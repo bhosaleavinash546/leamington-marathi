@@ -1,0 +1,393 @@
+{
+  "domain": "machines",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "capex.mach-vmc3",
+      "value": 287817,
+      "unit": "CNY/unit ex-VAT (maker average selling price, ex-works)",
+      "basis": "company annual report (derived ASP): Haitian Precision 海天精工 2025 CNC vertical machining centre (数控立式加工中心) revenue 8.41亿元 ÷ 2,922 units sold (2025 annual report 产销量 table) = 841,000,000 ÷ 2,922 = 287,816 CNY/unit",
+      "source": "https://finance.sina.cn/2026-03-23/detail-inhrynrq1147454.d.html ; units: http://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260323/71ad745b243c48e79d848681d7931b2a.PDF",
+      "date": "FY2025 (annual report published 2026-03-23)",
+      "notes": "Revenue is ex-VAT. ASP is a mix of all Haitian Precision VMC sizes (VMC850-class to larger) and includes exports; delivery, installation and options (4th axis, probes) are not in it. Segment gross margin 20.50% (same source). Revenue split from a media reading of the annual report; units from the report's production/sales table as summarised by search (column order inferred by the summariser — 2,943 produced / 2,922 sold / 637 stock). Current book implies 376,127 CNY (annualDepreciation 28,932.82 × 13 yr) — about 31% above this ASP. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-haas-vf2",
+      "value": 287817,
+      "unit": "CNY/unit ex-VAT",
+      "basis": "same evidence as capex.mach-vmc3 (Haitian Precision 2025 VMC ASP 287,816 CNY); a VF-2-class VMC is at the small end of that mix",
+      "source": "https://finance.sina.cn/2026-03-23/detail-inhrynrq1147454.d.html",
+      "date": "FY2025",
+      "notes": "No China price for a Haas VF-2 itself was found. Current book implies 259,873 CNY (19,990.21 × 13) — close to this evidence (−10%). Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-vmc3.crossCheck2023",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "2023 units only: Haitian Precision sold 2,612 VMCs in 2023 (revenue for 2023 not retrieved)",
+      "source": "https://file.finance.qq.com/finance/hs/pdf/2024/03/26/1219401061.PDF",
+      "date": "FY2023",
+      "notes": "Units only; no ASP derivable without the 2023 segment revenue. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-hmc.reference",
+      "value": 1476015,
+      "unit": "CNY/unit ex-VAT",
+      "basis": "company annual report (derived ASP): Haitian Precision 2025 CNC horizontal machining centre (数控卧式加工中心) revenue 4.00亿元 ÷ 271 units sold = 1,476,015 CNY/unit",
+      "source": "https://finance.sina.cn/2026-03-23/detail-inhrynrq1147454.d.html ; units: http://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260323/71ad745b243c48e79d848681d7931b2a.PDF",
+      "date": "FY2025",
+      "notes": "Reference only (no HMC id in the book list asked). Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-lathe-cnc",
+      "value": 215423,
+      "unit": "CNY/unit ex-VAT (approximate)",
+      "basis": "company annual report (derived): Zhejiang Headman 浙海德曼 2025 high-end CNC lathe (高端型数控车床, slant-bed turning centres) revenue 6.09亿元 ÷ 2,827 units PRODUCED 2025 = 215,423 CNY/unit. Production is used because 2025 units sold for this line were not found — the ratio is an approximation",
+      "source": "https://finance.sina.com.cn/stock/aigc/stockfs/2026-04-27/doc-inhvyknv2104372.shtml ; units: https://basic.10jqka.com.cn/688577/operate.html",
+      "date": "FY2025 (annual report 2026-04-28)",
+      "notes": "Revenue ex-VAT. Units are from a data platform (同花顺 F10), not read in the report itself. Headman's high-end line is the automotive-relevant slant-bed turning centre. Current book implies 273,524 CNY (21,040.27 × 13) — ~27% above this. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-lathe-cnc.economy",
+      "value": 59329,
+      "unit": "CNY/unit ex-VAT",
+      "basis": "company annual report (derived ASP): Headman 2025 economy CNC lathe (普及型数控车床, flat-bed) revenue 7,938.28万元 ÷ 1,338 units sold = 59,330 CNY/unit",
+      "source": "https://finance.sina.com.cn/stock/aigc/stockfs/2026-04-27/doc-inhvyknv2104372.shtml ; units: https://basic.10jqka.com.cn/688577/operate.html",
+      "date": "FY2025",
+      "notes": "Flat-bed economy lathe (CK6150 class) — not an auto-parts production machine. Cross-check: B2B supplier listings for CK6150 50,000–59,000 CNY/unit (https://m.gys.cn/chechuang/4875082782.html, 2024 — B2B listing, cross-check only, not a price). Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-mazak-qt200",
+      "value": 215423,
+      "unit": "CNY/unit ex-VAT (approximate)",
+      "basis": "same evidence as capex.mach-lathe-cnc (Headman 2025 high-end CNC lathe ≈ 215,423 CNY, revenue ÷ units produced)",
+      "source": "https://finance.sina.com.cn/stock/aigc/stockfs/2026-04-27/doc-inhvyknv2104372.shtml",
+      "date": "FY2025",
+      "notes": "No China price for a Mazak QT200 itself was found; a Chinese QT200-class slant-bed lathe is in this range. Current book implies 287,174 CNY. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-vmc5",
+      "value": 2425100,
+      "unit": "CNY/unit ex-VAT (maker average transaction price)",
+      "basis": "company disclosure: KEDE 科德数控 2024 five-axis machine average transaction price 242.51万元 (不含税), +27.49% y/y; 9M-2024 recognised-revenue average 233万元; H1-2024 new-order average 222万元",
+      "source": "https://stcn.com/article/detail/1725042.html ; https://www.stcn.com/article/detail/1413392.html",
+      "date": "FY2024 (2025 report not found)",
+      "notes": "KEDE's mix runs to large aerospace 5-axis machines, so it is the top of the range for a production 5-axis VMC. Second source: Nawi 纽威数控 IPO inquiry reply — five-axis machines 2018/2019/2020 unit price 160.21 / 159.25 / 199.69 万元 (3/3/10 units) (http://static.sse.com.cn/stock/disclosure/announcement/c/202105/000838_20210517_SW94.pdf, May 2021 — older). Current book implies 901,396 CNY (69,338.15 × 13) — 37% of KEDE's ASP and 45% of Nawi's 2020 price. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-dmg-dmu50",
+      "value": 2425100,
+      "unit": "CNY/unit ex-VAT",
+      "basis": "same evidence as capex.mach-vmc5 (KEDE 2024 five-axis ASP 2,425,100 CNY; Nawi 2020 1,996,900 CNY)",
+      "source": "https://stcn.com/article/detail/1725042.html",
+      "date": "FY2024",
+      "notes": "No China price for an imported DMU 50 found. Current book implies 806,475 CNY — below both domestic 5-axis ASPs. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-haas-umc500",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found (no China price for a compact UMC-500-class 5-axis)",
+      "source": "",
+      "date": "",
+      "notes": "Only the KEDE/Nawi ASPs above (≈2.0–2.4M CNY), which are larger machines. Current book implies 616,698 CNY."
+    },
+    {
+      "key": "capex.mach-drill",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": "No drilling/tapping centre price or ASP found (创世纪 Taikan's 3C drill-tap revenue 22亿元 is reported without units). Current book implies 191,492 CNY."
+    },
+    {
+      "key": "capex.laser-trumpf-3030",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found for a 6 kW 3015 in 2025–2026",
+      "source": "https://laser.ofweek.com/2020-05/ART-240015-8120-30439186.html",
+      "date": "FY2019",
+      "notes": "Only evidence: Bodor 邦德 2019 annual report — 2,672 fibre laser cutters sold, revenue 11.5亿元, ASP 43万元 (1,150,000,000 ÷ 2,672 = 430,389 CNY), all powers mixed, 2019 (old; fibre-laser prices have fallen since). Current book implies 1,830,030 CNY (UK $400–550k × 0.55) — likely far too high for a Chinese-built 6 kW 3015, but no 2026 Chinese price was found to prove the size of the gap. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.brake-amada-hfe100",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": "Yawei 亚威 2025 metal-forming revenue 17.35亿元 found without units (https://finance.sina.com.cn/stock/hkstock/ggscyd/2026-04-20/doc-inhvczzx8498616.shtml)."
+    },
+    {
+      "key": "capex.press-aida-200t",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": "Yangli 扬力 is unlisted; no tender price found."
+    },
+    {
+      "key": "capex.press-400t",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.imm-fleetAvg",
+      "value": 301732,
+      "unit": "CNY/unit ex-VAT (upper bound)",
+      "basis": "company annual report (derived ASP): Haitian International 海天国际 2025 injection-moulding machine revenue 168.97亿元 ÷ '>56,000' machines delivered = ≤301,732 CNY/unit (fleet average of all tonnages)",
+      "source": "https://static.weeklyonstock.com/26/0323/AB2616294199891.html ; https://macplas.it/en/marketing/international-news/haitian-internationals-revenue-grew-10-2025",
+      "date": "FY2025",
+      "notes": "Not tonnage-specific: Haitian's mix is mostly Mars small/medium servo toggle machines. H1 2025 check: total revenue 9,018.3m ÷ 29,438 units = 306,349 CNY (eu.newsroom.haitian.com/?p=86609); H1 2025 Zhafir all-electric 1,072.2m ÷ 2,044 = 524,560 CNY. Unit count '>56,000' comes from one secondary source. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.imm-200t",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found (no tonnage-specific price or tender)",
+      "source": "",
+      "date": "",
+      "notes": "Use capex.imm-fleetAvg (~300k CNY all tonnages) only as an order of magnitude. Current book imm-200t annualDepreciation 108,737 CNY/yr."
+    },
+    {
+      "key": "capex.imm-800t",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": "Haitian Jupiter (two-platen, large) H1 2025 revenue 16.72亿元 (CICC note) but no units."
+    },
+    {
+      "key": "capex.hpdc-800t",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": "LK Technology FY2024/25 die-casting revenue HK$3,866.6m and Yizumi 2025 die-casting revenue 11.89亿元 found without units."
+    },
+    {
+      "key": "capex.hpdc-1600t",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.hpdc-4000t.reference",
+      "value": 36000000,
+      "unit": "CNY per die-casting solution (cell)",
+      "basis": "broker research estimate (not a transaction): 4,000 t die-casting solution ≈ 3,600万元; ≥6,000 t integrated die-casting solution ≈ 1亿元 average",
+      "source": "https://news.smm.cn/news/102684637",
+      "date": "c. 2023 (research note reprint)",
+      "notes": "Attributed by the search summary to a broker research note among the Yizumi pages listed; not verified on the page. Reference only for the giga-press rows. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.sand-cast-line",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.induction-furnace-1-3t",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.forge-press-1600t",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.forge-press-4000t",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.smt-line",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.robot-mig-cell",
+      "value": null,
+      "unit": "CNY/unit",
+      "basis": "not found",
+      "source": "https://finance.sina.com.cn/stock/aigc/stockfs/2026-04-14/doc-inhunicw1595579.shtml",
+      "date": "FY2025",
+      "notes": "No robot ASP found. Context: Efort 埃夫特 2025 annual report says industrial-robot prices fell sharply (robot revenue −21.49% while H1 units +~20%); Estun 埃斯顿 had 10.5% of China shipments in 2025 (MIR) but units/segment revenue were not found. Current book implies 805,840 CNY for the cell."
+    },
+    {
+      "key": "finance.lpr1y",
+      "value": 3.0,
+      "unit": "% p.a.",
+      "basis": "PBoC-authorised LPR fixing (National Interbank Funding Center), 20 Sep 2026: 1-year 3.0%, unchanged since the May 2025 −10 bp cut",
+      "source": "https://www.mrjjxw.com/articles/2026-09-20/4586489.html",
+      "date": "2026-09-20",
+      "notes": "Reported identically by several outlets (eastmoney/The Paper). Current book uses 4% on half the capex (UK library rule). Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "finance.lpr5y",
+      "value": 3.5,
+      "unit": "% p.a.",
+      "basis": "PBoC LPR fixing 20 Sep 2026: 5-year-plus 3.5%",
+      "source": "https://www.mrjjxw.com/articles/2026-09-20/4586489.html",
+      "date": "2026-09-20",
+      "notes": "Aug 2026 weighted average new corporate loan rate reported 'slightly below 3%' (same reports, https://fund.eastmoney.com/a/202609203879283870.html). Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.shanghaiSuzhou",
+      "value": 31.94,
+      "unit": "CNY/m²/month",
+      "basis": "real-estate adviser survey: JLL Shanghai overall logistics rent Q2 2026 RMB 1.05/m²/day (−2.9% q/q); ×365/12 = 31.94 CNY/m²/month",
+      "source": "https://research.jllapsites.com/?p=37261",
+      "date": "2026-Q2",
+      "notes": "LOGISTICS warehouse rent (modern high-spec), not factory (厂房) rent — an upper proxy for a plant. Suzhou not found. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.guangzhouDongguanFoshan",
+      "value": null,
+      "unit": "CNY/m²/month",
+      "basis": "not found as a survey average",
+      "source": "http://www.honghengtai.com/hangye/293.html",
+      "date": "2025-07",
+      "notes": "Dongguan factory rents by town from an estate agent article: 10 CNY/m²/month (Huangjiang) to 28 (Liaobu); simple workshops 7.9 (Wanjiang). Trade/agent article, not a survey; a range, not an average. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.chongqing",
+      "value": null,
+      "unit": "CNY/m²/month",
+      "basis": "not found as an average",
+      "source": "https://m.anjuke.com/cq/cf/zu/",
+      "date": "2026 (listing page)",
+      "notes": "Listing cross-check only: Anjuke Chongqing factory listings (Bishan high-tech zone etc.) 0.13–0.40 CNY/m²/day ≈ 4.0–12.2 CNY/m²/month (×30.42). Individual asking prices, not an average. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.wuhan",
+      "value": null,
+      "unit": "CNY/m²/month",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": "Wuhan results were sale prices or offices only."
+    },
+    {
+      "key": "rent.clusterAvg",
+      "value": null,
+      "unit": "CNY/m²/month",
+      "basis": "not derivable — only Shanghai (logistics) and partial Dongguan/Chongqing ranges found",
+      "source": "",
+      "date": "",
+      "notes": "National logistics benchmarks: Cushman & Wakefield premium warehouse average Q1 2026 RMB 28.9/m²/month (https://cw-gbl-gws-prod.azureedge.net/en/greater-china/insights/greater-china-logistics-market-report); CBRE average asking Q1 2026 RMB 26.6 (https://www.cbre.com.cn/en/insights/figures/china-figures-q1-2026); general warehousing, 32 cities, Mar 2026 RMB 23.22 (source not identified in the search result). Factory rents in Dongguan (10–28) and Chongqing (≈4–12) listings sit below these. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "life.machinery",
+      "value": 10,
+      "unit": "years (minimum tax depreciation life)",
+      "basis": "regulation: EIT Law Implementation Regulations Art. 60 — machinery, mechanical and other production equipment minimum 10 years; plus Caishui/STA Announcement 2023 No.37: equipment bought 1 Jan 2024 – 31 Dec 2027 with unit value ≤ 5,000,000 CNY may be expensed in full in the year (no annual depreciation); above 5M CNY the existing accelerated-depreciation rules apply",
+      "source": "https://fgk.chinatax.gov.cn/zcfgk/c102416/c5202036/content.html ; https://jiangsu.chinatax.gov.cn/art/2023/3/20/art_22759_416541.html",
+      "date": "2024-2027 regime (current Oct 2026)",
+      "notes": "A TAX life, not an economic life (the UK book uses a 13-yr German AfA table as its economic proxy). The 2022 SME 50%-in-year rule for 10-yr assets has expired. Exact URL-to-provision mapping as given by the search summary; Art. 60 text not read directly. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "maintenancePct",
+      "value": null,
+      "unit": "% of capex / yr",
+      "basis": "not found in a Chinese source",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "hours.annual",
+      "value": null,
+      "unit": "h/yr",
+      "basis": "not found (no Chinese source stating 2×12 h × days/yr for auto-parts plants)",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "benchmark.cnc3axis",
+      "value": [
+        150,
+        300
+      ],
+      "unit": "CNY/h (job-shop selling rate incl. operator, overhead, margin)",
+      "basis": "supplier price guide: Suzhou Tianxuan 苏州天璇精工 2026 — 3/4-axis precision machining ≈150–300 CNY/h; small lots (<10 pcs) ×1.5",
+      "source": "https://www.sztxjg.com/news/163.html",
+      "date": "2026",
+      "notes": "Marketing article of one Suzhou job shop, small-batch precision work — NOT a machine-only rate; cross-check only. Another 2026 article gives 3-axis 250–430 CNY/h (https://www.sohu.com/a/1031373422_122782349, high-end precision). Older PRD (Shenzhen, 2019): CNC lathe 50–110, 4-axis 40–90 CNY/h (https://www.cncjmjg.com/wdzx/352.html — old). Book mach-vmc3 machine-only 49.79 CNY/h. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "benchmark.cnc5axis",
+      "value": [
+        300,
+        600
+      ],
+      "unit": "CNY/h (job-shop selling rate incl. operator, overhead, margin)",
+      "basis": "supplier price guide: Suzhou Tianxuan 2026 — 5-axis ≈300–600 CNY/h",
+      "source": "https://www.sztxjg.com/news/163.html",
+      "date": "2026",
+      "notes": "Cross-check only. Higher 2026 range 720–1,080 CNY/h (https://www.sohu.com/a/1031373422_122782349). Shenzhen 2019: 5-axis '>100 CNY/h' (old). Book mach-vmc5 machine-only 91.06 CNY/h. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "benchmark.imm",
+      "value": {
+        "200t": [
+          55,
+          160
+        ],
+        "800t": [
+          115,
+          170
+        ],
+        "800-1200t": [
+          300,
+          500
+        ]
+      },
+      "unit": "CNY/h (moulder machine-hour charge incl. operator & overhead)",
+      "basis": "trade/forum cost tables: 200 t 55–58 CNY/h (older tables), Shanghai 200 t 110–160 / 400 t 250–350; 800 t 115 (older table) or 170 (Shenzhen article, year not stated); 800–1,200 t 300–500 CNY/h; 2026 PRD article gives the method (rate ÷ parts/h) and says PRD rates are at the national high end",
+      "source": "https://www.sohu.com/a/1021143375_122713045 ; https://zhuanlan.zhihu.com/p/559692443 ; https://www.zhengnatech.com/article-detail/b7wDrkLb",
+      "date": "mixed, mostly undated; sohu article 2026",
+      "notes": "Cross-check only, low confidence: the search summary did not tie each figure to one of these pages, and several tables are old. Book: imm-200t 99.73, imm-800t 311.61 CNY/h machine-only. Page not opened: this session's egress proxy blocks direct fetches (WebFetch/curl got DNS/CONNECT refusals), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    }
+  ],
+  "notes": [
+    "Egress: WebFetch and curl were refused by the session proxy for every host, so no page was opened; every figure is as the WebSearch result quoted it for the cited URL. Re-read the page before adopting a value.",
+    "35 web searches used (budget reached).",
+    "Current-book implied capex = buildupCny.annualDepreciation × 13 yr (UK book life) — e.g. mach-vmc3 376,127; mach-lathe-cnc 273,524; mach-vmc5 901,396; mach-dmg-dmu50 806,475; mach-haas-umc500 616,698; mach-drill 191,492; laser-trumpf-3030 1,830,030; robot-mig-cell 805,840 CNY.",
+    "Evidence v book: Chinese 3-axis VMC ASP 287,816 (book 376,127, +31%); Chinese slant-bed lathe ≈215,423 (book 273,524, +27%); Chinese 5-axis ASP 2.0–2.4M (book 901,396, −60%); fibre laser book 1.83M looks high against Bodor's 2019 all-power ASP 430k but no 2026 6 kW price was found.",
+    "Book finance 4% on half capex v LPR 1-yr 3.0% / 5-yr 3.5% (Sep 2026). Book life 13 yr v China EIT minimum 10 yr (plus full expensing ≤5M CNY in 2024–2027).",
+    "Maker ASPs are ex-VAT ex-works and exclude freight, installation and options; delivered-to-plant cost is higher by an unsourced amount."
+  ]
+}
