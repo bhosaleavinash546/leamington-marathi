@@ -1,0 +1,209 @@
+id	class	current_PLN_per_hr
+mach-lathe-cnc	CNC Lathe (2-axis)	20.36
+mach-grind	CNC Cylindrical Grinder	158.49
+gear-hob-small	CNC Gear Hobber — small (≤m4, ≤Ø200)	162.4
+gear-hob-medium	CNC Gear Hobber — medium (≤m8, ≤Ø500)	218.26
+gear-hob-large	CNC Gear Hobber — large (≤m25, ≤Ø1600)	383.92
+gear-shaper-small	CNC Gear Shaper — small (≤m6, ≤Ø300)	163.02
+gear-shaper-large	CNC Gear Shaper — large (≤m12, ≤Ø800)	256.17
+gear-skive-small	Power Skiving Machine — small (≤m4, ≤Ø250)	238.03
+gear-skive-medium	Power Skiving Machine — medium (≤m8, ≤Ø600)	327.55
+gear-broach	Vertical Internal Gear Broach	176.59
+gear-grind-generating	Generating Gear Grinder (threaded wheel, ≤m6)	360.96
+gear-grind-profile	Profile Gear Grinder (form wheel, ≤m12)	457.62
+gear-shave	Gear Shaving Machine	131.81
+gear-hone	Gear Honing Machine	223.49
+gear-deburr	Gear Chamfer / Deburr Cell	72.55
+gear-induction	Gear Induction Hardening Cell (RF + quench + temper)	155.45
+gear-checker	CNC Gear Checker (profile / lead / pitch)	152.06
+bench-assembly	Assembly Workbench	1.5
+mach-mazak-qt200	Mazak Quick Turn 200 (Turning)	25.03
+grav-die-cast-std	Gravity Die Casting Machine	106.25
+invest-cast-furnace	Investment Casting Furnace	117.45
+heat-treat-furnace	Heat Treatment / Ageing Furnace	58.58
+press-100t	100T Mechanical Press (general press shop)	39.02
+press-200t	200T Mechanical Press (general press shop)	60.16
+press-400t	400T Mechanical Press (general press shop)	98.45
+press-630t	630T Mechanical Press (general press shop)	152.75
+press-800t	800T Mechanical Press (general press shop)	182.9
+press-1000t	1000T Mechanical Press (general press shop)	229.62
+press-1250t	1250T Mechanical Press (general press shop)	286.5
+press-fineblank-250t	250T Fine-Blanking Press (triple-action)	119.05
+press-hotstamp-1000t	1000T Hot-Stamping Press (water-cooled dies)	358.19
+furnace-roller-hearth	Roller-Hearth Austenitising Furnace (hot stamping)	177.87
+notching-machine	CNC Notching Machine (laminations)	83.27
+lamination-anneal-furnace	Stress-Relief Annealing Furnace (laminations)	132.83
+backlack-bonding-oven	Backlack Bonding Oven/Press (self-bonded stacks)	103.53
+laser-stack-welder	Laser Stack Welder (stator OD welds)	153.3
+imm-50t	50T Injection Moulding Machine	26.54
+imm-100t	100T Injection Moulding Machine	43.8
+imm-200t	200T Injection Moulding Machine	71.9
+imm-350t	350T Injection Moulding Machine	106.98
+imm-400t	400T Injection Moulding Machine	124.36
+imm-500t	500T Injection Moulding Machine	151.78
+imm-800t	800T Injection Moulding Machine	223.81
+imm-1200t	1200T Injection Moulding Machine	320.06
+imm-2000t	2000T Injection Moulding Machine	512.07
+imm-3500t	3500T Injection Moulding Machine	879.81
+hpdc-500t	HPDC 500T	138.93
+hpdc-800t	HPDC 800T	208.43
+hpdc-1600t	HPDC 1600T	364.63
+hpdc-giga-6100t	Giga-Casting Press 6100T (megacasting)	1185.13
+hpdc-giga-9000t	Giga-Casting Press 9000T (Xiaomi/Tesla-class)	1780.17
+sand-cast-line	Sand Casting Moulding Line	80.89
+hpdc-160t	HPDC 160T (Zinc/Small Al)	48.84
+forge-press-500t	500T Mechanical Forge Press	146.68
+forge-press-1600t	1600T Mechanical Forge Press	259.78
+forge-press-2500t	2500T Mechanical Forge Press	370.81
+forge-press-4000t	4000T Hydraulic Forge Press	555.16
+forge-press-8000t	8000T Hydraulic Forge Press	1077.57
+forge-screw-1000t	1000T Screw Press	194.53
+forge-upsetter-1000t	1000T Horizontal Upsetter	154.86
+forge-hammer-2t	2T Pneumatic Forge Hammer	72.45
+forge-hammer-5t	5T Pneumatic Forge Hammer	121.06
+forge-hammer-10t	10T Counterblow Forge Hammer	196.41
+forge-ring-mill	CNC Seamless Ring Rolling Mill	321
+paint-line-std	Standard Paint Line (E-coat + Topcoat)	276.44
+plating-line-barrel	Barrel Plating Line (zinc, high volume)	124.22
+plating-line-rack	Rack Plating / Anodising Line	180.22
+blast-machine	Shot Blast Machine (tumble / hanger)	70.85
+mass-finish-bowl	Vibratory / Mass Finishing Bowl	41.4
+galvanising-kettle	Hot Dip Galvanising Kettle (batch, EN ISO 1461)	542.5
+impregnation-plant	Vacuum Resin Impregnation Plant (casting porosity)	69.47
+robot-weld-station	Robot Welding Station	61.35
+smt-line	SMT Pick & Place + Reflow Line	141.86
+smt-high-speed-line	High-Speed SMT Line (Fuji/Juki/ASM)	410.4
+laser-drill-75um	Laser Drill — 75 µm Microvia (CO₂/UV)	326.56
+xray-bga-inspection	X-Ray BGA Inspection Cell (2D/3D AXI)	235.53
+ict-automotive	ICT Bed-of-Nails Test System (Automotive)	295.94
+blow-ebm-100l	EBM Blow Moulder (up to 5L)	60.45
+blow-ebm-500l	EBM Blow Moulder (5–100L tanks/drums)	105.21
+blow-ebm-2head	EBM 2-Head (Bottles 1–5L)	70.6
+blow-ebm-coex3	3-Layer Co-Ex EBM	135.13
+blow-ebm-coex5	5-Layer Co-Ex EBM (High-Barrier)	222.7
+blow-ebm-large	Large EBM Accumulator Head (20–200L)	170.09
+blow-ibm-rotary	IBM Rotary Machine (Pharma/Cosmetics)	124.64
+blow-ibm-linear	IBM Linear Machine (Medium Volume)	95.65
+blow-sbm-1stage	SBM Single-Stage (Preform + Blow)	130.04
+blow-sbm-2stage	SBM Two-Stage Reheat (High-Speed PET)	138.36
+blow-deflash-trimmer	Deflash Trim Robot / Station	31.35
+extruder-75mm	Single Screw Extruder 75mm	56.31
+extruder-150mm	Twin Screw Compounding/Extrusion Line 150mm	172.81
+extruder-pipe-line	Pipe Extrusion Line 90mm (SSE + vacuum tank + haul-off + saw)	94.67
+extruder-profile-line	Profile Extrusion Line 75mm (SSE + calibration table + haul-off)	74.37
+extruder-sheet-line	Sheet Extrusion Line (die + 3-roll stack + winder)	177.97
+extruder-cable-line	Cable/Wire Line (crosshead + CV/cooling + capstan)	78.67
+extruder-coex-3	3-Layer Co-Extrusion Line (3 extruders + feed block/manifold die)	225.66
+extruder-micro-tube	Medical Micro-Tubing Line (precision + laser gauge + cleanroom-ready)	113.46
+extrusion-finish-qa	Cut-off, Coil & Inspection Station	10.95
+extrusion-leak-test	Pipe/Tube Pressure & Leak Test Rig	14.67
+thermoform-small	Thermoformer (Small/Single Station)	36.21
+thermoform-large	Thermoformer (Inline/Rotary, Large)	97.63
+thermoform-pressure	Pressure Former (3–6 bar, cut-sheet)	73.63
+thermoform-twinsheet	Twin-Sheet Thermoformer	139.77
+thermoform-rollfed	Roll-Fed Inline Thermoformer (packaging)	163.61
+thermoform-oven	Standalone Sheet Pre-Heat Oven	30.96
+thermoform-trim-router	CNC Trim Router / Trim Robot (5-axis)	44.08
+rotomould-biaxial	Biaxial Rotational Moulder (3-arm carousel)	111.2
+rotomould-lab-1arm	Single-Arm Rotational Moulder (small/lab)	48.88
+rotomould-shuttle	Shuttle Rotational Moulder (1–2 station)	100.98
+rotomould-rocknroll	Rock-and-Roll Rotational Moulder	85.61
+rotomould-carousel-4arm	4-Arm Fixed Carousel Rotational Moulder	158.09
+ultrasonic-welder	Ultrasonic Welder	14.79
+hot-plate-welder	Hot Plate Welder	21.7
+vibration-welder	Vibration Welder	33.13
+laser-trumpf-3030	Trumpf TruLaser 3030 (6kW Fiber)	79.84
+laser-bystronic-3015	Bystronic BySmart 3015 (4kW Fiber)	60.94
+punch-amada-emz3610	Amada EMZ 3610 Turret Punch (30T)	175.4
+punch-trumpf-5000	Trumpf TruPunch 5000 (30T)	209.76
+brake-amada-hfe100	Amada HFE 100T Press Brake (3m)	148.76
+brake-trumpf-5230	Trumpf TruBend 5230 (230T)	189.37
+press-schuler-400t	Schuler 400T Stamping Press	397.41
+press-aida-200t	AIDA 200T Stamping Press	319.25
+rollform-dimeco-20st	Dimeco Roll Forming Line (20 stations)	358.88
+robot-spotweld-kuka	KUKA Spot Welding Robot Cell	255.44
+mig-welder-manual	Manual MIG/MAG Welder Station	12.7
+tig-welder-manual	Manual TIG Welder Station	13.96
+laser-trumpf-5030	Trumpf TruLaser 5030 (10kW Fiber)	115.62
+laser-amada-ensis-3015	Amada ENSIS 3015 AJ (3kW Fiber)	61.8
+plasma-hypertherm-xpr300	Hypertherm XPR300 Plasma Table	109.76
+plasma-kjellberg-hifocus280	Kjellberg HiFocus 280i Plasma Table	96.04
+waterjet-flow-mach500	Flow Mach 500 Waterjet (60K psi)	138.42
+waterjet-omax-80x	Omax 80X Waterjet (60K psi)	119.11
+shear-hydraulic-3m	Hydraulic Guillotine Shear (3m × 6mm)	35.96
+shear-guillotine-6mm	Hydraulic Shear Heavy Duty (4m × 6mm)	48.89
+brake-amada-hfe170	Amada HFE3i 170T Press Brake (4m)	183.73
+brake-trumpf-trubend3100	Trumpf TruBend 3100 (100T)	138.17
+brake-lvd-ppeb135	LVD PPEB 135T/30 Press Brake	159.25
+spotweld-gun-manual	Pedestal Spot Welding Machine	17.75
+robot-mig-cell	Robotic MIG/MAG Welding Cell	47.95
+compression-mould-std	Compression Moulding Press 250T	43.15
+transfer-mould-std	Transfer Moulding Press 200T	54.15
+lsr-injection-machine	LSR Injection Moulding Machine	75.78
+cure-oven-rubber	Rubber Cure / Vulcanisation Oven	35.79
+extruder-rubber-60mm	Rubber Extruder 60mm (Cold-feed)	37.36
+die-cut-press-rubber	Hydraulic Die-Cutting Press 20T	17.8
+autoclave-1200mm	Production Autoclave 1200mm dia	172.82
+oven-composite-cure	Composite Cure Oven (Fan-Assisted)	57.41
+al-ext-press-800t	Aluminium extrusion line — 800 t direct press, 4" container	394.27
+al-ext-press-1450t	Aluminium extrusion line — 1,450 t direct press, 6" container	656.72
+al-ext-press-1800t	Aluminium extrusion line — 1,800 t direct press, 7" container	816.09
+al-ext-press-2500t	Aluminium extrusion line — 2,500 t direct press, 9" container	1174.14
+al-ext-press-3600t	Aluminium extrusion line — 3,600 t direct press, 10" container	1691.65
+al-ext-press-5500t	Aluminium extrusion line — 5,500 t direct press, 12" container	2647.46
+al-ext-press-8000t	Aluminium extrusion line — 8,000 t direct press, 14" round / flat container (wide panels)	4330.52
+al-ext-indirect-2800t	Aluminium extrusion line — 2,800 t indirect press, 9" container (2xxx / 7xxx, seamless tube)	1446.48
+al-ext-hydrostatic-1600t	Aluminium extrusion line — 1,600 t hydrostatic press (high ratio, clad wire / fine sections)	1459.69
+al-conform-c400	Conform C400 continuous extrusion line (9.5–25 mm rod feed)	617.66
+al-impact-press-800t	800 t mechanical impact-extrusion press	573.35
+al-age-oven-batch	Batch ageing oven (T5 / T6)	109.75
+al-sht-drop-furnace	Vertical drop-quench solution heat-treatment furnace	377.34
+al-cnc-profile-centre	5-axis long-bed profile machining centre (7 m)	122.48
+al-ctl-saw	Automatic precision cut-to-length saw (bundle cutting, deburr)	47.32
+al-stretch-bender	CNC stretch-bending machine (3D, sweep)	199.56
+al-anodise-line	Anodising line (sulphuric, 10–25 µm, seal)	916.19
+al-powder-line	Vertical powder-coating line (pretreat + cure)	644.18
+al-ecoat-line	E-coat / conversion-coat line (chrome-free, for bonding)	772.7
+bat-cell-ocv-tester	Cell incoming OCV / IR test station	48.27
+bat-module-stacking	Cell stacking + compression line	673.44
+bat-laser-weld	Busbar laser welding cell (scanner)	241.28
+bat-module-eol	Module end-of-line tester	77.58
+bat-dispense	Gap-filler / adhesive dispensing cell	81.59
+bat-pack-assembly	Pack assembly station (semi-automatic)	126.13
+bat-leak-test	Pack / coolant-circuit leak tester (helium)	57.81
+bat-pack-eol	Pack end-of-line tester (HiPot, isolation, BMS, charge / discharge)	206.54
+emot-lamination-press	High-speed lamination press (progressive die, 300 spm)	524.39
+emot-hairpin-line	Hairpin forming + insertion line	728.7
+emot-winding-machine	Round-wire winding + insertion machine	171.43
+emot-hairpin-weld	Hairpin twist + laser weld cell	291.07
+emot-impregnation	Trickle / VPI impregnation + cure line	331.54
+emot-rotor-line	Rotor magnet insertion + bonding + shaft press	286.55
+emot-balancing	Rotor balancing machine	68.95
+emot-assembly-line	Motor final assembly line (shrink-fit, bearings, resolver)	361.39
+emot-eol	Motor end-of-line tester (back-EMF, HiPot, partial discharge, NVH)	234.63
+rtm-press-std	RTM / VARTM Injection Press	54.24
+waterjet-5ax-composite	5-Axis Waterjet Trim System	84.86
+mach-afp-atl	AFP/ATL Composite Cell	766.62
+harness-test-sys	Electrical Harness Test System (Continuity + HiPot)	30.35
+mach-vmc3-cn	VMC 3-axis CNC (China)	29.63
+mach-vmc3-in	VMC 3-axis CNC (India)	29.17
+mach-vmc3-de	VMC 3-axis CNC (Germany)	45.71
+mach-vmc3-pl	VMC 3-axis CNC (Poland)	32.93
+mach-vmc3-mx	VMC 3-axis CNC (Mexico)	30.29
+imm-200t-cn	Injection Moulding 200T (China)	38.16
+imm-200t-in	Injection Moulding 200T (India)	39.11
+imm-200t-de	Injection Moulding 200T (Germany)	64.52
+imm-200t-pl	Injection Moulding 200T (Poland)	45.08
+imm-200t-mx	Injection Moulding 200T (Mexico)	40.28
+hpdc-500t-cn	HPDC 500T (China)	83.03
+hpdc-500t-in	HPDC 500T (India)	85.24
+hpdc-500t-mx	HPDC 500T (Mexico)	87.1
+press-400t-cn	Stamping Press 400T (China)	55.49
+press-400t-in	Stamping Press 400T (India)	56.85
+press-400t-pl	Stamping Press 400T (Poland)	64.46
+press-400t-mx	Stamping Press 400T (Mexico)	58.36
+bench-assembly-cn	Manual Assembly Bench (China)	4.25
+bench-assembly-in	Manual Assembly Bench (India)	4.08
+bench-assembly-mx	Manual Assembly Bench (Mexico)	4.43
+bench-assembly-vn	Manual Assembly Bench (Vietnam)	3.79
+bench-assembly-pl	Manual Assembly Bench (Poland)	5

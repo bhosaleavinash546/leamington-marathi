@@ -1,0 +1,126 @@
+id	grade	category	current_PLN_per_kg
+mat-pom-c	POM-C (Acetal / Delrin Stock)	Engineering Plastic (Stock)	15.32
+mat-pa6-cast	Nylon 6 (Cast PA6 Stock)	Engineering Plastic (Stock)	20.76
+mat-ptfe	PTFE (Virgin Stock)	Engineering Plastic (Stock)	61.79
+mat-peek-stock	PEEK (Unfilled Stock)	Engineering Plastic (Stock)	469.6
+mat-acrylic-cast	Cast Acrylic (PMMA Stock)	Engineering Plastic (Stock)	23.73
+mat-uhmwpe	UHMW-PE (Stock)	Engineering Plastic (Stock)	16.81
+mat-pa66gf30	PA66 GF30	Thermoplastic	15.32
+mat-pom	POM / Acetal (Delrin)	Thermoplastic	10.13
+mat-pbt-gf30	PBT GF30	Thermoplastic	15.32
+mat-tpu-shore85	TPU Shore 85A	Thermoplastic Elastomer	12.46
+mat-pp-gf30	PP GF30 (Short Glass)	Thermoplastic	9.13
+mat-pet-gf30	PET GF30 (Engineering)	Thermoplastic	15.08
+mat-pc-abs	PC/ABS Blend (automotive grade)	Thermoplastic	9.49
+mat-pa6-gf30	PA6 GF30	Thermoplastic	12.46
+mat-peek-gf30	PEEK GF30	High-Performance Thermoplastic	470.61
+mat-asa	ASA (Weatherable)	Thermoplastic	11.07
+mat-san	SAN (Styrene-Acrylonitrile)	Thermoplastic	8.35
+mat-pp-t20	PP-T20 (20% Talc-filled)	Thermoplastic	6.2
+mat-pp-t30	PP-T30 (30% Mineral/Talc-filled)	Thermoplastic	6.69
+mat-pp-lgf30	PP-LGF30 (Long-Glass PP)	Thermoplastic	12.79
+mat-tpo	TPO (Thermoplastic Olefin)	Thermoplastic	9.24
+mat-tpv	TPV (Santoprene-type)	Thermoplastic Elastomer	15.87
+mat-pps-gf40	PPS GF40	High-Performance Thermoplastic	27.83
+mat-ppa-gf35	PPA GF35 (High-Temp Polyamide)	High-Performance Thermoplastic	34.41
+mat-pei	PEI (Ultem, Unfilled)	High-Performance Thermoplastic	63.25
+mat-pei-gf30	PEI GF30	High-Performance Thermoplastic	70.84
+mat-lcp-gf30	LCP GF30 (Liquid-Crystal Polymer)	High-Performance Thermoplastic	55.66
+mat-pa66-gf35	PA66 GF35	Thermoplastic	16.31
+mat-pa66-gf50	PA66 GF50	Thermoplastic	17.55
+mat-pa66-min	PA66 Mineral-filled (Low-Warp)	Thermoplastic	14.83
+mat-pa12	PA12 (Nylon 12)	Thermoplastic	42.02
+mat-pc-pbt	PC/PBT Blend	Thermoplastic	15.82
+mat-mppe	mPPE / PPO (Noryl-type)	Thermoplastic	16.81
+mat-pc-fr	PC FR (UL94 V0)	Thermoplastic	17.8
+mat-pa66-gf25-fr	PA66 GF25 FR (UL94 V0)	Thermoplastic	20.76
+mat-pcr-pp	PCR PP (Post-Consumer Recycled)	Thermoplastic	4.74
+mat-bio-pa610	Bio-PA610 (Castor-based)	High-Performance Thermoplastic	27.83
+mat-tpe-s-im	TPE-S (SEBS) 60 Shore A — overmould grade	Thermoplastic Elastomer	12.85
+mat-psu	PSU (Polysulfone)	High-Performance Thermoplastic	43.01
+mat-ppsu	PPSU (Polyphenylsulfone, Radel-type)	High-Performance Thermoplastic	80.97
+mat-pla	PLA (injection grade)	Thermoplastic	11.07
+mat-pc-gf20	PC GF20	Thermoplastic	11.72
+mat-paint-ecoat	E-coat (Cathodic)	Paint	18.19
+mat-paint-primer	2K Primer	Paint	30.15
+mat-paint-basecoat	Waterborne Basecoat	Paint	42.61
+mat-paint-clearcoat	2K Clearcoat	Paint	49.33
+mat-paint-powder	Powder Coat (Polyester)	Paint	16.61
+mat-paint-1k-primer	1K Etch Primer	Paint	26.69
+mat-paint-sb-basecoat	Solventborne Basecoat	Paint	45.48
+mat-paint-uv-clear	UV-Cure Clearcoat	Paint	71.68
+mat-paint-pvc-underbody	PVC Underbody / Anti-Chip Sealer	Paint	12.7
+mat-petg-bm	PETG Clear Blow Grade	Blow Moulding	10.78
+mat-tpe-bm	TPE Blow Grade 40 Shore A	Blow Moulding	12.26
+mat-eva-bm	EVA Blow Grade (14% VA)	Blow Moulding	9.14
+mat-tritan-bm	Tritan Copolyester (BPA-free clear)	Blow Moulding	32.13
+mat-biope-bm	Bio-PE Blow Grade (sugarcane HDPE)	Blow Moulding	10.87
+mat-rhdpe-bm	Recycled HDPE Blow Grade (PCR)	Blow Moulding	4.65
+mat-rpp-bm	Recycled PP Blow Grade (PCR)	Blow Moulding	4.55
+mat-xlpe-cable	XLPE Cable Insulation Compound	Extrusion	11.42
+mat-pvc-medical-tube	Medical PVC Tubing Compound (DEHP-free)	Extrusion	9.43
+mat-tpu-medical-tube	Medical TPU Tubing (85A)	Extrusion	32.61
+mat-tpe-profile	TPE-S Extrusion Profile (60 Shore A)	Extrusion	11.82
+mat-pa12-ext-tube	PA12 Extrusion (fuel/brake line tube)	Extrusion	31.09
+mat-pa11-tube	PA11 Tube Grade (Rilsan-type, bio-based)	Extrusion	31.24
+mat-pvdf-ext	PVDF Extrusion Grade (homopolymer)	Extrusion	44.64
+mat-tpv-profile	TPV Extrusion Profile (EPDM/PP, automotive weatherseal)	Extrusion	15.87
+mat-pom-rod	POM Extrusion Grade (rod / tube stock shapes)	Extrusion	11.47
+mat-tpu-ext-hose	TPU Extrusion Grade (85A, hose and tube)	Extrusion	12.46
+mat-asa-capstock	ASA Capstock Grade (co-extruded weather layer)	Extrusion	11.07
+mat-mb-colour	Colour Masterbatch (universal)	Additive / Masterbatch	22.89
+mat-mb-white-tio2	White Masterbatch (70% TiO₂)	Additive / Masterbatch	16.26
+mat-mb-black	Black Masterbatch (40% carbon)	Additive / Masterbatch	11.02
+mat-add-uv	UV Stabiliser Masterbatch (HALS)	Additive / Masterbatch	33.61
+mat-add-antistat	Anti-Static Additive Masterbatch	Additive / Masterbatch	27.19
+mat-add-fr	Flame-Retardant Masterbatch (halogen-free)	Additive / Masterbatch	20.76
+mat-add-impact	Impact Modifier (acrylic/CPE)	Additive / Masterbatch	15.32
+mat-add-procaid	Processing Aid (fluoropolymer PPA)	Additive / Masterbatch	42.02
+mat-hips-tf	HIPS Thermoforming Sheet	Thermoforming Sheet	7.24
+mat-petg-tf	PETG Thermoforming Sheet (clear)	Thermoforming Sheet	9.07
+mat-cpet-tf	CPET Sheet (crystalline, dual-ovenable)	Thermoforming Sheet	8.56
+mat-ps-foam-tf	PS Foam Sheet (foamed tray stock)	Thermoforming Sheet	9.78
+mat-pei-tf	PEI (Ultem) Sheet (aerospace)	Thermoforming Sheet	142.69
+mat-pps-tf	PPS Sheet (high-temp)	Thermoforming Sheet	71.34
+mat-abs-pmma-tf	ABS/PMMA Co-ex Sheet (capped)	Thermoforming Sheet	12.84
+mat-abs-pc-tf	ABS/PC Co-ex Sheet	Thermoforming Sheet	15.44
+mat-pp-tpo-tf	PP/TPO Automotive Sheet	Thermoforming Sheet	9.48
+mat-petg-barrier-tf	PETG/EVOH Barrier Sheet	Thermoforming Sheet	12.03
+mat-pa12-roto	PA12 Roto Powder	Rotational Moulding	46.96
+mat-rpe-roto	Recycled PE Roto Powder	Rotational Moulding	4.65
+mat-epdm	EPDM 70 Shore A	Rubber	9.61
+mat-nbr	NBR 70 Shore A	Rubber	11.74
+mat-silicone-hcr	HCR Silicone 60 Shore A	Rubber	45.14
+mat-lsr	LSR 40 Shore A	Rubber	79.7
+mat-viton-fkm	FKM Viton 75 Shore A	Rubber	116.89
+mat-sbr	SBR 65 Shore A	Rubber	7.34
+mat-cr	CR Neoprene 60 Shore A	Rubber	19.58
+mat-hnbr	HNBR 70 Shore A	Rubber	28.59
+mat-iir	Butyl Rubber IIR 55 Shore A	Rubber	11.03
+mat-pu-elastomer	Polyurethane Elastomer 70 Shore A	Rubber	21.51
+mat-fvmq	FVMQ Fluorosilicone 60 Shore A	Rubber	172.05
+mat-acm	ACM Polyacrylate 70 Shore A	Rubber	34.41
+mat-aem	AEM (Vamac) 60 Shore A	Rubber	48.07
+mat-eco	ECO Epichlorohydrin 65 Shore A	Rubber	29.86
+mat-csm	CSM Hypalon 65 Shore A	Rubber	31.37
+mat-br	BR Polybutadiene (high-cis) 60 Shore A	Rubber	8.86
+mat-bromobutyl	Bromobutyl (BIIR) 50 Shore A	Rubber	14.42
+mat-chlorobutyl	Chlorobutyl (CIIR) 55 Shore A	Rubber	13.92
+mat-ffkm	FFKM Perfluoroelastomer (Kalrez-type) 75 Shore A	Rubber	1619.3
+mat-nbr-high-acn	NBR High-ACN (fuel) 75 Shore A	Rubber	12.9
+mat-epdm-peroxide	EPDM Peroxide-Cured 70 Shore A	Rubber	10.88
+mat-silicone-medical	LSR Medical-Grade 30 Shore A	Rubber	83.5
+mat-cfrp-prepreg-t700	T700 CF/Epoxy Prepreg (125°C cure)	Composite	166.09
+mat-gfrp-prepreg-e	E-glass/Epoxy Prepreg (120°C cure)	Composite	38.95
+mat-cf-dry-3k	Carbon Fibre 3K Twill Dry Fabric	Composite	124.57
+mat-gf-dry-e	E-glass Woven Dry Fabric (600 g/m²)	Composite	19.72
+mat-epoxy-infusion	Epoxy Infusion Resin System (LT cure)	Composite	67.47
+mat-vinylester-rtm	Vinyl Ester RTM Resin	Composite	26.99
+mat-aramid-k49	Aramid (Kevlar 49) Woven Fabric	Composite	155.71
+mat-cf-uni-t800	T800 Unidirectional CF/Epoxy Prepreg	Composite	227.38
+mat-smc-gf	SMC (Glass-Filled Sheet Moulding Compound)	Composite	14.09
+mat-bmc	BMC (Bulk Moulding Compound)	Composite	15.32
+mat-csm-gf	E-glass Chopped Strand Mat (450 g/m²)	Composite	15.82
+mat-cf-peek-organo	CF/PEEK Organosheet (Thermoplastic)	Composite	306.47
+mat-nomex-honeycomb	Nomex Honeycomb Core	Composite	207.61
+mat-pet-foam-core	PET Structural Foam Core	Composite	46.96

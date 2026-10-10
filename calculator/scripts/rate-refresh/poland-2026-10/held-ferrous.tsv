@@ -1,0 +1,55 @@
+id	grade	category	current_PLN_per_kg
+mat-steel4140	4140 / 42CrMo4 / EN19 (Chromoly Alloy Steel)	Alloy Steel	5.98
+mat-ss304-bar	304 Stainless Bar	Stainless Steel	17.45
+mat-ss303	303 Free-Machining Stainless Bar	Stainless Steel	18.93
+mat-hrpo	HRPO (Hot Rolled Pickled & Oiled)	Mild Steel Sheet	3.81
+mat-nogo-m270-35a	M270-35A Non-Oriented Electrical (0.35mm)	Electrical Steel Sheet	7.86
+mat-nogo-m400-50a	M400-50A Non-Oriented Electrical (0.50mm)	Electrical Steel Sheet	6.38
+mat-go-m105-30p	M105-30P Grain-Oriented Electrical (0.30mm)	Electrical Steel Sheet	14.34
+mat-m235-35a	M235-35A NO Electrical (0.35mm, premium low-loss)	Electrical Steel Sheet	9.84
+mat-m330-35a	M330-35A NO Electrical (0.35mm)	Electrical Steel Sheet	8.6
+mat-m250-50a	M250-50A NO Electrical (0.50mm, low-loss)	Electrical Steel Sheet	7.22
+mat-m470-50a	M470-50A NO Electrical (0.50mm)	Electrical Steel Sheet	6.13
+mat-m600-50a	M600-50A NO Electrical (0.50mm, economy)	Electrical Steel Sheet	5.88
+mat-m700-65a	M700-65A NO Electrical (0.65mm, mains)	Electrical Steel Sheet	5.64
+mat-no27-27a	NO27 (0.27mm EV Traction)	Electrical Steel Sheet	12.06
+mat-no25-25a	NO25 (0.25mm EV Traction)	Electrical Steel Sheet	13.54
+mat-no20-20a	NO20 (0.20mm High-Speed EV/aero)	Electrical Steel Sheet	17
+mat-cgo-m120-27	M120-27S CGO (0.27mm Grain-Oriented)	Electrical Steel Sheet	12.6
+mat-hgo-m090-23	M090-23P HGO Domain-Refined (0.23mm)	Electrical Steel Sheet	16.81
+mat-cofe-hiperco50	Cobalt-Iron (Hiperco 50 / Vacodur 49)	Electrical Steel Sheet	286.7
+mat-nife-permalloy80	Nickel-Iron Permalloy (80% Ni)	Electrical Steel Sheet	118.93
+mat-amorphous-2605sa1	Amorphous Ribbon (Metglas 2605SA1)	Electrical Steel Sheet	42.02
+mat-no-semiproc-50	Semi-Processed NO Electrical (0.50mm)	Electrical Steel Sheet	5.39
+mat-hsno-rotor-700	High-Strength NO Electrical (~700 MPa, 0.30mm rotor)	Electrical Steel Sheet	13.05
+mat-hsno-rotor-960	Ultra-High-Strength NO Electrical (~960 MPa, 0.20–0.27mm rotor)	Electrical Steel Sheet	16.02
+mat-no15-15a	NO15 Ultra-Thin NO Electrical (0.15mm)	Electrical Steel Sheet	19.48
+mat-no10-10a	NO10 Ultra-Thin NO Electrical (0.10mm)	Electrical Steel Sheet	27.38
+mat-si65-jnex-10	6.5% Si High-Frequency Electrical (JNEX/Super-Core class, 0.10mm)	Electrical Steel Sheet	33.81
+mat-uhsno-1100	Ultra-High-Strength NO Electrical (~1100 MPa, 30k-rpm rotor)	Electrical Steel Sheet	17.99
+mat-cofe-thin-010	Cobalt-Iron Thin-Gauge (0.10mm, Vacoflux/Hiperco)	Electrical Steel Sheet	355.9
+mat-steel4340	4340 / EN24 / 817M40 (Ni-Cr-Mo Alloy Steel)	Alloy Steel Billet	7.17
+mat-steel4130	4130 / 25CrMo4	Alloy Steel Billet	7.91
+mat-steel8620	8620 (Case-Hardening)	Alloy Steel Billet	7.41
+mat-steel-20mncr5	20MnCr5 (Gear Steel)	Alloy Steel Billet	7.32
+mat-steel-52100	52100 / 100Cr6 (Bearing Steel)	Alloy Steel Billet	8.4
+mat-steel-300m	300M (UHS Aerospace)	Alloy Steel Billet	18.78
+mat-ss410-bar	410 (Martensitic Stainless Bar)	Stainless Steel Billet	17.94
+mat-ss304l-bar	304L (Austenitic Stainless Bar)	Stainless Steel Billet	23.38
+mat-ss316l-bar	316L (Austenitic Stainless Bar)	Stainless Steel Billet	31.29
+mat-ss17-4ph-bar	17-4PH (PH Stainless Bar)	Stainless Steel Billet	45.97
+mat-ss15-5ph-bar	15-5PH (PH Stainless Bar)	Stainless Steel Billet	48.94
+mat-hadfield	G-X120Mn12 / 1.3401 (Hadfield austenitic manganese wear steel)	Cast Wear Steel	10.87
+mat-steel-42crmo4	42CrMo4 / 4140 / 1.7225 (Cr-Mo QT steel)	Alloy Steel Billet	7.96
+mat-steel-34crnimo6	34CrNiMo6 / 1.6582 (Ni-Cr-Mo QT steel)	Alloy Steel Billet	8.95
+mat-steel-18crnimo7-6	18CrNiMo7-6 / 1.6587 (case-hardening, heavy gears)	Alloy Steel Billet	9.24
+mat-steel-16mncr5	16MnCr5 / 1.7131 (case-hardening)	Alloy Steel Billet	7.32
+mat-steel-41cr4	41Cr4 / 5140 / 1.7035 (Cr QT steel)	Alloy Steel Billet	7.32
+mat-steel-f22	ASTM A182 F22 (2.25Cr-1Mo, pressure forgings)	Alloy Steel Billet	10.38
+mat-ss420-bar	420 / 1.4021 (martensitic stainless forging bar)	Stainless Steel Billet	17.99
+mat-ss431-bar	431 / 1.4057 (martensitic Ni stainless forging bar)	Stainless Steel Billet	19.53
+mat-ss2205-bar	2205 / 1.4462 / F51 (duplex stainless forging bar)	Stainless Steel Billet	31.69
+mat-ab2-forge	CW307G / CuAl10Ni5Fe4 (nickel-aluminium bronze forging bar)	Copper Alloy Billet	50.6
+mat-ss409l-sheet	409L / 1.4512 Ferritic Stainless Sheet (exhaust)	Stainless Steel Sheet	6.39
+mat-ss441-sheet	441 / 1.4509 Ferritic Stainless Sheet (hot exhaust)	Stainless Steel Sheet	7.08
+mat-ss416-bar	416 / 1.4005 Free-Machining Martensitic Stainless Bar	Stainless Steel	19.43

@@ -200,6 +200,14 @@ ratios.sort((a, b) => a - b);
 const machineMult = r2(ratios[Math.floor(ratios.length / 2)]);
 register.push({ kind: 'factor', id: 'machineRateMultiplier', name: `${NAME} ÷ UK machine rate (median, the service factors read it)`, currentInr: SNAP.regional.machineRateMultiplier,
   newInr: machineMult, unit: 'ratio', decision: 'updated', basis: `median of ${ratios.length} machines in the new book`, source: '' });
+// overhead / packaging / logistics multipliers (× the UK basis) — only when the config sources them
+const MULTS = (cfg.regionalMultipliers ?? {}) as Record<'overhead' | 'packaging' | 'logistics', { value: number; basis: string; source?: string } | undefined>;
+for (const k of ['overhead', 'packaging', 'logistics'] as const) {
+  const m = MULTS[k]; if (!m) continue;
+  const cur = (SNAP.regional as unknown as Record<string, number>)[`${k}Multiplier`];
+  register.push({ kind: 'factor', id: `${k}Multiplier`, name: `${NAME} ${k} × the UK basis`, currentInr: cur, newInr: m.value, unit: 'ratio',
+    decision: Math.abs(m.value - cur) < 0.005 ? 'held (evidence agrees)' : 'updated', basis: m.basis, source: m.source ?? '' });
+}
 const billet = cfg.alBilletPremiumUsdPerT;
 if (billet) register.push({ kind: 'material', id: `BILLET_PREMIUM_USD_PER_T.${REGION}`, name: `${NAME} Al billet premium over LME`, currentInr: billet.current ?? 550, newInr: billet.value, unit: 'USD/t', decision: 'updated', basis: billet.basis, source: billet.source });
 
@@ -240,6 +248,9 @@ let newBlock = inBlock[1].replace(/^(?:  \/\/[^\n]*\n)+/, '')
   .replace(/labour: \{[^}]*\}/, `labour: { skilled: ${L.skilled}, semiskilled: ${L.semiskilled}, engineer: ${L.engineer}, foundry: ${L.foundry}, electronics: ${L.electronics}, inspector: ${L.inspector}, technician: ${L.technician}, supervisor: ${L.supervisor} }`)
   .replace(/machineRateMultiplier: [0-9.]+/, `machineRateMultiplier: ${machineMult}`);
 if (newElec !== undefined || newGas !== undefined) newBlock = newBlock.replace(/energy: \{[^}]*\}/, `energy: { electricityPerKwh: ${elecGbp}, gasPerKwh: ${gasGbp} }`);
+for (const k of ['overhead', 'packaging', 'logistics'] as const) {
+  const m = MULTS[k]; if (m) newBlock = newBlock.replace(new RegExp(`${k}Multiplier: [0-9.]+`), `${k}Multiplier: ${m.value}`);
+}
 reg = reg.replace(inBlock[1], `  // ${NAME}: labour from the ${NAME} rate book ${cfg.asOf} (scripts/country-book.ts; ${cfg.labour.short ?? 'statutory-loaded, 4-cluster, see the book'});\n  // machineRateMultiplier = median ${NAME} ÷ UK machine rate in that book (the service factors read it).\n${newBlock}`);
 writeFileSync(REG, reg);
 
