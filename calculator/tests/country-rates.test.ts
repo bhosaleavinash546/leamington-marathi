@@ -372,7 +372,7 @@ describe('9. flow review (Oct 2026, fourth pass): the country survives every ste
     expect(main).toContain('saveScenario(name, desc, lastInput, lastResult, _mfgRegion)');
     const xl = readFileSync('src/export/excel.ts', 'utf8');
     expect(xl).toContain("'Manufacturing Country'");
-    expect(xl).toContain('labourRoles(library)');
+    expect(xl).toContain('labourRoleLabel(');   // labour printed by role (casting 360 X14; only the roles the costing used)
   });
   it('no module turns energy into £ at a fixed tariff any more (the screen and the executor pass none)', () => {
     const main = readFileSync('src/ui/main.ts', 'utf8');

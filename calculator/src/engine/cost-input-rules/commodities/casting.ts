@@ -683,7 +683,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
         return decided('casting.shotBlastCostPerPart', v, 'library',
           `${r.advice.subtype} castings are blasted to remove sand / scale / flash — ${r.advice.massKg.toFixed(2)} kg ÷ `
           + `${BLAST_KG_PER_HR} kg/h × (blast machine £${rate.toFixed(2)}/h + operator £${lab.toFixed(2)}/h), `
-          + `min £${floor.toFixed(4)} (UK £${BLAST_MIN_CHARGE_UK.toFixed(2)}${countryNote('process')})`, 0.5);
+          + `min £${floor === BLAST_MIN_CHARGE_UK ? floor.toFixed(2) : `${floor.toFixed(3)} (UK £${BLAST_MIN_CHARGE_UK.toFixed(2)}${countryNote('process')})`}`, 0.5);
       },
     },
     {

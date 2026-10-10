@@ -79,7 +79,7 @@ describe('geometry drivers in the tornado', () => {
     expect(names).toContain('rawMaterial.netWeightKg');
     expect(names).toContain('rawMaterial.materialUtilization');
     const nw = s.drivers.find(d => d.parameter === 'rawMaterial.netWeightKg')!;
-    expect(nw.driver).toMatch(/measured geometry/);
+    expect(nw.driver).toMatch(/measured volume/);   // casting 360 X11: the costed weight adds the stated stock
     expect(nw.range).toBeGreaterThan(0);
   });
 });

@@ -22,7 +22,7 @@ CAST + MACHINE COST INPUT RULES:
   ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]
   manning=1  [one operator to a gravity cell — deterministic, use verbatim]
   leakTestSec=0  [not pressure-tight — no leak test — deterministic, use verbatim]
-  castPartWeightKg=2.851  [2.800 kg finished + 18.9 cm³ of 10 hole(s) ≤ 20 mm drilled from solid + 0.0 cm³ machining stock (1.5 mm a side on the machined faces and cored bores, gravity — ISO 8062-3 RMA typical; the drawing's RMA replaces it) — deterministic, use verbatim]
+  castPartWeightKg=2.851  [2.800 kg finished + 18.9 cm³ of 10 hole(s) ≤ 20 mm drilled from solid + 0.0 cm³ machining stock (1.5 mm a side on the machined faces and cored bores, gravity — ISO 8062-3 RMA typical, an assumption: no drawing is read for it; type the as-cast weight from the drawing or the foundry to override) — deterministic, use verbatim]
   estimatedCycleTimeHr=0.0783  [2.3 min cutting + 2.4 min handling (face 0 machined face(s), 0 cm² = 0.0 min; holes 2.1 min (≤ Ø20 drilled from solid, larger cored and finish-bored); 2 tools × 6 s (aluminium, ×1 on aluminium)); the kernel's planar-area rate said 16.1 min (not used) — deterministic, use verbatim]
   setupCount=4  [4 fixturing(s) of the split-3axis routing (3 approach direction(s) measured) — deterministic, use verbatim]
   setupTimeHr=3  [4 fixturing(s) of the split-3axis routing × 45 min change-over (fixture swap, tool offsets, first-off inspection) a batch — not the kernel's 15 min, which is a per-part allowance — deterministic, use verbatim]
