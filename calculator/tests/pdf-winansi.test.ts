@@ -113,4 +113,8 @@ describe('winAnsiSafe keeps the currency (casting 360 review, Oct 2026)', () => 
     expect(winAnsiSafe('฿100 ₫200 ₩300 ₺400 ₱500')).toBe('THB 100 VND 200 KRW 300 TRY 400 PHP 500');
     expect(winAnsiSafe('£12 €3 $4')).toBe('£12 €3 $4');
   });
+  it('the złoty sign becomes PLN (the Poland report printed "zl165.57"); a Polish word that contains it is kept', () => {
+    expect(winAnsiSafe('zł165.57 · zł1.73/kg · (zł/h)')).toBe('PLN 165.57 · PLN 1.73/kg · (PLN/h)');
+    expect(winAnsiSafe('złom stalowy ciężki')).toBe('zlom stalowy ciezki');
+  });
 });

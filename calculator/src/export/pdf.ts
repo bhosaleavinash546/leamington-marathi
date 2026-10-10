@@ -314,6 +314,10 @@ export function winAnsiSafe(s: string): string {
   return s
     .replace(/[₹฿₫₩₺₱]\s?(?=[\d(+-])/g, ch => `${CURRENCY_CODES[ch.trim()]} `)   // "₹2,445" → "INR 2,445"
     .replace(/[₹฿₫₩₺₱]/g, ch => CURRENCY_CODES[ch])                          // "₹/kg" → "INR/kg"
+    // The złoty sign: 'ł' is not in the font ("zł165.57" printed "zl165.57"). Only the symbol — never a Polish word
+    // that contains it ("złom", scrap, in a source note).
+    .replace(/(?<![\p{L}])zł\s?(?=[\d(+-])/gu, 'PLN ')                        // "zł165.57" → "PLN 165.57"
+    .replace(/(?<![\p{L}])zł(?![\p{L}])/gu, 'PLN')                            // "zł/kg" → "PLN/kg"
     .replace(/[\u2192\u2794\u27A1]/g, '->')      // arrows
     .replace(/[\u2190]/g, '<-')
     .replace(/[\u2713\u2714]/g, 'OK')             // ticks

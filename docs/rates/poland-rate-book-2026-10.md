@@ -160,7 +160,25 @@ material £/kg equal the Poland book (0 leaks).
 
 **Cast steel rises (+5%)** because its charge was below scrap.
 
-LIVE_RESULTS
+**Live runs** (a real server, a real browser, Poland selected; 100,000/yr, 5-year programme; `e2e/cad-parts-live.ts`):
+
+| Part | Screen (= Excel trace) |
+|---|---|
+| PRCR002 stub axle | **zł165.57** ±7.5% |
+| Casting_Braket | **zł63.41** ±6.4% |
+| IM_ECU_Cover | **zł4.86** ±11.4% |
+| IM_Storage_Tray | **zł15.30** ±12.4% |
+| Seat_Locking_Bracket | **zł5.35** ±12.4% |
+| BIW_Inner_Panel | **zł65.31** ±13% |
+
+- Every CAD response says `ratesRegion: PL`.
+- Every rate note reads "Poland book 2026-10-10: …", or "Poland: no Poland price for this grade …" for a held grade.
+- The sweep of the 12 exports is clean: no £ amount, no INR or CNY, no source-file names, no internal jargon.
+- The screen and headless figures differ for the mouldings and pressings because the screen amortises the tools over
+  the 5-year programme the run enters; headless uses the recorded answers.
+- **PDF fix found on the way:** the PDF printed "zl165.57", because 'ł' is not in the PDF's built-in font. It now prints
+  "PLN 165.57", as ₹ prints "INR". A Polish word containing "zł" (e.g. "złom", scrap, in a note) is left alone
+  (`tests/pdf-winansi.test.ts`).
 
 ## 7. Code and tests
 
