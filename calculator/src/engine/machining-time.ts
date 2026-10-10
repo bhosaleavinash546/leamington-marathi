@@ -301,7 +301,8 @@ export function holeMinutes(rows: FeatureRow[], family: MaterialFamily, coredAbo
 /**
  * Per-side machining stock a casting carries on a machined face, mm — the
  * required machining allowance of ISO 8062-3, at the RMA grade typical of each
- * process for a 100–250 mm casting. The drawing's RMA callout replaces it.
+ * process for a 100–250 mm casting. An assumption: no drawing input reaches it (the as-cast weight field overrides
+ * the weight it builds).
  */
 export const CAST_MACHINING_STOCK_MM: Record<string, number> = {
   sand_ferrous: 3.0, sand: 2.0, gravity: 1.5, investment: 1.0, hpdc: 0.5,

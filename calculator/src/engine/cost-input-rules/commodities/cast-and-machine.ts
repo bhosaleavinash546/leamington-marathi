@@ -142,7 +142,9 @@ const CAST_WEIGHT_RULE: RuleDef = {
       + (drilled.holes > 0 ? ` + ${fmt(drilled.cm3, 1)} cm³ of ${drilled.holes} hole(s) ≤ ${DRILLED_FROM_SOLID_MM} mm drilled from solid`
         : sub === 'hpdc' ? ' (HPDC cores its holes)' : '')
       + ` + ${fmt(faceCm3, 1)} cm³ machining stock (${stockMm} mm a side on the machined faces and cored bores, `
-      + `${sub ?? 'casting'} — ISO 8062-3 RMA typical; the drawing's RMA replaces it)`
+      // No drawing value reaches this rule (casting 360 review: it claimed the drawing's RMA replaced it)
+      + `${sub ?? 'casting'} — ISO 8062-3 RMA typical, an assumption: no drawing is read for it; type the as-cast weight `
+      + `from the drawing or the foundry to override)`
       + (turnCm3 > 0 ? ` + ${fmt(turnCm3, 1)} cm³ turning stock on the ${fmt(turnedCm2, 0)} cm² spindle (${stockMm} mm a side)` : ''), 0.7);
   },
 };

@@ -217,3 +217,18 @@ describe('X40 — the shot-blast minimum follows the country', () => {
   });
   it('UK: unchanged (factor 1)', () => { expect(blastIn('UK')).toBeGreaterThanOrEqual(0.10); });
 });
+
+describe('the machining-stock basis does not claim a drawing input that does not exist', () => {
+  const all = JSON.parse(readFileSync(new URL('./fixtures/real-parts-baseline.json', import.meta.url), 'utf8')) as Array<{ part: string; geometry: unknown }>;
+  const k = all.find(p => p.part === 'steering_knuckle_RH.stp')!;
+  const answers = { 'material.family': 'cast iron', 'commodity.route': 'cast_and_machine', 'service.pressureTight': 'no',
+    'service.toleranceClass': 'standard', 'service.safetyCritical': 'yes', 'material.grade': 'mat-gjs500' };
+  const ctx = { geo: k.geometry, geometryQuality: 'occt', commodity: 'cast_and_machine', commoditySource: 'engineer', annualVolume: 100_000,
+    filename: k.part, answers, rates: recomputeMachineRates(DEFAULT_RATE_LIBRARY) };
+  const { result } = buildDeterministicAnalysis(specForCommodity('cast_and_machine')!, ctx as never, k.part);
+  it('says the stock is an assumption and how to override it', () => {
+    const basis = JSON.stringify(result.provenance);
+    expect(basis).not.toMatch(/drawing's RMA replaces it/);
+    expect(basis).toMatch(/no drawing is read for it/);
+  });
+});
