@@ -1,0 +1,86 @@
+warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+knuckle          X1   pdf  must  OK   /INR \d{1,3}(,\d{3})*\.\d\d/
+knuckle          X2   pdf  never OK   /INR [\d,.]+/part[^\n]*£\d/
+knuckle          X6   pdf  must  OK   /bench \(no machine\s+time\)/
+knuckle          X10  pdf  never OK   /not an estimate/
+knuckle          X11  pdf  must  OK   /Costed weight/
+knuckle          X12  pdf  must  OK   /Values the rules set/
+knuckle          X12  xlsx must  OK   /VALUES THE RULES SET/
+knuckle          X13  pdf  must  OK   /Pattern equipment/
+knuckle          X13  pdf  must  OK   /Amortisation basis/
+knuckle          X13  xlsx must  OK   /Amortisation basis/
+knuckle          X14  pdf  never OK   /lab-uk-/
+knuckle          X14  xlsx never OK   /lab-uk-/
+knuckle          X15  pdf  must  OK   /as recorded, GBP/
+knuckle          X16  pdf  must  OK   /Finish boring/
+knuckle          X20  pdf  never OK   /pocket pass is in the cost either way/
+knuckle          X21  pdf  must  OK   /Melt Loss/
+knuckle          X24  pdf  never OK   /\d\.\d{9,}/
+knuckle          X27  pdf  never OK   /-INR 0\.00|-0\.00/
+knuckle          X29  pdf  never OK   /engine default/
+knuckle          X29  xlsx never OK   /engine default/
+knuckle          X30  pdf  must  OK   /± [\d.]+% \(P10/
+knuckle          X30  xlsx must  OK   /Uncertainty band/
+knuckle          X31  pdf  never OK   /\b\d{7}\.\d\d\b/
+knuckle          X33  pdf  never OK   /\b1 observations/
+knuckle          X35  xlsx never OK   /ALL AVAILABLE LABOUR RATES/
+knuckle          X36  xlsx must  OK   /rules \(per-part services\)/
+knuckle          X4   pdf  never OK   /No material family was confirmed/
+knuckle          X17  pdf  must  OK   /Geometric DFM / DFA/
+stub_axle        X1   pdf  must  OK   /INR \d{1,3}(,\d{3})*\.\d\d/
+stub_axle        X2   pdf  never OK   /INR [\d,.]+/part[^\n]*£\d/
+stub_axle        X6   pdf  must  OK   /bench \(no machine\s+time\)/
+stub_axle        X10  pdf  never OK   /not an estimate/
+stub_axle        X11  pdf  must  OK   /Costed weight/
+stub_axle        X12  pdf  must  OK   /Values the rules set/
+stub_axle        X12  xlsx must  OK   /VALUES THE RULES SET/
+stub_axle        X13  pdf  must  OK   /Pattern equipment/
+stub_axle        X13  pdf  must  OK   /Amortisation basis/
+stub_axle        X13  xlsx must  OK   /Amortisation basis/
+stub_axle        X14  pdf  never OK   /lab-uk-/
+stub_axle        X14  xlsx never OK   /lab-uk-/
+stub_axle        X15  pdf  must  OK   /as recorded, GBP/
+stub_axle        X16  pdf  must  OK   /Finish boring/
+stub_axle        X20  pdf  never OK   /pocket pass is in the cost either way/
+stub_axle        X21  pdf  must  OK   /Melt Loss/
+stub_axle        X24  pdf  never OK   /\d\.\d{9,}/
+stub_axle        X27  pdf  never OK   /-INR 0\.00|-0\.00/
+stub_axle        X29  pdf  never OK   /engine default/
+stub_axle        X29  xlsx never OK   /engine default/
+stub_axle        X30  pdf  must  OK   /± [\d.]+% \(P10/
+stub_axle        X30  xlsx must  OK   /Uncertainty band/
+stub_axle        X31  pdf  never OK   /\b\d{7}\.\d\d\b/
+stub_axle        X33  pdf  never OK   /\b1 observations/
+stub_axle        X35  xlsx never OK   /ALL AVAILABLE LABOUR RATES/
+stub_axle        X36  xlsx must  OK   /rules \(per-part services\)/
+stub_axle        X4   pdf  never OK   /No material family was confirmed/
+stub_axle        X17  pdf  must  OK   /Geometric DFM / DFA/
+casting_bracket  X1   pdf  must  OK   /INR \d{1,3}(,\d{3})*\.\d\d/
+casting_bracket  X2   pdf  never OK   /INR [\d,.]+/part[^\n]*£\d/
+casting_bracket  X6   pdf  must  OK   /bench \(no machine\s+time\)/
+casting_bracket  X10  pdf  never OK   /not an estimate/
+casting_bracket  X11  pdf  must  OK   /Costed weight/
+casting_bracket  X12  pdf  must  OK   /Values the rules set/
+casting_bracket  X12  xlsx must  OK   /VALUES THE RULES SET/
+casting_bracket  X13  pdf  must  OK   /Pattern equipment/
+casting_bracket  X13  pdf  must  OK   /Amortisation basis/
+casting_bracket  X13  xlsx must  OK   /Amortisation basis/
+casting_bracket  X14  pdf  never OK   /lab-uk-/
+casting_bracket  X14  xlsx never OK   /lab-uk-/
+casting_bracket  X15  pdf  must  OK   /as recorded, GBP/
+casting_bracket  X16  pdf  must  FAIL  /Finish boring/
+casting_bracket  X20  pdf  never OK   /pocket pass is in the cost either way/
+casting_bracket  X21  pdf  must  OK   /Melt Loss/
+casting_bracket  X24  pdf  never OK   /\d\.\d{9,}/
+casting_bracket  X27  pdf  never OK   /-INR 0\.00|-0\.00/
+casting_bracket  X29  pdf  never OK   /engine default/
+casting_bracket  X29  xlsx never OK   /engine default/
+casting_bracket  X30  pdf  must  OK   /± [\d.]+% \(P10/
+casting_bracket  X30  xlsx must  OK   /Uncertainty band/
+casting_bracket  X31  pdf  never OK   /\b\d{7}\.\d\d\b/
+casting_bracket  X33  pdf  never OK   /\b1 observations/
+casting_bracket  X35  xlsx never OK   /ALL AVAILABLE LABOUR RATES/
+casting_bracket  X36  xlsx must  OK   /rules \(per-part services\)/
+casting_bracket  X4   pdf  never OK   /No material family was confirmed/
+casting_bracket  X17  pdf  must  OK   /Geometric DFM / DFA/
+FAILS 1
