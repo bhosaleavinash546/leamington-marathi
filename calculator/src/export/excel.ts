@@ -1,5 +1,6 @@
 import { overallConfidence } from '../engine/uncertainty.js';
 import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
+import { fieldLabel } from '../ui/field-labels.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
@@ -101,7 +102,7 @@ export async function exportToExcelBlob(
   }
   const warnings = result.warnings ?? [];
   if (warnings.length) {
-    sum.push([], ['── WARNINGS ON THIS COSTING ──'], ...warnings.map(w => [w]));
+    sum.push([], ['── WARNINGS ON THIS COSTING ──'], ...warnings.map(w => [w.replace(/^([A-Za-z][\w.\[\]() -]*?): /, (_m, f: string) => `${fieldLabel(f)}: `)]));
   }
 
   sheets.push({ name: '1-Summary', rows: sum, cols: [58, 18, 12] });

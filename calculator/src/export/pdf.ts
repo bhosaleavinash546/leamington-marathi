@@ -19,6 +19,7 @@ import { buildPcbaReport, type PcbaAnalysisLike, type PcbaReport } from './pcba-
 import { brandRgb } from '../brand/index.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
+import { fieldLabel } from '../ui/field-labels.js';
 import { localiseGbpText, localiseRuleValue } from './money-text.js';
 
 /**
@@ -1542,9 +1543,11 @@ export function renderShouldCostSections(
       tl.totalToolingCost > 0
         ? (tl.mode === 'one_time_nre'
           ? `The tooling investment (${c(tl.totalToolingCost)}) is a one-time NRE charged separately — it is NOT in this unit cost.`
-          : `The tooling investment itself (${c(tl.totalToolingCost)}) is paid up front; this unit cost carries it amortised over ${Math.round(tl.amortizationVolume).toLocaleString('en-GB')} parts (bucket 4).`)
+          // not "paid up front": over a programme it includes replacement sets and maintenance bought along the way (Poland review)
+          : `The tooling over the amortisation (${c(tl.totalToolingCost)} — the first tool, any replacement sets the volume needs and their maintenance) is recovered through this unit cost, amortised over ${Math.round(tl.amortizationVolume).toLocaleString('en-GB')} parts (bucket 4).`)
         : 'No tooling investment is in this costing.',
-      'Import duty and international freight (regional table is Ex-Works).',
+      // the costing carries a logistics bucket, so "Ex-Works" contradicted it (Poland live review): say what is in and out
+      'Import duty and international freight / cross-border shipping — bucket 6 is the supplier\'s own delivery allowance (a tool estimate: confirm the lane and Incoterm).',
       'Formal embodied-carbon reporting (figures are indicative cradle-to-gate — replace with supplier EPDs).',
     ];
     if (isCasting) {
@@ -1604,7 +1607,7 @@ export function renderShouldCostSections(
     const cheapest = Math.min(...rc.map(r => r.total));
     const baseName = rc.find(r => r.isBase)?.name ?? 'base';
     doc.addPage(); y = 18;
-    y = secBar(doc, y, '§9 — Regional Cost Comparison', `Ex-Works  ·  per-region should-cost  ·  vs ${baseName}`);
+    y = secBar(doc, y, '§9 — Regional Cost Comparison', `per-region should-cost (supplier delivery allowance in, import duty out)  ·  vs ${baseName}`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
       // Every column the total is made of, so a row adds up (it hid packaging and margin), and no local-currency tag over
@@ -1630,7 +1633,7 @@ export function renderShouldCostSections(
     doc.text((regionalRows?.length || baseLibrary
       ? 'Each row is the part re-costed with that country\'s labour, machine, energy and material rates; tooling scaled by its toolroom rate; overhead, packaging and logistics by its shop factors.'
       : 'Each row scales this costing\'s buckets by that country\'s rate factors (no rate book was available to re-cost it).')
-      + ' Ex-works — excludes import duty and international freight. Indicative — confirm with an RFQ.', MG, y + 3, { maxWidth: CW });
+      + ' Each row carries that country\'s packaging and delivery allowance (bucket 6) and excludes import duty and cross-border freight to the buyer. Indicative — confirm with an RFQ.', MG, y + 3, { maxWidth: CW });
     y += 12;
   }
 
@@ -1823,15 +1826,27 @@ export function renderShouldCostSections(
       y = lastFinalY(doc) + 8;
     }
 
-    // §14 — inputs to confirm (no saving claimed against any of these)
-    if (ranked.verificationChecks.length > 0) {
+    // §14 — inputs to confirm (no saving claimed against any of these). Besides the insight checks, every rate the
+    // costing itself grades Low is an input to confirm — §14 read "None" on reports whose press capital was held at
+    // UK × 0.72 and whose resin was a UK price (Poland live review, 10 Oct 2026).
+    const lowSeen = new Set<string>();
+    const lowRates = (result.traceability ?? []).filter(t => t.confidence === 'Low' && t.rateId && !lowSeen.has(t.rateId) && lowSeen.add(t.rateId))
+      .slice(0, 8)
+      .map(t => ({
+        title: `${t.field.replace(/\.(machineRatePerHr|labourRatePerHr)$/, m => m === '.machineRatePerHr' ? ' — machine rate' : ' — labour rate').replace(/^material\.pricePerKg$/, 'Material price')}`,
+        detail: `Low confidence: ${String(t.rateSource).replace(/^[^:]*book [0-9-]+: /, '').slice(0, 170)}${String(t.rateSource).length > 170 ? '…' : ''}`,
+        action: /machineRatePerHr/.test(t.field) ? 'Confirm with the supplier\'s machine-hour rate or a local capex quote'
+          : /pricePerKg/.test(t.field) ? 'Confirm with a local supplier price for this grade' : 'Confirm with a local quote',
+      }));
+    const confirmRows = [...ranked.verificationChecks.map(v => ({ title: v.title, detail: v.detail, action: v.action })), ...lowRates];
+    if (confirmRows.length > 0) {
       y = chk(doc, y, 22);
       y = secBar(doc, y, '§14 — Inputs to Confirm', 'No saving is claimed against these');
 
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG },
         head: [['Item', 'What the costing assumed', 'How to close it']],
-        body: ranked.verificationChecks.map(v => [v.title, v.detail, v.action]),
+        body: confirmRows.map(v => [v.title, v.detail, v.action]),
         theme: 'plain',
         headStyles: { ...TH.headStyles, fontSize: 7 },
         bodyStyles: { fontSize: 7, textColor: SLATE, cellPadding: 2.5, overflow: 'linebreak' },
@@ -2308,7 +2323,9 @@ export function printPDF(
   // engine's caveats is not defensible.
   // The screen's "Costed from the PCB photo analysis … press Calculate" note is an instruction for the
   // screen; the report states the same basis under Key Assumptions.
-  const coverWarnings = (result.warnings ?? []).filter(w => !(pcba && /^Costed from the PCB photo analysis/.test(w)));
+  // plain names, as the form shows them — the cover printed "rawMaterial.materialId: …" (Poland live review)
+  const coverWarnings = (result.warnings ?? []).filter(w => !(pcba && /^Costed from the PCB photo analysis/.test(w)))
+    .map(w => w.replace(/^([A-Za-z][\w.\[\]() -]*?): /, (_m, f: string) => `${fieldLabel(f)}: `));
   if (coverWarnings.length) {
     y = calloutBox(doc, y, `Engine Warnings (${coverWarnings.length})`,
       coverWarnings, AM, [254, 249, 231]);

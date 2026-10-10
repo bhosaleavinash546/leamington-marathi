@@ -292,7 +292,7 @@ describe('X13 — the tooling says what it is, and why it is spread over this ma
   const drivers = computeCastAndMachineDrivers(trace.mapped.params);
   it('the items add up to the total', () => {
     const items = drivers.tooling.items ?? [];
-    expect(items.map(i => i.label).join(' | ')).toMatch(/Pattern equipment: \d+ set\(s\) \(life 8,000 moulds each\) \| Machining fixtures \| CNC programming/);
+    expect(items.map(i => i.label).join(' | ')).toMatch(/Pattern equipment: \d+ set\(s\) \(life 8,000 castings each\) \| Machining fixtures \| CNC programming/);
     expect(items.reduce((a, i) => a + i.gbp, 0)).toBeCloseTo(drivers.tooling.totalToolingCost, 6);
     expect(items.some(i => /£/.test(i.label))).toBe(false);   // the report prints the money, in its currency
   });

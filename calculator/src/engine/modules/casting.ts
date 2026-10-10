@@ -205,7 +205,8 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
         : 1;
       tooling = {
         items: [{ label: `Pattern equipment: ${sandNumPatterns} set(s)`
-          + (inputs.sand.patternLife > 0 ? ` (life ${inputs.sand.patternLife.toLocaleString('en-GB')} moulds each)` : ''), gbp: inputs.sand.patternCost * sandNumPatterns }],
+          // the life is in CASTINGS (sets = parts ÷ life): "16,000 moulds" was 8,000 moulds × 2 impressions (Poland review)
+          + (inputs.sand.patternLife > 0 ? ` (life ${inputs.sand.patternLife.toLocaleString('en-GB')} castings each)` : ''), gbp: inputs.sand.patternCost * sandNumPatterns }],
         totalToolingCost: inputs.sand.patternCost * sandNumPatterns,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
