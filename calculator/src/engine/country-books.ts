@@ -114,8 +114,11 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
       maintenance: r0(b.maintenance * f * hr),
       financeCost: r0(b.financeCost * f * M.financeRate / M.ukFinanceRate),
     };
-    what = `capital HELD at the book's UK × ${f} (${M.heldBasis}): depreciation × ${M.shiftDepreciationFactor.toFixed(3)} (shift pattern), `
-      + `maintenance per running hour held, finance re-rated ${(M.ukFinanceRate * 100).toFixed(0)}% → ${(M.financeRate * 100).toFixed(2)}%`;
+    // one plain line: the config's long held-basis text carried internal research remarks and a "3.5% of capex"
+    // maintenance clause that applies to sourced capex only (Poland live review, 10 Oct 2026)
+    what = `capital HELD — no ${regionName} capex was sourced for this machine, so its capital is the UK book's × ${f} (Low confidence): `
+      + `depreciation × ${M.shiftDepreciationFactor.toFixed(3)} (shift pattern), maintenance per running hour as the UK build-up, `
+      + `finance re-rated ${(M.ukFinanceRate * 100).toFixed(0)}% → ${(M.financeRate * 100).toFixed(2)}%`;
     confidence = 'Low';
   }
   const buildup: MachineRateBuildup = {
@@ -133,7 +136,7 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
     region: regionName,
     sourceNote: `${regionName} book ${book.asOf}: ${what}; ${r0(m2)} m² at ${loc(M.rentGbpPerM2Yr, 2)}/m²/yr, `
       + `${r0(kwh * hr).toLocaleString('en-GB')} kWh at ${loc(electricityGbpPerKwh, 4)}/kWh, support at ${M.labourRatio.toFixed(4)} of UK wages, `
-      + `${M.hoursPerYear.toLocaleString('en-GB')} h × ${b.machineUtilization} (${M.basis})`,
+      + `${M.hoursPerYear.toLocaleString('en-GB')} h × ${b.machineUtilization} (${g && ref ? M.basis : M.basis.replace(/; maintenance .*$/, '')})`,
     confidence,
   };
 }

@@ -1101,7 +1101,7 @@ export const POLAND_BOOK: CountryBook = {
   "labourRatio": 0.4658,
   "capitalHeldFactor": 0.72,
   "basis": "3 × 8 h, Monday–Friday, 251 working days in 2026 = 6,024 h (the labour model's pattern); Polish straight-line tax depreciation — no shift uplift on held capital; SME machinery / investment loan WIBOR 3M 3.82% + 3.9–4.9 pp = 7.72–8.72%, midpoint 8.22% (cooperative bank tariff, Mar 2026); NBP reference rate 3.75% (7 Oct 2026) — a large Tier-1 borrows below this; the book's line build-ups use 4% on half the capex; rent zł20.05/m²/month (warehouse / light-industrial headline rent midpoints: Upper Silesia zł20.12, Wrocław zł18.92, Poznań zł21.10 per m²/month (€3.15–6.00 at zł4.374/€; ceo.com.pl, ~Apr 2026) — mean; CBRE Q2 2026 national €4.7 = zł20.56 agrees; Rzeszów listings only); maintenance the library's own line build-up rule (3.5% of capex); no Polish norm found",
-  "heldBasis": "capex not sourced for Poland: the book's capital (UK × 0.72) is HELD — round-2 evidence shows it both ways (aluminium extrusion lines ~2–3× low, press brakes ~4× high in the UK build-ups); the Poland operating model (3 × 8 h hours, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied",
+  "heldBasis": "capex not sourced for Poland: the capital is the UK book's × 0.72; the Poland operating model (3 × 8 h, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied",
   "groups": [
    {
     "id": "cnc-vmc-eu",

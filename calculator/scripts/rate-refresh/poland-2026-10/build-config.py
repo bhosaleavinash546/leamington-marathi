@@ -225,7 +225,7 @@ machines = {
          'basis': 'TRUMPF TruBend 3100 (100 t × 3 m) NEW, offered at €136,000 FCA ex-VAT (Jul 2026, advertiser at TRUMPF Ditzingen) = zł594,864; a 2021 purchase at €115k agrees — the UK book\'s build-up (a "Target £/hr" shop rate) implied ~4× this',
          'source': R['capex.brake-trumpf-trubend3100']['source'], 'confidence': 'Low'},
     ],
-    'notRebuiltBasis': 'capex not sourced for Poland: the book\'s capital (UK × 0.72) is HELD — round-2 evidence shows it both ways (aluminium extrusion lines ~2–3× low, press brakes ~4× high in the UK build-ups); the Poland operating model (3 × 8 h hours, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied',
+    'notRebuiltBasis': 'capex not sourced for Poland: the capital is the UK book\'s × 0.72; the Poland operating model (3 × 8 h, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied',
 }
 
 # Al extrusion billet = LME + the DDP North Germany 6063 billet premium, over the library's LME (al-extrusion-data AL_MARKET)

@@ -1068,6 +1068,9 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         region: rd.name,
         sourceNote: `${rd.name}: no ${rd.name} price for this grade — the UK book £${m.pricePerKg.toFixed(2)}/kg × ${f.toFixed(3)} `
           + `(${classifyMaterialFamily(m)} country factor). UK basis: ${m.sourceNote}`,
+        // a country WITH its own rate book looked for this grade and found no price: UK × a factor is Low there
+        // (a Poland ECU cover's resin — 53% of the part — printed "Medium" on a UK price × 0.97; live review 10 Oct 2026)
+        ...(book ? { confidence: 'Low' as const } : {}),
       };
     }),
 
