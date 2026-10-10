@@ -96,7 +96,7 @@ The same 36 files were counted with the same patterns, before and after the fixe
 | "as recorded, GBP" | 107 | **0** |
 | "FX 1.0000 GBP" on a £ report | 6 | **0** |
 | "pounds" in a non-£ report | 16 | **0** |
-| Held-material note opening "UK book" | 67 | 33 (all 33 are on UK reports, where the UK book is the right source) |
+| Lines opening "UK book" (all on UK reports, the right source; the drop is §6 de-duplication). F1, the China / India held-material note, was verified headless by rate-isolation.ts. | 67 | 33 |
 | `NaN` / `undefined` / `null` / `[object` | 0 | 0 |
 | PDF pages, 18 reports | 243 | 234 |
 
