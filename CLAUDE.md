@@ -661,7 +661,12 @@ what is true** — nothing here has been compared with a price JLR paid.
   `scripts/rate-refresh/2026-10-china.json` (`china-2026-10/build-config.py`; the config names region / currency / dir /
   book file — India's predates those keys and takes the defaults): 4-cluster (Yangtze / Pearl deltas, Chongqing, Wuhan),
   2 × 12 h, ex-VAT; CNC on Chinese makers' ASPs, other capital HELD (UK × 0.55); gas updated, electricity held.
-  `tests/china-rate-book.test.ts`. Tests of the "UK × factor" scaling use a country WITHOUT a book (e.g. TR), never CN/IN.
+  `tests/china-rate-book.test.ts`. Tests of the "UK × factor" scaling use a country WITHOUT a book (e.g. TR), never CN/IN/PL.
+  Poland = `country-books/pl.ts` (Oct 2026, `docs/rates/poland-rate-book-2026-10.md`), same generator from
+  `scripts/rate-refresh/2026-10-poland.json` (`poland-2026-10/build-config.py`): 4 clusters (Silesia, Lower Silesia,
+  Wielkopolska, Podkarpacie), 3 × 8 h Mon–Fri (6,024 h), ZUS-loaded labour, European market anchors at the book FX,
+  Haas EU capex for CNC, other capital HELD (UK × 0.72). Lithuania is GENERATED from Poland (`region-expand.ts`) — re-run
+  it after a Poland change. `tests/poland-rate-book.test.ts`.
   Country-rates demo review (10 Oct 2026, `docs/review/country-rates-demo-review-2026-10-10.md`): a CN / IN costing reads
   only its own book (`scripts/review-2026-10-10/rate-isolation.ts`). In a non-£ report, money in TEXT (rule bases, rate
   notes, consumables) is converted by `src/export/money-text.ts` (PDF via `hardenPdfText`, Excel per string cell) — never
