@@ -1,0 +1,248 @@
+[
+ {
+  "label": "CN-PRCR002",
+  "file": "../cad-audit/parts/PRCR002.stp",
+  "answers": {
+   "material.family": "cast iron",
+   "commodity.route": "cast_and_machine",
+   "service.pressureTight": "no",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "yes",
+   "material.grade": "mat-gjs500"
+  },
+  "annualVolume": 100000,
+  "region": "CN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "CN-Casting_Braket",
+  "file": "../cad-audit/parts/Casting_Braket.stp",
+  "answers": {
+   "material.family": "steel",
+   "commodity.route": "cast_and_machine",
+   "service.pressureTight": "no",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "no"
+  },
+  "annualVolume": 100000,
+  "region": "CN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "CN-IM_ECU_Cover",
+  "file": "../cad-audit/parts/IM_ECU_Cover.stp",
+  "answers": {
+   "material.resin": "mat-pa66gf30",
+   "commodity.route": "injection_moulding",
+   "commodity.thinWallRoute": "injection_moulding"
+  },
+  "annualVolume": 100000,
+  "region": "CN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "CN-IM_Storage_Tray",
+  "file": "../cad-audit/parts/IM_Storage_Tray.stp",
+  "answers": {
+   "material.resin": "mat-pp-impact",
+   "commodity.route": "injection_moulding",
+   "commodity.thinWallRoute": "injection_moulding"
+  },
+  "annualVolume": 100000,
+  "region": "CN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "CN-Seat_Locking_Bracket",
+  "file": "../cad-audit/parts/Seat_Locking_Bracket.stp",
+  "answers": {
+   "material.family": "steel",
+   "commodity.route": "sheet_metal"
+  },
+  "annualVolume": 100000,
+  "region": "CN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "CN-BIW_Inner_Panel",
+  "file": "../cad-audit/parts/BIW_Inner_Panel.stp",
+  "answers": {
+   "material.family": "steel",
+   "commodity.route": "sheet_metal",
+   "commodity.thinWallRoute": "sheet_metal"
+  },
+  "annualVolume": 100000,
+  "region": "CN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "IN-PRCR002",
+  "file": "../cad-audit/parts/PRCR002.stp",
+  "answers": {
+   "material.family": "cast iron",
+   "commodity.route": "cast_and_machine",
+   "service.pressureTight": "no",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "yes",
+   "material.grade": "mat-gjs500"
+  },
+  "annualVolume": 100000,
+  "region": "IN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "IN-Casting_Braket",
+  "file": "../cad-audit/parts/Casting_Braket.stp",
+  "answers": {
+   "material.family": "steel",
+   "commodity.route": "cast_and_machine",
+   "service.pressureTight": "no",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "no"
+  },
+  "annualVolume": 100000,
+  "region": "IN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "IN-IM_ECU_Cover",
+  "file": "../cad-audit/parts/IM_ECU_Cover.stp",
+  "answers": {
+   "material.resin": "mat-pa66gf30",
+   "commodity.route": "injection_moulding",
+   "commodity.thinWallRoute": "injection_moulding"
+  },
+  "annualVolume": 100000,
+  "region": "IN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "IN-IM_Storage_Tray",
+  "file": "../cad-audit/parts/IM_Storage_Tray.stp",
+  "answers": {
+   "material.resin": "mat-pp-impact",
+   "commodity.route": "injection_moulding",
+   "commodity.thinWallRoute": "injection_moulding"
+  },
+  "annualVolume": 100000,
+  "region": "IN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "IN-Seat_Locking_Bracket",
+  "file": "../cad-audit/parts/Seat_Locking_Bracket.stp",
+  "answers": {
+   "material.family": "steel",
+   "commodity.route": "sheet_metal"
+  },
+  "annualVolume": 100000,
+  "region": "IN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "IN-BIW_Inner_Panel",
+  "file": "../cad-audit/parts/BIW_Inner_Panel.stp",
+  "answers": {
+   "material.family": "steel",
+   "commodity.route": "sheet_metal",
+   "commodity.thinWallRoute": "sheet_metal"
+  },
+  "annualVolume": 100000,
+  "region": "IN",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "UK-PRCR002",
+  "file": "../cad-audit/parts/PRCR002.stp",
+  "answers": {
+   "material.family": "cast iron",
+   "commodity.route": "cast_and_machine",
+   "service.pressureTight": "no",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "yes",
+   "material.grade": "mat-gjs500"
+  },
+  "annualVolume": 100000,
+  "region": "UK",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "UK-Casting_Braket",
+  "file": "../cad-audit/parts/Casting_Braket.stp",
+  "answers": {
+   "material.family": "steel",
+   "commodity.route": "cast_and_machine",
+   "service.pressureTight": "no",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "no"
+  },
+  "annualVolume": 100000,
+  "region": "UK",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "UK-IM_ECU_Cover",
+  "file": "../cad-audit/parts/IM_ECU_Cover.stp",
+  "answers": {
+   "material.resin": "mat-pa66gf30",
+   "commodity.route": "injection_moulding",
+   "commodity.thinWallRoute": "injection_moulding"
+  },
+  "annualVolume": 100000,
+  "region": "UK",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "UK-IM_Storage_Tray",
+  "file": "../cad-audit/parts/IM_Storage_Tray.stp",
+  "answers": {
+   "material.resin": "mat-pp-impact",
+   "commodity.route": "injection_moulding",
+   "commodity.thinWallRoute": "injection_moulding"
+  },
+  "annualVolume": 100000,
+  "region": "UK",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "UK-Seat_Locking_Bracket",
+  "file": "../cad-audit/parts/Seat_Locking_Bracket.stp",
+  "answers": {
+   "material.family": "steel",
+   "commodity.route": "sheet_metal"
+  },
+  "annualVolume": 100000,
+  "region": "UK",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ },
+ {
+  "label": "UK-BIW_Inner_Panel",
+  "file": "../cad-audit/parts/BIW_Inner_Panel.stp",
+  "answers": {
+   "material.family": "steel",
+   "commodity.route": "sheet_metal",
+   "commodity.thinWallRoute": "sheet_metal"
+  },
+  "annualVolume": 100000,
+  "region": "UK",
+  "programmeYears": 5,
+  "programmeYearsFirst": true
+ }
+]
