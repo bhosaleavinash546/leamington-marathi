@@ -350,3 +350,11 @@ describe('X30 — the band the screen shows is on the cover and in the workbook'
     expect(sum).toMatch(/P90 \(conservative\)/);
   });
 });
+
+describe('X36 — the consumables trace row names the rules, not the material rate', () => {
+  it('rateId', () => {
+    const { result } = sandCastingResult();
+    const row = result.traceability.find(t => t.field === 'rawMaterial.consumablesCostPerPart')!;
+    expect(row.rateId).toBe('rules (per-part services)');
+  });
+});
