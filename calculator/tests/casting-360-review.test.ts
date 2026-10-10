@@ -358,3 +358,20 @@ describe('X36 — the consumables trace row names the rules, not the material ra
     expect(row.rateId).toBe('rules (per-part services)');
   });
 });
+
+describe('the kept upload is the upload, not the mesh cache that shares its name', () => {
+  it('getUploadFile skips <hash>.1.mesh.json', async () => {
+    const { mkdtempSync, writeFileSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const dir = mkdtempSync(join(tmpdir(), 'cv-store-'));
+    process.env.CV_GEOMETRY_FILE_DIR = dir;
+    const { getUploadFile } = await import('../server/utils/geometry-store.js?fresh' as string) as typeof import('../server/utils/geometry-store.js');
+    const h = 'a'.repeat(64);
+    writeFileSync(join(dir, `${h}.1.mesh.json`), '{"triangles":1}');
+    writeFileSync(join(dir, `${h}.stp`), 'ISO-10303-21;');
+    const got = getUploadFile(h)!;
+    expect(got.ext).toBe('stp');
+    expect(got.buffer.toString()).toBe('ISO-10303-21;');
+  });
+});

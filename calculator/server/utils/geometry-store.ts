@@ -59,7 +59,9 @@ export function getUploadFile(hash: string): { buffer: Buffer; ext: string } | n
   if (!/^[a-f0-9]{64}$/.test(hash)) return null;
   try {
     ensureDir();
-    const hit = readdirSync(FILE_DIR).find(f => f.startsWith(hash + '.'));
+    // The upload itself is `<hash>.<ext>`. The mesh cache shares the prefix (`<hash>.1.mesh.json` / `.stl`) and sorts
+    // first: the inch re-measure and the DFM re-queue were handed a JSON mesh as the STEP (casting 360 review).
+    const hit = readdirSync(FILE_DIR).find(f => f.startsWith(hash + '.') && SAFE_EXT.test(f.slice(hash.length + 1)));
     if (!hit) return null;
     const p = join(FILE_DIR, hit);
     if (Date.now() - statSync(p).mtimeMs > FILE_TTL_MS) { unlinkSync(p); return null; }
