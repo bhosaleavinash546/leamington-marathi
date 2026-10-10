@@ -1,0 +1,256 @@
+{
+  "domain": "materials-nonferrous",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "nonferrous.al.a00",
+      "value": 21.47,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Changjiang (长江有色) A00 aluminium ingot spot, SEPTEMBER 2026 MONTHLY AVERAGE 24,259.52 CNY/t incl. 13% VAT; 24,259.52/1.13/1000 = 21.47. Exchange/price-agency spot (transaction assessment).",
+      "source": "https://finance.sina.com.cn/money/future/indu/2026-09-30/doc-initqzmc2066184.shtml",
+      "date": "2026-09 (article 2026-09-30)",
+      "notes": "Cross-checks: SMM A00 2026-09-30 avg 24,030 (range 24,020-24,040), SMM A00 Foshan 24,250, 有色宝长江 24,030 (https://www.smm.com.cn/price ; https://www.changjiangyouse.com/m/c3/1790697600/) -> 21.27 ex-VAT. SMM South China review ~2026-10-08: A00 Foshan 23,970, central China 23,760 CNY/t (https://news.metal.com/newscontent/104145345). Spot is ex-warehouse (Shanghai/Wuxi/Foshan), not delivered; add local freight. Year-on-year +16.8%."
+    },
+    {
+      "key": "nonferrous.al.adc12",
+      "value": 21.68,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SMM 铝合金ADC12 2026-09-30: range 24,400-24,600, avg 24,500 CNY/t incl. 13% VAT; 24,500/1.13/1000 = 21.68. Price agency assessment.",
+      "source": "https://www.smm.com.cn/price",
+      "date": "2026-09-30",
+      "notes": "Mysteel 2026-09-30: SW/East/South/NE China ADC12 spot 24,000-24,100 CNY/t (=21.24-21.33 ex-VAT); Ningbo branded (中镕, 兰溪博远) 24,200, unbranded 24,100 (https://list1.m.mysteel.com/zhishi/lhjgfjg.html). SMM weekly review late Sep: ADC12 steady at 24,500, scrap aluminium tight (https://news.metal.com/newscontent/104134228). SMM 2026-10-02: mainstream quotes cut 100-200 CNY/t post-holiday (https://news.metal.com/newscontent/103828057 — date per search snippet). ADC12 trades ABOVE A00 in Sep 2026 because scrap is tight. Secondary (recycled) ADC12 is what this price IS — mat-adc12-secondary should carry the same figure."
+    },
+    {
+      "key": "nonferrous.al.a356",
+      "value": 21.42,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SMM A356 铝合金 2026-09-30: range 24,000-24,400, avg 24,200 CNY/t incl. 13% VAT, Wuxi warehouse ex-store (自提); 24,200/1.13/1000 = 21.42.",
+      "source": "https://www.smm.com.cn/price",
+      "date": "2026-09-30",
+      "notes": "SMM A356.2 definition: Wuxi warehouse pickup, incl. 13% VAT (https://hq.smm.cn/aluminum/category/201102250010). Cross-checks: 曲合网 A356.2 2026-09-24 24,600 (https://www.quheqihuo.com/dz/js-d25.html); Mysteel 国标A356.2 2026-09-21 24,480 (https://m.mysteel.com/hot/1592462.html). Primary-based A356.2 ~ A00 + 0-200 CNY/t in late Sep 2026."
+    },
+    {
+      "key": "nonferrous.al.a380",
+      "value": 22.3,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Mysteel Foshan A380 2026-09-01: 25,200 CNY/t (+100), assumed incl. 13% VAT (Chinese spot convention); 25,200/1.13/1000 = 22.30.",
+      "source": "https://list1.m.mysteel.com/zhishi/lhjgfjg.html",
+      "date": "2026-09-01",
+      "notes": "Only a 1 Sep data point found; no 30 Sep A380 quote. A00 fell ~200 CNY/t over September, so late-Sep A380 is probably ~25,000. AlSi9Cu3 not quoted separately; A380 is its usual Chinese proxy."
+    },
+    {
+      "key": "nonferrous.al.zl102",
+      "value": 21.5,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Changjiang 铸造铝合金锭(ZL102) 24,200-24,400, avg 24,300 CNY/t incl. VAT; /1.13 = 21.50. LOW CONFIDENCE: page date not shown in the snippet.",
+      "source": "https://m.ccmn.cn/",
+      "date": "undated (search 2026-10-10)",
+      "notes": "Mysteel 2026-09-11: non-standard '102' secondary ingot ~22,600 CNY/t (=20.00 ex-VAT) (https://m.mysteel.com/hot/565719.html). AlSi10Mg / EN AC-43000 and heat-treatment-free giga-casting alloy (免热处理) prices: NOT FOUND in any public source this round."
+    },
+    {
+      "key": "nonferrous.al.alsi10mg",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found in any source (SMM / Mysteel / Changjiang searched).",
+      "source": "",
+      "date": "",
+      "notes": "Use ZL102/ZL101A (A356) ~21.4-21.5 ex-VAT as the nearest published Chinese Al-Si primary-based ingot."
+    },
+    {
+      "key": "nonferrous.al.billet6063_premium",
+      "value": 0.045,
+      "unit": "CNY/kg (processing fee over A00, incl. VAT)",
+      "basis": "Mysteel 铝棒 Foshan 2026-09-18: Φ90/100 fee 70 CNY/t (price 24,670), Φ120-178 fee 20 CNY/t (price 24,620). Midpoint 45 CNY/t = 0.045 CNY/kg. Billet price 24,620-24,680 CNY/t incl. VAT = 21.79-21.84 ex-VAT.",
+      "source": "https://list1.mysteel.com/zhishi/lvdingjiagongfei.html",
+      "date": "2026-09-18",
+      "notes": "Wuxi same day: Φ90 24,680 (fee 300), Φ178/152 24,540 (fee 160) CNY/t; 17 Sep Φ90 fee 400 (https://m.mysteel.com/hot/1485350.html — page titled 6061铝棒; Mysteel's daily 铝棒 summary). Foshan fee was 660-710 CNY/t on 2026-07-01 and collapsed as A00 rose. So a 6063 billet delivered ≈ A00 + 0.02-0.40 CNY/kg (incl. VAT) — i.e. billet ≈ 21.5-21.9 CNY/kg ex-VAT in Sep 2026. Alloy billets (2xxx/7xxx) not quoted."
+    },
+    {
+      "key": "nonferrous.al.sheet_processing",
+      "value": 2.6,
+      "unit": "CNY/kg (processing fee over A00, incl. VAT)",
+      "basis": "Mysteel annual review: 5052 plain sheet (普板) processing fee 2,500-2,700 CNY/t (snippet reads '2500-27000', almost certainly a typo for 2,700), down 400 vs end-2024. Midpoint 2,600 CNY/t = 2.6 CNY/kg. LIKELY A 2025 FULL-YEAR FIGURE, not 2026.",
+      "source": "https://m.mysteel.com/hot/1385258.html",
+      "date": "2025 year-end review (published 2026)",
+      "notes": "2026 spot cross-check: Mysteel July 2026 5052-O plain sheet Suzhou ~28,370 CNY/t, Fuzhou avg ~28,970 (incl. VAT) -> 25.11 / 25.64 ex-VAT at July A00 (~22,300-23,000). At Sep A00 24,260 + 2,600 fee = 26,860 incl. VAT = 23.77 ex-VAT for 5052 coil/plain sheet. 6061 plate fee: not found (Mingtai says 'varies by spec'). Delivered to plant: add freight."
+    },
+    {
+      "key": "nonferrous.al.scrap",
+      "value": 16.15,
+      "unit": "CNY/kg (VAT treatment of scrap quotes not stated; shown /1.13)",
+      "basis": "大沥铝材网 6063 old scrap (6063洁净旧料) 2026-09-30: 18,150-18,350, avg 18,250 CNY/t; /1.13 = 16.15 IF VAT-inclusive.",
+      "source": "https://www.lvdingjia.com/price/6063old/",
+      "date": "2026-09-30",
+      "notes": "Mysteel Guangdong 2026-09-24: 6063 new white scrap (新料白料) 21,000 CNY/t (=18.58); 2026-09-30: broken-bridge / mixed painted / mixed alloy shred 21,000, UBC 20,700, 6-series chips & thick 6063 white 20,600 (https://m.mysteel.com/hot/1326398.html). Mysteel Foshan scrap 19,150 (grade not stated) (https://m.mysteel.com/hot/1330838.html). Cast scrap (机件生铝) price not visible. Chinese scrap is often traded without a full VAT invoice; treat the VAT basis as unconfirmed."
+    },
+    {
+      "key": "nonferrous.cu.spot",
+      "value": 98.71,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Changjiang Nonferrous 1# copper 2026-09-30: 111,520-111,560, avg 111,540 CNY/t incl. 13% VAT; /1.13/1000 = 98.71.",
+      "source": "https://m.ccmn.cn/",
+      "date": "2026-09-30",
+      "notes": "SMM 1# cathode 2026-09-30 avg 111,360 (=98.55) (https://www.smm.com.cn/price). Changjiang 2026-09-04: 110,140-110,180. SMM North China 2026-10-09: avg transaction 111,145 (=98.36), Shanghai premium avg 540 over SHFE 2610 (~110,900) (https://news.metal.com/newscontent/104148208, https://news.metal.com/newscontent/104148828). Copper ~98-99 CNY/kg ex-VAT throughout Sep-Oct 2026."
+    },
+    {
+      "key": "nonferrous.cu.rod_processing",
+      "value": 1.0,
+      "unit": "CNY/kg (processing fee over cathode, incl. VAT)",
+      "basis": "Mysteel: 8 mm T1 low-oxygen rod fee 520-740 CNY/t (Guangdong, 2026-09-01: Jintian 740, market 630, Qingyuan Xinghai 520); North China 8 mm T1 cable rod 1,300-1,500 CNY/t (2026-09-22, +200-300); East China / Guangdong refined rod 1,400-2,000 CNY/t (week 2026-09-20/24). Representative ~1,000 CNY/t = 1.0 CNY/kg; range 0.5-2.0.",
+      "source": "https://m.mysteel.com/hot/1187468.html",
+      "date": "2026-09",
+      "notes": "8 mm rod ex-VAT ≈ (111,540 + 1,000)/1.13 = 99.6 CNY/kg. SMM 8 mm rod fee is paywalled (https://hq.smm.cn/h5/copper-rod-price). T2 busbar / C101 bar / C110 sheet conversion fee: NOT FOUND."
+    },
+    {
+      "key": "nonferrous.brass.HPb59-1_rod",
+      "value": 66.19,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Mysteel Ningbo HPb59-1 brass rod 2026-09-29: 74,800 CNY/t (flat; 9-24 74,900; 9-15 73,400), assumed incl. 13% VAT; /1.13/1000 = 66.19.",
+      "source": "https://list1.mysteel.com/zhishi/nbtbjgzxxq.html",
+      "date": "2026-09-29",
+      "notes": "HPb59-1 is the Chinese free-machining leaded brass (≈ CW614N / CZ121, ≈ CW617N forging brass). Processing fee not published in results."
+    },
+    {
+      "key": "nonferrous.brass.H62_rod",
+      "value": 74.34,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Mysteel Ningbo H62 brass rod 2026-09-29: 84,000 CNY/t (9-22 84,300; 9-15 81,700), assumed incl. VAT; /1.13/1000 = 74.34.",
+      "source": "https://list1.mysteel.com/zhishi/nbtbjgzxxq.html",
+      "date": "2026-09-29",
+      "notes": "H62 ≈ CuZn37/CuZn38 (CZ108 family). Rod, not sheet."
+    },
+    {
+      "key": "nonferrous.bronze.QSn",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found: only undated B2B / supplier listings (42-98 CNY/kg, units unclear), not usable under RULES.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "nonferrous.cu.scrap",
+      "value": 82.3,
+      "unit": "CNY/kg (VAT treatment not stated; shown /1.13)",
+      "basis": "Mysteel 2026-09-30: bright copper (光亮铜) 92,600-93,300 CNY/t across markets; Shanghai Cu>99% 93,000; refined-scrap spread 4,446 CNY/t. 93,000/1.13 = 82.30 IF VAT-inclusive.",
+      "source": "https://m.mysteel.com/hot/1593075.html",
+      "date": "2026-09-30",
+      "notes": "SMM: bright copper pricing coefficient 98.5-99.5% of cathode."
+    },
+    {
+      "key": "nonferrous.zn.spot",
+      "value": 22.93,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SMM Guangdong 0# zinc 2026-10-09: 25,910 CNY/t (-390); Shanghai midday range 25,775-26,060. 25,910/1.13/1000 = 22.93.",
+      "source": "https://news.metal.com/newscontent/104147388",
+      "date": "2026-10-09",
+      "notes": "SHFE ZN2611 ~26,000. LME zinc 3,710 USD/t (2026-10-08)."
+    },
+    {
+      "key": "nonferrous.zn.zamak3",
+      "value": 24.02,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Mysteel 2026-09-30: 3# zinc alloy (≈ Zamak 3) Zhejiang 27,100, Jiangsu 27,150, Fujian/Guangdong 27,200 CNY/t incl. VAT; /1.13 = 23.98-24.07, mid 24.03.",
+      "source": "https://list1.m.mysteel.com/zhishi/2026nxhjjgylb.html",
+      "date": "2026-09-30",
+      "notes": "Processing fee over 0# zinc (Mysteel, late June 2026): 3# 650 (Zhejiang), 700 (Jiangsu), 750 (Fujian/Guangdong) CNY/t. ZA-8 / ZA-27 / Zamak 2: not quoted."
+    },
+    {
+      "key": "nonferrous.zn.zamak5",
+      "value": 24.52,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Mysteel 2026-09-30: 5# zinc alloy (≈ Zamak 5) Zhejiang 27,710 CNY/t incl. VAT; /1.13/1000 = 24.52.",
+      "source": "https://list1.m.mysteel.com/zhishi/2026nxhjjgylb.html",
+      "date": "2026-09-30",
+      "notes": "5# processing fee 1,260 CNY/t (Zhejiang, late June 2026)."
+    },
+    {
+      "key": "nonferrous.mg.ingot",
+      "value": 13.72,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SMM 尚镁网 2026-10-09: Mg ingot 9990 (Fugu/Shenmu) 15,500 CNY/t (-50), ex-works cash incl. VAT; /1.13/1000 = 13.72.",
+      "source": "https://www.sohu.com/a/1085524211_121123889",
+      "date": "2026-10-09",
+      "notes": "Same table: 9995B 15,700, 9995A 16,250. Mysteel 2026-09-29: Shaanxi 99.90% 15,700-15,800 ex-works cash incl. VAT (=13.94); 2026-09-04 16,100-16,200 (https://list1.mysteel.com/zhishi/fgjsmjrjg.html). Ex-works Shaanxi; add freight to the clusters."
+    },
+    {
+      "key": "nonferrous.mg.az91d",
+      "value": 16.02,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "91金属网 AZ91D reference 2026-07-23: 18,100 CNY/t (17,800-18,400), assumed incl. VAT; /1.13/1000 = 16.02. Dated July — Mg ingot has since fallen ~500-1,000 CNY/t.",
+      "source": "https://hq.91jinshu.com/zd91dmeihejin/202607/52846.html",
+      "date": "2026-07-23",
+      "notes": "SMM AZ91D 2026-03-10: 19,000-19,100 avg 19,050 (=16.86) (https://hq.smm.cn/h5/AZ91D-magnesium-alloy-price). Mysteel 2026-09-11: Mg alloy 'consolidating'. Oct 2026 AZ91D probably ~17,500 incl. VAT (≈15.5 ex-VAT) — an inference, not a quote. AM60B / AM50A / AE44: not quoted."
+    },
+    {
+      "key": "nonferrous.sn.spot",
+      "value": 345.13,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SHFE tin SN2610 night session 2026-10-09 ~390,000 CNY/t (down 4.5%; 2026-10-08 ~413,470). 390,000/1.13/1000 = 345.13. Futures, not spot ingot.",
+      "source": "https://news.metal.com/newscontent/104146823",
+      "date": "2026-10-09",
+      "notes": "September: SMM 1# tin ~409,450 CNY/t (=362.35) per aggregator https://metalsmarket.org/market-price/all; Changjiang 1# tin 408,750-410,750 (undated). Volatile: use 345-362 range."
+    },
+    {
+      "key": "nonferrous.ni.spot",
+      "value": 107.65,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "同花顺 iFinD: Shanghai 1# electrolytic nickel spot avg 2026-10-09 (10:50) 121,650 CNY/t (-550), incl. VAT; /1.13/1000 = 107.65.",
+      "source": "http://news.10jqka.com.cn/20261009/c680512152.shtml",
+      "date": "2026-10-09",
+      "notes": "SMM 1# nickel cathode 18,097 USD/t on 2026-10-09 (metal.com) consistent."
+    },
+    {
+      "key": "nonferrous.ti.sponge",
+      "value": 38.94,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Mysteel: domestic 0-grade titanium sponge spot 44,000 CNY/t (late Sep 2026; 45,000 on 2026-09-07), incl. VAT; /1.13/1000 = 38.94.",
+      "source": "https://m.mysteel.com/hot/1472656.html",
+      "date": "2026-09-29",
+      "notes": "Mysteel 2026-09-10 separately reports 0-grade trades at 51,000-52,000 — sources do not reconcile. Full-process cost 43,320 CNY/t on 2026-09-29."
+    },
+    {
+      "key": "nonferrous.ti.tc4_ingot",
+      "value": 56.2,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Mysteel daily 2026-09-24: TC4 (Ti-6Al-4V) ingot 63-64 CNY/kg, weak; mid-Aug to early Sep 66-68. 63.5/1.13 = 56.19.",
+      "source": "https://m.mysteel.com/hot/562252.html",
+      "date": "2026-09-24",
+      "notes": "Ingot, not bar."
+    },
+    {
+      "key": "nonferrous.ti.tc4_bar",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "No dated 2026 source. Undated Mysteel page: TC4 bar 150-190 CNY/kg (=133-168 ex-VAT if VAT-incl) — cross-check only.",
+      "source": "https://m.mysteel.com/hot/12536.html",
+      "date": "undated",
+      "notes": "With TC4 ingot at ~56 ex-VAT and sponge at ~39, a commercial (non-aero) TC4 bar in China is plausibly 130-170 CNY/kg ex-VAT; aerospace AMS 4928 bar is higher. Not a quote."
+    },
+    {
+      "key": "nonferrous.ni.in718_bar",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found in a priority source. Trader page (登蔚国际, 'Aug 2026 reference, not a quote', no source): GH4169 ESR hot-rolled black bar 145-190 CNY/kg, VAR aerospace bar 190-250 CNY/kg — cross-check only.",
+      "source": "https://dengweichina.com/index.php?s=%2FShow%2Findex%2Fcid%2F55%2Fid%2F1496.html",
+      "date": "2026-08 (trader page)",
+      "notes": "Older trader pages quote 260-400 and 500-800 CNY/kg; spread too wide to use."
+    },
+    {
+      "key": "nonferrous.cu.flat_winding_wire_processing",
+      "value": null,
+      "unit": "CNY/kg",
+      "basis": "Not found for 2026. SMM publishes a monthly enamelled-wire processing fee (paywalled) (https://news.smm.cn/news/101512326). Trade press 2025: PEEK enamelled wire fee '10万+ CNY/t, ~10x ordinary magnet wire' -> ordinary ~10,000 CNY/t (2025, not flat hairpin).",
+      "source": "https://finance.sina.com.cn/roll/2025-03-15/doc-ineptaaq3005573.shtml",
+      "date": "2025-03-15",
+      "notes": ""
+    }
+  ],
+  "notes": [
+    "All Chinese spot quotes are taken as incl. 13% VAT (SMM states this for A356.2 and its spot series; Mysteel/Changjiang follow the same convention) and divided by 1.13. Scrap quotes' VAT basis is not stated.",
+    "Prices are ex-warehouse / ex-works (Shanghai, Wuxi, Foshan, Ningbo, Fugu), NOT delivered to the plant; add local freight (typically small vs metal value, not researched here).",
+    "Direct page fetch of Chinese sites (smm.cn, metal.com, mysteel, ccmn) was blocked by this environment's network policy; every figure was read from the web-search tool's quoted page extracts. URLs are the pages the extracts came from; re-verify before publishing the book.",
+    "Market picture Sep-Oct 2026: A00 ~24,000-24,260 CNY/t incl. VAT (21.3-21.5 ex-VAT); scrap tight so ADC12 (24,500) and A356 (24,200) trade at or ABOVE A00; billet fees near zero; copper ~111,000-111,500; zinc ~25,900; Mg ingot 15,500 (weak, below cost); nickel 121,650; tin ~390-410k.",
+    "28 web searches used."
+  ]
+}

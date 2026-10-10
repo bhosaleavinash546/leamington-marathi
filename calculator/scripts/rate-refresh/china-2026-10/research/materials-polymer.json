@@ -1,0 +1,365 @@
+{
+  "domain": "materials-polymer (China, CNY/kg ex-VAT)",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "polymer.pp_homo",
+      "value": 8.79,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PP raffia (拉丝, T30S-type homopolymer) 9,933.33 CNY/t incl. VAT ÷ 1.13 = 8,790.6 CNY/t = 8.79 CNY/kg.",
+      "source": "http://www.chemrp.com/info/detail-20261001-6294429.html",
+      "date": "2026-10-01",
+      "notes": "Same 9,933.33 on 2 Oct (http://www.chemrp.com/info/detail-20261002-6296409.html) and 30 Sep (SunSirs monthly review, https://finance.sina.com.cn/money/future/nyzx/2026-10-01/doc-inittqyc6537236.shtml). Cross-check, trade press: replasinfo East China general PP (T30S rep. grade) 9,860 CNY/t incl. VAT on 8 Oct 2026 = 8.73 ex-VAT (https://www.replasinfo.com/2026/10/market-intelligence/%E4%BB%8A%E6%97%A5%E4%B8%AD%E5%9B%BD%E6%96%B0%E5%A1%91%E6%96%99%E8%A1%8C%E6%83%85%EF%BC%9A2026%E5%B9%B410%E6%9C%8808%E6%97%A5%E4%B8%BB%E8%A6%81%E5%8C%BA%E5%9F%9F%E6%8A%A5%E4%BB%B7%E5%B9%B3%E7%A8%B3/). PP rose ~7% from early Sep (9,246.67)."
+    },
+    {
+      "key": "polymer.pp_copolymer",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found in any source.",
+      "source": "https://www.replasinfo.com/2026/10/market-intelligence/%E4%BB%8A%E6%97%A5%E4%B8%AD%E5%9B%BD%E6%96%B0%E5%A1%91%E6%96%99%E8%A1%8C%E6%83%85%EF%BC%9A2026%E5%B9%B410%E6%9C%8808%E6%97%A5%E4%B8%BB%E8%A6%81%E5%8C%BA%E5%9F%9F%E6%8A%A5%E4%BB%B7%E5%B9%B3%E7%A8%B3/",
+      "date": "2026-10-08",
+      "notes": "K8003 is listed on the replasinfo 8 Oct daily but its figure could not be read reliably from the search extract; no SunSirs PP(共聚) benchmark found. Impact copolymer normally trades at or above homopolymer (8.79), so the book's 7.41 is below the homopolymer evidence."
+    },
+    {
+      "key": "polymer.hdpe",
+      "value": 9.27,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). HDPE reference 10,475 CNY/t incl. VAT ÷ 1.13 = 9,269.9 CNY/t.",
+      "source": "https://hdpe.100ppi.com/",
+      "date": "2026-10-01",
+      "notes": "Flat on 2, 5, 6 Oct; down 2.9% from 1 Sep (10,787.50). SunSirs HDPE basket is not grade-specific; see polymer.hdpe_blow_5502 for the blow grade, which trade press puts ~1,800 CNY/t lower."
+    },
+    {
+      "key": "polymer.hdpe_blow_5502",
+      "value": 7.68,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Trade press (priority 5): replasinfo East China HDPE hollow/blow reference, 5502 (Sinopec system) representative grade, 8,680 CNY/t tax-included ÷ 1.13 = 7,681 CNY/t.",
+      "source": "https://www.replasinfo.com/2026/10/market-intelligence/%E4%BB%8A%E6%97%A5%E4%B8%AD%E5%9B%BD%E6%96%B0%E5%A1%91%E6%96%99%E8%A1%8C%E6%83%85%EF%BC%9A2026%E5%B9%B410%E6%9C%8808%E6%97%A5%E4%B8%BB%E8%A6%81%E5%8C%BA%E5%9F%9F%E6%8A%A5%E4%BB%B7%E5%B9%B3%E7%A8%B3/",
+      "date": "2026-10-08",
+      "notes": "Read from a search extract of the page, not the full page. Notably lower than the SunSirs HDPE basket (9.27)."
+    },
+    {
+      "key": "polymer.ldpe",
+      "value": 9.16,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). LDPE 10,350 CNY/t incl. VAT ÷ 1.13 = 9,159 CNY/t.",
+      "source": "https://www.100ppi.com/news/detail-20260813-6060907.html",
+      "date": "2026-08-13",
+      "notes": "Latest verified LDPE benchmark found. A related-link title showed 'LDPE 12,133.33 on 8 Oct' (= 10.74 ex-VAT) but its page was not seen, so it is NOT used; LDPE likely rose with the rest of the PE/PP complex in Sep–Oct."
+    },
+    {
+      "key": "polymer.lldpe",
+      "value": 8.31,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). LLDPE 9,390 CNY/t incl. VAT ÷ 1.13 = 8,309.7 CNY/t.",
+      "source": "https://m.10jqka.com.cn/20261001/c680427759.shtml",
+      "date": "2026-10-01",
+      "notes": "Up 8.41% vs 1 Sep (8,661.67); near the 12-month high (range 6,375–9,550). Trade-press cross-check: replasinfo East China LLDPE film 8,320 incl. VAT on 8 Oct (= 7.36)."
+    },
+    {
+      "key": "polymer.pvc_sg5",
+      "value": 4.31,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PVC (carbide SG-5) 4,865 CNY/t incl. VAT ÷ 1.13 = 4,305 CNY/t.",
+      "source": "https://pvc.100ppi.com/news/list---1.html",
+      "date": "2026-10-05",
+      "notes": "Same 4,865 on 1 and 2 Oct; 4,652 on 23 Sep. Producer cross-check 23 Sep: 中盐内蒙古 SG-5 4,530 (acceptance), 山东信发 ~4,650. Resin only — compounds (pipe dry-blend, cable, window profile) add stabiliser/filler/plasticiser and mixing."
+    },
+    {
+      "key": "polymer.abs",
+      "value": 10.01,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). ABS 11,316.67 CNY/t incl. VAT ÷ 1.13 = 10,014.7 CNY/t.",
+      "source": "https://abs.100ppi.com/news/list--121311-1.html",
+      "date": "2026-10-01",
+      "notes": "Trade press 10 Oct 2026 East China (replasinfo, incl. VAT): domestic mid-high ABS 11,200 (9.91 ex-VAT), domestic mid-low 10,940 (9.68), imported 16,740 (14.81). ABS was 8,683 in early July 2026 — it has risen ~30% since."
+    },
+    {
+      "key": "polymer.ps",
+      "value": 9.85,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PS (general purpose) 11,133.33 CNY/t incl. VAT ÷ 1.13 = 9,852.5 CNY/t.",
+      "source": "http://www.chemrp.com/info/detail-20260902-6155369.html",
+      "date": "2026-10-05",
+      "notes": "Figure from the page's 'recent quotes' side panel ('10月5日生意社PS基准价为11133.33元/吨'), dated 2026-10-05. SunSirs PS benchmark is GPPS; HIPS usually trades a few hundred CNY/t above."
+    },
+    {
+      "key": "polymer.pc",
+      "value": 11.12,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PC 12,566.67 CNY/t incl. VAT ÷ 1.13 = 11,121 CNY/t.",
+      "source": "http://www.chemrp.com/info/detail-20260709-5896771.html",
+      "date": "2026-07-09",
+      "notes": "Latest PC benchmark figure found (July). SunSirs trend analysis 23 Sep 2026 calls PC 'clearly falling' (D5 −123): http://news.10jqka.com.cn/20260923/c680192146.shtml — so Sep–Oct is likely at or below this. June 3 2026 was 16,033.33 (https://www.100ppi.com/news/detail-20260603-5739457.html)."
+    },
+    {
+      "key": "polymer.pa6_chips",
+      "value": 10.47,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PA6 (injection-grade chip) reference 11,833.33 CNY/t incl. VAT ÷ 1.13 = 10,472 CNY/t.",
+      "source": "https://pa6.100ppi.com/",
+      "date": "2026-07-13",
+      "notes": "Latest found; no Sep/Oct PA6 benchmark surfaced. 15 Jul 12,133.33; 26 Jun 11,800 (http://m.chemrp.com/info/detail-20260626-5839234.html); 7 Apr peak 14,600."
+    },
+    {
+      "key": "polymer.pa66_chips",
+      "value": 16.9,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Producer spot offers reported in SunSirs PA66 chain report 22 Sep 2026 (现货实单商谈): 安徽昊源 AHY4800 19,000, 浙江华峰 EP158 19,500, 神马 EPR27 18,800 CNY/t incl. VAT. Mean 19,100 ÷ 1.13 = 16,903 CNY/t.",
+      "source": "http://stock.10jqka.com.cn/20260922/c680178557.shtml",
+      "date": "2026-09-22",
+      "notes": "神马 cut 500 CNY/t that week. SunSirs PA66 benchmark was 20,866.67 on 10 Jun 2026 (http://www.chemrp.com/info/detail-20260610-5768925.html)."
+    },
+    {
+      "key": "polymer.pom",
+      "value": 11.54,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). POM 13,042.25 CNY/t incl. VAT ÷ 1.13 = 11,541.8 CNY/t.",
+      "source": "https://www.100ppi.com/news/detail-20260724-5970637.html",
+      "date": "2026-06-12",
+      "notes": "Latest SunSirs POM benchmark visible (10–12 Jun 2026); no Sep/Oct figure found. Cross-check: ChemicalBook market quote 11,500 on 22 Jul 2026 (https://www.chemicalbook.com/priceindex_cb5233205.htm) — B2B-type listing, cross-check only."
+    },
+    {
+      "key": "polymer.pbt",
+      "value": 8.85,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Upper bound only. OilChem (隆众, priority 2): 'entering Q2 2026 domestic PBT prices kept weakening… mainstream transactions lost the 10,000 CNY/t mark'. 10,000 incl. VAT ÷ 1.13 = 8,850 CNY/t is a CEILING, not a quote.",
+      "source": "https://plas.oilchem.net/plastic/pbt.shtml",
+      "date": "2026-Q2",
+      "notes": "No Sep/Oct PBT figure found. Trade press 17 Mar 2026 East China mid/low-viscosity pure resin ~9,900–11,000 (zhuansushijie). Unfilled PBT resin is therefore ≤ ~8.9 CNY/kg ex-VAT."
+    },
+    {
+      "key": "polymer.pet_bottle",
+      "value": 7.74,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PET (bottle-chip benchmark) 8,750 CNY/t incl. VAT ÷ 1.13 = 7,743 CNY/t.",
+      "source": "https://m.10jqka.com.cn/20261001/c680427815.shtml",
+      "date": "2026-10-01",
+      "notes": "PX up 16.5% in Sep (9,900 on 1 Oct, http://news.10jqka.com.cn/20261001/c680427801.shtml), so polyester feedstock is firming."
+    },
+    {
+      "key": "polymer.pmma",
+      "value": 13.36,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Agency market report (OilChem/Mysteel, priority 2): East China PMMA pellet mainstream negotiated 14,000–16,200 CNY/t incl. VAT on 30 Sep 2026. Midpoint 15,100 ÷ 1.13 = 13,363 CNY/t.",
+      "source": "https://m.mysteel.com/hot/1592840.html",
+      "date": "2026-09-30",
+      "notes": "Seen as a search extract ('截止发稿,华东地区PMMA粒子主流商谈价格参考14000-16200元/吨'); the exact hosting page among the Mysteel/OilChem results was not opened. SCI99 (卓创) East China domestic PMMA daily titles 29–30 Sep: 'down' / 'stable'."
+    },
+    {
+      "key": "polymer.tpu",
+      "value": 15.75,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs market quote (报价中心, trader 上海尚欣润新材料): Wanhua 1565A (85A-class) 17,800 CNY/t incl. VAT, Jiangsu/Suzhou delivery. ÷ 1.13 = 15,752 CNY/t.",
+      "source": "https://rp.100ppi.com/price/plist-459-1.html",
+      "date": "2026-09-30",
+      "notes": "17,500 in early Sep and July (ChemicalBook 14 Jul 2026 17,500). A single trader's quote on an agency platform — moderate confidence. OilChem Mar 2026: phone-case TPU 15,000–19,000 incl. VAT."
+    },
+    {
+      "key": "polymer.tpe_tpv",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found in any source (search budget).",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "polymer.pps",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found for 2026. OilChem lists 新和成 PPS flash notes in Sep 2026 (titles only, no price).",
+      "source": "https://list.oilchem.net/7380/5.html",
+      "date": "2026-09-07",
+      "notes": "Older references only: a grade quote of 56,000 CNY/t (Jan 2025) and a long-run 45,000–55,000 range (aibang, undated) — not used."
+    },
+    {
+      "key": "polymer.peek",
+      "value": 247.3,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "DERIVED average selling price, 中研股份 (688716, China's largest PEEK maker) FY2025 annual report: revenue 309 M CNY × 86.42% (PEEK pure resin 58.49% + reinforced compound pellets) = 267.04 M CNY ÷ 1,079.84 t PEEK sold = 247,300 CNY/t = 247.3 CNY/kg. Revenue is ex-VAT.",
+      "source": "https://news.qq.com/rain/a/20260429A0934U00",
+      "date": "2025 (FY, published 2026-04-29)",
+      "notes": "Revenue 3.09亿 from https://www.zhuansushijie.com/newsDetail-19afe5b421254675a777cc9adc98448f.html. Assumes the 1,079.84 t covers both resin and compound pellets (the report calls it 主营产品PEEK销量); mix of filled/unfilled not split. Domestic producer ASP — imported Victrex/Solvay grades sell higher. Order of magnitude evidence that the book's 654.63 (unfilled) is ~2.6× the Chinese producer's average."
+    },
+    {
+      "key": "polymer.pa66_gf30",
+      "value": 30.97,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Trade press / distributor article (priority 5, sales-oriented): DuPont Zytel 70G30L (PA66-GF30) typical East China wholesale 33,000–37,000 CNY/t in June 2026. Midpoint 35,000 ÷ 1.13 = 30,973 CNY/t (assuming tax-inclusive, as Chinese wholesale quotes are).",
+      "source": "https://www.csjcs.com/news/shangxun/Article-JPv613-467171.html",
+      "date": "2026-06",
+      "notes": "Branded import grade — a domestic generic PA66-GF30 compound (改性料) would be well below this (base PA66 chip 16.9 ex-VAT in Sep). No modified-plastics price index found. Low confidence; another vendor piece claims 'general PA66 GF30 broke 42 CNY/kg in April' (https://www.weiyadakeji.com/xwdt/gongsixinwen/1309.html)."
+    },
+    {
+      "key": "polymer.pa6_gf30",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found in any source.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "polymer.pp_gf30_talc",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found — no Chinese modified-plastics (改性料) price index surfaced.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "rubber.nr",
+      "value": 16.9,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). natural rubber reference (SunSirs NR basket = domestic 全乳胶 SCRWF, Shanghai) 19,100 CNY/t incl. VAT ÷ 1.13 = 16,903 CNY/t.",
+      "source": "https://nr.100ppi.com/",
+      "date": "2026-10-06",
+      "notes": "Flat vs 1 Oct; up 5.38% vs 1 Sep (18,125). Raw polymer, not a compound."
+    },
+    {
+      "key": "rubber.sbr_1502",
+      "value": 12.21,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Market report (trade press, chnrubber.org): 10 Aug 2026 SBR raised 100–200; 抚顺/兰州/扬子 1502 mainstream reference 13,700–13,900 CNY/t incl. VAT. Midpoint 13,800 ÷ 1.13 = 12,212 CNY/t.",
+      "source": "https://www.chnrubber.org/tag/%E4%B8%81%E8%8B%AF%E6%A9%A1%E8%83%B6%E4%BB%B7%E6%A0%BC/",
+      "date": "2026-08-10",
+      "notes": "No Sep/Oct SBR figure found. Raw polymer."
+    },
+    {
+      "key": "rubber.epdm",
+      "value": 22.79,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Trade-press daily (华东胶友通 jiaoyout.cn): Shanghai market, Ningbo SK 7486F average 25,750 CNY/t incl. VAT, 1–6 Oct 2026. ÷ 1.13 = 22,788 CNY/t.",
+      "source": "http://www.jiaoyout.cn/marketDetail_210_204_0_0.html",
+      "date": "2026-10-06",
+      "notes": "NOT 4045 / Jilin: 7486F is a high-ENB, high-Mooney grade that usually trades above general grades like 4045, so this is an upper reference for general EPDM. OilChem weekly titles 18–30 Sep 2026: EPDM 'firm, strengthening'. Raw polymer."
+    },
+    {
+      "key": "rubber.nbr_3355",
+      "value": 14.29,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). NBR (宁波顺泽 3355 basis) 16,150 CNY/t incl. VAT ÷ 1.13 = 14,292 CNY/t.",
+      "source": "https://nbr.100ppi.com/",
+      "date": "2026-07-01",
+      "notes": "Latest benchmark found; OilChem Sep 2026 monthly review title says NBR monthly average rose m/m (no figure). Trade-press 4 Sep (chnrubber.org): 兰化 N41 17,100 (=15.13 ex-VAT), Tianjin LG 6280 19,600. Raw polymer."
+    },
+    {
+      "key": "rubber.cr",
+      "value": 32.72,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Trade-press monthly average (华南胶友通): 山纳 CR244, South China, September 2026 average 36,972.22 CNY/t incl. VAT ÷ 1.13 = 32,719 CNY/t.",
+      "source": "http://m.jiaoyout.cn/marketDetail_0_0_0_0_0_0_0_2_817772.html",
+      "date": "2026-09",
+      "notes": "Grade-dependent: Mysteel text (date unclear) East China CR322 ~36,500, North China M-42 ~58,000; Denka A-90 ~69,500 in early Jun 2026. Raw polymer."
+    },
+    {
+      "key": "rubber.silicone_dmc",
+      "value": 12.74,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). silicone DMC (siloxane monomer, the raw-gum feedstock) 14,400 CNY/t incl. VAT ÷ 1.13 = 12,743 CNY/t.",
+      "source": "https://www.100ppi.com/vane/detail-751.html",
+      "date": "2026-10-07",
+      "notes": "Mysteel 7 Oct 2026: 合盛 ex-works list 15,000, 鲁西 14,500, East China market 14,700 (=13.01 ex-VAT). This is DMC, not raw gum (生胶) or HCR/LSR compound — raw gum not found. DMC rose ~1,000 in Sep on methanol."
+    },
+    {
+      "key": "rubber.fkm",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found in any source.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "rubber.compound",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found — no source stated a compounded (混炼胶) rubber price.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "composite.cf_t300_12k",
+      "value": 75.22,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Baiinfo (百川盈孚, priority 2): domestic T300-class 12K delivered transaction reference 80–90 CNY/kg (market average 83.75) on 20 Aug 2025. Midpoint 85 ÷ 1.13 = 75.22 CNY/kg (assumed VAT-inclusive, as Chinese delivered quotes are).",
+      "source": "https://www.baiinfo.com/xianweicailiao/tanxianwei",
+      "date": "2025-08-20",
+      "notes": "2025 figure used because no 2026 carbon-fibre price was found. Undated trade article (hzeyun, likely Mar 2026): Jilin T300 12K 95 CNY/kg, T300 25K ~85 after a +10,000 CNY/t increase (https://www.hzeyun.com/detail/2603091) — 2026 may be ~10% higher."
+    },
+    {
+      "key": "composite.cf_t700_12k",
+      "value": 92.92,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Baiinfo: domestic T700-class 12K delivered 90–120 CNY/kg, 20 Aug 2025. Midpoint 105 ÷ 1.13 = 92.92 CNY/kg.",
+      "source": "https://www.baiinfo.com/xianweicailiao/tanxianwei",
+      "date": "2025-08-20",
+      "notes": "Same caveat as T300: 2025 data, no 2026 figure found."
+    },
+    {
+      "key": "composite.epoxy_e51",
+      "value": 12.61,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). epoxy resin benchmark (liquid E-51 basis) 14,250 CNY/t incl. VAT ÷ 1.13 = 12,611 CNY/t.",
+      "source": "https://epoxy.100ppi.com/",
+      "date": "2026-09-01",
+      "notes": "Same on 28 Aug. Shandong 泽盛 liquid E-51 offer 13,500 on 1–2 Sep. East China E-51 was ~16,000 in May and 20,000–21,000 in a March 2026 spike (Mysteel). Neat resin — not a formulated infusion system."
+    },
+    {
+      "key": "composite.glassfibre_roving",
+      "value": 3.16,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Broker data (中泰证券 via 同花顺, trade press): 2400tex E-glass direct roving for winding 3,450–3,700 CNY/t, new price 'basically implemented', 21 Sep 2026. Midpoint 3,575 ÷ 1.13 = 3,164 CNY/t.",
+      "source": "http://stock.10jqka.com.cn/20260921/c680111529.shtml",
+      "date": "2026-09-21",
+      "notes": "Industry-wide, not Jushi-specific. Raw roving only — woven fabric / CSM add conversion."
+    },
+    {
+      "key": "composite.prepreg",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found in any source.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "composite.smc",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not found in any source.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "paint.powder_polyester",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "No absolute price found. Producers announced +2 CNY/kg on all powders from 1 Apr 2026 (天津瑞远, 成都信达) after Feb–Mar 2026 raw-material rises (polyester resin +3,000 CNY/t, curing agent +11,000, TiO2 +1,000); others moved to quote-by-order.",
+      "source": "https://www.zhuansushijie.com/zixun/detail-88d508235f254a5e87198a80af56459b.html",
+      "date": "2026-04-01",
+      "notes": "Change only, not a level."
+    },
+    {
+      "key": "paint.ecoat",
+      "value": null,
+      "unit": "CNY/kg ex-VAT",
+      "basis": "Not searched within budget / not found.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    }
+  ],
+  "notes": [
+    "All Chinese spot / benchmark quotes are VAT-inclusive (13%); every value here = quoted CNY/t ÷ 1.13 ÷ 1000. PEEK is derived from annual-report revenue, which is already ex-VAT.",
+    "Delivered-to-plant: SunSirs and East China market quotes are ex-warehouse East China (Yangtze Delta); no freight added. PRD/Chongqing/Wuhan typically within ±100–300 CNY/t for commodity resins.",
+    "Method limit: WebFetch and direct HTTP to the price sites were unavailable from this sandbox; all figures were read from search-engine extracts of the cited pages (titles such as 'X月X日生意社Y基准价为Z元/吨' are the agency's own daily notices). 35 web searches used.",
+    "Market context Sep–Oct 2026: olefins and styrenics are near 12-month highs (PP +7%, LLDPE +8% since 1 Sep, ABS +30% since July, PX +16% in Sep); PC and PBT were weak in mid-2026.",
+    "Book grades that are compounds or semi-finished stock (rubber 'xx Shore A' compounds, GF compounds, fabrics, prepregs, stock shapes, paints) are not directly comparable with the raw-polymer prices here.",
+    "Not found: PP copolymer K8003 figure, TPE/TPV, PPS (2026), PA6-GF30, PP-GF30/talc, FKM, raw silicone gum, compounded rubber, prepreg, SMC, powder-coat / e-coat levels."
+  ]
+}
