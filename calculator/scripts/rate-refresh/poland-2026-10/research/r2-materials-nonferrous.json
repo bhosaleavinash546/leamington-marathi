@@ -1,0 +1,148 @@
+{
+  "domain": "materials-nonferrous-round2",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "nonferrous.al.din226_current",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND for Jun-Oct 2026. The Fastmarkets DIN226/A380 delivered-Europe series (MB-AL-0005, weekly) is subscriber-only; no later public headline than round 1's 23 Jan 2026 print (2,430-2,530 EUR/t = 10.85 PLN/kg) was found in Fastmarkets, alcircle, SMM, Argus/Platts, CRU or German trade-press searches.",
+      "source": "https://www.fastmarkets.com/commodity-prices/aluminium-pressure-diecasting-ingot-din226-a380-delivered-europe-euro-tonne-mb-al-0005/",
+      "date": "",
+      "notes": "A Fastmarkets article quoting DIN226 at 2,380-2,480 EUR/t (2,595-2,705 USD/t) 'on July 12' (https://www.fastmarkets.com/insights/european-secondary-aluminium-scrap-prices-pressure/) carries no year. Its implied FX is 2,595/2,380 = 1.090 USD/EUR, which matches July 2024, not 2026 (book FX 1.165), so it is NOT a 2026 price and is not used. Schuler Rohstoff's August 2026 scrap report says primary and secondary aluminium prices changed only slightly after a June fall (qualitative, no figure): https://www.schuler-rohstoff.de/schrottmarktbericht-august-2026-2/. SMM's China ADC12 was 24,200 CNY/t on 30 Jul 2026 (China, not Europe; not used): https://news.metal.com/newscontent/104036350-cost-driven-price-strength-heatwave-holidays-drag-demand-adc12-gains-capped-aluminum-scrap-and-secondary-aluminum-weekly. Keep round 1's 10.85 PLN/kg (January) and flag it stale."
+    },
+    {
+      "key": "nonferrous.al.a356_premium",
+      "value": 3.85,
+      "unit": "PLN/kg (premium over LME cash)",
+      "basis": "Fastmarkets aluminium primary foundry alloy silicon 7 ingot premium, ddp Eastern Europe (MB-AL-0340), and the ddp Germany premium (MB-AL-0339): both 950-1,050 USD/t on 29 May 2026 (price-agency assessment; the 22 May print of 1,000-1,100 was deleted as published in error). Mid 1,000/1000 x 3.849 = 3.85 PLN/kg. Duty-paid and delivered, CBAM costs included from Jan 2026.",
+      "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+      "date": "2026-05-29",
+      "notes": "Range 950-1,050 = 3.66-4.04 PLN/kg. Corrected May average for ddp Germany: low 975 / high 1,075 USD/t (https://www.fastmarkets.com/insights/correction-to-may-averages-for-aluminium-primary-foundry-alloy-premiums/). Earlier all-time high 900-1,000 USD/t on 11 March (https://www.fastmarkets.com/insights/european-us-aluminium-pfa-premiums-hit-new-all-time-highs/; year read from context of the Strait of Hormuz closure, page date not confirmed). Fastmarkets moved the PFA premiums to twice a month (notice ~24 Sep 2026, https://www.fastmarkets.com/insights/increase-in-frequency-of-fastmarkets-european-aluminium-pfa-premiums/) but no Jun-Oct print was found. The P1020 Rotterdam premium eased from ~575-600 USD/t (2 Apr) to 490-520 (8 Sep) before recovering to 545-574 (1 Oct), so the October PFA premium may be somewhat below the May figure - inference, not a quote."
+    },
+    {
+      "key": "nonferrous.al.alsi7mg",
+      "value": 16.35,
+      "unit": "PLN/kg",
+      "basis": "DERIVED: LME aluminium cash 3,248 USD/t (28 Sep 2026, round 1 anchor) + PFA silicon 7 ingot premium ddp Eastern Europe 1,000 USD/t (29 May 2026) = 4,248 USD/t; x 3.849/1000 = 16.35 PLN/kg ex-VAT, duty-paid delivered Eastern Europe.",
+      "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346",
+      "date": "2026-05-29 / 2026-09-28",
+      "notes": "At the 7 Oct LME cash (3,102): 4,102 USD/t = 15.79 PLN/kg. Range with the premium band 950-1,050 at LME 3,102-3,248: 15.59-16.54 PLN/kg. Premium is four months older than the LME leg."
+    },
+    {
+      "key": "nonferrous.al.alsi10mg",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND as its own quote. No European AlSi10Mg (EN AC-43400 primary) price or premium is published separately; Fastmarkets' PFA series is the silicon 7 (A356/AlSi7Mg) ingot only.",
+      "source": "",
+      "date": "",
+      "notes": "If a proxy is needed, AlSi10Mg primary ingot is commonly traded off the same P1020 + PFA premium structure; nonferrous.al.alsi7mg (16.35 PLN/kg) is the nearest sourced figure. That is a PROXY, labelled as such, not a quote."
+    },
+    {
+      "key": "nonferrous.al.dutyPaidPremium_oct",
+      "value": 2.21,
+      "unit": "PLN/kg (premium over LME)",
+      "basis": "Front-month COMEX European duty-paid aluminium premium (Rotterdam) 574 USD/t on 1 Oct 2026 (exchange-traded futures settlement as reported by Reuters via AlCircle; highest since 8 June). 574/1000 x 3.849 = 2.21 PLN/kg.",
+      "source": "https://www.alcircle.com/news/european-aluminium-premium-hits-574-t-as-potential-us-tariff-cut-raises-supply-fears-121423",
+      "date": "2026-10-01",
+      "notes": "Later print than round 1's Fastmarkets 510-530 (15 Sep). Cross-checks: CRU duty-paid premium 533 USD/t on 23 Sep 2026 (https://www.crugroup.com/en/communities/thought-leadership/2026/european-aluminium-premiums-diverge-as-supply-tightens/); LME Insight weekly 545-570 USD/t on 1 Oct (https://storage.ghost.io/c/a7/38/a7384b33-c2f9-4c7c-85e7-bc1b263c8a1b/content/files/2026/10/Aluminium-Insight-by-LME-Insight-Edition-5-1.pdf). DERIVED P1020 at 7 Oct LME 3,102 + 574 = 3,676 USD/t = 14.15 PLN/kg in-warehouse Rotterdam (round 1: 14.50 at 28 Sep LME + 520)."
+    },
+    {
+      "key": "nonferrous.al.frp_europe_asp",
+      "value": 18.2,
+      "unit": "PLN/kg",
+      "basis": "DERIVED, company annual report: Novelis Inc. Form 10-K FY2026 (year to 31 Mar 2026), Europe segment net sales 5,272 million USD / total shipments 1,115 kt = 4,728 USD/t; x 3.849/1000 = 18.20 PLN/kg. Average selling price of Europe's largest flat-rolled producer, all products (can, automotive, specialty) incl. metal; ex-works mix, no VAT.",
+      "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+      "date": "2025-04-01 to 2026-03-31",
+      "notes": "FY2025 for comparison: 4,606 / 1,083 = 4,253 USD/t (16.37 PLN/kg). Segment figures include intersegment sales and affiliates on a proportionate basis (per the 10-K). The FY2026 metal price averaged below Sep-Oct 2026 levels (LME rose to ~3,385 USD/t by early March 2026 and Rotterdam premium roughly doubled through 2026), so an October 2026 sheet price is likely ABOVE this average - inference. Mix is dominated by can stock, which has the lowest conversion; automotive body sheet (6016/6111/5754) sells above the mix. Not a grade-specific price."
+    },
+    {
+      "key": "nonferrous.al.sheet_5754",
+      "value": 29.18,
+      "unit": "PLN/kg",
+      "basis": "Polish stockholder Atreon's own published shop price: EN AW-5754 sheet 6 x 1250 x 2500 mm (with foil), 50.63 kg per sheet, 29.18 PLN/kg net of VAT. Distributor list price, single sheet, small lot.",
+      "source": "https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/",
+      "date": "page read via search Oct 2026 (price undated)",
+      "notes": "Retail stockholder price for one cut sheet - a CEILING, not the coil/blank price an automotive plant pays the mill. Mill contract price is not public. Other Polish stockholders (nizpolmetale.pl, sklep.hart-metale.pl) list per piece without weights; Allegro listings ignored per RULES."
+    },
+    {
+      "key": "nonferrous.al.sheet_6016",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND. Automotive body-sheet (6016/6111) prices and European FRP conversion fees (CRU, Fastmarkets) are subscriber-only; the only CRU piece found (1050/5754 conversion-fee Monte Carlo, 2025) gives no 2026 level.",
+      "source": "https://www.crugroup.com/en/communities/thought-leadership/2025/aluminium-flat-rolled-products-monte-carlo-simulation-for-conversion-fees-in-europe/",
+      "date": "",
+      "notes": "Use nonferrous.al.frp_europe_asp (18.20 PLN/kg, FY2026 mix) as a floor for auto body sheet."
+    },
+    {
+      "key": "nonferrous.al.plate_6061_6082",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND. Polish stockholders (alinox, atreon, hart-metale) list 6082/6061 plate but no per-kg price was found in public pages.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "nonferrous.al.sheet_1050_3003",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND (no European 1050/3003 conversion fee or Polish per-kg list price).",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "nonferrous.al.bar_6082",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND. No Polish distributor per-kg list price for 6082 (PA4) bar was found; searches returned scrap boards only.",
+      "source": "",
+      "date": "",
+      "notes": "Floor by arithmetic: extruded bar must cost at least the delivered 6063 billet (round 1: 16.75 PLN/kg) plus extrusion conversion (not found)."
+    },
+    {
+      "key": "nonferrous.al.kety_extrusion_asp",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND. Grupa Kęty's 2025 extrusion-segment tonnage was not in any public extract (the 2025 consolidated annual report, published 26 Mar 2026, was not reachable). Only figures found: segment (SWW) 2025 FORECAST revenue 2,081 mln PLN (+8%), 9M 2025 volume +2% y/y with value revenue -2% y/y; group 2025 revenue 5,494 mln PLN.",
+      "source": "https://www.biznesradar.pl/a/132063,grupa-kety-szacunkowe-dane-za-2024-i-prognoza-na-2025-r ; https://www.wnp.pl/przemysl/grupa-kety-pokazala-szacunkowe-wyniki-roczny-zysk-netto-w-gore,1014940.html",
+      "date": "2025",
+      "notes": "No revenue / tonnes division possible without the tonnage."
+    },
+    {
+      "key": "nonferrous.mg.az91d",
+      "value": 10.98,
+      "unit": "PLN/kg",
+      "basis": "LOW CONFIDENCE. IMARC price tracker, magnesium alloy ingot, Netherlands, June 2026: ~2,853 USD/t (market-research estimate, not a price-agency assessment or transaction). 2,853/1000 x 3.849 = 10.98 PLN/kg.",
+      "source": "https://www.imarcgroup.com/magnesium-alloy-ingot-pricing-report",
+      "date": "2026-06 (Q2 2026)",
+      "notes": "Same tracker: Germany ~2,641, France ~3,197 USD/t. ChemAnalyst (AZ91D, June 2026): Germany ~2,574 USD/t = 9.91 PLN/kg, Hamburg-delivered average ~2,606 (https://www.chemanalyst.com/Pricing-data/magnesium-alloy-ingot-1337). Both are paywalled-summary market-research figures; method unknown. Fastmarkets Mg 99.9% in-whs Rotterdam (MB-MG-0001) is subscriber-only. Magontec (Europe's largest Mg alloy recycler) 2025 annual report is on the ASX (https://announcements.asx.com.au/asxpdf/20260224/pdf/06wpjx78fkb47j.pdf) but could not be read, so no revenue/tonnes ASP. Use as a cross-check only."
+    },
+    {
+      "key": "nonferrous.ti.ti6al4v_bar",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND in any price agency, producer list or annual report. Only vendor blog ranges were found (e.g. Grade 5 'Europe EUR 40-75/kg indicative' = 175-328 PLN/kg; other guides 14-32 USD/kg) - mutually inconsistent, undated, unsourced; not usable.",
+      "source": "",
+      "date": "",
+      "notes": "Candidate pages seen (vendor guides, NOT sources): https://hontitan.com/titanium-price-2026-market/ ; https://titaniumseller.com/resources/titanium-price-guide/"
+    },
+    {
+      "key": "nonferrous.ni.in718_bar",
+      "value": null,
+      "unit": "PLN/kg",
+      "basis": "NOT FOUND. No VDM / mill alloy-surcharge figure for 2.4668 for Sep-Oct 2026 was found; only vendor guides (25-55 USD/kg bar; 45-110 USD/kg certified mill product) - not usable as a price.",
+      "source": "",
+      "date": "",
+      "notes": "Candidate pages seen (vendor guides, NOT sources): https://richconn.com/inconel-718-price/ ; https://www.mwalloys.com/inconel-718-price-what-drives-cost-and-how-to-buy-smart/"
+    }
+  ],
+  "notes": [
+    "FX per RULES: 1 USD = 3.849 PLN, 1 EUR = 4.374 PLN. All values ex-VAT (agency / exchange / annual-report figures carry no VAT; the Atreon price is stated net).",
+    "Direct page fetch (WebFetch, curl) is blocked in this environment (DNS failure / proxy 403 on fastmarkets.com, grupakety.com, announcements.asx.com.au); all figures come from web-search page extracts. Re-verify the URLs before publishing.",
+    "Held book figures that look wrong: (1) mat-al6082-forge 16.40 and mat-al6061-forge 16.90 are BELOW or equal to delivered 6063 extrusion billet (round 1: 16.75) and below the book's own 6082 billet (17.15) - forging stock is extruded/cast bar made from billet, so it cannot cost less: too low. (2) mat-al6082-bar 17.66 and mat-al6061 18.01 are only ~0.9-1.3 PLN/kg over delivered billet before any extrusion conversion: likely too low. (3) Sheet: mat-aa3003-sheet 15.13, mat-aa1050-sheet 15.23, mat-aa5182/5052 16.14, mat-aa5754-sheet 16.80, mat-aa6016-t4 17.66 sit only 0.6-3.2 PLN/kg over P1020 (14.15-14.50) and BELOW Novelis Europe's FY2026 all-product average selling price (18.20 PLN/kg, at lower metal prices than today) - likely too low, especially auto body sheet 6016/6111 which sells above the can-dominated mix. (4) Foundry: no held primary-foundry grade is listed, but if A356/AlSi7Mg castings use P1020-level metal they should be ~16.35 PLN/kg (LME + PFA premium 1,000 USD/t), ~1.85 above P1020. (5) Magnesium AZ91D 19.28 / AM60B 18.52 / AM50A 18.77 are ~75% above the low-confidence European alloy ingot trackers (9.9-11.0 PLN/kg, June 2026); probably too high but the evidence is weak, so not asserted. (6) Ti-6Al-4V 238.49 / 190.42 and IN718 212.74-222.86 could not be tested against any citable source.",
+    "Not found: any Jun-Oct 2026 DIN226 print (the 'July 12' Fastmarkets figure is 2024 by its implied FX), a Jun-Oct PFA print, AlSi10Mg, European FRP conversion fees, 6016 body sheet, Polish per-kg prices for 6082 bar / plate, Grupa Kęty tonnage, Magontec ASP, titanium and nickel-superalloy bar prices.",
+    "27 web searches used."
+  ]
+}
