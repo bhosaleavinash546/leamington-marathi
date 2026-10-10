@@ -76,9 +76,12 @@ async function costOne(page: Page, base: string, p: PartSpec): Promise<Record<st
       else if (o.options.includes(p.answers[o.id])) await page.check(`${sel} input[type=radio][value="${p.answers[o.id]}"]`);
       else { (out.unanswerable as string[] | undefined)?.push(o.id) ?? (out.unanswerable = [`${o.id} (no option ${p.answers[o.id]}; offered ${o.options.join('|')})`]); }
     }
-    const before = await page.evaluate(() => document.getElementById('cad-results')!.innerHTML.length);
+    // Wait for the re-analysis itself: a DFM job landing also re-renders the panel, and the loop then read the
+    // pre-answer questions (the stub axle stopped after one round in the casting 360 re-run).
+    const reanalysed = page.waitForResponse(r => r.url().includes('/api/cad/reanalyze') && r.request().method() === 'POST', { timeout: 600_000 });
     await page.click('#cad-decisions-apply');
-    await page.waitForFunction(b => document.getElementById('cad-results')!.innerHTML.length !== b, before, { timeout: 600_000 });
+    await reanalysed;
+    await page.waitForTimeout(1500);
   }
   out.questions = asked;
   out.cadPanel = await page.evaluate(() => {

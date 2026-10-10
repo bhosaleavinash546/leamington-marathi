@@ -2984,10 +2984,13 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
       annualVolume,
       occtGeometry: geo,
       preprocessed: null,
-      // The DFM job re-run with the answered material and route (null: the upload's job stands).
-      dfmJobId: await requeueGeometricDFMWithAnswers(geometryHash, filename, selectedCommodity, geo.partName || filename,
-        forcedMaterial || String(decisionAnswers['material.family'] ?? ''),
-        forcedProcess || decidedRoute(det.result.suggestions), annualVolume, requestRegion(req)),
+      // The DFM job re-run with the answered material and route, once every blocking question is answered — one job
+      // per completed answer set (a job per round queued behind each other and outlasted the screen's poll in the
+      // live re-run). null: the upload's job stands.
+      dfmJobId: detDecisions.some(d => d.severity === 'blocking') ? null
+        : await requeueGeometricDFMWithAnswers(geometryHash, filename, selectedCommodity, geo.partName || filename,
+          forcedMaterial || String(decisionAnswers['material.family'] ?? ''),
+          forcedProcess || decidedRoute(det.result.suggestions), annualVolume, requestRegion(req)),
     };
     cadCache.set(cacheKey, detPayload);
     res.json(detPayload);

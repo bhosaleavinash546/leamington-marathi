@@ -17330,8 +17330,10 @@ function reportFunctionalSafety(): FunctionalSafetyMeta | undefined {
  */
 // 110 tries ≈ 5 × 1 s + 105 × 3 s = 320 s: past the kernel's own 300 s budget. At 60 (≈ 170 s) a large part's
 // report (the 3,444-face fuel tank: ~190 s) landed after the screen had stopped asking for it.
-async function pollGeometricDFM(jobId: string, tries = 110): Promise<void> {
-  for (let i = 0; i < tries; i++) {
+async function pollGeometricDFM(jobId: string, maxMs = 15 * 60_000): Promise<void> {
+  // By time, not tries: a job can wait behind another part's in the one-at-a-time queue (110 tries gave up at ~5.5 min).
+  const until = Date.now() + maxMs;
+  for (let i = 0; Date.now() < until; i++) {
     await new Promise(r => setTimeout(r, i < 5 ? 1000 : 3000));
     if (cadDfmJobId !== jobId) return;          // a newer upload superseded this
     try {
