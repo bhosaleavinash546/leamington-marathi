@@ -58,7 +58,7 @@ export const BILLET_PREMIUM_USD_PER_T: Record<ManufacturingRegion, BilletPremium
   MX: { usdPerT: 395, sourced: true, basis: 'Fastmarkets 6063 billet premium CIF Mexico $370–420/t, 9 Sep 2026 — mid-point' },
   BR: { usdPerT: 725, sourced: true, basis: 'Fastmarkets 6063/6060 billet premium CIF Brazilian main ports $700–750/t — mid-point' },
   CN: { usdPerT: -186, sourced: false, basis: 'SHFE ~RMB 23,800/t incl. 13% VAT → RMB 21,060 ex-VAT ≈ $2,966/t at RMB 7.10 ($274 under LME) + 6063 bar processing fee ~RMB 625 ≈ $88 (Mysteel, Jul 2026) — derived' },
-  IN: { usdPerT: 550, sourced: false, basis: 'India CIF primary ~$3,603/t mid-2026 (≈ LME + $350) + domestic billet conversion ~$200 — estimate' },
+  IN: { usdPerT: 710, sourced: true, basis: 'Hindalco AA6063 billet (P1020 + ₹17,600/t, Aug 2026) over LME 3M, Oct 2026 derived; May measured $803–842/t — the book held $550 (India rate book 2026-10-10)' },
   TH: { usdPerT: 420, sourced: false, basis: 'Asian P1020 premium ~$200–395/t + Thai 6063 billet processing fee $100–250 (alcircle, 2026) — estimate' },
   VN: { usdPerT: 450, sourced: false, basis: 'Asian P1020 premium + Vietnamese 6063 billet fee ~$200/t mid-June 2026 (alcircle) — estimate' },
   KR: { usdPerT: 420, sourced: false, basis: 'P1020A premium CIF South Korea $155–165/t + billet conversion ~$260 — estimate' },

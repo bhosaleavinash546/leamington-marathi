@@ -4,6 +4,7 @@
  * picker, reachable by the grade question and a declared designation, costed in all 39 countries.
  * docs/cad/casting-grade-gap-2026-10.md.
  */
+import { COUNTRY_BOOKS } from '../src/engine/country-books.js';
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
@@ -112,6 +113,8 @@ describe('3. priced in every country', () => {
     const book = buildRegionalLibrary(LIB, region);
     const rd = REGIONAL_DATA[region];
     for (const id of IDS) {
+      // A country with its own rate book prices the grade from its own evidence (India, Oct 2026: foundry charge).
+      if (COUNTRY_BOOKS[region]?.materials[id]) continue;
       const uk = mat(id);
       const local = book.materials.find(m => m.id === id)!;
       const cls = classifyMaterialFamily(uk);

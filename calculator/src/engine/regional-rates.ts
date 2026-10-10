@@ -1,5 +1,6 @@
 import type { RateLibrary, MaterialRate, Breakdown8Bucket } from './types.js';
 import { computeMachineRatePerHr } from './rate-library-merge.js';
+import { COUNTRY_BOOKS, countryMachine, countryMaterial } from './country-books.js';
 import { AL_ALLOYS, BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, type AlAlloy } from './al-extrusion-data.js';
 
 // ─── Manufacturing Regions ─────────────────────────────────────────────────────
@@ -271,15 +272,17 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     packagingMultiplier: 0.70,
     logisticsMultiplier: 1.45,
   },
+  // India: labour from the India rate book 2026-10-10 (scripts/country-book.ts; statutory-loaded, 4-cluster, see the book);
+  // machineRateMultiplier = median India ÷ UK machine rate in that book (the service factors read it).
   IN: {
     name: 'India',
     currency: 'INR',
     fxToGBP: 127.2,
-    labour: { skilled: 5.14, semiskilled: 3.52, engineer: 12.08, foundry: 3.02, electronics: 4.53, inspector: 5.54, technician: 5.65, supervisor: 6.94 },
+    labour: { skilled: 1.27, semiskilled: 0.9, engineer: 2, foundry: 1.02, electronics: 1.08, inspector: 0.97, technician: 1.13, supervisor: 1.55 },
     energy: { electricityPerKwh: 0.069, gasPerKwh: 0.03 },
     materialFactors: { commodityResin: 0.860, engineeringResin: 0.90, highPerfResin: 0.975 },
     materialMultiplier: 0.890,
-    machineRateMultiplier: 0.52,
+    machineRateMultiplier: 0.34,
     overheadMultiplier: 0.72,
     packagingMultiplier: 0.65,
     logisticsMultiplier: 1.50,
@@ -943,6 +946,8 @@ export function regionalShopDefaults(
 
 export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
   const rd = REGIONAL_DATA[region];
+  // The country's own book (country-books.ts) wins where it has evidence; the scaling below is the fallback.
+  const book = COUNTRY_BOOKS[region];
   const ownEnergy = baseLibrary.energy.find(e => e.id === `energy-${region.toLowerCase()}`);
   const elecTariff = ownEnergy?.electricityPerKwh ?? rd.energy.electricityPerKwh;
 
@@ -996,6 +1001,12 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         return { ...l, fullyLoadedRatePerHr: own.fullyLoadedRatePerHr, region: rd.name,
           sourceNote: `${own.id} — the rate book's own ${rd.name} rate (${own.sourceNote ?? ''})`.trim(), confidence: own.confidence };
       }
+      const grade = book?.labourGrades[suffix];
+      if (grade) {
+        return { ...l, fullyLoadedRatePerHr: grade.gbpPerHr, region: rd.name,
+          sourceNote: `${rd.name} book ${book!.asOf}: ${suffix} ₹${(grade.gbpPerHr * book!.fxToGBP).toFixed(0)}/h — ${grade.basis} (${grade.source})`,
+          confidence: grade.confidence };
+      }
       const direct = labourCategoryRates[suffix];
       const cat = PROCESS_LABOUR_CATEGORY[suffix] ?? 'skilled';
       const rate = direct ?? Math.round(l.fullyLoadedRatePerHr * (rd.labour[cat] / REGIONAL_DATA.UK.labour[cat]) * 100) / 100;
@@ -1026,6 +1037,8 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         return { ...m, pricePerKg: p, region: rd.name, confidence: 'Medium' as const,
           sourceNote: `${m.sourceNote} | ${rd.name}: billet premium $${BILLET_PREMIUM_USD_PER_T[region].usdPerT}/t → £${p.toFixed(3)}/kg (${BILLET_PREMIUM_USD_PER_T[region].basis})` };
       }
+      const own = book ? countryMaterial(book, m, rd.name) : null;
+      if (own) return own;
       const authentic = EXTRUSION_COUNTRY_PRICES[m.id]?.[region] ?? THERMOFORMING_COUNTRY_PRICES[m.id]?.[region];
       if (authentic !== undefined) {
         const ratio = m.pricePerKg > 0 ? authentic / m.pricePerKg : 1;
@@ -1053,6 +1066,8 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     // a cheap-power region (e.g. DE 0.20 vs UK 0.23) is genuinely cheaper to run.
     // The £/hr is recomputed from the rebuilt build-up (single source of truth).
     machines: baseLibrary.machines.map(m => {
+      const own = book && m.buildup ? countryMachine(book, m, baseLibrary.machines, elecTariff, rd.name) : null;
+      if (own) return own;
       if (!m.buildup) {
         // No build-up to rebuild from — fall back to the flat capex scale.
         return {

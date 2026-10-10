@@ -94,7 +94,9 @@ describe('generateInsights — no self-critique', () => {
   it('does not recommend China to a part costed in China; still does with no context', () => {
     const base = result({ process: 40, labour: 25 });
     const withCtx = generateInsights(base, input(SPLIT_OPS), DEFAULT_RATE_LIBRARY, 'casting', { region: 'CN' });
-    expect(withCtx.some(i => i.title.includes('Regional sourcing'))).toBe(false);
+    // From China the sourcing line may name a cheaper country (India, since its Oct 2026 rate book) — never China itself.
+    const sourcing = withCtx.find(i => i.title.includes('Regional sourcing'));
+    expect(sourcing?.actions.some(a => /^China:/.test(a)) ?? false).toBe(false);
     const withoutCtx = generateInsights(base, input(SPLIT_OPS), DEFAULT_RATE_LIBRARY, 'casting');
     expect(withoutCtx.some(i => i.title.includes('Regional sourcing'))).toBe(true);
   });

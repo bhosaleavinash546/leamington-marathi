@@ -554,7 +554,8 @@ describe('12. the forms\' £ defaults follow the country; a typed figure is a qu
     typed.value = '65000';                                     // the engineer's quote
     M.applyCountryMoneyDefaults(root, 'IN');
     expect(Number(die.value)).toBe(Math.round(120000 * S.countryFactor({ globalShare: 0.2, rest: 'toolroom' }, 'IN')));
-    expect(Number(nre.value)).toBe(Math.round(2000 * S.engineerFactor('IN')));
+    // below 100 the form keeps a decimal (the India book's engineer rate puts this NRE at ~93)
+    expect(Number(nre.value)).toBeCloseTo(2000 * S.engineerFactor('IN'), 1);
     expect(insert.value).toBe('0.05');                         // brass inserts are traded
     expect(typed.value).toBe('65000');
     M.applyCountryMoneyDefaults(root, 'DE');
