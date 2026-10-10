@@ -1,0 +1,296 @@
+{
+  "domain": "machines",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "capex.mach-vmc3",
+      "value": 284288,
+      "unit": "PLN/unit ex-VAT (maker list / EU special-package price, machine only)",
+      "basis": "Haas EU-series list: VF-2SSYT-EU (VF-2-size 3-axis VMC, super-speed, EU configuration) special price EUR 64,995 on Haas's Polish-language site; × 4.374 = 284,288 PLN. Same page: with 4th-axis package EUR 68,990, with 5th-axis package EUR 71,990",
+      "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html",
+      "date": "page undated (EU-series offer; retrieved via search 2026-10-10)",
+      "notes": "LIST price (a promotional EU configuration), not a transaction. VAT status not stated on the snippet — Haas EU prices are normally quoted net of VAT, but that is not confirmed here. Excludes delivery, rigging/installation, tooling and workholding (not sourced). The search summary says the page marks the model 'currently unavailable in the region'. Cross-checks: (1) Haas VF-2 US list US$70,995 (machinetoolindex, verified 2026-08-31, used by the UK book) × 3.849 = 273,260 PLN (https://machinetoolindex.com/machines/haas-vf-2); (2) a Haas EU year-end-sale page reportedly lists a VF-2 at EUR 50,052 (= 218,927 PLN) and another at EUR 66,995 (= 293,036 PLN), configuration not stated (https://www.haascnc.com/pl/shop/category/available-inventory-eu.html — URL of the sale page not certain). Current book: mach-vmc3 implied capex 282,522 PLN (financeCost 5,650.44 ÷ 2%) — agrees with this evidence (−0.6%). Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-haas-vf2",
+      "value": 284288,
+      "unit": "PLN/unit ex-VAT (list)",
+      "basis": "same evidence as capex.mach-vmc3 (Haas VF-2SSYT-EU EUR 64,995; US list VF-2 US$70,995 = 273,260 PLN)",
+      "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://machinetoolindex.com/machines/haas-vf-2",
+      "date": "page undated; US list verified 2026-08-31",
+      "notes": "Current book mach-haas-vf2 implied capex 195,197 PLN (financeCost 3,903.94 ÷ 2% = UK £53,204 × 0.72 × 5.096). A Haas is a traded machine sold at EUR/USD list in Poland; the 0.72 country factor on capital has no source. Evidence 273k–284k PLN is ~40–46% above the book. Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-lathe-cnc",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (no Polish/EU list or award price for a Haas ST-20, AVIA turning centre or DN Solutions Lynx; Haas's ST-20 pages show no price — 'contact your HFO')",
+      "source": "https://www.haascnc.com/machines/lathes/st/models/standard/st-20.html",
+      "date": "retrieved 2026-10-10",
+      "notes": "Current book implied capex 205,470 PLN (mach-lathe-cnc) and 215,744 PLN (mach-mazak-qt200)."
+    },
+    {
+      "key": "capex.mach-vmc5",
+      "value": 461861,
+      "unit": "PLN/unit (US list, machine only; older figure)",
+      "basis": "Haas UMC-500 'starts at US$119,995' (before educational discount) per an older Haas article quoted by the search; × 3.849 = 461,861 PLN",
+      "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+      "date": "article date not shown (older than 2026)",
+      "notes": "US LIST price, not EU and not a transaction; no EU/PLN list price found (Haas PL page: 'not currently available in your region'). Haas Automation Europe stock-machine page lists a UMC-500SS package at 129,995 with the currency labelled 'CNY' on the Chinese-locale page (https://www.haascnc.com/zh/shop/2024_stock/HAE/canceled-orders-master/UMC-500SS-HE-BN_1215724_.html) — a Haas Europe stock page, so the currency is probably EUR, but that is not confirmed; not converted. Cross-check (marketplace, not a price): used 2021 UMC-500SS in Kraków EUR 99,000 + VAT, 10,825 h (https://www.machineseeker.com/haas-umc-500ss/i-22273782, updated 2026-07-07). Current book: mach-haas-umc500 implied capex 463,410 PLN (agrees, +0.3%), mach-vmc5 677,136 PLN, mach-dmg-dmu50 605,955 PLN. Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-haas-umc500",
+      "value": 461861,
+      "unit": "PLN/unit (US list)",
+      "basis": "same evidence as capex.mach-vmc5",
+      "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+      "date": "older than 2026 (article date not shown)",
+      "notes": "Book 463,410 PLN — consistent. Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-dmg-dmu50",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (DMG MORI publishes no list price; only used-machine listings were returned)",
+      "source": "https://www.machineseeker.si/dmg+mori+dmu-50+5-achs/i-20897662",
+      "date": "2026",
+      "notes": "Marketplace cross-check only (not a price): used 2012 DMU 50 EUR 78,000 + VAT; used 2018 DMU 50 3rd gen EUR 110,000 + VAT (Ruhla, 32,903 h, https://www.used-machines.com/dmg+mori-dmu+50-3rd/gm-202-21655). Book implied 605,955 PLN."
+    },
+    {
+      "key": "capex.mach-drill",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Book implied capex 143,830 PLN."
+    },
+    {
+      "key": "capex.laser",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found as a maker/distributor list price or award for a 6 kW 3×1.5 m fibre laser",
+      "source": "https://www.24opole.pl/2159803,Sprzedam-Fiber_Laser_wycinarka_laserowa_ploter_CNC_Weni_3015H_6kW,ogloszenie.html",
+      "date": "2026 listings",
+      "notes": "MARKETPLACE cross-checks only (Chinese-built machines, not a price): Weni WS-3015H 6 kW new 199,900 zł (VAT status not stated; excludes installation, training, delivery, service) ; WatMachinery ZMB1530 6 kW, 2026, EUR 49,000 + VAT (= 214,326 PLN; https://www.machineseeker.pl/watmachinery-zmb1530+6kw+fiber+laser+cutting+machine/i-21454707). A Trumpf TruLaser 3030 is far dearer (UK book: third-party estimate US$400–550k). Current book laser-trumpf-3030 implied capex 1,374,820 PLN (= UK £374,700 × 0.72); a Chinese-built 6 kW 3015 sells for ~15% of that in Poland."
+    },
+    {
+      "key": "capex.press-brake",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found as a list price or award; marketplace/dealer listings only",
+      "source": "https://www.machineseeker.com/metformer-com+100t+3100mm/i-5001705",
+      "date": "listing year 2024 machine (retrieved 2026-10-10)",
+      "notes": "MARKETPLACE cross-checks only: Metformer (Polish maker) COM 100 t / 3,100 mm hydraulic press brake, 2024, 'new/demo' 99 h, EUR 41,000 + VAT fixed (= 179,334 PLN); dealer note on a used BAYKAL APH-S 3104x90 says a new one is ~EUR 80,000 (= 349,920 PLN; https://resale.info/pl/baykal-aph-s-3104x90/No-164625849). Current book implied capex: brake-trumpf-trubend3100 2,384,928 PLN, brake-amada-hfe100 2,568,384 PLN (financeCost ÷ 2%) — 7–14× these listings; even allowing a Trumpf/Amada premium the book looks high, but no premium-brand price was found to prove it."
+    },
+    {
+      "key": "capex.press-400t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Polish/EU searches returned only used-machine listings)",
+      "source": "",
+      "date": "",
+      "notes": "Book implied 1,146,600 PLN (financeCost ÷ 2%)."
+    },
+    {
+      "key": "capex.imm-200t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Polish/EU searches returned only used-machine listings)",
+      "source": "",
+      "date": "",
+      "notes": "Only hit: used 1998 BM Biraghi Sintesi 200 t EUR 8,000 (broken controller) — not usable (https://resale.info/pl/arburg-370cmd-cmd/No-164837215). Non-Polish reference in the China research: Haitian International 2025 fleet ASP ≤ 301,732 CNY/unit all tonnages (china-2026-10/research/machines.json). Book implied 504,504 PLN."
+    },
+    {
+      "key": "capex.imm-800t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Polish/EU searches returned only used-machine listings)",
+      "source": "",
+      "date": "",
+      "notes": "Book implied 1,605,240 PLN."
+    },
+    {
+      "key": "capex.hpdc-800t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Polish/EU searches returned only used-machine listings)",
+      "source": "",
+      "date": "",
+      "notes": "Book implied 1,834,560 PLN."
+    },
+    {
+      "key": "capex.sand-cast-line",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Polish/EU searches returned only used-machine listings)",
+      "source": "",
+      "date": "",
+      "notes": "Book implied 573,300 PLN."
+    },
+    {
+      "key": "capex.induction-furnace",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Polish/EU searches returned only used-machine listings)",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "capex.robot-mig-cell",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Polish/EU searches returned only used-machine listings)",
+      "source": "",
+      "date": "",
+      "notes": "UK integrator bands (Phoenix Robotic, single-robot cell £80k–250k) are in uk-2026-10/research/machines-a.json; no Polish source. Book implied 605,405 PLN."
+    },
+    {
+      "key": "finance.nbpRef",
+      "value": 3.75,
+      "unit": "% p.a.",
+      "basis": "regulator decision (as reported): MPC/RPP held the NBP reference rate at 3.75% at the 6–7 Oct 2026 meeting; unchanged since the 25 bp cut effective 5 Mar 2026. Lombard 4.25%, deposit 3.25%, rediscount 3.80%",
+      "source": "https://finwire.pl/artykuly/stopy-procentowe-nbp-pazdziernik-2026-375-decyzja-rpp-rata-kredytu ; https://www.wroclaw.pl/dla-mieszkanca/stopy-procentowe-w-polsce-2026-pazdziernikowa-decyzja-rpp",
+      "date": "2026-10-07",
+      "notes": "Press reports of the NBP communiqué (nbp.pl not opened). Sep 2026 CPI flash 4.0% y/y; the Council described as hawkish; Credit Agricole forecasts +25 bp to 4.00% in 2026. Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "finance.wibor3m",
+      "value": 3.82,
+      "unit": "% p.a.",
+      "basis": "market fixing (GPW Benchmark) as quoted: WIBOR 3M 3.82% on 28 Jul 2026; quarter-start fixing 3.85% (29 Jun 2026, used for Q3 resets); 3.79% on 27 Jul 2026 (money.pl)",
+      "source": "https://www.totalmoney.pl/artykuly/wibor-3m-prognozy-dlugoterminowe-i-aktualny-wibor-3m ; https://www.bs.limanowa.pl/uploads/drive/stopy/2026/Tabela_stawek_WIBOR_WIBID_2026-07-01.pdf",
+      "date": "2026-07-28 (latest found)",
+      "notes": "The September/October 2026 fixing was not found. With the NBP rate unchanged at 3.75% since March, WIBOR 3M has sat at 3.79–3.85% (Jun–Jul 2026). GPW Benchmark will publish WIBOR 3M/6M to 31 Dec 2036 (O/N discontinued 1 Oct 2026); new contracts are moving to POLSTR. Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "finance.machineryLoan",
+      "value": 8.22,
+      "unit": "% p.a. (SME investment loan, midpoint)",
+      "basis": "bank price list: Bank Spółdzielczy Rzemiosła Kraków 'Kredyt inwestycyjny Unia Biznes' (up to 15 yr) = WIBOR 3M + 3.90 to 4.90 pp (tariff from 5 Mar 2026). With WIBOR 3M 3.82%: 7.72%–8.72%, midpoint (7.72 + 8.72) / 2 = 8.22%",
+      "source": "https://bsr.krakow.pl/assets/public/dokumenty/oprocentowanie/77-produkt-kredytowe-wycofane-z-oferty-oddzial-w-debicy-od-5-marca-2026.pdf",
+      "date": "2026-03-05 tariff",
+      "notes": "One cooperative bank's SME list margins (the document title says 'products withdrawn from offer, Dębica branch' — treat as indicative); a tier-1 automotive supplier would borrow below this (not sourced). Leasing: most Polish leases are WIBOR + a fixed lessor margin; one case of a machinery lease loan at WIBOR 1M + 3.8 pp (undated, https://www.prawo.pl/biznes/wibor-kroluje-w-umowach-leasingu,534513.html). NBP Senior Loan Officer Survey Q2 2026: banks eased corporate lending terms incl. lower margins (https://static.nbp.pl/dane/rynek-kredytowy/ASRK_II_2026_Publikacja_PL.pdf) — no level given. Current book: 4% on half the capex (UK library rule) ≈ 2% of capex a year; a Polish cost of debt of ~7.7–8.7% (or ~4.6% for a borrower at WIBOR + ~0.8 pp, unsourced) is above the book's 4%. Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.upperSilesia",
+      "value": 20.12,
+      "unit": "PLN/m²/month (warehouse/industrial headline rent, midpoint)",
+      "basis": "real-estate market note: base rents EUR 3.80–5.40/m²/month; midpoint EUR 4.600 × 4.374 = 20.12 PLN",
+      "source": "https://ceo.com.pl/en/poland-warehouse-sector-rents-demand-and-regional-differences-56298/",
+      "date": "article ~Apr 2026 (search: '~180 days old'; date not shown)",
+      "notes": "Big-box WAREHOUSE / light-industrial headline rents (Colliers-style figures relayed by a business portal), not a dedicated factory rent; service charge excluded; effective rents are lower after incentives (Savills H1 2026: regional effective EUR 2.80–5.70). Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.wroclaw",
+      "value": 18.92,
+      "unit": "PLN/m²/month (warehouse/industrial headline rent, midpoint)",
+      "basis": "real-estate market note: base rents EUR 3.15–5.50/m²/month; midpoint EUR 4.325 × 4.374 = 18.92 PLN",
+      "source": "https://ceo.com.pl/en/poland-warehouse-sector-rents-demand-and-regional-differences-56298/",
+      "date": "article ~Apr 2026 (search: '~180 days old'; date not shown)",
+      "notes": "Big-box WAREHOUSE / light-industrial headline rents (Colliers-style figures relayed by a business portal), not a dedicated factory rent; service charge excluded; effective rents are lower after incentives (Savills H1 2026: regional effective EUR 2.80–5.70). Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.poznan",
+      "value": 21.1,
+      "unit": "PLN/m²/month (warehouse/industrial headline rent, midpoint)",
+      "basis": "real-estate market note: base rents EUR 3.65–6.00/m²/month; midpoint EUR 4.825 × 4.374 = 21.10 PLN",
+      "source": "https://ceo.com.pl/en/poland-warehouse-sector-rents-demand-and-regional-differences-56298/",
+      "date": "article ~Apr 2026 (search: '~180 days old'; date not shown)",
+      "notes": "Big-box WAREHOUSE / light-industrial headline rents (Colliers-style figures relayed by a business portal), not a dedicated factory rent; service charge excluded; effective rents are lower after incentives (Savills H1 2026: regional effective EUR 2.80–5.70). Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.rzeszow",
+      "value": null,
+      "unit": "PLN/m²/month",
+      "basis": "not found in an adviser survey for 2026",
+      "source": "https://www.otodom.pl/pl/oferta/powierzchnia-magazynowa-z-obsluga-w-rzeszowie-rozne-metraze-ID4yXw3",
+      "date": "2026 listings",
+      "notes": "LISTINGS cross-check only: Głogów Małopolski (ul. Chmury) 5,000 m² at EUR 4.04/m² (= 17.67 PLN); Przybyszówka 5,000 m² EUR 20,000/month ≈ EUR 4.00/m² (= 17.50); Jasionka airport 7,500 m² EUR 33,375/month ≈ EUR 4.45/m² (= 19.46); a small 800 m² unit at 35 zł/m² net. Range ≈ 17.5–19.5 PLN/m² for big units."
+    },
+    {
+      "key": "rent.clusterAvg",
+      "value": 20.05,
+      "unit": "PLN/m²/month",
+      "basis": "arithmetic mean of the three sourced cluster midpoints (Rzeszów has listings only): (4.600 + 4.325 + 4.825) / 3 = EUR 4.583 × 4.374 = 20.05 PLN",
+      "source": "https://ceo.com.pl/en/poland-warehouse-sector-rents-demand-and-regional-differences-56298/ ; https://mktgdocs.cbre.com/2299/afd5dde1-5a40-46be-a412-88753ce4fc8b-707339420/CBRE_Poland_Industrial_and_Log.pdf",
+      "date": "2026",
+      "notes": "Cross-check: CBRE Poland Q2 2026 national average headline rent EUR 4.7/m²/month (= 20.56 PLN), prime EUR 5.7 (= 24.93 PLN); Savills H1 2026 headline range EUR 3.60–6.75 (https://pdf.euro.savills.co.uk/poland/offices-and-warehouses/industrial-and-logistics-market-in-poland-h1-2026.pdf). Adding the Rzeszów listing mean (EUR 4.163) as a 4th cluster would give EUR 4.478 = 19.59 PLN. Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "life.machinery",
+      "value": 7.14,
+      "unit": "years (TAX life implied by the statutory straight-line rate)",
+      "basis": "statute: Wykaz rocznych stawek amortyzacyjnych (annex 1 to the PIT/CIT Acts) — 'Obrabiarki do metali' (KŚT group 4, rodzaj 41 as shown in the table) 14% a year; 100 / 14 = 7.14 years",
+      "source": "https://poradnikprzedsiebiorcy.pl/-roczne-stawki-amortyzacyjne-2024 ; https://www.podatki.biz/artykuly/zrozumiec-pit-28-odpisy-amortyzacyjne-dokonywane-metoda-degresywna_53_56965.htm",
+      "date": "rates unchanged in the 2017–2024 tables; no 2026 change found",
+      "notes": "TAX life, not economic life: degressive method allowed (coefficient up to 2.0 for group 3–6 in the first years), and individual/one-off depreciation regimes exist. The UK book uses 13 yr (German AfA table) as its economic-life proxy; Polish tax life is ~half. The KŚT code mapping (rodzaj 41 v 403) was not read off the Act itself. Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    },
+    {
+      "key": "maintenancePct",
+      "value": null,
+      "unit": "% of capex / yr",
+      "basis": "not found in a Polish or EU source (German VDI 2885 covers the method but no figure was returned)",
+      "source": "https://vdi.de/en/home/vdi-standards/details/vdi-2885-standardized-data-for-maintenance-planning-and-determination-of-maintenance-costs-data-and-data-determination",
+      "date": "",
+      "notes": "Book uses 3% of capex (UK worked example)."
+    },
+    {
+      "key": "hours.annual",
+      "value": 6024,
+      "unit": "h/yr (3 × 8 h, Mon–Fri, 2026)",
+      "basis": "2026 Polish full-time calendar: 251 working days / 2,008 h (Labour Code art. 130: 40 h × weeks + 8 h × remaining weekdays − 8 h per holiday falling Mon–Sat; Saturday holidays 15 Aug and 26 Dec give a day off). 251 × 24 h = 6,024 h. Plant-day basis (Mon–Fri less the 8 weekday holidays: 261 − 8 = 253 days, Ordio) gives 253 × 24 = 6,072 h",
+      "source": "https://hrappka.pl/?p=61543 ; https://poradnikprzedsiebiorcy.pl/-czas-pracy ; https://www.ordio.com/pl/tools/kalkulator-dni-roboczych",
+      "date": "calendar year 2026",
+      "notes": "Weekday holidays 2026 (my count from the statutory list): 1 Jan, 6 Jan, 6 Apr (Easter Mon), 1 May, 4 Jun (Corpus Christi), 11 Nov, 24 Dec (holiday from 2025), 25 Dec = 8; 261 weekdays − 8 = 253; − 2 days off for Saturday holidays = 251 (matches the sources). These are calendar hours before downtime/utilisation. Book CNC rows use 4,000 h × 0.8."
+    },
+    {
+      "key": "benchmark.cnc3axis",
+      "value": null,
+      "unit": "PLN/h",
+      "basis": "not found (no 2026 Polish job-shop price list with a PLN/h machining rate was returned)",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "benchmark.cnc5axis",
+      "value": null,
+      "unit": "PLN/h",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "benchmark.imm",
+      "value": null,
+      "unit": "PLN/h",
+      "basis": "not found",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "benchmark.cncLathe.teaching",
+      "value": 28.2,
+      "unit": "PLN/h (machine working-hour cost, model data)",
+      "basis": "university teaching data: Kraków University of Technology (PiOSP1 course data sheet) — CNC centre lathe TR10C1N machine cost kw = 28.20 zł/h working, kp = 10.60 zł/h idle; conventional lathe TUM25 18.59 / 4.72 zł/h",
+      "source": "https://zppw.pk.edu.pl/zppw/A_DO%20PUBLIKACJI/Zajecia%20dydaktyczne/Materialy%20do%20zajec/2018_2019_letni/1_PiOSP1/Pliki/1%20Dane%20do%20projektow/PiOSP1%20-%20Dane%20o%20maszynach.pdf",
+      "date": "academic year 2018/2019",
+      "notes": "Course model data, old, net/gross not stated, not a market selling rate — cross-check only. Current book mach-lathe-cnc 28.93 zł/h. Page not opened: this session's egress proxy blocks direct fetches (WebFetch got ENOTFOUND), so the figure is as quoted by the web-search result for this URL; verify against the page before use."
+    }
+  ],
+  "notes": [
+    "Egress: WebFetch was refused (ENOTFOUND) for every host, so no page was opened; every figure is as the WebSearch result quoted it for the cited URL. Re-read the page before adopting a value.",
+    "35 web searches used (budget reached).",
+    "FX: €1 = 4.374 PLN, $1 = 3.849 PLN (book rates).",
+    "Current-book implied capex = financeCost ÷ 2% (4% on half the capex) — mach-vmc3 282,522; mach-haas-vf2 195,197; mach-lathe-cnc 205,470; mach-mazak-qt200 215,744; mach-vmc5 677,136; mach-dmg-dmu50 605,955; mach-haas-umc500 463,410; mach-drill 143,830; laser-trumpf-3030 1,374,820; brake-trumpf-trubend3100 2,384,928; brake-amada-hfe100 2,568,384; press-400t 1,146,600; imm-200t 504,504; imm-800t 1,605,240; hpdc-800t 1,834,560; sand-cast-line 573,300; robot-mig-cell 605,405 PLN. The book is UK capex × 0.72 × 5.096.",
+    "Evidence v book: a Haas VF-2 class VMC is ~273k–284k PLN at USD/EUR list (book mach-haas-vf2 195k is ~30% low; mach-vmc3 283k agrees); Haas UMC-500 US list = 462k PLN (book 463k agrees). Machine tools are traded at EUR/USD list prices — the 0.72 country factor applied to Polish capital has no source and understates Haas-class capex.",
+    "Finance: book 4% on half the capex v NBP reference 3.75% (held 7 Oct 2026), WIBOR 3M ~3.82% (Jul 2026), SME investment loan WIBOR + 3.9–4.9 pp ≈ 7.7–8.7%.",
+    "Life: book 13 yr (German AfA) v Polish tax rate 14% for metal-working machine tools = 7.1 yr (tax, not economic).",
+    "Rent: big-box warehouse headline rents EUR 4.3–4.8/m²/month midpoints in the three western/southern clusters → cluster average ≈ 20.05 PLN/m²/month (CBRE national average 4.7 EUR = 20.56 PLN); Rzeszów listings ≈ EUR 4.0–4.45.",
+    "Hours: 2026 = 251 working days → 6,024 h for 3 × 8 h Mon–Fri (6,072 h on a 253 plant-day basis) v book 4,000 h for CNC."
+  ]
+}
