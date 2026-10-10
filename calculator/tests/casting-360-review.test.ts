@@ -165,3 +165,29 @@ describe('X17 — a DFM still running is stated, not silently left out', () => {
     expect(text).toMatch(/This is not a clean result/);
   });
 });
+
+describe('X5 / X19 / X20 — DFM texts claim only what the costing holds', () => {
+  const { input, result } = sandCastingResult();
+  const withFix = { ...input, operations: [...input.operations,
+    { operationName: 'Load / clamp / unload — 4 fixturing(s)', machineId: 'mach-haas-vf2', labourId: 'lab-uk-skilled', cycleTimeHr: 0.02,
+      partsPerCycle: 1, oee: 0.8, manning: 0.5, labourTimeHr: 0.02, labourEfficiency: 0.92 }] };
+  const res2 = computeUniversalStack(withFix as never, lib);
+  const setups = { ruleId: 'machining.setup.access-directions', title: 'Features need several setups on a 3-axis machine', severity: 'major',
+    count: 1, faceIds: [1], recommendation: 'Bring features onto fewer faces.', source: { standard: 'x' },
+    costNotModelled: 'The costing prices its OWN fixturing count.', range: { min: 9, max: 9 }, threshold: { value: 2, comparator: '>', unit: 'setups' },
+    worst: { detail: 'reached from 9 directions', measured: { field: 'setups', value: 9, unit: 'setups' } } };
+  const dfm = { grouped: [setups], findings: [setups], featuresExamined: 10, rulesEvaluated: 5, packAvailable: true, limitations: [] };
+  const text = pdfText(() => printPDF(res2, withFix as never, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+    { geometrySource: 'occt', geometricDFM: dfm } as never)).replace(/\n/g, ' ');
+  it('the setups finding states the costing’s count beside its own and which is priced', () => {
+    expect(text).toMatch(/In this costing: 4 fixturing\(s\) are charged/);
+    expect(text).toMatch(/counts 9 direction\(s\)/);
+    expect(text).toMatch(/Check the routing against the holes before quoting/);
+  });
+  it('no unpriced reason claims a price that is not there', () => {
+    const src = readFileSync(new URL('../src/engine/dfm-geometry/cost-impact.ts', import.meta.url), 'utf8');
+    expect(src).not.toMatch(/priced once, in the/);
+    expect(src).not.toMatch(/pocket pass is in the cost either way/);
+    void result;
+  });
+});

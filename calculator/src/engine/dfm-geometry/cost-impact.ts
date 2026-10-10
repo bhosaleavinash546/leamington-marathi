@@ -149,8 +149,9 @@ export const NOT_MODELLED: Record<string, string> = {
     + 'cut. (An earlier version routed this to the hole pricer, which silently returned nothing '
     + 'because a face carries no diameter — a wrong mapping is worse than an honest gap.)',
   'machining.hole.compound-angle':
-    'An off-frame hole is a fixturing of its own on a 3-axis machine; that fixturing is priced once, in the '
-    + '"several setups" finding, rather than again here.',
+    'An off-frame hole is a fixturing of its own on a 3-axis machine. The DFM does not price it (neither here nor in '
+    + 'the "several setups" finding): the costing\u2019s own fixturing count — the "Load / clamp / unload" line and '
+    + 'the fixture NRE — is what is in the price.',
   'machining.hole.intersecting':
     'Cross-hole deburring (tool, brush, thermal or ECM) is not an operation in the machining model, so its '
     + 'time is not derivable here.',
@@ -159,7 +160,8 @@ export const NOT_MODELLED: Record<string, string> = {
     + 'machining cost.',
   'machining.corner.long-reach-cutter':
     'The machining model has no feed derating for cutter reach, so the slower long-series cutter is not '
-    + 'priced; the corner\'s pocket pass is in the cost either way.',
+    + 'priced. On a machined-from-solid part the corner\'s pocket is in the roughing time; on a cast or forged '
+    + 'part the pocket is formed, not cut, and the costing has no pass for it.',
   'moulding.hole.core-pin-slender':
     'A slender core pin costs cycle time (it must cool) and pin breakage; neither is a term in the mould or '
     + 'cycle model, so the delta is not derivable.',

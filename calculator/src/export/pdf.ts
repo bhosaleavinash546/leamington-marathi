@@ -541,6 +541,8 @@ function renderGeometricDFM(
   doc: jsPDF, y: number, g: GeometricDFMMeta | null | undefined,
   money: (n: number) => string,
   amounts?: Record<string, { text: string; basis?: string }> | null, recosted?: boolean, pending?: boolean,
+  /** The fixturings the costing charges ("Load / clamp / unload — N fixturing(s)"), to set beside the setups finding. */
+  costedFixturings?: number | null,
 ): number {
   if (!g && pending) {
     // The stub axle's report left the section out while its job was still running: a reader took that as "no issues".
@@ -620,6 +622,15 @@ function renderGeometricDFM(
     // The header promises each unpriced issue says why — print it.
     const why = (gr as { costNotModelled?: string }).costNotModelled;
     if (why && !(amounts?.[gr.ruleId])) for (const ln of doc.splitTextToSize(`Not priced: ${why}`, CW - 4) as string[]) { doc.text(ln, MG + 2, y); y += 3.1; }
+    // Two counts of setups in one report (knuckle 3 v 4, bracket 9 v 4): say which one is in the price and why they differ.
+    if (gr.ruleId === 'machining.setup.access-directions' && costedFixturings) {
+      const n = (gr as { worst?: { measured?: { value?: number } } }).worst?.measured?.value;
+      for (const ln of doc.splitTextToSize(`In this costing: ${costedFixturings} fixturing(s) are charged, from the routing of the machined `
+        + `faces. This finding counts ${n ?? 'the'} direction(s) the measured holes face. They are different counts; the costing's `
+        + `${costedFixturings} is the one in the price.${n && n > costedFixturings ? ' Check the routing against the holes before quoting.' : ''}`, CW - 4) as string[]) {
+        doc.text(ln, MG + 2, y); y += 3.1;
+      }
+    }
     const src = gr.source.clause ? `${gr.source.standard} - ${gr.source.clause}` : gr.source.standard;
     for (const ln of doc.splitTextToSize(`Source: ${src}`, CW - 4) as string[]) {
       doc.text(ln, MG + 2, y); y += 3.1;
@@ -895,7 +906,11 @@ export function renderShouldCostSections(
   // detail: it is the context that explains why the verification operations in
   // section 4 cost what they do.
   y = renderChecksApplied(doc, y, cadMeta.checks);
-  y = renderGeometricDFM(doc, y, cadMeta.geometricDFM, c, cadMeta.geometricDFMAmounts, cadMeta.geometricDFMRecosted, cadMeta.geometricDFMPending);
+  const fixturings = (() => {
+    const m = input.operations.map(o => /Load \/ clamp \/ unload\s*[—-]\s*(\d+) fixturing/i.exec(o.operationName)).find(Boolean);
+    return m ? Number(m[1]) : null;
+  })();
+  y = renderGeometricDFM(doc, y, cadMeta.geometricDFM, c, cadMeta.geometricDFMAmounts, cadMeta.geometricDFMRecosted, cadMeta.geometricDFMPending, fixturings);
   y = renderFunctionalSafety(doc, y, result, commodityType, cadMeta.functionalSafety, c);
 
   // §3 — Material Detail  (new page)
