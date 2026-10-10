@@ -172,7 +172,9 @@ export const REGIONAL_COST_INDEX: Record<string, { label: string; index: number;
 // ─── FX rates to GBP ─────────────────────────────────────────────────────────
 
 // All values are "price of 1 unit of X in GBP" (X/GBP rate). 2026-09 rates (fawazahmed0/currency-api daily snapshots 2026-06-30 and 2026-09-29 (npm @fawazahmed0/currency-api)).
-export const FX_TO_GBP: Record<string, number> = {
+/** The 29 Sep 2026 FX snapshot. The PCB component catalogue's £ prices were converted at it, so its merge and audit
+ *  keep reading it (re-converting stored observations at the derived FX below moved 261 stored prices by a rounding). */
+export const FX_TO_GBP_TABLE: Record<string, number> = {
   GBP: 1.0000, EUR: 0.8584, USD: 0.7553, CNY: 0.1126, INR: 0.007862,
   MXN: 0.04195, THB: 0.02246, VND: 0.00002911, BRL: 0.1446, KRW: 0.0005562,
   PLN: 0.1962, CZK: 0.03517,
@@ -180,6 +182,12 @@ export const FX_TO_GBP: Record<string, number> = {
   // 2026-10 country expansion (29 Sep 2026 snapshot, scripts/rate-refresh/2026-10-countries.json)
   CAD: 0.5324, JPY: 0.004797, TWD: 0.02372, MYR: 0.1850, IDR: 0.00004193, PHP: 0.01208, SGD: 0.5908, ZAR: 0.04595, EGP: 0.01451, MAD: 0.0783, TND: 0.2544, RSD: 0.007303,
 };
+/** £ per unit of each currency, exact to the country books' own FX (REGIONAL_DATA.fxToGBP is units per £): the display
+ *  used a 4-digit rounding of 1 ÷ that rate, so a China report converted at ¥8.8810/£ while the book is ¥8.88/£ and
+ *  "¥9.23/kg" in the book printed "¥9.24/kg" (demo review 2026-10-10). The table above is only the fallback. */
+export const FX_TO_GBP: Record<string, number> = { ...FX_TO_GBP_TABLE };
+for (const r of Object.values(REGIONAL_DATA)) if (r.fxToGBP > 0 && FX_TO_GBP[r.currency] !== undefined) FX_TO_GBP[r.currency] = 1 / r.fxToGBP;
+
 
 // Canonical display symbol for every supported currency — the single source of
 // truth shared by the UI and every export (PDF/Excel). Kept in step with the
@@ -586,7 +594,7 @@ export function generateInsights(
       category: 'commercial',
       lever: 'assumption',
       title: 'Packaging & logistics are size-based estimates — confirm before acting',
-      finding: `Packaging + logistics at ${pcts.pkg.toFixed(1)}% of total are tool estimates from part size and weight, not quotes. On a low-value part these lines dominate the percentage without being wrong in pounds.`,
+      finding: `Packaging + logistics at ${pcts.pkg.toFixed(1)}% of total are tool estimates from part size and weight, not quotes. On a low-value part these lines dominate the percentage without being wrong in money terms.`,
       impact: 'Low',
       potentialSavingPct: 0,
       actions: [

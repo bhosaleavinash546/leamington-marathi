@@ -44,7 +44,7 @@
  */
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { FX_TO_GBP } from '../src/engine/insights.js';
+import { FX_TO_GBP_TABLE as FX_TO_GBP } from '../src/engine/insights.js'; // the snapshot the catalogue was priced at
 
 type Obs = { distributor: string; qty: number; price: number; currency: string; url: string; date: string };
 type Researched = { mpn: string; family?: string; mfr: string; desc: string; category: string; pkg: string; aecq: boolean;

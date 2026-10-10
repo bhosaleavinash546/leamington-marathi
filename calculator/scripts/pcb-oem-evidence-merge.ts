@@ -15,7 +15,7 @@
  *  4. A distributor-priced entry is never overwritten; an estimate of the same key is replaced (aliases kept).
  */
 import { readFileSync, writeFileSync } from 'node:fs';
-import { FX_TO_GBP } from '../src/engine/insights.js';
+import { FX_TO_GBP_TABLE as FX_TO_GBP } from '../src/engine/insights.js'; // the snapshot the catalogue was priced at
 
 type Claim = { part: string; value: number; currency: string; unit: string; quantityContext: string; year: number; type: string;
   publisher: string; url: string; dateRead: string; confidence: string };

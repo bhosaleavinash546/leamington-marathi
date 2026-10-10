@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs';
 import { priceFromObservations, FRANCHISED, PRICE_HOSTS } from './pcb-catalogue-research-merge.js';
 import { catalogueEntry } from '../server/utils/pcb-price-catalogue.js';
 import { classRange } from '../server/utils/pcb-class-pricing.js';
-import { FX_TO_GBP } from '../src/engine/insights.js';
+import { FX_TO_GBP_TABLE as FX_TO_GBP } from '../src/engine/insights.js'; // the snapshot the catalogue was priced at
 
 type Obs = { distributor: string; qty: number; price: number; currency: string; url: string; date: string; gbp?: number };
 type E = { mpn: string; family?: string; aliases?: string[]; desc: string; category: string; pkg: string; aecq: boolean; confidence: string; source: string;
