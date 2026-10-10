@@ -29,3 +29,13 @@ export function labourRoleId(id: string): string {
 export function labourRoles(lib: RateLibrary): LabourRate[] {
   return lib.labour.filter(l => !isCountryPinnedLabour(l.id));
 }
+
+/**
+ * What a report prints for a labour id: the ROLE, never the library key. `lab-uk-skilled` is the skilled-machinist role
+ * priced in the costed country, but an India report printed "lab-uk-skilled" beside an India rate (casting 360 review,
+ * Oct 2026). Company ids are printed as given.
+ */
+export function labourRoleLabel(id: string): string {
+  const m = /^lab-(?:[a-z]{2}-)?([a-z][a-z-]*)$/.exec(labourRoleId(id));
+  return m ? `${m[1].replace(/-/g, ' ')} (role)` : id;
+}

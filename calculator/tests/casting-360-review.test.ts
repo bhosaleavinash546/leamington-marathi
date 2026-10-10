@@ -81,3 +81,24 @@ describe('X7 / X8 / X9 — cost-reduction texts quote the lines the costing hold
     expect(f!.description).not.toMatch(/shell, filters/);
   });
 });
+
+import * as XLSX from 'xlsx';
+import { exportToExcelBlob } from '../src/export/excel.js';
+
+describe('X14 / X15 — labour is printed by role, and the trace says its source column is in GBP', () => {
+  const { input, result } = sandCastingResult();
+  it('the PDF prints no UK labour key on a costing in India, and labels the recorded £ column', () => {
+    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+    expect(text).not.toMatch(/lab-uk-/);
+    expect(text).toMatch(/foundry \(role\)/);
+    expect(text).toMatch(/as recorded, GBP/);
+  });
+  it('the Excel prints no UK labour key, and lists only the roles the costing used', async () => {
+    const blob = await exportToExcelBlob(result, input, lib, 'INR', 127.1941, null);
+    const wb = XLSX.read(new Uint8Array(await blob.arrayBuffer()));
+    const all = wb.SheetNames.map(n => XLSX.utils.sheet_to_csv(wb.Sheets[n])).join('\n');
+    expect(all).not.toMatch(/lab-uk-/);
+    expect(all).not.toMatch(/ALL AVAILABLE LABOUR RATES/);
+    expect(all).toMatch(/foundry \(role\)/);
+  });
+});

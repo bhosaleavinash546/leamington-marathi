@@ -17,6 +17,7 @@ import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { exportFilename } from './filename.js';
 import { buildPcbaReport, type PcbaAnalysisLike, type PcbaReport } from './pcba-report-data.js';
 import { brandRgb } from '../brand/index.js';
+import { labourRoleLabel } from '../engine/labour-roles.js';
 
 /**
  * CAD-derived provenance + geometry metadata that rides into the should-cost
@@ -1374,11 +1375,11 @@ export function renderShouldCostSections(
   // col widths: 48 + 20 + 12 + 64 + 24 + 14 = 182 ✓
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG },
-    head: [['Field', 'Value', 'Unit', 'Source / Reference', 'Rate ID', 'Conf.']],
+    head: [['Field', 'Value', 'Unit', 'Source / Reference (as recorded, GBP)', 'Rate / role', 'Conf.']],
     // £-denominated values in the report's currency, like every other table (they printed GBP under a £/hr unit).
     body: result.traceability.map(t => t.unit.includes('£')
-      ? [t.field, (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), t.rateSource, t.rateId, t.confidence]
-      : [t.field, t.value.toFixed(4), t.unit, t.rateSource, t.rateId, t.confidence]),
+      ? [t.field, (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), t.rateSource, /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId, t.confidence]
+      : [t.field, t.value.toFixed(4), t.unit, t.rateSource, /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId, t.confidence]),
     theme: 'plain',
     headStyles: { ...TH.headStyles, fontSize: 7.5 },
     bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: { top: 2.5, bottom: 2.5, left: 4, right: 4 } },

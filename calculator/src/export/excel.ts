@@ -1,4 +1,4 @@
-import { labourRoles } from '../engine/labour-roles.js';
+import { labourRoleLabel } from '../engine/labour-roles.js';
 import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
@@ -185,7 +185,7 @@ export async function exportToExcelBlob(
       bench ? '' : pctCell(op.oee),
       bench ? '' : hr6(op.cycleTimeHr / op.oee),
       m(op.processCost),
-      untended ? '— untended' : op.labourId,
+      untended ? '— untended' : labourRoleLabel(op.labourId),
       untended ? '' : lab?.skillLevel ?? '—',
       untended ? '' : m(op.labourRateUsed),
       untended ? 0 : op.manning,
@@ -238,16 +238,13 @@ export async function exportToExcelBlob(
   sheets.push({ name: '4-MachineRates', rows: machRows, cols: Array(14).fill(18) });
 
   // ── Sheet 5: Labour Rates ───────────────────────────────────────────────────
-  const labHdr: string[] = ['Labour ID', 'Region', 'Skill Level', 'Fully Loaded Rate (/hr)', 'Effective Date', 'Source', 'Confidence'];
+  // The roles THIS costing used, priced in its country — printed by role, not by library key; the "all available
+  // labour rates" list (blow, roto, SMT operators on a casting) is not printed (casting 360 review, Oct 2026).
+  const labHdr: string[] = ['Labour role', 'Region', 'Skill Level', 'Fully Loaded Rate (/hr)', 'Effective Date', 'Source', 'Confidence'];
   const labRows: unknown[][] = [labHdr];
   const usedLabIds = new Set(result.operationDetails.filter(o => o.labourTimeHr > 0).map(op => op.labourId));
   for (const lab of library.labour.filter(l => usedLabIds.has(l.id))) {
-    labRows.push([lab.id, lab.region, lab.skillLevel, m(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
-  }
-  labRows.push([], ['ALL AVAILABLE LABOUR RATES IN LIBRARY:']);
-  labRows.push(labHdr);
-  for (const lab of labourRoles(library)) {   // roles, one per job (labour-roles.ts)
-    labRows.push([lab.id, lab.region, lab.skillLevel, m(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
+    labRows.push([labourRoleLabel(lab.id), lab.region, lab.skillLevel, m(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
   }
   sheets.push({ name: '5-LabourRates', rows: labRows, cols: [22, 14, 20, 20, 14, 50, 12] });
 
@@ -256,7 +253,7 @@ export async function exportToExcelBlob(
   const trRows: unknown[][] = [trHdr];
   for (const t of trace) {
     const isMoney = t.unit.includes('£');
-    trRows.push([t.field, isMoney ? m(t.value) : num4(t.value), isMoney ? t.unit.replace('£', sym) : t.unit, t.rateSource, t.rateId, t.confidence]);
+    trRows.push([t.field, isMoney ? m(t.value) : num4(t.value), isMoney ? t.unit.replace('£', sym) : t.unit, t.rateSource, /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId, t.confidence]);
   }
   sheets.push({ name: '6-Traceability', rows: trRows, cols: [40, 14, 10, 70, 22, 12] });
 
