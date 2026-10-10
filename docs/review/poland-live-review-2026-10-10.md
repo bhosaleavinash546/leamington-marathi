@@ -75,4 +75,16 @@ The errors were in the bases, three logic paths and the presentation.
 
 ## 4. Before and after
 
-LIVE_AFTER
+Re-run live after the fixes, same parts, answers and volume, waiting for the DFM to land before export
+(`CV_DFM_WAIT_MS`). All three DFM sections are present (two were empty before).
+
+| Part | Before | After | Why it moved |
+|---|---|---|---|
+| PRCR002 stub axle | zł165.57 ±7.5% | **zł165.57** ±7.5% | No cost change. The index-clause lever no longer fires (metal 9.7% < 40%), the X-ray line reads zł25.48, and the pattern life reads castings. |
+| IM_ECU_Cover | zł4.86 ±11.4% | **zł4.95** ±18.1% | Five years of mould maintenance (+zł0.03). The cavity choice is now 2-up (zł0.8678/part on the programme basis, as the reviewer computed). The band widens because the resin is graded Low. The DFM shows moulding rules (undercut, draft, core-pin depth, sink), not drill reach. |
+| Seat_Locking_Bracket | zł5.35 ±12.4% | **zł5.48** ±12.2% | Five years of die maintenance (+2.4%, the reviewer's zł5.48). The largest re-costed saving is zł0.19; the scrap lever is zł0.05, not zł0.39. |
+
+**Export sweep after the fixes** (same patterns as the country review): £ amounts 0, INR/CNY 0, file names 0, jargon 0.
+The doubled "(PLN x)" brackets are gone; the remaining brackets are ordinary text. "COSTABLE" now sits beside
+"plastic — settled by the resin". §14 lists the held press capital and the UK-derived resin. The cover warning reads
+"Material: price confidence Low — see the material price source".

@@ -52,7 +52,7 @@ export function validateStackInput(
     if (!mat)
       errors.push({ field: 'rawMaterial.materialId', message: `Material '${rm.materialId}' not found in rate library` });
     else if (mat.confidence !== 'High')
-      warnings.push({ field: 'rawMaterial.materialId', message: `Material rate confidence: ${mat.confidence}` });
+      warnings.push({ field: 'rawMaterial.materialId', message: `price confidence ${mat.confidence} — see the material price source` });
 
     if (rm.materialUtilization < 0.3)
       warnings.push({ field: 'rawMaterial.materialUtilization', message: 'Very low utilisation (<30%) — verify strip layout' });

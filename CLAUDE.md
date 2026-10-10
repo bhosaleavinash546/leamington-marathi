@@ -667,6 +667,14 @@ what is true** — nothing here has been compared with a price JLR paid.
   Wielkopolska, Podkarpacie), 3 × 8 h Mon–Fri (6,024 h), ZUS-loaded labour, European market anchors at the book FX,
   Haas EU capex for CNC, other capital HELD (UK × 0.72). Lithuania is GENERATED from Poland (`region-expand.ts`) — re-run
   it after a Poland change. `tests/poland-rate-book.test.ts`.
+  Poland live review (10 Oct 2026, `docs/review/poland-live-review-2026-10-10.md`, `tests/poland-live-review.test.ts`):
+  tool DECISIONS (cavitation, stamping v laser + brake, rubber cavities) rank on the amortisation the costing carries —
+  annual × the TYPED programme years, one year when blank (`amortisationParts`, `smProgrammeParts`) — while tool WEAR
+  sizing keeps the stated 5-year default; mould / die maintenance is charged for every year amortised (`maintenanceYears`);
+  the scrap lever only raises the credit to 30% of prime (`rawMaterial.scrapRecoveryPricePerKgOverride`); the index clause
+  quotes the metal share (`metalShareOf`); an answered RESIN re-queues the DFM job (a moulding never answers the family);
+  a held grade in a book country is Low; money-text drops a book note's "(£…)" bracket and keeps pence on whole-£ amounts;
+  the screen's trace converts notes too (`_inCurText`).
   Country-rates demo review (10 Oct 2026, `docs/review/country-rates-demo-review-2026-10-10.md`): a CN / IN costing reads
   only its own book (`scripts/review-2026-10-10/rate-isolation.ts`). In a non-£ report, money in TEXT (rule bases, rate
   notes, consumables) is converted by `src/export/money-text.ts` (PDF via `hardenPdfText`, Excel per string cell) — never
