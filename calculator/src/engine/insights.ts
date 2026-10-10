@@ -574,9 +574,11 @@ export function generateInsights(
       impact: 'High',
       potentialSavingPct: Math.min(20, saving * 0.7),
       actions: [
-        ...pick.map(c => `${REGIONAL_DATA[c].name}: conversion ~${cut(c)}% below ${REGIONAL_DATA[here].name} (½ labour + ½ machine-hour, country table) — `
-          + 'conversion only — re-cost the part there for the figure'),
-        'Re-cost the part in each candidate with the country picker or the comparison table — that prices materials, energy, tools and logistics too',
+        ...pick.map(c => `${REGIONAL_DATA[c].name}: a quick index of ~${cut(c)}% lower conversion than ${REGIONAL_DATA[here].name} `
+          + '(½ labour + ½ machine-hour ratio) — an index, not a costing'),
+        // the regional comparison re-costs the part in each country; this index disagreed with it on a Poland report
+        // ("India ~62% below" beside a table that showed 79%) — the table is the figure (live review, 10 Oct 2026)
+        'For the figure, use the regional comparison table: it re-costs this part in each country (rates, materials, energy, tools and logistics)',
         'Offset: logistics, quality risk, IP protection, lead time, and working capital',
         'Recommend pilot batch from 2 alternative regions before full transition',
       ],

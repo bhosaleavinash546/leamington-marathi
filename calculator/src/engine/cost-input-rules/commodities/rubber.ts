@@ -145,13 +145,13 @@ const MAX_RUBBER_CAVITIES = 32;
  * fits the platen (each cavity takes 2.5× its footprint with runner and land),
  * capped at 32 — and between those, the count that makes the part cheapest:
  * press and crew time per shot ÷ cavities, plus the tool (base + cavities^0.9)
- * amortised over the year. It was a footprint bucket that capped any small part
+ * amortised over the programme. It was a footprint bucket that capped any small part
  * at 8-up (rubber review, Oct 2026). Without a cycle and volume it returns the
  * platen fit.
  */
 export function cavitiesFor(
   process: RubberProc, areaCm2: number, cycleSec = 0, annualVolume = 0,
-  cost?: { pressPerHrGBP: number; toolGBP: (n: number) => number },
+  cost?: { pressPerHrGBP: number; toolGBP: (n: number) => number; amortParts?: number },
 ): { n: number; basis: string } {
   if (process === 'die_cut') return { n: 8, basis: 'die-cut sheet — multiple parts per stroke' };
   const platen = RUBBER_PLATEN_USABLE_CM2[process] ?? 1500;
@@ -164,13 +164,14 @@ export function cavitiesFor(
   let n = lo; let best = Infinity;
   if (cost) {
     for (let k = lo; k <= fit; k++) {
-      const c = cost.pressPerHrGBP * cycleSec / 3600 / PRESS_OEE / k + cost.toolGBP(k) / annualVolume;
+      // the tool over the parts the costing amortises it over (the programme), not one year
+      const c = cost.pressPerHrGBP * cycleSec / 3600 / PRESS_OEE / k + cost.toolGBP(k) / (cost.amortParts ?? annualVolume);
       if (c < best - 1e-9) { best = c; n = k; }
     }
   }
   return { n, basis: `${n}-up: at least ${lo} to make ${annualVolume.toLocaleString('en-GB')}/yr on one press `
     + `(${Math.round(cycleSec)} s cure, ${PRESS_HOURS_A_YEAR} h × ${PRESS_OEE} OEE), at most ${fit} on the platen; `
-    + (cost ? `${n} is the cheapest — press time ÷ cavities against the tool amortised over the year (£${best.toFixed(3)} a part)` : 'the capacity minimum') };
+    + (cost ? `${n} is the cheapest — press time ÷ cavities against the tool amortised over ${cost.amortParts ? `${cost.amortParts.toLocaleString('en-GB')} parts` : 'the year'} (£${best.toFixed(3)} a part)` : 'the capacity minimum') };
 }
 
 /** Rubber sees low pressure, so tools are softer than a plastics mould. */
@@ -241,6 +242,7 @@ function advise(ctx: RuleContext): { advice: RubAdvice } | { blocked: RuleOutcom
     ? { n: 1, basis: 'one profile through the die' }
     : cavitiesFor(p.process, areaCm2, cureForCav, ctx.annualVolume, {
         pressPerHrGBP: pressRate,
+        amortParts: ctx.annualVolume * (ctx.programmeYears && ctx.programmeYears > 0 ? ctx.programmeYears : 1),   // as the costing amortises it
         toolGBP: (k) => estimateRubberMouldCost({ process: p.process, cavities: k, projectedAreaCm2: areaCm2,
           moldSteel: steelForCav, complexity: rubberComplexity(ctx) }).total,
       });

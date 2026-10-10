@@ -610,7 +610,7 @@ export function stampingPlan(ctx: RuleContext): StampingPlan | null {
     : `${dieType.replace('_', '-')} die, ${st} station(s), ${Math.round(blankAreaCm2)} cm² blank`)
     + `, ${shear} MPa shear — toolmaker build-up`
     + (soft ? `; SOFT TOOLING (${SOFT_TOOL.label}) at ${SOFT_TOOL.costFactor} × the £${Math.round(dieRaw).toLocaleString()} production die — ${dieClassFor(ctx).basis}` : '')
-    + (occt ? `; kernel face-count parametric said £${Math.round(occt).toLocaleString()} (not used)` : '');
+    + (occt ? `; the kernel's face-count parametric (UK basis, not country-adjusted) said £${Math.round(occt).toLocaleString()} (not used)` : '');
   return { pressLine, dieType, stations: st, presses, tonnes: Math.round(tonnes), forceBasis, bolsterMm, bolsterBasis,
     pressId, spm, spmBasis, dieCostGBP: die, dieBasis };
 }
@@ -626,11 +626,15 @@ export const BINDER_PRESSURE_MPA = 2.5;
  */
 export const SOFT_TOOL = { costFactor: 0.35, life: 25_000, label: 'zinc-alloy / soft-steel dies', maxProgrammeParts: 25_000 };
 export const PROGRAMME_YEARS_SM = 5;
+/** The programme in years: the one the engineer typed (RuleContext.programmeYears), else a stated 5. */
+export const smProgrammeYears = (ctx: RuleContext): number => (ctx.programmeYears && ctx.programmeYears > 0 ? ctx.programmeYears : PROGRAMME_YEARS_SM);
+/** Parts the costing amortises the dies over: annual × the TYPED programme years (one year when blank — CAD Apply). */
+export const smProgrammeParts = (ctx: RuleContext): number => Math.max(1, ctx.annualVolume * (ctx.programmeYears && ctx.programmeYears > 0 ? ctx.programmeYears : 1));
 export function dieClassFor(ctx: RuleContext): { soft: boolean; basis: string } {
-  const parts = ctx.annualVolume * PROGRAMME_YEARS_SM;
+  const parts = ctx.annualVolume * smProgrammeYears(ctx);
   return parts <= SOFT_TOOL.maxProgrammeParts
-    ? { soft: true, basis: `${parts.toLocaleString('en-GB')} parts over ${PROGRAMME_YEARS_SM} years — within a soft tool's life` }
-    : { soft: false, basis: `${parts.toLocaleString('en-GB')} parts over ${PROGRAMME_YEARS_SM} years — production steel dies` };
+    ? { soft: true, basis: `${parts.toLocaleString('en-GB')} parts over ${smProgrammeYears(ctx)} years — within a soft tool's life` }
+    : { soft: false, basis: `${parts.toLocaleString('en-GB')} parts over ${smProgrammeYears(ctx)} years — production steel dies` };
 }
 // ── Route: stamping, or laser cutting + press brake ──────────────────────────
 
@@ -694,11 +698,11 @@ export function fabPlan(ctx: RuleContext): FabPlan | null {
   const gas = fam === 'aluminium' ? 9.0 : 1.8;
   const perPart = laserCycleSec / 3600 * (machineRate(FAB.laserId) / oee + gas + labourRate(FAB.laserLabourId) / 0.92)
     + brakeSec / 3600 * (machineRate(brakeId) / oee + labourRate(FAB.brakeLabourId) / 0.92)
-    + fabToolingGBP() / Math.max(1, ctx.annualVolume);
+    + fabToolingGBP() / smProgrammeParts(ctx);   // over the programme, as the costing amortises it
   return { feasible, why, laserCycleSec, bends, brakeId, batch, perPartGBP: Math.round(perPart * 10_000) / 10_000 };
 }
 
-/** Stamping per part on the plan: press (+ blanking) time, crew, die amortised over a year. */
+/** Stamping per part on the plan: press (+ blanking) time, crew, die sets amortised over the programme (as the costing). */
 export function stampingPerPartGBP(ctx: RuleContext, plan: StampingPlan): number {
   const proc = pressProcess(ctx);
   const floor = plan.dieType === 'transfer' ? 3.0 : plan.dieType === 'progressive' ? 0.75 : 1.5;
@@ -712,8 +716,9 @@ export function stampingPerPartGBP(ctx: RuleContext, plan: StampingPlan): number
   const r = advise(ctx);
   const life = dieClassFor(ctx).soft ? SOFT_TOOL.life
     : 'blocked' in r ? 1_000_000 : estimateStampingDieLife({ shearStrengthMPa: r.advice.shearMPa, thicknessMm: r.advice.gauge, dieType: plan.dieType });
-  const sets = Math.max(1, Math.ceil(ctx.annualVolume / life));
-  return Math.round((v + plan.dieCostGBP * sets / Math.max(1, ctx.annualVolume)) * 10_000) / 10_000;
+  const parts = smProgrammeParts(ctx);
+  const sets = Math.max(1, Math.ceil(parts / life));
+  return Math.round((v + plan.dieCostGBP * sets / parts) * 10_000) / 10_000;
 }
 
 /** Operators per press: an automatic coil line ≤ 400 t is tended one to two presses; larger, transfer and tandem lines one a press. */
@@ -745,7 +750,7 @@ export function routeChoice(ctx: RuleContext): RouteChoice | null {
   return { route: chosenFab ? 'fab' : 'stamping', fab, stampGBP: stamp,
     basis: `${ctx.commodity === 'sheet_metal_fab' ? 'fabrication chosen by the engineer; ' : ''}`
       + `at ${ctx.annualVolume.toLocaleString('en-GB')}/yr: stamping £${stamp.toFixed(3)}/part `
-      + `(${plan.dieType.replace('_', '-')} die £${Math.round(plan.dieCostGBP).toLocaleString()} amortised over the year) `
+      + `(${plan.dieType.replace('_', '-')} die £${Math.round(plan.dieCostGBP).toLocaleString()} amortised over ${smProgrammeParts(ctx).toLocaleString('en-GB')} parts) `
       + `vs laser + brake £${fab.perPartGBP.toFixed(3)}/part (${fab.laserCycleSec} s laser, ${fab.bends} bend(s), £${fabToolingGBP()} programming) `
       + `— machine + labour + tooling; material is taken as equal` };
 }
@@ -1286,7 +1291,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => dieClassFor(ctx).soft
         ? decided('sheetMetal.dieMaintenanceFraction', 0, 'rule', 'soft tooling is replaced, not maintained', 0.5)
         : decided('sheetMetal.dieMaintenanceFraction', 0.05, 'rule',
-          'die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10%', 0.5),
+          'die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10%, charged for every year of the amortisation', 0.5),
     },
     {
       id: 'sheetMetal.fabLaserId',

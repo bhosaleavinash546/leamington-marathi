@@ -102,6 +102,8 @@ export interface SheetMetalInputs {
   setup?: { hoursPerChange: number; batchSize: number; setterLabourId: string };
   /** Die maintenance a year (sharpening, springs, inserts) as a fraction of the die cost (typical 0.05–0.10). */
   dieMaintenanceFraction?: number;
+  /** Years the amortisation volume covers (amortisation ÷ annual volume): the die is maintained every one of them. Default 1. */
+  maintenanceYears?: number;
 }
 
 export function getSheetMetalInputSchema(): Record<string, string> {
@@ -394,8 +396,9 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   // Number of die sets needed over the programme life
   const numDieSets = dieLife > 0 ? Math.ceil(inputs.amortizationVolume / dieLife) : 1;
   const tooling: ToolingInput = {
-    // + a year's die maintenance (the amortisation volume is a year's).
-    totalToolingCost: dieCost * numDieSets * (1 + Math.max(0, inputs.dieMaintenanceFraction ?? 0)),
+    // + die maintenance for every year the amortisation volume covers: a 5-year programme carried ONE year's 5% (Poland
+    // live review, 10 Oct 2026 — the seat bracket's headline was 2.4% low).
+    totalToolingCost: dieCost * numDieSets * (1 + Math.max(0, inputs.dieMaintenanceFraction ?? 0) * Math.max(1, inputs.maintenanceYears ?? 1)),
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

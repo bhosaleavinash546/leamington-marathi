@@ -155,7 +155,9 @@ export function computeUniversalStack(
 
     const grossWeight = input.rawMaterial.netWeightKg / input.rawMaterial.materialUtilization;
     const rmGross = grossWeight * mat.pricePerKg;
-    const scrapCredit = input.rawMaterial.lossIsNotScrap ? 0 : (grossWeight - input.rawMaterial.netWeightKg) * mat.scrapRecoveryPricePerKg;
+    const ov = input.rawMaterial.scrapRecoveryPricePerKgOverride;
+    const scrapPrice = ov !== undefined && Number.isFinite(ov) && ov >= 0 ? ov : mat.scrapRecoveryPricePerKg;
+    const scrapCredit = input.rawMaterial.lossIsNotScrap ? 0 : (grossWeight - input.rawMaterial.netWeightKg) * scrapPrice;
     rawMaterialCost = rmGross - scrapCredit;
 
     traceability.push({
@@ -168,9 +170,9 @@ export function computeUniversalStack(
     });
     traceability.push({
       field: 'material.scrapRecoveryPricePerKg',
-      value: mat.scrapRecoveryPricePerKg,
+      value: scrapPrice,
       unit: '£/kg',
-      rateSource: mat.sourceNote,
+      rateSource: scrapPrice !== mat.scrapRecoveryPricePerKg ? 'scrap price set on this costing (not the library grade\'s)' : mat.sourceNote,
       rateId: mat.id,
       confidence: mat.confidence,
     });

@@ -174,6 +174,8 @@ export interface RawMaterialInput {
    * traceability record each.
    */
   energyKwh?: { gas?: number; electricity?: number; basis?: string };
+  /** A scrap credit price, £/kg, in place of the library grade's (a typed scrap price, or a lever's what-if). */
+  scrapRecoveryPricePerKgOverride?: number;
   /**
    * The (gross − net) weight is metal LOST, not scrap to sell — no scrap credit on it. A casting buys
    * good part + melt loss (its gating is remelted in-house); crediting the burnt-off metal at scrap

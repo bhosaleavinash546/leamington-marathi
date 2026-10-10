@@ -55,6 +55,8 @@ export interface InjectionMouldingInputs {
   setup?: { hoursPerChange: number; batchSize: number; setterLabourId: string; purgeKg?: number };
   /** Mould maintenance a year as a fraction of the tool cost (typical 0.02–0.05). */
   mouldMaintenanceFraction?: number;
+  /** Years the amortisation volume covers (amortisation ÷ annual volume): the mould is maintained every one of them. Default 1. */
+  maintenanceYears?: number;
   /** Drying a hygroscopic resin, kWh per kg processed, at a tariff (default the library's). */
   drying?: { kwhPerKg: number; energyPricePerKwh?: number };
 }
@@ -588,9 +590,9 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   const shotsNeeded = inputs.amortizationVolume / inputs.cavities;
   const numMoulds = inputs.mouldLife > 0 ? Math.ceil(shotsNeeded / inputs.mouldLife) : 1;
   const tooling: ToolingInput = {
-    // + a year's mould maintenance (the amortisation volume is a year's).
+    // + mould maintenance for every year the amortisation volume covers (a 5-year programme carried one year's 3%).
     totalToolingCost: baseMouldCost * numMoulds * toleranceFactor * finishFactor.tooling
-      * (1 + Math.max(0, inputs.mouldMaintenanceFraction ?? 0)),
+      * (1 + Math.max(0, inputs.mouldMaintenanceFraction ?? 0) * Math.max(1, inputs.maintenanceYears ?? 1)),
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

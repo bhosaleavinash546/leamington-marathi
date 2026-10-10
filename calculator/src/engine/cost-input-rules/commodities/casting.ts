@@ -460,7 +460,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
             `${r.advice.subtype} toolmaker shop model: ${est.detail.labourHours.toLocaleString()} toolroom hours `
             + `+ steel + bought-outs from a ${Math.round(area)} cm² parting footprint${imps > 1 ? ` × ${imps} impressions on the plate` : ''}, ${complexity} `
             + `(${under} undercut face(s) ≈ ${slides} slide(s)${r.advice.subtype === 'sand' || r.advice.subtype === 'investment' ? `, ${cores} core box(es)` : ''})`
-            + (kernel != null ? `; kernel face-count parametric said £${Math.round(kernel).toLocaleString()} (not used)` : '')
+            + (kernel != null ? `; the kernel's face-count parametric (UK basis, not country-adjusted) said £${Math.round(kernel).toLocaleString()} (not used)` : '')
             + ' — a quotation overrides this', 0.6);
         }
         if (pick[r.advice.subtype] != null) {

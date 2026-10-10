@@ -19,7 +19,7 @@ SHEET METAL COST INPUT RULES:
   pitchMm=361  [blank 336 mm + 25 mm web (max(3, 2 × gauge)) — deterministic, use verbatim]
   stripWidthMm=301  [blank 252 mm + 2 × 25 mm edge margin — deterministic, use verbatim]
   strokesPerMin=32  [min(feed 18 m/min ÷ 361 mm pitch, press-400t max 40 SPM), de-rated for 4 bends — deterministic, use verbatim]
-  dieCostGBP=66555  [progressive die, 4 station(s), 847 cm² blank, 170 MPa shear — toolmaker build-up; kernel face-count parametric said £92,300 (not used) — deterministic, use verbatim]
+  dieCostGBP=66555  [progressive die, 4 station(s), 847 cm² blank, 170 MPa shear — toolmaker build-up; the kernel's face-count parametric (UK basis, not country-adjusted) said £92,300 (not used) — deterministic, use verbatim]
   dieLife=1050000  [170 MPa shear at 12.25 mm on a progressive die — deterministic, use verbatim]
   dieType=progressive  [coil-fed progressive die, 4 stations — deterministic, use verbatim]
   process=Laser Cutting  [high volume: laser produces clean dross-free edge on stainless/aluminium — deterministic, use verbatim]
@@ -31,7 +31,7 @@ SHEET METAL COST INPUT RULES:
   rejectRate=0.015  [press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — deterministic, use verbatim]
   setupHoursPerChange=1  [1 h to change a coil-fed die on a press-400t (engineering-typical) — deterministic, use verbatim]
   batchSize=5000  [100,000/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch — deterministic, use verbatim]
-  dieMaintenanceFraction=0.05  [die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10% — deterministic, use verbatim]
+  dieMaintenanceFraction=0.05  [die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10%, charged for every year of the amortisation — deterministic, use verbatim]
 
 ### context: degraded
 SHEET METAL COST INPUT RULES:
@@ -60,4 +60,4 @@ SHEET METAL COST INPUT RULES:
   rejectRate=0.015  [press-shop scrap (start-up, coil ends, splits), engineering-typical 1–2% — deterministic, use verbatim]
   setupHoursPerChange=1  [no press plan — 1 h a die change — deterministic, use verbatim]
   batchSize=5000  [100,000/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch — deterministic, use verbatim]
-  dieMaintenanceFraction=0.05  [die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10% — deterministic, use verbatim]
+  dieMaintenanceFraction=0.05  [die maintenance (sharpening, springs, inserts) 5% of the die a year — engineering-typical 5–10%, charged for every year of the amortisation — deterministic, use verbatim]

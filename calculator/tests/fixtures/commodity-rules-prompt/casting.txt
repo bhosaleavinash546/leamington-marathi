@@ -11,7 +11,7 @@ CASTING COST INPUT RULES:
   subtype=gravity  [gravity: medium-volume aluminium — gravity die casting gives denser, heat-treatable (T6) structure than HPDC for wheels/knuckles/pistons, with cheaper tooling than a pressure die [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
   yieldFraction=0.6  [gravity aluminium yield band 0.5–0.7, midpoint (feeding scales with the alloy's shrinkage) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
-  dieMouldCostGBP=13627  [gravity toolmaker shop model: 194 toolroom hours + steel + bought-outs from a 288 cm² parting footprint, moderate (2 undercut face(s) ≈ 1 slide(s)); kernel face-count parametric said £26,400 (not used) — a quotation overrides this — deterministic, use verbatim]
+  dieMouldCostGBP=13627  [gravity toolmaker shop model: 194 toolroom hours + steel + bought-outs from a 288 cm² parting footprint, moderate (2 undercut face(s) ≈ 1 slide(s)); the kernel's face-count parametric (UK basis, not country-adjusted) said £26,400 (not used) — a quotation overrides this — deterministic, use verbatim]
   dieMouldLife=50000  [gravity tool life band — deterministic, use verbatim]
   cycleTimeSandGravHr=0.08  [gravity cycle band — deterministic, use verbatim]
   labourId=lab-uk-foundry  [foundry operative on the moulding / die-casting line and at the fettling bench — deterministic, use verbatim]

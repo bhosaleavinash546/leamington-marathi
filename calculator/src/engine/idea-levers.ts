@@ -36,13 +36,22 @@ const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: Part
     if (next <= u) return null;
     return { next: { ...input, rawMaterial: { ...input.rawMaterial, materialUtilization: next } }, basis: `material utilisation ${(u * 100).toFixed(0)}% → ${(next * 100).toFixed(0)}% (10-20% regrind blend)` };
   },
-  'Scrap Revenue Recovery at Index Prices': (input) => {
-    // Credit the scrap fraction at 30% of prime: model as improved utilisation-equivalent.
-    const u = input.rawMaterial.materialUtilization;
-    const scrapFrac = 1 - u;
-    const next = Math.min(0.99, u + scrapFrac * 0.30);
-    if (next <= u) return null;
-    return { next: { ...input, rawMaterial: { ...input.rawMaterial, materialUtilization: next } }, basis: `${(scrapFrac * 100).toFixed(0)}% scrap credited at 30% of prime price (utilisation-equivalent ${(u * 100).toFixed(0)}% → ${(next * 100).toFixed(0)}%)` };
+  'Scrap Revenue Recovery at Index Prices': (input, result) => {
+    // Raise the scrap CREDIT to 30% of prime. The costing already credits the scrap at its own recovery price, so the
+    // lever is only the gap between that price and 30% of prime, on the scrap the part makes. It was modelled as better
+    // utilisation — buying less metal AND still crediting the scrap: a Poland stamping showed zł0.39 for a lever worth
+    // ~zł0.05 (live review, 10 Oct 2026).
+    const rm = input.rawMaterial;
+    if (rm.lossIsNotScrap || rm.directCost !== undefined || !(rm.materialUtilization > 0 && rm.materialUtilization < 1)) return null;
+    const tr = (f: string) => result.traceability.find(t => t.field === f)?.value;
+    const price = tr('material.pricePerKg'), scrap = tr('material.scrapRecoveryPricePerKg') ?? 0;
+    if (!(price && price > 0)) return null;
+    const target = 0.30 * price;
+    const scrapKg = rm.netWeightKg / rm.materialUtilization - rm.netWeightKg;
+    const gain = scrapKg * (target - scrap);
+    if (!(gain > 1e-6)) return null;
+    return { next: { ...input, rawMaterial: { ...rm, scrapRecoveryPricePerKgOverride: target } },
+      basis: `${scrapKg.toFixed(3)} kg of scrap a part credited at 30% of prime (£${target.toFixed(3)}/kg) instead of the costed £${scrap.toFixed(3)}/kg` };
   },
   'Attack the Bottleneck': (input, result) => {
     const ops = result.operationDetails ?? [];
@@ -288,12 +297,15 @@ export function generateIdeaLevers(
     });
   }
 
-  if (matPct > 40) {
+  // Index only what an index moves: the metal / resin, not the cores, heat treatment, NDT and tool wear the material
+  // bucket also carries ("material at 45.3%" on a stub axle whose metal was 9.7% — Poland live review, 10 Oct 2026).
+  const indexPct = metalShareOf(result, input) * 100;
+  if (indexPct > 40) {
     out.push({
       category: 'commercial', lever: 'sourcing',
       title: 'Raw-Material Price Indexation Clause',
-      description: `With material at ${matPct.toFixed(1)}% of cost, the quote embeds the supplier's hedge against metal/resin volatility. An index-linked clause removes that risk premium from the piece price.`,
-      expectedSavingPct: Math.min(3, matPct * 0.05),
+      description: `With the metal / resin itself at ${indexPct.toFixed(1)}% of cost, the quote embeds the supplier's hedge against metal/resin volatility. An index-linked clause removes that risk premium from the piece price.`,
+      expectedSavingPct: Math.min(3, indexPct * 0.05),
       technicalJustification: 'Indexing the material content to LME/CRU/resin indices with quarterly true-up removes the 2–5% volatility contingency suppliers price in, and makes future raw-material moves transparent in both directions.',
       risk: 'Low', timeframe: 'Quick Win',
     });

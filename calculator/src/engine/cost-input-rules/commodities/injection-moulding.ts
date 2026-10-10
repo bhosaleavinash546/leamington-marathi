@@ -42,6 +42,8 @@ const MAX_CLAMP_TONNES = 3500;
 /** A typical automotive programme, years. Turns an annual volume into a tool life. */
 const PROGRAMME_YEARS = 5;
 /** The programme the cavitation and mould steel are chosen over: the engineer's programme life, else 5 years (stated). */
+/** Parts the tooling is amortised over on the costing: annual × the TYPED programme years (one year when blank). */
+export const amortisationParts = (ctx: RuleContext): number => Math.max(1, ctx.annualVolume * (ctx.programmeYears && ctx.programmeYears > 0 ? ctx.programmeYears : 1));
 const programmeYearsOf = (ctx: RuleContext): number => (ctx.programmeYears && ctx.programmeYears > 0 ? ctx.programmeYears : PROGRAMME_YEARS);
 
 /**
@@ -85,6 +87,10 @@ export function cavitationChoiceFor(ctx: RuleContext, resin: ResinFacts): Cavita
     sideActionsLifters: sideActions(ctx).n,
     maxClampTonnes: MAX_CLAMP_TONNES,
     programmeYears: programmeYearsOf(ctx),
+    // rank on the tool's amortisation as the COSTING carries it (CAD Apply writes *-amort = annual × the typed programme
+    // years, one year when blank): ranked over one year on a 5-year programme it weighed the NRE 5× and printed
+    // "£x/part NRE" against a tooling bucket a fifth of it (Poland review, 10 Oct 2026)
+    amortizationVolume: amortisationParts(ctx),
     runnerSystem: runner.system,
     dropsPerCavity: runner.dropsPerCavity,
     runnerAreaFactor: runner.system === 'cold' ? COLD_RUNNER_AREA_FACTOR : 1,
@@ -586,7 +592,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           `toolmaker build-up: ${r.advice.cavities}-cavity ${r.advice.steel.cls} tool, ${r.advice.areaCm2} cm²/cavity, `
           + `${r.advice.slides} slide(s), ${rc.system} runner`
           + `${rc.system === 'hot' ? ` (${rc.dropsPerCavity * r.advice.cavities} drop(s))` : ''}`
-          + (occt ? `; kernel face-count parametric said £${Math.round(occt).toLocaleString()} (not used)` : ''),
+          + (occt ? `; the kernel's face-count parametric (UK basis, not country-adjusted) said £${Math.round(occt).toLocaleString()} (not used)` : ''),
           0.65);
       },
     },
@@ -686,7 +692,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       fieldId: 'imm-maint',
       label: 'mouldMaintenanceFraction',
       evaluate: () => decided('injectionMoulding.mouldMaintenanceFraction', 0.03, 'rule',
-        'mould maintenance 3% of the tool a year (engineering-typical 2–5%), on the year the tool is amortised over', 0.5),
+        'mould maintenance 3% of the tool a year (engineering-typical 2–5%), charged for every year of the amortisation (5 years on a 5-year programme)', 0.5),
     },
     {
       id: 'injectionMoulding.dryingKwhPerKg',
