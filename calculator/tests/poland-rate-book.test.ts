@@ -92,6 +92,34 @@ describe('machines: the 3 × 8 h operating model; EU capex for CNC', () => {
   });
 });
 
+describe('round 2 (10 Oct 2026): what round 1 left held', () => {
+  it('primary cast aluminium follows AlSi7Mg (LME + the foundry-alloy premium), never below it', () => {
+    expect(pln(mat('mat-lm25').pricePerKg)).toBeCloseTo(16.35, 1);
+    for (const id of ['mat-a357', 'mat-alsi10mg', 'mat-silafont36']) expect(pln(mat(id).pricePerKg), id).toBeGreaterThanOrEqual(16.34);
+  });
+  it('no forging stock below its billet, no rolled sheet below the European average, no blend below its resins', () => {
+    expect(pln(mat('mat-al6082-forge').pricePerKg)).toBeGreaterThanOrEqual(16.74);
+    expect(pln(mat('mat-aa5754-sheet').pricePerKg)).toBeGreaterThanOrEqual(18.19);
+    expect(pln(mat('mat-pc-abs').pricePerKg)).toBeGreaterThanOrEqual(10.48);
+    expect(pln(mat('mat-cf-dry-3k').pricePerKg)).toBeGreaterThanOrEqual(130.8);
+  });
+  it('POM at the European index; HRPO and 409L derived and labelled', () => {
+    expect(pln(mat('mat-pom').pricePerKg)).toBeCloseTo(11.70, 1);
+    expect(mat('mat-hrpo').sourceNote).toMatch(/DERIVED/);
+    expect(pln(mat('mat-ss409l-sheet').pricePerKg)).toBeCloseTo(6.48, 1);
+  });
+  it('press brakes on the TruBend 3100 EU price, not the UK build-up (~4× higher)', () => {
+    const b = mach('brake-trumpf-trubend3100');
+    expect(b.sourceNote).toMatch(/TruBend 3100/);
+    expect(b.sourceNote).not.toMatch(/HELD/);
+    expect(mach('brake-amada-hfe100').sourceNote).toMatch(/press-brake-eu/);
+  });
+  it('the overhead / packaging / logistics multipliers stay held — no source supported a change', () => {
+    expect(REGIONAL_DATA.PL.overheadMultiplier).toBe(0.85);
+    expect(REGIONAL_DATA.PL.logisticsMultiplier).toBe(1.20);
+  });
+});
+
 describe('the register', () => {
   const reg = readFileSync('scripts/rate-refresh/poland-2026-10/register.csv', 'utf8').trim().split('\n').slice(1);
   it('every library material and machine is in it once, with a decision', () => {

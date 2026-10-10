@@ -190,13 +190,51 @@ material £/kg equal the Poland book (0 leaks).
 - Lithuania is generated as Poland × a wage ratio (`2026-10-countries.json`); `region-expand.ts` was re-run, so LT moves
   with Poland (skilled £11.21 → £12.27/h, machine factor 0.72 → 0.56).
 
-## 8. Open — the next research round
+## 8. Round 2 (10 Oct 2026) — what round 1 left held
 
-1. **Capex for presses, injection-moulding and die-casting machines, sand lines, lasers, robot cells** — held at UK × 0.72,
-   likely low for imported plant.
-2. **Compounds:** PA66-GF30, PA6-GF30, PP-GF30 (held — the ECU cover's resin is still UK × factor).
-3. **A current DIN226 / ADC12 print** (January is the latest public figure) and an A356 premium.
-4. **Alloy bar** (41Cr4, 42CrMo4, 20MnCr5, 100Cr6) and stainless bar from a Polish stockholder or mill extras.
-5. **Gas fixed charges** and the 2026 PSG / Tauron / Enea network tariffs; the accident-insurance rate for automotive /
-   metal products; a sickness-absence rate.
-6. Verify the headline figures on the source pages (the fetches were blocked this round).
+Six more researchers (`poland-2026-10/research/r2-*.json`, rules as round 1) went after the 257 grades and 208 machines
+still at UK × factor, the overhead / packaging / logistics multipliers and bought-in services. Result: **174 grades
+re-priced (was 142), 262 held; 11 machines on Polish / EU capex (was 6).**
+
+| Item | Round 1 | Round 2 | Evidence |
+|---|---|---|---|
+| Primary cast Al (LM25 / A356, Silafont …) | zł15.08 (P1020 floor) | **zł16.35** | LME + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (May 2026) |
+| Al sheet 5754 / 6016 / 3003 | zł16.80 / 17.66 / 15.13 | **≥ zł18.20** (floor) | Novelis Europe average selling price, FY to Mar 2026 — a floor, not a price |
+| Al forging stock 6082 / 6061 | zł16.40 / 16.90 | **≥ zł16.75** (floor) | delivered 6063 billet — the stock was below its own billet |
+| POM | zł10.13 | **zł11.70** | European index (businessanalytiq, Jul 2026); a Polish offer list agrees |
+| PC/ABS | zł9.49 | **zł10.49** (floor) | its own resin content (0.7 PC + 0.3 ABS) |
+| Carbon fabric 3K | zł124.57 | **zł130.87** (floor) | carbon fibre $34/kg (IMARC Germany) — fabric below its fibre |
+| HRPO | zł3.81 | **zł3.65** | HRC + an undated pickling extra €90/t — DERIVED, Low |
+| 409L / 441 sheet | zł6.39 / 7.08 | **zł6.48 / 7.19** | Aperam 1.4512 surcharge + base as 304 — DERIVED, Low |
+| Press brakes (TruBend 3100 …) | zł187.10/h (capital held) | **zł58.56/h** | a NEW TruBend 3100 offered at €136k (Jul 2026) = zł595k; the UK book's build-up (a "Target £/hr" shop rate) implied ~4× that — Low |
+
+**Found but not used** (written down so nobody re-searches it):
+- **Aluminium extrusion lines:** Vimetco's 7-inch Presezzi line was €10 M (zł43.7 M) against the zł14.7 M the book implies, so
+  the book is 2–3× low. It was NOT applied: grouped machines depreciate over the book's 7.14-year life, which is the tax
+  life for metal-cutting tools, and no Polish life for an extrusion press was sourced.
+- **Sand line:** Odlewnie Polskie's €8.86 M is a whole foundry package with melting, not the library's moulding unit.
+- **SMT line:** Manncorp's $270k is a lower bound.
+- **Injection-moulding machines:** Haitian's average selling price (zł164k) averages every clamp size and was not used.
+- **AZ91D:** about zł10–11 from market-research trackers against the book's zł19.3 — too weak to set a price.
+- **Grain-oriented electrical steel:** the EU safeguard minimum import price zł12.25–14.87 agrees with the book.
+- **Alloy bar:** surcharges only (42CrMo4 €140/t, 18CrNiMo7-6 €358/t, scrap €253/t), no base price. The UK book's alloy
+  bars contradict each other: 4140 zł5.98 v 42CrMo4 zł7.96 for one grade, and 4340 below 4130. That is a UK-book fix
+  for the next refresh.
+- **Overhead / packaging / logistics multipliers (0.85 / 0.90 / 1.20):** no source supported a change, so they are held.
+  Polish road freight is about half a Western lane per km (Warsaw–Duisburg €1.45/km v Duisburg–Lille €2.58/km), so the
+  1.20 logistics factor holds only if Polish suppliers ship much farther. It is flagged, not changed.
+- **Services:** only job-shop price lists were found (powder coat ~zł50/m², sandblast ~zł51/m²). Heat treatment and NDT
+  still follow the Poland book's labour and machine rates.
+
+The six review parts do not use any round-2 grade or machine, so their costs are unchanged (§6).
+
+## 9. Open — the next research round
+
+1. **Injection-moulding, die-casting, stamping-press, lathe and casting-line capex by size** — still held at UK × 0.72.
+   Three Polish EU-funded tenders were found (an IMM ≥ 200 t, a profile line, a powder line); their award notices need a
+   browser.
+2. **A per-machine life** for presses and extrusion lines, so the extrusion evidence can be applied.
+3. **Compounds:** PA66-GF30, PA6-GF30, PP-GF30 — no market price in two rounds (the ECU cover's resin is still UK × factor).
+4. **A current DIN226 / ADC12 print** (January is still the latest), alloy and stainless bar base prices, NO electrical steel.
+5. **Logistics:** settle the 1.20 multiplier against lane distances; gas fixed charges; accident-insurance rate; sickness rate.
+6. Verify the headline figures on the source pages: every fetch was blocked in both rounds.

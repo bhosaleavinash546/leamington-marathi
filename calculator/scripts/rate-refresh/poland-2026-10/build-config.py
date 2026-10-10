@@ -18,7 +18,9 @@ ex-works or in-warehouse Rotterdam, and the family says so.
 import json, os
 HERE = os.path.dirname(os.path.abspath(__file__))
 R = {}
-for f in ['labour-energy', 'machines', 'materials-ferrous', 'materials-nonferrous', 'materials-polymer']:
+for f in ['labour-energy', 'machines', 'materials-ferrous', 'materials-nonferrous', 'materials-polymer',
+          # round 2 (10 Oct 2026): what round 1 left held
+          'r2-machines-forming', 'r2-machines-plastics', 'r2-materials-polymer', 'r2-materials-nonferrous', 'r2-materials-ferrous', 'r2-overhead-logistics-services']:
     for it in json.load(open(os.path.join(HERE, 'research', f + '.json')))['items']:
         R[it['key']] = it
 # ladder bases are the FROZEN UK snapshot (the generator reads the same file)
@@ -53,6 +55,10 @@ fam('HR structural', v('ferrous.anchor.hrc'), 'NW Europe HRC €745/t ex-works (
 fam('Coated sheet', v('ferrous.anchor.hdg'), 'NW Europe HDG €850–870/t ex-works (13 Sep 2026, as relayed by Tacto) = zł3.76/kg × the book\'s premium over DC01 GI',
     [src('ferrous.anchor.hdg')], 'ladder', ['mat-dc01-gi', 'mat-dc03-ga', 'mat-dc01-ze', 'mat-znni-eg', 'mat-zm-coated', 'mat-tinplate-etp'],
     base=UK['mat-dc01-gi'], floor_at_anchor=True)
+fam('HR pickled & oiled', v('ferrous.anchor.hrpo'), 'HRC €745/t (Fastmarkets N. Europe, 6 Oct 2026) + a German service-centre pickling extra ~€90/t (undated) = €835/t = zł3.65/kg — DERIVED',
+    [src('ferrous.anchor.hrpo')], 'direct', ['mat-hrpo'])
+fam('409L / 441 ferritic sheet', v('ferrous.stainless.409L_CR'), 'Aperam Jul 2026 1.4512 surcharge €919/t + an effective base equal to 304\'s (as the 430 line) = zł6.48/kg — DERIVED; 441 at the book\'s premium over 409L',
+    [src('ferrous.stainless.409L_CR')], 'ladder', ['mat-ss409l-sheet', 'mat-ss441-sheet'], base=UK['mat-ss409l-sheet'])
 C45 = v('ferrous.bar.C45')
 fam('C45 medium-carbon bar', C45, 'C45 round bar zł3.17/kg net (24metal.com Polish stockholder list, read 10 Oct 2026; the page is undated)', [src('ferrous.bar.C45')], 'direct',
     ['mat-steel1045', 'mat-steel-c45', 'mat-en8'])
@@ -95,10 +101,19 @@ ADC12, P1020, CU = v('nonferrous.al.adc12'), v('nonferrous.al.p1020'), v('nonfer
 fam('Secondary cast aluminium (ingot)', ADC12, 'Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = zł10.85/kg — the latest public print is 23 Jan 2026 (STALE; the Rotterdam premium has risen since) × the book\'s premium over ADC12',
     [src('nonferrous.al.adc12')], 'ladder', ['mat-adc12', 'mat-a380', 'mat-a413', 'mat-a319', 'mat-lm4', 'mat-en-ac-46200'], base=UK['mat-adc12'])
 fam('Secondary ADC12', ADC12, 'DIN226 zł10.85 (Jan 2026, stale)', [src('nonferrous.al.adc12')], 'direct', ['mat-adc12-secondary'])
-fam('Primary-based cast aluminium (floor)', P1020, f'P1020 = LME $3,248 (28 Sep) + Rotterdam duty-paid premium $510–530 (15 Sep) = zł{P1020}/kg; a primary foundry alloy is never below the primary metal (A356 premium not found)',
-    [src('nonferrous.al.p1020'), src('nonferrous.al.dutyPaidPremium')], 'floor',
+A356 = v('nonferrous.al.alsi7mg')
+fam('Primary-based cast aluminium', A356, f'AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł{A356}/kg × the book\'s premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł{P1020})',
+    [src('nonferrous.al.alsi7mg'), src('nonferrous.al.a356_premium')], 'ladder',
     ['mat-lm25', 'mat-a365', 'mat-alsi10mg', 'mat-a390', 'mat-a357', 'mat-lm6', 'mat-almg5-cast', 'mat-a206', 'mat-en-ac-45300', 'mat-lm13', 'mat-aural5',
-     'mat-silafont36', 'mat-castasil37', 'mat-magsimal59', 'mat-al-hpdc-lowco2', 'mat-htf-gigacast'], confidence='Medium')
+     'mat-silafont36', 'mat-castasil37', 'mat-magsimal59', 'mat-al-hpdc-lowco2', 'mat-htf-gigacast'], base=UK['mat-lm25'], floor_at_anchor=True)
+BILLET = v('nonferrous.al.billet6063')
+fam('Aluminium forging stock (floor)', BILLET, f'Delivered 6063 billet zł{BILLET}/kg (LME + DDP North Germany billet premium) — forging stock is never below the billet it is cut from (the book\'s 6082 / 6061 stock sat below it)',
+    [src('nonferrous.al.billet6063')], 'floor', ['mat-al6061-forge', 'mat-al6082-forge', 'mat-al2014-forge', 'mat-al7075-forge', 'mat-al2618-forge', 'mat-al7050-forge'])
+FRP = v('nonferrous.al.frp_europe_asp')
+fam('Aluminium sheet and plate (floor)', FRP, f'Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł{FRP}/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder\'s single-sheet 5754 price zł29.18 is a retail ceiling',
+    [src('nonferrous.al.frp_europe_asp'), src('nonferrous.al.sheet_5754')], 'floor',
+    ['mat-aa5182', 'mat-aa5052', 'mat-aa5083', 'mat-aa6082-sheet', 'mat-aa5754-sheet', 'mat-aa6061-sheet', 'mat-aa6063-sheet', 'mat-aa3003-sheet', 'mat-al-busbar',
+     'mat-aa6016-t4', 'mat-aa6111-t4', 'mat-aa7075-t6', 'mat-aa1050-sheet'])
 fam('ETP copper bar / sheet (floor)', CU, 'LME copper $14,740 (25 Sep 2026) + Aurubis 2026 cathode premium $315 = zł57.95/kg delivered — the book\'s bar and sheet zł56.86 were below the copper they contain',
     [src('nonferrous.cu.cathode_delivered'), src('nonferrous.cu.cathode_premium')], 'floor', ['mat-c101-bar', 'mat-c110-copper', 'mat-cu-hairpin'], confidence='Medium')
 fam('Free-machining / forging brass rod (floor)', v('nonferrous.brass.CW614N_rod'), 'Westmetall MS 58 metal basis €10.99/kg (9 Sep 2026) = zł48.07/kg — metal value before fabrication',
@@ -137,18 +152,23 @@ pfam('PBT', 'polymer.pbt', ['mat-pbt'], 'mat-pa6', f'PBT zł14.24/kg ex-VAT ({BA
 pfam('PET family', 'polymer.pet_bottle', ['mat-pet-bg', 'mat-pet-preform', 'mat-apet-tf'], 'mat-pet-bg', f'PET bottle grade zł4.97/kg ex-VAT ({BAQ}, Sep 2026) × the book\'s premium over PET bottle grade')
 pfam('PMMA family', 'polymer.pmma', ['mat-pmma', 'mat-pmma-ext-sheet', 'mat-pmma-tf'], 'mat-pmma', f'PMMA zł14.20/kg ex-VAT ({BAQ}, Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book\'s premium over PMMA')
 pfam('PEEK family', 'polymer.peek', ['mat-peek', 'mat-peek-ext'], 'mat-peek', 'PEEK ≈ zł346.5/kg — Victrex FY2026 Q3 average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin)', confidence='Low')
+pfam('POM', 'polymer.pom', ['mat-pom', 'mat-pom-rod'], 'mat-pom', f'POM zł11.70/kg ex-VAT ({BAQ}, Jul 2026; a Polish offer list zł11.65 agrees) × the book\'s premium over POM')
+PCABS = 0.7 * v('polymer.pc') + 0.3 * v('polymer.abs')
+fam('PC/ABS (floor)', PCABS, f'Resin content 0.7 × PC zł{v("polymer.pc")} + 0.3 × ABS zł{v("polymer.abs")} = zł{PCABS:.2f}/kg — the book\'s PC/ABS zł9.49 sat below its own resins',
+    [src('polymer.pc'), src('polymer.abs')], 'floor', ['mat-pc-abs'])
+fam('Carbon fabric (floor)', v('composite.cf_t700_12k'), 'Carbon fibre (12K, generic) $34/kg (IMARC Germany, Mar 2026) = zł130.87/kg — a woven fabric is never below the fibre it is woven from',
+    [src('composite.cf_t700_12k')], 'floor', ['mat-cf-dry-3k'])
 fam('Natural rubber (raw)', v('rubber.nr'), 'TSR20 benchmark zł9.97/kg (Trading Economics, 9 Oct 2026) — FOB Asia, freight to Poland NOT added; for the book\'s raw NR SMR20 line; compounds held',
     [src('rubber.nr')], 'direct', ['mat-nr'])
 
 held = {
-    'HRPO, alloy engineering bar (41Cr4, 42CrMo4, 20MnCr5, 100Cr6, Ni-Cr-Mo), bearing steel': 'No dated Polish / European price found — held',
+    'alloy engineering bar (41Cr4, 42CrMo4, 20MnCr5, 100Cr6, Ni-Cr-Mo), bearing steel': 'No dated Polish / European price found — held',
     'stainless bar (304, 316L, 303, martensitic, PH, duplex), 409L / 441': 'Not found (alloy surcharges only) — held',
     'electrical steel (NO / GO / CoFe / NiFe / amorphous)': 'Only a generic German index (grade not stated) — held',
     'wrought aluminium sheet / plate / forging stock': 'Not found — held (extrusion billets move by the billet premium)',
-    'magnesium alloys (AZ91D, AM60 …)': 'Only an aggregator ingot figure (IMARC, Q2 2026) — held',
+    'magnesium alloys (AZ91D, AM60 …)': 'Only market-research trackers (IMARC / ChemAnalyst AZ91D ~zł10–11, Jun 2026) — too weak to set a price; the book\'s zł18.5–19.3 may be high — held',
     'titanium, nickel superalloys, aluminium bronze, gunmetal': 'Not found — held',
-    'POM': 'Only a Polish OFFER price (Plastech, which runs 20–35% above the CEE market on PP / ABS) — held',
-    'filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30 …), TPU, TPE / TPV, PPS, PEI, LCP, PA12': 'No compound price found — held',
+    'filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30 …), TPU, TPE / TPV, PPS, PEI, LCP, PA12': 'No compound market price found in two rounds; raw-material floors (PA66-GF30 ≥ zł12.58, resin + glass) sit below the book — held',
     'rubber compounds (EPDM / NBR / CR / FKM / silicone …)': 'Raw polymers found (EPDM zł12.39, NBR zł8.43, SBR zł7.74) but a compound is not its polymer — held',
     'composites (prepreg, fabrics, SMC), paint, foam cores, engineering-plastic stock shapes': 'Epoxy (IMARC, May 2026) only — held',
 }
@@ -201,8 +221,11 @@ machines = {
         {'id': 'cnc-5axis-eu', 'match': '^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$', 'refId': 'mach-vmc5', 'refCapexLocal': v('capex.mach-vmc5'),
          'basis': 'Haas UMC-500 "from $119,995" (US list, older article) = zł461,861 — no EU price found',
          'source': R['capex.mach-vmc5']['source'], 'confidence': 'Low'},
+        {'id': 'press-brake-eu', 'match': '^brake-', 'refId': 'brake-trumpf-trubend3100', 'refCapexLocal': v('capex.brake-trumpf-trubend3100'),
+         'basis': 'TRUMPF TruBend 3100 (100 t × 3 m) NEW, offered at €136,000 FCA ex-VAT (Jul 2026, advertiser at TRUMPF Ditzingen) = zł594,864; a 2021 purchase at €115k agrees — the UK book\'s build-up (a "Target £/hr" shop rate) implied ~4× this',
+         'source': R['capex.brake-trumpf-trubend3100']['source'], 'confidence': 'Low'},
     ],
-    'notRebuiltBasis': 'capex not sourced for Poland: the book\'s capital (UK × 0.72) is HELD — note most Polish plant is imported and priced in EUR, so this likely UNDERSTATES it; the Poland operating model (3 × 8 h hours, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied',
+    'notRebuiltBasis': 'capex not sourced for Poland: the book\'s capital (UK × 0.72) is HELD — round-2 evidence shows it both ways (aluminium extrusion lines ~2–3× low, press brakes ~4× high in the UK build-ups); the Poland operating model (3 × 8 h hours, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied',
 }
 
 # Al extrusion billet = LME + the DDP North Germany 6063 billet premium, over the library's LME (al-extrusion-data AL_MARKET)

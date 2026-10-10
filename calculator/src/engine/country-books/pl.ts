@@ -253,6 +253,24 @@ export const POLAND_BOOK: CountryBook = {
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
+  "mat-hrpo": {
+   "gbpPerKg": 0.7166,
+   "basis": "HR pickled & oiled: HRC €745/t (Fastmarkets N. Europe, 6 Oct 2026) + a German service-centre pickling extra ~€90/t (undated) = €835/t = zł3.65/kg — DERIVED; direct",
+   "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/ (undated extra; HRC 2026-10-06)",
+   "confidence": "Low"
+  },
+  "mat-ss409l-sheet": {
+   "gbpPerKg": 1.2724,
+   "basis": "409L / 441 ferritic sheet: Aperam Jul 2026 1.4512 surcharge €919/t + an effective base equal to 304's (as the 430 line) = zł6.48/kg — DERIVED; 441 at the book's premium over 409L; the anchor grade itself",
+   "source": "https://news.metal.com/en/newscontent/104001715-smm-stainless-steel-flash-aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026 (2026-07-01)",
+   "confidence": "Low"
+  },
+  "mat-ss441-sheet": {
+   "gbpPerKg": 1.4108,
+   "basis": "409L / 441 ferritic sheet: Aperam Jul 2026 1.4512 surcharge €919/t + an effective base equal to 304's (as the 430 line) = zł6.48/kg — DERIVED; 441 at the book's premium over 409L; ladder ×1.109 (book £3.16 ÷ base £2.85)",
+   "source": "https://news.metal.com/en/newscontent/104001715-smm-stainless-steel-flash-aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026 (2026-07-01)",
+   "confidence": "Low"
+  },
   "mat-steel1045": {
    "gbpPerKg": 0.6226,
    "basis": "C45 medium-carbon bar: C45 round bar zł3.17/kg net (24metal.com Polish stockholder list, read 10 Oct 2026; the page is undated); direct",
@@ -577,11 +595,161 @@ export const POLAND_BOOK: CountryBook = {
    "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ (2026-01-23)",
    "confidence": "Low"
   },
+  "mat-lm25": {
+   "gbpPerKg": 3.2084,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); the anchor grade itself",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
   "mat-a365": {
-   "gbpPerKg": 2.8454,
-   "basis": "Primary-based cast aluminium (floor): P1020 = LME $3,248 (28 Sep) + Rotterdam duty-paid premium $510–530 (15 Sep) = zł14.5/kg; a primary foundry alloy is never below the primary metal (A356 premium not found); floor (raised to metal content)",
-   "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/ (2026-09-15 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/ (2026-09-15)",
-   "confidence": "Medium"
+   "gbpPerKg": 3.2084,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); the anchor grade itself",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-alsi10mg": {
+   "gbpPerKg": 3.2084,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); the anchor grade itself",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-a390": {
+   "gbpPerKg": 3.5529,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.107 (book £3.3 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-a357": {
+   "gbpPerKg": 3.4453,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.074 (book £3.2 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-lm6": {
+   "gbpPerKg": 3.2084,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); the anchor grade itself",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-almg5-cast": {
+   "gbpPerKg": 3.3161,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.034 (book £3.08 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-a206": {
+   "gbpPerKg": 3.919,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.221 (book £3.64 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-en-ac-45300": {
+   "gbpPerKg": 3.3484,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.044 (book £3.11 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-lm13": {
+   "gbpPerKg": 3.3161,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.034 (book £3.08 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-aural5": {
+   "gbpPerKg": 3.3053,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.030 (book £3.07 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-silafont36": {
+   "gbpPerKg": 3.3376,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.040 (book £3.1 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-castasil37": {
+   "gbpPerKg": 3.2622,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.017 (book £3.03 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-magsimal59": {
+   "gbpPerKg": 3.3914,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.057 (book £3.15 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-al-hpdc-lowco2": {
+   "gbpPerKg": 3.2299,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.007 (book £3 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-htf-gigacast": {
+   "gbpPerKg": 3.5529,
+   "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5); ladder ×1.107 (book £3.3 ÷ base £2.98)",
+   "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 (2026-05-29 / 2026-09-28) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.2869,
+   "basis": "Aluminium forging stock (floor): Delivered 6063 billet zł16.75/kg (LME + DDP North Germany billet premium) — forging stock is never below the billet it is cut from (the book's 6082 / 6061 stock sat below it); floor (raised to metal content)",
+   "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/final-decision-on-open-consultation-on-methodology-review-for-aluminium-extrusion-billet-premiums-ddp-italy-ddp-north-germany-ddp-spain-in-relation-to-cbam/ (2026-08-28 / 2026-09-28)",
+   "confidence": "Low"
+  },
+  "mat-aa5182": {
+   "gbpPerKg": 3.5714,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa5052": {
+   "gbpPerKg": 3.5714,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa5083": {
+   "gbpPerKg": 3.5714,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa6082-sheet": {
+   "gbpPerKg": 3.5714,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa5754-sheet": {
+   "gbpPerKg": 3.5714,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa6063-sheet": {
+   "gbpPerKg": 3.5714,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa3003-sheet": {
+   "gbpPerKg": 3.5714,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa6016-t4": {
+   "gbpPerKg": 3.5714,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa1050-sheet": {
+   "gbpPerKg": 3.5714,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
   },
   "mat-c101-bar": {
    "gbpPerKg": 11.3717,
@@ -889,6 +1057,30 @@ export const POLAND_BOOK: CountryBook = {
    "source": "https://www.investegate.co.uk/announcement/rns/victrex-plc--vct/trading-statement/9654844 (2026-06-30 (Q3 FY2026))",
    "confidence": "Low"
   },
+  "mat-pom": {
+   "gbpPerKg": 2.2959,
+   "basis": "POM: POM zł11.70/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Jul 2026; a Polish offer list zł11.65 agrees) × the book's premium over POM; the anchor grade itself",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/ (2026-07)",
+   "confidence": "Medium"
+  },
+  "mat-pom-rod": {
+   "gbpPerKg": 2.5983,
+   "basis": "POM: POM zł11.70/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Jul 2026; a Polish offer list zł11.65 agrees) × the book's premium over POM; ladder ×1.132 (book £2.32 ÷ base £2.05)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/ (2026-07)",
+   "confidence": "Medium"
+  },
+  "mat-pc-abs": {
+   "gbpPerKg": 2.0593,
+   "basis": "PC/ABS (floor): Resin content 0.7 × PC zł11.55 + 0.3 × ABS zł8.03 = zł10.49/kg — the book's PC/ABS zł9.49 sat below its own resins; floor (raised to metal content)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09) ; https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Low"
+  },
+  "mat-cf-dry-3k": {
+   "gbpPerKg": 25.6809,
+   "basis": "Carbon fabric (floor): Carbon fibre (12K, generic) $34/kg (IMARC Germany, Mar 2026) = zł130.87/kg — a woven fabric is never below the fibre it is woven from; floor (raised to metal content)",
+   "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report (2026-03)",
+   "confidence": "Low"
+  },
   "mat-nr": {
    "gbpPerKg": 1.9564,
    "basis": "Natural rubber (raw): TSR20 benchmark zł9.97/kg (Trading Economics, 9 Oct 2026) — FOB Asia, freight to Poland NOT added; for the book's raw NR SMR20 line; compounds held; direct",
@@ -909,7 +1101,7 @@ export const POLAND_BOOK: CountryBook = {
   "labourRatio": 0.4658,
   "capitalHeldFactor": 0.72,
   "basis": "3 × 8 h, Monday–Friday, 251 working days in 2026 = 6,024 h (the labour model's pattern); Polish straight-line tax depreciation — no shift uplift on held capital; SME machinery / investment loan WIBOR 3M 3.82% + 3.9–4.9 pp = 7.72–8.72%, midpoint 8.22% (cooperative bank tariff, Mar 2026); NBP reference rate 3.75% (7 Oct 2026) — a large Tier-1 borrows below this; the book's line build-ups use 4% on half the capex; rent zł20.05/m²/month (warehouse / light-industrial headline rent midpoints: Upper Silesia zł20.12, Wrocław zł18.92, Poznań zł21.10 per m²/month (€3.15–6.00 at zł4.374/€; ceo.com.pl, ~Apr 2026) — mean; CBRE Q2 2026 national €4.7 = zł20.56 agrees; Rzeszów listings only); maintenance the library's own line build-up rule (3.5% of capex); no Polish norm found",
-  "heldBasis": "capex not sourced for Poland: the book's capital (UK × 0.72) is HELD — note most Polish plant is imported and priced in EUR, so this likely UNDERSTATES it; the Poland operating model (3 × 8 h hours, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied",
+  "heldBasis": "capex not sourced for Poland: the book's capital (UK × 0.72) is HELD — round-2 evidence shows it both ways (aluminium extrusion lines ~2–3× low, press brakes ~4× high in the UK build-ups); the Poland operating model (3 × 8 h hours, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied",
   "groups": [
    {
     "id": "cnc-vmc-eu",
@@ -927,6 +1119,15 @@ export const POLAND_BOOK: CountryBook = {
     "refCapexGbp": 90632.06,
     "basis": "Haas UMC-500 \"from $119,995\" (US list, older article) = zł461,861 — no EU price found",
     "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+    "confidence": "Low"
+   },
+   {
+    "id": "press-brake-eu",
+    "match": "^brake-",
+    "refId": "brake-trumpf-trubend3100",
+    "refCapexGbp": 116731.55,
+    "basis": "TRUMPF TruBend 3100 (100 t × 3 m) NEW, offered at €136,000 FCA ex-VAT (Jul 2026, advertiser at TRUMPF Ditzingen) = zł594,864; a 2021 purchase at €115k agrees — the UK book's build-up (a \"Target £/hr\" shop rate) implied ~4× this",
+    "source": "https://www.machineseeker.com/trumpf-trubend+3100/i-22233802",
     "confidence": "Low"
    }
   ]

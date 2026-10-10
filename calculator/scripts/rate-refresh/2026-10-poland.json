@@ -172,9 +172,18 @@
     "basis": "Haas UMC-500 \"from $119,995\" (US list, older article) = zł461,861 — no EU price found",
     "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
     "confidence": "Low"
+   },
+   {
+    "id": "press-brake-eu",
+    "match": "^brake-",
+    "refId": "brake-trumpf-trubend3100",
+    "refCapexLocal": 594864,
+    "basis": "TRUMPF TruBend 3100 (100 t × 3 m) NEW, offered at €136,000 FCA ex-VAT (Jul 2026, advertiser at TRUMPF Ditzingen) = zł594,864; a 2021 purchase at €115k agrees — the UK book's build-up (a \"Target £/hr\" shop rate) implied ~4× this",
+    "source": "https://www.machineseeker.com/trumpf-trubend+3100/i-22233802",
+    "confidence": "Low"
    }
   ],
-  "notRebuiltBasis": "capex not sourced for Poland: the book's capital (UK × 0.72) is HELD — note most Polish plant is imported and priced in EUR, so this likely UNDERSTATES it; the Poland operating model (3 × 8 h hours, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied"
+  "notRebuiltBasis": "capex not sourced for Poland: the book's capital (UK × 0.72) is HELD — round-2 evidence shows it both ways (aluminium extrusion lines ~2–3× low, press brakes ~4× high in the UK build-ups); the Poland operating model (3 × 8 h hours, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied"
  },
  "materialFamilies": [
   {
@@ -291,6 +300,49 @@
     "mat-znni-eg",
     "mat-zm-coated",
     "mat-tinplate-etp"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR pickled & oiled",
+   "anchorLocalPerKg": 3.652,
+   "anchorBasis": "HRC €745/t (Fastmarkets N. Europe, 6 Oct 2026) + a German service-centre pickling extra ~€90/t (undated) = €835/t = zł3.65/kg — DERIVED",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrpo",
+     "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+     "date": "undated extra; HRC 2026-10-06"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hrpo"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "409L / 441 ferritic sheet",
+   "anchorLocalPerKg": 6.484,
+   "anchorBasis": "Aperam Jul 2026 1.4512 surcharge €919/t + an effective base equal to 304's (as the 430 line) = zł6.48/kg — DERIVED; 441 at the book's premium over 409L",
+   "sources": [
+    {
+     "research": "ferrous.stainless.409L_CR",
+     "source": "https://news.metal.com/en/newscontent/104001715-smm-stainless-steel-flash-aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026",
+     "date": "2026-07-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.85,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
    ],
    "confidence": "Low",
    "note": "",
@@ -691,24 +743,24 @@
    "proxies": {}
   },
   {
-   "family": "Primary-based cast aluminium (floor)",
-   "anchorLocalPerKg": 14.5,
-   "anchorBasis": "P1020 = LME $3,248 (28 Sep) + Rotterdam duty-paid premium $510–530 (15 Sep) = zł14.5/kg; a primary foundry alloy is never below the primary metal (A356 premium not found)",
+   "family": "Primary-based cast aluminium",
+   "anchorLocalPerKg": 16.35,
+   "anchorBasis": "AlSi7Mg (A356) = LME $3,248 (28 Sep) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $950–1,050/t (29 May 2026) = zł16.35/kg × the book's premium over LM25, never below A356 (round 2; round 1 floored at P1020 zł14.5)",
    "sources": [
     {
-     "research": "nonferrous.al.p1020",
-     "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/",
-     "date": "2026-09-15 / 2026-09-28"
+     "research": "nonferrous.al.alsi7mg",
+     "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346",
+     "date": "2026-05-29 / 2026-09-28"
     },
     {
-     "research": "nonferrous.al.dutyPaidPremium",
-     "source": "https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/",
-     "date": "2026-09-15"
+     "research": "nonferrous.al.a356_premium",
+     "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29"
     }
    ],
-   "method": "floor",
-   "base": null,
-   "floorAtAnchor": false,
+   "method": "ladder",
+   "base": 2.98,
+   "floorAtAnchor": true,
    "members": [
     "mat-lm25",
     "mat-a365",
@@ -727,7 +779,71 @@
     "mat-al-hpdc-lowco2",
     "mat-htf-gigacast"
    ],
-   "confidence": "Medium",
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium forging stock (floor)",
+   "anchorLocalPerKg": 16.75,
+   "anchorBasis": "Delivered 6063 billet zł16.75/kg (LME + DDP North Germany billet premium) — forging stock is never below the billet it is cut from (the book's 6082 / 6061 stock sat below it)",
+   "sources": [
+    {
+     "research": "nonferrous.al.billet6063",
+     "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/final-decision-on-open-consultation-on-methodology-review-for-aluminium-extrusion-billet-premiums-ddp-italy-ddp-north-germany-ddp-spain-in-relation-to-cbam/",
+     "date": "2026-08-28 / 2026-09-28"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-al6061-forge",
+    "mat-al6082-forge",
+    "mat-al2014-forge",
+    "mat-al7075-forge",
+    "mat-al2618-forge",
+    "mat-al7050-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium sheet and plate (floor)",
+   "anchorLocalPerKg": 18.2,
+   "anchorBasis": "Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = $4,728/t = zł18.2/kg (all rolled products, can stock included, at lower metal prices than today — a floor, not a price); a Polish stockholder's single-sheet 5754 price zł29.18 is a retail ceiling",
+   "sources": [
+    {
+     "research": "nonferrous.al.frp_europe_asp",
+     "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+     "date": "2025-04-01 to 2026-03-31"
+    },
+    {
+     "research": "nonferrous.al.sheet_5754",
+     "source": "https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/",
+     "date": "page read via search Oct 2026 (price undated)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aa5182",
+    "mat-aa5052",
+    "mat-aa5083",
+    "mat-aa6082-sheet",
+    "mat-aa5754-sheet",
+    "mat-aa6061-sheet",
+    "mat-aa6063-sheet",
+    "mat-aa3003-sheet",
+    "mat-al-busbar",
+    "mat-aa6016-t4",
+    "mat-aa6111-t4",
+    "mat-aa7075-t6",
+    "mat-aa1050-sheet"
+   ],
+   "confidence": "Low",
    "note": "",
    "proxies": {}
   },
@@ -1240,6 +1356,75 @@
    "proxies": {}
   },
   {
+   "family": "POM",
+   "anchorLocalPerKg": 11.7,
+   "anchorBasis": "POM zł11.70/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Jul 2026; a Polish offer list zł11.65 agrees) × the book's premium over POM",
+   "sources": [
+    {
+     "research": "polymer.pom",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/",
+     "date": "2026-07"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pom",
+    "mat-pom-rod"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC/ABS (floor)",
+   "anchorLocalPerKg": 10.494,
+   "anchorBasis": "Resin content 0.7 × PC zł11.55 + 0.3 × ABS zł8.03 = zł10.49/kg — the book's PC/ABS zł9.49 sat below its own resins",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    },
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc-abs"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon fabric (floor)",
+   "anchorLocalPerKg": 130.87,
+   "anchorBasis": "Carbon fibre (12K, generic) $34/kg (IMARC Germany, Mar 2026) = zł130.87/kg — a woven fabric is never below the fibre it is woven from",
+   "sources": [
+    {
+     "research": "composite.cf_t700_12k",
+     "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+     "date": "2026-03"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cf-dry-3k"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
    "family": "Natural rubber (raw)",
    "anchorLocalPerKg": 9.97,
    "anchorBasis": "TSR20 benchmark zł9.97/kg (Trading Economics, 9 Oct 2026) — FOB Asia, freight to Poland NOT added; for the book's raw NR SMR20 line; compounds held",
@@ -1262,14 +1447,13 @@
   }
  ],
  "held": {
-  "HRPO, alloy engineering bar (41Cr4, 42CrMo4, 20MnCr5, 100Cr6, Ni-Cr-Mo), bearing steel": "No dated Polish / European price found — held",
+  "alloy engineering bar (41Cr4, 42CrMo4, 20MnCr5, 100Cr6, Ni-Cr-Mo), bearing steel": "No dated Polish / European price found — held",
   "stainless bar (304, 316L, 303, martensitic, PH, duplex), 409L / 441": "Not found (alloy surcharges only) — held",
   "electrical steel (NO / GO / CoFe / NiFe / amorphous)": "Only a generic German index (grade not stated) — held",
   "wrought aluminium sheet / plate / forging stock": "Not found — held (extrusion billets move by the billet premium)",
-  "magnesium alloys (AZ91D, AM60 …)": "Only an aggregator ingot figure (IMARC, Q2 2026) — held",
+  "magnesium alloys (AZ91D, AM60 …)": "Only market-research trackers (IMARC / ChemAnalyst AZ91D ~zł10–11, Jun 2026) — too weak to set a price; the book's zł18.5–19.3 may be high — held",
   "titanium, nickel superalloys, aluminium bronze, gunmetal": "Not found — held",
-  "POM": "Only a Polish OFFER price (Plastech, which runs 20–35% above the CEE market on PP / ABS) — held",
-  "filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30 …), TPU, TPE / TPV, PPS, PEI, LCP, PA12": "No compound price found — held",
+  "filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30 …), TPU, TPE / TPV, PPS, PEI, LCP, PA12": "No compound market price found in two rounds; raw-material floors (PA66-GF30 ≥ zł12.58, resin + glass) sit below the book — held",
   "rubber compounds (EPDM / NBR / CR / FKM / silicone …)": "Raw polymers found (EPDM zł12.39, NBR zł8.43, SBR zł7.74) but a compound is not its polymer — held",
   "composites (prepreg, fabrics, SMC), paint, foam cores, engineering-plastic stock shapes": "Epoxy (IMARC, May 2026) only — held"
  },
