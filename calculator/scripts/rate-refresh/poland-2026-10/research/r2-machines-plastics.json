@@ -1,0 +1,74 @@
+{
+  "domain": "machines round 2 — plastics processing, turning / grinding / gear, electronics, finishing, aluminium extrusion press (capex)",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "asp.haitian-imm-2025",
+      "value": 164409,
+      "unit": "PLN/machine (average selling price, ex-works, all clamp sizes; derived)",
+      "basis": "Haitian International FY2025: injection-moulding-machine revenue RMB 16,897.3 m ÷ ~56,800 machines sold = RMB 297,488 per machine. Haitian's own release gives group revenue RMB 17,733.2 m ≈ EUR 2,240.6 m, i.e. RMB 7.9145/EUR → EUR 37,588 per machine × 4.374 = 164,409 PLN",
+      "source": "https://eu.haitianinter.com/category/company-en/annual-reports-en/ ; https://haitianinter.com/wp-content/uploads/sites/3/2026/04/2025-年报-英.pdf ; https://macplas.it/en/marketing/international-news/haitian-internationals-revenue-grew-10-2025",
+      "date": "FY2025 (annual results published 2026)",
+      "notes": "COMPANY ANNUAL REPORT, derived ASP. It is a mix average over every clamp size Haitian sells (Mars servo-hydraulic dominates; ~57% of revenue is sold in China at Chinese prices), ex-works, machine only — not installed, not per tonnage, and not a European price. Useful only as a floor/cross-check for imm-200t…imm-400t; it cannot be split by tonnage from the published figures (no units per series). Page not opened (egress proxy blocks fetches); figures as quoted by the search result for these URLs."
+    },
+    { "key": "capex.imm-100t", "value": null, "unit": "PLN/unit", "basis": "not found in any source (no Polish procurement award, distributor price list or maker list price for a new 100 t machine)", "source": "", "date": "", "notes": "Current book implied capex 321,048 PLN (financeCost ÷ 2%). Haitian 2025 average ASP (all sizes) 164,409 PLN — see asp.haitian-imm-2025." },
+    { "key": "capex.imm-200t", "value": null, "unit": "PLN/unit", "basis": "not found in any source. EU-funded tender located (Improdex, Czechowice-Dziedzice: hybrid IMM ≥200 t + 3-axis robot, purchase + delivery + installation) but the search returned no award value", "source": "https://bazakonkurencyjnosci.funduszeeuropejskie.gov.pl/api/files/1975317", "date": "2025–2026 (notice; award not found)", "notes": "Book implied 504,504 PLN. Marketplace cross-checks only (not prices): used Arburg 570 A 2000-1300 (200 t, 2010) EUR 79,500 (= 347,733 PLN) on a used-machine listing; used 200 t Engel/Arburg from the 1990s–2000s EUR 15–28k." },
+    { "key": "capex.imm-400t", "value": null, "unit": "PLN/unit", "basis": "not found in any source", "source": "https://sprzedajemy.pl/temat/wtryskarka+cena", "date": "2026 listings", "notes": "Book implied 917,280 PLN. Marketplace cross-check only: used Tederic DT400 (2021) 190,000 zł, VAT status not stated." },
+    { "key": "capex.imm-800t", "value": null, "unit": "PLN/unit", "basis": "not found in any source", "source": "", "date": "", "notes": "Book implied 1,605,240 PLN." },
+    { "key": "capex.imm-1200t", "value": null, "unit": "PLN/unit", "basis": "not found in any source", "source": "", "date": "", "notes": "Book implied 2,293,200 PLN." },
+    { "key": "capex.blow-ebm-100l", "value": null, "unit": "PLN/unit", "basis": "not searched to a result (budget) — not found", "source": "", "date": "", "notes": "Book implied 573,300 PLN." },
+    { "key": "capex.blow-sbm-2stage", "value": null, "unit": "PLN/unit", "basis": "not found", "source": "", "date": "", "notes": "Book implied 2,063,880 PLN." },
+    { "key": "capex.extruder-pipe-line", "value": null, "unit": "PLN/line", "basis": "not found in any source (no award value for a PE/PVC pipe line; makers' pages carry no price)", "source": "", "date": "", "notes": "Book implied 1,100,736 PLN." },
+    { "key": "capex.extruder-profile-line", "value": null, "unit": "PLN/line", "basis": "not found as a list price or award; EU-funded profile-line tender found (MARDOM, Łódź, 01/RPOWŁ/2023) without a value", "source": "https://bazakonkurencyjnosci.funduszeeuropejskie.gov.pl/api/files/1227998", "date": "2023-08-11", "notes": "Book implied 733,824 PLN. Marketplace cross-check only: a B2B offer of a transport/assembly-strip profile line at 360,000 PLN/unit on plastech.pl (https://www.plastech.pl/oferty-b2b/kategoria/linie-do-wytlaczania-rur-i-profili-110), new/used and VAT status not stated." },
+    { "key": "capex.extruder-sheet-line", "value": null, "unit": "PLN/line", "basis": "not found", "source": "", "date": "", "notes": "Book implied 2,018,016 PLN." },
+    { "key": "capex.thermoform-large", "value": null, "unit": "PLN/unit", "basis": "not found", "source": "", "date": "", "notes": "Book implied 1,031,940 PLN." },
+    { "key": "capex.thermoform-small", "value": null, "unit": "PLN/unit", "basis": "not found", "source": "", "date": "", "notes": "Book implied 343,980 PLN." },
+    { "key": "capex.rotomould-biaxial", "value": null, "unit": "PLN/unit", "basis": "not found", "source": "", "date": "", "notes": "Book implied 687,960 PLN." },
+    { "key": "capex.ultrasonic-welder", "value": null, "unit": "PLN/unit", "basis": "not found (no Polish/EU distributor price list for a new 20 kHz / 2 kW welder)", "source": "https://plasticker.de/requipment/showdata_en.php?id=97084", "date": "2026 listing", "notes": "Book implied 183,456 PLN. Marketplace cross-check only: used Branson 20 kHz welders EUR 8,800 each (= 38,491 PLN). An Indian 2 kW/20 kHz semi-automatic welder lists at INR 175,000 — not a European price, not converted." },
+    { "key": "capex.hot-plate-welder", "value": null, "unit": "PLN/unit", "basis": "not found", "source": "", "date": "", "notes": "Book implied 275,184 PLN." },
+    { "key": "capex.mach-lathe-cnc", "value": null, "unit": "PLN/unit", "basis": "not found in any source: Haas ST-10/ST-20 EU-series pages (haascnc.com/pl, /nl, /ja) show 'special European price' but no figure in the search snippets (price field labelled CNY-only / 'contact your HFO'); no US list on machinetoolindex", "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series.html", "date": "retrieved 2026-10-10", "notes": "Book implied 205,470 PLN. Cross-checks only (not prices): used ST-20 (2013) in Poland EUR 38,000 + VAT (= 166,212 PLN); used ST-10 (2019) Latvia EUR 49,000 + VAT DAP; a US dealer states the 'replacement cost new' of an equipped ST-20 system with bar feeder at US$125,000 (= 481,125 PLN; dealer claim, https://surplusrecord.com/listing/haas-st-20t-cnc-lathe-31-7-swing-10-chuck-20-hp-4k-rpm-tailstock-parts-catcher-chip-conv-12-tool-bar-feeder-2017-1041477). A used 2013 ST-20 at EUR 38k suggests the book's 205k PLN new is not too high." },
+    { "key": "capex.mach-mazak-qt200", "value": null, "unit": "PLN/unit", "basis": "not found (Mazak publishes no list price)", "source": "", "date": "", "notes": "Book implied 215,744 PLN; same cross-checks as capex.mach-lathe-cnc." },
+    { "key": "capex.mach-grind", "value": null, "unit": "PLN/unit", "basis": "not searched to a result (budget) — not found", "source": "", "date": "", "notes": "Book implied 3,779,193 PLN (financeCost ÷ 2%) — looks high for a CNC cylindrical grinder but no evidence found." },
+    { "key": "capex.gear-hob-small", "value": null, "unit": "PLN/unit", "basis": "not found (Liebherr / Gleason / EMAG Koepfer publish no list prices; used listings show 'call')", "source": "", "date": "", "notes": "Book implied 3,852,576 PLN. Only euro figure seen: a used-machine listing stating the new price of a Gleason-Pfauter P 2800 (2.8 m wheels) as EUR 2.3 m (= 10,060,200 PLN; https://www.machinio.com/hoefler/gear-hobbing/germany) — a far larger machine, not a cross-check for small hobbers." },
+    { "key": "capex.gear-hob-medium", "value": null, "unit": "PLN/unit", "basis": "not found", "source": "", "date": "", "notes": "Book implied 4,311,216 PLN." },
+    { "key": "capex.gear-grind-generating", "value": null, "unit": "PLN/unit", "basis": "not found", "source": "", "date": "", "notes": "Book implied 6,420,960 PLN." },
+    {
+      "key": "capex.smt-line",
+      "value": 1039211,
+      "unit": "PLN/line (US list price, machine only)",
+      "basis": "Manncorp inline PCB assembly line, regular price US$269,995: AP435 inline stencil printer + MC389 3-head pick-and-place (~10,500 CPH, PCB ≤650×460 mm) + CR5000 5-zone reflow oven + CT90 conveyor, 2-year warranty; × 3.849 = 1,039,211 PLN",
+      "source": "https://manncorp.com/products/smt-pcb-assembly-line-inline-production",
+      "date": "product page undated (live 2026-10-10)",
+      "notes": "LIST price of a US vendor (not EU, not a transaction); excludes AOI, feeders beyond the package, delivery, installation and import duty. It is a low/mid-volume line — a Polish EMS line on ASM / Fuji / Yamaha placers would cost more; treat as a lower bound for smt-line. Book implied 1,834,560 PLN. Older Polish cross-check: ZAMEL (2009) project for 2 SMT lines on Fuji NXT placers + Electrovert / Ersa reflow, total 1,533,935.71 PLN (net/gross not stated) ≈ 767k PLN per line (https://zamel.com/pl/uslugi/omix/montaz-smttht). Page not opened (egress proxy blocks fetches); figure as quoted by the search result."
+    },
+    { "key": "capex.paint-line-std", "value": null, "unit": "PLN/line", "basis": "not found (EU-funded powder-line tenders found — Świebodzin 01/2024, SANTEX — but no award values)", "source": "https://bazakonkurencyjnosci.funduszeeuropejskie.gov.pl/api/files/1607841", "date": "2024", "notes": "Book implied 2,751,840 PLN." },
+    { "key": "capex.plating-line-rack", "value": null, "unit": "PLN/line", "basis": "not found", "source": "", "date": "", "notes": "Book implied 2,201,472 PLN." },
+    { "key": "capex.galvanising-kettle", "value": null, "unit": "PLN/unit", "basis": "not found: Polish galvanising plants found (Inter Metal by Dekpol; Termetal Morawica, >13 m kettle) report no contract value; Polimex Siedlce 2008 (≈210 m zł) includes a steel-structure works and paint shop", "source": "https://www.money.pl/gielda/dekpol-rozpoczal-budowe-najnowoczesniejszej-ocynkowni-w-polsce-dla-inter-metalu-6450574067975809a.html", "date": "", "notes": "Book implied 6,237,504 PLN." },
+    { "key": "capex.al-powder-line", "value": null, "unit": "PLN/line", "basis": "not found (SAT / Cortizo / Benkam / Gateway vertical-line installs reported with no value)", "source": "https://www.lightmetalage.com/news/industry-news/surface-finishing/aluminios-cortizo-installs-vertical-powder-coating-line/", "date": "", "notes": "Book implied 10,273,536 PLN." },
+    {
+      "key": "capex.al-ext-press-1800t",
+      "value": 43740000,
+      "unit": "PLN/line (EU transaction-level programme value, installed)",
+      "basis": "Vimetco Extrusion (ALRO group, Slatina, Romania): EUR 10 m investment = acquisition and installation of an automated 7-inch aluminium extrusion line supplied by Presezzi Extrusion (profiles up to 60 m at 50 m/min, +11,000 t/yr); × 4.374 = 43,740,000 PLN",
+      "source": "https://www.alcircle.com/news/vimetco-extrusion-to-expand-aluminium-profiles-extrusion-line-with-eur-10-million-investments-63714 ; https://www.thediplomat.ro/?p=10490 ; https://www.alro.ro/en/article/vimetco-extrusion-announces-new-press ; https://www.lightmetalage.com/news/industry-news/extrusion/vimetco-extrudes-first-billet-on-new-press-line/",
+      "date": "project started March 2021, first billet 2022 (company announcement; 2021–22 prices)",
+      "notes": "COMPANY ANNOUNCEMENT of an investment value (not a list price); EU buyer in a CEE country, same supply market as Poland. The press force is not stated — a 7-inch container matches the library's 1,800 t line (7\" container); scope beyond 'acquisition and installation of the line' (building, dies) not stated. 2021 price, not escalated. Book implied capex 14,676,480 PLN — evidence is ~3× the book. Pages not opened (egress proxy); figures as quoted by the search results."
+    },
+    {
+      "key": "capex.al-ext-press-2500t",
+      "value": 54675000,
+      "unit": "PLN/line (UPPER BOUND, derived)",
+      "basis": "Soure, Portugal (2024): investment of about EUR 25 m including two 2,800 t aluminium extrusion lines → ≤ EUR 12.5 m per line × 4.374 = 54,675,000 PLN. Cross-check: Vitex (New Hampshire, US, ~2021) first phase US$12 m for a 2,750-ton Presezzi press × 3.849 = 46,188,000 PLN",
+      "source": "https://www.theportugalnews.com/es/noticias/2024-09-19/el-lider-mundial-del-aluminio-abre-una-unidad-en-portugal/271257 ; https://www.lightmetalage.com/?p=20722",
+      "date": "2024-09-19 (Soure); ~2021 (Vitex)",
+      "notes": "Trade-press investment values: the Soure EUR 25 m may include the building and other plant, so per-line is an upper bound; Vitex 'first phase' scope not stated. Both are 2,750–2,800 t (slightly above 2,500 t). Book implied capex 22,014,720 PLN — evidence is ~2.1–2.5× the book. Larger-press cross-checks: Grupa Kęty raised Extrusions capex by 188 m zł (ESPI, July 2021) for a production-and-warehouse hall plus a 4,000 t press line (a 2,000 t press to go in the same hall was already budgeted) — https://comparic.pl/grupa-kety-realizuje-strategie-dotyczaca-nakladow-inwestycyjnych/ ; Alcomet (Bulgaria) 40 MN Presezzi press, first extrusion 10 Mar 2026, within a EUR 70 m programme (https://www.alcircle.com/news/first-extrusion-achieved-on-alcomet-ads-newly-installed-40-mn-presezzi-press-117614). Pages not opened (egress proxy)."
+    }
+  ],
+  "notes": [
+    "28 web searches used (cap 30). WebFetch and curl to every host were refused by the egress proxy (ENOTFOUND / CONNECT 403), so every figure is as quoted by the search engine's summary of the cited URL — verify against the page before use.",
+    "Book implied capex = buildupPln.financeCost ÷ 2% from current-poland-book.json, the same method round 1 used.",
+    "Polish procurement awards (Baza Konkurencyjności) were found only as NOTICES (Improdex IMM ≥200 t + robot; MARDOM profile line; Świebodzin powder line) — the search tool does not reach the award documents with the net value. A person with a browser could read those three notices' 'informacja o wyborze' pages.",
+    "No IMM maker publishes units by clamp size; the Haitian ASP is a mix average and cannot replace per-tonnage capex.",
+    "Strongest finding: aluminium extrusion lines — two independent EU investment values put a 7-inch / ~1,800 t line at ~43.7 m PLN and a ~2,800 t line at ≤54.7 m PLN, 2–3× the book's UK × 0.72 capital."
+  ]
+}

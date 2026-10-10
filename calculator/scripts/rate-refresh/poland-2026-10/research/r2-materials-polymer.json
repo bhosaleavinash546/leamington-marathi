@@ -1,0 +1,239 @@
+{
+  "domain": "materials-polymer round 2 (compounds, elastomers, sheet, rubber compounds, paint, composites; Poland, PLN/kg ex-VAT)",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "polymer.pom",
+      "value": 11.7,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Europe POM (homo/copolymer, unfilled) US$3.04/kg, July 2026 (−2.9% m/m) × 3.849 = 11.70 PLN/kg. Aggregator index (businessanalytiq, 'calculated from multiple separate sources', method not published; US$/kg at period FX) — priority 2/5, moderate confidence. Market price, not an offer list.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/",
+      "date": "2026-07",
+      "notes": "Independent of round 1's Plastech offer average (11.65) and agrees within 0.5%. Celanese announced a POM increase 8 Oct 2026 (round 1) — not yet in this figure. Book mat-pom 10.13 is ~13% low; mat-pom-rod 11.47 close. mat-pom-c 15.32 is STOCK (semi-finished) and not comparable."
+    },
+    {
+      "key": "polymer.pa66_gf30",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found: no European market/index price for PA66-GF30 compound (PIE, KI, plasticker compounds, Ultramid A3EG6 distributor pages, Grupa Azoty Tarnamid all quote-only or paywalled). DERIVED raw-material FLOOR (not a price): 0.70 × PA66 16.28 (round 1) + 0.30 × glass fibre 3.95 (this file) = 11.40 + 1.19 = 12.58 PLN/kg, before compounding, heat stabiliser, coupling agent and margin (chopped strand for compounding also costs more than roving).",
+      "source": "https://plasticker.de/recybase/showdata_en.php?id=417645",
+      "date": "2026-09-07",
+      "notes": "Cross-check ONLY (marketplace listing, not a price per RULES): plasticker Recybase PA66-GF30 lot, Slovenia, 3.50 EUR/kg EXW (2,500 kg; 2024 production batch), 7 Sep 2026 = 15.31 PLN/kg. Book mat-pa66gf30 15.32 is 22% above the raw-material floor — plausible; round 1's remark that it 'sits below unfilled PA66' is not by itself an error, because 30% glass is far cheaper than PA66."
+    },
+    {
+      "key": "polymer.pa6_gf30",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found (market price). DERIVED FLOOR: 0.70 × PA6 10.28 (round 1) + 0.30 × 3.95 = 7.20 + 1.19 = 8.38 PLN/kg before compounding.",
+      "source": "https://plasticker.de/recybase/showdata_en.php?id=415073",
+      "date": "2026-07-14",
+      "notes": "Cross-check ONLY (marketplace): Recybase offer, virgin PA6-GF30 natural compound ex Wrocław, 1.85 EUR/kg (= 8.09 PLN/kg), July 2026, 'bulk negotiable' — an excess-lot price at the floor. Book mat-pa6-gf30 12.46 is 49% above the floor; not shown wrong."
+    },
+    {
+      "key": "polymer.pc_abs",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found (market price). DERIVED RESIN-CONTENT FLOOR (no compounding): automotive PC/ABS is typically ~70/30 PC/ABS → 0.70 × PC 11.55 + 0.30 × ABS 8.03 (both round 1) = 8.09 + 2.41 = 10.50 PLN/kg. Even a 50/50 blend = 0.5 × 11.55 + 0.5 × 8.03 = 9.79 PLN/kg.",
+      "source": "https://plasticker.de/recybase/listaog_en.php?mat=PC/ABS",
+      "date": "2026-08-28",
+      "notes": "Cross-check ONLY (marketplace): Recybase offer, ex Wrocław, PC/ABS virgin compound (T85-type replacement) 2.40 EUR/kg = 10.50 PLN/kg, 14 and 28 Aug 2026. Book mat-pc-abs 9.49 is BELOW the resin content of any automotive PC/ABS ratio — looks wrong (same logic as round 1's uPVC flag)."
+    },
+    {
+      "key": "polymer.pp_gf30",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found. DERIVED FLOOR: 0.70 × PP homo 5.11 (round 1) + 0.30 × 3.95 = 3.58 + 1.19 = 4.76 PLN/kg before coupling agent (MAH-PP) and compounding.",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37",
+      "notes": "Book mat-pp-gf30 9.13 is 1.9× the raw-material floor — looks high but no market price found to confirm."
+    },
+    {
+      "key": "polymer.pbt_gf30",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found. DERIVED FLOOR: 0.70 × PBT 14.24 (round 1) + 0.30 × 3.95 = 9.97 + 1.19 = 11.16 PLN/kg before compounding.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+      "date": "2026-09",
+      "notes": "Book mat-pbt-gf30 15.32 is 37% above the floor — plausible."
+    },
+    {
+      "key": "polymer.pps_neat",
+      "value": 33.52,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "IMARC pricing outlook, Germany PPS resin USD 8,710/MT, Q3 2025 ÷ 1000 × 3.849 = 33.52 PLN/kg. Market-research vendor estimate (priority 5). Used although 2025 because no 2026 European PPS figure was found.",
+      "source": "https://imarcgroup.com/polyphenylene-sulfide-pricing-report",
+      "date": "2025-Q3",
+      "notes": "Same report: Belgium USD 7,950/MT (30.60 PLN/kg). QYResearch (via GII) global average factory price ~US$7,700/t 2024. DERIVED PPS-GF40 FLOOR: 0.60 × 33.52 + 0.40 × 3.95 = 20.11 + 1.58 = 21.69 PLN/kg before compounding; book mat-pps-gf40 27.83 is 28% above — plausible."
+    },
+    {
+      "key": "polyurethane.general_proxy_for_tpu",
+      "value": 14.97,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Europe polyurethane (general, NOT TPU-specific) US$3.89/kg, Sep 2026 (+4.3%) × 3.849 = 14.97 PLN/kg. Aggregator index (businessanalytiq, 'calculated from multiple separate sources', method not published; US$/kg at period FX) — priority 2/5, moderate confidence.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/polyurethane-price-index/",
+      "date": "2026-09",
+      "notes": "Proxy only. No TPU price found (ChemAnalyst / Covestro / BASF / Lubrizol not in reach). Book mat-tpu-shore85 12.46 is 17% below the general-PU proxy; ester/ether TPU normally trades above generic PU systems, so the book TPU may be low — unconfirmed."
+    },
+    {
+      "key": "polymer.tpu",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found in any source within budget.",
+      "source": "",
+      "date": "",
+      "notes": "See polyurethane.general_proxy_for_tpu."
+    },
+    {
+      "key": "polymer.tpe_sebs",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found. Nearest: ChemAnalyst Europe (Italy) SBS Q2 2026 average USD 3,065/MT × 3.849 / 1000 = 11.80 PLN/kg — SBS is the unhydrogenated block copolymer; SEBS trades above it, while a 60 Shore A TPE-S compound is diluted with oil / PP / filler.",
+      "source": "https://www.chemanalyst.com/Pricing-data/styrene-butadiene-styrene-sbs-3191",
+      "date": "2026-Q2",
+      "notes": "Context only. Book mat-tpe-s-im 12.85 not tested."
+    },
+    {
+      "key": "polymer.tpv",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found (level). Only movement: Celanese Santoprene TPV +US$0.18/kg EMEA from 1 Jun 2025 (FR grades +US$1.10/kg).",
+      "source": "https://www.european-rubber-journal.com/article/2097353/celanese-increasing-prices-for-elastomers-engineered-materials",
+      "date": "2025-06-01",
+      "notes": "Producer price notice; no 2026 level."
+    },
+    {
+      "key": "rubber.silicone_polymer_proxy",
+      "value": 27.44,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Europe silicone (general polymer index, not HCR compound) US$7.13/kg, Sep 2026 (−0.4%) × 3.849 = 27.44 PLN/kg. Aggregator index (businessanalytiq, 'calculated from multiple separate sources', method not published; US$/kg at period FX) — priority 2/5, moderate confidence.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/silicone-price-index/",
+      "date": "2026-09",
+      "notes": "Proxy for the silicone raw material only. Book mat-silicone-hcr 60A 45.14 (= €10.32/kg) is 1.6× it; an HCR compound adds fumed silica, peroxide and milling, so the gap is not shown wrong. HCR 70A compound price not found."
+    },
+    {
+      "key": "rubber.epdm_compound",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found (compound). EPDM POLYMER spread for context: Expert Market Research Germany Q1 2026 ~US$2.08/kg (= 8.01 PLN/kg); businessanalytiq Europe Jul 2026 US$2.69/kg (10.35), Aug 2026 US$2.85/kg (10.97); round 1 Sep 2026 12.39; Procurement Resource Germany CIF Apr 2026 ~US$5,081/MT (19.56, outlier).",
+      "source": "https://www.expertmarketresearch.com/price-forecast/epdm-rubber-price-trends",
+      "date": "2026-Q1",
+      "notes": "Sources disagree ~2.4× on the polymer. Book mat-epdm 70A 9.61 sits inside the polymer spread; a filled 70A compound (carbon black 7.01 PLN/kg, oil) is normally cheaper than the polymer, so the book is not shown wrong."
+    },
+    {
+      "key": "rubber.nbr_compound",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found in any source within budget.",
+      "source": "",
+      "date": "",
+      "notes": "Raw NBR polymer is in round 1 (8.43)."
+    },
+    {
+      "key": "rubber.silicone_hcr",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found (compound). See rubber.silicone_polymer_proxy.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "additive.carbon_black",
+      "value": 7.01,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Europe carbon black US$1.82/kg, Sep 2026 (+13%) × 3.849 = 7.01 PLN/kg. Aggregator index (businessanalytiq, 'calculated from multiple separate sources', method not published; US$/kg at period FX) — priority 2/5, moderate confidence.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/carbon-black-price-index/",
+      "date": "2026-09",
+      "notes": "DERIVED black masterbatch (40% carbon) RAW-MATERIAL FLOOR: 0.40 × 7.01 + 0.60 × LDPE 5.58 (round 1) = 2.80 + 3.35 = 6.15 PLN/kg before dispersion/compounding. Book mat-mb-black 11.02 is 1.8× the floor — high-looking, unconfirmed (masterbatch market price not found)."
+    },
+    {
+      "key": "additive.tio2",
+      "value": 11.12,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Europe titanium dioxide (rutile pigment) US$2.89/kg, Sep 2026 (−3%) × 3.849 = 11.12 PLN/kg. Aggregator index (businessanalytiq, 'calculated from multiple separate sources', method not published; US$/kg at period FX) — priority 2/5, moderate confidence.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/titanium-dioxide-tio2-china-price-index/",
+      "date": "2026-09",
+      "notes": "Page URL is the site's TiO2 index page (titled 'China'; the Europe row was read from it). DERIVED white masterbatch (70% TiO2) FLOOR: 0.70 × 11.12 + 0.30 × LDPE 5.58 = 7.78 + 1.67 = 9.46 PLN/kg; book mat-mb-white-tio2 16.26 is 1.7× the floor — not shown wrong."
+    },
+    {
+      "key": "composite.glassfibre_roving",
+      "value": 3.95,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Glass fibre (generic, E-glass; roving-type commodity) Germany Q2 2026 USD 1,027/MT ÷ 1000 × 3.849 = 3.95 PLN/kg; same forecast gives Germany 2026 range USD 1,000–1,080/MT (3.85–4.16 PLN/kg). Market-research price forecast (priority 5).",
+      "source": "https://www.expertmarketresearch.com/price-forecast/glass-fiber-price-trends",
+      "date": "2026-Q2",
+      "notes": "Attribution read from a search extract (the page could not be fetched). Upside risk: European gas (Sinolink note, Mar 2026). Used above as the glass share of GF compound floors. Book E-glass fabrics/mats (mat-gf-dry-e 19.72, mat-csm-gf 15.82) are converted products, 4–5× roving — not tested."
+    },
+    {
+      "key": "composite.cf_t700_12k",
+      "value": 130.87,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "IMARC carbon fibre price, Germany, March 2026 US$34/kg × 3.849 = 130.87 PLN/kg (UK same month US$35/kg = 134.72). Market-research vendor (priority 5); generic standard-modulus carbon fibre, not T700-specific. Toray announced +10–20% on TORAYCA from Jan 2026.",
+      "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+      "date": "2026-03",
+      "notes": "Book mat-cf-dry-3k (3K twill DRY FABRIC) 124.57 is BELOW this 12K fibre price; 3K tow costs more per kg than 12K and weaving adds cost, so the fabric figure looks wrong (low). Book mat-cfrp-prepreg-t700 166.09: derived floor 0.65 × 130.87 + 0.35 × epoxy 20.01 (round 1) = 85.07 + 7.00 = 92.07 PLN/kg before impregnation — not shown wrong."
+    },
+    {
+      "key": "composite.epoxy_prepreg",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found from an attributable source. A search extract of market-report summaries (indexbox.io EU carbon prepreg report pages — not verified) gave €40–70/kg for standard industrial/automotive CF prepreg (= 175–306 PLN/kg) and €80–150/kg aerospace.",
+      "source": "https://www.indexbox.io/store/european-union-multi-directional-carbon-prepreg-market-analysis-forecast-size-trends-and-insights/",
+      "date": "2026 (undated extract)",
+      "notes": "Not used as a value. If confirmed, book T700 prepreg 166.09 (= €37.97/kg) would sit just under the automotive range."
+    },
+    {
+      "key": "paint.powder_polyester",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found (no Polish distributor net price list reachable; Teknos Infralit PE TDS give pack 15/20 kg and 6–10 m²/kg yield, no price). Movement only: Stepan polyester polyols (CASE, Europe) +€150/t from 1 Sep 2026.",
+      "source": "https://www.pcimag.com/articles/115162-stepan-raises-european-case-polyol-prices-by-150-mt",
+      "date": "2026-09-01",
+      "notes": "Allegro listings seen but not usable (no pack size / VAT)."
+    },
+    {
+      "key": "paint.ecoat",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not searched to completion — budget spent on higher priorities; not found.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "sheet.abs_pc_pmma_hdpe_pp",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found: no EU/PL distributor sheet price list per kg or per m² reachable (search is US-only and the Polish sites could not be fetched). Movement only: Trinseo Altuglas PMMA resin +€200/t from 1 Apr 2026 (after a 6 Mar 2026 increase).",
+      "source": "https://plasteurope.com/news/detail.asp?id=254955",
+      "date": "2026",
+      "notes": "Keys polymer.abs_sheet, pc_sheet, pmma_sheet, hdpe_sheet, pp_sheet all unresolved."
+    },
+    {
+      "key": "polymer.pp_t20",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found (talc price not found either). Raw floor without talc: 0.80 × PP homo 5.11 = 4.09 PLN/kg + 20% talc.",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37",
+      "notes": "Book mat-pp-t20 6.20 not tested."
+    },
+    {
+      "key": "masterbatch.black_white",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found (market price). See additive.carbon_black and additive.tio2 for derived raw-material floors.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    }
+  ],
+  "notes": [
+    "FX per RULES.md: USD 3.849, EUR 4.374 PLN. All figures ex-VAT market/contract-type levels in Europe; no freight to a Polish plant added (a few % at most).",
+    "28 web searches used. Every page fetch (plasticker.de, plastech.pl, businessanalytiq.com) failed on DNS from this sandbox; all figures were read from search-engine extracts of the cited pages. Several businessanalytiq extracts carry a '324 days ago' crawl tag beside a 'September 2026' header — the month label is the page's own, but treat as moderate confidence.",
+    "Glass/mineral compounds have no public European price series (PIE / KI / ICIS compound reports are paywalled; Ultramid, Tarnamid are quote-only). Instead this file gives DERIVED raw-material floors (resin share × resin price + glass share × glass fibre price) so obvious book errors can be caught; a floor is not a price.",
+    "Book figures that look wrong: mat-pc-abs 9.49 is below the resin content of its own blend (70/30 = 10.50; even 50/50 = 9.79) — too low. mat-cf-dry-3k 124.57 (3K woven fabric) is below the generic 12K carbon-fibre price 130.87 (IMARC Germany Mar 2026) — too low. mat-pom 10.13 is ~13% below the market index 11.70 (businessanalytiq Jul 2026), which agrees with round 1's Plastech 11.65.",
+    "Book figures that look high but are unconfirmed: mat-pp-gf30 9.13 (1.9× the 4.76 floor); mat-mb-black 11.02 (1.8× the 6.15 floor). Plausible against floors: mat-pa66gf30 15.32 (+22%), mat-pbt-gf30 15.32 (+37%), mat-pps-gf40 27.83 (+28%), mat-mb-white-tio2 16.26.",
+    "Not found: any market price for PA66-GF30, PA6-GF30, PP-GF30, PP-T20, PC/ABS, PBT-GF30, TPU, TPE-S, TPV; all sheet/semi-finished prices; EPDM/NBR/HCR rubber COMPOUND prices; masterbatch prices; polyester powder coating; e-coat; epoxy prepreg (only an unattributed market-report range)."
+  ]
+}
