@@ -1110,7 +1110,7 @@ export const INDIA_BOOK: CountryBook = {
   "groups": [
    {
     "id": "cnc-machining-domestic",
-    "match": "^(mach-vmc3|mach-vmc3-in|mach-haas-vf2|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$",
     "refId": "mach-vmc3",
     "refCapexGbp": 27169.81,
     "basis": "Jyoti CNC average realisation per machine sold ₹34.56 lakh (Q1 FY27; domestic VMC / turning-centre maker); an Indian-built machine of the class — an imported HAAS / Mazak costs more (not found)",

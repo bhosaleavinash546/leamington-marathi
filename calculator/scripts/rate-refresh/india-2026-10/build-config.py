@@ -230,7 +230,7 @@ machines = {
     'ukElectricityGbpPerKwh': 0.268,
     'capitalHeldFactor': 0.52,
     'groups': [
-        {'id': 'cnc-machining-domestic', 'match': '^(mach-vmc3|mach-vmc3-in|mach-haas-vf2|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$', 'refId': 'mach-vmc3',
+        {'id': 'cnc-machining-domestic', 'match': '^(mach-vmc3|mach-haas-vf2|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$', 'refId': 'mach-vmc3',
          'refCapexInr': R['capex.vmc3.domestic']['value'],
          'basis': 'Jyoti CNC average realisation per machine sold ₹34.56 lakh (Q1 FY27; domestic VMC / turning-centre maker); an Indian-built machine of the class — an imported HAAS / Mazak costs more (not found)',
          'research': 'capex.vmc3.domestic', 'source': R['capex.vmc3.domestic']['source'], 'confidence': 'Medium'},
