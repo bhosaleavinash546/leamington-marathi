@@ -232,3 +232,27 @@ describe('the machining-stock basis does not claim a drawing input that does not
     expect(basis).toMatch(/no drawing is read for it/);
   });
 });
+
+import { decisionAnswerText } from '../src/export/decision-text.js';
+
+describe('X29 — an unanswered advisory question prints what the costing used', () => {
+  it('names the costed grade, never "engine default"', () => {
+    expect(decisionAnswerText({ severity: 'advisory', answer: null, used: 'EN-GJS-500-7' })).toBe('not answered - costed as EN-GJS-500-7');
+    expect(decisionAnswerText({ severity: 'blocking', answer: null })).toBe('OPEN');
+    expect(decisionAnswerText({ severity: 'advisory', answer: 'cast iron' })).toBe('cast iron');
+  });
+  it('the PDF and the Excel print it', async () => {
+    const { input, result } = sandCastingResult();
+    const checks = { costable: true, geometryQuality: 'occt', sanity: [], overrides: [],
+      decisions: [{ id: 'material.grade', question: 'Which cast iron grade?', severity: 'advisory', answer: null, used: 'EN-GJS-500-7' }] };
+    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+      { geometrySource: 'occt', checks } as never)).replace(/\n/g, ' ');
+    expect(text).toMatch(/costed as EN-GJS-500-7/);
+    expect(text).not.toMatch(/engine default/);
+    const blob = await exportToExcelBlob(result, input, lib, 'INR', 127.1941, checks as never);
+    const wb = XLSX.read(new Uint8Array(await blob.arrayBuffer()));
+    const all = wb.SheetNames.map(n => XLSX.utils.sheet_to_csv(wb.Sheets[n])).join('\n');
+    expect(all).toMatch(/costed as EN-GJS-500-7/);
+    expect(all).not.toMatch(/engine default/);
+  });
+});

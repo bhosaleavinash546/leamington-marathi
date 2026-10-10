@@ -1,3 +1,4 @@
+import { decisionAnswerText } from './decision-text.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
@@ -289,7 +290,7 @@ export async function exportToExcelBlob(
       ...(checks.sanity.length ? checks.sanity.map(w => [w.code, w.severity, w.blocking ? 'yes' : 'no', w.blocking ? (w.acknowledged ? 'yes' : 'NO') : '', w.message]) : [['none fired']]),
       [],
       ['DECISIONS'], ['Question', 'Severity', 'Answer'],
-      ...(checks.decisions.length ? checks.decisions.map(d => [d.question, d.severity, d.answer ?? (d.severity === 'blocking' ? 'OPEN' : 'engine default')]) : [['none recorded']]),
+      ...(checks.decisions.length ? checks.decisions.map(d => [d.question, d.severity, decisionAnswerText(d)]) : [['none recorded']]),
       [],
       ['RULE-OWNED VALUES'], ['Field', 'Rule', 'Model said', 'Used', 'Basis'],
       ...checks.overrides.map(o => [o.field, o.ruleId, fmtVal(o.from), fmtVal(o.to), o.basis]),

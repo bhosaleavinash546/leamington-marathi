@@ -17590,7 +17590,9 @@ function buildChecksApplied(): CADReportMeta['checks'] {
     costable: !openBlocking && !unacked,
     geometryQuality: cadGeometrySource === 'occt' ? 'occt' : cadGeometrySource === 'stl_parser' ? 'stl' : cadGeometrySource ? 'text' : null,
     sanity: cadSanityWarnings.map(w => ({ ...w, acknowledged: w.blocking ? _cadSanityAcks.has(w.code) : undefined })),
-    decisions: Object.entries(asked).map(([id, d]) => ({ id, question: d.question, severity: d.severity as CADDecision['severity'], answer: _cadDecisionAnswers[id] ?? null })),
+    decisions: Object.entries(asked).map(([id, d]) => ({ id, question: d.question, severity: d.severity as CADDecision['severity'], answer: _cadDecisionAnswers[id] ?? null,
+      // an unanswered grade question: the grade the costing used (casting 360 X29)
+      used: id === 'material.grade' && lastInput ? (library.materials.find(m => m.id === lastInput!.rawMaterial.materialId)?.grade ?? null) : null })),
     overrides: _cadRuleOverrides,
   };
 }

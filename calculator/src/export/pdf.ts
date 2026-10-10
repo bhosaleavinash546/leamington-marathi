@@ -18,6 +18,7 @@ import { exportFilename } from './filename.js';
 import { buildPcbaReport, type PcbaAnalysisLike, type PcbaReport } from './pcba-report-data.js';
 import { brandRgb } from '../brand/index.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
+import { decisionAnswerText } from './decision-text.js';
 
 /**
  * CAD-derived provenance + geometry metadata that rides into the should-cost
@@ -150,7 +151,9 @@ export interface ChecksAppliedMeta {
   costable: boolean;
   geometryQuality?: 'occt' | 'stl' | 'text' | null;
   sanity: Array<{ code: string; message: string; severity: 'warn' | 'error'; blocking?: boolean; acknowledged?: boolean }>;
-  decisions: Array<{ id: string; question: string; severity: 'blocking' | 'advisory'; answer: string | null }>;
+  decisions: Array<{ id: string; question: string; severity: 'blocking' | 'advisory'; answer: string | null;
+    /** What the costing used for an unanswered advisory question (the grade it costed) — never "engine default". */
+    used?: string | null }>;
   /** Rule-owned fields written over the model's value (or set where it said nothing). */
   overrides: Array<{ field: string; ruleId: string; from: unknown; to: unknown; basis: string; contradicted: boolean }>;
 }
@@ -514,7 +517,7 @@ function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG },
       head: [['Decision', 'Severity', 'Answer']],
-      body: ch.decisions.map(d => [d.question, d.severity, d.answer ?? (d.severity === 'blocking' ? 'OPEN' : 'engine default')]),
+      body: ch.decisions.map(d => [d.question, d.severity, decisionAnswerText(d)]),
       styles: { fontSize: 6.5, cellPadding: 1.2 }, headStyles: { fillColor: NAVY, fontSize: 6.5 },
       columnStyles: { 1: { cellWidth: 18 }, 2: { cellWidth: 40 } },
     });
