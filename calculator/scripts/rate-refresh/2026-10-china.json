@@ -1,0 +1,1648 @@
+{
+ "asOf": "2026-10-10",
+ "label": "China rate book — 4-cluster average (Yangtze / Pearl River deltas, Chongqing, Wuhan), 2 × 12 h",
+ "region": "CN",
+ "currency": "CNY",
+ "currencySymbol": "¥",
+ "dir": "scripts/rate-refresh/china-2026-10",
+ "snapshot": "scripts/rate-refresh/china-2026-10/current-china-book.json",
+ "bookFile": "src/engine/country-books/cn.ts",
+ "bookConst": "CHINA_BOOK",
+ "fxPerGbp": 8.88,
+ "labour": {
+  "categories": {
+   "skilled": {
+    "localPerHr": 33.08,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 85,059 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "labour.skilled.monthlyGross.clusterAvg",
+    "research": "labour.skilled.fullyLoadedCnyPerHr"
+   },
+   "semiskilled": {
+    "localPerHr": 31.67,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+    "research": "labour.semiskilled.fullyLoadedCnyPerHr"
+   },
+   "foundry": {
+    "localPerHr": 31.67,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+    "research": "labour.foundry.fullyLoadedCnyPerHr"
+   },
+   "electronics": {
+    "localPerHr": 33.32,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 85,800 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.jobui.com/salary/quanguo-smttiepianjicaozuoyuan/",
+    "research": "labour.electronics.fullyLoadedCnyPerHr"
+   },
+   "inspector": {
+    "localPerHr": 30.82,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 78,000 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.zhaopin.com/zhaopin/00317a19a8314b26b64902b5680454d3/",
+    "research": "labour.inspector.fullyLoadedCnyPerHr"
+   },
+   "technician": {
+    "localPerHr": 39.59,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 105,300 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.jobui.com/salary/quanguo-shebeiweixiugong/",
+    "research": "labour.technician.fullyLoadedCnyPerHr"
+   },
+   "supervisor": {
+    "localPerHr": 41.47,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 111,150 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.jobui.com/salary/quanguo-shengchanzuchang/",
+    "research": "labour.supervisor.fullyLoadedCnyPerHr"
+   },
+   "engineer": {
+    "localPerHr": 99.08,
+    "basis": "Salaried, standard hours: (148,391 + 12 × (24.8% avg employer SI × 12,366 = 3,066.8 + 5% HPF 618.3)) ÷ 1,944 h = (148,391 + 44,221) ÷ 1,944. SI on actual pay (below every cluster cap).",
+    "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+    "research": "labour.engineer.fullyLoadedCnyPerHrStd"
+   }
+  },
+  "grades": {
+   "forge": {
+    "localPerHr": 31.67,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+    "research": "labour.forge.fullyLoadedCnyPerHr"
+   },
+   "furnace": {
+    "localPerHr": 31.67,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+    "research": "labour.furnace.fullyLoadedCnyPerHr"
+   },
+   "blow": {
+    "localPerHr": 31.67,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+    "research": "labour.blow.fullyLoadedCnyPerHr"
+   },
+   "roto": {
+    "localPerHr": 31.67,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+    "research": "labour.roto.fullyLoadedCnyPerHr"
+   },
+   "thermoform": {
+    "localPerHr": 31.67,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+    "research": "labour.thermoform.fullyLoadedCnyPerHr"
+   },
+   "trim-router": {
+    "localPerHr": 33.08,
+    "basis": "2×12 h model: (annual pay incl. OT & bonus 85,059 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+    "source": "labour.skilled.monthlyGross.clusterAvg",
+    "research": "labour.trimRouter.fullyLoadedCnyPerHr"
+   }
+  },
+  "loadingIncluded": "pay incl. overtime (150% weekday, 200% rest day) and a 13th month; employer pension 16%, medical, unemployment, injury and housing fund at the city contribution floor; two 12-h shifts = 3,113 productive h/yr (24 days/month × 11 h worked, less 5 days leave)",
+  "loadingNotIncluded": "meal / dorm allowances, training, absenteeism, severance accrual; social insurance on actual pay (≈ +¥1.3/h) — not sourced",
+  "short": "4-cluster, 2 × 12 h, social insurance at the floor"
+ },
+ "energy": {
+  "gasLocalPerKwh": 0.356,
+  "electricityLocalPerKwh": 0.63,
+  "basis": "Gas: non-residential pipeline gas, Shanghai ¥4.12 / Wuxi ¥3.86 / Guangzhou ¥4.47 (2025) / Chongqing ¥3.37 (seasonal mean) / Wuhan ¥3.71 per m³ incl. 9% VAT — cluster mean ¥3.88 ÷ 1.09 ÷ 10 kWh/m³ = ¥0.356/kWh (NDRC 36-city industrial average ¥0.328 agrees); the book had ¥0.27. Electricity HELD at ¥0.63: the national Sep 2026 1–10 kV TOU average for a 24-h two-shift load is ¥0.594 ex-VAT (¥0.672 incl.), Chongqing ¥0.724 — the book sits inside; provincial all-in averages for Shanghai, Jiangsu, Guangdong, Hubei not found",
+  "sources": [
+   {
+    "research": "energy.gas.clusterAvg",
+    "source": "derived",
+    "date": "2026"
+   },
+   {
+    "research": "energy.gas.national36CityIndustrial",
+    "source": "https://www.ceicdata.com/zh-hans/china/price-monitoring-center-ndrc-36-city-monthly-avg-transaction-price-production-material/cn-usage-price-36-city-avg-natural-gas-natural-gas-for-industry",
+    "date": "2026-04"
+   },
+   {
+    "research": "energy.electricity.clusterAvg",
+    "source": "https://www.sohu.com/a/1074364039_122014422",
+    "date": "2026-09"
+   },
+   {
+    "research": "energy.electricity.Chongqing",
+    "source": "https://finance.sina.com.cn/wm/2026-07-06/doc-inifwscq1812919.shtml",
+    "date": "2026-07"
+   }
+  ]
+ },
+ "machines": {
+  "hoursPerYear": 6336,
+  "hoursBasis": "two 12-h shifts × 11 h worked × 24 days/month × 12 = 6,336 h (the labour model's pattern)",
+  "shiftDepreciationFactor": 1.0,
+  "shiftBasis": "PRC straight-line (time-based) depreciation — no shift uplift on held capital",
+  "lifeYears": 10,
+  "financeRate": 0.035,
+  "financeBasis": "PBoC 5-year LPR 3.5% (20 Sep 2026; 1-year 3.0%) — the book's line build-ups use 4% on half the capex",
+  "ukFinanceRate": 0.04,
+  "maintenancePctOfCapex": 0.035,
+  "maintenanceBasis": "the library's own line build-up rule (3.5% of capex); no Chinese norm found",
+  "rentLocalPerM2Month": 25.47,
+  "rentBasis": "JLL Shanghai logistics rent Q2 2026 ¥31.94/m²/month (a ceiling for a factory) and Dongguan factory rents ¥10–28 (midpoint ¥19; estate-agent article, 2025) — mean; Wuhan / Chongqing averages not found (Chongqing listings ¥4–12 suggest this is high for the inland clusters)",
+  "ukRentGbpPerM2Yr": 110,
+  "capitalHeldFactor": 0.55,
+  "groups": [
+   {
+    "id": "cnc-vmc-domestic",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
+    "refId": "mach-vmc3",
+    "refCapexLocal": 287817,
+    "basis": "Haitian Precision 海天精工 2025 VMC average selling price ¥287,817 ex-VAT (¥841M ÷ 2,922 units); delivery, options and installation not in it",
+    "source": "https://finance.sina.cn/2026-03-23/detail-inhrynrq1147454.d.html ; units: http://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260323/71ad745b243c48e79d848681d7931b2a.PDF",
+    "confidence": "Medium"
+   },
+   {
+    "id": "cnc-lathe-domestic",
+    "match": "^(mach-lathe-cnc|mach-mazak-qt200)$",
+    "refId": "mach-lathe-cnc",
+    "refCapexLocal": 215423,
+    "basis": "Headman 浙海德曼 2025 slant-bed CNC lathe ¥215,423 (¥609M ÷ 2,827 units produced — an approximation)",
+    "source": "https://finance.sina.com.cn/stock/aigc/stockfs/2026-04-27/doc-inhvyknv2104372.shtml ; units: https://basic.10jqka.com.cn/688577/operate.html",
+    "confidence": "Low"
+   },
+   {
+    "id": "cnc-5axis-domestic",
+    "match": "^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$",
+    "refId": "mach-vmc5",
+    "refCapexLocal": 2425100,
+    "basis": "KEDE 科德数控 2024 five-axis average transaction price ¥2.4251M ex-VAT (its mix runs to large machines — top of range; Nawi IPO ¥2.0M)",
+    "source": "https://stcn.com/article/detail/1725042.html ; https://www.stcn.com/article/detail/1413392.html",
+    "confidence": "Low"
+   }
+  ],
+  "notRebuiltBasis": "capex not sourced for China: the book's capital (UK × 0.55) is HELD; the China operating model (2 × 12 h hours, straight-line, LPR finance, rent, tariff, support at China wages) is applied"
+ },
+ "materialFamilies": [
+  {
+   "family": "CR coil (DC01 / DC04)",
+   "anchorLocalPerKg": 3.239,
+   "anchorBasis": "Shanghai 1.0 mm SPCC cold-rolled spot ¥3,239/t ex-VAT (Mysteel, 9 Oct 2026)",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.mysteel.com/hot/563511.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "The book had DC01 ¥5.57 (UK × 0.83).",
+   "proxies": {}
+  },
+  {
+   "family": "CR automotive grades",
+   "anchorLocalPerKg": 3.239,
+   "anchorBasis": "CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.mysteel.com/hot/563511.html",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "ferrous.anchor.baosteel.auto_grades",
+     "source": "https://m.mysteel.com/hot/426801.html",
+     "date": "2026-10-10"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR pickled & oiled",
+   "anchorLocalPerKg": 3.142,
+   "anchorBasis": "SPHC pickled spot ¥3,142/t ex-VAT (Mysteel, Sep 2026)",
+   "sources": [
+    {
+     "research": "ferrous.anchor.pickled",
+     "source": "https://m.mysteel.com/hot/1478441.html",
+     "date": "2026-09-18"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hrpo"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR structural",
+   "anchorLocalPerKg": 2.885,
+   "anchorBasis": "Shanghai 4.75 mm Q235 HRC ¥2,885/t ex-VAT (9 Oct 2026) × the book's premium over HRPO; S355MC / S420MC extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrc",
+     "source": "https://m.mysteel.com/hot/11675.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.77,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-s355mc",
+    "mat-s420mc"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Coated sheet",
+   "anchorLocalPerKg": 3.496,
+   "anchorBasis": "Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hdg",
+     "source": "https://m.mysteel.com/hot/39907.html",
+     "date": "2026-09-29"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "45# medium-carbon bar",
+   "anchorLocalPerKg": 3.257,
+   "anchorBasis": "Shanghai 45# (C45) round bar ¥3,257/t ex-VAT (Mysteel, 24 Sep 2026)",
+   "sources": [
+    {
+     "research": "ferrous.bar.45",
+     "source": "https://m.mysteel.com/hot/78153.html",
+     "date": "2026-09-24"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-steel1045",
+    "mat-steel-c45",
+    "mat-en8"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon / micro-alloyed bar",
+   "anchorLocalPerKg": 3.257,
+   "anchorBasis": "45# bar ¥3.26 × the book's premium over C45; 38MnVS / 1215 / A105 extras not found",
+   "sources": [
+    {
+     "research": "ferrous.bar.45",
+     "source": "https://m.mysteel.com/hot/78153.html",
+     "date": "2026-09-24"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-steel-c35",
+    "mat-steel1020",
+    "mat-steel-a105",
+    "mat-steel-c70s6",
+    "mat-steel1141",
+    "mat-steel-en3-bar",
+    "mat-steel-11smnpb30",
+    "mat-steel-30mnvs6",
+    "mat-steel-38mnvs6"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "40Cr",
+   "anchorLocalPerKg": 3.451,
+   "anchorBasis": "Shanghai 40Cr round bar ¥3,451/t ex-VAT (24 Sep 2026) — the GB equivalent of 41Cr4 / 5140",
+   "sources": [
+    {
+     "research": "ferrous.bar.40Cr",
+     "source": "https://m.mysteel.com/hot/13617.html",
+     "date": "2026-09-24"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-steel-41cr4"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "42CrMo",
+   "anchorLocalPerKg": 4.283,
+   "anchorBasis": "Shanghai 42CrMo round bar ¥4,283/t ex-VAT (24 Sep 2026) — 42CrMo4 / 4140 (the book held the same grade at two prices)",
+   "sources": [
+    {
+     "research": "ferrous.bar.42CrMo",
+     "source": "https://m.mysteel.com/hot/78153.html",
+     "date": "2026-09-24"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-steel-42crmo4",
+    "mat-steel4140"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Case-hardening bar",
+   "anchorLocalPerKg": 3.646,
+   "anchorBasis": "Shanghai 20CrMnTi round bar ¥3,646/t ex-VAT (24 Sep 2026) — the GB case-hardening workhorse, used for 20MnCr5 / 16MnCr5",
+   "sources": [
+    {
+     "research": "ferrous.bar.20CrMnTi",
+     "source": "https://m.mysteel.com/hot/78153.html",
+     "date": "2026-09-24"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-steel-20mncr5",
+    "mat-steel-16mncr5"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Bearing steel",
+   "anchorLocalPerKg": 5.265,
+   "anchorBasis": "GCr15 ex-mill ¥5,265/t ex-VAT (23 Sep 2026) — 52100 / 100Cr6",
+   "sources": [
+    {
+     "research": "ferrous.bar.GCr15",
+     "source": "https://m.mysteel.com/hot/13792.html",
+     "date": "2026-09-23"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-steel-52100"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Cr-Mo / Cr-Mo alloy bar",
+   "anchorLocalPerKg": 4.283,
+   "anchorBasis": "42CrMo bar ¥4.28 × the book's premium over 42CrMo4 (Ni-bearing and aerospace grades: Chinese prices not found)",
+   "sources": [
+    {
+     "research": "ferrous.bar.42CrMo",
+     "source": "https://m.mysteel.com/hot/78153.html",
+     "date": "2026-09-24"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.61,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-steel4340",
+    "mat-steel4130",
+    "mat-steel8620",
+    "mat-steel-34crnimo6",
+    "mat-steel-18crnimo7-6",
+    "mat-steel-f22",
+    "mat-steel-300m"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304 stainless bar",
+   "anchorLocalPerKg": 12.168,
+   "anchorBasis": "304 round bar ¥12,168/t ex-VAT (30 Sep 2026)",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_bar",
+     "source": "https://m.mysteel.com/hot/567231.html",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-bar",
+    "mat-ss304l-bar"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "303 free-machining bar",
+   "anchorLocalPerKg": 12.168,
+   "anchorBasis": "304 bar ¥12.17 × the book's premium of 303 over 304 bar",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_bar",
+     "source": "https://m.mysteel.com/hot/567231.html",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.53,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss303"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "316L",
+   "anchorLocalPerKg": 26.504,
+   "anchorBasis": "316L cold-rolled coil ¥26,504/t ex-VAT (Wuxi, 30 Sep 2026); bar taken at the coil price (316L bar not found)",
+   "sources": [
+    {
+     "research": "ferrous.stainless.316L_CR",
+     "source": "https://list1.m.mysteel.com/zhishi/316bxglsjg.html",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet",
+    "mat-ss316l",
+    "mat-ss316l-bar"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304 sheet",
+   "anchorLocalPerKg": 12.755,
+   "anchorBasis": "304 CR 2B: Wuxi spot ¥12,146/t and Tisco cut-edge ¥13,363/t ex-VAT (Sep–Oct 2026) — mean",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://list1.mysteel.com/zhishi/wx304bxgjgzxxqzs.html",
+     "date": "2026-10-08"
+    },
+    {
+     "research": "ferrous.stainless.304_CR_2B_tisco",
+     "source": "https://www.ccmn.cn/bxg/304/",
+     "date": "2026-09 (late; date not shown in result)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "301 spring strip",
+   "anchorLocalPerKg": 12.755,
+   "anchorBasis": "304 sheet ¥12.75 × the book's premium of 301 over 304L sheet",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://list1.mysteel.com/zhishi/wx304bxgjgzxxqzs.html",
+     "date": "2026-10-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.49,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss301-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "430 ferritic sheet",
+   "anchorLocalPerKg": 6.726,
+   "anchorBasis": "430 CR coil ¥6,726/t ex-VAT (9 Oct 2026)",
+   "sources": [
+    {
+     "research": "ferrous.stainless.430_CR",
+     "source": "https://m.mysteel.com/hot/580230.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "409L / 441 ferritic sheet",
+   "anchorLocalPerKg": 6.681,
+   "anchorBasis": "409L CR ¥6,681/t ex-VAT (Jun 2026 — stale); 441 at the book's premium over 409L",
+   "sources": [
+    {
+     "research": "ferrous.stainless.409L_CR",
+     "source": "https://hq.smm.cn/h5/sus-400sus-price",
+     "date": "2026-06"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.85,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Martensitic stainless bar (410 / 416 / 420 / 431)",
+   "anchorLocalPerKg": 6.726,
+   "anchorBasis": "430 CR ¥6.73 (13–17% Cr, the nearest priced chromium stainless) × the book's premium of each bar over 430 sheet — martensitic bar prices not found",
+   "sources": [
+    {
+     "research": "ferrous.stainless.430_CR",
+     "source": "https://m.mysteel.com/hot/580230.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.97,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss410-bar",
+    "mat-ss416-bar",
+    "mat-ss420-bar",
+    "mat-ss431-bar"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "NO electrical steel 0.35 mm",
+   "anchorLocalPerKg": 5.177,
+   "anchorBasis": "35W300 non-oriented ¥4.89–5.18/kg ex-VAT (Sep 2026; upper end used) — for M270-35A / M330-35A",
+   "sources": [
+    {
+     "research": "ferrous.electrical.35W300",
+     "source": "https://m.mysteel.com/hot/3849.html",
+     "date": "2026-09-20"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nogo-m270-35a",
+    "mat-m330-35a"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "NO electrical steel, premium / thin / high-strength",
+   "anchorLocalPerKg": 5.177,
+   "anchorBasis": "35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found)",
+   "sources": [
+    {
+     "research": "ferrous.electrical.35W300",
+     "source": "https://m.mysteel.com/hot/3849.html",
+     "date": "2026-09-20"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.74,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-m235-35a",
+    "mat-no27-27a",
+    "mat-no25-25a",
+    "mat-no20-20a",
+    "mat-no15-15a",
+    "mat-no10-10a",
+    "mat-hsno-rotor-700",
+    "mat-hsno-rotor-960",
+    "mat-uhsno-1100"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "NO electrical steel 0.50 / 0.65 mm",
+   "anchorLocalPerKg": 3.938,
+   "anchorBasis": "50W800 non-oriented ¥3,938/t ex-VAT (Sep 2026) × the book's premium over M700-65A, floored at 50W800",
+   "sources": [
+    {
+     "research": "ferrous.electrical.50W800",
+     "source": "https://m.mysteel.com/hot/3849.html",
+     "date": "2026-09-20"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.14,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-m700-65a",
+    "mat-m600-50a",
+    "mat-m470-50a",
+    "mat-nogo-m400-50a",
+    "mat-m250-50a",
+    "mat-no-semiproc-50"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorLocalPerKg": 2.69,
+   "anchorBasis": "Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJS-500-7",
+     "source": "https://m.mysteel.com/hot/1487195.html",
+     "date": "2026-09-30"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron_nodular_Q10",
+     "source": "https://m.mysteel.com/hot/1487195.html",
+     "date": "2026-09-30"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://news.mysteel.com/a/26100711/92F88C485B219078.html",
+     "date": "2026-10-07"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Grey / malleable iron (charge)",
+   "anchorLocalPerKg": 2.35,
+   "anchorBasis": "Grey-iron charge ¥2.35/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJL-250",
+     "source": "https://www.mysteel.com/hot/1486014.html",
+     "date": "2026-09-30"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron_casting_Z18",
+     "source": "https://www.mysteel.com/hot/1486014.html",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorLocalPerKg": 2.16,
+   "anchorBasis": "Steel-foundry charge ¥2.16/kg (heavy melting scrap ¥2.05, Mysteel 45-city, + deoxidation) + the book's premium in £/kg (Cr–Mo)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GS-C25",
+     "source": "https://news.mysteel.com/a/26100711/92F88C485B219078.html",
+     "date": "2026-10-07"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://news.mysteel.com/a/26100711/92F88C485B219078.html",
+     "date": "2026-10-07"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast stainless (charge)",
+   "anchorLocalPerKg": 8.62,
+   "anchorBasis": "CF8 charged as 304 scrap ¥8.62/kg (304 scrap ¥8.36 + melt trim; virgin-alloy upper bound ¥14.9) + the book's premium in £/kg (Mo / Ni / Cr)",
+   "sources": [
+    {
+     "research": "ferrous.charge.CF8",
+     "source": "https://list1.mysteel.com/zhishi/ntjgzst25884.html",
+     "date": "2026-09-29"
+    },
+    {
+     "research": "ferrous.stainless.304_scrap",
+     "source": "https://list1.mysteel.com/zhishi/ntjgzst25884.html",
+     "date": "2026-09-29"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorLocalPerKg": 23.904,
+   "anchorBasis": "0.20 × Ni ¥107.65 (Changjiang, 9 Oct) + 0.02 × Cr ¥13.80 (HC FeCr) + 0.78 × ductile charge ¥2.69",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "http://news.10jqka.com.cn/20261009/c680512152.shtml",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://m.mysteel.com/zta/gaotangetie/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorLocalPerKg": 39.758,
+   "anchorBasis": "0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 ¥5.442 + 0.59 × ductile charge",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "http://news.10jqka.com.cn/20261009/c680512152.shtml",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "High-Cr white iron (charge)",
+   "anchorLocalPerKg": 4.983,
+   "anchorBasis": "0.23 × Cr ¥13.80 + 0.77 × grey charge ¥2.35",
+   "sources": [
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://m.mysteel.com/zta/gaotangetie/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary cast aluminium (ingot)",
+   "anchorLocalPerKg": 21.68,
+   "anchorBasis": "SMM ADC12 ¥21,680/t ex-VAT (30 Sep 2026) × the book's premium over ADC12 (Mysteel Foshan A380 ¥22.30, 1 Sep, agrees)",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.smm.com.cn/price",
+     "date": "2026-09-30"
+    },
+    {
+     "research": "nonferrous.al.a380",
+     "source": "https://list1.m.mysteel.com/zhishi/lhjgfjg.html",
+     "date": "2026-09-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-a413",
+    "mat-a319",
+    "mat-lm4",
+    "mat-en-ac-46200"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary ADC12",
+   "anchorLocalPerKg": 21.68,
+   "anchorBasis": "SMM ADC12 ¥21.68 — the book's \"secondary\" ¥18.12 sat below the market it is",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.smm.com.cn/price",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "A356 / AlSi7Mg",
+   "anchorLocalPerKg": 21.42,
+   "anchorBasis": "SMM A356.2 ingot ¥21,420/t ex-VAT (30 Sep 2026)",
+   "sources": [
+    {
+     "research": "nonferrous.al.a356",
+     "source": "https://www.smm.com.cn/price",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lm25",
+    "mat-a365"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Primary-based cast aluminium",
+   "anchorLocalPerKg": 21.42,
+   "anchorBasis": "A356 ¥21.42 × the book's premium over LM25, floored at A356 (AlSi10Mg, structural HPDC and giga-casting alloy prices not found; A00 ¥21.47)",
+   "sources": [
+    {
+     "research": "nonferrous.al.a356",
+     "source": "https://www.smm.com.cn/price",
+     "date": "2026-09-30"
+    },
+    {
+     "research": "nonferrous.al.a00",
+     "source": "https://finance.sina.com.cn/money/future/indu/2026-09-30/doc-initqzmc2066184.shtml",
+     "date": "2026-09 (article 2026-09-30)"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.98,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-alsi10mg",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm6",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorLocalPerKg": 98.71,
+   "anchorBasis": "Changjiang 1# copper ¥98,710/t ex-VAT (30 Sep 2026) — the book's bar and sheet ¥96.78 were below the copper they contain",
+   "sources": [
+    {
+     "research": "nonferrous.cu.spot",
+     "source": "https://m.ccmn.cn/",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper",
+    "mat-cu-hairpin"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Free-machining / forging brass rod",
+   "anchorLocalPerKg": 66.19,
+   "anchorBasis": "HPb59-1 brass rod ¥66,190/t ex-VAT (Ningbo, 29 Sep 2026) — CW614N / CW617N equivalent",
+   "sources": [
+    {
+     "research": "nonferrous.brass.HPb59-1_rod",
+     "source": "https://list1.mysteel.com/zhishi/nbtbjgzxxq.html",
+     "date": "2026-09-29"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-brass-cz121",
+    "mat-brass-cz122-forge"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "70/30 and 63/37 brass sheet",
+   "anchorLocalPerKg": 74.34,
+   "anchorBasis": "H62 brass rod ¥74,340/t ex-VAT (Ningbo, 29 Sep) × the book's premium of CZ108 sheet — H62 is the nearest priced CuZn37",
+   "sources": [
+    {
+     "research": "nonferrous.brass.H62_rod",
+     "source": "https://list1.mysteel.com/zhishi/nbtbjgzxxq.html",
+     "date": "2026-09-29"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cz108-brass"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Phosphor / tin bronze (floor)",
+   "anchorLocalPerKg": 124.091,
+   "anchorBasis": "Metal content 0.89 × Cu ¥98.71 + 0.105 × Sn ¥345.13",
+   "sources": [
+    {
+     "research": "nonferrous.cu.spot",
+     "source": "https://m.ccmn.cn/",
+     "date": "2026-09-30"
+    },
+    {
+     "research": "nonferrous.sn.spot",
+     "source": "https://news.metal.com/newscontent/104146823",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-bronze-pb1",
+    "mat-bronze-c905",
+    "mat-cusn12-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 3",
+   "anchorLocalPerKg": 24.02,
+   "anchorBasis": "No.3 zinc alloy ingot ¥24,020/t ex-VAT (SMM, 30 Sep 2026)",
+   "sources": [
+    {
+     "research": "nonferrous.zn.zamak3",
+     "source": "https://list1.m.mysteel.com/zhishi/2026nxhjjgylb.html",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak3"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 5 / 2 / ZA",
+   "anchorLocalPerKg": 24.52,
+   "anchorBasis": "No.5 zinc alloy ingot ¥24,520/t ex-VAT (30 Sep 2026); Zamak 2 and ZA-8 / ZA-27 × the book's premium over Zamak 5",
+   "sources": [
+    {
+     "research": "nonferrous.zn.zamak5",
+     "source": "https://list1.m.mysteel.com/zhishi/2026nxhjjgylb.html",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.24,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-zamak5",
+    "mat-zamak2",
+    "mat-za8",
+    "mat-za27"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Magnesium die-cast alloys",
+   "anchorLocalPerKg": 16.02,
+   "anchorBasis": "AZ91D ingot ¥16.02/kg ex-VAT (Jul 2026); Mg ingot ¥13.72 (Fugu, 9 Oct) agrees; AM60 / AM50 / AE44 × the book's premium over AZ91D",
+   "sources": [
+    {
+     "research": "nonferrous.mg.az91d",
+     "source": "https://hq.91jinshu.com/zd91dmeihejin/202607/52846.html",
+     "date": "2026-07-23"
+    },
+    {
+     "research": "nonferrous.mg.ingot",
+     "source": "https://www.sohu.com/a/1085524211_121123889",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.81,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-mag-az91",
+    "mat-mag-am60",
+    "mat-mag-am50",
+    "mat-mag-ae44"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PP family",
+   "anchorLocalPerKg": 8.79,
+   "anchorBasis": "PP T30S ¥8.79/kg ex-VAT (SunSirs, 1 Oct 2026) × the book's premium over PP homopolymer (copolymer K8003 not found)",
+   "sources": [
+    {
+     "research": "polymer.pp_homo",
+     "source": "http://www.chemrp.com/info/detail-20261001-6294429.html",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.99,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pp-homo",
+    "mat-pp",
+    "mat-pp-impact",
+    "mat-pp-bm",
+    "mat-pp-ext-sheet",
+    "mat-ppr-pipe",
+    "mat-pp-roto",
+    "mat-pp-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PE family",
+   "anchorLocalPerKg": 9.27,
+   "anchorBasis": "HDPE ¥9.27/kg ex-VAT (SunSirs, 1 Oct 2026) × the book's premium over HDPE",
+   "sources": [
+    {
+     "research": "polymer.hdpe",
+     "source": "https://hdpe.100ppi.com/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hdpe",
+    "mat-hdpe-bm",
+    "mat-hdpe-fuel-coex",
+    "mat-pe100-pipe",
+    "mat-pe80-pipe",
+    "mat-hdpe-profile",
+    "mat-hdpe-roto",
+    "mat-xlpe-roto",
+    "mat-fr-pe-roto",
+    "mat-foam-pe-roto",
+    "mat-cond-pe-roto",
+    "mat-hdpe-tf",
+    "mat-pex-pipe"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LDPE family",
+   "anchorLocalPerKg": 9.16,
+   "anchorBasis": "LDPE ¥9.16/kg ex-VAT (Aug 2026) × the book's premium over LDPE",
+   "sources": [
+    {
+     "research": "polymer.ldpe",
+     "source": "https://www.100ppi.com/news/detail-20260813-6060907.html",
+     "date": "2026-08-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.09,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ldpe",
+    "mat-ldpe-bm",
+    "mat-ldpe-tube",
+    "mat-ldpe-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LLDPE family",
+   "anchorLocalPerKg": 8.31,
+   "anchorBasis": "LLDPE ¥8.31/kg ex-VAT (1 Oct 2026) × the book's premium over LLDPE",
+   "sources": [
+    {
+     "research": "polymer.lldpe",
+     "source": "https://m.10jqka.com.cn/20261001/c680427759.shtml",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lldpe",
+    "mat-lldpe-bm",
+    "mat-lldpe-roto"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PVC family",
+   "anchorLocalPerKg": 4.31,
+   "anchorBasis": "PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC",
+   "sources": [
+    {
+     "research": "polymer.pvc_sg5",
+     "source": "https://pvc.100ppi.com/news/list---1.html",
+     "date": "2026-10-05"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-upvc",
+    "mat-fpvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe",
+    "mat-pvc-cable",
+    "mat-upvc-window-profile",
+    "mat-pvcp-profile",
+    "mat-pvc-foam",
+    "mat-rpvc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ABS family",
+   "anchorLocalPerKg": 10.01,
+   "anchorBasis": "ABS ¥10.01/kg ex-VAT (1 Oct 2026) × the book's premium over ABS",
+   "sources": [
+    {
+     "research": "polymer.abs",
+     "source": "https://abs.100ppi.com/news/list--121311-1.html",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.62,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-abs",
+    "mat-abs-ext-sheet",
+    "mat-abs-tf",
+    "mat-abs-fr"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PS",
+   "anchorLocalPerKg": 9.85,
+   "anchorBasis": "PS ¥9.85/kg ex-VAT (5 Oct 2026) × the book's premium over GPPS",
+   "sources": [
+    {
+     "research": "polymer.ps",
+     "source": "http://www.chemrp.com/info/detail-20260902-6155369.html",
+     "date": "2026-10-05"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.37,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gpps",
+    "mat-hips",
+    "mat-gpps-ext"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC family",
+   "anchorLocalPerKg": 11.12,
+   "anchorBasis": "PC ¥11.12/kg ex-VAT (Jul 2026; still falling in Sep) × the book's premium over PC",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "http://www.chemrp.com/info/detail-20260709-5896771.html",
+     "date": "2026-07-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc",
+    "mat-pc-glazing",
+    "mat-pc-bm",
+    "mat-pc-ext-sheet",
+    "mat-pc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA6 family",
+   "anchorLocalPerKg": 10.47,
+   "anchorBasis": "PA6 chips ¥10.47/kg ex-VAT (Jul 2026) × the book's premium over PA6",
+   "sources": [
+    {
+     "research": "polymer.pa6_chips",
+     "source": "https://pa6.100ppi.com/",
+     "date": "2026-07-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.68,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-bm",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA66",
+   "anchorLocalPerKg": 16.9,
+   "anchorBasis": "PA66 chips ¥16.90/kg ex-VAT (producer offers, 22 Sep 2026)",
+   "sources": [
+    {
+     "research": "polymer.pa66_chips",
+     "source": "http://stock.10jqka.com.cn/20260922/c680178557.shtml",
+     "date": "2026-09-22"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "POM",
+   "anchorLocalPerKg": 11.54,
+   "anchorBasis": "POM ¥11.54/kg ex-VAT (Jun 2026) × the book's premium over POM",
+   "sources": [
+    {
+     "research": "polymer.pom",
+     "source": "https://www.100ppi.com/news/detail-20260724-5970637.html",
+     "date": "2026-06-12"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pom",
+    "mat-pom-rod"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PBT",
+   "anchorLocalPerKg": 8.85,
+   "anchorBasis": "PBT ≤ ¥8.85/kg ex-VAT (Q2 2026: OilChem — trades below ¥10,000/t incl. VAT; a ceiling)",
+   "sources": [
+    {
+     "research": "polymer.pbt",
+     "source": "https://plas.oilchem.net/plastic/pbt.shtml",
+     "date": "2026-Q2"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pbt"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PET family",
+   "anchorLocalPerKg": 7.74,
+   "anchorBasis": "PET bottle chip ¥7.74/kg ex-VAT (1 Oct 2026) × the book's premium over PET bottle grade",
+   "sources": [
+    {
+     "research": "polymer.pet_bottle",
+     "source": "https://m.10jqka.com.cn/20261001/c680427815.shtml",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.21,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pet-bg",
+    "mat-pet-preform",
+    "mat-apet-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PMMA family",
+   "anchorLocalPerKg": 13.36,
+   "anchorBasis": "PMMA ¥13.36/kg ex-VAT (30 Sep 2026) × the book's premium over PMMA",
+   "sources": [
+    {
+     "research": "polymer.pmma",
+     "source": "https://m.mysteel.com/hot/1592840.html",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.4,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pmma",
+    "mat-pmma-ext-sheet",
+    "mat-pmma-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "TPU family",
+   "anchorLocalPerKg": 15.75,
+   "anchorBasis": "TPU (Wanhua 1565A) ¥15.75/kg ex-VAT (30 Sep 2026) × the book's premium over TPU 85A",
+   "sources": [
+    {
+     "research": "polymer.tpu",
+     "source": "https://rp.100ppi.com/price/plist-459-1.html",
+     "date": "2026-09-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-tpu-shore85",
+    "mat-tpu-ext-hose"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PEEK family",
+   "anchorLocalPerKg": 247.3,
+   "anchorBasis": "PEEK ≈ ¥247/kg ex-VAT — 中研股份 FY2025 PEEK revenue ÷ tonnes sold (a domestic producer ASP, derived)",
+   "sources": [
+    {
+     "research": "polymer.peek",
+     "source": "https://news.qq.com/rain/a/20260429A0934U00",
+     "date": "2025 (FY, published 2026-04-29)"
+    }
+   ],
+   "method": "ladder",
+   "base": 76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-peek",
+    "mat-peek-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Natural rubber (raw)",
+   "anchorLocalPerKg": 16.9,
+   "anchorBasis": "SCRWF / NR ¥16.90/kg ex-VAT (SunSirs, 6 Oct 2026) for the book's raw NR SMR20 line; compounds held",
+   "sources": [
+    {
+     "research": "rubber.nr",
+     "source": "https://nr.100ppi.com/",
+     "date": "2026-10-06"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "grain-oriented, cobalt-iron, nickel-iron, amorphous electrical steel": "No Chinese 2026 price found — held",
+  "PH / duplex stainless bar (17-4PH, 15-5PH, 2205)": "Not found — held",
+  "wrought aluminium sheet / plate / forging stock": "5052 conversion fee ¥2.5–2.7k/t is a 2025 figure; 6061 plate fee not found — held (extrusion billets move by the billet premium)",
+  "titanium, nickel superalloys": "TC4 ingot ¥56/kg and sponge ¥39/kg found, but no dated bar price (the book bar ¥324–406 is a conversion product) — held and flagged",
+  "aluminium bronze, gunmetal, cast brass": "Not found — held",
+  "filled / FR / blended compounds, TPE / TPV, PPS, PEI, LCP, PA12 and other engineering grades without an anchor": "Only a branded PA66-GF30 trade article (¥31) — held",
+  "rubber compounds (EPDM / NBR / CR / FKM / silicone 70 Shore A …)": "Raw polymers found (SBR ¥12.2, NBR ¥14.3, EPDM ¥22.8, CR ¥32.7) but a compound is not its polymer — held",
+  "composites (prepreg, fabrics, SMC), paint, foam cores, engineering-plastic stock shapes": "Carbon fibre (2025), epoxy E-51 ¥12.6 and E-glass roving ¥3.16 found; the book lines are fabrics / prepregs / systems — held"
+ },
+ "alBilletPremiumUsdPerT": {
+  "value": -21,
+  "current": -186,
+  "basis": "A00 ¥21.47/kg (Changjiang Sep 2026 avg) + 6063 billet fee ¥0.045/kg (Foshan, Sep 2026), ex-VAT = $3219/t at ¥6.684/$ — over the library LME $3240",
+  "research": "nonferrous.al.billet6063_premium",
+  "source": "https://list1.mysteel.com/zhishi/lvdingjiagongfei.html",
+  "date": "2026-09-18"
+ }
+}

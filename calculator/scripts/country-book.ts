@@ -156,11 +156,13 @@ for (const [k, v] of Object.entries(cfg.labour.grades as Record<string, LabourCf
 const E = cfg.energy;
 const curElec = SNAP.regional.energy.electricityPerKwh * FX, curGas = SNAP.regional.energy.gasPerKwh * FX;
 const newElec: number | undefined = E.electricityLocalPerKwh, newGas: number | undefined = E.gasLocalPerKwh;
-const elecGbp = newElec !== undefined ? r4(newElec / FX) : RD.energy.electricityPerKwh;
-const gasGbp = newGas !== undefined ? r4(newGas / FX) : RD.energy.gasPerKwh;
+// a figure the evidence agrees with (within 0.5%) is HELD at the regional value, not re-rounded through the local currency
+const moved = (nw: number | undefined, curLocal: number) => nw !== undefined && Math.abs(nw - curLocal) > 0.005 * curLocal;
+const elecGbp = moved(newElec, SNAP.regional.energy.electricityPerKwh * FX) ? r4(newElec! / FX) : SNAP.regional.energy.electricityPerKwh;
+const gasGbp = moved(newGas, SNAP.regional.energy.gasPerKwh * FX) ? r4(newGas! / FX) : SNAP.regional.energy.gasPerKwh;
 const eSrc = E.sources.map((s: { source: string }) => s.source).join(' ; ');
-register.push({ kind: 'energy', id: 'electricity', name: 'industrial electricity', currentInr: r2(curElec), newInr: r2(newElec ?? curElec), unit: `${SYM}/kWh`, decision: newElec !== undefined ? 'updated' : 'held (evidence agrees)', basis: E.basis, source: eSrc });
-register.push({ kind: 'energy', id: 'gas', name: 'industrial gas', currentInr: r2(curGas), newInr: r2(newGas ?? curGas), unit: `${SYM}/kWh`, decision: newGas !== undefined ? 'updated' : 'held (evidence agrees)', basis: E.basis, source: eSrc });
+register.push({ kind: 'energy', id: 'electricity', name: 'industrial electricity', currentInr: r2(curElec), newInr: r2(newElec ?? curElec), unit: `${SYM}/kWh`, decision: newElec !== undefined && Math.abs(newElec - curElec) > 0.005 * curElec ? 'updated' : 'held (evidence agrees)', basis: E.basis, source: eSrc });
+register.push({ kind: 'energy', id: 'gas', name: 'industrial gas', currentInr: r2(curGas), newInr: r2(newGas ?? curGas), unit: `${SYM}/kWh`, decision: newGas !== undefined && Math.abs(newGas - curGas) > 0.005 * curGas ? 'updated' : 'held (evidence agrees)', basis: E.basis, source: eSrc });
 
 // ── machines ─────────────────────────────────────────────────────────────────
 const M = cfg.machines;
@@ -260,7 +262,7 @@ writeFileSync(LIB, lib);
 if (billet) {
   const ALD = resolve(ROOT, 'src/engine/al-extrusion-data.ts');
   let ald = readFileSync(ALD, 'utf8');
-  const billetRe = new RegExp(`  ${REGION}: \\{ usdPerT: [0-9]+, sourced: (true|false), basis: '[^']*' \\},`);
+  const billetRe = new RegExp(`  ${REGION}: \\{ usdPerT: -?[0-9]+, sourced: (true|false), basis: '[^']*' \\},`);
   if (!billetRe.test(ald)) throw new Error(`BILLET_PREMIUM_USD_PER_T.${REGION} not found`);
   ald = ald.replace(billetRe, `  ${REGION}: { usdPerT: ${billet.value}, sourced: true, basis: '${String(billet.basis).replace(/'/g, '’')} (${NAME} rate book ${cfg.asOf})' },`);
   writeFileSync(ALD, ald);

@@ -18,6 +18,7 @@
 import type { MachineRate, MachineRateBuildup, MaterialRate, Confidence } from './types.js';
 import { computeMachineRatePerHr } from './rate-library-merge.js';
 import { INDIA_BOOK } from './country-books/in.js';
+import { CHINA_BOOK } from './country-books/cn.js';
 
 export interface CountryMaterialPrice { gbpPerKg: number; scrapGbpPerKg?: number; basis: string; source: string; confidence: Confidence }
 export interface CountryMachineGroup {
@@ -65,7 +66,7 @@ export interface CountryBook {
   materials: Record<string, CountryMaterialPrice>;
 }
 
-export const COUNTRY_BOOKS: Record<string, CountryBook | undefined> = { IN: INDIA_BOOK };
+export const COUNTRY_BOOKS: Record<string, CountryBook | undefined> = { IN: INDIA_BOOK, CN: CHINA_BOOK };
 
 const r0 = (n: number) => Math.round(n);
 

@@ -6,6 +6,7 @@
  * docs/rates/2026-10-country-rates-review.md lists the errors these pin.
  */
 import { describe, it, expect } from 'vitest';
+import { COUNTRY_BOOKS } from '../src/engine/country-books.js';
 import { readFileSync } from 'node:fs';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
 import {
@@ -44,12 +45,16 @@ describe('1. the China book carries China rates, every line', () => {
     for (const cat of ['skilled', 'semiskilled', 'engineer', 'foundry', 'inspector', 'technician', 'supervisor', 'electronics'] as const) {
       expect(CN.labour.find(l => l.id === `lab-uk-${cat}`)!.fullyLoadedRatePerHr, cat).toBe(R.CN.labour[cat]);
     }
+    // China's process grades are its own book's (China rate book, Oct 2026: NBS / recruiter wages, 2 × 12 h)
+    for (const g of ['forge', 'furnace', 'blow', 'roto', 'thermoform', 'trim-router'] as const) {
+      expect(CN.labour.find(l => l.id === `lab-uk-${g}`)!.fullyLoadedRatePerHr, g).toBe(COUNTRY_BOOKS.CN!.labourGrades[g].gbpPerHr);
+    }
+    // a country without a book still moves a process grade by ITS category, not by "skilled"
+    const TR = buildRegionalLibrary(UK, 'TR');
     const ukForge = UK.labour.find(l => l.id === 'lab-uk-forge')!.fullyLoadedRatePerHr;
-    expect(CN.labour.find(l => l.id === 'lab-uk-forge')!.fullyLoadedRatePerHr)
-      .toBeCloseTo(ukForge * R.CN.labour.foundry / R.UK.labour.foundry, 2);
+    expect(TR.labour.find(l => l.id === 'lab-uk-forge')!.fullyLoadedRatePerHr).toBeCloseTo(ukForge * R.TR.labour.foundry / R.UK.labour.foundry, 2);
     const ukBlow = UK.labour.find(l => l.id === 'lab-uk-blow')!.fullyLoadedRatePerHr;
-    expect(CN.labour.find(l => l.id === 'lab-uk-blow')!.fullyLoadedRatePerHr)
-      .toBeCloseTo(ukBlow * R.CN.labour.semiskilled / R.UK.labour.semiskilled, 2);
+    expect(TR.labour.find(l => l.id === 'lab-uk-blow')!.fullyLoadedRatePerHr).toBeCloseTo(ukBlow * R.TR.labour.semiskilled / R.UK.labour.semiskilled, 2);
   });
   it('energy is China\'s, and every machine is re-priced', () => {
     expect(CN.energy).toHaveLength(1);

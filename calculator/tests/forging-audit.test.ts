@@ -131,12 +131,13 @@ describe('F-H4 — exchange vs mill metal pricing', () => {
   });
 
   it('exchange-traded alloys stay near-flat by country; mill steel spreads wider', () => {
-    const cn = buildRegionalLibrary(lib, 'CN');
-    const inconelRatio = matPrice(cn, 'mat-inconel718-forge') / matPrice(lib, 'mat-inconel718-forge');
-    const steelRatio = matPrice(cn, 'mat-steel4340') / matPrice(lib, 'mat-steel4340');
+    // the regional SCALING (a country without its own book — China and India now price 4340 from their own markets)
+    const tr = buildRegionalLibrary(lib, 'TR');
+    const inconelRatio = matPrice(tr, 'mat-inconel718-forge') / matPrice(lib, 'mat-inconel718-forge');
+    const steelRatio = matPrice(tr, 'mat-steel4340') / matPrice(lib, 'mat-steel4340');
     expect(inconelRatio).toBeGreaterThan(0.95);   // global nickel market ~flat
-    expect(steelRatio).toBeLessThan(inconelRatio); // mill steel discounts more in CN
-    expect(steelRatio).toBeCloseTo(REGIONAL_DATA.CN.materialMultiplier, 2); // CN materialMultiplier
+    expect(steelRatio).toBeLessThan(inconelRatio); // mill steel discounts more
+    expect(steelRatio).toBeCloseTo(REGIONAL_DATA.TR.materialMultiplier, 2);
   });
 
   it('UK metal prices are unchanged (identity)', () => {

@@ -260,15 +260,17 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     packagingMultiplier: 0.80,
     logisticsMultiplier: 1.30,
   },
+  // China: labour from the China rate book 2026-10-10 (scripts/country-book.ts; 4-cluster, 2 × 12 h, social insurance at the floor);
+  // machineRateMultiplier = median China ÷ UK machine rate in that book (the service factors read it).
   CN: {
     name: 'China',
     currency: 'CNY',
     fxToGBP: 8.88,
-    labour: { skilled: 8.08, semiskilled: 5.62, engineer: 18.40, foundry: 5.11, electronics: 6.64, inspector: 8.18, technician: 8.88, supervisor: 10.91 },
-    energy: { electricityPerKwh: 0.071, gasPerKwh: 0.03 },
+    labour: { skilled: 3.73, semiskilled: 3.57, engineer: 11.16, foundry: 3.57, electronics: 3.75, inspector: 3.47, technician: 4.46, supervisor: 4.67 },
+    energy: { electricityPerKwh: 0.071, gasPerKwh: 0.0401 },
     materialFactors: { commodityResin: 0.802, engineeringResin: 0.88, highPerfResin: 0.970 },
     materialMultiplier: 0.830,
-    machineRateMultiplier: 0.55,
+    machineRateMultiplier: 0.34,
     overheadMultiplier: 0.75,
     packagingMultiplier: 0.70,
     logisticsMultiplier: 1.45,

@@ -246,10 +246,12 @@ describe('C2/H4 — regional machine rate rebuild (energy re-tariff)', () => {
   });
 
   it('an energy-heavy machine in a cheap-power region beats a naive flat capex scale', () => {
-    // CN: capex ×0.55 but electricity 0.07 vs UK 0.23 → energy scaled ~0.30, below 0.55.
-    const cn = buildRegionalLibrary(lib, 'CN');
-    const flat = machineRate(lib, 'imm-800t') * REGIONAL_DATA.CN.machineRateMultiplier;
-    expect(machineRate(cn, 'imm-800t')).toBeLessThan(flat);
+    // a scaled country (China now has its own book, with its own operating model): cheaper power than the UK
+    // re-tariffs the energy line below the flat capex multiplier
+    const tr = buildRegionalLibrary(lib, 'TR');
+    expect(REGIONAL_DATA.TR.energy.electricityPerKwh).toBeLessThan(REGIONAL_DATA.UK.energy.electricityPerKwh);
+    const flat = machineRate(lib, 'imm-800t') * REGIONAL_DATA.TR.machineRateMultiplier;
+    expect(machineRate(tr, 'imm-800t')).toBeLessThan(flat);
   });
 
   it('a dearer-capex country can be cheaper than the UK on an energy-dominated machine', () => {
@@ -279,12 +281,13 @@ describe('C1 — family-aware country resin pricing', () => {
   });
 
   it('commodity resins carry a wider country spread than high-performance ones', () => {
-    const cn = buildRegionalLibrary(lib, 'CN');
-    const ppRatio = matPrice(cn, 'mat-pp') / matPrice(lib, 'mat-pp');
-    const peekRatio = matPrice(cn, 'mat-peek') / matPrice(lib, 'mat-peek');
+    // the family factors of a SCALED country (China prices PP and PEEK from its own market since its rate book, Oct 2026)
+    const tr = buildRegionalLibrary(lib, 'TR');
+    const ppRatio = matPrice(tr, 'mat-pp') / matPrice(lib, 'mat-pp');
+    const peekRatio = matPrice(tr, 'mat-peek') / matPrice(lib, 'mat-peek');
     expect(ppRatio).toBeLessThan(peekRatio);          // PP moves further from UK than PEEK
     expect(peekRatio).toBeGreaterThan(0.95);          // high-perf ~globally flat
-    expect(ppRatio).toBeLessThan(0.9);                // commodity clearly discounted in CN
+    expect(ppRatio).toBeLessThan(0.9);                // commodity clearly discounted
   });
 
   it('UK material prices are unchanged (identity)', () => {
