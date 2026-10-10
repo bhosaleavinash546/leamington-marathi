@@ -180,7 +180,7 @@ export function buildDtcPanel(m: DtcPanelModel, st: DtcState, levers: DtcLever[]
 
 /** Cost everything the tab needs, once. */
 export function computeDtc(m: DtcPanelModel, st: DtcState): { levers: DtcLever[]; drivers: DtcDriver[]; proj: DtcProjection } {
-  const levers = m.grouped ? dfmLevers(m.grouped, m.input, m.library) : [];
+  const levers = m.grouped ? dfmLevers(m.grouped, m.input, m.library, m.money) : [];
   const drivers = costDrivers(m.input, m.library, m.targetGBP ?? undefined);
   const proj = projectDesignToCost(m.input, m.library, levers.filter(l => st.on.has(l.id)), st.whatIf, m.targetGBP ?? undefined);
   return { levers, drivers, proj };

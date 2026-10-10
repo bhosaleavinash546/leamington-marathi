@@ -336,6 +336,8 @@ export function restackFindingCosts(
   grouped: readonly RestackableFinding[],
   input: import('../types.js').UniversalStackInput,
   library: import('../types.js').RateLibrary,
+  /** The page's money formatter, so the basis is in the report's currency. */
+  money?: (gbp: number) => string,
 ): Array<{ ruleId: string; jobGBP: number; stackGBP: number; basis: string }> {
   const base = computeUniversalStack(input, library).total;
   const out: Array<{ ruleId: string; jobGBP: number; stackGBP: number; basis: string }> = [];
@@ -343,7 +345,7 @@ export function restackFindingCosts(
     // One definition of "take this finding out" — shared with the Design-to-Cost panel (design-to-cost.ts). A cost the
     // sheet does not carry (a hole it assumes is cored) is not in the stack to take out.
     if (NOT_IN_STACK_RULES.has(g.ruleId)) continue;
-    const v = findingVariant(g, input, library);
+    const v = findingVariant(g, input, library, undefined, money);
     if (!v) continue;
     try {
       const t = computeUniversalStack(v.next, library).total;

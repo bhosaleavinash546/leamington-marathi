@@ -17494,7 +17494,7 @@ function dfmFindingAmounts(): Map<string, DfmAmount> {
   const priced = groups.filter(g => (g.totalCostGBP ?? 0) > 0);
   if (lastInput && dfmBelongsToCosting()) {
     let re: ReturnType<typeof restackFindingCosts> = [];
-    try { re = restackFindingCosts(groups, lastInput, library); }
+    try { re = restackFindingCosts(groups, lastInput, library, dfmMoneyUi); }
     catch (err) { console.warn('[dfm] restack failed:', err instanceof Error ? err.message : String(err)); }
     for (const r of re) {
       if (!(r.stackGBP > 0)) continue;

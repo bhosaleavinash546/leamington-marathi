@@ -50,6 +50,12 @@ export interface DtcFindingLike {
  */
 export type LeverKind = 'redesign' | 'upper-bound';
 const UPPER_BOUND_RULES = /\.hole\.depth-beyond-standard-drill|\.hole\.many-sizes/;
+/** What each upper-bound finding's £ assumes — printed with the re-costed figure wherever it is shown. */
+const UPPER_BOUND_NOTE: Array<[RegExp, string]> = [
+  [/\.hole\.many-sizes/, ' — an upper bound: every size merged onto one tool, which the part\u2019s fits may not allow'],
+  [/\.hole\.depth-beyond-standard-drill/, ' — an upper bound: the features\u2019 whole cost'],
+];
+const gbpText = (gbp: number) => `£${gbp.toFixed(2)}`;
 /** Priced on work the cost sheet does not carry (a hole the sheet prices as pierced but must be drilled). */
 export const NOT_IN_STACK_RULES = new Set(['sheetmetal.hole.smaller-than-thickness']);
 
@@ -124,6 +130,8 @@ function opSlopes(op: UniversalStackInput['operations'][number], library: RateLi
  */
 export function findingVariant(
   g: DtcFindingLike, input: UniversalStackInput, library: RateLibrary, amount?: { gbp: number; nre?: number; minutes?: number },
+  /** The page's money formatter (display currency); a report in INR printed "£20.88 per hour" beside "₹41.68/part". */
+  money: (gbp: number) => string = gbpText,
 ): { next: UniversalStackInput; basis: string; short: string; removedGBP: number } | null {
   const items = costItems(g);
   const gbp = amount?.gbp ?? items.reduce((a, x) => a + x.gbp, 0);
@@ -138,8 +146,8 @@ export function findingVariant(
     const delta = Math.min(nre, input.tooling.totalToolingCost);
     return {
       next: { ...input, tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost - delta } },
-      basis: `tooling NRE −£${delta.toFixed(0)} (the slide / insert) through the stack`,
-      short: `£${delta.toFixed(0)} less tooling (the slide / insert), spread over ${vol > 0 ? vol.toLocaleString('en-GB') : 'the'} parts`,
+      basis: `tooling NRE −${money(delta)} (the slide / insert) through the stack`,
+      short: `${money(delta)} less tooling (the slide / insert), spread over ${vol > 0 ? vol.toLocaleString('en-GB') : 'the'} parts`,
       removedGBP: vol > 0 ? delta / vol : 0,
     };
   }
@@ -171,10 +179,12 @@ export function findingVariant(
   const removed = m * hr + l * labourHr;
   return {
     next: { ...input, operations: ops.map((o, i) => i === k ? { ...o, cycleTimeHr: o.cycleTimeHr - hr, labourTimeHr: o.labourTimeHr - labourHr } : o) },
-    basis: `${(hr * 60).toFixed(2)} min off ${op.operationName} at that operation\u2019s own rates (£${(m + l).toFixed(2)} per hour `
+    basis: `${(hr * 60).toFixed(2)} min off ${op.operationName} at that operation\u2019s own rates (${money(m + l)} per hour `
       + 'of cycle after parts/cycle, OEE and crew)'
       + (hr < want - 1e-12 ? ` — capped at 90 % of the operation (${(want * 60).toFixed(2)} min asked)` : '')
-      + ' through the stack',
+      + ' through the stack'
+      // the pricer's own caveat must survive the re-cost (casting 360 review: the PDF dropped "upper bound")
+      + (UPPER_BOUND_NOTE.find(([re]) => re.test(g.ruleId))?.[1] ?? ''),
     short: `${(hr * 60).toFixed(2)} min of ${opShortName(op.operationName)} off each part, at that operation\u2019s own rate`,
     removedGBP: removed,
   };
@@ -188,14 +198,14 @@ export function opShortName(name: string): string {
 
 /** Design levers: every DFM finding with a modelled £ that the stack carries and the design change can take out. */
 export function dfmLevers(
-  grouped: readonly DtcFindingLike[], input: UniversalStackInput, library: RateLibrary,
+  grouped: readonly DtcFindingLike[], input: UniversalStackInput, library: RateLibrary, money: (gbp: number) => string = gbpText,
 ): DtcLever[] {
   const base = computeUniversalStack(input, library).total;
   const out: DtcLever[] = [];
   for (const g of grouped) {
     if (NOT_IN_STACK_RULES.has(g.ruleId)) continue;
     const items = costItems(g);
-    const v = findingVariant(g, input, library);
+    const v = findingVariant(g, input, library, undefined, money);
     if (!v) continue;
     let t: number;
     try { t = computeUniversalStack(v.next, library).total; } catch { continue; }

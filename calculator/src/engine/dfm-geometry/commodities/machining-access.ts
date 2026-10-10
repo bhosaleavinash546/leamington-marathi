@@ -386,7 +386,7 @@ export function machiningPartLevelFindings(part: PartContext): GeometricFinding[
     out.push(partFinding({
       ruleId: 'machining.hole.many-sizes', part, severity: 'advisory',
       title: 'Many different hole sizes',
-      detail: `${sizes.length} hole diameters (${sizes.map(s => `⌀${s}`).join(', ')}) — a drill each, plus taps / reamers where fitted or threaded.`,
+      detail: `${sizes.length} hole diameters (${sizes.map(s => `⌀${s}`).join(', ')}) — a drill each (a boring tool for a cored or bored bore), plus taps / reamers where fitted or threaded.`,
       faceIds: holes.flatMap(h => h.faceIds), featureId: 'PART:hole-sizes',
       field: 'holeSizes', value: sizes.length, unit: 'sizes', threshold: HOLE_SIZES_REPORTED_AT - 1, comparator: '>',
       recommendation: 'Consolidate clearance and tapping sizes onto a few standard diameters so one drill serves several holes.',

@@ -135,3 +135,23 @@ describe('X16 — cored bores are finish-bored on the machining centre, not dril
     expect(drill.cycleTimeHr + bore.cycleTimeHr).toBeCloseTo(0.0932, 4);
   });
 });
+
+import { findingVariant } from '../src/engine/design-to-cost.js';
+
+describe('X2 / X3 — a DFM finding is re-costed in the report currency and keeps its "upper bound"', () => {
+  const { input } = sandCastingResult();
+  const withDrill = { ...input, operations: [...input.operations,
+    { operationName: 'Drilling — 8 holes (…) [geometry-measured]', machineId: 'mach-drill', labourId: 'lab-uk-skilled', cycleTimeHr: 0.041,
+      partsPerCycle: 1, oee: 0.8, manning: 0.5, labourTimeHr: 0.041, labourEfficiency: 0.92 }] };
+  const g = { ruleId: 'machining.hole.many-sizes', totalCostGBP: 0.3,
+    worst: { costImpact: { kind: 'feature_cost', perPartGBP: 0.3, minutes: 0.8 } } };
+  const inr = (gbp: number) => `INR ${(gbp * 127.1941).toFixed(2)}`;
+  const v = findingVariant(g as never, withDrill as never, lib, undefined, inr)!;
+  it('the rate in the basis is in the formatter’s currency — no £ beside an INR figure', () => {
+    expect(v.basis).toMatch(/INR \d+\.\d\d per hour/);
+    expect(v.basis).not.toMatch(/£/);
+  });
+  it('the many-sizes £ says it is an upper bound', () => {
+    expect(v.basis).toMatch(/upper bound: every size merged onto one tool/);
+  });
+});
