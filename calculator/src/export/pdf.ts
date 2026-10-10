@@ -1104,6 +1104,11 @@ export function renderShouldCostSections(
   // col widths: 42 + 32 + 22 + 18 + 18 + (182-132) = 42+32+22+18+18+50 = 182 ✓
   const opRowsA = result.operationDetails.map(op => {
     const mObj = library.machines.find(m => m.id === op.machineId);
+    // A bench task (fettling, melt shop, deburr) is labour only — no machine, rate or OEE — as the Excel and the screen
+    // show it. The PDF printed the placeholder machine, its rate and 100 % OEE (casting 360 review, Oct 2026).
+    if (op.benchOperation || op.cycleTimeHr === 0) {
+      return [op.operationName, 'bench (no machine time)', '', '', String(op.partsPerCycle ?? 1), '', c(op.processCost)];
+    }
     return [
       op.operationName,
       mObj?.machineClass ?? op.machineId,
