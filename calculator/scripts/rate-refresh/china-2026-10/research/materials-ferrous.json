@@ -1,0 +1,392 @@
+{
+ "domain": "materials-ferrous (China, CNY/kg ex-VAT)",
+ "researched": "2026-10-10",
+ "items": [
+  {
+   "key": "ferrous.anchor.hrc",
+   "value": 2.885,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Shanghai spot, HRC 4.75mm Q235, 3,260 CNY/t VAT-incl. (9 Oct 2026); 3,260/1.13/1000 = 2.885. 28 Sep 2026: 4.75x1500 Ansteel/Benxi 3,290, Anfeng 3,270; 18 Sep: Ansteel/Benxi 3,310.",
+   "source": "https://m.mysteel.com/hot/11675.html",
+   "date": "2026-10-09",
+   "notes": "Price-agency spot (trader warehouse, 现款含税), not delivered. Cross-check, government: NBS 10-day national monitored price, HRC 4.75-11.5mm Q235, 1-10 Sep 2026 = 3,351.6 CNY/t VAT-incl. (2.966 ex-VAT), https://www.stats.gov.cn/english/PressRelease/202609/t20260914_1965300.html . Other cities 9 Oct: Hangzhou 3,300, Guangzhou 3,250 (index.mysteel.com/price/getChartMultiCity_1_0.html)."
+  },
+  {
+   "key": "ferrous.anchor.crc",
+   "value": 3.239,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Shanghai spot, CRC 1.0mm (Benxi), 3,660 CNY/t VAT-incl. (9 Oct 2026); 3,660/1.13/1000 = 3.239. 29 Sep 2026: 3,690; Sep 2026 one-month average 3,731-3,733.",
+   "source": "https://www.mysteel.com/hot/563511.html",
+   "date": "2026-10-09",
+   "notes": "Price-agency spot, commercial-quality CR (SPCC/DC01 class, Benxi brand). A Baosteel-brand / automotive-quality DC01 sells above this (see hdg note for the Baosteel brand gap)."
+  },
+  {
+   "key": "ferrous.anchor.hdg",
+   "value": 3.496,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Shanghai spot, HDG 1.0mm (Benxi, regular spangle-free), 3,950 CNY/t VAT-incl. (24-29 Sep 2026, flat all September); 3,950/1.13/1000 = 3.496.",
+   "source": "https://m.mysteel.com/hot/39907.html",
+   "date": "2026-09-29",
+   "notes": "Same day, by mill, 1.0mm zero-spangle, 现汇含税 (Mysteel 29 Sep 2026 afternoon): Baosteel-Qingshan 4,280 (=3.788 ex-VAT), Masteel 4,060, Shougang 4,060, Ansteel 4,000, Benxi 3,950, Tangsteel 4,010. Special coating weights / grades are negotiated separately (Mysteel). Source for the per-mill list: https://list1.mysteel.com/zhishi/dxbjgds.html"
+  },
+  {
+   "key": "ferrous.anchor.hdg.baosteel",
+   "value": 3.788,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Shanghai spot, HDG 1.0mm zero-spangle, Baosteel-Qingshan brand, 4,280 CNY/t VAT-incl. (29 Sep 2026); 4,280/1.13/1000 = 3.788.",
+   "source": "https://list1.mysteel.com/zhishi/dxbjgds.html",
+   "date": "2026-09-29",
+   "notes": "Brand premium over Benxi 1.0mm HDG = +330 CNY/t (VAT-incl.)."
+  },
+  {
+   "key": "ferrous.anchor.pickled",
+   "value": 3.142,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Lecong (Foshan) spot, hot-rolled pickled coil SPHC 3.0x1250, 3,530-3,570 CNY/t VAT-incl. (18 Sep 2026); mid 3,550/1.13/1000 = 3.142. Same day Ningbo 3.0mm 3,510-3,560; Chongqing 3.0mm Pangang 3,570, Shagang 3,560.",
+   "source": "https://m.mysteel.com/hot/1478441.html",
+   "date": "2026-09-18",
+   "notes": "SPHC commercial grade, not SAPH440/QStE. No 2026 SAPH440 quote found. Last found: Shanghai automotive pickled SAPH440 3.0mm 4,040 CNY/t VAT-incl. on 21 Aug 2025 (f139, https://quan.f139.com/data/news/share.do?id=9889439&f=2294099) - STALE, kept only as a structural premium hint. Ansteel's Sep 2026 list base for pickled strip SPHC 3.0mm (>=1000 wide) is 4,750 CNY/t EX-VAT (mill list price, well above transactions)."
+  },
+  {
+   "key": "ferrous.anchor.baosteel.oct2026.hr_pickled_cr_adjustment",
+   "value": 200,
+   "unit": "CNY/t change",
+   "basis": "Baosteel October-2026 domestic forward price announcement: hot-rolled, pickled and commercial cold-rolled base prices +200 CNY/t; heavy plate, welded pipe, wire rod, bar +100; non-oriented electrical steel +200; grain-oriented and seamless pipe unchanged; tinplate and TFS +150. Announced 10 Sep 2026.",
+   "source": "https://m.mysteel.com/hot/426801.html",
+   "date": "2026-09-10",
+   "notes": "Producer list-price CHANGE, not a level; Baosteel base list prices and automotive grade extras (DC04/DC06, IF, DP590/780/980, 22MnB5, HC420LA, GA, ZnMg) are not published - NOT FOUND. Galvanised adjustment for October not stated in the source."
+  },
+  {
+   "key": "ferrous.anchor.baosteel.auto_grades",
+   "value": null,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Not found in any source: Baosteel automotive grade list prices / extras are not public (sold on annual / quarterly OEM contracts).",
+   "source": "https://m.mysteel.com/hot/426801.html",
+   "date": "2026-10-10",
+   "notes": "Use the CRC/HDG anchors plus a stated engineering-estimate extra per grade."
+  },
+  {
+   "key": "ferrous.bar.45",
+   "value": 3.257,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Shanghai special-bar spot 24 Sep 2026: 45# (Huaigang) 3,680 CNY/t VAT-incl.; 3,680/1.13/1000 = 3.257. Mysteel 30 Sep 2026: Shanghai carbon structural round 45# 20mm 3,680.",
+   "source": "https://m.mysteel.com/hot/78153.html",
+   "date": "2026-09-24",
+   "notes": "Cross-checks: an unnamed-region list effective 21 Aug 2026: 45# 3,630, Q235 round 3,570, 40Cr 3,830, 20CrMnTi 4,150 (VAT-incl.); another Shanghai page 30 Sep: 45# Φ40-70 3,320 (spec/basis unclear). Laiwu Steel ex-mill LIST 11 Sep 2026: 45# 4,548, 40Cr 4,769, 20CrMnTi(H) 4,876, 35-42CrMo 5,740 (mill list, ~+900 over Shanghai spot). Sources: https://m.mysteel.com/hot/27225.html , https://m.mysteel.com/hot/35024.html"
+  },
+  {
+   "key": "ferrous.bar.40Cr",
+   "value": 3.451,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Shanghai 24 Sep 2026: 40Cr (Huaigang) 3,900 CNY/t VAT-incl.; /1.13/1000 = 3.451. 30 Sep 2026: 40Cr Φ80 3,860.",
+   "source": "https://m.mysteel.com/hot/13617.html",
+   "date": "2026-09-24",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.bar.42CrMo",
+   "value": 4.283,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Shanghai 24 Sep 2026: 42CrMo (Xiangtan Steel) 4,840 CNY/t VAT-incl.; /1.13/1000 = 4.283.",
+   "source": "https://m.mysteel.com/hot/78153.html",
+   "date": "2026-09-24",
+   "notes": "SCM440 equivalent. Laiwu list 35-42CrMo Φ30-119 5,740 (11 Sep 2026) = mill list."
+  },
+  {
+   "key": "ferrous.bar.20CrMnTi",
+   "value": 3.646,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Shanghai 24 Sep 2026: 20CrMnTi (Huaigang) 4,120 CNY/t VAT-incl.; /1.13/1000 = 3.646.",
+   "source": "https://m.mysteel.com/hot/78153.html",
+   "date": "2026-09-24",
+   "notes": "Chinese gear steel; nearest proxy for 20MnCr5/16MnCr5 (not identical chemistry)."
+  },
+  {
+   "key": "ferrous.bar.GCr15",
+   "value": 5.265,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel flash 23 Sep 2026: GCr15 Xingcheng 5,900-6,000 CNY/t (ex-mill quote, VAT-incl. assumed per Chinese convention); mid 5,950/1.13/1000 = 5.265.",
+   "source": "https://m.mysteel.com/hot/13792.html",
+   "date": "2026-09-23",
+   "notes": "Ex-mill, not Shanghai spot; 52100/100Cr6 equivalent."
+  },
+  {
+   "key": "ferrous.bar.38MnVS",
+   "value": null,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Not found in any source (2026).",
+   "source": "https://m.mysteel.com/hot/78153.html",
+   "date": "2026-10-10",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.bar.1215",
+   "value": null,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Not found: Mysteel free-cutting steel EXW page (VAT-incl.) lists 1215 mills (Jiyuan, Xiangtan, Hangzhou, Shougang Guiyang) but the price column was not readable; last update 3 Apr 2026.",
+   "source": "https://www.mysteel.net/daily-prices/6965234-free-cutting-steel-exw-prices-chinas-major-mills",
+   "date": "2026-04-03",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.bar.Q235_plate",
+   "value": 3.1,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "NBS 10-day national monitored price, medium plate 20mm Q235, 21-30 Jun 2026 = 3,502.5 CNY/t VAT-incl.; /1.13/1000 = 3.100.",
+   "source": "https://www.stats.gov.cn/english/PressRelease/202607/t20260703_1964058.html",
+   "date": "2026-06-30",
+   "notes": "Government statistic, national average, three months old (HRC on the same series moved 3,325.2 -> 3,351.6, +0.8%, Jun-end -> early Sep, so plate is ~flat). A Shanghai 20mm Q235B (Masteel) 4,390 and Q345B 4,680 on '2 Sep' (cnyes, https://news.cnyes.com/news/id/2874214) has no year - not used."
+  },
+  {
+   "key": "ferrous.bar.Q355_plate",
+   "value": null,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Not found for 2026.",
+   "source": "https://news.cnyes.com/news/id/2874214",
+   "date": "2026-10-10",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.stainless.304_CR_2B",
+   "value": 12.146,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel, Wuxi, 8 Oct 2026: private-mill 304 cold-rolled mill-edge base 13,700-13,750 CNY/t VAT-incl. (-50); mid 13,725/1.13/1000 = 12.146.",
+   "source": "https://list1.mysteel.com/zhishi/wx304bxgjgzxxqzs.html",
+   "date": "2026-10-08",
+   "notes": "Mill-edge private (Qingshan/Delong class). State-mill cut-edge 2B coil quotes (CCMN, Wuxi, 304/2B 2.0x1219: Tisco 15,100, Zhangpu 15,300, Baosteel-Desheng 15,600; date not shown, 'held') = 13.36-13.81 ex-VAT - use for an automotive-quality coil. Sep 2026 Mysteel commentary: 304 CR base 13,750-13,800. https://www.ccmn.cn/bxg/304/"
+  },
+  {
+   "key": "ferrous.stainless.304_CR_2B_tisco",
+   "value": 13.363,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "CCMN Wuxi 304/2B CR coil 2.0x1219 Tisco 15,100 CNY/t VAT-incl.; /1.13/1000 = 13.363.",
+   "source": "https://www.ccmn.cn/bxg/304/",
+   "date": "2026-09 (late; date not shown in result)",
+   "notes": "Date uncertain - medium confidence."
+  },
+  {
+   "key": "ferrous.stainless.316L_CR",
+   "value": 26.504,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel 30 Sep 2026: 316L 4-ft cut-edge Tisco 29,950 CNY/t VAT-incl.; /1.13/1000 = 26.504. Qingshan 316L 28,400 (hot-rolled) = 25.133.",
+   "source": "https://list1.m.mysteel.com/zhishi/316bxglsjg.html",
+   "date": "2026-09-30",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.stainless.430_CR",
+   "value": 6.726,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel: Tisco 430 CR cut-edge 7,600 CNY/t VAT-incl. (18 Sep, 30 Sep, 9 Oct 2026 - flat); /1.13/1000 = 6.726. JISCO 430 CR cut-edge 7,700 (18 Sep); Foshan JISCO mill-edge base 7,650 (30 Sep).",
+   "source": "https://m.mysteel.com/hot/580230.html",
+   "date": "2026-10-09",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.stainless.409L_CR",
+   "value": 6.681,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "SMM Wuxi 409L/2B coil 7,500-7,600 CNY/t VAT-incl. (Jun 2026 - latest found); mid 7,550/1.13/1000 = 6.681. Foshan 7,550-7,650.",
+   "source": "https://hq.smm.cn/h5/sus-400sus-price",
+   "date": "2026-06",
+   "notes": "STALE (no Sep/Oct 2026 409L quote found); 430 was flat-to-slightly-down Jun->Sep, so 409L is unlikely to have risen."
+  },
+  {
+   "key": "ferrous.stainless.304_bar",
+   "value": 12.168,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel daily, 30 Sep 2026: 304 round bar - Delong Φ90 13,750, Φ100 13,650; Qingshan Φ65-130 13,450; Tisco 304 14,050 (CNY/t VAT-incl.). Taken 13,750/1.13/1000 = 12.168 (range 11.90-12.43).",
+   "source": "https://m.mysteel.com/hot/567231.html",
+   "date": "2026-09-30",
+   "notes": "Wenzhou Qingshan 304 bar 13,950-14,200 (date not shown)."
+  },
+  {
+   "key": "ferrous.stainless.17-4PH_bar",
+   "value": null,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Not found in any source (630 bar is quoted on enquiry).",
+   "source": "https://m.mysteel.com/hot/567231.html",
+   "date": "2026-10-10",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.stainless.304_scrap",
+   "value": 8.363,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel 29 Sep 2026: 304 industrial scrap (304工业料) 9,450 CNY/t; ≈1,028 CNY per Ni point, 12-37 below high-Ni NPI (1,040-1,065 CNY/Ni point delivered VAT-incl.). VAT-incl. assumed; /1.13/1000 = 8.363.",
+   "source": "https://list1.mysteel.com/zhishi/ntjgzst25884.html",
+   "date": "2026-09-29",
+   "notes": "VAT basis of the scrap quote not stated in the result; if ex-VAT, value = 9.45. Used for the CF8 charge."
+  },
+  {
+   "key": "ferrous.foundry.pig_iron_casting_Z18",
+   "value": 2.611,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel 30 Sep 2026, East China foundry pig iron Z18: Linyi 2,950, Changzhou 3,070, Sanming 3,110, Rizhao 2,950 CNY/t, 现款含税 (cash, VAT-incl.); Linyi 2,950/1.13/1000 = 2.611.",
+   "source": "https://www.mysteel.com/hot/1486014.html",
+   "date": "2026-09-30",
+   "notes": "Ex-works; Changzhou (in the YRD cluster) 3,070 = 2.717 ex-VAT."
+  },
+  {
+   "key": "ferrous.foundry.pig_iron_nodular_Q10",
+   "value": 2.796,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel 30 Sep 2026, East China nodular pig Q10 2,970-3,350 CNY/t 现款含税, one-by-one; mid 3,160/1.13/1000 = 2.796. Other regions same day: Benxi 3,050, Liaoyang 3,030, Wu'an 3,080, Linfen 3,120, Linzhou 3,050, Huangshi 2,890, Xinjiang 2,810.",
+   "source": "https://m.mysteel.com/hot/1487195.html",
+   "date": "2026-09-30",
+   "notes": "Huangshi (Wuhan cluster) 2,890 = 2.558 ex-VAT."
+  },
+  {
+   "key": "ferrous.foundry.steel_scrap_heavy",
+   "value": 2.045,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel: 45-city average heavy scrap 6-8mm 2,045 CNY/t over the National Day holiday, flat v 30 Sep 2026 (report 7 Oct 2026); 18 Sep index 2,065.1; 3 Sep 2,059. 2,045/1000 = 2.045.",
+   "source": "https://news.mysteel.com/a/26100711/92F88C485B219078.html",
+   "date": "2026-10-07",
+   "notes": "Mysteel's 45-city heavy-scrap average is quoted ex-VAT (不含税) by convention - not restated in the search result; if VAT-incl., ex-VAT = 1.810. Cross-check: Shagang Changzhou base 16 Jul 2026 heavy scrap 2,135-2,179 ex-VAT; ship-breaking plate scrap 30 Sep: Ningde ex-VAT 2,290 vs Jiangyin VAT-incl. 2,580 (=2,283 ex-VAT). Foundry-grade clean steel scrap (stampings/冲压料) costs more than HMS - not found."
+  },
+  {
+   "key": "ferrous.foundry.cast_iron_returns_scrap",
+   "value": null,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Not found: no 2026 China price for bought cast-iron scrap (铸铁废/生铁废). Returns are internal and valued at the charge's own cost in the derivations below.",
+   "source": "https://m.mysteel.com/hot/10513.html",
+   "date": "2026-10-10",
+   "notes": ""
+  },
+  {
+   "key": "ferrous.foundry.FeSiMg_nodulariser",
+   "value": null,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Not found: no 2026 China price for RE-MgFeSi nodulariser (FeSiMg8RE3). Proxy ONLY (different product): rare-earth ferrosilicon Inner Mongolia 23 two-step 10,000-10,500 CNY/t (Mysteel, 9 Sep 2026), 30 one-step ~8,500.",
+   "source": "https://m.mysteel.com/zta/xituguitie/",
+   "date": "2026-09-09",
+   "notes": "The derivations use the proxy 10,250/1.13 = 9.07 CNY/kg (stated); at 1.3% addition it contributes ~0.12 CNY/kg of iron, so its uncertainty barely moves the charge."
+  },
+  {
+   "key": "ferrous.foundry.FeSi75",
+   "value": 5.442,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel spot, end Sep 2026: 75 FeSi 6,100-6,200 CNY/t, cash VAT-incl. ex-works main producing areas (72 FeSi natural lump 5,700-5,750); mid 6,150/1.13/1000 = 5.442.",
+   "source": "https://m.mysteel.com/hot/47879.html",
+   "date": "2026-09-30",
+   "notes": "SunSirs FeSi benchmark 30 Sep 2026 5,685.71 CNY/t (grade not stated, matches 72#) https://www.100ppi.com/vane/detail-1154.html"
+  },
+  {
+   "key": "ferrous.foundry.FeCr_HC",
+   "value": 6.898,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Tisco Sep 2026 HC FeCr tender 7,795 CNY per 50%-Cr base tonne, cash VAT-incl. delivered (-100 m/m); Qingshan Sep long-term 7,995; ex-works 30 Sep 7,600-7,900. Per kg of 50%-Cr alloy: 7,795/1.13/1000 = 6.898 (= 13.80 CNY per kg contained Cr).",
+   "source": "https://m.mysteel.com/zta/gaotangetie/",
+   "date": "2026-09",
+   "notes": "Price is per 50% Cr base tonne (元/50基吨): scale by actual Cr%/50."
+  },
+  {
+   "key": "ferrous.foundry.Ni",
+   "value": 115.619,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "SMM #1 refined nickel average 130,650 CNY/t (5 Aug 2026); /1.13/1000 = 115.62.",
+   "source": "https://news.metal.com/en/newscontent/104043194-smm-1-refined-nickel-price-drops-to-130650-yuanmt-on-august-5",
+   "date": "2026-08-05",
+   "notes": "Latest 2026 level found (Changjiang 1# Ni and Sep 2026 not found) - two months old. The non-ferrous researcher's figure should prevail if newer."
+  },
+  {
+   "key": "ferrous.foundry.FeMo60",
+   "value": 296.903,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "FeMo60-C market price 333,000-338,000 CNY/t, mid 335,500 (mid-Aug 2026); /1.13/1000 = 296.9.",
+   "source": "https://list1.m.mysteel.com/zhishi/mtjgzq90418.html",
+   "date": "2026-08 (mid)",
+   "notes": "No Sep/Oct 2026 figure found."
+  },
+  {
+   "key": "ferrous.foundry.NPI_high_Ni",
+   "value": 1052.5,
+   "unit": "CNY per Ni point (1% Ni in 1 t) VAT-incl.",
+   "basis": "Mysteel 29-30 Sep 2026: high-Ni NPI (>11% Ni) 1,040-1,065 CNY per Ni point, delivered VAT-incl.; a major mill bought 10 kt at 1,040 (Eastmoney 29 Sep 2026).",
+   "source": "https://finance.eastmoney.com/a/202609293886244617.html",
+   "date": "2026-09-29",
+   "notes": "Reference only (stainless mill input)."
+  },
+  {
+   "key": "ferrous.charge.GJS-500-7",
+   "value": 2.69,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "ENGINEERING ASSUMPTION mix (per kg charged): 45% nodular pig Q10 (2.796) + 30% steel scrap (2.045) + 25% returns valued at the charge's own cost -> metallics = (0.45x2.796 + 0.30x2.045)/0.75 = 2.496; + FeSiMg 1.3% x 9.071 (rare-earth FeSi PROXY) = 0.118; + inoculant 0.4% x 5.442 (FeSi75 as proxy; Ba/Ca inoculants cost more) = 0.022; / 0.98 melt & treatment loss = 2.689 CNY/kg ex-VAT.",
+   "source": "https://m.mysteel.com/hot/1487195.html",
+   "date": "2026-09-30",
+   "notes": "Excludes carburiser (not priced), Cu/Sn pearlite additions for 500-7 (Cu from the non-ferrous research: ~0.3% Cu adds ~0.25 CNY/kg at ~85 CNY/kg Cu - not researched here), and the foundry-grade scrap premium over HMS. Ex-works prices, delivery not added."
+  },
+  {
+   "key": "ferrous.charge.GJL-250",
+   "value": 2.35,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "ENGINEERING ASSUMPTION mix (induction grey iron): 25% foundry pig Z18 (2.611) + 40% steel scrap (2.045) + 35% returns at charge cost -> (0.25x2.611 + 0.40x2.045)/0.65 = 2.263; + FeSi75 0.5% Si trim + 0.2% inoculant = 0.7% x 5.442 = 0.038; / 0.98 melt loss = 2.348 CNY/kg ex-VAT.",
+   "source": "https://www.mysteel.com/hot/1486014.html",
+   "date": "2026-09-30",
+   "notes": "Excludes carburiser (needed with 40% steel scrap; not priced) and bought cast-iron scrap (no China price found - the UK book's 60% cast-iron-scrap mix cannot be priced in China). A cupola/higher-pig mix (e.g. 50% pig) gives ~2.5."
+  },
+  {
+   "key": "ferrous.charge.GS-C25",
+   "value": 2.16,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "ENGINEERING ASSUMPTION: 70% steel scrap (2.045) + 30% returns at charge cost -> metallics 2.045; + FeSi75 0.5% x 5.442 = 0.027 deoxidation/Si; / 0.96 melt loss (steel) = 2.159 CNY/kg ex-VAT.",
+   "source": "https://news.mysteel.com/a/26100711/92F88C485B219078.html",
+   "date": "2026-10-07",
+   "notes": "Excludes FeMn (Mn 0.5-0.8%; not researched), Al wire, and the clean-scrap premium over HMS - so a floor. Also applies to G20Mn5 / A216 WCB as a base."
+  },
+  {
+   "key": "ferrous.charge.CF8",
+   "value": 8.62,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "ENGINEERING ASSUMPTION, scrap route (usual for a CF8 foundry): 80% 304 industrial scrap (8.363) + 20% returns at charge cost -> 8.363; / 0.97 melt loss = 8.622 CNY/kg ex-VAT. Virgin-alloy upper bound: Fe 70% steel scrap (2.045) + Cr 19% at 13.80/kg Cr (HC FeCr) + Ni 9% at 115.619 = (1.432 + 2.622 + 10.406)/0.97 = 14.91.",
+   "source": "https://list1.mysteel.com/zhishi/ntjgzst25884.html",
+   "date": "2026-09-29",
+   "notes": "Scrap route excludes small Cr/Ni trims and decarburisation (AOD) for CF8 C<=0.08; the virgin bound understates Cr (HC FeCr is too high in carbon; low-C FeCr costs more). Range 8.6 - 14.9; Mysteel says 304 scrap is cheaper per Ni unit than NPI, so the scrap route is the market basis."
+  },
+  {
+   "key": "ferrous.electrical.35W300",
+   "value": 5.177,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Qingdao market 20 Sep 2026: Baosteel 300-grade (35W300) 5,850 CNY/t VAT-incl.; /1.13/1000 = 5.177. Shougang 300-grade 5,530 (4.894); Wuhan market WISCO 35WW300 5,600 (4.956). Baosteel B35A300 5,830 on 30 Sep 2026 (region not stated). 4 Sep: Baosteel 300 5,950, Shougang 5,730.",
+   "source": "https://m.mysteel.com/hot/3849.html",
+   "date": "2026-09-20",
+   "notes": "Baosteel raised NO base list +200 CNY/t for October (ferrous.anchor.baosteel.*), not yet visible in spot."
+  },
+  {
+   "key": "ferrous.electrical.50W800",
+   "value": 3.938,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Mysteel Qingdao 20 Sep 2026: Baosteel 800-grade (50W800) 4,450, WISCO 4,350; Wuhan WISCO 800 4,190 CNY/t VAT-incl.; Baosteel 4,450/1.13/1000 = 3.938.",
+   "source": "https://m.mysteel.com/hot/3849.html",
+   "date": "2026-09-20",
+   "notes": "Mysteel weekly NO average 11-18 Sep 2026: 4,161 CNY/t (-5 w/w), https://list1.mysteel.com/zhishi/ggjgylb80761.html"
+  },
+  {
+   "key": "ferrous.electrical.50W470",
+   "value": null,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Not found as a 2026 quote. Bracketed by the same-day market: 50W800 3.94 < 50W470 < 35W300 5.18 CNY/kg ex-VAT (Baosteel, Qingdao, 20 Sep 2026).",
+   "source": "https://m.mysteel.com/hot/3849.html",
+   "date": "2026-09-20",
+   "notes": "B2B listings (1688 / gys.cn 5,250 - 9,998) not used as a price."
+  },
+  {
+   "key": "crosscheck.casting.ductile_wind_Riyue_2025",
+   "value": 8.26,
+   "unit": "CNY/kg ex-VAT",
+   "basis": "Riyue Heavy (603218) 2025: ductile-iron product revenue 5,779 M CNY (ex-VAT, annual report via Everbright Securities note); output 'over 700 kt' (company profile, production not sales). 5,779,000,000 / 700,000,000 kg = 8.26 CNY/kg - an UPPER estimate of the ASP if sales < output.",
+   "source": "https://m.gelonghui.com/news/5226363",
+   "date": "2025 (FY)",
+   "notes": "Large wind-turbine ductile castings, partly machined (420 kt finish-machining capacity), gross margin 17.8%. Cross-check only; automotive castings differ. Sales tonnage and a 球铁铸件 per-tonne market price for 2026 were NOT found. https://basic.10jqka.com.cn/603218/operate.html"
+  }
+ ],
+ "notes": [
+  "All Chinese spot quotes (Mysteel, SMM, CCMN, NBS) are VAT-inclusive (现款含税) unless stated; ex-VAT = /1.13. Exceptions flagged per item (Mysteel 45-city scrap, Ansteel list base).",
+  "Spot prices are trader-warehouse / ex-works, NOT delivered: intra-cluster delivery is not added (not sourced).",
+  "WebFetch could not reach any source host from this sandbox; every figure was read from search-engine extracts of the cited pages (Mysteel hot/zhishi pages, NBS, SMM). Dates are as the extracts state them; items with an uncertain date say so.",
+  "Searches used: 33 of 35.",
+  "Derived charges are per kg of metal charged, ex-VAT, with returns valued at the charge's own cost; the mixes are ENGINEERING ASSUMPTIONS, stated in each basis.",
+  "Current-book comparison (CNY/kg, current v evidence ex-VAT): 1045/C45 bar 7.00 / 6.34 v 3.26; 42CrMo4 11.87 and 4140 8.92 v 4.28; 20MnCr5/16MnCr5 10.91 v 20CrMnTi 3.65; 52100 12.53 v GCr15 5.27; DC01 5.57 v CRC 3.24; DC01 GI 5.57 v HDG 3.50 (Baosteel 3.79); HRPO 5.68 v pickled 3.14; S355MC 5.90 v HRC 2.89 (+grade extra); 304L sheet 17.22 v 12.15-13.36; 304 bar 26.02 / 304L bar 34.86 v 12.17; 316L bar 46.65 v 316L coil 26.50; 430 9.92 v 6.73; 409L 9.52 v 6.68 (Jun); M330-35A 12.82 v 35W300 4.89-5.18; M470-50A 9.14 v <5.18; M600/M700 8.77/8.40 v 50W800 3.94; GJL-250 1.25 v ~2.35; GJS-500-7 2.12 v ~2.69; GS-C25 1.05 v ~2.16; CF8 13.3 v 8.6-14.9 (not confident either way); 316L CR 29.11 v 26.50 (slightly high)."
+ ]
+}
