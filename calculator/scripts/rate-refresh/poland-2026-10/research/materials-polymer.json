@@ -1,0 +1,286 @@
+{
+  "domain": "materials-polymer (Poland, PLN/kg ex-VAT)",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "polymer.pp_homo",
+      "value": 5.11,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. PP homopolymer injection moulding (PPH IM) 1,168 EUR/t (week 37/2026, +1.6% w/w) ÷ 1000 × 4.374 = 5.11 PLN/kg.",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37 (page updated 2026-10-01)",
+      "notes": "PPH raffia 1,148 EUR/t same week (= 5.02). Week 36 (plasticker, published 2026-09-06): PP-Homo injection 1,150 EUR/t. Cross-checks: Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) PP homo 6.84 PLN/kg (~34% above myCEPPI — distributor offer level); PlasticPortal/Plastech monthly index Sep 2026 PP homo 1.58 EUR/kg (+4.6% m/m), https://www.plasticportal.eu/polymer-prices. Delivered CEE; Orlen/Basell Orlen Polyolefins (Płock) is the domestic producer."
+    },
+    {
+      "key": "polymer.pp_copolymer",
+      "value": 5.68,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. PP copolymer (block/impact) injection moulding 1,298 EUR/t (week 36/2026, published by myCEPPI 2026-09-06) ÷ 1000 × 4.374 = 5.68 PLN/kg.",
+      "source": "https://plasticker.de/preise/preise_myceppi.php",
+      "date": "2026-W36 (published 2026-09-06)",
+      "notes": "No week-37 copolymer figure seen. Week 29/2026 was 1,259 EUR/t. Cross-check Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) PP blok 6.82 PLN/kg."
+    },
+    {
+      "key": "polymer.hdpe",
+      "value": 5.47,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. HDPE film 1,250 EUR/t (week 37/2026, +2.5% w/w) ÷ 1000 × 4.374 = 5.47 PLN/kg.",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37 (page updated 2026-10-01)",
+      "notes": "Cross-checks: Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) HDPE injection 6.54, HDPE blow 6.85, HDPE film 6.21 PLN/kg; PlasticPortal monthly index Sep 2026 HDPE injection 1.51 EUR/kg."
+    },
+    {
+      "key": "polymer.hdpe_blow",
+      "value": 5.24,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. HDPE blow moulding 1,199 EUR/t (week 36/2026) ÷ 1000 × 4.374 = 5.24 PLN/kg.",
+      "source": "https://plasticker.de/preise/preise_myceppi.php",
+      "date": "2026-W36 (published 2026-09-06)",
+      "notes": "For the blow-moulding / jerry-can grades (mat-hdpe-bm, roto/profile HDPE are converted from this)."
+    },
+    {
+      "key": "polymer.ldpe",
+      "value": 5.58,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. LDPE film 1,276 EUR/t (week 37/2026, +0.8% w/w) ÷ 1000 × 4.374 = 5.58 PLN/kg.",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37 (page updated 2026-10-01)",
+      "notes": "Cross-checks: Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) LDPE film 6.72, LDPE injection 6.84 PLN/kg; PlasticPortal monthly index Sep 2026 LDPE film 1.56 EUR/kg (+2% m/m)."
+    },
+    {
+      "key": "polymer.lldpe",
+      "value": 5.45,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. (m)LLDPE C6 1,247 EUR/t (week 37/2026, unchanged) ÷ 1000 × 4.374 = 5.45 PLN/kg.",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37 (page updated 2026-10-01)",
+      "notes": "LLDPE C4 1,159 EUR/t same week (= 5.07). Cross-check Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) LLDPE 6.37 PLN/kg."
+    },
+    {
+      "key": "polymer.pvc",
+      "value": 4.34,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. S-PVC (suspension) 993 EUR/t (week 37/2026, −10 w/w) ÷ 1000 × 4.374 = 4.34 PLN/kg. K-value not stated (general S-PVC, K67-type).",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37 (page updated 2026-10-01)",
+      "notes": "Week 1/2026 was 819 EUR/t. Resin only — pipe dry-blend / window / cable compounds add stabiliser, filler, modifier and mixing. Anwil (Włocławek) is the domestic producer."
+    },
+    {
+      "key": "polymer.abs",
+      "value": 8.03,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. ABS 1,835 EUR/t (week 37/2026, −10 w/w) ÷ 1000 × 4.374 = 8.03 PLN/kg.",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37 (page updated 2026-10-01)",
+      "notes": "Cross-checks: Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) ABS natural 9.82 PLN/kg (+0.9% m/m); PlasticPortal monthly index Sep 2026 ABS natural 2.27 EUR/kg."
+    },
+    {
+      "key": "polymer.ps",
+      "value": 6.71,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. GPPS 1,534 EUR/t (week 37/2026, −3.8% w/w) ÷ 1000 × 4.374 = 6.71 PLN/kg.",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37 (page updated 2026-10-01)",
+      "notes": "Cross-check Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) GPPS 8.20 PLN/kg. Synthos (Oświęcim) is the domestic PS producer."
+    },
+    {
+      "key": "polymer.hips",
+      "value": 7.33,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. HIPS 1,676 EUR/t (week 37/2026, −29 w/w) ÷ 1000 × 4.374 = 7.33 PLN/kg.",
+      "source": "https://www.plasticportal.eu/price-reports",
+      "date": "2026-W37 (page updated 2026-10-01)",
+      "notes": "Cross-check Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) HIPS 8.73 PLN/kg."
+    },
+    {
+      "key": "polymer.pc",
+      "value": 11.55,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Price index (businessanalytiq, aggregator; methodology not published in detail): Europe polycarbonate US$3.00/kg Sep 2026 (−2.9% m/m) × 3.849 = 11.55 PLN/kg. Not a single transaction or contract price.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+      "date": "2026-09",
+      "notes": "Cross-checks: Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) PC transparent 14.40 PLN/kg (+1.8% m/m); PlasticPortal/Plastech PC transparent Sep 2026 3.33 EUR/kg (−2.1% m/m, 12-month range 3.21–4.07), https://www.plasticportal.eu/polymer-prices/pc-transparent/20. Plastech offer level runs ~25% above the market index, as on PP/ABS."
+    },
+    {
+      "key": "polymer.pa6",
+      "value": 10.28,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Price index (businessanalytiq): Europe PA6 US$2.67/kg Aug 2026 (+3.1% m/m) × 3.849 = 10.28 PLN/kg.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+      "date": "2026-08",
+      "notes": "Cross-checks: Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) PA6 13.20 PLN/kg (0% m/m, +15.8% y/y) = PlasticPortal 3.06 EUR/kg; tworzywa.pl 'Notowania rynkowe (EU)' PA6 2,115 EUR/t (= 9.25; quotation date not visible) https://www.tworzywa.pl/notowania/notowania-rynkowe-europa/ ; tworzywa.pl PL PA6 11.75 PLN/kg (July 2026). Grupa Azoty (Tarnów) is the domestic PA6 producer."
+    },
+    {
+      "key": "polymer.pa66",
+      "value": 16.28,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Price index (businessanalytiq): Europe PA66 US$4.23/kg Aug 2026 (+14.6% m/m) × 3.849 = 16.28 PLN/kg.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+      "date": "2026-08",
+      "notes": "Cross-check: tworzywa.pl 'Notowania rynkowe (EU)' PA6.6 4,050 EUR/t (= 17.71; date not visible — may be stale), https://www.tworzywa.pl/notowania/notowania-rynkowe-europa/ . Procurement Resource lists Europe PA66 US$6,669/t Aug 2026 (= 25.67) — out of line with the other two, not used. Driver: EU anti-dumping duties on Chinese adipic acid (May 2026) and benzene costs."
+    },
+    {
+      "key": "polymer.pom",
+      "value": 11.65,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Plastech.pl Sep 2026 Polish average OFFER price (producers/distributors survey, twice monthly, PLN/kg; VAT treatment not stated on the page — Polish B2B quotes are normally net) POM natural 11.65 PLN/kg (0% m/m, +13.9% y/y; = 2.70 EUR/kg on the PlasticPortal monthly index). OFFER level, not a market/contract index — likely above what a volume buyer pays (Plastech runs ~20–35% above myCEPPI on PP/ABS).",
+      "source": "https://www.plastech.pl/ceny-tworzyw",
+      "date": "2026-09 (page dated 2026-10-06)",
+      "notes": "No market-index POM figure found. tworzywa.pl PL quotation POM 11.77 PLN/kg (date not visible). Celanese announced a European POM price increase from 8 Oct 2026. Grupa Azoty makes Tarnoform POM in Tarnów."
+    },
+    {
+      "key": "polymer.pbt",
+      "value": 14.24,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Price index (businessanalytiq): Europe PBT US$3.70/kg Sep 2026 (−1.1% m/m) × 3.849 = 14.24 PLN/kg.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+      "date": "2026-09",
+      "notes": "IMARC (report vendor) Europe PBT US$3.2/kg Jun 2026 (= 12.32), https://www.imarcgroup.com/polybutylene-terephthalate-pricing-report . Unfilled resin."
+    },
+    {
+      "key": "polymer.pet_bottle",
+      "value": 4.97,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Price index (businessanalytiq): Europe PET US$1.29/kg Sep 2026 (+1.6% m/m) × 3.849 = 4.97 PLN/kg.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+      "date": "2026-09",
+      "notes": "IMARC Germany PET resin US$1,427/t Q2 2026 (= 5.49), https://www.imarcgroup.com/news/pet-resin-prices-imarc-group-unveils-real-time-price-trends-regional-analysis-and-forecast . No FD NWE contract figure for Sep 2026 visible (ICIS/Platts/ChemOrbis paywalled)."
+    },
+    {
+      "key": "polymer.pmma",
+      "value": 14.2,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Price index (businessanalytiq): Europe PMMA US$3.69/kg Sep 2026 (unchanged) × 3.849 = 14.2 PLN/kg.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+      "date": "2026-09",
+      "notes": "Trinseo (Altuglas) announced +250 EUR/t on PMMA in EMEA from 1 Oct 2026 (= +1.09 PLN/kg if it sticks), reported by German trade press (search extract)."
+    },
+    {
+      "key": "polymer.tpu",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found in any source.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "polymer.peek",
+      "value": 346.5,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "DERIVED from a company report: Victrex plc Q3 FY2026 trading statement — group average selling price £68/kg (Q3 and year-to-date to 30 Jun 2026; YTD revenue £231.6m ÷ 3,375 t = £68.6/kg). £68 × 5.096 = 346.5 PLN/kg. Revenue is ex-VAT.",
+      "source": "https://www.investegate.co.uk/announcement/rns/victrex-plc--vct/trading-statement/9654844",
+      "date": "2026-06-30 (Q3 FY2026)",
+      "notes": "ASP is Victrex's whole mix: unfilled resin, compounds, film and Medical (Invibio, much higher priced), so industrial unfilled PEEK resin is likely BELOW this; H1 FY2026 ASP £69/kg (interim report). Read from search extracts of the RNS."
+    },
+    {
+      "key": "polymer.pa66_gf30",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found in any source — no public European compound price (KI / PIE compound series paywalled; only marketplace listings, not usable).",
+      "source": "",
+      "date": "",
+      "notes": "Unfilled PA66 evidence is 16.28–17.71 PLN/kg; a GF30 compound would normally be in the same region."
+    },
+    {
+      "key": "polymer.pa6_gf30",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found in any source.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "polymer.pp_gf30_talc",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found in any source (a Plastech B2B PP-GF30 listing at ~1.71 EUR/kg is a recycled, expired marketplace offer — not used).",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "rubber.nr",
+      "value": 9.97,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Exchange-tracking benchmark (Trading Economics 'Rubber', a CFD tracking the TSR20 benchmark — not the SGX settlement itself): 259 US cents/kg on 2026-10-09 × 3.849 = 9.97 PLN/kg. FOB Asia basis — freight and insurance to a Polish plant NOT added (not found).",
+      "source": "https://tradingeconomics.com/commodity/rubber",
+      "date": "2026-10-09",
+      "notes": "A second page in the same search (not clearly attributable; one of the TSR20 price-trend pages) gave the SGX TSR20 Oct-2026 FOB settlement at US$2,562/t on 2026-10-02 (= 9.86). SGX/SICOM official settlement page not reached. Raw polymer (TSR20/SMR20), not a compound."
+    },
+    {
+      "key": "rubber.sbr_1502",
+      "value": 7.74,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Transaction index (Intratec): SBR Europe, export FOB Germany US$2,010/t May 2026 × 3.849 ÷ 1000 = 7.74 PLN/kg. Grade not stated as 1502.",
+      "source": "https://www.intratec.us/solutions/primary-commodity-prices/commodity/styrene-butadiene-rubber-prices",
+      "date": "2026-05",
+      "notes": "businessanalytiq Europe SBR US$2.59/kg Jun 2026 (= 9.97), https://businessanalytiq.com/procurementanalytics/index/styrene-butadiene-rubber-sbr-price-index/ — conflicting, basis unclear. No Synthos price found. Raw polymer."
+    },
+    {
+      "key": "rubber.epdm",
+      "value": 12.39,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Price index (businessanalytiq): Europe EPDM US$3.22/kg Sep 2026 (+4.5% m/m) × 3.849 = 12.39 PLN/kg.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/epdm-rubber-price-index/",
+      "date": "2026-09",
+      "notes": "IMARC Europe EPDM US$3.32/kg Sep 2026 (+12.9%) (= 12.78), https://www.imarcgroup.com/epdm-rubber-pricing-report . Page metadata age inconsistent with the label — moderate confidence. Raw polymer."
+    },
+    {
+      "key": "rubber.nbr",
+      "value": 8.43,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Price index (businessanalytiq): Europe solid NBR US$2.19/kg Jul 2026 (−6.8% m/m) × 3.849 = 8.43 PLN/kg.",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/acrylonitrile-butadiene-rubber-nbr-price-index/",
+      "date": "2026-07",
+      "notes": "IMARC Q2 2026 France NBR US$2,178/t (= 8.38), https://www.imarcgroup.com/nitrile-butadiene-rubber-pricing-report . Raw polymer."
+    },
+    {
+      "key": "composite.cf_t700_12k",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found in any source.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "composite.epoxy",
+      "value": 20.01,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Report vendor (IMARC): Europe epoxy resin US$5.2/kg May 2026 (−0.6% m/m) × 3.849 = 20.01 PLN/kg. Neat liquid resin, not a formulated infusion system.",
+      "source": "https://www.imarcgroup.com/epoxy-resin-pricing-report",
+      "date": "2026-05",
+      "notes": "Intratec export FOB Germany US$4,940/t Nov 2025. No Sep–Oct 2026 figure. Low-moderate confidence."
+    },
+    {
+      "key": "composite.glassfibre_roving",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found in any source for Europe.",
+      "source": "",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "paint.powder_polyester",
+      "value": null,
+      "unit": "PLN/kg ex-VAT",
+      "basis": "Not found in any source (not searched beyond budget).",
+      "source": "",
+      "date": "",
+      "notes": ""
+    }
+  ],
+  "notes": [
+    "FX per RULES.md: EUR 4.374, USD 3.849, GBP 5.096 PLN. Every value = original figure converted at these rates; no freight added unless stated.",
+    "Two Central-European series exist and differ by ~20–35%: myCEPPI (weekly, market price from processors/distributors/producers, EUR/t, ~5-week delay) and Plastech.pl (monthly average OFFER price, PLN/kg; e.g. PP homo 6.84 v myCEPPI 5.11; ABS 9.82 v 8.03). Commodity values here use myCEPPI (closer to what an automotive tier buying direct pays); Plastech is given as the small-lot / distributor upper reference. Only POM uses Plastech (no other source).",
+    "Engineering resins without a CEE market series (PC, PA6, PA66, PBT, PET, PMMA, EPDM, NBR) use businessanalytiq Europe indices (aggregator; method not published in detail) — moderate confidence.",
+    "Method limit: plasticker.de, plasticportal.eu, plastech.pl and the other price sites could not be fetched from this sandbox (egress refused); every figure was read from search-engine extracts of the cited pages. 30 web searches used.",
+    "Context: European polymer prices are ~15–20% higher y/y after the Q2 2026 ethylene spike (April ethylene contract +€450 to €1,595/t); KI reports engineering thermoplastics softening broadly in Sep 2026; Celanese POM (8 Oct) and Trinseo PMMA (+€250/t, 1 Oct) increases announced.",
+    "Current-book figures that look wrong: mat-upvc-pipe 3.97 (uPVC K67 dry-blend compound) is BELOW the S-PVC resin itself (4.34) — a compound cannot cost less than its resin; mat-pa66 12.61 is low v 16.28 (businessanalytiq) / 17.71 (tworzywa.pl EU) — ~25% low; mat-pmma 11.86 is low v 14.20 (+Trinseo Oct increase); mat-pet-bg 5.91 / mat-pet-preform 6.18 are high v 4.97 (businessanalytiq Sep) / 5.49 (IMARC Q2); mat-hips 6.69 = GPPS but HIPS trades ~140 EUR/t above GPPS (7.33 v 6.71); mat-pp-homo 4.83 a little low v 5.11 and mat-pp-impact 5.08 low v PP-copo 5.68; mat-ldpe 5.32 v 5.58 and mat-lldpe 5.13 v 5.45 slightly low; mat-pa66gf30 15.32 sits below the unfilled PA66 evidence (no compound price found to confirm). Close to evidence: mat-abs 8.01 (8.03), mat-gpps 6.69 (6.71), mat-pc 12.46 (11.55–14.40), mat-pa6 10.82 (10.28), mat-pbt 13.35 (14.24), mat-nr 9.64 (9.97 FOB Asia), mat-peek 384.58 (Victrex ASP 346.5, all-mix).",
+    "Rubber book grades are 'xx Shore A' compounds (fillers, oil, curatives, mixing) and are not directly comparable with the raw-polymer prices here (e.g. EPDM polymer 12.39 v book EPDM 70A compound 9.61 — plausible for a highly filled compound).",
+    "Not found: TPU, PA66-GF30 / PA6-GF30 / PP-GF30 / PP-talc compound prices, carbon fibre T700, glass roving (Europe), polyester powder coating, September/October European ethylene/propylene contract settlements."
+  ]
+}
