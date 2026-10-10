@@ -590,7 +590,7 @@ function renderGeometricDFM(
   const addressable = g.totalAddressableGBP ?? 0;
   doc.text(
     `${groups.length} issue(s) across ${g.findings.length} instance(s), from `
-    + `${g.featuresExamined} measured feature(s) and ${g.rulesEvaluated} rule(s). Every issue `
+    + `${g.featuresExamined} measured feature(s) (${g.rulesEvaluated} per-feature rule(s), plus the part-level checks). Every issue `
     + 'names the B-rep faces that produced it and the published source of its threshold. '
     + (amounts
       ? (recosted
@@ -675,7 +675,7 @@ function renderGeometricDFM(
 
   if (g.dfa?.available) {
     y = chk(doc, y, 20);
-    const p = (g.dfa.penalties ?? []).map(x => `+${x.addedSec ?? 0}s ${x.reason ?? ''}${x.measured ? ` (${x.measured})` : ''}`);
+    const p = (g.dfa.penalties ?? []).map(x => `+${Math.round((x.addedSec ?? 0) * 10) / 10}s ${x.reason ?? ''}${x.measured ? ` (${x.measured})` : ''}`);
     y = calloutBox(doc, y, 'DFA - handling & insertion (Boothroyd method, geometric half)', [
       `Handling ${g.dfa.handlingTimeSec}s + insertion ${g.dfa.insertionTimeSec}s = `
       + `${g.dfa.totalTimeSec}s, ${g.dfa.vsIdealRatio}x the 3s ideal part.`,
@@ -812,7 +812,8 @@ export function renderShouldCostSections(
   const { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta, baseLibrary, regionalRows } = ctx;
   y = renderSourcePhotographs(doc, y, cadMeta.photos ?? []);
   const sym  = currencySymbol(currency);
-  const c    = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
+  // thousands separators and no negative zero (casting 360 X27 / X31: "3846985.50", "-0.00")
+  const c    = (n: number) => { const v = n * fxRate; return `${sym}${(Math.abs(v) < 0.005 ? 0 : v).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; };
   const pct  = (n: number) => `${n.toFixed(1)}%`;
   const pcts = breakdownPercentages(result);
   const alloyMat = library.materials.find(m => m.id === input.rawMaterial.materialId);
@@ -1614,7 +1615,7 @@ export function renderShouldCostSections(
     // "0.00 kgCO2e" read as a result (uploaded-parts review, Oct 2026).
     if (input.rawMaterial.netWeightKg > 0) {
     y = chk(doc, y, 42);
-    y = secBar(doc, y, '§10 — Embodied Carbon', `${cb.totalKgCO2e.toFixed(2)} kgCO2e  ·  ${cb.perNetKgCO2e.toFixed(2)} /kg  ·  cradle-to-gate`);
+    y = secBar(doc, y, '§10 — Embodied Carbon', `${cb.totalKgCO2e.toFixed(2)} kgCO2e  ·  ${cb.perNetKgCO2e.toFixed(2)} kgCO2e/kg  ·  cradle-to-gate`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'plain',
       body: [
@@ -1651,7 +1652,7 @@ export function renderShouldCostSections(
   const insights = generateInsights(result, input, library, commodityType, suggestionCtx);
   if (insights.length > 0) {
     doc.addPage(); y = 18;
-    y = secBar(doc, y, '§11 — Cost Intelligence Insights', `${insights.length} observations  ·  prompts to look, no saving claimed`);
+    y = secBar(doc, y, '§11 — Cost Intelligence Insights', `${insights.length} observation${insights.length === 1 ? '' : 's'}  ·  prompts to look, no saving claimed`);
 
     const impCol = (imp: string): RGB => imp === 'High' ? RD : imp === 'Medium' ? AM : GREY;
     const typeLabel: Record<string, string> = {
@@ -1814,6 +1815,11 @@ export function renderShouldCostSections(
         },
       });
       y = lastFinalY(doc) + 8;
+    } else {
+      // keep the numbering whole (casting 360 X32: §13 ran straight into §15)
+      y = chk(doc, y, 14);
+      y = secBar(doc, y, '§14 — Inputs to Confirm', 'None: every input this costing flags is listed in the checks above');
+      y += 2;
     }
 
     // §15 Roadmap

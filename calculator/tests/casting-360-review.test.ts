@@ -294,7 +294,7 @@ describe('X13 — the tooling says what it is, and why it is spread over this ma
     expect(items.some(i => /£/.test(i.label))).toBe(false);   // the report prints the money, in its currency
   });
   it('a blank programme life is stated as one year’s volume, in the PDF and the Excel', async () => {
-    const { input, result } = sandCastingResult();
+    const { input } = sandCastingResult();
     const inp = { ...input, annualVolume: 100_000, tooling: { ...input.tooling, items: drivers.tooling.items } };
     const res = computeUniversalStack(inp, lib);
     const text = pdfText(() => printPDF(res, inp, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
@@ -309,4 +309,13 @@ describe('X13 — the tooling says what it is, and why it is spread over this ma
     const t2 = pdfText(() => printPDF(computeUniversalStack(withLife, lib), withLife, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
     expect(t2).toMatch(/the programme: 5 years × 100,000 a year/);
   });
+});
+
+describe('P3 report text (X24 / X26 / X31 / X32 / X33 / X38)', () => {
+  const { input, result } = sandCastingResult();
+  const big = { ...input, tooling: { ...input.tooling, totalToolingCost: 30297 } };
+  const text = pdfText(() => printPDF(computeUniversalStack(big, lib), big, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+  it('money has thousands separators', () => { expect(text).toMatch(/INR 3,853,612\.\d\d|INR 3,85\d,\d{3}\.\d\d/); });
+  it('no unrounded float anywhere', () => { expect(text).not.toMatch(/\d\.\d{9,}/); });
+  void result;
 });
