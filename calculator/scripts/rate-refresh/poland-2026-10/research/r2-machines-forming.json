@@ -1,0 +1,283 @@
+{
+  "domain": "machines-forming (round 2: metal forming, casting, forging, cutting, welding capex)",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "capex.brake-trumpf-trubend3100",
+      "value": 594864,
+      "unit": "PLN/unit ex-VAT (new machine, FCA Ditzingen; machine only)",
+      "basis": "TRUMPF TruBend 3100, 100 t, NEW, CE, 4-axis back gauge (expandable to 5), BendGuard, ACB laser angle measurement, on-demand hydraulic drive; asking price EUR 136,000 FCA, fixed price plus VAT; × 4.374 = 594,864 PLN. The advertiser's address is Johann-Maus-Straße 2, Ditzingen — TRUMPF's headquarters — so this reads as the maker's own new-machine offer.",
+      "source": "https://www.machineseeker.com/trumpf-trubend+3100/i-22233802",
+      "date": "listing updated 30.06.2026 / 10.07.2026",
+      "notes": "LIST (asking) price of a NEW machine, ex-VAT, carried on a marketplace (machineseeker) — the seller is not named in the snippet; the address is TRUMPF HQ. Per RULES a marketplace listing is a cross-check; adopt only if the caller accepts a maker's own offer posted there. Bending length not stated in the snippet (TruBend 3100 is normally 3,060 mm). Excludes delivery to Poland, installation, tooling. Cross-checks: (1) a used 2021 TruBend 3100 in Copenhagen whose listing says it cost EUR 115,000 new in 2021 (= 503,010 PLN; seller statement; https://www.used-machines.com/trumpf-trubend+3100/gm-225-11877); (2) round 1: Metformer (Polish maker) COM 100 t × 3,100 mm new/demo EUR 41,000 + VAT (= 179,334 PLN). Current book implied capex 2,384,928 PLN (financeCost 47,698.56 ÷ 2%) = 4.0× this evidence. Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.brake-amada-hfe100",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (no new-machine list, distributor price or award for an Amada HFE 100-3)",
+      "source": "https://resale.info/en/amada-hfe-100-3-prensa-plegadora/No-166672578",
+      "date": "listings 2015–2026",
+      "notes": "Used cross-checks only: 2001 HFE100-3S USD 26,950 (US dealer); 2004 HFP 100-3 EUR 18,000 + VAT (Finland); 2003 HFE 100-3 auction start EUR 8,400. Same class as TruBend 3100 (100 t × 3 m): new evidence ≈ 0.5–0.6 M PLN (see capex.brake-trumpf-trubend3100). Current book implied 2,568,384 PLN — ~4× the 100 t × 3 m class evidence. Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.laser-trumpf-3030",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found: no EU/PL new list price or award for a TruLaser 3030 fiber 6 kW (TRUMPF quotes on request)",
+      "source": "https://resale.info/en/trumpf-trulaser-3030-laser-cutting-machines/No-165417843",
+      "date": "resale records 2019–2026",
+      "notes": "Cross-checks (used, resale records): a 2014 TruLaser 3030 fiber sold for EUR 239,550 in May 2023 (= 1,047,792 PLN) after ~9 years; a 2015 L49 3 kW fiber sold EUR 344,000 in Dec 2019 (= 1,504,656 PLN). Resale at those levels implies a new 6 kW machine above ~EUR 300k. UK book: third-party estimate US$400–550k (uk-2026-10/research/machines-a.json; midpoint US$500k = 1,924,500 PLN). Chinese-built 6 kW 3015 machines sell in Poland for ~200k PLN (round 1). Current book implied 1,374,820 PLN (= EUR 314k) — plausible, not proven. Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.laser-bystronic-3015",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (no new list price for a BySmart Fiber 3015 4 kW)",
+      "source": "https://resale.info/en/bystronic-bysprint-fiber-3015-4kw-lazer-kesim-ma/No-165064566",
+      "date": "resale records 2021–2024",
+      "notes": "Used cross-checks only: BySprint Fiber 3015 4 kW (sister model) 2013 unit sold EUR 189,000 (Oct 2021) = 826,686 PLN; 2015 unit sold EUR 133,810 (Mar 2024) = 585,285 PLN; a 2021 BySmart 3015 6 kW listed at US$374,900 in the US (= 1,442,990 PLN; https://www.surplusrecord.com/listing/6000-watt-bystronic-bysmart-3015-fiber-cnc-laser-122-x-60-x-4-cut-area-shuttle-table-5-x-10-byvision-control-2809-hours-2021-1014187/). Current book implied 1,038,728 PLN — consistent with these resale levels, not proven. Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.punch-trumpf-5000",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (no new list price or award for a TruPunch 5000)",
+      "source": "https://resale.info/en/trumpf-trupunch-5000-cnc-punching-machines/No-161175712",
+      "date": "listings 2016–2024",
+      "notes": "Used cross-checks only: 2010 machine asking EUR 174,000 (Turkey, Oct 2024) = 761,076 PLN; 2014 unit US$179,500 (MMI Direct, https://mmi-direct.com/used-punch/trumpf-trupunch-5000-3688522-for-sale) = 690,896 PLN; 2007 unit sold EUR 300,000 (Dec 2016) = 1,312,200 PLN. Current book implied 4,036,032 PLN (= EUR 923k) — at the top of what these resale levels suggest for a new machine; likely high but no new price found to prove it. Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.plasma-hypertherm-xpr300",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found as a maker/distributor list price for a complete table; dealer statement and a component retail price only",
+      "source": "https://www.machineseeker.ie/hypertherm+kutavar-xpr300/i-21138092",
+      "date": "listing 2026 (2025 demo machine)",
+      "notes": "Cross-checks: (1) Kutavar 4 × 2 m plasma table with Hypertherm XPR300, 2025 demo machine, EUR 90,000 EXW + VAT; the listing states 'original price of the system EUR 135,000 (net)' (= 590,490 PLN; seller statement, not a verified list). (2) XPR300 power supply alone US$36,000 at a US retailer's web shop (= 138,564 PLN; https://shop.arcsolinc.com/products/hypertherm-xpr300-power-supply-200v-078620; undated). Current book implied 1,375,920 PLN = 2.3× the seller-stated new price of a complete 4 × 2 m table. Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.plasma-kjellberg-hifocus280",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (no Polish maker's — e.g. Eckert — price was returned)",
+      "source": "",
+      "date": "",
+      "notes": "Same class as capex.plasma-hypertherm-xpr300 (complete 4 × 2 m table ≈ EUR 135k seller-stated new). Current book implied 1,192,464 PLN."
+    },
+    {
+      "key": "capex.waterjet-flow-mach500",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found as a new list price; one public contract award (make not stated) and used listings",
+      "source": "https://irl.eu-supply.com/ctm/Supplier/PublicTenders/ViewNotice/268046",
+      "date": "award 2022",
+      "notes": "Cross-checks: (1) Irish public contract award (2022) for a 5-axis waterjet, value excluding VAT EUR 173,128 (= 757,262 PLN; TRANSACTION, make and table size not stated in the snippet; awarded to Stone Surfaces Ltd). (2) Used Flow Mach 500 listings US$85,000–289,990 (2017–2022 machines; e.g. 2021 Mach 500 4060 5-axis US$289,990 = 1,116,172 PLN; https://surplusrecord.com/listing/flow-mach-500-4060-cnc-waterjet-13-6-x-20-table-100-hp-hyperjet-pump-94000-psi-dual-5-axis-taper-compensating-head-2017-1106156/). Current book implied 1,651,104 PLN (= EUR 377k) — high against the award, but the award's machine is not identified. Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.waterjet-omax-80x",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found as a new list price; used listings only",
+      "source": "https://surplusrecord.com/listing/omax-80x-waterjet-6-8-x-13-4-table-50-hp-60000-psi-omax-intelli-max-control-2019-1098857/",
+      "date": "listings 2026",
+      "notes": "Used cross-checks only: 2022 OptiMAX 80X 50 hp US$129,900 (= 499,985 PLN); 2019 80X US$74,975–139,990; see also the Irish 2022 waterjet award EUR 173,128 ex-VAT (capex.waterjet-flow-mach500). Current book implied 1,375,920 PLN (= EUR 315k) — looks high (a 2022 machine resells for ~0.5 M PLN), not proven. Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.sand-cast-line",
+      "value": 38753640,
+      "unit": "PLN per complete package ex-VAT (TRANSACTION: contract value)",
+      "basis": "Odlewnie Polskie S.A. (Starachowice, listed on GPW) current report: contracts signed 20 Feb 2024 with Heinrich Wagner Sinto (horizontal-parting automatic green-sand moulding line), Jöst and Induga (induction melting) for a moulding line and related equipment, total EUR 8.86 M net; the filing gives ≈ 38.44 M PLN at the NBP rate of 19 Feb 2024; at the book rate 8,860,000 × 4.374 = 38,753,640 PLN. Purpose: capacity 19,500 → 23,500 t castings/yr (+4,000 t). 18-month project, own funds.",
+      "source": "https://www.parkiet.com/komunikaty-espi/art39872531-odlewnie-polskie-sa-zawarcie-znaczacych-umow ; https://www.biznesradar.pl/a/123867,odlewnie-polskie-inwestuja-w-zdolnosci-produkcyjne",
+      "date": "2024-02-20 (ESPI current report)",
+      "notes": "A real Polish automotive-type iron foundry contract (Świętokrzyskie, not one of the four clusters, but national prices). NOT like-for-like with the library's 'Sand Casting Moulding Line' (book implied capex 573,300 PLN, 110.95 PLN/h): this is a complete automatic HWS line PACKAGE including melting (Induga) and Jöst equipment, sized for thousands of tonnes a year. It shows that an automatic green-sand moulding line in Poland costs tens of millions of PLN — 67× the book's figure — so the book's sand-cast-line capex can only represent a small/manual unit. Decide which machine the library means before using; do not drop 38.8 M PLN onto a 573k PLN rate without that decision. 2024 price (no 2026 figure found)."
+    },
+    {
+      "key": "capex.hpdc-800t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (no Polish/EU award or maker price for an 800 t cold-chamber cell)",
+      "source": "https://www.themanufacturer.com/articles/foundry-casts-its-net-for-new-opportunities-following-2m-investment/",
+      "date": "Jan 2024",
+      "notes": "Cross-checks: (1) Alucast (Wednesbury, UK), Jan 2024: ~£2 M programme = 800 t LK HPDC in a fully automated cell + a low-pressure machine + six CNC machining centres (= 10,192,000 PLN for the WHOLE programme; the cell alone not stated). (2) Yizumi 800 t cold chamber, Indian dealer ₹55 lakh (IndiaMART, marketplace, not a price). (3) Used Bühler H-800 B (1995) EUR 25,000 EXW + VAT, Lithuania. Current book implied 1,834,560 PLN (= EUR 419k). Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.hpdc-1600t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source for Poland/EU",
+      "source": "https://www.machinery.co.uk/content/news/precision-die-caster-installs-first-in-uk-technology-to-boost-capability-and-ca",
+      "date": "UK trade press (date per UK round)",
+      "notes": "Cross-check only (from the UK round, not re-searched): Lupton & Place (UK) £1.2 M for a complete cell around a Bühler Carat 130 (= 6,115,200 PLN). Current book implied 3,210,480 PLN — about half that UK cell; the Carat 130's tonnage class against 1,600 t is not confirmed here."
+    },
+    {
+      "key": "capex.hpdc-500t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Current book implied 1,146,600 PLN."
+    },
+    {
+      "key": "capex.grav-die-cast-std",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (not searched separately — budget)",
+      "source": "",
+      "date": "",
+      "notes": "Current book implied 1,284,192 PLN."
+    },
+    {
+      "key": "capex.heat-treat-furnace",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (not searched separately — budget)",
+      "source": "",
+      "date": "",
+      "notes": "UK round cross-check: Wallwork vacuum furnace 'over £500,000' (= 2,548,000 PLN; aerospace vacuum unit, not an ageing furnace). Current book implied 504,504 PLN."
+    },
+    {
+      "key": "capex.invest-cast-furnace",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (not searched — budget)",
+      "source": "",
+      "date": "",
+      "notes": "Current book implied 1,541,030 PLN."
+    },
+    {
+      "key": "capex.impregnation-plant",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (not searched — budget)",
+      "source": "",
+      "date": "",
+      "notes": "Current book implied 953,971 PLN."
+    },
+    {
+      "key": "capex.blast-machine",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Polish 'śrutownica' search returned nothing relevant)",
+      "source": "",
+      "date": "",
+      "notes": "Current book implied 825,552 PLN."
+    },
+    {
+      "key": "capex.press-200t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (no new list price or award; AIDA/Schuler quote on request)",
+      "source": "https://sgpress.machinehub.com/?p=7011",
+      "date": "listings 2026",
+      "notes": "Used cross-checks only: AIDA NC1-2000(2) 200 t single-point gap mechanical press (2010) US$99,500 (= 382,976 PLN); AIDA PDA-20M 200 t straight-side (1987) US$149,500; NL2-200 (1986) US$159,500. Current book implied: press-200t 642,096 PLN; press-aida-200t 6,420,960 PLN (= EUR 1.47 M — looks like a whole servo line, not a 200 t press; not proven). Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.press-400t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Book implied press-400t 1,146,600 PLN; press-schuler-400t 7,338,240 PLN."
+    },
+    {
+      "key": "capex.press-630t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Book implied 1,719,900 PLN."
+    },
+    {
+      "key": "capex.press-1000t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Book implied 2,637,180 PLN."
+    },
+    {
+      "key": "capex.press-hotstamp-1000t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (AP&T press-hardening line orders publish no value)",
+      "source": "https://www.aptgroup.com/company/news/uform-orders-new-press-hardening-line-apt-us-production",
+      "date": "2023",
+      "notes": "Book implied 4,127,760 PLN."
+    },
+    {
+      "key": "capex.press-fineblank-250t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (not searched separately — budget)",
+      "source": "",
+      "date": "",
+      "notes": "Book implied 1,375,920 PLN."
+    },
+    {
+      "key": "capex.forge-press-1600t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Polish 'prasa kuźnicza' and EU trade-press searches returned no value)",
+      "source": "",
+      "date": "",
+      "notes": "Book implied 2,063,880 PLN."
+    },
+    {
+      "key": "capex.forge-press-2500t",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source (Schuler/Parsan, FormTech, Meadville announcements give no value)",
+      "source": "https://www.schulergroup.com/major/us/unternehmen/presse/pressemeldungen/archiv/2014/2014_01_08_parsan/index.html",
+      "date": "2014",
+      "notes": "Book implied 2,981,160 PLN."
+    },
+    {
+      "key": "capex.forge-hammer",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Book implied: forge-hammer-2t 458,640; forge-hammer-5t 802,620; forge-hammer-10t 1,375,920 PLN."
+    },
+    {
+      "key": "capex.forge-ring-mill",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Book implied 2,751,840 PLN."
+    },
+    {
+      "key": "capex.robot-spotweld-kuka",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found as a maker/integrator price or award; vendor-blog bands only",
+      "source": "https://grabarobot.com/blog/spot-welding-robot-guide-2026/",
+      "date": "2026 blog",
+      "notes": "Cross-check only (vendor blog, USD): complete spot-welding robot cell US$80,000 (simple appliance) to US$250,000+ (automotive high-speed) = 307,920–962,250 PLN; integration adds US$10–50k; a KUKA KR QUANTEC for spot welding 'north of US$100,000' with servo gun, cooling and fixtures (https://standardbots.com/blog/kuka-robot-pricing). Current book implied 6,971,328 PLN (= EUR 1.59 M) — 7× the top of that band; it reads like a multi-robot BIW line, not a cell. Not proven. Page not opened: this session's egress proxy blocks direct fetches (WebFetch ENOTFOUND), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.robot-mig-cell",
+      "value": null,
+      "unit": "PLN/unit",
+      "basis": "not found in any Polish source (EU-funded 'zrobotyzowane stanowisko spawalnicze' inquiries found — Fortaco Janów Lubelski 2023, Unidex 2022 — but no awarded value)",
+      "source": "https://fortacogroup.com/wp-content/uploads/2026/04/Zapytanie_ofertowe-nr-2_2023_Zrobotyzowane-stanowisko-spawalnicze.pdf",
+      "date": "2023",
+      "notes": "UK cross-check (UK round): integrator bands single-robot welding cell £80,000–250,000 (= 407,680–1,274,000 PLN; Phoenix Robotic). Current book implied 605,405 PLN — inside that band."
+    }
+  ],
+  "notes": [
+    "30 web searches used (round-2 budget). WebFetch refused (ENOTFOUND) for every host incl. bazakonkurencyjnosci.funduszeeuropejskie.gov.pl, so EU-funded tender documents could not be opened; Baza Konkurencyjności inquiries for press brakes (WEMECO 2025, Standis FENG 2024, DEKO-TECH FEMP 2023), a fibre laser (Plex Gliwice FESL 2025) and robot welding cells (Fortaco, Unidex) were found but none showed an awarded net value in the search results.",
+    "FX: €1 = 4.374 PLN, $1 = 3.849 PLN, £1 = 5.096 PLN (book rates).",
+    "Current-book implied capex = buildupPln.financeCost ÷ 2% (book: 4% on half the capex) from current-poland-book.json.",
+    "Pattern: for sheet-metal cutting/bending the book's capital (UK × 0.72) looks HIGH, not low — TruBend 3100 new EUR 136k = 0.59 M PLN v book 2.38 M; a complete XPR300 plasma table ≈ EUR 135k (seller-stated) = 0.59 M PLN v book 1.38 M; KUKA spot-weld cell book 6.97 M PLN v blog band 0.3–1.0 M; press-aida-200t / press-schuler-400t at 6.4 M / 7.3 M PLN look like lines, not presses. For foundry lines the book looks LOW: a Polish automatic HWS moulding line package cost EUR 8.86 M (38.8 M PLN, Odlewnie Polskie ESPI, Feb 2024) v book sand-cast-line 0.57 M PLN (different scope — see item).",
+    "The 'notRebuiltBasis' line in build-config.py says held capital 'likely UNDERSTATES' Polish plant; that is true for Haas-class CNC (round 1) but the evidence here says it OVERSTATES premium sheet-metal machines — the held capital should not be described as one-directional."
+  ]
+}
