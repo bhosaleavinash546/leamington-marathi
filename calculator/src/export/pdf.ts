@@ -2216,10 +2216,10 @@ export function printPDF(
   // Metrics chips row
   const chips: [string, string, RGB][] = pcba ? [
     [`Ex-works / board (${pcba.country.split(' (')[0]})`, money(pcba.exWorks), NAVY],
-    ['Delivered UK / board', `${sym}${(result.total * fxRate).toFixed(2)}`, ORANGE],
+    ['Delivered UK / board', money(result.total), ORANGE],
     ...pcba.shares.slice(0, 3).map(sh => [sh.label, pct(sh.pct), SLATE] as [string, string, RGB]),
   ] : [
-    ['Total Should-Cost',   `${sym}${(result.total * fxRate).toFixed(2)}`, ORANGE],
+    ['Total Should-Cost',   money(result.total), ORANGE],
     ['Material',            pct(pcts.rawMaterial), SLATE],
     ['Process',             pct(pcts.process), SLATE],
     ['Labour',              pct(pcts.labour), SLATE],
@@ -2403,7 +2403,7 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
   // AI cost range and tooling figures are GBP-denominated — convert to the
   // chosen display currency so a CNY/EUR report is not littered with £.
   const cadCurSym = currencySymbol(currency);
-  const cadMoney = (n: number) => `${cadCurSym}${(n * fxRate).toFixed(2)}`;
+  const cadMoney = (n: number) => `${cadCurSym}${(n * fxRate).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const cadMoney0 = (n: number) => `${cadCurSym}${Math.round(n * fxRate).toLocaleString()}`;
 
   const TEAL:   RGB3 = [13,  148, 136];
