@@ -56,8 +56,14 @@ describe('1. runners and risers are remelted, not sold as scrap', () => {
   });
 
   it('was £2.62 a part dearer on the Casting Bracket when gating and rejects went to the scrap yard', () => {
-    const now = stack(computeCastingDrivers({ ...BASE, melt: { energyKwhPerKg: 0 }, sand: { ...BASE.sand!, coreCostPerPart: 0 } }));
-    const old = stack(computeCastingDrivers({ ...BASE, melt: { lossFraction: 1, energyKwhPerKg: 0 }, sand: { ...BASE.sand!, coreCostPerPart: 0 } }));
+    // On the 2026-09 price the finding was stated at (GS-C25 £2.10/kg, scrap £0.28). The UK rate book (Oct 2026) prices
+    // cast steel at its charge — £0.142/kg, UK 0A scrap — where gating is worth what the yard pays and the gap vanishes.
+    const lib0926 = { ...DEFAULT_RATE_LIBRARY, materials: DEFAULT_RATE_LIBRARY.materials.map(m => m.id === 'mat-gs-c25'
+      ? { ...m, pricePerKg: 2.10, scrapRecoveryPricePerKg: 0.28 } : m) };
+    const stack0926 = (d: ReturnType<typeof computeCastingDrivers>) => computeUniversalStack(
+      { partName: 'x', ...d, overheadPct: 0, marginPct: 0, packagingPerPart: 0, logisticsPerPart: 0 } as never, lib0926);
+    const now = stack0926(computeCastingDrivers({ ...BASE, melt: { energyKwhPerKg: 0 }, sand: { ...BASE.sand!, coreCostPerPart: 0 } }));
+    const old = stack0926(computeCastingDrivers({ ...BASE, melt: { lossFraction: 1, energyKwhPerKg: 0 }, sand: { ...BASE.sand!, coreCostPerPart: 0 } }));
     // Gating and the 3% rejects, both remelted: £2.57 of metal on the bracket (£2.62 while the melt loss
     // was still credited at scrap — 360 review, Oct 2026: lost metal is not sold).
     expect(old.breakdown.rawMaterial - now.breakdown.rawMaterial).toBeCloseTo(2.57, 1);
@@ -107,7 +113,7 @@ describe('4. the route the screen printed is now the route that is costed', () =
     const c = r.suggestions.casting as Record<string, number>;
     expect(c.fettlingMinutes).toBe(6);
     expect(c.heatTreatCostPerKg).toBe(0.35);
-    expect(c.shotBlastCostPerPart).toBe(0.19);   // 2.5 kg ÷ 600 kg/h × (blast + operator)
+    expect(c.shotBlastCostPerPart).toBe(0.21);   // 2.5 kg ÷ 600 kg/h × (blast + operator) — £0.19 before the UK rate book's foundry wage (£18.63 → £24.60/h)
     expect(c.ndtCostPerPart).toBe(0);
   });
 

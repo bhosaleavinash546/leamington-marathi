@@ -1,0 +1,582 @@
+{
+ "domain": "labour-energy",
+ "researched": "2026-10-10",
+ "items": [
+  {
+   "key": "labour.oncost.employerNicRate",
+   "value": 0.15,
+   "unit": "fraction of earnings above secondary threshold",
+   "basis": "HMRC rates and thresholds for employers 2026 to 2027 (regulator statistic)",
+   "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027",
+   "date": "2026-04-06",
+   "notes": "Unchanged from 2025/26. Employment Allowance £10,500/yr per employer — immaterial per head for a tier-1/2 plant, ignored."
+  },
+  {
+   "key": "labour.oncost.employerNicSecondaryThresholdGbpPerYr",
+   "value": 5000,
+   "unit": "GBP/yr",
+   "basis": "HMRC Class 1 secondary threshold 2026/27 (£96/wk, £417/month)",
+   "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027",
+   "date": "2026-04-06",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.pensionStatutoryMinimum",
+   "value": 0.03,
+   "unit": "fraction of qualifying earnings",
+   "basis": "Auto-enrolment employer minimum 3% of qualifying earnings; band £6,240–£50,270, trigger £10,000 (held for 2026/27)",
+   "source": "https://www.gov.uk/government/publications/review-of-the-automatic-enrolment-earnings-trigger-and-qualifying-earnings-band-for-202627/review-of-the-automatic-enrolment-earnings-trigger-and-qualifying-earnings-band-for-202627",
+   "date": "2025-12-18",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.pensionTypical",
+   "value": 0.05,
+   "unit": "fraction of gross pay",
+   "basis": "IFS (Jul 2026): average employer contribution, all private-sector employees, 5.1% of pay in 2024; Unbiased: manufacturing median employer contribution 4.9% (undated). Used 5.0% of gross.",
+   "source": "https://ifs.org.uk/sites/default/files/2026-07/IFS%20Report%20-%20Automatic%20enrolment%20trends%20in%20employer%20pension%20contributions%20and%20the%20impact%20of%20potential%20reforms.pdf",
+   "date": "2024 (published 2026-07)",
+   "notes": "Manufacturing-specific 4.9% from https://www.unbiased.co.uk/discover/tax-business/running-a-business/how-much-are-employer-pension-contributions (no year/source stated — indicative)."
+  },
+  {
+   "key": "labour.oncost.apprenticeshipLevy",
+   "value": 0.005,
+   "unit": "fraction of paybill",
+   "basis": "Apprenticeship Levy 0.5% of paybill above £3m (£15,000 allowance) — HMRC",
+   "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027",
+   "date": "2026-04-06",
+   "notes": "Rate from HMRC guidance (not re-read this session — standing rate); tier-1/2 automotive paybills exceed £3m so applied in full (allowance immaterial per head)."
+  },
+  {
+   "key": "labour.oncost.shiftPremium2Shift",
+   "value": 0.18,
+   "unit": "fraction of basic pay",
+   "basis": "IDR Standby, call-out and shift pay 2025 study (60+ organisations, mostly manufacturing): two-shift systems ~17–19% → 18% midpoint. IDR 2023: double-day mean 17%, median 18%.",
+   "source": "https://www.incomesdataresearch.co.uk/resources/insights/findings-from-the-standby-call-out-and-shift-pay-2025-study",
+   "date": "2025",
+   "notes": "Applied to all shop-floor roles (both shifts of a double-day pattern are paid it); not to the process engineer (day work). Make UK Shift Patterns, Pay Premia and Benefits 2026 exists but rates are paywalled (https://www.makeuk.org/insights/reports/shift-patterns-pay-premia-and-benefits-2026)."
+  },
+  {
+   "key": "labour.oncost.statutoryHolidayDays",
+   "value": 28,
+   "unit": "days/yr",
+   "basis": "Statutory 5.6 weeks (28 days for a 5-day week, may include bank holidays) — Working Time Regulations",
+   "source": "https://www.gov.uk/holiday-entitlement-rights",
+   "date": "statutory",
+   "notes": "Not re-read this session (gov.uk unreachable); statutory minimum, standing law. Many engineering employers give 25 + 8 BH = 33 days — that would cut productive hours by a further ~39 h (2.2%)."
+  },
+  {
+   "key": "labour.oncost.sicknessAbsenceRate",
+   "value": 0.02,
+   "unit": "fraction of working hours",
+   "basis": "ONS Sickness absence in the UK labour market 2025: 2.0% of working hours lost (4.4 days/worker); process, plant & machine operatives among the highest-rate occupations (figure not given).",
+   "source": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/labourproductivity/articles/sicknessabsenceinthelabourmarket/2025",
+   "date": "2025 (published 2026-05-01)",
+   "notes": "Treated as paid (company sick pay) and non-productive — i.e. it reduces productive hours, not gross pay. Operative absence is likely above 2.0%."
+  },
+  {
+   "key": "labour.oncost.employersLiabilityInsurance",
+   "value": null,
+   "unit": "GBP/head/yr",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Excluded from the loaded rate; usually carried in factory overhead."
+  },
+  {
+   "key": "labour.oncost.ppeTraining",
+   "value": null,
+   "unit": "GBP/head/yr",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Excluded from the loaded rate."
+  },
+  {
+   "key": "labour.oncost.wageUprateApr2025ToOct2026",
+   "value": 1.053,
+   "unit": "factor",
+   "basis": "ONS AWE: whole-economy regular pay growth 3.5% y/y Apr–Jun 2026; uprate ASHE Apr 2025 by 18 months: 1.035^1.5 = 1.053",
+   "source": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/bulletins/averageweeklyearningsingreatbritain/august2026",
+   "date": "2026-06",
+   "notes": "Whole economy, not manufacturing (manufacturing figure not obtained; private sector was 2.9% in Feb–Apr 2026). Applied only to ASHE-based roles, not to 2026 recruiter/advert figures."
+  },
+  {
+   "key": "labour.nationalLivingWage2026",
+   "value": 12.71,
+   "unit": "GBP/h",
+   "basis": "UK National Living Wage, age 21+, from 1 April 2026 (+4.1% from £12.21) — government press release",
+   "source": "https://www.gov.uk/government/news/national-living-wage-increases-to-1271-per-hour",
+   "date": "2026-04-01",
+   "notes": "Check: the lowest base rate here (SOC 8114, £13.72 Apr 2025 → £14.45 Oct 2026) is 14% above NLW; all roles pass."
+  },
+  {
+   "key": "labour.productiveHoursPerYear",
+   "value": 1773.4,
+   "unit": "h/yr",
+   "basis": "39 h × 52 = 2028 paid h − 28 days × 7.8 h = 218.4 h holiday − 2.0% × 1809.6 = 36.2 h sickness = 1773.4 h",
+   "source": "derived (see labour.oncost.*)",
+   "date": "2026-10",
+   "notes": "Weekly hours are an ASSUMPTION (UK engineering standard week 37–39 h; ASHE paid hours for these SOCs not obtained). 2-shift working does not change hours per person."
+  },
+  {
+   "key": "labour.productiveHoursPerYear.engineer37h5",
+   "value": 1705.2,
+   "unit": "h/yr",
+   "basis": "37.5 h × 52 = 1950 paid h − 28 days × 7.5 h = 210.0 h holiday − 2.0% × 1740.0 = 34.8 h sickness = 1705.2 h",
+   "source": "derived (see labour.oncost.*)",
+   "date": "2026-10",
+   "notes": "Weekly hours are an ASSUMPTION (UK engineering standard week 37–39 h; ASHE paid hours for these SOCs not obtained). 2-shift working does not change hours per person."
+  },
+  {
+   "key": "labour.skilled.hourlyGross",
+   "value": 17.45,
+   "unit": "GBP/h basic",
+   "basis": "Median of three recruiter/secondary points (no ASHE 2025 5221 median found): Indeed UK CNC operator £15.87/h (national, Jul 2026); careermetrics.co.uk SOC 5221 £35,394/yr (listed among related occupations on its 5241 page) ÷ (39 h × 52) = £17.45/h (ASHE year not stated); Aspion setter-operator £35,000–42,000 → midpoint £38,500 ÷ 2,028 h = £18.98/h. Median = £17.45.",
+   "source": "https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/",
+   "date": "2026-07",
+   "notes": "Skilled Machinist (CNC setter-operator, SOC 5221). Low confidence: ONS ASHE 2025 Table 14 for SOC 5221 not reachable. EMBS West Midlands range £13–23/h, Birmingham avg £32,500/yr (Aug 2025, https://embstalent.co.uk/the-embs-cnc-machinist-salary-guide-2025/) consistent. Recruiter figure is already 2026, so it is NOT uprated (factor 1)."
+  },
+  {
+   "key": "labour.skilled.hourlyGrossOct2026",
+   "value": 17.45,
+   "unit": "GBP/h basic",
+   "basis": "17.45 (2026 source, not uprated)",
+   "source": "https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.skilled.fullyLoadedGbpPerHr",
+   "value": 27.95,
+   "unit": "GBP/productive h",
+   "basis": "17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h",
+   "source": "derived from labour.skilled.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-skilled; current book £26.19/h (+7%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.semiskilled.hourlyGross",
+   "value": 14.64,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 8120 median £29,692/yr = £571.00/wk ÷ 39 h = £14.64/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives",
+   "date": "2025-04",
+   "notes": "Semi-skilled Operator (SOC 8120 metal working machine operatives). Cross-check SOC 8142 assemblers (vehicles & metal goods) median £29,536 → £14.56/h."
+  },
+  {
+   "key": "labour.semiskilled.hourlyGrossOct2026",
+   "value": 15.42,
+   "unit": "GBP/h basic",
+   "basis": "14.64 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.semiskilled.fullyLoadedGbpPerHr",
+   "value": 24.65,
+   "unit": "GBP/productive h",
+   "basis": "15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h",
+   "source": "derived from labour.semiskilled.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-semiskilled; current book £19.94/h (+24%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.engineer.hourlyGross",
+   "value": 23.23,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 2125 median £45,292/yr (p25 £37,128, p75 £55,276) ÷ (37.5 h × 52 = 1,950 h) = £23.23/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/2125-production-and-process-engineers",
+   "date": "2025-04",
+   "notes": "Process Engineer (SOC 2125 production & process engineers). Day-work, no shift premium. Cross-check West Midlands process engineer: Coburg Banks 2026 WM median £48k (https://www.coburgbanks.co.uk/salary/process-engineer), Totaljobs £42,499, Adzuna advertised £49,684."
+  },
+  {
+   "key": "labour.engineer.hourlyGrossOct2026",
+   "value": 24.46,
+   "unit": "GBP/h basic",
+   "basis": "23.23 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/2125-production-and-process-engineers",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.engineer.fullyLoadedGbpPerHr",
+   "value": 33.27,
+   "unit": "GBP/productive h",
+   "basis": "24.46 × 1950 h = £47,697 gross; + NIC 15% × (gross − 5,000) £6,405 + pension 5% £2,385 + levy 0.5% £238 = £56,725/yr ÷ 1705.2 productive h = £33.27/h",
+   "source": "derived from labour.engineer.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-engineer; current book £42.8/h (-22%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.foundry.hourlyGross",
+   "value": 14.62,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 8115 median £29,640/yr (p25 £26,780, p75 £33,696) = £570.00/wk ÷ 39 h = £14.62/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives",
+   "date": "2025-04",
+   "notes": "Foundry Operative (SOC 8115 metal making & treating process operatives). SOC 5212 (moulders, core makers, die casters) not found. Job adverts West Midlands foundry operative £13–£17/h (Cradley Heath £15.50 basic, Brownhills £14–16; https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton, https://www.cv-library.co.uk/foundry-operative-jobs) — adverts, cross-check only."
+  },
+  {
+   "key": "labour.foundry.hourlyGrossOct2026",
+   "value": 15.39,
+   "unit": "GBP/h basic",
+   "basis": "14.62 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.foundry.fullyLoadedGbpPerHr",
+   "value": 24.6,
+   "unit": "GBP/productive h",
+   "basis": "15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h",
+   "source": "derived from labour.foundry.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-foundry; current book £18.63/h (+32%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.electronics.hourlyGross",
+   "value": 13.92,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 8141 median £28,236/yr = £543.00/wk ÷ 39 h = £13.92/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8141-assemblers-electrical-and-electronic-products",
+   "date": "2025-04",
+   "notes": "SMT / Electronics Operator (SOC 8141 assemblers, electrical & electronic). p25 £25,376, p75 £29,796."
+  },
+  {
+   "key": "labour.electronics.hourlyGrossOct2026",
+   "value": 14.66,
+   "unit": "GBP/h basic",
+   "basis": "13.92 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8141-assemblers-electrical-and-electronic-products",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.electronics.fullyLoadedGbpPerHr",
+   "value": 23.41,
+   "unit": "GBP/productive h",
+   "basis": "14.66 × 2028 h × 1.18 shift = £35,082 gross; + NIC 15% × (gross − 5,000) £4,512 + pension 5% £1,754 + levy 0.5% £175 = £41,524/yr ÷ 1773.4 productive h = £23.41/h",
+   "source": "derived from labour.electronics.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-electronics; current book £17.63/h (+33%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.inspector.hourlyGross",
+   "value": 16.62,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 8143 median £33,696/yr = £648.00/wk ÷ 39 h = £16.62/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8143-routine-inspectors-and-testers",
+   "date": "2025-04",
+   "notes": "CMM / Quality Inspector (SOC 8143 routine inspectors & testers). p75 £39,936 (→ £19.69/h) is closer to a CMM programmer/inspector; SOC 3115 QA technicians not found."
+  },
+  {
+   "key": "labour.inspector.hourlyGrossOct2026",
+   "value": 17.5,
+   "unit": "GBP/h basic",
+   "basis": "16.62 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8143-routine-inspectors-and-testers",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.inspector.fullyLoadedGbpPerHr",
+   "value": 28.03,
+   "unit": "GBP/productive h",
+   "basis": "17.5 × 2028 h × 1.18 shift = £41,878 gross; + NIC 15% × (gross − 5,000) £5,532 + pension 5% £2,094 + levy 0.5% £209 = £49,713/yr ÷ 1773.4 productive h = £28.03/h",
+   "source": "derived from labour.inspector.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-inspector; current book £27.7/h (+1%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.technician.hourlyGross",
+   "value": 20.79,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 3113 median £42,172/yr = £811.00/wk ÷ 39 h = £20.79/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/3113-engineering-technicians",
+   "date": "2025-04",
+   "notes": "Maintenance / Mould-Setter Technician (SOC 3113 engineering technicians). Cross-check West Midlands maintenance engineer ~£42,306 (Indeed via Advanced Resourcing 2025, https://advancedresourcing.co.uk/tips-advice/uk-manufacturing-salary-guide-2025-midlands/), RJN £45,430."
+  },
+  {
+   "key": "labour.technician.hourlyGrossOct2026",
+   "value": 21.89,
+   "unit": "GBP/h basic",
+   "basis": "20.79 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/3113-engineering-technicians",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.technician.fullyLoadedGbpPerHr",
+   "value": 35.17,
+   "unit": "GBP/productive h",
+   "basis": "21.89 × 2028 h × 1.18 shift = £52,384 gross; + NIC 15% × (gross − 5,000) £7,108 + pension 5% £2,619 + levy 0.5% £262 = £62,372/yr ÷ 1773.4 productive h = £35.17/h",
+   "source": "derived from labour.technician.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-technician; current book £28.81/h (+22%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.supervisor.hourlyGross",
+   "value": 17.1,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 8160 median £34,684/yr (p25 £29,796, p75 £41,444) = £667.00/wk ÷ 39 h = £17.10/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8160-production-factory-and-assembly-supervisors",
+   "date": "2025-04",
+   "notes": "Shift / Production Supervisor (SOC 8160). All-industry median; automotive tier-1 shift supervisors likely nearer p75 (£41,444 → £20.44/h). SOC 5250 (skilled metal trades supervisors) not found."
+  },
+  {
+   "key": "labour.supervisor.hourlyGrossOct2026",
+   "value": 18.01,
+   "unit": "GBP/h basic",
+   "basis": "17.1 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8160-production-factory-and-assembly-supervisors",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.supervisor.fullyLoadedGbpPerHr",
+   "value": 28.86,
+   "unit": "GBP/productive h",
+   "basis": "18.01 × 2028 h × 1.18 shift = £43,099 gross; + NIC 15% × (gross − 5,000) £5,715 + pension 5% £2,155 + levy 0.5% £215 = £51,184/yr ÷ 1773.4 productive h = £28.86/h",
+   "source": "derived from labour.supervisor.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-supervisor; current book £35.35/h (-18%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.forge.hourlyGross",
+   "value": 15.73,
+   "unit": "GBP/h basic",
+   "basis": "No ASHE 2025 SOC 5211 figure found. Midpoint of two Halesowen forge-operative job adverts £14.69 and £16.76/h = £15.73/h",
+   "source": "https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton",
+   "date": "2026",
+   "notes": "Forge Operator / Hammer-man. Low confidence: job adverts only (RULES: adverts are cross-checks). Not uprated (2026 adverts). ASHE 8115 (£14.62/h Apr 2025) is the statistical alternative."
+  },
+  {
+   "key": "labour.forge.hourlyGrossOct2026",
+   "value": 15.73,
+   "unit": "GBP/h basic",
+   "basis": "15.73 (2026 source, not uprated)",
+   "source": "https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.forge.fullyLoadedGbpPerHr",
+   "value": 25.15,
+   "unit": "GBP/productive h",
+   "basis": "15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h",
+   "source": "derived from labour.forge.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-forge; current book £24.17/h (+4%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.furnace.hourlyGross",
+   "value": 14.62,
+   "unit": "GBP/h basic",
+   "basis": "Same as foundry: ASHE 2025 SOC 8115 £570/wk ÷ 39 = £14.62/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives",
+   "date": "2025-04",
+   "notes": "Furnace / Heat Operator (SOC 8115). "
+  },
+  {
+   "key": "labour.furnace.hourlyGrossOct2026",
+   "value": 15.39,
+   "unit": "GBP/h basic",
+   "basis": "14.62 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.furnace.fullyLoadedGbpPerHr",
+   "value": 24.6,
+   "unit": "GBP/productive h",
+   "basis": "15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h",
+   "source": "derived from labour.furnace.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-furnace; current book £22.16/h (+11%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.blow.hourlyGross",
+   "value": 13.72,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 8114 median £27,820/yr (p25 £25,376, p75 £31,980) = £535.00/wk ÷ 39 h = £13.72/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8114-plastics-process-operatives",
+   "date": "2025-04",
+   "notes": "Blow Moulding Operator (SOC 8114 plastics process operatives). Same SOC applies to roto and thermoform."
+  },
+  {
+   "key": "labour.blow.hourlyGrossOct2026",
+   "value": 14.45,
+   "unit": "GBP/h basic",
+   "basis": "13.72 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8114-plastics-process-operatives",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.blow.fullyLoadedGbpPerHr",
+   "value": 23.07,
+   "unit": "GBP/productive h",
+   "basis": "14.45 × 2028 h × 1.18 shift = £34,579 gross; + NIC 15% × (gross − 5,000) £4,437 + pension 5% £1,729 + levy 0.5% £173 = £40,918/yr ÷ 1773.4 productive h = £23.07/h",
+   "source": "derived from labour.blow.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-blow; current book £20.65/h (+12%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.roto.hourlyGross",
+   "value": 13.72,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 8114 £535/wk ÷ 39 = £13.72/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8114-plastics-process-operatives",
+   "date": "2025-04",
+   "notes": "Rotational Moulding Operator (SOC 8114). "
+  },
+  {
+   "key": "labour.roto.hourlyGrossOct2026",
+   "value": 14.45,
+   "unit": "GBP/h basic",
+   "basis": "13.72 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8114-plastics-process-operatives",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.roto.fullyLoadedGbpPerHr",
+   "value": 23.07,
+   "unit": "GBP/productive h",
+   "basis": "14.45 × 2028 h × 1.18 shift = £34,579 gross; + NIC 15% × (gross − 5,000) £4,437 + pension 5% £1,729 + levy 0.5% £173 = £40,918/yr ÷ 1773.4 productive h = £23.07/h",
+   "source": "derived from labour.roto.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-roto; current book £20.14/h (+15%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.thermoform.hourlyGross",
+   "value": 13.72,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 8114 £535/wk ÷ 39 = £13.72/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8114-plastics-process-operatives",
+   "date": "2025-04",
+   "notes": "Thermoforming Operator (SOC 8114). "
+  },
+  {
+   "key": "labour.thermoform.hourlyGrossOct2026",
+   "value": 14.45,
+   "unit": "GBP/h basic",
+   "basis": "13.72 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8114-plastics-process-operatives",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.thermoform.fullyLoadedGbpPerHr",
+   "value": 23.07,
+   "unit": "GBP/productive h",
+   "basis": "14.45 × 2028 h × 1.18 shift = £34,579 gross; + NIC 15% × (gross − 5,000) £4,437 + pension 5% £1,729 + levy 0.5% £173 = £40,918/yr ÷ 1773.4 productive h = £23.07/h",
+   "source": "derived from labour.thermoform.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-thermoform; current book £19.64/h (+17%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "labour.trimRouter.hourlyGross",
+   "value": 14.64,
+   "unit": "GBP/h basic",
+   "basis": "ASHE 2025 SOC 8120 £571/wk ÷ 39 = £14.64/h",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives",
+   "date": "2025-04",
+   "notes": "CNC Trim / Router Operator (SOC 8120). "
+  },
+  {
+   "key": "labour.trimRouter.hourlyGrossOct2026",
+   "value": 15.42,
+   "unit": "GBP/h basic",
+   "basis": "14.64 × 1.053 (uprate Apr 2025 → Oct 2026)",
+   "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives",
+   "date": "2026-10",
+   "notes": "derived"
+  },
+  {
+   "key": "labour.trimRouter.fullyLoadedGbpPerHr",
+   "value": 24.65,
+   "unit": "GBP/productive h",
+   "basis": "15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h",
+   "source": "derived from labour.trimRouter.hourlyGrossOct2026 and labour.oncost.*",
+   "date": "2026-10",
+   "notes": "Book id lab-uk-trim-router; current book £22.66/h (+9%). Excludes overtime, bonus, EL insurance, PPE/training."
+  },
+  {
+   "key": "energy.electricity.manufacturingAvg",
+   "value": 17.4,
+   "unit": "p/kWh",
+   "basis": "DESNZ Quarterly Energy Prices Sept 2026: average electricity price paid by the manufacturing sector, Q2 2026 (+4.0% y/y, −0.4% q/q) — regulator statistic",
+   "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+   "date": "2026-Q2 (published 2026-09-29)",
+   "notes": "Ex-VAT, delivered (energy + network + policy costs). CCL inclusion for this series NOT confirmed from the snippet; CCL main rate 0.801 p/kWh (below). Size band (table 3.4.1 medium/large) NOT obtained — gov.uk unreachable; the manufacturing average is the closest published figure for a tier-1/2 plant."
+  },
+  {
+   "key": "energy.electricity.nonDomesticAvg",
+   "value": 24.5,
+   "unit": "p/kWh",
+   "basis": "DESNZ QEP Sept 2026: all non-domestic consumers Q2 2026 average, +2.0% y/y, +1.5% q/q",
+   "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+   "date": "2026-Q2",
+   "notes": "All sizes incl. very small (not industrial). June 2026 QEP gave Q1 2026 incl. CCL 24.14 p/kWh (https://assets.publishing.service.gov.uk/media/6a4243767ac6fd9c6a94aadc/quarterly-energy-prices-june-2026.pdf)."
+  },
+  {
+   "key": "energy.gas.manufacturingAvg",
+   "value": 3.8,
+   "unit": "p/kWh",
+   "basis": "DESNZ QEP Sept 2026: average gas price paid by the manufacturing sector, Q2 2026 (+6.3% y/y)",
+   "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+   "date": "2026-Q2 (published 2026-09-29)",
+   "notes": "Ex-VAT. Size band not obtained."
+  },
+  {
+   "key": "energy.gas.nonDomesticAvg",
+   "value": 5.3,
+   "unit": "p/kWh",
+   "basis": "DESNZ QEP Sept 2026: all non-domestic consumers Q2 2026, −0.6% y/y, +2.3% q/q",
+   "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+   "date": "2026-Q2",
+   "notes": "All sizes; Q1 2026 was 5.17 p/kWh (June 2026 QEP)."
+  },
+  {
+   "key": "energy.cclMainRate",
+   "value": 0.801,
+   "unit": "p/kWh",
+   "basis": "Climate Change Levy main rate from 1 Apr 2026, electricity and gas both £0.00801/kWh (RPI uprating; £0.00827 from 1 Apr 2027) — HMRC",
+   "source": "https://www.gov.uk/government/publications/climate-change-levy-rates-from-1-april-2026/climate-change-levy-changes-to-rates-from-1-april-2026",
+   "date": "2026-04-01",
+   "notes": "Plants in a Climate Change Agreement pay a reduced rate."
+  },
+  {
+   "key": "energy.electricity.bookValue",
+   "value": 0.174,
+   "unit": "GBP/kWh",
+   "basis": "= energy.electricity.manufacturingAvg 17.4 p/kWh (Q2 2026). If the series is ex-CCL, add 0.801 p → 0.182 £/kWh.",
+   "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+   "date": "2026-Q2",
+   "notes": "Current book 0.268 £/kWh (+54% vs evidence). Note the book's Sept refresh passed a wholesale rise (baseload £114.5→£152.55/MWh Jun→Sep 2026) through; Q3 2026 QEP is not yet published (due end Dec 2026), so October contracts may sit above Q2."
+  },
+  {
+   "key": "energy.gas.bookValue",
+   "value": 0.038,
+   "unit": "GBP/kWh",
+   "basis": "= energy.gas.manufacturingAvg 3.8 p/kWh (Q2 2026). If ex-CCL, + 0.801 p → 0.046 £/kWh.",
+   "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+   "date": "2026-Q2",
+   "notes": "Current book 0.067 £/kWh (+76% vs evidence). The book's own 2026-08 note cited QEP manufacturing gas 3.5–3.7 p and then added the NBP move (+2.67 p) on top; NBP pass-through for Q3 is not yet in a published QEP."
+  }
+ ],
+ "notes": [
+  "Access: ons.gov.uk, gov.uk, nomisweb and recruiter sites were blocked from this session (curl 403 / WebFetch DNS failure); all figures come from web-search snippets of the named pages. ASHE Table 14 figures come via huntukvisasponsors.com, which cites \"ONS ASHE 2025 provisional, Table 14\" — verify against the ONS xlsx before merging.",
+  "ASHE figures are UK national full-time medians, not West Midlands / North-East / North-West; regional tables (ASHE Table 15) were not reachable.",
+  "Hourly = ASHE weekly basic ÷ assumed weekly hours (39 shop floor, 37.5 engineer). ASHE hourly-excl-overtime columns would be better; not reachable.",
+  "Loaded multiplier on Oct-2026 basic: ~1.60 for 2-shift shop floor (18% shift + 15% NIC + 5% pension + 0.5% levy, ÷ 87.4% productive), ~1.36 for a day-work engineer.",
+  "Not found: SOC 5221 / 5211 / 5212 / 5250 / 3115 ASHE 2025 medians; DESNZ table 3.4.1/3.4.2 medium & large band prices; employer liability insurance; PPE/training per head; Make UK 2026 shift-premium figures (paywalled).",
+  "Headline ASHE 2025: full-time median £19.67/h excl. overtime, £766.60/wk (https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/annualsurveyofhoursandearnings/2025).",
+  "Summary current vs evidence (fully loaded £/h): skilled 26.19 → 27.95; semiskilled 19.94 → 24.65; engineer 42.8 → 33.27; foundry 18.63 → 24.6; electronics 17.63 → 23.41; inspector 27.7 → 28.03; technician 28.81 → 35.17; supervisor 35.35 → 28.86; forge 24.17 → 25.15; furnace 22.16 → 24.6; blow 20.65 → 23.07; roto 20.14 → 23.07; thermoform 19.64 → 23.07; trimRouter 22.66 → 24.65"
+ ]
+}

@@ -227,7 +227,6 @@ machines = {
     'rentInrPerSqftMonth': rent_inr_sqft_month,
     'rentBasis': 'Knight Frank H1 2026 industrial / warehousing rent: Pune 28.7, Chennai 25.7, Bengaluru 23.5, NCR 22.3 ₹/sq ft/month — mean',
     'ukRentGbpPerM2Yr': 110,
-    'ukElectricityGbpPerKwh': 0.268,
     'capitalHeldFactor': 0.52,
     'groups': [
         {'id': 'cnc-machining-domestic', 'match': '^(mach-vmc3|mach-haas-vf2|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$', 'refId': 'mach-vmc3',

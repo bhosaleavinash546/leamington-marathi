@@ -252,11 +252,12 @@ describe('C2/H4 — regional machine rate rebuild (energy re-tariff)', () => {
     expect(machineRate(cn, 'imm-800t')).toBeLessThan(flat);
   });
 
-  it('Germany can be cheaper than the UK on an energy-dominated machine despite higher capex', () => {
-    // DE capex ×1.05 but electricity 0.20 < UK 0.23; for the energy-heavy 800T press the cheaper
-    // power outweighs the capex uplift.
-    const de = buildRegionalLibrary(lib, 'DE');
-    expect(machineRate(de, 'imm-800t')).toBeLessThan(machineRate(lib, 'imm-800t'));
+  it('a dearer-capex country can be cheaper than the UK on an energy-dominated machine', () => {
+    // AT capex ×1.05 but electricity £0.151 < UK £0.182 (DESNZ, UK rate book Oct 2026 — Germany at £0.199 is now
+    // dearer than the UK, so it no longer shows this); for the energy-heavy 800T press the cheaper power outweighs it.
+    const at = buildRegionalLibrary(lib, 'AT');
+    expect(REGIONAL_DATA.AT.machineRateMultiplier).toBeGreaterThan(1);
+    expect(machineRate(at, 'imm-800t')).toBeLessThan(machineRate(lib, 'imm-800t'));
   });
 
   it('regional machine buildups stay self-consistent (rate recomputes from buildup)', () => {
@@ -298,8 +299,10 @@ describe('L10 — technician / supervisor labour categories', () => {
   it('every region defines technician and supervisor rates between semiskilled and engineer bands', () => {
     for (const region of Object.keys(REGIONAL_DATA) as ManufacturingRegion[]) {
       const l = REGIONAL_DATA[region].labour;
-      expect(l.technician).toBeGreaterThan(0);
-      expect(l.supervisor).toBeGreaterThan(l.technician);
+      expect(l.technician).toBeGreaterThan(l.semiskilled);
+      // supervisor above technician everywhere but the UK, where ASHE puts a 2-shift engineering technician (SOC 3113,
+      // £35.17/h loaded) just above a tier-1 shift supervisor at the SOC 8160 p75 (£34.57/h) — UK rate book, Oct 2026
+      expect(l.supervisor).toBeGreaterThan(region === 'UK' ? l.semiskilled : l.technician);
     }
   });
 

@@ -118,7 +118,9 @@ describe('2. the spindle is turned, and its stock is cast', () => {
 
   it('the real-parts baseline records the stub axle as cast ductile iron, safety-critical', () => {
     const rec = baseline.find(b => b.part === 'PRCR002.stp')!;
-    expect(rec.outcome.total).toBeGreaterThan(80);
+    // £87.38 on the 2026-09 book; £53.39 on the UK rate book (Oct 2026: ductile iron at its charge, machining
+    // machine-only) — still the ductile, safety-critical route, which costs well above the grey-iron one
+    expect(rec.outcome.total).toBeGreaterThan(45);
   });
 });
 

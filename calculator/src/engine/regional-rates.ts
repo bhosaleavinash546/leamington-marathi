@@ -1,6 +1,7 @@
 import type { RateLibrary, MaterialRate, Breakdown8Bucket } from './types.js';
 import { computeMachineRatePerHr } from './rate-library-merge.js';
 import { COUNTRY_BOOKS, countryMachine, countryMaterial } from './country-books.js';
+import { UK_ELECTRICITY_GBP_PER_KWH } from './uk-energy.js';
 import { AL_ALLOYS, BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, type AlAlloy } from './al-extrusion-data.js';
 
 // ─── Manufacturing Regions ─────────────────────────────────────────────────────
@@ -107,8 +108,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'United Kingdom',
     currency: 'GBP',
     fxToGBP: 1.00,
-    labour: { skilled: 26.19, semiskilled: 19.94, engineer: 42.80, foundry: 18.63, electronics: 17.63, inspector: 27.70, technician: 28.81, supervisor: 35.35 },
-    energy: { electricityPerKwh: 0.268, gasPerKwh: 0.067 },
+    labour: { skilled: 27.95, semiskilled: 24.65, engineer: 33.27, foundry: 24.6, electronics: 23.41, inspector: 28.03, technician: 35.17, supervisor: 34.57 },
+    energy: { electricityPerKwh: 0.182, gasPerKwh: 0.046 },
     materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 1.00,
@@ -282,7 +283,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     energy: { electricityPerKwh: 0.069, gasPerKwh: 0.03 },
     materialFactors: { commodityResin: 0.860, engineeringResin: 0.90, highPerfResin: 0.975 },
     materialMultiplier: 0.890,
-    machineRateMultiplier: 0.34,
+    machineRateMultiplier: 0.36,
     overheadMultiplier: 0.72,
     packagingMultiplier: 0.65,
     logisticsMultiplier: 1.50,
@@ -791,9 +792,9 @@ export const THERMOFORMING_COUNTRY_PRICES: Record<string, Partial<Record<Manufac
  * library are expressed against. Regional machine rates back annual kWh out of
  * the base energy figure using this basis, then re-tariff at the region's actual
  * electricity price — so a region's `electricityPerKwh` genuinely drives machine
- * cost instead of being dead data. Keep in sync with REGIONAL_DATA.UK.
+ * cost instead of being dead data. One constant (uk-energy.ts), written with REGIONAL_DATA.UK by scripts/uk-book.ts.
  */
-const UK_ELECTRICITY_BASIS_PER_KWH = 0.268;
+const UK_ELECTRICITY_BASIS_PER_KWH = UK_ELECTRICITY_GBP_PER_KWH;
 
 /** Resin family used to select the country price factor. */
 export type ResinFamily = 'commodity' | 'engineering' | 'highPerformance';

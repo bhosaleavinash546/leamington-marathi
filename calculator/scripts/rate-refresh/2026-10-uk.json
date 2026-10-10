@@ -1,0 +1,862 @@
+{
+ "asOf": "2026-10-10",
+ "label": "UK rate book — automotive tier-1/2 (W Midlands / NE / NW), 2-shift",
+ "labour": {
+  "categories": {
+   "skilled": {
+    "gbpPerHr": 27.95,
+    "basis": "17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h",
+    "source": "https://www.aspion.co.uk/blog/cnc-machinist-salary-uk-2026-what-operators-setters-programmers-earn-by-region-208 ; https://uk.indeed.com/career/cnc-operator/salaries ; https://careermetrics.co.uk/occupation/5241-electricians-and-electrical-fitters/",
+    "research": "labour.skilled.fullyLoadedGbpPerHr"
+   },
+   "semiskilled": {
+    "gbpPerHr": 24.65,
+    "basis": "15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives",
+    "research": "labour.semiskilled.fullyLoadedGbpPerHr"
+   },
+   "engineer": {
+    "gbpPerHr": 33.27,
+    "basis": "24.46 × 1950 h = £47,697 gross; + NIC 15% × (gross − 5,000) £6,405 + pension 5% £2,385 + levy 0.5% £238 = £56,725/yr ÷ 1705.2 productive h = £33.27/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/2125-production-and-process-engineers",
+    "research": "labour.engineer.fullyLoadedGbpPerHr"
+   },
+   "foundry": {
+    "gbpPerHr": 24.6,
+    "basis": "15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives",
+    "research": "labour.foundry.fullyLoadedGbpPerHr"
+   },
+   "electronics": {
+    "gbpPerHr": 23.41,
+    "basis": "14.66 × 2028 h × 1.18 shift = £35,082 gross; + NIC 15% × (gross − 5,000) £4,512 + pension 5% £1,754 + levy 0.5% £175 = £41,524/yr ÷ 1773.4 productive h = £23.41/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8141-assemblers-electrical-and-electronic-products",
+    "research": "labour.electronics.fullyLoadedGbpPerHr"
+   },
+   "inspector": {
+    "gbpPerHr": 28.03,
+    "basis": "17.5 × 2028 h × 1.18 shift = £41,878 gross; + NIC 15% × (gross − 5,000) £5,532 + pension 5% £2,094 + levy 0.5% £209 = £49,713/yr ÷ 1773.4 productive h = £28.03/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8143-routine-inspectors-and-testers",
+    "research": "labour.inspector.fullyLoadedGbpPerHr"
+   },
+   "technician": {
+    "gbpPerHr": 35.17,
+    "basis": "21.89 × 2028 h × 1.18 shift = £52,384 gross; + NIC 15% × (gross − 5,000) £7,108 + pension 5% £2,619 + levy 0.5% £262 = £62,372/yr ÷ 1773.4 productive h = £35.17/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/3113-engineering-technicians",
+    "research": "labour.technician.fullyLoadedGbpPerHr"
+   },
+   "supervisor": {
+    "gbpPerHr": 34.57,
+    "research": "labour.supervisor.hourlyGross",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8160-production-factory-and-assembly-supervisors",
+    "basis": "ASHE 2025 SOC 8160 p75 £41,444/yr (the research's note: an automotive tier-1 shift supervisor sits nearer the p75 than the all-industry median £34,684) ÷ 2,028 h × 1.053 = £21.52/h; × 2,028 h × 1.18 shift = £51,496; + NIC 15% above £5,000 + pension 5% + levy 0.5% = £61,302 ÷ 1,773.4 h = £34.57/h"
+   }
+  },
+  "grades": {
+   "forge": {
+    "gbpPerHr": 25.15,
+    "basis": "15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h",
+    "source": "https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton",
+    "research": "labour.forge.fullyLoadedGbpPerHr"
+   },
+   "furnace": {
+    "gbpPerHr": 24.6,
+    "basis": "15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8115-metal-making-and-treating-process-operatives",
+    "research": "labour.furnace.fullyLoadedGbpPerHr"
+   },
+   "blow": {
+    "gbpPerHr": 23.07,
+    "basis": "14.45 × 2028 h × 1.18 shift = £34,579 gross; + NIC 15% × (gross − 5,000) £4,437 + pension 5% £1,729 + levy 0.5% £173 = £40,918/yr ÷ 1773.4 productive h = £23.07/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8114-plastics-process-operatives",
+    "research": "labour.blow.fullyLoadedGbpPerHr"
+   },
+   "roto": {
+    "gbpPerHr": 23.07,
+    "basis": "14.45 × 2028 h × 1.18 shift = £34,579 gross; + NIC 15% × (gross − 5,000) £4,437 + pension 5% £1,729 + levy 0.5% £173 = £40,918/yr ÷ 1773.4 productive h = £23.07/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8114-plastics-process-operatives",
+    "research": "labour.roto.fullyLoadedGbpPerHr"
+   },
+   "thermoform": {
+    "gbpPerHr": 23.07,
+    "basis": "14.45 × 2028 h × 1.18 shift = £34,579 gross; + NIC 15% × (gross − 5,000) £4,437 + pension 5% £1,729 + levy 0.5% £173 = £40,918/yr ÷ 1773.4 productive h = £23.07/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8114-plastics-process-operatives",
+    "research": "labour.thermoform.fullyLoadedGbpPerHr"
+   },
+   "trim-router": {
+    "gbpPerHr": 24.65,
+    "basis": "15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h",
+    "source": "https://huntukvisasponsors.com/uk-visa-occupation-eligibility/8120-metal-working-machine-operatives",
+    "research": "labour.trimRouter.fullyLoadedGbpPerHr"
+   }
+  },
+  "loadingIncluded": "ASHE 2025 median ×1.053 (ONS regular pay growth) → 2-shift premium 18% (IDR 2025), employer NIC 15% above £5,000 (2026/27), pension 5% (IFS), Apprenticeship Levy 0.5%; 1,773 productive h/yr (39 h × 52 − 28 days − 2.0% sickness)"
+ },
+ "energy": {
+  "electricityGbpPerKwh": 0.182,
+  "gasGbpPerKwh": 0.046,
+  "basis": "DESNZ Quarterly Energy Prices (Sep 2026): manufacturing-sector average Q2 2026 electricity 17.4 p/kWh, gas 3.8 p/kWh, + Climate Change Levy 0.801 p/kWh (from 1 Apr 2026) — CCL added because the release could not be confirmed to include it (if it does, these are 0.8 p high)",
+  "sources": [
+   {
+    "research": "energy.electricity.manufacturingAvg",
+    "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+    "date": "2026-Q2 (published 2026-09-29)"
+   },
+   {
+    "research": "energy.gas.manufacturingAvg",
+    "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+    "date": "2026-Q2 (published 2026-09-29)"
+   },
+   {
+    "research": "energy.cclMainRate",
+    "source": "https://www.gov.uk/government/publications/climate-change-levy-rates-from-1-april-2026/climate-change-levy-changes-to-rates-from-1-april-2026",
+    "date": "2026-04-01"
+   }
+  ]
+ },
+ "machines": {
+  "lifeYears": 13,
+  "lifeBasis": "German BMF AfA table, stationary cutting machines 13 yr (a published tax life, used as the economic-life proxy; no UK table found)",
+  "maintenancePctOfCapex": 0.03,
+  "maintenanceBasis": "machine-hour-rate worked example: 3% of purchase price a year (no UK norm found)",
+  "indirectPctOfCapex": 0.05,
+  "indirectBasis": "the library's own line build-up rule (5% of capex)",
+  "financeRate": 0.04,
+  "financeBasis": "the library's own line build-up rule (4% on half the capex) — a current UK asset-finance rate was not researched",
+  "groups": [
+   {
+    "id": "cnc-3axis",
+    "match": "^(mach-haas-vf2|mach-vmc3|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$",
+    "refId": "mach-haas-vf2",
+    "refCapexGbp": 53204,
+    "refKw": 10.0,
+    "kwBasis": "measured machining-centre mean draw 7.4 kW finishing – 13 kW roughing (maker study) — midpoint 10 kW",
+    "basis": "Haas VF-2 US list $70,995 (2026) = £53,204, base machine (options, tooling and installation not included)",
+    "research": "capex.mach-haas-vf2",
+    "source": "https://machinetoolindex.com/machines/haas-vf-2",
+    "confidence": "Medium"
+   },
+   {
+    "id": "cnc-5axis",
+    "match": "^(mach-haas-umc500|mach-vmc5|mach-dmg-dmu50)$",
+    "refId": "mach-haas-umc500",
+    "refCapexGbp": 126275,
+    "refKw": 13.0,
+    "kwBasis": "measured machining-centre roughing mean 13 kW",
+    "basis": "Haas UMC-500 UK price £126,275 (2019 trade press — the only sterling figure; older)",
+    "research": "capex.mach-haas-umc500",
+    "source": "https://www.pesmedia.com/haas-umc-500-affordable-and-compact-5-axis-capability",
+    "confidence": "Low"
+   },
+   {
+    "id": "fibre-laser",
+    "match": "^(laser-trumpf-3030|laser-trumpf-5030|laser-bystronic-3015|laser-amada-ensis-3015)$",
+    "refId": "laser-trumpf-3030",
+    "refCapexGbp": 374700,
+    "refKw": 22,
+    "kwBasis": "maker worked example: 6 kW fibre laser ~22 kW average",
+    "basis": "TruLaser 3030 6 kW fibre: third-party estimate $400–550k = £374,700 midpoint (Trumpf publishes no list price)",
+    "research": "capex.laser-trumpf-3030",
+    "source": "https://machinetoolindex.com/machines/trumpf-trulaser-3030-fiber",
+    "confidence": "Low"
+   },
+   {
+    "id": "robot-mig",
+    "match": "^robot-mig-cell$",
+    "refId": "robot-mig-cell",
+    "refCapexGbp": 165000.0,
+    "refKw": null,
+    "kwBasis": "no sourced draw — the book's own running load kept",
+    "basis": "UK integrator band for a single-robot welding cell £80,000–250,000 (Phoenix Robotic; Robot Store gives £65,000–120,000+ for a full system) — midpoint £165,000",
+    "research": "capex.robot-mig-cell",
+    "source": "https://www.phoenixrobotic.co.uk/welding-robots/",
+    "confidence": "Low"
+   }
+  ],
+  "notRebuilt": "capex not sourced (or the book agrees with the evidence: IMM 800–2,000 t, HPDC 1,600 t, SMT lines): capital held; energy re-priced at the new UK tariff"
+ },
+ "materialFamilies": [
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "CR coil (DC01 / DC04)",
+   "anchorGbpPerKg": 0.756,
+   "anchorBasis": "ArcelorMittal Europe CRC base €880/t delivered (Oct 2026 contracts) × 0.859 = £0.756/kg",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc_hdg_eu_mill_base_delivered",
+     "source": "https://gmk.center/en/news/arcelormittal-is-raising-prices-for-rolled-steel-in-europe-by-e50-per-tonne/",
+     "date": "2026-07-10"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "The book had DC01 £0.91 ABOVE the deeper-drawing DC04 £0.77.",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "CR automotive grades",
+   "anchorGbpPerKg": 0.756,
+   "anchorBasis": "CR base £0.756 × the book's grade premium over its DC01/DC04 mean (£0.84); European grade extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc_hdg_eu_mill_base_delivered",
+     "source": "https://gmk.center/en/news/arcelormittal-is-raising-prices-for-rolled-steel-in-europe-by-e50-per-tonne/",
+     "date": "2026-07-10"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Coated sheet",
+   "anchorGbpPerKg": 0.756,
+   "anchorBasis": "ArcelorMittal Europe HDG base €880/t delivered = £0.756/kg (Tata UK HRC £620 + HDG uplift ~£145/t agrees) × the book's premium over DC01 GI",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc_hdg_eu_mill_base_delivered",
+     "source": "https://gmk.center/en/news/arcelormittal-is-raising-prices-for-rolled-steel-in-europe-by-e50-per-tonne/",
+     "date": "2026-07-10"
+    },
+    {
+     "research": "ferrous.anchor.hrc_uk_tata_ddp",
+     "source": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2796142-tata-steel-uk-hikes-hrc-offer-by-ps125-t",
+     "date": "2026-03 (for Q2 2026)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "304L sheet",
+   "anchorGbpPerKg": 2.3363,
+   "anchorBasis": "European 304 CRC effective price (incl. alloy surcharge) delivered: May €2,560 / Jul €2,700 / end-Q3 target €2,900 per t × 0.859 — mean £2.336/kg (mill coil)",
+   "sources": [
+    {
+     "research": "ferrous.anchor.stainless.crc304_may_deliv_transaction",
+     "source": "https://news.metal.com/newscontent/103862945-smm-스테인리스-스틸-시장-속보-유럽-철강사들-7월분-crc-공급가격을-도착도-기준-톤당-€2700으로-인상",
+     "date": "2026-04"
+    },
+    {
+     "research": "ferrous.anchor.stainless.crc304_mill_target_endQ3",
+     "source": "https://news.metal.com/en/newscontent/103920057-smm-stainless-steel-market-flash-eu-mills-target-€2900t-crc-by-end-q3-as-buyers-see-no-near-term-price-drop",
+     "date": "2026-05-25"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "316L sheet",
+   "anchorGbpPerKg": 3.6863,
+   "anchorBasis": "304 CRC £2.336 + (Outokumpu May 2026 surcharge 316L £3.28 − 304 £1.93) — same base assumed (derived)",
+   "sources": [
+    {
+     "research": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.316L.2026-05",
+     "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+     "date": "2026-04 (for May 2026 deliveries)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Ferritic sheet (430 / 409L / 441)",
+   "anchorGbpPerKg": 1.3463,
+   "anchorBasis": "304 CRC £2.336 + (surcharge 430 £0.94 − 304 £1.93) — same base assumed (derived); 409L / 441 at the book's premium over 430",
+   "sources": [
+    {
+     "research": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.430.2026-05",
+     "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+     "date": "2026-04 (for May 2026 deliveries)"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.97,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430",
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorGbpPerKg": 0.287,
+   "anchorBasis": "Treated-metal charge for GJS-500-7 £0.287/kg: 50% Brazilian pig iron (CFR Italy $520/t) + 50% UK 0A scrap (letsrecycle Jul 2026) + 1.2% FeSiMg (EU import value) + inoculant — + the book's grade premium over GJS-500-7 in £/kg (alloy content — Mo, Ni, Cu — and, for ADI, the austempering the casting engine does not add separately)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJS-500-7",
+     "source": "https://journals.pan.pl//Content/127177/PDF/AFE%202_2023_10_final%20version.pdf",
+     "date": "2026-10-10 (derived)"
+    },
+    {
+     "research": "ferrous.anchor.pig_iron_brazil_cfr_italy",
+     "source": "https://gmk.center/en/news/average-prices-for-pig-iron-in-the-black-sea-region-rose-by-8-per-ton-in-april/",
+     "date": "2026-04"
+    },
+    {
+     "research": "ferrous.anchor.scrap_uk_0A_plate_girder",
+     "source": "https://www.letsrecycle.com/prices/metals/ferrous-metal-prices/ferrous-scrap-metal-prices-2026/",
+     "date": "2026-07 (last Friday of month)"
+    },
+    {
+     "research": "ferrous.anchor.fesimg_eu_import_unit_value",
+     "source": "https://www.thetradehub.eu/de/customs/trade/72022910",
+     "date": "period not stated on the page (indexed 2026)"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Grey / malleable iron (charge)",
+   "anchorGbpPerKg": 0.169,
+   "anchorBasis": "Bought metallics for GJL-250 £0.169/kg: 60% cast-iron scrap + 25% steel scrap + 15% pig iron (textbook mix; UK letsrecycle scrap, Brazilian pig iron)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJL-250",
+     "source": "https://www.cliffsnotes.com/study-notes/24588812",
+     "date": "2026-10-10 (derived)"
+    },
+    {
+     "research": "ferrous.anchor.scrap_uk_9_10_cast",
+     "source": "https://www.letsrecycle.com/prices/metals/ferrous-metal-prices/ferrous-scrap-metal-prices-2026/",
+     "date": "2026-06"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": 0.125,
+   "scrapBasis": "UK merchant No.1 old steel £125/t (letsrecycle, Jul 2026; turnings were not priced) — the book's £0.28 credit was above the new charge price",
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorGbpPerKg": 0.142,
+   "anchorBasis": "Steel-foundry charge £0.142/kg: UK 0A plate & girder scrap £142.5/t (Mn/Si trim not priced) + the book's grade premium in £/kg (Cr–Mo content)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GS-C25_WCB",
+     "source": "https://www.letsrecycle.com/prices/metals/ferrous-metal-prices/ferrous-scrap-metal-prices-2026/",
+     "date": "2026-10-10 (derived)"
+    },
+    {
+     "research": "ferrous.anchor.scrap_uk_0A_plate_girder",
+     "source": "https://www.letsrecycle.com/prices/metals/ferrous-metal-prices/ferrous-scrap-metal-prices-2026/",
+     "date": "2026-07 (last Friday of month)"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Cast stainless (charge)",
+   "anchorGbpPerKg": 1.805,
+   "anchorBasis": "CF8 virgin-units charge £1.805/kg (Ni 9.5% at LME, Cr 19.5% via ferrochrome benchmark, Fe units) — an upper bound (scrap-based melting is cheaper) — + the book's grade premium in £/kg (Mo / Ni / Cr content: CF8M is CF8 + the 316-v-304 surcharge)",
+   "sources": [
+    {
+     "research": "ferrous.charge.CF8",
+     "source": "https://www.astm.org/a0351_a0351m-18.html",
+     "date": "2026-10-10 (derived)"
+    },
+    {
+     "research": "ferrous.anchor.nickel_lme_cash",
+     "source": "https://www.tacto.ai/en-us/commodities/nickel-price",
+     "date": "2026-07-31"
+    },
+    {
+     "research": "ferrous.anchor.ferrochrome_eu_benchmark_q3",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026 Q3"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorGbpPerKg": 2.8184,
+   "anchorBasis": "0.20 × Ni £12.717 + 0.02 × Cr £2.558 (contained) + 0.78 × ductile charge £0.287",
+   "sources": [
+    {
+     "research": "ferrous.anchor.nickel_lme_cash",
+     "source": "https://www.tacto.ai/en-us/commodities/nickel-price",
+     "date": "2026-07-31"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorGbpPerKg": 4.7147,
+   "anchorBasis": "0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 £1.082 + 0.59 × ductile charge",
+   "sources": [
+    {
+     "research": "ferrous.anchor.nickel_lme_cash",
+     "source": "https://www.tacto.ai/en-us/commodities/nickel-price",
+     "date": "2026-07-31"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "High-Cr white iron (charge)",
+   "anchorGbpPerKg": 0.7185,
+   "anchorBasis": "0.23 × Cr £2.558 (contained) + 0.77 × grey-iron charge £0.169",
+   "sources": [
+    {
+     "research": "ferrous.anchor.ferrochrome_eu_benchmark_q3",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026 Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Secondary cast aluminium (ingot)",
+   "anchorGbpPerKg": 2.104,
+   "anchorBasis": "Fastmarkets pressure-diecasting ingot DIN226 / A380 delivered Europe €2,430–2,530/t (Jan 2026 — the latest found; STALE) — the secondary (scrap-based) Al-Si-Cu alloys; × the book's premium over ADC12",
+   "sources": [
+    {
+     "research": "nonferrous.anchor.al_secondary_din226_delivered_europe",
+     "source": "https://www.tradingpedia.com/2026/01/26/scrap-squeeze-keeps-eu-secondary-aluminum-prices-elevated/",
+     "date": "2026-01-23/26"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-a413",
+    "mat-a319",
+    "mat-lm4",
+    "mat-en-ac-46200"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Primary-based cast aluminium (floor)",
+   "anchorGbpPerKg": 2.7867,
+   "anchorBasis": "P1020 primary aluminium duty-paid Rotterdam all-in (LME cash + DP premium, Oct 2026) — the primary-based alloys (A356/A357, AlSi7/10Mg, structural HPDC, A206, LM13) cannot sit below the primary metal they are made from; the book's prices above it are held (alloy-ingot premiums not found)",
+   "sources": [
+    {
+     "research": "nonferrous.anchor.al_lme_cash",
+     "source": "https://www.alcircle.com/news/lme-aluminium-offer-price-rises-to-3-134-5-t-as-stocks-remain-unchanged-at-240-375t-121456",
+     "date": "2026-10-06"
+    },
+    {
+     "research": "nonferrous.anchor.al_rotterdam_dp_premium",
+     "source": "https://storage.ghost.io/c/a7/38/a7384b33-c2f9-4c7c-85e7-bc1b263c8a1b/content/files/2026/10/Aluminium-Insight-by-LME-Insight-Edition-5-1.pdf",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-alsi10mg",
+    "mat-a365",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm25",
+    "mat-lm6",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Secondary ADC12 (ingot)",
+   "anchorGbpPerKg": 2.104,
+   "anchorBasis": "DIN226 / A380 secondary ingot (Fastmarkets, Jan 2026)",
+   "sources": [
+    {
+     "research": "nonferrous.anchor.al_secondary_din226_delivered_europe",
+     "source": "https://www.tradingpedia.com/2026/01/26/scrap-squeeze-keeps-eu-secondary-aluminum-prices-elevated/",
+     "date": "2026-01-23/26"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorGbpPerKg": 11.2355,
+   "anchorBasis": "LME copper $14,568.72/t (8 Oct 2026) + Aurubis 2026 premium $315/t = £11.24/kg — the book's bar £11.05 and sheet £10.77 were below the metal; conversion premium not found",
+   "sources": [
+    {
+     "research": "nonferrous.anchor.cu_cathode_delivered_derived",
+     "source": "see the two anchors",
+     "date": "2026-10-08"
+    },
+    {
+     "research": "nonferrous.anchor.cu_lme",
+     "source": "https://metalcharts.org/lme-copper-price",
+     "date": "2026-10-08"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Brass rod (mill list)",
+   "anchorGbpPerKg": 8.4753,
+   "anchorBasis": "Almag (Italian brass-rod mill) published CW614N–CW617N rod price €9,990/t on 9 Oct 2026 = £8.48/kg",
+   "sources": [
+    {
+     "research": "nonferrous.anchor.brass_rod_cw614n_cw617n_mill",
+     "source": "https://www.almagbrass.com/stock-price-brass-copper-zinc.html",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-brass-cz121",
+    "mat-brass-cz122-forge"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Phosphor bronze PB1 (floor)",
+   "anchorGbpPerKg": 14.4239,
+   "anchorBasis": "Metal content 0.89 × Cu £11.24 + 0.105 × Sn £42.14 (LME tin, Aug 2026) — the book's £13.91 was below it",
+   "sources": [
+    {
+     "research": "nonferrous.anchor.sn_lme_spot",
+     "source": "https://cbonds.pl/indexes/181087/",
+     "date": "2026-08-12"
+    },
+    {
+     "research": "nonferrous.anchor.cu_cathode_delivered_derived",
+     "source": "see the two anchors",
+     "date": "2026-10-08"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-bronze-pb1"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Rigid PVC (floor at the resin)",
+   "anchorGbpPerKg": 1.1135,
+   "anchorBasis": "S-PVC NW Europe gross contract £1.096 and Business Analytiq Europe index £1.131 (Sep 2026) — mean; the book's rigid grades (£0.76–0.85) were below the resin they are made of",
+   "sources": [
+    {
+     "research": "polymer.anchor.pvc_s_gross_contract_nwe",
+     "source": "https://polymerupdate.com/News/Details/1485733",
+     "date": "2026-05-08"
+    },
+    {
+     "research": "polymer.anchor.pvc_index_europe_ba",
+     "source": "https://businessanalytiq.com/?p=2559",
+     "date": "2026-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-upvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "PA6 unfilled",
+   "anchorGbpPerKg": 2.189,
+   "anchorBasis": "Business Analytiq PA6 Europe index (Sep 2026) — one source",
+   "sources": [
+    {
+     "research": "polymer.anchor.pa6_index_europe_ba",
+     "source": "https://businessanalytiq.com/?p=2215",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "PA66 unfilled",
+   "anchorGbpPerKg": 2.551,
+   "anchorBasis": "Business Analytiq PA66 Europe index (Sep 2026) — one source",
+   "sources": [
+    {
+     "research": "polymer.anchor.pa66_index_europe_ba",
+     "source": "https://businessanalytiq.com/?p=2623",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "scrapGbpPerKg": null,
+   "scrapBasis": null,
+   "family": "Natural rubber (floor)",
+   "anchorGbpPerKg": 1.905,
+   "anchorBasis": "SGX TSR20 (Oct 2026) — the book's SMR20 £1.84 was below the exchange price before freight",
+   "sources": [
+    {
+     "research": "rubber.nr_tsr20_sgx",
+     "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-3-10-bien-dong-trai-chieu-a336568.html",
+     "date": "2026-10-03"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "HR / HRPO / structural HR, carbon & alloy bar, forging stock": "NW Europe HRC £0.61–0.66/kg, Tata UK £0.62; the book's HRPO £0.77 / S355MC £0.80 are not contradicted (pickling / grade extras); no UK bar or SBQ base price found (only alloy surcharges) — held",
+  "electrical steel": "Only EU GOES safeguard floors (£2.41–3.01/kg; the book's GO grades sit inside) and an unspecified IMARC figure — held",
+  "wrought aluminium sheet / bar / forging stock, aluminium billet": "P1020 duty-paid Rotterdam £2.79/kg; the book's wrought grades are above it; conversion premiums not found; 6063 billet £3.27 v LME + billet premium £3.20 — consistent; held",
+  "zinc, magnesium, titanium, nickel alloys": "LME zinc £2.85 under Zamak £3.19 (consistent); Mg China FOB £1.70 v AZ91D £3.81 — likely high but no European alloy price found; Ti / Ni mill prices not found — held",
+  "brass sheet, gunmetal, aluminium bronze, tin bronze, winding wire": "Consistent with the metal content or no mill price found — held",
+  "PP, PE, PS, ABS, PC, PET and the engineering polymers without an anchor": "NW Europe spot (PP £1.02, HDPE £0.97, LDPE £1.09) to index (PP £1.47, HDPE £1.30) spans the book (PP £0.99, HDPE £1.05); ABS £1.64 v book £1.62; PC £2.21 v £2.52 (one source); held",
+  "filled / FR compounds, rubber compounds, composites, paint, masterbatch": "No European compound / paint / composite price found — held"
+ }
+}

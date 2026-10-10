@@ -61,8 +61,8 @@ describe('machine-oversized lesson — the machining-routing lesson, generalised
   };
 
   it('prices an oversized press in £/part and proposes the sized machine', () => {
-    // 180 t of clamp needs imm-200t (£25/hr); costed on imm-800t (£78/hr).
-    // 0.01 hr / 0.85 oee × £53/hr difference ≈ £0.62/part of machine nobody needed.
+    // 180 t of clamp needs imm-200t (£23/hr); costed on imm-800t (£72/hr) — UK rate book (Oct 2026) tariff.
+    // 0.01 hr / 0.85 oee × £49/hr difference ≈ £0.57/part of machine nobody needed (£0.62 at the old tariff).
     const f = runShouldCostAudit(base({
       commodity: 'injection_moulding', input: overInput(),
       sizingParams: { clampTonnes: 180 }, selectedMachineId: 'imm-800t',
@@ -71,7 +71,7 @@ describe('machine-oversized lesson — the machining-routing lesson, generalised
     expect(m).toBeDefined();
     expect(m?.severity).toBe('medium');
     expect(m?.correction).toEqual({ kind: 'machineId', machineId: 'imm-200t' });
-    expect(m?.message).toMatch(/£0\.6\d\/part/);
+    expect(m?.message).toMatch(/£0\.5\d\/part/);
   });
 
   it('stays silent when the selected machine IS the sized one', () => {

@@ -188,17 +188,17 @@ describe('8. moulds wear fractionally', () => {
 });
 
 describe('9. the parts reconcile', () => {
-  it('reservoir £1.62 and duct £1.24 at 50,000/yr (both blocked before; £1.59 / £1.20 on pellet grades before the scope review)', () => {
-    expect(baseline.find(b => b.part === 'BM_Washer_Reservoir.stp')!.outcome.total).toBe(1.62);
-    expect(baseline.find(b => b.part === 'BM_Air_Duct.stp')!.outcome.total).toBe(1.24);
+  it('reservoir £1.60 and duct £1.22 at 50,000/yr (£1.62 / £1.24 before the UK rate book; both blocked before; £1.59 / £1.20 on pellet grades before the scope review)', () => {
+    expect(baseline.find(b => b.part === 'BM_Washer_Reservoir.stp')!.outcome.total).toBe(1.6);
+    expect(baseline.find(b => b.part === 'BM_Air_Duct.stp')!.outcome.total).toBe(1.22);
   });
-  it('the real fuel tank: £28.91 (was £32.41; £29.12 on the pellet grade before the scope review)', async () => {
+  it('the real fuel tank: £28.69 (£28.91 before the UK rate book; was £32.41; £29.12 on the pellet grade before the scope review)', async () => {
     const t = structuredClone(TANK);
     const r = await costMeasuredPart(t, 'Fuel_tank.STEP',
       { partNumber: 'Fuel_tank', file: 'Fuel_tank.STEP', annualVolume: 50_000, commodity: 'blow_moulding' } as never,
       TANK_ANS, 'UK', { annualVolume: 50_000 } as never, recomputeMachineRates(DEFAULT_RATE_LIBRARY),
       { partNumber: 'Fuel_tank', file: 'Fuel_tank.STEP', status: 'error' } as never) as { status: string; total: number };
     expect(r.status).toBe('costed');
-    expect(r.total).toBeCloseTo(28.91, 2);
+    expect(r.total).toBeCloseTo(28.69, 2);
   });
 });

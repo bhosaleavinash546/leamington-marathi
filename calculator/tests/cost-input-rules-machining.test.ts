@@ -257,7 +257,7 @@ describe('machining end to end', () => {
     expect(m.batchSize).toBe(1000);                      // 20,000 / 20
     expect(m.rejectRate).toBe(0.02);
     expect(m.toolingCost).toBe(10_000);                  // 4 dedicated fixtures (100k parts over 5 years)
-    expect(m.programmingNRE).toBe(353);
+    expect(m.programmingNRE).toBe(274);                  // the engineer at £33.27/h (UK rate book, Oct 2026; £353 at £42.80)
     expect(m.toolWearCostPerPart).toBe(0.145);
     expect(r.provenance['mach-net-wt'].source).toBe('geometry');
   });

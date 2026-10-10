@@ -66,8 +66,8 @@ describe('1. the sheet the part came from: plan area, then mass balance', () => 
 
 describe('2. headless costs a thermoforming at all', () => {
   it('both parts cost (all failed: "materialUtilization must be in (0, 1]")', async () => {
-    expect((await headless(COVER, 'mat-abs-tf', 5_000)).total).toBeCloseTo(4.94, 2);
-    expect((await headless(LID, 'mat-hdpe-tf', 5_000)).total).toBeCloseTo(23.79, 2);
+    expect((await headless(COVER, 'mat-abs-tf', 5_000)).total).toBeCloseTo(5.07, 2);
+    expect((await headless(LID, 'mat-hdpe-tf', 5_000)).total).toBeCloseTo(23.64, 2);
   });
   it('parts per sheet is the nest, not sheet ÷ part (which charged no web)', () => {
     const c = ctx(COVER, 'mat-abs-tf', 50_000);
@@ -141,7 +141,7 @@ describe('7. a formed part named as one is asked, not pressed', () => {
 
 describe('8. baseline', () => {
   it('records both at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === LID)!.outcome.total).toBe(21.32);
-    expect(baseline.find(b => b.part === COVER)!.outcome.total).toBe(2.43);
+    expect(baseline.find(b => b.part === LID)!.outcome.total).toBe(21.17);
+    expect(baseline.find(b => b.part === COVER)!.outcome.total).toBe(2.48);
   });
 });

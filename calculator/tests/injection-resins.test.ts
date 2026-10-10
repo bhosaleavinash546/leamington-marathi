@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS, UK_BOOK_BASIS } from '../src/engine/rate-library.js';
+// A grade is on the refresh's month or, where the UK rate book (Oct 2026) re-priced it, on the book's month.
+const ON_BASIS = [RATE_BASIS, UK_BOOK_BASIS];
 import { computeUniversalStack } from '../src/engine/core.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 import { assertPartCostInvariants } from './helpers/engine-invariants.js';
@@ -57,7 +59,7 @@ describe('injection-moulding resin coverage', () => {
   it('all injection-moulding resins carry the 2026-07 index-anchored date (RATE_BASIS)', () => {
     const resins = lib.materials.filter(m => /Thermoplastic|High-Performance Thermoplastic|Thermoplastic Elastomer/.test(m.category));
     expect(resins.length).toBeGreaterThan(40);
-    for (const m of resins) expect(m.effectiveDate).toBe(RATE_BASIS);
+    for (const m of resins) expect(ON_BASIS).toContain(m.effectiveDate);
   });
 
   it('a new automotive resin drives the cost engine without error', () => {

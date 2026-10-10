@@ -215,10 +215,11 @@ describe('independent review fixes (Oct 2026)', () => {
 
   it('a tended op (labour time below the cycle) still gives up exactly the finding\'s £', () => {
     const tended = { ...input, operations: [opFactory({ cycleTimeHr: 0.12, labourTimeHr: 0.01 })] };
-    const f: DtcFindingLike = { ...holeFinding, totalCostGBP: 1.0 };
+    // £0.50 — inside the op's 90 % cap at machine-only rates (UK rate book, Oct 2026: £1.00 now exceeds it and is capped)
+    const f: DtcFindingLike = { ...holeFinding, totalCostGBP: 0.5 };
     const v = findingVariant(f, tended, lib)!;
-    expect(factoryBase(computeUniversalStack(tended, lib)) - factoryBase(computeUniversalStack(v.next, lib))).toBeCloseTo(1.0, 6);
-    expect(v.removedGBP).toBeCloseTo(1.0, 6);
+    expect(factoryBase(computeUniversalStack(tended, lib)) - factoryBase(computeUniversalStack(v.next, lib))).toBeCloseTo(0.5, 6);
+    expect(v.removedGBP).toBeCloseTo(0.5, 6);
   });
 
   it('one hole flagged by two rules comes out once when both levers are on', () => {

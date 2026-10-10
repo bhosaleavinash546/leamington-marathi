@@ -136,7 +136,6 @@
   "rentInrPerSqftMonth": 25.05,
   "rentBasis": "Knight Frank H1 2026 industrial / warehousing rent: Pune 28.7, Chennai 25.7, Bengaluru 23.5, NCR 22.3 ₹/sq ft/month — mean",
   "ukRentGbpPerM2Yr": 110,
-  "ukElectricityGbpPerKwh": 0.268,
   "capitalHeldFactor": 0.52,
   "groups": [
    {

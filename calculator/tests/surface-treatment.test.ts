@@ -47,8 +47,10 @@ const paintPart = (over: Partial<PaintingInputs> = {}): PaintingInputs => ({
 /** The painted reference part's total. £4.5936 on the June 2026 rates; £4.6583
  *  after the 2026-09 index refresh (+1.4%: line energy, labour and machine
  *  build-ups moved; chemistry converted at the Sep 2026 USD/GBP 1.3238 instead of
- *  1.33 → £4.6632). A move here must be explained. */
-const PAINTED_TOTAL = 4.6632;
+ *  1.33 → £4.6632). UK rate book (Oct 2026): +2.0% — the line operator £19.94 → £24.65/h
+ *  (ASHE-loaded semi-skilled), line energy re-priced at £0.182 / £0.046 per kWh (DESNZ) → £4.7577.
+ *  A move here must be explained. */
+const PAINTED_TOTAL = 4.7577;
 const total = (i: PaintingInputs): number => {
   const d = computePaintingDrivers(i);
   return computeUniversalStack({

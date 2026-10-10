@@ -1,0 +1,700 @@
+{
+ "domain": "machines-b (plastics, casting, forging, furnaces/heat treat/surface, electronics/EV/composites) — installed CAPEX and running inputs",
+ "researched": "2026-10-10",
+ "items": [
+  {
+   "key": "capex.imm-2000t",
+   "value": 1000000,
+   "unit": "GBP (lower bound, 'over £1 million')",
+   "basis": "trade-press project announcement: Taylor Engineering & Plastics (Rochdale) 2,200 t Wittmann MacroPower, investment 'worth over £1 million' incl. full material handling, drying and blending package, turnkey",
+   "source": "https://interplasinsights.com/plastics-machinery/injection-moulding-machine-news/tep-invests-big-with-wittmann/",
+   "date": "2025 (delivery Aug 2025)",
+   "notes": "Same story on https://www.bpf.co.uk/article/tep-wittmann-3794.aspx. 2,200 t not 2,000 t. Includes auxiliaries; installation not stated. Book depreciation £159,896/yr ÷ £1.0m = a 6.3-year write-off if capex were exactly £1.0m; consistent with a capex of £1.1–1.6m at 7–10 years. Not evidence the book is wrong."
+  },
+  {
+   "key": "capex.imm-1500t (cross-check for imm-2000t / imm-800t)",
+   "value": 500000,
+   "unit": "GBP",
+   "basis": "trade-press: Clarity Plastics (Birmingham) spent £500,000 'creating a dedicated production cell' for a Bole 1,500 t machine (Chinese-built)",
+   "source": "https://www.expressandstar.com/business/clarity-plastics-builds-for-future-with-ps500000-press-investment-8564834",
+   "date": "2025 or 2026 (publish date not visible in search snippet; company 'formed last year')",
+   "notes": "Also https://www.themanufacturer.com/articles/clarity-plastics-builds-for-the-future-with-1500-tonne-press-investment/ . A Chinese-made press: lower bound for European makes. Cell scope = machine + cell; whether it includes robot not stated."
+  },
+  {
+   "key": "capex.imm-500t (cross-check, between imm-200t and imm-800t)",
+   "value": 500000,
+   "unit": "GBP",
+   "basis": "trade-press: LGG Charlesworth (Malvern) 'invested £500,000 on a 500 ton injection moulding machine from Wittmann Battenfeld UK'",
+   "source": "https://www.britishplastics.co.uk/machinery/wittmann-battenfeld-works-for-lgg-charlesworth-expansion/",
+   "date": "date not visible in search snippet",
+   "notes": "Also https://zenoot.com/leading-contract-moulder-invests-500000-to-support-further-growth . Scope (robot, auxiliaries) not stated. European make. Book imm-800t depreciation £70,840/yr implies £0.5–0.7m at 7–10 years — consistent with a 500 t European machine at £0.5m."
+  },
+  {
+   "key": "capex.imm-500t-pair (cross-check)",
+   "value": 1500000,
+   "unit": "GBP for two 500 t hybrid machines + other IM technology",
+   "basis": "trade-press: PFF Packaging Group (Tyne & Wear) 'invested £1.5m in new injection moulding technology, including two 500-tonne hybrid machines'",
+   "source": "https://packagingeurope.com/pff-packaging-group-invests-15m-in-new-im-technology/1420.article",
+   "date": "date not visible in search snippet",
+   "notes": "Upper bound ≈ £0.75m per 500 t machine incl. associated technology (1.5m ÷ 2); scope not itemised."
+  },
+  {
+   "key": "capex.imm-50t",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source (new-machine price). Rutland Plastics bought 50 t and 80 t Engel victory tie-bar-less machines with robots — no £ given",
+   "source": "https://www.britishplastics.co.uk/machinery/rutland-plastics-invests-in-two-new-engel-machines-for-volum/",
+   "date": "undated",
+   "notes": ""
+  },
+  {
+   "key": "capex.imm-200t",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source for a new European 200 t machine. Cross-checks only (marketplace, not prices): Indian dealer Haitian 200 t servo ₹18,50,000; used 2021 Haitian MA1600III (160 t, 700 h) US$69,500; Plastics Today (old) 130–160 t Haitian delivered US$60,200",
+   "source": "https://www.equipt.com/listings/67598-used-2021-haitian-ma1600iii-injection-molding-machines-in-florida",
+   "date": "listing current Oct 2026; Plastics Today figure is old (pre-2010)",
+   "notes": "Also https://m.indiamart.com/vpsrplasticsystems and https://www.plasticstoday.com/haitian-places-new-machines-europe-0 . Not usable as a UK price; FX not applied."
+  },
+  {
+   "key": "capex.blow-ebm-100l",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched in depth (shared search budget); no maker price or UK project figure surfaced."
+  },
+  {
+   "key": "capex.blow-sbm-2stage",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched in depth (shared search budget); no maker price or UK project figure surfaced."
+  },
+  {
+   "key": "capex.extruder-pipe-line",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched in depth (shared search budget); no maker price or UK project figure surfaced."
+  },
+  {
+   "key": "capex.extruder-sheet-line",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched in depth (shared search budget); no maker price or UK project figure surfaced."
+  },
+  {
+   "key": "capex.thermoform-large",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched in depth (shared search budget); no maker price or UK project figure surfaced."
+  },
+  {
+   "key": "capex.lsr-injection-machine",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched in depth (shared search budget); no maker price or UK project figure surfaced."
+  },
+  {
+   "key": "capex.compression-mould-std",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched in depth (shared search budget); no maker price or UK project figure surfaced."
+  },
+  {
+   "key": "capex.rotomould-biaxial",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source for a new 3-arm carousel (Persico / Ferry / Rotoline). Chinese marketplace range US$50,000–140,000 per set (cross-check only)",
+   "source": "https://www.made-in-china.com/Manufacturing-Processing-Machinery-Catalog/Rotational-Molding-Machine.html",
+   "date": "listing current Oct 2026",
+   "notes": "Design guide: shuttle machines have lower capital cost than carousels of same size (https://www.rotomolding.org/design-guide-pt1-ch3)."
+  },
+  {
+   "key": "kw.imm (SEC, efficient benchmark)",
+   "value": 0.3,
+   "unit": "kWh/kg processed (thin-wall, short cycle)",
+   "basis": "Plastics Engineering (Wiley) 'eco-molding' cover story: efficient benchmarks 0.3 kWh/kg thin-walled short cycle, 0.6 kWh/kg thicker part moulded slowly",
+   "source": "https://read.nxtbook.com/wiley/plasticsengineering/march2015/coverstory_ecomolding.html",
+   "date": "2015-03",
+   "notes": "Older figure (no 2026 source found). Same article: SKZ test of a 100 t all-electric press measured 0.384 kWh/kg; plastification the largest user."
+  },
+  {
+   "key": "kw.imm (SEC, thicker part)",
+   "value": 0.6,
+   "unit": "kWh/kg",
+   "basis": "as above",
+   "source": "https://read.nxtbook.com/wiley/plasticsengineering/march2015/coverstory_ecomolding.html",
+   "date": "2015-03",
+   "notes": ""
+  },
+  {
+   "key": "kw.imm-hydraulic (SEC, measured)",
+   "value": 0.613,
+   "unit": "kWh/kg",
+   "basis": "ACEEE 2005 Vermont case study: hydraulic 0.278 kWh/lb, all-electric 0.073 kWh/lb, same parts, one week metered. 0.278 ÷ 0.4536 = 0.613 kWh/kg; 0.073 ÷ 0.4536 = 0.161 kWh/kg (all-electric)",
+   "source": "https://www.aceee.org/files/proceedings/2005/data/papers/SS05_Panel01_Paper15.pdf",
+   "date": "2005",
+   "notes": "Old; machine only (no dryers/chillers)."
+  },
+  {
+   "key": "kw.imm (SEC, LCI average incl. auxiliaries)",
+   "value": 1.47,
+   "unit": "kWh/kg",
+   "basis": "ecoinvent dataset average electricity for injection moulding (as reported in search summary of PMC6164802 / MDPI Materials 11(9):1740)",
+   "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6164802",
+   "date": "2018 (paper)",
+   "notes": "Book check (arithmetic only): imm-2000t 331.8 kW avg ÷ 0.6 kWh/kg = 553 kg/h; ÷ 1.47 = 226 kg/h. imm-200t 47.6 kW ÷ 0.6 = 79 kg/h; ÷ 1.47 = 32 kg/h. The book's power draws are consistent only with the ecoinvent all-in average (machine + auxiliaries), not with machine-only SECs of 0.16–0.6 kWh/kg."
+  },
+  {
+   "key": "maintenancePct.generic (worked example, not a benchmark)",
+   "value": 3,
+   "unit": "% of purchase price per year",
+   "basis": "derived from a machine-hour-rate calculator's worked example: €400,000 machine, 10-year life, €12,000/yr maintenance, 2,000 h/yr → 12,000 ÷ 400,000 = 3 %",
+   "source": "https://gocad.de/en/maschinenstundensatz-berechnen",
+   "date": "page current Oct 2026",
+   "notes": "An illustration, not a survey. Book ratio maintenance ÷ depreciation is ≈0.45 on most B-group lines (e.g. imm-2000t 72,690 ÷ 159,896) = 4.5 % of capex if the book used a 10-year life."
+  },
+  {
+   "key": "life.imm",
+   "value": null,
+   "unit": "years",
+   "basis": "not found in any source (the gocad example uses 10 years as an illustration only)",
+   "source": "https://gocad.de/en/maschinenstundensatz-berechnen",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "benchmark.imm-uk",
+   "value": null,
+   "unit": "GBP/h",
+   "basis": "not found in any source for UK. US Plastics Technology twice-yearly survey exists (10 clamp bands <50 t to >3,000 t, with/without operator) but figures not retrievable here; MAPP 2025 Machine Rate Report is paywalled (US$999)",
+   "source": "https://mappinc.com/resources/benchmarking-publications/2025-machine-rate-report/",
+   "date": "2025",
+   "notes": "Also https://ptonline.com/blog/post/what-are-the-latest-trends-in-molding-rates"
+  },
+  {
+   "key": "capex.hpdc-1600t (cross-check: Bühler Carat 130 cell)",
+   "value": 1200000,
+   "unit": "GBP (complete cell)",
+   "basis": "trade-press: Lupton & Place put £1.2 million into a new cell built around a Bühler Carat 130, 'first such system installed in the UK'",
+   "source": "https://www.machinery.co.uk/content/news/precision-die-caster-installs-first-in-uk-technology-to-boost-capability-and-capacity",
+   "date": "date not visible in search snippet",
+   "notes": "Tonnage not stated in the source snippet (Carat model numbers follow locking force; not confirmed here). Book hpdc-1600t depreciation £141,680/yr implies £1.1–1.4m at 8–10 years — consistent order of magnitude."
+  },
+  {
+   "key": "capex.hpdc-800t (programme incl.)",
+   "value": 2000000,
+   "unit": "GBP (whole programme, not the machine)",
+   "basis": "trade-press: Alucast (Wednesbury) £2m investment drive: 800 t LK HPDC in a fully automated cell + six CNC machines + an HDTD low-pressure machine",
+   "source": "https://foundry-planet.com/d/uk-foundry-casts-its-net-for-new-opportunities-following-pound2m-investment",
+   "date": "2024-01 (one re-publication dated 2025-02-03: https://www.ukmetalsexpo.com/2025/02/03/black-country-foundry-alucast-targets-expansion-after-2m-investment-drive/)",
+   "notes": "Machine price cannot be separated — use only as an upper bound for an 800 t cell (< £2m)."
+  },
+  {
+   "key": "capex.hpdc-small-auto (cross-check)",
+   "value": 250000,
+   "unit": "GBP",
+   "basis": "trade-press: Midland Pressure Diecasting (Willenhall) £250,000 project for a fully automatic aluminium die-casting machine (+20% capacity)",
+   "source": "https://www.machinery.co.uk/content/news/mpd-invests-250-000-to-boost-die-casting-capacity",
+   "date": "2019 (per search summary)",
+   "notes": "Tonnage not stated; old."
+  },
+  {
+   "key": "capex.hpdc-giga-6100t (cross-check, maker revenue)",
+   "value": 10000000,
+   "unit": "CHF per megacasting solution (average, derived)",
+   "basis": "Bühler: 50 megacasting solutions sold over five years ≈ CHF 500 million turnover → 500 ÷ 50 = CHF 10m per solution (cell incl. peripherals, service; not the press alone)",
+   "source": "https://engineeringnews.co.za/article/bhler-reports-changes-in-grain-milling-cocoa-processing-automotive-casting-production-processes-2026-02-16",
+   "date": "2026-02-16",
+   "notes": "Not converted to GBP (no sourced CHF/GBP rate in this file — convert at the 2026-02-16 rate). Mixes sizes (Carat 610 to 9,000 t). Book hpdc-giga-6100t depreciation £526,240/yr implies £5.3m at 10 years — below a CHF 10m average cell, so the book may be low, but not confirmed. No published Idra Giga Press price found; a forum claim of US$100m for a 6,000 t press is unverified rumour and NOT used (https://www.cybertruckownersclub.com/forum/threads/how-expensive-a-machine-is-the-9k-ton-idra-giga-press.5618/post-116874)."
+  },
+  {
+   "key": "capex.hpdc-800t (marketplace cross-check only)",
+   "value": null,
+   "unit": "GBP",
+   "basis": "Indian dealer lists a Yizumi 800 t cold-chamber DCM at ₹55,00,000 (new/used not stated) — not a price per RULES",
+   "source": "https://m.indiamart.com/impcat/cold-chamber-die-casting-machine.html",
+   "date": "listing current Oct 2026",
+   "notes": ""
+  },
+  {
+   "key": "capex.hpdc-160t",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.hpdc-500t",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.grav-die-cast-std",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.invest-cast-furnace",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.sand-cast-line",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source — DISA publishes payback claims (D5 'as little as a year') but no price; Fansuld (PL, 2023) and Trakya Döküm projects give no value",
+   "source": "https://www.disagroup.com/news/disa-fansuld/",
+   "date": "2023",
+   "notes": ""
+  },
+  {
+   "key": "capex.induction-furnace-per-t",
+   "value": null,
+   "unit": "GBP per tonne capacity",
+   "basis": "not found in any source — Thomas Foundry installed two Inductotherm 6 t furnaces (Feb 2024), no cost published",
+   "source": "https://castingssa.com/thomas-foundry-completes-melting-upgrade/",
+   "date": "2024-02",
+   "notes": ""
+  },
+  {
+   "key": "kw.melting (induction, ferrous or aluminium)",
+   "value": 530,
+   "unit": "kWh/t melted (midpoint of 500–560)",
+   "basis": "foundry-planet technical article: 'liquefying ferrous or aluminium materials requires approximately 500–560 kWh/t'; its worked example 550 kWh/t × €0.20 = €110/t. Midpoint (500+560)/2 = 530. At the book's £0.268/kWh: 500–560 × 0.268 = £134–150 per tonne melted",
+   "source": "https://www.foundry-planet.com/d/saving-energy-when-melting-metals-in-induction-furnaces-through-practical-measures-and-by-analyzing-digital-melting-process-data/",
+   "date": "undated (page current Oct 2026)",
+   "notes": "Melt energy per tonne poured; holding losses extra. Ferrous and aluminium given as one range in the source."
+  },
+  {
+   "key": "capex.al-ext-press-1800t (cross-check, 35 MN press)",
+   "value": 4500000,
+   "unit": "GBP",
+   "basis": "trade-press: Exlabesa (Doncaster) £4.5 million 35 MN SMS group press replacing a 20 MN press; capacity to 18,000 t/yr",
+   "source": "https://aluminiumtoday.com/news/exlabesa-extrusions-investment",
+   "date": "c.2019 (page date not visible)",
+   "notes": "35 MN ≈ 3,570 t, twice the book's 1,800 t. Garnalex (new entrant) £9m total investment to date (https://www.lightmetalage.com/news/industry-news/extrusion/garnalex-receives-delivery-of-extrusion-press/, c.2018–19). Book depreciation £266,667/yr implies £2.7m at 10 years / £4.0m at 15 years for a smaller 1,800 t line — plausible against £4.5m for a 35 MN press."
+  },
+  {
+   "key": "capex.forge-press-16000t-line (out of book range, cross-check)",
+   "value": 80000000,
+   "unit": "EUR (capital investment, whole line)",
+   "basis": "trade-press: thyssenkrupp Homburg Schuler/Farina 16,000 t mechanical forging line for front axles and crankshafts, €80m (~US$89.7m) capital investment, ~360,000 forgings/yr",
+   "source": "https://www.newequipment.com/plant-operations/media-gallery/21924369/worlds-largest-most-advanced-closed-die-press",
+   "date": "2019",
+   "notes": "4× the force of the book's largest forge press; whole-line capex incl. automation — not comparable to forge-press-4000t. Not converted (no sourced FX)."
+  },
+  {
+   "key": "capex.forge-press-4000t",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source — Independent Forgings and Alloys (Sheffield) announced two hydraulic press forges incl. a 3,000 t open-die press at DSEI 2025, value given only as 'multi-million pound'",
+   "source": "https://www.calibredefence.co.uk/dsei-uk-2025-independent-forging-and-alloys-announces-production-investment/",
+   "date": "2025-09",
+   "notes": ""
+  },
+  {
+   "key": "capex.forge-screw-press (out of range, old)",
+   "value": 27000000,
+   "unit": "EUR (capex, project)",
+   "basis": "trade-press: Böhler Kapfenberg, world's largest screw press (SMS Eumuco), capex ≈ €27m (US$35m)",
+   "source": "https://www.newequipment.com/metal-forming/material-handling/article/21922289/bohler-uddeholm-to-install-the-worlds-largest-screw-press-at-kapfenberg-austria-plant",
+   "date": "c.2006",
+   "notes": "Old and far above forge-screw-1000t; recorded only to show nothing comparable was found."
+  },
+  {
+   "key": "capex.forge-press-1600t",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.forge-hammer-5t",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.forge-upsetter-1000t",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.forge-ring-mill",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.forge-screw-1000t",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "benchmark.forging-uk",
+   "value": null,
+   "unit": "GBP/h",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "benchmark.hpdc-uk",
+   "value": null,
+   "unit": "GBP/h",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.heat-treat-furnace (vacuum, aerospace)",
+   "value": 500000,
+   "unit": "GBP (lower bound, 'over £500,000')",
+   "basis": "company press release: Wallwork Heat Treatment (Bury) vacuum furnace, work envelope 1500×900×800 mm, 1.6 t load",
+   "source": "https://www.airframer.com/news/release/3561",
+   "date": "2008",
+   "notes": "Old (no 2025–26 UK figure found) and a vacuum furnace, not the book's generic ageing furnace. Book heat-treat-furnace depreciation £22,264/yr implies £0.22–0.33m at 10–15 years — a generic ageing / tempering furnace, not comparable to a vacuum unit."
+  },
+  {
+   "key": "kw.heat-treat (heating only, derived example)",
+   "value": 0.2,
+   "unit": "kWh/kg",
+   "basis": "Ajax TOCCO-sourced example in Heat Treat Today: 1,135 kg load × 0.56 kJ/kg°C × ~843 °C austenitise ÷ 0.65 efficiency ≈ 0.805×10^6 kJ per cycle → 805,000 ÷ 3,600 = 224 kWh ÷ 1,135 kg = 0.197 kWh/kg",
+   "source": "https://heattreattoday.com/category/hardening",
+   "date": "undated (page current Oct 2026)",
+   "notes": "Heating the load only — excludes idle, atmosphere, quench and temper. A single example, not a typical value."
+  },
+  {
+   "key": "capex.paint-line-std (automotive e-coat plant)",
+   "value": 10000000,
+   "unit": "GBP (paint plant)",
+   "basis": "trade-press: Brose UK Coventry £10m paint shop — e-coat line, >3.5 million seat structures/yr; coating time cut from 3 days to 8 hours",
+   "source": "https://manufacturingmanagement.co.uk/content/news/brose-uk-opens-10m-paint-plant-in-coventry",
+   "date": "2016–2017",
+   "notes": "Whole paint plant (likely incl. building works; not itemised). Book paint-line-std depreciation £121,440/yr implies £1.2m at 10 years — a fraction of a full automotive e-coat plant, closer to a small job-shop line (see next item)."
+  },
+  {
+   "key": "capex.paint-line-ecoat-small (cross-check)",
+   "value": 750000,
+   "unit": "GBP",
+   "basis": "trade-press: Foleshill Plating (Coventry) £750,000 second electrophoretic coating line",
+   "source": "https://manufacturingmanagement.co.uk/content/news/foleshill-plating-invests-750k-in-electrophoretic-coating-line",
+   "date": "date not visible in search snippet",
+   "notes": ""
+  },
+  {
+   "key": "capex.galvanising-kettle (bath only)",
+   "value": 300000,
+   "unit": "GBP",
+   "basis": "trade-press: Scottish Galvanizers (Glasgow) like-for-like replacement galvanizing bath ≈£300,000, ~50 t bath, 'largest in Scotland'",
+   "source": "https://scottishbusinessnews.net/?p=1006894",
+   "date": "date not visible (programme >£1m over 3 years)",
+   "notes": "Kettle steel bath only — a plant also has pretreatment, flux, furnace, fume, cranes. Worksop: new 21 m bath holding 600 t zinc was the major part of a £1.5m redevelopment (c.2000, https://www.emerald.com/insight/content/doi/10.1108/acmm.2000.12847dab.006/full/html)."
+  },
+  {
+   "key": "capex.al-powder-line (cross-check)",
+   "value": 1000000,
+   "unit": "GBP (lower bound, 'over £1 million')",
+   "basis": "trade-press: Sheerline in-house powder coating plant 'over £1 million'",
+   "source": "https://glasstimes.co.uk/?p=86974",
+   "date": "date not visible",
+   "notes": "Non-automotive (aluminium window profiles). Book depreciation £186,667/yr."
+  },
+  {
+   "key": "capex.furnace-roller-hearth",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.plating-line-barrel",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.blast-machine",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Wheelabrator / Rösler installs found (Eurac Poole tumblast c.2019, Funosa RDGE 1250) carry no price."
+  },
+  {
+   "key": "capex.mass-finish-bowl",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.impregnation-plant",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.al-anodise-line",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.smt-high-speed-line",
+   "value": 1600000,
+   "unit": "GBP",
+   "basis": "trade-press: Plexus (Kelso) £1.6m SMT line — ASM pick-and-place, DEK printer, Speedline reflow",
+   "source": "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line",
+   "date": "date not visible in search snippet",
+   "notes": "Book smt-high-speed-line depreciation £182,160/yr implies £1.3m at 7 years / £1.8m at 10 years — consistent."
+  },
+  {
+   "key": "capex.smt-line (upgrade programme, 2025)",
+   "value": 1600000,
+   "unit": "GBP (EUR 1.9m as stated by source)",
+   "basis": "trade-press: Incap UK (Newcastle-under-Lyme) phase-2 SMT upgrade ≈EUR 1.9m (GBP 1.6m), Panasonic equipment; four lines consolidated to two, +55% capacity. Per resulting line ≈ 1.6 ÷ 2 = £0.8m (derived; scope of re-used kit not stated)",
+   "source": "https://www.emsnow.com/?p=46701",
+   "date": "2025-05",
+   "notes": "Also https://www.airframer.com/news/release/92132 . Book smt-line depreciation £80,960/yr implies £0.57m at 7 years / £0.81m at 10 years — consistent."
+  },
+  {
+   "key": "capex.smt-line-low-volume (list price)",
+   "value": 67985,
+   "unit": "USD (list, freight extra)",
+   "basis": "maker/dealer list price: Manncorp low-volume OEM package — stencil printer, single-head pick-and-place, benchtop reflow",
+   "source": "https://manncorp.com/products/smt-pcb-assembly-line-low-volume-oem",
+   "date": "page current Oct 2026",
+   "notes": "Not an automotive line; not converted."
+  },
+  {
+   "key": "capex.xray-bga-inspection",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.ict-automotive",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.bat-module-stacking",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Comau/ACC module-line award (8 GWh) and Indian pack lines disclosed no value; Thunder Said's ~$80/kWh-pa is WHOLE-gigafactory capex, not a module line (https://thundersaidenergy.com/downloads/battery-gigafactory-capex-costs/)."
+  },
+  {
+   "key": "capex.bat-laser-weld",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.rtm-press-std",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.mach-afp-atl",
+   "value": null,
+   "unit": "GBP",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "capex.emot-hairpin-line",
+   "value": [
+    3000000,
+    10000000
+   ],
+   "unit": "EUR (range: prototype line → series line)",
+   "basis": "peer-reviewed: total machine and equipment investment for a complete hairpin stator production ≈ €3m (prototyping) to €10m (series), depending on quantity, cycle time, automation; cost efficiency at ~200,000 stators/yr",
+   "source": "https://link.springer.com/article/10.1007/s00501-023-01420-w",
+   "date": "2023",
+   "notes": "Not converted (no sourced FX). Book emot-hairpin-line depreciation £400,000/yr implies £4.0m at 10 years / £3.2m at 8 years — between the prototype and series figures; for a series line (€10m) the book would be low. Not confident without FX and life."
+  },
+  {
+   "key": "capex.autoclave (3 m × 6 m research, estimate)",
+   "value": 730000,
+   "unit": "GBP ex VAT (tender estimate, not award)",
+   "basis": "UK public tender: Queen's University Belfast large 3 m × 6 m composites autoclave, estimated total value £730,000 ex VAT (£876,000 inc VAT)",
+   "source": "https://www.find-tender.service.gov.uk/Notice/037283-2025",
+   "date": "2025",
+   "notes": "A 3 m-diameter vessel (~42 m³) vs the book's 1.2 m (~3–4 m³ at 3 m long). Book autoclave-1200mm depreciation £60,720/yr implies £0.61m at 10 years / £0.91m at 15 years for a vessel ~1/10 the volume — the book looks HIGH vs this estimate. Univ. of Derby 2018 composites autoclave tender estimated £25–50k (small, research; https://neupc.delta-esourcing.com/tenders/UK-GB-Derby:-Composites-Autoclave/8K485VSZD5)."
+  },
+  {
+   "key": "footprint.plastics",
+   "value": null,
+   "unit": "m2",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched (budget); no figure surfaced incidentally."
+  },
+  {
+   "key": "footprint.casting",
+   "value": null,
+   "unit": "m2",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched (budget); no figure surfaced incidentally."
+  },
+  {
+   "key": "footprint.forging",
+   "value": null,
+   "unit": "m2",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched (budget); no figure surfaced incidentally."
+  },
+  {
+   "key": "footprint.surface",
+   "value": null,
+   "unit": "m2",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched (budget); no figure surfaced incidentally."
+  },
+  {
+   "key": "footprint.electronics",
+   "value": null,
+   "unit": "m2",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": "Not searched (budget); no figure surfaced incidentally."
+  },
+  {
+   "key": "life.casting",
+   "value": null,
+   "unit": "years",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "life.forging",
+   "value": null,
+   "unit": "years",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "life.furnace",
+   "value": null,
+   "unit": "years",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  },
+  {
+   "key": "life.electronics",
+   "value": null,
+   "unit": "years",
+   "basis": "not found in any source",
+   "source": "",
+   "date": "",
+   "notes": ""
+  }
+ ],
+ "notes": [
+  "Web fetch was blocked in this session (egress proxy 403 / DNS failure on every page tried), so figures come from search-result summaries with their URLs; publish dates were taken from the summaries and are marked 'not visible' where the snippet gave none. Re-open each URL to confirm date and scope before use.",
+  "No FX was sourced, so EUR / CHF / USD / INR figures are left in their own currency; convert at the stated date's Bank of England rate before use.",
+  "34 web searches used. Most makers (Engel, Arburg, KraussMaffei, Idra, Bühler, DISA, Inductotherm, Schuler, Lasco, Ipsen, Wheelabrator, ASM/Fuji) publish no prices; UK trade-press project figures are the main evidence and usually bundle auxiliaries, cells or buildings.",
+  "Book figures the evidence argues against (not proven): autoclave-1200mm (a £730k estimate buys a 3 m × 6 m autoclave; the book's write-off implies ≥£0.6m for a 1.2 m one); paint-line-std is 1/8 of a real automotive e-coat plant (£10m Brose) but near a small e-coat line (£750k Foleshill), so it depends on what the class means; IMM average power draws are consistent only with ecoinvent's all-in 1.47 kWh/kg, not machine-only 0.16–0.6 kWh/kg; hpdc-giga-6100t and emot-hairpin-line may be LOW against Bühler's ~CHF 10m average megacasting cell and the €10m series hairpin line.",
+  "Consistent with evidence: imm-800t / imm-2000t, hpdc-1600t, smt-line, smt-high-speed-line, al-ext-press-1800t capex orders of magnitude."
+ ]
+}

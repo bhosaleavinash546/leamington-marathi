@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS, UK_BOOK_BASIS } from '../src/engine/rate-library.js';
+// A grade is on the refresh's month or, where the UK rate book (Oct 2026) re-priced it, on the book's month.
+const ON_BASIS = [RATE_BASIS, UK_BOOK_BASIS];
 import { computeUniversalStack } from '../src/engine/core.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 import { assertPartCostInvariants } from './helpers/engine-invariants.js';
@@ -60,7 +62,7 @@ describe('casting alloy coverage', () => {
     const castCategories = /Die Cast Aluminium|Structural HPDC Aluminium|Gravity\/Sand Aluminium|Grey Cast Iron|Ductile Cast Iron|Compacted Graphite Iron|Copper Alloy|Magnesium Alloy|Cast Stainless Steel|Cast Carbon Steel|Nickel Superalloy Casting|Zinc Die Cast/;
     const casts = lib.materials.filter(m => castCategories.test(m.category));
     expect(casts.length).toBeGreaterThan(30);
-    for (const m of casts) expect(m.effectiveDate).toBe(RATE_BASIS);
+    for (const m of casts) expect(ON_BASIS).toContain(m.effectiveDate);
   });
 
   it('a new structural HPDC alloy drives the cost engine without error', () => {

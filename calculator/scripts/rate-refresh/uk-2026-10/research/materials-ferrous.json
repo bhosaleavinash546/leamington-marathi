@@ -1,0 +1,1032 @@
+{
+  "domain": "materials-ferrous (UK base book, Oct 2026)",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "ferrous.fx.gbp_per_eur",
+      "value": 0.859,
+      "unit": "GBP/EUR",
+      "basis": "ECB euro reference rate EUR/GBP 0.8590 (latest found)",
+      "source": "https://www.poundsterlinglive.com/bank-of-england-spot/historical-spot-exchange-rates/eur/EUR-to-GBP-2026",
+      "date": "2026-09-04",
+      "notes": "Used for every EUR conversion in this file. No October 2026 print found. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.fx.usd_per_gbp",
+      "value": 1.3447,
+      "unit": "USD/GBP",
+      "basis": "Bank of England daily spot GBP/USD 1.3447 (latest found)",
+      "source": "https://www.poundsterlinglive.com/bank-of-england-spot/historical-spot-exchange-rates/usd/GBP-to-USD-2026",
+      "date": "2026-08-04",
+      "notes": "Used for every USD conversion (x 1/1.3447 = 0.7437). No October 2026 print found. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.hrc_nwe_index_exw",
+      "value": 0.609,
+      "unit": "GBP/kg",
+      "basis": "SMM Northwest European daily HRC index USD 819/t EXW on 7 Oct 2026; 819 x 0.7437 = GBP 609/t",
+      "source": "https://news.metal.com/newscontent/104146499-smm-steel-european-hrc-prices-diverge-as-north-south-price-gap-narrows",
+      "date": "2026-10-07",
+      "notes": "Index, ex-works NW Europe mill (not delivered UK). Corroborated by Fastmarkets NE domestic HRC index EUR 722.08/t exw on 21 Aug 2026 (x0.859 = GBP 620/t) and Kallanish EUR 720-730/t delivered Italy/Europe on 22 Sep 2026. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.hrc_eu_mill_base_delivered",
+      "value": 0.661,
+      "unit": "GBP/kg",
+      "basis": "ArcelorMittal Europe HRC base price raised to EUR 770/t delivered (from 720) for late-Sep/Oct 2026 shipments; 770 x 0.859 = GBP 661/t",
+      "source": "https://gmk.center/en/news/arcelormittal-is-raising-prices-for-rolled-steel-in-europe-by-e50-per-tonne/",
+      "date": "2026-07-10",
+      "notes": "Mill list/offer base price, delivered. Same report: actual transactions EUR 700-720/t delivered. Sep 2026: AM Southern Europe HRC offer ~EUR 790/t (gmk.center ?p=128522). Recommended UK HRC anchor (delivered, before grade/size extras). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.hrc_uk_tata_ddp",
+      "value": 0.62,
+      "unit": "GBP/kg",
+      "basis": "Tata Steel UK Q2 2026 HRC offer ~GBP 620/t ddp West Midlands (up GBP 125/t from GBP 540-550); some buyers report a further GBP 40/t in May and again in June (=> up to ~GBP 700/t)",
+      "source": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2796142-tata-steel-uk-hikes-hrc-offer-by-ps125-t",
+      "date": "2026-03 (for Q2 2026)",
+      "notes": "Producer offer to UK service centres, delivered. Also reported by gmk.center (tata-steel-uk-raises-hot-rolled-coil-prices-by-125-t). A search summary also cited an Argus UK HRC weekly assessment of GBP 675/t ddp on 26 Mar 2026 but the carrying URL could not be identified, so it is not used. No Q3/Q4 2026 UK price found. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.crc_hdg_eu_mill_base_delivered",
+      "value": 0.756,
+      "unit": "GBP/kg",
+      "basis": "ArcelorMittal Europe CRC and HDG base price in new contracts raised EUR 50 to EUR 880/t delivered (Oct 2026 shipments); 880 x 0.859 = GBP 756/t",
+      "source": "https://gmk.center/en/news/arcelormittal-is-raising-prices-for-rolled-steel-in-europe-by-e50-per-tonne/",
+      "date": "2026-07-10",
+      "notes": "Mill base price (CQ / DC01-equivalent, standard coating), delivered, before grade, gauge, width and coating extras and before service-centre slitting/blanking. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.flat.crc_over_hrc",
+      "value": 0.094,
+      "unit": "GBP/kg",
+      "basis": "ArcelorMittal list: CRC/HDG EUR 880 - HRC EUR 770 = EUR 110/t; x 0.859 = GBP 94/t",
+      "source": "https://gmk.center/en/news/arcelormittal-is-raising-prices-for-rolled-steel-in-europe-by-e50-per-tonne/",
+      "date": "2026-07-10",
+      "notes": "List-price spread. In transactions it was much narrower: Fastmarkets NE CRC premium over HRC compressed to EUR 20-30/t in May 2026 (search summary citing a May 2026 analysis, https://gmk.center/en/news/arcelormittal-is-raising-prices-for-rolled-steel-in-europe-by-e50-per-tonne/amp/). Earlier AM list (Apr 2026 deliveries): HRC EUR 660, galvanised EUR 780 => EUR 120/t. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.flat.hdg_uk_q2_increase",
+      "value": 0.145,
+      "unit": "GBP/kg",
+      "basis": "Tata Steel UK raised HDG by GBP 140-150/t for Q2 2026 (vs GBP 125/t on HRC) — an increase, not an absolute extra; midpoint GBP 145/t",
+      "source": "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2796142-tata-steel-uk-hikes-hrc-offer-by-ps125-t",
+      "date": "2026-03 (for Q2 2026)",
+      "notes": "No absolute UK HDG or CRC price found in any source. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.flat.DC03",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.DC04",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.DC05",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.DC06",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.DX56D_IF",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.IF-HS260",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.BH260",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.HSLA340",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.HSLA420",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.HSLA550",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.S355MC",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.S420MC",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.DP600",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.DP780",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.DP980",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.DP1000",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.TRIP780",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.CP800",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.MS1200",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.MS1300",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.MS1500",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.QP980",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.MedMn1180",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.22MnB5",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.Usibor1500",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.Usibor2000",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.EG_ZE",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.ZnNi",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.ZM",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.GA",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.Tinplate_ETP",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.extra.flat.HRPO_pickling",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Searched Eurofer / ArcelorMittal / Tata / SSAB extras lists and price-reporter pieces (queries: AHSS DP980 premium, 22MnB5 AlSi premium, automotive contract 2026); grade extras are not published publicly. Needs a mill extras list or a supplier quote."
+    },
+    {
+      "key": "ferrous.anchor.goes_eu_safeguard_threshold_in_quota",
+      "value": [
+        2.405,
+        2.921
+      ],
+      "unit": "GBP/kg",
+      "basis": "EU provisional safeguard on grain-oriented electrical steel, GOES in-quota thresholds (by type): EUR 2800-3400/t x 0.859",
+      "source": "https://gmk.center/en/news/the-eu-is-introducing-temporary-safeguard-measures-on-imports-of-electrical-steel/",
+      "date": "2026-09-25 (in force to 2027-02-26)",
+      "notes": "A minimum import price threshold (duty = shortfall), NOT a market transaction price; indicates the EU GOES price floor. Also SteelOrbis 1478742 / eurometal. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.goes_eu_safeguard_threshold_out_of_quota",
+      "value": 3.006,
+      "unit": "GBP/kg",
+      "basis": "EU provisional safeguard on grain-oriented electrical steel, GOES out-of-quota threshold: EUR 3500-3500/t x 0.859",
+      "source": "https://gmk.center/en/news/the-eu-is-introducing-temporary-safeguard-measures-on-imports-of-electrical-steel/",
+      "date": "2026-09-25 (in force to 2027-02-26)",
+      "notes": "A minimum import price threshold (duty = shortfall), NOT a market transaction price; indicates the EU GOES price floor. Also SteelOrbis 1478742 / eurometal. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.goes_laminations_threshold",
+      "value": [
+        3.436,
+        3.908
+      ],
+      "unit": "GBP/kg",
+      "basis": "EU provisional safeguard on grain-oriented electrical steel, Laminations in/out of quota: EUR 4000-4550/t x 0.859",
+      "source": "https://gmk.center/en/news/the-eu-is-introducing-temporary-safeguard-measures-on-imports-of-electrical-steel/",
+      "date": "2026-09-25 (in force to 2027-02-26)",
+      "notes": "A minimum import price threshold (duty = shortfall), NOT a market transaction price; indicates the EU GOES price floor. Also SteelOrbis 1478742 / eurometal. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.goes_cores_threshold",
+      "value": [
+        4.295,
+        4.81
+      ],
+      "unit": "GBP/kg",
+      "basis": "EU provisional safeguard on grain-oriented electrical steel, Cores in/out of quota: EUR 5000-5600/t x 0.859",
+      "source": "https://gmk.center/en/news/the-eu-is-introducing-temporary-safeguard-measures-on-imports-of-electrical-steel/",
+      "date": "2026-09-25 (in force to 2027-02-26)",
+      "notes": "A minimum import price threshold (duty = shortfall), NOT a market transaction price; indicates the EU GOES price floor. Also SteelOrbis 1478742 / eurometal. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.electrical_steel_germany_imarc",
+      "value": 1.257,
+      "unit": "GBP/kg",
+      "basis": "IMARC: 'electrical steel' Germany Q2 2026 USD 1,690/t; x 0.7437",
+      "source": "https://www.imarcgroup.com/news/electrical-steel-price-index-q2-2026",
+      "date": "2026 Q2",
+      "notes": "Market-research index, grade unspecified (likely commodity NO); low confidence — IMARC figures disagree across its own reports. Cross-check only. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.noes_baosteel_b27ahv1400_cny",
+      "value": 9950,
+      "unit": "CNY/t",
+      "basis": "Baosteel high-grade NO B27AHV1400 (0.27 mm), Shanghai, 9,950 CNY/t",
+      "source": "https://metal.com/price/Ferrous%20Metals/Finished-Steel",
+      "date": "2026-03-27",
+      "notes": "Chinese domestic price, not converted (no CNY/GBP rate found); reference for the 0.27 mm EV-grade class only. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.noes_europe",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No European €/t for M270-35A / M400-50A / NO20-30 found; needs Fastmarkets/CRU or thyssenkrupp/voestalpine/Stalprodukt quote."
+    },
+    {
+      "key": "ferrous.anchor.wire_rod_mesh_de_delivered",
+      "value": 0.601,
+      "unit": "GBP/kg",
+      "basis": "SteelOrbis: German mesh-quality wire rod EUR 700/t delivered (Poland EUR 695); 700 x 0.859 = GBP 601/t",
+      "source": "https://www.steelorbis.com/steel-prices/steel-prices-market-analyses/longs-and-billet/price-ideas-in-european-longs-market-move-up-during-tubewire-2026-fair-1448431.htm",
+      "date": "2026-04-24",
+      "notes": "Commodity long-product anchor (scrap-based EAF). A later SteelOrbis piece (1452217, undated in results) puts German drawing-quality wire rod at EUR 710-720/t and rebar EUR 700-710/t delivered. No European SBQ/engineering-bar base price found. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.sbq.42CrMo4.alloy_surcharge_rolled",
+      "value": 0.1203,
+      "unit": "GBP/kg",
+      "basis": "THE STEEL (Frankstahl) alloy surcharge list valid from 1 Feb 2026: 42CrMo4 EUR 140/t rolled; x 0.859",
+      "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+      "date": "2026-02-01",
+      "notes": "Alloy surcharge ONLY (on top of the base price and the scrap surcharge, neither found). Search tool warned the PDF table text was garbled, column assignment is its best reading. Feb 2026 list converted at the Sep 2026 FX (Feb rate not found). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.sbq.42CrMo4.alloy_surcharge_bright",
+      "value": 0.1563,
+      "unit": "GBP/kg",
+      "basis": "same list: 42CrMo4 EUR 182/t bright (drawn); x 0.859",
+      "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+      "date": "2026-02-01",
+      "notes": "As above. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.sbq.25CrMo4.alloy_surcharge_rolled",
+      "value": 0.1203,
+      "unit": "GBP/kg",
+      "basis": "THE STEEL (Frankstahl) alloy surcharge list valid from 1 Feb 2026: 25CrMo4 EUR 140/t rolled; x 0.859",
+      "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+      "date": "2026-02-01",
+      "notes": "Alloy surcharge ONLY (on top of the base price and the scrap surcharge, neither found). Search tool warned the PDF table text was garbled, column assignment is its best reading. Feb 2026 list converted at the Sep 2026 FX (Feb rate not found). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.sbq.25CrMo4.alloy_surcharge_bright",
+      "value": 0.1563,
+      "unit": "GBP/kg",
+      "basis": "same list: 25CrMo4 EUR 182/t bright (drawn); x 0.859",
+      "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+      "date": "2026-02-01",
+      "notes": "As above. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.sbq.16MnCr5.alloy_surcharge_rolled",
+      "value": 0.0335,
+      "unit": "GBP/kg",
+      "basis": "THE STEEL (Frankstahl) alloy surcharge list valid from 1 Feb 2026: 16MnCr5 EUR 39/t rolled; x 0.859",
+      "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+      "date": "2026-02-01",
+      "notes": "Alloy surcharge ONLY (on top of the base price and the scrap surcharge, neither found). Search tool warned the PDF table text was garbled, column assignment is its best reading. Feb 2026 list converted at the Sep 2026 FX (Feb rate not found). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.sbq.16MnCr5.alloy_surcharge_bright",
+      "value": 0.0438,
+      "unit": "GBP/kg",
+      "basis": "same list: 16MnCr5 EUR 51/t bright (drawn); x 0.859",
+      "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+      "date": "2026-02-01",
+      "notes": "As above. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.sbq.30CrNiMo8.alloy_surcharge_rolled",
+      "value": 0.396,
+      "unit": "GBP/kg",
+      "basis": "THE STEEL (Frankstahl) alloy surcharge list valid from 1 Feb 2026: 30CrNiMo8 EUR 461/t rolled; x 0.859",
+      "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+      "date": "2026-02-01",
+      "notes": "Alloy surcharge ONLY (on top of the base price and the scrap surcharge, neither found). Search tool warned the PDF table text was garbled, column assignment is its best reading. Feb 2026 list converted at the Sep 2026 FX (Feb rate not found). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.sbq.30CrNiMo8.alloy_surcharge_bright",
+      "value": 0.5137,
+      "unit": "GBP/kg",
+      "basis": "same list: 30CrNiMo8 EUR 598/t bright (drawn); x 0.859",
+      "source": "https://cms.thesteel.com/cdn/1/THE_STEEL_Frankstahl_LZ_2026_02_7f2877ab36.pdf",
+      "date": "2026-02-01",
+      "notes": "As above. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.crosscheck.uk_retail_bright_bar.en8_12mm_3m",
+      "value": 6.77,
+      "unit": "GBP/kg",
+      "basis": "The Metal Store (UK web shop) EN8 bright round 12 mm x 3 m GBP 18.00 ex VAT / 2.66 kg",
+      "source": "https://themetalstore.co.uk/products/en8-bright-mild-steel-round-metric",
+      "date": "page as indexed 2026 (no date shown)",
+      "notes": "Retail one-bar price — CROSS-CHECK ONLY, never a production price (RULES). Shows small-quantity retail is ~5-7x mill bar. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.crosscheck.uk_retail_bright_bar.en8_20mm_3m",
+      "value": 4.73,
+      "unit": "GBP/kg",
+      "basis": "The Metal Store (UK web shop) EN8 bright round 20 mm x 3 m GBP 35.00 ex VAT / 7.4 kg",
+      "source": "https://themetalstore.co.uk/products/en8-bright-mild-steel-round-metric",
+      "date": "page as indexed 2026 (no date shown)",
+      "notes": "Retail one-bar price — CROSS-CHECK ONLY, never a production price (RULES). Shows small-quantity retail is ~5-7x mill bar. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.long.EN8_080M40",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.EN1A_230M07",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.EN3B",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.EN19_42CrMo4_base",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.EN24_817M40",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.20MnCr5",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.100Cr6",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.38MnVS6",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.C45_base",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.forging_billet",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.long.stockholder_tonnage_bar",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No UK stockholder tonnage price list (Barrett, Dudley, Smith, Aalco do not publish) nor European SBQ base/scrap surcharge found. Only alloy surcharges for 42CrMo4/16MnCr5 above."
+    },
+    {
+      "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.304.2026-05",
+      "value": 1.93,
+      "unit": "GBP/kg",
+      "basis": "Outokumpu Europe flat-product alloy surcharge 2026-05: 304 EUR 2247/t; x 0.859",
+      "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+      "date": "2026-04 (for May 2026 deliveries)",
+      "notes": "Producer alloy surcharge (added to the mill base price). Latest EUR figures found. June 2026 (BigMint 36604): 304 2,358 / 316L 4,032 / 430 1,088 per t, reported as USD by the search summary (currency uncertain). Oct 2026 European surcharges NOT found (an undated SteelRadar 'October' 304 EUR 1,444 / 316 EUR 2,190 is from an earlier year). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.316L.2026-05",
+      "value": 3.28,
+      "unit": "GBP/kg",
+      "basis": "Outokumpu Europe flat-product alloy surcharge 2026-05: 316L EUR 3818/t; x 0.859",
+      "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+      "date": "2026-04 (for May 2026 deliveries)",
+      "notes": "Producer alloy surcharge (added to the mill base price). Latest EUR figures found. June 2026 (BigMint 36604): 304 2,358 / 316L 4,032 / 430 1,088 per t, reported as USD by the search summary (currency uncertain). Oct 2026 European surcharges NOT found (an undated SteelRadar 'October' 304 EUR 1,444 / 316 EUR 2,190 is from an earlier year). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.430.2026-05",
+      "value": 0.94,
+      "unit": "GBP/kg",
+      "basis": "Outokumpu Europe flat-product alloy surcharge 2026-05: 430 EUR 1094/t; x 0.859",
+      "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+      "date": "2026-04 (for May 2026 deliveries)",
+      "notes": "Producer alloy surcharge (added to the mill base price). Latest EUR figures found. June 2026 (BigMint 36604): 304 2,358 / 316L 4,032 / 430 1,088 per t, reported as USD by the search summary (currency uncertain). Oct 2026 European surcharges NOT found (an undated SteelRadar 'October' 304 EUR 1,444 / 316 EUR 2,190 is from an earlier year). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.304.2026-04",
+      "value": 1.906,
+      "unit": "GBP/kg",
+      "basis": "Outokumpu Europe flat-product alloy surcharge 2026-04: 304 EUR 2219/t; x 0.859",
+      "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-surcharges-for-apr26-36145",
+      "date": "2026-03 (for Apr 2026 deliveries)",
+      "notes": "Producer alloy surcharge (added to the mill base price). Latest EUR figures found. June 2026 (BigMint 36604): 304 2,358 / 316L 4,032 / 430 1,088 per t, reported as USD by the search summary (currency uncertain). Oct 2026 European surcharges NOT found (an undated SteelRadar 'October' 304 EUR 1,444 / 316 EUR 2,190 is from an earlier year). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.316L.2026-04",
+      "value": 3.286,
+      "unit": "GBP/kg",
+      "basis": "Outokumpu Europe flat-product alloy surcharge 2026-04: 316L EUR 3825/t; x 0.859",
+      "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-surcharges-for-apr26-36145",
+      "date": "2026-03 (for Apr 2026 deliveries)",
+      "notes": "Producer alloy surcharge (added to the mill base price). Latest EUR figures found. June 2026 (BigMint 36604): 304 2,358 / 316L 4,032 / 430 1,088 per t, reported as USD by the search summary (currency uncertain). Oct 2026 European surcharges NOT found (an undated SteelRadar 'October' 304 EUR 1,444 / 316 EUR 2,190 is from an earlier year). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.430.2026-04",
+      "value": 0.91,
+      "unit": "GBP/kg",
+      "basis": "Outokumpu Europe flat-product alloy surcharge 2026-04: 430 EUR 1059/t; x 0.859",
+      "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-surcharges-for-apr26-36145",
+      "date": "2026-03 (for Apr 2026 deliveries)",
+      "notes": "Producer alloy surcharge (added to the mill base price). Latest EUR figures found. June 2026 (BigMint 36604): 304 2,358 / 316L 4,032 / 430 1,088 per t, reported as USD by the search summary (currency uncertain). Oct 2026 European surcharges NOT found (an undated SteelRadar 'October' 304 EUR 1,444 / 316 EUR 2,190 is from an earlier year). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.stainless.outokumpu_na_alloy_surcharge.316L.2026-10",
+      "value": 2.89,
+      "unit": "GBP/kg",
+      "basis": "Outokumpu North America coil alloy surcharge Oct 2026: 316L USD 3886.31/t; x 0.7437",
+      "source": "URL not identified — search summary attributed the figure to an SMM (metal.com) report; candidate results returned were steelradar.com/en/outokumpu-raises-alloy-surcharges-for-october and bigmint.co (none confirmed)",
+      "date": "2026-10",
+      "notes": "LOW confidence: the carrying page was not identified. US surcharge (US formula, USD) — the only Oct 2026 surcharge found and the only 2205 figure. Use for 2205/316L relativity only, not as the EU level. Figure read from a web-search result snippet; no page could be opened from this session."
+    },
+    {
+      "key": "ferrous.extra.stainless.outokumpu_na_alloy_surcharge.316L_2.5Mo.2026-10",
+      "value": 3.192,
+      "unit": "GBP/kg",
+      "basis": "Outokumpu North America coil alloy surcharge Oct 2026: 316L_2.5Mo USD 4291.96/t; x 0.7437",
+      "source": "URL not identified — search summary attributed the figure to an SMM (metal.com) report; candidate results returned were steelradar.com/en/outokumpu-raises-alloy-surcharges-for-october and bigmint.co (none confirmed)",
+      "date": "2026-10",
+      "notes": "LOW confidence: the carrying page was not identified. US surcharge (US formula, USD) — the only Oct 2026 surcharge found and the only 2205 figure. Use for 2205/316L relativity only, not as the EU level. Figure read from a web-search result snippet; no page could be opened from this session."
+    },
+    {
+      "key": "ferrous.extra.stainless.outokumpu_na_alloy_surcharge.2205.2026-10",
+      "value": 3.143,
+      "unit": "GBP/kg",
+      "basis": "Outokumpu North America coil alloy surcharge Oct 2026: 2205 USD 4225.83/t; x 0.7437",
+      "source": "URL not identified — search summary attributed the figure to an SMM (metal.com) report; candidate results returned were steelradar.com/en/outokumpu-raises-alloy-surcharges-for-october and bigmint.co (none confirmed)",
+      "date": "2026-10",
+      "notes": "LOW confidence: the carrying page was not identified. US surcharge (US formula, USD) — the only Oct 2026 surcharge found and the only 2205 figure. Use for 2205/316L relativity only, not as the EU level. Figure read from a web-search result snippet; no page could be opened from this session."
+    },
+    {
+      "key": "ferrous.anchor.stainless.crc304_may_deliv_transaction",
+      "value": 2.199,
+      "unit": "GBP/kg",
+      "basis": "European 304 CRC (effective, incl. alloy surcharge) EUR 2560/t delivered; x 0.859",
+      "source": "https://news.metal.com/newscontent/103862945-smm-스테인리스-스틸-시장-속보-유럽-철강사들-7월분-crc-공급가격을-도착도-기준-톤당-€2700으로-인상",
+      "date": "2026-04",
+      "notes": "May-delivery deals EUR 2,550-2,570/t (midpoint 2,560); June EUR 2,600-2,630; July offers EUR 2,700. No Sep/Oct 2026 transaction print found (Fastmarkets MB-STS-0281 moved to Monday publication from 7 Sep 2026; value not public). Note: EUR 2,560 effective less the EUR 2,247 May surcharge implies an implausibly low EUR ~313/t base, so one of the two figures is probably mis-stated in the snippets — do not derive a base from them. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.stainless.crc304_jul_offer",
+      "value": 2.319,
+      "unit": "GBP/kg",
+      "basis": "European 304 CRC (effective, incl. alloy surcharge) EUR 2700/t delivered; x 0.859",
+      "source": "https://news.metal.com/newscontent/103862945-smm-스테인리스-스틸-시장-속보-유럽-철강사들-7월분-crc-공급가격을-도착도-기준-톤당-€2700으로-인상",
+      "date": "2026-04",
+      "notes": "May-delivery deals EUR 2,550-2,570/t (midpoint 2,560); June EUR 2,600-2,630; July offers EUR 2,700. No Sep/Oct 2026 transaction print found (Fastmarkets MB-STS-0281 moved to Monday publication from 7 Sep 2026; value not public). Note: EUR 2,560 effective less the EUR 2,247 May surcharge implies an implausibly low EUR ~313/t base, so one of the two figures is probably mis-stated in the snippets — do not derive a base from them. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.stainless.crc304_mill_target_endQ3",
+      "value": 2.491,
+      "unit": "GBP/kg",
+      "basis": "European 304 CRC (effective, incl. alloy surcharge) EUR 2900/t delivered; x 0.859",
+      "source": "https://news.metal.com/en/newscontent/103920057-smm-stainless-steel-market-flash-eu-mills-target-€2900t-crc-by-end-q3-as-buyers-see-no-near-term-price-drop",
+      "date": "2026-05-25",
+      "notes": "Mill TARGET for end-Q3 2026, not a transaction. No Sep/Oct 2026 transaction print found (Fastmarkets MB-STS-0281 moved to Monday publication from 7 Sep 2026; value not public). Note: EUR 2,560 effective less the EUR 2,247 May surcharge implies an implausibly low EUR ~313/t base, so one of the two figures is probably mis-stated in the snippets — do not derive a base from them. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.extra.stainless.303",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.410",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.416",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.420",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.431",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.409L",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.441",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.17-4PH",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.15-5PH",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.301",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.extra.stainless.uk_stockholder_bar",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 surcharge or price found for this grade; Ugitech/Acerinox long-product surcharges also not found."
+    },
+    {
+      "key": "ferrous.anchor.scrap_uk_0A_plate_girder",
+      "value": 0.1425,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle UK guide price, 0A plate & girder, July 2026: GBP 125-160/t; midpoint (125+160)/2 = 142.5",
+      "source": "https://www.letsrecycle.com/prices/metals/ferrous-metal-prices/ferrous-scrap-metal-prices-2026/",
+      "date": "2026-07 (last Friday of month)",
+      "notes": "Merchant guide price (what merchants pay arisings), NOT the price delivered to a foundry — a delivered foundry-grade (low-residual, sized) scrap carries a merchant margin + haulage that was not found. Two snapshots disagree on June-July (one shows June 140-170). Aug-Oct 2026 not in the indexed page. Sep 2025 was 130-160. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.scrap_uk_no1_old_steel",
+      "value": 0.125,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle UK, No 1 old steel, July 2026: GBP 105-145/t; midpoint 125",
+      "source": "https://www.letsrecycle.com/prices/metals/ferrous-metal-prices/ferrous-scrap-metal-prices-2026/",
+      "date": "2026-07",
+      "notes": "Merchant guide price. No 2 old steel GBP 95-135/t. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.scrap_uk_9_10_cast",
+      "value": 0.125,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle UK, 9-10 cast (cast iron scrap), June 2026: GBP 110-140/t; midpoint 125",
+      "source": "https://www.letsrecycle.com/prices/metals/ferrous-metal-prices/ferrous-scrap-metal-prices-2026/",
+      "date": "2026-06",
+      "notes": "Merchant guide price. CI borings, shredded, OA/3B (BMRA grades) not found as 2026 UK £ prices. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.pig_iron_brazil_cfr_italy",
+      "value": 0.3867,
+      "unit": "GBP/kg",
+      "basis": "Brazilian pig iron into Italy above USD 520/t CFR in April 2026 (buyers ~USD 500); 520 x 0.7437 = GBP 387/t",
+      "source": "https://gmk.center/en/news/average-prices-for-pig-iron-in-the-black-sea-region-rose-by-8-per-ton-in-april/",
+      "date": "2026-04",
+      "notes": "BASIC (steelmaking) pig iron, CFR Italy — proxy for UK CIF; nodular/foundry-grade (low Mn/P, e.g. Sorelmetal) premium NOT found. Feb 2026 deals USD 450/t CFR excl. CBAM (USD 44/t); SE Brazil FOB USD 480-485/t end-April (Platts via GMK). Russian PI banned in EU. No Jun-Oct 2026 print found. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.fesi75_ddp_nwe",
+      "value": 1.082,
+      "unit": "GBP/kg",
+      "basis": "Argus ferro-silicon 75% EUR 1,240-1,280/t ddp NW Europe on 16 Jun 2026; midpoint 1,260 x 0.859 = GBP 1082/t",
+      "source": "https://api.argusmedia.com/articles/2840817",
+      "date": "2026-06-16",
+      "notes": "Assessment. EU safeguard (TRQ, price threshold USD 2,408/t) in force. Also the best available proxy for FeSi-based inoculant (Ca/Ba/Zr-bearing inoculants cost more; their price was not found). Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.fesimg_eu_import_unit_value",
+      "value": 1.907,
+      "unit": "GBP/kg",
+      "basis": "EU import average unit value, CN 7202 29 10 (FeSi with 4-10% Mg = FeSiMg nodulariser): EUR 2.22/kg; x 0.859",
+      "source": "https://www.thetradehub.eu/de/customs/trade/72022910",
+      "date": "period not stated on the page (indexed 2026)",
+      "notes": "Trade-statistics unit value (CIF border), not an assessment; LOW confidence on period. No 2026 FeSiMg assessment found. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.ferrochrome_eu_benchmark_q3",
+      "value": 2.558,
+      "unit": "GBP/kg Cr contained",
+      "basis": "European ferrochrome benchmark Q3 2026 = 156 US c/lb Cr contained (Samchrome/Samancor); 1.56 x 2204.62 = USD 3,439/t Cr x 0.7437 = GBP 2,558/t Cr",
+      "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+      "date": "2026 Q3",
+      "notes": "Quarterly reference for SA charge chrome; Q4 2026 not found. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.nickel_lme_cash",
+      "value": 12.717,
+      "unit": "GBP/kg",
+      "basis": "LME nickel cash settlement USD 17,100/t on 31 Jul 2026 (Westmetall series); x 0.7437",
+      "source": "https://www.tacto.ai/en-us/commodities/nickel-price",
+      "date": "2026-07-31",
+      "notes": "Latest found; early Aug spot USD 16,995 (5 Aug), 2026 high USD 19,642 futures (5 May). No Sep/Oct 2026 print found. Figure read from a web-search result snippet; the page itself could not be opened from this session (egress proxy 403 on every source host), so it is unverified against the page."
+    },
+    {
+      "key": "ferrous.anchor.ferromanganese_hc",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "HC FeMn: only a 2021 Argus EUR 1,800-1,850/t (too old) and a new Fastmarkets MEDIUM-carbon FeMn ddp Europe series (launched 26 Jun 2026, values not public)."
+    },
+    {
+      "key": "ferrous.anchor.carburiser",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 public price found."
+    },
+    {
+      "key": "ferrous.anchor.inoculant_proprietary",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 public price found."
+    },
+    {
+      "key": "ferrous.anchor.fesimg_assessment",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 public price found."
+    },
+    {
+      "key": "ferrous.anchor.foundry_pig_iron_nodular",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 public price found."
+    },
+    {
+      "key": "ferrous.anchor.scrap_uk_delivered_foundry",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 public price found."
+    },
+    {
+      "key": "ferrous.anchor.cast_iron_borings",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 public price found."
+    },
+    {
+      "key": "ferrous.anchor.shredded",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 public price found."
+    },
+    {
+      "key": "ferrous.charge.GJL-250",
+      "value": 0.169,
+      "unit": "GBP/kg bought metallics",
+      "basis": "Bought charge 60% cast-iron scrap @ 125.0 + 25% steel scrap @ 142.5 + 15% pig iron @ 386.7 = 75.0 + 35.6 + 58.0 = GBP 168.6/t",
+      "source": "https://www.cliffsnotes.com/study-notes/24588812",
+      "date": "2026-10-10 (derived)",
+      "notes": "Mix is a TEXTBOOK EXAMPLE (60% machinery/cast scrap, 25% steel, 15% pig) — the only grey-iron mix found; no CAEF / Cast Metals Federation charge survey found. Own returns (gating, scrap castings) are EXCLUDED because the engine already remelts gating (dross only lost). EXCLUDES: carburiser and Si trim (prices not found), melt loss (not sourced), merchant-to-foundry delivered premium on scrap (not found), melt energy (engine). LOW confidence; order of magnitude GBP 0.15-0.25/kg."
+    },
+    {
+      "key": "ferrous.charge.GJS-500-7",
+      "value": 0.287,
+      "unit": "GBP/kg treated metal",
+      "basis": "Bought charge 50% pig iron @ 386.7 + 50% steel scrap @ 142.5 = 264.6; + FeSiMg 1.2% x 1907 = 22.9; total GBP 287.5/t",
+      "source": "https://journals.pan.pl//Content/127177/PDF/AFE%202_2023_10_final%20version.pdf",
+      "date": "2026-10-10 (derived)",
+      "notes": "Pig iron share: 'pig iron ... in many cases accounting for even half of [the charge] mass' (Archives of Foundry Engineering 2023); grey-iron returns kept out of DI (Bockus & Dobrovolskis, matsc.ktu.lt 26589). FeSiMg 1.2% = average ladle addition (WFC 2016 paper, https://senkyo.co.jp/shishido/wfc2016/pdf/O-9.pdf). FeSiMg priced at the EU import unit value (low confidence). EXCLUDES inoculant (~FeSi75 GBP 1.08/kg as proxy; addition rate not sourced), carburiser, melt loss, delivered-scrap premium, nodular-PI premium, own returns (engine). Pearlitic 500-7 may add Cu (not costed)."
+    },
+    {
+      "key": "ferrous.charge.GS-C25_WCB",
+      "value": 0.142,
+      "unit": "GBP/kg bought metallics",
+      "basis": "Cast carbon steel melted from carbon steel scrap: 100% 0A plate & girder @ GBP 142.5/t",
+      "source": "https://www.letsrecycle.com/prices/metals/ferrous-metal-prices/ferrous-scrap-metal-prices-2026/",
+      "date": "2026-10-10 (derived)",
+      "notes": "Plain carbon cast steel is an all-scrap EAF/induction charge (no charge-mix survey found to cite the split with returns). EXCLUDES FeMn / FeSi deoxidation & Mn trim (HC FeMn price not found; ASTM A216 WCB Mn <= 1.00%), Al deox, melt loss, merchant-to-foundry delivered premium. LOW confidence; true delivered low-residual foundry scrap likely materially above the merchant guide price."
+    },
+    {
+      "key": "ferrous.charge.CF8",
+      "value": 1.805,
+      "unit": "GBP/kg (virgin-units basis)",
+      "basis": "Element costing at ASTM A351 CF8 mid-range Cr 19.5% / Ni 9.5%: Ni 0.095 x 12717 = 1208; Cr 0.195 x 2558 (FeCr, per t Cr) = 499; Fe balance 0.690 x carbon scrap 142.5 = 98; total GBP 1805/t",
+      "source": "https://www.astm.org/a0351_a0351m-18.html",
+      "date": "2026-10-10 (derived)",
+      "notes": "Composition limits from ASTM A351 (CF8: Cr 18.0-21.0, Ni 8.0-11.0) — standard page not fetched this session. Prices: LME Ni Jul 2026, EU FeCr benchmark Q3 2026, letsrecycle Jul 2026. Real stainless foundries charge 304 scrap/returns (priced vs Ni content; price not found), usually below virgin units, so this is an UPPER-BOUND charge. EXCLUDES 2% Mn/Si units, melt loss, AOD/refining. Same method: CF8M add Mo 2-3% (Mo price not found)."
+    }
+  ],
+  "notes": [
+    "Every source host (letsrecycle, argusmedia, gmk.center, metal.com, bigmint, eurometal, poundsterlinglive, thesteel.com, outokumpu.com) was refused by the session's egress proxy (403); all figures were read from WebSearch result snippets and could not be opened and checked against the page. Treat every value as 'snippet-verified' only.",
+    "FX: GBP/EUR 0.8590 (4 Sep 2026) and USD/GBP 1.3447 (4 Aug 2026) — latest found, no October 2026 rate found.",
+    "ANCHORS FOUND: NWE HRC index (Oct 2026), ArcelorMittal EU HRC/CRC/HDG base delivered (Oct 2026 shipments), Tata UK HRC Q2 2026, EU GOES safeguard thresholds (Sep 2026), German wire rod (Apr 2026), alloy surcharges 42CrMo4/16MnCr5 (Feb 2026), Outokumpu EU 304/316L/430 surcharges (Apr-May 2026) and NA Oct 2026 (316L/2205), EU 304 CRC deals (Apr-May 2026), UK scrap (letsrecycle Jun-Jul 2026), Brazilian pig iron (Apr 2026), FeSi75 (Jun 2026), FeCr Q3 2026, LME Ni (Jul 2026).",
+    "NOT FOUND: automotive grade extras (DC03-06, IF, BH, HSLA, DP, TRIP, CP, MS, Q&P, 22MnB5/Usibor, ZE/ZnNi/ZM/GA coatings), any European NOES/CRNO €/t, UK stockholder bar tonnage prices (EN8/EN1A/EN3B/EN19/EN24/100Cr6/38MnVS6), SBQ base & scrap surcharge, forging billet, Oct 2026 EU stainless surcharges, 17-4PH/409L/441, HC FeMn, FeSiMg assessment, inoculant, carburiser, nodular pig iron premium, UK delivered foundry scrap, BMRA OA/3B/HMS £ prices, CAEF / Cast Metals Federation charge-mix survey.",
+    "MODEL OF A GRADE: grade £/kg = anchor (HRC GBP 0.661 / CRC-HDG GBP 0.756 delivered mill base, or wire rod GBP 0.601) + published extra where one was found + service-centre processing (not found). Because grade extras were not found, the anchors alone cannot reprice the AHSS / PHS / electrical rows.",
+    "CURRENT-BOOK CHECKS (confident): (1) Cast-metal rows are delivered-casting-style prices, not charge: GJL-250 0.64 vs derived bought charge ~0.17; GJS-500-7 0.86 vs ~0.29; GS-C25 / WCB / G20Mn5 2.10 vs ~0.14 + Mn/Si trim; CF8 5.17 vs ~1.81 (virgin-units upper bound). Even allowing generously for the unpriced trims, melt loss and a delivered-scrap premium, the book is 2-15x the charge cost — consistent with RULES' known error. (2) DC04 0.77 / DC05 0.80 / DC06 0.85 below DC01 0.91 is inverted: deep-drawing grades sit on the same CR base (EUR 880 delivered = GBP 0.756) PLUS a positive grade extra; the size of the extra was not found. DC01 0.91 is GBP 0.15 over the mill CR base (plausible service-centre premium, not confirmed).",
+    "CURRENT-BOOK CHECKS (plausible / not contradicted): HRPO 0.77 and S355MC 0.80 vs HRC delivered base 0.66 (pickling / structural extras not found); EN8 0.98, C45 0.86, 42CrMo4 1.61 vs wire rod 0.60 + alloy surcharge 0.12 (bar base and scrap surcharge not found). 304L sheet 3.49 vs EU 304 CRC deals GBP 2.20-2.49/kg (Apr-May 2026; target) — book is ~40% above mill-delivered CRC; could be a stockholder sheet premium, flag for review. GO M105-30P 2.90 vs EU GOES in-quota floor GBP 2.41-2.92: consistent."
+  ]
+}

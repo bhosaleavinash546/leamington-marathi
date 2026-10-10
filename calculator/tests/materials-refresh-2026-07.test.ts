@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_RATE_LIBRARY, RATE_BASIS } from '../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, RATE_BASIS, UK_BOOK_BASIS } from '../src/engine/rate-library.js';
+// A grade is on the refresh's month or, where the UK rate book (Oct 2026) re-priced it, on the book's month.
+const ON_BASIS = [RATE_BASIS, UK_BOOK_BASIS];
 import { computeUniversalStack } from '../src/engine/core.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 import { assertPartCostInvariants } from './helpers/engine-invariants.js';
@@ -25,7 +27,7 @@ const NEW_GRADES = [
 
 describe('2026-07 refresh — remaining commodities', () => {
   it('every material except the virtual placeholder is on the current RATE_BASIS', () => {
-    const stale = lib.materials.filter(m => m.id !== 'mat-virtual' && m.effectiveDate !== RATE_BASIS);
+    const stale = lib.materials.filter(m => m.id !== 'mat-virtual' && !ON_BASIS.includes(m.effectiveDate));
     expect(stale.map(m => `${m.id}:${m.effectiveDate}`)).toEqual([]);
   });
 

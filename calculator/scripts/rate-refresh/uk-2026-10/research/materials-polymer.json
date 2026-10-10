@@ -1,0 +1,499 @@
+{
+  "domain": "materials-polymer (UK/NW-Europe polymers, rubber, composites, paint)",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "fx.eur_gbp",
+      "value": 0.858,
+      "unit": "GBP per EUR",
+      "basis": "Mean of two published September 2026 daily rates: 0.8575 (19 Sep 2026 12:11 GMT) and 1/1.1654 = 0.8581 (28 Sep 2026)",
+      "source": "https://www.currency-converter.org.uk/currency-rates/convert/EUR-GBP-rate.html",
+      "date": "2026-09-19/2026-09-28",
+      "notes": "Converter-site rates, not BoE/ECB reference; the Bank of England series was not reachable. Applied to all EUR figures, including May-Aug ones (their own month's rate was not sourced) - stated per item."
+    },
+    {
+      "key": "fx.usd_gbp",
+      "value": 0.7394,
+      "unit": "GBP per USD",
+      "basis": "1 / 1.3524 (GBP/USD spot 10 Sep 2026, range 1.3491-1.3560)",
+      "source": "https://30rates.com/pound-to-dollar-and-dollar-to-pound",
+      "date": "2026-09-10",
+      "notes": "Converter-site rate. 2026 YTD average GBP/USD 1.344 (poundsterlinglive.com/history/GBP-USD-2026) gives 0.7440 - 0.6% difference."
+    },
+    {
+      "key": "polymer.anchor.ethylene_contract_nwe",
+      "value": 1.266,
+      "unit": "GBP/kg",
+      "basis": "Sep 2026 NWE ethylene monthly contract EUR 1,475/t FD NWE (-12.5 vs Aug) x EUR->GBP 0.858 (0.8575 on 19 Sep 2026; 1/1.1654 = 0.8581 on 28 Sep 2026) = 1.266",
+      "source": "https://polymerupdate.com/News/Details/1504732",
+      "date": "2026-09",
+      "notes": "polymerupdate.com weekly European report (via search excerpt). Feedstock context only, not a resin price."
+    },
+    {
+      "key": "polymer.anchor.pp_homo_spot_nwe",
+      "value": 1.021,
+      "unit": "GBP/kg",
+      "basis": "PP homopolymer spot EUR 1,185-1,195/t FD NWE, mid 1190 x 0.858 / 1000 = 1.021",
+      "source": "https://polymerupdate.com/News/Details/1504732",
+      "date": "2026-08-21 (week)",
+      "notes": "polymerupdate.com weekly European report, spot (transaction-level, delivered NW Europe). Late-Aug report: spot stable, contract moving higher. Antwerp FCA EUR 1,170-1,200/t same week. July low EUR 1,095-1,105/t. Aug FX not sourced - Sep rate used. Ex-VAT; UK delivery not included."
+    },
+    {
+      "key": "polymer.anchor.pp_injection_gross_contract_nwe",
+      "value": 1.718,
+      "unit": "GBP/kg",
+      "basis": "PP injection 'contract' EUR 2,000-2,005/t FD NWE France, mid 2002.5 x 0.858 / 1000 = 1.718",
+      "source": "https://polymerupdate.com/News/Details/1499687",
+      "date": "2026-07",
+      "notes": "polymerupdate.com weekly European report gross-contract (list) level; June was EUR 2,350-2,355/t FD NWE Germany. Gross contract levels run ~EUR 800-900/t above spot and above what processors pay after discounts (Platts discontinued European PVC/PET gross-contract assessments from 1 Jan 2026 for that reason). Do NOT use as the transaction price; it bounds the top."
+    },
+    {
+      "key": "polymer.anchor.pp_index_europe_ba",
+      "value": 1.471,
+      "unit": "GBP/kg",
+      "basis": "Business Analytiq Europe PP Sep 2026 US$1.99/kg (-0.5%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 1.471",
+      "source": "https://businessanalytiq.com/procurementanalytics/index/polypropylene-price-index/",
+      "date": "2026-09",
+      "notes": "Price index (grade/basis not stated on the free page; converted to USD at the time). Sits between spot and gross contract."
+    },
+    {
+      "key": "polymer.anchor.hdpe_blow_spot_nwe",
+      "value": 0.97,
+      "unit": "GBP/kg",
+      "basis": "HDPE blow moulding spot EUR 1,125-1,135/t FD NWE (+30 w/w), mid 1130 x 0.858 / 1000 = 0.97",
+      "source": "https://polymerupdate.com/News/Details/1495853",
+      "date": "2026-08-14",
+      "notes": "polymerupdate.com weekly European report, spot. Antwerp FCA blow and film EUR 1,110-1,140/t mid-Aug. 3 Jul 2026 spot injection EUR 1,315-1,325/t (-140 w/w). Aug FX not sourced - Sep rate used."
+    },
+    {
+      "key": "polymer.anchor.hdpe_film_gross_contract_nwe",
+      "value": 1.795,
+      "unit": "GBP/kg",
+      "basis": "HDPE film 'contract' EUR 2,090-2,095/t FD NWE France/Germany (rollover), mid 2092.5 x 0.858 / 1000 = 1.795",
+      "source": "https://polymerupdate.com/News/Details/1495853",
+      "date": "2026-08-14",
+      "notes": "polymerupdate.com weekly European report gross-contract level (see PP gross note). 3 Jul 2026 blow moulding contract EUR 2,330-2,335/t FD NWE."
+    },
+    {
+      "key": "polymer.anchor.hdpe_index_europe_ba",
+      "value": 1.301,
+      "unit": "GBP/kg",
+      "basis": "Business Analytiq Europe HDPE Sep 2026 US$1.76/kg (-0.6%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 1.301",
+      "source": "https://businessanalytiq.com/?p=3909",
+      "date": "2026-09",
+      "notes": "Price index, grade not stated."
+    },
+    {
+      "key": "polymer.anchor.ldpe_spot_nwe",
+      "value": 1.09,
+      "unit": "GBP/kg",
+      "basis": "LDPE spot EUR 1,265-1,275/t FD NWE (+40 w/w), mid 1270 x 0.858 / 1000 = 1.09",
+      "source": "https://www.polymerupdate.com/News/Details/1507188",
+      "date": "2026-09-04",
+      "notes": "polymerupdate.com weekly European report, spot. Antwerp GP LDPE FCA EUR 1,250-1,280/t early Sep."
+    },
+    {
+      "key": "polymer.anchor.ldpe_gross_contract_uk",
+      "value": 2.1825,
+      "unit": "GBP/kg",
+      "basis": "LDPE general purpose 'contract' GBP 2,180-2,185/t FD NWE UK, mid 2,182.5 / 1000",
+      "source": "https://www.polymerupdate.com/News/Details/1507188",
+      "date": "2026-09-04",
+      "notes": "polymerupdate.com weekly European report gross-contract UK level (rollover); Germany/France EUR 2,540-2,545/t = GBP 2.18/kg at 0.858 - consistent. Gross list, ~2x spot; see PP gross note. Only UK-delivered virgin-resin figure found."
+    },
+    {
+      "key": "polymer.anchor.lldpe",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European LLDPE spot or contract figure surfaced. bvse/EUWID: LLDPE film -435 EUR/t in June 2026 (change only)."
+    },
+    {
+      "key": "polymer.anchor.pvc_s_gross_contract_nwe",
+      "value": 1.096,
+      "unit": "GBP/kg",
+      "basis": "S-PVC 'contract' EUR 1,275-1,280/t FD NWE France/Germany (+20 w/w), mid 1277.5 x 0.858 / 1000 = 1.096",
+      "source": "https://polymerupdate.com/News/Details/1485733",
+      "date": "2026-05-08",
+      "notes": "polymerupdate.com weekly European report. May figure; ChemOrbis 25 Jun 2026: European PVC 'continued to edge lower in June', sellers conceded mainly EUR 50/t, downtrend to deepen in July (https://www.chemorbis.com/en/premium-plastics-news/European-PVC-downtrend-set-to-deepen-in-July/2026/06/25/976303). May FX not sourced - Sep rate used."
+    },
+    {
+      "key": "polymer.anchor.pvc_index_europe_ba",
+      "value": 1.131,
+      "unit": "GBP/kg",
+      "basis": "Business Analytiq Europe PVC Sep 2026 US$1.53/kg (-0.6%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 1.131",
+      "source": "https://businessanalytiq.com/?p=2559",
+      "date": "2026-09",
+      "notes": "Conflicts with IMARC Germany PVC resin June 2026 US$946/t (= GBP 0.70/kg at 0.7394; https://www.imarcgroup.com/pvc-resin-price-trend) - the two differ by 60%; basis of neither stated in what could be read."
+    },
+    {
+      "key": "polymer.anchor.ps_index_europe_ba",
+      "value": 1.235,
+      "unit": "GBP/kg",
+      "basis": "Business Analytiq Europe polystyrene Sep 2026 US$1.67/kg (+3.7%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 1.235",
+      "source": "https://businessanalytiq.com/?p=4860",
+      "date": "2026-09",
+      "notes": "Index; GPPS/HIPS split not given. Trinseo announced GPPS/HIPS -230 EUR/t effective 1 Jul 2026 (announcement wording contradictory - https://plasticker.de/news/shownews_en.php?nr=48771)."
+    },
+    {
+      "key": "polymer.anchor.pet_bottle",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European PET bottle-grade price found. Platts discontinued European PET gross-contract assessment 1 Jan 2026."
+    },
+    {
+      "key": "polymer.anchor.standard_virgin_basket_de",
+      "value": 1.532,
+      "unit": "GBP/kg",
+      "basis": "bvse average of EUWID virgin standard-plastics quotes (HDPE, LDPE, LLDPE, PP, PS, PVC) July 2026 EUR 1,786/t x 0.858 / 1000 = 1.532",
+      "source": "https://plasticker.de/docs/preise/bvse_Marktbericht_Kunststoff_2026_08.pdf",
+      "date": "2026-07",
+      "notes": "German processor-level virgin prices (EUWID). Path: May EUR 2,342 -> June 2,099 (-243) -> July 1,786 (-313); +430 vs July 2025. July changes: HDPE injection -300, HDPE blow -300, PS crystal -370, PVC pipe -160, LDPE film -400 EUR/t. Market expected sideways with demand revival Sep/Oct. July FX not sourced - Sep rate used."
+    },
+    {
+      "key": "polymer.anchor.market_context_2026",
+      "value": null,
+      "unit": "",
+      "basis": "Context: European polymer prices spiked after the March 2026 Middle-East escalation (bvse Apr report: 'seller's market'); ChemAnalyst: Q2 2026 HDPE +~38%, LDPE +~31% in Europe; correcting from June.",
+      "source": "https://www.chemanalyst.com/NewsAndDeals/NewsDetails/europes-flexible-packaging-costs-soar-as-polymer-prices-surge-amid-43239",
+      "date": "2026-07",
+      "notes": "Explains the very wide spot vs contract gap in 2026 data."
+    },
+    {
+      "key": "polymer.anchor.abs_index_europe_ba",
+      "value": 1.641,
+      "unit": "GBP/kg",
+      "basis": "Business Analytiq Europe ABS Sep 2026 US$2.22/kg (-6.3%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 1.641",
+      "source": "https://businessanalytiq.com/?p=2160",
+      "date": "2026-09",
+      "notes": "Index; general-purpose grade assumed, not stated."
+    },
+    {
+      "key": "polymer.anchor.pc_index_europe_imarc",
+      "value": 2.211,
+      "unit": "GBP/kg",
+      "basis": "IMARC Europe polycarbonate July 2026 US$2.99/kg (-14.6%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 2.211",
+      "source": "https://www.imarcgroup.com/polycarbonate-pricing-report",
+      "date": "2026-07",
+      "notes": "Market-research index; July FX not sourced - Sep USD rate used."
+    },
+    {
+      "key": "polymer.anchor.pa6_index_europe_ba",
+      "value": 2.189,
+      "unit": "GBP/kg",
+      "basis": "Business Analytiq Europe PA6 Sep 2026 US$2.96/kg (+5.7%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 2.189",
+      "source": "https://businessanalytiq.com/?p=2215",
+      "date": "2026-09",
+      "notes": "Index, unfilled resin. Single source; much higher than 2025 levels (IMARC Germany Q2 2025 US$1,950/t) - benzene/caprolactam rise after Strait of Hormuz disruption (Procurement Resource)."
+    },
+    {
+      "key": "polymer.anchor.pa66_index_europe_ba",
+      "value": 2.551,
+      "unit": "GBP/kg",
+      "basis": "Business Analytiq Europe PA66 Sep 2026 US$3.45/kg (-3.9%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 2.551",
+      "source": "https://businessanalytiq.com/?p=2623",
+      "date": "2026-09",
+      "notes": "Index, unfilled. July 2026 was US$3.71/kg. Celanese PA66 +EUR 0.20/kg EMEA from 1 Feb 2026 (https://www.nasdaq.com/press-release/celanese-announces-polyamide-price-increase-2026-01-23)."
+    },
+    {
+      "key": "polymer.anchor.engineering_surcharges_celanese_emea",
+      "value": 0.35,
+      "unit": "EUR/kg",
+      "basis": "Celanese EMEA surcharges effective 1 Jun 2026: PA6 grades (Zytel/Minlon) EUR 0.35/kg; PBT/PET (Crastin/Celanex) EUR 0.25/kg; Rynite EUR 0.20/kg (= GBP 0.30 / 0.21 / 0.17 per kg at 0.858)",
+      "source": "https://plasticker.de/Plastics_News_48695_Celanese_Price_Increases_for_Engineered_Materials?seite=8",
+      "date": "2026-06-01",
+      "notes": "Producer price notice; table column alignment ambiguous in the excerpt. A surcharge, not a price level."
+    },
+    {
+      "key": "polymer.anchor.pom",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price surfaced within the search budget (sources: PIE/EUWID/ChemOrbis paywalled)."
+    },
+    {
+      "key": "polymer.anchor.pbt",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price surfaced within the search budget (sources: PIE/EUWID/ChemOrbis paywalled)."
+    },
+    {
+      "key": "polymer.anchor.pmma",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price surfaced within the search budget (sources: PIE/EUWID/ChemOrbis paywalled)."
+    },
+    {
+      "key": "polymer.anchor.pps",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price surfaced within the search budget (sources: PIE/EUWID/ChemOrbis paywalled)."
+    },
+    {
+      "key": "polymer.anchor.pei",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price surfaced within the search budget (sources: PIE/EUWID/ChemOrbis paywalled)."
+    },
+    {
+      "key": "polymer.anchor.tpu",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price surfaced within the search budget (sources: PIE/EUWID/ChemOrbis paywalled)."
+    },
+    {
+      "key": "polymer.anchor.tpe_tpv",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price surfaced within the search budget (sources: PIE/EUWID/ChemOrbis paywalled)."
+    },
+    {
+      "key": "polymer.anchor.pp_pe_uk_distributor",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price surfaced within the search budget (sources: PIE/EUWID/ChemOrbis paywalled)."
+    },
+    {
+      "key": "polymer.anchor.peek_resin_global",
+      "value": null,
+      "unit": "USD/kg",
+      "basis": "Global PEEK ex-factory average ~US$55/kg in 2024 (QYResearch, ~10,364 t); 2025 range US$60-90/kg by grade (Coherent Market Insights). At 0.7394: GBP 40.7/kg and GBP 44-67/kg.",
+      "source": "https://www.giikorea.co.kr/report/qyr1862489-peek-special-engineering-plastics-global-market.html",
+      "date": "2024 / 2025",
+      "notes": "Market-research figures, global, not 2026 and not Europe delivered - cross-check only (second source https://www.coherentmarketinsights.com/market-insight/polyether-ether-ketone-market-1005)."
+    },
+    {
+      "key": "polymer.extra.gf30",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No European compounder price indication for filled/FR grades vs base resin found."
+    },
+    {
+      "key": "polymer.extra.mineral",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No European compounder price indication for filled/FR grades vs base resin found."
+    },
+    {
+      "key": "polymer.extra.fr",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No European compounder price indication for filled/FR grades vs base resin found."
+    },
+    {
+      "key": "rubber.nr_tsr20_sgx",
+      "value": 1.905,
+      "unit": "GBP/kg",
+      "basis": "SGX TSR20 Nov-2026 contract 257.60 US c/kg (+1.10%) on 3 Oct 2026 x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 1.905",
+      "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-3-10-bien-dong-trai-chieu-a336568.html",
+      "date": "2026-10-03",
+      "notes": "Exchange futures, FOB SE Asia - excludes freight to UK and dealer margin. Secondary (Vietnamese press) report of SGX. 28 Sep 2026 Oct contract 253.20 c/kg. World-Bank-based 2026 range US$1.61-2.06/kg, avg 1.80 (https://cbonds.com.tr/indexes/154140/)."
+    },
+    {
+      "key": "rubber.silicone_price_moves_2026",
+      "value": null,
+      "unit": "%",
+      "basis": "Wacker: addition-curing silicone rubbers up to +25% from 1 Feb 2026 (platinum); second rise 1 Apr 2026 (energy/logistics). Elkem Europe +10-30% late Apr 2026. Shin-Etsu >+10% from 1 May. Baseline IMARC Germany silicone rubber US$10,190/t Sep 2025.",
+      "source": "https://www.alchempro.com/news/chemicals-news/germany-s-wacker-to-raise-silicone-prices-effective-april-1-2026-309203-newsdetails.htm",
+      "date": "2026-02..05",
+      "notes": "Producer increase notices, no EUR/kg level. Elkem: https://www.specialchem.com/plastics/news/elkem-increases-price-for-silicone-portfolio-in-europe-and-the-americas"
+    },
+    {
+      "key": "rubber.sbr",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price found (ERJ weekly figures surfaced were 2022). Procurement Resource: European synthetic rubber up in Q1 2026 (no level)."
+    },
+    {
+      "key": "rubber.epdm",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price found (ERJ weekly figures surfaced were 2022). Procurement Resource: European synthetic rubber up in Q1 2026 (no level)."
+    },
+    {
+      "key": "rubber.nbr",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price found (ERJ weekly figures surfaced were 2022). Procurement Resource: European synthetic rubber up in Q1 2026 (no level)."
+    },
+    {
+      "key": "rubber.cr",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price found (ERJ weekly figures surfaced were 2022). Procurement Resource: European synthetic rubber up in Q1 2026 (no level)."
+    },
+    {
+      "key": "rubber.fkm",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price found (ERJ weekly figures surfaced were 2022). Procurement Resource: European synthetic rubber up in Q1 2026 (no level)."
+    },
+    {
+      "key": "rubber.compound_70shA_vs_polymer",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price found (ERJ weekly figures surfaced were 2022). Procurement Resource: European synthetic rubber up in Q1 2026 (no level)."
+    },
+    {
+      "key": "composite.carbon_fibre_uk",
+      "value": 25.879,
+      "unit": "GBP/kg",
+      "basis": "IMARC carbon fibre Q1 2026 UK US$35/kg (Germany US$34/kg) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 25.879",
+      "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+      "date": "2026-Q1",
+      "notes": "Market-research estimate, grade not stated (not T700-specific). Cross-check: EU average import value CN 68151100 carbon fibres EUR 27.64/kg 2022-2025 = GBP 23.7/kg at 0.858 (https://www.thetradehub.eu/en/customs/trade/68151100)."
+    },
+    {
+      "key": "composite.epoxy_resin_europe",
+      "value": 3.423,
+      "unit": "GBP/kg",
+      "basis": "IMARC Europe epoxy resin March 2026 US$4.63/kg x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 3.423",
+      "source": "https://www.imarcgroup.com/epoxy-resin-pricing-report",
+      "date": "2026-03",
+      "notes": "Basic liquid epoxy, not a formulated infusion/prepreg system. Intratec Germany FOB export Nov 2025 US$4,940/t. Resourcewise: +20-25% early 2026 then uneven correction mid-year."
+    },
+    {
+      "key": "composite.e_glass_fibre",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price found; EU gas spike (EUR 62.5/MWh, 3 Mar 2026) cited as a fibreglass cost driver (https://www.itiger.com/news/1119929928)."
+    },
+    {
+      "key": "composite.vinyl_ester",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price found; EU gas spike (EUR 62.5/MWh, 3 Mar 2026) cited as a fibreglass cost driver (https://www.itiger.com/news/1119929928)."
+    },
+    {
+      "key": "composite.prepreg",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No 2026 European price found; EU gas spike (EUR 62.5/MWh, 3 Mar 2026) cited as a fibreglass cost driver (https://www.itiger.com/news/1119929928)."
+    },
+    {
+      "key": "paint.powder_polyester_us_crosscheck",
+      "value": null,
+      "unit": "USD/kg",
+      "basis": "US vendor guide: standard polyester powder US$3-5/lb = US$6.6-11.0/kg (x2.2046) = GBP 4.9-8.1/kg at 0.7394; high-durability US$6-10/lb.",
+      "source": "https://blog.fabcon.com/?p=306",
+      "date": "2026",
+      "notes": "US fabricator blog, not a UK/EU price - cross-check only; not used as a value."
+    },
+    {
+      "key": "paint.ecoat",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No European automotive paint price indication found within the search budget."
+    },
+    {
+      "key": "paint.primer",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No European automotive paint price indication found within the search budget."
+    },
+    {
+      "key": "paint.basecoat",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No European automotive paint price indication found within the search budget."
+    },
+    {
+      "key": "paint.clearcoat",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "No European automotive paint price indication found within the search budget."
+    },
+    {
+      "key": "polymer.extra.masterbatch",
+      "value": null,
+      "unit": "GBP/kg",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Not reached within the shared search budget."
+    }
+  ],
+  "notes": [
+    "Method limit: WebFetch and curl were blocked for every price host (plasticker, polymerupdate, argusmedia, bpf.co.uk, pieweb - egress proxy 403 / DNS). All figures come from WebSearch result excerpts of the cited URLs; the pages themselves were not opened. Treat as cited-but-unopened.",
+    "Polymerupdate article IDs: search excerpts did not always say which listed article a sentence came from; IDs given are the best match by date (1504732 = 21/28 Aug PP + Sep ethylene; 1507188 = 4 Sep LDPE; 1495853 = 14 Aug HDPE; 1485733 = 8 May PVC; 1499687 = July PP contract). Verify the ID before quoting a figure externally.",
+    "2026 European commodity resins show an unusually wide gap: spot (PP homo ~EUR 1,190, HDPE blow ~1,130, LDPE ~1,270 EUR/t, Aug-Sep) vs Polymerupdate 'gross contract' (PP inj ~2,000, HDPE film ~2,090, LDPE ~2,540 EUR/t; UK LDPE GBP 2,182/t) vs Business Analytiq indices (PP 1.99, HDPE 1.76, PVC 1.53, PS 1.67 USD/kg) vs EUWID July basket EUR 1,786/t. A UK tier-1 buying from a distributor pays between spot and the EUWID basket; gross-contract lists overstate. A defensible Oct 2026 UK delivered commodity anchor is roughly GBP 1.1-1.5/kg - choose one basis and state it.",
+    "Current book vs evidence: mat-pa6 GBP 1.68 vs BA Europe Sep GBP 2.19 (+30%); mat-pa66 GBP 1.89 vs BA GBP 2.55 (+35%) - both look low, single source. mat-pp-homo 0.99 / mat-hdpe 1.05 / mat-ldpe 1.09 sit at spot level (GBP 1.02 / 0.97 / 1.09), below the contract-type indices (1.47 / 1.30). mat-upvc 0.76 below both PVC figures except IMARC Germany June (0.70). mat-abs 1.62 = BA 1.64. mat-pc 2.52 vs IMARC July 2.21. mat-gpps/hips 1.37 vs BA PS 1.23. mat-peek 76 vs global resin US$55-90/kg (GBP 41-67) - possibly high. mat-nr 1.84 below SGX TSR20 FOB GBP 1.90 before freight. mat-cf-dry-3k 25.2 for woven fabric vs fibre ~GBP 25.9 - fabric should exceed fibre.",
+    "Not found: LLDPE, PET bottle, POM, PBT, PMMA, PPS, PEI, TPU, TPE/TPV, compound extras (GF/mineral/FR), SBR/EPDM/NBR/CR/FKM, 70 Shore A compound uplift, E-glass, vinyl ester, prepreg, all automotive paints, masterbatch."
+  ]
+}

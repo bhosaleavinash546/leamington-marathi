@@ -43,19 +43,28 @@ describe('1. the grades, each priced from its sibling with the arithmetic shown'
     expect(m, id).toBeDefined();
     expect(MATERIAL_SCOPE_BY_COMMODITY.casting.test(m.category)).toBe(true);
     expect(MATERIAL_SCOPE_BY_COMMODITY.cast_and_machine.test(m.category)).toBe(true);
-    expect(m.pricePerKg).toBeCloseTo(GAP[id][0], 2);
-    expect(m.sourceNote).toContain(GAP[id][3]);                       // names its sibling
-    expect(m.sourceNote).toContain(`= £${m.pricePerKg.toFixed(2)}/kg`);   // and its result
+    if (m.sourceNote.startsWith('UK book')) {
+      // The UK rate book (Oct 2026) re-priced it from evidence (a foundry charge or an ingot price); the sibling
+      // arithmetic is kept in its note as the earlier basis, and the price it replaced is stated.
+      expect(m.sourceNote).toContain(`Was £${GAP[id][0]}/kg`);
+      expect(m.sourceNote).toContain(GAP[id][3]);
+    } else {
+      expect(m.pricePerKg).toBeCloseTo(GAP[id][0], 2);
+      expect(m.sourceNote).toContain(GAP[id][3]);                       // names its sibling
+      expect(m.sourceNote).toContain(`= £${m.pricePerKg.toFixed(2)}/kg`);   // and its result
+    }
     expect(m.region).toBe('UK');
   });
 
   it('the alloy arithmetic reproduces (Ni-Resist D-5S, 1.4848, LM13)', () => {
+    // On the siblings' 2026-09 prices (D-2 £3.15, CF8 £5.17, LM6 £2.92) — the record of how the grades were
+    // added; the UK rate book (Oct 2026) has since re-priced all six from evidence.
     // D-2 + 15% Ni × £12.38 + 3% Si × £1.00 − 18% of GJS-400 £0.82
-    expect(mat('mat-ni-resist-d2').pricePerKg + 0.15 * 12.38 + 0.03 * 1.00 - 0.18 * 0.82).toBeCloseTo(4.89, 2);
+    expect(3.15 + 0.15 * 12.38 + 0.03 * 1.00 - 0.18 * 0.82).toBeCloseTo(4.89, 2);
     // CF8 + 6% Cr × £1.94 + 11% Ni × £12.38
-    expect(mat('mat-ss304-cast').pricePerKg + 0.06 * 1.94 + 0.11 * 12.38).toBeCloseTo(6.65, 2);
+    expect(5.17 + 0.06 * 1.94 + 0.11 * 12.38).toBeCloseTo(6.65, 2);
     // LM6 + 1% Cu + 1% Ni + 1% Mg − 3% Al
-    expect(mat('mat-lm6').pricePerKg + 0.01 * 10.77 + 0.01 * 12.38 + 0.01 * 1.77 - 0.03 * 2.85).toBeCloseTo(3.08, 2);
+    expect(2.92 + 0.01 * 10.77 + 0.01 * 12.38 + 0.01 * 1.77 - 0.03 * 2.85).toBeCloseTo(3.08, 2);
   });
 
   it('estimates are labelled and carry Low confidence', () => {

@@ -58,7 +58,7 @@ describe('1. the China book carries China rates, every line', () => {
   });
   it('the book says which country it is, with its toolroom factor', () => {
     expect(CN.regional).toEqual({ code: 'CN', name: 'China', toolroomFactor: toolroomFactorFor('CN') });
-    expect(toolroomFactorFor('CN')).toBeCloseTo(0.5 * 8.08 / 26.19 + 0.5 * 0.55, 4);
+    expect(toolroomFactorFor('CN')).toBeCloseTo(0.5 * R.CN.labour.skilled / R.UK.labour.skilled + 0.5 * R.CN.machineRateMultiplier, 4);
     expect(toolroomFactorFor('UK')).toBe(1);
   });
   it('the library\'s own country labour entries equal the country\'s rates (eight disagreed)', () => {
@@ -554,8 +554,9 @@ describe('12. the forms\' £ defaults follow the country; a typed figure is a qu
     typed.value = '65000';                                     // the engineer's quote
     M.applyCountryMoneyDefaults(root, 'IN');
     expect(Number(die.value)).toBe(Math.round(120000 * S.countryFactor({ globalShare: 0.2, rest: 'toolroom' }, 'IN')));
-    // below 100 the form keeps a decimal (the India book's engineer rate puts this NRE at ~93)
-    expect(Number(nre.value)).toBeCloseTo(2000 * S.engineerFactor('IN'), 1);
+    // below 100 the form keeps a decimal; at or above it, whole pounds
+    const want = 2000 * S.engineerFactor('IN');
+    expect(Number(nre.value)).toBeCloseTo(want >= 100 ? Math.round(want) : want, 1);
     expect(insert.value).toBe('0.05');                         // brass inserts are traded
     expect(typed.value).toBe('65000');
     M.applyCountryMoneyDefaults(root, 'DE');

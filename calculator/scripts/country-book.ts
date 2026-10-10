@@ -25,6 +25,7 @@ import { fileURLToPath } from 'node:url';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
 import { REGIONAL_DATA, buildRegionalLibrary, EXTRUSION_COUNTRY_PRICES, THERMOFORMING_COUNTRY_PRICES } from '../src/engine/regional-rates.js';
 import { countryMachine, type CountryBook } from '../src/engine/country-books.js';
+import { UK_ELECTRICITY_GBP_PER_KWH } from '../src/engine/uk-energy.js';   // the tariff the UK build-ups are written in (uk-book.ts)
 import type { Confidence } from '../src/engine/types.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -52,7 +53,12 @@ const register: Row[] = [];
 
 // ── materials ────────────────────────────────────────────────────────────────
 const materials: CountryBook['materials'] = {};
-const ukMat = new Map(UK.materials.map(m => [m.id, m]));
+// A ladder applies the UK book's grade premium as it stood when the India families were defined (the frozen UK
+// snapshot, scripts/rate-refresh/uk-2026-10/current-uk-book.json) — the UK book 2026-10 re-based castings to their
+// charge, and `f.base` in the India config is that snapshot's figure, so the live UK price would break the ratio.
+const UK_SNAP = JSON.parse(readFileSync(resolve(ROOT, 'scripts/rate-refresh/uk-2026-10/current-uk-book.json'), 'utf8')) as {
+  materials: Array<{ id: string; grade: string; gbpPerKg: number }> };
+const ukMat = new Map(UK_SNAP.materials.map(m => [m.id, { id: m.id, grade: m.grade, pricePerKg: m.gbpPerKg }]));
 const curMat = new Map(SNAP.materials.map(m => [m.id, m]));
 for (const f of cfg.materialFamilies) {
   const srcText = (f.sources as Array<{ source: string; date?: string }>).map(s => `${s.source}${s.date ? ` (${s.date})` : ''}`).join(' ; ');
@@ -127,7 +133,7 @@ const book: CountryBook = {
   machines: {
     hoursPerYear: M.hoursPerYear, shiftDepreciationFactor: r4(M.scheduleIIShiftFactor), lifeYears: M.lifeYears,
     financeRate: M.financeRate, ukFinanceRate: M.ukFinanceRate, maintenancePctOfCapex: M.maintenancePctOfCapex,
-    rentGbpPerM2Yr, ukRentGbpPerM2Yr: M.ukRentGbpPerM2Yr, ukElectricityGbpPerKwh: M.ukElectricityGbpPerKwh,
+    rentGbpPerM2Yr, ukRentGbpPerM2Yr: M.ukRentGbpPerM2Yr, ukElectricityGbpPerKwh: UK_ELECTRICITY_GBP_PER_KWH,
     labourRatio, capitalHeldFactor: M.capitalHeldFactor,
     basis: `${M.hoursBasis}; ${M.scheduleIIBasis}; ${M.financeBasis}; rent ₹${M.rentInrPerSqftMonth}/sq ft/month (${M.rentBasis}); maintenance ${M.maintenanceBasis}`,
     heldBasis: M.notRebuiltBasis,

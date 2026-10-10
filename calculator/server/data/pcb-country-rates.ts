@@ -855,7 +855,7 @@ const ENERGY_PACKAGING: Record<string, { kwh: number; pack: number }> = {
   cz: { kwh: 0.172, pack: 0.148 },
   pl: { kwh: 0.148, pack: 0.134 },
   de: { kwh: 0.258, pack: 0.277 },
-  gb: { kwh: 0.268, pack: 0.3 },
+  gb: { kwh: 0.182, pack: 0.3 },
   us: { kwh: 0.096, pack: 0.284 },
   jp: { kwh: 0.163, pack: 0.306 },
 };

@@ -1,0 +1,429 @@
+{
+  "domain": "materials-nonferrous",
+  "researched": "2026-10-10",
+  "items": [
+    {
+      "key": "nonferrous.fx.gbp_usd",
+      "value": 1.3247,
+      "unit": "USD per GBP",
+      "basis": "daily reference rate snapshot (fawazahmed0 currency-api, the source scripts/rate-refresh/2026-09.json already uses)",
+      "source": "https://registry.npmjs.org/@fawazahmed0/currency-api/-/currency-api-2026.10.9.tgz",
+      "date": "2026-10-09",
+      "notes": "Every USD figure below is converted at this rate."
+    },
+    {
+      "key": "nonferrous.fx.gbp_eur",
+      "value": 1.1787,
+      "unit": "EUR per GBP",
+      "basis": "same snapshot",
+      "source": "https://registry.npmjs.org/@fawazahmed0/currency-api/-/currency-api-2026.10.9.tgz",
+      "date": "2026-10-09",
+      "notes": "Every EUR figure below is converted at this rate (also older 2026 EUR figures — stated where it matters)."
+    },
+    {
+      "key": "nonferrous.fx.gbp_cny",
+      "value": 8.8722,
+      "unit": "CNY per GBP",
+      "basis": "same snapshot",
+      "source": "https://registry.npmjs.org/@fawazahmed0/currency-api/-/currency-api-2026.10.9.tgz",
+      "date": "2026-10-09",
+      "notes": ""
+    },
+    {
+      "key": "nonferrous.anchor.al_lme_cash",
+      "value": 2.3658,
+      "unit": "GBP/kg",
+      "basis": "LME aluminium cash BID $3,134/t on 6 Oct 2026 (up from $3,106 on 5 Oct) as reported by AlCircle; $3134/t ÷ 1.32470673 ÷ 1000 = £2.3658/kg. Exchange price (trade press report of LME official).",
+      "source": "https://www.alcircle.com/news/lme-aluminium-offer-price-rises-to-3-134-5-t-as-stocks-remain-unchanged-at-240-375t-121456",
+      "date": "2026-10-06",
+      "notes": "Read via search-result text (page itself not reachable from this sandbox). 2 Oct cash bid $3,109/t (https://www.alcircle.com/news/lme-aluminium-offer-price-eases-0-34-to-3-109-5-t-at-october-start-as-stocks-dip-to-240-625t-121420). 2026-09.json used $3,238.83 on 29 Sep."
+    },
+    {
+      "key": "nonferrous.anchor.al_lme_3m",
+      "value": 2.3764,
+      "unit": "GBP/kg",
+      "basis": "LME aluminium 3-month bid $3,148/t 6 Oct 2026 (AlCircle) ÷ 1.32470673 ÷ 1000",
+      "source": "https://www.alcircle.com/news/lme-aluminium-offer-price-rises-to-3-134-5-t-as-stocks-remain-unchanged-at-240-375t-121456",
+      "date": "2026-10-06",
+      "notes": "Contango of ~$14/t only."
+    },
+    {
+      "key": "nonferrous.anchor.al_lme_cash_h1_2026_avg",
+      "value": 2.556,
+      "unit": "GBP/kg",
+      "basis": "LME cash aluminium averaged $3,386/t in H1 2026 (vs $2,538 H1 2025); converted at Oct FX for comparison only",
+      "source": "https://www.mysteel.net/news/5138322-eu-canada-and-asia-aluminium-prices-why-3-386t-benchmark-can-cost-5-792t-read-how-regional-premiums-reshaped-markets",
+      "date": "2026-H1",
+      "notes": "Context: peak ~$3,651 late May 2026; price ~7% below the H1 average now."
+    },
+    {
+      "key": "nonferrous.anchor.al_rotterdam_dp_premium",
+      "value": 0.4208,
+      "unit": "GBP/kg",
+      "basis": "P1020A in-whs Rotterdam DUTY-PAID premium $545–570/t on 1 Oct 2026 (LME Insight 'Aluminium Insight' weekly, ed. 5); midpoint $557.5/t ÷ 1.32470673 ÷ 1000. Premium over LME cash official.",
+      "source": "https://storage.ghost.io/c/a7/38/a7384b33-c2f9-4c7c-85e7-bc1b263c8a1b/content/files/2026/10/Aluminium-Insight-by-LME-Insight-Edition-5-1.pdf",
+      "date": "2026-10-01",
+      "notes": "Up from $535–560 on 24 Sep. CRU had $533/t on 23 Sep 2026 with dp/dup spread $79/t (https://www.crugroup.com/en/communities/thought-leadership/2026/european-aluminium-premiums-diverge-as-supply-tightens/). EU duty-paid includes 6% EU duty and EU CBAM — neither applies to a UK import, so for a UK plant the duty-unpaid premium + UK tariff + Rotterdam→UK freight is the more exact basis (UK tariff and freight not researched here)."
+    },
+    {
+      "key": "nonferrous.anchor.al_rotterdam_dup_premium",
+      "value": 0.3454,
+      "unit": "GBP/kg",
+      "basis": "P1020A in-whs Rotterdam DUTY-UNPAID premium $445–470/t 1 Oct 2026 (LME Insight); midpoint $457.5/t ÷ 1.32470673 ÷ 1000",
+      "source": "https://storage.ghost.io/c/a7/38/a7384b33-c2f9-4c7c-85e7-bc1b263c8a1b/content/files/2026/10/Aluminium-Insight-by-LME-Insight-Edition-5-1.pdf",
+      "date": "2026-10-01",
+      "notes": "Unchanged from 24 Sep."
+    },
+    {
+      "key": "nonferrous.anchor.al_p1020_dp_rotterdam_allin",
+      "value": 2.7867,
+      "unit": "GBP/kg",
+      "basis": "derived: LME cash $3,134 + dp premium $557.5 = $3691.5/t ÷ 1.32470673 ÷ 1000",
+      "source": "see the two anchors above",
+      "date": "2026-10-01/06",
+      "notes": "Primary ingot in-whs Rotterdam duty-paid; excludes delivery to a UK plant. Duty-unpaid basis: $3591.5/t = £2.7112/kg."
+    },
+    {
+      "key": "nonferrous.anchor.al_billet_premium_ddp_n_germany",
+      "value": 0.8323,
+      "unit": "GBP/kg",
+      "basis": "Fastmarkets AA6063 extrusion billet premium DDP North Germany (Ruhr) $1,070–1,135/t on 28 Aug 2026 (from $1,080–1,150 prior week; $1,175–1,250 on 29 May; $560–600 on 27 Feb), as reported in trade press; midpoint $1102.5/t ÷ 1.32470673 ÷ 1000",
+      "source": "https://www.alcircle.com/news/germany-aluminium-extrusion-market-outlook-h2-2026-after-imports-fall-3-5-as-exports-rise-1-billet-premiums-double-120913",
+      "date": "2026-08-28",
+      "notes": "CROSS-CHECK for the 30 extrusion-billet rows (priced elsewhere). Includes EU CBAM from 1 Jan 2026 and the EU 6% billet duty. No October print found. Start of 2026: Platts German 6060/6063 at LME cash + $500/t DDP (https://www.spglobal.com/energy/en/news-research/latest-news/metals/121825-commodities-2026-european-aluminum-billet-faces-weak-demand-duty-changes-cbam)."
+    },
+    {
+      "key": "nonferrous.anchor.al_billet_6063_allin_derived",
+      "value": 3.1981,
+      "unit": "GBP/kg",
+      "basis": "derived cross-check: LME cash $3,134 (6 Oct) + billet premium $1102.5 (28 Aug) = $4236.5/t ÷ 1.32470673 ÷ 1000",
+      "source": "see anchors above",
+      "date": "2026-08-28/10-06",
+      "notes": "Current book: 6063 billet £3.2668, 6060 £3.2518, 6082/6061 £3.3798 — within about +2% / +6% of this European all-in; no conflict."
+    },
+    {
+      "key": "nonferrous.anchor.al_secondary_din226_delivered_europe",
+      "value": 2.104,
+      "unit": "GBP/kg",
+      "basis": "Fastmarkets aluminium pressure diecasting ingot DIN226/A380 delivered Europe €2,430–2,530/t (late Jan 2026, +€10 w/w on tight scrap); midpoint €2480.0/t ÷ 1.17871931 (Oct FX) ÷ 1000",
+      "source": "https://www.tradingpedia.com/2026/01/26/scrap-squeeze-keeps-eu-secondary-aluminum-prices-elevated/",
+      "date": "2026-01-23/26",
+      "notes": "Same range in Fastmarkets' own article https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ . DIN226 = EN AC-46000 / AlSi9Cu3(Fe) ≈ A380 ≈ ADC12 class; Fastmarkets says it is ~60% of European secondary ingot trade. Latest 2026 print found (price page MB-AL-0005 is paywalled). At Jan FX (~1.15 €/£) it is ~£2.16/kg. No A356/AlSi7Mg, AlSi10Mg or AlSi12 European price found."
+    },
+    {
+      "key": "nonferrous.extra.secondary_ingot_vs_lme.din226",
+      "value": -0.2618,
+      "unit": "GBP/kg",
+      "basis": "derived: DIN226 £2.104 − LME cash £2.3658 (dates differ: Jan v Oct 2026)",
+      "source": "see the two anchors",
+      "date": "2026",
+      "notes": "Negative = secondary diecasting ingot trades BELOW primary LME. In H1 2026 LME averaged $3,386 (≈€2,9xx at the time), so DIN226 was ~€400–500/t under LME then too. Use as: A380/ADC12 ingot ≈ LME cash − ~£0.25/kg (evidence-limited)."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.al_pure_cuttings",
+      "value": 1.65,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap price, Pure aluminium cuttings £1650/t, September 2026 column (updated last Friday of the month) ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price (what a UK plant is paid for its swarf/offcuts). Pure cuttings rose from ~£1,200/t in Jan 2026."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.al_alloy_cuttings",
+      "value": 1.55,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap price, Aluminium alloy cuttings £1550/t, September 2026 column (updated last Friday of the month) ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price (what a UK plant is paid for its swarf/offcuts). Pure cuttings rose from ~£1,200/t in Jan 2026."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.al_old_rolled",
+      "value": 1.3,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap price, Old rolled aluminium £1300/t, September 2026 column (updated last Friday of the month) ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price (what a UK plant is paid for its swarf/offcuts). Pure cuttings rose from ~£1,200/t in Jan 2026."
+    },
+    {
+      "key": "nonferrous.cross.al_bar_retail_themetalstore",
+      "value": 8.74,
+      "unit": "GBP/kg",
+      "basis": "derived: aluminium round bar 1in dia × 4000 mm, £48.00 ex VAT, 5.49 kg → £48/5.49",
+      "source": "https://themetalstore.co.uk/products/aluminium-bar",
+      "date": "undated (seen Oct 2026)",
+      "notes": "RETAIL cut-length listing — cross-check ONLY, never a price (rules). Alloy not stated (likely 6082). Shows the retail ceiling, not tier-1 mill/stockholder contract price."
+    },
+    {
+      "key": "nonferrous.cross.al_silicon7_premium_ddp_germany",
+      "value": null,
+      "unit": "USD/t",
+      "basis": "Fastmarkets aluminium primary foundry alloy (silicon 7 / A356 class) premium DDP Germany & DDP Eastern Europe, May monthly average $975–1,075/t per a correction notice — YEAR NOT CONFIRMED",
+      "source": "https://www.fastmarkets.com/insights/correction-to-may-averages-for-aluminium-primary-foundry-alloy-premiums/",
+      "date": "unknown year",
+      "notes": "Not used: no confirmed 2026 A356/AlSi7Mg premium was found. 2020 level was $280–300/t (https://alcircle.com/news/aluminium-foundry-alloy-premiums-in-europe-swing-up-after-two-long-years-57770)."
+    },
+    {
+      "key": "nonferrous.anchor.cu_lme",
+      "value": 10.9977,
+      "unit": "GBP/kg",
+      "basis": "LME copper $14,568.72/t on 8 Oct 2026 (metalcharts.org LME page; LME site showed 3-month close 14,540 on 10 Oct; devere $14,422 3M on 7 Oct) ÷ 1.32470673 ÷ 1000",
+      "source": "https://metalcharts.org/lme-copper-price",
+      "date": "2026-10-08",
+      "notes": "Cash v 3M not separated by the source. Cross-check: Almag (Italian brass-rod mill) lists copper €12,985.88/t on 8 Oct 2026 = £11.0169/kg (https://www.almagbrass.com/stock-price-brass-copper-zinc.html) — agrees within 0.2%. All-time high cash $14,850/t on 17 Aug 2026 (Cochilco, https://www.miningreporters.com/noticia/news/2026/08/copper-price-new-all-time-high-673-lb-london-cochilco)."
+    },
+    {
+      "key": "nonferrous.anchor.cu_cathode_premium_europe_2026",
+      "value": 0.2378,
+      "unit": "GBP/kg",
+      "basis": "Aurubis 2026 annual European refined-copper premium $315/t (record; $228/t in 2025) ÷ 1.32470673 ÷ 1000",
+      "source": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+      "date": "2025-10-07 (applies calendar 2026)",
+      "notes": "Producer annual contract premium over LME. Codelco 2026 Europe reported $325–345/t (https://www.kitco.com/news/off-the-wire/2025-10-16/codelco-hikes-2026-european-copper-premium-record-345-tonne). No 2026 spot cif Rotterdam figure found."
+    },
+    {
+      "key": "nonferrous.anchor.cu_cathode_delivered_derived",
+      "value": 11.2355,
+      "unit": "GBP/kg",
+      "basis": "derived: $14568.72 + $315 = $14883.72/t ÷ 1.32470673 ÷ 1000",
+      "source": "see the two anchors",
+      "date": "2026-10-08",
+      "notes": "Copper cathode ex-premium, before any semi-finished conversion. Every wrought copper product must sit ABOVE this."
+    },
+    {
+      "key": "nonferrous.anchor.brass_rod_cw614n_cw617n_mill",
+      "value": 8.4753,
+      "unit": "GBP/kg",
+      "basis": "Almag S.p.A. (Italian brass-rod mill) published brass rod CW614N–CW617N price €9,990/t on 9 Oct 2026 (€9,960 on 6 Oct); basis calculated on previous-day LME; ÷ 1.17871931 ÷ 1000",
+      "source": "https://www.almagbrass.com/stock-price-brass-copper-zinc.html",
+      "date": "2026-10-09",
+      "notes": "Producer published price (European mill list). Delivery terms not stated — UK delivery would add freight. Ratio to the same page's copper: 9,990 / 12,985.88 = 0.769."
+    },
+    {
+      "key": "nonferrous.extra.rod.cw614n",
+      "value": 0.9835,
+      "unit": "GBP/kg",
+      "basis": "derived: mill rod £8.4753 − metal content (0.58×Cu $14568.72 + 0.39×Zn $3,781 = $9924/t = £7.4918/kg; 3% lead not priced — no lead price found)",
+      "source": "https://www.almagbrass.com/stock-price-brass-copper-zinc.html",
+      "date": "2026-10-08/09",
+      "notes": "Conversion + lead + margin over Cu/Zn content ≈ £0.98/kg. Composition CuZn39Pb3 per EN 12164 (Cu 57–59, Pb 2.5–3.5, Zn bal.)."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.cu_heavy",
+      "value": 8.5,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap, Heavy copper £8500/t, September 2026 ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.cu_no2_wire",
+      "value": 8.2,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap, No 2 copper wire £8200/t, September 2026 ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.cu_braziery",
+      "value": 7.8,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap, Braziery copper £7800/t, September 2026 ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.brass_heavy",
+      "value": 4.1,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap, Heavy brass £4100/t, September 2026 ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.brass_mixed",
+      "value": 3.85,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap, Mixed brass £3850/t, September 2026 ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.brass_cuttings",
+      "value": 3.75,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap, Brass cuttings £3750/t, September 2026 ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.gunmetal",
+      "value": 6.0,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap, Gunmetal £6000/t, September 2026 ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price."
+    },
+    {
+      "key": "nonferrous.anchor.uk_scrap.cu_insulated_cable",
+      "value": 3.1,
+      "unit": "GBP/kg",
+      "basis": "letsrecycle.com UK non-ferrous scrap, Insulated copper cable £3100/t, September 2026 ÷ 1000",
+      "source": "https://www.letsrecycle.com/prices/metals/non-ferrous-metal-prices/non-ferrous-metal-prices-2026/",
+      "date": "2026-09",
+      "notes": "UK merchant buying price."
+    },
+    {
+      "key": "nonferrous.anchor.zn_lme_cash",
+      "value": 2.8542,
+      "unit": "GBP/kg",
+      "basis": "LME zinc official cash settlement $3,781/t on 8 Oct 2026 (Westmetall, as cited); 3M $3,737; ÷ 1.32470673 ÷ 1000",
+      "source": "https://discoveryalert.com/analysis/zinc-price-forecast-lme-deficit-october-2026",
+      "date": "2026-10-08",
+      "notes": "Secondary page quoting Westmetall (westmetall.com not reachable here). Trading Economics ~$3,767 same day; 2026 peak ~$4,186 in September. SHG premium (dp fca Rotterdam) and Zamak alloy premium: NOT FOUND for 2026."
+    },
+    {
+      "key": "nonferrous.anchor.ni_lme_spot",
+      "value": 13.1199,
+      "unit": "GBP/kg",
+      "basis": "LME nickel spot $17,380/t on 3 Aug 2026 (cbonds index, IMF series) ÷ 1.32470673 ÷ 1000",
+      "source": "https://cbonds.es/indexes/181085/",
+      "date": "2026-08-03",
+      "notes": "No October print found. 2026-09.json records a Sep 2026 MTD average $16,388/t (no URL there)."
+    },
+    {
+      "key": "nonferrous.anchor.sn_lme_spot",
+      "value": 42.1361,
+      "unit": "GBP/kg",
+      "basis": "LME tin $55,818/t on 12 Aug 2026 (cbonds index) ÷ 1.32470673 ÷ 1000",
+      "source": "https://cbonds.pl/indexes/181087/",
+      "date": "2026-08-12",
+      "notes": "No October print found; 2026-09.json records $54,550 on 25 Sep (no URL). Used only for bronze metal-content checks."
+    },
+    {
+      "key": "nonferrous.derived.metal_content.pb1_cusn10p",
+      "value": 14.1115,
+      "unit": "GBP/kg",
+      "basis": "derived: 0.90×Cu $14568.72 + 0.10×Sn $55818 = $18694/t",
+      "source": "LME anchors above",
+      "date": "2026-08/10",
+      "notes": "Virgin-metal content only (P ignored). Book PB1 BAR £13.91 is BELOW this — a bar must be above its metal content (unless made from scrap-based ingot)."
+    },
+    {
+      "key": "nonferrous.derived.metal_content.c905_cusn10zn2",
+      "value": 13.9487,
+      "unit": "GBP/kg",
+      "basis": "derived: 0.88×Cu + 0.10×Sn + 0.02×Zn = $18478/t",
+      "source": "LME anchors above",
+      "date": "2026-08/10",
+      "notes": "Book C905 £13.66."
+    },
+    {
+      "key": "nonferrous.derived.metal_content.cusn12",
+      "value": 14.7343,
+      "unit": "GBP/kg",
+      "basis": "derived: 0.88×Cu + 0.12×Sn = $19519/t",
+      "source": "LME anchors above",
+      "date": "2026-08/10",
+      "notes": "Book CuSn12-C £14.43."
+    },
+    {
+      "key": "nonferrous.derived.metal_content.lg2_cusn5zn5pb5",
+      "value": 11.5976,
+      "unit": "GBP/kg",
+      "basis": "derived: 0.85×Cu + 0.05×Sn + 0.05×Zn = $15363/t (5% Pb not priced)",
+      "source": "LME anchors above",
+      "date": "2026-08/10",
+      "notes": "Book LG2 £11.44 ≈ metal content; gunmetal SCRAP is £6.00/kg (letsrecycle Sep 2026), so scrap-based ingot can sit well below virgin content. No LG2 ingot price found."
+    },
+    {
+      "key": "nonferrous.derived.metal_content.ab2_cual10fe5ni5",
+      "value": 9.6907,
+      "unit": "GBP/kg",
+      "basis": "derived: 0.80×Cu + 0.10×Al $3134 + 0.05×Ni $17380 = $12837/t (Fe not priced)",
+      "source": "LME anchors above",
+      "date": "2026-08/10",
+      "notes": "Book AB2 cast £9.54, CW307G forging bar £10.00 (only ~£0.3/kg over metal content for a forged bar — likely low)."
+    },
+    {
+      "key": "nonferrous.derived.metal_content.cz108_cuzn37",
+      "value": 7.9846,
+      "unit": "GBP/kg",
+      "basis": "derived: 0.63×Cu + 0.37×Zn = $10577/t",
+      "source": "LME anchors above",
+      "date": "2026-10-08",
+      "notes": "Book CZ108 sheet £8.42 → implied conversion £0.44/kg."
+    },
+    {
+      "key": "nonferrous.derived.metal_content.monel400",
+      "value": 11.9922,
+      "unit": "GBP/kg",
+      "basis": "derived: 0.65×Ni $17380 + 0.315×Cu $14568.72 = $15886/t",
+      "source": "LME anchors above",
+      "date": "2026-08/10",
+      "notes": "Book Monel 400 forging bar £28.27 — no mill price found to check the conversion."
+    },
+    {
+      "key": "nonferrous.anchor.mg_ingot_fob_china",
+      "value": 1.6985,
+      "unit": "GBP/kg",
+      "basis": "SMM magnesium ingot 99.90% China FOB $2,200–2,300/t on 8 Oct 2026; midpoint $2250.0/t ÷ 1.32470673 ÷ 1000",
+      "source": "https://news.metal.com/newscontent/104146627-supply-continues-to-be-released-but-demand-is-weak-magnesium-ingot-runs-weak-under-pressure-smm-magnesium-ingot-spot-flash",
+      "date": "2026-10-08",
+      "notes": "Fugu 99.90% domestic 15,500–15,600 CNY/t same day (incl. 13% VAT: 15,550/1.13 = 13,761 CNY = £1.551/kg). 7 Sep: FOB $2,290–2,390 (https://news.metal.com/newscontent/104101590-producers-hold-prices-firm-but-deals-cool-overseas-and-domestic-markets-diverge-smm-magnesium-ingot-spot-express). Mapping of article to date taken from search text. No 2026 Rotterdam / European Mg price found; UK import duty / freight not researched."
+    },
+    {
+      "key": "nonferrous.anchor.mg_az91d_exworks_china",
+      "value": 1.6537,
+      "unit": "GBP/kg",
+      "basis": "SMM magnesium alloy AZ91D ex-works China $2,469.06–2,481.82/t (avg $2,475.44) incl. 13% VAT on 27 Mar 2026; ex-VAT $2191/t ÷ 1.32470673 (Oct FX) ÷ 1000",
+      "source": "https://www-old.metal.com/price/Minor-Metals/Magnesium",
+      "date": "2026-03-27",
+      "notes": "Latest AZ91D figure found. AZ91D traded ~level with 99.9% ingot (FOB Tianjin ingot $2,460–2,510 same day). AM60B / AM50A / AE44 / AZ31B: not found."
+    },
+    {
+      "key": "nonferrous.anchor.ti64_billet_surcharge_ati",
+      "value": 11.9825,
+      "unit": "GBP/kg",
+      "basis": "ATI Ti-6Al-4V BILLET raw-material surcharge $7.20/lb Q3 2026 ($7.43 Q1, $7.19 Q2) × 2.20462 = $15.87/kg ÷ 1.32470673",
+      "source": "https://performancetitanium.com/blog/",
+      "date": "2026-Q3",
+      "notes": "SURCHARGE ONLY (adder over a base price that was not found); bar/plate surcharges are higher. A lower bound component, not a price. No 2026 Ti-6Al-4V or CP Gr2 bar price index found (Fastmarkets MB-TI-0004 / Argus pages paywalled)."
+    },
+    {
+      "key": "nonferrous.cross.inconel718_bar_vendor_guides",
+      "value": null,
+      "unit": "USD/kg",
+      "basis": "vendor marketing ranges: richconn '2026 guide' Europe $48–61/kg; MWalloys $45–110/kg mill bar/plate; oepipe $25–30/kg; Chinese marketplace $22–24/kg",
+      "source": "https://richconn.com/inconel-718-price/",
+      "date": "2025–2026",
+      "notes": "Not a price (vendor guides / marketplace) — cross-check only; ranges too wide to test the book (£44.04 forge bar, £42.04 cast)."
+    },
+    {
+      "key": "nonferrous.extra.winding.flat_enamelled_cu_china",
+      "value": 0.9261,
+      "unit": "GBP/kg",
+      "basis": "SMM enamelled FLAT copper wire QXYB-2/220 (4–6 mm²) premium $1,226.83/t (range 1,162.26–1,291.40) on 24 Apr 2026, ex-works China over SMM 1# cathode; ÷ 1.32470673 ÷ 1000",
+      "source": "https://www.metal.com/en/prices/202106250002",
+      "date": "2026-04-24",
+      "notes": "Exact QXYB page URL was not returned by search; the URL given is SMM's sibling enamelled-wire processing-charge page (QA-1/155). Earlier SMM print: QYB-2/240 $1,422.74/t ex-VAT on 27 Mar 2026. China ex-works conversion premium, NOT a UK delivered hairpin premium. Derived: Cu cathode delivered £11.2355 + £0.9261 = £12.16/kg vs book Cu hairpin £13.90 (book implies £2.66/kg over cathode — not refutable from this). No aluminium winding-wire premium found."
+    }
+  ],
+  "notes": [
+    "Method: every grade = anchor (LME + regional premium, or a published semi price) + a form extra. Only the extras listed as items were found; for rolled sheet (5xxx/6xxx/1050/3003/auto 6016/6111/7075), extruded/drawn bar (6082/6061/2011/7075), ETP bar/sheet conversion, SHG zinc/Zamak premium, primary foundry alloy (A356/AlSi7Mg, AlSi10Mg, AlSi12) premium, phosphor-bronze/gunmetal ingot, Ti and Ni-alloy mill prices and aluminium winding wire NO 2026 source was found — 'not found in any source'.",
+    "Access: direct page fetches were blocked by this sandbox's egress policy (403 / DNS); all figures come from web-search result text attributed to the URL given. Each should be re-read on the page before it is committed.",
+    "FX: fawazahmed0 currency-api npm snapshot 2026-10-09 (GBP/USD 1.32471, GBP/EUR 1.17872, GBP/CNY 8.87215), downloaded from registry.npmjs.org; older 2026 USD/EUR figures are converted at this Oct rate, which slightly misstates their own-date GBP value.",
+    "UK basis: Rotterdam duty-paid premiums include EU import duty and EU CBAM (charging since 1 Jan 2026), which a UK importer does not pay; UK tariff, UK CBAM (not before 2027) and Rotterdam→UK freight were not researched.",
+    "Current-book findings (confident): (1) C110 ETP copper SHEET £10.77 and C101 ETP copper BAR £11.05 are below LME copper alone (£10.9977/kg, 8 Oct) and cathode+Aurubis premium (£11.2355/kg) — a semi-finished product cannot cost less than its cathode; both are low by at least the (unfound) conversion premium. (2) CZ121/CW614N rod £7.70 and CW617N forging brass £7.90 vs a European mill's published rod price £8.4753/kg (Almag, 9 Oct 2026, €9,990/t) — ~£0.6–0.8/kg (8–10%) low; £7.70 is ≈ bare Cu/Zn content (£7.4918). (3) PB1 phosphor-bronze BAR £13.91 is below its virgin Cu+Sn content £14.1115/kg (Sn from 12 Aug).",
+    "Current-book findings (likely, evidence dated/indirect): A380 £2.80 / ADC12 £2.75 / AlSi10Mg £2.89 / A365 £2.77 sit ~£0.65–0.80/kg above the only 2026 European DIN226 ingot print (£2.104/kg, Jan 2026) and above LME cash (£2.3658) — consistent with RULES' note that casting £/kg was a delivered-foundry figure; secondary ingot trades at or below LME. AZ91D £3.81 / AM60B £3.66 vs Chinese Mg ingot FOB £1.6985/kg and AZ91D ex-works £1.6537 — a gap of ~£2/kg that freight/duty alone is unlikely to explain, but no European Mg price was found to prove it.",
+    "Consistent with evidence: extrusion billet rows (6063 £3.27 vs LME + Aug DDP N. Germany billet premium £3.1981), LG2 £11.44 vs metal content £11.5976, CZ108 sheet £8.42 vs content £7.9846."
+  ]
+}

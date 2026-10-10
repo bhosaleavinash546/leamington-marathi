@@ -100,14 +100,14 @@ describe('5. screen and headless take the same values', () => {
     const r = await costMeasuredPart(geoOf(PIPE), PIPE, { partNumber: PIPE, file: PIPE, annualVolume: 50_000, commodity: 'extrusion' } as never,
       ans('mat-pe100-pipe'), 'UK', { annualVolume: 50_000 } as never, recomputeMachineRates(DEFAULT_RATE_LIBRARY),
       { partNumber: PIPE, file: PIPE, status: 'error' } as never) as { status: string; total: number };
-    expect(r.total).toBeCloseTo(1.06, 2);
+    expect(r.total).toBeCloseTo(1.05, 2);
   });
 });
 
 describe('6. baseline', () => {
   it('records all three at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === TUBE)!.outcome.total).toBe(0.41);
-    expect(baseline.find(b => b.part === PIPE)!.outcome.total).toBe(1.06);
-    expect(baseline.find(b => b.part === PROF)!.outcome.total).toBe(2.02);
+    expect(baseline.find(b => b.part === TUBE)!.outcome.total).toBe(0.42);
+    expect(baseline.find(b => b.part === PIPE)!.outcome.total).toBe(1.05);
+    expect(baseline.find(b => b.part === PROF)!.outcome.total).toBe(2.27);
   });
 });

@@ -361,9 +361,12 @@ describe('Named SM fab machines in DEFAULT_RATE_LIBRARY', () => {
     });
   }
 
-  it('Trumpf TruLaser 3030 rate ≈ £85/hr', () => {
+  it('Trumpf TruLaser 3030 rate is machine only on its sourced capex (was a £85/hr shop-rate target)', () => {
+    // UK rate book, Oct 2026: £374,700 (6 kW, third-party estimate), 22 kW, 13-yr life — the operator, overhead and
+    // margin are added by the costing
     const m = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'laser-trumpf-3030')!;
-    expectNearBenchmark(m.computedRatePerHr, 85);
+    expect(m.sourceNote).toMatch(/Capex £374,700/);
+    expectNearBenchmark(m.computedRatePerHr, 29.47);
   });
 
   it('Amada press brake rate ≈ £55/hr', () => {

@@ -61,7 +61,7 @@ describe('1. a laminate can be routed to composites', () => {
 describe('2. headless costs a composite at all', () => {
   it('composites is costable, and all three parts cost (it returned null: "no cost mapping")', async () => {
     expect(COSTABLE_COMMODITIES).toContain('composites');
-    expect((await headless(LID, 'rtm-gf', 5_000)).total).toBeCloseTo(91.17, 2);
+    expect((await headless(LID, 'rtm-gf', 5_000)).total).toBeCloseTo(90.89, 2);
     expect((await headless(ROOF, 'prepreg-cf', 5_000)).status).toBe('costed');
     expect((await headless(HAT, 'prepreg-cf', 5_000)).status).toBe('costed');
   });
@@ -113,8 +113,8 @@ describe('6. the rest of the cell is ruled, the same on both paths', () => {
 
 describe('7. baseline', () => {
   it('records all three at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === ROOF)!.outcome.total).toBe(443.36);
-    expect(baseline.find(b => b.part === LID)!.outcome.total).toBe(84.3);
-    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(99.63);
+    expect(baseline.find(b => b.part === ROOF)!.outcome.total).toBe(432.02);
+    expect(baseline.find(b => b.part === LID)!.outcome.total).toBe(84.02);
+    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(98.69);
   });
 });

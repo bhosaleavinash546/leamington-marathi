@@ -127,20 +127,23 @@ describe('gravity die-cast stub axle — should-cost after the cap', () => {
 
   it('reproduces the ~£116 over-cost at the un-capped ~0.9 h machining time', () => {
     const t = totalWith(0.9);
-    expect(t.uk).toBeGreaterThan(100); // the reported symptom
+    // the reported symptom was £116 on the shop-rate machine book; on the UK rate book (Oct 2026: machine-only VMC,
+    // ADC12 at the ingot) 0.9 h still doubles the part — £61.58 against £30.72 capped
+    expect(t.uk).toBeGreaterThan(55);
+    expect(t.uk).toBeGreaterThan(1.8 * totalWith(capNearNetMachiningHr(0.9, 2.8, 'cast_and_machine').machiningHr).uk);
   });
 
   it('lands at a realistic should-cost once machining is capped to the near-net envelope', () => {
     const capped = capNearNetMachiningHr(0.9, 2.8, 'cast_and_machine').machiningHr; // ≈ 0.296 h
     const t = totalWith(capped);
-    expect(t.uk).toBeLessThan(55);       // was ~£117
-    expect(t.cnLanded).toBeLessThan(40); // realistic China landed for a machined Al casting
-    expect(t.cnLanded).toBeGreaterThan(20);
+    expect(t.uk).toBeLessThan(35);       // was ~£117; £30.72 on the UK rate book (Oct 2026)
+    expect(t.cnLanded).toBeLessThan(25); // China landed for a machined Al casting: £16.17 on the UK rate book
+    expect(t.cnLanded).toBeGreaterThan(12);
   });
 
-  it('bare casting alone is already sensible (~£15 landed in China)', () => {
+  it('bare casting alone is already sensible (~£11 landed in China on the UK rate book, Oct 2026)', () => {
     const t = totalWith(0);
-    expect(t.cnLanded).toBeGreaterThan(12);
-    expect(t.cnLanded).toBeLessThan(20);
+    expect(t.cnLanded).toBeGreaterThan(8);
+    expect(t.cnLanded).toBeLessThan(14);
   });
 });
