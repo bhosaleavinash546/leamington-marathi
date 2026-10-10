@@ -11,37 +11,37 @@ export const INDIA_BOOK: CountryBook = {
  "fxToGBP": 127.2,
  "labourGrades": {
   "forge": {
-   "gbpPerHr": 1.04,
+   "gbpPerHr": 1.0362,
    "basis": "G=22,000; basic=0.5G=11,000; PF+EDLI+admin=13%xmin(basic,15000)=1,430; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =916; gratuity=4.81%xbasic=529; monthly employer cost=24,875 (+13.1%); x12=298,505/yr / 2,264 h = 131.8 INR/h. Included: employer PF 12% + EDLI/admin 1% (PF wage ≤ ₹15,000), ESI 3.25% (gross ≤ ₹21,000), statutory bonus 8.33%, gratuity 4.81%, basic = 50% of gross (Code on Wages); 2,264 productive h/yr (312 paid days − 29 leave/holiday days). NOT included: night-shift allowance, canteen / transport / uniform, group insurance, labour-agency margin on contract workers (~half of auto employment), bonus above 8.33% — not found in any source this round",
    "source": "https://wageindicator.org/en-in/work-in-india/role-and-pay/india-blacksmiths-hammersmiths-and-forging-press",
    "confidence": "Medium"
   },
   "furnace": {
-   "gbpPerHr": 1.08,
+   "gbpPerHr": 1.0833,
    "basis": "G=23,000; basic=0.5G=11,500; PF+EDLI+admin=13%xmin(basic,15000)=1,495; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =958; gratuity=4.81%xbasic=553; monthly employer cost=26,006 (+13.1%); x12=312,073/yr / 2,264 h = 137.8 INR/h. Included: employer PF 12% + EDLI/admin 1% (PF wage ≤ ₹15,000), ESI 3.25% (gross ≤ ₹21,000), statutory bonus 8.33%, gratuity 4.81%, basic = 50% of gross (Code on Wages); 2,264 productive h/yr (312 paid days − 29 leave/holiday days). NOT included: night-shift allowance, canteen / transport / uniform, group insurance, labour-agency margin on contract workers (~half of auto employment), bonus above 8.33% — not found in any source this round",
    "source": "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division",
    "confidence": "Medium"
   },
   "blow": {
-   "gbpPerHr": 0.87,
+   "gbpPerHr": 0.8726,
    "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h. Included: employer PF 12% + EDLI/admin 1% (PF wage ≤ ₹15,000), ESI 3.25% (gross ≤ ₹21,000), statutory bonus 8.33%, gratuity 4.81%, basic = 50% of gross (Code on Wages); 2,264 productive h/yr (312 paid days − 29 leave/holiday days). NOT included: night-shift allowance, canteen / transport / uniform, group insurance, labour-agency margin on contract workers (~half of auto employment), bonus above 8.33% — not found in any source this round",
    "source": "https://corpready.in/salary/injection-moulding-operator",
    "confidence": "Medium"
   },
   "roto": {
-   "gbpPerHr": 0.87,
+   "gbpPerHr": 0.8726,
    "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h. Included: employer PF 12% + EDLI/admin 1% (PF wage ≤ ₹15,000), ESI 3.25% (gross ≤ ₹21,000), statutory bonus 8.33%, gratuity 4.81%, basic = 50% of gross (Code on Wages); 2,264 productive h/yr (312 paid days − 29 leave/holiday days). NOT included: night-shift allowance, canteen / transport / uniform, group insurance, labour-agency margin on contract workers (~half of auto employment), bonus above 8.33% — not found in any source this round",
    "source": "https://corpready.in/salary/injection-moulding-operator",
    "confidence": "Medium"
   },
   "thermoform": {
-   "gbpPerHr": 0.87,
+   "gbpPerHr": 0.8726,
    "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h. Included: employer PF 12% + EDLI/admin 1% (PF wage ≤ ₹15,000), ESI 3.25% (gross ≤ ₹21,000), statutory bonus 8.33%, gratuity 4.81%, basic = 50% of gross (Code on Wages); 2,264 productive h/yr (312 paid days − 29 leave/holiday days). NOT included: night-shift allowance, canteen / transport / uniform, group insurance, labour-agency margin on contract workers (~half of auto employment), bonus above 8.33% — not found in any source this round",
    "source": "https://corpready.in/salary/injection-moulding-operator",
    "confidence": "Medium"
   },
   "trim-router": {
-   "gbpPerHr": 0.87,
+   "gbpPerHr": 0.8726,
    "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h. Included: employer PF 12% + EDLI/admin 1% (PF wage ≤ ₹15,000), ESI 3.25% (gross ≤ ₹21,000), statutory bonus 8.33%, gratuity 4.81%, basic = 50% of gross (Code on Wages); 2,264 productive h/yr (312 paid days − 29 leave/holiday days). NOT included: night-shift allowance, canteen / transport / uniform, group insurance, labour-agency margin on contract workers (~half of auto employment), bonus above 8.33% — not found in any source this round",
    "source": "https://corpready.in/salary/injection-moulding-operator",
    "confidence": "Medium"
@@ -62,7 +62,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-dc05": {
    "gbpPerKg": 0.5661,
-   "basis": "CR automotive grades: CR anchor (JPC Sep 2026) × the book's grade premium over its DC01/DC04 mean (£0.84/kg UK); India grade extras for IF / HSLA / DP / TRIP / CP / MS / PHS not found; ladder ×1.000 (book £0.8 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR anchor (JPC Sep 2026) × the book's grade premium over its DC01/DC04 mean (£0.84/kg UK); India grade extras for IF / HSLA / DP / TRIP / CP / MS / PHS not found; the anchor grade itself",
    "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/ (2026-09) ; https://www.hellenicshippingnews.com/explained-steel-firms-renegotiating-auto-contracts-and-the-impact-on-stocks-consumers/ (n/a)",
    "confidence": "Low"
   },
@@ -224,7 +224,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-dc01-gi": {
    "gbpPerKg": 0.6273,
-   "basis": "Coated sheet: GP sheet 0.63 mm JPC Sep 2026 (₹94,148/t incl. GST ÷ 1.18) × the book's premium over DC01 GI; coating-grade extras not found; ladder ×1.000 (book £1.11 ÷ base £1.11)",
+   "basis": "Coated sheet: GP sheet 0.63 mm JPC Sep 2026 (₹94,148/t incl. GST ÷ 1.18) × the book's premium over DC01 GI; coating-grade extras not found; the anchor grade itself",
    "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/ (2026-09)",
    "confidence": "Low"
   },
@@ -236,7 +236,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-dc01-ze": {
    "gbpPerKg": 0.6273,
-   "basis": "Coated sheet: GP sheet 0.63 mm JPC Sep 2026 (₹94,148/t incl. GST ÷ 1.18) × the book's premium over DC01 GI; coating-grade extras not found; ladder ×1.000 (book £0.98 ÷ base £1.11)",
+   "basis": "Coated sheet: GP sheet 0.63 mm JPC Sep 2026 (₹94,148/t incl. GST ÷ 1.18) × the book's premium over DC01 GI; coating-grade extras not found; the anchor grade itself",
    "source": "https://indianmasterminds.com/news/india-steel-demand-apr-aug-2026-236706/ (2026-09)",
    "confidence": "Low"
   },
@@ -272,25 +272,25 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-steel-c45": {
    "gbpPerKg": 0.5719,
-   "basis": "Carbon / alloy bar and forging stock: BigMint EN8 / C45 black round bar 110–150 mm ex-Mumbai ₹72,750/t (22 Apr 2026, latest found) × the book's grade premium over C45 billet; alloy-bar and bright-bar extras not found; ladder ×1.000 (book £0.86 ÷ base £0.86)",
+   "basis": "Carbon / alloy bar and forging stock: BigMint EN8 / C45 black round bar 110–150 mm ex-Mumbai ₹72,750/t (22 Apr 2026, latest found) × the book's grade premium over C45 billet; alloy-bar and bright-bar extras not found; the anchor grade itself",
    "source": "https://www.bigmint.co/intel/detail/india-alloy-steel-round-bar-prices-remain-stable-w-o-w-36412 (2026-04-22) ; https://dir.indiamart.com/pune/alloy-steel-bars.html (undated listings)",
    "confidence": "Low"
   },
   "mat-steel-c35": {
    "gbpPerKg": 0.5719,
-   "basis": "Carbon / alloy bar and forging stock: BigMint EN8 / C45 black round bar 110–150 mm ex-Mumbai ₹72,750/t (22 Apr 2026, latest found) × the book's grade premium over C45 billet; alloy-bar and bright-bar extras not found; ladder ×1.000 (book £0.85 ÷ base £0.86)",
+   "basis": "Carbon / alloy bar and forging stock: BigMint EN8 / C45 black round bar 110–150 mm ex-Mumbai ₹72,750/t (22 Apr 2026, latest found) × the book's grade premium over C45 billet; alloy-bar and bright-bar extras not found; the anchor grade itself",
    "source": "https://www.bigmint.co/intel/detail/india-alloy-steel-round-bar-prices-remain-stable-w-o-w-36412 (2026-04-22) ; https://dir.indiamart.com/pune/alloy-steel-bars.html (undated listings)",
    "confidence": "Low"
   },
   "mat-steel1020": {
    "gbpPerKg": 0.5719,
-   "basis": "Carbon / alloy bar and forging stock: BigMint EN8 / C45 black round bar 110–150 mm ex-Mumbai ₹72,750/t (22 Apr 2026, latest found) × the book's grade premium over C45 billet; alloy-bar and bright-bar extras not found; ladder ×1.000 (book £0.82 ÷ base £0.86)",
+   "basis": "Carbon / alloy bar and forging stock: BigMint EN8 / C45 black round bar 110–150 mm ex-Mumbai ₹72,750/t (22 Apr 2026, latest found) × the book's grade premium over C45 billet; alloy-bar and bright-bar extras not found; the anchor grade itself",
    "source": "https://www.bigmint.co/intel/detail/india-alloy-steel-round-bar-prices-remain-stable-w-o-w-36412 (2026-04-22) ; https://dir.indiamart.com/pune/alloy-steel-bars.html (undated listings)",
    "confidence": "Low"
   },
   "mat-steel-a105": {
    "gbpPerKg": 0.5719,
-   "basis": "Carbon / alloy bar and forging stock: BigMint EN8 / C45 black round bar 110–150 mm ex-Mumbai ₹72,750/t (22 Apr 2026, latest found) × the book's grade premium over C45 billet; alloy-bar and bright-bar extras not found; ladder ×1.000 (book £0.84 ÷ base £0.86)",
+   "basis": "Carbon / alloy bar and forging stock: BigMint EN8 / C45 black round bar 110–150 mm ex-Mumbai ₹72,750/t (22 Apr 2026, latest found) × the book's grade premium over C45 billet; alloy-bar and bright-bar extras not found; the anchor grade itself",
    "source": "https://www.bigmint.co/intel/detail/india-alloy-steel-round-bar-prices-remain-stable-w-o-w-36412 (2026-04-22) ; https://dir.indiamart.com/pune/alloy-steel-bars.html (undated listings)",
    "confidence": "Low"
   },
@@ -410,7 +410,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-ss316l-bar": {
    "gbpPerKg": 2.673,
-   "basis": "Stainless forging bar: BigMint SS 316L black round bar ex-Mumbai ₹340,000/t (~Jun 2026) × the book's grade premium over 316L forging bar; other stainless bar prices not found in India; ladder ×1.000 (book £6.33 ÷ base £6.33)",
+   "basis": "Stainless forging bar: BigMint SS 316L black round bar ex-Mumbai ₹340,000/t (~Jun 2026) × the book's grade premium over 316L forging bar; other stainless bar prices not found in India; the anchor grade itself",
    "source": "https://www.bigmint.co/insights/detail/india-stainless-steel-finished-prices-ease-w-o-w-on-weak-demand-softening-nickel-prices-765276 (2026-06 (approx.))",
    "confidence": "Low"
   },
@@ -458,7 +458,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-ss316l": {
    "gbpPerKg": 2.673,
-   "basis": "Stainless machining bar: BigMint SS 316L black round bar ₹340/kg (~Jun 2026) × the book's premium over its 316L machining bar; ladder ×1.000 (book £3.95 ÷ base £3.95)",
+   "basis": "Stainless machining bar: BigMint SS 316L black round bar ₹340/kg (~Jun 2026) × the book's premium over its 316L machining bar; the anchor grade itself",
    "source": "https://www.bigmint.co/insights/detail/india-stainless-steel-finished-prices-ease-w-o-w-on-weak-demand-softening-nickel-prices-765276 (2026-06 (approx.))",
    "confidence": "Low"
   },
@@ -506,7 +506,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-ss409l-sheet": {
    "gbpPerKg": 1.0557,
-   "basis": "409L / 441 ferritic sheet: China 409L ₹124.0/kg × 1.0825 duty — import parity; 441 at the book's premium over 409L; ladder ×1.000 (book £2.85 ÷ base £2.85)",
+   "basis": "409L / 441 ferritic sheet: China 409L ₹124.0/kg × 1.0825 duty — import parity; 441 at the book's premium over 409L; the anchor grade itself",
    "source": "https://www.sakysteel.com/news/china-stainless-steel-market-price-update-september-9-2026 (2026-09-09)",
    "confidence": "Low"
   },
@@ -518,7 +518,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-gjs500": {
    "gbpPerKg": 0.3617,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Metallic charge for GJS-500-7, mix A (60% pig iron ₹47.05 + steel scrap ₹39.8 + returns at charge cost; KTU ductile charge study) = ₹46.01/kg, the upper of the two mixes; FeSiMg and inoculant not priced (not found) × the book's grade premium over GJS-500-7; ladder ×1.000 (book £0.86 ÷ base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Metallic charge for GJS-500-7, mix A (60% pig iron ₹47.05 + steel scrap ₹39.8 + returns at charge cost; KTU ductile charge study) = ₹46.01/kg, the upper of the two mixes; FeSiMg and inoculant not priced (not found) × the book's grade premium over GJS-500-7; the anchor grade itself",
    "source": "https://matsc.ktu.lt/index.php/MatSc/article/view/26589/13665 (2026-10 (inputs Apr-Oct 2026)) ; https://www.bigmint.co/insights/detail/india-pig-iron-prices-rise-in-september-as-exports-input-costs-hurt-availability-796063 (2026-10-06) ; https://www.bigmint.co/insights/detail/india-foundry-scrap-market-remains-under-pressure-low-manganese-cr-busheling-sees-sharper-correction-758327 (2026-04 to 2026-07)",
    "confidence": "Low"
   },
@@ -584,7 +584,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-gjl250": {
    "gbpPerKg": 0.3349,
-   "basis": "Grey / malleable iron (charge): Metallic charge for GJL-250 ₹42.6/kg (40% steel scrap + 20% pig iron + returns; the mix is a CostVision engineering assumption — no Indian grey-iron charge mix found) × the book's grade premium over GJL-250; ladder ×1.000 (book £0.64 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Metallic charge for GJL-250 ₹42.6/kg (40% steel scrap + 20% pig iron + returns; the mix is a CostVision engineering assumption — no Indian grey-iron charge mix found) × the book's grade premium over GJL-250; the anchor grade itself",
    "source": "https://www.bigmint.co/insights/detail/india-pig-iron-prices-rise-in-september-as-exports-input-costs-hurt-availability-796063 (2026-10 (inputs Apr-Oct 2026))",
    "confidence": "Low"
   },
@@ -620,19 +620,19 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-gs-c25": {
    "gbpPerKg": 0.3007,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; ladder ×1.000 (book £2.1 ÷ base £2.1)",
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; the anchor grade itself",
    "source": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying (2026-09)",
    "confidence": "Low"
   },
   "mat-astm-a216-wcb": {
    "gbpPerKg": 0.3007,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; ladder ×1.000 (book £2.1 ÷ base £2.1)",
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; the anchor grade itself",
    "source": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying (2026-09)",
    "confidence": "Low"
   },
   "mat-g20mn5": {
    "gbpPerKg": 0.3007,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; ladder ×1.000 (book £2.1 ÷ base £2.1)",
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge ₹38.25/kg (melting scrap: Chennai foundry plate ₹38.6, Alang HMS ₹36.5 + deoxidation) × the book's premium over GS-C25; the anchor grade itself",
    "source": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying (2026-09)",
    "confidence": "Low"
   },
@@ -668,170 +668,170 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-ss304-cast": {
    "gbpPerKg": 1.1399,
-   "basis": "Cast stainless (charge): CF8 charged as 304 scrap ₹145/kg DAP Delhi (SMM, 21 Aug 2026) × the book's premium over CF8; ladder ×1.000 (book £5.17 ÷ base £5.17)",
-   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21) ; https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
+   "basis": "Cast stainless (charge): CF8 charged as 304 scrap ₹145/kg DAP Delhi (SMM, 21 Aug 2026) × the book's premium over CF8; the anchor grade itself",
+   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
    "confidence": "Low"
   },
   "mat-cf8m-cast": {
    "gbpPerKg": 1.3803,
    "basis": "Cast stainless (charge): CF8 charged as 304 scrap ₹145/kg DAP Delhi (SMM, 21 Aug 2026) × the book's premium over CF8; ladder ×1.211 (book £6.26 ÷ base £5.17)",
-   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21) ; https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
+   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
    "confidence": "Low"
   },
   "mat-ca6nm-cast": {
    "gbpPerKg": 1.1002,
    "basis": "Cast stainless (charge): CF8 charged as 304 scrap ₹145/kg DAP Delhi (SMM, 21 Aug 2026) × the book's premium over CF8; ladder ×0.965 (book £4.99 ÷ base £5.17)",
-   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21) ; https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
+   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
    "confidence": "Low"
   },
   "mat-cd4mcun-cast": {
    "gbpPerKg": 1.4354,
    "basis": "Cast stainless (charge): CF8 charged as 304 scrap ₹145/kg DAP Delhi (SMM, 21 Aug 2026) × the book's premium over CF8; ladder ×1.259 (book £6.51 ÷ base £5.17)",
-   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21) ; https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
+   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
    "confidence": "Low"
   },
   "mat-gx40crnisi25-20": {
    "gbpPerKg": 1.4663,
    "basis": "Cast stainless (charge): CF8 charged as 304 scrap ₹145/kg DAP Delhi (SMM, 21 Aug 2026) × the book's premium over CF8; ladder ×1.286 (book £6.65 ÷ base £5.17)",
-   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21) ; https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
+   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
    "confidence": "Low"
   },
   "mat-17-4ph-cast": {
    "gbpPerKg": 2.1167,
    "basis": "Cast stainless (charge): CF8 charged as 304 scrap ₹145/kg DAP Delhi (SMM, 21 Aug 2026) × the book's premium over CF8; ladder ×1.857 (book £9.6 ÷ base £5.17)",
-   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21) ; https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
+   "source": "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs (2026-08-21)",
    "confidence": "Low"
   },
   "mat-adc12": {
    "gbpPerKg": 2.3969,
-   "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.000 (book £2.75 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); the anchor grade itself",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-a380": {
    "gbpPerKg": 2.4404,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.018 (book £2.8 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-alsi10mg": {
    "gbpPerKg": 2.5189,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.051 (book £2.89 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-a365": {
    "gbpPerKg": 2.4143,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.007 (book £2.77 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-a413": {
    "gbpPerKg": 2.3969,
-   "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.000 (book £2.75 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); the anchor grade itself",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-a319": {
    "gbpPerKg": 2.5886,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.080 (book £2.97 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-a390": {
    "gbpPerKg": 2.8762,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.200 (book £3.3 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-a357": {
    "gbpPerKg": 2.7891,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.164 (book £3.2 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-lm25": {
    "gbpPerKg": 2.5973,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.084 (book £2.98 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-lm6": {
    "gbpPerKg": 2.545,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.062 (book £2.92 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-lm4": {
    "gbpPerKg": 2.5363,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.058 (book £2.91 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-almg5-cast": {
    "gbpPerKg": 2.6845,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.120 (book £3.08 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-a206": {
    "gbpPerKg": 3.1726,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.324 (book £3.64 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-en-ac-46200": {
    "gbpPerKg": 2.484,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.036 (book £2.85 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-en-ac-45300": {
    "gbpPerKg": 2.7106,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.131 (book £3.11 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-lm13": {
    "gbpPerKg": 2.6845,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.120 (book £3.08 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-aural5": {
    "gbpPerKg": 2.6758,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.116 (book £3.07 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-silafont36": {
    "gbpPerKg": 2.7019,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.127 (book £3.1 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-castasil37": {
    "gbpPerKg": 2.6409,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.102 (book £3.03 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-magsimal59": {
    "gbpPerKg": 2.7455,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.145 (book £3.15 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-al-hpdc-lowco2": {
    "gbpPerKg": 2.6148,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.091 (book £3 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-htf-gigacast": {
    "gbpPerKg": 2.8762,
    "basis": "Cast aluminium alloys: ADC12 alloy ingot, SMM 7 Oct 2026: Mumbai ₹305,000/t, Delhi ₹304,750/t (an automaker bought at ₹304,500/t) — mean; ADC12, A380 and secondary ADC12 are the same Indian market (made from scrap). Other alloys × the book's premium over ADC12 (India LM6 / LM25 / A356 / AlSi10Mg ingot prices not found); ladder ×1.200 (book £3.3 ÷ base £2.75)",
-   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07) ; https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
+   "source": "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline (2026-10-07)",
    "confidence": "Medium"
   },
   "mat-adc12-secondary": {
@@ -860,7 +860,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-pp-homo": {
    "gbpPerKg": 1.0169,
-   "basis": "PP family: PP: Delhi ex-godown ₹131.0 (Credco, 25 Sep 2026) and India index ₹127.7 (IMARC, Sep 2026) — mean; grades × the book's premium over PP homopolymer; ladder ×1.000 (book £0.99 ÷ base £0.99)",
+   "basis": "PP family: PP: Delhi ex-godown ₹131.0 (Credco, 25 Sep 2026) and India index ₹127.7 (IMARC, Sep 2026) — mean; grades × the book's premium over PP homopolymer; the anchor grade itself",
    "source": "https://credcosourcing.com/prices (2026-09-25) ; https://www.imarcgroup.com/polypropylene-pricing-report (2026-09)",
    "confidence": "Medium"
   },
@@ -896,7 +896,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-hdpe": {
    "gbpPerKg": 1.0692,
-   "basis": "PE family: HDPE: Delhi ex-godown GAIL ₹135.5, Haldia ₹136.5 (Credco, 25 Sep 2026) — mean; LDPE / LLDPE / blow / pipe / roto / sheet grades × the book's premium over HDPE; ladder ×1.000 (book £1.05 ÷ base £1.05)",
+   "basis": "PE family: HDPE: Delhi ex-godown GAIL ₹135.5, Haldia ₹136.5 (Credco, 25 Sep 2026) — mean; LDPE / LLDPE / blow / pipe / roto / sheet grades × the book's premium over HDPE; the anchor grade itself",
    "source": "https://credcosourcing.com/prices (2026-09-25)",
    "confidence": "Medium"
   },
@@ -908,7 +908,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-lldpe": {
    "gbpPerKg": 1.0692,
-   "basis": "PE family: HDPE: Delhi ex-godown GAIL ₹135.5, Haldia ₹136.5 (Credco, 25 Sep 2026) — mean; LDPE / LLDPE / blow / pipe / roto / sheet grades × the book's premium over HDPE; ladder ×1.000 (book £1.05 ÷ base £1.05)",
+   "basis": "PE family: HDPE: Delhi ex-godown GAIL ₹135.5, Haldia ₹136.5 (Credco, 25 Sep 2026) — mean; LDPE / LLDPE / blow / pipe / roto / sheet grades × the book's premium over HDPE; the anchor grade itself",
    "source": "https://credcosourcing.com/prices (2026-09-25)",
    "confidence": "Medium"
   },
@@ -938,7 +938,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-hdpe-profile": {
    "gbpPerKg": 1.0692,
-   "basis": "PE family: HDPE: Delhi ex-godown GAIL ₹135.5, Haldia ₹136.5 (Credco, 25 Sep 2026) — mean; LDPE / LLDPE / blow / pipe / roto / sheet grades × the book's premium over HDPE; ladder ×1.000 (book £1.05 ÷ base £1.05)",
+   "basis": "PE family: HDPE: Delhi ex-godown GAIL ₹135.5, Haldia ₹136.5 (Credco, 25 Sep 2026) — mean; LDPE / LLDPE / blow / pipe / roto / sheet grades × the book's premium over HDPE; the anchor grade itself",
    "source": "https://credcosourcing.com/prices (2026-09-25)",
    "confidence": "Medium"
   },
@@ -992,7 +992,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-upvc": {
    "gbpPerKg": 0.8039,
-   "basis": "PVC family: PVC K67: Delhi ex-godown ₹108.0 and Hygain ₹96.5 (Credco, 25 Sep 2026) — mean; compounds × the book's premium over uPVC; ladder ×1.000 (book £0.76 ÷ base £0.76)",
+   "basis": "PVC family: PVC K67: Delhi ex-godown ₹108.0 and Hygain ₹96.5 (Credco, 25 Sep 2026) — mean; compounds × the book's premium over uPVC; the anchor grade itself",
    "source": "https://credcosourcing.com/prices (2026-09-25)",
    "confidence": "Medium"
   },
@@ -1022,7 +1022,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-pet-bg": {
    "gbpPerKg": 0.8215,
-   "basis": "PET: PET bottle chip, India index ₹104.5 (Sep 2026); ladder ×1.000 (book £1.21 ÷ base £1.21)",
+   "basis": "PET: PET bottle chip, India index ₹104.5 (Sep 2026); the anchor grade itself",
    "source": "https://www.polyestertime.com/pet-bottle-grade-chip-price-trends/ (2026-09-10)",
    "confidence": "Low"
   },
@@ -1034,13 +1034,13 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-abs": {
    "gbpPerKg": 1.3003,
-   "basis": "ABS family: ABS India index ₹165.4 (Business Analytiq, Sep 2026); ladder ×1.000 (book £1.62 ÷ base £1.62)",
+   "basis": "ABS family: ABS India index ₹165.4 (Business Analytiq, Sep 2026); the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/abs-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pc": {
    "gbpPerKg": 1.7038,
-   "basis": "PC family: PC CIF India ₹200.2 (Jul 2026) × 1.0825 (BCD 7.5% + SWS, back in force from 1 Jul 2026); domestic May average ₹211 agrees; ladder ×1.000 (book £2.52 ÷ base £2.52)",
+   "basis": "PC family: PC CIF India ₹200.2 (Jul 2026) × 1.0825 (BCD 7.5% + SWS, back in force from 1 Jul 2026); domestic May average ₹211 agrees; the anchor grade itself",
    "source": "https://www.procurementresource.com/resource-center/polycarbonate-price-trends (2026-07) ; https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480 (2026-04-02)",
    "confidence": "Low"
   },
@@ -1058,7 +1058,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-pa6": {
    "gbpPerKg": 1.6459,
-   "basis": "PA6 family: PA6 CIF India ₹193.4 (Jun 2026, Plastemart) × 1.0825 duty; a second source reads higher (₹259) — the lower, dated figure is used; ladder ×1.000 (book £1.68 ÷ base £1.68)",
+   "basis": "PA6 family: PA6 CIF India ₹193.4 (Jun 2026, Plastemart) × 1.0825 duty; a second source reads higher (₹259) — the lower, dated figure is used; the anchor grade itself",
    "source": "https://www.plastemart.com/nylon-6-PA-6-cif-india-prices (2026-06) ; https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480 (2026-04-02)",
    "confidence": "Low"
   },
@@ -1070,19 +1070,19 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-pa6-ext-tube": {
    "gbpPerKg": 1.6459,
-   "basis": "PA6 family: PA6 CIF India ₹193.4 (Jun 2026, Plastemart) × 1.0825 duty; a second source reads higher (₹259) — the lower, dated figure is used; ladder ×1.000 (book £1.68 ÷ base £1.68)",
+   "basis": "PA6 family: PA6 CIF India ₹193.4 (Jun 2026, Plastemart) × 1.0825 duty; a second source reads higher (₹259) — the lower, dated figure is used; the anchor grade itself",
    "source": "https://www.plastemart.com/nylon-6-PA-6-cif-india-prices (2026-06) ; https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480 (2026-04-02)",
    "confidence": "Low"
   },
   "mat-pa66": {
    "gbpPerKg": 2.2637,
-   "basis": "PA66 family: PA66 CIF India ₹266.0 (Jun 2026, Plastemart) × 1.0825 duty; ladder ×1.000 (book £1.89 ÷ base £1.89)",
+   "basis": "PA66 family: PA66 CIF India ₹266.0 (Jun 2026, Plastemart) × 1.0825 duty; the anchor grade itself",
    "source": "https://www.plastemart.com/nylon-66-PA-66-polymer-prices-cif-india-pricelist (2026-06) ; https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480 (2026-04-02)",
    "confidence": "Low"
   },
   "mat-pbt": {
    "gbpPerKg": 1.9544,
-   "basis": "PBT family: PBT India index ₹248.6 (Business Analytiq, Sep 2026); moderate confidence; ladder ×1.000 (book £2.7 ÷ base £2.7)",
+   "basis": "PBT family: PBT India index ₹248.6 (Business Analytiq, Sep 2026); moderate confidence; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/ (2026-09)",
    "confidence": "Low"
   },
@@ -1103,7 +1103,7 @@ export const INDIA_BOOK: CountryBook = {
   "rentGbpPerM2Yr": 25.4373,
   "ukRentGbpPerM2Yr": 110,
   "ukElectricityGbpPerKwh": 0.182,
-  "labourRatio": 0.0454,
+  "labourRatio": 0.0455,
   "capitalHeldFactor": 0.52,
   "basis": "3 shifts × 8 h × 300 working days (Indian cost-accounting convention); Companies Act 2013 Schedule II: depreciation +50% for double shift, +100% for triple — a held (2-shift) capital charge × 2.0 / 1.5 at 3 shifts; 1-year MCLR 8.70–8.80% (SBI, BoB, BoI, Jul–Oct 2026); the book's line build-ups use 4% on half the capex; rent ₹25.05/sq ft/month (Knight Frank H1 2026 industrial / warehousing rent: Pune 28.7, Chennai 25.7, Bengaluru 23.5, NCR 22.3 ₹/sq ft/month — mean); maintenance the library's own line build-up rule (3.5% of capex); no Indian norm found",
   "heldBasis": "capex not sourced for India: the book's capital (UK × 0.52) is HELD; the India operating model (3-shift hours, Schedule II, finance, rent, tariff, support at India wages) is applied",

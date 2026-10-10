@@ -86,6 +86,9 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
   electricityGbpPerKwh: number, regionName: string): MachineRate | null {
   const M = book.machines;
   if (!(M.hoursPerYear > 0)) return null;
+  // money in the country's own currency first, the book's £ after it (a China report printed "capex £32,412" for a ¥287,817 machine)
+  const sym = book.currencySymbol ?? '₹';
+  const loc = (gbp: number, dp = 0) => `${sym}${(gbp * book.fxToGBP).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })} (£${gbp.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp || 0 })})`;
   const b = ukMachine.buildup;
   const hr = M.hoursPerYear / b.annualAvailableHours;
   const kwh = b.energy / M.ukElectricityGbpPerKwh;
@@ -99,7 +102,7 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
     const size = b.annualDepreciation / ref.buildup.annualDepreciation;
     const capex = g.refCapexGbp * size;
     capital = { annualDepreciation: r0(capex / M.lifeYears), maintenance: r0(capex * M.maintenancePctOfCapex), financeCost: r0(capex / 2 * M.financeRate) };
-    what = `capex £${r0(capex).toLocaleString('en-GB')} (${g.id}: ${g.refId} £${r0(g.refCapexGbp).toLocaleString('en-GB')}`
+    what = `capex ${loc(capex)} (${g.id}: ${g.refId} ${loc(g.refCapexGbp)}`
       + `${Math.abs(size - 1) > 1e-9 ? ` × book size ${size.toFixed(3)}` : ''} — ${g.basis}), ${M.lifeYears}-yr life, `
       + `maintenance ${(M.maintenancePctOfCapex * 100).toFixed(1)}% of capex, finance ${(M.financeRate * 100).toFixed(2)}% on half the capex`;
     confidence = g.confidence;
@@ -127,8 +130,8 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
     buildup,
     computedRatePerHr: computeMachineRatePerHr(buildup),
     region: regionName,
-    sourceNote: `${regionName} book ${book.asOf}: ${what}; ${r0(m2)} m² at £${M.rentGbpPerM2Yr.toFixed(2)}/m²/yr, `
-      + `${r0(kwh * hr).toLocaleString('en-GB')} kWh at £${electricityGbpPerKwh}/kWh, support at ${M.labourRatio.toFixed(4)} of UK wages, `
+    sourceNote: `${regionName} book ${book.asOf}: ${what}; ${r0(m2)} m² at ${loc(M.rentGbpPerM2Yr, 2)}/m²/yr, `
+      + `${r0(kwh * hr).toLocaleString('en-GB')} kWh at ${loc(electricityGbpPerKwh, 4)}/kWh, support at ${M.labourRatio.toFixed(4)} of UK wages, `
       + `${M.hoursPerYear.toLocaleString('en-GB')} h × ${b.machineUtilization} (${M.basis})`,
     confidence,
   };

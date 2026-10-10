@@ -76,7 +76,7 @@ function setField(obj: string, field: string, literal: string): string {
 // ── materials ────────────────────────────────────────────────────────────────
 const snapMat = new Map(SNAP.materials.map(m => [m.id, m]));
 for (const f of cfg.materialFamilies) {
-  const srcText = (f.sources as Array<{ source: string; date?: string }>).map(s => `${s.source}${s.date ? ` (${s.date})` : ''}`).join(' ; ');
+  const srcText = [...new Set((f.sources as Array<{ source: string; date?: string }>).map(s => `${s.source}${s.date ? ` (${s.date})` : ''}`))].join(' ; ');
   for (const id of f.members as string[]) {
     const cur = snapMat.get(id);
     if (!cur) throw new Error(`material ${id} is not in the snapshot`);
@@ -87,12 +87,12 @@ for (const f of cfg.materialFamilies) {
       const ratio = (proxy ?? cur).gbpPerKg / f.base;
       const r = f.floorAtAnchor ? Math.max(1, ratio) : ratio;
       price = f.anchorGbpPerKg * r;
-      how = `ladder ×${r.toFixed(3)} (book grade £${(proxy ?? cur).gbpPerKg} ÷ book base £${f.base})`;
+      how = Math.abs(r - 1) < 5e-4 && !proxy ? 'the anchor grade itself' : `ladder ×${r.toFixed(3)} (book grade £${(proxy ?? cur).gbpPerKg} ÷ book base £${f.base})`;
     } else if (f.method === 'ladder-add') {
       // alloy content is an absolute £/kg: the anchor + the book's own premium over its base
       const add = cur.gbpPerKg - f.base;
       price = f.anchorGbpPerKg + add;
-      how = `ladder +£${add.toFixed(3)}/kg (book grade £${cur.gbpPerKg} − book base £${f.base})`;
+      how = Math.abs(add) < 5e-4 ? 'the anchor grade itself' : `ladder +£${add.toFixed(3)}/kg (book grade £${cur.gbpPerKg} - book base £${f.base})`;
     } else if (f.method === 'floor') {
       price = Math.max(cur.gbpPerKg, f.anchorGbpPerKg);
       how = cur.gbpPerKg >= f.anchorGbpPerKg ? 'held (already at or above the content)' : 'floor (raised to the content)';

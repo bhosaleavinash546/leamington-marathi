@@ -29,7 +29,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
 import { REGIONAL_DATA, buildRegionalLibrary, EXTRUSION_COUNTRY_PRICES, THERMOFORMING_COUNTRY_PRICES } from '../src/engine/regional-rates.js';
-import { countryMachine, type CountryBook } from '../src/engine/country-books.js';
+import { countryMachine, machineGroupOf, type CountryBook } from '../src/engine/country-books.js';
 import { UK_ELECTRICITY_GBP_PER_KWH } from '../src/engine/uk-energy.js';   // the tariff the UK build-ups are written in (uk-book.ts)
 import type { Confidence } from '../src/engine/types.js';
 
@@ -87,7 +87,8 @@ const UK_SNAP = JSON.parse(readFileSync(resolve(ROOT, 'scripts/rate-refresh/uk-2
 const ukMat = new Map(UK_SNAP.materials.map(m => [m.id, { id: m.id, grade: m.grade, pricePerKg: m.gbpPerKg }]));
 const curMat = new Map(SNAP.materials.map(m => [m.id, m]));
 for (const f of cfg.materialFamilies) {
-  const srcText = (f.sources as Array<{ source: string; date?: string }>).map(s => `${s.source}${s.date ? ` (${s.date})` : ''}`).join(' ; ');
+  // each source once (a material note listed the same Mysteel page twice)
+  const srcText = [...new Set((f.sources as Array<{ source: string; date?: string }>).map(s => `${s.source}${s.date ? ` (${s.date})` : ''}`))].join(' ; ');
   for (const id of f.members as string[]) {
     const uk = ukMat.get(id), cur = curMat.get(id);
     if (!uk || !cur) throw new Error(`material ${id} is not in the library`);
@@ -108,12 +109,13 @@ for (const f of cfg.materialFamilies) {
       const ratio = (proxy ?? uk).pricePerKg / f.base;
       const r = f.floorAtAnchor ? Math.max(1, ratio) : ratio;
       inr = anchor * r;
-      how = `ladder ×${r.toFixed(3)} (book £${(proxy ?? uk).pricePerKg}${proxy ? ` [${proxy.id}]` : ''} ÷ base £${f.base})`;
+      // the base grade itself has nothing to explain ("ladder ×1.000 (book £0.86 ÷ base £0.86)" was noise in a report)
+      how = Math.abs(r - 1) < 5e-4 && !proxy ? 'the anchor grade itself' : `ladder ×${r.toFixed(3)} (book £${(proxy ?? uk).pricePerKg}${proxy ? ` [${proxy.id}]` : ''} ÷ base £${f.base})`;
     } else if (f.method === 'ladder-add') {
       // alloy content is an absolute £/kg: the anchor + the book's premium over its base, at this country's FX
       const add = (((f.proxies ?? {})[id] ? ukMat.get(f.proxies[id]) : undefined) ?? uk).pricePerKg - f.base;
       inr = anchor + add * FX;
-      how = `ladder +£${add.toFixed(3)}/kg (book £${uk.pricePerKg} − base £${f.base}) = +${SYM}${(add * FX).toFixed(2)}`;
+      how = Math.abs(add) < 5e-4 ? 'the anchor grade itself' : `ladder +${SYM}${(add * FX).toFixed(2)}/kg (the book's premium: £${uk.pricePerKg} - base £${f.base})`;
     } else if (f.method === 'floor') {
       inr = Math.max(curInr, anchor);
       how = curInr >= anchor ? 'held (already above the metal it contains)' : 'floor (raised to metal content)';
@@ -140,13 +142,13 @@ const cats = cfg.labour.categories as Record<string, LabourCfg>;
 const labourGbp: Record<string, number> = {};
 const localHr = (v: LabourCfg) => local(v, '', 'PerHr') ?? (v.localPerHr as number) ?? (v.inrPerHr as number);
 for (const [k, v] of Object.entries(cats)) {
-  labourGbp[k] = r2(localHr(v) / FX);
+  labourGbp[k] = r4(localHr(v) / FX);   // 4 dp: £0.01 is ¥0.09 / ₹1.27 — a note read ¥33.08 while ¥33.13 was costed
   register.push({ kind: 'labour', id: `category:${k}`, name: k, currentInr: r2(SNAP.regional.labour[k] * FX),
     newInr: r2(labourGbp[k] * FX), unit: `${SYM}/h fully loaded`, decision: 'updated', basis: v.basis, source: v.source });
 }
 const labourGrades: CountryBook['labourGrades'] = {};
 for (const [k, v] of Object.entries(cfg.labour.grades as Record<string, LabourCfg>)) {
-  labourGrades[k] = { gbpPerHr: r2(localHr(v) / FX), basis: `${v.basis}. Included: ${cfg.labour.loadingIncluded}. NOT included: ${cfg.labour.loadingNotIncluded}`, source: v.source, confidence: 'Medium' };
+  labourGrades[k] = { gbpPerHr: r4(localHr(v) / FX), basis: `${v.basis}. Included: ${cfg.labour.loadingIncluded}. NOT included: ${cfg.labour.loadingNotIncluded}`, source: v.source, confidence: 'Medium' };
   const cur = SNAP.labour.find(l => l.id === `lab-uk-${k}`);
   register.push({ kind: 'labour', id: `lab-uk-${k} (${NAME})`, name: k, currentInr: cur ? cur.inrPerHr : null,
     newInr: r2(labourGrades[k].gbpPerHr * FX), unit: `${SYM}/h fully loaded`, decision: 'updated', basis: v.basis, source: v.source });
@@ -189,7 +191,7 @@ for (const m of UK.machines) {
   const cur = SNAP.machines.find(x => x.id === m.id)!;
   const nw = m.buildup ? countryMachine(book, m, UK.machines, elec, NAME) : null;
   if (nw && m.computedRatePerHr > 0) ratios.push(nw.computedRatePerHr / m.computedRatePerHr);
-  const grouped = !!nw && /capex £/.test(nw.sourceNote);
+  const grouped = !!nw && !!machineGroupOf(book, m.id);
   register.push({ kind: 'machine', id: m.id, name: m.machineClass, currentInr: cur.inrPerHr, newInr: nw ? r2(nw.computedRatePerHr * FX) : cur.inrPerHr,
     unit: `${SYM}/h machine only`, decision: !nw ? 'held (no build-up)' : grouped ? `updated (${NAME} capex + operating model)` : `updated (${NAME} operating model; capital held — capex not sourced)`,
     basis: nw ? nw.sourceNote : 'no build-up: regional scaling', source: grouped ? (book.machines.groups.find(g => new RegExp(g.match).test(m.id))?.source ?? '') : '' });
@@ -248,7 +250,7 @@ for (const [suffix, cat] of [['skilled', 'skilled'], ['semiskilled', 'semiskille
   const re = new RegExp(`(id: 'lab-${cc}-${suffix}',[\\s\\S]*?fullyLoadedRatePerHr: )[0-9.]+(,[\\s\\S]*?effectiveDate: ')[^']*(',[\\s\\S]*?sourceNote: ')[^']*(',[\\s\\S]*?confidence: ')[A-Za-z]+(')`);
   if (!re.test(lib)) throw new Error(`lab-${cc}-${suffix} not found`);
   const v = cats[cat];
-  lib = lib.replace(re, `$1${labourGbp[cat]}$2${cfg.asOf}$3${NAME} rate book ${cfg.asOf}: ${SYM}${localHr(v)}/h fully loaded (${cfg.labour.short ?? '4-cluster, statutory loading'}; scripts/country-book.ts)$4Medium$5`);
+  lib = lib.replace(re, `$1${labourGbp[cat]}$2${cfg.asOf}$3${NAME} rate book ${cfg.asOf}: ${SYM}${localHr(v)}/h fully loaded (${cfg.labour.short ?? '4-cluster, statutory loading'})$4Medium$5`);
 }
 // the book's own energy-<cc> entry wins over the regional table, so it must agree
 if (newElec !== undefined || newGas !== undefined) {

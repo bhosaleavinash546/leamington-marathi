@@ -266,7 +266,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'China',
     currency: 'CNY',
     fxToGBP: 8.88,
-    labour: { skilled: 3.73, semiskilled: 3.57, engineer: 11.16, foundry: 3.57, electronics: 3.75, inspector: 3.47, technician: 4.46, supervisor: 4.67 },
+    labour: { skilled: 3.7252, semiskilled: 3.5664, engineer: 11.1577, foundry: 3.5664, electronics: 3.7523, inspector: 3.4707, technician: 4.4583, supervisor: 4.67 },
     energy: { electricityPerKwh: 0.071, gasPerKwh: 0.0401 },
     materialFactors: { commodityResin: 0.802, engineeringResin: 0.88, highPerfResin: 0.970 },
     materialMultiplier: 0.830,
@@ -281,7 +281,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'India',
     currency: 'INR',
     fxToGBP: 127.2,
-    labour: { skilled: 1.27, semiskilled: 0.9, engineer: 2, foundry: 1.02, electronics: 1.08, inspector: 0.97, technician: 1.13, supervisor: 1.55 },
+    labour: { skilled: 1.272, semiskilled: 0.897, engineer: 2.0016, foundry: 1.0181, electronics: 1.0833, inspector: 0.9693, technician: 1.1305, supervisor: 1.5464 },
     energy: { electricityPerKwh: 0.069, gasPerKwh: 0.03 },
     materialFactors: { commodityResin: 0.860, engineeringResin: 0.90, highPerfResin: 0.975 },
     materialMultiplier: 0.890,
@@ -1007,7 +1007,8 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       const grade = book?.labourGrades[suffix];
       if (grade) {
         return { ...l, fullyLoadedRatePerHr: grade.gbpPerHr, region: rd.name,
-          sourceNote: `${rd.name} book ${book!.asOf}: ${suffix} ₹${(grade.gbpPerHr * book!.fxToGBP).toFixed(0)}/h — ${grade.basis} (${grade.source})`,
+          // the book's own currency (a China report read "furnace INR 32/h" — demo review 2026-10-10)
+          sourceNote: `${rd.name} book ${book!.asOf}: ${suffix} ${book!.currencySymbol ?? '₹'}${(grade.gbpPerHr * book!.fxToGBP).toFixed(2)}/h — ${grade.basis} (${grade.source})`,
           confidence: grade.confidence };
       }
       const direct = labourCategoryRates[suffix];
@@ -1018,7 +1019,9 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         fullyLoadedRatePerHr: rate,
         region: rd.name,
         sourceNote: direct !== undefined
-          ? `${rd.name} ${suffix} rate (regional-rates.ts, 2026-09)`
+          // a book country's category rate is its rate book's (a China report read "China foundry rate (regional-rates.ts, 2026-09)")
+          ? (book ? `${rd.name} rate book ${book.asOf}: ${suffix} ${rd.currency} ${(direct * rd.fxToGBP).toFixed(2)}/h fully loaded (the rate book's labour model)`
+            : `${rd.name} ${suffix} labour rate — regional table (2026-09 refresh)`)
           : `UK ${suffix} grade × ${rd.name}/UK ${cat} ratio ${(rd.labour[cat] / REGIONAL_DATA.UK.labour[cat]).toFixed(4)}`,
         confidence: 'Low' as const,
       };
@@ -1050,7 +1053,8 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
           pricePerKg: authentic,
           scrapRecoveryPricePerKg: m.scrapRecoveryPricePerKg * ratio,
           region: rd.name,
-          sourceNote: `${m.sourceNote} | ${rd.name} authentic 2026-09 price £${authentic.toFixed(2)}/kg (country-specific, not multiplier-scaled)`,
+          // the country leads: a report in this country must not open a material line with a UK source (demo review 2026-10-10)
+          sourceNote: `${rd.name}: country price £${authentic.toFixed(2)}/kg (2026-09, country-specific, not multiplier-scaled). UK basis: ${m.sourceNote}`,
           confidence: 'Low' as const,
         };
       }
@@ -1060,7 +1064,8 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         pricePerKg: m.pricePerKg * f,
         scrapRecoveryPricePerKg: m.scrapRecoveryPricePerKg * f,
         region: rd.name,
-        sourceNote: `${m.sourceNote} | Regional adj. ×${f.toFixed(3)} (${classifyMaterialFamily(m)})`,
+        sourceNote: `${rd.name}: no ${rd.name} price for this grade — the UK book £${m.pricePerKg.toFixed(2)}/kg × ${f.toFixed(3)} `
+          + `(${classifyMaterialFamily(m)} country factor). UK basis: ${m.sourceNote}`,
       };
     }),
 
@@ -1077,7 +1082,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
           ...m,
           computedRatePerHr: m.computedRatePerHr * rd.machineRateMultiplier,
           region: rd.name,
-          sourceNote: `${m.sourceNote} | Regional adj. ×${rd.machineRateMultiplier}`,
+          sourceNote: `${rd.name}: the UK rate × ${rd.machineRateMultiplier} (no build-up to rebuild). UK basis: ${m.sourceNote}`,
           confidence: 'Low' as const,
         };
       }
@@ -1098,7 +1103,9 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         buildup: rebuilt,
         computedRatePerHr: computeMachineRatePerHr(rebuilt),
         region: rd.name,
-        sourceNote: `${m.sourceNote} | Regional: capex/overhead ×${rd.machineRateMultiplier}, energy re-tariffed @£${elecTariff}/kWh`,
+        // the country leads (demo review 2026-10-10: a Germany report opened a machine line with "UK book … Capex £77,006")
+        sourceNote: `${rd.name}: the UK build-up with capital and overhead × ${rd.machineRateMultiplier} and energy at `
+          + `${rd.currency} ${(elecTariff * rd.fxToGBP).toFixed(3)}/kWh (£${elecTariff}). UK basis: ${m.sourceNote}`,
         confidence: 'Low' as const,
       };
     }),
@@ -1110,9 +1117,11 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         region: rd.name,
         electricityPerKwh: ownEnergy?.electricityPerKwh ?? rd.energy.electricityPerKwh,
         gasPerKwh: ownEnergy?.gasPerKwh ?? rd.energy.gasPerKwh,
-        effectiveDate: new Date().toISOString().slice(0, 10),
-        sourceNote: `${rd.name} industrial energy benchmark 2026-09`,
-        confidence: 'Low' as const,
+        // the book's own energy-<cc> entry carries its date and source (the China / India rate books) — it was replaced by
+        // "industrial energy benchmark 2026-09" stamped with today's date
+        effectiveDate: ownEnergy?.effectiveDate ?? '2026-09',
+        sourceNote: ownEnergy?.sourceNote ?? `${rd.name} industrial energy benchmark 2026-09`,
+        confidence: (ownEnergy?.confidence ?? 'Low') as 'High' | 'Medium' | 'Low',
       },
     ],
   };
