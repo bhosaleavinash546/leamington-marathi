@@ -657,6 +657,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   capex, every other machine on the India operating model with its capital HELD (labelled); a casting grade in India is the
   metal CHARGE. India ladders read the FROZEN UK snapshot (`uk-2026-10/current-uk-book.json`), not the live UK price.
   `register.csv` lists every India rate (current → new, decision, basis). `tests/india-rate-book.test.ts`.
+  China = `country-books/cn.ts` (Oct 2026, `docs/rates/china-rate-book-2026-10.md`), same generator from
+  `scripts/rate-refresh/2026-10-china.json` (`china-2026-10/build-config.py`; the config names region / currency / dir /
+  book file — India's predates those keys and takes the defaults): 4-cluster (Yangtze / Pearl deltas, Chongqing, Wuhan),
+  2 × 12 h, ex-VAT; CNC on Chinese makers' ASPs, other capital HELD (UK × 0.55); gas updated, electricity held.
+  `tests/china-rate-book.test.ts`. Tests of the "UK × factor" scaling use a country WITHOUT a book (e.g. TR), never CN/IN.
 - UK rate book (Oct 2026, `docs/rates/uk-rate-book-2026-10.md`): the BASE library's UK literals are written by
   `scripts/uk-book.ts` from `scripts/rate-refresh/2026-10-uk.json` (`uk-2026-10/build-config.py` from sourced research;
   `uk-2026-10/register.csv`; idempotent — never hand-edit a rebuilt rate). Machine rates are MACHINE ONLY (the costing adds
