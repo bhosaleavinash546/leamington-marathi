@@ -206,6 +206,7 @@ import { computeFeatureCosting } from '../engine/feature-costing.js';
 import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell } from '../engine/machining-time.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { generateInsights, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
+import { localiseGbpText } from '../export/money-text.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities, CATEGORY_LABELS } from '../engine/opportunity-ranking.js';
 import type { RankedOpportunity } from '../engine/opportunity-ranking.js';
@@ -516,6 +517,18 @@ function _currFmt(n: number): string {
   if (!Number.isFinite(v)) return `${sym}—`;
   const s = Math.abs(v).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return `${v < 0 ? '−' : ''}${sym}${s}`;  // grouped thousands; sign before the symbol
+}
+
+/** Years an amortisation volume covers at the stated annual volume (≥ 1): tool maintenance is charged for each. */
+function _maintenanceYears(amortVol: number): number {
+  const a = parseFloat((document.getElementById('annual-volume') as HTMLInputElement | null)?.value ?? '');
+  return a > 0 && amortVol > 0 ? Math.max(1, amortVol / a) : 1;
+}
+
+// Money inside a rate note ("cores £2.06", "the UK book £3.10/kg") in the display currency — the reports convert it
+// (money-text.ts) and the screen showed it in £ on a złoty costing (Poland live review, 10 Oct 2026).
+function _inCurText(t: string): string {
+  return localiseGbpText(t ?? '', _displayFxRate, CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency);
 }
 
 // Grouped money — thousands separators, variable dp (2 for per-part, 0 for annual).
@@ -12397,6 +12410,7 @@ function collectSheetMetalInput(): UniversalStackInput {
     ...(num('sm-die-chg') > 0 && num('sm-batch') > 0
       ? { setup: { hoursPerChange: num('sm-die-chg'), batchSize: num('sm-batch'), setterLabourId: 'lab-uk-technician' } } : {}),
     dieMaintenanceFraction: num('sm-maint') || undefined,
+    maintenanceYears: _maintenanceYears(num('sm-amort')),
     // BIW process: press line, blanking before the line, the drawn panel's addendum.
     pressLine: validSel<'coil-fed' | 'transfer' | 'tandem'>('sm-press-line', ['coil-fed', 'transfer', 'tandem'], 'coil-fed'),
     pressesInLine: num('sm-presses') || undefined,
@@ -12534,6 +12548,7 @@ function collectIMMInput(): UniversalStackInput {
       setup: { hoursPerChange: num('imm-setup-hr'), batchSize: num('imm-batch'), setterLabourId: 'lab-uk-technician', purgeKg: num('imm-purge') },
     } : {}),
     mouldMaintenanceFraction: num('imm-maint') || undefined,
+    maintenanceYears: _maintenanceYears(num('imm-amort')),
     ...(num('imm-dry-kwh') > 0 ? { drying: { kwhPerKg: num('imm-dry-kwh') } } : {}),   // kWh, priced in the selected country
   });
 
@@ -15777,7 +15792,7 @@ function renderBreakdown(result: PartCostResult): void {
             const unit = isMoney ? t.unit.replace('£', '').trim() : t.unit;
             return `<tr>
             <td>${escHtml(t.field)}</td><td>${val}</td><td>${escHtml(unit)}</td>
-            <td style="font-family:sans-serif;font-size:0.76rem">${escHtml(t.rateSource)}</td>
+            <td style="font-family:sans-serif;font-size:0.76rem">${escHtml(_inCurText(t.rateSource))}</td>
             <td><span class="badge ${t.confidence}">${t.confidence}</span></td>
           </tr>`; }).join('')}
         </tbody>
@@ -17598,7 +17613,13 @@ function buildChecksApplied(): CADReportMeta['checks'] {
     costable: !openBlocking && !unacked,
     geometryQuality: cadGeometrySource === 'occt' ? 'occt' : cadGeometrySource === 'stl_parser' ? 'stl' : cadGeometrySource ? 'text' : null,
     sanity: cadSanityWarnings.map(w => ({ ...w, acknowledged: w.blocking ? _cadSanityAcks.has(w.code) : undefined })),
-    decisions: Object.entries(asked).map(([id, d]) => ({ id, question: d.question, severity: d.severity as CADDecision['severity'], answer: _cadDecisionAnswers[id] ?? null,
+    // a question asked in an earlier round and no longer asked was settled by a later answer (the resin settles the
+    // family) — it printed "OPEN" under a "COSTABLE — no blocking decision is open" status (Poland live review)
+    decisions: Object.entries(asked).map(([id, d]) => ({ id, question: d.question, severity: d.severity as CADDecision['severity'],
+      answer: _cadDecisionAnswers[id] ?? (_cadDecisions.some(c => c.id === id) ? null
+        : id === 'material.family' && _cadDecisionAnswers['material.resin']
+          ? `plastic — settled by the resin answered (${library.materials.find(m => m.id === _cadDecisionAnswers['material.resin'])?.grade ?? _cadDecisionAnswers['material.resin']})`
+          : 'no longer asked — settled by a later answer'),
       // an unanswered grade question: the grade the costing used (casting 360 X29)
       used: id === 'material.grade' && lastInput ? (library.materials.find(m => m.id === lastInput!.rawMaterial.materialId)?.grade ?? null) : null })),
     overrides: _cadRuleOverrides,
@@ -20644,8 +20665,8 @@ function openTraceDrawer(bucket: string): void {
           <thead><tr><th>Input</th><th style="text-align:right">Value</th><th>Source</th><th>Conf.</th></tr></thead>
           <tbody>${rows.map(t => `<tr>
             <td>${escHtml(t.field)}</td>
-            <td class="num">${t.value.toLocaleString('en-GB', { maximumFractionDigits: 3 })} ${escHtml(t.unit)}</td>
-            <td>${escHtml(t.rateSource)}</td>
+            <td class="num">${t.unit.includes('£') ? `${_currFmt(t.value)} ${escHtml(t.unit.replace('£', '').trim())}` : `${t.value.toLocaleString('en-GB', { maximumFractionDigits: 3 })} ${escHtml(t.unit)}`}</td>
+            <td>${escHtml(_inCurText(t.rateSource))}</td>
             <td><span class="badge ${escHtml(String(t.confidence))}">${escHtml(String(t.confidence))}</span></td>
           </tr>`).join('')}</tbody>
         </table>` : '<div style="font-size:0.78rem;color:var(--text-muted)">No line-level trace records matched this bucket — see the Detail tab for the full trace table.</div>'}
