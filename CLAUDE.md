@@ -662,6 +662,11 @@ what is true** — nothing here has been compared with a price JLR paid.
   book file — India's predates those keys and takes the defaults): 4-cluster (Yangtze / Pearl deltas, Chongqing, Wuhan),
   2 × 12 h, ex-VAT; CNC on Chinese makers' ASPs, other capital HELD (UK × 0.55); gas updated, electricity held.
   `tests/china-rate-book.test.ts`. Tests of the "UK × factor" scaling use a country WITHOUT a book (e.g. TR), never CN/IN.
+  Country-rates demo review (10 Oct 2026, `docs/review/country-rates-demo-review-2026-10-10.md`): a CN / IN costing reads
+  only its own book (`scripts/review-2026-10-10/rate-isolation.ts`). In a non-£ report, money in TEXT (rule bases, rate
+  notes, consumables) is converted by `src/export/money-text.ts` (PDF via `hardenPdfText`, Excel per string cell) — never
+  print "as recorded, GBP". Display FX (`FX_TO_GBP`) is derived from `REGIONAL_DATA.fxToGBP`; the PCB catalogue keeps the
+  29 Sep snapshot it was priced at (`FX_TO_GBP_TABLE`). Book notes carry the book's own currency symbol (`currencySymbol`).
 - UK rate book (Oct 2026, `docs/rates/uk-rate-book-2026-10.md`): the BASE library's UK literals are written by
   `scripts/uk-book.ts` from `scripts/rate-refresh/2026-10-uk.json` (`uk-2026-10/build-config.py` from sourced research;
   `uk-2026-10/register.csv`; idempotent — never hand-edit a rebuilt rate). Machine rates are MACHINE ONLY (the costing adds
