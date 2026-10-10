@@ -35,7 +35,12 @@ async function costOne(page: Page, base: string, p: PartSpec): Promise<Record<st
   const calls: Array<{ url: string; status: number; body?: unknown }> = [];
   page.on('response', async r => {
     if (!/\/api\/cad\/(analyze|reanalyze)/.test(r.url())) return;
-    try { calls.push({ url: r.url().replace(base, ''), status: r.status(), body: await r.json() }); } catch { calls.push({ url: r.url(), status: r.status() }); }
+    // text then parse — r.json() came back empty on these responses, so no call recorded the country it priced in
+    try {
+      const text = await r.text();
+      const body = JSON.parse(text) as Record<string, unknown>;
+      calls.push({ url: r.url().replace(base, ''), status: r.status(), body: { ratesRegion: body.ratesRegion, region: body.region, ...body } });
+    } catch (e) { calls.push({ url: r.url(), status: r.status(), body: { error: String(e).slice(0, 120) } }); }
   });
   await page.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
   await page.waitForSelector('html[data-country-ready="1"]', { timeout: 60_000 });
