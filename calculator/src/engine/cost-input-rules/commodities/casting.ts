@@ -184,6 +184,8 @@ export const INVESTMENT_TREE = { POUR_KG: 20, HR_PER_TREE: 0.40, MAX_PARTS: 60 }
  * operator). The flat £0.35 charged a 50 kg casting what it charged a 0.5 kg one.
  */
 export const BLAST_KG_PER_HR = 600;
+/** Shot-blast minimum charge per casting, UK £ (CostVision engineering heuristic) — × the process-service factor abroad. */
+export const BLAST_MIN_CHARGE_UK = 0.10;
 
 /**
  * The section that governs filling and freezing: the casting modulus 2·V/S, mm.
@@ -674,10 +676,14 @@ export const CASTING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const rate = libraryMachineRate('blast-machine');
         const lab = activeLabourRate('lab-uk-foundry');   // the costed country's (rate-context.ts)
-        const v = Math.max(0.10, Math.round(r.advice.massKg / BLAST_KG_PER_HR * (rate + lab) * 100) / 100);
+        // The minimum charge is a UK £ figure: it follows the country like any bought-in process service (casting 360
+        // review X40 — the UK £0.10 bound in India, where the blast itself costs less).
+        const floor = Math.round(BLAST_MIN_CHARGE_UK * processServiceFactor() * 10_000) / 10_000;
+        const v = Math.max(floor, Math.round(r.advice.massKg / BLAST_KG_PER_HR * (rate + lab) * 100) / 100);
         return decided('casting.shotBlastCostPerPart', v, 'library',
           `${r.advice.subtype} castings are blasted to remove sand / scale / flash — ${r.advice.massKg.toFixed(2)} kg ÷ `
-          + `${BLAST_KG_PER_HR} kg/h × (blast machine £${rate.toFixed(2)}/h + operator £${lab.toFixed(2)}/h), min £0.10`, 0.5);
+          + `${BLAST_KG_PER_HR} kg/h × (blast machine £${rate.toFixed(2)}/h + operator £${lab.toFixed(2)}/h), `
+          + `min £${floor.toFixed(4)} (UK £${BLAST_MIN_CHARGE_UK.toFixed(2)}${countryNote('process')})`, 0.5);
       },
     },
     {

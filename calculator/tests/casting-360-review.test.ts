@@ -191,3 +191,29 @@ describe('X5 / X19 / X20 — DFM texts claim only what the costing holds', () =>
     void result;
   });
 });
+
+import { buildRegionalLibrary } from '../src/engine/regional-rates.js';
+import { processServiceFactor } from '../src/engine/regional-services.js';
+import { withRates } from '../src/engine/rate-context.js';
+import { BLAST_MIN_CHARGE_UK } from '../src/engine/cost-input-rules/commodities/casting.js';
+
+describe('X40 — the shot-blast minimum follows the country', () => {
+  const all = JSON.parse(readFileSync(new URL('./fixtures/real-parts-baseline.json', import.meta.url), 'utf8')) as Array<{ part: string; geometry: unknown }>;
+  const k = all.find(p => p.part === 'steering_knuckle_RH.stp')!;
+  const answers = { 'material.family': 'cast iron', 'commodity.route': 'cast_and_machine', 'service.pressureTight': 'no',
+    'service.toleranceClass': 'standard', 'service.safetyCritical': 'yes', 'material.grade': 'mat-gjs500' };
+  const blastIn = (region: 'UK' | 'IN') => {
+    const rates = region === 'UK' ? recomputeMachineRates(DEFAULT_RATE_LIBRARY) : buildRegionalLibrary(recomputeMachineRates(DEFAULT_RATE_LIBRARY), region);
+    const ctx = { geo: k.geometry, geometryQuality: 'occt', commodity: 'cast_and_machine', commoditySource: 'engineer', annualVolume: 100_000,
+      filename: k.part, answers, rates };
+    const { analysis } = buildDeterministicAnalysis(specForCommodity('cast_and_machine')!, ctx as never, k.part);
+    return (analysis as { costInputSuggestions: { casting: { shotBlastCostPerPart: number } } }).costInputSuggestions.casting.shotBlastCostPerPart;
+  };
+  it('India: below the UK £0.10, never below the UK minimum × the process-service factor', () => {
+    const v = blastIn('IN');
+    const floor = withRates(buildRegionalLibrary(recomputeMachineRates(DEFAULT_RATE_LIBRARY), 'IN'), () => BLAST_MIN_CHARGE_UK * processServiceFactor());
+    expect(v).toBeLessThan(0.10);
+    expect(v).toBeGreaterThanOrEqual(floor - 1e-4);
+  });
+  it('UK: unchanged (factor 1)', () => { expect(blastIn('UK')).toBeGreaterThanOrEqual(0.10); });
+});
