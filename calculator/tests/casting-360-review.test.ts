@@ -62,3 +62,22 @@ describe('X10 / X11 / X21 / X27 — the report says what the costing holds', () 
     expect(text).toMatch(/machining stock/);
   });
 });
+
+import { metalShareOf } from '../src/engine/idea-levers.js';
+import { generateDFMDFA } from '../src/engine/dfm-dfa.js';
+
+describe('X7 / X8 / X9 — cost-reduction texts quote the lines the costing holds', () => {
+  const { input, result } = sandCastingResult();
+  it('the metal share excludes the consumables and energy in the material bucket', () => {
+    const metal = metalShareOf(result, input);
+    expect(metal).toBeLessThan(result.breakdown.rawMaterial / result.total);
+    expect(metal).toBeCloseTo((result.breakdown.rawMaterial - 4.16) / result.total, 3);
+  });
+  it('the consumables finding names the lines the costing holds, not "shell, filters"', () => {
+    const r = generateDFMDFA(result, input, 'cast_and_machine');
+    const f = r.dfm.issues.find(i => /Consumables dominate/.test(i.title));
+    expect(f).toBeTruthy();
+    expect(f!.description).toMatch(/NDT \d+%/);
+    expect(f!.description).not.toMatch(/shell, filters/);
+  });
+});

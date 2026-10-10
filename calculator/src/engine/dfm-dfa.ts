@@ -308,10 +308,15 @@ export function generateDFMDFA(
       category: 'material',
       lever: 'design',
       title: 'Consumables dominate the material line',
-      description: `Per-part consumables (cores, patterns, shell, filters) are ${(consumShare * 100).toFixed(0)}% of the material cost line.`,
+      // Name the lines the costing actually holds — the text named "cores, patterns, shell, filters" on a green-sand
+      // part whose lines were NDT 43 % and tool wear 32 % (casting 360 review, Oct 2026).
+      description: `Per-part consumables and services are ${(consumShare * 100).toFixed(0)}% of the material cost line`
+        + ((input.rawMaterial?.consumablesItems?.length ?? 0) > 0
+          ? `: ${[...input.rawMaterial!.consumablesItems!].sort((a, b) => b.gbp - a.gbp).map(i => `${i.label} ${Math.round(i.gbp / (input.rawMaterial!.consumablesCostPerPart || 1) * 100)}%`).join(', ')}.`
+          : '.'),
       savingPct: 6,
       risk: 'Medium',
-      recommendation: 'Rationalise core count and pattern life; evaluate reclaim (shell sand, wax); challenge consumable pricing open-book',
+      recommendation: 'Challenge the largest of these lines first (the inspection / NDT sampling plan, tool life, heat treatment, core count) and the consumable pricing open-book',
     });
   }
 

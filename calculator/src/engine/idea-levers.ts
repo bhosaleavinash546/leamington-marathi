@@ -114,11 +114,28 @@ function tendedMachineOp(o: UniversalStackInput['operations'][number]): boolean 
 }
 
 /** £ per part of core / pattern / shell / moulding-sand consumables — itemised where the module itemises them. */
-function coreConsumables(input: UniversalStackInput): number {
+export function coreConsumables(input: UniversalStackInput): number {
   const items = input.rawMaterial.consumablesItems;
   if (items?.length) return items.filter(i => /core|pattern|shell|sand|wax|binder/i.test(i.label)).reduce((s, i) => s + i.gbp, 0);
   return 0;
 }
+
+/**
+ * The METAL's share of the part — the material bucket less the consumables / services carried in it and the melt /
+ * process energy the core priced into it. "Material is 40 % … the lever is the metal itself" quoted the whole bucket,
+ * of which the metal was 17.9 % on the stub axle (casting 360 review, Oct 2026).
+ */
+export function metalShareOf(result: PartCostResult, input: UniversalStackInput): number {
+  const tot = result.total || 0;
+  if (!(tot > 0)) return 0;
+  const energy = ((result as { traceability?: Array<{ field: string; value: number }> }).traceability ?? [])
+    .filter(t => t.field.startsWith('rawMaterial.energyKwh')).reduce((s, t) => s + (Number(t.value) || 0), 0);
+  const metal = (result.breakdown.rawMaterial || 0) - (input.rawMaterial.consumablesCostPerPart ?? 0) - energy;
+  return Math.max(0, metal) / tot;
+}
+
+/** Cutting, drilling, boring, turning, handling, set-up and bench finishing after a casting / forging. */
+const RX_MACHINING_OP = /machin|drill|bor(e|ing)|turn|mill|load \/ clamp|setup|deburr|tap/i;
 
 /**
  * Run every lever that has a transform through the real stack. The saving
@@ -215,12 +232,13 @@ export function generateIdeaLevers(
 
   // ═══ MATERIAL ═══════════════════════════════════════════════════════════════
 
-  if (METAL_FORM.includes(commodity) && matPct > 40) {
+  const metalPct = metalShareOf(result, input) * 100;
+  if (METAL_FORM.includes(commodity) && metalPct > 40) {
     out.push({
       category: 'material', lever: 'design',
       title: 'Alternate Material Grade Study',
-      description: `Material is ${matPct.toFixed(1)}% of part cost — the largest lever on this part is the metal itself. An equivalent lower-cost grade (or secondary/remelt alloy where the spec allows) attacks it directly.`,
-      expectedSavingPct: Math.min(8, 3 + (matPct - 40) * 0.15),
+      description: `The metal is ${metalPct.toFixed(1)}% of part cost — the largest lever on this part is the metal itself. An equivalent lower-cost grade (or secondary/remelt alloy where the spec allows) attacks it directly.`,
+      expectedSavingPct: Math.min(8, 3 + (metalPct - 40) * 0.15),
       technicalJustification: 'Grade substitution within the same family (e.g. 6082→6060 where strength allows, primary→secondary casting alloy, DP600→HSLA where CAE confirms) typically saves 5–15% of the material line with no process change. Requires engineering sign-off against the load case.',
       risk: 'Medium', timeframe: 'Medium Term',
     });
@@ -284,13 +302,15 @@ export function generateIdeaLevers(
   // ═══ DESIGN ═════════════════════════════════════════════════════════════════
 
   const tightShare = opShareOfTotal(RX_TIGHT);
-  if (tightShare > 0.03 || (['machining', 'cast_and_machine'].includes(commodity) && procPct > 35)) {
+  // The machining operations' own share — the process bucket also holds the moulding line on a cast + machine part.
+  const machPct = commodity === 'machining' ? procPct : opShareOfTotal(RX_MACHINING_OP) * 100;
+  if (tightShare > 0.03 || (['machining', 'cast_and_machine'].includes(commodity) && machPct > 35)) {
     out.push({
       category: 'design', lever: 'design',
       title: 'Tolerance and Surface-Finish Relaxation',
       description: tightShare > 0.03
         ? `Grinding/honing/reaming content is ${(tightShare * 100).toFixed(1)}% of the part cost. Each of those operations exists to hit a callout — challenge the callouts before paying for them.`
-        : `Machining is ${procPct.toFixed(1)}% of the part. The tightest tolerance and finish callouts set the machine, the cycle and the inspection burden — reviewing them is the cheapest cost lever that exists.`,
+        : `Machining is ${machPct.toFixed(1)}% of the part (its operations, machine and labour). The tightest tolerance and finish callouts set the machine, the cycle and the inspection burden — reviewing them is the cheapest cost lever that exists.`,
       expectedSavingPct: tightShare > 0.03 ? Math.min(6, tightShare * 100 * 0.8) : 4,
       technicalJustification: 'Industry DFM studies attribute 20–40% of precision-machining cost to the tightest decile of callouts. Opening a ±0.01 to ±0.05 where function allows can delete a grinding operation outright.',
       risk: 'Low', timeframe: 'Quick Win',
