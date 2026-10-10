@@ -15770,11 +15770,16 @@ function renderBreakdown(result: PartCostResult): void {
       <table class="trace-table">
         <thead><tr><th>Field</th><th>Value</th><th>Unit</th><th>Source</th><th>Confidence</th></tr></thead>
         <tbody>
-          ${result.traceability.map(t => `<tr>
-            <td>${t.field}</td><td>${t.value}</td><td>${t.unit}</td>
-            <td style="font-family:sans-serif;font-size:0.76rem">${t.rateSource}</td>
+          ${result.traceability.map(t => {
+            // £ values in the display currency, others at 4 dp (casting 360 S1: "22.438727985074628£/hr" on an INR screen)
+            const isMoney = t.unit.includes('£');
+            const val = isMoney ? _currFmt(t.value) : String(Number(t.value.toFixed(4)));
+            const unit = isMoney ? t.unit.replace('£', '').trim() : t.unit;
+            return `<tr>
+            <td>${escHtml(t.field)}</td><td>${val}</td><td>${escHtml(unit)}</td>
+            <td style="font-family:sans-serif;font-size:0.76rem">${escHtml(t.rateSource)}</td>
             <td><span class="badge ${t.confidence}">${t.confidence}</span></td>
-          </tr>`).join('')}
+          </tr>`; }).join('')}
         </tbody>
       </table>
     </div>
