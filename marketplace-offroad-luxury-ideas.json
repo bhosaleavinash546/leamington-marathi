@@ -13,6 +13,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl001",
       "title": "Consolidate pack enclosure lower tray into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece pack enclosure lower tray (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Mercedes G-Class structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -85,6 +86,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl002",
       "title": "Topology-optimise and down-gauge the cross-member / cell-to-pack frame",
       "technicalDescription": "Re-engineer the cross-member / cell-to-pack frame with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Audi Q8 e-tron uses CAE-led lightweighting on this part.",
@@ -155,6 +157,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl003",
       "title": "Adopt low-carbon recycled feedstock for the module compression plate",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the module compression plate with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Lexus LX sustainability roadmaps target this.",
@@ -218,6 +221,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl004",
       "title": "Delete fasteners on the HV busbar bracket set via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the hv busbar bracket set with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Cadillac Escalade IQ body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -280,6 +284,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl005",
       "title": "Commonise pack lid / top cover variants across the platform",
       "technicalDescription": "Reduce pack lid / top cover variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. NIO ES8 platform strategy commonises this to cut piece price via volume.",
@@ -342,6 +347,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl006",
       "title": "Consolidate mounting bracket array into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece mounting bracket array (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against AITO M9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -414,6 +420,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl007",
       "title": "Topology-optimise and down-gauge the pack enclosure lower tray",
       "technicalDescription": "Re-engineer the pack enclosure lower tray with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Hongqi E-HS9 uses CAE-led lightweighting on this part.",
@@ -484,6 +491,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl008",
       "title": "Adopt low-carbon recycled feedstock for the cross-member / cell-to-pack frame",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the cross-member / cell-to-pack frame with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Rivian R1S sustainability roadmaps target this.",
@@ -547,6 +555,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl009",
       "title": "Delete fasteners on the module compression plate via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the module compression plate with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Mercedes G-Class body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -609,6 +618,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl010",
       "title": "Commonise HV busbar bracket set variants across the platform",
       "technicalDescription": "Reduce hv busbar bracket set variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Audi Q8 e-tron platform strategy commonises this to cut piece price via volume.",
@@ -671,6 +681,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl011",
       "title": "Consolidate pack lid / top cover into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece pack lid / top cover (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Lexus LX structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -743,6 +754,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl012",
       "title": "Topology-optimise and down-gauge the mounting bracket array",
       "technicalDescription": "Re-engineer the mounting bracket array with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Cadillac Escalade IQ uses CAE-led lightweighting on this part.",
@@ -813,6 +825,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl013",
       "title": "Adopt low-carbon recycled feedstock for the pack enclosure lower tray",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the pack enclosure lower tray with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. NIO ES8 sustainability roadmaps target this.",
@@ -876,6 +889,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl014",
       "title": "Delete fasteners on the cross-member / cell-to-pack frame via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the cross-member / cell-to-pack frame with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. AITO M9 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -938,6 +952,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl015",
       "title": "Commonise module compression plate variants across the platform",
       "technicalDescription": "Reduce module compression plate variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Hongqi E-HS9 platform strategy commonises this to cut piece price via volume.",
@@ -1000,6 +1015,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl016",
       "title": "Consolidate EDU housing into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece edu housing (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Porsche Cayenne structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -1072,6 +1088,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl017",
       "title": "Switch the gearbox case to near-net forging to cut machining stock",
       "technicalDescription": "Move the gearbox case from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. BMW X7 chassis/driveline parts use this route.",
@@ -1143,6 +1160,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl018",
       "title": "Topology-optimise and down-gauge the motor end-shield",
       "technicalDescription": "Re-engineer the motor end-shield with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Volvo EX90 uses CAE-led lightweighting on this part.",
@@ -1213,6 +1231,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl019",
       "title": "Adopt low-carbon recycled feedstock for the oil sump / lube gallery",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the oil sump / lube gallery with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Land Cruiser 300 sustainability roadmaps target this.",
@@ -1276,6 +1295,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl020",
       "title": "Commonise rotor shaft variants across the platform",
       "technicalDescription": "Reduce rotor shaft variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Jeep Grand Cherokee 4xe platform strategy commonises this to cut piece price via volume.",
@@ -1338,6 +1358,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl021",
       "title": "Consolidate stator housing jacket into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece stator housing jacket (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Li Auto L9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -1410,6 +1431,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl022",
       "title": "Switch the EDU housing to near-net forging to cut machining stock",
       "technicalDescription": "Move the edu housing from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Yangwang U8 chassis/driveline parts use this route.",
@@ -1481,6 +1503,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl023",
       "title": "Topology-optimise and down-gauge the gearbox case",
       "technicalDescription": "Re-engineer the gearbox case with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Xpeng G9 uses CAE-led lightweighting on this part.",
@@ -1551,6 +1574,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl024",
       "title": "Adopt low-carbon recycled feedstock for the motor end-shield",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the motor end-shield with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Porsche Cayenne sustainability roadmaps target this.",
@@ -1614,6 +1638,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl025",
       "title": "Commonise oil sump / lube gallery variants across the platform",
       "technicalDescription": "Reduce oil sump / lube gallery variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. BMW X7 platform strategy commonises this to cut piece price via volume.",
@@ -1676,6 +1701,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl026",
       "title": "Consolidate rotor shaft into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece rotor shaft (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Volvo EX90 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -1748,6 +1774,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl027",
       "title": "Switch the stator housing jacket to near-net forging to cut machining stock",
       "technicalDescription": "Move the stator housing jacket from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Land Cruiser 300 chassis/driveline parts use this route.",
@@ -1819,6 +1846,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl028",
       "title": "Topology-optimise and down-gauge the EDU housing",
       "technicalDescription": "Re-engineer the edu housing with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Jeep Grand Cherokee 4xe uses CAE-led lightweighting on this part.",
@@ -1889,6 +1917,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl029",
       "title": "Adopt low-carbon recycled feedstock for the gearbox case",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the gearbox case with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Li Auto L9 sustainability roadmaps target this.",
@@ -1952,6 +1981,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl030",
       "title": "Commonise motor end-shield variants across the platform",
       "technicalDescription": "Reduce motor end-shield variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Yangwang U8 platform strategy commonises this to cut piece price via volume.",
@@ -2014,6 +2044,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl031",
       "title": "Consolidate inverter housing into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece inverter housing (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Rivian R1S structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -2086,6 +2117,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl032",
       "title": "Replace the metal DC-link busbar with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the dc-link busbar from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Mercedes G-Class uses metal-replacement here.",
@@ -2158,6 +2190,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl033",
       "title": "Adopt low-carbon recycled feedstock for the power-module cold plate",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the power-module cold plate with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Audi Q8 e-tron sustainability roadmaps target this.",
@@ -2221,6 +2254,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl034",
       "title": "Delete fasteners on the gate-driver bracket via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the gate-driver bracket with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Lexus LX body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -2283,6 +2317,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl035",
       "title": "Commonise HV connector body variants across the platform",
       "technicalDescription": "Reduce hv connector body variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Cadillac Escalade IQ platform strategy commonises this to cut piece price via volume.",
@@ -2345,6 +2380,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl036",
       "title": "Consolidate capacitor mounting frame into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece capacitor mounting frame (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against NIO ES8 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -2417,6 +2453,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl037",
       "title": "Replace the metal inverter housing with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the inverter housing from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; AITO M9 uses metal-replacement here.",
@@ -2489,6 +2526,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl038",
       "title": "Adopt low-carbon recycled feedstock for the DC-link busbar",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the dc-link busbar with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Hongqi E-HS9 sustainability roadmaps target this.",
@@ -2552,6 +2590,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl039",
       "title": "Delete fasteners on the power-module cold plate via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the power-module cold plate with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Rivian R1S body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -2614,6 +2653,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl040",
       "title": "Commonise gate-driver bracket variants across the platform",
       "technicalDescription": "Reduce gate-driver bracket variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Mercedes G-Class platform strategy commonises this to cut piece price via volume.",
@@ -2676,6 +2716,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl041",
       "title": "Consolidate HV connector body into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece hv connector body (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Audi Q8 e-tron structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -2748,6 +2789,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl042",
       "title": "Replace the metal capacitor mounting frame with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the capacitor mounting frame from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Lexus LX uses metal-replacement here.",
@@ -2820,6 +2862,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl043",
       "title": "Adopt low-carbon recycled feedstock for the inverter housing",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the inverter housing with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Cadillac Escalade IQ sustainability roadmaps target this.",
@@ -2883,6 +2926,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl044",
       "title": "Delete fasteners on the DC-link busbar via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the dc-link busbar with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. NIO ES8 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -2945,6 +2989,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl045",
       "title": "Commonise power-module cold plate variants across the platform",
       "technicalDescription": "Reduce power-module cold plate variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. AITO M9 platform strategy commonises this to cut piece price via volume.",
@@ -3007,6 +3052,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl046",
       "title": "Replace the metal coolant distribution manifold with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the coolant distribution manifold from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Xpeng G9 uses metal-replacement here.",
@@ -3079,6 +3125,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl047",
       "title": "Consolidate chiller/heat-exchanger bracketry into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece chiller/heat-exchanger bracketry (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Porsche Cayenne structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -3151,6 +3198,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl048",
       "title": "Adopt low-carbon recycled feedstock for the battery cold-plate",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the battery cold-plate with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. BMW X7 sustainability roadmaps target this.",
@@ -3214,6 +3262,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl049",
       "title": "Delete fasteners on the coolant pipe set via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the coolant pipe set with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Volvo EX90 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -3276,6 +3325,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl050",
       "title": "Commonise expansion tank variants across the platform",
       "technicalDescription": "Reduce expansion tank variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Land Cruiser 300 platform strategy commonises this to cut piece price via volume.",
@@ -3338,6 +3388,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl051",
       "title": "Replace the metal valve-block housing with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the valve-block housing from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Jeep Grand Cherokee 4xe uses metal-replacement here.",
@@ -3410,6 +3461,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl052",
       "title": "Consolidate coolant distribution manifold into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece coolant distribution manifold (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Li Auto L9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -3482,6 +3534,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl053",
       "title": "Adopt low-carbon recycled feedstock for the chiller/heat-exchanger bracketry",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the chiller/heat-exchanger bracketry with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Yangwang U8 sustainability roadmaps target this.",
@@ -3545,6 +3598,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl054",
       "title": "Delete fasteners on the battery cold-plate via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the battery cold-plate with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Xpeng G9 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -3607,6 +3661,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl055",
       "title": "Commonise coolant pipe set variants across the platform",
       "technicalDescription": "Reduce coolant pipe set variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Porsche Cayenne platform strategy commonises this to cut piece price via volume.",
@@ -3669,6 +3724,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl056",
       "title": "Replace the metal expansion tank with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the expansion tank from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; BMW X7 uses metal-replacement here.",
@@ -3741,6 +3797,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl057",
       "title": "Consolidate valve-block housing into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece valve-block housing (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Volvo EX90 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -3813,6 +3870,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl058",
       "title": "Adopt low-carbon recycled feedstock for the coolant distribution manifold",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the coolant distribution manifold with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Land Cruiser 300 sustainability roadmaps target this.",
@@ -3876,6 +3934,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl059",
       "title": "Delete fasteners on the chiller/heat-exchanger bracketry via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the chiller/heat-exchanger bracketry with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Jeep Grand Cherokee 4xe body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -3938,6 +3997,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl060",
       "title": "Commonise battery cold-plate variants across the platform",
       "technicalDescription": "Reduce battery cold-plate variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Li Auto L9 platform strategy commonises this to cut piece price via volume.",
@@ -4000,6 +4060,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl061",
       "title": "Consolidate front rail / crash can into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece front rail / crash can (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Hongqi E-HS9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -4072,6 +4133,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl062",
       "title": "Tailor-weld the shock tower blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the shock tower to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Rivian R1S body engineering uses this to cut mass and weld count.",
@@ -4143,6 +4205,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl063",
       "title": "Topology-optimise and down-gauge the A-pillar reinforcement",
       "technicalDescription": "Re-engineer the a-pillar reinforcement with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Mercedes G-Class uses CAE-led lightweighting on this part.",
@@ -4213,6 +4276,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl064",
       "title": "Delete fasteners on the rear longitudinal rail via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the rear longitudinal rail with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Audi Q8 e-tron body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -4275,6 +4339,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl065",
       "title": "Adopt low-carbon recycled feedstock for the dash cross-member",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the dash cross-member with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Lexus LX sustainability roadmaps target this.",
@@ -4338,6 +4403,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl066",
       "title": "Consolidate roof bow set into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece roof bow set (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Cadillac Escalade IQ structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -4410,6 +4476,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl067",
       "title": "Tailor-weld the front rail / crash can blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the front rail / crash can to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. NIO ES8 body engineering uses this to cut mass and weld count.",
@@ -4481,6 +4548,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl068",
       "title": "Topology-optimise and down-gauge the shock tower",
       "technicalDescription": "Re-engineer the shock tower with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. AITO M9 uses CAE-led lightweighting on this part.",
@@ -4551,6 +4619,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl069",
       "title": "Delete fasteners on the A-pillar reinforcement via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the a-pillar reinforcement with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Hongqi E-HS9 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -4613,6 +4682,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl070",
       "title": "Adopt low-carbon recycled feedstock for the rear longitudinal rail",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the rear longitudinal rail with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Rivian R1S sustainability roadmaps target this.",
@@ -4676,6 +4746,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl071",
       "title": "Consolidate dash cross-member into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece dash cross-member (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Mercedes G-Class structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -4748,6 +4819,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl072",
       "title": "Tailor-weld the roof bow set blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the roof bow set to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Audi Q8 e-tron body engineering uses this to cut mass and weld count.",
@@ -4819,6 +4891,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl073",
       "title": "Topology-optimise and down-gauge the front rail / crash can",
       "technicalDescription": "Re-engineer the front rail / crash can with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Lexus LX uses CAE-led lightweighting on this part.",
@@ -4889,6 +4962,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl074",
       "title": "Delete fasteners on the shock tower via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the shock tower with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Cadillac Escalade IQ body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -4951,6 +5025,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl075",
       "title": "Adopt low-carbon recycled feedstock for the A-pillar reinforcement",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the a-pillar reinforcement with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. NIO ES8 sustainability roadmaps target this.",
@@ -5014,6 +5089,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl076",
       "title": "Tailor-weld the rocker / sill beam blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the rocker / sill beam to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Yangwang U8 body engineering uses this to cut mass and weld count.",
@@ -5085,6 +5161,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl077",
       "title": "Topology-optimise and down-gauge the B-pillar",
       "technicalDescription": "Re-engineer the b-pillar with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Xpeng G9 uses CAE-led lightweighting on this part.",
@@ -5155,6 +5232,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl078",
       "title": "Consolidate floor cross-member into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece floor cross-member (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Porsche Cayenne structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -5227,6 +5305,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl079",
       "title": "Adopt low-carbon recycled feedstock for the underbody tunnel",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the underbody tunnel with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. BMW X7 sustainability roadmaps target this.",
@@ -5290,6 +5369,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl080",
       "title": "Commonise strut brace variants across the platform",
       "technicalDescription": "Reduce strut brace variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Volvo EX90 platform strategy commonises this to cut piece price via volume.",
@@ -5352,6 +5432,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl081",
       "title": "Tailor-weld the bumper beam blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the bumper beam to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Land Cruiser 300 body engineering uses this to cut mass and weld count.",
@@ -5423,6 +5504,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl082",
       "title": "Topology-optimise and down-gauge the rocker / sill beam",
       "technicalDescription": "Re-engineer the rocker / sill beam with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Jeep Grand Cherokee 4xe uses CAE-led lightweighting on this part.",
@@ -5493,6 +5575,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl083",
       "title": "Consolidate B-pillar into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece b-pillar (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Li Auto L9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -5565,6 +5648,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl084",
       "title": "Adopt low-carbon recycled feedstock for the floor cross-member",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the floor cross-member with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Yangwang U8 sustainability roadmaps target this.",
@@ -5628,6 +5712,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl085",
       "title": "Commonise underbody tunnel variants across the platform",
       "technicalDescription": "Reduce underbody tunnel variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Xpeng G9 platform strategy commonises this to cut piece price via volume.",
@@ -5690,6 +5775,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl086",
       "title": "Tailor-weld the strut brace blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the strut brace to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Porsche Cayenne body engineering uses this to cut mass and weld count.",
@@ -5761,6 +5847,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl087",
       "title": "Topology-optimise and down-gauge the bumper beam",
       "technicalDescription": "Re-engineer the bumper beam with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. BMW X7 uses CAE-led lightweighting on this part.",
@@ -5831,6 +5918,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl088",
       "title": "Consolidate rocker / sill beam into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece rocker / sill beam (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Volvo EX90 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -5903,6 +5991,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl089",
       "title": "Adopt low-carbon recycled feedstock for the B-pillar",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the b-pillar with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Land Cruiser 300 sustainability roadmaps target this.",
@@ -5966,6 +6055,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl090",
       "title": "Commonise floor cross-member variants across the platform",
       "technicalDescription": "Reduce floor cross-member variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Jeep Grand Cherokee 4xe platform strategy commonises this to cut piece price via volume.",
@@ -6028,6 +6118,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl091",
       "title": "Replace the metal front fascia / bumper cover with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the front fascia / bumper cover from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; AITO M9 uses metal-replacement here.",
@@ -6100,6 +6191,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl092",
       "title": "Adopt low-carbon recycled feedstock for the wheel-arch cladding",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the wheel-arch cladding with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Hongqi E-HS9 sustainability roadmaps target this.",
@@ -6163,6 +6255,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl093",
       "title": "Delete fasteners on the roof rail via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the roof rail with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Rivian R1S body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -6225,6 +6318,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl094",
       "title": "Commonise tailgate outer variants across the platform",
       "technicalDescription": "Reduce tailgate outer variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Mercedes G-Class platform strategy commonises this to cut piece price via volume.",
@@ -6287,6 +6381,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl095",
       "title": "Tailor-weld the skid-plate blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the skid-plate to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Audi Q8 e-tron body engineering uses this to cut mass and weld count.",
@@ -6358,6 +6453,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl096",
       "title": "Replace the metal side-step / running board with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the side-step / running board from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Lexus LX uses metal-replacement here.",
@@ -6430,6 +6526,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl097",
       "title": "Adopt low-carbon recycled feedstock for the front fascia / bumper cover",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the front fascia / bumper cover with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Cadillac Escalade IQ sustainability roadmaps target this.",
@@ -6493,6 +6590,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl098",
       "title": "Delete fasteners on the wheel-arch cladding via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the wheel-arch cladding with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. NIO ES8 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -6555,6 +6653,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl099",
       "title": "Commonise roof rail variants across the platform",
       "technicalDescription": "Reduce roof rail variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. AITO M9 platform strategy commonises this to cut piece price via volume.",
@@ -6617,6 +6716,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl100",
       "title": "Tailor-weld the tailgate outer blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the tailgate outer to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Hongqi E-HS9 body engineering uses this to cut mass and weld count.",
@@ -6688,6 +6788,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl101",
       "title": "Replace the metal skid-plate with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the skid-plate from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Rivian R1S uses metal-replacement here.",
@@ -6760,6 +6861,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl102",
       "title": "Adopt low-carbon recycled feedstock for the side-step / running board",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the side-step / running board with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Mercedes G-Class sustainability roadmaps target this.",
@@ -6823,6 +6925,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl103",
       "title": "Delete fasteners on the front fascia / bumper cover via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the front fascia / bumper cover with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Audi Q8 e-tron body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -6885,6 +6988,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl104",
       "title": "Commonise wheel-arch cladding variants across the platform",
       "technicalDescription": "Reduce wheel-arch cladding variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Lexus LX platform strategy commonises this to cut piece price via volume.",
@@ -6947,6 +7051,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl105",
       "title": "Tailor-weld the roof rail blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the roof rail to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Cadillac Escalade IQ body engineering uses this to cut mass and weld count.",
@@ -7018,6 +7123,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl106",
       "title": "Replace the metal instrument-panel carrier with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the instrument-panel carrier from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Li Auto L9 uses metal-replacement here.",
@@ -7090,6 +7196,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl107",
       "title": "Delete fasteners on the seat structure frame via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the seat structure frame with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Yangwang U8 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -7152,6 +7259,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl108",
       "title": "Adopt low-carbon recycled feedstock for the centre-console substructure",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the centre-console substructure with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Xpeng G9 sustainability roadmaps target this.",
@@ -7215,6 +7323,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl109",
       "title": "Commonise door-trim carrier variants across the platform",
       "technicalDescription": "Reduce door-trim carrier variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Porsche Cayenne platform strategy commonises this to cut piece price via volume.",
@@ -7277,6 +7386,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl110",
       "title": "Topology-optimise and down-gauge the cross-car beam",
       "technicalDescription": "Re-engineer the cross-car beam with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. BMW X7 uses CAE-led lightweighting on this part.",
@@ -7347,6 +7457,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl111",
       "title": "Replace the metal load-floor panel with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the load-floor panel from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Volvo EX90 uses metal-replacement here.",
@@ -7419,6 +7530,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl112",
       "title": "Delete fasteners on the instrument-panel carrier via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the instrument-panel carrier with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Land Cruiser 300 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -7481,6 +7593,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl113",
       "title": "Adopt low-carbon recycled feedstock for the seat structure frame",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the seat structure frame with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Jeep Grand Cherokee 4xe sustainability roadmaps target this.",
@@ -7544,6 +7657,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl114",
       "title": "Commonise centre-console substructure variants across the platform",
       "technicalDescription": "Reduce centre-console substructure variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Li Auto L9 platform strategy commonises this to cut piece price via volume.",
@@ -7606,6 +7720,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl115",
       "title": "Topology-optimise and down-gauge the door-trim carrier",
       "technicalDescription": "Re-engineer the door-trim carrier with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Yangwang U8 uses CAE-led lightweighting on this part.",
@@ -7676,6 +7791,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl116",
       "title": "Replace the metal cross-car beam with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the cross-car beam from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Xpeng G9 uses metal-replacement here.",
@@ -7748,6 +7864,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl117",
       "title": "Delete fasteners on the load-floor panel via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the load-floor panel with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Porsche Cayenne body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -7810,6 +7927,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl118",
       "title": "Adopt low-carbon recycled feedstock for the instrument-panel carrier",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the instrument-panel carrier with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. BMW X7 sustainability roadmaps target this.",
@@ -7873,6 +7991,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl119",
       "title": "Commonise seat structure frame variants across the platform",
       "technicalDescription": "Reduce seat structure frame variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Volvo EX90 platform strategy commonises this to cut piece price via volume.",
@@ -7935,6 +8054,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl120",
       "title": "Topology-optimise and down-gauge the centre-console substructure",
       "technicalDescription": "Re-engineer the centre-console substructure with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Land Cruiser 300 uses CAE-led lightweighting on this part.",
@@ -8005,6 +8125,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl121",
       "title": "Switch the air-spring top mount to near-net forging to cut machining stock",
       "technicalDescription": "Move the air-spring top mount from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. NIO ES8 chassis/driveline parts use this route.",
@@ -8076,6 +8197,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl122",
       "title": "Replace the metal strut bracket with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the strut bracket from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; AITO M9 uses metal-replacement here.",
@@ -8148,6 +8270,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl123",
       "title": "Topology-optimise and down-gauge the compressor mounting frame",
       "technicalDescription": "Re-engineer the compressor mounting frame with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Hongqi E-HS9 uses CAE-led lightweighting on this part.",
@@ -8218,6 +8341,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl124",
       "title": "Commonise air-line manifold variants across the platform",
       "technicalDescription": "Reduce air-line manifold variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Rivian R1S platform strategy commonises this to cut piece price via volume.",
@@ -8280,6 +8404,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl125",
       "title": "Adopt low-carbon recycled feedstock for the ride-height sensor bracket",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the ride-height sensor bracket with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Mercedes G-Class sustainability roadmaps target this.",
@@ -8343,6 +8468,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl126",
       "title": "Switch the reservoir tank bracket to near-net forging to cut machining stock",
       "technicalDescription": "Move the reservoir tank bracket from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Audi Q8 e-tron chassis/driveline parts use this route.",
@@ -8414,6 +8540,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl127",
       "title": "Replace the metal air-spring top mount with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the air-spring top mount from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Lexus LX uses metal-replacement here.",
@@ -8486,6 +8613,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl128",
       "title": "Topology-optimise and down-gauge the strut bracket",
       "technicalDescription": "Re-engineer the strut bracket with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Cadillac Escalade IQ uses CAE-led lightweighting on this part.",
@@ -8556,6 +8684,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl129",
       "title": "Commonise compressor mounting frame variants across the platform",
       "technicalDescription": "Reduce compressor mounting frame variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. NIO ES8 platform strategy commonises this to cut piece price via volume.",
@@ -8618,6 +8747,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl130",
       "title": "Adopt low-carbon recycled feedstock for the air-line manifold",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the air-line manifold with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. AITO M9 sustainability roadmaps target this.",
@@ -8681,6 +8811,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl131",
       "title": "Switch the ride-height sensor bracket to near-net forging to cut machining stock",
       "technicalDescription": "Move the ride-height sensor bracket from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Hongqi E-HS9 chassis/driveline parts use this route.",
@@ -8752,6 +8883,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl132",
       "title": "Replace the metal reservoir tank bracket with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the reservoir tank bracket from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Rivian R1S uses metal-replacement here.",
@@ -8824,6 +8956,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl133",
       "title": "Topology-optimise and down-gauge the air-spring top mount",
       "technicalDescription": "Re-engineer the air-spring top mount with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Mercedes G-Class uses CAE-led lightweighting on this part.",
@@ -8894,6 +9027,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl134",
       "title": "Commonise strut bracket variants across the platform",
       "technicalDescription": "Reduce strut bracket variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Audi Q8 e-tron platform strategy commonises this to cut piece price via volume.",
@@ -8956,6 +9090,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl135",
       "title": "Adopt low-carbon recycled feedstock for the compressor mounting frame",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the compressor mounting frame with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Lexus LX sustainability roadmaps target this.",
@@ -9019,6 +9154,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl136",
       "title": "Switch the caliper bracket to near-net forging to cut machining stock",
       "technicalDescription": "Move the caliper bracket from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Jeep Grand Cherokee 4xe chassis/driveline parts use this route.",
@@ -9090,6 +9226,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl137",
       "title": "Topology-optimise and down-gauge the brake pedal box",
       "technicalDescription": "Re-engineer the brake pedal box with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Li Auto L9 uses CAE-led lightweighting on this part.",
@@ -9160,6 +9297,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl138",
       "title": "Replace the metal disc hat / bell with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the disc hat / bell from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Yangwang U8 uses metal-replacement here.",
@@ -9232,6 +9370,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl139",
       "title": "Commonise ABS module bracket variants across the platform",
       "technicalDescription": "Reduce abs module bracket variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Xpeng G9 platform strategy commonises this to cut piece price via volume.",
@@ -9294,6 +9433,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl140",
       "title": "Adopt low-carbon recycled feedstock for the master-cylinder mount",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the master-cylinder mount with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Porsche Cayenne sustainability roadmaps target this.",
@@ -9357,6 +9497,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl141",
       "title": "Switch the park-brake actuator bracket to near-net forging to cut machining stock",
       "technicalDescription": "Move the park-brake actuator bracket from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. BMW X7 chassis/driveline parts use this route.",
@@ -9428,6 +9569,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl142",
       "title": "Topology-optimise and down-gauge the caliper bracket",
       "technicalDescription": "Re-engineer the caliper bracket with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Volvo EX90 uses CAE-led lightweighting on this part.",
@@ -9498,6 +9640,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl143",
       "title": "Replace the metal brake pedal box with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the brake pedal box from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Land Cruiser 300 uses metal-replacement here.",
@@ -9570,6 +9713,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl144",
       "title": "Commonise disc hat / bell variants across the platform",
       "technicalDescription": "Reduce disc hat / bell variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Jeep Grand Cherokee 4xe platform strategy commonises this to cut piece price via volume.",
@@ -9632,6 +9776,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl145",
       "title": "Adopt low-carbon recycled feedstock for the ABS module bracket",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the abs module bracket with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Li Auto L9 sustainability roadmaps target this.",
@@ -9695,6 +9840,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl146",
       "title": "Switch the master-cylinder mount to near-net forging to cut machining stock",
       "technicalDescription": "Move the master-cylinder mount from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Yangwang U8 chassis/driveline parts use this route.",
@@ -9766,6 +9912,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl147",
       "title": "Topology-optimise and down-gauge the park-brake actuator bracket",
       "technicalDescription": "Re-engineer the park-brake actuator bracket with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Xpeng G9 uses CAE-led lightweighting on this part.",
@@ -9836,6 +9983,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl148",
       "title": "Replace the metal caliper bracket with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the caliper bracket from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Porsche Cayenne uses metal-replacement here.",
@@ -9908,6 +10056,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl149",
       "title": "Commonise brake pedal box variants across the platform",
       "technicalDescription": "Reduce brake pedal box variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. BMW X7 platform strategy commonises this to cut piece price via volume.",
@@ -9970,6 +10119,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl150",
       "title": "Adopt low-carbon recycled feedstock for the disc hat / bell",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the disc hat / bell with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Volvo EX90 sustainability roadmaps target this.",
@@ -10033,6 +10183,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl151",
       "title": "Switch the steering-gear housing to near-net forging to cut machining stock",
       "technicalDescription": "Move the steering-gear housing from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Cadillac Escalade IQ chassis/driveline parts use this route.",
@@ -10104,6 +10255,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl152",
       "title": "Topology-optimise and down-gauge the column support bracket",
       "technicalDescription": "Re-engineer the column support bracket with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. NIO ES8 uses CAE-led lightweighting on this part.",
@@ -10174,6 +10326,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl153",
       "title": "Commonise tie-rod variants across the platform",
       "technicalDescription": "Reduce tie-rod variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. AITO M9 platform strategy commonises this to cut piece price via volume.",
@@ -10236,6 +10389,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl154",
       "title": "Adopt low-carbon recycled feedstock for the pinion shaft",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the pinion shaft with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Hongqi E-HS9 sustainability roadmaps target this.",
@@ -10299,6 +10453,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl155",
       "title": "Replace the metal motor mount (EPS) with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the motor mount (eps) from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Rivian R1S uses metal-replacement here.",
@@ -10371,6 +10526,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl156",
       "title": "Switch the intermediate-shaft yoke to near-net forging to cut machining stock",
       "technicalDescription": "Move the intermediate-shaft yoke from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Mercedes G-Class chassis/driveline parts use this route.",
@@ -10442,6 +10598,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl157",
       "title": "Topology-optimise and down-gauge the steering-gear housing",
       "technicalDescription": "Re-engineer the steering-gear housing with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Audi Q8 e-tron uses CAE-led lightweighting on this part.",
@@ -10512,6 +10669,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl158",
       "title": "Commonise column support bracket variants across the platform",
       "technicalDescription": "Reduce column support bracket variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Lexus LX platform strategy commonises this to cut piece price via volume.",
@@ -10574,6 +10732,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl159",
       "title": "Adopt low-carbon recycled feedstock for the tie-rod",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the tie-rod with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Cadillac Escalade IQ sustainability roadmaps target this.",
@@ -10637,6 +10796,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl160",
       "title": "Replace the metal pinion shaft with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the pinion shaft from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; NIO ES8 uses metal-replacement here.",
@@ -10709,6 +10869,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl161",
       "title": "Switch the motor mount (EPS) to near-net forging to cut machining stock",
       "technicalDescription": "Move the motor mount (eps) from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. AITO M9 chassis/driveline parts use this route.",
@@ -10780,6 +10941,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl162",
       "title": "Topology-optimise and down-gauge the intermediate-shaft yoke",
       "technicalDescription": "Re-engineer the intermediate-shaft yoke with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Hongqi E-HS9 uses CAE-led lightweighting on this part.",
@@ -10850,6 +11012,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl163",
       "title": "Commonise steering-gear housing variants across the platform",
       "technicalDescription": "Reduce steering-gear housing variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Rivian R1S platform strategy commonises this to cut piece price via volume.",
@@ -10912,6 +11075,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl164",
       "title": "Adopt low-carbon recycled feedstock for the column support bracket",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the column support bracket with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Mercedes G-Class sustainability roadmaps target this.",
@@ -10975,6 +11139,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl165",
       "title": "Replace the metal tie-rod with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the tie-rod from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Audi Q8 e-tron uses metal-replacement here.",
@@ -11047,6 +11212,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl166",
       "title": "Topology-optimise and down-gauge the wheel rim",
       "technicalDescription": "Re-engineer the wheel rim with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Land Cruiser 300 uses CAE-led lightweighting on this part.",
@@ -11117,6 +11283,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl167",
       "title": "Adopt low-carbon recycled feedstock for the wheel centre / hub face",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the wheel centre / hub face with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Jeep Grand Cherokee 4xe sustainability roadmaps target this.",
@@ -11180,6 +11347,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl168",
       "title": "Commonise TPMS bracket variants across the platform",
       "technicalDescription": "Reduce tpms bracket variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Li Auto L9 platform strategy commonises this to cut piece price via volume.",
@@ -11242,6 +11410,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl169",
       "title": "Replace the metal wheel-bolt set with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the wheel-bolt set from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Yangwang U8 uses metal-replacement here.",
@@ -11314,6 +11483,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl170",
       "title": "Switch the aero wheel cover to near-net forging to cut machining stock",
       "technicalDescription": "Move the aero wheel cover from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Xpeng G9 chassis/driveline parts use this route.",
@@ -11385,6 +11555,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl171",
       "title": "Topology-optimise and down-gauge the spare-wheel carrier",
       "technicalDescription": "Re-engineer the spare-wheel carrier with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Porsche Cayenne uses CAE-led lightweighting on this part.",
@@ -11455,6 +11626,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl172",
       "title": "Adopt low-carbon recycled feedstock for the wheel rim",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the wheel rim with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. BMW X7 sustainability roadmaps target this.",
@@ -11518,6 +11690,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl173",
       "title": "Commonise wheel centre / hub face variants across the platform",
       "technicalDescription": "Reduce wheel centre / hub face variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Volvo EX90 platform strategy commonises this to cut piece price via volume.",
@@ -11580,6 +11753,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl174",
       "title": "Replace the metal TPMS bracket with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the tpms bracket from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Land Cruiser 300 uses metal-replacement here.",
@@ -11652,6 +11826,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl175",
       "title": "Switch the wheel-bolt set to near-net forging to cut machining stock",
       "technicalDescription": "Move the wheel-bolt set from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Jeep Grand Cherokee 4xe chassis/driveline parts use this route.",
@@ -11723,6 +11898,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl176",
       "title": "Topology-optimise and down-gauge the aero wheel cover",
       "technicalDescription": "Re-engineer the aero wheel cover with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Li Auto L9 uses CAE-led lightweighting on this part.",
@@ -11793,6 +11969,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl177",
       "title": "Adopt low-carbon recycled feedstock for the spare-wheel carrier",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the spare-wheel carrier with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Yangwang U8 sustainability roadmaps target this.",
@@ -11856,6 +12033,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl178",
       "title": "Commonise wheel rim variants across the platform",
       "technicalDescription": "Reduce wheel rim variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Xpeng G9 platform strategy commonises this to cut piece price via volume.",
@@ -11918,6 +12096,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl179",
       "title": "Replace the metal wheel centre / hub face with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the wheel centre / hub face from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Porsche Cayenne uses metal-replacement here.",
@@ -11990,6 +12169,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl180",
       "title": "Switch the TPMS bracket to near-net forging to cut machining stock",
       "technicalDescription": "Move the tpms bracket from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. BMW X7 chassis/driveline parts use this route.",
@@ -12061,6 +12241,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl181",
       "title": "Switch the axle beam / housing to near-net forging to cut machining stock",
       "technicalDescription": "Move the axle beam / housing from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Lexus LX chassis/driveline parts use this route.",
@@ -12132,6 +12313,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl182",
       "title": "Consolidate axle tube into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece axle tube (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Cadillac Escalade IQ structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -12204,6 +12386,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl183",
       "title": "Topology-optimise and down-gauge the hub carrier",
       "technicalDescription": "Re-engineer the hub carrier with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. NIO ES8 uses CAE-led lightweighting on this part.",
@@ -12274,6 +12457,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl184",
       "title": "Commonise spindle variants across the platform",
       "technicalDescription": "Reduce spindle variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. AITO M9 platform strategy commonises this to cut piece price via volume.",
@@ -12336,6 +12520,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl185",
       "title": "Adopt low-carbon recycled feedstock for the axle flange",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the axle flange with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Hongqi E-HS9 sustainability roadmaps target this.",
@@ -12399,6 +12584,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl186",
       "title": "Switch the breather / vent bracket to near-net forging to cut machining stock",
       "technicalDescription": "Move the breather / vent bracket from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Rivian R1S chassis/driveline parts use this route.",
@@ -12470,6 +12656,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl187",
       "title": "Consolidate axle beam / housing into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece axle beam / housing (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Mercedes G-Class structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -12542,6 +12729,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl188",
       "title": "Topology-optimise and down-gauge the axle tube",
       "technicalDescription": "Re-engineer the axle tube with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Audi Q8 e-tron uses CAE-led lightweighting on this part.",
@@ -12612,6 +12800,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl189",
       "title": "Commonise hub carrier variants across the platform",
       "technicalDescription": "Reduce hub carrier variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Lexus LX platform strategy commonises this to cut piece price via volume.",
@@ -12674,6 +12863,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl190",
       "title": "Adopt low-carbon recycled feedstock for the spindle",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the spindle with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Cadillac Escalade IQ sustainability roadmaps target this.",
@@ -12737,6 +12927,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl191",
       "title": "Switch the axle flange to near-net forging to cut machining stock",
       "technicalDescription": "Move the axle flange from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. NIO ES8 chassis/driveline parts use this route.",
@@ -12808,6 +12999,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl192",
       "title": "Consolidate breather / vent bracket into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece breather / vent bracket (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against AITO M9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -12880,6 +13072,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl193",
       "title": "Topology-optimise and down-gauge the axle beam / housing",
       "technicalDescription": "Re-engineer the axle beam / housing with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Hongqi E-HS9 uses CAE-led lightweighting on this part.",
@@ -12950,6 +13143,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl194",
       "title": "Commonise axle tube variants across the platform",
       "technicalDescription": "Reduce axle tube variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Rivian R1S platform strategy commonises this to cut piece price via volume.",
@@ -13012,6 +13206,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl195",
       "title": "Adopt low-carbon recycled feedstock for the hub carrier",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the hub carrier with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Mercedes G-Class sustainability roadmaps target this.",
@@ -13075,6 +13270,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl196",
       "title": "Consolidate front lower control arm into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece front lower control arm (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Volvo EX90 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -13147,6 +13343,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl197",
       "title": "Switch the upper control arm to near-net forging to cut machining stock",
       "technicalDescription": "Move the upper control arm from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Land Cruiser 300 chassis/driveline parts use this route.",
@@ -13218,6 +13415,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl198",
       "title": "Topology-optimise and down-gauge the trailing arm",
       "technicalDescription": "Re-engineer the trailing arm with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Jeep Grand Cherokee 4xe uses CAE-led lightweighting on this part.",
@@ -13288,6 +13486,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl199",
       "title": "Adopt low-carbon recycled feedstock for the lateral link",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the lateral link with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Li Auto L9 sustainability roadmaps target this.",
@@ -13351,6 +13550,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl200",
       "title": "Commonise toe link variants across the platform",
       "technicalDescription": "Reduce toe link variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Yangwang U8 platform strategy commonises this to cut piece price via volume.",
@@ -13413,6 +13613,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl201",
       "title": "Consolidate ball-joint housing into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece ball-joint housing (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Xpeng G9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -13485,6 +13686,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl202",
       "title": "Switch the front lower control arm to near-net forging to cut machining stock",
       "technicalDescription": "Move the front lower control arm from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Porsche Cayenne chassis/driveline parts use this route.",
@@ -13556,6 +13758,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl203",
       "title": "Topology-optimise and down-gauge the upper control arm",
       "technicalDescription": "Re-engineer the upper control arm with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. BMW X7 uses CAE-led lightweighting on this part.",
@@ -13626,6 +13829,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl204",
       "title": "Adopt low-carbon recycled feedstock for the trailing arm",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the trailing arm with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Volvo EX90 sustainability roadmaps target this.",
@@ -13689,6 +13893,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl205",
       "title": "Commonise lateral link variants across the platform",
       "technicalDescription": "Reduce lateral link variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Land Cruiser 300 platform strategy commonises this to cut piece price via volume.",
@@ -13751,6 +13956,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl206",
       "title": "Consolidate toe link into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece toe link (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Jeep Grand Cherokee 4xe structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -13823,6 +14029,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl207",
       "title": "Switch the ball-joint housing to near-net forging to cut machining stock",
       "technicalDescription": "Move the ball-joint housing from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Li Auto L9 chassis/driveline parts use this route.",
@@ -13894,6 +14101,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl208",
       "title": "Topology-optimise and down-gauge the front lower control arm",
       "technicalDescription": "Re-engineer the front lower control arm with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Yangwang U8 uses CAE-led lightweighting on this part.",
@@ -13964,6 +14172,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl209",
       "title": "Adopt low-carbon recycled feedstock for the upper control arm",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the upper control arm with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Xpeng G9 sustainability roadmaps target this.",
@@ -14027,6 +14236,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl210",
       "title": "Commonise trailing arm variants across the platform",
       "technicalDescription": "Reduce trailing arm variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Porsche Cayenne platform strategy commonises this to cut piece price via volume.",
@@ -14089,6 +14299,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl211",
       "title": "Consolidate front subframe into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece front subframe (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Audi Q8 e-tron structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -14161,6 +14372,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl212",
       "title": "Tailor-weld the rear subframe / cradle blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the rear subframe / cradle to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Lexus LX body engineering uses this to cut mass and weld count.",
@@ -14232,6 +14444,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl213",
       "title": "Topology-optimise and down-gauge the engine/EDU carrier",
       "technicalDescription": "Re-engineer the engine/edu carrier with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Cadillac Escalade IQ uses CAE-led lightweighting on this part.",
@@ -14302,6 +14515,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl214",
       "title": "Delete fasteners on the subframe bushing sleeve via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the subframe bushing sleeve with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. NIO ES8 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -14364,6 +14578,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl215",
       "title": "Adopt low-carbon recycled feedstock for the tie-bar",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the tie-bar with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. AITO M9 sustainability roadmaps target this.",
@@ -14427,6 +14642,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl216",
       "title": "Consolidate mounting-point node into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece mounting-point node (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Hongqi E-HS9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -14499,6 +14715,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl217",
       "title": "Tailor-weld the front subframe blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the front subframe to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. Rivian R1S body engineering uses this to cut mass and weld count.",
@@ -14570,6 +14787,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl218",
       "title": "Topology-optimise and down-gauge the rear subframe / cradle",
       "technicalDescription": "Re-engineer the rear subframe / cradle with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Mercedes G-Class uses CAE-led lightweighting on this part.",
@@ -14640,6 +14858,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl219",
       "title": "Delete fasteners on the engine/EDU carrier via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the engine/edu carrier with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Audi Q8 e-tron body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -14702,6 +14921,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl220",
       "title": "Adopt low-carbon recycled feedstock for the subframe bushing sleeve",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the subframe bushing sleeve with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Lexus LX sustainability roadmaps target this.",
@@ -14765,6 +14985,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl221",
       "title": "Consolidate tie-bar into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece tie-bar (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Cadillac Escalade IQ structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -14837,6 +15058,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl222",
       "title": "Tailor-weld the mounting-point node blank to down-gauge low-stress zones",
       "technicalDescription": "Convert the mounting-point node to a laser-welded tailored blank so thickness/strength follow the load path — thick/hot-stamped in crash zones, thin in low-stress zones — deleting bolt-on reinforcements. NIO ES8 body engineering uses this to cut mass and weld count.",
@@ -14908,6 +15130,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl223",
       "title": "Topology-optimise and down-gauge the front subframe",
       "technicalDescription": "Re-engineer the front subframe with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. AITO M9 uses CAE-led lightweighting on this part.",
@@ -14978,6 +15201,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl224",
       "title": "Delete fasteners on the rear subframe / cradle via clip/weld-bond joining",
       "technicalDescription": "Replace threaded fasteners on the rear subframe / cradle with weld-bonding, self-pierce rivets or moulded snaps, cutting fastener count, torque stations and rework. Hongqi E-HS9 body/interior lines use adhesive+SPR to lower assembly cost and improve stiffness/NVH.",
@@ -15040,6 +15264,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl225",
       "title": "Adopt low-carbon recycled feedstock for the engine/EDU carrier",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the engine/edu carrier with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Rivian R1S sustainability roadmaps target this.",
@@ -15103,6 +15328,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl226",
       "title": "Switch the gearbox housing to near-net forging to cut machining stock",
       "technicalDescription": "Move the gearbox housing from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. BMW X7 chassis/driveline parts use this route.",
@@ -15174,6 +15400,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl227",
       "title": "Consolidate planetary ring gear into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece planetary ring gear (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Volvo EX90 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -15246,6 +15473,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl228",
       "title": "Topology-optimise and down-gauge the clutch drum",
       "technicalDescription": "Re-engineer the clutch drum with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Land Cruiser 300 uses CAE-led lightweighting on this part.",
@@ -15316,6 +15544,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl229",
       "title": "Commonise output shaft variants across the platform",
       "technicalDescription": "Reduce output shaft variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Jeep Grand Cherokee 4xe platform strategy commonises this to cut piece price via volume.",
@@ -15378,6 +15607,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl230",
       "title": "Adopt low-carbon recycled feedstock for the valve-body plate",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the valve-body plate with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Li Auto L9 sustainability roadmaps target this.",
@@ -15441,6 +15671,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl231",
       "title": "Switch the parking-pawl bracket to near-net forging to cut machining stock",
       "technicalDescription": "Move the parking-pawl bracket from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Yangwang U8 chassis/driveline parts use this route.",
@@ -15512,6 +15743,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl232",
       "title": "Consolidate gearbox housing into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece gearbox housing (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Xpeng G9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -15584,6 +15816,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl233",
       "title": "Topology-optimise and down-gauge the planetary ring gear",
       "technicalDescription": "Re-engineer the planetary ring gear with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Porsche Cayenne uses CAE-led lightweighting on this part.",
@@ -15654,6 +15887,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl234",
       "title": "Commonise clutch drum variants across the platform",
       "technicalDescription": "Reduce clutch drum variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. BMW X7 platform strategy commonises this to cut piece price via volume.",
@@ -15716,6 +15950,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl235",
       "title": "Adopt low-carbon recycled feedstock for the output shaft",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the output shaft with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Volvo EX90 sustainability roadmaps target this.",
@@ -15779,6 +16014,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl236",
       "title": "Switch the valve-body plate to near-net forging to cut machining stock",
       "technicalDescription": "Move the valve-body plate from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Land Cruiser 300 chassis/driveline parts use this route.",
@@ -15850,6 +16086,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl237",
       "title": "Consolidate parking-pawl bracket into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece parking-pawl bracket (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Jeep Grand Cherokee 4xe structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -15922,6 +16159,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl238",
       "title": "Topology-optimise and down-gauge the gearbox housing",
       "technicalDescription": "Re-engineer the gearbox housing with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Li Auto L9 uses CAE-led lightweighting on this part.",
@@ -15992,6 +16230,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl239",
       "title": "Commonise planetary ring gear variants across the platform",
       "technicalDescription": "Reduce planetary ring gear variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Yangwang U8 platform strategy commonises this to cut piece price via volume.",
@@ -16054,6 +16293,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl240",
       "title": "Adopt low-carbon recycled feedstock for the clutch drum",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the clutch drum with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Xpeng G9 sustainability roadmaps target this.",
@@ -16117,6 +16357,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl241",
       "title": "Switch the transfer-case housing to near-net forging to cut machining stock",
       "technicalDescription": "Move the transfer-case housing from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Mercedes G-Class chassis/driveline parts use this route.",
@@ -16188,6 +16429,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl242",
       "title": "Consolidate range-shift fork into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece range-shift fork (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Audi Q8 e-tron structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -16260,6 +16502,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl243",
       "title": "Topology-optimise and down-gauge the chain sprocket",
       "technicalDescription": "Re-engineer the chain sprocket with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Lexus LX uses CAE-led lightweighting on this part.",
@@ -16330,6 +16573,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl244",
       "title": "Commonise output flange variants across the platform",
       "technicalDescription": "Reduce output flange variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Cadillac Escalade IQ platform strategy commonises this to cut piece price via volume.",
@@ -16392,6 +16636,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl245",
       "title": "Adopt low-carbon recycled feedstock for the actuator motor bracket",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the actuator motor bracket with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. NIO ES8 sustainability roadmaps target this.",
@@ -16455,6 +16700,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl246",
       "title": "Switch the oil-pump body to near-net forging to cut machining stock",
       "technicalDescription": "Move the oil-pump body from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. AITO M9 chassis/driveline parts use this route.",
@@ -16526,6 +16772,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl247",
       "title": "Consolidate transfer-case housing into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece transfer-case housing (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Hongqi E-HS9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -16598,6 +16845,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl248",
       "title": "Topology-optimise and down-gauge the range-shift fork",
       "technicalDescription": "Re-engineer the range-shift fork with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Rivian R1S uses CAE-led lightweighting on this part.",
@@ -16668,6 +16916,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl249",
       "title": "Commonise chain sprocket variants across the platform",
       "technicalDescription": "Reduce chain sprocket variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Mercedes G-Class platform strategy commonises this to cut piece price via volume.",
@@ -16730,6 +16979,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl250",
       "title": "Adopt low-carbon recycled feedstock for the output flange",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the output flange with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Audi Q8 e-tron sustainability roadmaps target this.",
@@ -16793,6 +17043,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl251",
       "title": "Switch the actuator motor bracket to near-net forging to cut machining stock",
       "technicalDescription": "Move the actuator motor bracket from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Lexus LX chassis/driveline parts use this route.",
@@ -16864,6 +17115,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl252",
       "title": "Consolidate oil-pump body into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece oil-pump body (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Cadillac Escalade IQ structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -16936,6 +17188,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl253",
       "title": "Topology-optimise and down-gauge the transfer-case housing",
       "technicalDescription": "Re-engineer the transfer-case housing with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. NIO ES8 uses CAE-led lightweighting on this part.",
@@ -17006,6 +17259,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl254",
       "title": "Commonise range-shift fork variants across the platform",
       "technicalDescription": "Reduce range-shift fork variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. AITO M9 platform strategy commonises this to cut piece price via volume.",
@@ -17068,6 +17322,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl255",
       "title": "Adopt low-carbon recycled feedstock for the chain sprocket",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the chain sprocket with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Hongqi E-HS9 sustainability roadmaps target this.",
@@ -17131,6 +17386,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl256",
       "title": "Switch the propeller-shaft tube to near-net forging to cut machining stock",
       "technicalDescription": "Move the propeller-shaft tube from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Porsche Cayenne chassis/driveline parts use this route.",
@@ -17202,6 +17458,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl257",
       "title": "Replace the metal CV/U-joint yoke with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the cv/u-joint yoke from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; BMW X7 uses metal-replacement here.",
@@ -17274,6 +17531,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl258",
       "title": "Topology-optimise and down-gauge the centre-bearing bracket",
       "technicalDescription": "Re-engineer the centre-bearing bracket with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Volvo EX90 uses CAE-led lightweighting on this part.",
@@ -17344,6 +17602,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl259",
       "title": "Commonise slip-yoke variants across the platform",
       "technicalDescription": "Reduce slip-yoke variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Land Cruiser 300 platform strategy commonises this to cut piece price via volume.",
@@ -17406,6 +17665,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl260",
       "title": "Adopt low-carbon recycled feedstock for the flange fork",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the flange fork with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Jeep Grand Cherokee 4xe sustainability roadmaps target this.",
@@ -17469,6 +17729,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl261",
       "title": "Switch the balance-weight assembly to near-net forging to cut machining stock",
       "technicalDescription": "Move the balance-weight assembly from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Li Auto L9 chassis/driveline parts use this route.",
@@ -17540,6 +17801,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl262",
       "title": "Replace the metal propeller-shaft tube with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the propeller-shaft tube from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Yangwang U8 uses metal-replacement here.",
@@ -17612,6 +17874,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl263",
       "title": "Topology-optimise and down-gauge the CV/U-joint yoke",
       "technicalDescription": "Re-engineer the cv/u-joint yoke with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Xpeng G9 uses CAE-led lightweighting on this part.",
@@ -17682,6 +17945,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl264",
       "title": "Commonise centre-bearing bracket variants across the platform",
       "technicalDescription": "Reduce centre-bearing bracket variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Porsche Cayenne platform strategy commonises this to cut piece price via volume.",
@@ -17744,6 +18008,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl265",
       "title": "Adopt low-carbon recycled feedstock for the slip-yoke",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the slip-yoke with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. BMW X7 sustainability roadmaps target this.",
@@ -17807,6 +18072,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl266",
       "title": "Switch the flange fork to near-net forging to cut machining stock",
       "technicalDescription": "Move the flange fork from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Volvo EX90 chassis/driveline parts use this route.",
@@ -17878,6 +18144,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl267",
       "title": "Replace the metal balance-weight assembly with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the balance-weight assembly from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Land Cruiser 300 uses metal-replacement here.",
@@ -17950,6 +18217,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl268",
       "title": "Topology-optimise and down-gauge the propeller-shaft tube",
       "technicalDescription": "Re-engineer the propeller-shaft tube with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Jeep Grand Cherokee 4xe uses CAE-led lightweighting on this part.",
@@ -18020,6 +18288,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl269",
       "title": "Commonise CV/U-joint yoke variants across the platform",
       "technicalDescription": "Reduce cv/u-joint yoke variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Li Auto L9 platform strategy commonises this to cut piece price via volume.",
@@ -18082,6 +18351,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl270",
       "title": "Adopt low-carbon recycled feedstock for the centre-bearing bracket",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the centre-bearing bracket with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Yangwang U8 sustainability roadmaps target this.",
@@ -18145,6 +18415,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl271",
       "title": "Switch the CV outer-joint housing to near-net forging to cut machining stock",
       "technicalDescription": "Move the cv outer-joint housing from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Rivian R1S chassis/driveline parts use this route.",
@@ -18216,6 +18487,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl272",
       "title": "Topology-optimise and down-gauge the tripod plunge joint",
       "technicalDescription": "Re-engineer the tripod plunge joint with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Mercedes G-Class uses CAE-led lightweighting on this part.",
@@ -18286,6 +18558,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl273",
       "title": "Commonise shaft bar variants across the platform",
       "technicalDescription": "Reduce shaft bar variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Audi Q8 e-tron platform strategy commonises this to cut piece price via volume.",
@@ -18348,6 +18621,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl274",
       "title": "Adopt low-carbon recycled feedstock for the wheel-side flange",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the wheel-side flange with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Lexus LX sustainability roadmaps target this.",
@@ -18411,6 +18685,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl275",
       "title": "Replace the metal boot-clamp / cover with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the boot-clamp / cover from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Cadillac Escalade IQ uses metal-replacement here.",
@@ -18483,6 +18758,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl276",
       "title": "Switch the intermediate-shaft support to near-net forging to cut machining stock",
       "technicalDescription": "Move the intermediate-shaft support from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. NIO ES8 chassis/driveline parts use this route.",
@@ -18554,6 +18830,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl277",
       "title": "Topology-optimise and down-gauge the CV outer-joint housing",
       "technicalDescription": "Re-engineer the cv outer-joint housing with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. AITO M9 uses CAE-led lightweighting on this part.",
@@ -18624,6 +18901,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl278",
       "title": "Commonise tripod plunge joint variants across the platform",
       "technicalDescription": "Reduce tripod plunge joint variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Hongqi E-HS9 platform strategy commonises this to cut piece price via volume.",
@@ -18686,6 +18964,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl279",
       "title": "Adopt low-carbon recycled feedstock for the shaft bar",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the shaft bar with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Rivian R1S sustainability roadmaps target this.",
@@ -18749,6 +19028,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl280",
       "title": "Replace the metal wheel-side flange with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the wheel-side flange from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; Mercedes G-Class uses metal-replacement here.",
@@ -18821,6 +19101,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl281",
       "title": "Switch the boot-clamp / cover to near-net forging to cut machining stock",
       "technicalDescription": "Move the boot-clamp / cover from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Audi Q8 e-tron chassis/driveline parts use this route.",
@@ -18892,6 +19173,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl282",
       "title": "Topology-optimise and down-gauge the intermediate-shaft support",
       "technicalDescription": "Re-engineer the intermediate-shaft support with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Lexus LX uses CAE-led lightweighting on this part.",
@@ -18962,6 +19244,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl283",
       "title": "Commonise CV outer-joint housing variants across the platform",
       "technicalDescription": "Reduce cv outer-joint housing variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Cadillac Escalade IQ platform strategy commonises this to cut piece price via volume.",
@@ -19024,6 +19307,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl284",
       "title": "Adopt low-carbon recycled feedstock for the tripod plunge joint",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the tripod plunge joint with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. NIO ES8 sustainability roadmaps target this.",
@@ -19087,6 +19371,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl285",
       "title": "Replace the metal shaft bar with a glass/PP hybrid moulding",
       "technicalDescription": "Convert the shaft bar from stamped/cast metal to a long-glass or GF polyamide moulding with integrated ribs, bosses and clip features, deleting fasteners and secondary brackets. A partial-recycled resin cuts cost and embodied carbon; AITO M9 uses metal-replacement here.",
@@ -19159,6 +19444,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl286",
       "title": "Switch the differential carrier / housing to near-net forging to cut machining stock",
       "technicalDescription": "Move the differential carrier / housing from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Xpeng G9 chassis/driveline parts use this route.",
@@ -19230,6 +19516,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl287",
       "title": "Consolidate ring & pinion set into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece ring & pinion set (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Porsche Cayenne structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -19302,6 +19589,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl288",
       "title": "Topology-optimise and down-gauge the diff case",
       "technicalDescription": "Re-engineer the diff case with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. BMW X7 uses CAE-led lightweighting on this part.",
@@ -19372,6 +19660,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl289",
       "title": "Commonise side-gear set variants across the platform",
       "technicalDescription": "Reduce side-gear set variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Volvo EX90 platform strategy commonises this to cut piece price via volume.",
@@ -19434,6 +19723,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl290",
       "title": "Adopt low-carbon recycled feedstock for the cover plate",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the cover plate with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Land Cruiser 300 sustainability roadmaps target this.",
@@ -19497,6 +19787,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl291",
       "title": "Switch the pinion-bearing support to near-net forging to cut machining stock",
       "technicalDescription": "Move the pinion-bearing support from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. Jeep Grand Cherokee 4xe chassis/driveline parts use this route.",
@@ -19568,6 +19859,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl292",
       "title": "Consolidate differential carrier / housing into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece differential carrier / housing (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Li Auto L9 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -19640,6 +19932,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl293",
       "title": "Topology-optimise and down-gauge the ring & pinion set",
       "technicalDescription": "Re-engineer the ring & pinion set with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Yangwang U8 uses CAE-led lightweighting on this part.",
@@ -19710,6 +20003,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl294",
       "title": "Commonise diff case variants across the platform",
       "technicalDescription": "Reduce diff case variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Xpeng G9 platform strategy commonises this to cut piece price via volume.",
@@ -19772,6 +20066,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl295",
       "title": "Adopt low-carbon recycled feedstock for the side-gear set",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the side-gear set with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Porsche Cayenne sustainability roadmaps target this.",
@@ -19835,6 +20130,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl296",
       "title": "Switch the cover plate to near-net forging to cut machining stock",
       "technicalDescription": "Move the cover plate from billet machining to precision near-net forging, cutting buy-to-fly and CNC time; a micro-alloyed air-hardening grade can delete the separate quench-and-temper cycle. BMW X7 chassis/driveline parts use this route.",
@@ -19906,6 +20202,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl297",
       "title": "Consolidate pinion-bearing support into a single high-pressure die-cast node",
       "technicalDescription": "Replace the multi-piece pinion-bearing support (stampings + welds/fasteners) with one large structural HPDC node in a low-Fe self-hardening Al alloy, cutting part count, spot welds and fixturing. Benchmarked against Volvo EX90 structural-casting practice; low-carbon secondary Al lowers embodied CO2e.",
@@ -19978,6 +20275,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl298",
       "title": "Topology-optimise and down-gauge the differential carrier / housing",
       "technicalDescription": "Re-engineer the differential carrier / housing with topology optimisation — ribs/beads on the load path, thinner elsewhere, higher-grade material where it pays — cutting mass and material cost at equal stiffness. Land Cruiser 300 uses CAE-led lightweighting on this part.",
@@ -20048,6 +20346,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl299",
       "title": "Commonise ring & pinion set variants across the platform",
       "technicalDescription": "Reduce ring & pinion set variants across trims/wheelbases to a common design (or a base + add-on), pooling volume onto one tool set and one validation. Jeep Grand Cherokee 4xe platform strategy commonises this to cut piece price via volume.",
@@ -20110,6 +20409,7 @@
     "stars": 0,
     "level": "part",
     "ideaData": {
+      "commodity": "Off-Road Features",
       "id": "orl300",
       "title": "Adopt low-carbon recycled feedstock for the diff case",
       "technicalDescription": "Qualify recycled/low-carbon feedstock (green Al, secondary copper, recyclate polymer) for the diff case with closed-loop scrap return and water-based coatings, cutting embodied CO2e and EU CBAM cost while holding spec. Li Auto L9 sustainability roadmaps target this.",

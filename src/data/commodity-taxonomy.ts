@@ -6,10 +6,10 @@
 // its own list, so cross-module filtering stays consistent.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { inferCommodityKey } from './commodity-classify.mjs';
+import { inferCommodityKey, marketplaceCommodityOf } from './commodity-classify.mjs';
 
 export type CommodityColor =
-  | 'slate' | 'blue' | 'violet' | 'green' | 'teal' | 'orange' | 'amber' | 'sky' | 'indigo' | 'rose';
+  | 'slate' | 'blue' | 'violet' | 'green' | 'teal' | 'orange' | 'amber' | 'sky' | 'indigo' | 'rose' | 'lime';
 
 export interface CommodityGroup {
   label: string;
@@ -45,6 +45,8 @@ export const COMMODITY_GROUPS: CommodityGroup[] = [
   { label: 'Exterior', key: 'Exterior', color: 'sky', systems: ['Exterior', 'Lighting', 'Sealing / Glazing'] },
   { label: 'Electrical', key: 'Electrical', color: 'indigo', systems: ['Electrical Architecture', 'Thermal Management'] },
   { label: 'Powertrain (ICE/Hybrid)', key: 'Powertrain', color: 'rose', systems: [] },
+  // Marketplace-only commodity: filed by ideaData.commodity, not by system (DECISIONS 127).
+  { label: 'Off-Road Features', key: 'OffRoad', color: 'lime', systems: [] },
 ];
 
 // Tailwind colour classes — complete strings (no dynamic construction so purge keeps them)
@@ -59,6 +61,7 @@ export const COLOR_TAB_ACTIVE: Record<CommodityColor, string> = {
   sky:    'bg-sky-500/20 text-sky-400 border-sky-500/40',
   indigo: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/40',
   rose:   'bg-rose-500/20 text-rose-400 border-rose-500/40',
+  lime:   'bg-lime-500/20 text-lime-400 border-lime-500/40',
 };
 
 export const COLOR_BADGE: Record<CommodityColor, string> = {
@@ -72,6 +75,7 @@ export const COLOR_BADGE: Record<CommodityColor, string> = {
   sky:    'bg-sky-500/10 text-sky-400 border-sky-500/20',
   indigo: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
   rose:   'bg-rose-500/10 text-rose-400 border-rose-500/20',
+  lime:   'bg-lime-500/10 text-lime-400 border-lime-500/20',
 };
 
 /**
@@ -81,6 +85,16 @@ export const COLOR_BADGE: Record<CommodityColor, string> = {
  */
 export function getCommodityForSystem(system: string): CommodityGroup | null {
   const key = inferCommodityKey(system);
+  if (!key) return null;
+  return COMMODITY_GROUPS.find(g => g.key === key) ?? null;
+}
+
+/**
+ * The commodity group of a marketplace IDEA: an explicit Off-Road Features
+ * filing (ideaData.commodity) first, else the system-based commodity.
+ */
+export function getCommodityForIdea(idea: { system: string; ideaData?: unknown }): CommodityGroup | null {
+  const key = marketplaceCommodityOf(idea);
   if (!key) return null;
   return COMMODITY_GROUPS.find(g => g.key === key) ?? null;
 }

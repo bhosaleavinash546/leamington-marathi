@@ -1,9 +1,9 @@
-import { test } from 'node:test';
+import { test, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { inferCommodityKey, COMMODITY_KEYS } from '../src/data/commodity-classify.mjs';
+import { inferCommodityKey, COMMODITY_KEYS, marketplaceCommodityOf, MARKETPLACE_COMMODITY_KEYS, OFF_ROAD_SYSTEM_NAMES } from '../src/data/commodity-classify.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -57,4 +57,25 @@ test('DATA INTEGRITY: every seeded marketplace system resolves (no orphans)', ()
   }
   const orphans = [...systems].filter(s => inferCommodityKey(s) === null);
   assert.deepEqual(orphans, [], `orphaned systems: ${orphans.join(', ')}`);
+});
+
+
+describe('Off-Road Features marketplace commodity (DECISIONS 127)', () => {
+  it('is a marketplace key on top of the engineering keys, which stay unchanged', () => {
+    assert.deepEqual(MARKETPLACE_COMMODITY_KEYS, [...COMMODITY_KEYS, 'OffRoad']);
+    assert.ok(!COMMODITY_KEYS.includes('OffRoad'));
+  });
+  it('files an idea only by its explicit ideaData.commodity, as object or JSON string', () => {
+    assert.equal(marketplaceCommodityOf({ system: 'Axles', ideaData: { commodity: 'Off-Road Features' } }), 'OffRoad');
+    assert.equal(marketplaceCommodityOf({ system: 'Axles', ideaData: JSON.stringify({ commodity: 'Off-Road Features' }) }), 'OffRoad');
+    assert.equal(marketplaceCommodityOf({ system: 'Off-Road Hardware', ideaData: { offRoad: true } }), 'Chassis');
+  });
+  it('every Off-Road Features sub-system still has an engineering commodity', () => {
+    for (const s of OFF_ROAD_SYSTEM_NAMES) assert.ok(COMMODITY_KEYS.includes(inferCommodityKey(s)), s);
+  });
+  it('the 300-idea off-road luxury pack is filed under Off-Road Features', () => {
+    const pack = JSON.parse(readFileSync(new URL('../marketplace-offroad-luxury-ideas.json', import.meta.url), 'utf8'));
+    assert.equal(pack.length, 300);
+    for (const x of pack) assert.equal(marketplaceCommodityOf(x), 'OffRoad', x.id);
+  });
 });

@@ -12,7 +12,7 @@ import IdeaDetailPanel from '../components/IdeaDetailPanel';
 import { toast } from '../hooks/useToast';
 import type { CostReductionIdea } from '../types';
 import {
-  COMMODITY_GROUPS, COLOR_TAB_ACTIVE, COLOR_BADGE, getCommodityForSystem,
+  COMMODITY_GROUPS, COLOR_TAB_ACTIVE, COLOR_BADGE, getCommodityForIdea,
   type CommodityColor, type CommodityGroup,
 } from '../data/commodity-taxonomy';
 import { classifyIdea, POWERTRAINS, VOLTAGES, type Powertrain, type Voltage } from '../data/idea-classify.mjs';
@@ -204,7 +204,7 @@ export default function MarketplacePage() {
   // is orphaned. Memoised over the loaded set.
   const commodityKeyOf = useMemo(() => {
     const map = new Map<string, string | null>();
-    for (const idea of ideas) map.set(idea.id, getCommodityForSystem(idea.system)?.key ?? null);
+    for (const idea of ideas) map.set(idea.id, getCommodityForIdea(idea)?.key ?? null);
     return map;
   }, [ideas]);
   const inCommodity = (idea: MarketplaceIdea) =>
@@ -700,7 +700,7 @@ export default function MarketplacePage() {
             <div ref={listRef}>
             <div style={{ height: range.offsetTop }} aria-hidden="true" />
             {rows.map((idea, i) => {
-              const commodity = getCommodityForSystem(idea.system);
+              const commodity = getCommodityForIdea(idea);
               const fresh = !seen.current.ids.has(idea.id);
               seen.current.ids.add(idea.id);
               return (

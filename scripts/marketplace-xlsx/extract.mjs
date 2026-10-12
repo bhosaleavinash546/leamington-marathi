@@ -1,7 +1,7 @@
 // Flatten every marketplace idea (every field) into rows for the Excel export.
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 const REPO = new URL('../..', import.meta.url).pathname.replace(/\/$/, '');
-const { inferCommodityKey } = await import(`${REPO}/src/data/commodity-classify.mjs`);
+const { marketplaceCommodityOf } = await import(`${REPO}/src/data/commodity-classify.mjs`);
 const { classifyIdea } = await import(`${REPO}/src/data/idea-classify.mjs`);
 const { findMoney, parseMoneyRange } = await import(`${REPO}/idea-arith.mjs`);
 const OUT = process.argv[2];
@@ -33,7 +33,7 @@ const unmappedKeys = {};
 for (const f of files) for (const x of JSON.parse(readFileSync(`${REPO}/${f}`, 'utf8'))) {
   if (retired.has(x.id)) continue;
   const d = typeof x.ideaData === 'string' ? JSON.parse(x.ideaData) : (x.ideaData || {});
-  const used = new Set();
+  const used = new Set(['commodity']);
   const g = (k) => { used.add(k); return d[k]; };
   const csp = g('costSavingPotential') || {};
   const cl = classifyIdea({ ...x, ideaData: JSON.stringify(d) });
@@ -60,7 +60,7 @@ for (const f of files) for (const x of JSON.parse(readFileSync(`${REPO}/${f}`, '
   const row = {
     'Idea ID': x.id,
     'Title': x.title,
-    'Commodity': inferCommodityKey(x.system) || 'Other',
+    'Commodity': ({ OffRoad: 'Off-Road Features' })[marketplaceCommodityOf({ system: x.system, ideaData: d })] || marketplaceCommodityOf({ system: x.system, ideaData: d }) || 'Other',
     'Sub-system': x.system || '',
     'Focus area / assembly': s(g('focusArea')),
     'Level': levelLabel,

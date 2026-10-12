@@ -143,7 +143,7 @@ def idea_sheet(title, data, table_name, helpers=False):
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     return ws
 
-COMMODITIES = ['Battery', 'EDU', 'Electrical', 'Powertrain', 'Driveline', 'Chassis', 'BIW', 'Exterior', 'Interior', 'Other']
+COMMODITIES = ['Battery', 'EDU', 'Electrical', 'Powertrain', 'Driveline', 'Chassis', 'BIW', 'Exterior', 'Interior', 'Off-Road Features', 'Other']
 LEVELS = ['Assembly', 'Subassembly', 'Part', 'System', 'Not stated']
 DIFFS = ['Low', 'Medium', 'High']
 CONFS = ['verified', 'benchmarked', 'estimated', 'Not stated']
@@ -161,7 +161,7 @@ LITE = os.environ.get('LITE')
 for c in COMMODITIES:
     sub = [r for r in rows if r['Commodity'] == c]
     if LITE: sub = sub[:2]
-    idea_sheet(c, sub, f'tbl{c.replace(" ", "")}')
+    idea_sheet(c, sub, 'tbl' + ''.join(ch for ch in c if ch.isalnum()))
 
 # Sources
 ws = wb.create_sheet('Sources'); ws.sheet_properties.tabColor = TEAL

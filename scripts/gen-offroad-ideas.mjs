@@ -48,6 +48,9 @@ function idea(seq, system, label, part, move, oem) {
     stars: 0,
     level: 'part',
     ideaData: {
+      // Filed under the Off-Road Features marketplace commodity (DECISIONS 127);
+      // `system` keeps the hardware it acts on.
+      commodity: 'Off-Road Features',
       id, title,
       technicalDescription: move.tech(part, oem),
       materialGrade: move.materials.join(' / '),

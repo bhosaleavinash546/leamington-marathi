@@ -22,7 +22,7 @@ import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import Database from 'better-sqlite3';
 import { chromium } from 'playwright-core';
-import { inferCommodityKey } from '../src/data/commodity-classify.mjs';
+import { marketplaceCommodityOf } from '../src/data/commodity-classify.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ARGS = process.argv.slice(2);
@@ -60,6 +60,7 @@ const COMMODITIES = [
   { key: 'BIW', label: 'BIW / Body Structure', color: '#c2410c', blurb: 'Body-in-white architecture, castings and stampings, joining, closures structure, underbody protection.' },
   { key: 'Exterior', label: 'Exterior', color: '#0369a1', blurb: 'Closures, bumpers and fascias, lighting, glazing and sealing, aero, paint and exterior trim.' },
   { key: 'Interior', label: 'Interior', color: '#a16207', blurb: 'Seating, cockpit and trim, HVAC module, NVH and acoustics, restraints, infotainment hardware.' },
+  { key: 'OffRoad', label: 'Off-Road Features', color: '#4d7c0f', blurb: 'Off-road capability: traction and lockers, low range, terrain management, ride height and articulation, protection and recovery, wading and vision, geometry and expedition fit-out.' },
   { key: 'Electrical', label: 'Electrical & Electronics', color: '#4338ca', blurb: 'E/E architecture, wiring harness, ADAS and sensing, vehicle thermal management, LV power.' },
   { key: 'Other', label: 'Cross-commodity & Unclassified', color: '#475569', blurb: 'Ideas whose system does not map to a single commodity (plant, paint shop, restraints and other cross-cutting systems).' },
 ];
@@ -68,7 +69,7 @@ const levelOf = x => String(x.level || x.d?.systemLevel || '').toLowerCase() || 
 
 function group(ideas) {
   const by = new Map(COMMODITIES.map(c => [c.key, []]));
-  for (const x of ideas) by.get(inferCommodityKey(x.system) ?? 'Other').push(x);
+  for (const x of ideas) by.get(marketplaceCommodityOf({ system: x.system, ideaData: x.d ?? x.ideaData }) ?? 'Other').push(x);
   for (const arr of by.values()) arr.sort((a, b) =>
     String(a.system).localeCompare(String(b.system)) || ((LEVEL_ORDER[levelOf(a)] ?? 9) - (LEVEL_ORDER[levelOf(b)] ?? 9)) || String(a.title).localeCompare(String(b.title)));
   return COMMODITIES.map(c => ({ ...c, ideas: by.get(c.key) })).filter(c => c.ideas.length);
