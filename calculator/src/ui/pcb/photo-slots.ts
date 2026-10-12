@@ -82,6 +82,10 @@ export function markPhotoSlot(slot: HTMLElement | null, filled: boolean): void {
 }
 
 /** Keyboard and per-slot drop: Enter / Space opens the picker; a photo dropped on a slot goes in THAT slot. */
+/** The photo types the server reads (pcb.ts multer filter). Any other image (HEIC, GIF …) failed the WHOLE analysis
+ *  on the server; it is refused here, where the user can still fix it (360 review, Oct 2026). */
+export const isReadablePcbPhoto = (f: File): boolean => /^image\/(jpeg|png|webp)$/i.test(f.type);
+
 export function wirePhotoSlot(slot: HTMLElement | null, open: () => void, put: (f: File) => void): void {
   if (!slot) return;
   slot.addEventListener('keydown', e => {
@@ -92,7 +96,7 @@ export function wirePhotoSlot(slot: HTMLElement | null, open: () => void, put: (
   slot.addEventListener('drop', e => {
     e.preventDefault(); e.stopPropagation();
     slot.classList.remove('is-drop');
-    const f = Array.from(e.dataTransfer?.files ?? []).find(x => x.type.startsWith('image/'));
+    const f = Array.from(e.dataTransfer?.files ?? []).find(isReadablePcbPhoto);
     if (f) put(f);
   });
 }

@@ -8,8 +8,10 @@
  * is data: every unnamed line is priced inside its class range, the model's
  * estimate only chooses a point within it, and each line records its basis.
  *
- * Ranges are indicative GBP unit prices at 100K, UK distributor / EMS-sourced,
- * 2025/26 (the same figures the prompt used). `automotive` selects the AEC-Q
+ * Ranges are indicative GBP unit prices, UK distributor / EMS-sourced, 2025/26 (the same figures the prompt used).
+ * Their evidence is distributor listings at 1k–28k, so the tool reads them as ~10k reel prices (TABLE_BASIS_QTY in
+ * pcb.ts) and moves them along the franchise curve on the parts bought — the prompt still says "100K"; the model's
+ * price is never used. `automotive` selects the AEC-Q
  * variant. Each entry names what it is for, so a reviewer can argue with it.
  */
 
@@ -181,12 +183,30 @@ function pick(ct: string, text: string, refDes = ''): { key: string; row: Row } 
   return null;
 }
 
+/** The IC table class a package name states, or null when it states none. */
+export function icPackageFamily(pkg: string): string | null {
+  const k = String(pkg || '').toLowerCase();
+  if (/bga|csp/.test(k)) return 'ic_bga';
+  if (/qfn|dfn|\bson|wson|vson|lga/.test(k)) return 'ic_qfn';
+  if (/qfp/.test(k)) return 'ic_tqfp';
+  if (/soic|\bsop|ssop|tssop|msop|\bso-?\d|\bsot-?\d|\bsot\b/.test(k)) return 'ic_soic';
+  return null;
+}
+
 /** Map a component type the AI or the BOM-file inference produced onto a table key. */
 export function tableTypeOf(componentType: string, pkg = '', description = ''): string {
   const ct = (componentType || '').toLowerCase();
   // "<= 1206" is a size limit, not a size (see inferComponentType).
   const p = `${pkg} ${description}`.toLowerCase().replace(/(<=|≤|=<|up to|max\.?)\s*(01005|0201|0402|0603|0805|1206|1210)/g, ' ');
-  if (TABLE[ct]) return ct;
+  if (TABLE[ct]) {
+    // The line's own PACKAGE outranks the model's IC class: U9 "QFN-16" typed ic_bga was priced as a BGA (£14.34 v
+    // £3.19, 360 review Oct 2026). Imagers stay BGA-class (their own rule).
+    if (/^ic_(bga|qfn|tqfp|soic)$/.test(ct) && !/image sensor|cmos sensor|camera sensor|imager\b/.test(p)) {
+      const fam = icPackageFamily(pkg);
+      if (fam && fam !== ct) return fam;
+    }
+    return ct;
+  }
   if (/image sensor|cmos sensor|camera sensor|imager\b/.test(p)) return 'ic_bga';   // CSP / BGA imagers
   // Hardware the ref-des prefixes do not know (SH1 shield can, MP1 standoff).
   if (/shield can|\bshield\b|\bcan\b|screw|standoff|spacer|heatsink|heat sink|bracket|\blabel\b|gasket|clip|mechanical/.test(p)) return 'mechanical';
@@ -214,10 +234,13 @@ export function tableTypeOf(componentType: string, pkg = '', description = ''): 
 }
 
 /** The price range a line's class and description justify. Never null. */
-export function classRange(line: { componentType?: unknown; description?: unknown; pkg?: unknown; value?: unknown; automotive?: unknown; refDes?: unknown }, automotiveBoard = false): ClassRange {
+export function classRange(line: { componentType?: unknown; description?: unknown; pkg?: unknown; value?: unknown; automotive?: unknown; refDes?: unknown; bomSource?: unknown; userCorrected?: unknown }, automotiveBoard = false): ClassRange {
   const desc = String(line.description ?? '');
   const text = `${desc} ${String(line.pkg ?? '')} ${String(line.value ?? '')}`;
-  const auto = automotiveBoard || line.automotive === true || /AEC-?Q|automotive/i.test(text);
+  // A line takes the AEC-Q range on an automotive board, or when the USER's BOM (file / picture / edit) says the part is
+  // automotive. The model's own flag or wording on a board classified "general" moved the BOM +19% (360 review, Oct 2026).
+  const userSays = line.bomSource === 'file' || line.bomSource === 'image' || line.userCorrected === true;
+  const auto = automotiveBoard || (userSays && (line.automotive === true || /AEC-?Q|automotive/i.test(text)));
   const ct = tableTypeOf(String(line.componentType ?? ''), String(line.pkg ?? ''), desc);
   let key: string; let row: Row;
   // An IC whose description names a diode or transistor ("ideal diode controller, SOT-23-6") is

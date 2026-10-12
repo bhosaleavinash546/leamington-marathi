@@ -22,6 +22,7 @@ import {
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { reconcileOcrMarkings, verifyOcrClaims, crossCheckWithOcr } from '../utils/pcb-ocr-reconcile.js';
+import { parseOcrReply } from '../utils/pcb-ocr-parse.js';
 import { gateIdentities } from '../utils/pcb-identity.js';
 import { consolidateBom } from '../utils/pcb-bom-consolidate.js';
 import { ecuLibrary } from '../utils/pcb-ecu-library.js';
@@ -37,8 +38,8 @@ import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
 import { guardAsil, type AsilLevel, type AsilGuardResult } from '../utils/pcb-asil-guard.js';
 
 // ── Volume BOM price correction ────────────────────────────────────────────
-// Pricing table is calibrated to 100K units. Multipliers scale cost up for
-// lower order quantities (below 100K it gets more expensive, above it's cheaper).
+// The pricing tables are read as ~10k reel prices (TABLE_BASIS_QTY below — F6–F8). Multipliers scale cost up for
+// fewer parts bought and down for more, flat above 300k parts. History:
 // Recalibrated (accuracy pass): the mid/high-volume steps were too steep — for
 // mainstream automotive silicon the real 10k-vs-100k distributor delta is ~10%,
 // not 35%. 10k is a production volume, not a prototype. Prototype steps (≤1k) stay
@@ -481,6 +482,8 @@ const extractionModel = (deep: boolean): string => (deep ? DEEP_EXTRACT_MODEL : 
 // Truncation-tolerant salvage (pcb-salvage.ts) backs this up for the rare board
 // that still overflows.
 const EXTRACT_MAX_TOKENS = 32000;
+/** Stage 2 (markings). At 4096 a dense board's list could be cut mid-JSON, losing every marking (360 review, Oct 2026). */
+const OCR_MAX_TOKENS = 8192;
 
 // Read the model's text output ROBUSTLY. Sonnet 5 / Opus 4.8 can return a
 // non-text block first (e.g. a thinking/redacted block), so `content[0]` is not
@@ -561,7 +564,7 @@ export function runSanityChecks(
     const disc = Math.abs(lineSum - aiTotalBOM) / Math.max(aiTotalBOM, lineSum);
     if (disc > 0.20) {
       warnings.push({ code: 'BOM_TOTAL_MISMATCH', severity: 'warn',
-        message: `AI BOM total £${aiTotalBOM.toFixed(2)} differs from line-item sum £${lineSum.toFixed(2)} by ${(disc*100).toFixed(0)}% — line-item sum used` });
+        message: `The AI's own BOM estimate (£${aiTotalBOM.toFixed(2)}, not used) differs from the priced lines (£${lineSum.toFixed(2)}) by ${(disc*100).toFixed(0)}% — the priced lines are the cost; a large gap is worth a look at the biggest lines` });
     }
   }
   // Implausibly small board with many layers
@@ -1026,6 +1029,9 @@ export function parseOrderQty(v: unknown): number {
 }
 
 const router = Router();
+/** A refused upload is a 400 with its reason (it was a 500 "Internal server error" in production). */
+function uploadRefused(message: string): Error { return Object.assign(new Error(message), { status: 400 }); }
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 20 * 1024 * 1024 },
@@ -1035,18 +1041,18 @@ const upload = multer({
     // (.gtl/.g2/.gko/.gbr/.art/.txt), so any text-like file under this field is
     // accepted and the measurer decides what it is.
     if (file.fieldname === 'fabFiles') {
-      if (/\.(zip|rar|7z|png|jpe?g|pdf)$/i.test(file.originalname)) cb(new Error('Fab files must be the individual drill / Gerber files, not an archive'));
+      if (/\.(zip|rar|7z|png|jpe?g|pdf)$/i.test(file.originalname)) cb(uploadRefused('Fab files must be the individual drill / Gerber files, not an archive'));
       else cb(null, true);
       return;
     }
     if (file.fieldname === 'bomFile') {
       // A BOM may also be a picture of the BOM table (pcb-bom-image.ts): PNG / JPEG / WebP.
       if (/\.(csv|xml|txt)$/i.test(file.originalname) || /^(text\/|application\/(xml|csv|vnd\.ms-excel))/i.test(file.mimetype) || isBomImage(file)) cb(null, true);
-      else cb(new Error('BOM file must be .csv, .xml, .txt, or an image of the BOM (.png / .jpg / .webp)'));
+      else cb(uploadRefused('BOM file must be .csv, .xml, .txt, or an image of the BOM (.png / .jpg / .webp)'));
       return;
     }
     if (/^image\/(jpeg|jpg|png|webp)$/i.test(file.mimetype)) cb(null, true);
-    else cb(new Error('Only JPEG, PNG, or WebP images are accepted'));
+    else cb(uploadRefused('Only JPEG, PNG, or WebP images are accepted'));
   },
 });
 
@@ -1066,20 +1072,22 @@ function buildImageContentBlocks(
   // Rec #2: when multiple views are supplied, tell the model how to exploit them —
   // this resolves components hidden on one side and lets it measure board size
   // from a scale reference instead of guessing.
-  if (files.length > 1) {
+  // The budget is applied first so the model is told how many views it ACTUALLY receives (it was told every upload).
+  const skip = new Set(photosOverBudget(files));
+  const sent = files.length - skip.size;
+  if (sent > 1) {
     out.push({ type: 'text', text:
-      `You are given ${files.length} views of the SAME board (e.g. top, bottom, angled, or a close-up). ` +
+      `You are given ${sent} views of the SAME board (e.g. top, bottom, angled, or a close-up). ` +
       `Combine them: a component visible in ANY view counts once — do not double-count a part seen in two views, ` +
       `and do not miss parts that appear only on one side. If a ruler, coin or known connector provides scale, ` +
       `use it to measure board dimensions rather than estimating. Note each component's side (top/bottom) where discernible.`,
     });
   }
   // Server-side safety net for the Anthropic 32 MB per-request limit. The web
-  // client already downscales to ≤1568 px, but a direct API caller (or a stale
+  // client already downscales (1600 px top / bottom, 2576 px close-ups), but a direct API caller (or a stale
   // cached client) could still send large buffers. Rather than hard-fail with a
   // 413, admit images in priority order (Top, Bottom, Close-ups…) up to a safe
   // base64 budget and drop the rest with a warning — a partial analysis beats none.
-  const skip = new Set(photosOverBudget(files));
   let dropped = 0;
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
@@ -1093,6 +1101,19 @@ function buildImageContentBlocks(
     console.warn(`[PCB] Image payload over budget — included ${files.length - dropped}/${files.length} image(s), dropped ${dropped} to stay under the API request limit. Client should downscale before upload.`);
   }
   return out;
+}
+
+/** The labels of the photos the model actually receives (the over-budget ones are left out). */
+function sentPhotoLabels(files: Express.Multer.File[], labels: string[]): string[] {
+  const skip = new Set(photosOverBudget(files));
+  return files.map((_, i) => labels[i] ?? `Image ${i + 1}`).filter((_, i) => !skip.has(i));
+}
+
+/** Only a whole run is replayed from the cache. A run whose classifier or OCR failed (or was cut off) told the user to
+ *  "run again" — and the cache replayed the same half-read result for 30 days (360 review, Oct 2026). */
+export function isCacheableRun(analysis: Record<string, unknown>, stage4Failed: boolean | undefined, classificationFailed: boolean, ocrQuality: string): boolean {
+  return !bomIsEmpty(analysis) && !stage4Failed && !analysis._salvaged && !classificationFailed
+    && !['failed', 'truncated', 'partial'].includes(ocrQuality);
 }
 
 /** Indexes of the photos left out to stay under the API request limit (priority order:
@@ -1200,7 +1221,7 @@ through_hole: electrolytic cap (small) £0.05–0.40; electrolytic cap (large) �
 manual_solder: wire/jumper £0.03–0.22; heat-shrink joint £0.02–0.14`;
 
 // ── IC price hints from OCR markings ──────────────────────────────────────
-// Known automotive IC price ranges (100K volume, AEC-Q qualified). Ranges marked
+// Known automotive IC price ranges (AEC-Q qualified; read as ~10k reel prices, TABLE_BASIS_QTY — the prompt says 100K). Ranges marked
 // with a date were checked against distributor prices on that date (see
 // docs/pcb/component-catalogue.md); the catalogue (server/data/
 // pcb-component-catalogue.json) carries the per-part figures and sources.
@@ -1277,7 +1298,7 @@ const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price
   { test: m => /LM317|LM358|LM741|LM324/i.test(m), label: 'TI/Fairchild classic linear IC', price: '£0.08–0.80' },
 ];
 
-/** The tool's stated 100K range for a BOM line it can name, for the grounding cap. */
+/** The tool's stated range (~10k basis, TABLE_BASIS_QTY) for a BOM line it can name, for the grounding cap. */
 export function icKnownRange(line: { partNumber?: unknown; description?: unknown }, opts: { specificOnly?: boolean } = {}): { lo: number; hi: number; label: string; generic?: boolean } | null {
   // A NAMED range applies to the part number only — the description is the model's prose ("…for AURIX MCUs" put a
   // TLF35585 in the £15–60 AURIX row; pipeline review F11). Only the generic function rows read the description.
@@ -1486,7 +1507,9 @@ async function applyStage3b(
   const unconfirmed = bom.filter(l =>
     HIGH_VALUE_COMP_TYPES.has(String(l.componentType ?? '')) &&
     !String(l.partNumber ?? '').trim());
-  if (unconfirmed.length === 0 || unconfirmed.length > 12) return 0;
+  if (unconfirmed.length === 0) return 0;
+  // Above 12 the second look is not run — say so (it was skipped silently, 360 review Oct 2026).
+  if (unconfirmed.length > 12) { analysis._secondLookSkipped = unconfirmed.length; return 0; }
   console.log(`[PCB${tag}] Stage 3b: second look at ${unconfirmed.length} unidentified high-value IC(s)`);
   const refinements = await refineUnconfirmedICs(anthropic, imageFiles, imageLabels, domain, unconfirmed);
   if (refinements.size === 0) return 0;
@@ -1520,6 +1543,8 @@ interface Stage4Input {
   /** What the BOM-image reader reported (rows not used, quantities fixed, cells unreadable). */
   bomImageNotes?: string[];
   files?: Record<string, Express.Multer.File[]>;
+  /** The labels the client sent with the photos (Top side, Close-up 3 …) — the dropped-photo warning names them. */
+  imageLabels?: string[];
   /** /reanalyze: the engineer's edited lines, authoritative. */
   correctedBOM?: Array<Record<string, unknown>> | null;
   onProgress?: (label: string) => void;
@@ -1567,7 +1592,9 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
   const { analysis: a, ocrResult, orderQty, tag } = inp;
   let asilLevel = inp.asilLevel;
   let domain = inp.domain;
-  const selectedCountry = inp.country;
+  // An unknown country priced as China while the response said the country asked for (360 review): it is China, said.
+  const countryFellBack = !PCB_COUNTRY_RATES[inp.country];
+  const selectedCountry = countryFellBack ? 'cn' : inp.country;
   const volumeMultiplier = getVolumeMultiplier(orderQty);
   let auto = domain === 'automotive_adas';
   const out: Stage4Output = {
@@ -1583,19 +1610,29 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     const boardSpec = (a.boardSpec ?? (a.boardSpec = {})) as Record<string, unknown>;
     const assemblyData = (a.assembly ?? (a.assembly = {})) as Record<string, unknown>;
     const costEst = (a.costEstimates ?? (a.costEstimates = {})) as Record<string, unknown>;
+    // The model's own first-pass figures, kept for audit BEFORE Stage 4 writes its own into costEstimates (they were
+    // captured after, so "aiFirstPass" held the tool's figures and the BOM-total check compared the sum with itself).
+    if (!costEst.aiFirstPass) costEst.aiFirstPass = JSON.parse(JSON.stringify({ pcbFabGBP: costEst.pcbFabGBP ?? null,
+      totalBOMCostGBP: costEst.totalBOMCostGBP ?? null, smtAssemblyCostGBP: costEst.smtAssemblyCostGBP ?? null }));
     const pcbFabGBP = costEst.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
     const warnings: SanityWarning[] = [];
+    if (countryFellBack) warnings.push({ code: 'COUNTRY_UNKNOWN', severity: 'warn',
+      message: `No PCB rates for "${String(inp.country).slice(0, 20)}" — the board is costed in China. Pick a listed country.` });
 
     if (a._salvaged === true) warnings.push({ code: 'BOM_TRUNCATED', severity: 'error',
-      message: `The AI's answer was cut off before the whole board was listed: this BOM (${Array.isArray(a.bom) ? (a.bom as unknown[]).length : 0} lines) is PARTIAL, so the cost is too low. Run again, or attach the BOM file.` });
+      message: `The AI's answer was cut off before the whole board was listed: this BOM (${Array.isArray(a.bom) ? (a.bom as unknown[]).length : 0} lines) is PARTIAL, so the cost is too low.${a._boardSpecLost === true ? ' The board spec was cut off too: size, layers and vias are DEFAULTS (100 × 80 mm, 4 layers), not read.' : ''} Run again, or attach the BOM file.` });
     {
       const photos = inp.files?.pcbImages ?? [];
       const over = photosOverBudget(photos);
       if (over.length) warnings.push({ code: 'PHOTOS_NOT_READ', severity: 'error',
-        message: `${over.length} of ${photos.length} photo(s) were too large to send together and were NOT read: ${over.map(i => DEFAULT_IMAGE_LABELS[i] ?? `photo ${i + 1}`).join(', ')}. Re-upload them smaller (the app's uploader resizes automatically).` });
+        message: `${over.length} of ${photos.length} photo(s) were too large to send together and were NOT read: ${over.map(i => inp.imageLabels?.[i] ?? DEFAULT_IMAGE_LABELS[i] ?? `photo ${i + 1}`).join(', ')}. Re-upload them smaller (the app's uploader resizes automatically).` });
     }
     if (inp.classificationFailed) warnings.push({ code: 'CLASSIFICATION_FAILED', severity: 'warn',
       message: 'The board-type classification failed, so the board was costed as "general" (no automotive grade). If this is an automotive board, run again.' });
+    if (typeof a._secondLookSkipped === 'number') warnings.push({ code: 'SECOND_LOOK_SKIPPED', severity: 'warn',
+      message: `${a._secondLookSkipped} IC lines had no part number — more than the 12 the second look re-reads, so none was re-read. They are priced from their class ranges; attach the BOM file or add close-ups of the main chips.` });
+    if (ocrResult.extractionQuality === 'truncated' || ocrResult.extractionQuality === 'partial') warnings.push({ code: 'OCR_PARTIAL', severity: 'warn',
+      message: `The chip-marking (OCR) answer was ${ocrResult.extractionQuality === 'truncated' ? 'cut off before the end' : 'not well-formed'}: the ${ocrResult.icMarkings.length} marking(s) read in full are kept, any after them were not read. Run again, or add a close-up of the unread chips.` });
     if (ocrResult.extractionQuality === 'failed') warnings.push({ code: 'OCR_STAGE_FAILED', severity: 'warn',
       message: 'The chip-marking (OCR) stage failed, so no marking was read separately: part numbers come only from the BOM stage and more lines are priced from class tables. Run again for a full read.' });
     // 1. Ground truth (a BOM file, measured fab data) before anything the model said.
@@ -1674,8 +1711,13 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     }
 
     // 6. The engineer's corrections (re-analysis) are authoritative — including a line
-    //    the model dropped or renamed this time (it used to be lost).
-    if (inp.correctedBOM && inp.correctedBOM.length) {
+    //    the model dropped or renamed this time (it used to be lost). They are KEPT on the analysis
+    //    (`userCorrections`): a re-price (country, quantity, form edit, Fetch Live Prices) restarts from rawBom and
+    //    sends no corrections, so an engineer's £0.50 went back to the class range on the next re-price (360 review).
+    const corrections = inp.correctedBOM && inp.correctedBOM.length ? inp.correctedBOM
+      : (Array.isArray(a.userCorrections) ? (a.userCorrections as Array<Record<string, unknown>>) : null);
+    if (inp.correctedBOM && inp.correctedBOM.length) a.userCorrections = JSON.parse(JSON.stringify(inp.correctedBOM));
+    if (corrections && corrections.length) {
       const corr = new Map<string, Record<string, unknown>>();
       // A placeholder ("—", "N/A", "U?") is not a designator: keyed on it, N unlabelled lines became N
       // copies of the last one (360 review). Such a line is matched by its part number + description.
@@ -1683,12 +1725,18 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
         const rd = String(l?.refDes ?? '').trim();
         return /^[A-Za-z_]+\d/.test(rd) ? rd : `pn:${String(l?.partNumber ?? '').trim()}|${String(l?.description ?? '').trim()}`;
       };
-      for (const l of inp.correctedBOM) corr.set(keyOf(l), l);
+      for (const l of corrections) corr.set(keyOf(l), l);
       const used = new Set<string>();
       const fromCorr = (c: Record<string, unknown>, base: Record<string, unknown>) => {
         const price = Number(c.unitPriceGBP);
         const qtyRaw = Number(c.qty);
         const qty = Number.isFinite(qtyRaw) && qtyRaw > 0 ? Math.round(qtyRaw) : Number(base.qty) || 1;
+        // A quantity-only edit changes the count and leaves the price to the tool (it froze the tool's price as the
+        // engineer's and took the line out of "to verify" — 360 review). Older clients send no flag: as before.
+        if (c.priceEdited === false && Object.keys(base).length) {
+          const k = inp.orderQty > 0 ? getVolumeMultiplier(qty * inp.orderQty) : Number(base.volumeMultiplier) || 1;
+          return { ...base, qty, qtyUserCorrected: true, volumeMultiplier: k, partsBought: inp.orderQty > 0 ? qty * inp.orderQty : base.partsBought };
+        }
         if (!Number.isFinite(price) || price < 0) return null;
         return { ...base, ...c, qty, unitPriceGBP: Math.round(price * 100000) / 100000, lineTotalGBP: Math.round(price * qty * 10000) / 10000,
           volumeAdjusted: false, automotiveGradeForced: false, userCorrected: true };
@@ -1701,6 +1749,10 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
         return fromCorr(c, line) ?? line;
       });
       for (const [rd, c] of corr) if (!used.has(rd)) { const l = fromCorr(c, {}); if (l) bom.push(l); }
+      // The placements and joints follow the corrected counts (they were counted before the corrections).
+      const recount = { ...assemblyData };
+      derivePlacementsFromBOM(bom, recount);
+      for (const k of ['smtPlacements', 'bgaCount', 'throughHoleJoints', 'manualJoints']) if (k in recount) assemblyData[k] = recount[k];
     }
 
     // 7. Prices: live distributor (if keyed) then the offline catalogue for EVERY
@@ -1790,6 +1842,21 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     const graded = applyAutomotiveGrade(bd, boardSpec, assemblyData, asilLevel, orderQty, domain);
     if (graded) { out.automotiveAssemblyCost = graded.assembly; out.automotiveFabAdjustment = graded.fab; }
     out.selectedCountryBreakdown = bd;
+    // Board figures no photo can show — they price fab and test but sat outside the "to verify" list, which is BOM
+    // lines only (360 review, Oct 2026). Named with the £ each drives, so the engineer knows what to confirm.
+    {
+      const m = (k: string) => String(boardSpec[k] ?? '') === 'measured';
+      const b = (bd.breakdown ?? {}) as unknown as Record<string, number>;
+      const fmt = (v: number) => `£${(Number(v) || 0).toFixed(2)}`;
+      const est: string[] = [];
+      if (!m('dimensionsSource')) est.push(`size ${widthMm} × ${heightMm} mm`);
+      if (!m('layersSource')) est.push(`${layers} layers (${fmt(b.pcbLayers)} a board)`);
+      if (!m('viasSource') && throughVias > 0) est.push(`${throughVias} through-vias (${fmt(b.pcbVias)})`);
+      if (String(boardSpec.hdiStructure ?? 'none') !== 'none') est.push(`HDI ${String(boardSpec.hdiStructure)} (${fmt(b.pcbHDI)})`);
+      if (Number(assemblyData.ictTimeSec) > 0) est.push(`ICT ${Number(assemblyData.ictTimeSec)} s a board`);
+      if (est.length) warnings.push({ code: 'BOARD_FIGURES_ESTIMATED', severity: 'warn',
+        message: `Not measured — estimates priced into fab and test: ${est.join(', ')}. No photo shows a via count, a layer stack or a test time; confirm them from the fab drawing or Gerbers (attach the drill / Gerber files, or type them into the PCB form and Calculate).` });
+    }
     // Panel: a board bigger than every panel had zero waste charged, and a poor fit was
     // clamped to 40 % utilisation — both silently (PCB review, Oct 2026).
     if (bd.panelInfo) {
@@ -1820,7 +1887,7 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     out.volumeCurves = { [cheapestId]: curve(cheapestId), [resolved]: curve(resolved), gb: curve('gb') };
     out.complexityScore = computeComplexityScore(boardSpec, assemblyData);
 
-    out.sanityWarnings = [...runSanityChecks(boardSpec, assemblyData, bom, Number((a.aiFirstPass as Record<string, unknown> | undefined)?.totalBOMCostGBP ?? 0), orderQty), ...warnings];
+    out.sanityWarnings = [...runSanityChecks(boardSpec, assemblyData, bom, Number((costEst.aiFirstPass as Record<string, unknown> | undefined)?.totalBOMCostGBP ?? 0), orderQty), ...warnings];
     console.log(`[PCB${tag}] Stage 4: qty=${orderQty} BOM=${bomTotal.toFixed(2)} headline=${bd.totalPerBoard.toFixed(2)} lines=${bom.length} verify=${out.needsVerificationCount}${auto ? ` asil=${asilLevel}` : ''}`);
   } catch (err) {
     out.failed = true;
@@ -1993,11 +2060,11 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
   let ocrResult: OCRResult = { icMarkings: [], refDesGroups: [], connectors: [], boardText: [], extractionQuality: 'low' };
   try {
     const s2MultiNote = multiImage
-      ? `\n\nNOTE: ${imageFiles.length} PCB photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Extract text from ALL images — the bottom side and additional photos often expose component markings not visible from the top.`
+      ? `\n\nNOTE: ${sentPhotoLabels(imageFiles, imageLabels).length} PCB photos provided (${sentPhotoLabels(imageFiles, imageLabels).join(', ')}). Extract text from ALL images — the bottom side and additional photos often expose component markings not visible from the top.`
       : '';
     const s2Msg = await anthropic.messages.create({
       model: OCR_MODEL,
-      max_tokens: 4096,
+      max_tokens: OCR_MAX_TOKENS,
       system: 'You are an expert at reading text from PCB images. Extract all readable text. Return ONLY JSON.',
       messages: [{
         role: 'user',
@@ -2008,14 +2075,8 @@ router.post('/analyze-image', aiLimit('pcbVision'), upload.fields([
       }],
     });
     const s2Raw = textOf(s2Msg);
-    const s2Parsed = JSON.parse(extractJSON(s2Raw)) as OCRResult;
-    ocrResult = {
-      icMarkings: Array.isArray(s2Parsed.icMarkings) ? s2Parsed.icMarkings : [],
-      refDesGroups: Array.isArray(s2Parsed.refDesGroups) ? s2Parsed.refDesGroups : [],
-      connectors: Array.isArray(s2Parsed.connectors) ? s2Parsed.connectors : [],
-      boardText: Array.isArray(s2Parsed.boardText) ? s2Parsed.boardText : [],
-      extractionQuality: s2Parsed.extractionQuality ?? 'low',
-    };
+    // A reply cut at max_tokens keeps its complete markings (it lost them all before — 360 review).
+    ocrResult = parseOcrReply(extractJSON(s2Raw), s2Raw, s2Msg.stop_reason);
     console.log(`[PCB] Stage 2: ${ocrResult.icMarkings.length} IC markings, extraction quality=${ocrResult.extractionQuality}`);
   } catch (err) {
     console.warn('[PCB] Stage 2 failed, using defaults:', err instanceof Error ? err.message : String(err));
@@ -2201,7 +2262,7 @@ ${userPromptText}`;
     asilRationale: asilClassification.asilRationale, asilSafetyFunctions: asilClassification.safetyFunctions,
     country: (req.body?.country as string | undefined) ?? 'cn',
     orderQty: parseOrderQty(req.body?.orderQty),
-    parsedBOM, bomImageNotes: bomImage?.notes, files, tag: '', classificationFailed: stage1Result.failed === true,
+    parsedBOM, bomImageNotes: bomImage?.notes, files, imageLabels, tag: '', classificationFailed: stage1Result.failed === true,
   });
 
   // ── Structural guarantee for the client ─────────────────────────────────
@@ -2224,7 +2285,7 @@ ${userPromptText}`;
     fromCache: false,
   };
   // Never cache a hollow, salvaged or half-costed result — it would replay forever.
-  if (!bomIsEmpty(analysis) && !s4.failed && !(analysis as Record<string, unknown>)._salvaged) setCached(cacheKey, { ...finalPayload, fromCache: true });
+  if (isCacheableRun(analysis as Record<string, unknown>, s4.failed, stage1Result.failed === true, ocrResult.extractionQuality)) setCached(cacheKey, { ...finalPayload, fromCache: true });
   res.json(finalPayload);
 });
 
@@ -2693,9 +2754,10 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   let ocrResult: OCRResult = { icMarkings: [], refDesGroups: [], connectors: [], boardText: [], extractionQuality: 'low' };
   try {
     emit('progress', { stage: 2, label: 'Stage 2 — OCR text extraction', pct: 35 });
-    const s2Note = multiImage ? `\n\nNOTE: ${imageFiles.length} photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Extract from ALL images.` : '';
+    const sentLabels = sentPhotoLabels(imageFiles, imageLabels);
+    const s2Note = multiImage ? `\n\nNOTE: ${sentLabels.length} photos provided (${sentLabels.join(', ')}). Extract from ALL images.` : '';
     const s2Msg = await anthropic.messages.create({
-      model: OCR_MODEL, max_tokens: 4096,
+      model: OCR_MODEL, max_tokens: OCR_MAX_TOKENS,
       system: 'You are an expert at reading PCB text. Return ONLY JSON.',
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
@@ -2703,18 +2765,16 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
       ]}],
     });
     const s2Raw = textOf(s2Msg);
-    const s2P = JSON.parse(extractJSON(s2Raw)) as OCRResult;
-    // Arrays of strings only, as the non-streaming route: a string icMarkings threw outside any try and
-    // the SSE stream never sent complete or error (360 review).
-    const strs = (v: unknown): string[] => Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
-    ocrResult = { icMarkings: strs(s2P.icMarkings), refDesGroups: Array.isArray(s2P.refDesGroups) ? s2P.refDesGroups : [], connectors: strs(s2P.connectors), boardText: strs(s2P.boardText), extractionQuality: s2P.extractionQuality ?? 'low' };
+    // Arrays of strings only (a string icMarkings once threw outside any try and the SSE stream never sent complete
+    // or error); a reply cut at max_tokens keeps its complete markings (360 review, Oct 2026).
+    ocrResult = parseOcrReply(extractJSON(s2Raw), s2Raw, s2Msg.stop_reason);
     emit('stage2', { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality });
   } catch { ocrResult.extractionQuality = 'failed'; emit('progress', { stage: 2, label: 'Stage 2 — OCR failed, continuing without chip markings', pct: 40 }); }
 
   // Stage 3
   emit('progress', { stage: 3, label: 'Stage 3 — Full BOM analysis (this takes ~20s)', pct: 50 });
   const reqOrderQty2 = parseOrderQty(req.body?.orderQty);
-  // Same safety net as the non-stream path: Stage 1 sees only the top photo, so a
+  // Same safety net as the non-stream path: Stage 1 can misread the board (it sees every photo but reads no part numbers), so a
   // radar board with an S32R/TEF81x marking can come back rf_microwave/general —
   // which drops automotive pricing, ASIL and AEC-Q grading. The chip markings win.
   if (stage1Result.domain !== 'automotive_adas' && looksAutomotiveSilicon(ocrResult.icMarkings)) {
@@ -2728,7 +2788,8 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
   }
   const domain = stage1Result.domain;
   const specSystem = SPECIALIST_SYSTEM_PROMPTS[domain] ?? SPECIALIST_SYSTEM_PROMPTS['general'];
-  const multiNote = multiImage ? `\n\nNOTE: ${imageFiles.length} photos (${imageLabels.slice(0, imageFiles.length).join(', ')}). Use ALL images together.` : '';
+  const sentLabels3 = sentPhotoLabels(imageFiles, imageLabels);
+  const multiNote = multiImage ? `\n\nNOTE: ${sentLabels3.length} photos (${sentLabels3.join(', ')}). Use ALL images together.` : '';
   let parsedBOM2: ParsedBOMLine[] = [];
   const bomFileUpload2 = files?.bomFile?.[0];
   if (bomFileUpload2 && !isBomImage(bomFileUpload2)) {
@@ -2851,7 +2912,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     asilRationale: streamAsilClassification.asilRationale, asilSafetyFunctions: streamAsilClassification.safetyFunctions,
     country: (req.body?.country as string | undefined) ?? 'cn',
     orderQty: parseOrderQty(req.body?.orderQty),
-    parsedBOM: parsedBOM2, bomImageNotes: bomImage2?.notes, files, tag: '/stream', classificationFailed: stage1Result.failed === true,
+    parsedBOM: parsedBOM2, bomImageNotes: bomImage2?.notes, files, imageLabels, tag: '/stream', classificationFailed: stage1Result.failed === true,
     onProgress: label => emit('progress', { stage: 4, label, pct: 90 }),
   });
   normalizePCBAnalysis(analysis as Record<string, unknown>);
@@ -2865,7 +2926,7 @@ router.post('/analyze-image-stream', aiLimit('pcbVision'), upload.fields([
     fromCache: false,
   };
   // Store so an identical re-run replays this exact result — never a hollow, salvaged or half-costed one.
-  if (!bomIsEmpty(analysis) && !s4.failed && !(analysis as Record<string, unknown>)._salvaged) setCached(streamCacheKey, streamComplete);
+  if (isCacheableRun(analysis as Record<string, unknown>, s4.failed, stage1Result.failed === true, ocrResult.extractionQuality)) setCached(streamCacheKey, streamComplete);
   emit('complete', streamComplete);
   res.end();
 });

@@ -140,11 +140,22 @@ app.get('/api/health', (_req, res) => {
 });
 
 // Global error handler — must be last middleware
-app.use((err: Error & { status?: number }, _req: Request, res: Response, _next: NextFunction) => {
-  const status = err.status ?? 500;
+app.use((err: Error & { status?: number; code?: string }, _req: Request, res: Response, _next: NextFunction) => {
+  // An upload refused by multer (too large, too many files, wrong type) is the caller's to fix: 400 with the reason.
+  // It was a 500 "Internal server error" in production and the PCB screen said only "Analysis failed" (360 review).
+  const status = err.status ?? (err.name === 'MulterError' ? 400 : 500);
   if (status >= 500) console.error('[ERROR]', err.stack ?? err.message);
-  res.status(status).json({ error: IS_PROD ? 'Internal server error' : (err.message ?? 'Unknown error') });
+  const message = err.name === 'MulterError' ? multerMessage(err.code, err.message) : (err.message ?? 'Unknown error');
+  res.status(status).json({ error: IS_PROD && status >= 500 ? 'Internal server error' : message });
 });
+
+function multerMessage(code: string | undefined, fallback: string): string {
+  switch (code) {
+    case 'LIMIT_FILE_SIZE': return 'A file is larger than the 20 MB upload limit — resize it and try again.';
+    case 'LIMIT_FILE_COUNT': case 'LIMIT_UNEXPECTED_FILE': return 'Too many files for this upload (the PCB screen takes 8 photos, 1 BOM and up to 40 fab files).';
+    default: return fallback;
+  }
+}
 
 // ── Last-resort crash guards ─────────────────────────────────────────────────
 // Express 4 does not catch async route errors; one unhandled rejection used to

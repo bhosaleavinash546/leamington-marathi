@@ -25,7 +25,7 @@ import './styles/cad-viewer.css';  // 3D viewer (theme-aware, --v-* tokens)
 import { initActionMenu, initAccountMenu, watchScrollRegions } from './saas-shell.js';
 import { linkHeadline } from './result-headline.js';
 import { attachPcbPayload } from './pcb/attach.js';
-import { photoSlotsHtml, markPhotoSlot, wirePhotoSlot } from './pcb/photo-slots.js';
+import { photoSlotsHtml, markPhotoSlot, wirePhotoSlot, isReadablePcbPhoto } from './pcb/photo-slots.js';
 import { analysisStackInput, snapshotFields, editedFields, boardSpecPatch } from './pcb/analysis-link.js';
 import { ecuLibraryShell, wireEcuLibrary } from './pcb/ecu-library.js';
 import { beginBusy } from './busy.js';
@@ -7639,6 +7639,7 @@ function wirePCBImageZone(): void {
   }
 
   function setSlot(idx: number, file: File): void {
+    if (!isReadablePcbPhoto(file)) { showToast(`"${file.name}" is not a JPEG, PNG or WebP photo — it was not added.`, 'warning'); return; }
     pcbImageFiles[idx] = file;
     // Read a data URL now, while we still hold the File — the report is
     // generated much later, by which point an object URL has been revoked.
@@ -7703,9 +7704,9 @@ function wirePCBImageZone(): void {
   zone?.addEventListener('drop', (e) => {
     e.preventDefault();
     zone.classList.remove('drag-over');
-    const dropped = Array.from((e as DragEvent).dataTransfer?.files ?? [])
-      .filter(f => f.type.startsWith('image/'))
-      .slice(0, PCB_IMAGE_MAX);
+    const all = Array.from((e as DragEvent).dataTransfer?.files ?? []).filter(f => f.type.startsWith('image/'));
+    const dropped = all.filter(isReadablePcbPhoto).slice(0, PCB_IMAGE_MAX);
+    if (dropped.length < all.length) showToast(`${all.length - dropped.length} photo(s) not added — use JPEG, PNG or WebP (at most ${PCB_IMAGE_MAX}).`, 'warning');
     dropped.forEach(f => {
       const emptySlot = pcbImageFiles.findIndex(s => s === null);
       if (emptySlot !== -1) setSlot(emptySlot, f);
@@ -7842,7 +7843,7 @@ function normalizePCBPayloadForRender(an: Record<string, unknown>): void {
 }
 
 async function analyzePCBImages(): Promise<void> {
-  const selectedFiles = pcbImageFiles.map((f, i) => f ? { file: f, label: PCB_SLOT_LABELS[i] } : null).filter((x): x is { file: File; label: string } => x !== null);
+  const selectedFiles = pcbImageFiles.map((f, i) => f ? { file: f, label: PCB_SLOT_LABELS[i], slot: i } : null).filter((x): x is { file: File; label: string; slot: number } => x !== null);
   if (!selectedFiles.length || pcbImageLoading) return;
 
   pcbImageLoading = true;
@@ -7865,9 +7866,10 @@ async function analyzePCBImages(): Promise<void> {
   // only when Deep analysis is on and reading tiny IC markings is worth the cost.
   const deepHiRes = (document.getElementById('pcb-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
   const uploadMaxEdge = deepHiRes ? 2576 : 1600;
-  // Close-ups (slots 3–8) exist to read chip markings: always at full resolution
+  // Close-ups (slots 3–8 on screen, index ≥ 2) exist to read chip markings: always at full resolution
   // (PCB review, Oct 2026). Top and bottom stay balanced unless Deep analysis is on.
-  const uploadFiles = await Promise.all(selectedFiles.map((x, i) => downscaleImageForUpload(x.file, i >= 2 ? 2576 : uploadMaxEdge)));
+  // By SLOT, as /reanalyze does: the list position moved a close-up to 1600 px when the bottom slot was empty.
+  const uploadFiles = await Promise.all(selectedFiles.map(x => downscaleImageForUpload(x.file, x.slot >= 2 ? 2576 : uploadMaxEdge)));
   uploadFiles.forEach(file => formData.append('pcbImages', file));
   formData.append('pcbImageLabels', JSON.stringify(selectedFiles.map(x => x.label)));
 
@@ -7896,7 +7898,9 @@ async function analyzePCBImages(): Promise<void> {
   // Optional BOM/netlist file (Priority 2)
   const bomFileInput = document.getElementById('pcb-bom-input') as HTMLInputElement | null;
   const bomFile = bomFileInput?.files?.[0] ?? pcbBOMFile;
-  if (bomFile) formData.append('bomFile', bomFile);
+  // A BOM PICTURE is resized like a close-up (2576 px keeps the table legible); it went up raw and a phone photo over
+  // the 20 MB limit failed the whole analysis (360 review). A .csv / .xml passes through untouched.
+  if (bomFile) formData.append('bomFile', isReadablePcbPhoto(bomFile) ? await downscaleImageForUpload(bomFile, 2576) : bomFile);
   for (const f of pcbFabFiles) formData.append('fabFiles', f);
 
   // Store the primary (first) image as a data URL for board annotation (Feature 9)
@@ -8229,7 +8233,7 @@ function linkPcbAnalysisToForm(): void {
   const vol = document.getElementById('annual-volume') as HTMLInputElement | null;
   if (vol && qty > 0) { vol.value = String(qty); vol.classList.add('ai-filled'); }
   const region = document.getElementById('pcbf-region') as HTMLSelectElement | null;
-  const want = ({ cn: 'china', in: 'india', us: 'na', mx: 'na', uk: 'uk', de: 'eu', pl: 'eu', cz: 'eu' } as Record<string, string>)[pcbImageResult._selectedCountry ?? 'cn'];
+  const want = ({ cn: 'china', in: 'india', us: 'na', mx: 'na', uk: 'uk', gb: 'uk', de: 'eu', pl: 'eu', cz: 'eu' } as Record<string, string>)[pcbImageResult._selectedCountry ?? 'cn'];
   if (region && want && Array.from(region.options).some(o => o.value === want)) region.value = want;
   _pcbFormFilledFrom = { result: pcbImageResult, commodity: 'pcb_fab' };
   _pcbFabSnapshot = snapshotFields();
@@ -8408,8 +8412,13 @@ function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec'
     const p = parseFloat(priceInput?.value ?? '');
     const qty = Number.isFinite(q) && q >= 1 ? Math.round(q) : item.qty;
     const unitPriceGBP = Number.isFinite(p) && p >= 0 ? p : item.unitPriceGBP;   // 0 is a valid price now
-    const changed = qty !== item.qty || Math.abs(unitPriceGBP - item.unitPriceGBP) > 0.0005 || pcbPinnedPrices.has(i);
-    return changed ? [{ ...item, qty, unitPriceGBP }] : [];
+    // A price the engineer typed or pinned (now or on an earlier round) is theirs; a quantity-only edit leaves the
+    // price to the tool (it froze the tool's figure as the engineer's — 360 review, Oct 2026).
+    const prior = item as { userCorrected?: boolean; priceSource?: string; qtyUserCorrected?: boolean };
+    const earlier = prior.userCorrected === true || prior.priceSource === 'user' || prior.qtyUserCorrected === true;
+    const priceEdited = Math.abs(unitPriceGBP - item.unitPriceGBP) > 0.0005 || pcbPinnedPrices.has(i) || prior.priceSource === 'user';
+    const changed = qty !== item.qty || priceEdited || earlier;
+    return changed ? [{ ...item, qty, unitPriceGBP, priceEdited }] : [];
   });
 
   return { correctedSpec, correctedAssembly, correctedBOM };
@@ -8689,9 +8698,9 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <div class="occt-stat"><div class="occt-stat-value">${a.complexity}</div><div class="occt-stat-label">Assembly complexity</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${a.reflowSides === 2 ? 'Double' : 'Single'}</div><div class="occt-stat-label">Reflow sides</div></div>
         <div class="occt-stat"><div class="occt-stat-value">&#163;${c.pcbFabGBP.min.toFixed(2)}–&#163;${c.pcbFabGBP.max.toFixed(2)}</div><div class="occt-stat-label">PCB fab est.</div></div>
-        <div class="occt-stat"><div class="occt-stat-value">&#163;${totalBOMCost}${r._selectedCountryBreakdown && Math.abs(r._selectedCountryBreakdown.bomCostPerBoard - c.totalBOMCostGBP) >= 0.01 ? `<span style="font-size:0.62rem;font-weight:600;color:var(--text-muted)"> → &#163;${r._selectedCountryBreakdown.bomCostPerBoard.toFixed(2)} in ${escHtml(r._selectedCountryBreakdown.countryName)}</span>` : ''}</div><div class="occt-stat-label" title="Distributor-level BOM; the headline uses it after the country's component sourcing factor">BOM total (distributor)${r._volumeMultiplier && r._volumeMultiplier !== 1.0 ? ` <span title="Volume-adjusted from 100K baseline (×${r._volumeMultiplier.toFixed(2)})" style="font-size:0.58rem;background:var(--accent);color:#fff;padding:1px 4px;border-radius:3px">VOL ×${r._volumeMultiplier.toFixed(2)}</span>` : ''}</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">&#163;${totalBOMCost}${r._selectedCountryBreakdown && Math.abs(r._selectedCountryBreakdown.bomCostPerBoard - c.totalBOMCostGBP) >= 0.01 ? `<span style="font-size:0.62rem;font-weight:600;color:var(--text-muted)"> → &#163;${r._selectedCountryBreakdown.bomCostPerBoard.toFixed(2)} with the EMS material burden</span>` : ''}</div><div class="occt-stat-label" title="Distributor-level BOM; the headline adds the EMS material burden (5% at 100k+ parts bought, 7% at 10k+, 10% below). Components are bought on one global market — there is no country factor.">BOM total (distributor)${r._volumeMultiplier && r._volumeMultiplier !== 1.0 ? ` <span title="Volume-adjusted from 100K baseline (×${r._volumeMultiplier.toFixed(2)})" style="font-size:0.58rem;background:var(--accent);color:#fff;padding:1px 4px;border-radius:3px">VOL ×${r._volumeMultiplier.toFixed(2)}</span>` : ''}</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.stage1Classification?.domain?.replace(/_/g,' ') ?? 'general'}</div><div class="occt-stat-label">Board domain</div></div>
-        <div class="occt-stat"><div class="occt-stat-value">${r.ocrExtraction?.icMarkings?.length ?? 0}</div><div class="occt-stat-label">ICs identified</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${r.ocrExtraction?.icMarkings?.length ?? 0}</div><div class="occt-stat-label" title="Chip markings the OCR stage read off the photos. A part number is priced from the catalogue only when a marking, your BOM or your edit agrees with it.">Chip markings read</div></div>
         ${r._asilLevel && r._asilLevel !== 'Unknown' ? `<div class="occt-stat"><div class="occt-stat-value" style="color:${r._asilLevel==='ASIL-D'?'#dc2626':r._asilLevel==='ASIL-C'?'#ea580c':r._asilLevel==='ASIL-B'?'#d97706':'#2563eb'}">${r._asilLevel}</div><div class="occt-stat-label">ISO 26262 ASIL</div></div>` : ''}
         ${r._conformalCoatingCost && r._conformalCoatingCost > 0 ? `<div class="occt-stat"><div class="occt-stat-value">&#163;${r._conformalCoatingCost.toFixed(0)}</div><div class="occt-stat-label">Conformal coat</div></div>` : ''}
         ${complexityScoreHtml}
@@ -8724,10 +8733,10 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
                 const nvc = nv.needsVerificationCount ?? nv._needsVerificationCount ?? 0;
                 if (ce && typeof ce.unverifiedBOMCostGBP === 'number' && ce.unverifiedBOMCostGBP > 0.01) {
                   return `<div style="font-size:0.58rem;margin-top:3px;line-height:1.3">`
-                    + `<span style="color:#0e9f6e" title="Catalogue prices, parts read off the chips, and small lines priced by count from the table">&#10003; &#163;${(ce.confirmedBOMCostGBP ?? 0).toFixed(2)} priced</span>`
+                    + `<span style="color:#0e9f6e" title="Catalogue prices, parts read off the chips, and small lines priced by count from the table. A catalogue price above its largest published break (usually 1k–3k) is DERIVED along the volume curve — a should-cost figure, not a quote.">&#10003; &#163;${(ce.confirmedBOMCostGBP ?? 0).toFixed(2)} priced</span>`
                     + ` · <span style="color:#b45309" title="Lines worth £1+ per board with no quote behind the price — confirm these">&#163;${ce.unverifiedBOMCostGBP.toFixed(2)} to verify${nvc ? ` (${nvc} lines)` : ''}</span>`
-                    // These split the distributor-level BOM; the figure above is after the country's sourcing factor.
-                    + `<div style="color:var(--text-muted)">of the &#163;${((ce.confirmedBOMCostGBP ?? 0) + ce.unverifiedBOMCostGBP).toFixed(2)} distributor-level BOM, before the ${escHtml(r._selectedCountryBreakdown?.countryName?.split(' (')[0] ?? 'country')} sourcing factor</div></div>`;
+                    // These split the distributor-level BOM; the figure above adds the EMS material burden.
+                    + `<div style="color:var(--text-muted)">of the &#163;${((ce.confirmedBOMCostGBP ?? 0) + ce.unverifiedBOMCostGBP).toFixed(2)} distributor-level BOM, before the EMS material burden</div></div>`;
                 }
                 return '';
               })()}
@@ -14869,11 +14878,20 @@ function fetchAICommentary(result: PartCostResult): void {
     <span class="ai-commentary-loading">Analysing cost structure…</span>`;
   div.style.display = '';
 
-  const commLabel = COMMODITY_LABELS[activeCommodity] ?? activeCommodity.replace(/_/g,' ');
-  const regionName = REGIONAL_DATA[_mfgRegion]?.name ?? _mfgRegion;
-  const prompt = `Should-cost result for "${result.partName}" (${commLabel}), manufactured in ${regionName}:
-Total: ${fmt(result.total)} (${_displayCurrency}), Material ${pcts.rawMaterial.toFixed(0)}%, Process ${pcts.process.toFixed(0)}%, Labour ${pcts.labour.toFixed(0)}%, Tooling ${pcts.tooling.toFixed(0)}%, Overhead ${pcts.overhead.toFixed(0)}%.
-In exactly 2-3 sentences: identify the dominant cost driver, whether it is above or below benchmark for this commodity type at this volume in ${regionName}, and the single highest-leverage action to reduce unit cost.`;
+  // A costing reported from the PCB photo analysis is built where the ANALYSIS says, under its own name, and its
+  // material bucket is components + bought-in board and assembly. It was described to the model as an "Unnamed Part"
+  // "manufactured in United Kingdom", 96% material (360 review, Oct 2026).
+  const pcb = _costedFromPcbAnalysis;
+  const pcbBd = pcb?._selectedCountryBreakdown;
+  const commLabel = pcb ? 'populated PCB assembly (PCBA)' : (COMMODITY_LABELS[activeCommodity] ?? activeCommodity.replace(/_/g,' '));
+  const regionName = pcbBd?.countryName ?? REGIONAL_DATA[_mfgRegion]?.name ?? _mfgRegion;
+  const partName = (result.partName && result.partName !== 'Unnamed Part') ? result.partName : (pcb?.partName ?? result.partName);
+  const split = pcbBd
+    ? `Components ${fmt(pcbBd.bomCostPerBoard)}, bare board ${fmt(pcbBd.pcbFabPerBoard)}, assembly and test ${fmt(pcbBd.assemblyPerBoard)}, freight and duty ${fmt(pcbBd.logisticsPerBoard)} per board at ${pcb?._orderQty ?? '—'} boards a year`
+    : `Material ${pcts.rawMaterial.toFixed(0)}%, Process ${pcts.process.toFixed(0)}%, Labour ${pcts.labour.toFixed(0)}%, Tooling ${pcts.tooling.toFixed(0)}%, Overhead ${pcts.overhead.toFixed(0)}%`;
+  const prompt = `Should-cost result for "${partName}" (${commLabel}), manufactured in ${regionName}:
+Total: ${fmt(result.total)} (${_displayCurrency}), ${split}.
+In exactly 2-3 sentences: identify the dominant cost driver from the figures above and the single highest-leverage action to reduce unit cost. Use only the figures given here — do not quote a benchmark, a market price or any number that is not above.`;
 
   fetch('/api/aichat', {
     method: 'POST',

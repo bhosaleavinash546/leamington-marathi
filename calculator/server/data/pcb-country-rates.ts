@@ -6,7 +6,7 @@ import { REGIONAL_DATA, type ManufacturingRegion } from '../../src/engine/region
  * Prismark PCB Industry Report Q4-2025, published EMS contracts (Jabil, Flex, Celestica).
  * All prices in GBP, calibrated to Jan 2026 FX mid-rates; re-based to 2026-09-29 FX and wages by scripts/pcb-rate-refresh.ts (fawazahmed0/currency-api daily snapshots 2026-01-15 and 2026-09-29 (npm @fawazahmed0/currency-api)).
  *
- * Covers: PCB fabrication, SMT/THT assembly, logistics to UK, component sourcing index.
+ * Covers: PCB fabrication, SMT/THT assembly, logistics to UK, the EMS material burden on components (one global market).
  */
 
 export interface PCBFabRates {
@@ -1208,9 +1208,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const confCost = input.conformalCoatAreaCm2 * a.conformalCoatPerCm2;
   const assemblyPerBoard = smtAssembly + thAssembly + manualAssembly + aoiCost + xrayCost + ictCost + confCost;
 
-  // Component sourcing (audit fix): BOM varies by country via the sourcing
-  // index — local availability/spot-market access, NOT an FX conversion.
-  // The EMS buys the components and charges for doing so: procurement, inventory carrying, scrap and a
+  // Components are bought on one global market (no country index since F13). The EMS buys the components and charges for doing so: procurement, inventory carrying, scrap and a
   // margin on material (cost-plus EMS practice — Venture Outsource, EMSNow; the rate falls on larger
   // programmes). It was missing: components passed through at cost, so every board sat below a real
   // quote. MATERIAL_BURDEN is an engineering figure by volume, stated in the breakdown.

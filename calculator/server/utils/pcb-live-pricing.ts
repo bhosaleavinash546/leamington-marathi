@@ -435,16 +435,24 @@ export async function fetchLivePrices(
 export function buildAutomotiveSearchVariants(partNumbers: string[]): string[] {
   // Audit fix: TR / CT / -T1 are tape-reel PACKAGING suffixes, not automotive
   // qualifiers — matching them mislabelled reel variants as AEC-Q parts.
+  // Every ORIGINAL first, then the variants: 4 variants a part under a cap of 20 reached only 5 parts (360 review).
+  const out: string[] = [...new Set(partNumbers)];
+  for (const [pn, v] of automotiveVariantPairs(partNumbers)) if (v !== pn && !out.includes(v)) out.push(v);
+  return out.slice(0, 20);   // fetchLivePrices sends 20 a call
+}
+
+/** [original, variant] pairs — the variant maps back to the part it was made from, and only to it. */
+function automotiveVariantPairs(partNumbers: string[]): Array<[string, string]> {
   const suffixes = ['-Q1', 'Q', '/Q'];
-  const variants: Set<string> = new Set();
+  const out: Array<[string, string]> = [];
   for (const pn of partNumbers) {
-    variants.add(pn);
+    out.push([pn, pn]);
     const upper = pn.toUpperCase();
-    for (const s of suffixes) {
-      if (!upper.endsWith(s.toUpperCase())) variants.add(pn + s);
-    }
+    // An MPN already carrying a qualifier (…-Q1, …Q1, …/Q) is not given another.
+    if (/(-?Q1|\/Q)$/.test(upper)) continue;
+    for (const s of suffixes) if (!upper.endsWith(s.toUpperCase())) out.push([pn, pn + s]);
   }
-  return [...variants].slice(0, 20);
+  return out;
 }
 
 /** Fetch live prices, for automotive domains also tries AEC-Q variant MPNs.
@@ -459,21 +467,21 @@ export async function fetchLivePricesWithAECQ(
   if (!preferAutomotive) return fetchLivePrices(partNumbers, provider, apiKey, qty);
   const variants = buildAutomotiveSearchVariants(partNumbers);
   const results = await fetchLivePrices(variants, provider, apiKey, qty);
-  // For each original MPN, if we have both an automotive and non-automotive hit prefer automotive
-  const bestPerMPN = new Map<string, LivePriceResult>();
+  // Each result maps back to the ORIGINAL it was generated from — never by stripping a trailing "Q" (an MPN that
+  // genuinely ends in Q was matched as its sibling, 360 review). Prefer an automotive hit over a commercial one.
+  // A distributor may return its canonical MPN rather than the string queried, so the fallback is the old normalised
+  // key — minus the bare-"Q" strip: only an "-Q1" / "Q1" / "/Q" qualifier is ignored.
+  const norm = (m: string) => m.toUpperCase().replace(/(-?Q1|\/Q)$/, '').replace(/[-\/\s]/g, '');
+  const origOf = new Map<string, string>();
+  for (const [orig, v] of automotiveVariantPairs(partNumbers)) if (!origOf.has(v.toUpperCase())) origOf.set(v.toUpperCase(), orig);
+  const origByNorm = new Map<string, string>();
+  for (const orig of partNumbers) if (!origByNorm.has(norm(orig))) origByNorm.set(norm(orig), orig);
+  const best = new Map<string, LivePriceResult>();
   for (const r of results) {
-    const key = r.mpn.toUpperCase().replace(/[-\/]?(Q1|Q)$/i, '');
-    const existing = bestPerMPN.get(key);
-    if (!existing || (r.automotiveGrade && !existing.automotiveGrade)) {
-      bestPerMPN.set(key, r);
-    }
+    const orig = origOf.get(String(r.mpn).toUpperCase()) ?? origByNorm.get(norm(String(r.mpn)));
+    if (!orig) continue;
+    const existing = best.get(orig);
+    if (!existing || (r.automotiveGrade && !existing.automotiveGrade)) best.set(orig, r);
   }
-  // Map back to original MPNs
-  const out: LivePriceResult[] = [];
-  for (const orig of partNumbers) {
-    const key = orig.toUpperCase().replace(/[-\/]?(Q1|Q)$/i, '');
-    const hit = bestPerMPN.get(key);
-    if (hit) out.push({ ...hit, mpn: orig });
-  }
-  return out;
+  return partNumbers.flatMap(orig => { const hit = best.get(orig); return hit ? [{ ...hit, mpn: orig }] : []; });
 }

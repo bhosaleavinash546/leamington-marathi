@@ -34,6 +34,19 @@ describe('Calculate after Analyze = the analysis', () => {
     // A BOM's category column ("Capacitor") is not a designator: the part number, or a dash.
     expect(lines.map(l => l.ref)).toEqual(['—', 'DS90UB935-Q1', '—', 'PCB', 'ASM']);
   });
+  it('lines print at the analysis price; the EMS material burden is its own line (it was a ×1.05 "sourcing factor" on every line)', () => {
+    // 2 lines priced £10.00, burden 5% = £0.50 → components £10.50
+    const r = { bom: [{ refDes: 'U1', qty: 1, unitPriceGBP: 8 }, { refDes: 'C1-C20', qty: 20, unitPriceGBP: 0.1 }],
+      _selectedCountryBreakdown: { totalPerBoard: 13, pcbFabPerBoard: 1, assemblyPerBoard: 1.5, bomCostPerBoard: 10.5, logisticsPerBoard: 0,
+        breakdown: { materialBurden: 0.5, materialBurdenPct: 0.05 }, countryName: 'China', countryId: 'cn' } };
+    const lines = analysisStackInput(r).rawMaterial.lines!;
+    expect(lines.find(l => l.ref === 'U1')!.unitCost).toBe(8);
+    expect(lines.find(l => l.ref === 'C1-C20')!.unitCost).toBe(0.1);
+    const ems = lines.find(l => l.ref === 'EMS')!;
+    expect(ems.unitCost).toBe(0.5);
+    expect(ems.description).toMatch(/5% of the components/);
+    expect(computeUniversalStack(analysisStackInput(r), DEFAULT_RATE_LIBRARY).total).toBeCloseTo(13, 6);
+  });
   it('refuses to report an analysis that has no country breakdown', () => {
     expect(() => analysisStackInput({ bom: [], _selectedCountryBreakdown: null })).toThrow(/run Analyze/);
   });

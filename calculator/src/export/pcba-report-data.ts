@@ -137,12 +137,12 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const duty = num(b.importDuty);
   const energy = num(b.energy), pack = num(b.packaging), yieldLoss = num(b.yieldLoss);
   const stack: PcbaStackRow[] = [
-    { key: 'components', label: 'Components (as the EMS buys them)', amount: componentsAtCost, basis: `${a.bom.length} BOM lines at ${country} sourcing — see §3` },
+    { key: 'components', label: 'Components (as the EMS buys them)', amount: componentsAtCost, basis: `${a.bom.length} BOM lines, components bought on the global market — see §3` },
     ...(burden > 0 ? [{ key: 'burden' as const, label: `EMS material burden (${Math.round(burdenPct * 100)}%)`, amount: burden, basis: 'Procurement, inventory, scrap and margin on material — stated rate by volume' }] : []),
     { key: 'fab', label: 'Bare PCB fabrication', amount: fabStd, basis: 'Fabricator price: base, layers, finish, vias, set-up — see §4' },
     ...(autoFab > 0 ? [{ key: 'autoFab' as const, label: 'Automotive fab grade', amount: autoFab, basis: 'IATF 16949 line, automotive laminate, class 3 inspection, coupons' }] : []),
     { key: 'asm', label: 'SMT / THT assembly', amount: asmStd, basis: 'Placements and joints at the country line rate' },
-    { key: 'test', label: 'Test & inspection', amount: test, basis: 'AOI, X-ray, ICT (station time + fixture over the order)' },
+    { key: 'test', label: 'Test & inspection', amount: test, basis: 'AOI, X-ray, ICT (station time + fixture over the order) and conformal coating where specified' },
     ...(autoAsm > 0 ? [{ key: 'autoAsm' as const, label: 'Automotive assembly grade', amount: autoAsm, basis: 'IATF line, class 3 workmanship, serialisation' + (/ASIL-[CD]/.test(String(bd.automotiveGrade?.asil)) ? ', burn-in' : '') }] : []),
     ...(energy + pack + yieldLoss > 0 ? [{ key: 'other' as const, label: 'Energy, packaging, cost of quality', amount: r2(energy + pack + yieldLoss), basis: `Energy ${money(energy)} · ESD packaging ${money(pack)} · rework/scrap ${money(yieldLoss)}` }] : []),
   ];
@@ -159,7 +159,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   );
   stack.push({ key: 'delivered', label: 'Delivered cost per board', amount: bd.totalPerBoard, basis: `${country} build, delivered UK, duty paid`, kind: 'total' });
 
-  // ── BOM: the analysis's lines at the country's sourcing (the same factor the components bucket uses).
+  // ── BOM: the analysis's lines at their own price; the factor only absorbs the penny rounding of the components row (≈ 1).
   const lines = a.bom.filter(l => num(l.qty) > 0);
   const dist = lines.reduce((t, l) => t + num(l.qty) * num(l.unitPriceGBP), 0);
   const sourcingFactor = dist > 0 ? componentsAtCost / dist : 1;
@@ -176,7 +176,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   });
   const bomTotal = bom.reduce((t, l) => t + l.ext, 0);
   const bomPieces = bom.reduce((t, l) => t + l.qty, 0);
-  const factorNote = Math.abs(sourcingFactor - 1) > 0.005 ? ` Unit prices are the distributor price × ${sourcingFactor.toFixed(3)}, ${country}'s component sourcing index.` : '';
+  const factorNote = Math.abs(sourcingFactor - 1) > 0.005 ? ` Unit prices are scaled × ${sourcingFactor.toFixed(3)} so the lines add up to the components row (penny rounding).` : '';
   const bomReconciliation = Math.abs(bomTotal - componentsAtCost) < 0.01
     ? `The ${bom.length} lines (${bomPieces} parts) total ${money(bomTotal)} — the components row of §1.${factorNote}${burden > 0 ? ` The EMS material burden (${money(burden)}) is added on top in §1.` : ''}`
     : `The ${bom.length} lines total ${money(bomTotal)} against ${money(componentsAtCost)} in §1 — a ${money(Math.abs(bomTotal - componentsAtCost))} difference from rounding of line prices.`;

@@ -16,9 +16,22 @@ import { PCB_ANALYSIS_JSON_SCHEMA, isOutputFormatRejection } from '../server/uti
 import { applyGroundTruth } from '../server/routes/pcb.js';
 
 describe('class price table — the AI no longer sets a price', () => {
-  it('an automotive 0402 resistor lands in its AEC-Q range', () => {
-    const r = classRange({ componentType: 'passive_0402', description: 'Automotive AEC-Q200 thick-film resistor', value: '10k' });
+  it('an automotive 0402 resistor lands in its AEC-Q range (automotive board, or the user\'s BOM says so)', () => {
+    const r = classRange({ componentType: 'passive_0402', description: 'Automotive AEC-Q200 thick-film resistor', value: '10k' }, true);
     expect(r.lo).toBe(0.003); expect(r.hi).toBe(0.012); expect(r.key).toMatch(/automotive$/);
+    const fromFile = classRange({ componentType: 'passive_0402', description: 'Automotive AEC-Q200 thick-film resistor', bomSource: 'file' });
+    expect(fromFile.key).toMatch(/automotive$/);
+  });
+  it('on a board classified general, the MODEL\'s word "automotive" or its flag does not raise the price (360 review)', () => {
+    const words = classRange({ componentType: 'passive_0402', description: 'Automotive AEC-Q200 thick-film resistor' });
+    const flag = classRange({ componentType: 'passive_0402', description: 'resistor', automotive: true });
+    expect(words.key).not.toMatch(/automotive$/);
+    expect(flag.key).not.toMatch(/automotive$/);
+  });
+  it('the line\'s own package outranks the model\'s IC class (QFN-16 typed ic_bga is a QFN; an imager stays BGA)', () => {
+    expect(classRange({ componentType: 'ic_bga', pkg: 'QFN-16', description: 'buck regulator' }).key).toMatch(/^ic_qfn/);
+    expect(classRange({ componentType: 'ic_bga', pkg: 'CSP', description: 'image sensor' }).key).toMatch(/^ic_bga/);
+    expect(classRange({ componentType: 'ic_qfn', pkg: '', description: 'buck regulator' }).key).toMatch(/^ic_qfn/);
   });
   it('a consumer 0402 MLCC does not', () => {
     const r = classRange({ componentType: 'passive_0402', description: 'X7R MLCC capacitor' });
@@ -35,8 +48,8 @@ describe('class price table — the AI no longer sets a price', () => {
       { refDes: 'C1-C10', componentType: 'passive_0603', description: 'Automotive AEC-Q200 X7R MLCC', qty: 10, unitPriceGBP: 0.5 },
       { refDes: 'C11-C20', componentType: 'passive_0603', description: 'Automotive AEC-Q200 X7R MLCC', qty: 10, unitPriceGBP: 0.03 },
     ], undefined, { automotive: true });
-    const res = classDefaultPrice(classRange({ componentType: 'passive_0402', description: 'resistor', automotive: true }));
-    const cap = classDefaultPrice(classRange({ componentType: 'passive_0603', description: 'X7R MLCC', automotive: true }));
+    const res = classDefaultPrice(classRange({ componentType: 'passive_0402', description: 'resistor' }, true));
+    const cap = classDefaultPrice(classRange({ componentType: 'passive_0603', description: 'X7R MLCC' }, true));
     expect(bom[0].unitPriceGBP).toBeCloseTo(res, 5);  // £0.0004 estimate: not used
     expect(bom[0].priceRaised).toBe(true);
     expect(bom[1].unitPriceGBP).toBeCloseTo(cap, 5);  // £0.50 estimate: not used
@@ -46,9 +59,9 @@ describe('class price table — the AI no longer sets a price', () => {
     expect(bom.every(l => String(l.priceNote).includes('table range'))).toBe(true);
   });
   it('a line with no estimate lands at the lower-half midpoint', () => {
-    const r = classRange({ componentType: 'passive_0402', description: 'resistor', automotive: true });
+    const r = classRange({ componentType: 'passive_0402', description: 'resistor' }, true);
     expect(classDefaultPrice(r)).toBeCloseTo(0.003 + 0.009 * 0.25, 5);
-    const { bom } = capUnconfirmedPrices([{ refDes: 'R1', componentType: 'passive_0402', description: 'resistor', qty: 1, unitPriceGBP: 0, automotive: true }]);
+    const { bom } = capUnconfirmedPrices([{ refDes: 'R1', componentType: 'passive_0402', description: 'resistor', qty: 1, unitPriceGBP: 0 }], undefined, { automotive: true });
     expect(bom[0].unitPriceGBP).toBeCloseTo(0.00525, 4);
   });
   it('small table-priced lines count as priced; £1+ lines still go to verify', () => {

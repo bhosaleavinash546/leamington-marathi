@@ -21,6 +21,11 @@ import { chromium, type Browser } from 'playwright';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = resolve(process.env.CV_OUT ?? join(tmpdir(), 'pcb-camera-review'));
 const PHOTOS = Number(process.env.CV_PHOTOS ?? 8);
+// Real photos instead of generated ones: CV_PHOTO_FILES=top.jpg,bottom.jpg,… (slot order); CV_BOM_FILE=bom.jpg.
+const PHOTO_FILES = (process.env.CV_PHOTO_FILES ?? '').split(',').map(x => x.trim()).filter(Boolean);
+const BOM_FILE = process.env.CV_BOM_FILE ?? '';
+// After the first exports: fields an engineer types from the board data sheet, then Calculate re-prices (/reprice).
+const EDITS = JSON.parse(process.env.CV_EDITS ?? '{}') as Record<string, string>;
 const log = (m: string) => console.log(`[pcb-review] ${m}`);
 
 function freePort(): Promise<number> {
@@ -71,8 +76,8 @@ async function main(): Promise<void> {
 
     // 1. Eight realistic photos: 4032×3024 JPEGs with distinct content (a phone camera's size).
     const gen = await context.newPage();
-    const photos: Buffer[] = [];
-    for (let i = 1; i <= PHOTOS; i++) {
+    const photos: Buffer[] = PHOTO_FILES.map(f => readFileSync(f));
+    for (let i = 1; i <= (PHOTO_FILES.length ? 0 : PHOTOS); i++) {
       // a string, not a function: the TS transpiler's __name helper does not exist in the page
       const b64 = await gen.evaluate(`(() => {
         const n = ${i}; const c = document.createElement('canvas'); c.width = 4032; c.height = 3024;
@@ -99,10 +104,12 @@ async function main(): Promise<void> {
     await page.waitForSelector('#pcb-img-input-0', { state: 'attached', timeout: 15_000 });
     const slots = await page.locator('input[id^="pcb-img-input-"]').count();
     log(`photo slots on the screen: ${slots}`);
-    for (let i = 0; i < Math.min(PHOTOS, slots); i++) {
-      await page.setInputFiles(`#pcb-img-input-${i}`, { name: `camera-photo-${i + 1}.jpg`, mimeType: 'image/jpeg', buffer: photos[i] });
+    for (let i = 0; i < Math.min(photos.length, slots); i++) {
+      await page.setInputFiles(`#pcb-img-input-${i}`, { name: PHOTO_FILES[i] ? PHOTO_FILES[i].split('/').pop()! : `camera-photo-${i + 1}.jpg`, mimeType: 'image/jpeg', buffer: photos[i] });
     }
-    await page.setInputFiles('#pcb-bom-input', { name: 'BOM.jpg', mimeType: 'image/jpeg', buffer: photos[0] });
+    await page.setInputFiles('#pcb-bom-input', BOM_FILE
+      ? { name: BOM_FILE.split('/').pop()!, mimeType: 'image/jpeg', buffer: readFileSync(BOM_FILE) }
+      : { name: 'BOM.jpg', mimeType: 'image/jpeg', buffer: photos[0] });
     await page.fill('#pcb-order-qty', '250000');
     await page.selectOption('#pcb-mfg-country', 'cn');
 
@@ -139,7 +146,26 @@ async function main(): Promise<void> {
     await page.waitForSelector('.total-row', { timeout: 60_000 });
     const calcTotal = ((await page.locator('.total-row td').nth(1).textContent()) ?? '').trim();
     await save('export-pdf-btn', 'report.pdf');
-    writeFileSync(join(OUT, 'summary.json'), JSON.stringify({ photos: photos.map(p => p.length), slots, headline, calcTotal, pageErrors,
+    // 4. The engineer enters the board data sheet's figures; Calculate re-prices the analysis with them (/reprice).
+    let editedTotal = '', repriced: unknown = null;
+    if (Object.keys(EDITS).length) {
+      for (const [id, v] of Object.entries(EDITS)) {
+        await page.evaluate(([fid, val]) => { const f = document.getElementById(fid) as HTMLInputElement | HTMLSelectElement | null;
+          if (f) { f.value = val; f.dispatchEvent(new Event('input', { bubbles: true })); f.dispatchEvent(new Event('change', { bubbles: true })); } }, [id, v]);
+      }
+      const rp = page.waitForResponse(r => r.url().includes('/api/pcb/reprice'), { timeout: 60_000 });
+      await page.click('#calc-btn', { timeout: 15_000 });
+      const rr = await rp;
+      repriced = await rr.json();
+      writeFileSync(join(OUT, 'reprice.json'), JSON.stringify(repriced, null, 1));
+      await page.waitForFunction(() => !!document.querySelector('.total-row td:nth-child(2)'), null, { timeout: 60_000 });
+      await page.waitForTimeout(1500);
+      editedTotal = ((await page.locator('.total-row td').nth(1).textContent()) ?? '').trim();
+      await save('export-pdf-btn', 'report-edited.pdf');
+      await save('pcb-export-excel-btn', 'pcb-report-edited.xlsx').catch(() => undefined);
+      log(`after the data-sheet edits: Calculate ${editedTotal}`);
+    }
+    writeFileSync(join(OUT, 'summary.json'), JSON.stringify({ photos: photos.map(p => p.length), slots, headline, calcTotal, editedTotal, edits: EDITS, pageErrors,
       requests: readFileSync(reqLog, 'utf8').trim().split('\n').length }, null, 1));
     writeFileSync(join(OUT, 'server.log'), serverLog.join(''));
     log(`Calculate ${calcTotal}; page errors ${pageErrors.length}; done → ${OUT}`);

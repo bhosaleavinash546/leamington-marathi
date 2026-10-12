@@ -318,7 +318,7 @@ export function buildProgramPricingSection(r: PCBImageAnalysis): string {
         <div style="font-size:0.85rem;font-weight:700;color:var(--green)">−£${pp.savingsGBP.toFixed(2)}</div>
       </div>
     </div>
-    <div style="margin-top:6px;font-size:0.62rem;color:var(--text-muted)">A negotiation lever, <strong>not in the headline</strong>: starts from the BOM as costed in the selected country (volume and sourcing factors already applied) and assumes ~${Math.round(pp.annualProgramVolume/1000)}K annual program volume (${pp.multiplier.toFixed(2)}× further). Actual contract terms vary.</div>
+    <div style="margin-top:6px;font-size:0.62rem;color:var(--text-muted)">A negotiation lever, <strong>not in the headline</strong>: starts from the BOM as costed (volume already applied, EMS material burden included) and assumes ~${Math.round(pp.annualProgramVolume/1000)}K annual program volume (${pp.multiplier.toFixed(2)}× further). Actual contract terms vary.</div>
   </div>`;
 }
 

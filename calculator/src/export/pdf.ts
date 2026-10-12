@@ -2078,7 +2078,7 @@ function renderPcbaSections(
       },
     });
     y = lastFinalY(doc) + 4;
-    para('"Other" is energy, ESD packaging and cost of quality (rework and scrap at the country\'s defect rate). Components follow each country\'s sourcing index; labour, energy and duty are each country\'s own.', 6.8);
+    para('"Other" is energy, ESD packaging and cost of quality (rework and scrap at the country\'s defect rate). Components are bought on one global market (the same prices in every country, plus the EMS material burden); labour, energy and duty are each country\'s own.', 6.8);
     y += 4;
   }
 

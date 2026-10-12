@@ -218,14 +218,14 @@ export function offlineCataloguePrices(partNumbers: string[], qty: number): Live
 const HIGH_VALUE_UNMATCHED_GBP = 10;
 
 /** The tool's own stated price range for a part it can name (e.g. an OCR-read
- *  NXP S32R294 → £22–48 at 100K). Supplied by the route, which owns the ranges. */
+ *  NXP S32R294 → £22–48, ~10k basis). Supplied by the route, which owns the ranges. */
 export type KnownRange = (line: BomLine) => { lo: number; hi: number; label: string; generic?: boolean } | null;
 
 export interface CapOptions {
   automotive?: boolean;
-  /** The order's price factor relative to the 100K basis of the class table (pcb.ts
-   *  getVolumeMultiplier). Model estimates arrive already scaled by it; the table
-   *  must be too, or a 100-board order is clamped back to 100K prices. Default 1. */
+  /** The order's price factor relative to the ~10k basis of the class table (pcb.ts
+   *  getVolumeMultiplier, TABLE_BASIS_QTY). Model estimates arrive already scaled by it; the table
+   *  must be too, or a 100-board order is clamped back to table prices. Default 1. */
   volumeMultiplier?: number;
 }
 

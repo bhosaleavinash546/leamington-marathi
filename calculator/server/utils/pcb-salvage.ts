@@ -60,6 +60,25 @@ export function salvageBomFromRaw(raw: string): Array<Record<string, unknown>> |
   return lines.length > 0 ? lines : null;
 }
 
+/** A `"key": { … }` object that closes before the cut, parsed; null when cut or malformed. */
+function completeObject(raw: string, key: string): Record<string, unknown> | null {
+  const m = new RegExp(`"${key}"\\s*:\\s*\\{`).exec(raw);
+  if (!m) return null;
+  const start = m.index + m[0].length - 1;
+  let depth = 0, inStr = false;
+  for (let i = start; i < raw.length; i++) {
+    const c = raw[i];
+    if (inStr) { if (c === '\\') i++; else if (c === '"') inStr = false; continue; }
+    if (c === '"') inStr = true;
+    else if (c === '{') depth++;
+    else if (c === '}' && --depth === 0) {
+      try { const o = JSON.parse(raw.slice(start, i + 1)); return o && typeof o === 'object' ? o as Record<string, unknown> : null; }
+      catch { return null; }
+    }
+  }
+  return null;
+}
+
 /** Build a minimal, renderable analysis object from a truncated/malformed raw
  *  Stage-3 response by salvaging its BOM lines. Returns null when nothing
  *  usable can be recovered (caller then falls back to repair/retry). The
@@ -71,10 +90,14 @@ export function salvageAnalysisFromRaw(raw: string): Record<string, unknown> | n
 
   const pn = raw.match(/"partName"\s*:\s*"([^"]{1,120})"/);
   const partName = pn ? pn[1] : 'PCB Assembly (partial — response truncated)';
+  // The board spec too, when it was written out in full before the cut — it was dropped and the
+  // normaliser's 100 × 80 mm, 4-layer defaults priced the fab silently (360 review, Oct 2026).
+  const boardSpec = completeObject(raw, 'boardSpec');
 
   return {
     partName,
     bom,
+    ...(boardSpec ? { boardSpec } : { _boardSpecLost: true }),
     confidenceLevel: 'Low',
     // A partial list prices a partial board: never cached, and said on screen (runStage4).
     _salvaged: true,

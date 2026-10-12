@@ -81,7 +81,7 @@ export function boardSpecPatch(edited: string[], doc: Document = document): { sp
 /** What the analysis's selected-country breakdown carries (attachPcbPayload). */
 export interface CountryBreakdownLike {
   totalPerBoard: number; pcbFabPerBoard: number; assemblyPerBoard: number; bomCostPerBoard: number; logisticsPerBoard: number;
-  breakdown?: { energy?: number; packaging?: number; yieldLoss?: number };
+  breakdown?: { energy?: number; packaging?: number; yieldLoss?: number; materialBurden?: number; materialBurdenPct?: number };
   countryName?: string; countryId?: string;
 }
 export interface AnalysisLike {
@@ -103,13 +103,18 @@ export function analysisStackInput(r: AnalysisLike, partName?: string, annualVol
   const b = bd.breakdown ?? {};
   const pack = (b.energy ?? 0) + (b.packaging ?? 0) + (b.yieldLoss ?? 0);
   const bomDist = r.bom.reduce((t, l) => t + (Number(l.qty) || 0) * (Number(l.unitPriceGBP) || 0), 0);
-  const sourcing = bomDist > 0 ? bd.bomCostPerBoard / bomDist : 1;   // the country's sourcing factor on the distributor BOM
+  // The components bucket is the priced lines + the EMS material burden (pcb-country-rates.ts; no country factor since
+  // F13). Lines print at the analysis's own price and the burden is its own line — every line used to be scaled by
+  // ×1.05 and called a "sourcing factor" (360 review, Oct 2026). `scale` only absorbs rounding (≈ 1).
+  const burden = Math.max(0, Number(b.materialBurden) || 0);
+  const scale = bomDist > 0 ? Math.max(0, bd.bomCostPerBoard - burden) / bomDist : 1;
   const lines: MaterialLineItem[] = r.bom.filter(l => (Number(l.qty) || 0) > 0).map(l => ({
     // A designator (R1, C1-C10, U3) — not a BOM's category column ("Capacitor").
     ref: /\b[A-Z]{1,4}\d+/i.test(String(l.refDes ?? '')) ? String(l.refDes) : String(l.partNumber || '—'), description: String(l.description ?? ''), qty: Number(l.qty) || 0,
-    unitCost: Math.round((Number(l.unitPriceGBP) || 0) * sourcing * 1e6) / 1e6, pkg: l.pkg || undefined, value: l.value || undefined,
+    unitCost: Math.round((Number(l.unitPriceGBP) || 0) * scale * 1e6) / 1e6, pkg: l.pkg || undefined, value: l.value || undefined,
     note: [l.partNumber, l.priceSource].filter(Boolean).join(' · ') || undefined,
   }));
+  if (burden > 0) lines.push({ ref: 'EMS', description: `EMS material burden (${Math.round((Number(b.materialBurdenPct) || burden / Math.max(1e-9, bd.bomCostPerBoard - burden)) * 100)}% of the components: buying, kitting, attrition)`, qty: 1, unitCost: burden, note: 'on the priced lines' });
   const where = bd.countryName ?? bd.countryId ?? 'the analysis country';
   lines.push({ ref: 'PCB', description: `Bare board (fabrication, ${where})`, qty: 1, unitCost: bd.pcbFabPerBoard, note: 'fabricator price' });
   lines.push({ ref: 'ASM', description: `SMT / THT assembly, inspection and test (${where})`, qty: 1, unitCost: bd.assemblyPerBoard, note: 'EMS price' });
