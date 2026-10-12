@@ -123,3 +123,36 @@ describe('copper typed from the board data sheet is costed', () => {
     expect(Number((m.selectedCountryBreakdown!.breakdown as unknown as Record<string, number>).pcbCopper)).toBe(0);
   });
 });
+
+describe('the exports say what each price is (360 review line read)', async () => {
+  const { buildPcbaReport } = await import('../src/export/pcba-report-data.js');
+  const camera = {
+    partName: 'camera module', boardSpec: { widthMm: 20, heightMm: 20, estimatedLayers: 8, throughVias: 115, copperWeightOz: 1, surfaceFinish: 'osp', qualityGrade: 'auto_grade2' },
+    assembly: { smtPlacements: 80, bgaCount: 1, reflowSides: 2, ictTimeSec: 60 },
+    bom: [
+      { description: 'FPD-Link III Serializer', partNumber: 'DS90UB935-Q1', qty: 1, unitPriceGBP: 2.1315, priceSource: 'catalogue', catalogueConfidence: 'distributor', catalogueExact: false, needsVerification: true, priceNote: 'Family price … DERIVED above the largest published break (3,000)' },
+      { description: 'Image sensor', qty: 1, unitPriceGBP: 4.78062, priceSource: 'class-range', needsVerification: true },
+      { description: 'Ceramic capacitor', qty: 49, unitPriceGBP: 0.01888, priceSource: 'class-range', needsVerification: false },
+    ],
+    _selectedCountryBreakdown: { countryId: 'cn', countryName: 'China', pcbFabPerBoard: 0.38, assemblyPerBoard: 0.62, logisticsPerBoard: 0.33, bomCostPerBoard: 8.14, totalPerBoard: 9.47,
+      breakdown: { materialBurden: 0.39, materialBurdenPct: 0.05, importDuty: 0.32 } },
+  } as never;
+  const rep = buildPcbaReport(camera, { annualVolume: 250_000 });
+  it('a family match is not called a range price; a derived catalogue price says so', () => {
+    const ser = rep.bom.find(l => l.partNumber === 'DS90UB935-Q1')!;
+    expect(ser.source).toMatch(/derived at volume/);
+    expect(ser.source).toMatch(/family match/);
+    expect(ser.verifyWhy).toMatch(/family match/);
+    expect(rep.bom.find(l => l.description === 'Image sensor')!.verifyWhy).toMatch(/range/);
+  });
+  it('lines print at their own price (no × 0.9997 scaling) and the accuracy note is there', () => {
+    expect(rep.bom.find(l => l.partNumber === 'DS90UB935-Q1')!.unit).toBe(2.1315);
+    expect(rep.accuracyNote).toMatch(/not yet measured/);
+  });
+  it('estimated board figures are marked; the quality grade reads as the form says it', () => {
+    const rows = Object.fromEntries(rep.boardRows);
+    expect(rows['Vias (through / blind / micro)']).toMatch(/estimated/);
+    expect(rows['Finish · copper']).toMatch(/assumed/);
+    expect(rows['In-circuit test']).toMatch(/60 s .*estimated/);
+  });
+});

@@ -1932,8 +1932,10 @@ export function renderShouldCostSections(
  */
 function renderPcbaSections(
   doc: jsPDF, y: number, rep: PcbaReport, c: (n: number) => string, cadMeta: CADReportMeta,
-  scenarios: Scenario[], total: number,
+  scenarios: Scenario[], total: number, c4: (n: number) => string = c,
 ): number {
+  // A sub-£1 unit price to 4 decimals: at 2 dp "£0.02 × 49" did not make the printed £0.92 (360 review).
+  const unitMoney = (n: number) => (Math.abs(n) >= 1 ? c(n) : c4(n));
   const pct = (n: number) => `${n.toFixed(1)}%`;
   const para = (text: string, size = 7.5, colour: RGB = GREY) => {
     doc.setFont('helvetica', 'normal'); doc.setFontSize(size); doc.setTextColor(...colour);
@@ -1981,7 +1983,7 @@ function renderPcbaSections(
   ];
   if (rep.confidence) basisRows.push(
     ['Estimate confidence', rep.confidence.label, 'Likely range', `${c(rep.confidence.low)} – ${c(rep.confidence.high)}`],
-    ['Lines to verify', `${rep.confidence.verifyCount} (${c(rep.confidence.verifyValue)})`, 'Meaning', `${c(1)}+ lines with no distributor price`],
+    ['Lines to verify', `${rep.confidence.verifyCount} (${c(rep.confidence.verifyValue)})`, 'Meaning', `${c(1)}+ lines with no quote for the exact part (a range price or a family match)`],
   );
   autoTable(doc, {
     startY: y, margin: { left: MG, right: MG }, body: basisRows, theme: 'plain',
@@ -1993,7 +1995,7 @@ function renderPcbaSections(
   if (rep.safety) {
     const sf = rep.safety;
     const lines = [
-      `Costed as ${sf.costed}${sf.claimed ? ` (the photo classifier said ${sf.claimed})` : ''}; quality grade ${sf.qualityGrade}. An ASIL comes from the hazard analysis (HARA), not from a photograph — confirm it against the safety concept.`,
+      `Costed as ${sf.costed}${sf.claimed ? ` — an assumption, not a finding: the photo classifier said ${sf.claimed}, which the parts list does not support` : ''}; quality grade ${sf.qualityGrade}. An ASIL comes from the hazard analysis (HARA), not from a photograph — confirm it against the safety concept.`,
       ...sf.notes,
       ...(sf.rationale ? [`Classifier's reading: ${sf.rationale}`] : []),
       ...(sf.functions.length ? [`Safety functions suggested by the photo classifier (unverified): ${sf.functions.join('; ')}`] : []),
@@ -2009,7 +2011,7 @@ function renderPcbaSections(
   const withRef = rep.bom.some(l => l.ref);
   const SRC = withRef ? 7 : 6;
   const body = rep.bom.map((l, i) => [
-    String(i + 1), ...(withRef ? [l.ref || '—'] : []), l.description + (l.partNumber ? `\n${l.partNumber}` : ''), l.pkg, String(l.qty), c(l.unit), c(l.ext), l.source + (l.verify ? ' *' : ''),
+    String(i + 1), ...(withRef ? [l.ref || '—'] : []), l.description + (l.partNumber ? `\n${l.partNumber}` : ''), l.pkg, String(l.qty), unitMoney(l.unit), c(l.ext), l.source + (l.verify ? ' *' : ''),
   ]);
   body.push(['', ...(withRef ? [''] : []), 'COMPONENTS TOTAL', '', String(rep.bomPieces), '', c(rep.bomTotal), '']);
   const cols: Array<{ cellWidth: number; [k: string]: unknown }> = [
@@ -2094,7 +2096,9 @@ function renderPcbaSections(
       columnStyles: { 0: { cellWidth: 82 }, 1: { cellWidth: 40, halign: 'right', fontStyle: 'bold' }, 2: { cellWidth: 60, halign: 'right', textColor: GREY } },
       didParseCell: (d) => { if (d.section === 'body' && d.row.index === rep.nre.length) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = OR_LT; d.cell.styles.textColor = NAVY; } },
     });
-    y = lastFinalY(doc) + 8;
+    y = lastFinalY(doc) + 4;
+    para('Engineering estimates, not quotes: UK automotive tier figures scaled by the build country\'s engineering rate. DV / PV test-lab work is scaled as engineering labour — confirm with the supplier\'s NRE quote.', 7);
+    y += 4;
   }
   function annualPer(v: number): string { return rep.annualVolume ? c(v / rep.annualVolume) : '—'; }
 
@@ -2103,6 +2107,7 @@ function renderPcbaSections(
   y = secBar(doc, y, `§${rep.nre.length ? 7 : 6} — Cost Drivers & Next Steps`);
   y = calloutBox(doc, y, 'What drives this board\'s cost', rep.drivers, NAVY, HDR);
   y = calloutBox(doc, y, 'Not in this unit cost', rep.excluded, AM, OR_LT);
+  y = calloutBox(doc, y, 'Accuracy', [rep.accuracyNote], SLATE, LIGHT);
   if (rep.warnings.length) y = calloutBox(doc, y, `Analysis checks (${rep.warnings.length})`, rep.warnings, AM, [254, 249, 231]);
   if (rep.limitations.length) y = calloutBox(doc, y, 'Limitations stated by the photo reader', rep.limitations, SLATE, LIGHT);
 
@@ -2414,7 +2419,8 @@ export function printPDF(
       `Board: ${pcba.domainLabel}${pcba.safety ? ` · costed at ${pcba.safety.costed}` : ''} · parts list from the ${pcba.bomOrigin} (${pcba.bom.length} lines, ${pcba.bomPieces} parts).`,
       'Component prices follow the parts bought (qty per board × boards); fabricator and EMS prices carry their own overhead and margin — none is added on top.',
     ], NAVY, HDR);
-    y = renderPcbaSections(doc, y, pcba, money, cadMeta, scenarios, result.total);
+    const money4 = (n: number) => `${sym}${(n * fxRate).toLocaleString('en-GB', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`;
+    y = renderPcbaSections(doc, y, pcba, money, cadMeta, scenarios, result.total, money4);
     addFooters();
     doc.save(exportFilename('should-cost', result.partName, 'pdf'));
     return;

@@ -386,7 +386,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   if (rep.countries.length) {
     const nr = cN + 1;
     co.getRow(nr).addPageBreak();   // the chart takes its own page: the table prints at a readable size
-    note(co, nr, 2, 14, 'Components include the EMS material burden. "Other" is energy, ESD packaging and cost of quality (rework and scrap at the country\'s defect rate). Freight by sea is under a penny a board at this size and volume, so it shows as ' + sym + '0.00; UK import duty is 0% where the UK tariff for that origin is 0% (trade agreement). Δ: + dearer, − cheaper than the costed country.');
+    note(co, nr, 2, 14, 'Components include the EMS material burden. "Other" is energy, ESD packaging and cost of quality (rework and scrap at the country\'s defect rate). Freight is by sea at volume (air below 2,500 boards); on a small board it is a penny or less a board; UK import duty is 0% where the UK tariff for that origin is 0% (trade agreement). Δ: + dearer, − cheaper than the costed country.');
     charts.push({
       sheet: 'Countries', kind: 'bar', stacked: true, title: `Delivered cost per board by build country (${sym}) — highlighted: ${countryShort}, as costed`, reverseCats: true, legend: 'b', numFmt: `"${sym}"#,##0.00`, labels: 'none',
       series: [
@@ -448,6 +448,8 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
     vn.mergeCells(r6, 6, r6, 9); val(vn, r6, 6, formula(`SUM(F${n0}:F${r6 - 1})`, m(rep.nreTotal)), NF.whole, font(10, C.white, true));
     vn.mergeCells(r6, 10, r6, 13); val(vn, r6, 10, formula(`SUM(J${n0}:J${r6 - 1})`, rep.annualVolume ? m(rep.nreTotal) / rep.annualVolume : 0), NF.unit, font(10, C.white, true));
     for (let c = 2; c <= 13; c++) vn.getCell(r6, c).fill = fill(C.navy);
+    r6++;
+    note(vn, r6, 2, 13, 'Engineering estimates, not quotes: UK automotive tier figures scaled by the build country\'s engineering rate; DV / PV test-lab work is scaled as engineering labour — confirm with the supplier\'s NRE quote.', { italic: true });
     r6 += 2;
   } else { note(vn, r6, 2, 13, 'No automotive NRE: a general-grade board.', { italic: true }); r6 += 2; }
 
@@ -572,7 +574,8 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   });
   const verify = rep.confidence
     ? [`${rep.confidence.label} confidence — likely ${fmtMoney(rep.confidence.low)} to ${fmtMoney(rep.confidence.high)} per board.`,
-       rep.confidence.verifyCount ? `${rep.confidence.verifyCount} line${rep.confidence.verifyCount === 1 ? '' : 's'} of ${fmtMoney(1)}+ priced from a range, not a quote (${fmtMoney(rep.confidence.verifyValue)}): see "Quote" on Bill of Materials.` : `Every line of ${fmtMoney(1)}+ has a distributor price behind it.`]
+       rep.confidence.verifyCount ? `${rep.confidence.verifyCount} line${rep.confidence.verifyCount === 1 ? '' : 's'} of ${fmtMoney(1)}+ to verify (${fmtMoney(rep.confidence.verifyValue)}): ${rep.bom.filter(l => l.verify).map(l => `${l.partNumber || l.description} — ${l.verifyWhy ?? 'priced from a range'}`).join('; ')}. See "Quote" on Bill of Materials.` : `Every line of ${fmtMoney(1)}+ has a catalogue price for the exact part behind it.`,
+       rep.accuracyNote]
     : ['No confidence band was computed for this analysis.'];
   // Each verify bullet is a block of rows beside the facts (merged H:M), sized to its text.
   let vr = kf + 1;
@@ -586,7 +589,7 @@ export async function buildPcbWorkbook(inp: PcbWorkbookInput): Promise<Uint8Arra
   let dr = Math.max(kf + 1 + facts.length, vr) + 1;
   bar(s, dr, 2, 13, 'What this tells you'); dr++;
   // The "priced from a range" caveat is said once, under To verify (the audit found it three times).
-  for (const d of rep.drivers.filter(x => !/priced from a range, not a quote/.test(x))) { note(s, dr, 2, 13, `•  ${d}`, { size: 10, color: C.slate }); dr++; }
+  for (const d of rep.drivers.filter(x => !/ to verify: /.test(x))) { note(s, dr, 2, 13, `•  ${d}`, { size: 10, color: C.slate }); dr++; }
   dr++;
   bar(s, dr, 2, 13, 'Not in this unit cost'); dr++;
   for (const t of rep.excluded) { note(s, dr, 2, 13, `•  ${t}`, { size: 9.5, color: C.slate, fillHex: C.page }); dr++; }

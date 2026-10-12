@@ -77,9 +77,11 @@ export function buildConfidenceRoadmap(r: PCBImageAnalysis): string {
   const cb = r._confidenceBand;
   if (!cb || cb.overallLabel === 'High') return '';
   const steps: string[] = [];
-  if (!r._livePriceHits || r._livePriceHits === 0) steps.push('Attach a BOM file (.csv/.xml) — eliminates all AI guesswork on part numbers and pricing');
+  // A BOM file or picture already attached is not asked for again; the AI never prices, so a BOM fixes identity and counts only.
+  const hasBom = (r.bom ?? []).some(l => { const x = l as { bomSource?: string; fromImage?: boolean }; return x.bomSource === 'file' || x.bomSource === 'image' || x.fromImage === true; });
+  if (!hasBom) steps.push('Attach the BOM (.csv / .xml, or a picture of it) — part numbers and quantities then come from your list, not from the photos');
   if (cb.unconfirmedHighValueCount > 0) steps.push(`${cb.unconfirmedHighValueCount} high-value IC${cb.unconfirmedHighValueCount > 1 ? 's are' : ' is'} unconfirmed — upload a close-up image of those chips or edit their prices manually`);
-  if (cb.fabConfidenceLabel === 'Low') steps.push('OCR quality was low — upload a higher-resolution image or a top-side close-up to improve fab spec extraction');
+  if (cb.fabConfidenceLabel === 'Low') steps.push('The board figures (size, layers, vias, test time) are estimates — attach the Gerber / drill files, or type them into the PCB form and Calculate');
   if (cb.weightedBOMConfidence < 0.70) steps.push('Many BOM lines have low AI confidence — enter the Re-analyze flow and correct any misidentified components');
   if (r._volumeMultiplier && r._volumeMultiplier > 3) steps.push(`Volume is very low (${r._volumeMultiplier.toFixed(1)}× cost uplift vs 100K) — prices at this volume are distributor-dependent; request actual supplier quotes`);
   if (steps.length === 0) return '';
@@ -236,7 +238,7 @@ export function buildAutomotiveFabSection(r: PCBImageAnalysis): string {
         <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Rationale</th>
       </tr></thead>
       <tbody>
-        <tr><td style="padding:3px 6px;font-size:0.68rem">Standard PCB fab (AI estimate)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem">${fmt(fa.standardFabGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">AI base estimate (generic FR4)</td></tr>
+        <tr><td style="padding:3px 6px;font-size:0.68rem">Standard PCB fab</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem">${fmt(fa.standardFabGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">the country's fab rates on the board figures (not an AI figure)</td></tr>
         <tr><td style="padding:3px 6px;font-size:0.68rem">IATF 16949 fab premium (+18%)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.iatfFabPremiumGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Certified automotive fab overhead</td></tr>
         <tr><td style="padding:3px 6px;font-size:0.68rem">Automotive laminate (IT-180A / Isola 370HR)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.automotiveLaminatePremiumGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">35–50% material premium over standard FR4</td></tr>
         <tr><td style="padding:3px 6px;font-size:0.68rem">IPC-6012 Class 3 inspection</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.ipcClass3InspectionGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Coupons + full electrical test</td></tr>
@@ -512,7 +514,7 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
         </table>
       </div>
       <div style="margin-top:4px;font-size:0.65rem;color:var(--text-muted)">
-        Prices include PCB fabrication + SMT/THT assembly + logistics/import duty to UK. BOM component cost (£${(comparison[0]?.bomCostPerBoard ?? 0).toFixed(2)}) is the same for all countries. Data calibrated to Jan 2026 market rates.
+        Prices include PCB fabrication + SMT/THT assembly + logistics/import duty to UK. BOM component cost (£${(comparison[0]?.bomCostPerBoard ?? 0).toFixed(2)}) is the same for all countries. Country fab and assembly rates as of 29 Sep 2026 (each with its source in the rate table).
         ${pcbNREEnabled ? `<br/>NRE costs are one-time per programme. At ${(nreQty / 1000).toFixed(nreQty % 1000 === 0 ? 0 : 1)}k units, ${selectedCountryId.toUpperCase()} NRE adds £${(((PCB_COUNTRY_META[selectedCountryId]?.nre?.totalGBP ?? 0) / nreQty)).toFixed(2)}/board.` : ''}
       </div>
     </div>`;

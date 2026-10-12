@@ -18,6 +18,7 @@ export interface PcbaLineLike {
   refDes?: string; componentType?: string; description?: string; partNumber?: string; pkg?: string; value?: string;
   qty?: number; unitPriceGBP?: number; priceSource?: string; livePriced?: boolean; catalogueConfidence?: string;
   bomSource?: string; fromImage?: boolean; needsVerification?: boolean; notFitted?: boolean;
+  catalogueExact?: boolean; priceNote?: string;
 }
 export interface PcbaBreakdownLike {
   countryId: string; countryName: string;
@@ -50,7 +51,7 @@ export interface PcbaAnalysisLike {
 
 export type PcbaStackKey = 'components' | 'burden' | 'fab' | 'autoFab' | 'asm' | 'test' | 'autoAsm' | 'other' | 'rounding' | 'exWorks' | 'freight' | 'duty' | 'delivered';
 export interface PcbaStackRow { key: PcbaStackKey; label: string; amount: number; basis: string; kind?: 'sub' | 'total' }
-export interface PcbaBomRow { ref: string; description: string; partNumber: string; pkg: string; qty: number; unit: number; ext: number; source: string; verify: boolean }
+export interface PcbaBomRow { ref: string; description: string; partNumber: string; pkg: string; qty: number; unit: number; ext: number; source: string; verify: boolean; verifyWhy?: string }
 export interface PcbaCountryRow { id: string; name: string; components: number; fab: number; assembly: number; other: number; logistics: number; exWorks: number; total: number; delta: number; leadWeeks?: number; selected: boolean }
 
 export interface PcbaReport {
@@ -86,6 +87,8 @@ export interface PcbaReport {
   bomOrigin: 'BOM file' | 'BOM image' | 'photos';
   warnings: string[];
   limitations: string[];
+  /** Accuracy is unmeasured — said in every report (CLAUDE.md, 360 review). */
+  accuracyNote: string;
   excluded: string[];
 }
 
@@ -97,7 +100,9 @@ export function priceSourceLabel(l: PcbaLineLike): string {
   if (l.notFitted || l.priceSource === 'not-fitted') return 'not fitted';
   if (l.livePriced) return 'distributor (live)';
   switch (l.priceSource) {
-    case 'catalogue': return l.catalogueConfidence === 'distributor' ? 'catalogue (distributor)' : 'catalogue (estimate)';
+    // A catalogue price above the largest published break is DERIVED along the volume curve (the line's own note says
+    // so) — printed as "distributor price" it read as a quote at volume (360 review, Oct 2026).
+    case 'catalogue': return `${l.catalogueConfidence === 'distributor' ? 'catalogue (distributor)' : 'catalogue (estimate)'}${/DERIVED/.test(String(l.priceNote ?? '')) ? ', derived at volume' : ''}${l.catalogueExact === false ? ', family match' : ''}`;
     case 'known-range': return 'named-part range';
     case 'function-range': return 'function range';
     case 'class-range': return 'class range';
@@ -159,12 +164,13 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   );
   stack.push({ key: 'delivered', label: 'Delivered cost per board', amount: bd.totalPerBoard, basis: `${country} build, delivered UK, duty paid`, kind: 'total' });
 
-  // ── BOM: the analysis's lines at their own price; the factor only absorbs the penny rounding of the components row (≈ 1).
+  // ── BOM: the analysis's lines at their OWN price (they were scaled × 0.9997 to hit the rounded components row, so a
+  // catalogue £2.1315 printed as £2.1308 and screen, PDF and Excel disagreed by a penny — 360 review). The penny of
+  // rounding between the line sum and §1 is stated in the reconciliation instead.
   const lines = a.bom.filter(l => num(l.qty) > 0);
-  const dist = lines.reduce((t, l) => t + num(l.qty) * num(l.unitPriceGBP), 0);
-  const sourcingFactor = dist > 0 ? componentsAtCost / dist : 1;
+  const sourcingFactor = 1;
   const bom: PcbaBomRow[] = lines.map(l => {
-    const unit = num(l.unitPriceGBP) * sourcingFactor;
+    const unit = num(l.unitPriceGBP);
     return {
       ref: refOf(l), description: tidyCaps(String(l.description || l.componentType || '')), partNumber: String(l.partNumber || ((l as { suggestedPartNumber?: string }).suggestedPartNumber ? `${(l as { suggestedPartNumber?: string }).suggestedPartNumber} (suggested, not read)` : '')),
       pkg: String(l.pkg ?? ''), qty: num(l.qty), unit, ext: unit * num(l.qty), source: priceSourceLabel(l),
@@ -172,17 +178,23 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
       // the £1 rule is the screen's too.
       verify: unit * num(l.qty) >= 1 && (typeof l.needsVerification === 'boolean'
         ? l.needsVerification : !(l.livePriced || (l.priceSource === 'catalogue' && l.catalogueConfidence === 'distributor'))),
+      // WHY it is to verify: a family match is a catalogue price for a sibling code, not a range (the serializer was
+      // listed as "priced from a range" — 360 review).
+      verifyWhy: l.priceSource === 'catalogue' && l.catalogueExact === false ? 'family match — confirm the orderable code'
+        : l.priceSource === 'catalogue' ? 'catalogue estimate — confirm with a quote' : 'priced from a range, not a quote',
     };
   });
   const bomTotal = bom.reduce((t, l) => t + l.ext, 0);
   const bomPieces = bom.reduce((t, l) => t + l.qty, 0);
-  const factorNote = Math.abs(sourcingFactor - 1) > 0.005 ? ` Unit prices are scaled × ${sourcingFactor.toFixed(3)} so the lines add up to the components row (penny rounding).` : '';
+  const factorNote = '';
   const bomReconciliation = Math.abs(bomTotal - componentsAtCost) < 0.01
     ? `The ${bom.length} lines (${bomPieces} parts) total ${money(bomTotal)} — the components row of §1.${factorNote}${burden > 0 ? ` The EMS material burden (${money(burden)}) is added on top in §1.` : ''}`
     : `The ${bom.length} lines total ${money(bomTotal)} against ${money(componentsAtCost)} in §1 — a ${money(Math.abs(bomTotal - componentsAtCost))} difference from rounding of line prices.`;
-  const sourceKey = 'Source: catalogue (distributor) = a distributor price on file; catalogue (estimate) = a dated engineering estimate; '
-    + 'named-part range = the part is identified, priced inside its own range; function / class range = priced from the tool\'s table for that kind of part. '
-    + `Lines marked * are ${money(1)}+ with no distributor price behind them — confirm with a quote.`;
+  const sourceKey = 'Source: catalogue (distributor) = from distributor listings on file; "derived at volume" = above the largest published break '
+    + '(usually 1k–10k), extended along the volume curve — a should-cost figure, not a quote; "family match" = the catalogue price of a sibling '
+    + 'orderable code; catalogue (estimate) = a dated engineering estimate; named-part range = the part is identified, priced inside its own range; '
+    + 'function / class range = priced from the tool\'s table for that kind of part. '
+    + `Lines marked * are ${money(1)}+ with no quote for this exact part behind them — confirm with a quote.`;
 
   // ── Board.
   const s = a.boardSpec ?? {};
@@ -190,12 +202,13 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const w = num(s.widthMm), h = num(s.heightMm);
   const boardRows: Array<[string, string]> = [
     ['Size', w && h ? `${w} × ${h} mm (${String(s.dimensionsSource) === 'measured' ? 'measured' : 'estimated from the photos'})` : '—'],
-    ['Layers', `${num(s.estimatedLayers) || '—'}${String((s as Record<string, unknown>).layersSource) === 'measured' ? ' (measured)' : ''}`],
+    ['Layers', `${num(s.estimatedLayers) || '—'}${String((s as Record<string, unknown>).layersSource) === 'measured' ? ' (measured)' : ' (estimated)'}`],
     ['Technology / HDI', `${pretty(s.technologyType)}${s.hdiStructure && s.hdiStructure !== 'none' ? ` · ${pretty(s.hdiStructure)}` : ''}`],
-    ['Finish · copper', `${pretty(s.surfaceFinish)} · ${num(s.copperWeightOz) || 1} oz`],
-    ['Vias (through / blind / micro)', `${num(s.throughVias)} / ${num(s.blindVias)} / ${num(s.microVias)}`],
+    ['Finish · copper', `${pretty(s.surfaceFinish)} · ${num(s.copperWeightOz) || 1} oz${(s as Record<string, unknown>).copperEvidence ? '' : ' (standard, assumed — no copper weight was evidenced)'}`],
+    ['Vias (through / blind / micro)', `${num(s.throughVias)} / ${num(s.blindVias)} / ${num(s.microVias)}${String((s as Record<string, unknown>).viasSource) === 'measured' ? ' (measured)' : ' (estimated — no photo shows a via count)'}`],
     ['Impedance control', s.impedanceControlRequired ? 'Yes' : 'No'],
     ['Placements · BGA/CSP', `${num(asm.smtPlacements)} SMT · ${num(asm.bgaCount)} BGA/CSP · ${num(asm.reflowSides) || 1} reflow side(s)`],
+    ...(num((asm as Record<string, unknown>).ictTimeSec) > 0 ? [['In-circuit test', `${num((asm as Record<string, unknown>).ictTimeSec)} s a board (estimated)`] as [string, string]] : []),
   ];
   if (bd.panelInfo) boardRows.push(['Panel', `${bd.panelInfo.boardsPerPanel} boards on ${bd.panelInfo.panelW} × ${bd.panelInfo.panelH} mm (${Math.round(bd.panelInfo.utilisation * 100)}% used)`]);
   const pb: Array<[string, number | undefined]> = [['base', b.pcbBase], ['layers', b.pcbLayers], ['finish', b.pcbSurface], ['vias', b.pcbVias], ['HDI', b.pcbHDI], ['set-up', b.pcbSetup], ['copper', b.pcbCopper], ['impedance', b.pcbImpedance]];
@@ -224,7 +237,9 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const safety = asil ? {
     costed: asil, claimed: a._asilClaimed && a._asilClaimed !== asil ? a._asilClaimed : null,
     notes: a._asilNotes ?? [], rationale: String(a._asilRationale ?? ''), functions: a._asilSafetyFunctions ?? [],
-    qualityGrade: String(opts.qualityGrade ?? s.qualityGrade ?? '—').replace(/_/g, ' ').replace(/grade(\d)/i, 'grade $1'),
+    // The form's own words ("Automotive Grade 2 (AEC-Q)"), not the stored id "auto_grade2" (360 review).
+    qualityGrade: (({ auto_grade1: 'Automotive Grade 1 (AEC-Q)', auto_grade2: 'Automotive Grade 2 (AEC-Q)', consumer: 'Consumer', industrial: 'Industrial', aerospace: 'Aerospace' } as Record<string, string>)[String(opts.qualityGrade ?? s.qualityGrade ?? '')])
+      ?? String(opts.qualityGrade ?? s.qualityGrade ?? '—').replace(/_/g, ' ').replace(/grade(\d)/i, 'grade $1'),
   } : null;
   const n = a._automotiveNRE;
   const nre: Array<[string, number]> = n && n.totalNRE > 0
@@ -243,7 +258,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
   const cheapest = countries[0];
   if (cheapest && !cheapest.selected && cheapest.delta < -0.005) drivers.push(`${cheapest.name} costs this board ${money(-cheapest.delta)} less delivered (${money(cheapest.total)}) — before qualification, lead time and supply-chain risk.`);
   else if (cheapest?.selected) drivers.push(`${country} is the lowest delivered cost of the ${countries.length} countries compared.`);
-  if (toVerify.length) drivers.push(`${toVerify.length} line${toVerify.length === 1 ? '' : 's'} of ${money(1)}+ (${money(toVerify.reduce((t, l) => t + l.ext, 0))}) ${toVerify.length === 1 ? 'is' : 'are'} priced from a range, not a quote: ${toVerify.slice(0, 4).map(l => l.description).join('; ')}.`);
+  if (toVerify.length) drivers.push(`${toVerify.length} line${toVerify.length === 1 ? '' : 's'} of ${money(1)}+ (${money(toVerify.reduce((t, l) => t + l.ext, 0))}) to verify: ${toVerify.slice(0, 4).map(l => `${l.description}${l.partNumber ? ` (${l.partNumber})` : ''} ${money(l.ext)} — ${l.verifyWhy ?? 'priced from a range, not a quote'}`).join('; ')}.`);
 
   // ── Warnings: the analysis's own, de-duplicated. Limitations as the analysis states them.
   // Not repeated here: the ASIL notes (in the functional-safety box) and the BOM-image transcription
@@ -276,6 +291,7 @@ export function buildPcbaReport(a: PcbaAnalysisLike, opts: { partName?: string; 
     // ("ICs may be double counted") no longer applies: the list, not the photos, is the BOM.
     limitations: (a.analysisLimitations ?? []).filter(Boolean).map(t => (/[.!?)]$/.test(t.trim()) ? t.trim() : `${t.trim()}.`))
       .filter(t => !(a.bom.some(l => l.bomSource === 'file' || l.bomSource === 'image' || l.fromImage) && /double[- ]?count|duplicat|designators? (are|were) not visible|assigned by grouping/i.test(t))),
+    accuracyNote: 'Accuracy is not yet measured: the tool has been compared with too few real purchase prices to state an error band from them. The likely range above is the tool\'s own uncertainty, not a measured accuracy.',
     excluded: [
       ...(nre.length ? [`One-time automotive NRE (${money(n!.totalNRE).replace(/\.00$/, '')} — PPAP, FMEA, DV/PV, audit) is not in the unit cost; see §6.`] : []),
       'Stencils, test fixtures and programming are inside the EMS price, spread over the order (no separate tooling line).',

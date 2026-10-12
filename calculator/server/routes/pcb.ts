@@ -1783,6 +1783,14 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     bom = grounded.bom.map((l, i) => (bom[i].userCorrected === true ? { ...bom[i], priceSource: 'user', needsVerification: false }
       : l.qtyUnverified === true ? { ...l, needsVerification: true,
         priceNote: `${l.priceNote ? `${String(l.priceNote)} · ` : ''}Quantity ${String(l.qty)} is the AI's count — no designators or chip markings show it; confirm` } : l)) as Array<Record<string, unknown>>;
+    // A part the catalogue lists as NOT AEC-Q qualified on an automotive board: said, never re-priced (BQ24025DRCR on the
+    // camera board carried the "AEC" badge — 360 review, Oct 2026).
+    if (auto) {
+      const commercial = bom.filter(l => l.automotiveGrade === false && (l.priceSource === 'catalogue' || l.livePriced === true))
+        .map(l => String(l.partNumber || l.description));
+      if (commercial.length) warnings.push({ code: 'NON_AEC_PART', severity: 'warn',
+        message: `${commercial.join(', ')} ${commercial.length === 1 ? 'is' : 'are'} listed by the catalogue as a commercial (not AEC-Q) part on an automotive board — priced as the part named; confirm the grade with the design team.` });
+    }
     // What the OCR stage SAW against the parts list: a quantity that differs from the
     // chips read, a connector where only pads were seen. Flagged to verify, never changed.
     {

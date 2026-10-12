@@ -8605,7 +8605,10 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
   const b = r.boardSpec;
   const a = r.assembly;
   const c = r.costEstimates;
-  const confClass = r.confidenceLevel === 'High' ? 'score-high' : r.confidenceLevel === 'Medium' ? 'score-med' : 'score-low';
+  // The TOOL's estimate confidence (the band the reports print), not the model's self-rating — the screen said "Medium"
+  // beside reports saying "Low" (360 review, Oct 2026).
+  const confLabel = r._confidenceBand?.overallLabel ?? r.confidenceLevel;
+  const confClass = confLabel === 'High' ? 'score-high' : confLabel === 'Medium' ? 'score-med' : 'score-low';
 
   const totalBOMLines = r.bom.length;
   const totalPlacements = a.smtPlacements;
@@ -8633,7 +8636,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
   const opts = r.optimisationSuggestions.map(s => `<li>${s}</li>`).join('');
   const limits = r.analysisLimitations.map(s => `<li>${s}</li>`).join('');
   const complexityScoreHtml = r.complexityScore ? `<div class="occt-stat"><div class="occt-stat-value">${r.complexityScore.score}/100</div><div class="occt-stat-label">Complexity (${r.complexityScore.label})</div></div>
-        <div class="occt-stat"><div class="occt-stat-value">Class ${r.complexityScore.ipcClass}</div><div class="occt-stat-label">IPC class</div></div>` : '';
+        <div class="occt-stat"><div class="occt-stat-value">Class ${r.stage1Classification?.domain === 'automotive_adas' ? 3 : r.complexityScore.ipcClass}</div><div class="occt-stat-label" title="${r.stage1Classification?.domain === 'automotive_adas' ? 'Automotive boards are costed at IPC class 3 workmanship' : 'From the board complexity'}">IPC class${r.stage1Classification?.domain === 'automotive_adas' ? ' (costed)' : ''}</div></div>` : '';
 
   return `
     <div class="pcb-analysis-panel" style="${pcbEditMode ? 'border:2px solid #f59e0b;' : ''}">
@@ -8643,7 +8646,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
           <strong>${r.partName}</strong>
           <span style="font-size:0.65rem;color:var(--text-muted);margin-left:8px">PCB Image Analysis</span>
         </div>
-        <span class="occt-mfg-score ${confClass}">${r.confidenceLevel} Confidence</span>
+        <span class="occt-mfg-score ${confClass}">${confLabel} Confidence</span>
         ${r.fromCache ? '<span title="This exact photo + quantity + country was analysed before — the identical result is returned, so the should-cost is repeatable run to run." style="background:var(--info-bg,#eff6ff);color:var(--info,#2563eb);border:1px solid var(--info-border,#bfdbfe);font-size:0.6rem;padding:2px 6px;border-radius:10px;margin-left:6px;font-weight:700">&#8635; Repeat analysis — identical result</span>' : ''}
         ${r._isReanalyzed ? '<span style="background:#16a34a;color:#fff;font-size:0.6rem;padding:2px 6px;border-radius:10px;margin-left:6px">&#10003; Recalculated</span>' : ''}
         <button class="btn btn-secondary btn-sm" id="pcb-edit-toggle-btn" style="font-size:0.65rem;padding:2px 8px">${pcbEditMode ? '&#10005; Cancel Edit' : '&#9999; Edit'}</button>
@@ -8698,7 +8701,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <div class="occt-stat"><div class="occt-stat-value">${a.complexity}</div><div class="occt-stat-label">Assembly complexity</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${a.reflowSides === 2 ? 'Double' : 'Single'}</div><div class="occt-stat-label">Reflow sides</div></div>
         <div class="occt-stat"><div class="occt-stat-value">&#163;${c.pcbFabGBP.min.toFixed(2)}–&#163;${c.pcbFabGBP.max.toFixed(2)}</div><div class="occt-stat-label">PCB fab est.</div></div>
-        <div class="occt-stat"><div class="occt-stat-value">&#163;${totalBOMCost}${r._selectedCountryBreakdown && Math.abs(r._selectedCountryBreakdown.bomCostPerBoard - c.totalBOMCostGBP) >= 0.01 ? `<span style="font-size:0.62rem;font-weight:600;color:var(--text-muted)"> → &#163;${r._selectedCountryBreakdown.bomCostPerBoard.toFixed(2)} with the EMS material burden</span>` : ''}</div><div class="occt-stat-label" title="Distributor-level BOM; the headline adds the EMS material burden (5% at 100k+ parts bought, 7% at 10k+, 10% below). Components are bought on one global market — there is no country factor.">BOM total (distributor)${r._volumeMultiplier && r._volumeMultiplier !== 1.0 ? ` <span title="Volume-adjusted from 100K baseline (×${r._volumeMultiplier.toFixed(2)})" style="font-size:0.58rem;background:var(--accent);color:#fff;padding:1px 4px;border-radius:3px">VOL ×${r._volumeMultiplier.toFixed(2)}</span>` : ''}</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">&#163;${totalBOMCost}${r._selectedCountryBreakdown && Math.abs(r._selectedCountryBreakdown.bomCostPerBoard - c.totalBOMCostGBP) >= 0.01 ? `<span style="font-size:0.62rem;font-weight:600;color:var(--text-muted)"> → &#163;${r._selectedCountryBreakdown.bomCostPerBoard.toFixed(2)} with the EMS material burden</span>` : ''}</div><div class="occt-stat-label" title="Distributor-level BOM; the headline adds the EMS material burden (5% at 100k+ parts bought, 7% at 10k+, 10% below). Components are bought on one global market — there is no country factor.">BOM total (distributor)${r._volumeMultiplier && r._volumeMultiplier !== 1.0 ? ` <span title="Board-level volume factor ×${r._volumeMultiplier.toFixed(2)}: range-priced lines move with the parts bought from a ~10k table basis; catalogue lines follow their own price breaks" style="font-size:0.58rem;background:var(--accent);color:#fff;padding:1px 4px;border-radius:3px">VOL ×${r._volumeMultiplier.toFixed(2)}</span>` : ''}</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.stage1Classification?.domain?.replace(/_/g,' ') ?? 'general'}</div><div class="occt-stat-label">Board domain</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.ocrExtraction?.icMarkings?.length ?? 0}</div><div class="occt-stat-label" title="Chip markings the OCR stage read off the photos. A part number is priced from the catalogue only when a marking, your BOM or your edit agrees with it.">Chip markings read</div></div>
         ${r._asilLevel && r._asilLevel !== 'Unknown' ? `<div class="occt-stat"><div class="occt-stat-value" style="color:${r._asilLevel==='ASIL-D'?'#dc2626':r._asilLevel==='ASIL-C'?'#ea580c':r._asilLevel==='ASIL-B'?'#d97706':'#2563eb'}">${r._asilLevel}</div><div class="occt-stat-label">ISO 26262 ASIL</div></div>` : ''}
@@ -8713,7 +8716,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
           ? `<span style="background:#dc2626;color:#fff;font-size:0.6rem;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px">⚠ ${cb.unconfirmedHighValueCount} UNCONFIRMED IC${cb.unconfirmedHighValueCount > 1 ? 's' : ''}</span>`
           : '';
         const volNote = cb.volumeMultiplier !== 1.0
-          ? `<span style="font-size:0.65rem;color:var(--text-muted);margin-left:6px">Volume factor ×${cb.volumeMultiplier.toFixed(2)} applied to 100K baseline</span>`
+          ? `<span style="font-size:0.65rem;color:var(--text-muted);margin-left:6px">Volume factor ×${cb.volumeMultiplier.toFixed(2)} (range-priced lines, ~10k table basis)</span>`
           : '';
         return `<div style="margin-top:8px;padding:10px 12px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;font-size:0.72rem">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
@@ -8923,7 +8926,8 @@ function buildRiskRadarSection(r: PCBImageAnalysis): string {
   const comparison = r._countryComparison ?? [];
   if (!comparison.length) return '';
   const selId = r._selectedCountry ?? 'cn';
-  const autoCount = r.bom.filter(b => b.automotive).length;
+  // ICs and high-cost lines only: counting every AEC-Q passive as "potential single-source" said 11 on the camera board (360 review).
+  const autoCount = r.bom.filter(b => b.automotive && (b.componentType.startsWith('ic_') || b.highCost)).length;
 
   // Selected + top 3 cheapest alternatives (distinct)
   const ordered = [...comparison].sort((a, b) => a.totalPerBoard - b.totalPerBoard);

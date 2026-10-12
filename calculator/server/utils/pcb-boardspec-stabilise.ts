@@ -116,7 +116,7 @@ export function gateBoardEvidence(spec: Record<string, unknown>, boardText: stri
   }
   if (n(spec.boardWeightG) > 0 && !spec.weightEvidence) {
     if (seen(n(spec.boardWeightG), 0.5)) spec.weightEvidence = 'board-text';
-    else { spec.aiBoardWeightG = spec.boardWeightG; spec.boardWeightG = 0; out.push('A board weight from the AI is not shown in any board text — the weight is computed from the board.'); }
+    else { spec.aiBoardWeightG = spec.boardWeightG; spec.boardWeightG = 0; out.push('A board weight from the AI is not shown in any board text — freight uses the tool\'s estimate (area × layers × 28 g/dm², at least 20 g shipped per board).'); }
   }
   return out;
 }

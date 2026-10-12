@@ -74,7 +74,7 @@ export function cleanBomImageRows(rows: RawRow[]): { lines: (ParsedBOMLine & { f
     if (!text) continue;
     if (/^(ref(erence)?s?|designators?|qty|quantity|part ?(number|no\.?)|mpn|description|value|item)$/i.test(refDes || partNumber || description)) { dropped.push(`header "${text.slice(0, 30)}"`); continue; }
     if (/^(sub-?)?total\b|^grand total/i.test(refDes || description || partNumber)) { dropped.push(`total "${text.slice(0, 30)}"`); continue; }
-    if (!partNumber && !description && !value) { dropped.push(`"${refDes}" (no part named)`); continue; }
+    if (!partNumber && !description && !value) { dropped.push(`"${refDes}" (a group / heading row — no part named)`); continue; }
     const refs = expandRefDes(refDes);
     let qty = Number(r.qty);
     if (!Number.isFinite(qty) || qty < 1 || !Number.isInteger(qty)) {

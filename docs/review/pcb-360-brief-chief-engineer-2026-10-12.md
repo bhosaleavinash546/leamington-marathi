@@ -36,7 +36,7 @@ one point, not an accuracy figure).
 - **ASIL:** the classifier claimed ASIL-C with a radar rationale on a camera board. The tool rejected the rationale
   and costed **ASIL-B**, because no safety PMIC / SBC is on the BOM.
 
-## Fixed in this review (25 defects, each with a test)
+## Fixed in this review (34 defects; the logic fixes each have a test)
 
 The ones that changed or could change a number:
 
@@ -47,7 +47,9 @@ The ones that changed or could change a number:
 - one unreadable photo **failed the whole analysis**;
 - the model's word "automotive" raised a general board's prices;
 - live pricing reached only 5 parts;
-- the "sourcing factor" labels were wrong (it is the 5 % EMS burden).
+- the "sourcing factor" labels were wrong (it is the 5 % EMS burden);
+- the reports called a catalogue family match a "range price", printed derived volume prices as distributor prices, and
+  printed the estimated via count, ICT time and copper as facts.
 
 Full list: `docs/review/pcb-360-review-2026-10-12.md`.
 
