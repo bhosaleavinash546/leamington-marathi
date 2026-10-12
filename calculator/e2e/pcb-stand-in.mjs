@@ -6,7 +6,7 @@
 //
 //   PORT=3999 REPLIES=./fixtures/pcb-radar-replies.json node e2e/pcb-stand-in.mjs
 import http from 'node:http';
-import { readFileSync } from 'node:fs';
+import { readFileSync, appendFileSync } from 'node:fs';
 
 const R = JSON.parse(readFileSync(new URL(process.env.REPLIES ?? './fixtures/pcb-radar-replies.json', import.meta.url), 'utf8'));
 const PORT = Number(process.env.PORT || 3999);
@@ -18,6 +18,18 @@ http.createServer((req, res) => {
     let j = {};
     try { j = JSON.parse(body); } catch { /* not JSON */ }
     const sys = typeof j.system === 'string' ? j.system : JSON.stringify(j.system ?? '');
+    // REQUEST_LOG=<file>: one JSON line per model call — which stage, which model, and every image it carried (its
+    // media type and size), so a review can prove what the server sends, not what it is meant to send.
+    if (process.env.REQUEST_LOG) {
+      const imgs = [];
+      for (const m of j.messages ?? []) for (const c of Array.isArray(m.content) ? m.content : []) {
+        if (c.type === 'image') imgs.push({ mediaType: c.source?.media_type, base64Chars: (c.source?.data ?? '').length });
+      }
+      const texts = (j.messages ?? []).flatMap(m => Array.isArray(m.content) ? m.content.filter(c => c.type === 'text').map(c => c.text) : [String(m.content ?? '')]);
+      appendFileSync(process.env.REQUEST_LOG, JSON.stringify({ at: new Date().toISOString(), model: j.model, maxTokens: j.max_tokens, stream: !!j.stream,
+        system: sys.slice(0, 160), images: imgs, textChars: texts.join(' ').length, text: texts.join(' | ').slice(0, 600),
+        outputFormat: j.output_config?.format ? 'structured' : undefined }) + '\n');
+    }
     const text = JSON.stringify(j.messages ?? '').slice(-4000);
     let out;
     if (/transcribe bill-of-materials/i.test(sys)) out = R.bomImage;   // the BOM-image reader (pcb-bom-image.ts)
