@@ -177,6 +177,7 @@ const book: CountryBook = {
     financeRate: M.financeRate, ukFinanceRate: M.ukFinanceRate, maintenancePctOfCapex: M.maintenancePctOfCapex,
     rentGbpPerM2Yr, ukRentGbpPerM2Yr: M.ukRentGbpPerM2Yr, ukElectricityGbpPerKwh: UK_ELECTRICITY_GBP_PER_KWH,
     labourRatio, capitalHeldFactor: M.capitalHeldFactor,
+    ...(M.continuousHoursPerYear ? { continuousHoursPerYear: M.continuousHoursPerYear, continuousBasis: M.continuousBasis } : {}),
     basis: M.rentLocalPerM2Month !== undefined
       ? `${M.hoursBasis}; ${M.shiftBasis}; ${M.financeBasis}; rent ${SYM}${M.rentLocalPerM2Month}/m²/month (${M.rentBasis}); maintenance ${M.maintenanceBasis}`
       : `${M.hoursBasis}; ${M.scheduleIIBasis}; ${M.financeBasis}; rent ₹${M.rentInrPerSqftMonth}/sq ft/month (${M.rentBasis}); maintenance ${M.maintenanceBasis}`,

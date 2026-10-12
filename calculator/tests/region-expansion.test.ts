@@ -77,8 +77,9 @@ describe('2. the arithmetic is the config\'s, and nothing else', () => {
     expect(src).toContain('⟪region-expand 2026-10');
   });
   it('a few anchors a reviewer can check by hand', () => {
-    // Austria = Germany × 44.5 / 43.4 (Eurostat 2024): 40.77 × 1.0253 = 41.80
-    expect(REGIONAL_DATA.AT.labour.skilled).toBeCloseTo(41.80, 2);
+    // Austria = Germany × 44.5 / 43.4 (Eurostat 2024): the Germany rate book's 45.0215 (€52.45) × 1.0253 = 46.16
+    expect(REGIONAL_DATA.AT.labour.skilled).toBeCloseTo(46.16, 2);
+    expect(REGIONAL_DATA.AT.labour.skilled / REGIONAL_DATA.DE.labour.skilled).toBeCloseTo(44.5 / 43.4, 3);
     // Malaysia = Thailand × 490 / 437 (JETRO): 4.15 × 1.1213 = 4.65
     expect(REGIONAL_DATA.MY.labour.semiskilled).toBeCloseTo(4.65, 2);
     // Portugal electricity: €11.33 / 100 / 1.16526 = £0.097

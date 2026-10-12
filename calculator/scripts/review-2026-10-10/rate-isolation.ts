@@ -1,5 +1,5 @@
 /**
- * Rate isolation check (demo review, 10 Oct 2026): cost the six review parts headless in CN / IN / UK and test every
+ * Rate isolation check (demo review, 10 Oct 2026; PARTS=a.stp,b.stp to choose the parts): cost the six review parts headless in CN / IN / UK and test every
  * rate the costing used against THAT country's book — material £/kg and scrap, each operation's machine and labour
  * £/h — and flag any figure that equals the UK book where the country book differs (a leak).
  *   npx tsx scripts/review-2026-10-10/rate-isolation.ts > out.json          (REGIONS=PL,CN … to choose the countries)
@@ -9,7 +9,7 @@ import { costMeasuredPart } from '../../server/services/bulk-run.js';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
 import { buildRegionalLibrary } from '../../src/engine/regional-rates.js';
 
-const PARTS = ['PRCR002.stp', 'Casting_Braket.stp', 'IM_ECU_Cover.stp', 'IM_Storage_Tray.stp', 'Seat_Locking_Bracket.stp', 'BIW_Inner_Panel.stp'];
+const PARTS = process.env.PARTS ? process.env.PARTS.split(',') : ['PRCR002.stp', 'Casting_Braket.stp', 'IM_ECU_Cover.stp', 'IM_Storage_Tray.stp', 'Seat_Locking_Bracket.stp', 'BIW_Inner_Panel.stp'];
 const fixture = JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json', 'utf8')) as Array<{ part: string; answers: Record<string, string>; geometry: never; outcome: { commodity?: string } }>;
 const UK = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
 const log = console.log; console.log = () => {}; console.warn = () => {};

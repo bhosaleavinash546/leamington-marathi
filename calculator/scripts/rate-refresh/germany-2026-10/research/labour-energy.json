@@ -1,0 +1,717 @@
+{
+ "domain": "labour-energy",
+ "researched": "2026-10-12",
+ "items": [
+  {
+   "key": "labour.anchor.era.bw.apr2026",
+   "value": null,
+   "unit": "EUR/month (35 h/wk), Grundentgelt",
+   "basis": "Südwestmetall / IG Metall BW ERA table valid 1 Apr – 31 Oct 2026 (Grundentgelt, no Leistungszulage): EG 5 3,296.00; EG 6 3,481.00; EG 7 3,703.50 (Eckentgelt); EG 8 3,962.50; EG 9 4,222.00; EG 10 4,499.50; EG 11 4,796.00; EG 12 5,129.00; EG 13 5,462.50; EG 14 5,795.50; EG 15 6,129.00; EG 16 6,536.50; EG 1 2,740.50",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "Collective agreement (secondary transcription; pay sites differ by cents, e.g. EG 7 3,703.35). Official IG Metall ERA PDF: https://www.igmetall.de/download/20260331_Metall_Elektroindustrie_ERA_Tabellen_f2965b456efe1ba4f35a9e90d5931e1120a8701f.pdf (host blocked from this session)."
+  },
+  {
+   "key": "labour.anchor.era.by.apr2026",
+   "value": null,
+   "unit": "EUR/month (35 h/wk), Grundentgelt",
+   "basis": "VBM / IG Metall Bayern ERA table from 1 Apr 2026 (Stufe A / B): EG 1 2,741; EG 2 2,795/2,841; EG 3 2,935/3,026; EG 4 3,117/3,207/3,412 (C); EG 5 3,497/3,583 (EG 5 A = Eckentgelt); EG 6 3,714/3,843; EG 7 4,004/4,167; EG 8 4,344/4,525; EG 9 4,757/4,991; EG 10 5,261/5,528; EG 11 5,818/6,104; EG 12 top 6,650",
+   "source": "https://bayern.igmetall.de/aktuell/metall--und-elektroindustrie",
+   "date": "2026-04-01",
+   "notes": "Collective agreement (IG Metall Bayern page, rounded to whole euro; cent values e.g. EG 5 A 3,497.15 on tarif-gehalt.de)."
+  },
+  {
+   "key": "labour.anchor.era.ni.apr2026",
+   "value": null,
+   "unit": "EUR/month (35 h/wk), Grundentgelt",
+   "basis": "NiedersachsenMetall / IG Metall ERA table from 1 Apr 2026 (Stufe A / B / C): EG 3 2,829/2,875/2,940; EG 4 2,974/3,013/3,166; EG 5 3,356/3,569/3,615 (Eckentgelt = EG 5 C 3,614.69); EG 6 3,657/3,705/3,786; EG 7 3,897/3,985/4,080; EG 8 4,172/4,309/4,367; EG 9 4,393/4,476/4,545; EG 11 4,815/5,041/5,269; EG 12 5,492/5,717/5,944; EG 13 6,196/6,683/6,882",
+   "source": "https://gehalts.info/tarif/ig-metall/niedersachsen",
+   "date": "2026-04-01",
+   "notes": "Collective agreement (secondary transcription of the IG Metall table)."
+  },
+  {
+   "key": "labour.anchor.era.nw.apr2026",
+   "value": null,
+   "unit": "EUR/month (35 h/wk), Grundentgelt",
+   "basis": "METALL NRW / IG Metall NRW ERA table from 1 Apr 2026: EG 5 2,960.50; EG 6 3,037.33; EG 7 3,132.00; EG 8 3,295.00; EG 9 3,561.00 (Eckentgelt); EG 10 3,914.00; EG 11 4,389.00; EG 12 4,523.00 (5,023.00 after 36 months); EG 13 5,054.00 (5,945.50 after 36 months); EG 14 5,741.00 / 6,100.50 / 6,459.50 / 7,178.50 (steps)",
+   "source": "https://www.metall.nrw/fileadmin/content/Tarif/Wages_schedules/METALL_NRW_wages_shedule_2024-2026.pdf",
+   "date": "2026-04-01",
+   "notes": "Collective agreement (METALL NRW wage schedule 2024–2026 confirms the +3.1% step; group values via https://igmetallrechner.de/tariftabelle/nordrhein-westfalen/)."
+  },
+  {
+   "key": "labour.tariffStep.2026",
+   "value": 0.031,
+   "unit": "fraction",
+   "basis": "M+E agreement of 12 Nov 2024 (Hamburg pilot, adopted in all Bezirke): ERA monthly base pay +2.0% from 1 Apr 2025 and +3.1% from 1 Apr 2026; tables valid to 31 Oct 2026 (agreement cancellable then; a new round is due for Nov 2026)",
+   "source": "https://www.igmetall-berlin.de/fileadmin/user/Downloads/FAQ__MuE_TG_I_TG_II_Sax_BBS.pdf",
+   "date": "2026-04-01",
+   "notes": "Collective agreement. Also https://www.igmetall.de/tarif/tarifrunden/metall-und-elektro/tarifrunde-metall-und-elektro-2024. Any Nov 2026 settlement is NOT in these figures."
+  },
+  {
+   "key": "labour.performancePay.average",
+   "value": null,
+   "unit": "fraction of Grundentgelt",
+   "basis": "ERA performance pay (Leistungszulage / Leistungsentgelt), works average: BW 15%, Bavaria 14%, Lower Saxony 10%, NRW 10% (NRW: individual 0–20%; works average not found — 10% ASSUMED as the midpoint of that range; the other regions 6–15% per the same source)",
+   "source": "https://igmetallrechner.de/era-rechner/",
+   "date": "2026",
+   "notes": "Secondary (ERA calculator site). NI 10%: https://igmetallrechner.de/tariftabelle/niedersachsen/. Not a table value — paid on top of Grundentgelt."
+  },
+  {
+   "key": "labour.region.clusterFactor",
+   "value": 0.9473,
+   "unit": "ratio to Baden-Württemberg",
+   "basis": "Each region's Eckentgelt (reference skilled-worker rate) incl. average performance pay: BW EG 7 3,703.50 × 1.15 = 4259.02; BY EG 5 A 3,497.00 × 1.14 = 3986.58; NI EG 5 C 3,614.69 × 1.10 = 3976.16; NRW EG 9 3,561.00 × 1.10 = 3917.10; 4-cluster mean 4034.72 ÷ BW 4259.02 = 0.9473. Role pay = BW ERA group Grundentgelt × 1.15 × 0.9473 (BW has the finest 17-group ladder; the factor moves it to the 4-cluster average).",
+   "source": "https://www.igmetall.de/download/20260331_Metall_Elektroindustrie_ERA_Tabellen_f2965b456efe1ba4f35a9e90d5931e1120a8701f.pdf",
+   "date": "2026-04-01",
+   "notes": "Derived from the four regional ERA tables above. Cross-check, skilled role mapped region by region (BW EG 8 × 1.15 = 4,556.88; BY EG 6 B 3,843 × 1.14 = 4,381.02; NI EG 6 C 3,786 × 1.10 = 4,164.60; NRW EG 10 3,914 × 1.10 = 4,305.40; mean 4,351.98) v the factor method 4,316.79 — within 0.8%."
+  },
+  {
+   "key": "labour.special.urlaubsgeld",
+   "value": 0.6923,
+   "unit": "months of monthly pay / yr",
+   "basis": "Additional holiday pay 50% of the daily average pay per holiday day: 30 days × 0.5 × (monthly × 3 ÷ 65 working days in 13 weeks) = 0.6923 × monthly (≈ the 69% of a month quoted)",
+   "source": "https://igmetall-gelsenkirchen.de/t-zug-in-der-metall-und-elektroindustrie-jetzt-gibts-das-tarifliche-zusatzgeld-t-zug/",
+   "date": "2026",
+   "notes": "Collective agreement (MTV/Urlaubsabkommen). IG Metall pages state 50% per holiday day; the 69% of a month figure is the same rule."
+  },
+  {
+   "key": "labour.special.weihnachtsgeld",
+   "value": 0.55,
+   "unit": "months of monthly pay / yr",
+   "basis": "Tarifliche Sonderzahlung (13th-month share): up to 55% of a monthly pay after 36 months' service (25–55% by tenure) — 55% used (established workforce)",
+   "source": "https://www.igmetall.de/tarif/tarifrunden/metall-und-elektro/jetzt-gibts-das-tarifliche-zusatzgeld-t-zug",
+   "date": "2026",
+   "notes": "Collective agreement."
+  },
+  {
+   "key": "labour.special.tZugA",
+   "value": 0.275,
+   "unit": "months of monthly pay / yr",
+   "basis": "T-ZUG A = 27.5% of individual monthly pay, paid with July payroll (can be swapped for days off by shift workers, carers, parents)",
+   "source": "https://www.igmetall.de/tarif/tarifrunden/metall-und-elektro/jetzt-gibts-das-tarifliche-zusatzgeld-t-zug",
+   "date": "2026-07",
+   "notes": "Collective agreement."
+  },
+  {
+   "key": "labour.special.tGeld",
+   "value": 0.184,
+   "unit": "months of monthly pay / yr",
+   "basis": "Transformationsgeld (T-Geld) = 18.4% of monthly pay, paid in July since the 2024 agreement",
+   "source": "https://www.igmetall.de/tarif/tarifrunden/metall-und-elektro/jetzt-kommt-das-transformationsgeld",
+   "date": "2026-07",
+   "notes": "Collective agreement."
+  },
+  {
+   "key": "labour.special.tZugB",
+   "value": 923.79,
+   "unit": "EUR/yr",
+   "basis": "T-ZUG B raised from 18.5% to 26.5% of the region's Eckentgelt from Feb 2026 (paid in February, on the table then valid = 2025 values): 0.265 × mean 2025 Eckentgelt (BW 3,703.50, BY 3,497.00, NI 3,614.69, NRW 3,561.00 → mean 3,594.05 ÷ 1.031 = 3,485.98) = 923.79; IG Metall quotes €845–952 by region",
+   "source": "https://www.igmetall-leipzig.de/aktuelles/meldung/jetzt-gibts-das-tarifliche-zusatzgeld-b-erhoehung-auf-265",
+   "date": "2026-02",
+   "notes": "Collective agreement. BW check: 0.265 × 3,703.50 ÷ 1.031 = 951.9 = the €952 top of the quoted range."
+  },
+  {
+   "key": "labour.special.total",
+   "value": 1.7013,
+   "unit": "months of monthly pay / yr (+ T-ZUG B)",
+   "basis": "Urlaubsgeld 0.6923 + Weihnachtsgeld 0.55 + T-ZUG A 0.275 + T-Geld 0.184 = 1.7013 monthly pays + T-ZUG B 923.79 EUR flat",
+   "source": "derived",
+   "date": "2026",
+   "notes": "One-off €600 inflation payment was Feb 2025 only — not in 2026."
+  },
+  {
+   "key": "labour.shift.lateShiftPremium",
+   "value": 0.2,
+   "unit": "fraction of hourly pay, per late-shift hour 12:00–19:00",
+   "basis": "MTV Metall BW (2024 version, §§ on Spätarbeit): 20% for each Spätarbeit hour between 12:00 and 19:00 where the regular shift starts after 12:00 and ends after 19:00",
+   "source": "https://www.bw.igm.de/downloads/artikel/files//ARTID_108316_QsaVt1?name=Manteltarifvertrag_final.pdf",
+   "date": "2024 (in force 2026)",
+   "notes": "Collective agreement (BW). Bavaria, Lower Saxony and NRW late-shift rules NOT found; the BW rule is applied to all four clusters (stated proxy)."
+  },
+  {
+   "key": "labour.shift.twoShiftAveragePremium",
+   "value": 0.0625,
+   "unit": "fraction of hourly pay, averaged over both shifts",
+   "basis": "Shifts 06:00–14:00 and 14:00–22:00: late-shift hours 14:00–19:00 = 5 h × 20% = 1.0 premium-hour per late shift; ÷ 16 h over both shifts = 6.25% of base hourly pay on hours worked. Applied as 0.0625 × (monthly ÷ 152.25 h) × 1,466.78 productive h = 0.6021 × monthly per year",
+   "source": "https://www.bw.igm.de/downloads/artikel/files//ARTID_108316_QsaVt1?name=Manteltarifvertrag_final.pdf",
+   "date": "2026",
+   "notes": "Hours 19:00–22:00 carry NO premium here: whether they are Nachtarbeit (higher premium) under each regional MTV was NOT confirmed — if so, the loaded shop-floor rates rise by ~€1–1.5/h. Night/third shift and weekends are outside the 2 × 8 h pattern."
+  },
+  {
+   "key": "labour.oncost.pension",
+   "value": 0.093,
+   "unit": "fraction of gross",
+   "basis": "Rentenversicherung 18.6% total, employer 9.3%, up to BBG 8,450 EUR/month (101,400/yr)",
+   "source": "https://www.krankenkassen.de/gesetzliche-krankenkassen/system-gesetzliche-krankenversicherung/sozialversicherung-rechengroessen-beitragsbemessungsgrenze-versicherungspflichtgrenze/rechengroessen-2026/",
+   "date": "2026-01-01",
+   "notes": "Statute / insurer notice"
+  },
+  {
+   "key": "labour.oncost.unemployment",
+   "value": 0.013,
+   "unit": "fraction of gross",
+   "basis": "Arbeitslosenversicherung 2.6% total, employer 1.3%, up to BBG 101,400/yr",
+   "source": "https://www.krankenkassen.de/gesetzliche-krankenkassen/system-gesetzliche-krankenversicherung/sozialversicherung-rechengroessen-beitragsbemessungsgrenze-versicherungspflichtgrenze/rechengroessen-2026/",
+   "date": "2026-01-01",
+   "notes": "Statute / insurer notice"
+  },
+  {
+   "key": "labour.oncost.health",
+   "value": 0.0875,
+   "unit": "fraction of gross",
+   "basis": "Krankenversicherung 14.6% general (employer 7.3%) + half of the 2026 average Zusatzbeitrag 2.9% (1.45%) = 8.75%, up to BBG 5,812.50/month (69,750/yr)",
+   "source": "https://www.informationsportal.de/aenderungen-in-der-sozialversicherung-2026/",
+   "date": "2026-01-01",
+   "notes": "Statute / insurer notice"
+  },
+  {
+   "key": "labour.oncost.care",
+   "value": 0.018,
+   "unit": "fraction of gross",
+   "basis": "Pflegeversicherung 3.6% total, employer 1.8% (childless surcharge is employee-only), up to BBG 69,750/yr",
+   "source": "https://www.krankenkassen.de/gesetzliche-krankenkassen/system-gesetzliche-krankenversicherung/sozialversicherung-rechengroessen-beitragsbemessungsgrenze-versicherungspflichtgrenze/rechengroessen-2026/",
+   "date": "2026-01-01",
+   "notes": "Statute / insurer notice"
+  },
+  {
+   "key": "labour.oncost.accident",
+   "value": 0.0108,
+   "unit": "fraction of gross",
+   "basis": "Statutory accident insurance: DGUV average contribution of the commercial Berufsgenossenschaften 2025 = 1.08 EUR per 100 EUR of wages (2024: 1.09). BG Holz und Metall's own average / Gefahrklasse for metalworking NOT found — the all-BG average is used (proxy); BGHM's new Gefahrtarif applies to contributions from April 2026",
+   "source": "https://dguv.de/de/mediencenter/pm/zahlen-2025.jsp",
+   "date": "2026-01-01",
+   "notes": "Regulator statistic (proxy)"
+  },
+  {
+   "key": "labour.oncost.insolvency",
+   "value": 0.0015,
+   "unit": "fraction of gross",
+   "basis": "Insolvenzgeldumlage 2026 = 0.15% (unchanged), on pension-liable pay up to BBG incl. one-off payments",
+   "source": "https://www.haufe.de/id/beitrag/insolvenzgeldumlage-fuer-2026-HI17106952.html",
+   "date": "2026-01-01",
+   "notes": "Statute / insurer notice"
+  },
+  {
+   "key": "labour.oncost.u1",
+   "value": 0.0,
+   "unit": "fraction of gross",
+   "basis": "U1 (sick-pay reimbursement) applies only to employers with ≤ 30 employees — not an automotive supplier plant; 0 (AOK BW 2026 U1 rate 4.05% at 80% reimbursement, for reference)",
+   "source": "https://www.aok.de/fk/fileadmin/user_upload/medien-seminare/medien/dft2026/sv-werte-2026-bw.pdf",
+   "date": "2026-01-01",
+   "notes": "Statute / insurer notice"
+  },
+  {
+   "key": "labour.oncost.u2",
+   "value": 0.0044,
+   "unit": "fraction of gross",
+   "basis": "U2 (maternity) — compulsory for all employers: AOK Baden-Württemberg 2026 0.44% (Barmer 0.42%, Mobil 0.40%, Bertelsmann BKK 0.20%); on regular pay up to BBG, not on one-off payments",
+   "source": "https://www.aok.de/fk/fileadmin/user_upload/medien-seminare/medien/dft2026/sv-werte-2026-bw.pdf",
+   "date": "2026-01-01",
+   "notes": "Statute / insurer notice"
+  },
+  {
+   "key": "labour.oncost.employerTotal",
+   "value": 0.2282,
+   "unit": "fraction of gross (below both ceilings)",
+   "basis": "9.30 + 1.30 + 8.75 + 1.80 + 1.08 + 0.15 + 0.44 = 22.82% below the KV/PV ceiling 69,750/yr; above it only pension, unemployment, insolvency (+U2) to 101,400 and accident run on",
+   "source": "derived",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.oncost.bbgPension",
+   "value": 101400,
+   "unit": "EUR/yr",
+   "basis": "Beitragsbemessungsgrenze RV/AV 2026 (uniform West/East): 8,450 EUR/month",
+   "source": "https://www.krankenkassen.de/gesetzliche-krankenkassen/system-gesetzliche-krankenversicherung/sozialversicherung-rechengroessen-beitragsbemessungsgrenze-versicherungspflichtgrenze/rechengroessen-2026/",
+   "date": "2026-01-01",
+   "notes": "Statute (Sozialversicherungsrechengrößenverordnung 2026)."
+  },
+  {
+   "key": "labour.oncost.bbgHealth",
+   "value": 69750,
+   "unit": "EUR/yr",
+   "basis": "Beitragsbemessungsgrenze KV/PV 2026: 5,812.50 EUR/month",
+   "source": "https://www.krankenkassen.de/gesetzliche-krankenkassen/system-gesetzliche-krankenversicherung/sozialversicherung-rechengroessen-beitragsbemessungsgrenze-versicherungspflichtgrenze/rechengroessen-2026/",
+   "date": "2026-01-01",
+   "notes": "Statute."
+  },
+  {
+   "key": "labour.hours.workingDays2026",
+   "value": 252.75,
+   "unit": "days/yr",
+   "basis": "2026 Mon–Fri = 261 days; public holidays on weekdays: BW 9 → 252, Bavaria 9 → 252 (15 Aug, 3 Oct, 1 Nov fall on weekends), Lower Saxony 7 → 254, NRW 8 → 253; mean (252+252+254+253) ÷ 4 = 252.75",
+   "source": "https://rechner-hub.de/arbeitstage-rechner/2026/",
+   "date": "2026",
+   "notes": "Calendar computed from the Länder holiday laws and checked against the calculator site (schnelle-online.info agrees; taxmaro differs and is not used)."
+  },
+  {
+   "key": "labour.hours.contract",
+   "value": 1769.25,
+   "unit": "h/yr",
+   "basis": "IG Metall West 35-h week = 7 h/day × 252.75 days = 1,769.25 h",
+   "source": "https://www.bw.igm.de/downloads/artikel/files//ARTID_108316_QsaVt1?name=Manteltarifvertrag_final.pdf",
+   "date": "2026",
+   "notes": "Collective agreement (MTV 35 h)."
+  },
+  {
+   "key": "labour.hours.holiday",
+   "value": 30,
+   "unit": "days/yr",
+   "basis": "MTV Metall: 30 working days' annual leave",
+   "source": "https://igmetall-gelsenkirchen.de/t-zug-in-der-metall-und-elektroindustrie-jetzt-gibts-das-tarifliche-zusatzgeld-t-zug/",
+   "date": "2026",
+   "notes": "Collective agreement."
+  },
+  {
+   "key": "labour.hours.sicknessDays",
+   "value": 13.21,
+   "unit": "working days/yr",
+   "basis": "TK Gesundheitsreport 2026: 18.5 sickness days per insured employee in 2025 (sickness rate 5.08%; 2024 5.23%), counted in CALENDAR days → × 5/7 = 13.21 working days. NRW Länderreport 19.7 days",
+   "source": "https://www.tk.de/resource/blob/2214302/9c99dbb2cea6422e50c6009c50e57e37/gesundheitsreport-au-2026-data.pdf",
+   "date": "2025",
+   "notes": "Insurer statistic, all sectors. Metal-production occupations usually run above average — not found by occupation. All days ASSUMED inside the 6-week employer sick-pay period (Entgeltfortzahlung 100%), i.e. full cost, no output."
+  },
+  {
+   "key": "labour.hours.productivePerYear",
+   "value": 1466.78,
+   "unit": "h/yr",
+   "basis": "1,769.25 contract h − 30 days leave × 7 h (210) − 13.21 sickness days × 7 h (92.47) = 1466.78 h. Paid but not productive: holidays, public holidays (already outside the 252.75 days), sickness (Entgeltfortzahlung)",
+   "source": "derived",
+   "date": "2026",
+   "notes": "No deduction for Bildungsurlaub (BW/NRW/NI 5 days, not Bavaria), training, works meetings or T-ZUG/T-Geld days swapped for time off — each would lower the productive hours further."
+  },
+  {
+   "key": "hours.annual",
+   "value": 4044.0,
+   "unit": "machine h/yr",
+   "basis": "2 × 8 h Mon–Fri: 252.75 working days (4-Länder mean, 2026) × 16 h = 4,044 h",
+   "source": "https://rechner-hub.de/arbeitstage-rechner/2026/",
+   "date": "2026",
+   "notes": "Before utilisation / OEE."
+  },
+  {
+   "key": "labour.skilled.monthlyGross",
+   "value": 4316.88,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "Zerspanungsmechaniker / CNC machinist: 3.5-year apprenticeship + experience setting and editing CNC programs → one group above the Eckentgelt (EG 7 = completed 3-yr apprenticeship) = EG 8. BW EG 8 3,962.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4316.88",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation."
+  },
+  {
+   "key": "labour.skilled.fullyLoadedEurPerHr",
+   "value": 52.45,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4316.88 = 51803; + late-shift premium 2599 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 8268; annual gross 62670; + employer social contributions 14265 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 76935 ÷ 1466.78 productive h = 52.45",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.semiskilled.monthlyGross",
+   "value": 3590.77,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "Maschinen- und Anlagenführer: 2-year apprenticeship / trained operator → EG 5 (two below Eckentgelt). BW EG 5 3,296.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3590.77",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation."
+  },
+  {
+   "key": "labour.semiskilled.fullyLoadedEurPerHr",
+   "value": 43.76,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3590.77 = 43089; + late-shift premium 2162 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7033; annual gross 52284; + employer social contributions 11900 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 64184 ÷ 1466.78 productive h = 43.76",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.foundry.monthlyGross",
+   "value": 4034.72,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "Gießereimechaniker: 3.5-year apprenticeship → Eckentgelt EG 7. BW EG 7 3,703.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4034.72",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation. Foundries in these clusters are mainly in the M+E agreements; a foundry under a separate house agreement may differ."
+  },
+  {
+   "key": "labour.foundry.fullyLoadedEurPerHr",
+   "value": 49.07,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4034.72 = 48417; + late-shift premium 2429 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7788; annual gross 58634; + employer social contributions 13346 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 71980 ÷ 1466.78 productive h = 49.07",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.electronics.monthlyGross",
+   "value": 3590.77,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "SMT / electronics production operator: trained-on operator (no 3-yr apprenticeship needed) → EG 5, same level as the semi-skilled operator. BW EG 5 3,296.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3590.77",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation. Judgement; SMT line set-up specialists would be EG 6–7."
+  },
+  {
+   "key": "labour.electronics.fullyLoadedEurPerHr",
+   "value": 43.76,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3590.77 = 43089; + late-shift premium 2162 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7033; annual gross 52284; + employer social contributions 11900 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 64184 ÷ 1466.78 productive h = 43.76",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.inspector.monthlyGross",
+   "value": 4034.72,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "Quality inspector (CMM, measuring-room): skilled-worker level → Eckentgelt EG 7. BW EG 7 3,703.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4034.72",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation."
+  },
+  {
+   "key": "labour.inspector.fullyLoadedEurPerHr",
+   "value": 49.07,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4034.72 = 48417; + late-shift premium 2429 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7788; annual gross 58634; + employer social contributions 13346 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 71980 ÷ 1466.78 productive h = 49.07",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.technician.monthlyGross",
+   "value": 4599.59,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "Maintenance Mechatroniker: 3.5-year apprenticeship + several years' experience, fault-finding across trades → EG 9. BW EG 9 4,222.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4599.59",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation."
+  },
+  {
+   "key": "labour.technician.fullyLoadedEurPerHr",
+   "value": 55.84,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4599.59 = 55195; + late-shift premium 2770 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 8749; annual gross 66714; + employer social contributions 15186 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 81899 ÷ 1466.78 productive h = 55.84",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.supervisor.monthlyGross",
+   "value": 5587.7,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "Shift foreman / Industriemeister: Meister qualification with staff responsibility → EG 12 (BW Meister band EG 11–12). BW EG 12 5,129.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 5587.70",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation. Many Meister are paid above tariff (AT) — not costed."
+  },
+  {
+   "key": "labour.supervisor.fullyLoadedEurPerHr",
+   "value": 66.87,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 5587.70 = 67052; + late-shift premium 3365 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 10430; annual gross 80847; + employer social contributions 17233 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 98080 ÷ 1466.78 productive h = 66.87",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.forge.monthlyGross",
+   "value": 3792.32,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "PROXY — Umformer / forging press operator: Maschinen- und Anlagenführer (Umformtechnik) level plus hot heavy-press work → EG 6 (one above the semi-skilled operator). BW EG 6 3,481.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3792.32",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation. No forging-specific ERA example found; judgement. Hot-work / Erschwerniszulagen not costed."
+  },
+  {
+   "key": "labour.forge.fullyLoadedEurPerHr",
+   "value": 46.17,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.furnace.monthlyGross",
+   "value": 4034.72,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "PROXY = foundry (Gießereimechaniker, EG 7) — no melter / furnace-operator grading found. BW EG 7 3,703.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4034.72",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation. Proxy."
+  },
+  {
+   "key": "labour.furnace.fullyLoadedEurPerHr",
+   "value": 49.07,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4034.72 = 48417; + late-shift premium 2429 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7788; annual gross 58634; + employer social contributions 13346 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 71980 ÷ 1466.78 productive h = 49.07",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.blow.monthlyGross",
+   "value": 3792.32,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "PROXY — Verfahrensmechaniker Kunststoff- und Kautschuktechnik as machine operator: trained operator with mould change / process setting → EG 6 on the M+E table. BW EG 6 3,481.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3792.32",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation. Proxy. Plastics processors are often on the IG BCE Kunststoff-verarbeitende-Industrie agreements, not M+E — those tables were NOT researched."
+  },
+  {
+   "key": "labour.blow.fullyLoadedEurPerHr",
+   "value": 46.17,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.roto.monthlyGross",
+   "value": 3792.32,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "PROXY — as blow: Verfahrensmechaniker Kunststoff operator → EG 6 (M+E table). BW EG 6 3,481.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3792.32",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation. Proxy; see blow."
+  },
+  {
+   "key": "labour.roto.fullyLoadedEurPerHr",
+   "value": 46.17,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.thermoform.monthlyGross",
+   "value": 3792.32,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "PROXY — as blow: Verfahrensmechaniker Kunststoff operator → EG 6 (M+E table). BW EG 6 3,481.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3792.32",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation. Proxy; see blow."
+  },
+  {
+   "key": "labour.thermoform.fullyLoadedEurPerHr",
+   "value": 46.17,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.trimRouter.monthlyGross",
+   "value": 4316.88,
+   "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+   "basis": "PROXY = skilled (CNC router / trim operator → EG 8). BW EG 8 3,962.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4316.88",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "ERA group choice is a stated CostVision judgement from the ERA qualification levels, not a sourced job evaluation. Proxy = skilled."
+  },
+  {
+   "key": "labour.trimRouter.fullyLoadedEurPerHr",
+   "value": 52.45,
+   "unit": "EUR/h per productive hour",
+   "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4316.88 = 51803; + late-shift premium 2599 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 8268; annual gross 62670; + employer social contributions 14265 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 76935 ÷ 1466.78 productive h = 52.45",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Employer cost; sick pay (Entgeltfortzahlung) and paid leave are cost without output (inside 12 monthly pays, divided by productive hours only)."
+  },
+  {
+   "key": "labour.engineer.monthlyGross",
+   "value": 6313.81,
+   "unit": "EUR/month gross",
+   "basis": "Process / manufacturing engineer (Bachelor/Diplom, several years' experience) → BW EG 14 5,795.50 × 1.15 × 0.9473 = 6313.81 (tariff-covered engineer; BW engineers span EG 13–17)",
+   "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+   "date": "2026-04-01",
+   "notes": "Cross-check: IG Metall Bayern engineer pay brochure 2025/2026 example — Grundentgelt 5,643 (= Bayern EG 11 A, 2025) + 14% = 6,433.02/month from 1 Apr 2025; × 1.031 = 6,632/month in 2026 (+5% v this figure). Many engineers are on above-tariff (AT) contracts, which must exceed the top tariff group — a share of AT staff would raise the rate; AT pay levels NOT sourced. Source: https://www.igmetall.de/download/20250430_IGM_Bro_Ingenieur_Geh_lter_2025_2026_Bayern_DE_Web_7b2603aa7aac7e46437eed549c1ef53c577ca539.pdf"
+  },
+  {
+   "key": "labour.engineer.fullyLoadedEurPerHrStd",
+   "value": 71.9,
+   "unit": "EUR/h per productive hour (day shift)",
+   "basis": "Day shift, salaried, no shift premium. Pay 12 × 6313.81 = 75766; + special payments 11665; annual gross 87431 (above the KV/PV ceiling 69,750); + employer social contributions 18035 (RV/AV/insolvency 10.75% on 87k < 101,400; KV/PV 10.55% capped at 69,750; accident 1.08%; U2 0.44%); total 105466 ÷ 1466.78 h = 71.90",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Tariff-covered engineer; AT engineers cost more."
+  },
+  {
+   "key": "labour.loadingIncluded",
+   "value": null,
+   "unit": "—",
+   "basis": "Fully-loaded hourly cost INCLUDES: ERA monthly Grundentgelt (tables valid 1 Apr – 31 Oct 2026, incl. the +3.1% step) + average Leistungszulage, 4-cluster average; 30 days' paid leave and paid public holidays (inside 12 monthly pays); Entgeltfortzahlung for 13.2 sickness working days; Urlaubsgeld (0.69 month), tarifliche Sonderzahlung 55%, T-ZUG A 27.5%, T-Geld 18.4%, T-ZUG B (26.5% of Eckentgelt); late-shift premium 20% on 14:00–19:00 (shop-floor roles); employer RV, AV, KV incl. half Zusatzbeitrag, PV, accident (DGUV average), Insolvenzgeldumlage, U2 — with the 2026 ceilings; divided by 1,466.78 productive hours.",
+   "source": "derived",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "labour.loadingNotIncluded",
+   "value": null,
+   "unit": "—",
+   "basis": "NOT included: night premiums for any late-shift hours after 19:00/20:00 (regional night definition not confirmed); third shift / weekend / overtime premiums; Erschwernis- / hot-work allowances; occupational pension (tarifliche Altersvorsorge AVWL, company bAV) and vermögenswirksame Leistungen; Bildungsurlaub; training time; works-council and meeting time; protective clothing, canteen subsidy; recruitment; agency-worker mark-ups; the Nov 2026 tariff round (tables expire 31 Oct 2026); AT (above-tariff) pay; U1 (n/a > 30 staff).",
+   "source": "derived",
+   "date": "2026",
+   "notes": "Destatis Arbeitskosten also count bAV, training and other non-wage items — part of why they can exceed a wage-and-statutory build-up."
+  },
+  {
+   "key": "labour.crossCheck.destatisManufacturing2025",
+   "value": 49.5,
+   "unit": "EUR per hour worked",
+   "basis": "Destatis labour cost survey 2025 (PD26/148, 29 Apr 2026): manufacturing (Verarbeitendes Gewerbe) 49.50 EUR per hour actually worked (2024: 48.30); all industry + services 45.00 (EU 34.90). Compare: build-up skilled 52.45, semi-skilled 43.76, engineer 71.90 — the Destatis mean spans all staff (incl. salaried white-collar and engineers) and includes bAV / training; automotive (WZ 29) runs above the manufacturing mean (WZ split not found)",
+   "source": "https://statistiken-aktuell.de/arbeitskosten-2025-datenmonitor/",
+   "date": "2025",
+   "notes": "Official statistic via secondary report; 45.00 confirmed by https://www.ihk.de/heilbronn-franken/produktmarken/zahlen-daten-fakten/aktuelles/eine-arbeitsstunde-kostete-2025-durchschnittlich-45-euro-7043140."
+  },
+  {
+   "key": "energy.electricity.energyComponent",
+   "value": 0.0866,
+   "unit": "EUR/kWh ex-VAT",
+   "basis": "EEX Phelix-DE Cal-26 baseload settlements during 2025 procurement: 88.03 (8 Oct 2025), 87.16 (22 Oct 2025), 84.58 (1 Jul 2025); low 77.62 (Apr 2025); mean of the three dated points (88.03 + 87.16 + 84.58) ÷ 3 = 86.59 EUR/MWh",
+   "source": "https://www.ewv.de/fileadmin/user_upload/user_upload/Geschaeftskunden/Marktberichte/2025/EWV-Marktbericht-Nr.41-Strom.pdf",
+   "date": "2025-10",
+   "notes": "Exchange settlement (via utility market reports; also https://www.stadtwerke-hamm.de/fileadmin/user-storage/Diverse_Content/Geschaeftskunden/20250701_-_Marktbericht_SW_Hamm.pdf). Baseload only — a 2 × 8 h weekday profile costs more than base, and supplier margin is extra (neither sourced)."
+  },
+  {
+   "key": "energy.electricity.networkCharges",
+   "value": 0.043,
+   "unit": "EUR/kWh ex-VAT",
+   "basis": "2026 medium-voltage network charges (energy + capacity price, incl. the 6.5 bn EUR federal subsidy to transmission charges which cut the TSO charge passed to HV/MV from 6.65 to 2.86 ct/kWh, −57%): range 2.8–5.8 ct/kWh at 3,500 full-load h (2.2–5.2 at 5,000 h) across DSOs; midpoint 4.3 ct used (a 2-shift plant runs ~3,500–4,000 h)",
+   "source": "https://www.stromvermittlung.de/netzentgelte/",
+   "date": "2026",
+   "notes": "Broker overview, not official — DSO price sheets vary widely; subsidy: https://www.ifesca.de/netzentgelt-zuschuss-2026-industrie/ (one-off for 2026; TSOs' provisional 2027 charge 3.54 ct/kWh). BNetzA average for MV industry NOT found."
+  },
+  {
+   "key": "energy.electricity.kwkgLevy",
+   "value": 0.00446,
+   "unit": "EUR/kWh",
+   "basis": "KWKG-Umlage 2026 = 0.446 ct/kWh net (2025: 0.277)",
+   "source": "https://www.vea.de/newsroom/aktuelles/thema/netztransparenzde-meldet-netzentgeltbasierte-umlagen-fuer-2026",
+   "date": "2026-01-01",
+   "notes": "TSO notice (netztransparenz.de). Reduced only for BesAR-privileged users."
+  },
+  {
+   "key": "energy.electricity.offshoreLevy",
+   "value": 0.00941,
+   "unit": "EUR/kWh",
+   "basis": "Offshore-Netzumlage 2026 = 0.941 ct/kWh net (2025: 0.816)",
+   "source": "https://www.vea.de/newsroom/aktuelles/thema/netztransparenzde-meldet-netzentgeltbasierte-umlagen-fuer-2026",
+   "date": "2026-01-01",
+   "notes": "TSO notice."
+  },
+  {
+   "key": "energy.electricity.par19Levy",
+   "value": 0.00352,
+   "unit": "EUR/kWh (load-averaged)",
+   "basis": "Aufschlag für besondere Netznutzung (§19 StromNEV successor) 2026: category A 1.559 ct/kWh on the first 1 GWh per delivery point, category B 0.050 ct/kWh above. Plant of 5 GWh/yr (ASSUMED size): (1 × 1.559 + 4 × 0.050) ÷ 5 = 0.352 ct/kWh",
+   "source": "https://blog.get-ag.com/get-energy/netzentgeltbasierte-umlagen-f%C3%BCr-2026-veroeffentlicht",
+   "date": "2026-01-01",
+   "notes": "TSO notice. Category C 0.025 for electricity-intensive manufacturers. At 1 GWh/yr the figure is 1.559 ct."
+  },
+  {
+   "key": "energy.electricity.concessionFee",
+   "value": 0.0011,
+   "unit": "EUR/kWh",
+   "basis": "Konzessionsabgabe for Sondervertragskunden (special-contract / MV customers): 0.11 ct/kWh (KAV §2(3))",
+   "source": "https://www.gesetze-im-internet.de/kav/__2.html",
+   "date": "statute in force 2026",
+   "notes": "Statute; the page could not be re-read in this session (fetch blocked) — figure from the ordinance text."
+  },
+  {
+   "key": "energy.electricity.stromsteuer",
+   "value": 0.0005,
+   "unit": "EUR/kWh",
+   "basis": "Stromsteuer 2026: standard 2.05 ct/kWh; Produzierendes Gewerbe (on application) reduced to the EU minimum 0.50 EUR/MWh = 0.05 ct/kWh, made permanent from 2026",
+   "source": "https://www.wattline.de/energiewissen/strom-umlagen/",
+   "date": "2026-01-01",
+   "notes": "Statute (StromStG change), via supplier summary. Requires application to the Hauptzollamt."
+  },
+  {
+   "key": "energy.electricity.buildUpSubtotal",
+   "value": 0.1488,
+   "unit": "EUR/kWh ex-VAT",
+   "basis": "Sourced components: energy (baseload) 0.0866 + network 0.043 + KWKG 0.00446 + offshore 0.00941 + §19 0.00352 + concession 0.0011 + Stromsteuer 0.0005 = 0.1488; the gap to the market price (~2.3 ct) is load profile, supplier margin / balancing and forward-price timing (not sourced)",
+   "source": "derived",
+   "date": "2026",
+   "notes": ""
+  },
+  {
+   "key": "energy.electricity.allIn",
+   "value": 0.172,
+   "unit": "EUR/kWh ex-VAT",
+   "basis": "BDEW Strompreisanalyse (autumn 2026): average electricity price for small–medium industry (160 MWh – 20 GWh/yr, medium-voltage supply, incl. reduced Stromsteuer, excl. VAT) in 2026 to date = 17.2 ct/kWh (−0.4 ct v 2025; rising at the margin after the Iran war). Consistent with the sourced build-up 0.149 + profile/margin",
+   "source": "https://www.bdew.de/service/daten-und-grafiken/bdew-strompreisanalyse/",
+   "date": "2026 (published Aug/Sep 2026)",
+   "notes": "Industry association survey. Same class 2025: 16.0 (Jan 2026 edition); 20–70 GWh class 2025: 15.9; 70–150 GWh: 14.4. = £0.148/kWh at 1.165."
+  },
+  {
+   "key": "energy.electricity.crossCheck.destatis",
+   "value": 0.1762,
+   "unit": "EUR/kWh ex-VAT and recoverable taxes",
+   "basis": "Destatis non-household electricity: H2 2025 average 19.22 ct/kWh (all bands; < 20 MWh band 32.58); H1 2026 −8.3% → 19.22 × 0.917 = 17.62 ct/kWh (derived)",
+   "source": "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/09/PD26_345_61243.html",
+   "date": "2026-H1 (provisional)",
+   "notes": "Official statistic; H2 2025: https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/03/PD26_111_61243.html. Bands ID/IE (Eurostat nrg_pc_205) NOT found."
+  },
+  {
+   "key": "energy.gas.commodity",
+   "value": 0.0335,
+   "unit": "EUR/kWh ex-VAT (Hs)",
+   "basis": "EEX THE natural gas Cal-26 = 33.50 EUR/MWh on 7 Oct 2025 (2025 range 32.33–46.11); THE day-ahead 34.15 the same day",
+   "source": "https://www.mainova.de/resource/blob/57556/119d6c21bb0f872a3ffdde0402f013fc/marktbericht-07102025-data.pdf",
+   "date": "2025-10-07",
+   "notes": "Exchange settlement via utility market report. 2026 spot average NOT found; BDEW notes a price rise in 2026 after the Iran war — the 2026 spot may be above this forward."
+  },
+  {
+   "key": "energy.gas.co2Price",
+   "value": 0.0109,
+   "unit": "EUR/kWh ex-VAT (Hs)",
+   "basis": "BEHG national CO2 price 2026: auction within a corridor of 55–65 EUR/t. Published as 1.2–1.4 ct/kWh incl. 19% VAT for gas → ex-VAT 1.01–1.18 ct/kWh; midpoint 60 EUR/t ≈ 1.09 ct/kWh",
+   "source": "https://www.swd-ag.de/pk/strom-gas-wasser/gas/behg-brennstoffemissionshandelsgesetz/",
+   "date": "2026",
+   "notes": "Statute (BEHG); one source gives a 55–70 corridor. Plants in EU ETS 1 pay the ETS instead."
+  },
+  {
+   "key": "energy.gas.energySteuer",
+   "value": 0.0055,
+   "unit": "EUR/kWh",
+   "basis": "Energiesteuer on natural gas for heating 2026: 5.50 EUR/MWh = 0.55 ct/kWh (unchanged)",
+   "source": "https://first-energy.net/energieeinkauf/steuern-abgaben-erdgas/",
+   "date": "2026",
+   "notes": "Statute. Manufacturing firms can reclaim part (§54 EnergieStG, 1.38 EUR/MWh per the statute text — not re-read this session) and process uses are exempt (§51); not deducted here."
+  },
+  {
+   "key": "energy.gas.distribution",
+   "value": null,
+   "unit": "EUR/kWh ex-VAT",
+   "basis": "NOT FOUND: 2026 gas network / distribution charges for an RLM industrial customer (DSO price sheets not reached)",
+   "source": "",
+   "date": "",
+   "notes": "Implied by the Destatis average: 6.29 − (3.35 + 1.09 + 0.55) ≈ 1.3 ct/kWh for distribution + supplier margin (derived, all sizes)."
+  },
+  {
+   "key": "energy.gas.allIn",
+   "value": 0.0629,
+   "unit": "EUR/kWh ex-VAT (Hs)",
+   "basis": "Destatis non-household natural gas, H1 2026 average 6.29 ct/kWh excl. VAT and recoverable taxes (H2 2025: 6.18). Volume-weighted over all sizes; band 1,000–10,000 GJ (≈ 0.3–2.8 GWh, Eurostat I2) was 8.60 in H2 2025 and > 4 million GJ 4.52. A mid-size 2-shift supplier plant (I2–I3) sits around 6.3–8.6",
+   "source": "https://www.destatis.de/DE/Presse/Pressemitteilungen/2026/09/PD26_345_61243.html",
+   "date": "2026-H1",
+   "notes": "Official statistic. Sourced build-up floor: commodity 0.0335 + CO2 0.0109 + Energiesteuer 0.0055 = 0.0499 + distribution (not found). I3 / I4 bands NOT found. = £0.054/kWh at 1.165."
+  }
+ ],
+ "notes": [
+  "Web fetch was blocked for every host in this session (igmetall.de, tarifvertrag-online.de, etc.); all figures come from search-result extracts of the cited pages. 30 searches used.",
+  "Labour method: role pay = BW ERA group (finest ladder, EG 1–17) × BW average Leistungszulage 1.15 × cluster factor 0.9473 (4-cluster mean Eckentgelt incl. performance pay ÷ BW). ERA tables valid 1 Apr – 31 Oct 2026 (+3.1% step of the Nov 2024 agreement); the Nov 2026 round is not in these figures.",
+  "Loaded rates (EUR/h, 2 × 8 h): skilled 52.45, semiskilled 43.76, foundry 49.07, electronics 43.76, inspector 49.07, technician 55.84, supervisor 66.87, forge 46.17, furnace 49.07, blow 46.17, roto 46.17, thermoform 46.17, trimRouter 52.45; engineer (day, tariff EG 14) 71.90.",
+  "Current book v evidence (EUR/h): skilled 47.50 v 52.45 (book LOW ~10%); semiskilled 37.52 v 43.76 (LOW ~17%); foundry 32.84 v 49.07 (LOW ~49% — the book ranks foundry below semi-skilled; in the ERA a Gießereimechaniker is a skilled worker); inspector 41.04 v 49.07; technician 52.25 v 55.84; supervisor 64.12 v 66.87; electronics 35.18 v 43.76; forge 33.58 v 46.17 (proxy); blow/roto/thermoform 35.12 v 46.17 (proxy); engineer 76.23 v 71.90 (book ~6% high for a tariff engineer, plausible if AT).",
+  "Electricity: book 0.232 EUR/kWh (UK × factor) v BDEW 2026 small–medium industry 0.172 and Destatis H1 2026 non-household ≈ 0.176 — the book is ~35% HIGH. 2026 is helped by the one-off 6.5 bn EUR transmission-charge subsidy and the permanent 0.05 ct Stromsteuer; 2027 network charges are provisionally higher (TSO 3.54 v 2.86 ct).",
+  "Gas: book 0.079 EUR/kWh v Destatis H1 2026 all-size average 0.0629 and the I2 band (0.3–2.8 GWh) 0.086 in H2 2025 — the book sits inside the plausible range for a mid-size plant; NOT shown wrong (slightly high for a plant above ~3 GWh/yr).",
+  "Not found: regional late-shift / night definitions for Bavaria, Lower Saxony, NRW (BW rule used); NRW works-average Leistungsentgelt (10% assumed); BG Holz und Metall's own contribution level (DGUV all-BG average 1.08% used); sickness days for metal occupations (TK all-sector 18.5 calendar days); above-tariff engineer pay; Destatis WZ 25/28/29 Verdienste by occupation; Eurostat nrg_pc_205 ID/IE and nrg_pc_203 I3/I4 for Germany; 2026 gas distribution charges; an official MV network-charge average; THE 2026 spot average."
+ ]
+}

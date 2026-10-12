@@ -42,7 +42,7 @@ export interface BilletPremium {
 
 const EU_BILLET = 1_100;   // DE Ruhr $1,070–1,135 and IT Brescia $1,075–1,150, 28 Aug 2026
 export const BILLET_PREMIUM_USD_PER_T: Record<ManufacturingRegion, BilletPremium> = {
-  DE: { usdPerT: 1_100, sourced: true, basis: 'Fastmarkets 6063 billet premium DDP North Germany (Ruhr) $1,070–1,135/t, 28 Aug 2026 — mid-point' },
+  DE: { usdPerT: 1102, sourced: true, basis: '6063 billet premium DDP North Germany (Ruhr) $1,070–1,135/t (Fastmarkets, 28 Aug 2026 — the latest public print) — mid-point $1102/t over the library LME $3240 (Germany rate book 2026-10-12)' },
   IT: { usdPerT: 1_110, sourced: true, basis: 'Fastmarkets 6063 billet premium DDP Italy (Brescia) $1,075–1,150/t, 28 Aug 2026 — mid-point' },
   FR: { usdPerT: EU_BILLET, sourced: false, basis: 'EU duty-paid billet: Ruhr / Brescia assessments, 28 Aug 2026 (no French assessment)' },
   NL: { usdPerT: EU_BILLET, sourced: false, basis: 'EU duty-paid billet: Ruhr / Brescia assessments, 28 Aug 2026' },

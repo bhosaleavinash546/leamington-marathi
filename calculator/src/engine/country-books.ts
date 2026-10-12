@@ -20,6 +20,7 @@ import { computeMachineRatePerHr } from './rate-library-merge.js';
 import { INDIA_BOOK } from './country-books/in.js';
 import { CHINA_BOOK } from './country-books/cn.js';
 import { POLAND_BOOK } from './country-books/pl.js';
+import { GERMANY_BOOK } from './country-books/de.js';
 
 export interface CountryMaterialPrice { gbpPerKg: number; scrapGbpPerKg?: number; basis: string; source: string; confidence: Confidence }
 export interface CountryMachineGroup {
@@ -54,6 +55,11 @@ export interface CountryMachineModel {
   basis: string;
   heldBasis: string;
   groups: CountryMachineGroup[];
+  /** Hours for a CONTINUOUS line — one the UK book itself runs ≥ 6,000 h (extrusion presses, furnaces, ageing ovens,
+   *  compounding lines) — when the country's plant pattern is shorter (Germany 2 × 8 h): a continuous line is not
+   *  stopped for the night, so its capital is spread over this, not the two-shift hours (Germany book, Oct 2026). */
+  continuousHoursPerYear?: number;
+  continuousBasis?: string;
 }
 export interface CountryBook {
   region: string;
@@ -67,9 +73,12 @@ export interface CountryBook {
   materials: Record<string, CountryMaterialPrice>;
 }
 
-export const COUNTRY_BOOKS: Record<string, CountryBook | undefined> = { IN: INDIA_BOOK, CN: CHINA_BOOK, PL: POLAND_BOOK };
+export const COUNTRY_BOOKS: Record<string, CountryBook | undefined> = { IN: INDIA_BOOK, CN: CHINA_BOOK, PL: POLAND_BOOK, DE: GERMANY_BOOK };
 
 const r0 = (n: number) => Math.round(n);
+
+/** A machine the UK book runs this many hours or more a year is a continuous line (see continuousHoursPerYear). */
+export const CONTINUOUS_UK_HOURS = 6000;
 
 /** The group a machine falls in, or null (the machine keeps the regional scaling). */
 export function machineGroupOf(book: CountryBook, id: string): CountryMachineGroup | null {
@@ -91,7 +100,9 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
   const sym = book.currencySymbol ?? '₹';
   const loc = (gbp: number, dp = 0) => `${sym}${(gbp * book.fxToGBP).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })} (£${gbp.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp || 0 })})`;
   const b = ukMachine.buildup;
-  const hr = M.hoursPerYear / b.annualAvailableHours;
+  const continuous = !!M.continuousHoursPerYear && b.annualAvailableHours >= CONTINUOUS_UK_HOURS;
+  const hours = continuous ? M.continuousHoursPerYear! : M.hoursPerYear;
+  const hr = hours / b.annualAvailableHours;
   const kwh = b.energy / M.ukElectricityGbpPerKwh;
   const m2 = b.floorSpace / M.ukRentGbpPerM2Yr;
   const g = machineGroupOf(book, ukMachine.id);
@@ -126,7 +137,7 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
     energy: r0(kwh * hr * electricityGbpPerKwh),
     floorSpace: r0(m2 * M.rentGbpPerM2Yr),
     indirectSupport: r0(b.indirectSupport * M.labourRatio),
-    annualAvailableHours: M.hoursPerYear,
+    annualAvailableHours: hours,
     machineUtilization: b.machineUtilization,
   };
   return {
@@ -136,7 +147,7 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
     region: regionName,
     sourceNote: `${regionName} book ${book.asOf}: ${what}; ${r0(m2)} m² at ${loc(M.rentGbpPerM2Yr, 2)}/m²/yr, `
       + `${r0(kwh * hr).toLocaleString('en-GB')} kWh at ${loc(electricityGbpPerKwh, 4)}/kWh, support at ${M.labourRatio.toFixed(4)} of UK wages, `
-      + `${M.hoursPerYear.toLocaleString('en-GB')} h × ${b.machineUtilization} (${g && ref ? M.basis : M.basis.replace(/; maintenance .*$/, '')})`,
+      + `${hours.toLocaleString('en-GB')} h × ${b.machineUtilization}${continuous ? ` — a continuous line (${M.continuousBasis ?? 'three shifts'})` : ''} (${g && ref ? M.basis : M.basis.replace(/; maintenance .*$/, '')})`,
     confidence,
   };
 }
