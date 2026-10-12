@@ -189,7 +189,7 @@ export function computeUniversalStack(
       // (X-ray, heat treatment, tool wear), not cores (stub axle live run, Oct 2026).
       rateSource: input.rawMaterial.consumablesItems?.length
         ? `Per-part consumables & services: ${input.rawMaterial.consumablesItems.map(i => `${i.label} £${i.gbp.toFixed(2)}`).join(' · ')}`
-        : 'Per-part consumable (core/wax/shell)',
+        : 'Per-part consumables (the commodity does not itemise them)',
       // set by the commodity's rules, not the material rate (casting 360 X36 printed "mat-gjs500" here)
       rateId: 'rules (per-part services)',
       confidence: 'Medium',

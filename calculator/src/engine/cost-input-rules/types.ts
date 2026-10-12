@@ -54,6 +54,9 @@ export interface DecisionOption<V = string> {
   /** The engine's hunch. Displayed, never preselected: preselecting a hunch is
    *  how a guess becomes a silent default. */
   leaning?: boolean;
+  /** The option the costing uses until the question is answered (an advisory default). The screen pre-selects THIS —
+   *  it pre-selected the leaning, which Apply then skipped, so 'C45' showed selected while 38MnVS6 was costed. */
+  costed?: boolean;
 }
 
 /**

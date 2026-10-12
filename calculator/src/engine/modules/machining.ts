@@ -97,7 +97,8 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
     materialUtilization: utilization,
     // Inserts, end mills and drills worn per good part — scrapped parts wear tools too.
     ...(inputs.toolWearCostPerPart && inputs.toolWearCostPerPart > 0
-      ? { consumablesCostPerPart: inputs.toolWearCostPerPart * rejectUplift } : {}),
+      ? { consumablesCostPerPart: inputs.toolWearCostPerPart * rejectUplift,
+          consumablesItems: [{ label: 'tool wear (inserts, end mills, drills)', gbp: inputs.toolWearCostPerPart * rejectUplift }] } : {}),
   };
 
   const setupPerPart = inputs.setup.setupTimeHr / inputs.setup.batchSize;

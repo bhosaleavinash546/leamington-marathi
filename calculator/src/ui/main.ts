@@ -392,7 +392,7 @@ interface CADDecision {
   kind: string;
   question: string;
   why: string;
-  options: Array<{ value: string; label: string; consequence?: string; leaning?: boolean }>;
+  options: Array<{ value: string; label: string; consequence?: string; leaning?: boolean; costed?: boolean }>;
   /** Present when the answer is a typed value rather than one of the options. */
   entry?: { kind: 'number' | 'text'; unit?: string; placeholder?: string };
   blockedFieldIds: string[];
@@ -6427,7 +6427,7 @@ function renderCADDecisionsPanel(): string {
   const decisionRow = (d: CADDecision, accent: string): string => `
     <div class="cad-decision" data-decision-id="${escHtml(d.id)}" style="margin-top:10px;padding-top:10px;border-top:1px solid ${accent}">
       <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">${escHtml(d.question)}</div>
-      <div style="font-size:0.7rem;color:var(--text-secondary);margin:3px 0 6px;line-height:1.5">${escHtml(d.why)}</div>
+      <div style="font-size:0.7rem;color:var(--text-secondary);margin:3px 0 6px;line-height:1.5">${escHtml(_inCurText(d.why))}</div>
       ${d.entry
         // Some answers are a figure, not a choice — an investment-casting
         // quotation, a gauge off a drawing. Rendering those as a radio group
@@ -6442,11 +6442,15 @@ function renderCADDecisionsPanel(): string {
            </label>`
         : d.options.map(o => `
         <label style="display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:0.72rem;cursor:pointer">
-          <input type="radio" name="dec-${escHtml(d.id)}" value="${escHtml(o.value)}" ${_cadDecisionAnswers[d.id] === o.value || (_cadDecisionAnswers[d.id] === undefined && o.leaning) ? 'checked' : ''} style="margin-top:2px"/>
+          <input type="radio" name="dec-${escHtml(d.id)}" value="${escHtml(o.value)}" ${_cadDecisionAnswers[d.id] === o.value || (_cadDecisionAnswers[d.id] === undefined && (d.options.some(x => x.costed) ? o.costed : o.leaning)) ? 'checked' : ''} style="margin-top:2px"/>
           <span>
             <span style="font-weight:600;color:var(--text-primary)">${escHtml(o.label)}</span>
-            ${o.consequence ? `<span style="color:var(--text-muted)"> &mdash; ${escHtml(o.consequence)}</span>` : ''}
-            ${o.leaning ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above; confirm with Apply)</span>' : ''}
+            ${o.consequence ? `<span style="color:var(--text-muted)"> &mdash; ${escHtml(_inCurText(o.consequence))}</span>` : ''}
+            ${/* An advisory default is costed until answered; a suggestion is applied only when it is selected (an untouched
+                 advisory radio is skipped by Apply — it said "confirm with Apply" and was not applied). */ ''}
+            ${o.costed && !o.leaning && d.options.some(x => x.leaning) ? '<span style="color:var(--text-muted);font-style:italic"> (costed until you choose)</span>' : ''}
+            ${o.leaning && !o.costed && d.options.some(x => x.costed) ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above; select it and Apply to cost it)</span>' : ''}
+            ${o.leaning && (o.costed || !d.options.some(x => x.costed)) ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above)</span>' : ''}
           </span>
         </label>`).join('')}
     </div>`;

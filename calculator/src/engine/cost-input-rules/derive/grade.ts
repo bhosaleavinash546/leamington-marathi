@@ -229,6 +229,7 @@ export function gradeDecision(ctx: RuleContext, family: MaterialFamily, defaultI
       consequence: `£${m.pricePerKg.toFixed(2)}/kg · ${(cm3 * m.densityKgPerM3 / 1e6).toFixed(2)} kg`
         + (safety && BRITTLE_IRON.test(m.id) ? ' · brittle — not for a safety-critical part' : ''),
       leaning: m.id === lean,
+      costed: m.id === (ev?.source === 'declared' ? ev.id : defaultId),
     })),
     blockedFieldIds: [], blockedRuleIds: [], severity: 'advisory',
   };

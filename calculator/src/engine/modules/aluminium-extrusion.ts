@@ -131,7 +131,9 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
     materialId: i.materialId,
     netWeightKg: i.partWeightKg * up,
     materialUtilization: Math.min(1, i.partWeightKg / billetKg),
-    ...(consumables > 0 ? { consumablesCostPerPart: consumables } : {}),
+    ...(consumables > 0 ? { consumablesCostPerPart: consumables,
+      consumablesItems: ([['billet feed adder', feedAdder * up], ['die nitriding', nitride * up], ['finish consumables', finishCons * up],
+        ['fabrication tool wear', (i.fabConsumablesGbp ?? 0) * up]] as Array<[string, number]>).filter(([, v]) => v > 0).map(([label, gbp]) => ({ label, gbp })) } : {}),
     ...(gasKwh > 0 ? { energyKwh: { gas: gasKwh, basis: 'billet log heating, solution treatment and ageing furnaces' } } : {}),
   };
 

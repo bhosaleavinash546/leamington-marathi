@@ -249,11 +249,19 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     });
   if (finishing) operations.push(...finishing.operations);
   const totalConsumables = consumablesCostPerPart + (finishing?.consumablesPerPart ?? 0);
+  // Itemised, so the report says what the € are (the core's fallback label said "core/wax/shell" on a forging —
+  // Germany live review, Oct 2026).
+  const consumablesItems = ([
+    ['billet heating (typed tariff)', heatingCostPerPart], ['heat treatment', heatTreatCostPerPart], ['descale', descaleCostPerPart],
+    ['coining', inputs.coiningCostPerPart ?? 0], ['NDT', inputs.ndtCostPerPart ?? 0],
+    ['machining tool wear and cell consumables', inputs.secondaryMachiningConsumablesPerPart ?? 0],
+    ['surface finishing consumables', finishing?.consumablesPerPart ?? 0],
+  ] as Array<[string, number]>).filter(([, v]) => v > 0).map(([label, gbp]) => ({ label, gbp }));
 
   return {
     rawMaterial: {
       ...rawMaterial,
-      ...(totalConsumables > 0 ? { consumablesCostPerPart: totalConsumables } : {}),
+      ...(totalConsumables > 0 ? { consumablesCostPerPart: totalConsumables, consumablesItems } : {}),
       ...(heating.kwh ? { energyKwh: heating.kwh } : {}),
     },
     operations,

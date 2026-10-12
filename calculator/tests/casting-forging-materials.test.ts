@@ -2,6 +2,7 @@
  * Casting & forging materials review, Oct 2026 — one test per finding.
  * docs/cad/casting-forging-materials-review-2026-10.md has the findings and sources.
  */
+import { gradeDecision } from '../src/engine/cost-input-rules/derive/grade.js';
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
@@ -114,6 +115,15 @@ describe('4. the file\'s own words: declared designation applies, names only lea
     const c = { ...ctx(FLANGE, 'forging', FORGE_ANS), filename: 'hub flange 42CrMo4.stp' } as RuleContext;
     expect(gradeEvidence(c, gradeCandidates('forging', 'steel'))?.id).toBe('mat-steel-42crmo4');
     expect(explicitGrade(c, 'steel')).toBeNull();
+  });
+  it('the question marks the grade it COSTS: a name only leans (Germany live review — "C45" showed selected while 38MnVS6 was costed)', () => {
+    const c = { ...ctx(FLANGE, 'forging', FORGE_ANS), filename: 'hub flange C45.stp' } as RuleContext;
+    const d = gradeDecision(c, 'steel', 'mat-steel-38mnvs6')!;
+    expect(d.options.find(o => o.leaning)?.value).toBe('mat-steel-c45');
+    expect(d.options.filter(o => o.costed).map(o => o.value)).toEqual(['mat-steel-38mnvs6']);
+    // a DECLARED designation is costed, so it is both the leaning and the costed option
+    const decl = gradeDecision(ctx(FLANGE, 'forging', FORGE_ANS, ['C45']), 'steel', 'mat-steel-38mnvs6')!;
+    expect(decl.options.find(o => o.costed)?.value).toBe('mat-steel-c45');
   });
   it('the longest designation wins: "GJS-400-15" is not read as some other 400', () => {
     expect(gradeEvidence(ctx(BRACKET, 'cast_and_machine', CAST_ANS, ['GJS-400-15']), gradeCandidates('cast_and_machine', 'cast iron'))?.id).toBe('mat-gjs400');
