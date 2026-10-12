@@ -1,0 +1,175 @@
+{
+  "domain": "overhead-logistics-services",
+  "researched": "2026-10-12",
+  "items": [
+    {
+      "key": "overhead.DE.share",
+      "value": null,
+      "unit": "% of gross output (sonstige Kosten / Bruttoproduktionswert)",
+      "basis": "Not found. The Destatis Kostenstrukturerhebung im Verarbeitenden Gewerbe (Fachserie 4 Reihe 4.3 / GENESIS 42251) for WZ 29 / 29.3, 25 or 28 did not surface with figures in search: only the 2003–2014 Fachserie editions (statistischebibliothek.de) and Statista pointers to GENESIS 81000-0100 / 81000-0102 (gross output / value added, no cost split). destatis.de, www-genesis.destatis.de and statistischebibliothek.de could not be fetched from this environment (egress proxy denies CONNECT), so the table itself could not be read.",
+      "source": "https://www.statistischebibliothek.de/mir/servlets/MCRFileNodeServlet/DEHeft_derivate_00026884/2040430147004.pdf",
+      "date": "",
+      "notes": "Lead for the next round: GENESIS 42251-0002 (Kostenstruktur, Anteil am Bruttoproduktionswert, WZ08 3-digit) — read 'sonstige Kosten' for WZ08-293."
+    },
+    {
+      "key": "overhead.UK.share",
+      "value": null,
+      "unit": "% of gross output",
+      "basis": "Not searched to a result: ONS Annual Business Survey (purchases of goods, materials and services v. turnover, SIC 29.3) was not reached within the shared search budget; ons.gov.uk is not fetchable from this environment.",
+      "source": "https://www.ons.gov.uk",
+      "date": "",
+      "notes": "The ABS splits purchases differently from the Destatis cost types (no 'sonstige Kosten' line), so even both figures would need a mapping before a ratio is taken."
+    },
+    {
+      "key": "overhead.ratio",
+      "value": null,
+      "unit": "DE ÷ UK overhead share",
+      "basis": "NOT SUPPORTED — neither share was sourced, and the two surveys are not on a comparable basis without a cost-type mapping. Keep overheadMultiplier 1.10 labelled as an unresearched assumption.",
+      "source": "https://www.statistischebibliothek.de/mir/servlets/MCRFileNodeServlet/DEHeft_derivate_00026884/2040430147004.pdf",
+      "date": "2026-10-12",
+      "notes": ""
+    },
+    {
+      "key": "logistics.ftlPerKm.DE",
+      "value": 2.10,
+      "unit": "EUR/km (FTL, German domestic, spot, shipper-offered, Q2 2026 average)",
+      "basis": "TIMOCOM Transportbarometer Q2 2026 (press release on presseportal.de, TIMOCOM newsroom 50246): German domestic average rate offered by shippers €2.10/km (+13.4% y/y); carrier-requested €2.18/km (+10.5% y/y); Europe-wide shipper average €1.81/km. Cross-check, same publisher: May 2026 shippers offered €2.19/km (>+17% y/y), carriers' weekly peak €2.36/km (KW 20); Q2 2025 €1.86 offered / €1.97 requested. Converted at the book FX: €2.10 × 0.858 = £1.80/km.",
+      "source": "https://www.presseportal.de/pm/50246/6314709",
+      "date": "Q2 2026 (Apr–Jun 2026)",
+      "notes": "Freight-exchange platform data (offers and asks on the TIMOCOM spot market) — SPOT, not contract; spot is usually above contract in a fuel-driven quarter. B2B freight prices are quoted net; the release (snippet) does not state VAT explicitly. Read from search snippets only: presseportal.de is blocked from this environment. The publisher was inferred from the presseportal newsroom id that the TIMOCOM search returned; re-read on the page before it sets a rate."
+    },
+    {
+      "key": "logistics.ftlPerKm.DE_originLanes",
+      "value": 1.73,
+      "unit": "EUR/km (FTL contract, Duisburg–Prague, Q2 2026)",
+      "basis": "IRU / Upply / Ti European Road Freight Rate Benchmark Q2 2026 as reported by trans.info / transport-online: Duisburg–Prague €1.73/km, Duisburg–Lille €2.58/km (contract). German domestic contract index 158.3 in June 2026 (+11.6 points q/q); German domestic spot +10.2 points q/q and the strongest y/y spot rise of the four domestic markets covered. The index is not convertible to €/km from the snippets.",
+      "source": "https://trans.info/de/deutschland-frachtraten-steigen-trotz-schwacher-transportnachfrage-495956",
+      "date": "Q2 2026",
+      "notes": "Benchmark (survey of contract rates), snippets only (trans.info and ti-insight.com are blocked here). DE-origin cross-border lanes, not German domestic; reference only. Second source for the lanes: https://transport-online.de/en/news/iru-analysis-europe-s-freight-rates-are-likely-rise-significantly-again-188397.html"
+    },
+    {
+      "key": "logistics.ftlPerKm.UK",
+      "value": null,
+      "unit": "EUR/km",
+      "basis": "Not found — no 2026 UK domestic FTL €/km or £/mile rate was found within the budget (RHA cost tables and Logistics UK cost guides are paywalled; the Ti benchmark's UK-touching lane is cross-Channel).",
+      "source": "https://trans.info/en/june-freight-paradox-495918",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "logistics.toll.DE",
+      "value": 0.348,
+      "unit": "EUR/km (Lkw-Maut, > 18 t, ≥ 5 axles, Euro VI, CO2 emission class 1; total of infrastructure + air pollution + noise + CO2 part-rates)",
+      "basis": "Toll Collect tariff table as reproduced by autobahn-baustellen.de: 34.8 ct/km for Euro 6, CO2 class 1, > 18 t, 5+ axles ('Gesamtmautsatz inkl. aller Teilsätze'); 32.4 ct/km 4 axles; 30.3 ct/km up to 3 axles; table 'gültig seit 01.07.2024', stated valid for 2026. The CO2 part-rate for this class is 15.8 ct/km (BGL statement table, from the 2023 draft that became BFStrMG Anlage 1, BGBl. 2023 I Nr. 315; CO2 charge at €200/t CO2 since 1 Dec 2023). 0.348 × 0.858 = £0.299/km.",
+      "source": "https://www.autobahn-baustellen.de/lkw-maut-rechner/",
+      "date": "rates in force since 2024-07-01; no change for 2026 found",
+      "notes": "Statute (BFStrMG Anlage 1, https://www.gesetze-im-internet.de/bfstrmg/anlage_1.html — last amended 23 Feb 2026 per lxgesetze.de header) read via a secondary site: gesetze-im-internet.de and toll-collect.de are blocked here, so the statutory table itself was not read. A second secondary table (bussgeldrechner.org) gives 34.0 ct/km for the same class — the CO2 class it assumes is unclear. A public charge, no VAT. Applies on Autobahnen and Bundesstraßen; trucks > 3.5 t since 1 Jul 2024. A Euro VI truck in a better CO2 class (2–5) pays less."
+    },
+    {
+      "key": "logistics.ratio",
+      "value": null,
+      "unit": "DE ÷ UK logistics £/part",
+      "basis": "NOT SUPPORTED — no UK domestic per-km rate was sourced. Directional evidence only: German domestic spot €2.10/km (£1.80/km) includes a distance toll of €0.348/km (17% of the rate) that a UK domestic haul does not pay per km. Keep logisticsMultiplier 1.15 labelled as an unresearched assumption.",
+      "source": "https://www.presseportal.de/pm/50246/6314709",
+      "date": "2026-10-12 (derived)",
+      "notes": "0.348 ÷ 2.10 = 0.166."
+    },
+    {
+      "key": "packaging.epalPallet.DE",
+      "value": 12.21,
+      "unit": "EUR/pallet (new EPAL EUR-1 1200×800, DACH)",
+      "basis": "Tacto material-price page, citing the PalettenReport / HPE solid-wood index: new EUR-1 pallet DACH ≈ €12.21 (Aug 2026, EN page); €12.17 on the German page dated 06.07.2026; €11.80 in early May 2026. HPE wood index rebased Jan 2026 = 100, ~102.5 at the time. Used pallets €3–5 below new. 12.21 × 0.858 = £10.48.",
+      "source": "https://www.tacto.ai/de/materialpreise/palettenpreis",
+      "date": "2026-07-06 (DE page) / 2026-08 (EN page, https://www.tacto.ai/en/material-prices/pallet-price)",
+      "notes": "Price-index summary by a procurement-software vendor (secondary to PalettenReport / HPE). VAT basis not stated in the snippet — a B2B index price, presumed net. EPAL publishes no list price. Read from search snippets (tacto.ai blocked here)."
+    },
+    {
+      "key": "packaging.containerboard.DE",
+      "value": 505,
+      "unit": "EUR/tonne (testliner 2, recycled, Germany, Q1 2026, midpoint)",
+      "basis": "industrie-fachwissen.de article dated 1 Feb 2026: testliner 2 €480–530/t, ~-5% y/y; testliner and fluting stabilised in Q4 2025, 15–25% above 2018–2020 levels. Midpoint (480 + 530) / 2 = 505. 505 × 0.858 = £433/t.",
+      "source": "https://industrie-fachwissen.de/verpackung/wellpappe-preise-entwicklung-2026",
+      "date": "2026-02-01",
+      "notes": "LOW confidence: trade-explainer site with no stated attribution — not a price agency. The Fastmarkets German series exist (testliner 2 140 g free del. Germany FP-CTB-0017, testliner 3 FP-CTB-0021, unbleached kraftliner 150 g FP-CTB-0041, 175 g+ FP-CTB-0007) and EUWID surveys monthly, but no values were public in snippets. SCA announced a €100/t kraftliner increase from 1 Sep 2026 (market not stated): https://www.inderes.se/en/releases/sca-to-increase-kraftliner-prices-by-euro100-per-tonne . No German kraftliner value found."
+    },
+    {
+      "key": "packaging.ratio",
+      "value": null,
+      "unit": "DE ÷ UK packaging £/part",
+      "basis": "NOT SUPPORTED — no UK pallet or containerboard price was found. Pallets and containerboard trade across Europe at € prices, so a DE/UK ratio near 1.0 is plausible, but that is not a sourced figure. Keep packagingMultiplier 1.05 labelled as an unresearched assumption.",
+      "source": "https://www.tacto.ai/de/materialpreise/palettenpreis",
+      "date": "2026-10-12",
+      "notes": ""
+    },
+    {
+      "key": "services.heatTreat.quenchTemperPerKg",
+      "value": null,
+      "unit": "EUR/kg",
+      "basis": "Not found — German Lohnhärtereien (Härterei Reese, Härtecenter, Reintjes, Rübig terminplan, DEW Lohnarbeiten Hagen) publish capabilities and order requirements but no €/kg prices; no VDI/AWT price figure surfaced.",
+      "source": "https://swisssteel-group.com/content-media/documents/DEW-Lohnarbeiten_Hagen.pdf",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "services.heatTreat.carburisePerKg",
+      "value": null,
+      "unit": "EUR/kg",
+      "basis": "Not found (as above).",
+      "source": "https://reintjes-gears.de/wp-content/uploads/2025/03/Waermebehandlung-Flyer_web_0.pdf",
+      "date": "",
+      "notes": ""
+    },
+    {
+      "key": "services.galvanisePerKg",
+      "value": null,
+      "unit": "EUR/kg ex-VAT",
+      "basis": "Not found from a job shop's list. The Coatinc price lists (Rhein-Main Sept 2025, Bochum Oct 2025, Siegen Jan 2023 — all net + VAT) give surcharges as % of the galvanising price and minimum invoices (normal-temperature galvanising: €75 Rhein-Main, €120 Bochum) but the base €/kg did not appear in any snippet. Reference only (excluded as a price — commercial guide, not a galvaniser or trade association): clean-invoice.com 2026 guide gives Feuerverzinken €0.95–2.30/kg incl. VAT → ÷ 1.19 = €0.80–1.93/kg ex-VAT.",
+      "source": "https://www.coatinc.com/wp-content/uploads/2025/10/preisliste-cbo_oktober-2025_2.pdf",
+      "date": "2025-10",
+      "notes": "Cost driver: fine zinc in Germany €3,455/t in July 2026, ~+31% y/y (drweb.de), passed on by galvanisers as a Materialteuerungszuschlag: https://www.drweb.de/zink/ . Rhein-Main list also gives fettling (Feinverputzen) €0.66/kg railings, €0.33/kg steel structures."
+    },
+    {
+      "key": "services.powderCoatPerM2",
+      "value": 55.00,
+      "unit": "EUR/m² ex-VAT (standard RAL, smooth silk-gloss, railing/fabrication goods, job shop list)",
+      "basis": "COATINC Bochum service price list, Stand October 2025, 'alle Preise netto zzgl. MwSt.': RAL powder coating of Geländerware €55.00/m²; +€4.00/m² for DB tones, metallic / micaceous iron oxide; minimum invoice €150; packing surcharge 8% of the coating price. Earlier lists (for trend): COATINC Rhein-Main Jul 2022 €31.20/m², COATINC Siegen Jan 2023 €32.95/m². 55.00 × 0.858 = £47.19/m².",
+      "source": "https://www.coatinc.com/wp-content/uploads/2025/10/preisliste-cbo_oktober-2025_2.pdf",
+      "date": "2025-10 (no 2026 list found; latest published)",
+      "notes": "Company published price list (job shop, NRW cluster). Architectural / small-lot steelwork price, NOT an automotive volume line — an upper bound for a volume part. Read from search snippets (coatinc.com blocked here); the 2022/2023 figures are from https://www.coatinc.com/wp-content/uploads/2022/08/220805_crh_preisliste_v02.pdf and https://www.coatinc.com/de/012023_csi_preisliste_final ."
+    },
+    {
+      "key": "services.anodisePerM2",
+      "value": null,
+      "unit": "EUR/m² ex-VAT",
+      "basis": "Not found from a German anodiser's published list. Reference only (excluded — commercial guide): clean-invoice.com 2026 'Galvanik Kosten' gives natural anodising €36–60/m² incl. VAT (÷ 1.19 = €30.3–50.4 ex-VAT) and coloured €48–95/m², plus a 3–5% environmental surcharge.",
+      "source": "https://www.clean-invoice.com/galvanik/kosten-und-kalkulation-galvanik",
+      "date": "2026",
+      "notes": "Not used as a value per RULES.md (not a job shop list or trade association)."
+    },
+    {
+      "key": "services.blast",
+      "value": 3.90,
+      "unit": "EUR/kg ex-VAT (sandblasting, job shop)",
+      "basis": "COATINC Rhein-Main (Groß-Rohrheim, Hesse) service price list, Stand September 2025, net + VAT: Sandstrahlen €3.90/kg. COATINC Bochum (Oct 2025) and Siegen (Jan 2023) list blasting 'auf Anfrage / nach Aufwand'. 3.90 × 0.858 = £3.35/kg.",
+      "source": "https://www.coatinc.com/wp-content/uploads/2025/09/230406_crh_preisliste_v03_september2025.pdf",
+      "date": "2025-09 (no 2026 list found)",
+      "notes": "Company published price list — small-lot sandblasting of steelwork prior to coating, not automated shot blasting of castings / forgings (which is far cheaper per kg in volume). Site is in Hesse (Rhine-Main), not one of the four clusters. Read from search snippets."
+    },
+    {
+      "key": "services.ndt.mpiPerPart",
+      "value": null,
+      "unit": "EUR/part or EUR/h",
+      "basis": "Not found — only MT training fees surfaced (SLV Duisburg MT1/2 course €1,805 + TÜV Nord exam €827.05, 2018), which are not inspection service rates; excluded.",
+      "source": "https://www.slv-duisburg.de/fileadmin/diva/118745907/2018_web_MT.pdf",
+      "date": "",
+      "notes": ""
+    }
+  ],
+  "notes": [
+    "Environment: every target host (destatis.de, genesis, statistischebibliothek.de, ons.gov.uk, toll-collect.de, gesetze-im-internet.de, presseportal.de, tacto.ai, coatinc.com, ec.europa.eu) was denied by the egress proxy (CONNECT 403), so every figure was read from search-result snippets, not from the page. Treat as 'reported by' and re-read on the page before it sets a rate.",
+    "FX per RULES.md: €1 = £0.858; German VAT 19% removed where a source was gross.",
+    "None of the three multipliers (overhead 1.10, packaging 1.05, logistics 1.15) can be confirmed or refuted from sourced figures: no comparable UK figure was found for any of them.",
+    "Service prices found are small-lot job-shop list prices (COATINC, NRW/Hesse, 2025 lists): powder coat €55.00/m², sandblast €3.90/kg — upper bounds for automotive volume work. Heat treatment, galvanising (€/kg base), anodising and MPI were not found from an admissible source.",
+    "27 web searches used."
+  ]
+}
