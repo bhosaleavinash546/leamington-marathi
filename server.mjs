@@ -787,6 +787,9 @@ seedMarketplaceIdeasFromFile('marketplace-mhev-48v-deep-ideas.json', '48 V MHEV 
 // 2023-2026 benchmark and its source, a cost bridge that nets to the stated saving
 // and a reconciled payback; engineering-reviewed before seeding.
 seedMarketplaceIdeasFromFile('marketplace-interior-exterior-biw-chassis-ideas.json', 'Interior/Exterior/BIW/Chassis researched ideas');
+// Off-Road Features commodity (DECISIONS 127): researched off-road ideas for the
+// luxury off-road SUV, filed by ideaData.commodity; engineering-reviewed.
+seedMarketplaceIdeasFromFile('marketplace-offroad-features-ideas.json', 'Off-Road Features researched ideas');
 
 // Retired ideas: removed from their pack after review (impossible physics, a
 // negative saving, or not feasible as described). The seeder only inserts and
