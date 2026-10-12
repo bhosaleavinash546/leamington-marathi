@@ -7,6 +7,7 @@
  * nothing. These tests pin it running first, and pin the two constants it
  * replaces: a flat 0.90 yield and a flat 20,000 die life.
  */
+import { coldSlugDiameterMm, COLD_FORMER_MAX_SLUG_MM } from '../src/engine/modules/forging-advisor.js';
 import { describe, it, expect } from 'vitest';
 import { runCostInputRules, renderCommodityRulesPrompt } from '../src/engine/cost-input-rules/engine.js';
 import {
@@ -148,8 +149,10 @@ describe('the forging die-life fix', () => {
   it('predicts life from the alloy instead of a flat 20,000', () => {
     const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
     const f = r.suggestions.forging as Record<string, number>;
+    // Grade unanswered → the REPRESENTATIVE steel the costing prices (38MnVS6, microalloyed) sets the alloy too
+    // (Germany live review: the route was chosen for carbon steel while 38MnVS6 was costed).
     expect(f.dieLife).toBe(estimateForgingDieLife({
-      alloyFamily: 'carbon-steel', projectedAreaCm2: AXLE_SILHOUETTE_CM2, complexity: 'moderate',
+      alloyFamily: 'microalloyed-steel', projectedAreaCm2: AXLE_SILHOUETTE_CM2, complexity: 'moderate',
     }));
     expect(f.dieLife).toBeGreaterThan(20_000);   // the flat prompt figure over-charged tooling
   });
@@ -296,17 +299,25 @@ describe('press, die and secondary ops', () => {
     const hot = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
     expect((hot.suggestions.forging as Record<string, number>).heatingEnergyKwhPerKg).toBe(0.35);
 
-    // A small high-volume steel part goes cold-formed — no furnace at all.
+    // A small high-volume CARBON-steel part whose slug fits a cold former (≤ Ø50 mm) goes cold-formed — no furnace.
     const smallPart = {
-      ...STUB_AXLE, volume: { mm3: 250_000, cm3: 250 },
-      boundingBox: { xMm: 90, yMm: 60, zMm: 50 },
+      ...STUB_AXLE, volume: { mm3: 100_000, cm3: 100 },
+      boundingBox: { xMm: 60, yMm: 50, zMm: 40 },
     } as unknown as OCCTGeometry;
-    const cold = runCostInputRules(FORGING_RULES, ctx(smallPart, STEEL_ANSWERED));
+    const cold = runCostInputRules(FORGING_RULES, ctx(smallPart, { ...STEEL_ANSWERED, 'material.grade': 'mat-steel-c45' }));
     const f = cold.suggestions.forging as Record<string, number | string>;
     expect(f.process).toBe('cold-forming');
     expect(f.heatingEnergyKwhPerKg).toBe(0);
     expect(f.descaleCostPerKg).toBe(0);
     expect(f.flashAndScaleKg).toBe(0);
+  });
+
+  it('a slug no cold former takes is forged hot, whatever the grade (a Ø140 × 2.3 kg C45 flange was cold-formed on a "500 t" press)', () => {
+    expect(coldSlugDiameterMm(2.33, 'carbon-steel')).toBeGreaterThan(COLD_FORMER_MAX_SLUG_MM);
+    expect(coldSlugDiameterMm(0.78, 'carbon-steel')).toBeLessThan(COLD_FORMER_MAX_SLUG_MM);
+    const bigPart = { ...STUB_AXLE, volume: { mm3: 300_000, cm3: 300 }, boundingBox: { xMm: 140, yMm: 140, zMm: 50 } } as unknown as OCCTGeometry;
+    const hot = runCostInputRules(FORGING_RULES, ctx(bigPart, { ...STEEL_ANSWERED, 'material.grade': 'mat-steel-c45' }));
+    expect((hot.suggestions.forging as Record<string, string>).process).not.toBe('cold-forming');
   });
 });
 

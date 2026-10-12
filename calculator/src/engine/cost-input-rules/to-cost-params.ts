@@ -221,7 +221,7 @@ function secondaryMachining(
  * Composites: fibre + resin priced per kg by the rules, so there is no single
  * grade to resolve — handled before the material check that would refuse it.
  */
-function compositesParams(ci: CostInputs, annualVolume: number, assumed: string[], D: typeof SHOP_DEFAULTS, commodity: string): ToCostParamsResult | null {
+function compositesParams(ci: CostInputs, amortVolume: number, assumed: string[], D: typeof SHOP_DEFAULTS, commodity: string): ToCostParamsResult | null {
   const c = ci.composites;
   if (!c || c.fibrePricePerKg == null || c.layupTimeHrPerPart == null || !c.cureMachineId) return null;
   return {
@@ -251,7 +251,7 @@ function compositesParams(ci: CostInputs, annualVolume: number, assumed: string[
       rejectRate: num(c.rejectRate, D.rejectRate),
       toolingCost: num(c.toolCostGBP),
       toolingLife: num(c.toolLife),
-      amortizationVolume: annualVolume,
+      amortizationVolume: amortVolume,
       toolsInService: num(c.toolsInService, 1),
     },
   };
@@ -273,7 +273,11 @@ export function toCostParams(
   annualVolume: number = SHOP_DEFAULTS.annualVolume,
   familyHint?: MaterialFamily | null,
   geo?: OCCTGeometry,
+  /** Programme life, years — tooling amortises over annual × years, exactly as CAD Apply writes the form's amort
+   *  field (the screen used 500,000 on a 5-year programme while headless amortised over one year — Germany review). */
+  programmeYears?: number,
 ): ToCostParamsResult | null {
+  const amortVolume = annualVolume * (programmeYears && programmeYears > 0 ? programmeYears : 1);
   const assumed: string[] = [];
   const D = SHOP_DEFAULTS;
   const labourId = LABOUR[commodity] ?? 'lab-uk-skilled';
@@ -294,7 +298,7 @@ export function toCostParams(
       section: { areaMm2: num(e.areaMm2), perimeterMm: num(e.perimeterMm), ccdMm: num(e.ccdMm), voids: Math.round(Number(e.voids) || 0),
         minWallMm: num(e.minWallMm), partLengthMm: num(e.partLengthMm),
         ...(num(e.tongueRatio) ? { tongueRatio: num(e.tongueRatio) } : {}) },
-      partWeightKg: num(e.partWeightKg) || num(ci.netWeightKg), annualVolume,
+      partWeightKg: num(e.partWeightKg) || num(ci.netWeightKg), annualVolume, amortizationVolume: amortVolume,
       temper: (e.temper ?? 'T6') as AlTemper, finish: (e.finish ?? 'mill') as AlFinish, finishAreaM2: num(e.finishAreaM2),
       ...(num(e.finishOutsideAreaM2) ? { finishOutsideAreaM2: num(e.finishOutsideAreaM2) } : {}),
       bends: Math.round(Number(e.bends) || 0), cncMinutes: Number(e.cncMinutes) || 0, cncFixturings: Math.round(Number(e.cncFixturings) || 0),
@@ -308,7 +312,7 @@ export function toCostParams(
         logisticsPerPart: estimateLogisticsPerPart(build.inputs.partWeightKg, v) } : {}) };
   }
   if (commodity === 'composites') {
-    const r = compositesParams(ci, annualVolume, assumed, D, commodity);
+    const r = compositesParams(ci, amortVolume, assumed, D, commodity);
     const bb0 = geo?.boundingBox;
     if (!r || !bb0) return r;
     const v = (bb0.xMm * bb0.yMm * bb0.zMm) / 1000;
@@ -323,7 +327,7 @@ export function toCostParams(
   const shop = {
     labourId, oee: FORM_EFFICIENCY_DEFAULTS[commodity]?.oee ?? D.oee, manning: D.manning,
     labourEfficiency: FORM_EFFICIENCY_DEFAULTS[commodity]?.labourEfficiency ?? D.labourEfficiency, rejectRate: D.rejectRate,
-    amortizationVolume: annualVolume,
+    amortizationVolume: amortVolume,
   };
 
   // Packaging scales with the shipping envelope — a 1.7 m bumper is not a 3 g
@@ -520,7 +524,7 @@ export function toCostParams(
           machiningToolingCost: num(mach?.toolingCost),
           machiningProgrammingNRE: num(mach?.programmingNRE),
           ...(num(mach?.toolWearCostPerPart) > 0 ? { machiningToolWearCostPerPart: num(mach!.toolWearCostPerPart) } : {}),
-          amortizationVolume: annualVolume,
+          amortizationVolume: amortVolume,
         },
       };
     }
@@ -548,7 +552,7 @@ export function toCostParams(
         netWeightKg: num(ci.netWeightKg),
         materialId,
         annualVolume,
-        amortizationVolume: annualVolume,
+        amortizationVolume: amortVolume,
         batchSize: num(g.batchSize, standardBatchSize(annualVolume)),
         // No labourId: passing the commodity default PINNED every operation to
         // a skilled machinist, overriding the module's per-process labour
@@ -704,7 +708,7 @@ export function toCostParams(
           programmingNRE: num(mach?.programmingNRE),
           toolingCost: num(mach?.toolingCost),
           ...(num(mach?.toolWearCostPerPart) > 0 ? { toolWearCostPerPart: num(mach!.toolWearCostPerPart) } : {}),
-          amortizationVolume: annualVolume,
+          amortizationVolume: amortVolume,
         },
       };
     }
@@ -794,7 +798,7 @@ export function toCostParams(
             oee: D.oee, manning: 1, labourEfficiency: D.labourEfficiency,
             rejectRate: s.fabRejectRate !== undefined ? num(s.fabRejectRate) : D.rejectRate,
             toolingCost: num(s.fabToolingGBP, Math.round(1500 * countryFactor('engineer'))),   // programming + first-off, UK £1,500
-            amortizationVolume: annualVolume,
+            amortizationVolume: amortVolume,
             ...hardware,
           },
         };

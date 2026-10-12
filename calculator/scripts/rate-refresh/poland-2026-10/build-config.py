@@ -215,7 +215,8 @@ machines = {
     'ukRentGbpPerM2Yr': 110,
     'capitalHeldFactor': 0.72,
     'groups': [
-        {'id': 'cnc-vmc-eu', 'match': '^(mach-vmc3|mach-haas-vf2|mach-drill)$', 'refId': 'mach-vmc3', 'refCapexLocal': v('capex.mach-vmc3'),
+        # the Haas EU list IS the VF-2's own price (it sat on the generic VMC and the VF-2 was scaled to 69% of it — Germany live review)
+        {'id': 'cnc-vmc-eu', 'match': '^(mach-vmc3|mach-haas-vf2|mach-drill)$', 'refId': 'mach-haas-vf2', 'refCapexLocal': v('capex.mach-vmc3'),
          'basis': 'Haas VF-2SSYT-EU list €64,995 on Haas\'s Polish site = zł284,288 (machine only; delivery, installation and tooling not included); US list $70,995 = zł273,260 agrees — an imported machine costs Poland what it costs the EU',
          'source': R['capex.mach-vmc3']['source'], 'confidence': 'Medium'},
         {'id': 'cnc-5axis-eu', 'match': '^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$', 'refId': 'mach-vmc5', 'refCapexLocal': v('capex.mach-vmc5'),

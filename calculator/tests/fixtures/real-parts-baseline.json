@@ -11801,7 +11801,7 @@
         "rawMaterial": 9.34,
         "process": 4.8,
         "labour": 5.71,
-        "tooling": 0.61,
+        "tooling": 0.62,
         "packaging": 0.14,
         "logistics": 0.23,
         "overhead": 2.46,
@@ -12166,16 +12166,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 18.26,
+      "total": 18.48,
       "breakdown": {
         "rawMaterial": 7.55,
-        "process": 2.97,
+        "process": 3.13,
         "labour": 3.55,
-        "tooling": 0.61,
+        "tooling": 0.63,
         "packaging": 0.17,
         "logistics": 0.3,
-        "overhead": 1.76,
-        "margin": 1.35
+        "overhead": 1.78,
+        "margin": 1.37
       }
     }
   },
@@ -23824,12 +23824,12 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 25.34,
+      "total": 25.4,
       "breakdown": {
         "rawMaterial": 11.19,
         "process": 3.87,
         "labour": 4.44,
-        "tooling": 0.97,
+        "tooling": 1.01,
         "packaging": 0.19,
         "logistics": 0.34,
         "overhead": 2.46,

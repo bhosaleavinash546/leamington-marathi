@@ -161,6 +161,8 @@ export interface BulkRunRecord {
 }
 
 export interface BulkRunOptions {
+  /** Programme life, years: tooling amortises over annual × years, as CAD Apply writes the form (blank → one year). */
+  programmeYears?: number;
   /**
    * Cost on these rates instead of the built-in UK book.
    *
@@ -298,6 +300,7 @@ export async function costMeasuredPart(
   const ctxFor = (commodity: string): RuleContext => ({
     geo, geometryQuality: 'occt', commodity, commoditySource: 'engineer',
     annualVolume, filename: name, answers, rates: book,
+    ...(opts.programmeYears && opts.programmeYears > 0 ? { programmeYears: opts.programmeYears } : {}),
   } as RuleContext);
 
   const geometry = {
@@ -357,7 +360,7 @@ export async function costMeasuredPart(
   }
 
   const mapped = withRates(book, () => toCostParams(commodity!, analysis.costInputSuggestions, annualVolume,
-                              materialFacts(ctx).family, geo));
+                              materialFacts(ctx).family, geo, opts.programmeYears));
   if (!mapped) {
     // Warnings ride along even here: a part that was acknowledged past a
     // blocking check and then failed for another reason must still show that

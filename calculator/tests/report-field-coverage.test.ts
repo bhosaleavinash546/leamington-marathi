@@ -63,7 +63,7 @@ describe('result.warnings', () => {
       ...BASE,
       operations: [{ ...BASE.operations[0], partsPerCycle: 4 }],
     }, DEFAULT_RATE_LIBRARY);
-    expect(multiCavity.warnings!.some(w => /multi-cavity/i.test(w))).toBe(true);
+    expect(multiCavity.warnings!.some(w => /parts a cycle/i.test(w))).toBe(true);   // commodity-neutral wording (Germany review)
   });
 
   it('stays undefined on a clean costing — no noise', () => {

@@ -170,7 +170,7 @@
    {
     "id": "cnc-vmc-eu",
     "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
-    "refId": "mach-vmc3",
+    "refId": "mach-haas-vf2",
     "refCapexLocal": 64995,
     "basis": "Haas VF-2SSYT-EU EU-series list €64,995 (one EUR price across the EU; machine only — delivery, installation and tooling not included)",
     "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu",

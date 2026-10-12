@@ -149,7 +149,9 @@ describe('9. holes: through means open at both ends; clearance holes are not rea
 describe('10. the hub flange reconciles by hand', () => {
   // £31.76 by the hand reconciliation on the 2026-09 shop-rate machine book; the UK rate book (Oct 2026) prices the
   // secondary machining machine-only.
-  it('£18.26 at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(18.26);
+  // Germany live review (Oct 2026): the route and die life now follow the COSTED grade (the representative 38MnVS6 —
+  // microalloyed, shorter die life than plain carbon steel): +£0.16 process, +£0.02 tooling.
+  it('£18.48 at 50,000/yr', () => {
+    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(18.48);
   });
 });

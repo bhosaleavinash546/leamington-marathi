@@ -74,7 +74,7 @@ export function renderAlExtrusionForm(): string {
       ${f('alx-finish-area', 'Whole surface (m²)', '0.1', 'Every surface, chambers included — what anodising and e-coat treat.')}
       ${f('alx-finish-out', 'Outside surface (m²)', '0', 'Outer outline × length — what powder coats. 0 = use the whole surface.')}
       ${f('alx-impact-dia', 'Cup Ø (mm, impact)', '0', 'Impact extrusion only: outer diameter.')}
-      ${f('alx-amort', 'Annual volume', '50000', 'Parts a year — dies are amortised over it.', '1000')}
+      ${f('alx-amort', 'Parts the dies are amortised over', '50000', 'Annual volume × programme years (CAD Apply writes it). Runs and die changes follow the page\'s annual volume.', '1000')}
     </div>
     <div id="alx-plan" class="process-info-band" style="margin-top:8px;padding:6px 10px;border-left:3px solid var(--accent);border-radius:4px;font-size:0.8em;line-height:1.45"></div>`;
 }
@@ -95,7 +95,10 @@ export function buildFromForm(r: AlFormReader, annualVolumeFallback: number): Al
       voids: Math.round(r.num('alx-voids')), minWallMm: r.num('alx-wall'), partLengthMm: r.num('alx-length'),
       ...(r.num('alx-tongue') > 0 ? { tongueRatio: r.num('alx-tongue') } : {}) },
     partWeightKg: r.num('alx-part-wt'),
-    annualVolume: r.num('alx-amort') || annualVolumeFallback,
+    // The page's annual volume sets runs and die changes a YEAR; this field amortises the dies (it held annual × years
+    // and was read as the annual volume — die changes were spread over five years; Germany live review).
+    annualVolume: annualVolumeFallback || r.num('alx-amort'),
+    amortizationVolume: r.num('alx-amort') || annualVolumeFallback,
     temper: (r.sel('alx-temper') || AL_ALLOYS[alloy].defaultTemper) as AlTemper,
     finish: (r.sel('alx-finish') || 'mill') as AlFinish, finishAreaM2: r.num('alx-finish-area'),
     ...(r.num('alx-finish-out') > 0 ? { finishOutsideAreaM2: r.num('alx-finish-out') } : {}),

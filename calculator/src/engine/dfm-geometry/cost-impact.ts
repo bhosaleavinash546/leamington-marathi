@@ -171,7 +171,7 @@ export const NOT_MODELLED: Record<string, string> = {
   'machining.setup.access-directions':
     'The costing prices its OWN fixturing count from its routing (the "Load / clamp / unload" line and the fixture '
     + 'NRE). This finding states the directions the measured features are reached from; compare the two on the cost '
-    + 'sheet. It carried a separate £ at reference rates that disagreed with the costing\u2019s count.',
+    + 'sheet.',
   'machining.hole.non-preferred-diameter':
     'Moving to the nearest stock size still leaves a distinct size, so the costing\u2019s tool count does not change '
     + 'unless the new size is one the part already uses — that is a hole-size consolidation, a finding of its own when '

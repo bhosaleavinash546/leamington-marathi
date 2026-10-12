@@ -215,8 +215,13 @@ const FIVE_AXIS_ID = /vmc5|umc|dmu|5[\s-]?ax/i;
 /** The real machining operations behind an operation list — synthetic entries
  *  (the amortised-setup pseudo-op, the casting pour) excluded. */
 export function realMachiningOps(input: UniversalStackInput): UniversalStackInput['operations'] {
-  return (input.operations ?? []).filter(o => !SYNTHETIC_OP.test(o.operationName ?? ''));
+  // CUTTING operations only: an extrusion's press, ageing oven, saw and pack bench, and the load / clamp / deburr rows,
+  // were counted as "7 machining operations across 5 stations" (Germany live review, Oct 2026).
+  return (input.operations ?? []).filter(o => !SYNTHETIC_OP.test(o.operationName ?? '')
+    && CUTTING_OP.test(o.operationName ?? '') && !HANDLING_OP.test(o.operationName ?? ''));
 }
+const CUTTING_OP = /mill|drill|turn|bor(e|ing)|tap|ream|grind|machin|fabrication|face|hob|shap/i;
+const HANDLING_OP = /load|clamp|unload|deburr|gauge|inspect|pack|change-over|set-?up/i;
 
 /** The REAL machining stations behind an operation list: synthetic ops
  *  excluded, distinct machines counted, consolidation recognised. */
@@ -232,7 +237,9 @@ export function realMachiningStations(input: UniversalStackInput): {
     fiveAxis,
     // Consolidated means FEW STATIONS — owning a 5-axis machine somewhere in a
     // five-station routing (the real stub axle) is not consolidation.
-    consolidated: ids.size <= 2,
+    // one station, or a multi-axis machine with at most one helper — a 3-axis mill + a drill on four fixturings is a
+    // SPLIT routing whatever its station count (it was told "consolidation already assumed"; Germany review).
+    consolidated: ids.size <= 1 || (fiveAxis && ids.size <= 2),
   };
 }
 
@@ -574,11 +581,12 @@ export function generateInsights(
       impact: 'High',
       potentialSavingPct: Math.min(20, saving * 0.7),
       actions: [
-        ...pick.map(c => `${REGIONAL_DATA[c].name}: a quick index of ~${cut(c)}% lower conversion than ${REGIONAL_DATA[here].name} `
-          + '(½ labour + ½ machine-hour ratio) — an index, not a costing'),
         // the regional comparison re-costs the part in each country; this index disagreed with it on a Poland report
-        // ("India ~62% below" beside a table that showed 79%) — the table is the figure (live review, 10 Oct 2026)
+        // ("India ~62% below" beside a table that showed 79%) — the table is the figure (live review, 10 Oct 2026). FIRST:
+        // the PDF prints two actions, and the pointer was the third (Germany review: "India ~85%" beside a table at 89%).
         'For the figure, use the regional comparison table: it re-costs this part in each country (rates, materials, energy, tools and logistics)',
+        ...pick.map(c => `${REGIONAL_DATA[c].name}: a quick index of ~${cut(c)}% lower conversion than ${REGIONAL_DATA[here].name} `
+          + '(½ labour + ½ machine-hour ratio) — an index, not a costing; the table above is the figure'),
         'Offset: logistics, quality risk, IP protection, lead time, and working capital',
         'Recommend pilot batch from 2 alternative regions before full transition',
       ],

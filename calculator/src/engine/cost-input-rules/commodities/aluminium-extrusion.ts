@@ -20,6 +20,7 @@
  * is not drilled) at the drilling feed, and any volume machined away (section ×
  * length − volume) at aluminium's removal rate, in the machining review's cell.
  */
+import { amortisationParts } from './injection-moulding.js';
 import { AL_ALLOYS, AL_ALLOY_LIST, AL_DOWNSTREAM, type AlAlloy, type AlExtrusionRoute, type AlFinish } from '../../al-extrusion-data.js';
 import { COMMODITY_DECISION_ID } from '../derive/commodity.js';
 import { buildAlExtrusionInputs, temperNeeds, type AlExtrusionSpec, type AlTemper, type AlExtrusionBuild } from '../../modules/aluminium-extrusion.js';
@@ -233,7 +234,7 @@ function advise(ctx: RuleContext): { advice: AlAdvice } | { blocked: RuleOutcome
       minWallMm: section.minWallMm, partLengthMm: section.lengthMm,
       ...(section.tongueRatio != null ? { tongueRatio: section.tongueRatio } : {}) },
     partWeightKg: Math.round(partKg * 10_000) / 10_000,
-    annualVolume: ctx.annualVolume, temper, finish,
+    annualVolume: ctx.annualVolume, amortizationVolume: amortisationParts(ctx), temper, finish,
     finishAreaM2: Math.round((ctx.geo.surfaceArea?.mm2 ?? 0) / 1e6 * 10_000) / 10_000,
     ...(section.outerPerimeterMm ? { finishOutsideAreaM2: Math.round(section.outerPerimeterMm * section.lengthMm / 1e6 * 10_000) / 10_000 } : {}),
     bends, cncMinutes: fab.minutes, cncFixturings: fab.fixturings, fabFeatureRows: fab.rows,

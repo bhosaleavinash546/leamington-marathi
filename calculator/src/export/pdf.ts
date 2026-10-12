@@ -612,9 +612,9 @@ function renderGeometricDFM(
     + 'names the B-rep faces that produced it and the published source of its threshold. '
     + (amounts
       ? (recosted
-        ? 'A £ is what the finding moves THIS costing by, re-costed through its own operations (overhead and margin included); '
+        ? 'A figure is what the finding moves THIS costing by, re-costed through its own operations (overhead and margin included); '
           + 'levers overlap, so they are not summed. Issues without a figure are quality or yield risks with no modelled cost path.'
-        : 'A £ is the finding priced at its reference rate, before a costing of this part; issues without a figure have no modelled cost path.')
+        : 'A figure is the finding priced at its reference rate, before a costing of this part; issues without a figure have no modelled cost path.')
       : addressable > 0
         ? `Priced findings total ${money(addressable)}/part at the reference rate; issues shown without a figure are `
           + 'quality or yield risks with no modelled cost path — see each entry.'
@@ -998,7 +998,8 @@ export function renderShouldCostSections(
       ['Gross Weight (stock)',        `${grossWt.toFixed(4)} kg`,                              'kg',           'Net ÷ utilisation ratio'],
       // With the melt shop on, gross − net is the metal LOST in melting (runners and risers are remelted) — it was
       // labelled "Scrap / Runner Weight", 0.06 kg on a knuckle whose gating weighs ~2 kg (casting 360 review, Oct 2026).
-      [lossIsNotScrap ? 'Melt Loss (metal lost)' : 'Scrap / Runner Weight', `${scrapWt.toFixed(4)} kg`, 'kg',
+      // "Runner" is a casting word: a forging's flash, a bar's swarf and an extrusion's butt are the same line (Germany review).
+      [lossIsNotScrap ? 'Melt Loss (metal lost)' : /cast/i.test(String(commodityType)) ? 'Scrap / Runner Weight' : 'Scrap (bought, not in the part)', `${scrapWt.toFixed(4)} kg`, 'kg',
         lossIsNotScrap ? 'Gross - Net: metal lost in melting; runners, risers and rejects are remelted' : 'Gross - Net'],
       ['Material Utilisation',        pct(input.rawMaterial.materialUtilization * 100),        '%',            utilisationBenchmarkNote(commodityType, lossIsNotScrap)],
       ['Material Price',              c(price),                                               `${currency}/kg`, mat?.sourceNote ?? ''],
@@ -2366,7 +2367,7 @@ export function printPDF(
         `Volume, weight and every feature were measured from the CAD solid by the Open CASCADE kernel. Measured volume ${vol}; finished-part mass at the costed material's density ${wt}.`,
         // The VOLUME is measured; the costed weight adds rule machining stock, and prices / rates carry their own
         // confidence — "not an estimate" overstated it (casting 360 review, Oct 2026).
-        'The volume, faces and holes are measured. The costed weight adds the stated machining stock, and the prices and rates carry their own confidence (§6) — those are estimates, not measurements.',
+        'The volume, faces and holes are measured. The costed weight is the measured part with its stated allowances (the reject allowance, and machining stock where the route carries it — §3), and the prices and rates carry their own confidence (§6) — those are estimates, not measurements.',
       ], GN, [237, 247, 237]);
     } else if (src === 'stl_parser') {
       y = calloutBox(doc, y, 'Geometry Provenance — MEASURED FROM MESH (STL)', [

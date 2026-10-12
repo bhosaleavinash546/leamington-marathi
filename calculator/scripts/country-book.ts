@@ -148,7 +148,10 @@ for (const [k, v] of Object.entries(cats)) {
 }
 const labourGrades: CountryBook['labourGrades'] = {};
 for (const [k, v] of Object.entries(cfg.labour.grades as Record<string, LabourCfg>)) {
-  labourGrades[k] = { gbpPerHr: r4(localHr(v) / FX), basis: `${v.basis}. Included: ${cfg.labour.loadingIncluded}. NOT included: ${cfg.labour.loadingNotIncluded}`, source: v.source, confidence: 'Medium' };
+  // The research texts carry their own "…INCLUDES:" / "NOT included:" lead-ins and full stops — "NOT included: NOT
+  // included:" and ".." were printed (Germany live review).
+  const clause = (t: string) => String(t ?? '').replace(/^\s*(fully-loaded hourly cost\s+)?(includes?|not included)\s*:\s*/i, '').replace(/\.\s*$/, '');
+  labourGrades[k] = { gbpPerHr: r4(localHr(v) / FX), basis: `${clause(v.basis)}. Included: ${clause(cfg.labour.loadingIncluded)}. NOT included: ${clause(cfg.labour.loadingNotIncluded)}`, source: v.source, confidence: 'Medium' };
   const cur = SNAP.labour.find(l => l.id === `lab-uk-${k}`);
   register.push({ kind: 'labour', id: `lab-uk-${k} (${NAME})`, name: k, currentInr: cur ? cur.inrPerHr : null,
     newInr: r2(labourGrades[k].gbpPerHr * FX), unit: `${SYM}/h fully loaded`, decision: 'updated', basis: v.basis, source: v.source });

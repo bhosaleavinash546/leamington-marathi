@@ -27,7 +27,7 @@ export async function buildWorkbook(sheets: SheetSpec[]): Promise<XLSXType.WorkB
   for (const sh of sheets) {
     // Brand every sheet. The .xlsx community build can't embed the logo image or
     // colour cells, so the wordmark is stamped as the first row of each sheet.
-    const rows = [['CostVision — AI Cost Intelligence'], [], ...sh.rows];
+    const rows = [['CostVision — Should-Cost Report'], [], ...sh.rows];
     const typed: Array<{ r: number; c: number; cell: MoneyCell | PctCell }> = [];
     const plain = rows.map((row, r) => (row as unknown[]).map((x, c) => { if (isCell(x)) { typed.push({ r, c, cell: x }); return x.v; } return x; }));
     const ws = XLSX.utils.aoa_to_sheet(plain);

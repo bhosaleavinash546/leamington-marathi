@@ -111,6 +111,9 @@ export interface AluminiumExtrusionInputs {
   /** Fabrication tool wear, £ a part. */
   fabConsumablesGbp?: number;
   amortizationVolume: number;
+  /** Parts a year — the die changes a year are spread over THESE, not the programme (they were divided by the
+   *  5-year amortisation: 1.2e-5 h instead of 6e-5 h a part — Germany live review). Absent: the amortisation volume. */
+  annualVolume?: number;
 }
 
 export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): CommodityDrivers {
@@ -148,8 +151,9 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
     manning: i.crew, labourTimeHr: pushHr, labourEfficiency: i.labourEfficiency,
   });
   // Die change and heat-up, once a run, shared by the year's parts.
-  if (i.runsPerYear > 0 && i.dieChangeHr > 0 && i.amortizationVolume > 0) {
-    const setupHr = i.runsPerYear * i.dieChangeHr / i.amortizationVolume;
+  const yearParts = i.annualVolume && i.annualVolume > 0 ? i.annualVolume : i.amortizationVolume;
+  if (i.runsPerYear > 0 && i.dieChangeHr > 0 && yearParts > 0) {
+    const setupHr = i.runsPerYear * i.dieChangeHr / yearParts;
     ops.push({
       operationName: 'Die change and press set-up (per run)', machineId: i.pressId, labourId: i.labourId,
       cycleTimeHr: setupHr, partsPerCycle: 1, oee: 1, manning: i.crew, labourTimeHr: setupHr, labourEfficiency: i.labourEfficiency,
@@ -227,7 +231,10 @@ export interface AlExtrusionSpec {
   section: AlSection;
   /** Finished part, kg — less than the extruded length when it is machined. */
   partWeightKg: number;
+  /** Parts a YEAR — runs, die changes and the press loading follow it. */
   annualVolume: number;
+  /** Parts the dies are amortised over (annual × programme years); the annual volume when absent. */
+  amortizationVolume?: number;
   temper: AlTemper;
   finish: AlFinish;
   /** Area finished, m² (the part's whole surface — anodise and e-coat coat every face). */
@@ -371,7 +378,8 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
       finishConsumablesGbpPerM2: finishLine.consumablesGbpPerM2 } : {}),
     packSecPerPart: Math.round((6 + 4 * s.partLengthMm / 1000) * 10) / 10, inspectLabourId: 'lab-uk-semiskilled',
     dieCostGbp: dieGbp, dieLifeKg, nitrideGbp: spec.route === 'impact' ? 0 : inCountry(AL_DIE_NITRIDE.gbp, 'heatTreat'), nitrideEveryKg: AL_DIE_NITRIDE.everyT * 1000,
-    amortizationVolume: spec.annualVolume,
+    amortizationVolume: spec.amortizationVolume && spec.amortizationVolume > 0 ? spec.amortizationVolume : spec.annualVolume,
+    annualVolume: spec.annualVolume,
   };
   return { inputs, plan, notes, warnings };
 }

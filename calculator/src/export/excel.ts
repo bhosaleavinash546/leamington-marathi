@@ -142,7 +142,7 @@ export async function exportToExcelBlob(
       ['Material ID', rm.materialId, '', ''],
       ['Grade / Description', mat?.grade ?? rm.materialId, '', mat?.sourceNote ?? ''],
       ['Costed Net Weight', num4(rm.netWeightKg), 'kg', 'the weight the material line is costed on — the finished part plus any machining stock or reject allowance the module carries'],
-      ['Gross Weight (stock / pour)', num4(gross), 'kg', '= net ÷ utilisation'],
+      ['Gross Weight (material bought)', num4(gross), 'kg', '= net ÷ utilisation'],
       ['Material Utilisation', pctCell(rm.materialUtilization), '', lossIsNotScrap ? 'melt loss only — runners and risers are remelted' : '= net ÷ gross'],
       ['Material Price', m(price), `${currency}/kg`, 'as costed'],
       ['Gross Material Cost', m(gross * price), currency, '= gross × price/kg'],

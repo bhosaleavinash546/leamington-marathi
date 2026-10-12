@@ -212,7 +212,8 @@ machines = {
     # Held capital: UK book's × 1.05 — one sourced pair, the Haas VF-2 EU list €64,995 v the UK book's US-list €61,983
     'capitalHeldFactor': round(v('capex.mach-vmc3') / 61983, 3),
     'groups': [
-        {'id': 'cnc-vmc-eu', 'match': '^(mach-vmc3|mach-haas-vf2|mach-drill)$', 'refId': 'mach-vmc3', 'refCapexLocal': v('capex.mach-vmc3'),
+        # the Haas EU list IS the VF-2's own price (it sat on the generic VMC and the VF-2 was scaled to 69% of it — Germany live review)
+        {'id': 'cnc-vmc-eu', 'match': '^(mach-vmc3|mach-haas-vf2|mach-drill)$', 'refId': 'mach-haas-vf2', 'refCapexLocal': v('capex.mach-vmc3'),
          'basis': 'Haas VF-2SSYT-EU EU-series list €64,995 (one EUR price across the EU; machine only — delivery, installation and tooling not included)',
          'source': R['capex.mach-vmc3']['source'], 'confidence': 'Medium'},
         {'id': 'cnc-5axis-eu', 'match': '^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$', 'refId': 'mach-vmc5', 'refCapexLocal': v('capex.mach-vmc5'),

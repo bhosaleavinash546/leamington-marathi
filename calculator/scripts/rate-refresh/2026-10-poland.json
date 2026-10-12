@@ -158,7 +158,7 @@
    {
     "id": "cnc-vmc-eu",
     "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
-    "refId": "mach-vmc3",
+    "refId": "mach-haas-vf2",
     "refCapexLocal": 284288,
     "basis": "Haas VF-2SSYT-EU list €64,995 on Haas's Polish site = zł284,288 (machine only; delivery, installation and tooling not included); US list $70,995 = zł273,260 agrees — an imported machine costs Poland what it costs the EU",
     "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html",

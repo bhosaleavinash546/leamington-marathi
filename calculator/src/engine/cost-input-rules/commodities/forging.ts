@@ -192,6 +192,10 @@ export const FORGE_LINE = {
 } as const;
 
 /** Crew on the forge line, by route; one operator on the trim press. */
+const CREW_WHO: Record<ForgingProcess, string> = {
+  'closed-die': 'forger + heater / handler', precision: 'forger + heater / handler', 'ring-rolling': 'roller operator + handler',
+  'open-die': 'forger + manipulator + crane', 'cold-forming': 'one setter shared between two automatic multi-station formers',
+};
 export const FORGE_CREW: Record<ForgingProcess, number> = {
   'closed-die': 2,        // forger + heater / handler
   precision: 2,
@@ -316,7 +320,10 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
 
   // An answered or declared GRADE sets the forging alloy (alloy v carbon steel,
   // stainless, superalloy); the family alone falls back to its default.
-  const alloy = forgingAlloyForGrade(mat.gradeId) ?? toForgingAlloyFamily(mat.family!);
+  // Unanswered, it is the REPRESENTATIVE grade the costing prices (Germany live review: the route was chosen for plain
+  // carbon steel while 38MnVS6 was costed — a cold-forming route on a microalloyed steel the cold branch excludes).
+  const alloy = forgingAlloyForGrade(mat.gradeId ?? representativeMaterialId('forging', mat.family as MaterialFamily) ?? null)
+    ?? toForgingAlloyFamily(mat.family!);
   if (!alloy) {
     return {
       blocked: ask({
@@ -456,7 +463,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
         const g = materialFacts(ctx).gradeId;
         if (g) return decided('forging.materialId', g, 'engineer', `${r.advice.massBasis}; grade ${g}`, 1);
         const id = representativeMaterialId('forging', r.advice.familyLabel as MaterialFamily);
-        return decided('forging.materialId', id ?? r.advice.familyLabel, 'engineer',
+        return decided('forging.materialId', id ?? r.advice.familyLabel, 'rule',
           `${r.advice.massBasis}; ${r.advice.familyLabel} → ${id ?? r.advice.familyLabel} (representative forging billet — not a drawing callout)`, 1);
       },
     },
@@ -631,7 +638,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
       fieldId: 'forge-lab',
       label: 'labourId',
       evaluate: () => decided('forging.labourId', 'lab-uk-forge', 'rule',
-        'forge-shop operative (the screen defaulted to a skilled machinist)', 0.8),
+        'forge-shop operative', 0.8),
     },
     {
       id: 'forging.manning',
@@ -642,8 +649,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('forging.manning', FORGE_CREW[r.advice.process], 'rule',
-          `${r.advice.process} line crew (forger + heater / handler; open die adds a manipulator) — `
-          + 'engineering typical; the screen said 2, headless 1', 0.55);
+          `${r.advice.process} line crew: ${CREW_WHO[r.advice.process]} — engineering typical`, 0.55);
       },
     },
     {
@@ -708,7 +714,14 @@ export const FORGING_RULES: CommodityRuleSpec = {
       path: 'forging.trimManning',
       fieldId: 'forge-trim-manning',
       label: 'trimManning',
-      evaluate: () => decided('forging.trimManning', TRIM_CREW, 'rule', 'one operator on the trim press', 0.6),
+      // No trim crew where the route makes no flash (a cold-formed part printed "one operator on the trim press" with no press).
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        return r.advice.flashFrac === 0
+          ? decided('forging.trimManning', 0, 'rule', `${r.advice.process} makes no flash — no trim press, no trim crew`, 0.6)
+          : decided('forging.trimManning', TRIM_CREW, 'rule', 'one operator on the in-line trim press', 0.6);
+      },
     },
     {
       id: 'forging.dieSteel',

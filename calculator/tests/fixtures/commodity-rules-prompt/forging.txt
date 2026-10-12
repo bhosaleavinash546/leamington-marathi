@@ -8,31 +8,31 @@ FORGING COST INPUT RULES:
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
   materialId=mat-al6082-forge  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer); aluminium → mat-al6082-forge (representative forging billet — not a drawing callout) — deterministic, use verbatim]
   grade: UNDECIDED — needs "Which aluminium grade?" (6082 (Al Forging Stock) | 6061 (Al Forging Stock) | 2014 (Al-Cu forging stock — aero and automotive) | 7075 (Al Forging Stock) | 2618 (Al-Cu Piston/Aero) | 7050 (Al-Zn Aero Forging Stock))
-  partWeightKg=2.851  [2.800 kg finished + 18.8 cm³ of holes drilled from solid (≤ Ø25; larger bores pierced) + 0.0 cm³ machining stock (0 mm a side on the machined faces, cold-forming) — 1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
-  process=cold-forming  [small aluminium part at 100,000/yr — cold forging gives near-100% material yield, work-hardened strength and a machined-quality finish with no flash [tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
+  partWeightKg=2.851  [2.800 kg finished + 18.8 cm³ of holes drilled from solid (≤ Ø25; larger bores pierced) + 0.0 cm³ machining stock (2 mm a side on the machined faces, closed-die) — 1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
+  process=closed-die  [aluminium at 100,000/yr — closed-die impression forging is the volume workhorse: net-shape grain flow, good tolerance, lowest piece cost once dies amortise [tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
   projectedAreaCm2=288.4  [estimated: bbox face × √fill for a solid, bbox face for a shell below 5% fill (no measured silhouette) — deterministic, use verbatim]
   shapeComplexity=moderate  [4 free-form face(s), 2 undercut face(s), 120 faces total — deterministic, use verbatim]
-  yieldFraction=0.915  [cold-forming stock yield band 0.85–0.98, midpoint 0.915 — this route makes no flash — deterministic, use verbatim]
-  flashAndScaleKg=0  [cold-forming has no impression parting line — it makes no flash; the stock loss is inside the yield band — deterministic, use verbatim]
-  forgeId=forge-press-1600t  [F = Kt × σflow × A: moderate shape in aluminium over 288.4 cm² = 809 t (1.2 safety) — deterministic, use verbatim]
-  strokesToForm=4  [multi-station cold former: 4 stations, one part every 2 s — deterministic, use verbatim]
-  timePerBlowSec=0.5  [hit + transfer on the press (informational — the cycle below is the line takt) — deterministic, use verbatim]
-  cycleTimeHr=0.000556  [multi-station cold former: 4 stations, one part every 2 s — deterministic, use verbatim]
-  labourId=lab-uk-forge  [forge-shop operative (the screen defaulted to a skilled machinist) — deterministic, use verbatim]
-  manning=0.5  [cold-forming line crew (forger + heater / handler; open die adds a manipulator) — engineering typical; the screen said 2, headless 1 — deterministic, use verbatim]
+  yieldFraction=0.743  [closed-die stock yield band 0.55–0.8, midpoint 0.675, scaled by the 10% flash so the billet lands at part ÷ 0.675 — deterministic, use verbatim]
+  flashAndScaleKg=0.285  [10% of part weight squeezed out at the flash land — deterministic, use verbatim]
+  forgeId=forge-press-1600t  [F = Kt × σflow × A: moderate shape in aluminium over 288.4 cm² + 57 cm² flash land = 969 t (1.2 safety) — deterministic, use verbatim]
+  strokesToForm=3  [3 s billet from the heater + 3 hit(s) (2 impression(s) + 1 extra finisher hit(s), moderate shape) × 4 s mechanical press hit + transfer = 15 s takt — deterministic, use verbatim]
+  timePerBlowSec=4  [hit + transfer on the press (informational — the cycle below is the line takt) — deterministic, use verbatim]
+  cycleTimeHr=0.004167  [3 s billet from the heater + 3 hit(s) (2 impression(s) + 1 extra finisher hit(s), moderate shape) × 4 s mechanical press hit + transfer = 15 s takt — deterministic, use verbatim]
+  labourId=lab-uk-forge  [forge-shop operative — deterministic, use verbatim]
+  manning=2  [closed-die line crew: forger + heater / handler — engineering typical — deterministic, use verbatim]
   rejectRate=0.02  [2% forging scrap (laps, underfill, cracks at inspection) — engineering typical — deterministic, use verbatim]
   furnaceType=gas  [aluminium forges warm — billets soak in a gas furnace — deterministic, use verbatim]
-  trimMachineId=  [cold-forming makes no flash — no trim press — deterministic, use verbatim]
-  trimCycleHr=0  [no flash to trim — deterministic, use verbatim]
+  trimMachineId=press-100t  [747 mm flash line × 2.5 mm flash × 55 MPa hot flow stress = 10.7 t → the smallest mechanical press with 1.25× margin — deterministic, use verbatim]
+  trimCycleHr=0.004167  [the trim press stands in line and works to the forge takt (15 s) — deterministic, use verbatim]
   trimLabourId=lab-uk-forge  [forge-shop operative — deterministic, use verbatim]
-  trimManning=1  [one operator on the trim press — deterministic, use verbatim]
+  trimManning=1  [one operator on the in-line trim press — deterministic, use verbatim]
   dieSteel=h13  [H13 — the impression-die workhorse — deterministic, use verbatim]
-  dieImpressions=4  [cold-forming tooling — deterministic, use verbatim]
-  dieCostGBP=75395  [4-impression h13 die over 288.4 cm²: £14925 block + £52686 sinking + £4246 HT + £3538 polish; OCCT parametric says £63800 — deterministic, use verbatim]
+  dieImpressions=2  [blocker + finisher — deterministic, use verbatim]
+  dieCostGBP=45724  [2-impression h13 die over 288.4 cm²: £11697 block + £28012 sinking + £4246 HT + £1769 polish; OCCT parametric says £63800 — deterministic, use verbatim]
   dieLife=64728  [aluminium at 288.4 cm², moderate impression — deterministic, use verbatim]
-  heatingEnergyKwhPerKg=0  [cold forming — the billet is never heated — deterministic, use verbatim]
+  heatingEnergyKwhPerKg=0.18  [energy to bring aluminium to forging temperature — deterministic, use verbatim]
   heatTreatCostPerKg=1.2  [solution-age for a aluminium forging — deterministic, use verbatim]
-  descaleCostPerKg=0  [cold formed — no scale to remove — deterministic, use verbatim]
+  descaleCostPerKg=0.12  [forge scale pickled off before machining — deterministic, use verbatim]
   ndtCostPerPart=0  [not safety-critical — no NDT — deterministic, use verbatim]
 
 ### context: degraded
@@ -51,14 +51,14 @@ FORGING COST INPUT RULES:
   strokesToForm: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   timePerBlowSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   cycleTimeHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
-  labourId=lab-uk-forge  [forge-shop operative (the screen defaulted to a skilled machinist) — deterministic, use verbatim]
+  labourId=lab-uk-forge  [forge-shop operative — deterministic, use verbatim]
   manning: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   rejectRate=0.02  [2% forging scrap (laps, underfill, cracks at inspection) — engineering typical — deterministic, use verbatim]
   furnaceType: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   trimMachineId: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   trimCycleHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   trimLabourId=lab-uk-forge  [forge-shop operative — deterministic, use verbatim]
-  trimManning=1  [one operator on the trim press — deterministic, use verbatim]
+  trimManning: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   dieSteel: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   dieImpressions: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   dieCostGBP: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)

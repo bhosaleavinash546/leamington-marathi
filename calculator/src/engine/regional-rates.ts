@@ -2,7 +2,7 @@ import type { RateLibrary, MaterialRate, Breakdown8Bucket } from './types.js';
 import { computeMachineRatePerHr } from './rate-library-merge.js';
 import { COUNTRY_BOOKS, countryMachine, countryMaterial } from './country-books.js';
 import { UK_ELECTRICITY_GBP_PER_KWH } from './uk-energy.js';
-import { AL_ALLOYS, BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, type AlAlloy } from './al-extrusion-data.js';
+import { AL_ALLOYS, AL_MARKET, BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, type AlAlloy } from './al-extrusion-data.js';
 
 // ─── Manufacturing Regions ─────────────────────────────────────────────────────
 
@@ -1045,7 +1045,11 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       if (alAlloy) {
         const p = billetPriceGbpPerKg(alAlloy, region);
         return { ...m, pricePerKg: p, region: rd.name, confidence: 'Medium' as const,
-          sourceNote: `${m.sourceNote} | ${rd.name}: billet premium $${BILLET_PREMIUM_USD_PER_T[region].usdPerT}/t → £${p.toFixed(3)}/kg (${BILLET_PREMIUM_USD_PER_T[region].basis})` };
+          // The region's OWN build-up — the UK note ("UK all-in billet premium $1100/t … UK imports billet") was kept and
+          // this appended, so a German report printed two premiums (Germany live review, Oct 2026).
+          sourceNote: `${rd.name}: LME $${AL_MARKET.lmeUsdPerT}/t + ${rd.name} billet premium $${BILLET_PREMIUM_USD_PER_T[region].usdPerT}/t `
+            + `(${BILLET_PREMIUM_USD_PER_T[region].basis}) + ${alAlloy} alloy adder $${AL_ALLOYS[alAlloy].billetAdderUsdPerT}/t (engineering estimate) `
+            + `at $${AL_MARKET.usdPerGbp}/£ = £${p.toFixed(3)}/kg. Scrap at LME ${AL_ALLOYS[alAlloy].scrapDiffUsdPerT >= 0 ? '+' : '−'} $${Math.abs(AL_ALLOYS[alAlloy].scrapDiffUsdPerT)}/t, the same in every region (scrap trades on LME terms).` };
       }
       const own = book ? countryMaterial(book, m, rd.name) : null;
       if (own) return own;

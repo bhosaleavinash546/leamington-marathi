@@ -94,7 +94,7 @@ export function validateStackInput(
     if (op.partsPerCycle > 1) {
       warnings.push({
         field: `${p}.partsPerCycle`,
-        message: `Multi-cavity/multi-part (×${op.partsPerCycle}): cost allocated equally across cavities — verify all cavities have identical cycle times`,
+        message: `${op.operationName}: ${op.partsPerCycle} parts a cycle — each part carries 1/${op.partsPerCycle} of the cycle time`,
       });
     }
   }

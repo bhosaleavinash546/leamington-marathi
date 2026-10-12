@@ -94,6 +94,16 @@ export const FORGING_PROCESS_REFERENCE: Record<ForgingProcess, ForgingProcessRef
 
 // ─── Process advisor ──────────────────────────────────────────────────────────
 
+/** Largest slug a multi-station cold former takes, mm — CostVision engineering heuristic (typical wire capacity of
+ *  the largest multi-station cold formers; no source read). */
+export const COLD_FORMER_MAX_SLUG_MM = 50;
+/** The slug a part of this weight is cut from, at a height / diameter of 2.3 (the free-upset limit). */
+export function coldSlugDiameterMm(partWeightKg: number, alloy: ForgingAlloyFamily): number {
+  const density = alloy === 'aluminium' ? 2.7 : alloy === 'copper' ? 8.9 : alloy === 'titanium' ? 4.5 : 7.85;   // g/cm³
+  const mm3 = partWeightKg / density * 1e6;
+  return Math.cbrt(4 * mm3 / (Math.PI * 2.3));
+}
+
 export interface ForgingAdvisorInputs {
   annualVolume: number;
   partWeightKg: number;
@@ -159,8 +169,10 @@ export function adviseForgingProcess(inputs: ForgingAdvisorInputs): ForgingProce
       ['Heat treat', ...(inputs.safetyCritical ? ['CT/UT NDT'] : []), 'Near-net machining']);
   }
 
-  // 3. Small, high-volume, simple → cold forging / heading.
+  // 3. Small, high-volume, simple → cold forging / heading — when the slug fits a cold former (a Ø140 × 2.3 kg flange
+  //    was cold-formed on a "500 t" press sized at the HOT flow stress; Germany live review, Oct 2026).
   if (inputs.partWeightKg <= 5 && inputs.annualVolume >= 100000 && inputs.complexity !== 'high'
+      && coldSlugDiameterMm(inputs.partWeightKg, inputs.alloyFamily) <= COLD_FORMER_MAX_SLUG_MM
       && (inputs.alloyFamily === 'carbon-steel' || inputs.alloyFamily === 'alloy-steel' || inputs.alloyFamily === 'aluminium' || inputs.alloyFamily === 'copper')) {
     return build('cold-forming',
       `small ${alloy} part at ${inputs.annualVolume.toLocaleString()}/yr — cold forging gives near-100% material yield, work-hardened strength and a machined-quality finish with no flash`,
