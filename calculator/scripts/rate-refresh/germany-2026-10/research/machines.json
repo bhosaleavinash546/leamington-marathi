@@ -1,0 +1,320 @@
+{
+  "domain": "machines",
+  "researched": "2026-10-12",
+  "items": [
+    {
+      "key": "capex.mach-vmc3",
+      "value": 64995,
+      "unit": "EUR/unit ex-VAT (Haas EU-series list / special price, machine only)",
+      "basis": "Haas EU-series VF-2SSYT-EU (VF-2-size 3-axis VMC, 12k rpm, extended Y, EU configuration) special price EUR 64,995 as shown on Haas's own EU (Polish-locale) site and recorded by the Poland round on 2026-10-10. Haas sells the EU series at one EUR price across the EU; the German page (haascnc.com/de) describes the same model as 'zu einem Sonderpreis für den europäischen Markt' but the search did not return the figure from the German page.",
+      "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu",
+      "date": "page undated; retrieved via search 2026-10-10 (PL) and 2026-10-12 (DE page, no price in snippet)",
+      "notes": "LIST price, not a transaction; VAT treatment not stated on the snippet (Haas EU prices are normally net — not confirmed). Excludes delivery, rigging, tooling, workholding. Cross-checks: (1) Landré (Haas Factory Outlet, Netherlands) VF-2SSYT-EU 'from EUR 75,995' with equipped variants EUR 71,995 / 76,390 / 79,390, VAT status not stated, listing ~242 days old (https://www.landre.nl/en/verspaning/haas-eu-serie/haas-vf-2ssyt-eu/); (2) Haas Switzerland (German-language page) VF-2YT-EU base package 'Sonderpreis 64'395 CHF' (https://www.haascnc.com/de/machines/Special-Series/eu-series/Swiss_vf-2yt-eu.html) — no book CHF rate, not converted; (3) Haas VF-2 US list US$70,995 (machinetoolindex, verified 2026-08-31) × 0.880 = EUR 62,476. Current Germany book mach-vmc3 implied capex EUR 94,190 (financeCost 1,883.81 ÷ 2%; depreciation 7,246.53 × 13 yr agrees) — about 45% above the Haas EU list; it is a generic 'CNC VMC 3-axis' row so a higher-spec machine may be intended. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-haas-vf2",
+      "value": 64995,
+      "unit": "EUR/unit ex-VAT (list)",
+      "basis": "same evidence as capex.mach-vmc3: Haas VF-2SSYT-EU EU special price EUR 64,995; US list VF-2 US$70,995 × 0.880 = EUR 62,476",
+      "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://machinetoolindex.com/machines/haas-vf-2",
+      "date": "page undated; US list verified 2026-08-31",
+      "notes": "Current Germany book mach-haas-vf2 implied capex EUR 65,077 (financeCost 1,301.54 ÷ 2%) — AGREES with the Haas EU list (+0.1%). The standard VF-2 German page shows no price ('kontaktieren Sie Ihr lokales Haas Factory Outlet'). Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-vmc5",
+      "value": 105596,
+      "unit": "EUR/unit (US list converted, machine only; older figure)",
+      "basis": "Haas UMC-500 'starts at US$119,995' (older Haas article quoted by the Poland round's search) × 0.880 = EUR 105,596",
+      "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+      "date": "article date not shown (older than 2026)",
+      "notes": "US LIST, not EU and not a transaction; no EUR list price found on the German Haas page (UMC-500: 'Derzeit nicht in Ihrer Region erhältlich … Haas Factory Outlet'). Haas Europe year-end stock-sale pages (2025) show UMC-500 packages at 88,495 and 108,995 with the currency labelled 'CNY' on the Chinese-locale page (https://www.haascnc.com/zh/shop/Year-End_Stock_Sale_2025/UMC500_1199983.html ; Czech page https://www.haascnc.com/cs/shop/Year-End_Stock_Sale_2025/UMC-500-HE-Z_1206007.html — 'HE' = Haas Europe stock), so probably EUR, not confirmed; they bracket the US-list conversion. A Haas drill/tap centre + 2-axis trunnion '3+2 / 5-axis' package 'ab 70.180 Euro' (industrial-production.de, undated; https://www.industrial-production.de/zerspanen/volle-5-achsen-bearbeitung.htm). Current Germany book: mach-vmc5 implied EUR 225,751 (2.1× the Haas figure — a generic 5-axis row, could be a premium machine), mach-haas-umc500 EUR 154,496 (46% above the Haas US list). Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-haas-umc500",
+      "value": 105596,
+      "unit": "EUR/unit (US list converted)",
+      "basis": "same as capex.mach-vmc5: US$119,995 × 0.880 = EUR 105,596",
+      "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+      "date": "older than 2026",
+      "notes": "Haas Europe stock-sale UMC-500 packages 88,495 / 108,995 (currency shown as 'CNY', probably EUR — unconfirmed). Current Germany book implied EUR 154,496 — looks ~45% high for a Haas UMC-500. Marketplace cross-check only (not a price): resale record 2021 UMC-500SS EUR 245,000 (Feb 2025, https://www.resale.info/it/haas-umc-500/No-169761361) — an SS / pallet configuration, not comparable. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-lathe-cnc",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found: no EUR list price for a Haas ST-20 on the German Haas site (configurator shows only a 'CNY' starting price; ST-20LY-EU 'Sonderpreis' with no figure)",
+      "source": "https://www.haascnc.com/de/machines/compare-machines.ST-20.html ; https://www.haascnc.com/sv/shop/2024_stock/HAE/canceled-orders-master/ST-20-HE-AC_3132431.html",
+      "date": "retrieved via search 2026-10-12",
+      "notes": "A Haas Europe ('HAE') stock page lists an ST-20 package at 74,995 labelled 'CNY ONLY' — in CNY that would be ~EUR 9k, so it is almost certainly EUR, but the currency and configuration are not confirmed; not adopted. Marketplace cross-check (not a price): used ST-20 asking US$34,500–44,500 (Equipt, https://www.equipt.com/models/haas-st-20). Current Germany book: mach-lathe-cnc implied EUR 68,502, mach-mazak-qt200 EUR 71,927 — consistent with the 74,995 figure if that is EUR. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.mach-dmg-dmu50",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found: DMG MORI publishes no list price; searches returned only used CMX/DMU listings",
+      "source": "https://www.resale.de/dmg-mori-cmx-600-v-vertikales-bearbeitungszentrum/Nr-167372149",
+      "date": "2026",
+      "notes": "Current Germany book implied EUR 202,020. No evidence either way."
+    },
+    {
+      "key": "capex.mach-vmc3-de",
+      "value": 99000,
+      "unit": "EUR/unit ex-VAT (NEW machine asking price, EXW Sauerlach; marketplace-carried)",
+      "basis": "SPINNER VC1150-Compact (German-built 3-axis VMC, 1,150 mm X), year of build 2026, condition 'Neu', fixed price EUR 99,000 EXW plus VAT, location Sauerlach (Bavaria) — SPINNER Werkzeugmaschinenfabrik's home town, so this reads as the maker's/dealer's own new-machine offer",
+      "source": "https://www.maschinensucher.de/spinner-vc1150-compact/i-20312800",
+      "date": "listing current at search 2026-10-12 (build year 2026)",
+      "notes": "Per RULES a marketplace listing is at most a cross-check: this is an asking price for a NEW machine (not used), seller not named in the snippet — adopt only if the caller accepts it. Larger table than a VF-2 class machine. No Hermle / DMG MORI new price found (a used Hermle listing quotes a former new price 'ca. 570.000 EUR', model C 22 U + automation, date unknown — https://www.maschinensucher.de/hermle-c+22+u+%2B+manipula%C4%8Dn%C3%AD+syst%C3%A9m+ih+30/i-21894293 — a 5-axis cell, not comparable). Current Germany book mach-vmc3-de implied capex EUR 357,800 (financeCost 7,156.01 ÷ 2%) = 3.6× this evidence. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.forge-press-1600t",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found: no maker price, TED award or investment announcement stating the price of a 1,600 t mechanical hot-forging press (Schuler, SMS group, Lasco) was returned",
+      "source": "",
+      "date": "",
+      "notes": "Context only (different sizes / scope — see forge-press-2500t): Berriz (Spanish forge) runs 4 lines with 1,600 t vertical presses and induction heating, no price (https://www.gesenkschmiedeberriz.de/technologie/). Current Germany book implied capex EUR 688,078 (financeCost 13,761.56 ÷ 2%), depreciated over 6.18 yr. The larger-press evidence (EUR 2.6 M for a ~2,100–2,200 t press; CHF 13.5 M for a 3,000 t press project) suggests the book's capital for forge presses is LOW, but nothing at 1,600 t was found."
+    },
+    {
+      "key": "capex.forge-press-2500t",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found at 2,500 t. Nearest investment announcements: (a) Mosdorfer (Weiz, Austria) — the search summary of an industriemagazin.at article says EUR 2.6 M for a new ~2,200 t forging press doubling its heavy-press capacity (not confirmed by a second search; Schuler's July 2021 order for Mosdorfer's new forge was two servo screw presses PAR360 SDT 2,100 t and PAR265 SDT 1,100 t plus five C-frame presses — https://www.machinery.co.uk/content/news/schuler-supplies-seven-presses-to-mosdorfer); (b) Imbach & Cie (Nebikon, CH) — 3,000 t multi-function forging press built with Schuler ('Power Nexis'), about CHF 13.5 M, the largest investment in the company's history, 12-month build (https://www.industrial-production.de/wirtschaft---unternehmen/displayaction-577918.htm, undated) — project scope (building, foundations) not stated, CHF not converted (no book CHF rate); (c) thyssenkrupp Homburg (Saarland) — about EUR 30 M for a new high-performance forging line whose main press is 6,500 t (2017, https://www.thyssenkrupp-automotive-technology.com/de/presse/pressemitteilungen/neuinvestitionen-bei-thyssenkrupp-in-homburg-420.html), and EUR 80 M for the 16,000 t truck-chassis line (https://www.thyssenkrupp.com/de/newsroom/pressemeldungen/pressedetailseite/modernste-schmiedelinie-der-welt-in-homburgsaarland-nimmt-produktion-auf-120651) — lines incl. automation and buildings",
+      "source": "https://industriemagazin.at/artikel/mosdorfer-neue-schmiedepresse",
+      "date": "Mosdorfer order 2021; Imbach undated; thyssenkrupp 2017",
+      "notes": "None is a 2,500 t mechanical press price, so value stays null. Current Germany book implied capex EUR 993,890 for forge-press-2500t, EUR 1,529,062 for forge-press-4000t and EUR 2,905,219 for forge-press-8000t — the announcements above (EUR 2.6 M at ~2,200 t; CHF 13.5 M at 3,000 t; EUR 30 M for a 6,500 t line) say the book's forge-press capital is low by 2–3× or more, scope differences allowed for. Breitenfeld Edelstahl (Austria, 2025): ~EUR 15 M for a 40 MN (≈4,000 t) open-die forging press + two forging furnaces + new hall (https://edelstahlaktuell.de/grosinvestition-breitenfeld-investiert-in-40mn-schmiedepresse/) — open-die, not closed-die. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.forge-screw-1000t",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found: Mosdorfer's 2021 Schuler order includes a PAR265 SDT 1,100 t servo screw press but no price was published per press",
+      "source": "https://www.machinery.co.uk/content/news/schuler-supplies-seven-presses-to-mosdorfer",
+      "date": "2021-07-28",
+      "notes": "Current Germany book implied capex EUR 535,172. If the EUR 2.6 M (industriemagazin.at, unconfirmed) relates to Mosdorfer's 2,100 t screw press, a 1,000 t screw press is unlikely to be as low as the book — not provable."
+    },
+    {
+      "key": "capex.forge-induction-billet-heater",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found in any source (no maker price or award for an induction billet heater)",
+      "source": "",
+      "date": "",
+      "notes": "Not searched separately (budget); none surfaced in forging-line announcements."
+    },
+    {
+      "key": "capex.forge-trim-press",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Not searched separately (budget)."
+    },
+    {
+      "key": "capex.al-ext-press-1800t",
+      "value": 10000000,
+      "unit": "EUR per line incl. automation (investment announcement, 2021–22, Romania)",
+      "basis": "ALRO's subsidiary Vimetco Extrusion (Slatina, Romania): about EUR 10 M for an automatic extrusion line for aluminium profiles supplied by Presezzi Extrusion — 7-inch press, profiles to 60 m at 50 m/min, +~11,000 t/yr; project started March 2021, first billet June 2022, commissioned Sept 2022; financed by commercial and bank investment credit",
+      "source": "https://www.alro.ro/en/news-resources/news/vimetco-extrusion-alro-s-downstream-subsidiary-1st-billet-extruded-on-a-new-automatic-line-for-aluminium-profiles-following-a-eur-10-million-investment ; https://www.alcircle.com/news/vimetco-extrusion-to-expand-aluminium-profiles-extrusion-line-with-eur-10-million-investments-63714",
+      "date": "2021-03 to 2022-09",
+      "notes": "COMPANY INVESTMENT ANNOUNCEMENT (EU, not Germany), line incl. automation and installation; press force in MN not stated — matched to the book's 1800 t row by its 7\" container (the book row is '1,800 t direct press, 7\" container'). 2021–22 money; not escalated. Whether building works are inside the EUR 10 M is not stated. Current Germany book implied capex EUR 4,893,000 (financeCost 97,860 ÷ 2%; depreciation 326,200 × 15 yr) — about HALF this evidence. Cross-check: EAS Aluminium (2025) installed a Presezzi 19.5 MN 7\" front-loading press line, no amount published (https://www.easaluminium.eu/2025/04/16/eas-aluminium-launches-35000-m%C2%B2-new-extrusion-facility-with-presezzi-technology-in-2025/). Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.al-ext-press-2500t",
+      "value": 11000000,
+      "unit": "EUR per line project — FLOOR (second-hand 22 MN 8\" press + new ageing oven, Germany, 2022–23)",
+      "basis": "Hydro, Rackwitz (Saxony): EUR 11 M to add a third extrusion line — a 22 MN (≈2,240 t), 8-inch 'upcycled' (second-hand, previously used by a competitor) press, P22, plus an energy-efficient ageing oven; +12,000 t/yr, 40 jobs; announced 22 Sept 2022, in operation end-2023",
+      "source": "https://www.hydro.com/en/global/media/news/2022/hydro-adding-third-extrusion-press-in-germany/ ; https://www.lightmetalage.com/news/industry-news/extrusion/hydro-expands-extrusion-capacity-in-rackwitz-with-upcycled-press/",
+      "date": "2022-09-22 (announcement); commissioned end-2023",
+      "notes": "COMPANY INVESTMENT ANNOUNCEMENT in Germany. The press itself was second-hand, so a NEW line of this size would cost more — treat EUR 11 M as a lower bound. Press is 8\" / 22 MN, the book row is 9\" / 2,500 t. Current Germany book implied capex EUR 7,339,500 (financeCost 146,790 ÷ 2%) — BELOW even this second-hand-press project. Larger-press cross-checks (book al-ext-press-5500t 12\" implied EUR 18,348,750): Hammerer Aluminium Industries, Ranshofen (AT) — new 60 MN line inaugurated 20 Oct 2022, EUR 37.9 M invested in expanding extrusion capacity at the site (https://www.hai-aluminium.com/2022/10/einweihung-der-neuen-p60-strangpresse-in-ranshofen/); Hydro Tønder (DK) — EUR 29 M for a new 12-inch press for automotive (search summary; URL attribution uncertain, one of https://aluminium-journal.de/hydro-investiert-in-weitere-strangpresse-in-deutschland or https://www.aluminium-exhibition.com/germany/de-de/blog/industry-news/hydro-investiert.html). Both say the 12\" book capital is also low. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.al-age-oven-batch",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found: the Hydro Rackwitz ageing oven is inside the EUR 11 M project with no separate price",
+      "source": "https://www.hydro.com/en/global/media/news/2022/hydro-adding-third-extrusion-press-in-germany/",
+      "date": "2022",
+      "notes": "Current Germany book implied EUR 795,112."
+    },
+    {
+      "key": "capex.al-ctl-saw",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found in any source",
+      "source": "",
+      "date": "",
+      "notes": "Current Germany book implied EUR 269,115."
+    },
+    {
+      "key": "capex.laser-trumpf-3030",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not found: no new-machine EUR list price for a TRUMPF TruLaser 3030 fiber (TRUMPF quotes on request); search returned only used listings",
+      "source": "https://www.maschinensucher.de/trumpf-trulaser+3030+fiber+%28l81%29+%2B+storemaster/i-20635200",
+      "date": "listings current at 2026-10-12",
+      "notes": "Marketplace cross-checks only (not prices): used 2020 TruLaser 3030 fiber (L81) + Storemaster, Gütersloh, EUR 250,000 VB plus VAT; resale record 2014 TruLaser 3030 fiber sold EUR 239,550 (May 2023). Resale at those levels implies a new 6 kW machine well above EUR 300k. Current Germany book implied EUR 458,352 — plausible, not proven. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.brake-trumpf-trubend3100",
+      "value": 136000,
+      "unit": "EUR/unit ex-VAT (NEW machine asking price, FCA Ditzingen; machine only)",
+      "basis": "TRUMPF TruBend 3100 (100 t), NEW, CE, 4-axis back gauge, BendGuard, ACB, asking price EUR 136,000 FCA, fixed price plus VAT; advertiser address Johann-Maus-Straße 2, Ditzingen (TRUMPF headquarters, Baden-Württemberg). Found by the Poland round (r2-machines-forming.json, 2026-10-10); not re-searched here.",
+      "source": "https://www.machineseeker.com/trumpf-trubend+3100/i-22233802",
+      "date": "listing updated 2026-06-30 / 2026-07-10",
+      "notes": "Asking price of a NEW machine carried on a marketplace — per RULES a cross-check unless the maker's own offer is accepted. Delivered within Baden-Württemberg the FCA price is close to a delivered price. Cross-check: a used 2021 TruBend 3100 listing says it cost EUR 115,000 new in 2021 (https://www.used-machines.com/trumpf-trubend+3100/gm-225-11877). Current Germany book implied capex EUR 795,112 (financeCost 15,902.25 ÷ 2%) = 5.8× this evidence. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "capex.imm-200t",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not searched (budget exhausted); no Engel / Arburg / KraussMaffei price found",
+      "source": "",
+      "date": "",
+      "notes": "Current Germany book implied: imm-200t EUR 168,197; imm-200t-de EUR 428,138 (the two German-market 200 t rows differ by 2.5×)."
+    },
+    {
+      "key": "capex.heat-treat-furnace",
+      "value": null,
+      "unit": "EUR/unit",
+      "basis": "not searched (budget exhausted)",
+      "source": "",
+      "date": "",
+      "notes": "Current Germany book implied EUR 168,197."
+    },
+    {
+      "key": "finance.machineryLoan",
+      "value": 3.73,
+      "unit": "% p.a. (bank new business, loans > EUR 1 M to non-financial corporations, initial rate fixation > 10 years, EURO AREA, July 2026)",
+      "basis": "Bundesbank release of the euro-area MFI interest rate statistics for July 2026: loans > EUR 1 M to non-financial corporations, fixation > 10 years 3.73% (−5 bp); floating / ≤ 3 months 3.49% (−7 bp); > 3 months–1 year 3.84% (+17 bp). Earlier 2026: > 10 yr 3.65% (Mar), 3.74% (Apr), 3.60% (May), 3.77% (Jun)",
+      "source": "https://www.bundesbank.de/resource/blob/1007288/4cb2afba5124a71bb1996fd5aa0def80/472B63F073F071307366337C94F8C870/2026-09-02-mfi-zinsstatistik-download.pdf",
+      "date": "July 2026 (published 2026-09-02)",
+      "notes": "EURO-AREA figure, not Germany-only; the > 1–5 and > 5–10 year fixation buckets the task asks for were not in the search snippets — read them from the Bundesbank German new-business table (https://www.bundesbank.de/resource/blob/615022/67f84a183e2423091ea9b1939ff97180/472B63F073F071307366337C94F8C870/s510atgv-data.pdf). Predates the ECB's 10 Sept 2026 hike (+25 bp), so October 2026 loan rates are likely ~0.2 pp higher (not sourced). This is the large-loan rate a mid-cap pays; an SME pays more: a blog quotes the KfW ERP-Förderkredit Digitalisierung und Innovation at 3.5–5.2% (May 2026, https://skill-sprinters.de/blog/foerderung/kfw-erp-foerderkredit-digitalisierung-innovation-2026/ — secondary source; ERP-Förderkredit KMU 365/366 rate not found, KfW sets risk-based maxima). German costing practice often uses a 6% calculatory interest rate (default in the Symestic machine-hour calculator, https://www.symestic.com/de-de/tools/maschinenstundensatz-rechner — a vendor tool). Current book: 4% on half the capex (≈ 2% of capex a year) — consistent with a ~3.7–4% cost of debt on the average capital employed. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "finance.ecbRate",
+      "value": 2.5,
+      "unit": "% p.a. (ECB deposit facility rate)",
+      "basis": "ECB Governing Council 10 Sept 2026: +25 bp; from 16 Sept 2026 deposit facility 2.50%, main refinancing operations 2.65%, marginal lending 2.90% (second hike in a row after June; no change 23 July 2026)",
+      "source": "https://www.capitalo.de/anbieter/capitalo/news/ezb-leitzins-september-2026 ; https://www.lbbw.de/artikel/news-und-einschaetzungen/ezb-zinsentscheid-september-2026_ane1zmv1ua_d.html",
+      "date": "effective 2026-09-16",
+      "notes": "Secondary sources (bank / broker news), consistent with each other; confirm on ecb.europa.eu. Main refinancing rate 2.65%. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "life.machinery",
+      "value": 14,
+      "unit": "years (TAX guide life, BMF AfA-Tabelle AV, line 'Pressen')",
+      "basis": "BMF AfA-Tabelle für die allgemein verwendbaren Anlagegüter (AV, BStBl I 2000, valid for assets acquired after 31.12.2000): Pressen 14 years. For milling machines a Lexware summary of the same table gives 15 years stationary, 8 mobile and 5 for CNC-controlled — the CNC line was not read off the official table",
+      "source": "https://www.lexware.de/wissen/buchhaltung-finanzen/abschreibungstabelle/pressen/ ; https://www.lexware.de/wissen/buchhaltung-finanzen/abschreibungstabelle/fraesmaschine/ ; https://media.frag-den-staat.de/files/docs/60/5e/ed/605eed5a489b423bbd4f8690b5f27071/bstbl_2000_21.pdf",
+      "date": "table in force since 2001 (no 2026 change found)",
+      "notes": "TAX guide lives, not economic lives; a shorter life may be used if substantiated. Bearbeitungszentren, Öfen/Härteöfen and the Maschinenbau / Metallbearbeitung branch-table lines were NOT found by the searches (read the BMF table PDF). The IHK Ostwestfalen note says older/branch tables allow +25% on the straight-line rate for double-shift use (https://www.ostwestfalen.ihk.de/fileadmin/Dokumente/Recht/Merkblaetter-Steuern/AfA-Tabelle.pdf); the AV table's preamble says shift use is already reflected where the table says so. Current book: CNC 13 yr, forge presses / IMM / heat-treat 6.18 yr, extrusion 15 yr. A 6.18-yr life for presses is well short of the AfA guide's 14 yr. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.stuttgart",
+      "value": 8.75,
+      "unit": "EUR/m²/month net (prime logistics / production halls > 5,000 m²)",
+      "basis": "JLL Q1 2026 prime rent, Stuttgart 8.75 EUR/m²/month (REALOGIS H1 2026: 8.70)",
+      "source": "https://www.verkehrsrundschau.de/nachrichten/lager-umschlag/spitzenmieten-fuer-logistikflaechen-steigen-weiter-3789069 ; https://www.realogis.com/insights/press-release/article/realogis-ruhr-region-takes-the-lead-among-germanys-top-8-logistics-markets-in-the-first-half-of-2026",
+      "date": "Q1 / H1 2026",
+      "notes": "PRIME (top-of-market) rent for large halls — no 2026 production-space (Unternehmensimmobilien) average was found; average production rents are lower (IUI first market report 2014: ~EUR 5.40 average; the H1 2025 report gives no figure in the snippet). Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.munich",
+      "value": 11.0,
+      "unit": "EUR/m²/month net (prime logistics halls > 5,000 m²)",
+      "basis": "JLL Q1 2026 prime rent, Munich 11.00 EUR/m²/month (first time at EUR 11)",
+      "source": "https://www.verkehrsrundschau.de/nachrichten/lager-umschlag/spitzenmieten-fuer-logistikflaechen-steigen-weiter-3789069",
+      "date": "Q1 2026",
+      "notes": "Prime; Ingolstadt / Regensburg not found. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.hanoverBraunschweig",
+      "value": 6.4,
+      "unit": "EUR/m²/month net (prime logistics)",
+      "basis": "JLL 2025 prime rent Hannover/Braunschweig 6.40 EUR/m²/month; JLL's Q1 and Q2 2026 releases list no rise for this market",
+      "source": "https://www.jll.com/de-de/newsroom/Logistikmarkt-hat-2025-grosse-Planbarkeit-bei-den-Spitzenmieten-geboten ; https://www.jll.com/de-de/newsroom/in-der-logistik-ziehen-die-spitzenmieten-in-vielen-regionen-erneut-an",
+      "date": "2025 (no 2026 change reported)",
+      "notes": "2025 value carried into 2026 because the 2026 releases name no increase for it — an inference, not a published 2026 figure. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.cologneRuhr",
+      "value": 8.0,
+      "unit": "EUR/m²/month net (prime logistics, Cologne)",
+      "basis": "REALOGIS H1 2026 prime rent Cologne 8.00 EUR/m²/month (BNP Paribas RE mid-2026: 8.20). Ruhr: prime 7.75, average 6.50 (REALOGIS H1 2026)",
+      "source": "https://www.realogis.com/insights/press-release/article/realogis-ruhr-region-takes-the-lead-among-germanys-top-8-logistics-markets-in-the-first-half-of-2026 ; https://www.realestate.bnpparibas.de/sites/default/files/document/2026-07/bnppre-logistikmarkt-koeln-2026q2.pdf",
+      "date": "H1 2026",
+      "notes": "Cologne used for the NRW cluster; with the Ruhr prime (7.75) instead the cluster average falls by 0.06. Ruhr average 6.50 is the only 'average' (non-prime) 2026 figure found. Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "rent.clusterAvg",
+      "value": 8.54,
+      "unit": "EUR/m²/month net (prime logistics; production space not found)",
+      "basis": "(8.75 Stuttgart + 11.00 Munich + 6.40 Hannover/Braunschweig + 8.00 Cologne) / 4 = 34.15 / 4 = 8.54",
+      "source": "see the four rent.* items",
+      "date": "2025–2026",
+      "notes": "Prime logistics rents overstate average production-space rents (Ruhr average 6.50 v prime 7.75 = −16%). No Destatis or IUI 2026 production-rent figure was found."
+    },
+    {
+      "key": "maintenancePct",
+      "value": null,
+      "unit": "% of capex / yr",
+      "basis": "not found in a German standard: VDI 2885 (2025-10) sets the method for maintenance-cost data but the search returned no percentage; VDI 2067 is for building services",
+      "source": "https://vdi.de/richtlinien/details/vdi-2885-standardized-data-for-maintenance-planning-and-determination-of-maintenance-costs-data-and-data-determination",
+      "date": "2025-10",
+      "notes": "Cross-check only (vendor blog, plant-wide, not machine-tool specific): maintenance 2–3% of replacement asset value for world-class plants, 3–5% average, ≥ 6% 'firefighting' (https://www.fabrico.io/de/blog/maintenance-cost-as-percent-of-rav/). Current book: 3.0% for CNC rows, ~7.4–7.9% for forge presses, 3.5% for extrusion lines, ~8% for imm-200t."
+    },
+    {
+      "key": "hours.annual",
+      "value": 4044,
+      "unit": "h/yr (2 × 8 h, Mon–Fri, 2026, four-Länder average)",
+      "basis": "2026 working days (5-day week): Baden-Württemberg 252, Bayern 252, Niedersachsen 254, Nordrhein-Westfalen 253; mean (252 + 252 + 254 + 253) / 4 = 252.75 days × 16 h = 4,044 h. (261 weekdays in 2026 less weekday public holidays: 7 national + BW/BY Epiphany and Corpus Christi, NW Corpus Christi; 3 Oct, 31 Oct, 1 Nov, 15 Aug and 26 Dec fall on a weekend)",
+      "source": "https://www.kalenderpedia.de/arbeitstage-2026.html ; https://www.deutschland-rechner.de/arbeitstage-rechner",
+      "date": "calendar year 2026",
+      "notes": "Calendar hours before downtime and utilisation. Current book: CNC / IMM 4,000 h (agrees, −1.1%), forge / press 3,500 h (13% below two shifts), extrusion and furnaces 6,000 h (≈ three shifts, not the two-shift pattern). Bavarian Catholic communes add 15 Aug (Saturday in 2026, no effect). Page not opened: this session's egress proxy refuses direct fetches (WebFetch ENOTFOUND / CONNECT 403), so the figure is as the web-search result quoted it for this URL; verify against the page before use."
+    },
+    {
+      "key": "benchmark.cnc3axis",
+      "value": null,
+      "unit": "EUR/h (machine-hour rate, cross-check)",
+      "basis": "not found: no published German Maschinenstundensatz for a 3-axis CNC (VDMA, IHK or trade press) was returned; calculator pages give the method only",
+      "source": "",
+      "date": "",
+      "notes": "Cross-check field only."
+    },
+    {
+      "key": "benchmark.cnc5axis",
+      "value": null,
+      "unit": "EUR/h (machine-hour rate, cross-check)",
+      "basis": "not found: no published German Maschinenstundensatz for a 5-axis CNC (VDMA, IHK or trade press) was returned; calculator pages give the method only",
+      "source": "https://www.whk-controlling.de/wissen/maschinenstundensatz-rechner",
+      "date": "",
+      "notes": "Cross-check field only."
+    },
+    {
+      "key": "benchmark.forgePress",
+      "value": null,
+      "unit": "EUR/h (machine-hour rate, cross-check)",
+      "basis": "not found: no published German Maschinenstundensatz for a forging press (VDMA, IHK or trade press) was returned; calculator pages give the method only",
+      "source": "",
+      "date": "",
+      "notes": "Cross-check field only."
+    },
+    {
+      "key": "benchmark.extrusionPress",
+      "value": null,
+      "unit": "EUR/h (machine-hour rate, cross-check)",
+      "basis": "not found: no published German Maschinenstundensatz for a extrusion press (VDMA, IHK or trade press) was returned; calculator pages give the method only",
+      "source": "",
+      "date": "",
+      "notes": "Cross-check field only."
+    }
+  ],
+  "notes": [
+    "Egress: WebFetch and curl were refused for every host (ENOTFOUND / proxy CONNECT 403, e.g. www.haascnc.com), so no page was opened; every figure is as the WebSearch result quoted it for the cited URL. Re-read the page before adopting a value.",
+    "30 web searches used (budget reached). Two items (Haas VF-2SSYT-EU EUR 64,995; TRUMPF TruBend 3100 EUR 136,000 FCA Ditzingen) are carried from the Poland round's research files (2026-10-10) with their original URLs, because they are EU-wide / German-origin prices.",
+    "FX (book): $1 = EUR 0.880; £1 = EUR 1.165. CHF figures are given in CHF — the book has no CHF rate.",
+    "Current-book implied capex = buildupEur.financeCost ÷ 2% (book: 4% on half the capex), from current-germany-book.json: mach-vmc3 94,190; mach-haas-vf2 65,077; mach-vmc5 225,751; mach-haas-umc500 154,496; mach-lathe-cnc 68,502; mach-mazak-qt200 71,927; mach-dmg-dmu50 202,020; mach-vmc3-de 357,800; forge-press-500t 344,039; forge-press-1600t 688,078; forge-press-2500t 993,890; forge-press-4000t 1,529,062; forge-screw-1000t 535,172; al-ext-press-1800t 4,893,000; al-ext-press-2500t 7,339,500; al-ext-press-5500t 18,348,750; al-age-oven-batch 795,112; al-ctl-saw 269,115; laser-trumpf-3030 458,352; brake-trumpf-trubend3100 795,112; imm-200t 168,197; imm-200t-de 428,138; heat-treat-furnace 168,197 EUR. Depreciation lives implied (capex ÷ annualDepreciation): CNC 13 yr, forge / IMM / heat-treat 6.18 yr, extrusion 15 yr.",
+    "Evidence v book: (1) Haas-class CNC — mach-haas-vf2 agrees with the Haas EU list (EUR 65k); generic mach-vmc3 (EUR 94k) is ~45% above it; mach-haas-umc500 (EUR 154k) ~45% above the US-list conversion (EUR 106k); mach-vmc3-de (EUR 358k) is 3.6× a new German-built SPINNER VC1150 asking price (EUR 99k). The book's €13.70/h for mach-vmc3 is NOT driven by capex (depreciation + finance are only ~21% of the annual cost; energy and floor space are 62%), so the capex error moves the rate little. (2) Forging — forge-press-1600t / 2500t capital (EUR 0.69 M / 0.99 M, written off over 6.18 yr) looks low against EUR 2.6 M for a ~2,100–2,200 t press (Mosdorfer, unconfirmed) and CHF 13.5 M for a 3,000 t press project (Imbach); no 1,600 / 2,500 t price was found. (3) Aluminium extrusion — al-ext-press-1800t capital EUR 4.89 M v EUR 10 M for a 7\" Presezzi automatic line (Vimetco, 2021–22); al-ext-press-2500t EUR 7.34 M v EUR 11 M for a line built around a SECOND-HAND 22 MN 8\" press (Hydro Rackwitz, 2022–23); 12\" row EUR 18.3 M v EUR 29 M (Hydro Tønder) / EUR 37.9 M (HAI 60 MN). The extrusion capital looks ~1.5–2× low. (4) Press brake — brake-trumpf-trubend3100 implied EUR 795k v a new TruBend 3100 at EUR 136k FCA Ditzingen (5.8×, high).",
+    "Operating model: euro-area bank rate for > EUR 1 M corporate loans 3.5–3.8% (July 2026) v book 4% on half the capex; ECB deposit rate 2.50% from 16 Sept 2026; AfA guide life for presses 14 yr v book 6.18 yr; two-shift hours 4,044 v book 4,000 (CNC) / 3,500 (presses) / 6,000 (extrusion); prime logistics rents EUR 6.40–11.00/m²/month, four-cluster mean 8.54."
+  ]
+}
