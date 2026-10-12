@@ -223,6 +223,14 @@ size); laminate type / second reflow side / duty not sourced. Re-run the baselin
 `npx tsx scripts/pcb-review-2026-10-09/stage4.mts json`.
 Real purchase prices go in `scripts/actuals/pcb-actuals.csv` (`npx tsx scripts/accuracy-report.ts <csv>`) — never tune to one.
 `npm run test:e2e:pcb-camera` drives that board end to end; see `docs/pcb/camera-board-360-2026-10.md`.
+**PCB 360 review (12 Oct 2026, `docs/review/pcb-360-review-2026-10-12.md`, `tests/pcb-360-review.test.ts`):** the engineer's
+BOM corrections live ON the analysis (`userCorrections`) and are re-applied by every re-price — never rely on the request
+to carry them; a quantity-only edit (`priceEdited: false`) leaves the price to the tool; a typed form figure carries
+`…Evidence: 'user'` (copper included) or the evidence gate strikes it; `aiFirstPass` is captured BEFORE Stage 4 writes;
+only an automotive board or the USER's BOM selects AEC-Q class ranges (never the model's word); a stated package beats
+the model's IC class; a half-failed run (classifier / OCR failed or cut off) is never cached; board figures no photo shows
+are listed (`BOARD_FIGURES_ESTIMATED`). Prove intake with `e2e/pcb-camera-review.ts` (`REQUEST_LOG` records every model
+request; `CV_PHOTO_FILES` / `CV_BOM_FILE` / `CV_EDITS` for real files and form edits).
 `expandRefDes` counts only real designators (U1, R12A, C_BULK1) — a placeholder ("—", "N/A", "U?") is
 not one (it once made 13 unlabelled lines read as duplicate views). File inputs are never written back
 (`country-recost.ts` — restoring a chosen photo's path threw and failed Calculate on the PCB form).

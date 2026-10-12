@@ -72,6 +72,9 @@ export function boardSpecPatch(edited: string[], doc: Document = document): { sp
     if (def.key === 'widthMm' || def.key === 'heightMm') { spec.dimensionsSource = 'measured'; spec.dimensionsEvidence = 'user'; }
     if (def.key === 'estimatedLayers') { spec.layersSource = 'measured'; spec.layersEvidence = 'user'; }
     if (def.key === 'throughVias') { spec.viasSource = 'measured'; spec.viasEvidence = 'user'; }
+    // Typed outer copper is the engineer's figure: it replaces the model's per-layer list (which the evidence gate
+    // then struck back to 1 oz — the 2 oz typed from the board data sheet was lost, 360 review Oct 2026).
+    if (def.key === 'copperWeightOz') { spec.copperEvidence = 'user'; spec.copperOzByLayer = []; }
     if (def.key === 'qualityGrade') domain = /^auto/i.test(v) ? 'automotive_adas' : 'general';
     if (def.key === 'technologyType') notes.push('PCB technology is derived from the layers, vias and HDI structure — the price follows those fields, so edit them to change it.');
   }

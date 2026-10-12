@@ -110,3 +110,16 @@ describe('live pricing reaches every part before any variant', () => {
     expect(v.length).toBeLessThanOrEqual(20);
   });
 });
+
+describe('copper typed from the board data sheet is costed', () => {
+  it('2 oz outer with user evidence prices heavy copper; the same figure from the model alone is struck to 1 oz', async () => {
+    const user = JSON.parse(JSON.stringify(R.analysis)) as Record<string, unknown>;
+    Object.assign(user.boardSpec as object, { copperWeightOz: 2, copperEvidence: 'user', copperOzByLayer: [] });
+    const u = await stage4(user);
+    const model = JSON.parse(JSON.stringify(R.analysis)) as Record<string, unknown>;
+    Object.assign(model.boardSpec as object, { copperWeightOz: 2, copperOzByLayer: [2, 1, 1, 1, 1, 1, 1, 2] });
+    const m = await stage4(model);
+    expect(Number((u.selectedCountryBreakdown!.breakdown as unknown as Record<string, number>).pcbCopper)).toBeGreaterThan(0);
+    expect(Number((m.selectedCountryBreakdown!.breakdown as unknown as Record<string, number>).pcbCopper)).toBe(0);
+  });
+});

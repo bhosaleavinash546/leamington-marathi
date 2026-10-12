@@ -53,6 +53,11 @@ describe('Calculate after Analyze = the analysis', () => {
 });
 
 describe('an edited field is the engineer\'s figure', () => {
+  it('typed outer copper carries user evidence and replaces the model\'s per-layer list (the gate struck it back to 1 oz)', () => {
+    const fake = { getElementById: (id: string) => (id === 'pcbf-outer-cu' ? { value: '2', type: 'number' } : null) } as unknown as Document;
+    const p = boardSpecPatch(['pcbf-outer-cu'], fake);
+    expect(p.spec).toMatchObject({ copperWeightOz: 2, copperEvidence: 'user', copperOzByLayer: [] });
+  });
   const fakeDoc = (vals: Record<string, string>) => ({ getElementById: (id: string) => (id in vals ? { value: vals[id], type: 'text' } : null) }) as unknown as Document;
   it('size, layers and vias edits are marked measured; an automotive quality grade costs the board as automotive', () => {
     const p = boardSpecPatch(['pcbf-board-w', 'pcbf-layers', 'pcbf-vias', 'pcbf-quality'], fakeDoc({ 'pcbf-board-w': '20', 'pcbf-layers': '6', 'pcbf-vias': '90', 'pcbf-quality': 'auto_grade1' }));
