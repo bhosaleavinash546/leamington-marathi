@@ -7,7 +7,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { loadLibrary, checkAgainst } from '../scripts/check-idea-dupes.mjs';
-import { inferCommodityKey } from '../src/data/commodity-classify.mjs';
+import { inferCommodityKey, marketplaceCommodityOf, OFF_ROAD_SYSTEM_NAMES } from '../src/data/commodity-classify.mjs';
 import { classifyIdea } from '../src/data/idea-classify.mjs';
 
 const VOL = 50_000;
@@ -59,11 +59,22 @@ const PACKS = [
     perCommodity: { Interior: 100, Exterior: 100, BIW: 99, Chassis: 98 },
     bridge: true,
   },
+  {
+    file: 'marketplace-offroad-features-ideas.json', name: 'Off-Road Features',
+    total: 272, levels: { assembly: 77, subassembly: 101, part: 94 },
+    // Every idea is an off-road idea; shared-platform ideas dominate.
+    mix: (pt, offRoad) => offRoad === 272 && (pt['MHEV & 800V BEV'] ?? 0) >= 150 && (pt['800V BEV'] ?? 0) >= 40 && (pt.MHEV ?? 0) >= 40,
+    // The engineering commodities of the hardware the ideas act on; the
+    // marketplace files them all under Off-Road Features (DECISIONS 127).
+    commodities: ['Driveline', 'Chassis', 'Electrical', 'BIW', 'Battery', 'Exterior'],
+    bridge: true,
+    offRoadFeatures: true,
+  },
 ];
 
 for (const P of PACKS) describePack(P);
 
-function describePack({ file: FILE, name, total, levels, mix, commodities, deep = false, bridge = false, perCommodity = null }) {
+function describePack({ file: FILE, name, total, levels, mix, commodities, deep = false, bridge = false, perCommodity = null, offRoadFeatures = false }) {
 const pack = JSON.parse(readFileSync(new URL(`../${FILE}`, import.meta.url), 'utf8'));
 describe(`${name} marketplace library`, () => {
   it(`holds exactly the commissioned ${Object.values(levels).join('/')} split and its powertrain mix`, () => {
@@ -174,6 +185,15 @@ describe(`${name} marketplace library`, () => {
       const expect = total / (((av[0] + av[1]) / 2) / 12);
       if (total > 0) assert.ok(Math.abs(inv.paybackMonths - expect) <= Math.max(1, expect * 0.2), `${x.title}: payback ${inv.paybackMonths} vs ${expect.toFixed(1)} months`);
       assert.equal(x.annualSaving, d.costSavingPotential.annualValue, `${x.title}: headline saving differs from annual value`);
+    }
+  });
+
+  if (offRoadFeatures) it('is filed under Off-Road Features, on its sub-systems, and every idea is off-road', () => {
+    for (const x of pack) {
+      assert.equal(marketplaceCommodityOf(x), 'OffRoad', x.id);
+      assert.ok(OFF_ROAD_SYSTEM_NAMES.includes(x.system), `${x.id}: system ${x.system}`);
+      assert.equal(x.ideaData.offRoad, true, x.id);
+      assert.match(x.id, /^orf-[0-9a-f]{12}$/);
     }
   });
 
