@@ -29,6 +29,10 @@
    "offRoad": true,
    "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "savingPerUnitLowGBP": 1.3,
+   "savingPerUnitHighGBP": 1.3,
+   "annualSavingLowGBP": 104000.0,
+   "annualSavingHighGBP": 104000.0,
    "costSavingPotential": {
     "perVehicle": "£1.30 per vehicle",
     "annualValue": "£104.0K at 80,000 vehicles/yr",
@@ -79,6 +83,10 @@
    "offRoad": true,
    "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "savingPerUnitLowGBP": 2.16,
+   "savingPerUnitHighGBP": 2.16,
+   "annualSavingLowGBP": 172800.0,
+   "annualSavingHighGBP": 172800.0,
    "costSavingPotential": {
     "perVehicle": "£2.16 per vehicle",
     "annualValue": "£172.8K at 80,000 vehicles/yr",
@@ -179,6 +187,10 @@
    "offRoad": true,
    "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "savingPerUnitLowGBP": 4.93,
+   "savingPerUnitHighGBP": 4.93,
+   "annualSavingLowGBP": 394400.0,
+   "annualSavingHighGBP": 394400.0,
    "costSavingPotential": {
     "perVehicle": "£4.93 per vehicle",
     "annualValue": "£394.4K at 80,000 vehicles/yr",
@@ -231,6 +243,10 @@
    "offRoad": true,
    "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "savingPerUnitLowGBP": 3.63,
+   "savingPerUnitHighGBP": 3.63,
+   "annualSavingLowGBP": 290400.0,
+   "annualSavingHighGBP": 290400.0,
    "costSavingPotential": {
     "perVehicle": "£3.63 per vehicle",
     "annualValue": "£290.4K at 80,000 vehicles/yr",
@@ -245,7 +261,10 @@
    "studyPdfPages": [
     25,
     27
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · duplicate] Same move on the same part: power-skiving the transfer-case planetary internal ring gear instead of shaping it. Evidence: Library [luxury-suv-mhev-bev]: 'Power-skived internal ring gear for planetary low range shared with MHEV transfer case ... (shaping) to ... (skiving)' Recommendation: Link.",
+   "possibleDuplicateOf": "lux-f09b097a4b7b"
   },
   "annualSaving": "£290.4K at 80,000 vehicles/yr",
   "costSavingType": "process",
@@ -283,6 +302,10 @@
    "offRoad": true,
    "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "savingPerUnitLowGBP": 1.21,
+   "savingPerUnitHighGBP": 1.21,
+   "annualSavingLowGBP": 96800.0,
+   "annualSavingHighGBP": 96800.0,
    "costSavingPotential": {
     "perVehicle": "£1.21 per vehicle",
     "annualValue": "£96.8K at 80,000 vehicles/yr",
@@ -349,7 +372,9 @@
    "studyPdfPages": [
     24,
     27
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · quality] The SPEC refers to 'pinion bearing preload'. A chain-drive planetary transfer case has no hypoid pinion. The SPEC text (1.5-3.0 Nm, spacer ground to 0.01 mm) is word-for-word the axle card dif26-p3, which suggests a carry-over. Evidence: TC P4 SPEC: 'pinion bearing preload window held at 1.5–3.0 Nm rolling torque, spacer ground to 0.01 mm at build'; DIF P3: 'rolling torque held at 1.5-3.0 Nm* on both axles ... spacer ground to 0.01 mm' Recommendation: Ask the author which transfer-case bearing pair this applies to (e.g. output shaft)."
   },
   "annualSaving": "No saving booked — cost adder (defended)",
   "costSavingType": "process",
@@ -387,6 +412,10 @@
    "offRoad": true,
    "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "savingPerUnitLowGBP": 25.0,
+   "savingPerUnitHighGBP": 25.0,
+   "annualSavingLowGBP": 2000000.0,
+   "annualSavingHighGBP": 2000000.0,
    "costSavingPotential": {
     "perVehicle": "£25.00 per vehicle",
     "annualValue": "£2.00M at 80,000 vehicles/yr",
@@ -401,7 +430,9 @@
    "studyPdfPages": [
     26,
     27
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · quality] The card shows £2.00M/yr, but the study treats it as a brand decision that is 'most likely refused'. It overlaps D2. Evidence: Combined capture: 'D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle' Recommendation: Add a non-additive / brand-decision tag next to the annual figure."
   },
   "annualSaving": "£2.00M at 80,000 vehicles/yr",
   "costSavingType": "design",
@@ -439,6 +470,10 @@
    "offRoad": true,
    "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "savingPerUnitLowGBP": 43.0,
+   "savingPerUnitHighGBP": 43.0,
+   "annualSavingLowGBP": 3440000.0,
+   "annualSavingHighGBP": 3440000.0,
    "costSavingPotential": {
     "perVehicle": "£43.00 per vehicle",
     "annualValue": "£3.44M at 80,000 vehicles/yr",
@@ -453,7 +488,9 @@
    "studyPdfPages": [
     26,
     27
-   ]
+   ],
+   "reviewSeverity": "major",
+   "reviewOpenPoints": "[MAJOR · quality] The card shows £3.44M/yr. The card says it will almost certainly be rejected, and the combined capture excludes it. It also overlaps D1, so the two annual figures (£3.44M + £2.00M) cannot both be taken. Evidence: Trade-off: 'Almost certainly rejected on brand grounds in a luxury vehicle ... D1 and D2 overlap: taking both does not save the sum' Recommendation: Tag as 'brand decision — excluded from capture; overlaps D1', or suppress the annual figure."
   },
   "annualSaving": "£3.44M at 80,000 vehicles/yr",
   "costSavingType": "design",
@@ -491,6 +528,10 @@
    "offRoad": true,
    "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "savingPerUnitLowGBP": 16.0,
+   "savingPerUnitHighGBP": 16.0,
+   "annualSavingLowGBP": 1280000.0,
+   "annualSavingHighGBP": 1280000.0,
    "costSavingPotential": {
     "perVehicle": "£16.00 per vehicle",
     "annualValue": "£1.28M at 80,000 vehicles/yr",
@@ -505,7 +546,9 @@
    "studyPdfPages": [
     26,
     27
-   ]
+   ],
+   "reviewSeverity": "major",
+   "reviewOpenPoints": "[MAJOR · consistency] This conflicts with PS26 D9 (see the ps26-d9 finding): ~35 mm here against the ≥120 mm PS26 D9 relies on for the same package change. Evidence: TC D3: 'shortened by about 35 mm*'; PS D9: 'at least 120 mm*' Recommendation: Reconcile with PS26 D9."
   },
   "annualSaving": "£1.28M at 80,000 vehicles/yr",
   "costSavingType": "design",
@@ -543,6 +586,10 @@
    "offRoad": true,
    "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "savingPerUnitLowGBP": 8.0,
+   "savingPerUnitHighGBP": 8.0,
+   "annualSavingLowGBP": 640000.0,
+   "annualSavingHighGBP": 640000.0,
    "costSavingPotential": {
     "perVehicle": "£8.00 per vehicle",
     "annualValue": "£640.0K at 80,000 vehicles/yr",
@@ -659,7 +706,10 @@
    ],
    "studyPdfPages": [
     27
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · quality] The status 'Cost adder (defended)' overstates the study's position. The card is conditional on a measured cycle gain that has not yet been taken. Evidence: Cost effect: '+£48* — a cost ADDER assessed against a measured cycle gain'; SPEC: 'to be confirmed by measurement before the cost is committed' Recommendation: Use 'Cost adder (pending measurement)'. ¶ [MINOR · duplicate] The same move: disconnect the front driveline at the transfer case to cut spin/churn losses. The library version adds a front-diff decoupler and starts from an on-demand case. Evidence: Library [luxury-suv-mhev-bev]: 'Disconnecting front driveline: transfer-case clutch plus front-diff decoupler for MHEV AWD' Recommendation: Link (near-duplicate).",
+   "possibleDuplicateOf": "lux-61ef8b51c04a"
   },
   "annualSaving": "No saving booked — cost adder (defended)",
   "costSavingType": "design",
@@ -709,7 +759,9 @@
    ],
    "studyPdfPages": [
     27
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · quality] The 6,398 Nm transfer-case OUTPUT torque cannot be derived from the card's own inputs. 3,168 Nm input × 2.93 low range = 9,282 Nm. The card does not state the basis (a sustained crawl case at a lower gear?). Evidence: D7 SPEC: '6,398 Nm transfer case OUTPUT torque'; D4 SPEC: '3,168 Nm transfer case INPUT torque'; scope: 'low range 2.93:1' Recommendation: State the duty-cycle basis for 6,398 Nm on the card."
   },
   "annualSaving": "No saving booked — refused saving (protected)",
   "costSavingType": "design",

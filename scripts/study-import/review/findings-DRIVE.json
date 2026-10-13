@@ -1,0 +1,532 @@
+[
+ {
+  "id": "hs26-m1",
+  "originalId": "M1",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "targetVehicle is cut off mid-sentence. This applies to all 17 HS26 records.",
+  "evidence": "Record ends: '...DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is'",
+  "duplicateOf": null,
+  "recommendation": "Carry the full scope text, or end it at a sentence boundary with an ellipsis."
+ },
+ {
+  "id": "dif26-m1",
+  "originalId": "M1",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "targetVehicle is cut off mid-sentence. This applies to all 17 DIF26 records.",
+  "evidence": "Record ends: '...pinion flange, and assembly with backlash '",
+  "duplicateOf": null,
+  "recommendation": "Carry the full scope text, or end it at a sentence boundary."
+ },
+ {
+  "id": "ps26-m1",
+  "originalId": "M1",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "targetVehicle is cut off mid-sentence. This applies to all 19 PS26 records.",
+  "evidence": "Record ends: '...aluminium extruded tube at 5.50 £/kg* is NOT in the inherited driveline rate card. It'",
+  "duplicateOf": null,
+  "recommendation": "Carry the full scope text, or end it at a sentence boundary."
+ },
+ {
+  "id": "tc26-m1",
+  "originalId": "M1",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "The TC26 register has no 'Lever' or 'Evidence pointer' column. Every TC26 record has a 'lever' value (material/process/design) taken from the ID prefix, not from the source. evidencePointer is correctly left empty.",
+  "evidence": "TC register header: ['ID','Idea — plain title','How it works...','SPEC...','EUR on the reference transfer case*','Duty and environment verdict','Trade-off','Maturity','Effort']; record lever='material'",
+  "duplicateOf": null,
+  "recommendation": "Label the lever 'derived from ID prefix', or leave it blank for TC26."
+ },
+ {
+  "id": "ix3b-e1",
+  "originalId": "E1",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "The iX3 records have no 'maturity' field, although the source states one: E1 'Proven (BMW LIVE)', E2 'Proven', S2 'Proven at 3 OEMs', C2 'Emerging for EU; Proven at Tesla'. The text is only inside riskNotes. costSavingType 'Architecture' does not come from the source. This applies to all 4 iX3 records.",
+  "evidence": "Source col 6 (E1): '...Proven (BMW LIVE). Effort: medium. Evidence: tab 1 rows 24–25.'",
+  "duplicateOf": null,
+  "recommendation": "Fill maturity from the source text, so the maturity badge renders the same way as on the driveline cards."
+ },
+ {
+  "id": "hs26-d4",
+  "originalId": "D4",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "The currency in the SPEC line differs across the three files. In the register and the PDF, 2.20/kg is the EUR figure with a £ label on it, not converted. At 0.8644 it would be about £1.90/kg.",
+  "evidence": "Register: '2.20 £/kg steel tube ... about 3.50 EUR* per shaft'; deck s26: '2.20 £/kg ... about 3.50 £* per shaft'; PDF p26: '2.20 €/kg ... about 3.50 €* per shaft'",
+  "duplicateOf": null,
+  "recommendation": "Ask the author for one currency, e.g. '£1.90/kg ... £3.03 per shaft'. The record follows the register verbatim."
+ },
+ {
+  "id": "HS26 (study-level)",
+  "originalId": null,
+  "category": "consistency",
+  "severity": "major",
+  "issue": "The headline tiles on Half-Shaft deck slides 28, 31 and 32 are the EUR figures with a £ sign on them. They contradict the GBP combined-capture text on the same slide and in the register, which every HS26 record carries.",
+  "evidence": "Deck s28 tiles: '£163 the cards add to this | £120 of it is D1 | £17–30* | £69–90*'; same slide text and register: 'roughly £141 ... D1 is £104 ... £17-26* ... £69-78*'. PDF p28 (EUR): '€163 | €120 | €20–30* | €80–90*'. s31/s32 also say '£17–30', '£69–90', '£156'.",
+  "duplicateOf": null,
+  "recommendation": "Correct the deck tiles to £141 / £104 / £17–26 / £69–78 before the Director review. Marketplace records are correct (they quote the register)."
+ },
+ {
+  "id": "HS26 (study-level)",
+  "originalId": null,
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "The deck contradicts itself on the model correction: slide 1 says £90, slides 30/32 say about £136 (+£90 on s32). The PDF gives €157, which converts to £136.",
+  "evidence": "Deck s1: '£90 MORE than the driveline master carried'; s30: 'understated this line by about £136'; s32: '+£90 model correction'; PDF p1/p32: '€157'",
+  "duplicateOf": null,
+  "recommendation": "Use £136 throughout the deck."
+ },
+ {
+  "id": "HS26 (study-level)",
+  "originalId": null,
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "The Half-Shaft and Transfer-Case PDFs are an EUR edition. The register and deck are GBP. Every card figure reconciles at the declared 0.8644 (e.g. M1 €1.80→£1.56, D1 €120→£104, TC D3 €18→£15.56→£16). No mismatches.",
+  "evidence": "HS PDF p24 '-€1.80*'; register '-£1.56*'. TC PDF p26 '-€18*'; register '-£16*'.",
+  "duplicateOf": null,
+  "recommendation": "Optional: say in the source pointer that the PDF is the EUR edition, so a reviewer comparing them is not misled."
+ },
+ {
+  "id": "ps26-d9",
+  "originalId": "D9",
+  "category": "consistency",
+  "severity": "major",
+  "issue": "There is a cross-study contradiction on the shortening. PS26 D9 needs 'at least 120 mm' of rear-shaft shortening from flange-mounting the transfer case, and calls it the same package change as TC26 D3. TC26 D3 says that change shortens the driveline by about 35 mm. The required length is also not set by the workbook's own gate: its table already rates 1,400 mm (-50 mm) as 'OK', and 1,450 mm (no shortening) as only 'MARGINAL'. So '120 mm minimum' is not a gate requirement.",
+  "evidence": "PS register D9: 'rear propshaft shortened by at least 120 mm* by flange-mounting the transfer case'; TC register D3: 'overall driveline length shortened by about 35 mm*'; PS sheet 1 rows 92/124: '1.45 m ... 1.41x ... 126.6 km/h ... MARGINAL'; '1400 ... 1.51x ... 135.8 km/h ... OK — one-piece STEEL is available at this length'",
+  "duplicateOf": null,
+  "recommendation": "Ask the author to reconcile 35 mm against 120 mm, and to state the shortening the gate actually needs. The £35.68 saving depends on that package change being achievable."
+ },
+ {
+  "id": "tc26-d3",
+  "originalId": "D3",
+  "category": "consistency",
+  "severity": "major",
+  "issue": "This conflicts with PS26 D9 (see the ps26-d9 finding): ~35 mm here against the ≥120 mm PS26 D9 relies on for the same package change.",
+  "evidence": "TC D3: 'shortened by about 35 mm*'; PS D9: 'at least 120 mm*'",
+  "duplicateOf": null,
+  "recommendation": "Reconcile with PS26 D9."
+ },
+ {
+  "id": "ps26-d9",
+  "originalId": "D9",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "PS26 says the transfer-case study is worth 'a further £15.56'. The TC26 register gives -£16 for D3. It is a rounding difference: €18 × 0.8644 = £15.56. But £15.56 is also PS26 D3's own adder figure, which invites confusion.",
+  "evidence": "PS combined capture: 'worth a further £15.56 in the transfer-case study'; TC D3 '-£16*'",
+  "duplicateOf": null,
+  "recommendation": "Quote the TC figure as written (-£16), or state 'TC D3 €18 = £15.56'."
+ },
+ {
+  "id": "ps26-d2",
+  "originalId": "D2",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "The design torque is stated two ways: 4,669 Nm (D2, D5) against 4,670 Nm (M1, M3, DIF D3).",
+  "evidence": "D2: 'qualified to the 4,669 Nm* design case'; M1: '4,670 Nm* PROPSHAFT design case'",
+  "duplicateOf": null,
+  "recommendation": "Use one value."
+ },
+ {
+  "id": "hs26-d2",
+  "originalId": "D2",
+  "category": "quality",
+  "severity": "major",
+  "issue": "studyStatus is 'Saving', and the card shows £622.4K/yr. But the card text says the idea is likely infeasible and is listed only so it can be rejected on record. The combined capture says 'a rejected idea captures nothing'.",
+  "evidence": "Trade-off: 'LIKELY INFEASIBLE on a longitudinal SUV ... Listed so it is rejected on record rather than re-proposed.' Cost effect: '-£7.78* IF feasible'",
+  "duplicateOf": null,
+  "recommendation": "Reclassify as 'Rejected alternative' (or 'Saving — conditional, likely infeasible') and do not show an annual saving."
+ },
+ {
+  "id": "ps26-d1",
+  "originalId": "D1",
+  "category": "quality",
+  "severity": "major",
+  "issue": "studyStatus is 'Saving', and the card shows £1.91M/yr. But the author says he recommends AGAINST this idea and that D9 supersedes it.",
+  "evidence": "Trade-off: 'I AM NOW RECOMMENDING AGAINST THIS, ON EVIDENCE RATHER THAN INSTINCT, AND IDEA D9 SUPERSEDES IT.'",
+  "duplicateOf": null,
+  "recommendation": "Reclassify as 'Rejected alternative (superseded by D9)' and do not show an annual saving."
+ },
+ {
+  "id": "ps26-d1",
+  "originalId": "D1",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The card says one-piece steel at 1,450 mm is 'ruled out' at 5,943 rpm / 127 km/h half-critical. By the study's own gate (1.25x margin and half-critical outside 80-113 km/h), 1.41x and 127 km/h pass; the workbook itself labels the case 'MARGINAL', not ruled out. The 'ruled out' premise underlies both D1 and D9.",
+  "evidence": "Register D1: 'one-piece STEEL at the same length is ruled out at 5,943 rpm with a 127 km/h half-critical'; sheet 1 row 92: '1.4065 ... 126.59 km/h ... MARGINAL — half-critical only just clear of that band'; row 96 / sheet 9: 'The gate tests the 1.25x margin AND the half-critical road speed against the 80-113 km/h band.'",
+  "duplicateOf": null,
+  "recommendation": "Ask the author to state the real acceptance margin. If it is 1.25x, a one-piece steel shaft may already be available without D9's package change."
+ },
+ {
+  "id": "hs26-d5",
+  "originalId": "D5",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The status 'Cost adder (defended)' implies the study backs the adder. The card says the idea is ruled out on published plunge travel.",
+  "evidence": "Trade-off: 'ON THE PUBLISHED NUMBERS THIS IDEA IS RULED OUT BY PLUNGE TRAVEL.' Combined capture: 'it is an adder that is currently unavailable'",
+  "duplicateOf": null,
+  "recommendation": "Use 'Cost adder (ruled out pending long-plunge variant)'."
+ },
+ {
+  "id": "ps26-d2",
+  "originalId": "D2",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The status 'Cost adder (defended)' contradicts the card, which says not recommended and costed only so the number exists.",
+  "evidence": "Trade-off: 'NOT RECOMMENDED at 80,000 units a year. Costed here so the number exists when somebody asks.'",
+  "duplicateOf": null,
+  "recommendation": "Use 'Rejected alternative (cost adder)'."
+ },
+ {
+  "id": "ps26-m5",
+  "originalId": "M5",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The status 'Cost adder (defended)' overstates the study's position. The author does not propose it for the steel baseline; it is only a pre-condition for D1/D9.",
+  "evidence": "Trade-off: 'I am not proposing it for the steel baseline ... It is here because it is the PRE-CONDITION for ideas D1 and D9'",
+  "duplicateOf": null,
+  "recommendation": "Use 'Cost adder (conditional on D1/D9)'."
+ },
+ {
+  "id": "tc26-d6",
+  "originalId": "D6",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The status 'Cost adder (defended)' overstates the study's position. The card is conditional on a measured cycle gain that has not yet been taken.",
+  "evidence": "Cost effect: '+£48* — a cost ADDER assessed against a measured cycle gain'; SPEC: 'to be confirmed by measurement before the cost is committed'",
+  "duplicateOf": null,
+  "recommendation": "Use 'Cost adder (pending measurement)'."
+ },
+ {
+  "id": "dif26-d8",
+  "originalId": "D8",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The status 'No cost change (specification)' does not fit the card, which is a reallocation of efficiency spend (an efficiency programme), not a specification.",
+  "evidence": "Cost effect: '£0 — a reallocation, not a cost'",
+  "duplicateOf": null,
+  "recommendation": "Use a 'No cost change (reallocation)' label."
+ },
+ {
+  "id": "hs26-d1",
+  "originalId": "D1",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The card shows £8.32M/yr. The study itself excludes D1 from capture as an architecture decision 'not ours'. The saving is also counted only at half-shaft level: a solid rear axle changes the housing, differential carrier and suspension cost too, and none of that is in the £104.",
+  "evidence": "Combined capture: 'D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop.' SPEC: 'delete 2 CV half-shafts, substitute 2 straight axle shafts at about £52* each'",
+  "duplicateOf": null,
+  "recommendation": "Show the annual figure with an 'architecture decision — excluded from study capture' tag, or suppress it."
+ },
+ {
+  "id": "tc26-d2",
+  "originalId": "D2",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The card shows £3.44M/yr. The card says it will almost certainly be rejected, and the combined capture excludes it. It also overlaps D1, so the two annual figures (£3.44M + £2.00M) cannot both be taken.",
+  "evidence": "Trade-off: 'Almost certainly rejected on brand grounds in a luxury vehicle ... D1 and D2 overlap: taking both does not save the sum'",
+  "duplicateOf": null,
+  "recommendation": "Tag as 'brand decision — excluded from capture; overlaps D1', or suppress the annual figure."
+ },
+ {
+  "id": "tc26-d1",
+  "originalId": "D1",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The card shows £2.00M/yr, but the study treats it as a brand decision that is 'most likely refused'. It overlaps D2.",
+  "evidence": "Combined capture: 'D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle'",
+  "duplicateOf": null,
+  "recommendation": "Add a non-additive / brand-decision tag next to the annual figure."
+ },
+ {
+  "id": "dif26-d1",
+  "originalId": "D1",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The card shows £2.32M/yr, but the combined capture excludes it as a brand decision.",
+  "evidence": "Combined capture: 'D1 is £29 of it and it is a brand decision, not an engineering one'",
+  "duplicateOf": null,
+  "recommendation": "Add a 'brand decision — excluded from capture' tag."
+ },
+ {
+  "id": "dif26-d2",
+  "originalId": "D2",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The card shows £968.0K/yr, but the combined capture excludes it ('takes the driver out of the loop').",
+  "evidence": "Combined capture: 'D2 is £12 and it takes the driver out of the loop on a product sold on control.'",
+  "duplicateOf": null,
+  "recommendation": "Add an 'excluded from capture' tag."
+ },
+ {
+  "id": "dif26-p1",
+  "originalId": "P1",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The card shows £415.2K/yr as if it stood alone. The card says it is conditional on M4 and saves nothing by itself.",
+  "evidence": "Trade-off: 'it is conditional on M4. Alone it saves nothing.'",
+  "duplicateOf": null,
+  "recommendation": "Add a 'conditional on dif26-m4' tag."
+ },
+ {
+  "id": "ps26-d9",
+  "originalId": "D9",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The card shows £2.85M/yr. It is a mutually exclusive alternative to D1 (which shows £1.91M), and it needs a transfer-case package change at the concept gate. The volumeBasis note says this generically, but nothing on the card itself does.",
+  "evidence": "Cost effect: '-£35.68* ... ALTERNATIVE TO D1, NOT ADDITIONAL'",
+  "duplicateOf": null,
+  "recommendation": "Fine as long as the cost-effect text is visible on the card. Add a 'mutually exclusive with ps26-d1' tag."
+ },
+ {
+  "id": "HS26 (study-level)",
+  "originalId": null,
+  "category": "quality",
+  "severity": "major",
+  "issue": "The combined-capture arithmetic (shown on all 17 HS26 records) does not follow from the cards. (1) The saving cards sum to £151.01, not '~£141'. (2) Excluding D1 and D2 leaves £39.23, not '£29-38'. (3) Netting the named M4 (+£0.52) and D4 (+£3.98) adders from £29-38 gives £24.5-33.5, not '£17-26'. The ~£12 gap matches D5 (+£12.24), which the text does not name.",
+  "evidence": "Cards: M1 1.56 + P1 9.39 + P2 12.10 + P3 3.46 + P4 2.42 + P5 1.73 + D1 104 + D2 7.78 + D3 8.57 = 151.01. Text: 'add to roughly £141 ... excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26*'",
+  "duplicateOf": null,
+  "recommendation": "Ask the author to restate the derivation (which cards are in the gross, and which adders are netted) before the figure is presented as 'the number to commit to'."
+ },
+ {
+  "id": "PS26 (study-level)",
+  "originalId": null,
+  "category": "quality",
+  "severity": "major",
+  "issue": "The combined-capture arithmetic (shown on all 19 PS26 records) does not follow from the cards. (1) Saving cards sum to £75.26, not '~£80'. (2) Excluding D1 and D9 leaves £15.68, not '£12-14' (£13.61 only if D5 is also excluded). (3) Netting the named adders M1+M3+M4+M5 (£9.38) from £12-14 gives £2.6-4.6, not '£6-12'.",
+  "evidence": "Cards: P1 3.98 + P2 4.89 + P3 3.67 + P4 1.07 + D1 23.90 + D5 2.07 + D9 35.68 = 75.26. Adders: 0.90 + 5.19 + 0.69 + 2.60 = 9.38. Text: '£12-14* gross; net of the M1, M3, M4 and M5 adders it is £6-12*'",
+  "duplicateOf": null,
+  "recommendation": "Ask the author to restate the derivation. The downstream £31-37 and £67-73 depend on it."
+ },
+ {
+  "id": "DIF26 (study-level)",
+  "originalId": null,
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Minor arithmetic gaps in the combined capture (shown on all 17 DIF26 records). The saving cards sum to £77.22, not '~£81'. 'If the concept gate deletes the front locker and reverts the front housing to iron, add another £51', but D1 + D4 = £29.00 + £17.58 = £46.58.",
+  "evidence": "Text: 'The saving cards add to roughly £81 ... add another £51'",
+  "duplicateOf": null,
+  "recommendation": "Correct to ~£77 and ~£47, or state what else is included."
+ },
+ {
+  "id": "TC26 (study-level)",
+  "originalId": null,
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The combined capture says the engineering-only gross 'excluding D1 and D2 is £22-29'. The remaining saving cards sum to £37.23. The range only matches if D3 (£16) or D4 (£8) is also dropped, which the text implies but does not state.",
+  "evidence": "M1 1.30 + M2 2.16 + P1 4.93 + P2 3.63 + P3 1.21 + D3 16 + D4 8 = 37.23; text: '£22-29* gross'",
+  "duplicateOf": null,
+  "recommendation": "State that D3/D4 are risk-adjusted out of the range."
+ },
+ {
+  "id": "dif26-d4",
+  "originalId": "D4",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The figures and the stiffness claim do not follow from the stated inputs. 8.5 kg × £3.98/kg = £33.83 and 11.5 kg × £1.64/kg = £18.86, not '£57' and '£39'. The difference (£18) matches the card, so conversion costs are presumably included but not stated. More important: an 11.5 kg ductile-iron housing replacing 8.5 kg of aluminium has about half the wall thickness (7.1 vs 2.7 g/cm³). Plate-bending stiffness scales with E·t³, so it would be roughly a third as stiff in bending, not 'stiffer'. If the deflection spec forces more iron mass, both the saving and the +3 kg move.",
+  "evidence": "'The front housing is 8.5 kg of aluminium at £3.98/kg. The equivalent iron casting would be about 11.5 kg at £1.64/kg, costing about £39 against £57, and would be stiffer'",
+  "duplicateOf": null,
+  "recommendation": "Ask the author to show the £39/£57 build-up, and to support 'stiffer' with a deflection calculation at the stated mass."
+ },
+ {
+  "id": "tc26-p4",
+  "originalId": "P4",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The SPEC refers to 'pinion bearing preload'. A chain-drive planetary transfer case has no hypoid pinion. The SPEC text (1.5-3.0 Nm, spacer ground to 0.01 mm) is word-for-word the axle card dif26-p3, which suggests a carry-over.",
+  "evidence": "TC P4 SPEC: 'pinion bearing preload window held at 1.5–3.0 Nm rolling torque, spacer ground to 0.01 mm at build'; DIF P3: 'rolling torque held at 1.5-3.0 Nm* on both axles ... spacer ground to 0.01 mm'",
+  "duplicateOf": null,
+  "recommendation": "Ask the author which transfer-case bearing pair this applies to (e.g. output shaft)."
+ },
+ {
+  "id": "tc26-d7",
+  "originalId": "D7",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The 6,398 Nm transfer-case OUTPUT torque cannot be derived from the card's own inputs. 3,168 Nm input × 2.93 low range = 9,282 Nm. The card does not state the basis (a sustained crawl case at a lower gear?).",
+  "evidence": "D7 SPEC: '6,398 Nm transfer case OUTPUT torque'; D4 SPEC: '3,168 Nm transfer case INPUT torque'; scope: 'low range 2.93:1'",
+  "duplicateOf": null,
+  "recommendation": "State the duty-cycle basis for 6,398 Nm on the card."
+ },
+ {
+  "id": "ix3b-e2",
+  "originalId": "E2",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The vehicle-level figure is gross (booster deleted, −€250 to −€400). S2 states its vehicle-level figure net of the pack adder. Net for E2 would be −€175 to −€325.",
+  "evidence": "E2: '+€75 ... in the pack; −€250 to −€400 at VEHICLE level'; S2: '+€35 ... in pack; net −€115 to −€265 at VEHICLE level'",
+  "duplicateOf": null,
+  "recommendation": "State E2 as net −€175 to −€325 at vehicle level, so it is consistent with S2."
+ },
+ {
+  "id": "ix3b-e1",
+  "originalId": "E1",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The combined capture says E1 and C2 'land on the same overhead block'. The study's own cost model puts them on separate lines (tab 1 rows 24-25 vs row 28), so the stated reason for non-additivity is unclear. The maturity 'Proven (BMW LIVE)' also sits next to a benchmark the card itself calls '(illustrative)', and the Energy Master contents are Tier B ESTIMATE.",
+  "evidence": "Combined capture: 'E1 + C2 land on the same overhead block'; cost model row 24 'Energy Master contents Tier B'; row 28 'Propagation protection'",
+  "duplicateOf": null,
+  "recommendation": "Ask the author for the overlap mechanism. Keep 'Proven' for the concept but tag the contents as estimated."
+ },
+ {
+  "id": "hs26-m1",
+  "originalId": "M1",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: induction-hardened medium-carbon half-shaft bar replacing a through-hardened alloy bar.",
+  "evidence": "Library [luxury-suv-mhev-bev]: 'Front half-shaft bar in induction-hardened Cf53 replaces through-hardened 42CrMo4'",
+  "duplicateOf": "lux-1b191109224a",
+  "recommendation": "Link the two. The study card carries the duty-specific SPEC (C50/1050, 15,539 Nm)."
+ },
+ {
+  "id": "hs26-p2",
+  "originalId": "P2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: near-net forging of the CV outer race (outer-joint housing).",
+  "evidence": "Library [offroad-luxury]: 'Switch the CV outer-joint housing to near-net forging to cut machining stock'",
+  "duplicateOf": "orl271",
+  "recommendation": "Link. The study card has the cycle-time figures."
+ },
+ {
+  "id": "hs26-d4",
+  "originalId": "D4",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: a tubular half-shaft in place of a solid bar (also pt023 'Hollow induction-hardened CV outer shaft tube', drv029 'flow-formed hollow bars'). The figures CONFLICT: the library claims a saving of ~£5.1/side; the study prices it as a +£3.98 adder and calls it 'a mass purchase, not a saving'.",
+  "evidence": "Library [extra]: 'Friction-welded tubular half-shaft replacing solid bar ... saving about £5.1/side'",
+  "duplicateOf": "add157",
+  "recommendation": "Link, and flag the sign conflict for whoever curates add157."
+ },
+ {
+  "id": "dif26-p2",
+  "originalId": "P2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: net/cold-forged differential pinions (spider) and side gears in place of machined gears.",
+  "evidence": "Library [legacy-seed]: 'Open differential spider gears — cold-forged 8620 vs machined bevel gear from bar'",
+  "duplicateOf": "pt019",
+  "recommendation": "Link."
+ },
+ {
+  "id": "dif26-d1",
+  "originalId": "D1",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: delete the front locker hardware and rely on brake-based front traction intervention.",
+  "evidence": "Library [luxury-suv-mhev-bev]: 'MHEV locker content rationalised: centre lock plus rear e-locker, front locking by brakes ... Deletes the front e-locker hardware'",
+  "duplicateOf": "lux-125861e312e0",
+  "recommendation": "Link."
+ },
+ {
+  "id": "ps26-p2",
+  "originalId": "P2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: near-net forging of the propshaft flange yoke (flange fork).",
+  "evidence": "Library [offroad-luxury]: 'Switch the flange fork to near-net forging to cut machining stock'",
+  "duplicateOf": "orl266",
+  "recommendation": "Link."
+ },
+ {
+  "id": "ps26-d1",
+  "originalId": "D1",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: a one-piece aluminium propshaft replacing two-piece steel plus centre bearing (also drv036 'aluminium prop-shaft tube'). The library card presents it as a saving; the study now recommends against it.",
+  "evidence": "Library [legacy-seed]: 'Single-piece aluminium propshaft — replaces 2-piece steel + centre bearing assembly'",
+  "duplicateOf": "pt029",
+  "recommendation": "Link. The study card's objections (shell mode, MPW slippage, rock strike) are useful against pt029."
+ },
+ {
+  "id": "ps26-d2",
+  "originalId": "D2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: a CFRP one-piece propshaft tube replacing two-piece steel (also pt028).",
+  "evidence": "Library [driveline]: 'CFRP propshaft tube replacing two-piece steel for ICE/PHEV'",
+  "duplicateOf": "drv024",
+  "recommendation": "Link. Study prices it as +£38.90 adder, not recommended."
+ },
+ {
+  "id": "ps26-d3",
+  "originalId": "D3",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: a CV joint replacing a Cardan joint on the propshaft for NVH.",
+  "evidence": "Library [legacy-seed]: 'Propshaft U-joint replaced by constant-velocity joint — NVH and warranty improvement'",
+  "duplicateOf": "pt032",
+  "recommendation": "Link."
+ },
+ {
+  "id": "tc26-p2",
+  "originalId": "P2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: power-skiving the transfer-case planetary internal ring gear instead of shaping it.",
+  "evidence": "Library [luxury-suv-mhev-bev]: 'Power-skived internal ring gear for planetary low range shared with MHEV transfer case ... (shaping) to ... (skiving)'",
+  "duplicateOf": "lux-f09b097a4b7b",
+  "recommendation": "Link."
+ },
+ {
+  "id": "tc26-d6",
+  "originalId": "D6",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "The same move: disconnect the front driveline at the transfer case to cut spin/churn losses. The library version adds a front-diff decoupler and starts from an on-demand case.",
+  "evidence": "Library [luxury-suv-mhev-bev]: 'Disconnecting front driveline: transfer-case clutch plus front-diff decoupler for MHEV AWD'",
+  "duplicateOf": "lux-61ef8b51c04a",
+  "recommendation": "Link (near-duplicate)."
+ },
+ {
+  "id": "ix3b-s2",
+  "originalId": "S2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: the pack tray/floor becomes the body floor and carries body/crash loads (also cn001 BYD CTB, add065, deep-fe076ec3e33c). The library frames it as a saving; the study books it correctly as a cost transfer (pack +€35).",
+  "evidence": "Library [legacy-seed]: 'Pack structural integration (structural battery) — pack floor IS the body floor'",
+  "duplicateOf": "pt050",
+  "recommendation": "Link. Keep the study's 'cost transfer' framing."
+ },
+ {
+  "id": "ix3b-e2",
+  "originalId": "E2",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found. 'BMW Gen6 splits the pack into two 400 V halves for 400 V charging, no booster': BMW states only that 400 V DC charging remains possible. The mechanism (pack split vs booster) was not found in public sources. The study's own tech tab rates it Tier B 'decoded from technical threads'.",
+  "evidence": "https://www.press.bmwgroup.com/belux/article/attachment/T0450688FR/632948 (fact sheet: '800V ... charging at 400V DC points will, of course, still be possible'); no source found for split",
+  "duplicateOf": null,
+  "recommendation": "Keep the '(illustrative)' tag. Do not present the mechanism as confirmed."
+ },
+ {
+  "id": "ix3b-c2",
+  "originalId": "C2",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found. 'BMW Gen6 bottom venting (per-cell into a common bottom channel)': no BMW source found describing the Gen6 venting path. The study's own tab 1 row 28 says 'GB 38031 result NOT DISCLOSED' and the cooling side is 'CONFLICT'.",
+  "evidence": "https://www.bmwblog.com/2022/09/19/bmw-gen6-cylindrical-cells/ (format confirmed, venting path not described)",
+  "duplicateOf": null,
+  "recommendation": "Keep '(illustrative)'. The study's action A5 (request GB 38031 evidence) stands."
+ },
+ {
+  "id": "hs26-m2",
+  "originalId": "M2",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Not a duplicate, but a library CONFLICT. drv039 proposes switching CV boots from CR to TPE as a cost-down. This card (and ps26-m2) says CR is the cheaper option and refuses it. Each card says the other material is the cheaper one.",
+  "evidence": "drv039: 'Replace chloroprene (CR) rubber CV boots with thermoplastic-elastomer (TPE/Hytrel) boots ... Cuts boot cost'; hs26-m2: 'CR is cheaper and has less temperature and ozone margin'",
+  "duplicateOf": null,
+  "recommendation": "Flag drv039 for curation. Same lever, different direction — no merge."
+ },
+ {
+  "id": "hs26-m3",
+  "originalId": "M3",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Not a duplicate, but a library CONFLICT. drv030 proposes the single-grease consolidation that this card refuses as a PROTECTED line.",
+  "evidence": "drv030: 'Consolidate three CV-joint grease specifications to a single high-performance lifetime-fill grease across outboard and inboard joints'",
+  "duplicateOf": null,
+  "recommendation": "Cross-reference so drv030 is not taken on the off-road variant without the crawl thermal case."
+ }
+]

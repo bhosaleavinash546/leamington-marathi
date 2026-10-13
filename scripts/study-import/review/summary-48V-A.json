@@ -1,0 +1,261 @@
+{
+ "slice": "48V-A",
+ "source": "48V_MHEV_Should_Cost_v1.8.xlsx (Ideas rows 5-80, Evaluation), 48V_MHEV_Development_Pack.pptx slides 12-79",
+ "ideasReviewed": 76,
+ "transcriptionOk": 75,
+ "transcriptionNote": "75 of 76 records are field-for-field identical to the source. ID-018's annual saving drops the minus sign. There are also two slice-wide minor converter artefacts ('payback None yrs' / 'NRE £0' for blank cells), and the criterion scores are not carried. The development-pack slides for all 19 Develop ideas match their records (titles, header, risk-adjusted saving, p, lead time, NRE, payback, and all text excerpts).",
+ "studyCaveat": "The study's own deck (slide 4) and Evaluation row 180-181 state that the saving bands are overstated (portfolio payback of about 40 days 'is not credible'), and that the development-list total double counts.",
+ "duplicates": [
+  {
+   "id": "mhev48s-id-004",
+   "duplicateOf": "lux-afb07eaa6f42",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-005",
+   "duplicateOf": "m48d-891c018074fd",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-007",
+   "duplicateOf": "m48d-78dd3b78c3f0",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-008",
+   "duplicateOf": "m48-d7f7f6c7dbaa",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-012",
+   "duplicateOf": "m48-214d051ffe01",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-024",
+   "duplicateOf": "m48d-4d0c6a28f04e",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-029",
+   "duplicateOf": "m48-c89054c21d85",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-059",
+   "duplicateOf": "m48d-633fddeccf45",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-076",
+   "duplicateOf": "m48d-e590e7d3c36b",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-006",
+   "duplicateOf": "pt044 / add064 (legacy & extra: traction-pack CTP)",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "mhev48s-id-009",
+   "duplicateOf": "EDU 'gate driver and control board onto one PCBA' (study-edu-function-analysis)",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "mhev48s-id-010",
+   "duplicateOf": "Stamped cold plate to roll-bond aluminium (marketplace-extra-ideas.json)",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-033",
+   "duplicateOf": "As-cast pin-fin cooling face on inverter housing (marketplace-retired-ideas.json)",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-063",
+   "duplicateOf": "lux zone controller PCB 10-layer HDI to 6-layer (luxury-suv-mhev-bev)",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "mhev48s-id-069",
+   "duplicateOf": "Glass fuse link integrated into module busbar (marketplace-legacy-seed-ideas.json)",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "mhev48s-id-072",
+   "duplicateOf": "Shunt-based current sensor replaces Hall-effect sensor (legacy-seed) - opposite direction; also m48d-3b14e3a47139",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-066",
+   "duplicateOf": "lux-f13407b63bdf MOSFET switch replaces relay in 48V battery - opposite direction",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-014",
+   "duplicateOf": "m48d-cb81122a6928 fleet telemetry cuts ageing margin (evidence-based; ID-014 is a spec relaxation)",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-049",
+   "duplicateOf": "m48-c78965e1ee37 sealed eyelet housings (vehicle harness side of the joint)",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "mhev48s-id-052",
+   "duplicateOf": "m48-e9bfed2040e1 moulded-in terminal shroud (different solution)",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-065",
+   "duplicateOf": "m48d-e7bd70766ec9 BMS on busbar carrier deletes sense harness (different solution)",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-003",
+   "duplicateOf": "m48d-ed3f205ffacf off-line floor module / m48-391bd89362f8 inverter+DC-DC box",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-044",
+   "duplicateOf": "m48d-ee7fc4f778a2 (retired) thirteen busbars stamped as one lead-frame",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-062",
+   "duplicateOf": "lux-d89ce6be0bf3 one AFE chip and BMS software core across 48V and 800V",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-013",
+   "duplicateOf": "m48d-15eca2680941 chemistry-agnostic housing for dual sourcing",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-001",
+   "duplicateOf": "m48-2afc1188cc6d / m48-8db4649764d5 air-cooled DC-DC / BiSG (other parts)",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "mhev48s-id-012",
+   "duplicateOf": "ID-122 (same study, laser-mark data matrix) - conflict-mapped alternative in C21",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-024",
+   "duplicateOf": "ID-126 (same study, barrier+insulation on can) - overlapping, see quality finding",
+   "verdict": "distinct"
+  },
+  {
+   "id": "mhev48s-id-007",
+   "duplicateOf": "ID-143 / ID-014 (same study) - conflict-mapped alternatives in C5",
+   "verdict": "distinct"
+  }
+ ],
+ "benchmarkChecks": [
+  {
+   "id": "mhev48s-id-001",
+   "claim": "Bosch 48V pack: cells to 75 degC, passive cooling, plastic housing",
+   "result": "confirmed",
+   "url": "https://chargedevs.com/newswire/bosch-introduces-new-48-v-li-ion-battery-for-mild-hybrids/ ; https://bosch-mobility.com/en/solutions/batteries/48v-battery"
+  },
+  {
+   "id": "mhev48s-id-001",
+   "claim": "Bosch cells deliver FULL output to 75 degC 'without any reduction in service life'",
+   "result": "not found",
+   "url": "https://www.delo-adhesives.com/press-and-news/delo-news/details/bosch-relies-on-delo-adhesives-for-mild-hybrid-systems"
+  },
+  {
+   "id": "mhev48s-id-001",
+   "claim": "Castasil-37 thermal conductivity up to 173 W/m.K (EMP Tech, Sep 2026)",
+   "result": "not found",
+   "url": "none: WebSearch for Castasil-37 thermal conductivity returned no source naming the alloy"
+  },
+  {
+   "id": "mhev48s-id-001",
+   "claim": "MAHLE Powertrain 48V pack: simple cooling holding cells under 55 degC; busbar designed to avoid heat input at cell terminals",
+   "result": "confirmed",
+   "url": "https://www.mahle-powertrain.com/media/mahle-powertrain/news-&-press/flyers/48-v-battery/mpt-48-v-battery-25.pdf"
+  },
+  {
+   "id": "mhev48s-id-004",
+   "claim": "A123 48V MHEV pack, 14S1P pouch, 8 Ah, 0.4 kWh, tested at EPA NVFEL (SAE 2018-01-0433)",
+   "result": "confirmed",
+   "url": "https://www.epa.gov/sites/production/files/2018-10/documents/sae-paper-2018-01-0433.pdf"
+  },
+  {
+   "id": "mhev48s-id-004",
+   "claim": "China LFP cell 55-65 USD/kWh against NMC 85-95 (BAKTH Battery, 15 Jun 2026)",
+   "result": "not found",
+   "url": "https://sneresearch.com/en/business/report_view/256/page/0"
+  },
+  {
+   "id": "mhev48s-id-011",
+   "claim": "Valeo: battery coolers built to best-in-class flatness specifically to minimise thermal interface material",
+   "result": "confirmed",
+   "url": "https://www.valeo.com/en/catalogue/ths/large-battery-liquid-cooler-for-ev/"
+  },
+  {
+   "id": "mhev48s-id-021",
+   "claim": "Mica-based thermal shields 0.5-1.0 mm stable above 1000 degC (PatSnap, 9 Apr 2026)",
+   "result": "not found",
+   "url": "https://www.patsnap.com/resources/blog/rd-blog/thermal-runaway-in-prismatic-lfp-packs-patsnap-eureka/"
+  },
+  {
+   "id": "mhev48s-id-059",
+   "claim": "TI BQ79612-Q1 (12S) pin-compatible with BQ79614-Q1/BQ79616-Q1; auto-pause of balancing on over-temperature",
+   "result": "confirmed",
+   "url": "https://www.ti.com/product/BQ79614-Q1 ; https://www.ti.com/document-viewer/lit/html/SLUSE81F"
+  },
+  {
+   "id": "mhev48s-id-059",
+   "claim": "NXP MC33771/MC33772: 0.8 mV cell voltage accuracy and integrated 300 mA balancing",
+   "result": "not found",
+   "url": "https://www.eenewseurope.com/en/nxp-adds-cell-controller-to-battery-management-platform/"
+  },
+  {
+   "id": "mhev48s-id-059",
+   "claim": "ADI LTC6811-1: 12 cells in 290 microseconds, total error under 1.2 mV",
+   "result": "confirmed",
+   "url": "https://www.analog.com/en/products/ltc6811-1.html"
+  },
+  {
+   "id": "mhev48s-id-062",
+   "claim": "Hella 48V PowerPack combines 48V Li-ion battery, battery management and DC/DC converter",
+   "result": "confirmed",
+   "url": "https://chargedevs.com/newswire/hella-develops-two-new-battery-systems-for-mild-hybrids/"
+  }
+ ],
+ "counts": {
+  "byCategory": {
+   "transcription": 3,
+   "consistency": 3,
+   "quality": 34,
+   "duplicate": 9,
+   "benchmark": 6
+  },
+  "bySeverity": {
+   "major": 16,
+   "minor": 37,
+   "critical": 2
+  },
+  "byCategoryAndSeverity": {
+   "transcription/major": 1,
+   "transcription/minor": 2,
+   "consistency/minor": 3,
+   "quality/critical": 2,
+   "quality/major": 15,
+   "quality/minor": 17,
+   "duplicate/minor": 9,
+   "benchmark/minor": 6
+  },
+  "findings": 55,
+  "trueDuplicates": 9,
+  "statusMix": {
+   "Develop": 19,
+   "Hold": 22,
+   "Not selected": 34,
+   "Screened out": 1
+  }
+ }
+}

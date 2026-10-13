@@ -1,0 +1,286 @@
+{
+ "slice": "EDU-A",
+ "ideasReviewed": 83,
+ "transcriptionOk": 83,
+ "transcriptionNote": "All 83 records were checked by script against '7. Creativity idea register' (rows 8+) and '11. Phase 4 evaluation'. Every carried field matches exactly, and both the saving arithmetic and the risk-adjusted arithmetic hold. Only normalisation: Effort 'Med' is shown as 'Medium' on 35 records (benign). Not carried into records: C1-C7 criterion scores, NRE per unit, Net per unit. All 37 Develop ideas match their deck ranking row and card exactly. Cross-reference slide links are mis-attached on T1 (carries T12's card notes), T5, G1, G8, G9.",
+ "duplicates": [
+  {
+   "id": "edu26-a3",
+   "duplicateOf": "pt036",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-a7",
+   "duplicateOf": "deep-1a4ca54b9939",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-a8",
+   "duplicateOf": "luxpr036",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-t1",
+   "duplicateOf": "bev167",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-t11",
+   "duplicateOf": "bev189",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-t4",
+   "duplicateOf": "add128",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-g1",
+   "duplicateOf": "add122",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-g10",
+   "duplicateOf": "add194",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-g11",
+   "duplicateOf": "add123",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-g4",
+   "duplicateOf": "add124",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-g8",
+   "duplicateOf": "deep-6ffd7a7310c7",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-h2",
+   "duplicateOf": "add133",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-h3",
+   "duplicateOf": "deep-8cdc9b733c53",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-b10",
+   "duplicateOf": "drv048",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-b2",
+   "duplicateOf": "bev104",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-b4",
+   "duplicateOf": "orl023",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-i1",
+   "duplicateOf": "add138",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-i2",
+   "duplicateOf": "add120",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-m2",
+   "duplicateOf": "lux-ec8d9126baa0",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-m5",
+   "duplicateOf": "deep-8265e3abd6c5",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-v2",
+   "duplicateOf": "add175",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-a1",
+   "duplicateOf": "add143",
+   "verdict": "distinct: hybrid NdFeB+ferrite spoke vs all-ferrite spoke"
+  },
+  {
+   "id": "edu26-a1",
+   "duplicateOf": "edu26-r3",
+   "verdict": "same lever, different machine (study conflict set)"
+  },
+  {
+   "id": "edu26-a5",
+   "duplicateOf": "deep-f5876c444716",
+   "verdict": "distinct: reduced NdFeB vs ferrite-assisted"
+  },
+  {
+   "id": "edu26-t12",
+   "duplicateOf": "bev130",
+   "verdict": "distinct: low-pressure centrifugal feed vs deleting a feed pipe"
+  },
+  {
+   "id": "edu26-h6",
+   "duplicateOf": "bat8-2b66f6de22a8",
+   "verdict": "same lever, different part (battery HV distribution)"
+  },
+  {
+   "id": "edu26-m4",
+   "duplicateOf": "bat8-44d8fcb4c349",
+   "verdict": "same lever, different part (battery busbars)"
+  },
+  {
+   "id": "edu26-m4",
+   "duplicateOf": "edu26 aluminium hairpin (EDU-B)",
+   "verdict": "distinct: busbar vs winding"
+  },
+  {
+   "id": "edu26-m6",
+   "duplicateOf": "m48d-0566f6e21347",
+   "verdict": "same lever, different part (48 V power stages)"
+  },
+  {
+   "id": "edu26-v4",
+   "duplicateOf": "mhev48s-id-149",
+   "verdict": "same lever, different part (48 V battery housing)"
+  },
+  {
+   "id": "edu26-t10",
+   "duplicateOf": "mhev48s-id-104",
+   "verdict": "same lever, different part (48 V battery cover)"
+  },
+  {
+   "id": "edu26-t6",
+   "duplicateOf": "mhev48s-id-113",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "edu26-g3",
+   "duplicateOf": "pt020",
+   "verdict": "same lever, different part (axle hypoid ring and pinion)"
+  },
+  {
+   "id": "edu26-g9",
+   "duplicateOf": "drv038",
+   "verdict": "distinct: selective-fit shim vs shim deletion"
+  },
+  {
+   "id": "edu26-g16",
+   "duplicateOf": "deep-7326d3bf068a",
+   "verdict": "distinct variant: angular-contact vs deep-groove ball bearing"
+  },
+  {
+   "id": "edu26-g14",
+   "duplicateOf": "edu26-g3",
+   "verdict": "distinct moves on the same ring gear"
+  },
+  {
+   "id": "edu26-t7",
+   "duplicateOf": "lux-4c22efd3a631",
+   "verdict": "distinct: moulded polymer ring vs cast-in cover feature"
+  },
+  {
+   "id": "edu26-m3",
+   "duplicateOf": "add106",
+   "verdict": "distinct"
+  },
+  {
+   "id": "edu26-b8",
+   "duplicateOf": "m48-214d051ffe01",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "edu26-b5",
+   "duplicateOf": "mhev48s-id-034",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "edu26-b3",
+   "duplicateOf": "mhev48s-id-137",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "edu26-h6",
+   "duplicateOf": "bat8-4a72ef562f8f",
+   "verdict": "same lever, different part"
+  }
+ ],
+ "benchmarkChecks": [
+  {
+   "id": "edu26-t7",
+   "claim": "Nissan Ariya uses axial oil sprays at rotor and stator coil ends",
+   "result": "not found",
+   "url": "https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12661973"
+  },
+  {
+   "id": "edu26-g8",
+   "claim": "Pinion integrated into rotor shaft on VW MEB APP310 and Tesla Model 3 rear unit",
+   "result": "not found",
+   "url": "https://insideevs.com/news/518692/tesla-model-3y-drive-units/"
+  },
+  {
+   "id": "edu26-b1",
+   "claim": "Tesla Model Y and most modern BEV drive units use HPDC aluminium EDU housings",
+   "result": "not found (only Model Y body megacastings found)",
+   "url": "https://en.wikipedia.org/wiki/Giga_Press"
+  },
+  {
+   "id": "edu26-b2",
+   "claim": "VW MEB and Tesla Model 3/Y have cast-in coolant galleries in the EDU housing",
+   "result": "contradicted for Tesla (weak, one secondary source); not found for MEB",
+   "url": "https://leandesign.com/?p=2064"
+  },
+  {
+   "id": "edu26-z10",
+   "claim": "Selling the EDU to third parties is widespread but confidential",
+   "result": "not checkable (no named fact)",
+   "url": null
+  },
+  {
+   "id": "edu26-a5",
+   "claim": "Tesla Model 3 Long Range rear drive unit is a PM-assisted synchronous reluctance machine",
+   "result": "confirmed (consensus of secondary sources)",
+   "url": "https://insideevs.com/news/518692/tesla-model-3y-drive-units/"
+  },
+  {
+   "id": "edu26-a3",
+   "claim": "Mercedes-AMG models use YASA axial flux machines",
+   "result": "confirmed (AMG GT 4-Door Coupe, AMG.EA; Berlin production 2026)",
+   "url": "https://www.electrive.com/es/2026/06/10/mercedes-benz-inicia-la-produccion-de-motores-de-flujo-axial-en-berlin/"
+  },
+  {
+   "id": "edu26-a4",
+   "claim": "Niron with Stellantis and GM investment, announced for future Chrysler and Jeep applications",
+   "result": "investment confirmed; Chrysler/Jeep not found",
+   "url": "https://electrive.com/2023/11/09/gm-and-stellantis-invest-in-niron-magnetics"
+  }
+ ],
+ "searchesUsed": 10,
+ "counts": {
+  "consistency": {
+   "major": 1,
+   "minor": 4
+  },
+  "quality": {
+   "major": 11,
+   "minor": 10
+  },
+  "duplicate": {
+   "minor": 21
+  },
+  "benchmark": {
+   "minor": 5
+  },
+  "total": 52
+ }
+}

@@ -21,6 +21,7 @@
    "costReductionMechanism": "Cost effect on the 105 kWh GROSS reference pack (study): −€40 to −€70 / −€0.4 to −€0.7 per kWh GROSS",
    "riskNotes": "Certification: NONE if contactor/pyro ratings and welding detection are held; RE-TEST if ratings change (LV 123). Trade-off: single point of failure, thermal density. Proven (BMW LIVE). Effort: medium. Evidence: tab 1 rows 24–25.",
    "studyCostEffect": "−€40 to −€70 / −€0.4 to −€0.7 per kWh GROSS",
+   "maturity": "",
    "powertrain": "800V BEV (105 kWh GROSS reference pack)",
    "studyCombinedCapture": "COMBINED CAPTURE (non-additive): E1 + C2 land on the same overhead block — realistic combined −€60 to −€90 / −€0.6 to −€0.9 per kWh GROSS at pack level, NOT the sum. E2 and S2 are cost TRANSFERS that raise pack cost and lower vehicle cost; never book them as pack savings.",
    "costSavingPotential": {
@@ -30,7 +31,9 @@
     "qualitative": "Saving"
    },
    "volumeBasis": "No volume stated in the benchmark. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
-   "implementationDifficulty": "Medium"
+   "implementationDifficulty": "Medium",
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · quality] The combined capture says E1 and C2 'land on the same overhead block'. The study's own cost model puts them on separate lines (tab 1 rows 24-25 vs row 28), so the stated reason for non-additivity is unclear. The maturity 'Proven (BMW LIVE)' also sits next to a benchmark the card itself calls '(illustrative)', and the Energy Master contents are Tier B ESTIMATE. Evidence: Combined capture: 'E1 + C2 land on the same overhead block'; cost model row 24 'Energy Master contents Tier B'; row 28 'Propagation protection' Recommendation: Ask the author for the overlap mechanism. Keep 'Proven' for the concept but tag the contents as estimated."
   },
   "costSavingType": "Architecture",
   "annualSaving": "Not stated — the benchmark states no volume",
@@ -60,6 +63,7 @@
    "costReductionMechanism": "Cost effect on the 105 kWh GROSS reference pack (study): +€75 / +€0.7 per kWh GROSS in the pack; −€250 to −€400 at VEHICLE level",
    "riskNotes": "Certification: RE-TEST — switching contactors are PROTECTED ratings (LV 123, ISO 6469-1). Trade-off: pack-level cost RISES; judge at vehicle level only. Proven. Evidence: tab 2 'Configuration'.",
    "studyCostEffect": "+€75 / +€0.7 per kWh GROSS in the pack; −€250 to −€400 at VEHICLE level",
+   "maturity": "",
    "powertrain": "800V BEV (105 kWh GROSS reference pack)",
    "studyCombinedCapture": "COMBINED CAPTURE (non-additive): E1 + C2 land on the same overhead block — realistic combined −€60 to −€90 / −€0.6 to −€0.9 per kWh GROSS at pack level, NOT the sum. E2 and S2 are cost TRANSFERS that raise pack cost and lower vehicle cost; never book them as pack savings.",
    "costSavingPotential": {
@@ -69,7 +73,9 @@
     "qualitative": "Cost transfer (pack +, vehicle −)"
    },
    "volumeBasis": "No volume stated in the benchmark. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
-   "implementationDifficulty": ""
+   "implementationDifficulty": "",
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · quality] The vehicle-level figure is gross (booster deleted, −€250 to −€400). S2 states its vehicle-level figure net of the pack adder. Net for E2 would be −€175 to −€325. Evidence: E2: '+€75 ... in the pack; −€250 to −€400 at VEHICLE level'; S2: '+€35 ... in pack; net −€115 to −€265 at VEHICLE level' Recommendation: State E2 as net −€175 to −€325 at vehicle level, so it is consistent with S2. ¶ [MINOR · benchmark] Benchmark claim not found. 'BMW Gen6 splits the pack into two 400 V halves for 400 V charging, no booster': BMW states only that 400 V DC charging remains possible. The mechanism (pack split vs booster) was not found in public sources. The study's own tech tab rates it Tier B 'decoded from technical threads'. Evidence: https://www.press.bmwgroup.com/belux/article/attachment/T0450688FR/632948 (fact sheet: '800V ... charging at 400V DC points will, of course, still be possible'); no source found for split Recommendation: Keep the '(illustrative)' tag. Do not present the mechanism as confirmed."
   },
   "costSavingType": "Architecture",
   "annualSaving": "No saving booked — cost transfer (raises pack cost, lowers vehicle cost)",
@@ -99,6 +105,7 @@
    "costReductionMechanism": "Cost effect on the 105 kWh GROSS reference pack (study): +€35 / +€0.3 per kWh GROSS in pack; net −€115 to −€265 at VEHICLE level",
    "riskNotes": "Certification: RE-HOMOLOGATION — crash and bottom-impact case moves into the pack (GB 38031 150 J; R100). Trade-off: pack repair = body repair; sealing interfaces. Proven at 3 OEMs. Evidence: tab 1 row 19.",
    "studyCostEffect": "+€35 / +€0.3 per kWh GROSS in pack; net −€115 to −€265 at VEHICLE level",
+   "maturity": "",
    "powertrain": "800V BEV (105 kWh GROSS reference pack)",
    "studyCombinedCapture": "COMBINED CAPTURE (non-additive): E1 + C2 land on the same overhead block — realistic combined −€60 to −€90 / −€0.6 to −€0.9 per kWh GROSS at pack level, NOT the sum. E2 and S2 are cost TRANSFERS that raise pack cost and lower vehicle cost; never book them as pack savings.",
    "costSavingPotential": {
@@ -108,7 +115,10 @@
     "qualitative": "Cost transfer (pack +, vehicle −)"
    },
    "volumeBasis": "No volume stated in the benchmark. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
-   "implementationDifficulty": ""
+   "implementationDifficulty": "",
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · duplicate] Same move on the same part: the pack tray/floor becomes the body floor and carries body/crash loads (also cn001 BYD CTB, add065, deep-fe076ec3e33c). The library frames it as a saving; the study books it correctly as a cost transfer (pack +€35). Evidence: Library [legacy-seed]: 'Pack structural integration (structural battery) — pack floor IS the body floor' Recommendation: Link. Keep the study's 'cost transfer' framing.",
+   "possibleDuplicateOf": "pt050"
   },
   "costSavingType": "Architecture",
   "annualSaving": "No saving booked — cost transfer (raises pack cost, lowers vehicle cost)",
@@ -138,6 +148,7 @@
    "costReductionMechanism": "Cost effect on the 105 kWh GROSS reference pack (study): −€30 / −€0.3 per kWh GROSS",
    "riskNotes": "Certification: RE-HOMOLOGATION — PROTECTED line, GB 38031-2025 propagation test mandatory. Trade-off: only valid with a cylindrical cell decision (C-lever). Emerging for EU; Proven at Tesla. Evidence: tab 1 row 28.",
    "studyCostEffect": "−€30 / −€0.3 per kWh GROSS",
+   "maturity": "",
    "powertrain": "800V BEV (105 kWh GROSS reference pack)",
    "studyCombinedCapture": "COMBINED CAPTURE (non-additive): E1 + C2 land on the same overhead block — realistic combined −€60 to −€90 / −€0.6 to −€0.9 per kWh GROSS at pack level, NOT the sum. E2 and S2 are cost TRANSFERS that raise pack cost and lower vehicle cost; never book them as pack savings.",
    "costSavingPotential": {
@@ -147,7 +158,9 @@
     "qualitative": "Saving"
    },
    "volumeBasis": "No volume stated in the benchmark. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
-   "implementationDifficulty": ""
+   "implementationDifficulty": "",
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · benchmark] Benchmark claim not found. 'BMW Gen6 bottom venting (per-cell into a common bottom channel)': no BMW source found describing the Gen6 venting path. The study's own tab 1 row 28 says 'GB 38031 result NOT DISCLOSED' and the cooling side is 'CONFLICT'. Evidence: https://www.bmwblog.com/2022/09/19/bmw-gen6-cylindrical-cells/ (format confirmed, venting path not described) Recommendation: Keep '(illustrative)'. The study's action A5 (request GB 38031 evidence) stands."
   },
   "costSavingType": "Architecture",
   "annualSaving": "Not stated — the benchmark states no volume",

@@ -1,0 +1,552 @@
+[
+ {
+  "id": "mhev48s-id-018",
+  "originalId": "ID-018",
+  "category": "transcription",
+  "severity": "major",
+  "issue": "The annual saving has lost its minus sign. The source low saving is negative (-£1.5126 per pack: aerogel costs more), and the per-pack string keeps it, but annualSaving and costSavingPotential.annualValue read '£181.5K-£36.3K', which shows a £181.5K GAIN where the source states a £181.5K COST.",
+  "evidence": "Ideas row ID-018: Saving low -1.5126, Saving high 0.3025. Record perVehicle '£-1.51-£0.30 per pack'; annualSaving '£181.5K-£36.3K at 120,000 packs/yr'. The text itself says 'this idea spends money'.",
+  "duplicateOf": null,
+  "recommendation": "Render it as '-£181.5K to £36.3K' (or 'cost £181.5K to save £36.3K'), and fix the generator for every negative band in the pack."
+ },
+ {
+  "id": "ALL",
+  "originalId": "ALL",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Converter artefacts in costSavingPotential.calculationBasis, on every Not selected / Hold / Screened-out idea in the slice: 'payback None yrs' (a Python None leaking into text), and 'NRE £0' where the Evaluation cell is BLANK, not zero. A blank means NRE was not assessed for an idea that was not selected. It does not mean free.",
+  "evidence": "e.g. ID-002 calculationBasis: 'Evaluation risk-adjusted: £2.65-£4.42 per pack at p 0.5; NRE £0; payback None yrs.' Evaluation row ID-002: NRE GBP '', Payback yrs ''. Its investmentText says 'of the order of 200k GBP combined'.",
+  "duplicateOf": null,
+  "recommendation": "Write 'NRE not assessed (not selected)' and drop the payback clause when the source cell is blank."
+ },
+ {
+  "id": "ALL",
+  "originalId": "ALL",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Two items are not carried into the records. (a) The five Evaluation criterion scores (Saving potential, Technical feasibility, Investment required, Lead time, Specification and safety risk); only the weighted total is kept. (b) Level is re-labelled 'sub-assembly'->'subassembly' and 'component'->'part'. The re-labelling is a vocabulary mapping, not a loss. Every other field matched the source exactly for all 76 ideas: title, all 10 text columns, affected GBP, saving low/high, depth, group, lever, novelty, maturity, effort, lead time, conflicts, saving basis, decision, reason, weighted score, p, risk-adjusted low/high, NRE, shared NRE, payback and NRE note. The Ideas 'Saving low/high' also equal the Evaluation 'Saving low/high' for every idea.",
+  "evidence": "Scripted cell-by-cell comparison of 'Ideas' rows 5-80 and the matching 'Evaluation' rows against slice-48V-A.json.",
+  "duplicateOf": null,
+  "recommendation": "Optional: add the five criterion scores to ideaData, so a reader can see why an idea was selected."
+ },
+ {
+  "id": "mhev48s-id-058",
+  "originalId": "ID-058",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "The component count under the two BMS-scope readings is given three different ways. This idea says 'from 55 to 44'. Assumptions A-02 says the component count drops 'to 45'. Development pack slide 81 (Decisions required, item 2) says 'from 55 to 45'. The Parts sheet header says '54 leaf components', while its rows are numbered to 55.",
+  "evidence": "ID-058 Trade-offs: 'change the component count from 55 to 44'. Assumptions A-02: 'drops the bill of materials to £232.78 and the component count to 45'. Deck slide 81: 'the component count from 55 to 45'.",
+  "duplicateOf": null,
+  "recommendation": "Ask the study author which count is right. Report only."
+ },
+ {
+  "id": "mhev48s-id-001",
+  "originalId": "ID-001",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "The text and the conflict map disagree. ID-001 says it 'conflicts directly with integrating the DC-DC converter' (ID-003), and ID-003 says 'The two radical ideas are in direct conflict'. But no conflict set contains both: ID-001 is in C1 and C27-C31, ID-003 is in C11.",
+  "evidence": "Conflicts sheet: C1 = ID-001, ID-010, ID-146, ID-128, ID-117, ID-113, ID-119, ID-120; C11 = ID-009, ID-003, ID-131, ID-062, ID-058.",
+  "duplicateOf": null,
+  "recommendation": "Flag to the author. No effect on decisions, because ID-003 is Not selected."
+ },
+ {
+  "id": "mhev48s-id-003",
+  "originalId": "ID-003",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "The 'direct conflict' with ID-001 claimed in the text is not in the conflict map. See the ID-001 finding.",
+  "evidence": "ID-003 Trade-offs: 'The two radical ideas are in direct conflict.' The record's conflictsWith is C11 only.",
+  "duplicateOf": null,
+  "recommendation": "Flag to the author."
+ },
+ {
+  "id": "mhev48s-id-011",
+  "originalId": "ID-011",
+  "category": "quality",
+  "severity": "critical",
+  "issue": "The claimed saving is larger than the only cost line that actually falls. This is the top-ranked Develop idea (weighted 4.73). It saves thermal adhesive: the content is £3.78, and the mechanism's own arithmetic is 'about £1.70'. The band of £4.60-£8.74 (risk-adjusted £3.91-£7.43) is reached only by counting the £19.21 A380 housing in the affected cost. But the idea makes the housing MORE expensive (flatness control or machining, which the risk text acknowledges). The high case is 2.3x the entire adhesive line and 5x the stated mechanism.",
+  "evidence": "Parts: Thermal conductive adhesive 0.42 kg £3.78; Housing A380 £19.21. ID-011 Mechanism: 'Halving the design gap roughly halves the dispensed mass, about £1.70'. Risk: 'if the floor has to be machined the operation may cost more than the adhesive it saves'. Saving low/high 4.598/8.7362 on affected £22.99.",
+  "duplicateOf": null,
+  "recommendation": "Show the saving as unverified or overstated in front of the Director. The study's own deck (slide 4) warns that the bands are overstated. Do not quote £4.60-£8.74 per pack or the implied £0.55M-£1.05M a year."
+ },
+ {
+  "id": "mhev48s-id-006",
+  "originalId": "ID-006",
+  "category": "quality",
+  "severity": "critical",
+  "issue": "The claimed saving is larger than the content the idea can remove. Cell-to-pack deletes the frame, cover and plate parts; it does not change the cell. Yet the £122.41 cell is in the £135.02 affected cost. The non-cell content affected is £12.61, and even the LOW saving (£16.20) exceeds it, as does the risk-adjusted high (£16.20). No arithmetic is given, and the benchmark admits 'No published 48V cell-to-pack benchmark was found'.",
+  "evidence": "Deck slide 14 'What we do today': cells £122.41; side plates £2.20; end plates £2.60; tie rods £0.90; stack cover £1.10; top insulation plate £0.55; + busbars £5.26 = £135.02. Saving low/high £16.20-£32.40.",
+  "duplicateOf": null,
+  "recommendation": "Show it as unverified. At most the £12.61 non-cell content (less the added housing tooling cost) can be at stake, unless the author shows a cell-price mechanism."
+ },
+ {
+  "id": "mhev48s-id-001",
+  "originalId": "ID-001",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The saving band is not derived from the stated mechanism. The itemised deletions total about £4.8 (plugs £0.70, impregnation £1.20, port parts £2.74, glycol £0.18), plus some adhesive. Reaching £11.18-£17.03 needs a £4-£10 fall in the £19.21 casting, while fins and a dearer alloy are added and a dearer 75 degC cell returns 'part of the saving at the largest line'. That penalty is not netted. The high saving (£17.03) also exceeds the £12.84 value-gap cap the text itself states.",
+  "evidence": "Mechanism: 'two plugs at £0.70 and the vacuum impregnation at £1.20 ... coolant interface parts go at £2.74; the glycol charge goes at £0.18'. Risk: 'A 75 degC-capable cell also costs more per kWh ... part of the saving returns at the largest line.' Value gap £12.84.",
+  "duplicateOf": null,
+  "recommendation": "Present it as an architecture decision (deck Decision 1, 'confirm why the pack is liquid cooled'), not as a quoted saving."
+ },
+ {
+  "id": "mhev48s-id-001",
+  "originalId": "ID-001",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Double-counting between two Develop ideas. ID-001 'reduce[s] the adhesive to a controlled thin bond line', and ID-011 (Develop) cuts the same £3.78 adhesive. Both also claim the housing. They share no conflict set (ID-001: C1, C27-31; ID-011: C19), so the development list counts the adhesive saving twice.",
+  "evidence": "ID-001 Specifics: 'reduce the adhesive to a controlled thin bond line'; ID-011: 'cut the thermal interface material volume'. Both list 'Thermal conductive adhesive; Housing, A380 die casting'.",
+  "duplicateOf": null,
+  "recommendation": "Add a conflict edge, or net the overlap. Report to the author."
+ },
+ {
+  "id": "mhev48s-id-004",
+  "originalId": "ID-004",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The NRE is understated and assigned to the wrong asset. The investment text says 'of the order of 450k GBP' (cell requalification, busbar and contacting tooling). The Evaluation carries £90,000 as a 'marginal share' of a 'Moulding tooling' asset whose full investment is said to sit on ID-064, which is BMS panel tooling at £30,000. The marginal share is three times the full asset, and cell requalification is not moulding tooling. The payback of 0.05 years shown on the deck becomes about 0.26 years on £450k.",
+  "evidence": "Record investmentText '...of the order of 450k GBP'; nreGBP 90000; nreNote 'Marginal share only. The full Moulding tooling investment is carried by ID-064'. ID-064: nreGBP 30000, investmentText 'Panel tooling.' Deck slide 12 'Cost to do £90,000; Payback 0.05 years'.",
+  "duplicateOf": null,
+  "recommendation": "Show £450k as the investment, or flag the NRE as under review."
+ },
+ {
+  "id": "mhev48s-id-006",
+  "originalId": "ID-006",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The NRE is understated in the same way as ID-004. The investment text says '350k GBP' (housing tooling and line rework), but the Evaluation carries a £70,000 'marginal share' of a moulding asset held by ID-064 (£30k panel tooling). The payback falls from about 0.36 to the 0.07 years shown.",
+  "evidence": "investmentText 'of the order of 350k GBP'; nreGBP 70000; nreNote '...carried by ID-064'.",
+  "duplicateOf": null,
+  "recommendation": "Show £350k, or flag it."
+ },
+ {
+  "id": "mhev48s-id-059",
+  "originalId": "ID-059",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The NRE is understated: the text says 'Board redesign and safety rework, of the order of 400k GBP', but the Evaluation carries £80,000 as a marginal share of an 'Electronics NRE' asset that ID-063 carries in full at £30,000. Separately, the text says the 14S-LFP conflict is 'recorded as a conflict', but it is NOT in the conflict map. ID-059 (C7) and ID-004 LFP 14S (C4, C32-C34) are BOTH Develop.",
+  "evidence": "ID-059 Risk: 'Choosing a 12S device fixes the string at twelve cells, which voids the LFP idea at 14S ... recorded as a conflict.' Conflicts sheet: no set contains ID-059 and ID-004. Both Decision = Develop.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author: the development list holds two mutually exclusive ideas, and the NRE is understated."
+ },
+ {
+  "id": "mhev48s-id-004",
+  "originalId": "ID-004",
+  "category": "quality",
+  "severity": "major",
+  "issue": "There is an unrecorded conflict with ID-059, the Develop 12S front end (see the ID-059 finding). The high saving also exceeds the stated arithmetic: the cell (about £33) plus the barrier (up to £6.05) less the added parts (£1.20) is about £37.9, against a claimed high of £43.90, which is above the £41.69 value-gap cap.",
+  "evidence": "Mechanism: 'roughly £33 on £122.41 ... barrier falls by up to £6.05 ... about £1.20, charged against the saving'. Saving high 43.904.",
+  "duplicateOf": null,
+  "recommendation": "Report only. The band needs tightening."
+ },
+ {
+  "id": "mhev48s-id-049",
+  "originalId": "ID-049",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The NRE is understated: the text says 'of the order of 150k GBP' (or supplier-funded), but the Evaluation carries £30,000 as a marginal share of a 'Moulding tooling' asset held by ID-064 (BMS panel tooling, £30k).",
+  "evidence": "investmentText 'Connector tooling, supplier funded or of the order of 150k GBP.'; nreGBP 30000.",
+  "duplicateOf": null,
+  "recommendation": "Flag it."
+ },
+ {
+  "id": "mhev48s-id-062",
+  "originalId": "ID-062",
+  "category": "quality",
+  "severity": "major",
+  "issue": "A logical contradiction inside the Develop list. Carrying over a BMS from another 48V application replaces the board design. Yet four other Develop ideas redesign the same £40 board: ID-059 (new 12S front end), ID-060 (delete unused channels), ID-063 (4- to 2-layer re-lay) and ID-064 (re-panelise). None of them shares a conflict set with ID-062 (C11). On that one £40.00 board the Develop high savings sum to £32.00 (risk-adjusted £22.48), which exceeds its £25.63 value gap. The benchmark is also weak: Hella's PowerPack is an integrated battery+BMS+DC/DC block, not evidence of BMS carry-over across applications, and the same benchmark is cited for the opposite move (ID-003, integration).",
+  "evidence": "Develop on 'BMS printed circuit assembly' £40.00: ID-059 £5.60-11.20, ID-060 £2.00-4.80, ID-062 £3.20-7.20, ID-063 £2.40-5.60, ID-064 £1.20-3.20.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author: either ID-062 or the redesign ideas, not both."
+ },
+ {
+  "id": "mhev48s-id-015",
+  "originalId": "ID-015",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The mechanism does not apply to this pack as stated. A 12S1P string cannot buy 'less cell': the cell count is fixed by voltage, so a usable-capacity gain only pays if a smaller-Ah cell is specified. That is a new cell, which is inconsistent with 'Low' effort, NRE £0 and 12-18 months. The risk text also says the saving 'is not obvious', yet p success is 0.85. The idea reaches Develop through the 1%-of-BOM route on that p.",
+  "evidence": "Mechanism: 'less cell has to be bought for the same usable energy'. Risk: 'The saving only appears if the usable-capacity gain exceeds the sorting premium, which is not obvious.' p 0.85; Reason: 'risk-adjusted saving of £6.24 is at or above 1 per cent'.",
+  "duplicateOf": null,
+  "recommendation": "Flag p and the mechanism to the author. Show it as unverified."
+ },
+ {
+  "id": "mhev48s-id-066",
+  "originalId": "ID-066",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The status contradicts the text. The risk text says a latching relay 'cannot be switched under fault current as fast as a semiconductor, which is exactly what DO-09 asks for' (it fails a stated design objective), yet the idea is Develop at p 0.7 with 'Production elsewhere' maturity and 'No published benchmark'. The cost premise (a relay is cheaper than a MOSFET array at 48V) is the reverse of the existing library idea lux-f13407b63bdf, where a MOSFET switch replaces a relay in a 48V battery. The high saving (£1.44) also exceeds its £0.81 gap cap.",
+  "evidence": "ID-066 Risk text as quoted. Library marketplace-luxury-suv-mhev-bev-ideas.json lux-f13407b63bdf 'Back-to-back MOSFET switch replaces electromechanical relay in 48V battery'.",
+  "duplicateOf": null,
+  "recommendation": "Show it as unverified, conflicting with a design objective. Raise it with the author."
+ },
+ {
+  "id": "mhev48s-id-034",
+  "originalId": "ID-034",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The decision rule is applied inconsistently. This idea is Develop with weighted score 3.67, below the 3.95 development threshold, and its risk-adjusted high saving of £0.34 is below the 1%-of-BOM material route (£2.42). It is selected only because it 'won its position in the conflict graph'. Unconflicted ideas with the same or higher scores are Held (e.g. ID-023, ID-025, ID-035 at 3.67: 'below the 3.95 development threshold. Held'). Winning a conflict set should not bypass the threshold.",
+  "evidence": "Evaluation: ID-034 Weighted 3.67, Risk-adj high 0.34, Decision Develop, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: the threshold and the 1% route.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author. By the study's own rule this idea should read Hold."
+ },
+ {
+  "id": "mhev48s-id-049",
+  "originalId": "ID-049",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The decision rule is applied inconsistently. This idea is Develop with weighted score 3.00, below the 3.95 development threshold, and its risk-adjusted high saving of £0.72 is below the 1%-of-BOM material route (£2.42). It is selected only because it 'won its position in the conflict graph'. Unconflicted ideas with the same or higher scores are Held (e.g. ID-023, ID-025, ID-035 at 3.67: 'below the 3.95 development threshold. Held'). Winning a conflict set should not bypass the threshold.",
+  "evidence": "Evaluation: ID-049 Weighted 3.0, Risk-adj high 0.72, Decision Develop, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: the threshold and the 1% route.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author. By the study's own rule this idea should read Hold."
+ },
+ {
+  "id": "mhev48s-id-056",
+  "originalId": "ID-056",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The decision rule is applied inconsistently. This idea is Develop with weighted score 3.67, below the 3.95 development threshold, and its risk-adjusted high saving of £0.07 is below the 1%-of-BOM material route (£2.42). It is selected only because it 'won its position in the conflict graph'. Unconflicted ideas with the same or higher scores are Held (e.g. ID-023, ID-025, ID-035 at 3.67: 'below the 3.95 development threshold. Held'). Winning a conflict set should not bypass the threshold.",
+  "evidence": "Evaluation: ID-056 Weighted 3.67, Risk-adj high 0.07, Decision Develop, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: the threshold and the 1% route.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author. By the study's own rule this idea should read Hold."
+ },
+ {
+  "id": "mhev48s-id-066",
+  "originalId": "ID-066",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The decision rule is applied inconsistently. This idea is Develop with weighted score 3.27, below the 3.95 development threshold, and its risk-adjusted high saving of £1.01 is below the 1%-of-BOM material route (£2.42). It is selected only because it 'won its position in the conflict graph'. Unconflicted ideas with the same or higher scores are Held (e.g. ID-023, ID-025, ID-035 at 3.67: 'below the 3.95 development threshold. Held'). Winning a conflict set should not bypass the threshold.",
+  "evidence": "Evaluation: ID-066 Weighted 3.27, Risk-adj high 1.01, Decision Develop, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: the threshold and the 1% route.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author. By the study's own rule this idea should read Hold."
+ },
+ {
+  "id": "mhev48s-id-069",
+  "originalId": "ID-069",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The decision rule is applied inconsistently. This idea is Develop with weighted score 2.87, below the 3.95 development threshold, and its risk-adjusted high saving of £0.28 is below the 1%-of-BOM material route (£2.42). It is selected only because it 'won its position in the conflict graph'. Unconflicted ideas with the same or higher scores are Held (e.g. ID-023, ID-025, ID-035 at 3.67: 'below the 3.95 development threshold. Held'). Winning a conflict set should not bypass the threshold.",
+  "evidence": "Evaluation: ID-069 Weighted 2.87, Risk-adj high 0.28, Decision Develop, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: the threshold and the 1% route.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author. By the study's own rule this idea should read Hold."
+ },
+ {
+  "id": "mhev48s-id-074",
+  "originalId": "ID-074",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The decision rule is applied inconsistently. This idea is Develop with weighted score 3.47, below the 3.95 development threshold, and its risk-adjusted high saving of £0.46 is below the 1%-of-BOM material route (£2.42). It is selected only because it 'won its position in the conflict graph'. Unconflicted ideas with the same or higher scores are Held (e.g. ID-023, ID-025, ID-035 at 3.67: 'below the 3.95 development threshold. Held'). Winning a conflict set should not bypass the threshold.",
+  "evidence": "Evaluation: ID-074 Weighted 3.47, Risk-adj high 0.46, Decision Develop, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: the threshold and the 1% route.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author. By the study's own rule this idea should read Hold."
+ },
+ {
+  "id": "mhev48s-id-001",
+  "originalId": "ID-001",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Weighted score 3.47 is below the 3.95 threshold. The selection is defensible through the 1%-of-BOM material route (risk-adjusted high above £2.42), but the recorded reason cites only 'won its position in the conflict graph'.",
+  "evidence": "Evaluation ID-001: Weighted 3.47.",
+  "duplicateOf": null,
+  "recommendation": "Make the reason state the material-saving route."
+ },
+ {
+  "id": "mhev48s-id-004",
+  "originalId": "ID-004",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Weighted score 3.07 is below the 3.95 threshold. The selection is defensible through the 1%-of-BOM material route (risk-adjusted high above £2.42), but the recorded reason cites only 'won its position in the conflict graph'.",
+  "evidence": "Evaluation ID-004: Weighted 3.07.",
+  "duplicateOf": null,
+  "recommendation": "Make the reason state the material-saving route."
+ },
+ {
+  "id": "mhev48s-id-006",
+  "originalId": "ID-006",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Weighted score 2.93 is below the 3.95 threshold. The selection is defensible through the 1%-of-BOM material route (risk-adjusted high above £2.42), but the recorded reason cites only 'won its position in the conflict graph'.",
+  "evidence": "Evaluation ID-006: Weighted 2.93.",
+  "duplicateOf": null,
+  "recommendation": "Make the reason state the material-saving route."
+ },
+ {
+  "id": "mhev48s-id-059",
+  "originalId": "ID-059",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Weighted score 3.60 is below the 3.95 threshold. The selection is defensible through the 1%-of-BOM material route (risk-adjusted high above £2.42), but the recorded reason cites only 'won its position in the conflict graph'.",
+  "evidence": "Evaluation ID-059: Weighted 3.6.",
+  "duplicateOf": null,
+  "recommendation": "Make the reason state the material-saving route."
+ },
+ {
+  "id": "mhev48s-id-069",
+  "originalId": "ID-069",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "'Production elsewhere' maturity with 'No published benchmark', for a fusible-busbar main fuse whose own risk text calls it 'far harder to calibrate' with non-benign arcing at 48V. Payback is 3.01 years, the longest on the Develop list.",
+  "evidence": "ID-069 BM: 'No published benchmark.' Maturity: Production elsewhere.",
+  "duplicateOf": null,
+  "recommendation": "Downgrade maturity to Prototype, or cite a production example."
+ },
+ {
+  "id": "ALL",
+  "originalId": "ALL",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Maturity is over-claimed on ideas with no benchmark. 'Production elsewhere' is recorded with 'No published benchmark. No comparable public 48V pack design was found' on 41 of the slice's 76 ideas. Develop ones: ID-015, ID-034, ID-047, ID-049, ID-056, ID-060, ID-064, ID-066, ID-069, ID-074. Maturity drives the Technical feasibility score (5/4/3 vs 3 for Prototype), so it lifts these ideas' scores without evidence.",
+  "evidence": "Evaluation scoring rule row 6: 'Production elsewhere scores 5 at Low effort, 4 at Medium, 3 at High; Prototype scores 3'.",
+  "duplicateOf": null,
+  "recommendation": "Show maturity as 'study judgement' where no example is cited."
+ },
+ {
+  "id": "ALL",
+  "originalId": "ALL",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Investment is scored inconsistently with the published rule. Every idea whose investment text reads 'Low, under 50k GBP' (ID-066 to ID-076) is scored 3 (below 150k) and given NRE £50,000. The rule gives 4 for 'below 50k GBP'.",
+  "evidence": "Evaluation row 7: '5 where none beyond qualification, 4 below 50k GBP, 3 below 150k'. ID-066 Investment required = 3, NRE 50000.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author."
+ },
+ {
+  "id": "ALL",
+  "originalId": "ALL",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Savings are shown that are capped to zero. 22 ideas in the slice state 'a combined value gap of £0.00 at Stage 3 ... the saving claimed here is capped at that gap', yet carry a positive per-pack and annual saving on the card. Two are Develop: ID-056 (£0.04-£0.08) and ID-069 (£0.20-£0.40). The others: ID-012, 023, 027, 028, 030, 031, 037, 038, 039, 040, 041, 042, 050, 051, 052, 053, 057, 070, 071, 075.",
+  "evidence": "e.g. ID-069 Mechanism: 'combined value gap of £0.00 at Stage 3, against an affected component cost of £1.32; the saving claimed here is capped at that gap'.",
+  "duplicateOf": null,
+  "recommendation": "Add a visible note on the card that the capped contribution is £0."
+ },
+ {
+  "id": "mhev48s-id-005",
+  "originalId": "ID-005",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "An internal contradiction on energy density. The text says sodium-ion 'at 175 Wh/kg is also below NMC, so the pack grows against a 12 kg target'. But the study's own cell assumption is 150 Wh/kg (Assumptions A-08, band 130-170), so 175 Wh/kg would make the cell mass smaller.",
+  "evidence": "Assumptions A-08: 'Cell specific energy | 150 Wh/kg ... The band is 130 to 170.'",
+  "duplicateOf": null,
+  "recommendation": "Report to the author."
+ },
+ {
+  "id": "mhev48s-id-032",
+  "originalId": "ID-032",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Physics wording error. The mechanism says 'equal stiffness needs less than proportionally more thickness'. For equal plate bending stiffness, steel (E=210 GPa) needs about 0.69x the thickness of aluminium (E=70 GPa), i.e. thinner, which is what the title says ('at reduced thickness'). Mass is about 2x.",
+  "evidence": "(70/210)^(1/3)=0.69.",
+  "duplicateOf": null,
+  "recommendation": "Correct the sentence."
+ },
+ {
+  "id": "mhev48s-id-021",
+  "originalId": "ID-021",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Tension inside the register. ID-018 says commodity mica board's 'binder fails rapidly at the temperatures an NMC cell reaches, so the cheap option may not perform at all', yet ID-021 (Develop) moves the barrier to commodity mica board from an electrical-insulation converter.",
+  "evidence": "ID-018 Risk text vs ID-021 Specifics 'Mica paper bonded with silicone resin is a commodity electrical insulation product'.",
+  "duplicateOf": null,
+  "recommendation": "Keep the propagation test per lot (already in Validation). Flag to the author."
+ },
+ {
+  "id": "mhev48s-id-059",
+  "originalId": "ID-059",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The device list is inconsistent with 'a single 12-series cell monitor sized exactly to the string': the NXP options are MC33771 (14 channels) or MC33772 (6 channels), neither of which is 12.",
+  "evidence": "ID-059 Specifics: 'NXP MC33771 (14 channels) or MC33772 (6 channels)'.",
+  "duplicateOf": null,
+  "recommendation": "Note it."
+ },
+ {
+  "id": "mhev48s-id-064",
+  "originalId": "ID-064",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The mechanism is doubtful: 'Assembly cost per board is driven by panel handling time rather than by board area.' Bare-board cost is driven by panel utilisation and SMT cost by placements. A £1.20-£3.20 saving (3-8% of the £40 PCBA) from re-panelising alone looks high.",
+  "evidence": "ID-064 Mechanism.",
+  "duplicateOf": null,
+  "recommendation": "Show it as unverified."
+ },
+ {
+  "id": "mhev48s-id-024",
+  "originalId": "ID-024",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "ID-024 and ID-126 (other slice: 'Buy cells with the barrier and insulation already applied to the can') both move the cell-to-cell film onto the supplier's can, but share no conflict set (ID-024 conflicts: none). The text also says it 'conflicts with dual sourcing' (ID-013), which is likewise unrecorded.",
+  "evidence": "ID-024 Risk: 'ties the pack to one cell supplier's process, which conflicts with dual sourcing.' conflictsWith: none.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author."
+ },
+ {
+  "id": "mhev48s-id-028",
+  "originalId": "ID-028",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Unrecorded overlap with the Develop idea ID-140 ('Standardise every insulating moulding in the pack on one resin grade'), which covers the cell top insulation plate. ID-028 changes that plate's resin to unfilled PP, and ID-053 does the same for the cap and busbar cover, with no conflict edge. ID-027, ID-040 and ID-041 are correctly in C22 with ID-140.",
+  "evidence": "ID-140 componentsAffected: 'Cell top insulation plate; Stack cover; Busbar insulation cover; Terminal protec...'",
+  "duplicateOf": null,
+  "recommendation": "Report to the author."
+ },
+ {
+  "id": "mhev48s-id-053",
+  "originalId": "ID-053",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The same unrecorded overlap with Develop ID-140 as ID-028 (a resin change on the terminal protective cap and the busbar insulation cover).",
+  "evidence": "ID-053 conflictsWith: none.",
+  "duplicateOf": null,
+  "recommendation": "Report to the author."
+ },
+ {
+  "id": "mhev48s-id-004",
+  "originalId": "ID-004",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: the 48V battery goes from NMC to 14S LFP prismatic cells. The library idea is 'Library: 14s LFP high-power prismatic cells replace NMC pouch cells in 48V battery'. (m48d-78dd3b78c3f0 and m48d-15eca2680941 cover LFP too, combined with downsizing and dual-sourcing.)",
+  "evidence": "marketplace-luxury-suv-mhev-bev-ideas.json lux-afb07eaa6f42.",
+  "duplicateOf": "lux-afb07eaa6f42",
+  "recommendation": "Cross-link the cards. Keep the study record verbatim and mark it as the user's own-study instance of the library concept."
+ },
+ {
+  "id": "mhev48s-id-005",
+  "originalId": "ID-005",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: sodium-ion cells in the 48V battery to buy cold-crank power and delete the cold-power oversizing. Both cite CATL Naxtra and the aluminium anode collector.",
+  "evidence": "marketplace-mhev-48v-deep-ideas.json m48d-891c018074fd 'Sodium-ion power cells remove cold-power capacity oversizing from the 48 V battery'. (The automatic flag also caught it, c=0.51.)",
+  "duplicateOf": "m48d-891c018074fd",
+  "recommendation": "Cross-link the cards."
+ },
+ {
+  "id": "mhev48s-id-007",
+  "originalId": "ID-007",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: re-size the 48V pack on power rather than energy (fewer Wh, higher-rate cell). The library version also switches to LFP.",
+  "evidence": "m48d-78dd3b78c3f0 'Power-sized 48 V battery: 0.45 kWh high-power LFP replaces 0.9 kWh pack' ('The governing requirement ... is power, not energy'). ID-007: 'a power requirement rather than an energy one'.",
+  "duplicateOf": "m48d-78dd3b78c3f0",
+  "recommendation": "Cross-link the cards."
+ },
+ {
+  "id": "mhev48s-id-008",
+  "originalId": "ID-008",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: EN AW-1050A aluminium replaces nickel-plated Cu-ETP cell interconnect busbars in the 48V battery string.",
+  "evidence": "marketplace-mhev-48v-ideas.json m48-d7f7f6c7dbaa 'EN AW-1050A busbars with thinned weld lands replace nickel-plated Cu-ETP in 48 V string'.",
+  "duplicateOf": "m48-d7f7f6c7dbaa",
+  "recommendation": "Cross-link the cards."
+ },
+ {
+  "id": "mhev48s-id-012",
+  "originalId": "ID-012",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: printed labels on the 48V battery are replaced by direct laser-marked DataMatrix plus hazard marking on the housing/cover.",
+  "evidence": "m48-214d051ffe01 'Laser-marked DataMatrix and hazard symbols on battery housing replace four printed labels'.",
+  "duplicateOf": "m48-214d051ffe01",
+  "recommendation": "Cross-link the cards."
+ },
+ {
+  "id": "mhev48s-id-024",
+  "originalId": "ID-024",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: the loose inter-cell insulation parts are deleted and the cell maker's can wrap or coating is specified instead.",
+  "evidence": "m48d-4d0c6a28f04e 'Inter-cell barrier: PC sheets and PI corner tape replaced by supplier double PET wrap'. ID-024: 'Buy cells with a factory-applied insulating and compliant coating on the can faces, removing both the eleven films and the two pads'.",
+  "duplicateOf": "m48d-4d0c6a28f04e",
+  "recommendation": "Cross-link the cards."
+ },
+ {
+  "id": "mhev48s-id-029",
+  "originalId": "ID-029",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: the 48V cell-stack end-plate and tie-rod frame is replaced by tensioned steel strapping bands.",
+  "evidence": "m48-c89054c21d85 'Stainless strapping bands with moulded end blocks replace aluminium end plates on 14s stack'.",
+  "duplicateOf": "m48-c89054c21d85",
+  "recommendation": "Cross-link the cards."
+ },
+ {
+  "id": "mhev48s-id-059",
+  "originalId": "ID-059",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: the 48V BMS monitoring is consolidated onto ONE automotive AFE with integrated current sense and an on-die secondary OV comparator, deleting separate chips.",
+  "evidence": "m48d-633fddeccf45 'Coulomb counter folded into one 48 V AFE, deleting gauge IC and isoSPI link' ('Redundant over-voltage detection ... uses the AFE's secondary comparator path rather than a second chip'). ID-059: 'monitoring, balancing, current sense and second-level protection into one 12S automotive front end'.",
+  "duplicateOf": "m48d-633fddeccf45",
+  "recommendation": "Cross-link the cards."
+ },
+ {
+  "id": "mhev48s-id-076",
+  "originalId": "ID-076",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: fewer cell NTC thermistors in the 48V battery, with a BMS thermal model estimating the unmeasured cells.",
+  "evidence": "m48d-e590e7d3c36b 'Four NTCs on the cell-sense flex plus thermal model replace fourteen leaded NTCs'.",
+  "duplicateOf": "m48d-e590e7d3c36b",
+  "recommendation": "Cross-link the cards."
+ },
+ {
+  "id": "mhev48s-id-001",
+  "originalId": "ID-001",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: Bosch cells deliver FULL output to 75 degC 'without any reduction in service life'. Sources confirm operation to 75 degC and 'long lifetime even at high operating temperature', but no source states full output or zero life reduction. The Bosch pack is also much smaller than this study's (360 Wh, 14 kW peak, under 6 kg in plastic, against 836 Wh, 12 kg), which weakens the read-across to a pack whose cooling has to handle a hot-country towing case.",
+  "evidence": "https://www.delo-adhesives.com/press-and-news/delo-news/details/bosch-relies-on-delo-adhesives-for-mild-hybrid-systems",
+  "duplicateOf": null,
+  "recommendation": "Show the claim as unverified, or correct it, before the Director presentation."
+ },
+ {
+  "id": "mhev48s-id-001",
+  "originalId": "ID-001",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: Castasil-37 thermal conductivity up to 173 W/m.K (EMP Tech, Sep 2026). No source found for the figure. Check it against the Rheinfelden datasheet.",
+  "evidence": "none: WebSearch for Castasil-37 thermal conductivity returned no source naming the alloy",
+  "duplicateOf": null,
+  "recommendation": "Show the claim as unverified, or correct it, before the Director presentation."
+ },
+ {
+  "id": "mhev48s-id-004",
+  "originalId": "ID-004",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: China LFP cell 55-65 USD/kWh against NMC 85-95 (BAKTH Battery, 15 Jun 2026). No 2026 source found. SNE Research (late 2024-2025) puts China LFP cells at USD 50-60/kWh and NCM above USD 100/kWh. The direction is consistent, but the NMC figure differs from the study's 85-95, which is also the base of the £33 cell saving arithmetic.",
+  "evidence": "https://sneresearch.com/en/business/report_view/256/page/0",
+  "duplicateOf": null,
+  "recommendation": "Show the claim as unverified, or correct it, before the Director presentation."
+ },
+ {
+  "id": "mhev48s-id-021",
+  "originalId": "ID-021",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: Mica-based thermal shields 0.5-1.0 mm stable above 1000 degC (PatSnap, 9 Apr 2026). No source states the 0.5-1.0 mm range or the >1000 degC stability. One patent used 1 mm mica only as a comparative example. ID-018 in the same register says the silicone binder in mica board fails at NMC runaway temperatures.",
+  "evidence": "https://www.patsnap.com/resources/blog/rd-blog/thermal-runaway-in-prismatic-lfp-packs-patsnap-eureka/",
+  "duplicateOf": null,
+  "recommendation": "Show the claim as unverified, or correct it, before the Director presentation."
+ },
+ {
+  "id": "mhev48s-id-059",
+  "originalId": "ID-059",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: NXP MC33771/MC33772: 0.8 mV cell voltage accuracy and integrated 300 mA balancing. 14 and 6 channels, ASIL D, integrated balancing transistors and 48V positioning are confirmed. The 0.8 mV and 300 mA figures were not found; the only '0.8' in the sources is the 0.8 ohm balancing MOSFET resistance, so the figures may be confused. The 105 degC thermal-pause threshold claimed for TI was also not found (TI family balancing is listed at 240 mA).",
+  "evidence": "https://www.eenewseurope.com/en/nxp-adds-cell-controller-to-battery-management-platform/",
+  "duplicateOf": null,
+  "recommendation": "Show the claim as unverified, or correct it, before the Director presentation."
+ },
+ {
+  "id": "mhev48s-id-011",
+  "originalId": "ID-011",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "The Valeo benchmark is confirmed, but it applies to a different kind of part. The Valeo source is a large EV battery cold plate (2000 x 1500 mm, flatness under 0.5 mm, glued into the pack), not the as-cast floor of an HPDC housing. It supports the principle, not the cost or feasibility of controlling flatness on an A380 die casting.",
+  "evidence": "https://www.valeo.com/en/catalogue/ths/large-battery-liquid-cooler-for-ev/",
+  "duplicateOf": null,
+  "recommendation": "Present it as a principle reference only."
+ }
+]

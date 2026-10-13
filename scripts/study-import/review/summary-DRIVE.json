@@ -1,0 +1,254 @@
+{
+ "slice": "DRIVE",
+ "ideasReviewed": 72,
+ "transcriptionOk": "72/72 — every source cell (title, how-it-works, SPEC, cost effect, duty, trade-off/maturity/effort, evidence pointer, lever) is present verbatim; no source row missed. Minor field-level notes only: targetVehicle truncated (HS/DIF/PS), TC lever derived from ID prefix, iX3 maturity not populated as a field.",
+ "duplicates": [
+  {
+   "id": "hs26-m1",
+   "duplicateOf": "lux-1b191109224a",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "hs26-p2",
+   "duplicateOf": "orl271",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "hs26-d4",
+   "duplicateOf": "add157",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "dif26-p2",
+   "duplicateOf": "pt019",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "dif26-d1",
+   "duplicateOf": "lux-125861e312e0",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "ps26-p2",
+   "duplicateOf": "orl266",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "ps26-d1",
+   "duplicateOf": "pt029",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "ps26-d2",
+   "duplicateOf": "drv024",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "ps26-d3",
+   "duplicateOf": "pt032",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "tc26-p2",
+   "duplicateOf": "lux-f09b097a4b7b",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "tc26-d6",
+   "duplicateOf": "lux-61ef8b51c04a",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "ix3b-s2",
+   "duplicateOf": "pt050",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "hs26-m2",
+   "duplicateOf": "ps26-m2",
+   "verdict": "same lever, different part (CV outer boot vs slip-spline boot)"
+  },
+  {
+   "id": "hs26-m2",
+   "duplicateOf": "hs26-d8",
+   "verdict": "distinct (boot material vs clamp type)"
+  },
+  {
+   "id": "hs26-p2",
+   "duplicateOf": "ps26-p2",
+   "verdict": "same lever, different part (outer race vs flange yoke)"
+  },
+  {
+   "id": "hs26-d1",
+   "duplicateOf": "lux single dog-locker cartridge (luxury-suv-mhev-bev)",
+   "verdict": "distinct"
+  },
+  {
+   "id": "hs26-d2",
+   "duplicateOf": "ps26-d5",
+   "verdict": "same lever, different part"
+  },
+  {
+   "id": "dif26-m3",
+   "duplicateOf": "tc26-d5",
+   "verdict": "same lever, different part (axle vs transfer-case breather)"
+  },
+  {
+   "id": "dif26-p3",
+   "duplicateOf": "tc26-p4",
+   "verdict": "same lever, different part (axle pinion vs transfer case)"
+  },
+  {
+   "id": "dif26-d3",
+   "duplicateOf": "ps26-d5",
+   "verdict": "same lever, different part (companion flange vs mating flange yoke; the study says one decision covers both)"
+  },
+  {
+   "id": "ps26-d1",
+   "duplicateOf": "ps26-d9",
+   "verdict": "distinct — mutually exclusive alternatives, the study states this"
+  },
+  {
+   "id": "tc26-d1",
+   "duplicateOf": "orf-6cf87ad5e11a",
+   "verdict": "distinct — opposite move (library keeps the clutch, deletes the dog lock)"
+  },
+  {
+   "id": "ix3b-s2",
+   "duplicateOf": "add065",
+   "verdict": "same lever (cell-to-body); recorded as a true duplicate of pt050"
+  },
+  {
+   "id": "ix3b-e1",
+   "duplicateOf": "lux-4ff83e7790ea",
+   "verdict": "same lever, different functions folded (LDC vs BDU/BMS) — distinct"
+  },
+  {
+   "id": "ix3b-c2",
+   "duplicateOf": "bat8-874e97243309",
+   "verdict": "same lever (bottom venting), different implementation — distinct"
+  }
+ ],
+ "benchmarkChecks": [
+  {
+   "id": "dif26-d2",
+   "claim": "Eaton MLocker engages at ≥100 rpm wheel-speed difference, locks in a fraction of a second, light-bias LSD otherwise, no electronics",
+   "result": "confirmed",
+   "url": "https://www.eaton.com/ie/en-gb/catalog/differentials/MLocker.html"
+  },
+  {
+   "id": "dif26-d1",
+   "claim": "Lexus GX (and Land Cruiser 250 / Defender) use brake-based front traction control instead of a front locker",
+   "result": "confirmed (GX: rear + centre lock, front by traction control)",
+   "url": "https://expeditionportal.com/the-new-overland-ready-lexus-gx550-overtrail/"
+  },
+  {
+   "id": "ps26-d9 / tc26-d3",
+   "claim": "G-Class W464 transfer case is flange-mounted directly onto the 9G-TRONIC (40/60 split)",
+   "result": "confirmed",
+   "url": "https://www.thedrive.com/article/17373/mercedes-benz-reveals-new-details-about-the-updated-g-class"
+  },
+  {
+   "id": "tc26-d1 / tc26-d2",
+   "claim": "INEOS Grenadier: mechanical centre lock usable in both ranges, lever-shifted Tremec two-speed case",
+   "result": "confirmed",
+   "url": "https://unsealed4x4.com.au/ineos-grenadier-australian-offroad-review/"
+  },
+  {
+   "id": "ps26-p1",
+   "claim": "Dana patent literature: conventional welding causes driveshaft imbalance; MPW improves balance and reduces post-manufacture balancing",
+   "result": "confirmed (patent literature, plus a Dana executive quoted in Ward's)",
+   "url": "https://patents.google.com/patent/US20060219005A1/en"
+  },
+  {
+   "id": "dif26-p2",
+   "claim": "Eaton ELocker internal gears are net-forged for strength and durability",
+   "result": "confirmed",
+   "url": "https://eaton.com/us/en-us/catalog/differentials/eaton-elocker-differential.html"
+  },
+  {
+   "id": "hs26-d5 / hs26-d4",
+   "claim": "GKN VL3: up to 27% more torque in the same package, 18 mm plunge; system credited with >4 kg per RWD platform",
+   "result": "confirmed",
+   "url": "https://www.eurekamagazine.co.uk/content/news/cv-joint-system-helps-make-premium-vehicles-lighter-and-more-efficient"
+  },
+  {
+   "id": "tc26-d8",
+   "claim": "BorgWarner states chain beats gear on cost, axial load, noise, efficiency and centre-distance tolerance",
+   "result": "confirmed",
+   "url": "https://www.automotiveworld.com/news-releases/borgwarners-new-low-friction-hy-vo-chain-drives-transfer-cases-toyota-lexus/"
+  },
+  {
+   "id": "ix3b-e1",
+   "claim": "BMW Gen6 'Energy Master' central HV/LV unit sits on top of the pack, serviceable under the rear seat",
+   "result": "confirmed (exact BDU/BMS contents not published)",
+   "url": "https://www.press.bmwgroup.com/global/article/detail/T0448099EN/charge-faster-drive-further:-bmw-group-reveals-revolutionary-electric-drive-concept-with-800v-technology-for-the-neue-klasse"
+  },
+  {
+   "id": "ix3b-s2",
+   "claim": "BMW Gen6 pack is 'pack to open body' structural floor",
+   "result": "confirmed",
+   "url": "https://www.press.bmwgroup.com/belux/article/attachment/T0450688FR/632948"
+  },
+  {
+   "id": "ix3b-e2",
+   "claim": "BMW Gen6 splits the pack into two 400 V halves for 400 V charging without a booster",
+   "result": "not found",
+   "url": "https://www.press.bmwgroup.com/belux/article/attachment/T0450688FR/632948"
+  },
+  {
+   "id": "ix3b-c2",
+   "claim": "BMW Gen6 per-cell bottom venting",
+   "result": "not found",
+   "url": "https://www.bmwblog.com/2022/09/19/bmw-gen6-cylindrical-cells/"
+  }
+ ],
+ "counts": {
+  "byCategory": {
+   "transcription": 5,
+   "consistency": 8,
+   "quality": 26,
+   "duplicate": 12,
+   "benchmark": 2
+  },
+  "bySeverity": {
+   "minor": 42,
+   "major": 11
+  },
+  "byCategoryAndSeverity": {
+   "benchmark/minor": 2,
+   "consistency/major": 3,
+   "consistency/minor": 5,
+   "duplicate/minor": 12,
+   "quality/major": 8,
+   "quality/minor": 18,
+   "transcription/minor": 5
+  },
+  "totalFindings": 53,
+  "trueDuplicates": 12,
+  "studyStatusCheck": {
+   "checked": 72,
+   "consistentWithCostEffectText": 72,
+   "contradictedByCardTradeOffText": [
+    "hs26-d2 (Saving, likely infeasible)",
+    "ps26-d1 (Saving, author recommends against)",
+    "hs26-d5, ps26-d2, ps26-m5, tc26-d6 (\"defended\" overstates)",
+    "dif26-d8 (reallocation, not specification)"
+   ]
+  },
+  "annualFigureCheck": {
+   "savingCardsDriveline": 32,
+   "perVehicleTimes80000Correct": 32,
+   "ix3SavingCards": 2,
+   "ix3AnnualCorrectlyNotStated": true
+  },
+  "missedIdeas": 0,
+  "ideasPerSource": {
+   "HS26": 17,
+   "DIF26": 17,
+   "PS26": 19,
+   "TC26": 15,
+   "IX3": 4
+  }
+ }
+}

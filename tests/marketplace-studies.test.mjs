@@ -3,7 +3,7 @@
 // exact source pointer; nothing that is not a saving carries a saving figure.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { inferCommodityKey } from '../src/data/commodity-classify.mjs';
 
 const PACKS = {
@@ -48,6 +48,33 @@ describe('user-supplied study packs', () => {
       const saving = ['Saving', 'Develop', 'Hold', 'Not selected', 'Screened out'].includes(x.ideaData.studyStatus);
       if (!saving) assert.doesNotMatch(x.annualSaving, /[£€$]\s?\d/, `${x.id}: ${x.ideaData.studyStatus} must not show a saving figure`);
     }
+  });
+  it('a negative low case keeps its sign — a cost increase never reads as a saving', () => {
+    let negatives = 0;
+    for (const f of Object.keys(PACKS)) for (const x of load(f)) {
+      const d = x.ideaData;
+      if (!Number.isFinite(d.savingPerUnitLowGBP)) continue;
+      assert.ok(d.savingPerUnitLowGBP <= d.savingPerUnitHighGBP, x.id);
+      if (d.savingPerUnitLowGBP < 0) {
+        negatives++;
+        assert.match(x.annualSaving, /^−£/, x.id);
+        assert.match(x.annualSaving, /cost increase/, x.id);
+        assert.ok(d.annualSavingLowGBP < 0, x.id);
+      }
+      assert.doesNotMatch(d.costSavingPotential.calculationBasis, /None yrs|P(success) None|at p None/, x.id);
+    }
+    assert.equal(negatives, 7); // 48V ID-018, 123, 124, 128, 129, 130, 132
+  });
+  it('review findings are visible on the idea, and duplicates point at a real library idea', () => {
+    const ids = new Set();
+    for (const f of readdirSync(new URL('..', import.meta.url)).filter(n => /^marketplace-.*\.json$/.test(n))) for (const x of JSON.parse(readFileSync(new URL(`../${f}`, import.meta.url), 'utf8'))) ids.add(x.id);
+    let open = 0, dup = 0;
+    for (const f of Object.keys(PACKS)) for (const x of load(f)) {
+      const d = x.ideaData;
+      if (d.reviewOpenPoints) { open++; assert.ok(['critical', 'major', 'minor'].includes(d.reviewSeverity), x.id); }
+      if (d.possibleDuplicateOf) { dup++; for (const t of d.possibleDuplicateOf.split(', ')) assert.ok(ids.has(t), `${x.id} → ${t}`); }
+    }
+    assert.ok(open >= 150 && dup >= 70, `${open} open, ${dup} dup`);
   });
   it('is registered with the seeder', () => {
     const src = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');

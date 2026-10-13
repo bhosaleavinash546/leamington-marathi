@@ -1,0 +1,413 @@
+{
+ "slice": "EDU-B",
+ "ideasReviewed": 83,
+ "transcriptionOk": 48,
+ "transcriptionNote": "All 83 records match the source register (row index 6 header, data from row 7; sourcePointer rows are 1-based) and the Phase 4 evaluation on every field: title, group, class, lever, target functions, function class, value index, value gap, components, affected cost, saving %, saving low/high (perVehicle and annual), baseline and technical specifics (in technicalDescription), cost mechanism, trade-offs, validation, investment, lead time, benchmark, practice note, maturity, conflicts, decision and reason, weighted score, P(success), risk-adjusted low/high, NRE, NRE shared and payback. The only deviation is 'Med' normalised to 'Medium' on 35 records (minor). The C1-C7 scores, NRE per unit and Net per unit were not carried into the records; they were omitted rather than altered. All 40 Develop ideas have their development-pack slide, and every figure on it (parts count, affected cost, saving a unit, band, chance, cost to do, payback, benchmark, text) matches the record.",
+ "duplicates": [
+  {
+   "id": "edu26-r1",
+   "originalId": "R1",
+   "duplicateOf": "add108",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-r3",
+   "originalId": "R3",
+   "duplicateOf": "deep-f5876c444716",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-r5",
+   "originalId": "R5",
+   "duplicateOf": "add150",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-n1",
+   "originalId": "N1",
+   "duplicateOf": "add134",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-n2",
+   "originalId": "N2",
+   "duplicateOf": "add136",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-n3",
+   "originalId": "N3",
+   "duplicateOf": "lux-27e26813a85b",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-n5",
+   "originalId": "N5",
+   "duplicateOf": "deep-77cc22b224be",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-r6",
+   "originalId": "R6",
+   "duplicateOf": "deep-0cd844f4bffb",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-r15",
+   "originalId": "R15",
+   "duplicateOf": "deep-b348af670330",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-r16",
+   "originalId": "R16",
+   "duplicateOf": "bev137",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-r20",
+   "originalId": "R20",
+   "duplicateOf": "deep-6ffd7a7310c7",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-p3",
+   "originalId": "P3",
+   "duplicateOf": "add116",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-p6",
+   "originalId": "P6",
+   "duplicateOf": "add132",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-p7",
+   "originalId": "P7",
+   "duplicateOf": "add118",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-p8",
+   "originalId": "P8",
+   "duplicateOf": "bev154",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-p12",
+   "originalId": "P12",
+   "duplicateOf": "lux-bc141176f205",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-p14",
+   "originalId": "P14",
+   "duplicateOf": "bev150",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-p16",
+   "originalId": "P16",
+   "duplicateOf": "deep-df5a1b778117",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-p17",
+   "originalId": "P17",
+   "duplicateOf": "deep-7516c0a9f7c9",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-p18",
+   "originalId": "P18",
+   "duplicateOf": "deep-092a971e1334",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-s2",
+   "originalId": "S2",
+   "duplicateOf": "add102",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-s4",
+   "originalId": "S4",
+   "duplicateOf": "add101",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-s5",
+   "originalId": "S5",
+   "duplicateOf": "deep-bf6d16ace594",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-s9",
+   "originalId": "S9",
+   "duplicateOf": "bev125",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-s10",
+   "originalId": "S10",
+   "duplicateOf": "cool046",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-x1",
+   "originalId": "X1",
+   "duplicateOf": "add138",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "edu26-z16",
+   "originalId": "Z16",
+   "duplicateOf": "cool039 / bev059",
+   "verdict": "distinct",
+   "note": "cool039 adds PCM at the SiC module to smooth junction temperature (no system downsizing); bev059 is battery pack - same lever, different part."
+  },
+  {
+   "id": "edu26-z19",
+   "originalId": "Z19",
+   "duplicateOf": "add110 / bev128",
+   "verdict": "same lever, different part",
+   "note": "Library replaces an Inconel/steel retaining ring on surface-PM rotors; Z19 replaces IPM lamination bridges."
+  },
+  {
+   "id": "edu26-z2",
+   "originalId": "Z2",
+   "duplicateOf": "luxpr (Mercedes EQS residual heat)",
+   "verdict": "distinct",
+   "note": "Different scope (vehicle heat recovery vs EDU-first designed output)."
+  },
+  {
+   "id": "edu26-p1",
+   "originalId": "P1",
+   "duplicateOf": "lux-c572d2684f43",
+   "verdict": "same lever, different part",
+   "note": "Library applies Si IGBT only to the secondary front-axle inverter; P1 replaces the single EDU (primary) module."
+  },
+  {
+   "id": "edu26-p4",
+   "originalId": "P4",
+   "duplicateOf": "add117 / bev146",
+   "verdict": "distinct",
+   "note": "Library shrinks DC-link via higher switching frequency; P4 right-sizes to measured ripple."
+  },
+  {
+   "id": "edu26-p15",
+   "originalId": "P15",
+   "duplicateOf": "add118",
+   "verdict": "distinct",
+   "note": "P15 is a gate driver ASIC; add118 merges driver onto control board (that is P7)."
+  },
+  {
+   "id": "edu26-r4",
+   "originalId": "R4",
+   "duplicateOf": "deep-94d7f9726c89 / add142",
+   "verdict": "same lever, different part",
+   "note": "Library applies induction machine to the secondary-axle variant / an auxiliary motor."
+  },
+  {
+   "id": "edu26-r20",
+   "originalId": "R20(flag)",
+   "duplicateOf": "bev (6308->6207 bearing right-sizing)",
+   "verdict": "distinct",
+   "note": "Flag nearest is bearing size; true match recorded separately (deep-6ffd7a7310c7)."
+  },
+  {
+   "id": "edu26-s12",
+   "originalId": "S12",
+   "duplicateOf": "m48-0abf1d0275ce",
+   "verdict": "same lever, different part",
+   "note": "48 V stator vs 800 V EDU stator."
+  },
+  {
+   "id": "edu26-s8",
+   "originalId": "S8",
+   "duplicateOf": "luxpr025 Xpeng 8-layer",
+   "verdict": "distinct",
+   "note": "Opposite direction (more layers)."
+  },
+  {
+   "id": "edu26-s3",
+   "originalId": "S3",
+   "duplicateOf": "deep-60e08336153f",
+   "verdict": "distinct",
+   "note": "Inverse move: library goes TO backlack bonding; S3 goes FROM backlack to interlock + cleat."
+  },
+  {
+   "id": "edu26-s1",
+   "originalId": "S1",
+   "duplicateOf": "lux-c79d2d2105f7",
+   "verdict": "same lever, different part",
+   "note": "Library down-gauges the low-duty front motor of a twin-motor car."
+  },
+  {
+   "id": "edu26-s7",
+   "originalId": "S7",
+   "duplicateOf": "deep-010029a79d3b / m48d-26b628a19b03",
+   "verdict": "same lever, different part",
+   "note": "deep: cast-in terminals replacing phase cables; m48d: 48 V BSG weld-to-busbar."
+  },
+  {
+   "id": "edu26-r9",
+   "originalId": "R9",
+   "duplicateOf": "deep-5053b7a14fbb",
+   "verdict": "distinct",
+   "note": "Overlapping balance-boss feature, but R9 primary lever is stamped end plates."
+  },
+  {
+   "id": "edu26-x2",
+   "originalId": "X2",
+   "duplicateOf": "luxpr033",
+   "verdict": "distinct",
+   "note": "Li-Auto is variant commonisation via stack length; X2 is part-number sharing for volume price tiers."
+  },
+  {
+   "id": "edu26-n4",
+   "originalId": "N4",
+   "duplicateOf": "add129",
+   "verdict": "distinct",
+   "note": "Different mechanism (CAN-shared vehicle sensor vs thermistor relocated to busbar)."
+  },
+  {
+   "id": "edu26-r10",
+   "originalId": "R10",
+   "duplicateOf": "add144",
+   "verdict": "distinct",
+   "note": "Partial overlap (hybrid ceramic only at high-speed end) - R10 primary lever is platform standardisation."
+  },
+  {
+   "id": "edu26-r11",
+   "originalId": "R11",
+   "duplicateOf": "lux-41a147ed4071",
+   "verdict": "distinct",
+   "note": "Inverse arrangement (library keeps grounding ring, R11 deletes it)."
+  },
+  {
+   "id": "edu26-r8",
+   "originalId": "R8",
+   "duplicateOf": "bev174",
+   "verdict": "same lever, different part",
+   "note": "Induction hardening on final-drive pinion vs rotor shaft journals."
+  },
+  {
+   "id": "edu26-x4",
+   "originalId": "X4",
+   "duplicateOf": "m48d-3fc7f6fa09ff / m48d-74ef6984da72",
+   "verdict": "same lever, different part",
+   "note": "48 V inverter EOL/burn-in vs EDU."
+  }
+ ],
+ "benchmarkChecks": [
+  {
+   "id": "R5",
+   "claim": "BMW i4 / iX fifth-generation eDrive uses a current-excited synchronous machine (magnet-free)",
+   "result": "confirmed",
+   "url": "https://chargedevs.com/features/a-closer-look-at-brushed-ac-motors-in-evs/",
+   "note": "Also https://www.bmwblog.com/2023/11/17/bmws-externally-excited-electric-motor-explained/"
+  },
+  {
+   "id": "R5",
+   "claim": "Nissan Ariya uses a current-excited (wound-rotor) synchronous machine",
+   "result": "confirmed",
+   "url": "https://www.wardsauto.com/news/archive-wards-dual-motors-and-sport-mode-give-ariya-performance-cred/797475/",
+   "note": "Externally excited 8-pole synchronous motor; Munro teardown summary at leandesign.com"
+  },
+  {
+   "id": "R5",
+   "claim": "Renault Zoe / Megane E-Tech use current-excited synchronous machines",
+   "result": "confirmed",
+   "url": "https://renaultgroup.com/en/magazine/energy-and-powertrains/all-about-electric-motors-with-no-rare-earths/",
+   "note": "Renault: EESM in production since ZOE 2012; Megane E-Tech magnet-free EESM"
+  },
+  {
+   "id": "Z5",
+   "claim": "Porsche Taycan and Audi e-tron GT have two-speed BEV transmissions in production",
+   "result": "confirmed",
+   "url": "https://en.wikipedia.org/wiki/Porsche_Taycan",
+   "note": "Rear-axle two-speed (16:1 / 8.05:1); e-tron GT also two-speed rear (https://drivingelectric.com/reviews/40958/audi-e-tron-gt-vs-porsche-taycan-4s-performance-and-handling). Note: used for performance, not to downsize magnets as Z5 proposes."
+  },
+  {
+   "id": "P1",
+   "claim": "Nissan Leaf and pre-2020 400 V BEVs use silicon IGBT traction inverters",
+   "result": "confirmed",
+   "url": "https://www.energy.gov/sites/prod/files/2014/03/f13/ape006_burress_2013_o.pdf",
+   "note": "ORNL/DOE benchmarking: 18 IGBTs + 18 diodes in the LEAF power electronics module. Caveat: a 400 V benchmark; it does not show Si IGBT parity on the study's 800 V bus."
+  },
+  {
+   "id": "X2",
+   "claim": "VW MEB shares one EDU (APP310) across ID.3, ID.4, ID.5 and Audi Q4 e-tron",
+   "result": "confirmed",
+   "url": "https://en.wikipedia.org/wiki/Volkswagen_Group_MEB_platform",
+   "note": "Confirmed with caveat: APP310 is the base/early-trim motor; higher trims use APP550 and the 2026 Q4 facelift moves its base version to APP350 (https://www.electrive.net/2026/04/27/audi-ueberarbeitet-den-q4-e-tron/)."
+  },
+  {
+   "id": "S7",
+   "claim": "VW ID.3 / ID.4 (APP310) has a direct stator-to-inverter connection (terminal block deleted)",
+   "result": "not found",
+   "url": "https://patents.google.com/patent/US12101003",
+   "note": "No public source found describing the APP310 phase connection; search returned only generic patents.",
+   "sev": "minor",
+   "rec": "Qualify as 'integrated EDU, connection detail not public' or drop APP310 from the benchmark column."
+  },
+  {
+   "id": "S7",
+   "claim": "GM Hummer EV (Ultium) has a direct stator-to-inverter connection",
+   "result": "not found",
+   "url": "https://chargedevs.com/newswire/gm-reveals-3-new-ev-motors-for-its-ultium-platform",
+   "note": "GM confirms the inverter is integrated into the Ultium Drive unit, but no source describes the stator-lead/busbar joint or terminal-block deletion.",
+   "sev": "minor",
+   "rec": "Reword to 'inverter integrated in drive unit (GM Ultium)'; the direct-weld claim is not publicly evidenced."
+  },
+  {
+   "id": "P17",
+   "claim": "Practice note: shunt current sensing 'Widely used in integrated traction inverters'",
+   "result": "not found",
+   "url": "https://www.ti.com/document-viewer/lit/html/SBAA293",
+   "note": "Only an industry trend from Hall to shunt sensing and supplier products (TI, Riedon); no named production traction inverter found. TI is still launching coreless Hall sensors for traction inverters.",
+   "sev": "minor",
+   "rec": "Soften to 'emerging; supplier solutions available' and keep maturity under review (currently 'Proven')."
+  },
+  {
+   "id": "R1",
+   "claim": "Practice note: grain boundary diffusion 'Widely adopted across traction magnet supply'",
+   "result": "not found",
+   "url": "https://www.automotiveworld.com/?p=154723",
+   "note": "Partially supported: Nissan production motor with GBD cut Dy about 40%. No source quantifies wide adoption; trade press notes GBD is limited for thick magnets.",
+   "sev": "minor",
+   "rec": "Cite the Nissan example rather than 'widely adopted'."
+  },
+  {
+   "id": "N1",
+   "claim": "Practice note: inductive position sensors 'Widely adopted across recent traction drives'",
+   "result": "not found",
+   "url": "https://www.renesas.com/en/blogs/inductive-position-sensor-ips2550-ideal-xev-position-sensor-resolver-replacement",
+   "note": "Supplier products (Renesas IPS2550, ams AS5715, Microchip LX34070) and trade press only; no named OEM production programme found.",
+   "sev": "minor",
+   "rec": "Reword to 'supplier products in market; adoption growing'."
+  }
+ ],
+ "counts": {
+  "transcription": {
+   "minor": 35
+  },
+  "quality": {
+   "critical": 4,
+   "major": 7,
+   "minor": 7
+  },
+  "consistency": {
+   "minor": 3
+  },
+  "duplicate": {
+   "minor": 26
+  },
+  "benchmark": {
+   "minor": 5
+  },
+  "total": 87
+ }
+}

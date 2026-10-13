@@ -1,0 +1,552 @@
+[
+ {
+  "id": "mhev48s-id-123",
+  "originalId": "ID-123",
+  "category": "transcription",
+  "severity": "critical",
+  "issue": "Negative 'Saving low' (a cost INCREASE in the source) is shown as a positive annual saving: the minus sign is dropped in annualValue / top-level annualSaving, so the card reads as a saving of millions per year. perVehicle keeps the sign but is ambiguous ('£-x-£y').",
+  "evidence": "Source 'Ideas' sheet ID-123: Saving low is negative (£-16.24 per pack, i.e. a cost increase); record annualSaving = '£1.95M-£974.5K at 120,000 packs/yr' and perVehicle = '£-16.24-£8.12 per pack'. Evaluation risk-adj low = -2.4362.",
+  "duplicateOf": null,
+  "recommendation": "Regenerate annualValue/annualSaving with the sign preserved (e.g. '−£1.95M to +£974.5K at 120,000 packs/yr'), and format perVehicle as '−£16.24 to £8.12 per pack'."
+ },
+ {
+  "id": "mhev48s-id-124",
+  "originalId": "ID-124",
+  "category": "transcription",
+  "severity": "critical",
+  "issue": "Negative 'Saving low' (a cost INCREASE in the source) is shown as a positive annual saving: the minus sign is dropped in annualValue / top-level annualSaving, so the card reads as a saving of millions per year. perVehicle keeps the sign but is ambiguous ('£-x-£y').",
+  "evidence": "Source 'Ideas' sheet ID-124: Saving low is negative (£-6.12 per pack, i.e. a cost increase); record annualSaving = '£734.5K-£3.67M at 120,000 packs/yr' and perVehicle = '£-6.12-£30.60 per pack'. Evaluation risk-adj low = -0.9181.",
+  "duplicateOf": null,
+  "recommendation": "Regenerate annualValue/annualSaving with the sign preserved (e.g. '−£1.95M to +£974.5K at 120,000 packs/yr'), and format perVehicle as '−£16.24 to £8.12 per pack'."
+ },
+ {
+  "id": "mhev48s-id-128",
+  "originalId": "ID-128",
+  "category": "transcription",
+  "severity": "critical",
+  "issue": "Negative 'Saving low' (a cost INCREASE in the source) is shown as a positive annual saving: the minus sign is dropped in annualValue / top-level annualSaving, so the card reads as a saving of millions per year. perVehicle keeps the sign but is ambiguous ('£-x-£y').",
+  "evidence": "Source 'Ideas' sheet ID-128: Saving low is negative (£-21.81 per pack, i.e. a cost increase); record annualSaving = '£2.62M-£2.62M at 120,000 packs/yr' and perVehicle = '£-21.81-£21.81 per pack'. Evaluation risk-adj low = -6.543.",
+  "duplicateOf": null,
+  "recommendation": "Regenerate annualValue/annualSaving with the sign preserved (e.g. '−£1.95M to +£974.5K at 120,000 packs/yr'), and format perVehicle as '−£16.24 to £8.12 per pack'."
+ },
+ {
+  "id": "mhev48s-id-129",
+  "originalId": "ID-129",
+  "category": "transcription",
+  "severity": "critical",
+  "issue": "Negative 'Saving low' (a cost INCREASE in the source) is shown as a positive annual saving: the minus sign is dropped in annualValue / top-level annualSaving, so the card reads as a saving of millions per year. perVehicle keeps the sign but is ambiguous ('£-x-£y').",
+  "evidence": "Source 'Ideas' sheet ID-129: Saving low is negative (£-6.12 per pack, i.e. a cost increase); record annualSaving = '£734.5K-£2.20M at 120,000 packs/yr' and perVehicle = '£-6.12-£18.36 per pack'. Evaluation risk-adj low = -0.9181.",
+  "duplicateOf": null,
+  "recommendation": "Regenerate annualValue/annualSaving with the sign preserved (e.g. '−£1.95M to +£974.5K at 120,000 packs/yr'), and format perVehicle as '−£16.24 to £8.12 per pack'."
+ },
+ {
+  "id": "mhev48s-id-130",
+  "originalId": "ID-130",
+  "category": "transcription",
+  "severity": "critical",
+  "issue": "Negative 'Saving low' (a cost INCREASE in the source) is shown as a positive annual saving: the minus sign is dropped in annualValue / top-level annualSaving, so the card reads as a saving of millions per year. perVehicle keeps the sign but is ambiguous ('£-x-£y').",
+  "evidence": "Source 'Ideas' sheet ID-130: Saving low is negative (£-12.85 per pack, i.e. a cost increase); record annualSaving = '£1.54M-£1.54M at 120,000 packs/yr' and perVehicle = '£-12.85-£12.85 per pack'. Evaluation risk-adj low = -1.9269.",
+  "duplicateOf": null,
+  "recommendation": "Regenerate annualValue/annualSaving with the sign preserved (e.g. '−£1.95M to +£974.5K at 120,000 packs/yr'), and format perVehicle as '−£16.24 to £8.12 per pack'."
+ },
+ {
+  "id": "mhev48s-id-132",
+  "originalId": "ID-132",
+  "category": "transcription",
+  "severity": "critical",
+  "issue": "Negative 'Saving low' (a cost INCREASE in the source) is shown as a positive annual saving: the minus sign is dropped in annualValue / top-level annualSaving, so the card reads as a saving of millions per year. perVehicle keeps the sign but is ambiguous ('£-x-£y').",
+  "evidence": "Source 'Ideas' sheet ID-132: Saving low is negative (£-6.18 per pack, i.e. a cost increase); record annualSaving = '£741.1K-£2.96M at 120,000 packs/yr' and perVehicle = '£-6.18-£24.70 per pack'. Evaluation risk-adj low = -0.9263.",
+  "duplicateOf": null,
+  "recommendation": "Regenerate annualValue/annualSaving with the sign preserved (e.g. '−£1.95M to +£974.5K at 120,000 packs/yr'), and format perVehicle as '−£16.24 to £8.12 per pack'."
+ },
+ {
+  "id": "mhev48s-id-077",
+  "originalId": "ID-077",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "SYSTEMIC (affects 59 records: ID-077, ID-078, ID-079, ID-080, ID-081, ID-082, ID-083, ID-084, ID-085, ID-086, ID-087, ID-088, ID-089, ID-090, ID-091, ID-093, ID-094, ID-095, ID-096, ID-098, ID-099, ID-101, ID-102, ID-103, ID-105, ID-106, ID-108, ID-109, ID-110, ID-111, ID-112, ID-113, ID-114, ID-115, ID-116, ID-117, ID-118, ID-119, ID-120, ID-121, ID-122, ID-123, ID-124, ID-125, ID-126, ID-127, ID-128, ID-129, ID-130, ID-131, ID-132, ID-133, ID-134, ID-135, ID-141, ID-142, ID-145, ID-146, ID-147). calculationBasis is generated text that turns blank Evaluation cells into figures: blank NRE becomes 'NRE £0' and blank payback becomes 'payback None yrs' (a Python None leaked into display text).",
+  "evidence": "e.g. ID-077 calculationBasis: '...NRE £0; payback None yrs...'; source 'Evaluation' NRE GBP and Payback yrs cells are empty; record nreGBP=null, paybackYears=null.",
+  "duplicateOf": null,
+  "recommendation": "Regenerate calculationBasis: 'NRE not assessed (not on development list); payback n/a' when the source cells are blank."
+ },
+ {
+  "id": "mhev48s-id-077",
+  "originalId": "ID-077",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "SYSTEMIC (66 records). Source 'Level' values are remapped to the Marketplace enum: 'component' -> 'part', 'sub-assembly' -> 'subassembly'. Meaning preserved, wording altered; 'assembly' kept.",
+  "evidence": "Source 'Ideas' col Level = 'component' for ID-077; record level = 'part'. ID-079 source 'sub-assembly' -> record 'subassembly'.",
+  "duplicateOf": null,
+  "recommendation": "Acceptable if the enum requires it; otherwise carry the source label verbatim (e.g. in ideaData.studyLevel)."
+ },
+ {
+  "id": "mhev48s-id-107",
+  "originalId": "ID-107",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "Development pack slide 75 'What would change' is cut after the first sentence, so the deck never says what replaces A380; the workbook/record continue 'Instead move to A360 (<0.6 per cent Cu) or the AlSi10MnMg structural family...'. Other slice deck texts (ID-092, ID-138 etc.) are also abridged but keep the claim; all figures (risk-adjusted saving, p, NRE, payback, lead time) match the record for all 16 Develop ideas.",
+  "evidence": "Deck slide 75: 'Do not simply delete the coating from A380. A380 carries 3 to 4 per cent copper ... which is why the coating is there.' Record technicalDescription continues: 'Instead move to A360 (<0.6 per cent Cu) or the AlSi10MnMg structural family (Silafont-36, Castasil-37, Aural-2)...'.",
+  "duplicateOf": null,
+  "recommendation": "Add the replacement-alloy sentence to slide 75 before presenting."
+ },
+ {
+  "id": "mhev48s-id-135",
+  "originalId": "ID-135",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-150', but ID-150 has the LOWER weighted score (4.00 vs 4.47). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-135 Weighted 4.466667; ID-150 Weighted 4.0. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-150, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-114",
+  "originalId": "ID-114",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-001', but ID-001 has the LOWER weighted score (3.47 vs 4.00). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-114 Weighted 4.000001; ID-001 Weighted 3.466666. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-001, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-094",
+  "originalId": "ID-094",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-092', but ID-092 has the LOWER weighted score (3.20 vs 4.00). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-094 Weighted 4.0; ID-092 Weighted 3.199999. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-092, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-146",
+  "originalId": "ID-146",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-001', but ID-001 has the LOWER weighted score (3.47 vs 3.93). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-146 Weighted 3.933333; ID-001 Weighted 3.466666. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-001, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-141",
+  "originalId": "ID-141",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-006', but ID-006 has the LOWER weighted score (2.93 vs 3.80). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-141 Weighted 3.800001; ID-006 Weighted 2.933332. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-006, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-105",
+  "originalId": "ID-105",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-104', but ID-104 has the LOWER weighted score (3.27 vs 3.67). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-105 Weighted 3.666668; ID-104 Weighted 3.266668. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-104, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-106",
+  "originalId": "ID-106",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-104', but ID-104 has the LOWER weighted score (3.27 vs 3.67). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-106 Weighted 3.666668; ID-104 Weighted 3.266668. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-104, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-118",
+  "originalId": "ID-118",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-001', but ID-001 has the LOWER weighted score (3.47 vs 3.67). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-118 Weighted 3.666668; ID-001 Weighted 3.466666. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-001, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-120",
+  "originalId": "ID-120",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-001', but ID-001 has the LOWER weighted score (3.47 vs 3.67). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-120 Weighted 3.666668; ID-001 Weighted 3.466666. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-001, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-122",
+  "originalId": "ID-122",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-151', but ID-151 has the LOWER weighted score (3.47 vs 3.53). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-122 Weighted 3.533335; ID-151 Weighted 3.466668. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-151, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-113",
+  "originalId": "ID-113",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-001', but ID-001 has the LOWER weighted score (3.47 vs 3.53). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-113 Weighted 3.533334; ID-001 Weighted 3.466666. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-001, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-093",
+  "originalId": "ID-093",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-092', but ID-092 has the LOWER weighted score (3.20 vs 3.53). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-093 Weighted 3.533333; ID-092 Weighted 3.199999. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-092, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-101",
+  "originalId": "ID-101",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-100', but ID-100 has the LOWER weighted score (3.13 vs 3.40). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-101 Weighted 3.400002; ID-100 Weighted 3.133335. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-100, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-108",
+  "originalId": "ID-108",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-107', but ID-107 has the LOWER weighted score (3.40 vs 3.40). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-108 Weighted 3.400002; ID-107 Weighted 3.400001. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-107, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-124",
+  "originalId": "ID-124",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "studyDecisionReason says it lost to 'a higher scoring idea already selected: ID-004', but ID-004 has the LOWER weighted score (3.07 vs 3.13). Per deck slide 5 the conflict graph now resolves on expected value (risk-adjusted saving), so the reason wording is stale.",
+  "evidence": "Evaluation: ID-124 Weighted 3.133332; ID-004 Weighted 3.066666. Deck slide 5: 'The conflict graph was first ordered by weighted score alone ... It now resolves on expected value.'",
+  "duplicateOf": null,
+  "recommendation": "Reword the reason to 'Mutually exclusive with ID-004, which has the higher risk-adjusted (expected-value) saving'."
+ },
+ {
+  "id": "mhev48s-id-133",
+  "originalId": "ID-133",
+  "category": "duplicate",
+  "severity": "major",
+  "issue": "Same move on the same part: weld a thermoplastic lid/cover to a thermoplastic 48V battery housing, deleting the seal and the twelve cover screws.",
+  "evidence": "Library (marketplace-mhev-48v-ideas.json) m48-0892299936f2 'Hot-plate welded PP-LGF30 lid replaces EPDM gasket and twelve screws on 48 V battery' vs ID-133 'Weld the cover to the housing and delete the sealant and every cover fastener ... removing the sealant bead, all twelve screws'.",
+  "duplicateOf": "m48-0892299936f2",
+  "recommendation": "Mark as a duplicate of the existing idea (or merge) before the Marketplace is shown; keep the study provenance on the surviving record."
+ },
+ {
+  "id": "mhev48s-id-122",
+  "originalId": "ID-122",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: laser-mark the DataMatrix (with laser-markable additive) directly into the 48V battery's polymer lid instead of a printed label. Also wholly contained in the study's own ID-012 (C21 alternative).",
+  "evidence": "Library m48-214d051ffe01 'Laser-marked DataMatrix and hazard symbols on battery housing replace four printed labels' (adds laser-marking additive to the black PP-LGF30 lid); ID-122 'Laser-mark the data matrix directly onto the cover ... may need a laser-markable additive'.",
+  "duplicateOf": "m48-214d051ffe01",
+  "recommendation": "Mark as a duplicate of the existing idea (or merge) before the Marketplace is shown; keep the study provenance on the surviving record."
+ },
+ {
+  "id": "mhev48s-id-079",
+  "originalId": "ID-079",
+  "category": "duplicate",
+  "severity": "major",
+  "issue": "Same move on the same part: terminate the cell-sense flex directly on the BMS board and delete the internal sense harness and the board-to-wire connector.",
+  "evidence": "Library (deep pack) m48d-e7bd70766ec9 'BMS board mounted on the busbar carrier deletes internal cell-sense harness' ('the flex terminates in a press-fit or soldered stiffener on the BMS board ... no internal wire harness, no wire-to-board connector pair'); ID-079 'Land the flexible contacting circuit straight into a zero-insertion-force connector on the BMS, deleting the internal sense harness and its board-to-wire header'.",
+  "duplicateOf": "m48d-e7bd70766ec9",
+  "recommendation": "Mark as a duplicate of the existing idea (or merge) before the Marketplace is shown; keep the study provenance on the surviving record."
+ },
+ {
+  "id": "mhev48s-id-077",
+  "originalId": "ID-077",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "Same move on the same part: put the NTCs onto the cell-sense flex instead of discrete leaded/bonded thermistors (library version also cuts the count).",
+  "evidence": "Library m48d-e590e7d3c36b 'Four NTCs on the cell-sense flex plus thermal model replace fourteen leaded NTCs'; ID-077 'Print or place thermistor elements directly onto the flexible contacting circuit rather than fitting discrete bonded thermistors with their own leads'.",
+  "duplicateOf": "m48d-e590e7d3c36b",
+  "recommendation": "Mark as a duplicate of the existing idea (or merge) before the Marketplace is shown; keep the study provenance on the surviving record."
+ },
+ {
+  "id": "mhev48s-id-107",
+  "originalId": "ID-107",
+  "category": "duplicate",
+  "severity": "major",
+  "issue": "Intra-study overlap: ID-093 already changes the same housing from A380 to A360/AlSi10MnMg and books coating deletion as its 'third, and largest' mechanism; ID-107 is the same alloy move on the same part for the same coating saving. They sit in different conflict sets (C2 vs C17), so ID-107 survives on the Develop list while ID-093 was eliminated by ID-092.",
+  "evidence": "ID-093 Cost mechanism: 'Third, and largest, A360 and A413 both carry far less copper than A380, which removes the corrosion driver and puts the £0.70 coating line in play as a deletion'. ID-107: 'move to A360 (<0.6 per cent Cu) or the AlSi10MnMg structural family ... Then delete the coating'.",
+  "duplicateOf": "ID-093 (mhev48s-id-093)",
+  "recommendation": "Mark as a duplicate of the existing idea (or merge) before the Marketplace is shown; keep the study provenance on the surviving record."
+ },
+ {
+  "id": "mhev48s-id-150",
+  "originalId": "ID-150",
+  "category": "quality",
+  "severity": "critical",
+  "issue": "Over-claim on a Develop idea. A weld-process change is credited £19.77-£39.55/pack (risk-adjusted £13.84-£27.68, ~£1.7-3.3M/yr) because the class-default 15-30% band was applied to an affected cost of £131.83 that is 93% the cell (£122.41). The study's own Conversion sheet prices the entire laser-welding step at £1.36/pack, and the non-cell parts touched total £9.42.",
+  "evidence": "Conversion: 'Laser welding, 26 joints | 3 min | £22/hr | machine £1.10 | labour £0.26'. Parts: cell £122.41, busbars £5.26, contacting system £3.80, NTC £0.36. Ideas ID-150 Saving basis: 'class default band, no part-specific estimate made'. Deck slide 82: class-default bands are 'almost all on parts below half a per cent of the bill of materials'.",
+  "duplicateOf": null,
+  "recommendation": "Re-estimate on the weld step and busbar content only (order of £1-2/pack before any Al-busbar benefit, which belongs to ID-008); remove the cell from the affected cost; withdraw the current figure from the Director deck."
+ },
+ {
+  "id": "mhev48s-id-138",
+  "originalId": "ID-138",
+  "category": "quality",
+  "severity": "critical",
+  "issue": "Over-claim on a Develop idea. 'Removes one layer of margin' is credited £27.24-£54.49/pack (risk-adjusted £19.07-£38.14). The study's own cascade carries only £8.21 SG&A + £8.71 profit on bought-in content and conversion plus a £1.84 cell handling charge (£18.76 total), and states the cell content already carries no pack-supplier SG&A or profit. The claimed saving exceeds the entire modelled margin layer.",
+  "evidence": "Summary_Assembly: 'SG&A on bought-in and conversion 8.21 ... Cell content excluded from the base'; 'Profit on bought-in and conversion 8.71'; 'Cell handling charge 1.84'; 'EVE Energy manufactures both the cells and the pack. The cell price already carries a cell-maker's margin.' Saving basis: 'class default band'.",
+  "duplicateOf": null,
+  "recommendation": "Cap at the modelled margin actually removable (well under £18.76, net of in-house integration, warranty and safety-case cost the trade-offs list) and re-run the evaluation."
+ },
+ {
+  "id": "mhev48s-id-135",
+  "originalId": "ID-135",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Over-claim (Not selected, but highest weighted score in its set at 4.47). Moving stacking/insulation/banding to the cell supplier is credited £12.24-£26.93/pack, while the study's Conversion sheet prices cell sorting and stack build at £0.65 and total direct labour plus machine for the whole pack at £7.23. Band applied to the £122.41 cell.",
+  "evidence": "Conversion: 'Cell sorting and stack build | machine £0.30 | labour £0.35'; TOTAL machine £5.28, labour £1.95. Ideas ID-135 Saving basis: 'class default band'.",
+  "duplicateOf": null,
+  "recommendation": "Re-estimate on the stack-build conversion content only."
+ },
+ {
+  "id": "mhev48s-id-148",
+  "originalId": "ID-148",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Over-claim on a Develop idea: saving £4.11-£9.03 (risk-adjusted £2.87-£6.32) for deleting board-to-connector wiring, because the band is applied to the £40.00 user-stated BMS board. The signal connector is £1.05 and the whole internal sense harness £1.60; the board itself is not removed.",
+  "evidence": "Parts: BMS printed circuit assembly £40.00, Signal connector £1.05, Internal sense harness £1.60. ID-148 affected £41.05, Saving basis 'class default band'.",
+  "duplicateOf": null,
+  "recommendation": "Re-base on the wiring/termination content removed (order of £1-2)."
+ },
+ {
+  "id": "mhev48s-id-149",
+  "originalId": "ID-149",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Over-claim on a Develop idea: £1.98-£4.36/pack for deleting one of four mounting bushes and a bolt, because the band is applied to the £19.21 housing casting as well. One bush costs £0.15; the trade-offs say the remaining feet may need thicker sections that 'cost more than the deleted foot saves'.",
+  "evidence": "Parts: Housing mounting bush, qty 4, unit £0.15. ID-149 affected £19.81, Saving basis 'class default band'.",
+  "duplicateOf": null,
+  "recommendation": "Re-base on one bush + bolt + feet machining; treat casting change as cost-neutral until modelled."
+ },
+ {
+  "id": "mhev48s-id-151",
+  "originalId": "ID-151",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Over-claim on a Develop idea: combining two labels that cost £0.11 together is credited £0.41-£0.89/pack, because the £3.95 top cover (unchanged by the idea) is included in the affected cost.",
+  "evidence": "Parts: Warning and handling label £0.06; Identification and traceability label £0.05; Top cover £3.95. ID-151 affected £4.06.",
+  "duplicateOf": null,
+  "recommendation": "Remove the cover from the affected cost; saving cannot exceed label + one application step."
+ },
+ {
+  "id": "mhev48s-id-144",
+  "originalId": "ID-144",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Develop idea credits this pack's piece price with £2.32-£5.10 for freezing the interface for the NEXT programme; the tooling/fixture reuse it describes benefits future programmes, not this pack's should-cost.",
+  "evidence": "ID-144 Cost mechanism: 'Tooling, fixtures, gauges and the leak test programme are all reused rather than rebuilt'; Specifics: 'carry-over interface for future 48V packs'. Tooling amortisation on this pack is only £0.92 (Summary_Assembly).",
+  "duplicateOf": null,
+  "recommendation": "Report as a future-programme / cross-boundary benefit, not a saving on this pack."
+ },
+ {
+  "id": "mhev48s-id-143",
+  "originalId": "ID-143",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Saving assumes the cell is energy-sized, but the study states the cell is sized for power (2.2x power-cell premium, A-01; ID-124 'the cell is bought at roughly 2.2 times an energy-cell price to survive 18 to 24C pulses'). A wider SOC window lowers power at the extremes (its own trade-off), and in 12S1P capacity can only fall by changing the cell Ah rating. Its validation text cites DO-02 to DO-04 while the trade-offs cite DO-02, DO-03 and DO-06.",
+  "evidence": "ID-143 Trade-offs: 'reduces power at the extremes, which threatens DO-02, DO-03 and DO-06'; validationRequired: 'checking power capability at both ends against DO-02 to DO-04'. Assumptions A-01.",
+  "duplicateOf": null,
+  "recommendation": "Show that the cell is energy-limited before claiming £18-37/pack; reconcile the DO references."
+ },
+ {
+  "id": "mhev48s-id-092",
+  "originalId": "ID-092",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Cross-idea contradiction on the Develop list: ID-092 (polymer housing, 'cannot be the heat path ... void unless taken with either the cold plate or the passive cooling idea') is selected alongside ID-001 (passive conduction into a FINNED CAST housing using Castasil-37) and the cold plate ID-010 lost to ID-001. Its passive-cooling partner needs the metal housing it removes. ID-107 (low-copper alloy for the same casting), ID-137 (machine only some faces of the A380 casting) and ID-144 (freeze the A380 housing interface) are also on the Develop list with 'Conflicts: none/C17/C13', not in C2.",
+  "evidence": "ID-001 Specifics: 'Add external cast fins to the housing side walls ... Castasil-37 ... so the fins do more'. Conflicts sheet: C1 = ID-001, ID-010, ...; C2 = ID-092, ID-093, ID-094, ID-125, ID-133 (ID-107, ID-137, ID-144, ID-001 absent).",
+  "duplicateOf": null,
+  "recommendation": "Add conflict edges ID-092 with ID-001, ID-107, ID-137, ID-144 and re-resolve the graph; do not present both housing routes as concurrently selected."
+ },
+ {
+  "id": "mhev48s-id-092",
+  "originalId": "ID-092",
+  "category": "quality",
+  "severity": "major",
+  "issue": "NRE understated: record/deck carry £50,000 marginal NRE and payback 0.12 yrs, with the note that the full 'Moulding tooling investment is carried by ID-064' - but ID-064 is 'Panelise the board to a higher array count' (a PCB change), which carries no injection tool. ID-092's own Investment text is 'Injection tool of the order of 250k GBP plus the cold plate tooling'.",
+  "evidence": "Evaluation ID-092 NRE 50000, note 'Marginal share only. The full Moulding tooling investment is carried by ID-064'; Ideas ID-064 title 'Panelise the board to a higher array count'.",
+  "duplicateOf": null,
+  "recommendation": "Charge ID-092 its own ~£250k+ tool and recompute payback."
+ },
+ {
+  "id": "mhev48s-id-097",
+  "originalId": "ID-097",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "NRE note says the 'full Moulding tooling investment is carried by ID-064', but ID-064 is a PCB panelisation idea; the shared-asset allocation is wrong (for ID-107 there is no moulding tool at all - 'Alloy trial; no new tooling').",
+  "evidence": "Evaluation ID-097 NRE note: 'Marginal share only. The full Moulding tooling investment is carried by ID-064'. ID-064: 'Panelise the board to a higher array count'.",
+  "duplicateOf": null,
+  "recommendation": "Correct the shared-asset owner and NRE."
+ },
+ {
+  "id": "mhev48s-id-104",
+  "originalId": "ID-104",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "NRE note says the 'full Moulding tooling investment is carried by ID-064', but ID-064 is a PCB panelisation idea; the shared-asset allocation is wrong (for ID-107 there is no moulding tool at all - 'Alloy trial; no new tooling').",
+  "evidence": "Evaluation ID-104 NRE note: 'Marginal share only. The full Moulding tooling investment is carried by ID-064'. ID-064: 'Panelise the board to a higher array count'.",
+  "duplicateOf": null,
+  "recommendation": "Correct the shared-asset owner and NRE."
+ },
+ {
+  "id": "mhev48s-id-107",
+  "originalId": "ID-107",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "NRE note says the 'full Moulding tooling investment is carried by ID-064', but ID-064 is a PCB panelisation idea; the shared-asset allocation is wrong (for ID-107 there is no moulding tool at all - 'Alloy trial; no new tooling').",
+  "evidence": "Evaluation ID-107 NRE note: 'Marginal share only. The full Moulding tooling investment is carried by ID-064'. ID-064: 'Panelise the board to a higher array count'.",
+  "duplicateOf": null,
+  "recommendation": "Correct the shared-asset owner and NRE."
+ },
+ {
+  "id": "mhev48s-id-097",
+  "originalId": "ID-097",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Status contradicts the stated decision rule: Develop with weighted 3.80 (< 3.95 threshold) and risk-adjusted high £1.29 (< 1% of BOM = £2.42), i.e. it meets neither route. Ideas with no conflict at the same or higher score (e.g. ID-080/081 at 3.13, ID-095/ID-147 at 3.80) are Held 'below the 3.95 development threshold'. Winning a conflict set is being treated as qualifying for Develop.",
+  "evidence": "Evaluation ID-097: Decision 'Develop', Weighted 3.8, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: 'any idea whose risk-adjusted high saving reaches 1 per cent of the bill of materials goes to Develop rather than Hold'; ID-080 Reason 'below the 3.95 development threshold. Held'.",
+  "duplicateOf": null,
+  "recommendation": "Apply the threshold to conflict-set winners too (move to Hold) or state the rule explicitly in the deck."
+ },
+ {
+  "id": "mhev48s-id-100",
+  "originalId": "ID-100",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Status contradicts the stated decision rule: Develop with weighted 3.13 (< 3.95 threshold) and risk-adjusted high £0.26 (< 1% of BOM = £2.42), i.e. it meets neither route. Ideas with no conflict at the same or higher score (e.g. ID-080/081 at 3.13, ID-095/ID-147 at 3.80) are Held 'below the 3.95 development threshold'. Winning a conflict set is being treated as qualifying for Develop.",
+  "evidence": "Evaluation ID-100: Decision 'Develop', Weighted 3.13, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: 'any idea whose risk-adjusted high saving reaches 1 per cent of the bill of materials goes to Develop rather than Hold'; ID-080 Reason 'below the 3.95 development threshold. Held'.",
+  "duplicateOf": null,
+  "recommendation": "Apply the threshold to conflict-set winners too (move to Hold) or state the rule explicitly in the deck."
+ },
+ {
+  "id": "mhev48s-id-104",
+  "originalId": "ID-104",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Status contradicts the stated decision rule: Develop with weighted 3.27 (< 3.95 threshold) and risk-adjusted high £0.46 (< 1% of BOM = £2.42), i.e. it meets neither route. Ideas with no conflict at the same or higher score (e.g. ID-080/081 at 3.13, ID-095/ID-147 at 3.80) are Held 'below the 3.95 development threshold'. Winning a conflict set is being treated as qualifying for Develop.",
+  "evidence": "Evaluation ID-104: Decision 'Develop', Weighted 3.27, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: 'any idea whose risk-adjusted high saving reaches 1 per cent of the bill of materials goes to Develop rather than Hold'; ID-080 Reason 'below the 3.95 development threshold. Held'.",
+  "duplicateOf": null,
+  "recommendation": "Apply the threshold to conflict-set winners too (move to Hold) or state the rule explicitly in the deck."
+ },
+ {
+  "id": "mhev48s-id-107",
+  "originalId": "ID-107",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Status contradicts the stated decision rule: Develop with weighted 3.40 (< 3.95 threshold) and risk-adjusted high £0.57 (< 1% of BOM = £2.42), i.e. it meets neither route. Ideas with no conflict at the same or higher score (e.g. ID-080/081 at 3.13, ID-095/ID-147 at 3.80) are Held 'below the 3.95 development threshold'. Winning a conflict set is being treated as qualifying for Develop.",
+  "evidence": "Evaluation ID-107: Decision 'Develop', Weighted 3.4, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: 'any idea whose risk-adjusted high saving reaches 1 per cent of the bill of materials goes to Develop rather than Hold'; ID-080 Reason 'below the 3.95 development threshold. Held'.",
+  "duplicateOf": null,
+  "recommendation": "Apply the threshold to conflict-set winners too (move to Hold) or state the rule explicitly in the deck."
+ },
+ {
+  "id": "mhev48s-id-140",
+  "originalId": "ID-140",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Status contradicts the stated decision rule: Develop with weighted 3.47 (< 3.95 threshold) and risk-adjusted high £0.51 (< 1% of BOM = £2.42), i.e. it meets neither route. Ideas with no conflict at the same or higher score (e.g. ID-080/081 at 3.13, ID-095/ID-147 at 3.80) are Held 'below the 3.95 development threshold'. Winning a conflict set is being treated as qualifying for Develop.",
+  "evidence": "Evaluation ID-140: Decision 'Develop', Weighted 3.47, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: 'any idea whose risk-adjusted high saving reaches 1 per cent of the bill of materials goes to Develop rather than Hold'; ID-080 Reason 'below the 3.95 development threshold. Held'.",
+  "duplicateOf": null,
+  "recommendation": "Apply the threshold to conflict-set winners too (move to Hold) or state the rule explicitly in the deck."
+ },
+ {
+  "id": "mhev48s-id-151",
+  "originalId": "ID-151",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Status contradicts the stated decision rule: Develop with weighted 3.47 (< 3.95 threshold) and risk-adjusted high £0.63 (< 1% of BOM = £2.42), i.e. it meets neither route. Ideas with no conflict at the same or higher score (e.g. ID-080/081 at 3.13, ID-095/ID-147 at 3.80) are Held 'below the 3.95 development threshold'. Winning a conflict set is being treated as qualifying for Develop.",
+  "evidence": "Evaluation ID-151: Decision 'Develop', Weighted 3.47, Reason 'Selected. No conflict with any other selected idea and it won its position in the conflict graph.' Evaluation row 24: 'any idea whose risk-adjusted high saving reaches 1 per cent of the bill of materials goes to Develop rather than Hold'; ID-080 Reason 'below the 3.95 development threshold. Held'.",
+  "duplicateOf": null,
+  "recommendation": "Apply the threshold to conflict-set winners too (move to Hold) or state the rule explicitly in the deck."
+ },
+ {
+  "id": "mhev48s-id-100",
+  "originalId": "ID-100",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Idea's functions carry a Stage 3 value gap of £0.00, so its capped contribution is zero, yet the card shows a positive annual saving and it carries £30k NRE with a 1.79-yr payback. Same pattern on Develop ID-140 (gap £0.00, £50k NRE). 16 other slice ideas also have a £0.00 gap with a positive card saving (ID-083, 087, 090, 091, 099, 101, 102, 103, 106, 109, 110, 115, 116, 121, 122, 134).",
+  "evidence": "ID-100 Cost mechanism: 'combined value gap of £0.00 at Stage 3 ... the saving claimed here is capped at that gap'.",
+  "duplicateOf": null,
+  "recommendation": "Show the capped figure (£0) or a 'gap not assessed' badge on these cards."
+ },
+ {
+  "id": "mhev48s-id-138",
+  "originalId": "ID-138",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "NRE £50,000 sits at/above the idea's own investment band 'Low, under 50k GBP'. Same placeholder on ID-136, 137, 140, 143, 144, 148, 149, 151.",
+  "evidence": "Ideas ID-138 Investment 'Low, under 50k GBP'; Evaluation NRE GBP 50000.",
+  "duplicateOf": null,
+  "recommendation": "Replace the £50k placeholder with an estimate or label it as a placeholder."
+ },
+ {
+  "id": "mhev48s-id-123",
+  "originalId": "ID-123",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Internal contradiction: the trade-offs say the idea 'makes our pack more expensive, not less', yet the in-boundary saving high is +£8.12/pack.",
+  "evidence": "ID-123 Saving low -16.241, high 8.1205; Trade-offs: 'it makes our pack more expensive, not less, and the saving is reported on a separate cross-boundary line'.",
+  "duplicateOf": null,
+  "recommendation": "Set the in-boundary high case to ≤ 0 or explain the positive case."
+ },
+ {
+  "id": "mhev48s-id-093",
+  "originalId": "ID-093",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Alloy designation errors: Silafont-36 is labelled 'AlSi10Mg' in the Specifics but 'AlSi10MnMg' in the trade-offs; Castasil-37 is grouped in the 'AlSi10MnMg structural family' although its published composition is Al-9.5Si-0.48Mn-0.2Mo-0.2Zr (no Mg). Same grouping repeated in ID-107.",
+  "evidence": "ID-093 Specifics '**Silafont-36** (AlSi10Mg, Rheinfelden, AA 365.0)'; Trade-offs 'The AlSi10MnMg structural family (Silafont-36, Castasil-37, Aural-2)'. ASM Alloy Digest Al-481: 'RHEINFELDEN CASTASIL-37 Al-9.5Si-0.48Mn-0.2Mo-0.2Zr' (https://dl.asminternational.org/alloy-digest/article/70/10/Al-481/18335/RHEINFELDEN-CASTASIL-37Al-9-5Si-0-48Mn-0-2Mo-0-2Zr).",
+  "duplicateOf": null,
+  "recommendation": "Correct to Silafont-36 = AlSi10MnMg; Castasil-37 = AlSi9MnMoZr."
+ },
+ {
+  "id": "mhev48s-id-092",
+  "originalId": "ID-092",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Arithmetic: '2.70 kg ... at £1.59/kg charged mass plus £5.00/kg conversion, about £18.01' - 2.70 x (1.59 + 5.00) = £17.79; the £18.01 implies a charged mass above 2.70 kg that is not stated.",
+  "evidence": "ID-092 Cost mechanism text.",
+  "duplicateOf": null,
+  "recommendation": "State the charged mass used, or correct to £17.79."
+ },
+ {
+  "id": "mhev48s-id-136",
+  "originalId": "ID-136",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Savings stacked on the same £40 BMS board: ID-136 (ASIL decomposition, conflicts 'none') is on the Develop list alongside ID-059 (re-architect monitoring onto one AFE) and ID-062 (carry over a BMS from another application). A carried-over board cannot also be re-decomposed; savings are not additive.",
+  "evidence": "Evaluation: ID-059 Develop, ID-062 Develop, ID-136 Develop; ID-136 Conflicts 'none'.",
+  "duplicateOf": null,
+  "recommendation": "Add conflict edge ID-136/ID-062 or note non-additivity on the card."
+ },
+ {
+  "id": "mhev48s-id-107",
+  "originalId": "ID-107",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Family grouping and 'copper-free' statement not substantiated.",
+  "evidence": "AlSi10MnMg family (Silafont-36, Castasil-37, Aural-2) is copper-free -> not found (Castasil-37 is AlSi9MnMoZr, no Mg; copper-free status not confirmed in search). https://dl.asminternational.org/alloy-digest/article/70/10/Al-481/18335/RHEINFELDEN-CASTASIL-37Al-9-5Si-0-48Mn-0-2Mo-0-2Zr",
+  "duplicateOf": null,
+  "recommendation": "Soften or re-source the claim before the Director review."
+ }
+]

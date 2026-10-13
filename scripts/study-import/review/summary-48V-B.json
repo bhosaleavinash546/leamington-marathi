@@ -1,0 +1,209 @@
+{
+ "slice": "48V-B",
+ "ideasReviewed": 75,
+ "idRange": "ID-077 to ID-151",
+ "transcriptionOk": "All 75 records match the source Ideas row (title, depth, group, lever, novelty, maturity, components, functions, affected GBP, saving low/high, specifics, cost mechanism, trade-offs, validation, benchmark, investment, lead time, effort, conflicts, saving basis) and the Evaluation row (decision, weighted, p, risk-adjusted, NRE, shared, payback, reason, NRE note) character-for-character. 69 fully clean apart from systemic formatting; 6 records (ID-123, 124, 128, 129, 130, 132) drop the minus sign on the annual saving (critical). Systemic minor: level enum remap; 'NRE £0'/'payback None' in calculationBasis.",
+ "transcriptionCleanCount": 69,
+ "developmentPackCheck": "16 Develop ideas in slice all have two slides; every figure matches; deck text is abridged (ID-107 loses the key sentence).",
+ "duplicates": [
+  {
+   "id": "mhev48s-id-133",
+   "originalId": "ID-133",
+   "duplicateOf": "m48-0892299936f2",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-122",
+   "originalId": "ID-122",
+   "duplicateOf": "m48-214d051ffe01",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-079",
+   "originalId": "ID-079",
+   "duplicateOf": "m48d-e7bd70766ec9",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-077",
+   "originalId": "ID-077",
+   "duplicateOf": "m48d-e590e7d3c36b",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-107",
+   "originalId": "ID-107",
+   "duplicateOf": "ID-093 (mhev48s-id-093)",
+   "verdict": "true duplicate"
+  },
+  {
+   "id": "mhev48s-id-123",
+   "originalId": "ID-123",
+   "duplicateOf": "marketplace-legacy-seed-ideas.json: '12V LFP auxiliary battery integration into HV pack eliminates separate 12V lead-acid battery'",
+   "verdict": "same lever, different part",
+   "note": "Library idea folds the 12V function into a high-voltage traction pack; ID-123 folds it into a 48V MHEV pack plus DC-DC."
+  },
+  {
+   "id": "mhev48s-id-125",
+   "originalId": "ID-125",
+   "duplicateOf": "marketplace-legacy-seed-ideas.json: 'Pack structural integration (structural battery) — pack floor IS the body floor'",
+   "verdict": "same lever, different part",
+   "note": "Traction-pack structural battery vs a 12 kg 48V pack; ID-125 itself says 'No published 48V example was found; the concept is used on traction packs'."
+  },
+  {
+   "id": "mhev48s-id-149",
+   "originalId": "ID-149",
+   "duplicateOf": "marketplace-study-edu-function-analysis.json: 'Three-point mounting in place of four'",
+   "verdict": "same lever, different part",
+   "note": "EDU mounting vs 48V battery housing mounting."
+  },
+  {
+   "id": "mhev48s-id-111",
+   "originalId": "ID-111",
+   "duplicateOf": "marketplace-mhev-48v-deep-ideas.json m48d-77154347d56a '48 V cell gap filler: 3 W/mK silicone becomes 1.5 W/mK polyurethane'",
+   "verdict": "distinct",
+   "note": "Overlapping rationale (specify TIM conductivity to the low 48V heat flux) but different move: ID-111 changes form to a die-cut pad; library keeps a dispensed filler and changes chemistry. Note the overlap to the reviewer."
+  },
+  {
+   "id": "mhev48s-id-130",
+   "originalId": "ID-130",
+   "duplicateOf": "marketplace-mhev-48v-deep-ideas.json m48d-aa07710803c0 'Dealer repair-not-replace for 48 V battery ... cell-stack exchange'",
+   "verdict": "distinct",
+   "note": "Library opens an electronics service bay; ID-130 makes the stack openable for individual cell replacement and remanufacture. Related, not the same move."
+  },
+  {
+   "id": "mhev48s-id-078",
+   "originalId": "ID-078",
+   "duplicateOf": "marketplace-mhev-48v-deep-ideas.json m48d-83b688d84d00 'Cell-sense flex on PET ... replaces polyimide flex circuit'",
+   "verdict": "distinct",
+   "note": "Same part, different move (stamped lead frame vs cheaper flex substrate)."
+  },
+  {
+   "id": "mhev48s-id-136",
+   "originalId": "ID-136",
+   "duplicateOf": "marketplace-mhev-48v-ideas.json m48-d58b2d875387 'ASIL decomposition: engine-ECU torque monitor lets the 48 V inverter drop to ASIL A'",
+   "verdict": "same lever, different part",
+   "note": "Inverter vs BMS."
+  },
+  {
+   "id": "mhev48s-id-138",
+   "originalId": "ID-138",
+   "duplicateOf": "marketplace-mhev-48v-ideas.json m48-afe4cb16ab44 'Source 48 V as components with OEM-owned integration...'",
+   "verdict": "same lever, different part",
+   "note": "Motor-inverter sourcing vs battery pack de-bundling."
+  },
+  {
+   "id": "mhev48s-id-101",
+   "originalId": "ID-101",
+   "duplicateOf": "marketplace-mhev-48v-deep-ideas.json m48d-a9cf1b4c6bab 'Thread-forming screws in as-cast cored holes...'",
+   "verdict": "same lever, different part",
+   "note": "Power-electronics housings vs battery cover bosses."
+  },
+  {
+   "id": "mhev48s-id-088",
+   "originalId": "ID-088",
+   "duplicateOf": "marketplace-mhev-48v-ideas.json m48-8856fb22503a 'One 16-way sealed hybrid connector replaces three LV connectors on the 48 V inverter'",
+   "verdict": "same lever, different part",
+   "note": "Inverter vs battery."
+  },
+  {
+   "id": "mhev48s-id-085",
+   "originalId": "ID-085",
+   "duplicateOf": "marketplace-mhev-48v-deep-ideas.json m48d-a51fe5028b63 'Delete conformal coating on 48 V inverter and DC-DC boards'",
+   "verdict": "same lever, different part",
+   "note": "Inverter/DC-DC boards vs BMS board (ID-085 deletes potting, keeps coating)."
+  },
+  {
+   "id": "mhev48s-id-104",
+   "originalId": "ID-104",
+   "duplicateOf": "marketplace-mhev-48v-ideas.json m48-548f04298891 'Combined ePTFE breather and burst disc, heat-staked into lid'",
+   "verdict": "distinct",
+   "note": "Same part, different move (labyrinth vs combined membrane/burst vent)."
+  }
+ ],
+ "benchmarkChecks": [
+  {
+   "id": "mhev48s-id-092",
+   "originalId": "ID-092",
+   "claim": "Bosch 48V pack: plastic housing withstanding cell expansion/contraction; passive cooling only",
+   "result": "confirmed",
+   "url": "https://bosch-mobility.com/en/solutions/batteries/48v-battery"
+  },
+  {
+   "id": "mhev48s-id-100",
+   "originalId": "ID-100",
+   "claim": "Valeo controls cooler flatness to minimise thermal interface material quantity (valeo.com)",
+   "result": "confirmed",
+   "url": "https://www.valeo.com/en/catalogue/ths/large-battery-liquid-cooler-for-ev/"
+  },
+  {
+   "id": "mhev48s-id-107",
+   "originalId": "ID-107",
+   "claim": "A360 copper below 0.6% gives a corrosion advantage over A380 (3-4% Cu)",
+   "result": "confirmed",
+   "url": "https://www.gabrian.com/a360-aluminum-alloy/page/3/"
+  },
+  {
+   "id": "mhev48s-id-107",
+   "originalId": "ID-107",
+   "claim": "AlSi10MnMg family (Silafont-36, Castasil-37, Aural-2) is copper-free",
+   "result": "not found (Castasil-37 is AlSi9MnMoZr, no Mg; copper-free status not confirmed in search)",
+   "url": "https://dl.asminternational.org/alloy-digest/article/70/10/Al-481/18335/RHEINFELDEN-CASTASIL-37Al-9-5Si-0-48Mn-0-2Mo-0-2Zr"
+  },
+  {
+   "id": "mhev48s-id-123",
+   "originalId": "ID-123",
+   "claim": "Hella 48V PowerPack combines battery, management and DC/DC in one block",
+   "result": "confirmed",
+   "url": "https://chargedevs.com/newswire/hella-develops-two-new-battery-systems-for-mild-hybrids/"
+  },
+  {
+   "id": "mhev48s-id-139",
+   "originalId": "ID-139",
+   "claim": "Copper at 6.55 USD/lb on 4 Sep 2026 (= 14,440 USD/t)",
+   "result": "not found for the exact date; consistent with nearby data (1 Sep 2026 COMEX range $6.55-6.62/lb; Sept average $6.66/lb). Unit conversion 6.55 x 2204.6 = 14,440 correct",
+   "url": "https://www.octagonai.co/markets/commodities/metals/copper-price-on-september-01-2026-at-5-00-pm-edt/"
+  },
+  {
+   "id": "mhev48s-id-150",
+   "originalId": "ID-150",
+   "claim": "Ultrasonic welding does not melt the metal and pairs well with aluminium busbars; laser weld depth control is critical (SunLith Energy)",
+   "result": "confirmed (SunLith guide: ultrasonic avoids melting, suits aluminium); the specific weld-depth wording not seen in snippets",
+   "url": "https://sunlithenergy.com/?p=5924"
+  },
+  {
+   "id": "mhev48s-id-093",
+   "originalId": "ID-093",
+   "claim": "Silafont-36 composition (cited as AlSi10Mg) / AlSi10MnMg conductivity",
+   "result": "contradicted in part: Silafont-36 is AlSi9-10MnMg (Mn-bearing), not AlSi10Mg; as-cast AlSi10MnMg measured 125-138 W/m.K",
+   "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11547685/"
+  }
+ ],
+ "counts": {
+  "byCategory": {
+   "transcription": 8,
+   "consistency": 16,
+   "duplicate": 5,
+   "quality": 25,
+   "benchmark": 1
+  },
+  "bySeverity": {
+   "critical": 8,
+   "minor": 30,
+   "major": 17
+  },
+  "byCategoryAndSeverity": {
+   "transcription/critical": 6,
+   "transcription/minor": 2,
+   "consistency/minor": 16,
+   "duplicate/major": 3,
+   "duplicate/minor": 2,
+   "quality/critical": 2,
+   "quality/major": 14,
+   "quality/minor": 9,
+   "benchmark/minor": 1
+  },
+  "totalFindings": 55,
+  "trueDuplicates": 5
+ }
+}

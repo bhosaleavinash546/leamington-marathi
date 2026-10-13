@@ -1,0 +1,872 @@
+[
+ {
+  "id": "edu26-p1",
+  "originalId": "P1",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p12",
+  "originalId": "P12",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p13",
+  "originalId": "P13",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p14",
+  "originalId": "P14",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p15",
+  "originalId": "P15",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p16",
+  "originalId": "P16",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p17",
+  "originalId": "P17",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p18",
+  "originalId": "P18",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p2",
+  "originalId": "P2",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p20",
+  "originalId": "P20",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p3",
+  "originalId": "P3",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p5",
+  "originalId": "P5",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p6",
+  "originalId": "P6",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p7",
+  "originalId": "P7",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-p9",
+  "originalId": "P9",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-r12",
+  "originalId": "R12",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-r13",
+  "originalId": "R13",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-r14",
+  "originalId": "R14",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-r16",
+  "originalId": "R16",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-r19",
+  "originalId": "R19",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-r20",
+  "originalId": "R20",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-r7",
+  "originalId": "R7",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-n1",
+  "originalId": "N1",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-n7",
+  "originalId": "N7",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-n8",
+  "originalId": "N8",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-s12",
+  "originalId": "S12",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-s13",
+  "originalId": "S13",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-s2",
+  "originalId": "S2",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-s7",
+  "originalId": "S7",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-s8",
+  "originalId": "S8",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-s9",
+  "originalId": "S9",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-x2",
+  "originalId": "X2",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-x4",
+  "originalId": "X4",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-x5",
+  "originalId": "X5",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-x8",
+  "originalId": "X8",
+  "category": "transcription",
+  "severity": "minor",
+  "issue": "Effort value normalised: source cell reads 'Med', record (ideaData.implementationDifficulty and top-level difficulty) reads 'Medium'. Meaning unchanged; not verbatim.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' column 'Effort' = 'Med'; record = 'Medium'",
+  "duplicateOf": null,
+  "recommendation": "Accept as a harmless normalisation, or store 'Med' verbatim if the rule is strict verbatim."
+ },
+ {
+  "id": "edu26-r5",
+  "originalId": "R5",
+  "category": "quality",
+  "severity": "critical",
+  "issue": "Conflict set omits every other magnet idea that was also selected. R5 removes the NdFeB magnets entirely, yet R1 (grain boundary diffusion), R6 (segment count), R13 (rectangular blocks), R16 (resin retention), R19 (dual source/index), M2 (coating), Z5 (shrink machine 'and its magnets'), Z9 (recover magnet value), X2 and Z10 (magnet volume pricing) are all Develop alongside it. Their savings cannot coexist with a magnet-free rotor. Risk-adjusted high savings on the £171.00 magnet part from the Develop list sum to £339.72 for every idea that touches it, or £97.73 for magnet-only ideas plus R5's £110.70. The pack's Rotor group header shows £260.51 of saving against about £269.90 of total rotor part cost. That contradicts the pack's statement that the 77 'do not clash with each other' and Phase 4's statement that 'no two selected ideas can be mutually exclusive'.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' R5 'Conflicts with' = 'A1, A2, A3, A5, R17, R3, R4, S3'; R1 = 'A4, R12, R2, Z8'; R13/R6 = 'none'; R16 = 'R9, Z19'; R19 = 'Z7, Z8'. '11. Phase 4 evaluation' all = 'Develop'. Pack slide 4: '77 carried forward | These do not clash with each other'; slide 12: 'Rotor | 13 proposals | £260.51 Saving a unit'.",
+  "duplicateOf": null,
+  "recommendation": "Make R5 mutually exclusive with the magnet-optimisation ideas (or present the PM-rotor path and the R5 path as two alternative packages), then re-run the conflict resolution and the group and headline totals before the Director/President review."
+ },
+ {
+  "id": "edu26-r5",
+  "originalId": "R5",
+  "category": "quality",
+  "severity": "critical",
+  "issue": "The saving band does not follow from the idea's own cost mechanism. The mechanism says 'roughly 60-75% of the magnet cost is removed net of the excitation hardware', which is £102.60-£128.25 on the £171.00 magnet. The register instead applies 75-90% to £205.00 (magnets plus rotor lamination stack), giving £153.75-£184.50. A wound rotor still needs a laminated pole stack, so crediting up to 90% of the lamination cost as well is not supported. This is the #1 ranked proposal in the pack (£110.70 a unit).",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' R5: Affected cost 205, Saving % low 0.75, high 0.9, Saving 153.75-184.5; Cost mechanism: 'Roughly 60-75% of the magnet cost is removed net of the excitation hardware that comes back.' Trade-offs: 'Adds a rotor winding, slip rings or a rotating transformer, and an excitation converter.'",
+  "duplicateOf": null,
+  "recommendation": "Ask the study author to reconcile the band with the stated mechanism (60-75% of £171 gives £102.60-£128.25, or about £61.56-£76.95 risk-adjusted at P=0.6) before the deck is shown."
+ },
+ {
+  "id": "edu26-p1",
+  "originalId": "P1",
+  "category": "quality",
+  "severity": "critical",
+  "issue": "Status contradicts the idea's own text. The register says this 'must not be judged at part level' and to 'Present it as a system trade study, not a saving', yet it is Develop with a device-level saving of £72.52-£108.78 (40-60% of the module) and is the #2 ranked saving in the pack (£81.59 a unit). The offsetting system costs it names (battery capacity for range, cooling, a larger DC-link capacitor at lower switching frequency) are not netted.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' P1 Trade-offs: 'This is the one idea that must not be judged at part level. On an 800 V bus SiC usually wins back its premium through battery sizing and cooling... Present it as a system trade study, not a saving.' '11. Phase 4 evaluation' P1 Decision 'Develop', Risk-adj high 81.59; pack slide 6 rank 2.",
+  "duplicateOf": null,
+  "recommendation": "Show P1 as a system trade study with no saving credited until the WLTP/range and cooling study is done, or show the saving net of the system penalty."
+ },
+ {
+  "id": "edu26-p17",
+  "originalId": "P17",
+  "category": "quality",
+  "severity": "critical",
+  "issue": "Over-claim: the saving is several times the cost of what the idea deletes. The mechanism removes three discrete current sensors ('Phase current sensors', £9.80 in the component list) and adds a shunt to 'a module that is already being bought'; isolation 'adds cost back on the driver board'. The band is still 20-35% of £191.10, because the £181.30 power module is included in the affected cost, giving £38.22-£66.88 (risk-adjusted £50.16, #3 in the pack). Nothing in the text makes the module itself cheaper.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' P17: Components 'Phase current sensors; Power module (SiC)', Affected 191.1, % 0.2-0.35; Mechanism 'Three discrete sensors, their mountings and their wiring are removed and replaced by a shunt integrated into a module that is already being bought.' '1. Components': Phase current sensors 9.8, Power module (SiC) 181.3.",
+  "duplicateOf": null,
+  "recommendation": "Re-base the saving on the deleted sensors, mounting and wiring (at most about £9.80 gross, less the added shunt and isolation cost) or give the module-cost mechanism that justifies 20-35%."
+ },
+ {
+  "id": "edu26-r16",
+  "originalId": "R16",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Saving is credited against magnet purchase cost the idea does not change. The mechanism is rotor-line process cost (per-magnet adhesive dispensing, multi-hour oven cure, WIP and labour). The £171.00 magnet part cost is built up as material plus sintering/grinding/coating/margin, so it contains none of that. The band of 10-20% of £179.60 (magnets plus end plates), £17.96-£35.92, therefore attacks a cost that is not in the affected parts.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' R16 Mechanism: 'Per-magnet adhesive dispensing and a multi-hour cure oven are replaced by a single injection cycle of minutes, which removes work in progress as well as labour.' Pack slide 3: magnet part cost £171.00 = finished magnet $92.43/kg 'after sintering, grinding, coating and margin'.",
+  "duplicateOf": null,
+  "recommendation": "Price R16 against the rotor assembly labour, cure and WIP cost, not as a percentage of magnet piece price."
+ },
+ {
+  "id": "edu26-r6",
+  "originalId": "R6",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "As with R16, the mechanism is rotor-line handling, insertion and adhesive cost, but the 3-8% band is applied to the £171.00 magnet purchase price. Fewer segments could also cut slicing and coating at the magnet supplier, but the text does not claim this.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' R6 Mechanism: 'Each segment carries handling, placement and adhesive cost... removes roughly half the insertion cycles and adhesive volume on the rotor line.' Affected 171 = Rotor permanent magnets.",
+  "duplicateOf": null,
+  "recommendation": "State which cost pool the saving comes from."
+ },
+ {
+  "id": "edu26-p3",
+  "originalId": "P3",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The saving depends on an idea that was not selected. P3's title and mechanism rest on die-area reduction ('enabling further area reduction'; 'only pays where the die area saving is real'; 'Overlaps with P2 and should be assessed as one package'). P2, the die-area optimisation, is Not selected (displaced by P1). P3 is also 'Standard on SiC traction modules' while P1, which is also Develop, replaces the SiC module with Si IGBT, and P3 does not list P1 as a conflict.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' P3 Trade-offs: 'Overlaps with P2 and should be assessed as one package.' Conflicts with 'none'. '11. Phase 4 evaluation' P2 'Not selected', 'Displaced by higher scoring alternative P1'.",
+  "duplicateOf": null,
+  "recommendation": "Either re-base P3 on a benefit that does not need P2, or carry it with P2 and resolve both against P1."
+ },
+ {
+  "id": "edu26-p14",
+  "originalId": "P14",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Part of the claimed saving is the die-area reduction in P2, which is Not selected. The mechanism says the clip 'permit[s] a smaller die for the same rating'. It also stacks on the SiC module alongside P1 (Si IGBT replacement), P3, P13 and P20, with no conflicts declared. Risk-adjusted highs of the single-part Develop ideas on the £181.30 module sum to £144.15, and £282.81 including the multi-part ideas that touch it.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' P14 Technical specifics: 'Better thermal extraction then feeds the die area reduction in P2.' Conflicts 'none'. P2 Decision 'Not selected'.",
+  "duplicateOf": null,
+  "recommendation": "Restate the saving without P2, and test P14/P3/P13/P20 against P1 as one power-module package."
+ },
+ {
+  "id": "edu26-z9",
+  "originalId": "Z9",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Selected although its own text says it depends on an idea that was not selected, and conflicts it does not declare. The lead time reads 'Depends on Z7' and the mechanism says it 'links it directly to Z7', but Z7 is Not selected (displaced by R19). The trade-offs say it 'conflicts directly with several ideas in this register that delete joints and bond parts permanently', for example R16 cast resin magnet retention, S13 and R15 shrink fits, S7 welded busbars and X6. Yet 'Conflicts with' is 'none', and those ideas are Develop. It also targets magnet recovery while R5 (magnet-free) is selected. P(success) is 0.2 and it admits the recovery route 'today it largely does not' exist.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' Z9 Lead time: '24-36 months. Depends on Z7.'; Conflicts with: 'none'. '11. Phase 4 evaluation' Z7 'Not selected', 'Displaced by higher scoring alternative R19'. Pack slide 48 repeats 'Depends on Z7'.",
+  "duplicateOf": null,
+  "recommendation": "Add the conflicts named in the text, and either re-admit Z7 or hold Z9."
+ },
+ {
+  "id": "edu26-z5",
+  "originalId": "Z5",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The conflict set omits R5 and the other selected magnet ideas. Z5's whole mechanism is saving magnet volume ('spending on gears to save on rare earth'). That is void if R5 (magnet-free rotor) is taken, and it overlaps R1/R13/R19. The idea also says its viability 'depends entirely on the magnet price, which is exactly the number this study has not validated', yet it carries maturity 'Proven' and P(success) 0.6. The cited 'Proven' production cases (Taycan / e-tron GT) use two speeds for performance, not to shrink the magnets.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' Z5 Conflicts with: 'G10, Z6'; Trade-offs: 'Whether the machine saving exceeds the gearbox addition depends entirely on the magnet price, which is exactly the number this study has not validated.' Maturity 'Proven'.",
+  "duplicateOf": null,
+  "recommendation": "Add R5 to Z5's conflicts, and present Z5 as a system trade study pending a validated magnet price."
+ },
+ {
+  "id": "edu26-r8",
+  "originalId": "R8",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Selected although its economics are net-negative on the study's own figures. Net per unit is -0.03 (NRE per unit 1.20 against risk-adjusted low 1.17) and payback is 5.13 years on £600,000 NRE for a £1.17-£2.81 saving.",
+  "evidence": "'11. Phase 4 evaluation' R8: Risk-adj low 1.17, NRE 600000, NRE per unit 1.2, Net per unit -0.03, Payback 5.13, Decision 'Develop'.",
+  "duplicateOf": null,
+  "recommendation": "Hold R8 or attach it to a shared tooling programme so it carries a marginal NRE."
+ },
+ {
+  "id": "edu26-x7",
+  "originalId": "X7",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Selected although its economics are net-negative on the study's own figures. Net per unit is -0.11 and payback is 5.19 years on £1,500,000 NRE for a £2.89-£5.42 saving. Its weighted score of 3.107 is only just above the 3.00 threshold.",
+  "evidence": "'11. Phase 4 evaluation' X7: NRE 1500000, NRE per unit 3, Net per unit -0.11, Payback 5.19, Decision 'Develop'.",
+  "duplicateOf": null,
+  "recommendation": "Hold X7 or show the case for it beyond piece cost (for example a functional-safety necessity)."
+ },
+ {
+  "id": "edu26-x4",
+  "originalId": "X4",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Marginal economics: net per unit +0.04 and payback 4.84 years on £600,000 NRE.",
+  "evidence": "'11. Phase 4 evaluation' X4 Net per unit 0.04, Payback 4.84.",
+  "duplicateOf": null,
+  "recommendation": "Flag as marginal in the deck."
+ },
+ {
+  "id": "edu26-x1",
+  "originalId": "X1",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The conflict resolution discards the larger saving. X1, full three-in-one integration (risk-adjusted £7.60-£13.93), is 'Displaced by higher scoring alternative H3', an LV connector and loom consolidation worth £1.78-£3.56. The method states that the higher weighted score wins, but the President should know that the integration architecture was dropped for a much smaller saving. S7 ('inside the shared housing') and X6 (benchmark 'inherent to integrated EDUs') still describe an integrated-EDU context.",
+  "evidence": "'11. Phase 4 evaluation' X1 'Not selected', 'Displaced by higher scoring alternative H3'; H3 Risk-adj 1.78-3.56; X1 Risk-adj 7.6-13.93.",
+  "duplicateOf": null,
+  "recommendation": "Show X1 against H3 as an explicit architecture decision."
+ },
+ {
+  "id": "edu26-z17",
+  "originalId": "Z17",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The conflict resolution discards the larger saving. Z17 (risk-adjusted £5.58-£9.30) lost to P8 (£1.40-£4.19). Z2 (£8.58-£15.01) lost to T6 (£2.25-£3.94) through a conflict link between waste-heat use and coolant hose bosses that is not obvious.",
+  "evidence": "'11. Phase 4 evaluation' Z17 'Displaced by higher scoring alternative P8'; Z2 'Displaced by higher scoring alternative T6'.",
+  "duplicateOf": null,
+  "recommendation": "Confirm these conflict links are genuine."
+ },
+ {
+  "id": "edu26-r10",
+  "originalId": "R10",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Possible clash with R11, which is also Develop: R10 reserves hybrid ceramic rolling elements 'only for the high-speed rotor position', while R11 puts a hybrid ceramic bearing at the non-drive end to delete the grounding ring. R20 also deletes a bearing position in the same set. No conflicts are declared among R10, R11 and R20.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' R10/R11/R20 Conflicts with: 'none'.",
+  "duplicateOf": null,
+  "recommendation": "Assess R10, R11 and R20 as one bearing package."
+ },
+ {
+  "id": "edu26-z19",
+  "originalId": "Z19",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Maturity 'Proven' for a Radical idea whose own benchmark says it is 'not standard in passenger BEV traction rotors'. Proven only in motorsport and aerospace. Z2 and Z17 are similar: 'Proven' while the specific strategy is 'not publicly detailed'.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' Z19 Maturity 'Proven'; Benchmark 'Motorsport and aerospace high-speed machines; not standard in passenger BEV rotors'.",
+  "duplicateOf": null,
+  "recommendation": "Label 'Proven (other industry)' or 'Emerging' for automotive."
+ },
+ {
+  "id": "edu26-r6",
+  "originalId": "R6",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "R6 'must be assessed together' with R1 and R2, but R2 is Not selected. The pack slide repeats the dependency.",
+  "evidence": "EDU_Function_Analysis.xlsx '7. Creativity idea register' R6 Trade-offs: 'Interacts directly with R1 and R2 and must be assessed together.' '11. Phase 4 evaluation' R2 'Not selected'.",
+  "duplicateOf": null,
+  "recommendation": "Drop the R2 reference or note that R2 is not selected."
+ },
+ {
+  "id": null,
+  "originalId": null,
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "Development pack internal inconsistency: slide 2 says step 5 is 'This pack. Twenty proposals worked up', but the pack carries 77 proposals, each with its own slide.",
+  "evidence": "EDU_Phase5_Development_Pack slide 2: '5. Development | This pack. Twenty proposals worked up'; slide 1: '77 | In this pack'.",
+  "duplicateOf": null,
+  "recommendation": "Correct slide 2 to 77."
+ },
+ {
+  "id": null,
+  "originalId": null,
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "Development pack slide 5 says 'The remaining 57 ideas are still live', but 154 - 77 = 77, which matches the workbook's 74 Not selected plus 3 Held. Slide 4 says the 89 removed are 'Twelve will not work. The rest lose to a better alternative', but 3 of them were Held for scoring below 3.00, not displaced.",
+  "evidence": "Pack slide 5: '154 | After removing the twelve...| 77 | After settling clashes... | The remaining 57 ideas are still live.' '12. Phase 4 decisions': Screened out 12, Not selected 74, Held 3, Carried 77.",
+  "duplicateOf": null,
+  "recommendation": "Correct to 77 remaining (74 not selected plus 3 held)."
+ },
+ {
+  "id": null,
+  "originalId": null,
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "Pack figures use different bases: the 'Saving a unit' headline on every proposal slide and in the ranking tables is the risk-adjusted HIGH figure, while 'Pays back in' is computed on the risk-adjusted LOW figure (NRE / (risk-adjusted low x 100,000)). For example, Z16 has payback 2.08 = 1,000,000/(4.81 x 100k). The Marketplace records copy the workbook correctly; this concerns presentation only.",
+  "evidence": "Every slide-level check: 'Saving a unit' = '11. Phase 4 evaluation' 'Risk-adj high'; 'Pays back in' = NRE/(Risk-adj low x 1e5), verified for all 40 Develop ideas in this slice.",
+  "duplicateOf": null,
+  "recommendation": "Label the headline 'up to', or show the risk-adjusted range."
+ },
+ {
+  "id": "edu26-r1",
+  "originalId": "R1",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add108 \"Grain-boundary-diffused Dy to cut bulk heavy rare-earth\" [marketplace-extra-ideas.json]: same GBD move on traction rotor NdFeB magnets.",
+  "duplicateOf": "add108",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-r3",
+  "originalId": "R3",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Ferrite-assisted synchronous reluctance rotor deleting heavy-rare-earth\" [deep-library]: same machine-topology swap on the EDU rotor.",
+  "duplicateOf": "deep-f5876c444716",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-r5",
+  "originalId": "R5",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add150 \"Magnet-free externally-excited rotor EDU eliminating rare earth\" [extra]; also pt034 \"Wound rotor synchronous motor — eliminates rare earth permanent magnets entirely\" [legacy-seed].",
+  "duplicateOf": "add150",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-n1",
+  "originalId": "N1",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add134 \"Inductive position sensor replacing resolver on EDU\" [extra]; also bev193 [legacy-seed].",
+  "duplicateOf": "add134",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-n2",
+  "originalId": "N2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add136 \"Sensorless high-speed control reducing redundant position sensor\" [extra]: flux-observer sensorless above a speed threshold with a low-speed sensor retained.",
+  "duplicateOf": "add136",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-n3",
+  "originalId": "N3",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Two-phase current sensing with computed third phase in secondary inverter\" [luxury-suv-mhev-bev]: same move on a traction inverter.",
+  "duplicateOf": "lux-27e26813a85b",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-n5",
+  "originalId": "N5",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Shared position sensor: one resolver serves motor and gear speed\" [deep-library]: derive output speed from rotor position and fixed ratio, deleting discrete speed sensors.",
+  "duplicateOf": "deep-77cc22b224be",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-r6",
+  "originalId": "R6",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Coarse two-block axial magnet split replacing six-block segmentation\" [deep-library]: fewer magnet segments per pole on an IPM rotor.",
+  "duplicateOf": "deep-0cd844f4bffb",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-r15",
+  "originalId": "R15",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Interference-fit shaft-to-core deletes keyway and adhesive bond\" [deep-library]: shrink-fit rotor stack to shaft replacing spline/key.",
+  "duplicateOf": "deep-b348af670330",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-r16",
+  "originalId": "R16",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library bev137 \"Injection-moulded magnet holder replaces adhesive bonding, reducing assembly time 60%\" [legacy-seed]: one-shot moulded encapsulation of magnets in place of per-magnet adhesive.",
+  "duplicateOf": "bev137",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-r20",
+  "originalId": "R20",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Bearing-count reduction via shared shaft between motor and gear\" [deep-library]: rotor and pinion share a bearing, deleting one bearing position (also overlaps study idea G8).",
+  "duplicateOf": "deep-6ffd7a7310c7",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-p3",
+  "originalId": "P3",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add116 \"Sintered-silver die-attach replacing solder in SiC power module\" [extra]; also bev155 [legacy-seed].",
+  "duplicateOf": "add116",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-p6",
+  "originalId": "P6",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add132 \"Aluminum HV busbars with selective plating replacing copper\" [extra]: same Al-for-Cu busbar move with plating at joints.",
+  "duplicateOf": "add132",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-p7",
+  "originalId": "P7",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add118 \"Integrated PCB gate driver replacing discrete driver board\" [extra]: gate driver merged onto the control PCB, deleting the inter-board connector.",
+  "duplicateOf": "add118",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-p8",
+  "originalId": "P8",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library bev154 \"PCB layer consolidation from 12-layer to 8-layer inverter control board reduces PCB cost 22%\" [legacy-seed] (P8 adds MCU right-sizing).",
+  "duplicateOf": "bev154",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-p12",
+  "originalId": "P12",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Transfer-moulded single-switch SiC packages on a common pin-fin baseplate\" [luxury-suv-mhev-bev]: discrete/single-switch SiC packages in place of a custom six-pack module.",
+  "duplicateOf": "lux-bc141176f205",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-p14",
+  "originalId": "P14",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library bev150 \"Copper clip bonding replaces wire bonding for SiC die interconnects, reducing bond resistance 60%\" [legacy-seed].",
+  "duplicateOf": "bev150",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-p16",
+  "originalId": "P16",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Ceramic-substrate DC-link snubber replaces bulk film headroom\" [deep-library]: local MLCCs take HF ripple so the film DC-link shrinks.",
+  "duplicateOf": "deep-df5a1b778117",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-p17",
+  "originalId": "P17",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Shunt-in-busbar current sensing deletes discrete phase sensors\" [deep-library]: shunts replace Hall phase-current sensors (location busbar vs module).",
+  "duplicateOf": "deep-7516c0a9f7c9",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-p18",
+  "originalId": "P18",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Insert-moulded PPS busbar replaces stamped-and-laminated Cu stack\" [deep-library]: insert-moulded inverter busbars.",
+  "duplicateOf": "deep-092a971e1334",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-s2",
+  "originalId": "S2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add102 \"Segmented stator core with bonded laminations vs interlocked\" [extra] (utilisation 58%->88%); also deep-3e00b0f8717c and bev116.",
+  "duplicateOf": "add102",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-s4",
+  "originalId": "S4",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add101 \"Continuous hairpin wave-winding to cut stator copper scrap\" [extra].",
+  "duplicateOf": "add101",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-s5",
+  "originalId": "S5",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library \"Aluminium hairpin conductors with copper-clad slot legs\" [deep-library].",
+  "duplicateOf": "deep-bf6d16ace594",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-s9",
+  "originalId": "S9",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library bev125 \"End winding geometry optimisation via FEA reduces copper end-turn length 18%\" [legacy-seed].",
+  "duplicateOf": "bev125",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-s10",
+  "originalId": "S10",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library cool046 \"Stator end-winding direct oil cooling enables shorter lamination stack\" [bev-cooling]: identical mechanism.",
+  "duplicateOf": "cool046",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-x1",
+  "originalId": "X1",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate of an existing Marketplace library idea (same move on the same part).",
+  "evidence": "Library add138 \"3-in-1 EDU integrating motor, inverter and reducer housing\" [extra]; also bev101 [legacy-seed].",
+  "duplicateOf": "add138",
+  "recommendation": "Link or merge with the library record; keep the study record as the sourced (verbatim) version."
+ },
+ {
+  "id": "edu26-s7",
+  "originalId": "S7",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: VW ID.3 / ID.4 (APP310) has a direct stator-to-inverter connection (terminal block deleted)",
+  "evidence": "https://patents.google.com/patent/US12101003 — No public source found describing the APP310 phase connection; search returned only generic patents.",
+  "duplicateOf": null,
+  "recommendation": "Qualify as 'integrated EDU, connection detail not public' or drop APP310 from the benchmark column."
+ },
+ {
+  "id": "edu26-s7",
+  "originalId": "S7",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: GM Hummer EV (Ultium) has a direct stator-to-inverter connection",
+  "evidence": "https://chargedevs.com/newswire/gm-reveals-3-new-ev-motors-for-its-ultium-platform — GM confirms the inverter is integrated into the Ultium Drive unit, but no source describes the stator-lead/busbar joint or terminal-block deletion.",
+  "duplicateOf": null,
+  "recommendation": "Reword to 'inverter integrated in drive unit (GM Ultium)'; the direct-weld claim is not publicly evidenced."
+ },
+ {
+  "id": "edu26-p17",
+  "originalId": "P17",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: Practice note: shunt current sensing 'Widely used in integrated traction inverters'",
+  "evidence": "https://www.ti.com/document-viewer/lit/html/SBAA293 — Only an industry trend from Hall to shunt sensing and supplier products (TI, Riedon); no named production traction inverter found. TI is still launching coreless Hall sensors for traction inverters.",
+  "duplicateOf": null,
+  "recommendation": "Soften to 'emerging; supplier solutions available' and keep maturity under review (currently 'Proven')."
+ },
+ {
+  "id": "edu26-r1",
+  "originalId": "R1",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: Practice note: grain boundary diffusion 'Widely adopted across traction magnet supply'",
+  "evidence": "https://www.automotiveworld.com/?p=154723 — Partially supported: Nissan production motor with GBD cut Dy about 40%. No source quantifies wide adoption; trade press notes GBD is limited for thick magnets.",
+  "duplicateOf": null,
+  "recommendation": "Cite the Nissan example rather than 'widely adopted'."
+ },
+ {
+  "id": "edu26-n1",
+  "originalId": "N1",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark claim not found: Practice note: inductive position sensors 'Widely adopted across recent traction drives'",
+  "evidence": "https://www.renesas.com/en/blogs/inductive-position-sensor-ips2550-ideal-xev-position-sensor-resolver-replacement — Supplier products (Renesas IPS2550, ams AS5715, Microchip LX34070) and trade press only; no named OEM production programme found.",
+  "duplicateOf": null,
+  "recommendation": "Reword to 'supplier products in market; adoption growing'."
+ }
+]

@@ -7,7 +7,7 @@ study, original ID and an exact source pointer (file / sheet / row, deck slide).
 import json, re, os
 from collections import Counter
 
-S = os.environ.get('STUDY_DIR') or os.path.dirname(os.path.abspath(__file__))  # folder holding txt/ (the extracted study files)
+S = os.environ.get('STUDY_DIR') or os.path.dirname(os.path.abspath(__file__))
 T = f'{S}/txt'
 OUT = f'{S}/packs'
 os.makedirs(OUT, exist_ok=True)
@@ -24,6 +24,22 @@ def num(v):
 
 def money_gbp(v, dec=2):
     return f'£{v:,.{dec}f}'
+
+
+def sgn(v, txt):
+    return ('−' + txt) if v < 0 else txt
+
+
+def money_gbp_s(v, dec=2):
+    return sgn(v, f'£{abs(v):,.{dec}f}')
+
+
+def money_big_s(v, sym='£'):
+    return sgn(v, money_big(abs(v), sym))
+
+
+def opt(v, fmt):
+    return 'not stated' if v is None else fmt(v)
 
 
 def money_big(v, sym='£'):
@@ -90,7 +106,7 @@ for i, r in enumerate(reg):
         'costReductionMechanism': s(r[17]), 'riskNotes': s(r[18]), 'validationRequired': s(r[19]),
         'investment': None, 'investmentText': s(r[20]), 'timeToImplement': s(r[21]),
         'benchmarkReference': s(r[22]), 'practiceNote': s(r[23]), 'maturity': s(r[24]),
-        'implementationDifficulty': {'Med': 'Medium'}.get(s(r[25]), s(r[25])), 'conflictsWith': s(r[26]),
+        'implementationDifficulty': {'Med': 'Medium'}.get(s(r[25]), s(r[25])), 'studyEffort': s(r[25]), 'conflictsWith': s(r[26]),
         'powertrain': 'BEV (single-motor EDU)',
         'weightedScore': num(e.get('Weighted score')), 'pSuccess': num(e.get('P(success)')),
         'riskAdjustedLowGBP': num(e.get('Risk-adj low')), 'riskAdjustedHighGBP': num(e.get('Risk-adj high')),
@@ -99,12 +115,14 @@ for i, r in enumerate(reg):
     })
     pct = f"{num(r[11]) * 100:.0f}-{num(r[12]) * 100:.0f}% of the affected component cost" if num(r[11]) is not None else ''
     if lo is not None and hi is not None:
-        per = f'{money_gbp(lo)}-{money_gbp(hi)} per unit'
-        ann = f'{money_big(lo * EDU_VOL)}-{money_big(hi * EDU_VOL)} at 100,000 units/yr'
-        basis = (f"Study register band: {pct} of £{num(r[10]):,.2f} affected cost = {money_gbp(lo)}-{money_gbp(hi)} per unit "
+        neg = ' (the low case is a cost increase)' if lo < 0 else ''
+        per = f'{money_gbp_s(lo)} to {money_gbp_s(hi)} per unit{neg}'
+        ann = f'{money_big_s(lo * EDU_VOL)} to {money_big_s(hi * EDU_VOL)} at 100,000 units/yr{neg}'
+        d.update({'savingPerUnitLowGBP': lo, 'savingPerUnitHighGBP': hi, 'annualSavingLowGBP': lo * EDU_VOL, 'annualSavingHighGBP': hi * EDU_VOL})
+        basis = (f"Study register band: {pct} of £{num(r[10]):,.2f} affected cost = {money_gbp_s(lo)} to {money_gbp_s(hi)} per unit "
                  f"× 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: "
-                 f"{money_gbp(d['riskAdjustedLowGBP'] or 0)}-{money_gbp(d['riskAdjustedHighGBP'] or 0)} per unit at P(success) {d['pSuccess']}; "
-                 f"NRE £{(d['nreGBP'] or 0):,.0f} ({d['nreShared']}); payback {d['paybackYears']} yrs. Indicative band, not a quotation.")
+                 f"{opt(d['riskAdjustedLowGBP'], money_gbp_s)} to {opt(d['riskAdjustedHighGBP'], money_gbp_s)} per unit at P(success) {opt(d['pSuccess'], str)}; "
+                 f"NRE {opt(d['nreGBP'], lambda v: f'£{v:,.0f}')} ({d['nreShared'] or 'sharing not stated'}); payback {opt(d['paybackYears'], lambda v: f'{v} yrs')}. Indicative band, not a quotation.")
     else:
         per, ann, basis = 'Not stated', 'Not stated', ''
     d['costSavingPotential'] = {'perVehicle': per, 'annualValue': ann, 'percentage': pct, 'calculationBasis': basis,
@@ -112,8 +130,13 @@ for i, r in enumerate(reg):
     d['volumeBasis'] = f'Study volume 100,000 units/yr. {NOT_ADDITIVE} Conflicts with: {s(r[26]) or "none stated"}.'
     if rid in edu_deck:
         sl = edu_deck[rid]
-        d['developmentPackSlides'] = [n for n, _ in sl]
-        d['developmentPackNotes'] = ' ¶ '.join(' | '.join(p) for n, p in sl if p and p[0].startswith(rid))[:12000]
+        own = [(n, p) for n, p in sl if p and re.match(rf'{rid}\b', p[0])]
+        if own:
+            d['developmentPackSlides'] = [n for n, _ in own]
+            d['developmentPackNotes'] = ' ¶ '.join(' | '.join(p) for n, p in own)[:30000]
+        mentions = [n for n, p in sl if (n, p) not in own]
+        if mentions:
+            d['studyDeckMentions'] = mentions
     x.update({'costSavingType': s(r[3]), 'annualSaving': ann if lo is not None else 'Not stated',
               'difficulty': d['implementationDifficulty'], 'timeToImplement': s(r[21]),
               'description': f"[EDU study · {status}] {title}. {s(r[16])[:600]}"})
@@ -150,19 +173,21 @@ for i, r in enumerate(reg):
         'benchmarkReference': s(rr['Benchmark']), 'investmentText': s(rr['Investment']),
         'timeToImplement': s(rr['Lead time']), 'implementationDifficulty': s(rr['Effort']),
         'conflictsWith': s(rr['Conflicts']), 'savingBasis': s(rr['Saving basis']),
-        'powertrain': 'MHEV (48V battery pack)',
+        'powertrain': 'MHEV (48V battery pack)', 'studyLevel': s(rr['Level']),
         'weightedScore': num(e.get('Weighted')), 'pSuccess': num(e.get('p success')),
         'riskAdjustedLowGBP': num(e.get('Risk-adj low')), 'riskAdjustedHighGBP': num(e.get('Risk-adj high')),
         'nreGBP': num(e.get('NRE GBP')), 'nreShared': s(e.get('Shared NRE')), 'paybackYears': num(e.get('Payback yrs')),
         'nreNote': s(e.get('NRE note')),
     })
     if lo is not None and hi is not None:
-        per = f'{money_gbp(lo)}-{money_gbp(hi)} per pack'
-        ann = f'{money_big(lo * VOL48)}-{money_big(hi * VOL48)} at 120,000 packs/yr'
+        neg = ' (the low case is a cost increase)' if lo < 0 else ''
+        per = f'{money_gbp_s(lo)} to {money_gbp_s(hi)} per pack{neg}'
+        ann = f'{money_big_s(lo * VOL48)} to {money_big_s(hi * VOL48)} at 120,000 packs/yr{neg}'
+        d.update({'savingPerUnitLowGBP': lo, 'savingPerUnitHighGBP': hi, 'annualSavingLowGBP': lo * VOL48, 'annualSavingHighGBP': hi * VOL48})
         basis = (f"Study register band ({s(rr['Saving basis'])}) on £{num(rr['Affected GBP']):,.2f} affected cost = "
-                 f"{money_gbp(lo)}-{money_gbp(hi)} per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: "
-                 f"{money_gbp(d['riskAdjustedLowGBP'] or 0)}-{money_gbp(d['riskAdjustedHighGBP'] or 0)} per pack at p {d['pSuccess']}; "
-                 f"NRE £{(d['nreGBP'] or 0):,.0f}; payback {d['paybackYears']} yrs. No teardown or quotation exists (study README).")
+                 f"{money_gbp_s(lo)} to {money_gbp_s(hi)} per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: "
+                 f"{opt(d['riskAdjustedLowGBP'], money_gbp_s)} to {opt(d['riskAdjustedHighGBP'], money_gbp_s)} per pack at p {opt(d['pSuccess'], str)}; "
+                 f"NRE {opt(d['nreGBP'], lambda v: f'£{v:,.0f}')}; payback {opt(d['paybackYears'], lambda v: f'{v} yrs')}. No teardown or quotation exists (study README).")
     else:
         per, ann, basis = 'Not stated', 'Not stated', ''
     d['costSavingPotential'] = {'perVehicle': per, 'annualValue': ann, 'calculationBasis': basis,
@@ -170,7 +195,7 @@ for i, r in enumerate(reg):
     d['volumeBasis'] = f'Study volume 120,000 packs/yr for 7 years. {NOT_ADDITIVE} Conflicts: {s(rr["Conflicts"]) or "none stated"}.'
     if rid in mh_deck:
         d['developmentPackSlides'] = [n for n, _ in mh_deck[rid]]
-        d['developmentPackNotes'] = ' ¶ '.join(' | '.join(p) for n, p in mh_deck[rid])[:12000]
+        d['developmentPackNotes'] = ' ¶ '.join(' | '.join(p) for n, p in mh_deck[rid])[:30000]
     x.update({'costSavingType': s(rr['Lever']), 'annualSaving': ann if lo is not None else 'Not stated',
               'difficulty': s(rr['Effort']), 'timeToImplement': s(rr['Lead time']),
               'description': f"[48V MHEV study · {status}] {title}. {s(rr['Specifics'])[:600]}"})
@@ -241,7 +266,7 @@ for fn, system, study, code, pfx, deck, pdf in DRIVE:
                   'riskNotes': f"Duty / environment: {duty} Trade-off: {trade}",
                   'evidencePointer': evidence, 'studyCostEffect': cost, 'implementationDifficulty': effort,
                   'powertrain': 'ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)',
-                  'offRoad': True, 'targetVehicle': scope[:600],
+                  'offRoad': True, 'targetVehicle': scope,
                   'studyCombinedCapture': capture[:1500]})
         if status == 'Saving' and val is not None:
             per = f'£{val:,.2f} per vehicle'
@@ -249,6 +274,7 @@ for fn, system, study, code, pfx, deck, pdf in DRIVE:
             basis = (f"Study cost effect {cost} per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). "
                      f"Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.")
             x['annualSaving'] = ann
+            d.update({'savingPerUnitLowGBP': val, 'savingPerUnitHighGBP': val, 'annualSavingLowGBP': val * DVOL, 'annualSavingHighGBP': val * DVOL})
         else:
             per = 'No saving booked'
             ann = f'No saving booked — {status.lower()}'
@@ -296,7 +322,7 @@ for i, r in enumerate(rows):
               'studyStatus': status,
               'technicalDescription': f"How it works · benchmark (as stated): {how} Spec: {spec}",
               'costReductionMechanism': f"Cost effect on the 105 kWh GROSS reference pack (study): {eur}",
-              'riskNotes': cert, 'studyCostEffect': eur, 'powertrain': '800V BEV (105 kWh GROSS reference pack)',
+              'riskNotes': cert, 'studyCostEffect': eur, 'maturity': (re.match(r'^([^·]+)·', cert).group(1).strip() if re.match(r'^([^·]+)·', cert) else ''), 'powertrain': '800V BEV (105 kWh GROSS reference pack)',
               'studyCombinedCapture': capture,
               'costSavingPotential': {'perVehicle': per, 'annualValue': ann,
                                       'calculationBasis': f"Study figure: {eur}. Priced on the study's reference pack. {capture}",

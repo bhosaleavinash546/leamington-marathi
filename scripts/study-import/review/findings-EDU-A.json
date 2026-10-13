@@ -1,0 +1,522 @@
+[
+ {
+  "id": "edu26-t1",
+  "originalId": "T1",
+  "category": "consistency",
+  "severity": "major",
+  "issue": "Screened-out idea T1 is linked to development-pack slide 78 and its developmentPackNotes field carries the full text of the T12 slide (T12 title, saving £10.45, 75% chance, £600,000 NRE, 1.01-year payback). Slide 78 is T12's card and only mentions T1 in passing ('the same weakness as T1'). A reader of the T1 record would see a Develop-pack card with figures that belong to another idea.",
+  "evidence": "Record T1 developmentPackSlides=[78]; developmentPackNotes begins 'T12  Passive rotor cooling by centrifugal pumping from the hollow shaft | ... Saving a unit | £10.45 ...'. Deck slide 78: 'What could go wrong: Cooling flow scales with speed, so it is weakest at low speed and high torque, the same weakness as T1.' Phase 4: T1 Decision = Screened out.",
+  "recommendation": "Remove developmentPackSlides / developmentPackNotes from T1 (or relabel as 'mentioned on slide 78 (T12 card)'), so a screened-out idea does not display another idea's development card.",
+  "duplicateOf": null
+ },
+ {
+  "id": "edu26-t5",
+  "originalId": "T5",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "Not-selected idea T5 is linked to development-pack slide 54, which is the M9 card; T5 is only cross-referenced there. Notes field is empty, so no wrong figures are shown, but the link implies T5 is in the development pack.",
+  "evidence": "Record T5 developmentPackSlides=[54]. Slide 54 (M9): 'This trades directly against the filtration decisions in T5, so the two must be assessed together.'",
+  "recommendation": "Relabel the link as a cross-reference ('mentioned on M9 card') or drop it.",
+  "duplicateOf": null
+ },
+ {
+  "id": "edu26-g1",
+  "originalId": "G1",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "Not-selected idea G1 is linked to development-pack slide 83, which is the G2 card; G1 is only cross-referenced there.",
+  "evidence": "Record G1 developmentPackSlides=[83]. Slide 83 (G2): 'Overlaps with G1 and should be assessed as one package.'",
+  "recommendation": "Relabel as a cross-reference or drop the link.",
+  "duplicateOf": null
+ },
+ {
+  "id": "edu26-g8",
+  "originalId": "G8",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "G8's developmentPackSlides includes slide 21, which is another idea's card (R20, rotor on a shared gearbox bearing) that merely says 'Depends on G8 being adopted'. G8's own card (slide 86) matches the workbook exactly.",
+  "evidence": "Record G8 developmentPackSlides=[9, 21, 82, 86]; slide 21 text: 'Depends on G8 being adopted.'",
+  "recommendation": "Keep 9/82/86 as G8's pack slides; mark 21 as a dependency cross-reference (R20 depends on G8).",
+  "duplicateOf": null
+ },
+ {
+  "id": "edu26-g9",
+  "originalId": "G9",
+  "category": "consistency",
+  "severity": "minor",
+  "issue": "G9's developmentPackSlides includes slide 66, which is the B3 card that only says it 'Interacts with G9'. G9's own card (slide 91) matches the workbook exactly.",
+  "evidence": "Record G9 developmentPackSlides=[11, 66, 82, 91]; slide 66 (B3): 'Interacts with G9, so the two must be assessed together rather than counted separately.'",
+  "recommendation": "Mark 66 as an interaction cross-reference rather than a G9 slide.",
+  "duplicateOf": null
+ },
+ {
+  "id": "edu26-b1",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The baseline assumption contradicts the study's own component sheet. B1 assumes a gravity or low-pressure cast AlSi7Mg housing, but '1. Components' row 44 already describes the main housing as HPDC aluminium. If the baseline is already HPDC, the £9-£18 band (£10.80 risk-adjusted, £1M NRE, ranked #22 in the deck) has no basis.",
+  "evidence": "Register B1 baseline: 'Gravity or low-pressure cast AlSi7Mg with substantial machining stock.' Components #44 Main housing: 'HPDC aluminium centre housing carrying motor, gear train, bearings, oil volume and coolant gallery.'",
+  "recommendation": "Ask the study author to reconcile the baseline with the cost model before this is presented. Either the component description or the idea is wrong.",
+  "duplicateOf": null,
+  "originalId": "B1"
+ },
+ {
+  "id": "edu26-i3",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The baseline assumption contradicts the component sheet. I3 proposes a stamped lid in place of a machined cover, but component #29 already describes the inverter lid as a stamped aluminium cover, so the saving may already be in the baseline.",
+  "evidence": "Register I3 baseline: 'Machined aluminium lid with a milled sealing face.' Components #29 Inverter lid (£8.40): 'Stamped aluminium cover closing the power electronics chamber and completing EMC shielding.'",
+  "recommendation": "Reconcile the baseline with the cost model. If the lid is already stamped, withdraw I3 or restate it as the conductive-gasket change only.",
+  "duplicateOf": null,
+  "originalId": "I3"
+ },
+ {
+  "id": "edu26-v2",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The baseline assumption contradicts the component sheet. V2 assumes hydraulically damped mounts, but component #55 Mount bushings (£14) are described as elastomeric isolators, which is already the proposed state.",
+  "evidence": "Register V2 baseline: 'Hydraulically damped mount bushings.' Components #55: 'Elastomeric isolators decoupling EDU structure-borne vibration from the subframe.'",
+  "recommendation": "Confirm the actual baseline mount type. If the mounts are already elastomeric, the £4.20-£7.00 band is not real.",
+  "duplicateOf": null,
+  "originalId": "V2"
+ },
+ {
+  "id": "edu26-b2",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The baseline is partly inconsistent with the component sheet, and the band is drawn on a part whose cost the idea raises. The main housing (#44) is already described as carrying the coolant gallery. Also, 10-20% of £56.50 includes the £44 main housing, which gets more expensive with a lost core, while the parts actually deleted (fittings and hoses) cost only £12.50.",
+  "evidence": "B2 baseline: 'Separate coolant jacket components with hoses and quick connectors between chambers.' Components #44: '...oil volume and coolant gallery'; #53 Coolant jacket fittings and hoses £12.50. B2 risk: 'Core removal and residue control add process steps.'",
+  "recommendation": "State which jacket parts exist in the baseline and draw the band on the deleted parts net of the lost-core cost adder.",
+  "duplicateOf": null,
+  "originalId": "B2"
+ },
+ {
+  "id": "edu26-v4",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Over-claim against the stated mechanism. Removing one of four isolators (about £3.50 of £14) plus one bracket and one fastener set cannot yield 20-30% of £58, because that £58 includes the £44 main housing. The high case of £17.40 exceeds the whole mount-bushing cost. No separate bracket part exists in the component list. V4 is ranked #16 in the deck at £13.05 a unit.",
+  "evidence": "V4: affected £58 (Mount bushings £14 + Main housing £44), 20-30% => £11.60-£17.40; mechanism 'One isolator, one bracket and one fastener set are removed... bracket position tolerances can relax'.",
+  "recommendation": "Rebuild the band bottom-up from one isolator, the bracket share of the housing and the fasteners. It is likely to come out at a third or less of the current figure.",
+  "duplicateOf": null,
+  "originalId": "V4"
+ },
+ {
+  "id": "edu26-g8",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The status contradicts the study's own economics. G8 is 'Develop', yet Phase 4 gives a negative net per unit (-£0.11) and a 5.19-year payback, longer than the 5-year amortisation used for NRE per unit (NRE/500,000 units). The affected cost also includes the £21 intermediate layshaft, which integrating the pinion into the rotor shaft does not remove.",
+  "evidence": "Phase 4 G8: NRE £1,500,000, NRE per unit 3, Net per unit -0.11, Payback 5.19, Decision Develop. Components affected: 'Input pinion shaft; Intermediate gear shaft'.",
+  "recommendation": "Flag G8 as value-negative at the risk-adjusted low case, or justify it on the high case. Remove the layshaft from the affected cost unless it is genuinely deleted.",
+  "duplicateOf": null,
+  "originalId": "G8"
+ },
+ {
+  "id": "edu26-g9",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The status contradicts the economics. G9 is 'Develop' with a negative net per unit (-£0.43) and a 7.79-year payback. The text also says machining cost rises to pay for the change, and the function value gap is £0.",
+  "evidence": "Phase 4 G9: NRE £600,000, Net per unit -0.43, Payback 7.79, Decision Develop. Function value gap 0. Text: 'Machining cost rises to buy the tighter bore tolerance'.",
+  "recommendation": "Re-examine the Develop status, or present G9 explicitly as value-negative.",
+  "duplicateOf": null,
+  "originalId": "G9"
+ },
+ {
+  "id": "edu26-b6",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The status contradicts the economics. B6 is 'Develop' with a negative net per unit (-£0.48) and an 8.33-year payback, because the £600,000 NRE dwarfs a £0.72-£1.44 risk-adjusted saving.",
+  "evidence": "Phase 4 B6: NRE £600,000, Net per unit -0.48, Payback 8.33, Decision Develop.",
+  "recommendation": "Re-examine the Develop status. The decision rule does not test net value.",
+  "duplicateOf": null,
+  "originalId": "B6"
+ },
+ {
+  "id": "edu26-a2",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Internal contradiction. The 70-90% band is applied to an affected cost that includes the £181.30 SiC power module, yet the risk text says inverter cost and complexity rise. The text's own published figure (40-60% machine cost reduction) is also below the register band.",
+  "evidence": "A2: affected £386.30 (magnets 171 + rotor stack 34 + Power module (SiC) 181.30), 70-90% => £270.41-£347.67. Text: 'Published comparisons put the machine cost reduction at 40-60%'; 'inverter cost and complexity rise'.",
+  "recommendation": "Remove the power module from the affected cost, or show a power-module saving. Align the band with the cited 40-60%.",
+  "duplicateOf": null,
+  "originalId": "A2"
+ },
+ {
+  "id": "edu26-a1",
+  "category": "quality",
+  "severity": "major",
+  "issue": "Arithmetic does not follow from the mechanism. The high case of £190.45 exceeds the entire magnet cost of £171. So the band implies savings in the rotor stack and stator winding, yet the text says 'rotor and stator both grow'.",
+  "evidence": "A1: affected £293 (magnets 171 + rotor stack 34 + hairpin winding 88), 45-65%. Mechanism: 'Even at three times the magnet volume the material cost falls sharply, though rotor and stator both grow.'",
+  "recommendation": "Draw the band on the magnet cost net of the copper and steel growth.",
+  "duplicateOf": null,
+  "originalId": "A1"
+ },
+ {
+  "id": "edu26-a8",
+  "category": "quality",
+  "severity": "major",
+  "issue": "The record displays a positive saving (£39.06-£58.59 a unit, £3.91M-£5.86M a year) for an idea the study itself says is almost certainly cost-negative and screened out for that reason. A reader of the Marketplace card sees a large saving.",
+  "evidence": "A8 trade-offs: 'This almost certainly increases total EDU cost'. Lead time: 'Likely cost-negative.' Decision: 'Screened out: Stated as cost-negative at system level'. Record annualSaving '£3.91M-£5.86M at 100,000 units/yr'.",
+  "recommendation": "Suppress or caveat the saving figures on screened-out cost-negative records.",
+  "duplicateOf": null,
+  "originalId": "A8"
+ },
+ {
+  "id": "edu26-t8",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Over-claim against the stated mechanism. The mechanism is a roughly 20% oil fill reduction on an £18 oil charge (about £3.60), but the band is 15-25% of £62, which includes the £44 main housing that the deeper baffled sump does not make cheaper.",
+  "evidence": "T8: affected £62 (oil £18 + housing £44), 15-25% => £9.30-£15.50. Mechanism: 'A 20% fill reduction is a direct material saving'.",
+  "recommendation": "Draw the band on the oil charge.",
+  "duplicateOf": null,
+  "originalId": "T8"
+ },
+ {
+  "id": "edu26-t5",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The baseline contradicts the component sheet. T5 assumes a serviceable filter plus a strainer, but component #51 lists only a suction strainer and vent valve.",
+  "evidence": "T5 baseline: 'Serviceable filter element plus a suction strainer.' Components #51 Oil filter and breather: 'Suction strainer and vent valve...'.",
+  "recommendation": "Confirm the baseline.",
+  "duplicateOf": null,
+  "originalId": "T5"
+ },
+ {
+  "id": "edu26-m9",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The baseline assumption is questionable and not supported by the component sheet. Through-hardened 100Cr6/52100 is the industry default for deep-groove motor bearings, and components #10 and #40 do not state a carburised spec. If the baseline is already through-hardened, the saving is zero.",
+  "evidence": "M9 baseline: 'Case-carburised bearing rings specified for maximum shock load capability.' Components #10: 'Deep-groove ball bearings'; #40: 'Tapered and ball bearings'. M9's own text calls through-hardened 'the standard and cheapest bearing material'.",
+  "recommendation": "Confirm the current bearing ring specification with the supplier before claiming the £5.98.",
+  "duplicateOf": null,
+  "originalId": "M9"
+ },
+ {
+  "id": "edu26-g11",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Metallurgy detail: the stated baseline 20MnCr5 contains no molybdenum, so 'removes chromium and molybdenum content' does not apply to that grade.",
+  "evidence": "G11 baseline '20MnCr5 or equivalent'; mechanism 'Boron substitution removes chromium and molybdenum content'.",
+  "recommendation": "Reword to chromium (and Mo where an MnCrMo or NiCrMo baseline applies).",
+  "duplicateOf": null,
+  "originalId": "G11"
+ },
+ {
+  "id": "edu26-g17",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Internal contradiction. G17 is described as an enabler for G2 that 'must be assessed as one package', yet it is placed in a conflict set with G2 and displaced by it. The selected G2 then goes forward without its NVH enabler, and G17 still carries a stand-alone saving band.",
+  "evidence": "G17 mechanism: 'Enables the quality class step in G2 without the NVH penalty, so it is an enabler rather than a saving on its own. The two must be assessed as one package.' Conflicts with G1, G2; Decision 'Displaced by higher scoring alternative G2'.",
+  "recommendation": "Treat G2+G17 as one package, or note that G2's NVH risk is carried without G17.",
+  "duplicateOf": null,
+  "originalId": "G17"
+ },
+ {
+  "id": "edu26-v3",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Internal contradiction. V3 calls itself 'a prerequisite for V1 rather than an alternative to it', yet it is listed as conflicting (mutually exclusive) with V1.",
+  "evidence": "V3 technical: 'is a prerequisite for V1 rather than an alternative to it'; Conflicts with: V1, V2, Z1.",
+  "recommendation": "Correct the conflict set.",
+  "duplicateOf": null,
+  "originalId": "V3"
+ },
+ {
+  "id": "edu26-z10",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The maturity contradicts the class and benchmark. The idea is 'Radical' (defined in the register as speculative) yet tagged 'Proven', with no citable example. The deck card prints 'Used in production on: Widespread but commercially confidential; no citable model'.",
+  "evidence": "Register Z10: class Radical, maturity Proven, benchmark 'Widespread but commercially confidential; no citable model'. Deck slide 47 header 'Used in production on'.",
+  "recommendation": "Downgrade the maturity or relabel the deck line as 'No published benchmark'.",
+  "duplicateOf": null,
+  "originalId": "Z10"
+ },
+ {
+  "id": "edu26-m1",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Title and scope disagree. The title says 'rotor pole pieces' and the text says SMC suits pole pieces rather than the main flux path, yet the affected cost includes the £62 stator lamination stack.",
+  "evidence": "M1 components: 'Stator core lamination stack; Rotor core lamination stack' (£96).",
+  "recommendation": "Restrict the affected cost to the rotor parts concerned.",
+  "duplicateOf": null,
+  "originalId": "M1"
+ },
+ {
+  "id": "edu26-t11",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "Value-negative idea scored above threshold. Net per unit is -£4.45 with an 11.27-year payback, yet the weighted score is 3.179. It was displaced only by the conflict rule, not by its economics.",
+  "evidence": "Phase 4 T11: NRE £4,000,000, Net -4.45, Payback 11.27.",
+  "recommendation": "The decision rule should screen negative net value. This affects T4 (net -3.14), I2 (-1.42) and M1 (-0.08) too.",
+  "duplicateOf": null,
+  "originalId": "T11"
+ },
+ {
+  "id": "edu26-t3",
+  "category": "quality",
+  "severity": "minor",
+  "issue": "The risk-adjusted saving exceeds the function value gap. By the study's definition of worth, a saving above the gap would take cost below worth. The deck says capping is applied at function level, but the per-idea card shows the uncapped figure.",
+  "evidence": "T3 risk-adj high £8.10 vs function value gap £2.00 (Lubricate Surfaces). Same pattern on Develop ideas T6 (3.94 vs 1.75), G7 (3.45 vs 1.65), H3 (3.56 vs 0), B3 (8.10 vs 7.64), B5 (2.29 vs 0), B8 (0.41 vs 0), V2 (5.25 vs 3.80), G9 (1.27 vs 0). Deck slide 4: 'Capped means no idea is credited with saving more on a function than the whole gap on that function.'",
+  "recommendation": "Show the capped figure on cards, or footnote that card figures are uncapped.",
+  "duplicateOf": null,
+  "originalId": "T3"
+ },
+ {
+  "id": "edu26-a3",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate by meaning: axial flux machine replacing a radial flux traction motor.",
+  "evidence": "Library pt036 'Axial flux motor architecture — 50% shorter axial length, 30% higher power density vs radial flux' (marketplace-legacy-seed-ideas.json); see also luxpr031.",
+  "duplicateOf": "pt036",
+  "recommendation": "Cross-link the records, or merge them keeping the study provenance.",
+  "originalId": "A3"
+ },
+ {
+  "id": "edu26-a7",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate by meaning: replace the stator water jacket with direct oil cooling of the stator (immersion versus spray is a variant of the same move).",
+  "evidence": "Library deep-1a4ca54b9939 'Direct-oil rotor-and-stator cooling deletes the water jacket'.",
+  "duplicateOf": "deep-1a4ca54b9939",
+  "recommendation": "Cross-link the records.",
+  "originalId": "A7"
+ },
+ {
+  "id": "edu26-a8",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate by meaning: delete the mechanical axle differential by one motor per wheel with torque vectoring.",
+  "evidence": "Library luxpr036 'Yangwang U9 hypercar: torque vectoring via software eliminating torsen rear differential'.",
+  "duplicateOf": "luxpr036",
+  "recommendation": "Cross-link the records.",
+  "originalId": "A8"
+ },
+ {
+  "id": "edu26-t1",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: delete the EDU electric oil pump in favour of splash or scoop lubrication.",
+  "evidence": "Library bev167 'Delete electric oil pump — splash lubrication with baffled oil circuit replaces pressurised supply'.",
+  "duplicateOf": "bev167",
+  "recommendation": "Cross-link the records. Note the study screens T1 out as likely to fail validation, while bev167 claims £20.10 a vehicle.",
+  "originalId": "T1"
+ },
+ {
+  "id": "edu26-t11",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: share the battery/vehicle coolant loop with the EDU and delete the dedicated circuit.",
+  "evidence": "Library bev189 'Shared coolant circuit for EDU and battery pack eliminates one pump and expansion tank'; also cool019, cool028.",
+  "duplicateOf": "bev189",
+  "recommendation": "Cross-link the records.",
+  "originalId": "T11"
+ },
+ {
+  "id": "edu26-t4",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: cast-in oil-to-coolant exchange in the EDU housing, deleting the plate heat exchanger.",
+  "evidence": "Library add128 'Cast-in oil-to-coolant heat exchanger in EDU housing'.",
+  "duplicateOf": "add128",
+  "recommendation": "Cross-link the records.",
+  "originalId": "T4"
+ },
+ {
+  "id": "edu26-g1",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: hone (or skive) EDU helical reduction gear flanks instead of full grinding.",
+  "evidence": "Library add122 'Honed gear flanks replacing hard-grinding for NVH targets'; also drv044 (skiving).",
+  "duplicateOf": "add122",
+  "recommendation": "Cross-link the records.",
+  "originalId": "G1"
+ },
+ {
+  "id": "edu26-g10",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: a single planetary reduction replacing the offset two-stage helical train.",
+  "evidence": "Library add194 'Single planetary reduction replacing offset two-shaft on rear drive'.",
+  "duplicateOf": "add194",
+  "recommendation": "Cross-link the records.",
+  "originalId": "G10"
+ },
+ {
+  "id": "edu26-g11",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate by meaning: a leaner (lower-alloy) case-hardening steel for EDU reduction gears. The specific grades differ.",
+  "evidence": "Library add123 'Lower-alloy steel gear with optimized case-carburizing' (27MnCr5 for 18CrNiMo7-6).",
+  "duplicateOf": "add123",
+  "recommendation": "Cross-link the records.",
+  "originalId": "G11"
+ },
+ {
+  "id": "edu26-g4",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: a single-piece differential case replacing the bolted two-piece case (cast versus forged is a variant).",
+  "evidence": "Library add124 'Single-piece differential housing replacing bolted two-half case'.",
+  "duplicateOf": "add124",
+  "recommendation": "Cross-link the records.",
+  "originalId": "G4"
+ },
+ {
+  "id": "edu26-g8",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: make the rotor shaft and input pinion one part, deleting the spline coupling and bearings.",
+  "evidence": "Library deep-6ffd7a7310c7 'Bearing-count reduction via shared shaft between motor and gear' ('make rotor shaft and reduction-gear input pinion one piece').",
+  "duplicateOf": "deep-6ffd7a7310c7",
+  "recommendation": "Cross-link the records.",
+  "originalId": "G8"
+ },
+ {
+  "id": "edu26-h2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: integrate the HVIL pilot loop into the main HV connector with short pins that break first.",
+  "evidence": "Library add133 'Spring-contact HVIL replacing dedicated interlock loop wiring'; also dxp045.",
+  "duplicateOf": "add133",
+  "recommendation": "Cross-link the records.",
+  "originalId": "H2"
+ },
+ {
+  "id": "edu26-h3",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: replace the internal EDU LV loom with a moulded or leadframe carrier and one sealed header.",
+  "evidence": "Library deep-8cdc9b733c53 'Cast-in mechatronic connector shelf deletes internal LV harness'.",
+  "duplicateOf": "deep-8cdc9b733c53",
+  "recommendation": "Cross-link the records.",
+  "originalId": "H3"
+ },
+ {
+  "id": "edu26-b10",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate, partial overlap: a magnesium die-cast e-axle gearbox cover replacing aluminium. B10 also covers the inverter lid.",
+  "evidence": "Library drv048 'BEV e-axle differential housing magnesium cover replacing aluminium'.",
+  "duplicateOf": "drv048",
+  "recommendation": "Cross-link the records.",
+  "originalId": "B10"
+ },
+ {
+  "id": "edu26-b2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: lost-core cast-in coolant channels in the EDU housing, deleting separate jacket parts.",
+  "evidence": "Library bev104 'Coolant jacket integration into motor housing wall eliminates separate jacket casting'; also cool033.",
+  "duplicateOf": "bev104",
+  "recommendation": "Cross-link the records.",
+  "originalId": "B2"
+ },
+ {
+  "id": "edu26-b4",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: topology-optimise and thin the EDU housing/gearbox case walls.",
+  "evidence": "Library orl023 'Topology-optimise and down-gauge the gearbox case' <EDU>.",
+  "duplicateOf": "orl023",
+  "recommendation": "Cross-link the records.",
+  "originalId": "B4"
+ },
+ {
+  "id": "edu26-i1",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: cast the inverter chamber into the main EDU housing (3-in-1 housing).",
+  "evidence": "Library add138 '3-in-1 EDU integrating motor, inverter and reducer housing'; also pt001.",
+  "duplicateOf": "add138",
+  "recommendation": "Cross-link the records.",
+  "originalId": "I1"
+ },
+ {
+  "id": "edu26-i2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: a direct-cooled pin-fin module baseplate deleting the TIM layer.",
+  "evidence": "Library add120 'Pin-fin direct-cooled SiC baseplate eliminating TIM layer'.",
+  "duplicateOf": "add120",
+  "recommendation": "Cross-link the records.",
+  "originalId": "I2"
+ },
+ {
+  "id": "edu26-m2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: simplify or delete NiCuNi plating on rotor NdFeB magnets because the magnets are protected in the rotor (oil-sealed versus resin-encapsulated rationale).",
+  "evidence": "Library lux-ec8d9126baa0 'Delete NiCuNi plating on NdFeB magnets fully encapsulated in resin-filled rotor slots'.",
+  "duplicateOf": "lux-ec8d9126baa0",
+  "recommendation": "Cross-link the records.",
+  "originalId": "M2"
+ },
+ {
+  "id": "edu26-m5",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: thinner metallised PP film to downsize the DC-link capacitor.",
+  "evidence": "Library deep-8265e3abd6c5 'Metallised-PP film step-change downsizes DC-link capacitor 20%'.",
+  "duplicateOf": "deep-8265e3abd6c5",
+  "recommendation": "Cross-link the records.",
+  "originalId": "M5"
+ },
+ {
+  "id": "edu26-v2",
+  "category": "duplicate",
+  "severity": "minor",
+  "issue": "True duplicate: rubber/elastomer EDU mounts in place of hydraulic mounts.",
+  "evidence": "Library add175 'Hydraulic-mount-free elastomer e-axle mount with tuned voided bushing'.",
+  "duplicateOf": "add175",
+  "recommendation": "Cross-link the records.",
+  "originalId": "V2"
+ },
+ {
+  "id": "edu26-t7",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark not found, and weakly relevant. Two searches found no public source for the Nissan Ariya using axial oil sprays directed at the rotor and stator coil ends; results were generic patents. Even if true, a Nissan oil-spray design does not show a spray ring cast into the end cover, which is the actual proposal.",
+  "evidence": "Register T7 benchmark: 'Nissan Ariya — axial oil sprays directed at the rotor and stator coil ends'. Searches returned only generic patents, e.g. https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12661973",
+  "recommendation": "Cite a source (Nissan technical paper or teardown) or downgrade to 'No published benchmark'.",
+  "duplicateOf": null,
+  "originalId": "T7"
+ },
+ {
+  "id": "edu26-g8",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark not found. No public source was found confirming that the VW MEB APP310 or the Tesla Model 3 rear unit cut the first pinion on the rotor shaft. The InsideEVs Model 3 breakdown lists a separate 31-tooth input shaft, which is ambiguous.",
+  "evidence": "https://www.volkswagen-group.com/en/press-releases/in-brief-more-than-200-horses-in-a-sports-bag-the-electric-drive-in-the-volkswagen-id3-16799 ; https://insideevs.com/news/518692/tesla-model-3y-drive-units/",
+  "recommendation": "Verify against a teardown (e.g. Munro) before presenting the named vehicles.",
+  "duplicateOf": null,
+  "originalId": "G8"
+ },
+ {
+  "id": "edu26-b1",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark not found. Searches found Tesla HPDC megacastings for the Model Y body, but no source specifically for HPDC drive-unit housings.",
+  "evidence": "https://en.wikipedia.org/wiki/Giga_Press (body structure only).",
+  "recommendation": "Cite a drive-unit-specific source. Also see the B1 quality finding: the study's own baseline housing is already HPDC.",
+  "duplicateOf": null,
+  "originalId": "B1"
+ },
+ {
+  "id": "edu26-b2",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Benchmark partly contradicted (weak evidence) and partly not found. One secondary teardown comparison says the Tesla Model 3 motor is oil-cooled through stator lamination grooves, with a coolant-to-oil exchanger on the housing exterior. That does not support 'cast-in coolant galleries in the EDU housing' for Tesla. Nothing was found for the VW MEB.",
+  "evidence": "https://leandesign.com/?p=2064 ('The Tesla Model 3 has a coolant to oil heat exchanger on the exterior of the housing and uses the oil to flow through grooves and channels in the stator laminate stack')",
+  "recommendation": "Drop or re-source the Tesla Model 3/Model Y pairing, and source the MEB claim.",
+  "duplicateOf": null,
+  "originalId": "B2"
+ },
+ {
+  "id": "edu26-a4",
+  "category": "benchmark",
+  "severity": "minor",
+  "issue": "Partly confirmed. GM Ventures and Stellantis Ventures invested in Niron (November 2023 round of $33M). No source was found for the claim 'announced for future Chrysler and Jeep applications'.",
+  "evidence": "https://electrive.com/2023/11/09/gm-and-stellantis-invest-in-niron-magnetics",
+  "recommendation": "Remove the Chrysler/Jeep claim unless a source is cited.",
+  "duplicateOf": null,
+  "originalId": "A4"
+ }
+]

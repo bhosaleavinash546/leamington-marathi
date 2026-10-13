@@ -49,9 +49,11 @@ for (const f of files) for (const x of JSON.parse(readFileSync(`${REPO}/${f}`, '
   const pts = new Set(cl.powertrains); const volts = new Set(cl.voltages);
   if (statedPt) { if (/MHEV/.test(statedPt)) pts.add('MHEV'); if (/BEV/.test(statedPt)) pts.add('BEV'); if (/800V/.test(statedPt)) volts.add('800V'); }
   const annualText = x.annualSaving || csp.annualValue || '';
-  const ann = parseMoneyRange(annualText);
+  // Study imports carry their signed numbers (a negative low case is a cost increase); the text parser drops signs.
+  const num2 = (a, b) => (Number.isFinite(d[a]) && Number.isFinite(d[b]) ? { lo: g(a), hi: g(b) } : null);
+  const ann = num2('annualSavingLowGBP', 'annualSavingHighGBP') || parseMoneyRange(annualText);
   const pvText = csp.perVehicle || '';
-  const pv = pvText ? parseMoneyRange(pvText) : null;
+  const pv = num2('savingPerUnitLowGBP', 'savingPerUnitHighGBP') || (pvText ? parseMoneyRange(pvText) : null);
   const ec = g('engineCheck');
   const ba = g('benchmarkAnchor') || {};
   const inv = g('investment') || {};
@@ -170,6 +172,10 @@ for (const f of files) for (const x of JSON.parse(readFileSync(`${REPO}/${f}`, '
     'Source file': s(g('sourceFile')),
     'Source pointer': s(g('sourcePointer')),
     'Possible duplicate of': s(g('possibleDuplicateOf')),
+    'Review severity (study import)': s(g('reviewSeverity')),
+    'Study effort (verbatim)': s(g('studyEffort')),
+    'Study level (verbatim)': s(g('studyLevel')),
+    'Study deck mentions (slides)': s(g('studyDeckMentions')),
     'Submitted by': x.submittedBy || '',
     'Library pack': PACK[f] || f,
   };

@@ -27,8 +27,12 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
+   "savingPerUnitLowGBP": 1.56,
+   "savingPerUnitHighGBP": 1.56,
+   "annualSavingLowGBP": 124800.0,
+   "annualSavingHighGBP": 124800.0,
    "costSavingPotential": {
     "perVehicle": "£1.56 per vehicle",
     "annualValue": "£124.8K at 80,000 vehicles/yr",
@@ -41,7 +45,10 @@
    ],
    "studyPdfPages": [
     24
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · duplicate] Same move on the same part: induction-hardened medium-carbon half-shaft bar replacing a through-hardened alloy bar. Evidence: Library [luxury-suv-mhev-bev]: 'Front half-shaft bar in induction-hardened Cf53 replaces through-hardened 42CrMo4' Recommendation: Link the two. The study card carries the duty-specific SPEC (C50/1050, 15,539 Nm).",
+   "possibleDuplicateOf": "lux-1b191109224a"
   },
   "annualSaving": "£124.8K at 80,000 vehicles/yr",
   "costSavingType": "material",
@@ -77,7 +84,7 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
    "costSavingPotential": {
     "perVehicle": "No saving booked",
@@ -91,7 +98,9 @@
    ],
    "studyPdfPages": [
     24
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · quality] Not a duplicate, but a library CONFLICT. drv039 proposes switching CV boots from CR to TPE as a cost-down. This card (and ps26-m2) says CR is the cheaper option and refuses it. Each card says the other material is the cheaper one. Evidence: drv039: 'Replace chloroprene (CR) rubber CV boots with thermoplastic-elastomer (TPE/Hytrel) boots ... Cuts boot cost'; hs26-m2: 'CR is cheaper and has less temperature and ozone margin' Recommendation: Flag drv039 for curation. Same lever, different direction — no merge."
   },
   "annualSaving": "No saving booked — refused saving (protected)",
   "costSavingType": "material",
@@ -127,7 +136,7 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
    "costSavingPotential": {
     "perVehicle": "No saving booked",
@@ -141,7 +150,9 @@
    ],
    "studyPdfPages": [
     24
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · quality] Not a duplicate, but a library CONFLICT. drv030 proposes the single-grease consolidation that this card refuses as a PROTECTED line. Evidence: drv030: 'Consolidate three CV-joint grease specifications to a single high-performance lifetime-fill grease across outboard and inboard joints' Recommendation: Cross-reference so drv030 is not taken on the off-road variant without the crawl thermal case."
   },
   "annualSaving": "No saving booked — refused saving (protected)",
   "costSavingType": "material",
@@ -177,7 +188,7 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
    "costSavingPotential": {
     "perVehicle": "No saving booked",
@@ -229,8 +240,12 @@
    "implementationDifficulty": "Medium",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
+   "savingPerUnitLowGBP": 9.39,
+   "savingPerUnitHighGBP": 9.39,
+   "annualSavingLowGBP": 751200.0,
+   "annualSavingHighGBP": 751200.0,
    "costSavingPotential": {
     "perVehicle": "£9.39 per vehicle",
     "annualValue": "£751.2K at 80,000 vehicles/yr",
@@ -283,8 +298,12 @@
    "implementationDifficulty": "Medium",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
+   "savingPerUnitLowGBP": 12.1,
+   "savingPerUnitHighGBP": 12.1,
+   "annualSavingLowGBP": 968000.0,
+   "annualSavingHighGBP": 968000.0,
    "costSavingPotential": {
     "perVehicle": "£12.10 per vehicle",
     "annualValue": "£968.0K at 80,000 vehicles/yr",
@@ -301,7 +320,10 @@
     10,
     25,
     28
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · duplicate] Same move on the same part: near-net forging of the CV outer race (outer-joint housing). Evidence: Library [offroad-luxury]: 'Switch the CV outer-joint housing to near-net forging to cut machining stock' Recommendation: Link. The study card has the cycle-time figures.",
+   "possibleDuplicateOf": "orl271"
   },
   "annualSaving": "£968.0K at 80,000 vehicles/yr",
   "costSavingType": "process",
@@ -337,8 +359,12 @@
    "implementationDifficulty": "Medium",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
+   "savingPerUnitLowGBP": 3.46,
+   "savingPerUnitHighGBP": 3.46,
+   "annualSavingLowGBP": 276800.0,
+   "annualSavingHighGBP": 276800.0,
    "costSavingPotential": {
     "perVehicle": "£3.46 per vehicle",
     "annualValue": "£276.8K at 80,000 vehicles/yr",
@@ -389,8 +415,12 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
+   "savingPerUnitLowGBP": 2.42,
+   "savingPerUnitHighGBP": 2.42,
+   "annualSavingLowGBP": 193600.0,
+   "annualSavingHighGBP": 193600.0,
    "costSavingPotential": {
     "perVehicle": "£2.42 per vehicle",
     "annualValue": "£193.6K at 80,000 vehicles/yr",
@@ -443,8 +473,12 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
+   "savingPerUnitLowGBP": 1.73,
+   "savingPerUnitHighGBP": 1.73,
+   "annualSavingLowGBP": 138400.0,
+   "annualSavingHighGBP": 138400.0,
    "costSavingPotential": {
     "perVehicle": "£1.73 per vehicle",
     "annualValue": "£138.4K at 80,000 vehicles/yr",
@@ -497,8 +531,12 @@
    "implementationDifficulty": "Very High",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
+   "savingPerUnitLowGBP": 104.0,
+   "savingPerUnitHighGBP": 104.0,
+   "annualSavingLowGBP": 8320000.0,
+   "annualSavingHighGBP": 8320000.0,
    "costSavingPotential": {
     "perVehicle": "£104.00 per vehicle",
     "annualValue": "£8.32M at 80,000 vehicles/yr",
@@ -521,7 +559,9 @@
     26,
     28,
     29
-   ]
+   ],
+   "reviewSeverity": "major",
+   "reviewOpenPoints": "[MAJOR · quality] The card shows £8.32M/yr. The study itself excludes D1 from capture as an architecture decision 'not ours'. The saving is also counted only at half-shaft level: a solid rear axle changes the housing, differential carrier and suspension cost too, and none of that is in the £104. Evidence: Combined capture: 'D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop.' SPEC: 'delete 2 CV half-shafts, substitute 2 straight axle shafts at about £52* each' Recommendation: Show the annual figure with an 'architecture decision — excluded from study capture' tag, or suppress it."
   },
   "annualSaving": "£8.32M at 80,000 vehicles/yr",
   "costSavingType": "design",
@@ -557,8 +597,12 @@
    "implementationDifficulty": "High",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
+   "savingPerUnitLowGBP": 7.78,
+   "savingPerUnitHighGBP": 7.78,
+   "annualSavingLowGBP": 622400.0,
+   "annualSavingHighGBP": 622400.0,
    "costSavingPotential": {
     "perVehicle": "£7.78 per vehicle",
     "annualValue": "£622.4K at 80,000 vehicles/yr",
@@ -573,7 +617,9 @@
    "studyPdfPages": [
     26,
     28
-   ]
+   ],
+   "reviewSeverity": "major",
+   "reviewOpenPoints": "[MAJOR · quality] studyStatus is 'Saving', and the card shows £622.4K/yr. But the card text says the idea is likely infeasible and is listed only so it can be rejected on record. The combined capture says 'a rejected idea captures nothing'. Evidence: Trade-off: 'LIKELY INFEASIBLE on a longitudinal SUV ... Listed so it is rejected on record rather than re-proposed.' Cost effect: '-£7.78* IF feasible' Recommendation: Reclassify as 'Rejected alternative' (or 'Saving — conditional, likely infeasible') and do not show an annual saving."
   },
   "annualSaving": "£622.4K at 80,000 vehicles/yr",
   "costSavingType": "design",
@@ -609,8 +655,12 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
+   "savingPerUnitLowGBP": 8.57,
+   "savingPerUnitHighGBP": 8.57,
+   "annualSavingLowGBP": 685600.0,
+   "annualSavingHighGBP": 685600.0,
    "costSavingPotential": {
     "perVehicle": "£8.57 per vehicle",
     "annualValue": "£685.6K at 80,000 vehicles/yr",
@@ -663,7 +713,7 @@
    "implementationDifficulty": "Medium",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
    "costSavingPotential": {
     "perVehicle": "No saving booked",
@@ -682,7 +732,10 @@
     16,
     26,
     28
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · consistency] The currency in the SPEC line differs across the three files. In the register and the PDF, 2.20/kg is the EUR figure with a £ label on it, not converted. At 0.8644 it would be about £1.90/kg. Evidence: Register: '2.20 £/kg steel tube ... about 3.50 EUR* per shaft'; deck s26: '2.20 £/kg ... about 3.50 £* per shaft'; PDF p26: '2.20 €/kg ... about 3.50 €* per shaft' Recommendation: Ask the author for one currency, e.g. '£1.90/kg ... £3.03 per shaft'. The record follows the register verbatim. ¶ [MINOR · duplicate] Same move on the same part: a tubular half-shaft in place of a solid bar (also pt023 'Hollow induction-hardened CV outer shaft tube', drv029 'flow-formed hollow bars'). The figures CONFLICT: the library claims a saving of ~£5.1/side; the study prices it as a +£3.98 adder and calls it 'a mass purchase, not a saving'. Evidence: Library [extra]: 'Friction-welded tubular half-shaft replacing solid bar ... saving about £5.1/side' Recommendation: Link, and flag the sign conflict for whoever curates add157.",
+   "possibleDuplicateOf": "add157"
   },
   "annualSaving": "No saving booked — cost adder (defended)",
   "costSavingType": "design",
@@ -718,7 +771,7 @@
    "implementationDifficulty": "Medium",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
    "costSavingPotential": {
     "perVehicle": "No saving booked",
@@ -742,7 +795,9 @@
     27,
     28,
     31
-   ]
+   ],
+   "reviewSeverity": "minor",
+   "reviewOpenPoints": "[MINOR · quality] The status 'Cost adder (defended)' implies the study backs the adder. The card says the idea is ruled out on published plunge travel. Evidence: Trade-off: 'ON THE PUBLISHED NUMBERS THIS IDEA IS RULED OUT BY PLUNGE TRAVEL.' Combined capture: 'it is an adder that is currently unavailable' Recommendation: Use 'Cost adder (ruled out pending long-plunge variant)'."
   },
   "annualSaving": "No saving booked — cost adder (defended)",
   "costSavingType": "design",
@@ -778,7 +833,7 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
    "costSavingPotential": {
     "perVehicle": "No saving booked",
@@ -830,7 +885,7 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
    "costSavingPotential": {
     "perVehicle": "No saving booked",
@@ -880,7 +935,7 @@
    "implementationDifficulty": "Low",
    "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
    "offRoad": true,
-   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is",
+   "targetVehicle": "SCOPE: front pair and rear pair of constant-velocity half-shafts for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT rated 750 Nm INPUT, transfer case low range 2.93:1, final drive 3.54, 33-in tyres at 0.40 m rolling radius, 3,300 kg GVW, 3,500 kg braked tow, 900 mm wading, 240,000 km, EU plant, >=80,000/yr, 2026 prices). ARCHITECTURE ASSUMPTION, stated loudly: independent front AND rear suspension, so four CV half-shafts. If the rear goes to a solid axle this line largely disappears — see idea D1. DIRECTIONAL should-cost, not a validated teardown BOM. Every rate below is an input you can argue with.",
    "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £141 and that number is wrong for four reasons. D1 is £104 of it and it is an architecture decision that belongs to the programme director, not to a cost workshop. D2 is very likely infeasible on a longitudinal SUV and a rejected idea captures nothing. D5 is ruled out by published plunge travel unless a long-plunge variant exists, so it is not a saving at all — it is an adder that is currently unavailable. And P1, P2, P3 and P4 are all things the SUPPLIER does, so we capture them through the RFQ rather than in our own plant. A realistic engineering-only capture, excluding D1 and D2, is £29-38* gross; net of the M4 and D4 adders it is £17-26* on a £423 assembly, roughly 4-6%. Add the RFQ at -12% and it becomes £69-78*. THAT is the number to commit to, and it says the same thing the transfer-case study said: the commercial lever beats the engineering levers, and we should pull it first.",
    "costSavingPotential": {
     "perVehicle": "No saving booked",
