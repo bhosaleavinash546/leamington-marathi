@@ -87,9 +87,45 @@ Costing (the owner decides; none is guessed):
   133 % of development, flat for life. **Homologation (#11)** constants unsourced; VSOC opex absent. **MC band (#13)**
   is narrow (±11 %) for software. **Default reuse (#14)** Medium on every module.
 
-UX (from the build list, not built this round):
-- One input pane (Guided and Advanced still both exist; Advanced is the default and both feed the same live rail).
-- Undo / redo and a keyboard map; a Scenarios tab with a pinned baseline and Δ table.
-- The vehicle map's component list still shows £ per component (a module on several parts counts at each — stated
-  on screen).
-- At 400 px the waterfall's labels are small; the data table under it carries the figures.
+UX: the build list's remaining items were built in round 2 (§5).
+
+## 5. Round 2 — the rest of the build list (14 Oct 2026)
+
+| Item | What was built |
+|---|---|
+| **One input pane** | The six-step Guided wizard and the "full setup" form were two UIs over one set of inputs, synced by hand (bugs F2, F3, F5 came from that). They are merged. **Setup** now holds "Start from" (vehicle programmes, quick settings), the programme fields, **domain chips** ("Infotainment · 0 of 9 in scope", which switch a whole domain and follow the powertrain scope from the engine) and the reference reports. **Scope** holds the modules. A powertrain change re-scopes in place: no panel re-render, so the tab, scroll and charts stay. |
+| **Undo / redo** | Every costed state is recorded (60 deep; the rate book is policy and is never in history). ↶ / ↷ in the header, plus Ctrl/⌘ Z and Ctrl/⌘ ⇧ Z (or Ctrl Y). Undo writes the inputs back into every field (`writeInputsToForm`) and recosts. Text fields keep their own undo. |
+| **Keyboard map** | "?" opens a native modal `<dialog>` that lists every shortcut (Esc or the backdrop closes it). The shortcuts are Alt + 1 … 0 for the tabs, ← → Home End inside the tab bar, "/" to find a module, and B to pin the baseline. Each control carries `aria-keyshortcuts`. |
+| **Scenarios tab** | Pin a baseline (button or B), then **save the current programme by name inline** (no `window.prompt`). It compares saved scenarios, or generated sets: the 3 **development sources**, 8 representative **hubs** (a typed rate stays with its own hub) or the 5 **reuse levels**. Every row is `computeSWProgram` on its own inputs (`src/engine/sw-scenarios.ts`). It shows per-vehicle bars against the baseline, then a table: per vehicle, total, engineering, royalty / vehicle built, running / vehicle-year, P90 and effort, each with ▲ / ▼ against the baseline. **What differs** names the inputs ("hub United Kingdom → India", "reuse changed on 43 modules"). Load (an undoable step), Use as baseline, Delete. A scenario the engine refuses keeps its row with the reason. |
+| **Vehicle map** | The component list no longer shows a £ sum. A module on several components counted at each, so the list added up to more than the programme. It now shows modules and the highest ASIL; each module's own £ is in the hover detail. The Cost colour uses the most costly *single* module on a component, never a sum. The Excel "Vehicle map" sheet follows. |
+| **Phone (400 px)** | Charts keep reading-size text and scroll inside their own frame; the page never scrolls sideways. The rail is no longer sticky below 700 px (it covered half the screen). |
+
+**Proof.**
+- `tests/sw-cockpit.test.ts` (+9):
+  - a scenario's change equals the difference of two independent costings;
+  - "what differs" wording and module counts;
+  - a refused scenario keeps its reason;
+  - generated sets (sources, hubs with no travelling typed rate, reuse), with the input not mutated;
+  - no wizard, `prompt` or second hub picker;
+  - history excludes the rate book;
+  - the dialog lists every wired shortcut;
+  - no component £ sum.
+- Full suite 3,854 / 3,854.
+- Live: `e2e/sw-cockpit-flow.ts` drives a real server and browser. Its 13 checks all PASS:
+  - a domain chip;
+  - undo by button;
+  - redo / undo by keyboard;
+  - "?" / Esc;
+  - "/";
+  - pin → change → save → compare;
+  - the hub set;
+  - Load + undo;
+  - Delete;
+  - no money in the component list.
+
+  axe gives `[]` on all eleven tabs and the open dialog, in dark and light (`calculator/scripts/sw-research/2026-10-14-ux/round2/`).
+- `e2e/sw-live.ts` and `e2e/sw-studio.ts` were updated for the single pane (the studio now proves an edit survives a tab
+  round-trip and undo restores it). Both pass with axe `[]`.
+
+**Still open (UX):** scenarios live for the session plus the saved list. A pinned baseline is not stored between visits,
+and there is no scenario chart beyond per-vehicle.

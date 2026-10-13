@@ -57,8 +57,8 @@ async function main(): Promise<void> {
       const t = p?.id.replace('swk-p-', '');
       if (t && p!.hidden) (document.querySelector(`[data-swk-tab="${t}"]`) as HTMLElement | null)?.click();
     }, sel);
-    out.wizardPowertrainOptions = await page.$$eval('#wiz-powertrain option', os => os.map(o => (o as HTMLOptionElement).value));
-    await show('.sw-mode-btn[data-mode="advanced"]'); await page.click('.sw-mode-btn[data-mode="advanced"]');
+    // One input pane since the guided wizard was merged into Setup (cockpit round 2).
+    out.powertrainOptions = await page.$$eval('#sw-powertrain option', os => os.map(o => (o as HTMLOptionElement).value).filter(Boolean));
     const totals: Record<string, string> = {};
     for (const pt of ['ICE', 'MHEV', 'PHEV', 'BEV']) {
       await show('#sw-powertrain'); await page.selectOption('#sw-powertrain', pt);

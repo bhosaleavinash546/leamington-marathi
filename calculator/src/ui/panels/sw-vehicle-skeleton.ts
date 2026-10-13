@@ -37,19 +37,23 @@ const esc = (s: unknown): string => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } as Record<string, string>)[c]);
 
 const ASIL_RANK: Record<string, number> = { QM: 0, A: 1, B: 2, C: 3, D: 4 };
+const ASIL_NAME = ['QM', 'A', 'B', 'C', 'D'];
 
-/** Per component: the in-scope modules running on it, the sum of their costs, and the highest ASIL among them. */
-export function componentLoad(state: SkeletonState): Map<string, { modules: SkeletonModule[]; cost: number; asil: number }> {
-  const out = new Map<string, { modules: SkeletonModule[]; cost: number; asil: number }>();
+/** Per component: the in-scope modules running on it, the sum of their costs (a module on several components counts
+ *  at each — never shown as a component's "cost", cockpit review C11), its most costly single module and the highest
+ *  ASIL among them. */
+export function componentLoad(state: SkeletonState): Map<string, { modules: SkeletonModule[]; cost: number; top: number; asil: number }> {
+  const out = new Map<string, { modules: SkeletonModule[]; cost: number; top: number; asil: number }>();
   const focus = state.focusModules ? new Set(state.focusModules) : null;
   for (const m of state.modules) {
     if (focus && !focus.has(m.id)) continue;
     for (const cid of SW_MODULE_COMPONENTS[m.id] ?? []) {
       const c = vehicleComponent(cid);
       if (!c || !componentOnPowertrain(c, state.powertrain)) continue;
-      const e = out.get(cid) ?? { modules: [], cost: 0, asil: 0 };
+      const e = out.get(cid) ?? { modules: [], cost: 0, top: 0, asil: 0 };
       e.modules.push(m);
       e.cost += m.cost;
+      e.top = Math.max(e.top, m.cost);
       e.asil = Math.max(e.asil, ASIL_RANK[m.asil] ?? 0);
       out.set(cid, e);
     }
@@ -73,7 +77,7 @@ const fmtDefault = (n: number): string => `£${Math.round(n).toLocaleString('en-
 /** The SVG. `fmt` is the page's currency formatter — the skeleton never prints a bare £ of its own. */
 export function renderVehicleSkeletonSVG(state: SkeletonState, fmt: (n: number) => string = fmtDefault): string {
   const load = componentLoad(state);
-  const maxCost = Math.max(1, ...[...load.values()].map(v => v.cost));
+  const maxCost = Math.max(1, ...[...load.values()].map(v => v.top));
   const colourBy = state.colourBy ?? 'scope';
   // A drivetrain-specific part (engine, battery, e-axle, 48 V) is drawn on its drivetrain; with none stated, only when a
   // module in scope runs on it — so a BEV scope shows no engine and an ICE scope no battery.
@@ -98,10 +102,10 @@ export function renderVehicleSkeletonSVG(state: SkeletonState, fmt: (n: number) 
   const ordered = [...comps.filter(c => c.rect), ...comps.filter(c => !c.rect)];
   const nodes = ordered.filter(c => c.id !== 'backbone').map(c => {
     const l = load.get(c.id);
-    const level = !l ? 0 : colourBy === 'cost' ? 0.25 + 0.75 * (l.cost / maxCost) : colourBy === 'asil' ? 0.2 + 0.2 * l.asil : 1;
+    const level = !l ? 0 : colourBy === 'cost' ? 0.25 + 0.75 * (l.top / maxCost) : colourBy === 'asil' ? 0.2 + 0.2 * l.asil : 1;
     const asilCls = l && colourBy === 'asil' ? ` swv-asil-${l.asil}` : '';
     const label = l
-      ? `${c.label}: ${l.modules.length} software module${l.modules.length === 1 ? '' : 's'} (${l.modules.map(m => m.name).join(', ')}) — ${fmt(l.cost)}`
+      ? `${c.label}: ${l.modules.length} software module${l.modules.length === 1 ? '' : 's'} (${l.modules.map(m => m.name).join(', ')})${colourBy === 'cost' ? ` — most costly ${fmt(l.top)}` : ''}`
       : `${c.label}: no software module in scope`;
     const region = c.rect ? `<rect class="swv-region" x="${c.rect[0]}" y="${c.rect[1]}" width="${c.rect[2]}" height="${c.rect[3]}" rx="18"/>` : '';
     return `<g class="swv-comp swv-k-${c.kind}${l ? ' swv-lit' : ''}${asilCls}" data-comp="${esc(c.id)}" style="--swv-level:${level.toFixed(2)}" tabindex="0" role="button" aria-label="${esc(label)}">
@@ -133,15 +137,16 @@ export function renderVehicleMapHTML(state: SkeletonState, fmt?: (n: number) => 
     `<button type="button" class="swv-mode${mode === m ? ' is-on' : ''}" data-swv-mode="${m}" aria-pressed="${mode === m}">${label}</button>`;
   const load = componentLoad(state);
   const lit = load.size;
-  const money = fmt ?? fmtDefault;
   // The lit components as a list beside the car — names a reader cannot get from the markers alone; each item is the
   // same control as its marker (keyboard and screen-reader route to every component).
   const list = [...load.entries()]
     .filter(([id]) => id !== 'backbone' && componentOnPowertrain(vehicleComponent(id)!, state.powertrain))
-    .sort((a, b) => b[1].cost - a[1].cost)
+    .sort((a, b) => b[1].modules.length - a[1].modules.length || b[1].asil - a[1].asil || b[1].top - a[1].top)
+    // No £ per component: a module on several components would count at each and the list would add up to more
+    // than the programme (cockpit review C11). Each module's own £ is in the hover detail.
     .map(([id, l]) => `<li><button type="button" class="swv-li-btn" data-comp="${esc(id)}">
       <span class="swv-li-name">${esc(vehicleComponent(id)!.label)}</span>
-      <span class="swv-li-meta">${l.modules.length} module${l.modules.length === 1 ? '' : 's'} · ${esc(money(l.cost))}</span></button></li>`).join('');
+      <span class="swv-li-meta">${l.modules.length} module${l.modules.length === 1 ? '' : 's'} · ${l.asil ? `up to ASIL ${ASIL_NAME[l.asil]}` : 'QM'}</span></button></li>`).join('');
   return `<section class="swv-wrap" aria-labelledby="swv-title">
   <div class="swv-head">
     <div>
@@ -159,7 +164,7 @@ export function renderVehicleMapHTML(state: SkeletonState, fmt?: (n: number) => 
     <span><i class="swv-li swv-li-act"></i>Actuator</span><span><i class="swv-li swv-li-hmi"></i>Display</span>
     <span><i class="swv-li swv-li-energy"></i>Energy</span><span><i class="swv-li swv-li-net"></i>Network</span>
   </div>
-  <p class="swv-detail" aria-live="polite">${mode === 'cost' ? 'Cost colour: the software £ of every module that runs on a component. A module on several components counts at each, so these do not add up to the total.' : '&nbsp;'}</p>
+  <p class="swv-detail" aria-live="polite">${mode === 'cost' ? 'Cost colour: the most costly single module running on each component. Modules are never summed per component — one module often runs on several.' : '&nbsp;'}</p>
 </section>`;
 }
 

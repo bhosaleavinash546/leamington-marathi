@@ -225,7 +225,7 @@ describe('#13 the screen shows what was costed — active book, country, dev-sou
   it('the page country moves the inputs and both hub pickers (not just the advanced drop-down)', () => {
     const ui = src('src/ui/panels/sw-should-cost-ui.ts');
     expect(ui).toMatch(/export function applySWCountry/);
-    expect(ui).toMatch(/\['sw-region', 'wiz-region'\]/);
+    expect(ui).toMatch(/if \(hubSel\) hubSel\.value = _swInputs\.region;/);   // one hub picker since Guided merged into Setup
     expect(src('src/ui/main.ts')).toMatch(/applySWCountry\(region\)/);
     expect(ui).toMatch(/runValidation\(undefined, undefined, _swInputs\.rateLibrary\)/);
     expect(ui).toMatch(/resolveRateLibrary\(_swInputs\.rateLibrary\)/);

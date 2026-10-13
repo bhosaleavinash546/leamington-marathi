@@ -213,9 +213,11 @@ describe('#5 powertrain is an engine input; shared software is apportioned acros
       }
     }
   });
-  it('the wizard and the report scripts use the engine scope (no private copies)', () => {
-    // The wizard takes the scope AND the de-rating from the engine (code review F2, Oct 2026).
-    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/applyPowertrainScope\(_swInputs\.modules, _wizPowertrain\)/);
+  it('the screen and the report scripts use the engine scope (no private copies)', () => {
+    // Domain chips and the powertrain picker take the scope AND the de-rating from the engine (code review F2, Oct 2026;
+    // the guided wizard that once held its own copy was merged into Setup, cockpit round 2).
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/applyPowertrainScope\(_swInputs\.modules, _swInputs\.powertrain\)/);
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/_swInputs\.modules = applyPowertrainScope\(_swInputs\.modules, pt\)/);
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).not.toMatch(/MHEV_DISABLED|_ICE_OFF/);
     for (const f of ['scripts/gen-sw-report.ts', 'scripts/gen-l460-deepdive.ts', 'scripts/gen-allmodels-deepdive.ts']) {
       expect(src(f), f).toMatch(/applyPowertrainScope/);
@@ -236,7 +238,7 @@ describe('#5 follow-through: demos keep their premium-trim modules', () => {
 
 describe('static reports are labelled as pre-fix', () => {
   it('the panel says the report pages pre-date the October 2026 fixes', () => {
-    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/reference examples<\/strong> — static reports\s+generated before the October 2026 model fixes/);
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/<strong>reference examples<\/strong> generated before the October 2026 model fixes/);
   });
 });
 

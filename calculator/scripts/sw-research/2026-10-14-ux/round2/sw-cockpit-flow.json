@@ -1,0 +1,49 @@
+{
+ "panelOpenMs": 34,
+ "checks": {
+  "no guided/advanced toggle": "PASS",
+  "domain chip excludes infotainment": "PASS",
+  "undo restores the domain and the total": "PASS",
+  "Ctrl+Shift+Z redoes": "PASS",
+  "Ctrl+Z undoes": "PASS",
+  "? opens the shortcuts, Esc closes": "PASS",
+  "/ focuses the module search": "PASS",
+  "saved scenario shows its change and what differs": "PASS",
+  "hub set lists the current hub as baseline + 7 others": "PASS",
+  "Load writes the scenario into the form": "PASS",
+  "undo after Load restores the previous programme": "PASS",
+  "Delete removes the saved scenario": "PASS",
+  "component list carries no money": "PASS"
+ },
+ "axeDialog": [],
+ "scenariosSaved": [
+  "Pinned 23:27 baseline £249£199.4M£44.0M£22.70£22.25£227.4M4,135 PM",
+  "Current programme current hub United Kingdom → IndiaUse as baseline£189▼ £60£151.2M▼ £48.2M£16.7M▼ £27.2M£22.70—£22.25—£173.6M▼ £53.7M4,135 PM—",
+  "India hub hub United Kingdom → IndiaLoadUse as baselineDelete£189▼ £60£151.2M▼ £48.2M£16.7M▼ £27.2M£22.70—£22.25—£173.6M▼ £53.7M4,135 PM—"
+ ],
+ "scenarios_source": [
+  "in-house (current) baseline",
+  "Tier-1 supplier source in-house → Tier-1 supplierLoadUse as baseline",
+  "start-up / OSS source in-house → start-up / OSSLoadUse as baseline"
+ ],
+ "scenarios_hub": [
+  "India (current) baseline",
+  "United Kingdom hub India → United KingdomLoadUse as baseline",
+  "Germany hub India → GermanyLoadUse as baseline",
+  "Poland hub India → PolandLoadUse as baseline",
+  "Romania hub India → RomaniaLoadUse as baseline",
+  "China hub India → ChinaLoadUse as baseline",
+  "USA — Michigan hub India → USA — MichiganLoadUse as baseline",
+  "Mexico hub India → MexicoLoadUse as baseline"
+ ],
+ "scenarios_reuse": [
+  "Fresh reuse reuse changed on 43LoadUse as baseline",
+  "Light reuse reuse changed on 43LoadUse as baseline",
+  "Medium reuse (current) baseline",
+  "Heavy reuse reuse changed on 43LoadUse as baseline",
+  "Platform reuse reuse changed on 43LoadUse as baseline"
+ ],
+ "axeDark": [],
+ "axeLight": [],
+ "pageErrors": []
+}

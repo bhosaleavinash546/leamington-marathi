@@ -661,7 +661,8 @@ describe('13. all 39 countries × every real part: each costing is priced in its
     expect(readFileSync('src/ui/main.ts', 'utf8')).toContain('applySWCountry(region);');
     const ui = readFileSync('src/ui/panels/sw-should-cost-ui.ts', 'utf8');
     expect(ui).toContain('const hub = swRegionFor(mfg);');
-    expect(ui).toContain("for (const id of ['sw-region', 'wiz-region'])");
+    expect(ui).toContain("const hubSel = document.getElementById('sw-region')");
+    expect(ui).toContain('if (hubSel) hubSel.value = _swInputs.region;');
   });
 
   it('the AI agent quotes the request country\'s £/hr (it quoted the UK\'s in every country)', () => {

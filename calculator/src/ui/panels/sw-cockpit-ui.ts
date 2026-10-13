@@ -15,8 +15,9 @@ import { swMoney } from './sw-currency.js';
 import { swSpendProfile, swQuoteCheck, swUnitEconomics, type SWQuote } from '../../engine/sw-cockpit.js';
 import { swSchedule } from '../../engine/sw-schedule.js';
 import {
-  waterfallChart, treemapChart, tornadoChart, distributionChart, spendChart, wireCharts, CHART_CSS, type Money,
+  waterfallChart, treemapChart, tornadoChart, distributionChart, spendChart, scenarioChart, wireCharts, CHART_CSS, type Money,
 } from './sw-charts.js';
+import type { SWScenarioRow, SWScenarioFigures } from '../../engine/sw-scenarios.js';
 
 const esc = (s: unknown): string => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } as Record<string, string>)[c]);
@@ -25,7 +26,7 @@ const EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
 // ── Tabs ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-export type CockpitTab = 'setup' | 'scope' | 'overview' | 'vehicle' | 'risk' | 'spend' | 'modules' | 'supplier' | 'rates' | 'report';
+export type CockpitTab = 'setup' | 'scope' | 'overview' | 'vehicle' | 'risk' | 'spend' | 'modules' | 'supplier' | 'scenarios' | 'rates' | 'report';
 
 export const COCKPIT_TABS: Array<{ id: CockpitTab; label: string; group: 'Inputs' | 'Results' | 'Method'; key: string }> = [
   { id: 'setup', label: 'Setup', group: 'Inputs', key: '1' },
@@ -36,8 +37,10 @@ export const COCKPIT_TABS: Array<{ id: CockpitTab; label: string; group: 'Inputs
   { id: 'spend', label: 'Spend & schedule', group: 'Results', key: '6' },
   { id: 'modules', label: 'Modules', group: 'Results', key: '7' },
   { id: 'supplier', label: 'Supplier check', group: 'Results', key: '8' },
-  { id: 'rates', label: 'Rates & method', group: 'Method', key: '9' },
-  { id: 'report', label: 'Report', group: 'Method', key: '0' },
+  { id: 'scenarios', label: 'Scenarios', group: 'Results', key: '9' },
+  { id: 'rates', label: 'Rates & method', group: 'Method', key: '0' },
+  // Eleven tabs, ten digits: the report is one click away and its exports sit in the header.
+  { id: 'report', label: 'Report', group: 'Method', key: '' },
 ];
 
 export function tabsHTML(active: CockpitTab): string {
@@ -47,7 +50,7 @@ export function tabsHTML(active: CockpitTab): string {
     group = t.group;
     return `${sep}<button type="button" role="tab" id="swk-t-${t.id}" class="swk-tab${t.id === active ? ' is-on' : ''}"
       aria-selected="${t.id === active}" aria-controls="swk-p-${t.id}" tabindex="${t.id === active ? 0 : -1}" data-swk-tab="${t.id}"
-      title="${esc(`${t.label} (Alt+${t.key})`)}">${esc(t.label)}</button>`;
+      ${t.key ? `aria-keyshortcuts="Alt+${t.key}" title="${esc(`${t.label} (Alt+${t.key})`)}"` : ''}>${esc(t.label)}</button>`;
   }).join('')}</div>`;
 }
 
@@ -86,7 +89,7 @@ export function wireTabs(root: HTMLElement, onChange?: (t: CockpitTab) => void):
   });
   root.addEventListener('keydown', e => {
     if (!e.altKey || e.ctrlKey || e.metaKey) return;
-    const t = COCKPIT_TABS.find(x => x.key === e.key);
+    const t = COCKPIT_TABS.find(x => x.key !== '' && x.key === e.key);
     if (t) { e.preventDefault(); select(t.id, true); }
   });
   return select;
@@ -103,11 +106,37 @@ export function headHTML(): string {
     </div>
     <div class="swk-head-r">
       <span class="swk-live" id="swk-live" role="status"><i aria-hidden="true"></i><span>Live</span></span>
+      <span class="swk-hist" role="group" aria-label="Undo and redo">
+        <button type="button" class="swk-btn swk-icon" id="swk-undo" disabled aria-keyshortcuts="Control+Z Meta+Z" title="Undo (${MOD}Z)"><span aria-hidden="true">↶</span><span class="sr-only">Undo</span></button>
+        <button type="button" class="swk-btn swk-icon" id="swk-redo" disabled aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z Control+Y" title="Redo (${MOD}⇧Z)"><span aria-hidden="true">↷</span><span class="sr-only">Redo</span></button>
+      </span>
+      <button type="button" class="swk-btn swk-icon" id="swk-keys-btn" aria-keyshortcuts="Shift+?" title="Keyboard shortcuts (?)" aria-haspopup="dialog"><span aria-hidden="true">?</span><span class="sr-only">Keyboard shortcuts</span></button>
       <button type="button" class="swk-btn" data-swk-go="supplier">Check a quote</button>
       <button type="button" class="swk-btn" data-swk-click="sw-excel-btn">Excel</button>
       <button type="button" class="swk-btn swk-btn-primary" data-swk-click="sw-pdf-btn">PDF report</button>
     </div>
   </div>`;
+}
+
+const MOD = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘' : 'Ctrl+';
+
+/** The keyboard map: a native modal <dialog> (Esc closes, focus returns), listing every shortcut the cockpit answers. */
+export function shortcutsDialogHTML(): string {
+  const row = (k: string, what: string) => `<tr><th scope="row"><kbd>${k}</kbd></th><td>${esc(what)}</td></tr>`;
+  return `<dialog class="swk-dialog" id="swk-keys" aria-labelledby="swk-keys-h">
+    <div class="swk-dialog-h"><h3 id="swk-keys-h">Keyboard shortcuts</h3><button type="button" class="swk-btn" data-close>Close</button></div>
+    <table class="swk-keys"><tbody>
+      ${row(`${MOD}Z`, 'Undo the last change')}
+      ${row(`${MOD}⇧Z · Ctrl+Y`, 'Redo')}
+      ${row('Alt+1 … Alt+0', 'Go to a tab (Setup … Rates & method)')}
+      ${row('← → · Home · End', 'Move between tabs when a tab has focus')}
+      ${row('/', 'Find a module (opens Scope)')}
+      ${row('B', 'Pin the current programme as the scenario baseline')}
+      ${row('?', 'Show this list')}
+      ${row('Esc', 'Close this list')}
+    </tbody></table>
+    <p class="swk-sub">Every change recosts the programme within a quarter of a second; undo walks back through those costed states.</p>
+  </dialog>`;
 }
 
 export function contextLine(r: SWProgramResult, hubLabel: string): string {
@@ -291,6 +320,68 @@ export function supplierResultHTML(r: SWProgramResult, quote: SWQuote, money: Mo
       (hub rate × development source × overhead). The difference is the supplier's overhead, margin, risk allowance and any scope or effort difference: ask for its person-month breakdown.</p>` : ''}`;
 }
 
+// ── Scenarios ────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+export type ScenarioMode = 'saved' | 'source' | 'hub' | 'reuse';
+
+export function scenariosPanelHTML(): string {
+  const gen = (m: ScenarioMode, l: string) => `<button type="button" class="swk-seg" data-sc-mode="${m}" aria-pressed="${m === 'saved'}">${esc(l)}</button>`;
+  return `<section class="swk-card">
+    <div class="swk-sc-top">
+      <div><h3 class="swk-h">Scenarios</h3>
+        <p class="swk-sub">Pin a baseline, then compare. Each row is costed on its own inputs. The change column is against the baseline, and "What differs" lists the inputs behind it.</p></div>
+      <div class="swk-sc-actions">
+        <span class="swk-sc-base" id="swk-sc-base" aria-live="polite">Baseline: the current programme</span>
+        <button type="button" class="swk-btn" id="swk-sc-pin" aria-keyshortcuts="B" title="Pin the current programme as the baseline (B)">Pin current as baseline</button>
+      </div>
+    </div>
+    <form class="swk-sc-save" id="swk-sc-save" data-no-live>
+      <label for="swk-sc-name" class="sr-only">Scenario name</label>
+      <input id="swk-sc-name" type="text" maxlength="60" placeholder="Name this scenario, e.g. India hub · heavy reuse" data-no-live autocomplete="off">
+      <button type="submit" class="swk-btn swk-btn-primary">Save current</button>
+      <span class="swk-sc-msg" id="swk-sc-msg" role="status"></span>
+    </form>
+    <div class="swk-segs" role="group" aria-label="Compare">
+      <span class="swk-segs-l">Compare</span>${gen('saved', 'Saved scenarios')}${gen('source', 'Development sources')}${gen('hub', 'Hubs')}${gen('reuse', 'Reuse levels')}
+    </div>
+    <div id="swk-sc-out"></div>
+  </section>`;
+}
+
+const FIG_COLS: Array<[keyof SWScenarioFigures, string, 'pv' | 'm' | 'p2' | 'pm']> = [
+  ['perVehicle', 'Per vehicle', 'pv'], ['total', 'Programme total', 'm'], ['nre', 'Engineering', 'm'],
+  ['perVehicleBuilt', 'Royalty / vehicle built', 'p2'], ['perVehicleYear', 'Running / vehicle-year', 'p2'], ['p90', 'P90 total', 'm'], ['effortPM', 'Effort', 'pm'],
+];
+
+/** The comparison: a per-vehicle bar per scenario, then the table with the change against the baseline. */
+export function scenarioResultHTML(rows: SWScenarioRow[], money: Money, moneyM: Money, opts: { savedIds: Set<string>; baselineName: string }): string {
+  if (rows.length < 2) return `<p class="swk-empty">Nothing to compare yet. Save the current programme under a name, change an input, save again — or pick Development sources, Hubs or Reuse levels above.</p>`;
+  const f = (k: 'pv' | 'm' | 'p2' | 'pm', v: number) => k === 'pv' ? money(v) : k === 'p2' ? swMoney(v, 2) : k === 'pm' ? `${Math.round(v).toLocaleString('en-GB')} PM` : moneyM(v);
+  const signed = (k: 'pv' | 'm' | 'p2' | 'pm', d: number) => Math.abs(d) < (k === 'p2' ? 0.005 : 0.5) ? '—' : `${d > 0 ? '▲' : '▼'} ${f(k, Math.abs(d))}`;
+  const ok = rows.filter(r => r.figures);
+  const chart = scenarioChart('sc', ok.map(r => ({ key: r.id, label: r.name, value: r.figures!.perVehicle, base: !r.delta })), 'Per vehicle, all-in', money);
+  const head = `<tr><th scope="col">Scenario · what differs</th>${FIG_COLS.map(([, l]) => `<th scope="col" class="n">${esc(l)}</th>`).join('')}</tr>`;
+  const body = rows.map(r => {
+    const isBase = r.figures && !r.delta;
+    const cells = r.figures ? FIG_COLS.map(([k, , u]) => {
+      const d = r.delta?.[k];
+      const cls = d == null || Math.abs(d) < 1e-9 ? '' : d > 0 ? ' is-up' : ' is-down';
+      return `<td class="n"><span class="swk-sc-v">${esc(f(u, r.figures![k]))}</span>${d == null ? '' : `<span class="swk-sc-d${cls}">${esc(signed(u, d))}</span>`}</td>`;
+    }).join('') : `<td colspan="${FIG_COLS.length}" class="swk-sc-err">Not costed: ${esc(r.error ?? 'invalid inputs')}</td>`;
+    const saved = opts.savedIds.has(r.id);
+    const acts = [
+      r.kind !== 'baseline' && r.kind !== 'current' ? `<button type="button" class="swk-link" data-sc-load="${esc(r.id)}">Load</button>` : '',
+      !isBase ? `<button type="button" class="swk-link" data-sc-base="${esc(r.id)}">Use as baseline</button>` : '',
+      saved ? `<button type="button" class="swk-link swk-link-del" data-sc-del="${esc(r.id)}" aria-label="Delete ${esc(r.name)}">Delete</button>` : '',
+    ].filter(Boolean).join('');
+    const diff = isBase ? '' : r.differs.length ? `<ul class="swk-sc-diff">${r.differs.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '<span class="swk-sc-diff swk-muted">same inputs</span>';
+    return `<tr class="${isBase ? 'is-base' : ''}"><th scope="row"><span class="swk-sc-name">${esc(r.name)}${isBase ? ' <span class="swk-pill">baseline</span>' : ''}${r.kind === 'current' ? ' <span class="swk-pill swk-pill-q">current</span>' : ''}</span>
+      ${diff}${acts ? `<span class="swk-sc-acts">${acts}</span>` : ''}</th>${cells}</tr>`;
+  }).join('');
+  return `${chart}
+    <div class="swk-sc-tw" tabindex="0" role="region" aria-label="Scenario comparison table"><table class="swk-sc-t"><caption class="sr-only">Scenarios against the baseline ${esc(opts.baselineName)}; ▲ costs more, ▼ costs less</caption><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+
 // ── Styles ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 export const COCKPIT_CSS = CHART_CSS + `
@@ -364,7 +455,70 @@ export const COCKPIT_CSS = CHART_CSS + `
 .swk-scopebar select{font:inherit;font-size:.76rem;padding:5px 8px;border:1px solid var(--sw-border);border-radius:7px;background:var(--sw-surface);color:var(--sw-text-primary)}
 .swk-scopebar .swk-count{font-size:.74rem;color:var(--sw-text-secondary);margin-left:auto}
 .sw-module-row.swk-hit-none{display:none}
-@media (prefers-reduced-motion: reduce){.swk-delta,.swk-qb{transition:none}}
+.swk-icon{min-width:32px;padding:6px 9px;font-size:.9rem;line-height:1}
+.swk-btn:disabled{opacity:.45;cursor:default}
+.swk-btn:disabled:hover{border-color:var(--sw-border)}
+.swk-btn:focus-visible,.swk-seg:focus-visible,.swk-domain:focus-visible,.swk-link:focus-visible{outline:2px solid var(--sw-accent);outline-offset:2px}
+.swk-hist{display:inline-flex;gap:4px}
+.swk-dialog{border:1px solid var(--sw-border);border-radius:12px;background:var(--sw-surface);color:var(--sw-text-body);padding:16px 18px;max-width:min(520px,calc(100vw - 32px));
+  opacity:1;transform:none;transition:opacity 200ms cubic-bezier(.22,.61,.36,1),transform 200ms cubic-bezier(.22,.61,.36,1),overlay 200ms allow-discrete,display 200ms allow-discrete}
+.swk-dialog:not([open]){opacity:0;transform:translateY(6px)}
+@starting-style{.swk-dialog[open]{opacity:0;transform:translateY(6px)}}
+.swk-dialog::backdrop{background:rgba(0,0,0,.45)}
+.swk-dialog-h{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
+.swk-dialog-h h3{margin:0;font-size:1rem;color:var(--sw-text-primary)}
+.swk-keys{border-collapse:collapse;width:100%;font-size:.82rem}
+.swk-keys th,.swk-keys td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--sw-border)}
+.swk-keys th{white-space:nowrap;font-weight:400}
+kbd{font:inherit;font-size:.76rem;padding:1px 6px;border:1px solid var(--sw-border);border-bottom-width:2px;border-radius:5px;background:var(--sw-surface-alt);color:var(--sw-text-primary);font-variant-numeric:tabular-nums}
+.swk-domains{display:flex;flex-wrap:wrap;gap:8px}
+.swk-domain{font:inherit;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 12px 8px 30px;position:relative;min-width:150px;
+  border:1px solid var(--sw-border);border-radius:10px;background:var(--sw-surface);color:var(--sw-text-primary);cursor:pointer;text-align:left;
+  transition:border-color var(--dur-hover,200ms) ease,background-color var(--dur-hover,200ms) ease}
+.swk-domain i{position:absolute;left:11px;top:12px;width:10px;height:10px;border-radius:3px}
+.swk-domain[aria-pressed="false"]{color:var(--sw-text-secondary);background:var(--sw-surface-alt)}
+.swk-domain[aria-pressed="false"] i{opacity:.35}
+.swk-domain[aria-pressed="true"]{border-color:color-mix(in srgb,var(--sw-accent) 55%,var(--sw-border))}
+.swk-domain:hover{border-color:var(--sw-accent)}
+.swk-domain-n{font-size:.8rem;font-weight:650}
+.swk-domain-c{font-size:.7rem;color:var(--sw-text-secondary);font-variant-numeric:tabular-nums}
+.swk-setup{display:flex;flex-direction:column;gap:14px}
+.swk-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.swk-row-l{font-size:.74rem;color:var(--sw-text-secondary);font-weight:600;margin-right:4px}
+.swk-link{font:inherit;font-size:.74rem;background:none;border:none;padding:2px 4px;color:var(--sw-accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.swk-link-del{color:var(--sw-bad)}
+.swk-sc-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.swk-sc-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.swk-sc-base{font-size:.76rem;color:var(--sw-text-secondary)}
+.swk-sc-save{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0 10px}
+.swk-sc-save input{font:inherit;font-size:.8rem;padding:7px 10px;border:1px solid var(--sw-border);border-radius:7px;background:var(--sw-surface);color:var(--sw-text-primary);min-width:min(320px,100%);flex:1 1 240px}
+.swk-sc-msg{font-size:.74rem;color:var(--sw-text-secondary)}
+.swk-segs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.swk-segs-l{font-size:.74rem;color:var(--sw-text-secondary);font-weight:600;margin-right:4px}
+.swk-seg{font:inherit;font-size:.76rem;font-weight:600;padding:6px 11px;border-radius:999px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-secondary);cursor:pointer;transition:border-color var(--dur-hover,200ms) ease,color var(--dur-hover,200ms) ease}
+.swk-seg[aria-pressed="true"]{border-color:var(--sw-accent);color:var(--sw-text-primary);background:var(--sw-accent-bg)}
+.swk-sc-tw{overflow-x:auto;margin-top:10px;border:1px solid var(--sw-border);border-radius:10px}
+.swk-sc-tw:focus-visible{outline:2px solid var(--sw-accent);outline-offset:2px}
+.swk-sc-t{border-collapse:collapse;width:100%;font-size:.76rem;min-width:860px}
+.swk-sc-t th,.swk-sc-t td{padding:7px 10px;border-bottom:1px solid var(--sw-border);text-align:left;vertical-align:top;color:var(--sw-text-body)}
+.swk-sc-t thead th{font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;color:var(--sw-text-secondary);background:var(--sw-surface-alt);font-weight:600}
+.swk-sc-t tbody th{font-weight:400;color:var(--sw-text-body);min-width:240px;max-width:340px}
+.swk-sc-name{display:block;font-weight:650;color:var(--sw-text-primary)}
+.swk-sc-t .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.swk-sc-t tr.is-base{background:var(--sw-accent-bg)}
+.swk-sc-v{display:block;color:var(--sw-text-primary);font-weight:600}
+.swk-sc-d{display:block;font-size:.7rem;color:var(--sw-text-secondary)}
+.swk-sc-d.is-up{color:var(--sw-bad)}.swk-sc-d.is-down{color:var(--sw-good)}
+.swk-sc-diff{margin:4px 0 0;padding-left:14px;display:flex;flex-direction:column;gap:1px;font-size:.72rem;color:var(--sw-text-secondary)}
+span.swk-sc-diff{display:block;padding-left:0}
+.swk-sc-err{color:var(--sw-bad)}
+.swk-sc-acts{display:flex;flex-wrap:wrap;gap:2px 6px;margin-top:4px}
+.swk-pill{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 6px;border-radius:999px;border:1px solid currentColor;color:var(--sw-text-secondary);vertical-align:1px}
+.swk-pill-q{color:var(--sw-accent)}
+.swk-muted{color:var(--sw-text-muted)}
+/* Phone: the rail scrolls with the page (sticky it would cover half the screen) and shows the answer first. */
+@media (max-width:700px){.swk-rail{position:static}.swk-head{align-items:flex-start}}
+@media (prefers-reduced-motion: reduce){.swk-delta,.swk-qb,.swk-dialog{transition:none}}
 `;
 
 export { wireCharts };

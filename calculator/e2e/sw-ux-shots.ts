@@ -59,11 +59,12 @@ async function main(): Promise<void> {
     out.domNodes = await page.evaluate(() => document.getElementById('sw-panel')?.querySelectorAll('*').length);
     out.rail = await page.evaluate(() => document.getElementById('swk-rail')?.textContent?.replace(/\s+/g, ' ').trim());
     await shot(page, '01-setup', false);
-    const tabs = ['scope', 'overview', 'vehicle', 'risk', 'spend', 'modules', 'supplier', 'rates', 'report'];
+    const tabs = ['scope', 'overview', 'vehicle', 'risk', 'spend', 'modules', 'supplier', 'scenarios', 'rates', 'report'];
     for (const [i, t] of tabs.entries()) {
       await page.click(`[data-swk-tab="${t}"]`);
       await page.waitForTimeout(t === 'vehicle' ? 900 : 500);
       if (t === 'supplier') { await page.fill('#swk-q-nre', '60000000'); await page.fill('#swk-q-pv', '60'); await page.waitForTimeout(300); }
+      if (t === 'scenarios') { await page.click('[data-sc-mode="hub"]'); await page.waitForTimeout(500); }
       await page.locator('#sw-panel').screenshot({ path: join(OUT, `${String(i + 2).padStart(2, '0')}-${t}.png`) });
     }
     // Live: change the volume on Setup and read the rail's delta chip.
@@ -73,7 +74,7 @@ async function main(): Promise<void> {
     await page.waitForFunction(() => /▼|▲/.test(document.querySelector('#swk-rail [data-fig="pv"] .swk-delta')?.textContent ?? ''), null, { timeout: 5000 });
     out.liveMs = Date.now() - tLive;
     out.railAfterVolume = await page.evaluate(() => document.getElementById('swk-rail')?.textContent?.replace(/\s+/g, ' ').trim());
-    await page.locator('#swk-rail').screenshot({ path: join(OUT, '12-rail-delta.png') });
+    await page.locator('#swk-rail').screenshot({ path: join(OUT, '13-rail-delta.png') });
     out.pageErrors = errors;
   } finally {
     writeFileSync(join(OUT, 'sw-ux-shots.json'), JSON.stringify(out, null, 1));

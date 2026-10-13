@@ -57,7 +57,6 @@ async function main(): Promise<void> {
     out.hubOptgroups = await page.$$eval('#sw-region optgroup', gs => gs.map(g => g.getAttribute('label')));
     out.rateField = await page.inputValue('#sw-base-rate');
 
-    await show('.sw-mode-btn[data-mode="advanced"]'); await page.click('.sw-mode-btn[data-mode="advanced"]');
     await show('#sw-powertrain'); await page.selectOption('#sw-powertrain', 'BEV');
     await page.waitForTimeout(300);
     await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
@@ -118,7 +117,7 @@ async function main(): Promise<void> {
     });
     const axe = async () => {
       const found: string[] = [];
-      for (const t of ['setup', 'scope', 'overview', 'vehicle', 'risk', 'spend', 'modules', 'supplier', 'rates', 'report']) {
+      for (const t of ['setup', 'scope', 'overview', 'vehicle', 'risk', 'spend', 'modules', 'supplier', 'scenarios', 'rates', 'report']) {
         await page.click(`[data-swk-tab="${t}"]`);
         await page.waitForTimeout(350);
         for (const v of await axeOne()) found.push(`${t}: ${v}`);
@@ -133,11 +132,13 @@ async function main(): Promise<void> {
     out.axeLight = await axe();
     await page.evaluate(() => document.documentElement.removeAttribute('data-theme'));
 
-    // Guided ⇄ Advanced keep the same inputs (F3).
-    await show('#sw-vol'); await page.fill('#sw-vol', '150000');
-    await show('.sw-mode-btn[data-mode="guided"]'); await page.click('.sw-mode-btn[data-mode="guided"]');
-    await show('.sw-mode-btn[data-mode="advanced"]'); await page.click('.sw-mode-btn[data-mode="advanced"]');
-    out.volAfterModeSwitch = await page.inputValue('#sw-vol');
+    // One input pane (Guided merged into Setup): an edit survives a tab round-trip, and undo restores the value before it.
+    await show('#sw-vol'); const volBefore = await page.inputValue('#sw-vol');
+    await page.fill('#sw-vol', '150000'); await page.waitForTimeout(600);
+    await page.click('[data-swk-tab="overview"]'); await page.click('[data-swk-tab="setup"]');
+    out.volAfterTabSwitch = await page.inputValue('#sw-vol');
+    await page.click('#swk-undo'); await page.waitForTimeout(300);
+    out.volAfterUndo = [volBefore, await page.inputValue('#sw-vol')];
     out.pageErrors = errors;
   } finally {
     writeFileSync(join(OUT, 'sw-studio.json'), JSON.stringify(out, null, 1));

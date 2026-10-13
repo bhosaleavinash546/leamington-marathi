@@ -222,6 +222,34 @@ export function tornadoChart(id: string, rows: TornadoRow[], money: Money): stri
   </figure>`;
 }
 
+// ── Scenarios: one figure per scenario against the baseline ─────────────────────────────────────────────────────────
+
+export interface ScenarioBar { key: string; label: string; value: number; base?: boolean }
+
+/** One bar per scenario (single series, no legend); the baseline bar in ink and a dashed rule at its value. */
+export function scenarioChart(id: string, bars: ScenarioBar[], measure: string, money: Money): string {
+  if (!bars.length) return '';
+  // Drawn wide (it spans the card) so a short list does not scale its text up.
+  const W = 1000, rowH = 30, left = 230, right = 170, top = 8;
+  const H = top + bars.length * rowH + 6;
+  const max = niceMax(Math.max(...bars.map(b => b.value), 0));
+  const sx = (v: number) => (W - left - right) * Math.max(0, v) / max;
+  const base = bars.find(b => b.base);
+  const rows = bars.map((b, i) => {
+    const y = top + i * rowH;
+    const d = base && !b.base ? b.value - base.value : null;
+    const dTxt = d == null ? 'baseline' : `${d >= 0 ? '+' : '−'}${money(Math.abs(d))}`;
+    return `<text class="swc-lbl${b.base ? ' swc-strong' : ''}" x="${left - 10}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(b.label.length > 28 ? b.label.slice(0, 27) + '…' : b.label)}</text>
+      ${hbar(left, y + 7, sx(b.value), rowH - 14, b.base ? 'var(--swc-ink)' : SLOT(0), b.key, `${b.label}: ${money(b.value)} (${dTxt})`)}
+      <text class="swc-val${b.base ? ' swc-strong' : ''}" x="${r1(left + sx(b.value) + 6)}" y="${y + rowH / 2 + 4}">${esc(money(b.value))}${d == null ? '' : ` · ${esc(dTxt)}`}</text>`;
+  }).join('');
+  const rule = base ? `<line class="swc-base" x1="${r1(left + sx(base.value))}" x2="${r1(left + sx(base.value))}" y1="${top}" y2="${H - 4}"/>` : '';
+  return `<figure class="swc" data-chart="${esc(id)}">
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}-t"><title id="${id}-t">${esc(measure)} by scenario${base ? `, against the baseline ${esc(base.label)}` : ''}</title>${rows}${rule}</svg>
+    ${table(`${measure} by scenario`, ['Scenario', measure, 'Against baseline'], bars.map(b => [b.label, money(b.value), b.base ? 'baseline' : base ? `${b.value - base.value >= 0 ? '+' : '−'}${money(Math.abs(b.value - base.value))}` : '']))}
+  </figure>`;
+}
+
 // ── Distribution: the Monte Carlo band ──────────────────────────────────────────────────────────────────────────────
 
 export function distributionChart(id: string, hist: Array<{ lo: number; hi: number; count: number }>,
@@ -372,6 +400,7 @@ html:not([data-theme="light"]) .sw-cockpit{--swc-1:#3987e5;--swc-2:#d95926;--swc
 .swc-axis-t{font-size:10.5px;fill:var(--sw-text-secondary);font-variant-numeric:tabular-nums}
 .swc-conn{stroke:var(--sw-text-muted);stroke-width:1;opacity:.6}
 .swc-sop{stroke:var(--sw-text-primary);stroke-width:1.5}
+.swc-base{stroke:var(--sw-text-primary);stroke-width:1.5;stroke-dasharray:4 3}
 .swc-marker{stroke:var(--sw-text-secondary);stroke-width:1}
 .swc-mk-h{stroke:var(--sw-text-primary);stroke-width:2}
 .swc-mk-t{font-size:10.5px;fill:var(--sw-text-secondary);font-variant-numeric:tabular-nums}
@@ -397,4 +426,6 @@ html:not([data-theme="light"]) .sw-cockpit{--swc-1:#3987e5;--swc-2:#d95926;--swc
   transition:opacity 150ms cubic-bezier(.22,.61,.36,1),transform 150ms cubic-bezier(.22,.61,.36,1)}
 .swc-tip.is-on{opacity:1;transform:none}
 @media (prefers-reduced-motion: reduce){.swc-tip{transition:none}}
+/* Phone width: a chart keeps reading-size text and scrolls inside its own frame (the page never scrolls sideways). */
+@media (max-width:560px){.swc{overflow-x:auto;-webkit-overflow-scrolling:touch}.swc svg{min-width:520px}.swc .swc-legend,.swc .swc-data{position:sticky;left:0;max-width:calc(100vw - 48px)}}
 `;
