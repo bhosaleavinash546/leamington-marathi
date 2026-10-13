@@ -1,0 +1,712 @@
+{
+ "domain": "passives-rlc",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "CRCW04020000Z0ED",
+   "family": "CRCW0402",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film jumper 0 ohm, 0402, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "CRCW04020000Z0ED",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 50000,
+     "price": 0.0013,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C190119.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C190119, 10k reel. Mouser/TME only qty-1 prices seen."
+  },
+  {
+   "mpn": "CRCW04020000Z0EDC",
+   "family": "CRCW0402",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film jumper 0 ohm, 0402, AEC-Q200 (EDC packing)",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "CRCW04020000Z0EDC",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 20000,
+     "price": 0.0016,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw04020000z0edc-vishay-9093751",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 750000,
+     "price": 0.0014,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw04020000z0edc-vishay-9093751",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Packing sibling of CRCW04020000Z0ED; Future MOQ 20,000."
+  },
+  {
+   "mpn": "CRCW0603100KFKEA",
+   "family": "CRCW0603",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film 100k 1% 0.1W, 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "CRCW0603100KFKEA",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 1000,
+     "price": 0.027,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/surface-mount-fixed-resistors/6789673",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK ex-VAT; the price is RS's 50-1,200 tier (recorded at 1,000, which it covers). Digi-Key out of stock, no price."
+  },
+  {
+   "mpn": "CRCW08051K00FKEA",
+   "family": "CRCW0805",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film 1k 1% 0.125W, 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "CRCW08051K00FKEA",
+   "observations": [],
+   "notes": "Digi-Key lists it (541-1.00KCTR-ND) out of stock with no price shown; no other franchised price found."
+  },
+  {
+   "mpn": "ERJ-UP6F1001V",
+   "family": "ERJ-UP6",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-surge / anti-sulfur 1k 1%, 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "powertrain",
+    "BCM"
+   ],
+   "observedMpn": "ERJUP6F1001V",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 5000,
+     "price": 0.028,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/surface-mount-resistors/2432231",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK reel of 5,000 at GBP 140.00 ex-VAT = 0.028 each. Anti-sulfur cell."
+  },
+  {
+   "mpn": "ERJ-P06F1001V",
+   "family": "ERJ-P06",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-surge 1k 1% 0.5W, 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "ERJP06F1001V",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 5000,
+     "price": 0.0141,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C441981.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C441981: snippet gave $70.50 at 5,000+ (read as the reel extended price = $0.0141 each); 0 in stock at read."
+  },
+  {
+   "mpn": "CRCW25121K00FKEG",
+   "family": "CRCW2512",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film 1k 1% 1W, 2512, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "CRCW25121K00FKEG",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 2000,
+     "price": 0.0561,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw25121k00fkeg-vishay-9757535",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 30000,
+     "price": 0.0519,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw25121k00fkeg-vishay-9757535",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 1250,
+     "price": 0.054,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/p/surface-mount-resistors/6792424",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Power-size 2512 cell. RS UK ex-VAT."
+  },
+  {
+   "mpn": "CRCW251210R0FKEG",
+   "family": "CRCW2512",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film 10 ohm 1% 1W, 2512, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "CRCW251210R0FKEG",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 25000,
+     "price": 15.28,
+     "currency": "JPY",
+     "url": "https://jp.rs-online.com/web/p/surface-mount-resistors/6792409",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS Japan ex-tax; lower tier JPY 16.24 at 25-600 (below the 100 floor, not recorded)."
+  },
+  {
+   "mpn": "CRCW120610R0FKEB",
+   "family": "CRCW1206",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film 10 ohm 1% 0.25W, 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "CRCW120610R0FKEB",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 20000,
+     "price": 0.0096,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C844016.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC lists this packing code DISCONTINUED (20 left); see CRCW120612R0FKEA for an active code."
+  },
+  {
+   "mpn": "CRCW120612R0FKEA",
+   "family": "CRCW1206",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film 12 ohm 1% 0.25W, 1206, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "CRCW120612R0FKEA",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 5000,
+     "price": 0.0068,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/1640135",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Low-ohm 1206 cell (no listing found for CRCW120610R0FKEA). Future: 0 global stock, 12-week lead time at read."
+  },
+  {
+   "mpn": "WSL25122L000FEA",
+   "family": "WSL2512",
+   "mfr": "Vishay Dale",
+   "desc": "Metal-strip current-sense 2 mOhm 1% 1W, 2512, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "inverter",
+    "power"
+   ],
+   "observedMpn": "WSL25122L000FEA",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2000,
+     "price": 0.56,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/WSL25122L000FEA18",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "FindChips naming Mouser (stock 18,662): ~$2.13 at 1 down to ~$0.56 at 2,000 (summary said 'about'; verify). Avnet $0.84-1.26, break not given."
+  },
+  {
+   "mpn": "WSL25121L000FEA",
+   "family": "WSL2512",
+   "mfr": "Vishay Dale",
+   "desc": "Metal-strip current-sense 1 mOhm 1% 1W, 2512, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "inverter",
+    "power"
+   ],
+   "observedMpn": "WSL25121L000FEA",
+   "observations": [],
+   "notes": "Digipart shows Mouser SKU 71-WSL25121L000FEA but no price; no franchised price found."
+  },
+  {
+   "mpn": "TNPW080513K0BEEA",
+   "family": "TNPW0805",
+   "mfr": "Vishay Dale",
+   "desc": "Thin film 13k 0.1% 25ppm, 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor",
+    "BMS"
+   ],
+   "observedMpn": "TNPW080513K0BEEA",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 5000,
+     "price": 0.114,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/7003983",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Thin-film 0805 0.1% cell; value 13k because no price was found for 10k (TNPW080510K0BEEA)."
+  },
+  {
+   "mpn": "TNPW080512K0BEEA",
+   "family": "TNPW0805",
+   "mfr": "Vishay Dale",
+   "desc": "Thin film 12k 0.1% 25ppm, 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor",
+    "BMS"
+   ],
+   "observedMpn": "TNPW080512K0BEEA",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.22,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C7125390.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C7125390; summary gave 'about $0.22' at 1,000+ (about $0.42 at 1) - verify."
+  },
+  {
+   "mpn": "TNPW080510K0BEEA",
+   "family": "TNPW0805",
+   "mfr": "Vishay Dale",
+   "desc": "Thin film 10k 0.1% 25ppm, 0805, AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor",
+    "BMS"
+   ],
+   "observedMpn": "TNPW080510K0BEEA",
+   "observations": [],
+   "notes": "Mouser SKU 71-TNPW080510K0BEEA listed, no price in results; Digipart 'Inquiry' only."
+  },
+  {
+   "mpn": "BLM21PG221SH1D",
+   "family": "BLM21PG",
+   "mfr": "Murata",
+   "desc": "Ferrite bead 220R@100MHz, 0805, automotive (SH1)",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "BLM21PG221SH1D",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.0183,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C88994.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C88994, 4,000 reel. Commercial BLM21PG221SN1D Mouser price only seen via OEMsTrade (not used)."
+  },
+  {
+   "mpn": "IHLP4040DZER100MA1",
+   "family": "IHLP-4040DZ",
+   "mfr": "Vishay Dale",
+   "desc": "Molded power inductor 10uH 20%, 10.2x10.2 mm (4040), commercial",
+   "category": "passive_1206",
+   "pkg": "4040",
+   "aecq": false,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "IHLP4040DZER100MA1",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 500,
+     "price": 0.395,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/9112920",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "10x10 cell. Future showed 0 global stock at read. Automotive -5A code IHLP4040DZER100M5A not found listed."
+  },
+  {
+   "mpn": "XAL1010-103MEB",
+   "family": "XAL1010",
+   "mfr": "Coilcraft",
+   "desc": "Molded power inductor 10uH, 10x11 mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "10x11",
+   "aecq": true,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "XAL1010-103MEB",
+   "observations": [],
+   "notes": "No franchised distributor price found (only Quest broker). Coilcraft direct list price: $1.67 at 1,200 (manufacturer, not an observation)."
+  },
+  {
+   "mpn": "SRP6540-4R7M",
+   "family": "SRP6540",
+   "mfr": "Bourns",
+   "desc": "Shielded power inductor 4.7uH 6A 33.5 mOhm, 6.5x6.9 mm",
+   "category": "passive_1206",
+   "pkg": "6.5x6.9",
+   "aecq": false,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "SRP6540-4R7M",
+   "observations": [],
+   "notes": "6x6 cell. Only a broker (Cytech) price found; Farnell JP lists it without price. AEC-Q200 status not confirmed in results."
+  },
+  {
+   "mpn": "ACT1210L-101-2P-TL00",
+   "family": "ACT1210L",
+   "mfr": "TDK",
+   "desc": "Common-mode choke 100uH 2-line, 1210, AEC-Q200, CAN-FD / in-vehicle network",
+   "category": "transformer",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "BCM"
+   ],
+   "observedMpn": "ACT1210L-101-2P-TL00",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.3284,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C307643.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C307643, 3,063 in stock."
+  },
+  {
+   "mpn": "ACT1210-101-2P-TL00",
+   "family": "ACT1210",
+   "mfr": "TDK",
+   "desc": "CAN common-mode choke 100uH 2-line, 1210, AEC-Q200",
+   "category": "transformer",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "BCM"
+   ],
+   "observedMpn": "ACT1210-101-2P-TL00",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.3085,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C529452.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C529452."
+  },
+  {
+   "mpn": "EEH-ZA1H101P",
+   "family": "EEH-ZA",
+   "mfr": "Panasonic",
+   "desc": "Hybrid polymer Al SMD 100uF 50V, ZA series, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "power",
+    "BCM"
+   ],
+   "observedMpn": "EEHZA1H101P",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 500,
+     "price": 0.424,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C109086.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 500,
+     "price": 0.664,
+     "currency": "EUR",
+     "url": "https://ee.farnell.com/panasonic/eehza1h101p/cap-alu-elec-hybrid-100uf-50v/dp/2666626",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell Estonia full reels of 500 (assumed ex-VAT, B2B site)."
+  },
+  {
+   "mpn": "EEE-FK1E471P",
+   "family": "EEE-FK",
+   "mfr": "Panasonic",
+   "desc": "Al electrolytic SMD 470uF 25V 20%, FK series, 105C, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "EEEFK1E471P",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 5000,
+     "price": 0.2024,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C248607.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 250,
+     "price": 0.506,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/aluminium-capacitors/5370528P",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 500,
+     "price": 0.339,
+     "currency": "EUR",
+     "url": "https://fr.rs-online.com/web/p/condensateurs-electrolytiques-aluminium/7479002",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC lowest (5,000+) tier. RS UK ex-VAT; RS France reel of 500 at EUR 169.50 HT."
+  },
+  {
+   "mpn": "UCZ1V221MCL1GS",
+   "family": "UCZ",
+   "mfr": "Nichicon",
+   "desc": "Al electrolytic SMD 220uF 35V 20%, UCZ 125C automotive",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "power",
+    "BCM"
+   ],
+   "observedMpn": "UCZ1V221MCL1GS",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 500,
+     "price": 0.455,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/4212997",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 200,
+     "price": 0.582,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/aluminium-capacitors/2437284",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future MOQ 500, 16,000 stock. RS UK ex-VAT."
+  },
+  {
+   "mpn": "T495D107K016ATA100",
+   "family": "T495",
+   "mfr": "KEMET",
+   "desc": "Tantalum MnO2 100uF 16V 10% 100 mOhm, D case 7343, commercial",
+   "category": "passive_1206",
+   "pkg": "7343 (D)",
+   "aecq": false,
+   "ecuRoles": [
+    "power"
+   ],
+   "observedMpn": "T495D107K016ATA100",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 500,
+     "price": 0.4811,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C603137.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.461,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C603137.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "No listing for T495D107K016ATE100; this is the code LCSC lists (0 in stock at read)."
+  },
+  {
+   "mpn": "B32776T8685K000",
+   "family": "B32776",
+   "mfr": "TDK (EPCOS)",
+   "desc": "DC-link PP film capacitor 6.8uF 10% 875 VDC, radial 4-pin",
+   "category": "through_hole",
+   "pkg": "radial box",
+   "aecq": false,
+   "ecuRoles": [
+    "inverter",
+    "OBC"
+   ],
+   "observedMpn": "B32776T8685K000",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 300,
+     "price": 4.4,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/6026301",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future: 0 stock, 20-week lead, MOQ 1,040 at read. AEC-Q200 not stated for this code (B32776H8106K000 is tagged AEC-Q200 by Farnell). Burklin B32776G0206K000 EUR 7.69 at 150 (distributor not on the allowed list)."
+  },
+  {
+   "mpn": "MKP1848C62010JP5",
+   "family": "MKP1848C",
+   "mfr": "Vishay Roederstein",
+   "desc": "DC-link PP film capacitor 20uF 5% 1 kVDC, through hole",
+   "category": "through_hole",
+   "pkg": "radial box",
+   "aecq": false,
+   "ecuRoles": [
+    "inverter",
+    "OBC"
+   ],
+   "observedMpn": "MKP1848C62010JP5",
+   "observations": [],
+   "notes": "RS UK GBP 10.27 at 50+ ex-VAT (below the 100 floor, not recorded); RS page shows 85C max, no AEC-Q200 tag."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "Ethernet CMC 100/1000BASE-T1 (Murata DLW43MH / TDK ACT1210E / Wurth WE-CNSW)",
+   "why": "search found no listing for the Murata codes tried; ACT1210L-101 recorded instead"
+  },
+  {
+   "code": "Isabellenhuette BVR / VMK / BVS, Bourns CRA2512, Rohm PMR/GMR, KOA TLR, Panasonic ERJ-MB",
+   "why": "shunt alternatives to Vishay WSL; budget spent"
+  },
+  {
+   "code": "Vishay CRCW-AS / Panasonic ERJ-S anti-sulfur 0402/0603",
+   "why": "anti-sulfur covered only by ERJ-UP6F1001V (0805); budget spent"
+  },
+  {
+   "code": "Susumu RG automotive, Panasonic ERA-6A 0805 0.1%",
+   "why": "thin-film alternatives; budget spent"
+  },
+  {
+   "code": "TDK TFM2012 / Murata DFE2012 (2.0x1.2), Wurth WE-XHMA / WE-MAPI / WE-HCI, Vishay IHLE, Sumida CDRH, Coilcraft XAL7070",
+   "why": "power inductor cells; budget spent"
+  },
+  {
+   "code": "Chemi-Con HXE/HXD/MZK, Wurth WCAP-ASLI/HCGP, Nichicon UCJ/CZ, Panasonic EEH-ZK / EEE-FT, 63V points",
+   "why": "electrolytic / hybrid cells; budget spent"
+  },
+  {
+   "code": "KEMET T591 / T495 AUTO, KYOCERA AVX TAJ AUTO / TCQ, Vishay T55 / 893D",
+   "why": "automotive tantalum cells; budget spent"
+  },
+  {
+   "code": "KEMET C4AQ / R75 automotive, Vishay MKP1848C AEC-Q200 code",
+   "why": "film DC-link / snubber cells; budget spent"
+  }
+ ]
+}
