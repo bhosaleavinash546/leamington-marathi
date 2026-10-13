@@ -148,6 +148,18 @@ describe('the research merge rules', () => {
     expect(p.distributors).not.toContain('LCSC');
     expect(p.dropped.join(' ')).toMatch(/outlier/);
   });
+  it('judges outliers per distributor and never drops the majority (round 4: GCM188R71E105KA64D)', () => {
+    // Per observation, the rule removed 4 of 5 readings and left one RS price. Per distributor: RS and Future agree
+    // (within 2.5×), so LCSC — 9× below both — is the outlier; Future's two breaks are one vote.
+    const p = priceFromObservations([o('LCSC', 4000, 0.0096), o('LCSC', 48000, 0.0087), o('RS Components', 4000, 0.066, 'GBP'),
+      o('Future', 4000, 0.135), o('Future', 12000, 0.131)])!;
+    expect(p.distributors.sort()).toEqual(['Future', 'RS Components']);
+    expect(p.dropped.filter(d => /outlier/.test(d)).length).toBe(2);
+    // Three distributors with no two agreeing: all stay, the median distributor sets the price, and the basis says so.
+    const q = priceFromObservations([o('Digi-Key', 1000, 0.01), o('Mouser', 1000, 0.05), o('Avnet', 1000, 0.25)])!;
+    expect(q.distributors.length).toBe(3);
+    expect(q.basis).toMatch(/distributors disagree/);
+  });
   it('never reads two distributors\' prices as a volume slope (round 2: DS90UB954)', () => {
     // Mouser $14.78 @1k vs Digi-Key $10.79 @2.5k is the distributors' spread; it used to read as b = 0.34.
     const p = priceFromObservations([o('Mouser', 1000, 14.78), o('Digi-Key', 2500, 10.79)])!;

@@ -94,14 +94,34 @@ export function priceFromObservations(raw: Obs[]): Priced | null {
   }
   // Rule 3 — outliers, judged at a common quantity (1k) so a reel break is not an "outlier".
   const at1k = (o: { qty: number; gbp: number }, b = DEFAULT_B) => o.gbp * Math.pow(o.qty / 1000, b);
-  if (obs.length >= 3) {
-    obs = obs.filter((o, i) => {
-      const others = obs.filter((_, j) => j !== i).map(x => at1k(x));
-      const m = median(others), v = at1k(o);
-      const bad = v > m * 2.5 || v < m / 2.5;
-      if (bad) dropped.push(`${o.distributor} ${o.price} ${o.currency} @${o.qty} (outlier vs median)`);
-      return !bad;
-    });
+  // Rule 3 is judged per DISTRIBUTOR (each one's breaks collapse to one value), and a distributor is dropped only when the
+  // OTHERS agree with each other (within 2.5×). Judged per observation, it removed 4 of 5 readings on an MLCC whose
+  // distributors genuinely disagree (round 4: LCSC $0.0096, RS £0.066, Future $0.135 — only RS was left), and one
+  // distributor's two breaks counted as two votes. With no consensus every distributor stays (rule 4 takes their median).
+  let spread = false;
+  const distVal = (list: typeof obs) => median(list.map(o => at1k(o)));
+  const groups = new Map<string, typeof obs>();
+  for (const o of obs) { const k = o.distributor.toLowerCase(); groups.set(k, [...(groups.get(k) ?? []), o]); }
+  if (groups.size >= 3) {
+    const vals = new Map([...groups].map(([k, l]) => [k, distVal(l)]));
+    const out = new Set<string>();
+    for (const [k, v] of vals) {
+      const others = [...vals].filter(([j]) => j !== k).map(([, x]) => x);
+      const agree = Math.max(...others) / Math.min(...others) <= 2.5;
+      const m = median(others);
+      if (agree && (v > m * 2.5 || v < m / 2.5)) out.add(k);
+    }
+    if (out.size && out.size < groups.size / 2) {
+      obs = obs.filter(o => {
+        const bad = out.has(o.distributor.toLowerCase());
+        if (bad) dropped.push(`${o.distributor} ${o.price} ${o.currency} @${o.qty} (outlier: the other distributors agree)`);
+        return !bad;
+      });
+    }
+  }
+  {
+    const vals = [...new Set(obs.map(o => o.distributor.toLowerCase()))].map(k => distVal(obs.filter(o => o.distributor.toLowerCase() === k)));
+    spread = vals.length >= 2 && Math.max(...vals) / Math.min(...vals) > 2.5;
   }
   // Rule 5 — the part's own slope.
   let b = NaN, basis = '';
@@ -119,8 +139,11 @@ export function priceFromObservations(raw: Obs[]): Priced | null {
   if (!Number.isFinite(b)) { b = DEFAULT_B; basis = 'franchise curve (no second break found): 10k = 1k × 0.85'; }
   b = Math.min(0.18, Math.max(0.02, b));
   // Rule 4 — the 1k price.
+  // The median of the observations near 1k. (A median across DISTRIBUTORS — one vote each — would re-price 43 entries
+  // already in the catalogue; it is a recommendation in docs/pcb/catalogue-round-4-2026-10-13.md, not applied.)
   const ref = near1k.length ? near1k : obs;
   const p1k = median(ref.map(o => at1k(o, b)));
+  if (spread) basis += '; distributors disagree > 2.5× — every distributor kept, the median used';
   const at = (q: number) => r4(p1k * Math.pow(q / 1000, -b));
   return {
     gbp: { q1k: r4(p1k), q10k: at(10_000), q100k: at(100_000), q200k: at(200_000), q300k: at(300_000) },
