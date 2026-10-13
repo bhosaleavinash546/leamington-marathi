@@ -225,7 +225,8 @@ describe('accessibility — the software panel\'s axe findings (57 label, 2 sele
   });
   it('the colours axe failed are gone: light result colours, light phase fills under white text, gold button text', () => {
     expect(ui).not.toMatch(/mc\.p10PerVehicle,0\)\}\/veh`, color: '#059669'|mc\.p90PerVehicle,0\)\}\/veh`, color: '#ef4444'/);
-    expect(ui).toMatch(/mc\.p10PerVehicle,0\)\}\/veh`, color: 'var\(--sw-good\)'/);
+    // Money is in text ink (cockpit UX review: no coloured KPI figures); the colour stays off the numbers.
+    expect(ui).toMatch(/mc\.p10PerVehicle,0\)\}\/veh`, color: 'var\(--sw-text-primary\)'/);
     expect(ui).not.toMatch(/'#3b82f6','#0891b2','#059669'/);
     expect(ui).not.toMatch(/color:#9C7328|var\(--gold,#B67D1E\)/);
     expect(ui).toMatch(/--sw-good:\s+#047857/);

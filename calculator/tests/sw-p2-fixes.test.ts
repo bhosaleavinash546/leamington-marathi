@@ -107,16 +107,20 @@ describe('#11 per-vehicle royalties scale with volume', () => {
 
   it('the three royalty modules carry a per-unit figure, no flat IP fee, and a stated basis', () => {
     expect(def('ivi_os').perVehicleRoyaltyGBP).toBeCloseTo(25 / USD_PER_GBP, 2);
-    expect(def('voice_assistant').perVehicleRoyaltyGBP).toBe(15);
+    // Voice: Cerence's published price per unit (cockpit costing review #5) — it includes connected services, so the
+    // module carries no separate cloud line.
+    expect(def('voice_assistant').perVehicleRoyaltyGBP).toBeCloseTo(5.05 / USD_PER_GBP, 2);
+    expect(def('voice_assistant').annualCloudCostGBP).toBe(0);
+    expect(def('voice_assistant').royaltyBasis).toMatch(/Cerence/);
     expect(def('navigation').perVehiclePerYearGBP).toBe(11.5);
-    for (const id of ['ivi_os', 'voice_assistant', 'navigation']) {
-      expect(def(id).annualIPLicenceGBP).toBe(0);
-      expect(def(id).royaltyBasis).toMatch(/Unsourced estimate/);
-    }
+    for (const id of ['ivi_os', 'voice_assistant', 'navigation']) expect(def(id).annualIPLicenceGBP).toBe(0);
+    expect(def('ivi_os').royaltyBasis).toMatch(/Unsourced placeholder/);
+    expect(def('navigation').royaltyBasis).toMatch(/Unsourced estimate/);
   });
 
   it('a built-vehicle royalty is volume × life × rate (no discount)', () => {
-    expect(lic('voice_assistant', 80_000)).toBeCloseTo(80_000 * 10 * 15, 0);
+    const rate = def('voice_assistant').perVehicleRoyaltyGBP!;
+    expect(lic('voice_assistant', 80_000)).toBeCloseTo(80_000 * 10 * rate, 0);
     expect(lic('voice_assistant', 160_000)).toBeCloseTo(2 * lic('voice_assistant', 80_000), 0);
   });
 
@@ -137,7 +141,8 @@ describe('#11 per-vehicle royalties scale with volume', () => {
   it('discounting applies year by year', () => {
     const d = def('voice_assistant');
     const v = unitRoyaltyGBP(d, { annualProductionVolume: 1000, programLifeYears: 2, discountRatePct: 10 });
-    expect(v).toBeCloseTo(1000 * 15 / 1.1 + 1000 * 15 / 1.21, 4);
+    const rate = d.perVehicleRoyaltyGBP!;
+    expect(v).toBeCloseTo(1000 * rate / 1.1 + 1000 * rate / 1.21, 4);
   });
 });
 
@@ -202,7 +207,9 @@ describe('#13 the screen shows what was costed — active book, country, dev-sou
 
   it('dev-source rows follow a company book\'s multiplier (the screen had 0.88 hard-coded)', () => {
     const rows = devSourceComparison(prog(p => { p.rateLibrary = company; }));
-    expect(rows.find(r => r.devSource === 'Tier1_Supplier')!.multiplier).toBe(0.5);
+    // The book's 0.5 is the supplier's EFFORT; the price adds the supplier margin (cockpit costing review #2).
+    const m = DEFAULT_SW_RATE_LIBRARY.supplierMargin!.value;
+    expect(rows.find(r => r.devSource === 'Tier1_Supplier')!.multiplier).toBeCloseTo(0.5 / (1 - m), 10);
     const builtIn = devSourceComparison(prog()).find(r => r.devSource === 'Tier1_Supplier')!;
     expect(rows.find(r => r.devSource === 'Tier1_Supplier')!.grandTotal).toBeLessThan(builtIn.grandTotal);
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).not.toMatch(/srcMult: 0\.88|=== 'Tier1_Supplier' \? 0\.88/);

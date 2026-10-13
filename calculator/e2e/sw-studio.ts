@@ -45,16 +45,23 @@ async function main(): Promise<void> {
     await page.click('#new-costing-btn');
     await page.locator('#commodity-picker-view .cpicker-tile[data-commodity="automotive_software"]:visible').first().click();
     await page.waitForSelector('#sw-panel');
+    // Tabbed cockpit (Oct 2026): open the tab that holds a control before using it.
+    const show = (sel: string) => page.evaluate(s => {
+      const p = document.querySelector(s)?.closest('.swk-panel[role="tabpanel"]') as HTMLElement | null;
+      const t = p?.id.replace('swk-p-', '');
+      if (t && p!.hidden) (document.querySelector(`[data-swk-tab="${t}"]`) as HTMLElement | null)?.click();
+    }, sel);
 
     // Guided and Advanced agree on the same choices (code review F2) — wizard to its cost step, then Advanced.
     out.hubOptions = await page.$$eval('#sw-region option', os => os.length);
     out.hubOptgroups = await page.$$eval('#sw-region optgroup', gs => gs.map(g => g.getAttribute('label')));
     out.rateField = await page.inputValue('#sw-base-rate');
 
-    await page.click('.sw-mode-btn[data-mode="advanced"]');
-    await page.selectOption('#sw-powertrain', 'BEV');
+    await show('.sw-mode-btn[data-mode="advanced"]'); await page.click('.sw-mode-btn[data-mode="advanced"]');
+    await show('#sw-powertrain'); await page.selectOption('#sw-powertrain', 'BEV');
     await page.waitForTimeout(300);
-    await page.click('#sw-calc-btn');
+    await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
+    await page.click('[data-swk-tab="vehicle"]');
     await page.waitForSelector('#sw-studio .swp-studio', { timeout: 20_000 });
     await page.waitForTimeout(600);
     out.steps = await page.$$eval('#sw-studio .swp-step', ls => ls.map(l => l.textContent?.replace(/\s+/g, ' ').trim()));
@@ -62,7 +69,7 @@ async function main(): Promise<void> {
     await page.locator('#sw-studio').screenshot({ path: join(OUT, 'sw-studio-final.png') });
 
     // Play: step 2 (effort) lights only the ASIL C/D modules' components.
-    await page.click('#sw-studio [data-swp="play"]');
+    await show('#sw-studio [data-swp="play"]'); await page.click('#sw-studio [data-swp="play"]');
     await page.waitForTimeout(1600);
     out.duringPlay = await page.evaluate(() => ({
       active: document.querySelector('#sw-studio .swp-step.is-active')?.textContent?.replace(/\s+/g, ' ').trim(),
@@ -74,50 +81,62 @@ async function main(): Promise<void> {
     out.afterPlay = await page.evaluate(() => document.querySelector('#sw-studio .swp-step.is-active')?.textContent?.replace(/\s+/g, ' ').trim());
 
     // Rate step by keyboard; then click a component (the ADAS domain controller).
-    await page.click('#sw-studio [data-swp-step="3"]');
+    await show('#sw-studio [data-swp-step="3"]'); await page.click('#sw-studio [data-swp-step="3"]');
     out.rateStep = await page.evaluate(() => document.querySelector('#sw-studio .swp-now')?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 400));
-    await page.click('#sw-studio [data-comp="adas_dc"]');
+    await show('#sw-studio [data-comp="adas_dc"]'); await page.click('#sw-studio [data-comp="adas_dc"]');
     await page.waitForTimeout(300);
     out.afterComponentClick = await page.evaluate(() => ({
       lit: Array.from(document.querySelectorAll('#sw-studio .swv-comp.swv-lit')).map(g => g.getAttribute('data-comp')),
     }));
-    await page.hover('#sw-studio [data-comp="bms"]');
+    await show('#sw-studio [data-comp="bms"]'); await page.hover('#sw-studio [data-comp="bms"]');
     out.bmsDetail = await page.evaluate(() => document.querySelector('#sw-studio .swv-detail')?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 300));
-    await page.click('#sw-studio [data-swv-mode="cost"]');
+    await show('#sw-studio [data-swv-mode="cost"]'); await page.click('#sw-studio [data-swv-mode="cost"]');
     await page.locator('#sw-studio').screenshot({ path: join(OUT, 'sw-studio-cost-colour.png') });
 
     // Hub: India, re-cost; the rate library lists each hub's build-up.
-    const total = () => page.evaluate(() => Array.from(document.querySelectorAll('#sw-panel .sw-summary-card')).map(e => e.textContent?.replace(/\s+/g, ' ').trim() ?? '').find(x => /Total Programme/i.test(x))?.slice(0, 60) ?? '');
+    const total = () => page.evaluate(() => [document.querySelector('#swk-rail [data-fig="total"]')?.textContent?.replace(/\s+/g, ' ').trim() ?? ''][0]?.slice(0, 60) ?? '');
     out.totalUK = await total();
-    await page.selectOption('#sw-region', 'IN');
+    await show('#sw-region'); await page.selectOption('#sw-region', 'IN');
     out.rateFieldIN = await page.inputValue('#sw-base-rate');
-    await page.click('#sw-calc-btn');
+    await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
     await page.waitForTimeout(900);
     out.totalIN = await total();
-    await page.selectOption('#sw-region', 'UK');
-    await page.click('#sw-calc-btn');
+    await show('#sw-region'); await page.selectOption('#sw-region', 'UK');
+    await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
     await page.waitForTimeout(900);
     await page.evaluate(() => { const d = document.querySelector('#sw-hub-rates')?.closest('details') as HTMLDetailsElement | null; if (d) d.open = true; });
     out.hubTableRows = await page.$$eval('#sw-hub-rates tbody tr', rs => rs.length);
+    await show('#sw-hub-rates');
     await page.locator('#sw-hub-rates').screenshot({ path: join(OUT, 'sw-hub-rates.png') });
 
     await page.addScriptTag({ content: AXE });
-    const axe = () => page.evaluate(async () => {
+    // axe skips hidden content, so scan every cockpit tab in turn.
+    const axeOne = () => page.evaluate(async () => {
       const r = await (window as unknown as { axe: { run: (c: unknown, o: unknown) => Promise<{ violations: Array<{ id: string; nodes: Array<{ target: string[] }> }> }> } })
         .axe.run(document.getElementById('sw-panel'), { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } });
       return r.violations.map(v => `${v.id} ×${v.nodes.length}: ${v.nodes.slice(0, 3).map(n => n.target.join(' ')).join(' | ')}`);
     });
+    const axe = async () => {
+      const found: string[] = [];
+      for (const t of ['setup', 'scope', 'overview', 'vehicle', 'risk', 'spend', 'modules', 'supplier', 'rates', 'report']) {
+        await page.click(`[data-swk-tab="${t}"]`);
+        await page.waitForTimeout(350);
+        for (const v of await axeOne()) found.push(`${t}: ${v}`);
+      }
+      return found;
+    };
     out.axeDark = await axe();
     await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
     await page.waitForTimeout(300);
+    await page.click('[data-swk-tab="vehicle"]'); await page.waitForTimeout(400);
     await page.locator('#sw-studio').screenshot({ path: join(OUT, 'sw-studio-light.png') });
     out.axeLight = await axe();
     await page.evaluate(() => document.documentElement.removeAttribute('data-theme'));
 
     // Guided ⇄ Advanced keep the same inputs (F3).
-    await page.fill('#sw-vol', '150000');
-    await page.click('.sw-mode-btn[data-mode="guided"]');
-    await page.click('.sw-mode-btn[data-mode="advanced"]');
+    await show('#sw-vol'); await page.fill('#sw-vol', '150000');
+    await show('.sw-mode-btn[data-mode="guided"]'); await page.click('.sw-mode-btn[data-mode="guided"]');
+    await show('.sw-mode-btn[data-mode="advanced"]'); await page.click('.sw-mode-btn[data-mode="advanced"]');
     out.volAfterModeSwitch = await page.inputValue('#sw-vol');
     out.pageErrors = errors;
   } finally {

@@ -1,0 +1,245 @@
+{
+  "researched": "2026-10-14",
+  "searchesUsed": 34,
+  "method": "WebSearch only. One WebFetch (aws.amazon.com) failed with DNS ENOTFOUND, so every figure below was read from a search-result extract of the cited page (seenIn 'search-snippet'). No figure is estimated by CostVision; where nothing was found the value is null and the note says what was tried. Derived ratios (e.g. per-vehicle = revenue / vehicles) were deliberately NOT computed.",
+  "items": [
+    {
+      "topic": "Voice assistant (Cerence) — average technology price per vehicle (PPU), trailing twelve months, Q4 FY25",
+      "value": 5.05, "unit": "USD per vehicle shipped (TTM average; includes embedded licence AND connected-services subscription)", "currency": "USD", "year": 2025,
+      "source": "Cerence Inc., Q4 FY25 earnings presentation",
+      "url": "https://investors.cerence.com/news-events/presentations/detail/35612/q4-fy25-earnings-presentation",
+      "seenIn": "search-snippet",
+      "note": "Prior year TTM $4.50. Q2 FY25 $4.87, Q3 FY25 $4.91 (same series). Model uses £15 / vehicle royalty PLUS £450k/yr cloud NLU for voice_assistant — the PPU already includes connected services."
+    },
+    {
+      "topic": "Voice assistant (Cerence) — PPU TTM, Q3 FY25",
+      "value": 4.91, "unit": "USD per vehicle (TTM)", "currency": "USD", "year": 2025,
+      "source": "Cerence Inc., Q3 FY25 earnings deck (SEC exhibit)",
+      "url": "https://investors.cerence.com/sec-filings/all-sec-filings/content/0001628280-25-038336/cerenceaiq3fy25earningsd.htm",
+      "seenIn": "search-snippet", "note": "Cross-check of the series."
+    },
+    {
+      "topic": "Android Automotive OS (AAOS) base OS licence",
+      "value": 0, "unit": "licence fee (open source, Apache licence)", "currency": "USD", "year": 2025,
+      "source": "Dhiraj Patra, 'Android Automotive OS & Google Automotive Services' (Medium, Sep 2025)",
+      "url": "https://dhirajpatra.medium.com/android-automotive-os-google-automotive-services-bf7601e7a5b1",
+      "seenIn": "search-snippet",
+      "note": "Blog, not Google. Google's own docs describe GAS as a separately licensed, optional collection of apps/services with terms from the Google point of contact (source.android.com/docs/automotive/start/what_automotive). The model's '$25 AAOS licence' therefore names the wrong thing."
+    },
+    {
+      "topic": "Google Automotive Services (GAS) per-vehicle licence",
+      "value": null, "unit": "USD per vehicle", "currency": "USD", "year": 2025,
+      "source": "not disclosed",
+      "url": "https://dhirajpatra.medium.com/android-automotive-os-google-automotive-services-bf7601e7a5b1",
+      "seenIn": "search-snippet",
+      "note": "Only figure found: '$10–20 per vehicle' described as unsourced 'industry estimates' in a blog — NOT usable as a source. Searched: GAS licence fee per vehicle; Google built-in revenue share GM/Volvo/Polestar (only a 2018 Radio Free Mobile speculation of ~30% data revenue share, radiofreemobile.com/renault-and-co-google-keys-to-the-kingdom/)."
+    },
+    {
+      "topic": "QNX per-unit royalty",
+      "value": null, "unit": "USD per ECU / vehicle", "currency": "USD", "year": 2026,
+      "source": "BlackBerry Ltd Form 10-K FY2026",
+      "url": "https://www.sec.gov/Archives/edgar/data/1070235/000107023526000039/bbry-20260228.htm",
+      "seenIn": "search-snippet",
+      "note": "No per-unit rate is disclosed. Disclosed: QNX automotive ECU software is licensed 'on a per-unit royalty basis'; royalty backlog ≈ $950M at end FY2026 (≈ $865M end FY2025); TechInsights: QNX in >235M vehicles. Searched three phrasings (royalty per vehicle, analyst estimate, ARPU)."
+    },
+    {
+      "topic": "QNX royalty backlog (context, not a unit price)",
+      "value": 950000000, "unit": "USD estimated future royalties (backlog)", "currency": "USD", "year": 2026,
+      "source": "BlackBerry Ltd Form 10-K FY2026",
+      "url": "https://www.sec.gov/Archives/edgar/data/1070235/000107023526000039/bbry-20260228.htm",
+      "seenIn": "search-snippet", "note": "Management estimate from projected volumes; 'may not be indicative of actual future revenue'."
+    },
+    {
+      "topic": "Navigation SD map data per vehicle per year (HERE / TomTom)",
+      "value": null, "unit": "GBP per vehicle per year", "currency": "GBP", "year": 2025,
+      "source": "not disclosed by HERE or TomTom",
+      "url": "https://corporate.tomtom.com/static-files/4e19e7d7-5a76-4ddd-8912-ff354b980e8d",
+      "seenIn": "search-snippet",
+      "note": "TomTom FY2025 automotive operational revenue €322M (FY24 €326M) — no per-car price. HERE: revenue only (Craft.co €941M 2023). Telenav–HERE data licence contract on Justia has prices redacted. The model's £11.50 / vehicle / yr on the fleet in service stays UNSOURCED."
+    },
+    {
+      "topic": "TomTom automotive operational revenue FY2025 (context)",
+      "value": 322000000, "unit": "EUR per year (segment revenue)", "currency": "EUR", "year": 2025,
+      "source": "TomTom Q4 2025 results press release",
+      "url": "https://www.vfb.be/Media/Default/pdf/tomtom-q4-2025-results-press-release.pdf",
+      "seenIn": "search-snippet", "note": "Down 1% from €326M in 2024; tied to car-line volumes (a per-car-built licence model, not per car in service)."
+    },
+    {
+      "topic": "HD map licence per car per year (AutoNavi, China)",
+      "value": 100, "unit": "RMB per car per year (HD map for ADAS / automated driving)", "currency": "CNY", "year": 2021,
+      "source": "KrASIA, 'Alibaba's AutoNavi commercializes HD map by charging automakers license fee'",
+      "url": "https://kr-asia.com/alibabas-autonavi-commercializes-hd-map-by-charging-automakers-license-fee",
+      "seenIn": "search-snippet",
+      "note": "HD map, China, described by AutoNavi as a breakeven price with ≥2%/yr price reductions planned. Not an SD navigation map price; year of article not confirmed in the snippet (circa 2021)."
+    },
+    {
+      "topic": "AUTOSAR BSW / Vector MICROSAR per-ECU royalty or project licence",
+      "value": null, "unit": "EUR per ECU or per project", "currency": "EUR", "year": 2025,
+      "source": "not published",
+      "url": "https://dev.to/arvind_b_n_luxoft/classic-autosar-basic-sw-and-runtime-environment-rte-20gb",
+      "seenIn": "search-snippet",
+      "note": "No list price found. Luxoft notes OEMs sometimes supply pre-integrated BSW to suppliers at no cost, otherwise the supplier acquires rights — i.e. the cost often sits in the Tier-1 ECU price."
+    },
+    {
+      "topic": "Vector CANoe tool licence per seat",
+      "value": null, "unit": "EUR per seat", "currency": "EUR", "year": 2025,
+      "source": "not published (G2 / fitgap: 'contact sales')",
+      "url": "https://www.g2.com/products/canoe/pricing",
+      "seenIn": "search-snippet",
+      "note": "Only anecdotes: EEVblog 'multiple k€'; Atomic Object commenter '> $15,000 with PCI/USB interface' (undated). Not usable as a price; confirms tools are bought per SEAT (+ modules), not per software module."
+    },
+    {
+      "topic": "Connected-vehicle cloud — AWS IoT FleetWise vehicle charge, tier 1",
+      "value": 0.60, "unit": "USD per active vehicle per month (first 10,000 vehicles, us-east-1)", "currency": "USD", "year": 2026,
+      "source": "AWS IoT FleetWise pricing page",
+      "url": "https://aws.amazon.com/iot-fleetwise/pricing/",
+      "seenIn": "search-snippet",
+      "note": "Messaging extra ($1.75 per million 5 KB messages, first 1bn); storage (S3 / Timestream) extra. A reseller page says FleetWise closed to new customers 30 Apr 2026 — unconfirmed on AWS. WebFetch of the page failed (DNS)."
+    },
+    {
+      "topic": "Connected-vehicle cloud — AWS IoT FleetWise vehicle charge, tier 2",
+      "value": 0.45, "unit": "USD per active vehicle per month (next 40,000 vehicles)", "currency": "USD", "year": 2026,
+      "source": "AWS IoT FleetWise pricing page",
+      "url": "https://aws.amazon.com/iot-fleetwise/pricing/",
+      "seenIn": "search-snippet", "note": "Covers the managed data-collection service only, not the OEM's full backend."
+    },
+    {
+      "topic": "Connected-vehicle cloud — AWS IoT Core messaging",
+      "value": 1.00, "unit": "USD per million messages (5 KB metering; volume tiers to $0.70)", "currency": "USD", "year": 2026,
+      "source": "AWS re:Post billing example / AWS News Blog (IoT Core pricing model)",
+      "url": "https://repost.aws/questions/QU3IHf4yhtTfqdjPkrR9dBzA/understanding-aws-billing-for-iot-core",
+      "seenIn": "search-snippet", "note": "Connectivity $0.08 per million connection-minutes (same sources). Unit prices only — a fleet figure needs the OEM's message rate."
+    },
+    {
+      "topic": "Connected-vehicle cloud total cost per vehicle per year (OEM disclosure)",
+      "value": null, "unit": "USD per vehicle per year", "currency": "USD", "year": 2026,
+      "source": "not found",
+      "url": null,
+      "seenIn": "search-snippet",
+      "note": "Searched: connected car cloud cost per vehicle per year (EN and DE), SBD Automotive telematics opex, OEM disclosures. Only vendor marketing (Sibros, Wirelesscar, Elektrobit) and 2011–2017 analyst value estimates — none is a cost. The model's ≈ £11.8 per connected vehicle-year (module £/yr ÷ 440k) stays UNSOURCED."
+    },
+    {
+      "topic": "OTA delivery cost per vehicle per update (vendor claim)",
+      "value": 133, "unit": "USD per vehicle for a full 2 GB image (vs $13 for a 0.2 GB delta)", "currency": "USD", "year": null,
+      "source": "HARMAN, OTA over-the-air solution page",
+      "url": "https://car.harman.com/solutions/ota/harman-ota-over-air-solution",
+      "seenIn": "search-snippet", "note": "Vendor marketing for its delta-update product; cellular + CDN cost of a full-image update. Use only as an upper reference."
+    },
+    {
+      "topic": "Cellular data plan per vehicle (retail, consumer price)",
+      "value": 15, "unit": "USD per vehicle per month (AT&T Connected Car, unlimited, with an eligible postpaid plan)", "currency": "USD", "year": 2026,
+      "source": "AT&T Connected Car plans page",
+      "url": "https://www.att.com/plans/connected-car/",
+      "seenIn": "search-snippet", "note": "Retail price paid by the driver, NOT the OEM's wholesale telematics data cost (not disclosed). Shows the model has no cellular-data line at all."
+    },
+    {
+      "topic": "UNECE R155 compliance cost (per vehicle model, legacy architecture)",
+      "value": 1000000, "unit": "USD per vehicle model ('can easily exceed', A-segment car)", "currency": "USD", "year": 2024,
+      "source": "S&P Global Mobility AutoTechInsight, 'Navigating compliance costs: OEMs' dilemma in making legacy vehicles compliant with cybersecurity'",
+      "url": "https://autotechinsight.spglobal.com/news/5276625/navigating-compliance-costs-oems-dilemma-in-making-legacy-vehicles-compliant-with-cybersecurity-",
+      "seenIn": "search-snippet",
+      "note": "A lower bound for one model's implementation, not a per-unit cost. Same body of work flags in-house VSOC operation as a hidden cost. CSMS must be re-assessed at least every 3 years (TÜV SÜD) — an organisation-level, recurring cost. No VCA fee schedule for R155 was found."
+    },
+    {
+      "topic": "Vehicle Security Operations Centre (VSOC) cost per vehicle per year",
+      "value": null, "unit": "USD per vehicle per year", "currency": "USD", "year": 2026,
+      "source": "not found",
+      "url": "https://upstream.auto/resources/webinar-real-world-experiences-in-building-and-operating-a-vsoc/",
+      "seenIn": "search-snippet",
+      "note": "Upstream / Sibros / Kaspersky describe VSOC build-v-buy but give no price. NHTSA V2V SCMS $1–6 (avg $3.14) per vehicle is certificate management, NOT a VSOC (itskrs.its.dot.gov/2014-sc00323) — do not use."
+    },
+    {
+      "topic": "Engineering-services supplier margin — KPIT Technologies FY25 EBITDA margin",
+      "value": 21.0, "unit": "% of revenue (EBITDA)", "currency": "n/a", "year": 2025,
+      "source": "The Machine Maker, 'KPIT reports FY25 results, meets higher EBITDA target of 21%'",
+      "url": "https://themachinemaker.com/news/kpit-reports-fy25-results-meets-higher-ebitda-target-of-21/",
+      "seenIn": "search-snippet", "note": "FY25 revenue USD 691M; Q4 FY25 EBITDA 21.1%. Press coverage, not the company filing."
+    },
+    {
+      "topic": "Engineering-services supplier margin — Tata Elxsi FY25 PBT margin",
+      "value": 26.3, "unit": "% of revenue (profit before tax, full year)", "currency": "n/a", "year": 2025,
+      "source": "Tata Elxsi press release, FY'25 results",
+      "url": "https://www.tataelxsi.com/news-and-events/tata-elxsi-operating-revenue-at-rs-3-729-crores-for-fy-25-with-full-year-pbt-at-26-3",
+      "seenIn": "search-snippet", "note": "Revenue ₹3,729 Cr; Transportation ₹1,961.9 Cr (>50%). Q4 FY25 EBITDA margin 22.9% (NSE press release). Full-year EBITDA margin not found."
+    },
+    {
+      "topic": "Engineering-services supplier margin — L&T Technology Services FY25 EBIT margin",
+      "value": 14.9, "unit": "% of revenue (EBIT)", "currency": "n/a", "year": 2025,
+      "source": "LTTS Q4FY25 press release / HDFC Securities update (Jun 2025)",
+      "url": "https://www.hdfcsec.com/hsl.docs/L&T%20Tech%20-%20Update%20-%20Jun25%20-%20HSIE-202506181927496587142.pdf",
+      "seenIn": "search-snippet", "note": "Revenue USD 1,259M. Full-year v Q4 basis not explicit in the snippet (Q4 FY25 was 13.2% per the earnings call). Mobility-segment margin not disclosed."
+    },
+    {
+      "topic": "Engineering-services supplier margin — ALTEN 2025 operating margin on activity",
+      "value": 8.5, "unit": "% of revenue (operating profit on activity)", "currency": "n/a", "year": 2025,
+      "source": "ALTEN Group, 2025 annual results (24 Feb 2026)",
+      "url": "https://www.alten.com/2025-annual-results/",
+      "seenIn": "search-snippet", "note": "€346.5M on revenue €4,099.0M; 9.1% in 2024. European ER&D benchmark."
+    },
+    {
+      "topic": "Engineering-services supplier result — Bertrandt FY2024/25 EBIT",
+      "value": -35519000, "unit": "EUR EBIT (reported); adjusted EBIT ≈ €-2M; total revenue €977.936M", "currency": "EUR", "year": 2025,
+      "source": "Bertrandt AG press release, fiscal year 2024/2025 (18 Dec 2025)",
+      "url": "https://www.bertrandt.com/en/press-releases/fiscal-year-2024-2025",
+      "seenIn": "search-snippet", "note": "German engineering-services margins were around zero in 2024/25 — a sell-rate mark-up must come from the chosen supplier group, not one number."
+    },
+    {
+      "topic": "Supplier sell-rate proxy — UK Embedded Software Engineer contract day rate (median)",
+      "value": 600, "unit": "GBP per day (6 months to 15 Jan 2026; 10th–90th pct £494–£682; ex-London £563)", "currency": "GBP", "year": 2026,
+      "source": "IT Jobs Watch — Embedded Software Engineer contract job trends (UK)",
+      "url": "https://www.itjobswatch.co.uk/contracts/uk/embedded%20software%20engineer.do",
+      "seenIn": "search-snippet", "note": "Only 6 rates quoted — thin sample. 'Automotive Embedded Software Engineer' page: not enough data. Embedded Engineer UK median £550 / day (13 rates)."
+    },
+    {
+      "topic": "Supplier sell-rate proxy — UK public-sector framework rate card, Engineer grade",
+      "value": 110, "unit": "GBP per hour (Senior Consultant £165, Principal £200)", "currency": "GBP", "year": 2024,
+      "source": "G-Cloud 14 supplier pricing document (Digital Marketplace)",
+      "url": "https://assets.applytosupply.digitalmarketplace.service.gov.uk/g-cloud-14/documents/581033/244666892974296-pricing-document-2024-04-12-1437.pdf",
+      "seenIn": "search-snippet", "note": "One supplier's IT rate card, not automotive. Upper reference only."
+    },
+    {
+      "topic": "India offshore software engineering billing rate",
+      "value": null, "unit": "USD per hour", "currency": "USD", "year": 2026,
+      "source": "not found from a non-vendor source",
+      "url": "https://kanerika.com/blogs/offshore-software-development-rates/",
+      "seenIn": "search-snippet",
+      "note": "Only vendor blogs ($20–50/h generic India). No automotive-embedded benchmark (NASSCOM / analyst rate cards not reachable)."
+    },
+    {
+      "topic": "Fully loaded employment cost multiplier (before facilities overhead)",
+      "value": "1.25–1.4", "unit": "× base salary (salary + taxes + benefits)", "currency": "n/a", "year": null,
+      "source": "Joe Hadzima, 'How Much Does An Employee Cost?', MIT Nuts & Bolts (Boston Business Journal column)",
+      "url": "https://nutsandbolts.mit.edu/BBJ/EmployeeCost.php",
+      "seenIn": "search-snippet",
+      "note": "US basis. NN/g: fully loaded cost 'at least twice' salary once overhead is counted (nngroup.com/articles/loaded-cost-of-employee-time/). CostVision UK today: 1.139 (statutory) × 1.15 = 1.31× salary INCLUDING overhead."
+    },
+    {
+      "topic": "Software maintenance per year as % of initial development cost (rule of thumb)",
+      "value": "15–25", "unit": "% of initial development cost per year", "currency": "n/a", "year": 2026,
+      "source": "Edana, 'Estimating software maintenance costs: the forgotten key to TCO' (Jan 2026)",
+      "url": "https://edana.ch/en/2026/01/03/estimating-software-maintenance-costs-the-forgotten-key-to-total-cost-of-ownership/",
+      "seenIn": "search-snippet", "note": "Consultancy rule of thumb, not a primary study. Others cite 15–20% as the 'long-standing rule of thumb'."
+    },
+    {
+      "topic": "Software maintenance spend, year 1–3, % of original build (benchmark, 24 DACH SaaS products)",
+      "value": "24 / 21 / 26", "unit": "% of original build cost per year (median, years 1/2/3)", "currency": "n/a", "year": 2026,
+      "source": "Wavect, 'Software maintenance cost benchmark — DACH SaaS'",
+      "url": "https://wavect.io/blog/software-maintenance-cost-benchmark-dach-saas/",
+      "seenIn": "search-snippet", "note": "Directional, SaaS not embedded; 35–60% for regulated, integration-heavy products; 10–16% for quiet internal apps."
+    },
+    {
+      "topic": "Maintenance share of application total ownership cost (ISBSG article)",
+      "value": "65–85", "unit": "% of total ownership cost", "currency": "n/a", "year": 2022,
+      "source": "ISBSG, 'Lessons Learned from the ISBSG Maintenance & Support Dataset'",
+      "url": "https://www.isbsg.org/2022/10/04/isbsg-maintenance-and-support-data/",
+      "seenIn": "search-snippet", "note": "Stated as 'generally believed', not an ISBSG measurement. No hours-per-FP-per-year figure found (needs ISBSG M&S repository access)."
+    },
+    {
+      "topic": "Bought-in ADAS camera system price (make-v-buy reference) — Mobileye average system price Q1 2025",
+      "value": 49.0, "unit": "USD per system (EyeQ SoC + software)", "currency": "USD", "year": 2025,
+      "source": "Mobileye Q1 2025 results (company release)",
+      "url": "https://ir.mobileye.com/news-releases/news-release-details/mobileye-releases-fourth-quarter-and-full-year-2025-results-and",
+      "seenIn": "search-snippet", "note": "Q2 $49.7, Q3 $51.7 (fintool KPI table), Q4 $50.8 (AlphaStreet) — secondary. Full-year ASP not read. The model's camera_perception has no per-unit buy option."
+    }
+  ]
+}

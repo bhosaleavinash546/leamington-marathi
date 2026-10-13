@@ -16,7 +16,7 @@
 
 import type {
   ASILLevel, SWComplexity, SWReuse, SWRegion, DevSource,
-  SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain, SWCal,
+  SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain, SWCal, SWCategory,
 } from '../../engine/sw-should-cost.js';
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion,
@@ -25,6 +25,11 @@ import {
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { hubOptionsHTML, hubRatesTableHTML, hubLabel, HUB_RATES_CSS } from './sw-hub-rates.js';
 import { mountSWStudio, skeletonStateFor } from './sw-costing-pipeline.js';
+import {
+  headHTML, railHTML, tabsHTML, wireTabs, updateRail, railError, contextLine, overviewHTML, riskHTML, spendHTML,
+  supplierFormHTML, readQuote, supplierResultHTML, wireCharts, COCKPIT_CSS, type CockpitTab,
+} from './sw-cockpit-ui.js';
+import { swRateCheck } from '../../engine/sw-cockpit.js';
 import { componentLoad } from './sw-vehicle-skeleton.js';
 import { vehicleComponent } from '../../engine/sw-vehicle-map.js';
 import { SW_HUB_RATES } from '../../engine/sw-country-rates.js';
@@ -201,7 +206,7 @@ function asilColor(asil: ASILLevel): string {
 
 function asilBadge(asil: ASILLevel): string {
   const c = asilColor(asil);
-  return `<span style="background:${c}22;color:${c};border:1px solid ${c}55;border-radius:4px;padding:1px 6px;font-size:0.7rem;font-weight:700;font-family:monospace">${esc(asil)}</span>`;
+  return `<span style="background:${c}22;color:${c};border:1px solid ${c}55;border-radius:4px;padding:1px 6px;font-size:0.7rem;font-weight:700">${esc(asil)}</span>`;
 }
 
 // ─── Category metadata ────────────────────────────────────────────────────────
@@ -374,7 +379,10 @@ const DOMAIN_INFO: Record<SWCat, { plain: string; typicalAsil: string }> = {
   G: { plain: 'Over-the-air (OTA) updates, cloud backend, fleet analytics', typicalAsil: 'QM' },
 };
 
-let _swMode: 'guided' | 'advanced' = 'guided';
+// Full setup by default: the cockpit recalculates live, so the long walkthrough is optional (cockpit review, Oct 2026).
+let _swMode: 'guided' | 'advanced' = 'advanced';
+let _swTab: CockpitTab = 'setup';
+let _swSelectTab: ((t: CockpitTab) => void) | null = null;
 let _wizStep = 1;
 let _wizDomains: Record<SWCat, boolean> = { A: true, B: true, C: true, D: true, E: true, F: true, G: true };
 let _wizCfg: Record<SWCat, GuidedDomainCfg> =
@@ -616,7 +624,7 @@ function goToWizStep(n: number): void {
   if (_wizStep === 4) renderWizCost();
   if (_wizStep === 5) renderWizSensitivity();
   if (_wizStep === 6) renderWizReport();
-  body?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  body?.scrollIntoView({ block: 'start' });
 }
 
 function wireGuided(): void {
@@ -676,6 +684,30 @@ function setSWMode(mode: 'guided' | 'advanced'): void {
   if (a) a.style.display = mode === 'advanced' ? '' : 'none';
   document.querySelectorAll<HTMLButtonElement>('.sw-mode-btn').forEach(b =>
     b.classList.toggle('sw-mode-active', b.dataset.mode === mode));
+}
+
+/** Scope toolbar: find modules, show only those in scope, and set ASIL / complexity / reuse on every module shown. */
+function scopeBarHTML(): string {
+  const opt = (vals: string[], label: string, id: string) => `<label class="sr-only" for="${id}">${label}</label><select id="${id}" data-no-live><option value="">${label}…</option>${vals.map(v => `<option value="${v}">${v}</option>`).join('')}</select>`;
+  return `<div class="swk-scopebar" role="search">
+    <label class="sr-only" for="swk-scope-q">Find a module</label>
+    <input id="swk-scope-q" type="search" placeholder="Find a module — e.g. radar, BMS, OTA" data-no-live autocomplete="off">
+    <label style="display:flex;gap:6px;align-items:center;font-size:.76rem;color:var(--sw-text-body)"><input id="swk-scope-on" type="checkbox" data-no-live> In scope only</label>
+    ${opt(['QM', 'A', 'B', 'C', 'D'], 'ASIL', 'swk-bulk-asil')}${opt(['Low', 'Medium', 'High', 'Very High'], 'Complexity', 'swk-bulk-comp')}${opt(['Fresh', 'Light', 'Medium', 'Heavy', 'Platform'], 'Reuse', 'swk-bulk-reuse')}
+    <button type="button" class="swk-btn" id="swk-bulk-apply">Apply to modules shown</button>
+    <span class="swk-count" id="swk-scope-count" aria-live="polite"></span>
+  </div>`;
+}
+
+function rateCheckHTML(r: SWProgramResult): string {
+  const c = swRateCheck(r);
+  const hub = activeSWBook().lib.hubRates[r.inputs.region];
+  return `<section class="swk-card"><h3 class="swk-h">The engineering rate in this costing</h3>
+    <p class="swk-sub">${esc(hubLabel(r.inputs.region))}: hub rate ${swMoney(hub ? (r.inputs.teamSeniorFraction * hub.senior.value + (1 - r.inputs.teamSeniorFraction) * hub.mid.value) : 0, 0)} / PM
+      × development source × overhead ${r.inputs.overheadMultiplier} = <strong>${swMoney(c.loadedPerPM, 0)} per person-month</strong>
+      (${swMoney(c.perHour, 0)} an hour · ${swMoney(c.perDay, 0)} a day of 8 h).</p>
+    ${c.lines.length ? `<ul class="swk-callouts">${c.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
+  </section>`;
 }
 
 function renderSWPanelHTML(): string {
@@ -755,32 +787,15 @@ function renderSWPanelHTML(): string {
     `<option value="${v}" ${inputs.devSource === v ? 'selected' : ''}>${esc(l)}</option>`).join('');
 
   return `
-<div id="sw-panel" style="padding:12px 0">
-
-  <!-- ── Header ───────────────────────────────────────────────── -->
-  <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#1e4a8a 100%);border-radius:12px;padding:24px 28px;margin-bottom:20px;position:relative;overflow:hidden">
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(59,130,246,0.18) 0%,transparent 70%);pointer-events:none"></div>
-    <div style="position:relative">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-        <span style="font-size:2rem"></span>
-        <div>
-          <h2 style="margin:0;font-size:1.35rem;font-weight:800;color:#fff;letter-spacing:-0.3px">Automotive Software Should-Cost</h2>
-          <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px">Premium Luxury SUV — Full SW Stack · ${SW_MODULES.length} Modules · 7 Categories · ISO 26262 / ISO 21434</div>
-        </div>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
-        <span style="background:rgba(59,130,246,0.25);color:#93c5fd;border:1px solid rgba(59,130,246,0.4);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">ASIL QM→D</span>
-        <span style="background:rgba(34,197,94,0.2);color:#86efac;border:1px solid rgba(34,197,94,0.35);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">10 Cost Dimensions</span>
-        <span style="background:rgba(168,85,247,0.2);color:#d8b4fe;border:1px solid rgba(168,85,247,0.35);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">Monte Carlo P10/P50/P90</span>
-        <span style="background:rgba(245,158,11,0.2);color:#fcd34d;border:1px solid rgba(245,158,11,0.35);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">Phase Timeline</span>
-      </div>
-    </div>
-  </div>
-
+<div id="sw-panel" class="sw-cockpit">
+  ${headHTML()}
+  <div id="swk-rail" class="swk-rail" aria-label="Live programme figures">${railHTML(_swResult, n => swMoney(n, 0), fmtM)}</div>
+  ${tabsHTML(_swTab)}
+  <section class="swk-panel" id="swk-p-setup" role="tabpanel" aria-labelledby="swk-t-setup"${_swTab === 'setup' ? '' : ' hidden'}>
   <!-- ── Mode toggle: Guided wizard (default) vs Advanced panel ── -->
   <div class="sw-mode-toggle">
-    <button class="sw-mode-btn ${_swMode === 'guided' ? 'sw-mode-active' : ''}" data-mode="guided">Guided</button>
-    <button class="sw-mode-btn ${_swMode === 'advanced' ? 'sw-mode-active' : ''}" data-mode="advanced">⚙ Advanced</button>
+    <button class="sw-mode-btn ${_swMode === 'advanced' ? 'sw-mode-active' : ''}" data-mode="advanced">Full setup</button>
+    <button class="sw-mode-btn ${_swMode === 'guided' ? 'sw-mode-active' : ''}" data-mode="guided">Guided walkthrough</button>
   </div>
 
   <!-- ── Guided wizard body ───────────────────────────────────── -->
@@ -864,12 +879,6 @@ function renderSWPanelHTML(): string {
     </div>
   </div>
 
-  <!-- ── Rate Library & Provenance (Rec #1) ────────────────────── -->
-  ${renderRateLibraryHTML()}
-
-  <!-- ── Model Validation (Rec #2) ─────────────────────────────── -->
-  <div id="sw-validation-wrap">${renderValidationHTML()}</div>
-  ${renderActualsHTML()}
 
   <!-- ── Quick-set presets ─────────────────────────────────────── -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
@@ -901,12 +910,27 @@ function renderSWPanelHTML(): string {
     return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 16px;padding:10px 14px;border-radius:8px;border:1px solid rgba(29,78,216,0.30);background:linear-gradient(135deg,rgba(37,99,235,0.10),rgba(37,99,235,0.04))">
       <span style="font-size:1.05rem"></span>
       <span style="flex:1;min-width:180px;font-size:0.78rem;font-weight:600;color:var(--sw-text-primary)">Detailed board-level breakdown for ${esc(active.label)} — a reference example from before the October 2026 model fixes; its figures differ from the live calculation.</span>
-      <button type="button" id="sw-demo-report-btn" data-report-url="${esc(active.reportUrl)}" style="display:flex;align-items:center;gap:6px;font-size:0.76rem;font-weight:700;padding:7px 15px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;border-radius:7px;cursor:pointer;color:#fff;box-shadow:0 3px 10px rgba(37,99,235,0.30);transition:transform 0.15s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+      <button type="button" id="sw-demo-report-btn" data-report-url="${esc(active.reportUrl)}" class="swk-btn swk-btn-primary" style="display:flex;align-items:center;gap:6px">
         View reference example →
       </button>
     </div>`;
   })()}
 
+
+
+  <!-- ── Calculate button ─────────────────────────────────────── -->
+  <div style="margin:20px 0;text-align:center">
+    <button id="sw-calc-btn" class="swk-btn swk-btn-primary">
+      Recalculate now
+    </button>
+    <div style="font-size:0.72rem;color:var(--sw-text-secondary);margin-top:6px">The figures above update as you type.</div>
+  </div>
+
+  </div><!-- /sw-advanced-body -->
+  </section>
+
+  <section class="swk-panel" id="swk-p-scope" role="tabpanel" aria-labelledby="swk-t-scope"${_swTab === 'scope' ? '' : ' hidden'}>
+    ${scopeBarHTML()}
   <!-- ── Module Configuration ─────────────────────────────────── -->
   <div style="font-weight:700;font-size:0.88rem;color:var(--sw-text-primary);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
     <span style="display:flex;align-items:center;gap:6px"><span></span> Module Configuration (${SW_MODULES.length} modules)</span>
@@ -917,47 +941,50 @@ function renderSWPanelHTML(): string {
   </div>
 
   <div id="sw-modules-container">${moduleRowsHTML}</div>
+  </section>
 
-  <!-- ── Calculate button ─────────────────────────────────────── -->
-  <div style="margin:20px 0;text-align:center">
-    <button id="sw-calc-btn" style="background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff;border:none;border-radius:10px;padding:14px 48px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:0.3px;box-shadow:0 4px 14px rgba(37,99,235,0.35);transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s">
-      Calculate Software Should-Cost
-    </button>
-  </div>
-
-  </div><!-- /sw-advanced-body -->
-
-  <!-- ── Results (shared by both modes; hidden until calculated) ─ -->
-  <div id="sw-results" style="display:none">
-
-    <!-- Summary cards -->
-    <div id="sw-summary-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px"></div>
+  <div id="sw-results">
+  <section class="swk-panel" id="swk-p-overview" role="tabpanel" aria-labelledby="swk-t-overview"${_swTab === 'overview' ? '' : ' hidden'}>
+    <div id="swk-overview" class="swk-stack"></div>
+    <div class="sw-results-section" id="sw-insights"></div>
+  </section>
+  <section class="swk-panel" id="swk-p-vehicle" role="tabpanel" aria-labelledby="swk-t-vehicle"${_swTab === 'vehicle' ? '' : ' hidden'}>
     <div id="sw-studio"></div>
-
-    <!-- Monte Carlo distribution (Rec 2) -->
+  </section>
+  <section class="swk-panel" id="swk-p-risk" role="tabpanel" aria-labelledby="swk-t-risk"${_swTab === 'risk' ? '' : ' hidden'}>
+    <div id="swk-risk"></div>
     <div class="sw-results-section" id="sw-monte-carlo"></div>
-
-    <!-- Programme phases (Rec 3) -->
-    <div class="sw-results-section" id="sw-phases"></div>
-
-    <!-- Category breakdown -->
-    <div class="sw-results-section" id="sw-cat-breakdown"></div>
-
-    <!-- Cost composition (inc. Calibration — Rec 7) -->
-    <div class="sw-results-section" id="sw-cost-composition"></div>
-
-    <!-- Module detail table (Rec 8: ASIL validation) -->
-    <div class="sw-results-section" id="sw-module-table"></div>
-
-    <!-- Sensitivity analysis -->
     <div class="sw-results-section" id="sw-sensitivity"></div>
-
-    <!-- Benchmark comparison -->
-    <div class="sw-results-section" id="sw-benchmarks"></div>
-
-    <!-- OEM / Tier1 / Startup decomposition (Rec 4) -->
+  </section>
+  <section class="swk-panel" id="swk-p-spend" role="tabpanel" aria-labelledby="swk-t-spend"${_swTab === 'spend' ? '' : ' hidden'}>
+    <div id="swk-spend" class="swk-stack"></div>
+    <div class="sw-results-section" id="sw-phases"></div>
+  </section>
+  <section class="swk-panel" id="swk-p-modules" role="tabpanel" aria-labelledby="swk-t-modules"${_swTab === 'modules' ? '' : ' hidden'}>
+    <div class="sw-results-section" id="sw-cat-breakdown"></div>
+    <div class="sw-results-section" id="sw-cost-composition"></div>
+    <div class="sw-results-section" id="sw-module-table"></div>
     <div class="sw-results-section" id="sw-source-decomp"></div>
-
+  </section>
+  <section class="swk-panel" id="swk-p-supplier" role="tabpanel" aria-labelledby="swk-t-supplier"${_swTab === 'supplier' ? '' : ' hidden'}>
+    ${supplierFormHTML(Object.entries(CAT_META).map(([c, m]) => [c as SWCategory, m.label]))}
+  </section>
+  <section class="swk-panel" id="swk-p-rates" role="tabpanel" aria-labelledby="swk-t-rates"${_swTab === 'rates' ? '' : ' hidden'}>
+    <div id="swk-ratecheck"></div>
+    ${renderRateLibraryHTML()}
+    <div id="sw-validation-wrap">${renderValidationHTML()}</div>
+    ${renderActualsHTML()}
+  </section>
+  <section class="swk-panel" id="swk-p-report" role="tabpanel" aria-labelledby="swk-t-report"${_swTab === 'report' ? '' : ' hidden'}>
+    <!-- Export -->
+    <div style="text-align:center;margin:20px 0;display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
+      <button id="sw-excel-btn" class="swk-btn">
+        Export Excel (6 sheets)
+      </button>
+      <button id="sw-pdf-btn" class="swk-btn swk-btn-primary">
+        Export PDF Report
+      </button>
+    </div>
     <!-- AI Analysis (Rec 5) -->
     <div class="sw-results-section" id="sw-ai-analysis">
       <div class="sw-section-title"><span></span> AI Analysis</div>
@@ -970,24 +997,16 @@ function renderSWPanelHTML(): string {
       <div id="sw-ai-content" style="display:none"></div>
     </div>
 
-    <!-- Engineering Insights -->
-    <div class="sw-results-section" id="sw-insights"></div>
-
-    <!-- Export -->
-    <div style="text-align:center;margin:20px 0;display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
-      <button id="sw-excel-btn" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:11px 28px;font-size:0.88rem;font-weight:600;cursor:pointer">
-        Export Excel (6 sheets)
-      </button>
-      <button id="sw-pdf-btn" style="background:#0f172a;color:#fff;border:none;border-radius:8px;padding:11px 28px;font-size:0.88rem;font-weight:600;cursor:pointer">
-        Export PDF Report
-      </button>
-    </div>
-  </div>
+    <div class="sw-results-section" id="sw-benchmarks"></div>
+  </section>
+  </div><!-- /sw-results -->
 
 </div>
 
 <style>
 ${HUB_RATES_CSS}
+${COCKPIT_CSS}
+body.cv-sw #costing-view > .results-panel, body.cv-sw .cv-sticky-actions { display: none !important; }
 .sw-ratelib-h{font-size:.8rem;font-weight:700;color:var(--sw-text-primary);margin:4px 0 8px}
 /* Rec 9: Dark mode CSS variables */
 :root {
@@ -1185,7 +1204,7 @@ html:not([data-theme="light"]) .sw-tag-sec   { color: var(--red, #f87171); }
 .sw-data-table td { padding: 8px 10px; border-bottom: 1px solid var(--sw-border-light); color: var(--sw-text-body); }
 .sw-data-table tr:last-child td { border-bottom: none; }
 .sw-data-table tbody tr:hover { background: var(--sw-surface-alt); }
-.sw-num { text-align: right; font-variant-numeric: tabular-nums; font-family: monospace; }
+.sw-num { text-align: right; font-variant-numeric: tabular-nums; }
 .sw-highlight { background: var(--sw-accent-bg) !important; font-weight: 700; color: var(--sw-accent) !important; }
 
 .sw-summary-card {
@@ -1277,7 +1296,7 @@ html:not([data-theme="light"]) .sw-tag-sec   { color: var(--red, #f87171); }
 
 /* Tactile lift on summary cards */
 .sw-summary-card { box-shadow: var(--sw-shadow-sm); transition: box-shadow 0.18s ease, transform 0.18s ease; }
-.sw-summary-card:hover { box-shadow: var(--sw-shadow); transform: translateY(-1px); }
+.sw-summary-card:hover { box-shadow: var(--sw-shadow); }
 
 /* ── Responsive pass (Rec #5) ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
@@ -1317,8 +1336,8 @@ html:not([data-theme="light"]) .sw-tag-sec   { color: var(--red, #f87171); }
 .sw-wiz-help { font-size: 0.82rem; color: var(--sw-text-secondary); margin-bottom: 16px; line-height: 1.55; }
 .sw-wiz-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--sw-border-light); }
 .sw-wiz-stepcount { font-size: 0.74rem; color: var(--sw-text-muted); }
-.sw-wiz-btn-primary { background: linear-gradient(135deg,#1d4ed8,#2563eb); color: #fff; border: none; border-radius: 8px; padding: 9px 26px; font-size: 0.85rem; font-weight: 700; cursor: pointer; box-shadow: var(--sw-shadow-sm); transition: transform 0.15s, box-shadow 0.15s; }
-.sw-wiz-btn-primary:hover { transform: translateY(-1px); box-shadow: var(--sw-shadow); }
+.sw-wiz-btn-primary { background: var(--sw-accent); color: var(--sw-on-accent); border: 1px solid var(--sw-accent); border-radius: 8px; padding: 9px 26px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+.sw-wiz-btn-primary:hover { filter: brightness(1.08); }
 .sw-wiz-btn-ghost { background: transparent; color: var(--sw-text-body); border: 1px solid var(--sw-border); border-radius: 8px; padding: 9px 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
 .sw-wiz-btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }
 
@@ -1633,8 +1652,9 @@ function applyPreset(preset: string): void {
 
 // ─── Render results ───────────────────────────────────────────────────────────
 
-function renderResults(result: SWProgramResult): void {
+function renderResults(result: SWProgramResult, opts: { live?: boolean } = {}): void {
   const s = result.summary;
+  renderCockpit(result, opts);
 
   // Summary cards. Per-vehicle split follows the engine's rule exactly: NRE over the recovery window's vehicles,
   // lifecycle over the life's (it divided both by life, so the two parts did not add to the headline).
@@ -1693,9 +1713,9 @@ function renderResults(result: SWProgramResult): void {
       <div class="sw-section-title"><span></span> Monte Carlo Cost Distribution (${mc.iterations.toLocaleString()} iterations)</div>
       <div class="sw-grid sw-grid-4" style="margin-bottom:16px">
         ${[
-          { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `${swMoney(mc.p10PerVehicle,0)}/veh`, color: 'var(--sw-good)' },
-          { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `${swMoney(mc.p50PerVehicle,0)}/veh`, color: 'var(--sw-accent)' },
-          { label: 'P90 (Pessimistic)', val: fmtM(mc.p90),  pv: `${swMoney(mc.p90PerVehicle,0)}/veh`, color: 'var(--sw-bad)' },
+          { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `${swMoney(mc.p10PerVehicle,0)}/veh`, color: 'var(--sw-text-primary)' },
+          { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `${swMoney(mc.p50PerVehicle,0)}/veh`, color: 'var(--sw-text-primary)' },
+          { label: 'P90 (Pessimistic)', val: fmtM(mc.p90),  pv: `${swMoney(mc.p90PerVehicle,0)}/veh`, color: 'var(--sw-text-primary)' },
           { label: 'Mean',              val: fmtM(mc.mean), pv: `P90/P10 spread: +${fmt(pct90vs10,0)}%`, color: 'var(--sw-text-primary)' },
         ].map(c => `
         <div style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:8px;padding:12px 14px">
@@ -1890,11 +1910,11 @@ function renderResults(result: SWProgramResult): void {
     const isThis = b.vehicle === 'This programme';
     const thisM  = s.grandTotal / 1_000_000;
     const diff   = (!isThis && b.totalM > 0) ? ((thisM - b.totalM) / b.totalM * 100) : 0;
-    const diffFmt = isThis ? '⭐ Base' : `${diff >= 0 ? '+' : ''}${fmt(diff, 0)}%`;
-    const diffColor = isThis ? '#2563eb' : diff > 20 ? '#ef4444' : diff < -20 ? '#059669' : '#d97706';
+    const diffFmt = isThis ? 'Base' : `${diff >= 0 ? '+' : ''}${fmt(diff, 0)}%`;
+    const diffColor = isThis ? 'var(--sw-text-primary)' : diff > 20 ? 'var(--sw-bad)' : diff < -20 ? 'var(--sw-good)' : 'var(--sw-text-body)';
     const cite = isThis ? '' : ` <span style="cursor:help;color:var(--sw-text-muted);font-size:0.7rem" title="Source: ${esc(b.source)}">ⓘ</span>`;
     return `<tr ${isThis ? 'style="background:var(--sw-accent-bg);font-weight:700"' : ''}>
-      <td>${isThis ? '⭐ ' : ''}${esc(b.vehicle)}${cite}</td>
+      <td>${esc(b.vehicle)}${cite}</td>
       <td class="sw-num">${b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal)}</td>
       <td class="sw-num">${swMoney(b.perVehicle > 0 ? b.perVehicle : s.perVehicle, 0)}</td>
       <td class="sw-num" style="color:${diffColor};font-weight:600">${diffFmt}</td>
@@ -2044,11 +2064,55 @@ function renderResults(result: SWProgramResult): void {
       </div>`;
   }
 
-  // Show results section
+  // Results live in their tabs now; nothing scrolls the page (cockpit review: smooth scroll-jumps removed).
   const resultsEl = document.getElementById('sw-results');
-  if (resultsEl) {
-    resultsEl.style.display = '';
-    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (resultsEl) resultsEl.style.display = '';
+}
+
+/** The cockpit views: rail, context line, overview / risk / spend charts, supplier check and the rate check. */
+function renderCockpit(result: SWProgramResult, opts: { live?: boolean } = {}): void {
+  const money = (n: number) => swMoney(n, 0);
+  const rail = document.getElementById('swk-rail');
+  if (rail) updateRail(rail, result, money, fmtM, { quiet: !opts.live });
+  const ctx = document.getElementById('swk-context');
+  if (ctx) ctx.textContent = contextLine(result, hubLabel(result.inputs.region));
+  const put = (id: string, html: string) => { const el = document.getElementById(id); if (el) { el.innerHTML = html; wireCharts(el); } };
+  put('swk-overview', overviewHTML(result, money, fmtM));
+  put('swk-risk', riskHTML(result, money, fmtM));
+  put('swk-spend', spendHTML(result, money, fmtM));
+  const rc = document.getElementById('swk-ratecheck');
+  if (rc) rc.innerHTML = rateCheckHTML(result);
+  refreshQuote();
+}
+
+function refreshQuote(): void {
+  const root = document.getElementById('swk-p-supplier');
+  const out = document.getElementById('swk-quote-out');
+  if (!root || !out || !_swResult) return;
+  out.innerHTML = supplierResultHTML(_swResult, readQuote(root), n => swMoney(n, 0), fmtM);
+}
+
+// ── Live recalculation (cockpit review: the engine runs in milliseconds — the Calculate button is no longer needed) ──
+let _liveTimer: ReturnType<typeof setTimeout> | null = null;
+function scheduleLive(): void {
+  if (_liveTimer) clearTimeout(_liveTimer);
+  document.getElementById('swk-live')?.classList.add('is-busy');
+  _liveTimer = setTimeout(() => { _liveTimer = null; runLive(true); }, 250);
+}
+
+function runLive(live: boolean): void {
+  const rail = document.getElementById('swk-rail');
+  document.getElementById('swk-live')?.classList.remove('is-busy');
+  try {
+    if (_swMode === 'advanced') readConfig();
+    else { readWizStep(_wizStep); applyGuidedToInputs(); }
+    if (!_swInputs.modules.some(m => m.enabled)) { if (rail) railError(rail, 'No module is in scope — tick at least one module on the Scope tab.'); return; }
+    _swResult = computeSWProgram(_swInputs);
+    renderResults(_swResult, { live });
+    if (_swMode === 'guided') syncAdvancedFields();
+  } catch (err) {
+    // Keep the last good figures, dimmed, and say why (an invalid input is reported, never patched).
+    if (rail) railError(rail, (err as Error).message.replace(/^Software cost inputs are not valid — /, 'Check the inputs: '));
   }
 }
 
@@ -2665,10 +2729,107 @@ function showSWError(msg: string): void {
   errEl.setAttribute('role', 'alert');
   errEl.innerHTML = `<span>⚠</span> ${esc(msg)}`;
   errEl.style.display = 'flex';
-  setTimeout(() => { if (errEl) errEl.style.display = 'none'; }, 6000);
+  // It stays until the next good calculation (WCAG 2.2.1 — no timed message; cockpit UX review #18).
 }
 
 // ─── Wire events ──────────────────────────────────────────────────────────────
+
+/** Tabs, header actions, live recalculation, the scope toolbar and the supplier check. */
+function wireCockpit(): void {
+  const panel = document.getElementById('sw-panel');
+  if (!panel) return;
+  document.body.classList.add('cv-sw');
+  _swSelectTab = wireTabs(panel, t => {
+    _swTab = t;
+    // The vehicle studio sizes itself on mount; re-mount when its tab is first shown.
+    if (t === 'vehicle' && _swResult) renderCockpitStudio(_swResult);
+  });
+  panel.querySelector('.swk-head')?.addEventListener('click', e => {
+    const b = (e.target as Element).closest<HTMLElement>('[data-swk-go],[data-swk-click]');
+    if (!b) return;
+    if (b.dataset.swkGo) _swSelectTab?.(b.dataset.swkGo as CockpitTab);
+    if (b.dataset.swkClick) (document.getElementById(b.dataset.swkClick) as HTMLButtonElement | null)?.click();
+  });
+  // Live: any input on Setup or Scope re-costs (250 ms debounce). Search / bulk / quote / save-name fields opt out.
+  const onEdit = (e: Event) => {
+    const t = e.target as HTMLElement;
+    if (!t || t.closest('[data-no-live]') || t.hasAttribute('data-no-live')) return;
+    if (!t.closest('#swk-p-setup, #swk-p-scope')) return;
+    if (t.closest('#sw-actuals-card, #sw-saved-configs, .sw-saved-configs')) return;
+    if (t.closest('#swk-p-scope') && _swMode === 'guided') enterAdvancedKeepingEdits();
+    scheduleLive();
+  };
+  panel.addEventListener('input', onEdit);
+  panel.addEventListener('change', onEdit);
+  // Supplier check: recomputed on every keystroke from the current result (no engine run needed).
+  panel.querySelector('#swk-p-supplier')?.addEventListener('input', () => refreshQuote());
+  // Treemap: a module block opens the vehicle tab with that module's parts lit.
+  panel.querySelector('#swk-overview')?.addEventListener('click', e => {
+    const id = (e.target as Element).closest<SVGElement>('[data-module]')?.getAttribute('data-module');
+    if (id) { _swSelectTab?.('vehicle'); document.querySelector<HTMLElement>(`#sw-studio [data-comp]`)?.focus(); }
+  });
+  panel.querySelector('#swk-overview')?.addEventListener('keydown', e => {
+    if ((e as KeyboardEvent).key === 'Enter' && (e.target as Element).closest('[data-module]')) (e.target as HTMLElement).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
+  wireScopeBar();
+}
+
+function renderCockpitStudio(result: SWProgramResult): void {
+  const studioEl = document.getElementById('sw-studio');
+  if (studioEl && !studioEl.querySelector('.swp-studio')) renderResults(result);
+}
+
+/** Scope edits are module-level, which the guided walkthrough does not hold: switch to full setup without overwriting
+ *  the edit (the advanced fields are kept in sync with the wizard after every live run). */
+function enterAdvancedKeepingEdits(): void {
+  _swMode = 'advanced';
+  const g = document.getElementById('sw-guided-body'), a = document.getElementById('sw-advanced-body');
+  if (g) g.style.display = 'none';
+  if (a) a.style.display = '';
+  document.querySelectorAll<HTMLButtonElement>('.sw-mode-btn').forEach(b => b.classList.toggle('sw-mode-active', b.dataset.mode === 'advanced'));
+}
+
+function wireScopeBar(): void {
+  const q = document.getElementById('swk-scope-q') as HTMLInputElement | null;
+  const onlyOn = document.getElementById('swk-scope-on') as HTMLInputElement | null;
+  const count = document.getElementById('swk-scope-count');
+  const filter = () => {
+    const term = (q?.value ?? '').trim().toLowerCase();
+    let shown = 0, total = 0;
+    document.querySelectorAll<HTMLElement>('#sw-modules-container .sw-module-row').forEach(row => {
+      total++;
+      const text = row.textContent?.toLowerCase() ?? '';
+      const enabled = (row.querySelector('.sw-mod-enable') as HTMLInputElement | null)?.checked ?? false;
+      const hit = (!term || text.includes(term)) && (!onlyOn?.checked || enabled);
+      row.classList.toggle('swk-hit-none', !hit);
+      if (hit) shown++;
+    });
+    document.querySelectorAll<HTMLElement>('#sw-modules-container .sw-cat-group').forEach(g => {
+      const any = !!g.querySelector('.sw-module-row:not(.swk-hit-none)');
+      g.style.display = any ? '' : 'none';
+      if (term && any) g.classList.remove('sw-collapsed');
+    });
+    if (count) count.textContent = `${shown} of ${total} modules shown`;
+  };
+  q?.addEventListener('input', filter);
+  onlyOn?.addEventListener('change', filter);
+  document.getElementById('swk-bulk-apply')?.addEventListener('click', () => {
+    const v = (id: string) => (document.getElementById(id) as HTMLSelectElement | null)?.value ?? '';
+    const asil = v('swk-bulk-asil'), comp = v('swk-bulk-comp'), reuse = v('swk-bulk-reuse');
+    if (!asil && !comp && !reuse) { if (count) count.textContent = 'Choose an ASIL, complexity or reuse to apply.'; return; }
+    let n = 0;
+    document.querySelectorAll<HTMLElement>('#sw-modules-container .sw-module-row:not(.swk-hit-none)').forEach(row => {
+      if (asil) { const s2 = row.querySelector<HTMLSelectElement>('.sw-asil-sel'); if (s2) s2.value = asil; }
+      if (comp) { const s2 = row.querySelector<HTMLSelectElement>('.sw-comp-sel'); if (s2) s2.value = comp; }
+      if (reuse) { const s2 = row.querySelector<HTMLSelectElement>('.sw-reuse-sel'); if (s2) s2.value = reuse; }
+      n++;
+    });
+    if (_swMode === 'guided') enterAdvancedKeepingEdits();
+    if (count) count.textContent = `Applied to ${n} module${n === 1 ? '' : 's'}.`;
+    scheduleLive();
+  });
+  filter();
+}
 
 export function wireSWPanel(): void {
   // A base-rate field becomes an override the moment the engineer types in it (sw-rate-field.ts).
@@ -2704,7 +2865,7 @@ export function wireSWPanel(): void {
     _swInputs.modules = applyPowertrainScope(_swInputs.modules, pt);
     _swResult = null;
     const panel = document.getElementById('sw-panel');
-    if (panel?.parentElement) { panel.parentElement.innerHTML = renderSWPanelHTML(); wireSWPanel(); }
+    if (panel?.parentElement) { panel.parentElement.innerHTML = renderSWPanelHTML(); wireSWPanel(); runLive(false); }
   });
   // Mode toggle (Guided wizard ↔ Advanced expert panel) + wizard wiring
   document.querySelectorAll<HTMLButtonElement>('.sw-mode-btn').forEach(btn =>
@@ -2723,6 +2884,8 @@ export function wireSWPanel(): void {
     } catch (err) { console.warn('[sw] calibration card not wired:', err); }
   });
 
+  wireCockpit();
+
   // Calculate button
   const calcBtn = document.getElementById('sw-calc-btn');
   if (calcBtn) {
@@ -2735,23 +2898,19 @@ export function wireSWPanel(): void {
         return;
       }
 
-      const origText = calcBtn.textContent ?? '';
-      calcBtn.textContent = 'Calculating…';
-      (calcBtn as HTMLButtonElement).disabled = true;
-
-      setTimeout(() => {
-        try {
-          _swResult = computeSWProgram(_swInputs);
-          renderResults(_swResult);
-          const errEl = document.getElementById('sw-calc-error');
-          if (errEl) errEl.style.display = 'none';
-        } catch (err) {
-          showSWError(`Calculation error: ${(err as Error).message}`);
-        } finally {
-          calcBtn.textContent = origText;
-          (calcBtn as HTMLButtonElement).disabled = false;
-        }
-      }, 20);
+      // The engine runs in a few milliseconds: no busy state, no deferred work (cockpit review).
+      const rail = document.getElementById('swk-rail');
+      try {
+        _swResult = computeSWProgram(_swInputs);
+        renderResults(_swResult, { live: true });
+        _swSelectTab?.('overview');
+        const errEl = document.getElementById('sw-calc-error');
+        if (errEl) errEl.style.display = 'none';
+      } catch (err) {
+        const msg = (err as Error).message;
+        showSWError(`Calculation error: ${msg}`);
+        if (rail) railError(rail, msg.replace(/^Software cost inputs are not valid — /, 'Check the inputs: '));
+      }
     });
   }
 
@@ -2764,6 +2923,7 @@ export function wireSWPanel(): void {
       _swActiveVehicle = null;
       document.getElementById('sw-demo-report-btn')?.parentElement?.remove();
       applyPreset(btn.dataset.preset ?? '');
+      scheduleLive();
     });
   });
 
@@ -2940,6 +3100,8 @@ export function initSWPanel(containerEl: HTMLElement): void {
   _swResult = null;
   containerEl.innerHTML = renderSWPanelHTML();
   wireSWPanel();
+  // The cockpit opens with the default programme already costed (deterministic, milliseconds).
+  runLive(false);
   // Load saved configs asynchronously (server or localStorage), then refresh the
   // list in place — the panel renders immediately without waiting on the network.
   void loadSavedConfigs().then(updateSavedConfigsUI).catch(() => { /* non-fatal */ });

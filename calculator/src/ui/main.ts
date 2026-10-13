@@ -11661,12 +11661,19 @@ function switchCommodity(type: CommodityType): void {
   showPriceBasisNote(type === 'pcb_fab');
 
   // Show/hide part-name for non-assembly modes
+  // The software should-cost has its own programme header: a part name, a part photo and the factory rate-book bar
+  // ("UK base rates · Rate Database") mean nothing there (software cockpit review, Oct 2026). The app header's country
+  // picker still sets the software hub.
+  const isSoftware = (type as string) === 'automotive_software';
+  document.body.classList.toggle('cv-sw', isSoftware);   // the cockpit hides the generic results pane + action bar
   const partNameWrap = el('part-name').closest<HTMLElement>('div[style]');
-  if (partNameWrap) partNameWrap.style.display = type === 'assembly' ? 'none' : '';
+  if (partNameWrap) partNameWrap.style.display = type === 'assembly' || isSoftware ? 'none' : '';
+  const photoRow = document.getElementById('part-photo-row');
+  if (photoRow) photoRow.style.display = isSoftware ? 'none' : '';
 
-  // Show/hide country bar (hidden for AI Agent only)
+  // Show/hide country bar (hidden for AI Agent and the software cockpit)
   const countryBar = document.getElementById('wf-country-bar');
-  if (countryBar) countryBar.style.display = (type as string) === 'ai_agent' ? 'none' : '';
+  if (countryBar) countryBar.style.display = (type as string) === 'ai_agent' || isSoftware ? 'none' : '';
 
   const area = el('commodity-form-area');
   disposeAllCADViewers(); // the innerHTML swap below destroys any mounted viewer's DOM

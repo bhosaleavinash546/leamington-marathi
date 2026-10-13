@@ -1,0 +1,22 @@
+{
+ "panelOpenMs": 40,
+ "domNodesAdvanced": 3913,
+ "calcMs": 200,
+ "domNodesResults": 5483,
+ "panelHeightPx": 11279,
+ "sections": [
+  "How this software was costed",
+  "Where this software runs",
+  "Monte Carlo Cost Distribution (1,000 iterations)",
+  "Programme Milestone Phases (NRE: £44.1M)",
+  "Cost by Software Category",
+  "Cost Composition (10 Dimensions)",
+  "Module Cost Detail — All 43 Active Modules",
+  "Sensitivity Analysis",
+  "Benchmark Comparison — Premium EV Programme SW Investment (unverified)",
+  "Development Source Decomposition (OEM / Tier-1 / Startup)",
+  "AI Analysis",
+  "Engineering Insights"
+ ],
+ "pageErrors": []
+}

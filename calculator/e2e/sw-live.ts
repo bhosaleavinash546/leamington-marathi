@@ -51,16 +51,22 @@ async function main(): Promise<void> {
     await page.click('#new-costing-btn');
     await page.locator('#commodity-picker-view .cpicker-tile[data-commodity="automotive_software"]:visible').first().click();
     await page.waitForSelector('#sw-panel');
+    // Tabbed cockpit (Oct 2026): open the tab that holds a control before using it.
+    const show = (sel: string) => page.evaluate(s => {
+      const p = document.querySelector(s)?.closest('.swk-panel[role="tabpanel"]') as HTMLElement | null;
+      const t = p?.id.replace('swk-p-', '');
+      if (t && p!.hidden) (document.querySelector(`[data-swk-tab="${t}"]`) as HTMLElement | null)?.click();
+    }, sel);
     out.wizardPowertrainOptions = await page.$$eval('#wiz-powertrain option', os => os.map(o => (o as HTMLOptionElement).value));
-    await page.click('.sw-mode-btn[data-mode="advanced"]');
+    await show('.sw-mode-btn[data-mode="advanced"]'); await page.click('.sw-mode-btn[data-mode="advanced"]');
     const totals: Record<string, string> = {};
     for (const pt of ['ICE', 'MHEV', 'PHEV', 'BEV']) {
-      await page.selectOption('#sw-powertrain', pt);
+      await show('#sw-powertrain'); await page.selectOption('#sw-powertrain', pt);
       await page.waitForTimeout(300);
-      await page.click('#sw-calc-btn');
+      await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
       await page.waitForTimeout(800);
       totals[pt] = await page.evaluate(() => {
-        const t = Array.from(document.querySelectorAll('#sw-panel .sw-summary-card, #sw-panel .sw-card')).map(e => e.textContent?.replace(/\s+/g, ' ').trim() ?? '').find(x => /Total/i.test(x));
+        const t = [document.querySelector('#swk-rail [data-fig="total"]')?.textContent?.replace(/\s+/g, ' ').trim() ?? ''][0];
         return t?.slice(0, 80) ?? '';
       });
       if (pt === 'PHEV') {
@@ -76,7 +82,7 @@ async function main(): Promise<void> {
         .axe.run(document.getElementById('sw-panel'), { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } });
       return r.violations.map(v => `${v.impact} ${v.id} ×${v.nodes.length}: ${(v.nodes as Array<{ target: string[] }>).slice(0, 4).map(n => n.target.join(' ')).join(' | ')}`);
     });
-    await page.click('.sw-vehicle-btn[data-vehicle="rr_l460"]');
+    await show('.sw-vehicle-btn[data-vehicle="rr_l460"]'); await page.click('.sw-vehicle-btn[data-vehicle="rr_l460"]');
     await page.waitForTimeout(1200);
     out.demoL460 = await page.evaluate(() => ({
       powertrain: (document.getElementById('sw-powertrain') as HTMLSelectElement | null)?.value,
@@ -84,13 +90,12 @@ async function main(): Promise<void> {
       staleNote: !!document.getElementById('sw-reports-stale'),
     }));
     // ── P2 fixes ──
-    const headline = () => page.evaluate(() => Array.from(document.querySelectorAll('#sw-panel .sw-summary-card, #sw-panel .sw-card'))
-      .map(e => e.textContent?.replace(/\s+/g, ' ').trim() ?? '').find(x => /Total/i.test(x))?.slice(0, 80) ?? '');
-    await page.fill('#sw-vol', '0');
-    await page.click('#sw-calc-btn');
+    const headline = () => page.evaluate(() => [document.querySelector('#swk-rail [data-fig="total"]')?.textContent?.replace(/\s+/g, ' ').trim() ?? ''][0]?.slice(0, 80) ?? '');
+    await show('#sw-vol'); await page.fill('#sw-vol', '0');
+    await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
     await page.waitForTimeout(500);
-    out.p2_invalidRefused = await page.evaluate(() => document.getElementById('sw-calc-error')?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 160) ?? '');
-    await page.fill('#sw-vol', '80000');
+    out.p2_invalidRefused = await page.evaluate(() => (document.getElementById('sw-calc-error')?.textContent || '') + ' | rail: ' + (document.getElementById('swk-rail-msg')?.textContent ?? ''));
+    await show('#sw-vol'); await page.fill('#sw-vol', '80000');
     out.p2_cal = await page.evaluate(() => ({
       selects: document.querySelectorAll('.sw-cal-sel').length,
       iviOs: (document.querySelector('.sw-cal-sel[data-id="ivi_os"]') as HTMLSelectElement | null)?.value,
@@ -103,31 +108,31 @@ async function main(): Promise<void> {
       swRegion: (document.getElementById('sw-region') as HTMLSelectElement | null)?.value,
       basis: document.getElementById('sw-hub-basis')?.textContent ?? '',
     }));
-    await page.click('#sw-calc-btn');
+    await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
     await page.waitForTimeout(900);
     out.p2_totalIndia = await headline();
     out.p2_devSourceRows = await page.$$eval('#sw-source-decomp tbody tr', rows => rows.map(r => r.textContent?.replace(/\s+/g, ' ').trim().slice(0, 60)));
     await page.selectOption('#mfg-region-selector', 'UK');
     await page.waitForTimeout(600);
-    await page.click('#sw-calc-btn');
+    await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
     await page.waitForTimeout(900);
     const before = await headline();
-    await page.click('#sw-actuals-card > summary');
+    await show('#sw-actuals-card > summary'); await page.click('#sw-actuals-card > summary');
     for (const [mod, pm] of [['gateway_ecu', '80'], ['body_control', '105'], ['rtos', '32']] as const) {
-      await page.selectOption('#swa-module', mod);
-      await page.fill('#swa-pm', pm);
-      await page.click('#swa-add');
+      await show('#swa-module'); await page.selectOption('#swa-module', mod);
+      await show('#swa-pm'); await page.fill('#swa-pm', pm);
+      await show('#swa-add'); await page.click('#swa-add');
     }
     out.p2_calibration = await page.evaluate(() => document.getElementById('swa-result')?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 200) ?? '');
     await page.locator('#sw-actuals-card').screenshot({ path: join(OUT, 'sw-p2-actuals-card.png') });
     const applyBtn = page.locator('#swa-apply');
     if (await applyBtn.count()) await applyBtn.click();
     out.p2_effortField = await page.inputValue('#sw-effort-cal');
-    await page.click('#sw-calc-btn');
+    await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
     await page.waitForTimeout(900);
     out.p2_totalBeforeAfterCalibration = [before, await headline()];
     await page.screenshot({ path: join(OUT, 'sw-p2-actuals.png'), fullPage: false });
-    const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#sw-excel-btn')]);
+    const [dl] = await Promise.all([page.waitForEvent('download'), show('#sw-excel-btn').then(() => page.click('#sw-excel-btn'))]);
     const xlsxPath = join(OUT, 'sw-p2.xlsx');
     await dl.saveAs(xlsxPath);
     const wb = XLSX.readFile(xlsxPath);
@@ -141,7 +146,7 @@ async function main(): Promise<void> {
     await page.waitForTimeout(600);
     out.p3_totalEUR = await headline();
     out.p3_rateTableEUR = await page.evaluate(() => document.querySelector('#sw-hub-rates tbody tr td:nth-child(2)')?.textContent ?? '');
-    const [dl3] = await Promise.all([page.waitForEvent('download'), page.click('#sw-excel-btn')]);
+    const [dl3] = await Promise.all([page.waitForEvent('download'), show('#sw-excel-btn').then(() => page.click('#sw-excel-btn'))]);
     const x3 = join(OUT, 'sw-p3-eur.xlsx'); await dl3.saveAs(x3);
     const w3 = XLSX.readFile(x3);
     out.p3_excelEUR = XLSX.utils.sheet_to_csv(w3.Sheets[w3.SheetNames[0]]).split('\n').filter(l => /Cost Bucket|TOTAL PROGRAMME|Per Vehicle|^Currency/.test(l));

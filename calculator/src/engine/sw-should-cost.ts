@@ -348,6 +348,10 @@ export interface SWMonteCarlo {
   /** Where the deterministic headline sits in its own band: the share of trials at or below it, 0–100. The bucket
    *  ranges are skewed upwards, so the headline is NOT the median — the screen states this (software review P3 #19). */
   headlinePercentile: number;
+  /** The programme total at P5, P10 … P95 (19 points) — the S-curve the screen draws. */
+  curve:          number[];
+  /** 20 equal-width bins of the programme total, min → max, with the number of trials in each. */
+  histogram:      Array<{ lo: number; hi: number; count: number }>;
 }
 
 export interface SWBenchmark {
@@ -390,7 +394,7 @@ export const COMPLEXITY_MULT: Record<SWComplexity, number> = rateValues(DEFAULT_
 export const REUSE_FACTOR: Record<SWReuse, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.reuseFactors);
 
 /** DevSource quality/overhead multiplier */
-export const DEV_SOURCE_MULT: Record<DevSource, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.devSourceMultipliers);
+export const DEV_SOURCE_MULT: Record<DevSource, number> = priceFactors(rateValues(DEFAULT_SW_RATE_LIBRARY.devSourceMultipliers), DEFAULT_SW_RATE_LIBRARY.supplierMargin?.value ?? 0);
 
 /** Numeric rate bundle resolved once per programme (default library + any override). */
 interface ResolvedRates {
@@ -414,6 +418,24 @@ export function swLibraryBaseRate(prog: Pick<SWProgramInputs, 'rateLibrary' | 'r
   return s * hub.senior.value + (1 - s) * hub.mid.value;
 }
 
+/** The loaded £ / PM the engine prices engineering at: the engineer rate × development source × overhead (no schedule
+ *  penalty). The rate basis, the costing steps and the supplier check all read this one function. */
+export function swLoadedRate(prog: SWProgramInputs): number {
+  const p = { ...prog, region: normaliseSWRegion(String(prog.region)) as SWRegion };
+  const r = resolveRates(p);
+  return r.engineerRate * r.devSource[p.devSource] * p.overheadMultiplier;
+}
+
+/** Development-source PRICE factors: in-house = its efficiency; a supplier = efficiency ÷ (1 − margin). */
+export function priceFactors(eff: Record<DevSource, number>, margin: number): Record<DevSource, number> {
+  const m = Math.min(0.9, Math.max(0, margin));
+  return {
+    OEM_Internal: eff.OEM_Internal,
+    Tier1_Supplier: eff.Tier1_Supplier / (1 - m),
+    Startup_OSS: eff.Startup_OSS / (1 - m),
+  };
+}
+
 function resolveRates(prog: SWProgramInputs): ResolvedRates {
   const lib = resolveRateLibrary(prog.rateLibrary);
   // A typed rate is this hub's own figure and replaces the book's blend (F4).
@@ -421,7 +443,8 @@ function resolveRates(prog: SWProgramInputs): ResolvedRates {
   return {
     engineerRate: typed ? prog.baseRateGBP! : swLibraryBaseRate(prog),
     typed,
-    devSource:  rateValues(lib.devSourceMultipliers),
+    // A bought source's price: its efficiency ÷ (1 − supplier margin). In-house carries no margin.
+    devSource:  priceFactors(rateValues(lib.devSourceMultipliers), lib.supplierMargin?.value ?? 0),
     asilDev:    rateValues(lib.asilDevMultipliers),
     asilTest:   rateValues(lib.asilTestMultipliers),
     complexity: rateValues(lib.complexityMultipliers),
@@ -634,7 +657,7 @@ export const SW_MODULES: SWModuleDef[] = [
     annualToolLicenceGBP: 168_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 120_000,
     calibrationFractionBase: 0.02,
     perVehicleRoyaltyGBP: Math.round(25 / USD_PER_GBP * 100) / 100,
-    royaltyBasis: 'This module\'s own note: AAOS licence ~$25 / vehicle, at the app\'s USD_PER_GBP. Replaces the flat £220k / yr IP figure (the note names the licence it stood for). Unsourced estimate.',
+    royaltyBasis: 'Unsourced placeholder ~$25 / vehicle for Google Automotive Services (GAS) or a QNX runtime licence — neither price is public; Android Automotive OS itself is open source with no licence fee (costing review #6). Replace with your supplier quote.',
     notes: 'Google AAOS licence fee (~$25/vehicle) or QNX royalty. Boot < 4s target.',
   },
   {
@@ -657,11 +680,14 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 65,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.35, integrationFractionBase: 0.18, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 450_000,
+    // Cerence's own average price per unit is US$5.05 (TTM, Q4 FY25) and INCLUDES its connected (cloud) services, so the
+    // separate £450k / yr voice cloud is gone — it counted the cloud twice (costing review #5, Oct 2026; search result
+    // of Cerence's FY25 results, not the filing itself).
+    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.04,
-    perVehicleRoyaltyGBP: 15,
-    royaltyBasis: 'This module\'s own note: on-device ASR engine licence ~£15 / vehicle. Replaces the flat £220k / yr IP figure. Unsourced estimate.',
-    notes: 'On-device ASR engines (Cerence, SoundHound) licence ~£15/vehicle. Cloud NLU significant.',
+    perVehicleRoyaltyGBP: Math.round(5.05 / USD_PER_GBP * 100) / 100,
+    royaltyBasis: 'Cerence average price per unit US$5.05 (TTM, Q4 FY2025, includes connected services) at the app\'s USD_PER_GBP — read from a search result of Cerence\'s FY25 results.',
+    notes: 'On-device + cloud voice (Cerence, SoundHound). Cerence PPU $5.05 includes connected services (FY25).',
   },
   {
     id: 'tcu_software', name: 'Telematics Control Unit (TCU) Software', shortName: 'TCU Software',
@@ -1502,12 +1528,24 @@ function runMonteCarlo(
     p90PerVehicle: q(perVeh, 0.90),
     iterations:    n,
     headlinePercentile: Math.round(100 * countAtOrBelow(totals, s.grandTotal) / n),
+    curve:         Array.from({ length: 19 }, (_, i) => q(totals, (i + 1) * 0.05)),
+    histogram:     histogramOf(totals, 20),
   };
+}
+
+/** Equal-width bins over the sorted trials (min → max). */
+function histogramOf(sorted: number[], bins: number): Array<{ lo: number; hi: number; count: number }> {
+  if (!sorted.length) return [];
+  const lo = sorted[0], hi = sorted[sorted.length - 1];
+  const w = (hi - lo) / bins || 1;
+  const out = Array.from({ length: bins }, (_, i) => ({ lo: lo + i * w, hi: lo + (i + 1) * w, count: 0 }));
+  for (const v of sorted) out[Math.min(bins - 1, Math.floor((v - lo) / w))].count++;
+  return out;
 }
 
 // ─── Programme Phases ─────────────────────────────────────────────────────────
 
-function buildPhases(nreTotal: number, developmentMonths = SW_DEFAULT_DEVELOPMENT_MONTHS): SWPhase[] {
+export function buildPhases(nreTotal: number, developmentMonths = SW_DEFAULT_DEVELOPMENT_MONTHS): SWPhase[] {
   // Phase ends as shares of the M1–M90 timeline, scaled to the programme's development duration (P3 #17).
   const ends = [6, 18, 54, 78, 90].map(m => Math.max(1, Math.round(m / 90 * developmentMonths)));
   const span = (i: number) => `M${i === 0 ? 1 : ends[i - 1] + 1}–M${ends[i]}`;
@@ -1524,7 +1562,7 @@ function buildPhases(nreTotal: number, developmentMonths = SW_DEFAULT_DEVELOPMEN
 
 const EMPTY_MC: SWMonteCarlo = {
   p10: 0, p50: 0, p90: 0, mean: 0,
-  p10PerVehicle: 0, p50PerVehicle: 0, p90PerVehicle: 0, iterations: 0, headlinePercentile: 0,
+  p10PerVehicle: 0, p50PerVehicle: 0, p90PerVehicle: 0, iterations: 0, headlinePercentile: 0, curve: [], histogram: [],
 };
 
 /** Trials ≤ x in an ascending array (binary search). */

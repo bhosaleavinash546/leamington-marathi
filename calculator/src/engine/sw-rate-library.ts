@@ -41,7 +41,10 @@ export interface SWRateLibrary {
   lastReviewed:          string;
   /** Each software hub's OWN rate (Chief Engineer review, Oct 2026). Replaces the retired UK base × region multiplier. */
   hubRates:              Record<SWRegion, SWHubRateEntry>;
+  /** Delivery EFFICIENCY of each development source (effort relative to OEM in-house) — not a price. */
   devSourceMultipliers:  Record<DevSource, SWRateEntry>;
+  /** A supplier's operating margin: a bought source's price is its cost ÷ (1 − margin) (Oct 2026 costing review). */
+  supplierMargin?:       SWRateEntry;
   asilDevMultipliers:    Record<ASILLevel, SWRateEntry>;
   asilTestMultipliers:   Record<ASILLevel, SWRateEntry>;
   complexityMultipliers: Record<SWComplexity, SWRateEntry>;
@@ -77,12 +80,23 @@ export const DEFAULT_SW_RATE_LIBRARY: SWRateLibrary = {
   // priced every country as £28,000 / PM (≈ £1,400 a day, 2.5× the UK automotive contract day rate) × a ratio.
   hubRates: hubEntries(),
 
+  // EFFICIENCY only (effort relative to OEM in-house; unsourced, labelled). A bought source is then PRICED at
+  // cost ÷ (1 − supplierMargin): the old ×0.88 on the same hub cost priced a Tier-1 below its own wage bill, so buying
+  // looked cheaper than doing it in-house (costing-manager review, Oct 2026).
   devSourceMultipliers: {
     OEM_Internal:   E(1.00, 'OEM in-house baseline (full process rigour, full overhead)', '2025-01', 'High'),
-    Tier1_Supplier: E(0.88, 'Tier-1 supplier efficiency vs OEM in-house — typical 10-15% delta', '2025-01', 'Medium'),
-    Startup_OSS:    E(0.72, 'SW startup / OSS-leveraged delivery — lower process overhead, higher execution risk', '2025-01', 'Low',
-                       'Lower cost reflects leaner process, not lower scope — pair with higher risk weighting.'),
+    Tier1_Supplier: E(0.88, 'Tier-1 delivery efficiency vs OEM in-house (platform reuse, mature process) — CostVision assumption, unsourced', '2025-01', 'Low',
+                       'An effort factor; the supplier margin is added on top (supplierMargin).'),
+    Startup_OSS:    E(0.72, 'SW startup / OSS-leveraged delivery efficiency — lower process overhead, higher execution risk; CostVision assumption, unsourced', '2025-01', 'Low',
+                       'Lower effort reflects leaner process, not lower scope — pair with higher risk weighting. Supplier margin added on top.'),
   },
+
+  // Median of four engineering-services firms' latest published margins: ALTEN 8.5 % (operating margin on activity,
+  // 2025), LTTS 14.9 % (EBIT, FY25), KPIT 21.0 % (EBITDA, FY25), Tata Elxsi 26.3 % (PBT, FY25) → (14.9 + 21.0) / 2.
+  // The measures differ (EBIT / EBITDA / PBT), said so; read from search results (costing review data, 14 Oct 2026).
+  supplierMargin: E(0.18,
+    'Median of ALTEN 8.5 % (op. margin 2025), LTTS 14.9 % (EBIT FY25), KPIT 21.0 % (EBITDA FY25), Tata Elxsi 26.3 % (PBT FY25)',
+    '2026-10', 'Low', 'Mixed margin measures; set your own supplier\'s margin when known. Price = cost ÷ (1 − margin).'),
 
   // ASIL uplift — ONE factor on total effort (software review P1 #20, Oct 2026). It was ×1.35–3.20 on development AND a
   // test fraction rising 0.35 → 1.80 on top (an ASIL-D module's testing ≈ 16× a QM one), against ×1.26–×1.8 in every
@@ -154,6 +168,7 @@ export function resolveRateLibrary(override?: Partial<SWRateLibrary>): SWRateLib
     lastReviewed:          override.lastReviewed ?? d.lastReviewed,
     hubRates:              mergeHubs(d.hubRates, override.hubRates),
     devSourceMultipliers:  { ...d.devSourceMultipliers,  ...(override.devSourceMultipliers  ?? {}) },
+    supplierMargin:        override.supplierMargin ?? d.supplierMargin,
     asilDevMultipliers:    { ...d.asilDevMultipliers,    ...(override.asilDevMultipliers    ?? {}) },
     asilTestMultipliers:   { ...d.asilTestMultipliers,   ...(override.asilTestMultipliers   ?? {}) },
     complexityMultipliers: { ...d.complexityMultipliers, ...(override.complexityMultipliers ?? {}) },
