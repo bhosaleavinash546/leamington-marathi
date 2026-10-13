@@ -50,7 +50,9 @@ and flags (`hasMLContent`, `hasCybersecRequirement`, `hasCloudDependency`).
 ## The per-module formula
 
 ```
-rate      = ukBase × region × devSource × seniority × overhead × schedule
+rate      = hubRate(senior share) × devSource × overhead × schedule
+            # hubRate: the hub's OWN mid / senior £ per 152-h PM (salary + statutory on-cost ÷ hours) —
+            # docs/rates/software-engineering-rates-2026-10.md; no UK base, no region multiplier (Oct 2026)
 effortPM  = basePersonMonths × reuse       →   devPM = effortPM × asil_dev
 
 dev       = reqs 12% + arch 14% + algo 22%·cx + impl 37%·cx' + safety 15%·floor

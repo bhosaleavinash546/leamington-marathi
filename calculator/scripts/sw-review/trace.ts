@@ -1,4 +1,4 @@
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES } from '../../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, swLibraryBaseRate } from '../../src/engine/sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY as L } from '../../src/engine/sw-rate-library.js';
 import { runValidation } from '../../src/engine/sw-validation.js';
 const p = defaultSWProgramInputs();
@@ -7,9 +7,10 @@ const f = (n: number) => '£' + n.toLocaleString('en-GB', { maximumFractionDigit
 console.log('INPUTS', JSON.stringify({ ...p, modules: `${p.modules.filter(m=>m.enabled).length} enabled of ${p.modules.length}` }));
 // hand trace bms_core
 const def = SW_MODULES.find(m => m.id === 'bms_core')!; const mi = p.modules.find(m => m.moduleId === 'bms_core')!;
-const base = L.ukBaseRatePerPM.value, reg = L.regionMultipliers[p.region].value, ds = L.devSourceMultipliers[p.devSource].value;
-const senior = p.teamSeniorFraction*1.2 + (1-p.teamSeniorFraction)*0.75;
-const rate = base*reg*ds*senior*p.overheadMultiplier;
+// Oct 2026: the hub's own rate (mid / senior blend), × dev source × overhead — no UK base, no multiplier.
+const base = swLibraryBaseRate(p), reg = 1, ds = L.devSourceMultipliers[p.devSource].value;
+const senior = 1;
+const rate = base*ds*p.overheadMultiplier;
 const reuse = L.reuseFactors[mi.reuse].value, ad = L.asilDevMultipliers[mi.asil].value, cx = L.complexityMultipliers[mi.complexity].value;
 const effPM = def.basePersonMonths*reuse, devPM = effPM*ad;
 const safetyScale = Math.max(reuse, {QM:0,A:0,B:0.4,C:0.5,D:0.6}[mi.asil])/reuse;

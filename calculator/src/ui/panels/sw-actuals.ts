@@ -56,10 +56,17 @@ export function renderActualsHTML(): string {
 /** Wire the card. `onApply` receives the fitted factor (rounded to 3 dp) when the user chooses to use it. */
 export function wireActuals(onApply: (factor: number) => void): void {
   const g = <T extends HTMLElement>(id: string) => document.getElementById(id) as T | null;
+  // A stored row the engine refuses (a size outside 0.1–10,000 KSLOC, an unknown ASIL …) used to throw here on every
+  // load and stop the whole panel wiring (code review F1). Such rows are dropped, and the screen says so.
+  const valid = (a: (typeof actuals)[number]) => { try { return Number.isFinite(modelledEffortPM(a)); } catch { return false; } };
   let actuals = loadActuals();
+  const dropped = actuals.filter(a => SW_MODULES.some(m => m.id === a.moduleId) && !valid(a)).length;
+  if (dropped) { actuals = actuals.filter(a => !SW_MODULES.some(m => m.id === a.moduleId) || valid(a)); saveActuals(actuals); }
 
   const draw = () => {
-    const fit = calibrateSWEffort(actuals);
+    let fit: ReturnType<typeof calibrateSWEffort>;
+    try { fit = calibrateSWEffort(actuals); }
+    catch { fit = calibrateSWEffort([]); }
     const badge = g('sw-actuals-badge');
     if (badge) badge.textContent = fit.factor !== null ? `· factor ×${fit.factor.toFixed(2)} from ${fit.n} module${fit.n === 1 ? '' : 's'}` : '· none logged';
     const table = g('swa-table');
@@ -99,6 +106,9 @@ export function wireActuals(onApply: (factor: number) => void): void {
     const pm = parseFloat(g<HTMLInputElement>('swa-pm')?.value ?? '');
     const msg = g('swa-msg');
     if (!(pm > 0)) { if (msg) msg.textContent = 'Enter the effort the module actually took, in person-months.'; return; }
+    const kRaw = g<HTMLInputElement>('swa-ksloc')?.value.trim() ?? '';
+    const k = parseFloat(kRaw);
+    if (kRaw !== '' && !(k >= 0.1 && k <= 10_000)) { if (msg) msg.textContent = 'Size must be 0.1–10,000 KSLOC (or leave it blank).'; return; }
     actuals = [...actuals, {
       moduleId:   g<HTMLSelectElement>('swa-module')!.value,
       asil:       g<HTMLSelectElement>('swa-asil')!.value as ASILLevel,
@@ -114,4 +124,5 @@ export function wireActuals(onApply: (factor: number) => void): void {
     draw();
   });
   draw();
+  if (dropped) { const msg = g('swa-msg'); if (msg) msg.textContent = `${dropped} logged row${dropped === 1 ? '' : 's'} the model cannot cost (size outside 0.1–10,000 KSLOC or an unknown setting) ${dropped === 1 ? 'was' : 'were'} removed.`; }
 }

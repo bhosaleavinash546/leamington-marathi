@@ -70,13 +70,13 @@ export interface SWValidationReport {
  * matches them — matching unverified figures is not evidence of accuracy (software review P1 #6, Oct 2026).
  */
 const CONFIGS: SWValidationCase['config'][] = [
-  { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 70_000, programLifeYears: 9, note: 'German OEM in-house full-stack flagship' },  // BMW iX
-  { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 40_000, programLifeYears: 8, note: 'Lower volume premium sports EV' },  // Porsche Taycan
-  { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 55_000, programLifeYears: 9, note: 'Flagship infotainment-heavy programme' },  // Mercedes EQS
+  { region: 'DE', devSource: 'OEM_Internal', annualProductionVolume: 70_000, programLifeYears: 9, note: 'German OEM in-house full-stack flagship' },  // BMW iX
+  { region: 'DE', devSource: 'OEM_Internal', annualProductionVolume: 40_000, programLifeYears: 8, note: 'Lower volume premium sports EV' },  // Porsche Taycan
+  { region: 'DE', devSource: 'OEM_Internal', annualProductionVolume: 55_000, programLifeYears: 9, note: 'Flagship infotainment-heavy programme' },  // Mercedes EQS
   { region: 'UK', devSource: 'Tier1_Supplier', annualProductionVolume: 75_000, programLifeYears: 8, note: 'UK OEM with heavy Tier-1 outsourcing' },  // Range Rover L460
-  { region: 'USA_Detroit', devSource: 'OEM_Internal', annualProductionVolume: 100_000, programLifeYears: 10, note: 'US in-house, high volume' },  // Tesla Model S HW4
-  { region: 'EU', devSource: 'OEM_Internal', annualProductionVolume: 65_000, programLifeYears: 9, note: 'VW Group platform-reuse benefits' },  // Audi Q8 e-tron
-  { region: 'USA_SV', devSource: 'Startup_OSS', annualProductionVolume: 8_000, programLifeYears: 6, note: 'Silicon Valley startup, very low volume' },  // Lucid Air
+  { region: 'US-MI', devSource: 'OEM_Internal', annualProductionVolume: 100_000, programLifeYears: 10, note: 'US in-house, high volume' },  // Tesla Model S HW4
+  { region: 'DE', devSource: 'OEM_Internal', annualProductionVolume: 65_000, programLifeYears: 9, note: 'VW Group platform-reuse benefits' },  // Audi Q8 e-tron
+  { region: 'US-CA', devSource: 'Startup_OSS', annualProductionVolume: 8_000, programLifeYears: 6, note: 'Silicon Valley startup, very low volume' },  // Lucid Air
 ];
 
 export const SW_VALIDATION_CASES: SWValidationCase[] = SW_PUBLISHED_PROGRAMMES.map((p, i) => ({

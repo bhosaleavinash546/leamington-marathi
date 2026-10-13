@@ -19,10 +19,16 @@ import type {
   SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain, SWCal,
 } from '../../engine/sw-should-cost.js';
 import {
-  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate,
+  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion,
   applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_COCOMO, SW_COCOMO_EXPONENT,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
+import { hubOptionsHTML, hubRatesTableHTML, hubLabel, HUB_RATES_CSS } from './sw-hub-rates.js';
+import { mountSWStudio, skeletonStateFor } from './sw-costing-pipeline.js';
+import { componentLoad } from './sw-vehicle-skeleton.js';
+import { vehicleComponent } from '../../engine/sw-vehicle-map.js';
+import { SW_HUB_RATES } from '../../engine/sw-country-rates.js';
+import { swSchedule } from '../../engine/sw-schedule.js';
 import { resolveRateLibrary } from '../../engine/sw-rate-library.js';
 import { renderActualsHTML, wireActuals } from './sw-actuals.js';
 import { swMoney, swMoneyM, swConv, swCur, swUnitM, setSWCurrency } from './sw-currency.js';
@@ -51,11 +57,8 @@ async function syncSWRateLibrary(): Promise<void> {
     _swInputs.rateLibrary = (data.rateLibrary && typeof data.rateLibrary === 'object')
       ? data.rateLibrary as typeof _swInputs.rateLibrary
       : undefined;
-    // An untyped base-rate field shows the ACTIVE book's base (it rendered before the book arrived).
-    for (const id of SW_BASE_RATE_FIELDS) {
-      const f = document.getElementById(id) as HTMLInputElement | null;
-      if (f && f.dataset.typed !== '1') f.value = String(swLibraryBaseRate(_swInputs));
-    }
+    // An untyped rate field shows the ACTIVE book's hub rate (it rendered before the book arrived).
+    refreshRateFields();
     refreshSWBookViews();
   } catch { /* offline / not authed — keep engine defaults */ }
 }
@@ -224,7 +227,8 @@ function activeSWBook(): { lib: SWRateLibrary; company: boolean } {
 }
 
 function rateLibraryRowsHTML(lib: SWRateLibrary): string {
-  const confColor = (c: RateConfidence) => c === 'High' ? '#059669' : c === 'Medium' ? '#d97706' : '#dc2626';
+  // White text on these passes AA (4.5:1): the old #d97706 / #059669 fills gave 3.0 / 3.8 (axe, Oct 2026).
+  const confColor = (c: RateConfidence) => c === 'High' ? '#047857' : c === 'Medium' ? '#b45309' : '#b91c1c';
   const confBadge = (c: RateConfidence) =>
     `<span style="font-size:0.62rem;font-weight:700;color:#fff;background:${confColor(c)};border-radius:3px;padding:1px 5px">${c}</span>`;
   const rows = (title: string, entries: [string, SWRateEntry][]) =>
@@ -236,11 +240,8 @@ function rateLibraryRowsHTML(lib: SWRateLibrary): string {
       <td style="font-size:0.7rem;color:var(--sw-text-secondary)">${esc(e.source)}${e.note ? ` <em>(${esc(e.note)})</em>` : ''}</td>
     </tr>`).join('');
   const ent = <T extends string>(rec: Record<T, SWRateEntry>) => Object.entries(rec) as [string, SWRateEntry][];
-  // A rate table shows the display currency (the app's money rule); multipliers are unitless.
-  const base = { ...lib.ukBaseRatePerPM, value: Math.round(swConv(lib.ukBaseRatePerPM.value)) };
-  return rows(`Labour base (${swCur().sym}/person-month, pre-overhead)`, [['UK senior-blended base', base]])
-    + rows('Regional multipliers', ent(lib.regionMultipliers))
-    + rows('Development source multipliers', ent(lib.devSourceMultipliers))
+  // Engineer rates are in the hub table above (each hub's own build-up); these are the unitless factors.
+  return rows('Development source multipliers', ent(lib.devSourceMultipliers))
     + rows('ASIL development multipliers (ISO 26262)', ent(lib.asilDevMultipliers))
     + rows('ASIL test/verification multipliers', ent(lib.asilTestMultipliers))
     + rows('Complexity multipliers', ent(lib.complexityMultipliers))
@@ -257,6 +258,9 @@ function refreshSWBookViews(): void {
   const { lib, company } = activeSWBook();
   const rowsEl = document.getElementById('sw-ratelib-rows');
   if (rowsEl) rowsEl.innerHTML = rateLibraryRowsHTML(lib);
+  const hubsEl = document.getElementById('sw-hub-rates');
+  if (hubsEl) hubsEl.innerHTML = hubRatesTableHTML(lib, n => swMoney(n, 0), _swInputs.region);
+  refreshHubPickers();
   const badgeEl = document.getElementById('sw-ratelib-badge');
   if (badgeEl) badgeEl.innerHTML = rateLibraryBadgeHTML(lib, company);
   const valEl = document.getElementById('sw-validation-wrap');
@@ -273,12 +277,15 @@ function renderRateLibraryHTML(): string {
     </summary>
     <div style="padding:0 18px 16px;overflow-x:auto">
       <div id="sw-rate-admin" style="margin-bottom:12px"></div>
+      <h4 class="sw-ratelib-h">Software engineering hubs — each country's own rate</h4>
+      <div id="sw-hub-rates" style="overflow-x:auto;margin-bottom:14px">${hubRatesTableHTML(lib, n => swMoney(n, 0), _swInputs.region)}</div>
+      <h4 class="sw-ratelib-h">Effort factors</h4>
       <table class="sw-data-table" style="font-size:0.76rem">
         <thead><tr><th>Rate</th><th class="sw-num">Value</th><th>Confidence / As-of</th><th>Source</th></tr></thead>
         <tbody id="sw-ratelib-rows">${rateLibraryRowsHTML(lib)}
         </tbody>
       </table>
-      <p style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:8px">Override the UK base rate in Programme Configuration above. Confidence reflects how well-anchored each figure is to a published or surveyed source — not all rates are equal; treat <span style="color:#dc2626;font-weight:600">Low</span> figures as directional.</p>
+      <p style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:8px">Type your own engineer rate in Programme Configuration above to replace the hub's book rate. Confidence reflects how well-anchored each figure is to a published or surveyed source — not all rates are equal; treat <span style="color:#dc2626;font-weight:600">Low</span> figures as directional.</p>
     </div>
   </details>`;
 }
@@ -379,16 +386,24 @@ const PT_LABEL: Record<SWPowertrain, string> = { ICE: 'ICE — combustion', MHEV
 
 /** Map the guided selections onto the full module set in _swInputs. */
 function applyGuidedToInputs(): void {
+  // The drivetrain scope comes from the ENGINE (applyPowertrainScope: which modules, and the PHEV / MHEV de-rating) —
+  // the wizard switched on every in-scope module and skipped the de-rating, so Guided and Advanced disagreed for the
+  // same choices (code review F2: £406.7M v £388.7M).
+  const scoped = applyPowertrainScope(_swInputs.modules, _wizPowertrain);
   for (const m of _swInputs.modules) {
     const def = SW_MODULES.find(d => d.id === m.moduleId)!;
     const cat = def.category as SWCat;
-    // Powertrain modules follow the drivetrain's scope; it used to switch on every Category-A module (P1 #5).
-    m.enabled = _wizDomains[cat] && (!SW_POWERTRAIN_MODULE_IDS.has(m.moduleId) || SW_POWERTRAIN_SCOPE[_wizPowertrain].on.includes(m.moduleId));
+    const sc = scoped.find(x => x.moduleId === m.moduleId)!;
+    const pt = SW_POWERTRAIN_MODULE_IDS.has(m.moduleId);
+    // Premium-trim options keep the state they have (default off, as on the Advanced form); the rest follow the domain.
+    const premium = def.defaultEnabled === false && !pt;
+    m.enabled = _wizDomains[cat] && (pt ? sc.enabled : premium ? m.enabled : true);
     const g = _wizCfg[cat];
-    m.complexity = g.complexity === 'default' ? def.defaultComplexity : g.complexity;
-    m.asil       = g.asil === 'default' ? def.defaultAsil : g.asil;
+    m.complexity = g.complexity === 'default' ? (pt ? sc.complexity : def.defaultComplexity) : g.complexity;
+    m.asil       = g.asil === 'default' ? (pt ? sc.asil : def.defaultAsil) : g.asil;
     m.reuse      = g.reuse;
   }
+  _swInputs.powertrain = _wizPowertrain;
 }
 
 function selectedCats(): SWCat[] { return ALL_CATS.filter(c => _wizDomains[c]); }
@@ -420,8 +435,7 @@ const tip = (t: string) => `<span class="sw-tip" title="${esc(t)}">ⓘ</span>`;
 function renderWizStepBody(step: number): string {
   const inp = _swInputs;
   if (step === 1) {
-    const regionOpts = (['UK','EU','USA_Detroit','USA_SV','China','India','Mexico','Eastern_Europe','Japan'] as const)
-      .map(r => `<option value="${r}" ${inp.region === r ? 'selected' : ''}>${r.replace('_',' ')}</option>`).join('');
+    const regionOpts = hubOptionsHTML(inp.region, activeSWBook().lib, n => swMoney(n, 0), inp.teamSeniorFraction);
     const phaseOpts = (['Concept','Development','SOP','Facelift'] as const)
       .map(p => `<option value="${p}" ${_programPhase === p ? 'selected' : ''}>${p}</option>`).join('');
     const ptOpts = (['ICE', 'MHEV', 'PHEV', 'BEV'] as const)
@@ -430,7 +444,7 @@ function renderWizStepBody(step: number): string {
       <div class="sw-wiz-h">Step 1 — Vehicle &amp; Programme Context</div>
       <p class="sw-wiz-help">Tell us about the programme. These set the baseline rates and how the one-time engineering cost is spread across vehicles.</p>
       <div class="sw-grid sw-grid-2" style="gap:16px">
-        <div class="sw-field-group"><label class="sw-label" for="wiz-region">Development region ${tip('Where your engineers are based — sets the labour rate. Silicon Valley is ~9× India.')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-region">Software engineering hub ${tip('Where your engineers are based. Each hub has its own rate from that country\'s salaries, statutory employer on-costs and working hours — see the Rate Library.')}</label>
           <select id="wiz-region" class="sw-config-sel">${regionOpts}</select></div>
         <div class="sw-field-group"><label class="sw-label" for="wiz-phase">Programme phase ${tip('Concept/Development/SOP/Facelift — informational; facelift programmes usually reuse more software.')}</label>
           <select id="wiz-phase" class="sw-config-sel">${phaseOpts}</select></div>
@@ -503,12 +517,12 @@ function renderWizStepBody(step: number): string {
       <div class="sw-wiz-h">Step 5 — Review &amp; Fine-Tune</div>
       <p class="sw-wiz-help">Adjust the commercial assumptions, then recalculate. Most users can leave these at defaults.</p>
       <div class="sw-grid sw-grid-3" style="gap:16px">
-        <div class="sw-field-group"><label class="sw-label" for="wiz-overhead">Overhead multiplier ${tip('Facilities, IT and programme management on top of the base rate, which already includes benefits. 1.15 is the default; going much higher counts benefits twice.')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-overhead">Overhead multiplier ${tip('Facilities, IT, management and non-statutory benefits on top of the hub rate (which is salary + statutory employer on-cost only). 1.15 is a CostVision assumption — use your company\'s figure.')}</label>
           <input id="wiz-overhead" type="number" class="sw-config-inp" min="1" max="3" step="0.05" value="${inp.overheadMultiplier}"></div>
-        <div class="sw-field-group"><label class="sw-label" for="wiz-senior">Senior engineer fraction ${tip('Share of the team that are senior (more expensive, more productive).')}</label>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-senior">Senior engineer fraction ${tip('Share of the team that are senior: blends the hub\'s mid-level and senior rates. It changes the rate only, not the effort.')}</label>
           <input id="wiz-senior" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inp.teamSeniorFraction}"></div>
-        <div class="sw-field-group"><label class="sw-label" for="wiz-baserate">UK base rate £/PM ${tip('UK senior-blended rate per person-month before overhead. All regions scale from this.')}</label>
-          <input id="wiz-baserate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inp.baseRateGBP ?? swLibraryBaseRate(inp)}"${inp.baseRateGBP ? ' data-typed="1"' : ''}></div>
+        <div class="sw-field-group"><label class="sw-label" for="wiz-baserate">Your engineer rate £/PM (optional) ${tip('Leave as shown to use the hub\'s own book rate. Type your own £ per person-month (152 h, before overhead) to replace it for this hub — it is never scaled by a country factor.')}</label>
+          <input id="wiz-baserate" type="number" class="sw-config-inp" min="100" max="500000" step="50" value="${inp.baseRateGBP ?? Math.round(swLibraryBaseRate(inp))}"${inp.baseRateGBP ? ' data-typed="1"' : ''}></div>
       </div>
       <div style="text-align:center;margin-top:16px"><button id="wiz-recalc" class="sw-wiz-btn-primary">↻ Recalculate</button></div>
       <div id="wiz-sensitivity" style="margin-top:14px"></div>`;
@@ -579,11 +593,11 @@ function renderWizCost(): void {
 function renderWizSensitivity(): void {
   const el = document.getElementById('wiz-sensitivity');
   if (!el || !_swResult) return;
-  const reg  = _swResult.sensitivity.find(x => x.parameter.includes('Region'));
+  const reg  = _swResult.sensitivity.find(x => x.parameter.startsWith('Engineering hub'));
   const asil = _swResult.sensitivity.find(x => x.parameter.includes('ASIL'));
   const row = (label: string, r?: { low: number; high: number }) =>
     r ? `<div class="sw-box" style="font-size:0.78rem"><strong>${esc(label)}:</strong> ${fmtM(r.low)} → ${fmtM(r.high)}</div>` : '';
-  el.innerHTML = `<div class="sw-grid sw-grid-2" style="gap:10px">${row('Region swing (India ↔ USA SV)', reg)}${row('ASIL swing (B ↔ D)', asil)}</div>`;
+  el.innerHTML = `<div class="sw-grid sw-grid-2" style="gap:10px">${row(`Hub swing (${reg?.parameter.replace(/^Engineering hub \((.*)\)$/, '$1').replace(' vs ', ' ↔ ') ?? ''})`, reg)}${row('ASIL swing (B ↔ D)', asil)}</div>`;
 }
 
 function renderWizReport(): void {
@@ -592,7 +606,7 @@ function renderWizReport(): void {
   const res = document.getElementById('sw-results');
   if (res) res.style.display = '';
   const note = document.getElementById('wiz-report-note');
-  if (note) note.innerHTML = `<div class="sw-box" style="font-size:0.78rem;line-height:1.6"><strong>Key assumptions:</strong> ${selectedCats().length}/7 domains · ${esc(_swInputs.region.replace('_', ' '))} · ${_programPhase} phase · ${_swInputs.programLifeYears} yr · ${fmt(_swInputs.annualProductionVolume / 1000, 0)}k vehicles/yr · overhead ×${_swInputs.overheadMultiplier}. Rates from ${activeSWBook().company ? "company" : "built-in"} library v${esc(activeSWBook().lib.version)}. Per-vehicle is amortised over full lifetime volume — see the Model Validation panel for the recovery-window caveat.</div>`;
+  if (note) note.innerHTML = `<div class="sw-box" style="font-size:0.78rem;line-height:1.6"><strong>Key assumptions:</strong> ${selectedCats().length}/7 domains · ${esc(hubLabel(_swInputs.region))} · ${_programPhase} phase · ${_swInputs.programLifeYears} yr · ${fmt(_swInputs.annualProductionVolume / 1000, 0)}k vehicles/yr · overhead ×${_swInputs.overheadMultiplier}. Rates from ${activeSWBook().company ? "company" : "built-in"} library v${esc(activeSWBook().lib.version)}. Per-vehicle is amortised over full lifetime volume — see the Model Validation panel for the recovery-window caveat.</div>`;
 }
 
 function goToWizStep(n: number): void {
@@ -620,7 +634,41 @@ function wireGuided(): void {
   document.getElementById('wiz-recalc')?.addEventListener('click', () => { readWizStep(5); wizCompute(); renderWizSensitivity(); });
 }
 
+/** Write the shared inputs into the Advanced form, so switching from Guided shows (and Calculate reads) what the wizard
+ *  set (code review F3: Advanced re-read its stale fields and overwrote the wizard's volume, hub and life). */
+function syncAdvancedFields(): void {
+  const set = (id: string, v: string | number | undefined) => {
+    const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+    if (el && v !== undefined) el.value = String(v);
+  };
+  set('sw-region', _swInputs.region);
+  set('sw-dev-source', _swInputs.devSource);
+  set('sw-prog-life', _swInputs.programLifeYears);
+  set('sw-vol', _swInputs.annualProductionVolume);
+  set('sw-overhead', _swInputs.overheadMultiplier);
+  set('sw-senior-frac', _swInputs.teamSeniorFraction);
+  if (_swInputs.powertrain) set('sw-powertrain', _swInputs.powertrain);
+  const br = document.getElementById('sw-base-rate') as HTMLInputElement | null;
+  if (br) {
+    if (_swInputs.baseRateGBP) { br.value = String(_swInputs.baseRateGBP); br.dataset.typed = '1'; }
+    else { delete br.dataset.typed; }
+  }
+  refreshRateFields();
+  for (const m of _swInputs.modules) {
+    const q = (cls: string) => document.querySelector<HTMLInputElement | HTMLSelectElement>(`.${cls}[data-id="${m.moduleId}"]`);
+    const cb = q('sw-mod-enable') as HTMLInputElement | null;
+    if (cb) cb.checked = m.enabled;
+    const a = q('sw-asil-sel'); if (a) a.value = m.asil;
+    const c = q('sw-comp-sel'); if (c) c.value = m.complexity;
+    const r = q('sw-reuse-sel'); if (r) r.value = m.reuse;
+  }
+}
+
 function setSWMode(mode: 'guided' | 'advanced'): void {
+  if (mode === _swMode) return;
+  // Leaving Advanced: its fields are the inputs. Entering Advanced: show the inputs the wizard set.
+  if (_swMode === 'advanced') { try { readConfig(); } catch { /* the engine reports a bad value at Calculate */ } }
+  else syncAdvancedFields();
   _swMode = mode;
   const g = document.getElementById('sw-guided-body');
   const a = document.getElementById('sw-advanced-body');
@@ -699,13 +747,7 @@ function renderSWPanelHTML(): string {
     </div>`;
   }).join('');
 
-  const regionOpts = ([
-    ['UK','UK (London / Coventry)'],['EU','EU (Germany / Czech)'],['USA_Detroit','USA (Detroit)'],
-    ['USA_SV','USA (Silicon Valley)'],['China','China (Shanghai / Shenzhen)'],
-    ['India','India (Bangalore / Pune)'],['Mexico','Mexico (Juárez / Guadalajara)'],
-    ['Eastern_Europe','Eastern Europe (Romania / Poland)'],['Japan','Japan (Tokyo / Nagoya)'],
-  ] as [SWRegion, string][]).map(([v,l]) =>
-    `<option value="${v}" ${inputs.region === v ? 'selected' : ''}>${esc(l)}</option>`).join('');
+  const regionOpts = hubOptionsHTML(inputs.region, activeSWBook().lib, n => swMoney(n, 0), inputs.teamSeniorFraction);
 
   const sourceOpts = ([
     ['OEM_Internal','OEM Internal Teams'],['Tier1_Supplier','Tier 1 Supplier'],['Startup_OSS','Startup / OSS'],
@@ -759,7 +801,7 @@ function renderSWPanelHTML(): string {
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
       <div class="sw-field-group">
-        <label class="sw-label" for="sw-region">Development Region</label>
+        <label class="sw-label" for="sw-region">Software engineering hub</label>
         <select id="sw-region" class="sw-config-sel">${regionOpts}</select><div id="sw-hub-basis" style="font-size:0.66rem;color:var(--text-muted);margin-top:3px">${esc(_swHubBasis)}</div>
       </div>
       <div class="sw-field-group">
@@ -803,11 +845,11 @@ function renderSWPanelHTML(): string {
       </div>
       <div class="sw-field-group">
         <label class="sw-label" for="sw-senior-frac">Senior Engineer Fraction</label>
-        <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Fraction of team that are senior engineers (0.0–1.0).">
+        <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Share of senior engineers (0–1): blends the hub's mid-level and senior rates. It changes the rate, not the effort.">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label" for="sw-base-rate">UK Base Rate (£/PM)</label>
-        <input id="sw-base-rate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inputs.baseRateGBP ?? swLibraryBaseRate(inputs)}"${inputs.baseRateGBP ? ' data-typed="1"' : ''} title="UK senior-blended bare rate per person-month, before overhead. All regional rates are relative to this. Override to match your engagement's rate library.">
+        <label class="sw-label" for="sw-base-rate">Your engineer rate (£/PM, optional)</label>
+        <input id="sw-base-rate" type="number" class="sw-config-inp" min="100" max="500000" step="50" value="${inputs.baseRateGBP ?? Math.round(swLibraryBaseRate(inputs))}"${inputs.baseRateGBP ? ' data-typed="1"' : ''} title="Shows the hub's own book rate (its mid / senior blend at your senior share). Type your own £ per person-month (152 h, before overhead) to replace it for this hub — it is never scaled by a country factor.">
       </div>
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
@@ -832,10 +874,10 @@ function renderSWPanelHTML(): string {
   <!-- ── Quick-set presets ─────────────────────────────────────── -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
     <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Quick Set:</span>
-    <button class="sw-preset-btn" data-preset="aggressive">Aggressive (Low ASIL, High Reuse)</button>
-    <button class="sw-preset-btn" data-preset="baseline">Industry Baseline</button>
-    <button class="sw-preset-btn" data-preset="premium">Premium OEM (High ASIL, Fresh)</button>
-    <button class="sw-preset-btn" data-preset="offshored">Offshored (India Team)</button>
+    <button class="sw-preset-btn" data-preset="aggressive" title="Heavy reuse everywhere, developed in China; module ASIL and complexity unchanged">Heavy reuse · China hub</button>
+    <button class="sw-preset-btn" data-preset="baseline" title="Medium reuse, UK hub, module defaults">Baseline · UK hub</button>
+    <button class="sw-preset-btn" data-preset="premium" title="Fresh code, complexity raised to at least High (never lowered), California hub">Fresh code · California hub</button>
+    <button class="sw-preset-btn" data-preset="offshored" title="Medium reuse, India hub, module defaults">Offshored · India hub</button>
   </div>
 
   <!-- ── Vehicle programme demos ────────────────────────────────── -->
@@ -843,9 +885,9 @@ function renderSWPanelHTML(): string {
     <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Demo Programmes:</span>
     ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
     <button class="sw-preset-btn" id="sw-study-btn" title="Open the apple-to-apple powertrain cost study — 5 cars × 4 drivetrains" style="border-color:rgba(180,120,20,0.6);color:var(--sw-text-primary);font-weight:700">Powertrain Cost Study</button>
-    <button class="sw-preset-btn" id="sw-bench-btn" title="Range Rover L460 competitive benchmark — vs BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne, real drivetrains only" style="border-color:rgba(30,64,52,0.45);color:#1E4034;font-weight:700">L460 Competitive Benchmark</button>
+    <button class="sw-preset-btn" id="sw-bench-btn" title="Range Rover L460 competitive benchmark — vs BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne, real drivetrains only" style="border-color:var(--sw-accent-border);color:var(--sw-text-primary);font-weight:700">L460 Competitive Benchmark</button>
     <button class="sw-preset-btn" id="sw-deepdive-btn" title="Range Rover L460 module-by-module deep-dive — features, cost detail, competitive differences and an insight for every module" style="border-color:rgba(156,115,40,0.6);color:var(--sw-text-primary);font-weight:700">L460 Deep-Dive</button>
-    <button class="sw-preset-btn" id="sw-allmodels-btn" title="All-models comparison — every module priced across Range Rover L460 / BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne side by side" style="border-color:rgba(60,90,140,0.5);color:#3E5F92;font-weight:700">All-Models Comparison</button>
+    <button class="sw-preset-btn" id="sw-allmodels-btn" title="All-models comparison — every module priced across Range Rover L460 / BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne side by side" style="border-color:var(--sw-accent-border);color:var(--sw-text-primary);font-weight:700">All-Models Comparison</button>
   </div>
   <p id="sw-reports-stale" style="font-size:0.72rem;color:var(--sw-text-muted);margin:-8px 0 14px">
     The Study, Benchmark, Deep-Dive, All-Models and per-vehicle pages are <strong>reference examples</strong> — static reports
@@ -890,6 +932,7 @@ function renderSWPanelHTML(): string {
 
     <!-- Summary cards -->
     <div id="sw-summary-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px"></div>
+    <div id="sw-studio"></div>
 
     <!-- Monte Carlo distribution (Rec 2) -->
     <div class="sw-results-section" id="sw-monte-carlo"></div>
@@ -944,6 +987,8 @@ function renderSWPanelHTML(): string {
 </div>
 
 <style>
+${HUB_RATES_CSS}
+.sw-ratelib-h{font-size:.8rem;font-weight:700;color:var(--sw-text-primary);margin:4px 0 8px}
 /* Rec 9: Dark mode CSS variables */
 :root {
   --sw-surface:      #ffffff;
@@ -960,23 +1005,27 @@ function renderSWPanelHTML(): string {
   /* Result colours that pass WCAG AA (4.5:1) on the panel surfaces in each theme (axe, P3 a11y). */
   --sw-good:         #047857;
   --sw-bad:          #b91c1c;
+  --sw-warn:         #b45309;
+  --sw-on-accent:    #ffffff;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --sw-surface:      #1e293b;
-    --sw-surface-alt:  #0f172a;
-    --sw-border:       #334155;
-    --sw-border-light: #1e293b;
-    --sw-text-primary: #f1f5f9;
-    --sw-text-body:    #cbd5e1;
-    --sw-text-secondary: #94a3b8;
-    --sw-text-muted:   #94a3b8;   /* #64748b was 3.9:1 on #0f172a */
-    --sw-accent:       #3b82f6;
-    --sw-good:         #34d399;
-    --sw-bad:          #f87171;
-    --sw-accent-bg:    #1e3a5f;
-    --sw-accent-border:#1d4ed8;
-  }
+/* Dark follows the APP's theme (black + green; dark is the default), not the OS setting (code review F6: the panel
+   went light inside a dark app, or dark inside a light one). Values are the app's own tokens. */
+html:not([data-theme="light"]) {
+    --sw-surface:      var(--surface, #111513);
+    --sw-surface-alt:  var(--bg-secondary, #0c0f0d);
+    --sw-border:       var(--border-strong, rgba(178,204,186,.22));
+    --sw-border-light: var(--border, rgba(178,204,186,.10));
+    --sw-text-primary: var(--text-primary, #eef3ef);
+    --sw-text-body:    var(--text-secondary, #a9b6ad);
+    --sw-text-secondary: var(--text-secondary, #a9b6ad);
+    --sw-text-muted:   var(--text-muted, #85928a);
+    --sw-accent:       var(--accent, #22c55e);
+    --sw-on-accent:    var(--on-accent, #04130a);
+    --sw-good:         var(--green, #2dd4bf);
+    --sw-bad:          var(--red, #f87171);
+    --sw-warn:         var(--amber, #fbbf24);
+    --sw-accent-bg:    var(--accent-light, rgba(34,197,94,.12));
+    --sw-accent-border: rgba(34,197,94,.45);
 }
 
 .sw-config-sel, .sw-config-inp {
@@ -1079,9 +1128,13 @@ function renderSWPanelHTML(): string {
   font-weight: 700;
   margin-right: 2px;
 }
-.sw-tag-ml    { background: #7c3aed22; color: #7c3aed; border: 1px solid #7c3aed44; }
-.sw-tag-cloud { background: #0891b222; color: #0891b2; border: 1px solid #0891b244; }
-.sw-tag-sec   { background: #dc262622; color: #dc2626; border: 1px solid #dc262644; }
+/* Tag text passes AA in both themes (light: darker inks; dark: the app's own tokens). */
+.sw-tag-ml    { background: #7c3aed1a; color: #6d28d9; border: 1px solid #7c3aed55; }
+.sw-tag-cloud { background: #0891b21a; color: #0e7490; border: 1px solid #0891b255; }
+.sw-tag-sec   { background: #dc26261a; color: #b91c1c; border: 1px solid #dc262655; }
+html:not([data-theme="light"]) .sw-tag-ml    { color: #c4b5fd; }
+html:not([data-theme="light"]) .sw-tag-cloud { color: var(--accent3, #2dd4bf); }
+html:not([data-theme="light"]) .sw-tag-sec   { color: var(--red, #f87171); }
 
 .sw-preset-btn {
   padding: 5px 12px;
@@ -1348,7 +1401,7 @@ function readConfig(): void {
   document.querySelectorAll<HTMLInputElement>('.sw-pm-input').forEach(inp => {
     const m = _swInputs.modules.find(x => x.moduleId === inp.dataset.id);
     if (!m) return;
-    const v = parseInt(inp.value);
+    const v = parseFloat(inp.value);   // 12.5 PM was costed as 12 (parseInt, code review F22)
     m.customPersonMonths = isNaN(v) || inp.value.trim() === '' ? null : v;
   });
 }
@@ -1400,7 +1453,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'bmw_x7', powertrain: 'MHEV', label: 'BMW X7 (48V MHEV)',
     desc: 'G07 flagship SUV, CLAR platform, iDrive 8 (BMW OS 8). ICE + 48V mild hybrid. Strong platform reuse across 7-Series/X5/X7. Premium software: Executive Drive Pro (48V active roll) + Integral Active Steering, Bowers & Wilkins Diamond audio, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-ready HUD.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
+    region: 'DE', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/bmw-x7-software-cost-breakdown.html',
     disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
@@ -1410,7 +1463,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'audi_q8', powertrain: 'MHEV', label: 'Audi Q8 (48V MHEV)',
     desc: 'MLB Evo platform, MMI/MIB3 infotainment, VW Group + CARIAD shared software stacks. ICE + 48V mild hybrid. Strong platform reuse (VW.OS carry-across). Premium software: adaptive air suspension + all-wheel steer, Bang & Olufsen 3D, park assist plus + 360, 4-zone climate, HUD.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
+    region: 'DE', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy',
     reportUrl: 'reports/audi-q8-software-cost-breakdown.html',
     // Core platform middleware genuinely carries across the VW Group → Platform reuse there.
     moduleOverrides: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } },
@@ -1419,7 +1472,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'merc_gls', powertrain: 'MHEV', label: 'Mercedes GLS 450 (48V MHEV)',
     desc: 'X167 flagship, MBUX / NTG6 (infotainment-heavy), EQ Boost 48V mild hybrid. Signature software: E-Active Body Control (48V, camera Road-Surface-Scan), MBUX + "Hey Mercedes" voice, Burmester 3D surround, active parking + 360, MB AR-HUD, 5-zone climate + air purification, digital key.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium',
+    region: 'DE', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/mercedes-gls-software-cost-breakdown.html',
     disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
@@ -1433,7 +1486,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'porsche_cayenne', powertrain: 'BEV', label: 'Porsche Cayenne Electric (2026)',
     desc: 'E4 platform (PPE, 800V), full BEV, Porsche Driver Experience HMI. Shares PPE middleware with Macan EV / Audi Q6 e-tron (Platform reuse there); bespoke Porsche 4D chassis, Active Ride, 800V high-power charging and Burmester audio at Very-High complexity. Full EV powertrain stack retained.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
+    region: 'DE', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-software-cost-breakdown.html',
     disabledModules: [],  // full BEV: BMS / charge / drive software all in scope
     moduleOverrides: {
@@ -1449,7 +1502,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'porsche_cayenne_phev', powertrain: 'PHEV', label: 'Porsche Cayenne E-Hybrid (PHEV)',
     desc: 'MLB Evo · PCM · E-Hybrid plug-in powertrain. Same Porsche performance software as the BEV, but the plug-in-hybrid powertrain is retained at reduced scope (smaller pack, lower charging power) — BMS / SOC / drive-unit at High rather than Very-High.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
+    region: 'DE', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-phev-software-cost-breakdown.html',
     disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
     moduleOverrides: {
@@ -1461,7 +1514,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'porsche_cayenne_mhev', powertrain: 'MHEV', label: 'Porsche Cayenne (48V MHEV)',
     desc: 'MLB Evo · PCM · 48V mild-hybrid powertrain. High-voltage battery / charge / drive modules are not applicable and disabled; 48V regen and battery-thermal retained. Porsche performance software at Very-High complexity.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
+    region: 'DE', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-mhev-software-cost-breakdown.html',
     disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
@@ -1472,7 +1525,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'porsche_cayenne_ice', powertrain: 'ICE', label: 'Porsche Cayenne V8 (ICE)',
     desc: 'MLB Evo · PCM · V8 twin-turbo powertrain. Combustion powertrain software (engine, transmission, after-treatment / OBD — estimates); no electrified-powertrain software. Porsche performance, chassis and infotainment software otherwise identical.',
-    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
+    region: 'DE', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.60, reuse: 'Medium',
     reportUrl: 'reports/porsche-cayenne-ice-software-cost-breakdown.html',
     disabledModules: [],  // powertrain scope: engine SW_POWERTRAIN_SCOPE
     moduleOverrides: {
@@ -1491,9 +1544,9 @@ interface StudyCar { id: string; slug: string; flag: string; name: string; regio
 interface StudyDT { key: string; code: string; pt: SWPowertrain; }
 const STUDY_CARS: StudyCar[] = [
   { id: 'l460', slug: 'range-rover-l460', flag: '', name: 'Range Rover L460', region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium', sig: { premium_audio: { complexity: 'Very High' } }, skip: 'phev' },
-  { id: 'bmw_x7', slug: 'bmw-x7', flag: '', name: 'BMW X7', region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
-  { id: 'audi_q8', slug: 'audi-q8', flag: '', name: 'Audi Q8', region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy', sig: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } }, skip: 'mhev' },
-  { id: 'merc_gls', slug: 'mercedes-gls', flag: '', name: 'Mercedes GLS 450', region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
+  { id: 'bmw_x7', slug: 'bmw-x7', flag: '', name: 'BMW X7', region: 'DE', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
+  { id: 'audi_q8', slug: 'audi-q8', flag: '', name: 'Audi Q8', region: 'DE', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Heavy', sig: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } }, skip: 'mhev' },
+  { id: 'merc_gls', slug: 'mercedes-gls', flag: '', name: 'Mercedes GLS 450', region: 'DE', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
 ];
 const STUDY_DTS: StudyDT[] = [
   { key: 'ice', code: 'ICE', pt: 'ICE' }, { key: 'mhev', code: 'MHEV', pt: 'MHEV' },
@@ -1556,22 +1609,23 @@ function applyVehicleDemo(id: string): void {
 
 function applyPreset(preset: string): void {
   const cfg = {
-    aggressive: { asil: 'A' as ASILLevel, comp: 'Medium' as SWComplexity, reuse: 'Heavy' as SWReuse, region: 'China' as SWRegion },
-    baseline:   { asil: null,              comp: null,                       reuse: 'Medium' as SWReuse, region: 'UK'    as SWRegion },
-    premium:    { asil: null,              comp: 'High' as SWComplexity,    reuse: 'Fresh'  as SWReuse, region: 'USA_SV' as SWRegion },
-    offshored:  { asil: null,              comp: null,                       reuse: 'Medium' as SWReuse, region: 'India' as SWRegion },
+    aggressive: { asil: null,              comp: null,                       reuse: 'Heavy' as SWReuse, region: 'CN' as SWRegion },
+    baseline:   { asil: null,              comp: null,                       reuse: 'Medium' as SWReuse, region: 'UK' as SWRegion },
+    premium:    { asil: null,              comp: 'High' as SWComplexity,    reuse: 'Fresh'  as SWReuse, region: 'US-CA' as SWRegion },
+    offshored:  { asil: null,              comp: null,                       reuse: 'Medium' as SWReuse, region: 'IN' as SWRegion },
   }[preset];
   if (!cfg) return;
 
   const regionSel = document.getElementById('sw-region') as HTMLSelectElement | null;
-  if (regionSel) regionSel.value = cfg.region;
+  if (regionSel) { regionSel.value = cfg.region; regionSel.dispatchEvent(new Event('change', { bubbles: true })); }
 
-  document.querySelectorAll<HTMLSelectElement>('.sw-asil-sel').forEach(sel => {
-    if (cfg.asil) sel.value = cfg.asil;
-  });
+  // A preset never LOWERS a module (code review F11: "Premium" set every module to High, lowering the 20 Very-High
+  // ones, and "Aggressive" set ASIL-A on ASIL-D modules). ASIL stays the module's — it is a safety decision.
+  const RANK: Record<string, number> = { Low: 0, Medium: 1, High: 2, 'Very High': 3 };
   document.querySelectorAll<HTMLSelectElement>('.sw-comp-sel').forEach(sel => {
-    if (cfg.comp) sel.value = cfg.comp;
+    if (cfg.comp && RANK[sel.value] < RANK[cfg.comp]) sel.value = cfg.comp;
   });
+  void cfg.asil;
   document.querySelectorAll<HTMLSelectElement>('.sw-reuse-sel').forEach(sel => {
     sel.value = cfg.reuse;
   });
@@ -1582,19 +1636,23 @@ function applyPreset(preset: string): void {
 function renderResults(result: SWProgramResult): void {
   const s = result.summary;
 
-  // Summary cards
-  const avgFTE = s.totalEffortPersonMonths > 0 ? s.totalEffortPersonMonths / (result.inputs.programLifeYears * 12) : 0;
+  // Summary cards. Per-vehicle split follows the engine's rule exactly: NRE over the recovery window's vehicles,
+  // lifecycle over the life's (it divided both by life, so the two parts did not add to the headline).
+  const sch = swSchedule(result);
   const nreTotal = s.nreTotal;
-  const vehicles = result.inputs.annualProductionVolume * result.inputs.programLifeYears;
-  const nrePerVeh       = vehicles > 0 ? nreTotal / vehicles : 0;                    // one-time dev, amortised
-  const lifecyclePerVeh = vehicles > 0 ? (s.grandTotal - nreTotal) / vehicles : 0;   // recurring over life
+  const lifecycleTotal = s.totalMaintenance + s.totalCloud + s.totalLicensing;   // F8: licences / royalties are lifecycle too
+  const recovery = Math.max(1, result.inputs.costRecoveryYears ?? result.inputs.programLifeYears);
+  const nreVehicles = result.inputs.annualProductionVolume * recovery;
+  const lifeVehicles = result.inputs.annualProductionVolume * result.inputs.programLifeYears;
+  const nrePerVeh       = nreVehicles > 0 ? nreTotal / nreVehicles : 0;
+  const lifecyclePerVeh = lifeVehicles > 0 ? lifecycleTotal / lifeVehicles : 0;
   const cards: { label: string; value: string; sub: string; color: string }[] = [
     { label: 'Total Programme Cost',    value: fmtM(s.grandTotal),             sub: 'NRE + Lifecycle (all modules)',                color: '#2563eb' },
-    { label: 'Per Vehicle (SW Cost)',   value: `${swMoney(s.perVehicle, 0)}`,     sub: `NRE ${swMoney(nrePerVeh,0)} + Lifecycle ${swMoney(lifecyclePerVeh,0)} · ${fmt(result.inputs.annualProductionVolume/1000,0)}k/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
+    { label: 'Per Vehicle (SW Cost)',   value: `${swMoney(s.perVehicle, 0)}`,     sub: `NRE ${swMoney(nrePerVeh,0)} (${recovery}-yr recovery) + Lifecycle ${swMoney(lifecyclePerVeh,0)} · ${fmt(result.inputs.annualProductionVolume/1000,0)}k/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
     { label: 'Total NRE',              value: fmtM(nreTotal),                  sub: 'Dev + Test + Integ + Tools + Cyber + Calib',  color: '#7c3aed' },
-    { label: 'Engineering Effort',     value: `${fmt(s.totalEffortPersonMonths, 0)} PM`, sub: `development ${fmt(s.totalPersonMonths, 0)} PM · avg ${fmt(avgFTE,0)} FTE over ${result.inputs.programLifeYears} yr`, color: '#d97706' },
-    { label: 'Lifecycle (Maint+Cloud)',value: fmtM(s.totalMaintenance + s.totalCloud), sub: `${fmt((s.totalMaintenance+s.totalCloud)/s.grandTotal*100,0)}% of total programme`, color: '#0891b2' },
-    { label: 'Active Modules',         value: `${result.modules.length}`,      sub: `of ${SW_MODULES.length} modules · ${result.inputs.region} / ${result.inputs.devSource.replace('_',' ')}`, color: '#64748b' },
+    { label: 'Engineering Effort',     value: `${fmt(s.totalEffortPersonMonths, 0)} PM`, sub: `development ${fmt(s.totalPersonMonths, 0)} PM · avg ${fmt(sch.averageTeam,0)} engineers over ${fmt(sch.developmentMonths,0)} months`, color: '#d97706' },
+    { label: 'Lifecycle',              value: fmtM(lifecycleTotal), sub: `maintenance, cloud, licences & royalties · ${fmt(s.grandTotal > 0 ? lifecycleTotal/s.grandTotal*100 : 0,0)}% of total`, color: '#0891b2' },
+    { label: 'Active Modules',         value: `${result.modules.length}`,      sub: `of ${SW_MODULES.length} modules · ${hubLabel(result.inputs.region)} / ${result.inputs.devSource.replace('_',' ')}`, color: '#64748b' },
   ];
 
   const cardsHTML = cards.map(c => `
@@ -1607,6 +1665,23 @@ function renderResults(result: SWProgramResult): void {
 
   const cardsEl = document.getElementById('sw-summary-cards');
   if (cardsEl) cardsEl.innerHTML = cardsHTML;
+
+  // Costing studio: the seven steps of this costing on the SUV skeleton (sw-costing-pipeline.ts).
+  const studioEl = document.getElementById('sw-studio');
+  if (studioEl) {
+    const lib = activeSWBook().lib;
+    const hub = lib.hubRates[result.inputs.region];
+    const r = swRateBasis(result.inputs);
+    const used = r.find(([k]) => k === 'Engineer rate used')?.[1] ?? '';
+    const loaded = (result.inputs.baseRateGBP && result.inputs.baseRateGBP > 0 ? result.inputs.baseRateGBP : swLibraryBaseRate(result.inputs))
+      * (lib.devSourceMultipliers[result.inputs.devSource]?.value ?? 1) * result.inputs.overheadMultiplier;
+    mountSWStudio(studioEl, {
+      result,
+      rate: { perPMGBP: loaded, hubLabel: hubLabel(result.inputs.region),
+        build: `${used.replace(/^\u00a3[\d,]+ — /, '')}; mid ${swMoney(hub?.mid.value ?? 0, 0)} / senior ${swMoney(hub?.senior.value ?? 0, 0)} per person-month (salary + statutory on-cost ÷ productive hours × 152 h), × development source ${lib.devSourceMultipliers[result.inputs.devSource]?.value ?? 1} × overhead ${result.inputs.overheadMultiplier}.` },
+      fmt: { money: n => n >= 1e6 ? fmtM(n) : swMoney(n, 0), number: (n, dp = 0) => fmt(n, dp) },
+    });
+  }
 
   // Rec 2: Monte Carlo
   const mc = result.monteCarlo;
@@ -1621,7 +1696,7 @@ function renderResults(result: SWProgramResult): void {
           { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `${swMoney(mc.p10PerVehicle,0)}/veh`, color: 'var(--sw-good)' },
           { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `${swMoney(mc.p50PerVehicle,0)}/veh`, color: 'var(--sw-accent)' },
           { label: 'P90 (Pessimistic)', val: fmtM(mc.p90),  pv: `${swMoney(mc.p90PerVehicle,0)}/veh`, color: 'var(--sw-bad)' },
-          { label: 'Mean',              val: fmtM(mc.mean), pv: `P90/P10 spread: +${fmt(pct90vs10,0)}%`, color: '#7c3aed' },
+          { label: 'Mean',              val: fmtM(mc.mean), pv: `P90/P10 spread: +${fmt(pct90vs10,0)}%`, color: 'var(--sw-text-primary)' },
         ].map(c => `
         <div style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:8px;padding:12px 14px">
           <div style="font-size:0.7rem;font-weight:600;color:var(--sw-text-muted);margin-bottom:4px">${c.label}</div>
@@ -1919,7 +1994,7 @@ function renderResults(result: SWProgramResult): void {
       const diffPct = (thisM - medianBm) / medianBm * 100;
       insights.push({ icon: diffPct > 30 ? '<svg class="ic" aria-hidden="true" style="color:#ef4444"><use href="#i-dot"/></svg>' : diffPct > 10 ? '<svg class="ic" aria-hidden="true" style="color:#eab308"><use href="#i-dot"/></svg>' : '<svg class="ic" aria-hidden="true" style="color:var(--green)"><use href="#i-dot"/></svg>', level: diffPct > 30 ? 'warn' : 'ok',
         title: `Programme cost is ${fmt(Math.abs(diffPct),0)}% ${diffPct >= 0 ? 'above' : 'below'} peer median (${fmtM(medianBm * 1_000_000)})`,
-        body: diffPct > 20 ? `Cost exceeds peer median. Review ASIL assignments and reuse opportunities. India offshoring could reduce by ${fmt(s.grandTotal > 0 ? Math.abs(s.grandTotal - _recomputeTotalForInsight(result)) / s.grandTotal * 100 : 0, 0)}% vs current region.`
+        body: diffPct > 20 ? `Cost exceeds peer median. Review ASIL assignments and reuse opportunities. The cheapest assessed hub would cost ${fmt(s.grandTotal > 0 ? Math.abs(s.grandTotal - _recomputeTotalForInsight(result)) / s.grandTotal * 100 : 0, 0)}% less than this hub.`
               : `Programme cost is within normal range vs peers. Monitor cloud costs as fleet scales.`,
       });
     }
@@ -1932,26 +2007,28 @@ function renderResults(result: SWProgramResult): void {
       });
     }
 
-    if (result.inputs.region === 'UK' || result.inputs.region === 'USA_SV') {
-      const indiaTotal = result.sensitivity.find(r => r.parameter.includes('Region'))?.low;
-      if (indiaTotal && indiaTotal > 0) {
-        const saving = s.grandTotal - indiaTotal;
-        insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg>', level: 'info',
-          title: `Offshoring to India could save ${fmtM(saving)}`,
-          body: `India-based team (Bangalore/Pune rate) reduces labour cost to ${fmtM(indiaTotal)} — saving ${fmtM(saving)}. This is the whole programme re-costed at the India hub; add your own figure for coordination, knowledge transfer and time-zone risk.`,
-        });
-      }
+    const hubRow = result.sensitivity.find(r => r.parameter.startsWith('Engineering hub'));
+    if (hubRow && hubRow.low > 0 && hubRow.low < s.grandTotal * 0.97) {
+      const cheapest = hubRow.parameter.replace(/^Engineering hub \((.*) vs .*\)$/, '$1');
+      const saving = s.grandTotal - hubRow.low;
+      insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg>', level: 'info',
+        title: `The same scope in ${cheapest} would cost ${fmtM(hubRow.low)} (−${fmtM(saving)})`,
+        body: `The whole programme re-costed at ${cheapest}'s own book rate. Add your own figure for coordination, knowledge transfer, travel and time-zone risk before comparing.`,
+      });
     }
 
-    const avgTeamFTE = s.totalEffortPersonMonths > 0 ? s.totalEffortPersonMonths / (result.inputs.programLifeYears * 12) : 0;
-    insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>', level: 'info',
-      title: `Average team: ${fmt(avgTeamFTE, 0)} FTE across ${result.inputs.programLifeYears}-year programme`,
-      body: `${fmt(s.totalEffortPersonMonths, 0)} person-months of engineering effort is ~${fmt(avgTeamFTE,0)} FTE averaged over the ${result.inputs.programLifeYears}-year programme; the peak during development is higher.`,
+    // Average team over the DEVELOPMENT window and the COCOMO II duration of the longest module (code review F7: it
+    // divided development effort by the production life).
+    const sch = swSchedule(result);
+    insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>', level: sch.overrunning.length ? 'warn' : 'info',
+      title: `Average team: ${fmt(sch.averageTeam, 0)} engineers over ${fmt(sch.developmentMonths, 0)} months of development`,
+      body: `${fmt(s.totalEffortPersonMonths, 0)} person-months of engineering ÷ ${fmt(sch.developmentMonths, 0)} months. COCOMO II gives the longest module (${sch.longestModule}) ${fmt(sch.longestMonths, 0)} months`
+        + (sch.overrunning.length ? ` — ${sch.overrunning.length} module${sch.overrunning.length === 1 ? '' : 's'} need longer than the development window at nominal staffing (${sch.overrunning.slice(0, 3).join(', ')}${sch.overrunning.length > 3 ? '…' : ''}).` : ', inside the development window.'),
     });
 
-    const levelColor: Record<string, string> = { info: '#2563eb', warn: '#d97706', ok: '#059669' };
-    const levelBg:    Record<string, string> = { info: '#eff6ff', warn: '#fff7ed', ok: '#f0fdf4' };
-    const levelBorder:Record<string, string> = { info: '#bfdbfe', warn: '#fed7aa', ok: '#bbf7d0' };
+    const levelColor: Record<string, string> = { info: 'var(--sw-accent)', warn: 'var(--sw-warn,#b45309)', ok: 'var(--sw-good)' };
+    const levelBg:    Record<string, string> = { info: 'var(--sw-accent-bg)', warn: 'var(--sw-surface-alt)', ok: 'var(--sw-surface-alt)' };
+    const levelBorder:Record<string, string> = { info: 'var(--sw-accent-border)', warn: 'var(--sw-border)', ok: 'var(--sw-border)' };
 
     insightsEl.innerHTML = `
       <div class="sw-section-title"><span></span> Engineering Insights</div>
@@ -1961,7 +2038,7 @@ function renderResults(result: SWProgramResult): void {
           <span style="font-size:1.2rem;flex-shrink:0">${ins.icon}</span>
           <div>
             <div style="font-weight:700;font-size:0.82rem;color:${levelColor[ins.level]};margin-bottom:4px">${esc(ins.title)}</div>
-            <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.5">${esc(ins.body)}</div>
+            <div style="font-size:0.78rem;color:var(--sw-text-body);line-height:1.5">${esc(ins.body)}</div>
           </div>
         </div>`).join('')}
       </div>`;
@@ -1976,8 +2053,8 @@ function renderResults(result: SWProgramResult): void {
 }
 
 function _recomputeTotalForInsight(result: SWProgramResult): number {
-  // Quick India recompute for insights without full sensitivity
-  return result.sensitivity.find(r => r.parameter.includes('Region'))?.low ?? result.summary.grandTotal;
+  // The cheapest assessed hub, from the sensitivity row (no extra recompute).
+  return result.sensitivity.find(r => r.parameter.startsWith('Engineering hub'))?.low ?? result.summary.grandTotal;
 }
 
 // ─── Rec 5: AI Analysis ───────────────────────────────────────────────────────
@@ -2003,7 +2080,7 @@ PROGRAMME: Premium Luxury SUV Full Software Stack (${result.inputs.programLifeYe
 Total Programme Cost: ${(s.grandTotal/1e6).toFixed(1)}M GBP
 Per Vehicle: £${Math.round(s.perVehicle)}
 Engineering effort: ${Math.round(s.totalEffortPersonMonths)} PM (development ${Math.round(s.totalPersonMonths)} PM)
-Region: ${result.inputs.region} | Source: ${result.inputs.devSource} | Life: ${result.inputs.programLifeYears}yr | Volume: ${(result.inputs.annualProductionVolume/1000).toFixed(0)}k/yr
+Engineering hub: ${hubLabel(result.inputs.region)} | Source: ${result.inputs.devSource} | Life: ${result.inputs.programLifeYears}yr | Volume: ${(result.inputs.annualProductionVolume/1000).toFixed(0)}k/yr
 Active Modules: ${result.modules.length}/${SW_MODULES.length}
 
 COST BREAKDOWN:
@@ -2177,7 +2254,7 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
   const cfgData = [
     ['PROGRAMME CONFIGURATION'],
     ['Parameter', 'Value'],
-    ['Region', inp.region],
+    ['Engineering hub', hubLabel(inp.region)],
     ['Dev Source', inp.devSource],
     ['Programme Life (years)', inp.programLifeYears],
     ['Annual Production Volume', inp.annualProductionVolume],
@@ -2194,6 +2271,47 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     }),
   ];
 
+  // Where the software runs (the studio's SUV map), the COCOMO schedule and the hub's own rate build-up — the same
+  // engine figures the screen shows; a module on several components counts at each (stated in the sheet).
+  const vLoad = componentLoad(skeletonStateFor(result));
+  const vehicleData: (string | number)[][] = [
+    ['Where this software runs — components and the modules on them (a module on several components counts at each; these do not add up)'],
+    ['Component', 'Kind', 'Modules', `Software on it (${swCur().code} M)`, 'Modules'],
+    ...[...vLoad.entries()].filter(([id]) => id !== 'backbone').sort((a, b) => b[1].cost - a[1].cost).map(([id, l]) => {
+      const c = vehicleComponent(id)!;
+      return [c.label, c.kind, l.modules.length, fM(l.cost), l.modules.map(m => m.name).join('; ')];
+    }),
+  ];
+  const sch = swSchedule(result);
+  const schedData: (string | number)[][] = [
+    ['Schedule — COCOMO II.2000 TDEV per module (modules in parallel; CostVision assumption)'],
+    ['Basis', sch.basis],
+    ['Development window (months)', f2(sch.developmentMonths)],
+    ['Average engineering team (effort ÷ window)', f2(sch.averageTeam)],
+    ['Longest module (months)', f2(sch.longestMonths)],
+    [],
+    ['Module', 'Effort (PM)', 'COCOMO duration (months)', 'Average staff'],
+    ...sch.rows.map(r => [r.name, f2(r.effortPM), f2(r.tdevMonths), f2(r.avgStaff)]),
+  ];
+  const hubBook = SW_HUB_RATES[inp.region];
+  const hubData: (string | number)[][] = hubBook ? [
+    ['Engineering hub — its own rate (no UK multiplier)'],
+    ['Hub', hubBook.label],
+    ['Cities', hubBook.cities.join(', ')],
+    ['Build-up', hubBook.build],
+    ['Senior basis', hubBook.seniorBasis],
+    ['Employer on-cost', hubBook.onCostBasis],
+    ['Productive hours', hubBook.hoursBasis],
+    ['Confidence', hubBook.confidence],
+    ['Notes', hubBook.notes],
+    [],
+    ['Salary figures (mid)', 'Source · statistic · year · URL'],
+    ...hubBook.mid.map(o => [`${hubBook.currency} ${o.value.toLocaleString('en-GB')} ${o.period} × ${o.annualFactor}`, `${o.source} · ${o.statistic} · ${o.dataYear ?? 'year n/s'} · ${o.url}`]),
+    ['Salary figures (senior)', ''],
+    ...hubBook.senior.map(o => [`${hubBook.currency} ${o.value.toLocaleString('en-GB')} ${o.period} × ${o.annualFactor}`, `${o.source} · ${o.statistic} · ${o.dataYear ?? 'year n/s'} · ${o.url}`]),
+    ['Evidence of automotive software here', hubBook.evidence.join(' · ')],
+  ] : [['Engineering hub', String(inp.region)]];
+
   const wb = await buildWorkbook([
     { name: 'Summary',            rows: summaryData, cols: [30, 16, 12] },
     { name: 'Category Breakdown', rows: catData,     cols: [10, 30, 10, 16, 12] },
@@ -2201,6 +2319,9 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     { name: 'Sensitivity & MC',   rows: sensData,    cols: [40, 12, 16, 16, 16, 14] },
     { name: 'Benchmarks',         rows: bmData,      cols: [28, 18, 12, 18, 44] },
     { name: 'Configuration',      rows: cfgData,     cols: [28, 40, 10, 8, 12, 10, 12] },
+    { name: 'Vehicle map',        rows: vehicleData, cols: [34, 12, 10, 16, 90] },
+    { name: 'Schedule',           rows: schedData,   cols: [40, 14, 14, 14] },
+    { name: 'Hub rate',           rows: hubData,     cols: [34, 90] },
   ]);
   await downloadWorkbook(wb, exportFilename('sw-should-cost', null, 'xlsx'));
 }
@@ -2209,8 +2330,9 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
 
 function exportSWPDF(result: SWProgramResult): void {
   import('jspdf').then(({ jsPDF }) => {
-    import('jspdf-autotable').then(({ default: autoTable }) => {
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    Promise.all([import('jspdf-autotable'), import('../../export/pdf.js')]).then(([{ default: autoTable }, { hardenPdfText }]) => {
+      // WinAnsi-safe text: ₹ ₩ ₫ ₺ zł Kč and "≈" printed as mojibake (code review F10); same helper as the main PDF.
+      const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }));
       const s = result.summary;
       const W = 210, MG = 14;
       const nreTotal = s.nreTotal;
@@ -2228,7 +2350,7 @@ function exportSWPDF(result: SWProgramResult): void {
       doc.setTextColor(148, 163, 184);
       doc.text('Premium Luxury SUV — Full Software Stack (2024–2026)', 14, 38);
       doc.setFontSize(9);
-      doc.text(`Region: ${result.inputs.region}  ·  Source: ${result.inputs.devSource}  ·  Life: ${result.inputs.programLifeYears}yr  ·  Volume: ${(result.inputs.annualProductionVolume / 1000).toFixed(0)}k/yr`, 14, 46);
+      doc.text(`Engineering hub: ${hubLabel(result.inputs.region)}  ·  Source: ${result.inputs.devSource}  ·  Life: ${result.inputs.programLifeYears}yr  ·  Volume: ${(result.inputs.annualProductionVolume / 1000).toFixed(0)}k/yr`, 14, 46);
       doc.text(`Generated: ${new Date().toLocaleDateString('en-GB')}  ·  CostVision`, 14, 52);
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
@@ -2425,6 +2547,8 @@ function loadConfig(id: string): void {
   const cfg = _savedConfigs.find(c => c.id === id);
   if (!cfg) return;
   _swInputs = JSON.parse(JSON.stringify(cfg.inputs));
+  // A configuration saved before Oct 2026 names a retired hub ('EU', 'India' …) — map it to today's hub.
+  _swInputs.region = normaliseSWRegion(String(_swInputs.region)) as SWRegion;
   delete _swInputs.rateLibrary;          // legacy configs may carry a snapshot — drop it
   void syncSWRateLibrary();              // apply the CURRENT active rate library
   // Stale result from a prior calculation no longer matches the loaded inputs;
@@ -2478,7 +2602,7 @@ function compareConfigs(): void {
     ['Lifecycle',       c => fmtM(c.r.summary.totalMaintenance + c.r.summary.totalCloud + c.r.summary.totalLicensing)],
     ['MC P50',          c => fmtM(c.r.monteCarlo.p50)],
     ['MC P90',          c => fmtM(c.r.monteCarlo.p90)],
-    ['Region',          c => c.r.inputs.region],
+    ['Engineering hub', c => hubLabel(c.r.inputs.region)],
     ['Dev Source',      c => c.r.inputs.devSource.replace('_', ' ')],
     ['Active Modules',  c => `${c.r.modules.length}/${SW_MODULES.length}`],
   ];
@@ -2532,9 +2656,13 @@ function showSWError(msg: string): void {
     errEl = document.createElement('div');
     errEl.id = 'sw-calc-error';
     errEl.style.cssText = 'background:color-mix(in srgb, var(--danger) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--danger) 35%, transparent);border-radius:8px;padding:10px 16px;margin:8px 0;font-size:0.82rem;color:color-mix(in srgb, var(--danger) 80%, var(--text-primary));display:flex;align-items:center;gap:8px';
-    const calcBtn = document.getElementById('sw-calc-btn');
-    calcBtn?.parentElement?.insertBefore(errEl, calcBtn);
   }
+  // Put it where the engineer is looking: the Advanced Calculate button, or the wizard's own body (code review F5 —
+  // the wizard's errors went into the hidden Advanced section).
+  const anchor = _swMode === 'guided' ? document.getElementById('sw-guided-body') : document.getElementById('sw-calc-btn');
+  if (_swMode === 'guided') anchor?.prepend(errEl);
+  else anchor?.parentElement?.insertBefore(errEl, anchor);
+  errEl.setAttribute('role', 'alert');
   errEl.innerHTML = `<span>⚠</span> ${esc(msg)}`;
   errEl.style.display = 'flex';
   setTimeout(() => { if (errEl) errEl.style.display = 'none'; }, 6000);
@@ -2550,6 +2678,21 @@ export function wireSWPanel(): void {
     swPanel.addEventListener('input', e => {
       const t = e.target as HTMLInputElement;
       if ((SW_BASE_RATE_FIELDS as readonly string[]).includes(t.id)) t.dataset.typed = '1';
+    });
+    // A new hub or senior share: the untyped rate field follows the hub's book rate; the hub note clears.
+    swPanel.addEventListener('change', e => {
+      const t = e.target as HTMLInputElement | HTMLSelectElement;
+      if (t.id === 'sw-region' || t.id === 'wiz-region') {
+        _swInputs.region = t.value as SWRegion;
+        _swHubBasis = '';
+        const basisEl = document.getElementById('sw-hub-basis');
+        if (basisEl) basisEl.textContent = '';
+        refreshRateFields();
+      } else if (t.id === 'sw-senior-frac' || t.id === 'wiz-senior') {
+        const v = parseFloat(t.value);
+        if (Number.isFinite(v)) _swInputs.teamSeniorFraction = Math.min(1, Math.max(0, v));
+        refreshRateFields();
+      }
     });
   }
   // Powertrain select: apply the engine's scope to the modules and redraw the module table (P1 #5).
@@ -2568,10 +2711,16 @@ export function wireSWPanel(): void {
     btn.addEventListener('click', () => setSWMode(btn.dataset.mode as 'guided' | 'advanced')));
   wireGuided();
   void renderSWRateAdmin();
-  wireActuals(factor => {
-    _swInputs.effortCalibration = factor;
-    const f = document.getElementById('sw-effort-cal') as HTMLInputElement | null;
-    if (f) f.value = String(factor);
+  // The calibration card is wired AFTER Calculate (below) and cannot stop the panel if it fails (code review F1).
+
+  queueMicrotask(() => {
+    try {
+      wireActuals(factor => {
+        _swInputs.effortCalibration = factor;
+        const f = document.getElementById('sw-effort-cal') as HTMLInputElement | null;
+        if (f) f.value = String(factor);
+      });
+    } catch (err) { console.warn('[sw] calibration card not wired:', err); }
   });
 
   // Calculate button
@@ -2733,6 +2882,25 @@ function updateCatCounts(): void {
  */
 let _swHubBasis = '';
 
+/** An untyped engineer-rate field shows the hub's book rate at the current senior share. */
+function refreshRateFields(): void {
+  for (const id of SW_BASE_RATE_FIELDS) {
+    const f = document.getElementById(id) as HTMLInputElement | null;
+    if (f && f.dataset.typed !== '1') {
+      const v = swLibraryBaseRate(_swInputs);
+      f.value = Number.isFinite(v) ? String(Math.round(v)) : '';
+    }
+  }
+}
+
+/** Both hub pickers re-listed from the active book (a company book changes the rates the options show). */
+function refreshHubPickers(): void {
+  for (const id of ['sw-region', 'wiz-region']) {
+    const sel = document.getElementById(id) as HTMLSelectElement | null;
+    if (sel) sel.innerHTML = hubOptionsHTML(_swInputs.region, activeSWBook().lib, n => swMoney(n, 0), _swInputs.teamSeniorFraction);
+  }
+}
+
 /**
  * The page's display currency changed (main.ts `_applyCurrency`): results, the rate table and the next export follow it
  * (P3 #15). Inputs stay £.
@@ -2762,6 +2930,7 @@ export function applySWCountry(mfg: string): void {
   }
   const basisEl = document.getElementById('sw-hub-basis');
   if (basisEl) basisEl.textContent = _swHubBasis;
+  refreshRateFields();
 }
 
 export function initSWPanel(containerEl: HTMLElement): void {

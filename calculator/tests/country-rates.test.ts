@@ -651,9 +651,12 @@ describe('13. all 39 countries × every real part: each costing is priced in its
   it('software should-cost follows the country to its nearest engineering hub, for every country', async () => {
     const { swRegionFor } = await import('../src/engine/sw-should-cost.js');
     for (const c of ALL) expect(swRegionFor(c).region, c).toBeTruthy();
-    expect(swRegionFor('IN').region).toBe('India');
-    expect(swRegionFor('PL').region).toBe('Eastern_Europe');
-    expect(swRegionFor('VN').basis).toContain('nearest');
+    // Oct 2026 country book: a country where automotive software is developed is its OWN hub; the rest say which hub.
+    expect(swRegionFor('IN').region).toBe('IN');
+    expect(swRegionFor('PL').region).toBe('PL');
+    expect(swRegionFor('VN').region).toBe('VN');
+    expect(swRegionFor('TH')).toEqual({ region: 'VN', basis: expect.stringContaining('assessed hub') });
+    expect(swRegionFor('US').region).toBe('US-MI');
     // The country moves the software INPUTS and both hub pickers, not only the advanced drop-down (software P2 #13).
     expect(readFileSync('src/ui/main.ts', 'utf8')).toContain('applySWCountry(region);');
     const ui = readFileSync('src/ui/panels/sw-should-cost-ui.ts', 'utf8');

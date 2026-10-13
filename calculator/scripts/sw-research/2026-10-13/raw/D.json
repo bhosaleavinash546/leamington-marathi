@@ -1,0 +1,615 @@
+{
+  "task": "D",
+  "researched": "2026-10-13",
+  "searchesUsed": 24,
+  "method": "All 24 WebSearch calls used. WebFetch was attempted on 8 URLs and failed on every one with a DNS error (getaddrinfo ENOTFOUND), so every figure here is seenIn 'search-snippet' (from the search tool's summary of the result pages) and none was read on the page.",
+  "countries": [
+    {
+      "hub": "IN",
+      "cities": [
+        "Bengaluru",
+        "Pune",
+        "Hyderabad",
+        "Chennai"
+      ],
+      "currency": "INR",
+      "evidence": [
+        {
+          "claim": "KPIT Technologies (Pune) employs AUTOSAR developers: AmbitionBox lists an 'Autosar Developer' salary page for KPIT built from 26 reported salaries (updated July 2025).",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+          "seenIn": "search-snippet"
+        },
+        {
+          "claim": "Mercedes-Benz Research and Development India (Bengaluru): Mercedes-Benz announced creation of 1,000 R&D jobs in India; the report states ~9,000 engineers already employed by Mercedes-Benz in India.",
+          "url": "https://www.investmentmonitor.ai/news/mercedes-benz-announces-creation-of-1000-rd-jobs-in-india",
+          "seenIn": "search-snippet",
+          "note": "Article date not visible in the snippet; headcount figures conflict between sources (HRKatha: ~2,300 engineers Bengaluru + Pune; https://www.hrkatha.com/recruitment/mercedes-benz-r-d-scouts-for-1-700-engineers/)."
+        },
+        {
+          "claim": "Bosch India: India is the Bosch Group's largest development centre outside Germany, ~18,500 R&D associates across Bengaluru and Coimbatore; plan to hire up to 10,000 R&D engineers.",
+          "url": "https://www.businesstoday.in/amp/latest/corporate/story/engineers-bosch-india-10-000-job-opportunity-101647-2018-02-08",
+          "seenIn": "search-snippet",
+          "note": "2018 article — old; today's Bosch Global Software Technologies headcount not found."
+        },
+        {
+          "claim": "Schaeffler India employs embedded software engineers (AmbitionBox 'Embedded Software Engineer' salary page for Schaeffler India).",
+          "url": "https://www.ambitionbox.com/salaries/schaeffler-india-salaries/embedded-software-engineer",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "salaries": [
+        {
+          "role": "embedded_sw_engineer",
+          "level": "mid",
+          "value": 450000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range low",
+          "dataYear": 2025,
+          "region": "India (company-wide, KPIT Technologies)",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — KPIT Technologies 'Autosar Developer'",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+          "seenIn": "search-snippet",
+          "note": "Source band is 2–4 years experience (straddles junior/mid); 26 salaries; page updated July 2025. AmbitionBox figures are normally CTC — not confirmed in snippet. Services firm."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "mid",
+          "value": 1090000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range high",
+          "dataYear": 2025,
+          "region": "India (company-wide, KPIT Technologies)",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — KPIT Technologies 'Autosar Developer'",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+          "seenIn": "search-snippet",
+          "note": "Pair of the 450,000 low; 2–4 years experience; 26 salaries; updated July 2025."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "mid",
+          "value": 400000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range low",
+          "dataYear": null,
+          "region": "India (company-wide, TCS)",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — TCS 'Autosar Developer'",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+          "seenIn": "search-snippet",
+          "note": "Peer-company figure shown alongside the KPIT AUTOSAR page in the search summary; 2–5 years; data year not visible — verify. Exact TCS page URL not seen."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "mid",
+          "value": 850000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range high",
+          "dataYear": null,
+          "region": "India (company-wide, TCS)",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — TCS 'Autosar Developer'",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+          "seenIn": "search-snippet",
+          "note": "Pair of the 400,000 low; 2–5 years; data year not visible — verify."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "junior",
+          "value": 360000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range low",
+          "dataYear": null,
+          "region": "India (company-wide, Tech Mahindra)",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — Tech Mahindra 'Autosar Developer'",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+          "seenIn": "search-snippet",
+          "note": "Peer-company figure from the same search summary; 1–3 years; data year not visible — verify."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "junior",
+          "value": 800000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range high",
+          "dataYear": null,
+          "region": "India (company-wide, Tech Mahindra)",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — Tech Mahindra 'Autosar Developer'",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+          "seenIn": "search-snippet",
+          "note": "Pair of the 360,000 low; 1–3 years; data year not visible — verify."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "mid",
+          "value": 460000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range low",
+          "dataYear": null,
+          "region": "India (company-wide, Schaeffler India)",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — Schaeffler India 'Embedded Software Engineer'",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/salaries/schaeffler-india-salaries/embedded-software-engineer",
+          "seenIn": "search-snippet",
+          "note": "Automotive Tier-1. Band is 1–5 years experience; level figures blurred behind paywall; data year not visible in snippet — verify before use."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "mid",
+          "value": 1260000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range high",
+          "dataYear": null,
+          "region": "India (company-wide, Schaeffler India)",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — Schaeffler India 'Embedded Software Engineer'",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/salaries/schaeffler-india-salaries/embedded-software-engineer",
+          "seenIn": "search-snippet",
+          "note": "Pair of the 460,000 low; 1–5 years; data year not visible — verify."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "junior",
+          "value": 150000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range low",
+          "dataYear": null,
+          "region": "Bengaluru",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — 'Junior Embedded Engineer', Bengaluru",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/profile/junior-embedded-engineer-salary/bengaluru-location",
+          "seenIn": "search-snippet",
+          "note": "<1 to 3 years; 107 salaries; general embedded (not automotive-specific); data year not visible — verify."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "junior",
+          "value": 530000,
+          "period": "annual",
+          "currency": "INR",
+          "statistic": "range high",
+          "dataYear": null,
+          "region": "Bengaluru",
+          "includesBonus": null,
+          "source": "AmbitionBox (job-board aggregate) — 'Junior Embedded Engineer', Bengaluru",
+          "sourceType": "job-board-aggregate",
+          "url": "https://www.ambitionbox.com/profile/junior-embedded-engineer-salary/bengaluru-location",
+          "seenIn": "search-snippet",
+          "note": "Pair of the 150,000 low; <1 to 3 years; 107 salaries; data year not visible."
+        }
+      ],
+      "supplierRates": [],
+      "notes": "NO official software-developer statistic found or searched to completion: PLFS / Labour Bureau do not publish a software-developer wage split (not confirmed by a search this round). No figure for senior (6–10 y) or lead embedded/automotive engineers from a usable source: the only senior bands seen (₹22–45 LPA 'senior', DIYguru) come from a training-provider page and were EXCLUDED; Jooble's 'Autosar engineer' ₹10.7–13.8 L is a machine aggregate and was EXCLUDED; Glassdoor India results were individual self-reports (Cyient, TI) and were not recorded. Indian salaries are normally quoted as annual CTC (incl. employer PF, variable pay) — AmbitionBox does not separate base from variable in what was seen. All figures are search-snippet only: WebFetch failed with DNS errors (getaddrinfo ENOTFOUND) for every host tried (ambitionbox.com, glassdoor.co.in, payscale.com, stats.gov.cn, wikipedia.org, shigoto.mhlw.go.jp), so no page was read directly."
+    },
+    {
+      "hub": "CN",
+      "cities": [
+        "Shanghai",
+        "Shenzhen",
+        "Huizhou",
+        "Suzhou",
+        "Hefei"
+      ],
+      "currency": "CNY",
+      "evidence": [
+        {
+          "claim": "Bosch opened a software hub in Shanghai for automated driving / digital cockpit (its third such innovation centre in China), reported at ~540 engineers.",
+          "url": "https://technode.com/2022/11/23/bosch-opens-new-software-hub-in-shanghai-for-automated-driving/",
+          "seenIn": "search-snippet",
+          "note": "2022 report."
+        },
+        {
+          "claim": "Desay SV (Huizhou) — automotive electronics/software Tier-1: 10,000+ employees worldwide and 4,600+ R&D professionals (company campus-recruitment page).",
+          "url": "https://nus.edu.sg/cfg/events/details/2f1095e028c015fc6c97f91f323698e4",
+          "seenIn": "search-snippet",
+          "note": "Group-wide count; R&D branches reported in Chengdu, Nanjing, Shanghai, Shenzhen, Guangzhou, Taipei (search summary)."
+        }
+      ],
+      "salaries": [
+        {
+          "role": "software_developer_general",
+          "level": "all",
+          "value": 238966,
+          "period": "annual",
+          "currency": "CNY",
+          "statistic": "mean",
+          "dataYear": 2024,
+          "region": "China, urban non-private units",
+          "includesBonus": null,
+          "source": "National Bureau of Statistics, 2024年城镇单位就业人员年平均工资情况 (released 16 May 2025) — industry 'Information transmission, software and information technology services'",
+          "sourceType": "official-statistic",
+          "url": "https://www.stats.gov.cn/sj/zxfb/202505/t20250516_1959826.html",
+          "seenIn": "search-snippet",
+          "note": "INDUSTRY average (ISIC-like section), not an occupation: includes all staff in the IT-services industry. Highest of 19 sections; national non-private average 124,110. NBS wage totals are understood to include bonuses — not confirmed on the page."
+        },
+        {
+          "role": "software_developer_general",
+          "level": "all",
+          "value": 123193,
+          "period": "annual",
+          "currency": "CNY",
+          "statistic": "mean",
+          "dataYear": 2024,
+          "region": "China, urban private units",
+          "includesBonus": null,
+          "source": "National Bureau of Statistics, 2024年城镇单位就业人员年平均工资情况 (table 5, private units) — industry 'Information transmission, software and information technology services'",
+          "sourceType": "official-statistic",
+          "url": "https://www.stats.gov.cn/sj/zxfb/202505/t20250516_1959826.html",
+          "seenIn": "search-snippet",
+          "note": "Private-unit industry average; 2023 was 129,215 (−4.7%). Many automotive-software employers (NIO, XPeng, Desay SV) are private or listed private firms — the two official figures bracket very different populations."
+        }
+      ],
+      "supplierRates": [],
+      "notes": "No usable SURVEY for embedded / automotive software engineers by level: three searches (Liepin / Zhaopin / BOSS Zhipin in Chinese; Glassdoor / Levels.fyi in English) returned nothing citable. An industry-association report (汽车人才研究会) put 智能网联 bachelor campus-hire pay at '约18万元' — EXCLUDED as an 'about' figure seen only in a search summary. Interview Query's Shanghai 'software engineer' USD figures (no year, n=4/13) were EXCLUDED. Monthly ×13–16 pay months were not seen stated in any source. Both official figures are industry averages (all occupations in IT services), not software engineers specifically. Snippet-only (WebFetch DNS failure)."
+    },
+    {
+      "hub": "VN",
+      "cities": [
+        "Hanoi",
+        "Ho Chi Minh City",
+        "Da Nang"
+      ],
+      "currency": "VND",
+      "evidence": [
+        {
+          "claim": "FPT (FPT Software / FPT Automotive) has expanded its automotive software workforce to more than 5,000 professionals and targets >30% annual growth in automotive software; it runs an AUTOSAR-based (embedded C/C++) digital automotive engineering lab with Hanoi University of Science and Technology.",
+          "url": "https://fpt.com/en/news/fpt-and-hanoi-university-of-science-and-technology-inaugurate-digital-automotive-engineering-laboratory-to-advance-automotive-talent-development",
+          "seenIn": "search-snippet",
+          "note": "The search summary attributed the 5,000 figure to a December 2025 FPT release; which FPT page carries it is not confirmed."
+        },
+        {
+          "claim": "LG Electronics' Hanoi R&D centre (LGEDV) does software development and verification for in-vehicle infotainment / telematics; LG planned to grow its Vietnam R&D staff from 750 to 1,000.",
+          "url": "https://theinvestor.vn/lg-electronics-to-power-up-auto-parts-rd-in-vietnam-d4019.html",
+          "seenIn": "search-snippet",
+          "note": "March 2023 figures."
+        },
+        {
+          "claim": "LG Vehicle Solution Vietnam — LG company page on its Vietnam vehicle-component R&D subsidiary.",
+          "url": "https://www.lg.com/global/business/insights/mobility/news/20230309-company-lg-vehicle-solution-vietnam/",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "salaries": [
+        {
+          "role": "embedded_sw_engineer",
+          "level": "all",
+          "value": 34350000,
+          "period": "monthly",
+          "currency": "VND",
+          "statistic": "median",
+          "dataYear": 2025,
+          "region": "Vietnam (national)",
+          "includesBonus": null,
+          "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer",
+          "sourceType": "salary-survey",
+          "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market",
+          "seenIn": "search-snippet",
+          "note": "All experience levels. Median by years of experience; gross vs net NOT stated in what was seen — verify (Vietnamese salaries are often quoted net)."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "junior",
+          "value": 21400000,
+          "period": "monthly",
+          "currency": "VND",
+          "statistic": "median",
+          "dataYear": 2025,
+          "region": "Vietnam (national)",
+          "includesBonus": null,
+          "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer",
+          "sourceType": "salary-survey",
+          "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market",
+          "seenIn": "search-snippet",
+          "note": "Under 1 year experience. Median by years of experience; gross vs net NOT stated in what was seen — verify (Vietnamese salaries are often quoted net)."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "junior",
+          "value": 23900000,
+          "period": "monthly",
+          "currency": "VND",
+          "statistic": "median",
+          "dataYear": 2025,
+          "region": "Vietnam (national)",
+          "includesBonus": null,
+          "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer",
+          "sourceType": "salary-survey",
+          "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market",
+          "seenIn": "search-snippet",
+          "note": "1–2 years experience. Median by years of experience; gross vs net NOT stated in what was seen — verify (Vietnamese salaries are often quoted net)."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "mid",
+          "value": 28400000,
+          "period": "monthly",
+          "currency": "VND",
+          "statistic": "median",
+          "dataYear": 2025,
+          "region": "Vietnam (national)",
+          "includesBonus": null,
+          "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer",
+          "sourceType": "salary-survey",
+          "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market",
+          "seenIn": "search-snippet",
+          "note": "3–4 years experience. Median by years of experience; gross vs net NOT stated in what was seen — verify (Vietnamese salaries are often quoted net)."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "senior",
+          "value": 39400000,
+          "period": "monthly",
+          "currency": "VND",
+          "statistic": "median",
+          "dataYear": 2025,
+          "region": "Vietnam (national)",
+          "includesBonus": null,
+          "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer",
+          "sourceType": "salary-survey",
+          "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market",
+          "seenIn": "search-snippet",
+          "note": "5–8 years experience (source band, not 6–10). Median by years of experience; gross vs net NOT stated in what was seen — verify (Vietnamese salaries are often quoted net)."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "lead",
+          "value": 60650000,
+          "period": "monthly",
+          "currency": "VND",
+          "statistic": "median",
+          "dataYear": 2025,
+          "region": "Vietnam (national)",
+          "includesBonus": null,
+          "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer",
+          "sourceType": "salary-survey",
+          "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market",
+          "seenIn": "search-snippet",
+          "note": "Over 8 years experience (source band, not 10+). Median by years of experience; gross vs net NOT stated in what was seen — verify (Vietnamese salaries are often quoted net)."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "senior",
+          "value": 45600000,
+          "period": "monthly",
+          "currency": "VND",
+          "statistic": "median",
+          "dataYear": 2024,
+          "region": "Vietnam (national)",
+          "includesBonus": null,
+          "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2024–2025 — Embedded Engineer",
+          "sourceType": "salary-survey",
+          "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market-2024-2025",
+          "seenIn": "search-snippet",
+          "note": "Single data point, 8 years experience; statistic (median) assumed from report style — verify. Not comparable to the 2025–26 bands."
+        }
+      ],
+      "supplierRates": [],
+      "notes": "ONE survey only (ITviec, general embedded — not automotive-specific). TopDev's report is gated (topdev.vn/get-report-en) and no embedded figure was seen. No official statistic searched (GSO publishes income by industry, not software occupation) — budget. Most serious doubt: ITviec does not state gross vs net in what was seen; if net, gross (with employee social insurance 10.5% and PIT) is materially higher. Snippet-only (WebFetch DNS failure)."
+    },
+    {
+      "hub": "JP",
+      "cities": [
+        "Tokyo",
+        "Nagoya / Aichi (Kariya, Toyota City)"
+      ],
+      "currency": "JPY",
+      "evidence": [
+        {
+          "claim": "Toyota set up a Software Development Center and expanded collaboration with Woven by Toyota and Denso (both with software-implementation strengths); Denso's CTO serves as an EVP of the new unit.",
+          "url": "https://toyotatimes.jp/en/toyota_news/1045.html",
+          "seenIn": "search-snippet"
+        },
+        {
+          "claim": "Woven by Toyota (Tokyo) develops the Arene vehicle software platform; Arene software roles advertised in Tokyo.",
+          "url": "https://www.marketscreener.com/quote/stock/TOYOTA-INDUSTRIES-CORPORA-6493686/news/Toyota-mobility-tech-unit-CEO-Kuffner-to-leave-post-44791728/",
+          "seenIn": "search-snippet",
+          "note": "Also job listings, e.g. https://welovedevs.com/app/job/chief-engineer-arene"
+        },
+        {
+          "claim": "Japanese job posting for software-development-process improvement on in-vehicle safety ECUs (en-ambi, listing 30 Jul – 12 Aug 2026).",
+          "url": "https://en-ambi.com/job/j-16013831/",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "salaries": [
+        {
+          "role": "software_developer_general",
+          "level": "all",
+          "value": 386200,
+          "period": "monthly",
+          "currency": "JPY",
+          "statistic": "mean",
+          "dataYear": 2024,
+          "region": "Japan (establishments ≥10 employees), men and women",
+          "includesBonus": false,
+          "source": "MHLW Basic Survey on Wage Structure 2024 (令和6年賃金構造基本統計調査) — ソフトウェア作成者, きまって支給する現金給与額, as quoted by Benesse 職業情報",
+          "sourceType": "official-statistic",
+          "url": "https://manabi.benesse.ne.jp/shokugaku/job/list/197/income/",
+          "seenIn": "search-snippet",
+          "note": "Contractual cash earnings per month = scheduled earnings + overtime pay; EXCLUDES bonus (bonus recorded separately below). Read from a secondary page quoting the official table — verify on e-Stat."
+        },
+        {
+          "role": "software_developer_general",
+          "level": "all",
+          "value": 1106800,
+          "period": "annual",
+          "currency": "JPY",
+          "statistic": "mean",
+          "dataYear": 2024,
+          "region": "Japan (establishments ≥10 employees), men and women",
+          "includesBonus": true,
+          "source": "MHLW Basic Survey on Wage Structure 2024 — ソフトウェア作成者, 年間賞与その他特別給与額, as quoted by Benesse 職業情報",
+          "sourceType": "official-statistic",
+          "url": "https://manabi.benesse.ne.jp/shokugaku/job/list/197/income/",
+          "seenIn": "search-snippet",
+          "note": "Annual bonus and other special earnings only (add to 12 × monthly). Annual total = 12 × 386,200 + 1,106,800 by arithmetic (not stored). Verify on e-Stat."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "all",
+          "value": 5576000,
+          "period": "annual",
+          "currency": "JPY",
+          "statistic": "mean",
+          "dataYear": null,
+          "region": "Japan (national)",
+          "includesBonus": null,
+          "source": "MHLW jobtag — システムエンジニア（組込み、IoT） 賃金（年収）, as quoted by a career article",
+          "sourceType": "official-statistic",
+          "url": "https://shigoto.mhlw.go.jp/User/Occupation/Detail/315",
+          "seenIn": "search-snippet",
+          "note": "Figure '557.6万円' seen only in a search snippet of a secondary article quoting jobtag; the jobtag page id (315) was returned by the search but NOT confirmed as this occupation, and the underlying wage-census year was not visible. jobtag annual pay is normally derived from the Wage Structure survey incl. bonus — not confirmed."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "all",
+          "value": 6000000,
+          "period": "annual",
+          "currency": "JPY",
+          "statistic": "range low",
+          "dataYear": 2026,
+          "region": "Japan",
+          "includesBonus": null,
+          "source": "en-ambi job posting — software development process improvement, in-vehicle safety ECU",
+          "sourceType": "job-posting",
+          "url": "https://en-ambi.com/job/j-16013831/",
+          "seenIn": "search-snippet",
+          "note": "Single employer's posted range (listing 30 Jul – 12 Aug 2026), not a market statistic; experience level not stated in what was seen; employer not named in snippet (search was on Denso/Toyota)."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "all",
+          "value": 12500000,
+          "period": "annual",
+          "currency": "JPY",
+          "statistic": "range high",
+          "dataYear": 2026,
+          "region": "Japan",
+          "includesBonus": null,
+          "source": "en-ambi job posting — software development process improvement, in-vehicle safety ECU",
+          "sourceType": "job-posting",
+          "url": "https://en-ambi.com/job/j-16013831/",
+          "seenIn": "search-snippet",
+          "note": "Pair of the 6,000,000 low."
+        }
+      ],
+      "supplierRates": [],
+      "notes": "No embedded/automotive survey by LEVEL found: doda's 平均年収ランキング2025 per-occupation embedded row was not visible (only all-job figures: 20s ¥3.65M, 30s ¥4.54M, 40s ¥5.17M — not recorded); doda's 2023 決定年収 for 組み込みソフトウェア (¥5.24M) is 2023 survey data and was not recorded. Denso, per OpenWork as quoted by a recruiter article (Nov 2025): average ¥7.71M all jobs, engineers ¥8.08M (https://sincereed-agent.com/?p=18732) — company-wide, all engineering disciplines, recruiter-blog citation — NOT recorded as a salary. Japanese annual pay = 12 × monthly + bonus (often 4–7 months at OEMs/Tier-1s; Toyota 2025 bonus reported as 7.6 months). Snippet-only (WebFetch DNS failure)."
+    },
+    {
+      "hub": "KR",
+      "cities": [
+        "Seoul",
+        "Pangyo / Seongnam",
+        "Hwaseong (Namyang R&D)"
+      ],
+      "currency": "KRW",
+      "evidence": [
+        {
+          "claim": "Hyundai Motor Group's SDV developer conference (with Hyundai AutoEver, 42dot, Kia) — group vehicle-software development in Korea.",
+          "url": "https://www.hyundai.com/worldwide/en/newsroom/detail/hyundai-motor-group-accelerates-software-defined-vehicle-advancement-with-second-developer-conference-0000000151",
+          "seenIn": "search-snippet"
+        },
+        {
+          "claim": "42dot — Hyundai Motor Group's software / Advanced Vehicle Platform subsidiary (CEO Song Chang-hyeon); group software centre reporting.",
+          "url": "https://www.kedglobal.com/newsView/ked202407010005",
+          "seenIn": "search-snippet",
+          "note": "2024 report. No headcount found for 42dot, Hyundai AutoEver or Hyundai Mobis software."
+        }
+      ],
+      "salaries": [
+        {
+          "role": "embedded_sw_engineer",
+          "level": "all",
+          "value": 6099042,
+          "period": "monthly",
+          "currency": "KRW",
+          "statistic": "mean",
+          "dataYear": 2024,
+          "region": "Korea (national)",
+          "includesBonus": true,
+          "source": "KOSA (Korea Software Industry Association), 2025년 적용 SW기술자 평균임금 (2024 survey, published 4 Dec 2024) — 시스템SW개발자 (임베디드SW개발자 포함)",
+          "sourceType": "official-statistic",
+          "url": "https://files-scs.pstatic.net/2024/12/29/Yp9k9cqjwa/2025년_적용_SW기술자_평균임금_공표.pdf",
+          "seenIn": "search-snippet",
+          "note": "KOSA statutory SW-engineer wage survey (SW Industry Promotion Act); amount INCLUDES base pay, allowances, bonus, retirement-pay provision and employer 4-insurance contributions — i.e. close to employer cost, above take-home salary. Basis for public SW procurement labour cost. Daily = monthly ÷ average working days; hourly = daily ÷ 8. Job category 'System SW developer' explicitly includes embedded SW developer."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "all",
+          "value": 296070,
+          "period": "daily",
+          "currency": "KRW",
+          "statistic": "mean",
+          "dataYear": 2024,
+          "region": "Korea (national)",
+          "includesBonus": true,
+          "source": "KOSA 2025년 적용 SW기술자 평균임금 — 시스템SW개발자 (임베디드SW개발자 포함), 일평균임금",
+          "sourceType": "official-statistic",
+          "url": "https://files-scs.pstatic.net/2024/12/29/Yp9k9cqjwa/2025년_적용_SW기술자_평균임금_공표.pdf",
+          "seenIn": "search-snippet",
+          "note": "KOSA statutory SW-engineer wage survey (SW Industry Promotion Act); amount INCLUDES base pay, allowances, bonus, retirement-pay provision and employer 4-insurance contributions — i.e. close to employer cost, above take-home salary. Basis for public SW procurement labour cost. Daily = monthly ÷ average working days; hourly = daily ÷ 8. Hourly 37,009."
+        },
+        {
+          "role": "embedded_sw_engineer",
+          "level": "all",
+          "value": 5821743,
+          "period": "monthly",
+          "currency": "KRW",
+          "statistic": "mean",
+          "dataYear": 2023,
+          "region": "Korea (national)",
+          "includesBonus": true,
+          "source": "KOSA 2024년 적용 SW기술자 평균임금 (2023 survey) — 시스템SW개발자 (임베디드SW개발자 포함)",
+          "sourceType": "official-statistic",
+          "url": "https://files-scs.pstatic.net/2024/06/11/rWYW23kJof/2024년 적용 SW기술자 평균임금 공표.pdf",
+          "seenIn": "search-snippet",
+          "note": "KOSA statutory SW-engineer wage survey (SW Industry Promotion Act); amount INCLUDES base pay, allowances, bonus, retirement-pay provision and employer 4-insurance contributions — i.e. close to employer cost, above take-home salary. Basis for public SW procurement labour cost. Daily = monthly ÷ average working days; hourly = daily ÷ 8. Previous year (daily 278,819; hourly 34,852) — for trend only."
+        },
+        {
+          "role": "software_developer_general",
+          "level": "all",
+          "value": 396307,
+          "period": "daily",
+          "currency": "KRW",
+          "statistic": "mean",
+          "dataYear": 2024,
+          "region": "Korea (national)",
+          "includesBonus": true,
+          "source": "KOSA 2025년 적용 SW기술자 평균임금 — all SW technicians, 일평균임금",
+          "sourceType": "official-statistic",
+          "url": "https://byline.network/2024/12/4-249/",
+          "seenIn": "search-snippet",
+          "note": "KOSA statutory SW-engineer wage survey (SW Industry Promotion Act); amount INCLUDES base pay, allowances, bonus, retirement-pay provision and employer 4-insurance contributions — i.e. close to employer cost, above take-home salary. Basis for public SW procurement labour cost. Daily = monthly ÷ average working days; hourly = daily ÷ 8. Average over all SW job categories; +4.2% on 380,435 the year before."
+        }
+      ],
+      "supplierRates": [],
+      "notes": "KOSA figures are the best official source found but they are a fully-loaded employer cost (bonus + severance provision + employer social insurance), NOT a gross salary — do not add the employer load again. They do not split by seniority. The 2026-applicable KOSA table is published (+4.7% overall reported) but the system/embedded row was not seen. No survey by level found (Wanted / Saramin / Jobplanet search returned nothing Korean). Snippet-only (WebFetch DNS failure)."
+    }
+  ],
+  "notResearched": [
+    "TW (Taiwan) — search budget exhausted",
+    "MY (Malaysia) — search budget exhausted; automotive-software activity not checked"
+  ]
+}

@@ -28,18 +28,22 @@ import { baseRateOverride } from '../src/ui/panels/sw-rate-field.js';
 import { swLibraryBaseRate, DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-should-cost.js';
 
 describe('#2 a company rate book is honoured (base rate and vehicle demos)', () => {
-  const company = { ukBaseRatePerPM: { ...DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM, value: 35_000, source: 'company book' } };
+  // A company book giving the UK hub its own rates (Oct 2026: hub rates, not a UK base × multiplier).
+  const company = { hubRates: { UK: {
+    mid:    { ...DEFAULT_SW_RATE_LIBRARY.hubRates.UK.mid,    value: 9_000,  source: 'company book' },
+    senior: { ...DEFAULT_SW_RATE_LIBRARY.hubRates.UK.senior, value: 11_000, source: 'company book' } } } } as never as Partial<typeof DEFAULT_SW_RATE_LIBRARY>;
   it('an untyped base-rate field is not an override; a typed one is', () => {
     expect(baseRateOverride('28000', false)).toBeUndefined();
     expect(baseRateOverride('31000', true)).toBe(31_000);
     expect(baseRateOverride('', true)).toBeUndefined();
     expect(baseRateOverride('-5', true)).toBeUndefined();
   });
-  it('with no override the company base rate drives the cost', () => {
+  it('with no override the company hub rate drives the cost', () => {
     const p = { ...defaultSWProgramInputs(), rateLibrary: company };
-    expect(swLibraryBaseRate(p)).toBe(35_000);
-    const builtIn = computeSWProgram(defaultSWProgramInputs()).summary.totalDevelopment;
-    expect(computeSWProgram(p).summary.totalDevelopment / builtIn).toBeCloseTo(35_000 / 28_000, 6);
+    expect(swLibraryBaseRate(p)).toBe(10_000);                       // 50 % senior blend of 9,000 / 11,000
+    const d = defaultSWProgramInputs();
+    const builtIn = computeSWProgram(d).summary.totalDevelopment;
+    expect(computeSWProgram(p).summary.totalDevelopment / builtIn).toBeCloseTo(10_000 / swLibraryBaseRate(d), 6);
   });
   it('a vehicle demo keeps the active rate book (it was dropped)', () => {
     const d = SW_VEHICLE_DEMOS[0];
@@ -93,7 +97,7 @@ describe('#1 base effort is NOMINAL (QM, Medium, fresh) — one definition, no s
     p.modules = p.modules.map(m => ({ ...m, enabled: m.moduleId === 'bms_core', asil: 'QM' as const, complexity: 'Medium' as const, reuse: 'Fresh' as const }));
     const r = computeSWProgram(p);
     const m = r.modules[0];
-    const ratePerPM = 28_000 * 1 * 1 * (0.5 * 1.2 + 0.5 * 0.75) * p.overheadMultiplier;
+    const ratePerPM = swLibraryBaseRate(p) * 1 * p.overheadMultiplier;   // hub blend × OEM in-house × overhead
     expect(m.development.total / ratePerPM).toBeCloseTo(SW_MODULES.find(d => d.id === 'bms_core')!.basePersonMonths, 9);
   });
   it('the field definition says nominal, matching the engine and docs/auto-sw-cost.md', () => {
@@ -210,7 +214,8 @@ describe('#5 powertrain is an engine input; shared software is apportioned acros
     }
   });
   it('the wizard and the report scripts use the engine scope (no private copies)', () => {
-    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/SW_POWERTRAIN_SCOPE\[_wizPowertrain\]\.on\.includes/);
+    // The wizard takes the scope AND the de-rating from the engine (code review F2, Oct 2026).
+    expect(src('src/ui/panels/sw-should-cost-ui.ts')).toMatch(/applyPowertrainScope\(_swInputs\.modules, _wizPowertrain\)/);
     expect(src('src/ui/panels/sw-should-cost-ui.ts')).not.toMatch(/MHEV_DISABLED|_ICE_OFF/);
     for (const f of ['scripts/gen-sw-report.ts', 'scripts/gen-l460-deepdive.ts', 'scripts/gen-allmodels-deepdive.ts']) {
       expect(src(f), f).toMatch(/applyPowertrainScope/);

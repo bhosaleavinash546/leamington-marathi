@@ -1,0 +1,1176 @@
+{
+  "task": "review",
+  "reviewed": "2026-10-13",
+  "searchesUsed": 34,
+  "method": "WebFetch tried once (itjobswatch.co.uk) and failed with getaddrinfo ENOTFOUND; every figure below is from WebSearch result text and is seenIn 'search-snippet'. Figures a summary gave only as 'about / roughly' or as the search engine's own inference are named in notes but not stored as values. Item 15 checks the stored figure with the highest weight per country; EG, CZ etc. are one search each.",
+  "checks": [
+    {
+      "id": 1,
+      "hub": "UK",
+      "item": "IT Jobs Watch embedded software engineer median permanent salary",
+      "stored": "65000 GBP annual median (6 months to 4 Sep 2026); senior 70000",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 65000,
+          "period": "annual",
+          "currency": "GBP",
+          "grossOrNet": "gross (advertised)",
+          "statistic": "median",
+          "dataYear": 2026,
+          "source": "IT Jobs Watch — Embedded Software Engineer, UK permanent, 6 months to 18 Jan 2026 (227 jobs, 171 salaries; p25 52,250, p75 70,000; year-earlier median 55,000)",
+          "url": "https://www.itjobswatch.co.uk/jobs/uk/embedded%20software%20engineer.do",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 65000,
+          "period": "annual",
+          "currency": "GBP",
+          "grossOrNet": "gross (advertised)",
+          "statistic": "median",
+          "dataYear": 2026,
+          "source": "IT Jobs Watch — Senior Embedded Software Engineer, UK, 6 months to 11 Jan 2026 (37 salaries)",
+          "url": "https://www.itjobswatch.co.uk/jobs/uk/senior%20embedded%20software%20engineer.do",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "Median matches. The snapshot I saw is the 6 months to 18 Jan 2026, not 4 Sep 2026 as stored — the page is a rolling window, so the stored period should be re-read on the page. Senior median I saw is 65,000 (37 salaries) vs stored 70,000 (within 15%). WebFetch failed (getaddrinfo ENOTFOUND www.itjobswatch.co.uk)."
+    },
+    {
+      "id": 1,
+      "hub": "UK",
+      "item": "ONS ASHE 2024/2025 SOC 2134 median gross annual pay (full-time)",
+      "stored": "54615 GBP annual median, ASHE 2024 revised, via paychecktaxcalculator.net",
+      "verdict": "NOT-FOUND",
+      "found": [
+        {
+          "value": 54615,
+          "period": "annual",
+          "currency": "GBP",
+          "grossOrNet": "gross",
+          "statistic": "median",
+          "dataYear": 2024,
+          "source": "ASHE 2024 (revised) SOC 2134, republished by paychecktaxcalculator.net — the SAME secondary source the researcher used, so not an independent confirmation",
+          "url": "https://paychecktaxcalculator.net/highest-paying-jobs-uk/software-developers",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "No ONS page or ASHE 2025 Table 14 value for SOC 2134 surfaced. The 54,700 stored as 'going rate' is the Skilled Worker visa going rate (Immigration Rules), not a pay statistic — it must not be used as a salary. The official figure still needs a read of ASHE Table 14 on ons.gov.uk."
+    },
+    {
+      "id": 2,
+      "hub": "DE",
+      "item": "BA Entgeltatlas Softwareentwickler/in, Experte, median gross monthly",
+      "stored": "6301 EUR monthly median (p25 5034, p75 7723)",
+      "verdict": "NOT-FOUND",
+      "found": [
+        {
+          "value": 5627,
+          "period": "monthly",
+          "currency": "EUR",
+          "grossOrNet": "gross",
+          "statistic": "average (as stated by republisher)",
+          "dataYear": null,
+          "source": "mystipendium.de citing BA Entgeltatlas — Softwareentwickler, all levels (no Experte split; year not shown)",
+          "url": "https://www.mystipendium.de/berufe/softwareentwickler/gehalt?page=0%2C3",
+          "seenIn": "search-snippet",
+          "note": "Different statistic/level from the stored Experte median; not comparable."
+        },
+        {
+          "value": 6917,
+          "period": "monthly",
+          "currency": "EUR",
+          "grossOrNet": "gross",
+          "statistic": "median, Experte level",
+          "dataYear": 2026,
+          "source": "JobJump Gehaltsprofil Systementwickler/in 2026 (overall median ~6,281)",
+          "url": "https://jobjump.net/gehalt/pdf/gehaltsprofil-systementwickler-in-2026.pdf",
+          "seenIn": "search-snippet",
+          "note": "DIFFERENT job title (Systementwickler); given as 'about' in the summary."
+        }
+      ],
+      "note": "The 6,301 Experte median was not seen in any result. Entgeltatlas is a live tool (web.arbeitsagentur.de/entgeltatlas/beruf/15260) that search does not index; needs a page read. jobvector 71,692 was not re-searched (budget: one search per line)."
+    },
+    {
+      "id": 3,
+      "hub": "US-MI",
+      "item": "BLS OEWS May 2024 15-1252 Detroit-Warren-Dearborn median and p75",
+      "stored": "124780 USD median, 135830 p75 (May 2024, via O*NET)",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 130760,
+          "period": "annual",
+          "currency": "USD",
+          "grossOrNet": "gross",
+          "statistic": "median",
+          "dataYear": 2025,
+          "source": "BLS OEWS May 2025, Detroit area, 15-1252, as quoted by tradecareerpath.com (national 135,980)",
+          "url": "https://tradecareerpath.com/programs/online-computer-science-degree/michigan/detroit/",
+          "seenIn": "search-snippet",
+          "note": "Newer release; +4.8% vs stored May 2024 median — consistent."
+        },
+        {
+          "value": 107820,
+          "period": "annual",
+          "currency": "USD",
+          "grossOrNet": "gross",
+          "statistic": "median",
+          "dataYear": 2024,
+          "source": "BLS OEWS May 2024, Michigan statewide, 15-1252, via wagedex.com (41,490 jobs; national 133,080)",
+          "url": "https://wagedex.com/jobs/software-developers/michigan",
+          "seenIn": "search-snippet",
+          "note": "Matches the stored Michigan statewide 107,820 exactly."
+        }
+      ],
+      "note": "The May 2024 metro figure itself was not shown; a May 2025 metro median (130,760) within 5% and an exact statewide match support it. p75 135,830 not re-checked. May 2025 OEWS is out — consider moving to it."
+    },
+    {
+      "id": 4,
+      "hub": "US-CA",
+      "item": "BLS OEWS 15-1252 San Jose-Sunnyvale-Santa Clara median 213,110 and p75 226,080 — year and top-coding",
+      "stored": "213110 median, 226080 p75, 289150 p90 (dataYear null)",
+      "verdict": "DIFFERENT",
+      "found": [
+        {
+          "value": 213110,
+          "period": "annual",
+          "currency": "USD",
+          "grossOrNet": "gross",
+          "statistic": "median",
+          "dataYear": 2025,
+          "source": "wagedex.com San Jose metro 15-1252 — attributes 213,110 median and 226,080 p75 to May 2025 OEWS",
+          "url": "https://wagedex.com/jobs/software-developers/metro/san-jose-sunnyvale-santa-clara-ca",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 180320,
+          "period": "annual",
+          "currency": "USD",
+          "grossOrNet": "gross",
+          "statistic": "median",
+          "dataYear": 2024,
+          "source": "resumegeni.com Software Engineer Salary Guide 2026, citing May 2024 OEWS for San Jose metro",
+          "url": "https://resumegeni.com/salary-guides/software-engineer-salary-guide",
+          "seenIn": "search-snippet",
+          "note": "Third-party; not confirmed on bls.gov."
+        }
+      ],
+      "note": "The stored figures appear to be MAY 2025, not May 2024 (the stored row has dataYear null — set it). A third-party quote of May 2024 gives 180,320, 15% lower; if the rate mixes May 2024 Detroit with May 2025 San Jose it is not like-for-like. Top-coding NOT resolved: a p75 only 6% above the median with p90 at 289,150 is unusual — read the bls.gov metro table (oes_41940) before use. Official BLS 2022 San Jose mean was 234,540 (bls.gov/oes/2022/may/oes151252.htm)."
+    },
+    {
+      "id": 5,
+      "hub": "IN",
+      "item": "AmbitionBox KPIT 'AUTOSAR developer' 2–4 y range",
+      "stored": "450000–1090000 INR annual (2–4 y, 26 salaries, July 2025)",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 450000,
+          "period": "annual",
+          "currency": "INR",
+          "grossOrNet": "not stated (AmbitionBox convention CTC — unverified)",
+          "statistic": "range low",
+          "dataYear": 2025,
+          "source": "AmbitionBox KPIT Technologies AUTOSAR Developer, 2–4 y, 26 salaries, updated Jul 2025",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 1090000,
+          "period": "annual",
+          "currency": "INR",
+          "grossOrNet": "not stated",
+          "statistic": "range high",
+          "dataYear": 2025,
+          "source": "AmbitionBox KPIT Technologies AUTOSAR Developer, 2–4 y",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+          "seenIn": "search-snippet",
+          "note": "Recent individual submissions 5 L–11.5 L."
+        }
+      ],
+      "note": "Same source, figures match. The TCS / Tech Mahindra rows stored under the KPIT URL were NOT re-seen — their URLs are wrong in raw/D.json (researcher already flagged)."
+    },
+    {
+      "id": 7,
+      "hub": "PL",
+      "item": "Bulldogjob 2025 embedded medians, UoP — gross or net?",
+      "stored": "mid 13800, senior 22800 PLN/month, labelled 'UoP gross'",
+      "verdict": "DIFFERENT",
+      "found": [
+        {
+          "value": 10159,
+          "period": "monthly",
+          "currency": "PLN",
+          "grossOrNet": "net (na rękę)",
+          "statistic": "mean, all IT employees on UoP",
+          "dataYear": 2025,
+          "source": "Bulldogjob Polish IT Community Report 2025, as reported by android.com.pl",
+          "url": "https://android.com.pl/tech/582395-buldogjob-raport-it-praca-zarobki/",
+          "seenIn": "search-snippet",
+          "note": "Methodology as summarised: Bulldogjob reports pay separately for the three contract forms and shows amounts 'na rękę' (net take-home)."
+        }
+      ],
+      "note": "The 13,800 / 22,800 values were not re-seen, but the report's stated basis is NET take-home ('na rękę'), not gross. raw/B.json labels them 'UoP gross' and its own year-end rows (9,300 / 14,000) as take-home — the two cannot both be right. If 13,800 / 22,800 are net, the gross UoP salary is materially higher (Polish net/gross is well below 1). Treat the PL rate as unbuilt until bulldogjob.pl/it-report/salaries/embedded is read."
+    },
+    {
+      "id": 8,
+      "hub": "RO",
+      "item": "Gross average monthly earnings, IT services activity (INS 2025)",
+      "stored": "12136 / 12588 RON monthly mean — NET (no gross stored)",
+      "verdict": "NOT-FOUND",
+      "found": [
+        {
+          "value": 12588,
+          "period": "monthly",
+          "currency": "RON",
+          "grossOrNet": "net",
+          "statistic": "mean",
+          "dataYear": 2025,
+          "source": "INS, December 2025, activități de servicii în tehnologia informației (via capital.ro)",
+          "url": "https://www.capital.ro/salariul-mediu-net-a-urcat-la-5-914-lei-in-decembrie-2025-ins-indica-o-crestere-lunara-de-53.html",
+          "seenIn": "search-snippet",
+          "note": "Confirms the stored December net figure."
+        },
+        {
+          "value": 12931,
+          "period": "monthly",
+          "currency": "RON",
+          "grossOrNet": "net",
+          "statistic": "mean",
+          "dataYear": 2025,
+          "source": "INS, November 2025, IT services (via hotnews.ro)",
+          "url": "https://hotnews.ro/salariul-mediu-net-a-crescut-la-5-615-lei-in-noiembrie-2025-in-ce-domenii-s-a-castigat-cel-mai-bine-2151180",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 11957,
+          "period": "monthly",
+          "currency": "RON",
+          "grossOrNet": "net",
+          "statistic": "mean",
+          "dataYear": 2025,
+          "source": "INS, June 2025, IT services (via g4media.ro)",
+          "url": "https://www.g4media.ro/castigul-salarial-mediu-net-in-luna-iunie-a-crescut-usor-la-5-539-lei-cele-mai-mari-salarii-in-industria-petroliera-si-tehnologia-informatiei-cele-mai-mici-in-horeca-si-industria-textila.html",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 11810,
+          "period": "monthly",
+          "currency": "RON",
+          "grossOrNet": "net",
+          "statistic": "mean",
+          "dataYear": 2025,
+          "source": "INS, October 2025, IT services (via tvrinfo.ro)",
+          "url": "https://tvrinfo.ro/salariul-mediu-net-a-ajuns-la-5-492-de-lei-in-octombrie-it-ul-ramane-lider-la-castiguri/",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 8716,
+          "period": "monthly",
+          "currency": "RON",
+          "grossOrNet": "gross",
+          "statistic": "mean, whole economy, year 2025",
+          "dataYear": 2025,
+          "source": "INS, national average gross 2025 (net 5,266)",
+          "url": "https://www.capital.ro/salariul-mediu-net-a-urcat-la-5-914-lei-in-decembrie-2025-ins-indica-o-crestere-lunara-de-53.html",
+          "seenIn": "search-snippet",
+          "note": "National gross/net pair only — NOT an IT gross figure. URL attribution among the results is uncertain."
+        }
+      ],
+      "note": "No GROSS figure for IT services was found; INS TEMPO (series by CAEN activity) has it. The 2025 national net/gross pair (5,266 / 8,716) exists but applying a whole-economy ratio to IT is an assumption, not a source."
+    },
+    {
+      "id": 9,
+      "hub": "RS",
+      "item": "Gross average for 'računarsko programiranje' (RZS 2025)",
+      "stored": "281991–305805 RSD monthly NET; 400234 (basis unstated, Jan 2025)",
+      "verdict": "NOT-FOUND",
+      "found": [
+        {
+          "value": 345350,
+          "period": "monthly",
+          "currency": "RSD",
+          "grossOrNet": "gross",
+          "statistic": "mean",
+          "dataYear": 2022,
+          "source": "RZS September 2022, programming activity: 254,895 net = 345,350 gross (via biznis.rs)",
+          "url": "https://biznis.rs/vesti/srbija/ne-dobijaju-samo-programeri-visoke-plate/",
+          "seenIn": "search-snippet",
+          "note": "2022 — outside the 2024–26 window; attribution to this URL uncertain. Shows the source's own net→gross pair for this activity (net/gross 0.738)."
+        },
+        {
+          "value": 150777,
+          "period": "monthly",
+          "currency": "RSD",
+          "grossOrNet": "gross",
+          "statistic": "mean, whole economy",
+          "dataYear": 2025,
+          "source": "RZS April 2025 (net 109,272), via biznis.rs",
+          "url": "https://biznis.rs/vesti/srbija/rzs-prosecna-neto-zarada-109-272-dinara-u-aprilu/",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "No 2025 GROSS programming figure. The 400,234 (Jan 2025, NACE 62 incl. consultancy) is still basis-unstated. The N1 'November' net 281,991 — the result did not show the year; it may be 2023, not 2025: re-check before use."
+    },
+    {
+      "id": 10,
+      "hub": "VN",
+      "item": "ITviec 2025–26 embedded medians — gross or net?",
+      "stored": "mid 28.4 M, senior 39.4 M VND/month median",
+      "verdict": "NOT-FOUND",
+      "found": [],
+      "note": "Basis not stated in any snippet. Survey facts seen: 1,839 respondents, two online periods (27 May–31 Jul and 21 Oct–11 Nov 2025); the 2024–25 report used 2,324 respondents. The embedded rows themselves were not re-seen. https://itviec.com/report/vietnam-it-salary-and-recruitment-market — the PDF's methodology page decides gross/net."
+    },
+    {
+      "id": 11,
+      "hub": "TR",
+      "item": "kariyer.net Gömülü Yazılım Mühendisi 63,521 TL/month 2025 — gross or net?",
+      "stored": "63521 TRY monthly mean 2025 (net/gross unverified)",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 63521,
+          "period": "monthly",
+          "currency": "TRY",
+          "grossOrNet": "not stated on kariyer.net; a news site says kariyer.net data are monthly NET",
+          "statistic": "mean of candidates' salary EXPECTATIONS",
+          "dataYear": 2025,
+          "source": "kariyer.net — Gömülü Yazılım Mühendisi maaşları (2026 shown: 78,192; by experience 51,400 <1 y to 129,800 15+ y)",
+          "url": "https://www.kariyer.net/pozisyonlar/gomulu+yazilim+muhendisi/maas",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 73472,
+          "period": "monthly",
+          "currency": "TRY",
+          "grossOrNet": "not stated",
+          "statistic": "mean of candidates' salary expectations (848 people)",
+          "dataYear": 2025,
+          "source": "kariyer.net — Kıdemli Gömülü Yazılım Mühendisi",
+          "url": "https://www.kariyer.net/pozisyonlar/kidemli+gomulu+yazilim+muhendisi/maas",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "Value confirmed but it is what APPLICANTS ASK FOR when applying, not paid salaries. Basis: Haber Gazetesi (secondary, general software-engineering article) says kariyer.net figures 'aylık net maaşları yansıtmaktadır' — https://www.habergazetesi.com.tr/2025-guncel-verilerle-yazilim-muhendisligi-maaslari-deneyime-ve-unvana-gore-kazanclar. Treat as NET expectations. The page also has a 2026 average (78,192) — use it rather than 2025 given inflation."
+    },
+    {
+      "id": 12,
+      "hub": "KR",
+      "item": "KOSA 2025 SW기술자 평균임금 시스템SW개발자 — includes 법인부담금 and 퇴직급여충당금?",
+      "stored": "6099042 KRW monthly mean (2024 survey, applied 2025)",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 6099042,
+          "period": "monthly",
+          "currency": "KRW",
+          "grossOrNet": "fully loaded (base + allowances + bonus + severance provision + employer 4-insurance)",
+          "statistic": "mean",
+          "dataYear": 2024,
+          "source": "KOSA 2025년 적용 SW기술자 평균임금 공표 — 시스템SW개발자 (임베디드SW개발자 포함): monthly 6,099,042, daily 296,070, hourly 37,009",
+          "url": "https://files-scs.pstatic.net/2024/12/29/Yp9k9cqjwa/2025년_적용_SW기술자_평균임금_공표.pdf",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "Definition quoted from the publication: 'SW기술자 평균임금은 기본급, 제수당, 상여금, 퇴직급여충당금, 법인부담금(4대보험)을 모두 포함한 결과임' — YES, both are included, so it is an employer cost, and no Korean employer on-cost may be added on top. Daily = monthly ÷ 20.6 days (2024 average working days); hourly = daily ÷ 8. Legal basis: 소프트웨어진흥법 제46조 4항. A 2026-applicable table (+4.7% overall) exists — row not seen."
+    },
+    {
+      "id": 13,
+      "hub": "JP",
+      "item": "MHLW 2024 wage structure survey ソフトウェア作成者: monthly ¥386.2k + annual bonus ¥1,106.8k",
+      "stored": "386200 JPY monthly mean; 1106800 JPY annual bonus",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 386200,
+          "period": "monthly",
+          "currency": "JPY",
+          "grossOrNet": "gross",
+          "statistic": "mean (きまって支給する現金給与額)",
+          "dataYear": 2024,
+          "source": "MHLW 令和6年賃金構造基本統計調査, ソフトウェア作成者, establishments ≥10 employees, both sexes (mean age 38.0, tenure 10.7 y), via Benesse manabi",
+          "url": "https://manabi.benesse.ne.jp/shokugaku/job/list/197/income/",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 1106800,
+          "period": "annual",
+          "currency": "JPY",
+          "grossOrNet": "gross",
+          "statistic": "mean (年間賞与その他特別給与額)",
+          "dataYear": 2024,
+          "source": "same",
+          "url": "https://manabi.benesse.ne.jp/shokugaku/job/list/197/income/",
+          "seenIn": "search-snippet",
+          "note": "Site's own total ≈ ¥5.74M/yr (= 12 × 386.2k + 1,106.8k)."
+        }
+      ],
+      "note": "Same secondary page the researcher used — not an independent confirmation; e-Stat not reached. @SOHO shows 385k / 951k bonus / ¥5.58M with year unclear (atsoho.com, other pages cite 令和5年). 386.2k includes overtime (contractual cash earnings)."
+    },
+    {
+      "id": 14,
+      "hub": "FR",
+      "item": "Seyos / Silkhom embedded software engineer 'confirmé' Paris ranges",
+      "stored": "Seyos confirmé Paris 45–55 k€; Silkhom confirmé 43–48 k€ (gross annual)",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 45000,
+          "period": "annual",
+          "currency": "EUR",
+          "grossOrNet": "gross",
+          "statistic": "range low",
+          "dataYear": 2025,
+          "source": "Optima Industrie — ingénieur systèmes embarqués, confirmé (3–8 y), citing Khonexio 2025, APEC, IESF",
+          "url": "https://optima-industrie.com/?p=4159",
+          "seenIn": "search-snippet",
+          "note": "Recruiter page; range 45,000–58,000."
+        },
+        {
+          "value": 58000,
+          "period": "annual",
+          "currency": "EUR",
+          "grossOrNet": "gross",
+          "statistic": "range high",
+          "dataYear": 2025,
+          "source": "Optima Industrie (as above)",
+          "url": "https://optima-industrie.com/?p=4159",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 55000,
+          "period": "annual",
+          "currency": "EUR",
+          "grossOrNet": "gross",
+          "statistic": "advert range low",
+          "dataYear": 2026,
+          "source": "France Travail advert, Ingénieur logiciel embarqué, Paris, ≥8 y experience: 55,000–65,000",
+          "url": "https://candidat.francetravail.fr/offres/recherche/detail/4945984",
+          "seenIn": "search-snippet",
+          "note": "Single advert; URL attribution between the two France Travail adverts uncertain."
+        }
+      ],
+      "note": "Seyos / Silkhom pages themselves did not surface; an independent recruiter range (45–58 k€) overlaps the stored 45–55 / 43–48 k€ within 15%. Weak corroboration (recruiter-cited surveys)."
+    },
+    {
+      "id": 15,
+      "hub": "CZ",
+      "item": "Central software-developer figure (stored: Pracomat mean of advertised C/C++ Prague salaries)",
+      "stored": "80378 CZK monthly mean of adverts",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 91792,
+          "period": "monthly",
+          "currency": "CZK",
+          "grossOrNet": "gross",
+          "statistic": "mean, IT SECTION (not occupation 2512)",
+          "dataYear": 2025,
+          "source": "ČSÚ ISPV 2025 as reported by zpravy.kurzy.cz",
+          "url": "https://zpravy.kurzy.cz/856269-median-hrube-mesicni-mzdy-dosahl-v-roce-2025-vyse-43-241-kc-mezirocne-vzrostl-o-6-4--prumerna/",
+          "seenIn": "search-snippet",
+          "note": "URL attribution among the kurzy.cz results uncertain."
+        },
+        {
+          "value": 73483,
+          "period": "monthly",
+          "currency": "CZK",
+          "grossOrNet": "gross",
+          "statistic": "median, IT section",
+          "dataYear": 2025,
+          "source": "same",
+          "url": "https://zpravy.kurzy.cz/856269-median-hrube-mesicni-mzdy-dosahl-v-roce-2025-vyse-43-241-kc-mezirocne-vzrostl-o-6-4--prumerna/",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "Stored 80,378 lies between the official IT-section median (−9%) and mean (+14%) — within ±15% of both, but a SECTION figure, not CZ-ISCO 2512. The CZ hub has NO official occupation figure and no survey by level; only adverts. ISPV 2512 table on csu.gov.cz is the fix."
+    },
+    {
+      "id": 15,
+      "hub": "HU",
+      "item": "Grafton Salary & Market Guide 2025 software developer (senior)",
+      "stored": "senior 1,600,000–2,300,000 HUF monthly; junior 700,000–950,000",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 1600000,
+          "period": "monthly",
+          "currency": "HUF",
+          "grossOrNet": "not stated",
+          "statistic": "range low, senior developer",
+          "dataYear": 2025,
+          "source": "Grafton Salary & Market Guide 2025 via Economx (4 Nov 2025)",
+          "url": "https://www.economx.hu/gazdasag/erre-fele-orientalodjon-a-munkaeropiacon-ha-nagyon-jol-akar-keresni.818773.html",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 2300000,
+          "period": "monthly",
+          "currency": "HUF",
+          "grossOrNet": "not stated",
+          "statistic": "range high, senior developer",
+          "dataYear": 2025,
+          "source": "same",
+          "url": "https://www.economx.hu/gazdasag/erre-fele-orientalodjon-a-munkaeropiacon-ha-nagyon-jol-akar-keresni.818773.html",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "Same press source as the researcher; values match. Gross/net not stated in the article. Not embedded-specific."
+    },
+    {
+      "id": 15,
+      "hub": "IT",
+      "item": "PayScale experienced / senior embedded software engineer, Italy",
+      "stored": "lead 46000 EUR annual mean (39k–83k)",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 45009,
+          "period": "annual",
+          "currency": "EUR",
+          "grossOrNet": "gross",
+          "statistic": "average base",
+          "dataYear": 2026,
+          "source": "PayScale — Experienced Senior Embedded Software Engineer, Italy (range ~41k–54k)",
+          "url": "https://www.payscale.com/research/IT/Job=Senior_Embedded_Software_Engineer/Salary/7c98cf40/Experienced",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 35000,
+          "period": "annual",
+          "currency": "EUR",
+          "grossOrNet": "gross (RAL)",
+          "statistic": "advert floor",
+          "dataYear": 2026,
+          "source": "The Member Company advert, senior embedded, La Spezia, ≥5 y (floor)",
+          "url": "https://www.themembercompany.com/careers/senior-software-engineer-gIEAR",
+          "seenIn": "search-snippet",
+          "note": "Single-employer floor; Genoa automotive embedded floor 32k, Padua (2–5 y, CCNL Commercio) floor 33k."
+        }
+      ],
+      "note": "Within 3% of stored. Italy still has no official statistic and no second survey by level; PayScale only."
+    },
+    {
+      "id": 15,
+      "hub": "PT",
+      "item": "Central embedded figure (stored: TalentUp 36,400 EUR annual)",
+      "stored": "36400 EUR annual (TalentUp), PayScale 15k–41k",
+      "verdict": "NOT-FOUND",
+      "found": [
+        {
+          "value": 1982,
+          "period": "monthly",
+          "currency": "EUR",
+          "grossOrNet": "gross base",
+          "statistic": "average",
+          "dataYear": 2026,
+          "source": "Indeed Portugal — Software Engineer, Porto (few salaries)",
+          "url": "https://pt.indeed.com/career/software-engineer/salaries",
+          "seenIn": "search-snippet",
+          "note": "General software engineer, not embedded; Portugal pays 14 salaries a year (not stated on the page)."
+        }
+      ],
+      "note": "No acceptable embedded figure. nettocalc.com showed a Braga median of 36,000 (p25 25,500, p75 51,000) — it is a calculator site with figures for every title, so EXCLUDED under RULES even though it matches TalentUp."
+    },
+    {
+      "id": 15,
+      "hub": "MX",
+      "item": "Glassdoor Mexico Ingeniero de Software Embebido 25,000 MXN/month",
+      "stored": "25000 MXN monthly mean (Glassdoor, May 2026); Indeed Guadalajara developer 15,188",
+      "verdict": "NOT-FOUND",
+      "found": [
+        {
+          "value": 15253,
+          "period": "monthly",
+          "currency": "MXN",
+          "grossOrNet": "gross base",
+          "statistic": "average",
+          "dataYear": 2026,
+          "source": "Indeed Mexico — Desarrollador de software, Guadalajara (220 salaries, updated 4 Oct 2026)",
+          "url": "https://mx.indeed.com/career/software-engineer/salaries",
+          "seenIn": "search-snippet",
+          "note": "Confirms the stored Indeed Guadalajara row (15,188). Ingeniero de software Guadalajara: 16,599 (29 salaries, 5 Sep 2026); national 16,685. URL attribution among Indeed pages uncertain."
+        },
+        {
+          "value": 729846,
+          "period": "annual",
+          "currency": "MXN",
+          "grossOrNet": "gross total compensation",
+          "statistic": "median",
+          "dataYear": 2026,
+          "source": "Levels.fyi — Software Engineer, Guadalajara metropolitan area (updated 18 Feb 2026)",
+          "url": "https://www.levels.fyi/fil-ph/t/software-engineer/locations/guadalajara-metropolitan-area",
+          "seenIn": "search-snippet",
+          "note": "≈ 4× the Indeed level; Levels.fyi skews to multinational employers."
+        }
+      ],
+      "note": "The Glassdoor 25,000 embedded figure did not surface. Mexican software pay spans ~15k (local job boards) to ~60k/month (Levels.fyi total comp); the rate depends heavily on which employer segment an automotive SW centre (Continental / Bosch Guadalajara) belongs to — state the choice."
+    },
+    {
+      "id": 15,
+      "hub": "CA",
+      "item": "ESDC Job Bank NOC 21231 Ontario median hourly wage",
+      "stored": "56.73 CAD/hour median (low 36.06, high 88.00)",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 56.73,
+          "period": "hourly",
+          "currency": "CAD",
+          "grossOrNet": "gross",
+          "statistic": "median",
+          "dataYear": 2025,
+          "source": "Job Bank — Software Design Engineer (NOC 21231), Ontario, updated 19 Nov 2025 (Toronto region 56.49; Canada 56.49)",
+          "url": "https://on.jobbank.gc.ca/marketreport/wages-occupation/5482/ON",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "Exact match. Conflict: Job Bank's occupation SUMMARY page reports 51.44/h for NOC 21231 Ontario (https://yt.jobbank.gc.ca/marketreport/summary-occupation/5479/ON) — 9% lower; reason not shown."
+    },
+    {
+      "id": 15,
+      "hub": "SE",
+      "item": "SCB 2024 SSYK 2512 median monthly salary",
+      "stored": "52500 SEK monthly median (2024)",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 52800,
+          "period": "monthly",
+          "currency": "SEK",
+          "grossOrNet": "gross",
+          "statistic": "mean (not median)",
+          "dataYear": null,
+          "source": "Sambla.se citing 'latest' SCB statistics, systemutvecklare",
+          "url": "https://www.sambla.se/lonestatistik/systemutvecklare-lon/",
+          "seenIn": "search-snippet",
+          "note": "Year not stated; mean not median."
+        },
+        {
+          "value": 56100,
+          "period": "monthly",
+          "currency": "SEK",
+          "grossOrNet": "gross",
+          "statistic": "average, men",
+          "dataYear": null,
+          "source": "Ledigajobb.se citing SCB, systemutvecklare (women 53,400)",
+          "url": "https://ledigajobb.se/articles/systemutvecklare-lon",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "Weak confirmation: secondary sites, year unstated, mean rather than median. SCB's own table not reached."
+    },
+    {
+      "id": 15,
+      "hub": "AT",
+      "item": "EEI Kollektivvertrag Angestellte 2026, Verwendungsgruppe H Grundstufe",
+      "stored": "4905.47 EUR monthly minimum (2026)",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 4905.47,
+          "period": "monthly",
+          "currency": "EUR",
+          "grossOrNet": "gross",
+          "statistic": "collective-agreement minimum, BG H Grundstufe, from 1 May 2026",
+          "dataYear": 2026,
+          "source": "GPA Gehaltstabelle EEI 2026 (identical in WKO Gehaltsordnung)",
+          "url": "https://www.gpa.at/content/dam/gpa/downloads/kollektivvertrag/elektro,-it,-telekom/elektro/2026/Gehaltstabelle_EEI_2026.pdf",
+          "seenIn": "search-snippet",
+          "note": "Steps: 5,095.98 (2 BG-years), 5,286.49 (4), 5,381.75 (7), 5,477.01 (10). Actual salaries rise 1.85% + €22 from 1.5.2026."
+        }
+      ],
+      "note": "Exact match. Austria pays 14 monthly salaries — the annual is 14 × monthly (convention, not stated in this snippet)."
+    },
+    {
+      "id": 15,
+      "hub": "EG",
+      "item": "PayScale Embedded Software Engineer at Valeo, Egypt",
+      "stored": "197193 EGP annual mean (2026)",
+      "verdict": "DIFFERENT",
+      "found": [
+        {
+          "value": 610000,
+          "period": "annual",
+          "currency": "EGP",
+          "grossOrNet": "gross",
+          "statistic": "median total package (all base)",
+          "dataYear": 2026,
+          "source": "Levels.fyi — Valeo, Software Engineer, Embedded Systems, Egypt",
+          "url": "https://www.levels.fyi/companies/valeo/salaries/software-engineer/title/embedded-systems",
+          "seenIn": "search-snippet",
+          "note": "Valeo SWE Egypt median 699K; Greater Cairo 602K (https://www.levels.fyi/companies/valeo/salaries/software-engineer/locations/greater-cairo). Data late 2025–2026."
+        },
+        {
+          "value": 197193,
+          "period": "not stated (likely annual)",
+          "currency": "EGP",
+          "grossOrNet": "gross base",
+          "statistic": "average",
+          "dataYear": 2026,
+          "source": "PayScale — Embedded Software Engineer at Valeo, Egypt (re-seen)",
+          "url": "https://www.payscale.com/research/EG/Job=Embedded_Software_Engineer/Salary/6bbe4197/Valeo",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "The PayScale figure exists, but an independent self-reported source for the SAME employer and role is ~3× higher. After the 2024 EGP devaluation PayScale samples are likely stale. Do not build EG on PayScale alone; Levels.fyi is outside RULES' allowed scope (Bay Area only) so it is evidence of a problem, not a replacement."
+    }
+  ],
+  "hours": [
+    {
+      "hub": "UK",
+      "weeklyHours": null,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": null,
+      "url": null,
+      "seenIn": "search-snippet",
+      "note": "Not searched by the reviewer (budget). F: 28 days statutory incl. 8 bank holidays (snippet)."
+    },
+    {
+      "hub": "DE",
+      "weeklyHours": null,
+      "publicHolidays": "10-13 (by state)",
+      "annualLeaveDays": 20,
+      "leaveIncludesHolidays": false,
+      "source": "blog/aggregator summaries (Wikipedia list page surfaced but its table was not in the snippet)",
+      "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+      "seenIn": "search-snippet",
+      "note": "20 WORKING days statutory minimum (5-day week). A 30-day figure (Statista) is a different basis. Collective agreements (IG Metall) give 30 — not sourced here. Weekly hours not found."
+    },
+    {
+      "hub": "AT",
+      "weeklyHours": null,
+      "publicHolidays": 13,
+      "annualLeaveDays": 25,
+      "leaveIncludesHolidays": false,
+      "source": "vacationtracker.io / aggregator summary",
+      "url": "https://vacationtracker.io/blog/annual-leave-around-the-world/",
+      "seenIn": "search-snippet",
+      "note": "25 days PTO + 13 public holidays; more leave after 25 years' service. Weekly normal hours not found (Eurofound: most EU statutory max 40)."
+    },
+    {
+      "hub": "SE",
+      "weeklyHours": null,
+      "publicHolidays": 11,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": "vacationtracker.io",
+      "url": "https://vacationtracker.io/blog/annual-leave-around-the-world/",
+      "seenIn": "search-snippet",
+      "note": "Leave figure ambiguous in the snippet — not recorded."
+    },
+    {
+      "hub": "FR",
+      "weeklyHours": 35,
+      "publicHolidays": 11,
+      "annualLeaveDays": 30,
+      "leaveIncludesHolidays": false,
+      "source": "Eurofound 'Balancing the clock' 2024 (35 h statutory, Aubry law 2000); leave/holidays from aggregator summary",
+      "url": "https://www.eurofound.europa.eu/en/publications/all/balancing-the-clock-how-europe-works-and-rests",
+      "seenIn": "search-snippet",
+      "note": "30 is 'jours ouvrables' (Mon–Sat) = 5 weeks = 25 working days — the snippet called it 'six weeks', which is wrong by the reviewer's reading. Cadres on forfait jours work ≤ 218 days/yr (L3121-64), so the 35 h week does not set their hours."
+    },
+    {
+      "hub": "IT",
+      "weeklyHours": null,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": null,
+      "url": null,
+      "seenIn": "search-snippet",
+      "note": "Not found within budget. F: 20 days + 12 public holidays (snippet)."
+    },
+    {
+      "hub": "PT",
+      "weeklyHours": null,
+      "publicHolidays": 13,
+      "annualLeaveDays": 22,
+      "leaveIncludesHolidays": false,
+      "source": "aggregator summary (search result for the Wikipedia list query)",
+      "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+      "seenIn": "search-snippet",
+      "note": "22 working days + 13 paid holidays."
+    },
+    {
+      "hub": "PL",
+      "weeklyHours": null,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": null,
+      "url": null,
+      "seenIn": "search-snippet",
+      "note": "Not found within budget."
+    },
+    {
+      "hub": "CZ",
+      "weeklyHours": null,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": null,
+      "url": null,
+      "seenIn": "search-snippet",
+      "note": "Not found within budget."
+    },
+    {
+      "hub": "RO",
+      "weeklyHours": null,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": null,
+      "url": null,
+      "seenIn": "search-snippet",
+      "note": "Not found within budget."
+    },
+    {
+      "hub": "HU",
+      "weeklyHours": null,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": null,
+      "url": null,
+      "seenIn": "search-snippet",
+      "note": "Not found within budget."
+    },
+    {
+      "hub": "RS",
+      "weeklyHours": null,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": null,
+      "url": null,
+      "seenIn": "search-snippet",
+      "note": "Not found within budget."
+    },
+    {
+      "hub": "TR",
+      "weeklyHours": null,
+      "publicHolidays": 9,
+      "annualLeaveDays": "15-30",
+      "leaveIncludesHolidays": null,
+      "source": "gloroots.com leave-policy aggregator",
+      "url": "https://www.gloroots.com/leave-policy",
+      "seenIn": "search-snippet",
+      "note": "WEAK: generic aggregator; Turkish leave is service-linked. Verify against İş Kanunu art. 53. Weekly hours (45) NOT found in any result."
+    },
+    {
+      "hub": "EG",
+      "weeklyHours": null,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": null,
+      "url": null,
+      "seenIn": "search-snippet",
+      "note": "No usable result (searched with VN/CN/TR)."
+    },
+    {
+      "hub": "IN",
+      "weeklyHours": 48,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": true,
+      "source": "HiveDesk blog (Factories Act 48 h max); Resume.io via humanresourcesonline.net: 18 days total paid leave + public holidays",
+      "url": "https://www.hivedesk.com/blog/outsourcing/average-working-hours-by-country",
+      "seenIn": "search-snippet",
+      "note": "48 h is the Factories Act MAXIMUM; IT / software firms fall under state Shops & Establishments Acts — 48 h is a ceiling, not normal hours. 18 days total (leave + PH) is from a study, not statute: https://humanresourcesonline.net/malaysia-singapore-and-thailand-rank-among-25-countries-with-the-least-paid-leave-days"
+    },
+    {
+      "hub": "CN",
+      "weeklyHours": 44,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": "HelloPEBL blog",
+      "url": "https://hellopebl.com/resources/blog/working-hours-by-country/",
+      "seenIn": "search-snippet",
+      "note": "REVIEWER DOUBT: the blog says 44 h (Labour Law art. 36); the State Council's 1995 rule set the standard week at 40 h. Verify before use. Public holidays / leave: no usable result."
+    },
+    {
+      "hub": "VN",
+      "weeklyHours": null,
+      "publicHolidays": 11,
+      "annualLeaveDays": 12,
+      "leaveIncludesHolidays": false,
+      "source": "Labour Code 2019 art. 113 via lawnet.vn / netviet.com.vn",
+      "url": "https://lawnet.vn/en/laws/is-the-annual-leave-period-of-foreign-employees-similar-to-that-of-vietnamese-employees-86020.html",
+      "seenIn": "search-snippet",
+      "note": "12 working days (+1 per 5 years' service); 11 public holidays incl. Tet (foreign employees +2). A 2026 proposal to add 27 July was under review in Oct 2026. Weekly hours not found."
+    },
+    {
+      "hub": "JP",
+      "weeklyHours": 40,
+      "publicHolidays": null,
+      "annualLeaveDays": 10,
+      "leaveIncludesHolidays": false,
+      "source": "HelloPEBL (40 h, Labour Standards Act; '36 Agreement' for overtime); leave from a Statista/Newsweek-type summary",
+      "url": "https://hellopebl.com/resources/blog/working-hours-by-country/",
+      "seenIn": "search-snippet",
+      "note": "10 days minimum, rising with seniority to 20. Public holidays count not found (16 is commonly cited but NOT seen)."
+    },
+    {
+      "hub": "KR",
+      "weeklyHours": 40,
+      "publicHolidays": null,
+      "annualLeaveDays": 16,
+      "leaveIncludesHolidays": false,
+      "source": "HiveDesk (40 h + 12 h overtime after 2018); leave 16 from one summary",
+      "url": "https://www.hivedesk.com/blog/outsourcing/average-working-hours-by-country",
+      "seenIn": "search-snippet",
+      "note": "16 days from a single secondary summary (Labour Standards Act: 15 days after 1 year, +1 per 2 years — reviewer's knowledge, not seen). Public holidays not found."
+    },
+    {
+      "hub": "US",
+      "weeklyHours": null,
+      "publicHolidays": 0,
+      "annualLeaveDays": 0,
+      "leaveIncludesHolidays": null,
+      "source": "Statista chart summary",
+      "url": "https://www.statista.com/chart/amp/15005/statutory-minimum-paid-leave-and-public-holidays",
+      "seenIn": "search-snippet",
+      "note": "No statutory paid leave or paid public holidays for private employers; 10 federal holidays are customary. FLSA 40 h overtime threshold not searched."
+    },
+    {
+      "hub": "CA",
+      "weeklyHours": null,
+      "publicHolidays": 9,
+      "annualLeaveDays": 10,
+      "leaveIncludesHolidays": false,
+      "source": "Statista 2020 chart (via search summary)",
+      "url": "https://www.statista.com/chart/amp/15005/statutory-minimum-paid-leave-and-public-holidays",
+      "seenIn": "search-snippet",
+      "note": "Provincial: Ontario 2 weeks (10 days) and 9 statutory holidays — the summary did not name the province; 2020 data."
+    },
+    {
+      "hub": "MX",
+      "weeklyHours": 48,
+      "publicHolidays": null,
+      "annualLeaveDays": null,
+      "leaveIncludesHolidays": null,
+      "source": "Oyster HR",
+      "url": "https://www.oysterhr.com/library/average-working-hours-by-country",
+      "seenIn": "search-snippet",
+      "note": "48 h legal week (+9 h overtime). A reform to 40 h was under discussion — not verified. Leave / holidays not found."
+    }
+  ],
+  "gaps": [
+    {
+      "id": 5,
+      "hub": "IN",
+      "item": "SENIOR (6–10 y) embedded / AUTOSAR engineer pay at Indian automotive SW firms",
+      "stored": "none (gap)",
+      "verdict": "NOT-FOUND",
+      "found": [
+        {
+          "value": 950000,
+          "period": "annual",
+          "currency": "INR",
+          "grossOrNet": "not stated (likely CTC)",
+          "statistic": "individual reports, low",
+          "dataYear": null,
+          "source": "AmbitionBox — Tata Elxsi Embedded Developer, individual reports for 5–8 y",
+          "url": "https://www.ambitionbox.com/salaries/tata-elxsi-salaries/embedded-developer",
+          "seenIn": "search-snippet",
+          "note": "Individual reports 9.5–12.8 L; overall page range 4.4–11.4 L for 0–8 y."
+        },
+        {
+          "value": 1280000,
+          "period": "annual",
+          "currency": "INR",
+          "grossOrNet": "not stated",
+          "statistic": "individual reports, high",
+          "dataYear": null,
+          "source": "AmbitionBox — Tata Elxsi Embedded Developer, 5–8 y",
+          "url": "https://www.ambitionbox.com/salaries/tata-elxsi-salaries/embedded-developer",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 650000,
+          "period": "annual",
+          "currency": "INR",
+          "grossOrNet": "not stated",
+          "statistic": "range low",
+          "dataYear": null,
+          "source": "AmbitionBox — Bosch Global Software Technologies, Senior Software Engineer (general, 2–10 y): 6.5–20 L",
+          "url": null,
+          "seenIn": "search-snippet",
+          "note": "Exact page URL not in the results; BGSW Embedded Engineer page: 4.5–10.5 L for 0–5 y."
+        },
+        {
+          "value": 2000000,
+          "period": "annual",
+          "currency": "INR",
+          "grossOrNet": "not stated",
+          "statistic": "range high",
+          "dataYear": null,
+          "source": "AmbitionBox — BGSW Senior Software Engineer (2–10 y)",
+          "url": null,
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": 900000,
+          "period": "annual",
+          "currency": "INR",
+          "grossOrNet": "not stated",
+          "statistic": "range low",
+          "dataYear": null,
+          "source": "AmbitionBox — KPIT Senior Automation Engineer, 3–8 y (3 salaries, low confidence): 9–14.3 L",
+          "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/senior-automation-engineer",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "No clean 6–10 y embedded band exists in what search shows (AmbitionBox hides level detail behind 'unlock'). The best senior evidence is Tata Elxsi 5–8 y individual reports, ₹9.5–12.8 L. A ₹9–15 L 'senior' band appeared only as the search engine's own inference — not recorded."
+    },
+    {
+      "id": 6,
+      "hub": "CN",
+      "item": "Embedded / automotive software engineer salary, Shanghai / Shenzhen",
+      "stored": "only NBS industry averages",
+      "verdict": "NOT-FOUND",
+      "found": [
+        {
+          "value": 15000,
+          "period": "monthly",
+          "currency": "CNY",
+          "grossOrNet": "gross (advert)",
+          "statistic": "advert range low",
+          "dataYear": 2025,
+          "source": "Shanghai advert, AUTOSAR CP, 5–10 y experience: 1.5–3万 (zhaopin)",
+          "url": "https://m-pre.zhaopin.com/jobs/CCL1318168350J40796784508.htm",
+          "seenIn": "search-snippet",
+          "note": "Single advert; URL attribution uncertain; months/year not stated."
+        },
+        {
+          "value": 30000,
+          "period": "monthly",
+          "currency": "CNY",
+          "grossOrNet": "gross (advert)",
+          "statistic": "advert range high",
+          "dataYear": 2025,
+          "source": "same advert",
+          "url": "https://m-pre.zhaopin.com/jobs/CCL1318168350J40796784508.htm",
+          "seenIn": "search-snippet"
+        },
+        {
+          "value": null,
+          "period": "monthly",
+          "currency": "CNY",
+          "grossOrNet": "gross (advert)",
+          "statistic": "listings 20–30k up to 60–90k ·16薪",
+          "dataYear": null,
+          "source": "Liepin Shanghai embedded listings (headhunter adverts, mostly not automotive)",
+          "url": "https://www.liepin.com/city-sh/zplyxyfwkf4r2t/",
+          "seenIn": "search-snippet",
+          "note": "Shows 16-month pay structures exist; not a statistic."
+        }
+      ],
+      "note": "Two searches (职友集/看准网; 猎聘/智联 reports) found no published salary statistic for embedded/automotive SW. Maimai 2025 report covers AI roles only (AI scientist avg ¥112,394/month). A '20–30K first-tier embedded' figure came from a headhunter blog with no method — excluded. CN still has no usable salary survey."
+    },
+    {
+      "id": 17,
+      "hub": "FR",
+      "item": "Cadres 'forfait jours' 218 days per year",
+      "stored": "n/a",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 218,
+          "period": "days per year",
+          "currency": null,
+          "grossOrNet": null,
+          "statistic": "statutory ceiling",
+          "dataYear": 2024,
+          "source": "Code du travail art. L3121-64 (via Éditions Tissot / CCI Paris / travail-industrie.com): the collective agreement's day count is capped at 218 days, journée de solidarité included",
+          "url": "https://travail-industrie.com/code-du-travail/l3121-64",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "218 is a CEILING set by the collective agreement, not a fixed number; the solidarity day is inside it. Legifrance not reached."
+    },
+    {
+      "id": 18,
+      "hub": "IT",
+      "item": "Italy employer social-security rate, industry employee",
+      "stored": "null in F (PwC gives only 'approximately 30%')",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": null,
+          "period": "percent of taxable compensation",
+          "currency": null,
+          "grossOrNet": null,
+          "statistic": "range 29–32 (employer); employee 9.19–10.49",
+          "dataYear": 2025,
+          "source": "KPMG Taxation of International Executives: Italy, March 2025",
+          "url": "https://assets.kpmg.com/content/dam/kpmgsites/xx/pdf/2023/01/TIES-Italy.pdf.coredownload.inline.pdf",
+          "seenIn": "search-snippet",
+          "note": "A RANGE, not one number: depends on category, sector, headcount. KPMG 2023 guide gave 26–32%. PwC: 'approximately 30%' employer (excluded per RULES). TFR severance accrual not covered."
+        }
+      ],
+      "note": "No single statutory figure exists for 'industry'; use the KPMG 29–32% range with the midpoint stated as a judgement, or read the INPS rate table for metalmeccanica > 50 employees."
+    },
+    {
+      "id": 18,
+      "hub": "MX",
+      "item": "Mexico employer IMSS (+INFONAVIT, SAR) total %",
+      "stored": "null in F",
+      "verdict": "NOT-FOUND",
+      "found": [
+        {
+          "value": 5.0,
+          "period": "percent of SBC",
+          "currency": null,
+          "grossOrNet": null,
+          "statistic": "INFONAVIT employer rate",
+          "dataYear": 2026,
+          "source": "start-ops.com.mx labour-cost calculator citing Ley del INFONAVIT art. 29 fr. II (cap 25 UMA/day = MXN 2,932.75/day)",
+          "url": "https://start-ops.com.mx/calculators/mexico-labor-cost-calculator.html",
+          "seenIn": "search-snippet",
+          "note": "Vendor page."
+        },
+        {
+          "value": 2.0,
+          "period": "percent of SBC",
+          "currency": null,
+          "grossOrNet": null,
+          "statistic": "SAR (retiro) employer rate",
+          "dataYear": 2026,
+          "source": "same vendor page; Invalidez y Vida 1.75%; CEAV rising to 11.875% (top band) by 2030",
+          "url": "https://start-ops.com.mx/calculators/mexico-labor-cost-calculator.html",
+          "seenIn": "search-snippet"
+        }
+      ],
+      "note": "No big-four or IMSS source surfaced. Vendors quote 30–40% all-in and '~21%' IMSS-only — both vague / vendor estimates, not recorded. State payroll tax (ISN) on gross: CDMX 4%, Jalisco / Edomex 3% (vendor). CEAV is phasing up to 2030, so any total is year-specific."
+    },
+    {
+      "id": 18,
+      "hub": "IN",
+      "item": "India gratuity 4.81% and whether AmbitionBox figures are CTC",
+      "stored": "F: gratuity not sourced",
+      "verdict": "CONFIRMED",
+      "found": [
+        {
+          "value": 4.81,
+          "period": "percent of basic (+DA) per year",
+          "currency": null,
+          "grossOrNet": null,
+          "statistic": "provision rate = 15/26 ÷ 12",
+          "dataYear": null,
+          "source": "Payment of Gratuity Act formula as explained by hrone.cloud / holisticinvestment.in; patronaccounting.com: shown inside CTC, paid only on separation after 5 years",
+          "url": "https://hrone.cloud/?p=34510",
+          "seenIn": "search-snippet",
+          "note": "Base is BASIC (+DA), not CTC — on a typical Indian package basic is a fraction of CTC, so 4.81% of CTC overstates it."
+        }
+      ],
+      "note": "Gratuity confirmed (secondary HR / payroll sites, not the Act's text). Whether AmbitionBox figures are CTC: NOT-FOUND — nothing in results; it remains an assumption. If AmbitionBox is CTC, gratuity and employer PF are ALREADY inside it — do not add them again."
+    }
+  ]
+}

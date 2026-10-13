@@ -239,7 +239,7 @@ const AM:    RGB = brandRgb('amber');
  * Patching the instance covers `doc.text` and, because jspdf-autotable renders
  * cells through the same instance method, the tables as well.
  */
-function hardenPdfText(doc: jsPDF, money?: { fx: number; sym: string }): jsPDF {
+export function hardenPdfText(doc: jsPDF, money?: { fx: number; sym: string }): jsPDF {
   const d = doc as unknown as { text: (...a: unknown[]) => unknown; splitTextToSize: (...a: unknown[]) => unknown; getTextWidth: (...a: unknown[]) => unknown };
   const orig = d.text.bind(doc), split = d.splitTextToSize.bind(doc), width = d.getTextWidth.bind(doc);
   // In a non-£ report every £ amount in the text (rule bases, rate sources, notes) is printed in the report currency

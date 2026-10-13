@@ -4,8 +4,8 @@ import {
   defaultSWProgramInputs,
   SW_MODULES,
   ASIL_DEV_MULT,
-  REGION_MULT,
   REUSE_FACTOR,
+  swLibraryBaseRate,
 } from '../src/engine/sw-should-cost.js';
 import type {
   SWProgramInputs,
@@ -47,10 +47,14 @@ describe('computeSWProgram — sanity', () => {
     expect(Number.isFinite(r.summary.grandTotal)).toBe(true);
   });
 
-  it('produces a grand total in the premium-EV benchmark range (£300M–£1.2B)', () => {
+  // A plausibility guard only — the published programme figures are unverified and no test pins the model to them.
+  // (The old £300M floor was met only with the retired £28,000 / PM UK base; the Oct 2026 country book prices the
+  // default at ≈ £213M.)
+  it('produces a plausible grand total (£50M–£1.2B) with engineering a material share', () => {
     const r = computeSWProgram(defaultSWProgramInputs());
-    expect(r.summary.grandTotal).toBeGreaterThan(300_000_000);
+    expect(r.summary.grandTotal).toBeGreaterThan(50_000_000);
     expect(r.summary.grandTotal).toBeLessThan(1_200_000_000);
+    expect(r.summary.nreTotal).toBeGreaterThan(0.1 * r.summary.grandTotal);
   });
 
   it('all 54 modules carry the required cost-driver fields (49 + 5 ICE / hybrid estimates, P1 #4)', () => {
@@ -155,11 +159,11 @@ describe('cost-driver monotonicity', () => {
     expect(REUSE_FACTOR.Platform).toBeLessThan(REUSE_FACTOR.Fresh);
   });
 
-  it('India labour is cheaper than USA Silicon Valley', () => {
-    const india = computeSWProgram(uniformInputs({ region: 'India'  as SWRegion })).summary.grandTotal;
-    const sv    = computeSWProgram(uniformInputs({ region: 'USA_SV' as SWRegion })).summary.grandTotal;
+  it('India labour is cheaper than California (each hub at its own rate)', () => {
+    const india = computeSWProgram(uniformInputs({ region: 'IN' as SWRegion })).summary.grandTotal;
+    const sv    = computeSWProgram(uniformInputs({ region: 'US-CA' as SWRegion })).summary.grandTotal;
     expect(india).toBeLessThan(sv);
-    expect(REGION_MULT.India).toBeLessThan(REGION_MULT.USA_SV);
+    expect(DEFAULT_SW_RATE_LIBRARY.hubRates.IN.mid.value).toBeLessThan(DEFAULT_SW_RATE_LIBRARY.hubRates['US-CA'].mid.value);
   });
 
   it('higher base rate raises labour-driven cost (editable rate library)', () => {
@@ -168,9 +172,10 @@ describe('cost-driver monotonicity', () => {
     expect(hi).toBeGreaterThan(lo);
   });
 
-  it('baseRateGBP unset falls back to the default and matches the explicit default', () => {
-    const explicit = computeSWProgram({ ...defaultSWProgramInputs(), baseRateGBP: 28_000 }).summary.grandTotal;
-    const unset    = computeSWProgram({ ...defaultSWProgramInputs(), baseRateGBP: undefined }).summary.grandTotal;
+  it('baseRateGBP unset falls back to the hub book rate and matches it typed explicitly', () => {
+    const d = defaultSWProgramInputs();
+    const explicit = computeSWProgram({ ...d, baseRateGBP: swLibraryBaseRate(d) }).summary.grandTotal;
+    const unset    = computeSWProgram({ ...d, baseRateGBP: undefined }).summary.grandTotal;
     expect(unset).toBeCloseTo(explicit, 0);
   });
 });
@@ -213,10 +218,11 @@ describe('sensitivity analysis', () => {
       expect(Number.isFinite(row.high)).toBe(true);
     }
   });
-  it('region sensitivity low (India) is below base (UK)', () => {
-    const region = r.sensitivity.find(x => x.parameter.includes('Region'));
+  it('hub sensitivity: the cheapest hub is below base (UK), the dearest above', () => {
+    const region = r.sensitivity.find(x => x.parameter.startsWith('Engineering hub'));
     expect(region).toBeDefined();
     expect(region!.low).toBeLessThan(region!.base);
+    expect(region!.high).toBeGreaterThan(region!.base);
   });
 });
 
@@ -226,15 +232,16 @@ describe('rate library', () => {
   const lib = DEFAULT_SW_RATE_LIBRARY;
 
   it('is versioned', () => {
-    expect(lib.version).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(lib.version).toMatch(/^\d+\.\d+\.\d+/);
   });
 
   it('every rate entry carries full provenance (source, date, confidence)', () => {
     const groups = [
-      lib.regionMultipliers, lib.devSourceMultipliers, lib.asilDevMultipliers,
+      lib.devSourceMultipliers, lib.asilDevMultipliers,
       lib.asilTestMultipliers, lib.complexityMultipliers, lib.reuseFactors,
     ];
-    for (const e of [lib.ukBaseRatePerPM, ...groups.flatMap(g => Object.values(g))]) {
+    const hubs = Object.values(lib.hubRates).flatMap(h => [h.mid, h.senior]);
+    for (const e of [...hubs, ...groups.flatMap(g => Object.values(g))]) {
       expect(e.source.length).toBeGreaterThan(8);
       expect(e.asOf).toMatch(/^\d{4}-\d{2}$/);
       expect(['High', 'Medium', 'Low']).toContain(e.confidence);
@@ -244,17 +251,16 @@ describe('rate library', () => {
 
   it('engine constants are derived from the library (single source of truth)', () => {
     expect(ASIL_DEV_MULT).toEqual(rateValues(lib.asilDevMultipliers));
-    expect(REGION_MULT).toEqual(rateValues(lib.regionMultipliers));
     expect(REUSE_FACTOR).toEqual(rateValues(lib.reuseFactors));
   });
 
   it('a partial override changes only the overridden rates', () => {
     const merged = resolveRateLibrary({
-      regionMultipliers: { ...DEFAULT_SW_RATE_LIBRARY.regionMultipliers,
-        UK: { value: 2.0, source: 'test', asOf: '2026-06', confidence: 'Low' } },
+      hubRates: { UK: { ...DEFAULT_SW_RATE_LIBRARY.hubRates.UK, mid: { value: 9_000, source: 'test', asOf: '2026-06', confidence: 'Low' } } } as never,
     });
-    expect(merged.regionMultipliers.UK.value).toBe(2.0);
-    expect(merged.regionMultipliers.India.value).toBe(lib.regionMultipliers.India.value);
+    expect(merged.hubRates.UK.mid.value).toBe(9_000);
+    expect(merged.hubRates.UK.senior.value).toBe(lib.hubRates.UK.senior.value);
+    expect(merged.hubRates.IN.mid.value).toBe(lib.hubRates.IN.mid.value);
     expect(merged.reuseFactors.Fresh.value).toBe(lib.reuseFactors.Fresh.value);
   });
 
@@ -263,9 +269,10 @@ describe('rate library', () => {
     const over = computeSWProgram({
       ...defaultSWProgramInputs(),
       rateLibrary: {
-        ukBaseRatePerPM: { value: 56_000, source: 'engagement', asOf: '2026-06', confidence: 'High' },
+        hubRates: { UK: { mid: { value: 20_000, source: 'engagement', asOf: '2026-06', confidence: 'High' },
+          senior: { value: 24_000, source: 'engagement', asOf: '2026-06', confidence: 'High' } } } as never,
       },
     }).summary.grandTotal;
-    expect(over).toBeGreaterThan(base); // doubled base rate raises labour-driven cost
+    expect(over).toBeGreaterThan(base); // a dearer company hub rate raises labour-driven cost
   });
 });

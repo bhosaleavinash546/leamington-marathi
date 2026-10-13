@@ -1,0 +1,618 @@
+{
+  "task": "F",
+  "researched": "2026-10-13",
+  "searchesUsed": 26,
+  "method": "WebFetch failed on every host tried (taxsummaries.pwc.com, www.oecd.org, en.wikipedia.org, www.gov.uk: 'getaddrinfo ENOTFOUND'), so NO page was read; every figure below is from a WebSearch result summary and is marked seenIn 'search-snippet'. Search results were restricted by domain where possible (taxsummaries.pwc.com for employer on-costs; ssa.gov / irs.gov / canada.ca for US and Canada). 'pct' is the plain SUM of the employer components the source listed (my addition, shown in 'components'); it is the rate below any ceiling — above a ceiling the effective % falls. Accident / work-injury insurance is excluded from 'pct' unless stated. Figures a summary gave only as 'about / roughly' are stored as null with the wording in 'note', per RULES.md.",
+  "hubs": [
+    {
+      "hub": "UK",
+      "employerOnCost": {
+        "pct": 15.0,
+        "components": "Employer Class 1 NIC 15% on earnings above the secondary threshold of GBP 5,000 a year; no upper ceiling",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, United Kingdom - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/united-kingdom/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Snippet: secondary threshold stays at GBP 5,000 until April 2028, then rises with CPI. Apprenticeship levy and workplace-pension auto-enrolment employer minimum not researched (budget)."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 28,
+        "publicHolidays": 8,
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Statutory leave 5.6 weeks capped at 28 days; employers may include bank holidays within it. 8 bank holidays England & Wales (9 Scotland, 10 NI)", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" }
+        ],
+        "note": "28 days can INCLUDE the 8 bank holidays — do not add them. OECD hours for the UK not returned for 2024 (a 2023 figure appeared only on visualcapitalist; not used)."
+      }
+    },
+    {
+      "hub": "DE",
+      "employerOnCost": {
+        "pct": 21.3,
+        "components": "Pension 9.3% (half of 18.6%, ceiling EUR 101,400/yr) + unemployment 1.3% (half of 2.6%, ceiling EUR 101,400) + health 7.3% (half of 14.6%) + half of the average fund supplement 2.9% = 1.45% (health ceiling EUR 69,750/yr) + long-term care 1.8% (ceiling EUR 69,750; childless surcharge is employee-only) + insolvency levy 0.15% (ceiling EUR 101,400). Work-accident (BG) contribution is employer-only and sector-dependent — excluded.",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, Germany - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/germany/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Health/care ceiling EUR 69,750 (EUR 5,812.50/month) is BELOW a typical senior engineer salary, so the effective % is lower for seniors. 2025 figures were not in the results (the summary offered remembered 2025 values; not used)."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 20,
+        "publicHolidays": "10-13 (by state)",
+        "oecdAnnualHoursWorked": 1332,
+        "year": null,
+        "sources": [
+          { "what": "Leave 20-30 days (5-day week; statute 24 working days on a 6-day week); public holidays 10-13 by state", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Average annual hours per worker 1,332 (OECD data, Wikipedia list)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ],
+        "note": "Hours: the search summary attributed the figure to a column it called '2025' with 1,332 also as the '2020' value — year labelling doubtful; verify against the OECD 'Average annual hours actually worked per worker' series before use."
+      }
+    },
+    {
+      "hub": "AT",
+      "employerOnCost": {
+        "pct": 20.98,
+        "components": "Total employer rate on monthly pay (pension, sickness, unemployment, accident, minor contributions) 20.98% up to a monthly ceiling of EUR 6,930; special payments (13th / 14th salary) 20.48%",
+        "year": null,
+        "source": "PwC Worldwide Tax Summaries, Austria - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/austria/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Summary did not say which year the rates are for. The summary wrote 'about 20.98%' but the figure is PwC's two-decimal table total. Other employer payroll items (e.g. FLAF, municipal tax, severance fund) not in the snippet — not researched."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 25,
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": 1442,
+        "year": null,
+        "sources": [
+          { "what": "Leave 25 days", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Annual hours 1,442 (same year-label doubt as DE)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ]
+      }
+    },
+    {
+      "hub": "SE",
+      "employerOnCost": {
+        "pct": 31.42,
+        "components": "Employer social security contributions 31.42% of total taxable remuneration, no cap",
+        "year": null,
+        "source": "PwC Worldwide Tax Summaries, Sweden - Individual - Other taxes",
+        "url": "http://taxsummaries.pwc.com/ID/Sweden-Individual-Other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Collective-agreement pension (ITP) not included — not researched."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 25,
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": 1421,
+        "year": null,
+        "sources": [
+          { "what": "Leave 25-30 days", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Annual hours 1,421 (same year-label doubt as DE)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ]
+      }
+    },
+    {
+      "hub": "FR",
+      "employerOnCost": {
+        "pct": 45,
+        "components": "PwC: on average the employer's share of contributions is 45% of gross salary; contributions are assessed under various ceilings so the average rate decreases as gross salary increases",
+        "year": null,
+        "source": "PwC Worldwide Tax Summaries, France - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/france/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "An average, not a statutory rate; no component split in the snippet."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 25,
+        "publicHolidays": "11-13",
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Leave 25 days; public holidays 11-13", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" }
+        ]
+      }
+    },
+    {
+      "hub": "IT",
+      "employerOnCost": {
+        "pct": null,
+        "components": "PwC gives only an estimate: total social security cost roughly 40% of gross pay, of which roughly 30% borne by the employer; varies by employee category, sector and employer size",
+        "year": null,
+        "source": "PwC Worldwide Tax Summaries, Italy - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/italy/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Stored null because the source states it only as 'roughly'. TFR (severance accrual) not researched."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 20,
+        "publicHolidays": 12,
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Leave 20 days; public holidays 12", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" }
+        ]
+      }
+    },
+    {
+      "hub": "ES",
+      "employerOnCost": {
+        "pct": 30.65,
+        "components": "General employer rate fixed 30.65% (includes 23.60% common contingencies and 0.75% employer share of the Intergenerational Equity Mechanism, which PwC says is 0.90% in 2026) plus a variable occupational-accident rate (e.g. 1.5% for office work, excluded)",
+        "year": 2025,
+        "source": "PwC Worldwide Tax Summaries, Spain - Corporate - Other taxes",
+        "url": "https://taxsummaries.pwc.com/spain/corporate/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "The 2026 total with MEI 0.90% was not stated. Maximum contribution base (ceiling) not in the snippet — it likely binds for senior engineers; not researched."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 22,
+        "publicHolidays": "12-13",
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Leave 22 days; public holidays 12-13", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" }
+        ]
+      }
+    },
+    {
+      "hub": "PT",
+      "employerOnCost": {
+        "pct": 23.75,
+        "components": "Employer social security 23.75% of gross pay (employee 11%); employers also buy a separate occupational accident insurance (excluded)",
+        "year": null,
+        "source": "PwC Worldwide Tax Summaries, Portugal - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/portugal/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": ""
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": "22-25",
+        "publicHolidays": "13-15",
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Leave 22-25 days; public holidays 13-15", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" }
+        ]
+      }
+    },
+    {
+      "hub": "PL",
+      "employerOnCost": {
+        "pct": null,
+        "pctLow": 19.48,
+        "pctHigh": 22.14,
+        "components": "PwC: employer total 19.48%-22.14% of gross salary (accident insurance varies by company size and sector); includes pension 9.76% and Labour Fund + Solidarity Fund 2.45% (from PwC sample calculation); pension and disability contributions capped at PLN 282,600 a year (2026)",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, Poland - Corporate - Other taxes / Individual - Sample personal income tax calculation",
+        "url": "https://taxsummaries.pwc.com/poland/corporate/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "The PLN 282,600 cap binds for senior engineers on pension/disability components."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": "20-26",
+        "publicHolidays": 14,
+        "oecdAnnualHoursWorked": 1776,
+        "year": null,
+        "sources": [
+          { "what": "Leave 20-26 days (by service); public holidays 14", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Annual hours 1,776 (same year-label doubt as DE; OECD Productivity Compendium 2024 says Poland recorded >2,000 h in 2022 — conflicts)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ]
+      }
+    },
+    {
+      "hub": "CZ",
+      "employerOnCost": {
+        "pct": 33.8,
+        "components": "Employer social security 24.8% + health insurance 9%; social security assessment base capped at 48 x average monthly wage = CZK 2,350,416 a year (2026)",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, Czech Republic - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/czech-republic/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": ""
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 20,
+        "publicHolidays": 13,
+        "oecdAnnualHoursWorked": 1824,
+        "year": null,
+        "sources": [
+          { "what": "Leave 20 days; public holidays 13", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Annual hours 1,824 (same year-label doubt as DE)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ]
+      }
+    },
+    {
+      "hub": "RO",
+      "employerOnCost": {
+        "pct": 2.25,
+        "components": "Work insurance contribution 2.25%; employer social insurance 4% or 8% only for special / particular working conditions — none for normal conditions",
+        "year": null,
+        "source": "PwC Worldwide Tax Summaries, Romania - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/romania/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Romania shifted social contributions to the employee, so the gross salary already carries them; the summary inferred the employer column from the page layout."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": null,
+        "publicHolidays": 15,
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Public holidays 15", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_number_of_public_holidays" }
+        ]
+      }
+    },
+    {
+      "hub": "HU",
+      "employerOnCost": {
+        "pct": 13.0,
+        "components": "Employer social contribution tax ('social tax') 13% (employee contribution 18.5% separately)",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, Hungary - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/hungary/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Vocational training contribution not in the snippet."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 20,
+        "publicHolidays": "11-13",
+        "oecdAnnualHoursWorked": 1671,
+        "year": null,
+        "sources": [
+          { "what": "Leave 20 working days (ILO Holidays with Pay Convention table, ratified 1998)", "url": "https://en.wikipedia.org/wiki/Holidays_with_Pay_Convention_(Revised),_1970" },
+          { "what": "Public holidays 11-13", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_number_of_public_holidays" },
+          { "what": "Annual hours 1,671 (same year-label doubt as DE)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ]
+      }
+    },
+    {
+      "hub": "RS",
+      "employerOnCost": {
+        "pct": 15.15,
+        "components": "Employer pension and disability insurance 10% + health insurance 5.15%",
+        "year": null,
+        "source": "PwC Worldwide Tax Summaries, Serbia - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/serbia/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Maximum contribution base not in the snippet — not researched."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 20,
+        "publicHolidays": 9,
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Leave 20 working days (ILO convention table, listed under FR Yugoslavia 2000)", "url": "https://en.wikipedia.org/wiki/Holidays_with_Pay_Convention_(Revised),_1970" },
+          { "what": "Public holidays 9", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_number_of_public_holidays" }
+        ]
+      }
+    },
+    {
+      "hub": "TR",
+      "employerOnCost": {
+        "pct": null,
+        "pctLow": 20.75,
+        "pctHigh": 21.75,
+        "components": "Two PwC pages disagree: (a) general employer SSC 20.75%, reducible by 4 points to 16.75% (5 points in manufacturing) if conditions are met; (b) employer share 21.75% (employee 14%). Unemployment insurance employer 2% (employee 1%, state 1%). Monthly premium ceiling TRY 297,270.00 from 1 Jan 2026 (same for UI)",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, Turkey - Individual - Other taxes and Turkey - Corporate - Other taxes",
+        "url": "https://taxsummaries.pwc.com/turkey/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Unclear whether the 2% UI is inside 20.75% / 21.75%. Second URL: https://taxsummaries.pwc.com/Turkey/Corporate/Other-taxes"
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": "14-26",
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Leave 14-26 days (by service)", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" }
+        ],
+        "note": "No recent OECD hours value in the list (last shown 2015)."
+      }
+    },
+    {
+      "hub": "EG",
+      "employerOnCost": {
+        "pct": 22.75,
+        "components": "Social insurance employer 18.75% of insurable salary (band EGP 2,700 min - EGP 16,700 max per month in 2026; limits rise 15% each 1 Jan for seven years from 2021) + comprehensive health insurance employer 4%",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, Egypt - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/egypt/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "The EGP 16,700/month insurable cap binds for most engineers, so the effective % of gross is far below 22.75%. Base of the 4% health contribution not stated in the snippet."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": null,
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": []
+      }
+    },
+    {
+      "hub": "IN",
+      "employerOnCost": {
+        "pct": 12.0,
+        "components": "Employer provident fund 12% of salary matching the employee's 12% (establishments with 20+ employees); of the employer share, 8.33% of salary capped at INR 15,000/month goes to the pension fund. Gratuity (commonly 4.81%) and ESI NOT found in the results",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, India - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/india/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Gratuity not sourced (no search budget left) — do not add 4.81% without a source. Indian salary surveys often quote CTC, which already contains the employer PF — check before adding on-cost."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 25,
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Leave 25 days per Wikipedia table (its own text says 2 days per month worked, i.e. a different basis)", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" }
+        ],
+        "note": "Indian leave is state Shops & Establishments law; the 25 figure is doubtful."
+      }
+    },
+    {
+      "hub": "CN",
+      "employerOnCost": {
+        "pct": null,
+        "pctLow": 25.7,
+        "pctHigh": 27.4,
+        "components": "Shanghai employer: pension 16% + medical (incl. maternity) 9% + unemployment 0.5% + work injury 0.2%-1.9%; base capped at 300% of the city's prior-year average salary. Housing provident fund employer rate NOT in the results",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, China - Individual - Other taxes (table valid as of 30 June 2026)",
+        "url": "https://taxsummaries.pwc.com/peoples-republic-of-china/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Housing fund (Shanghai 5-7%) not sourced — excluded. The 300% cap binds for senior engineers in Shanghai."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": "5/10/15",
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": [
+          { "what": "Annual leave 5, 10 or 15 days by years of service; public holidays and rest days do not count toward it", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" }
+        ]
+      }
+    },
+    {
+      "hub": "VN",
+      "employerOnCost": {
+        "pct": 21.5,
+        "components": "Social insurance employer 17.5% + health insurance 3% + unemployment insurance 1%; SI and HI income capped at 20 x the reference level",
+        "year": null,
+        "source": "PwC Worldwide Tax Summaries, Vietnam - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/vietnam/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Trade-union fee not in the snippet. UI cap basis not stated."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": null,
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": null,
+        "year": null,
+        "sources": []
+      }
+    },
+    {
+      "hub": "JP",
+      "employerOnCost": {
+        "pct": 14.575,
+        "components": "Welfare pension 9.15% (on max JPY 650,000/month) + health insurance Tokyo 4.925% (from March 2026) + employment insurance 0.5% (from April 2026); workers' accident compensation employer-only, industry rate (excluded)",
+        "year": 2026,
+        "source": "PwC Worldwide Tax Summaries, Japan - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/japan/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Nursing-care insurance (age 40+) and the child-support contribution not in the snippet — excluded. Health rate is prefecture-specific (Tokyo used)."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": "10-20",
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": 1598,
+        "year": null,
+        "sources": [
+          { "what": "Leave 10-20 days (by service)", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Annual hours 1,598 (same year-label doubt as DE)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ]
+      }
+    },
+    {
+      "hub": "KR",
+      "employerOnCost": {
+        "pct": null,
+        "pctLow": 9.9674,
+        "pctHigh": 10.5674,
+        "components": "National pension 4.75% + health insurance incl. long-term care 4.0674% + employment insurance 1.15%-1.75% (by headcount and industry); industrial accident insurance employer-only 0.56%-18.56% (excluded)",
+        "year": null,
+        "source": "PwC Worldwide Tax Summaries, Korea - Individual - Other taxes",
+        "url": "https://taxsummaries.pwc.com/republic-of-korea/individual/other-taxes",
+        "seenIn": "search-snippet",
+        "note": "Summary said health 'about 4.0674%' (a four-decimal statutory figure). Pension income ceiling not in the snippet. Mandatory severance pay (1 month per year) not researched."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": "11-15",
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": 1833,
+        "year": null,
+        "sources": [
+          { "what": "Leave 11-15 days", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Annual hours 1,833 (same year-label doubt as DE)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ]
+      }
+    },
+    {
+      "hub": "US",
+      "employerOnCost": {
+        "pct": 7.65,
+        "components": "Federal: OASDI 6.2% employer on wages up to USD 184,500 (2026 contribution and benefit base) + Medicare 1.45% on all wages. FUTA and state unemployment (SUTA) NOT sourced; Michigan / California state items not researched",
+        "year": 2026,
+        "source": "SSA Office of the Chief Actuary, Contribution and Benefit Base; IRS Publication 15 (2026)",
+        "url": "https://www.ssa.gov/oact/cola/cbb.html",
+        "seenIn": "search-snippet",
+        "note": "Second URL: https://www.irs.gov/publications/p15. Employer health insurance / 401(k) are not statutory and are excluded."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 0,
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": 1800,
+        "year": null,
+        "sources": [
+          { "what": "No federal minimum paid leave", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Annual hours 1,800 (same year-label doubt as DE)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ],
+        "note": "Statutory 0 leave days is not what an engineering employer gives; use a survey figure for actual leave."
+      }
+    },
+    {
+      "hub": "CA",
+      "employerOnCost": {
+        "pct": 8.232,
+        "components": "CPP employer 5.95% (base 4.95% + first additional 1.00%) on earnings between the CAD 3,500 basic exemption and CAD 74,600 YMPE (2026) — max employer contribution CAD 4,230.45 = 5.95% x 71,100, so 5.95% is per side; plus EI employer = 1.4 x 1.63% = 2.282% on max insurable earnings CAD 68,900 (max employer premium CAD 1,572.30). CPP2 (second additional, above YMPE) not looked up",
+        "year": 2026,
+        "source": "Canada Revenue Agency: CPP contribution rates, maximums and exemptions; EI premium rates and maximums",
+        "url": "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/payroll/payroll-deductions-contributions/canada-pension-plan-cpp/cpp-contribution-rates-maximums-exemptions.html",
+        "seenIn": "search-snippet",
+        "note": "Snippet called 5.95% the 'combined' rate; the CRA maximum (4,230.45 = 5.95% of 71,100) shows it is the rate for EACH of employee and employer. Both CPP and EI are capped below a typical engineer salary, so the effective % is well under 8.23% (max employer total CAD 5,802.75 a year). EI URL: https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/payroll/payroll-deductions-contributions/employment-insurance-ei/ei-premium-rates-maximums.html. Quebec differs (EI 1.30%, QPP). Provincial employer health taxes not researched."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": "10-20",
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": 1687,
+        "year": null,
+        "sources": [
+          { "what": "Leave 10-20 days (provincial)", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Annual hours 1,687 (same year-label doubt as DE)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ]
+      }
+    },
+    {
+      "hub": "MX",
+      "employerOnCost": {
+        "pct": null,
+        "components": "INFONAVIT 5% of contribution base (SBC), employer only; SAR retirement 2% of SBC; CEAV employer 3.15%-7.513% of SBC in 2026 by salary band (2020 pension reform); other IMSS branches given only as ranges ('approximately 15-25%' / '~20-25%'); state payroll tax (ISN) 1-4% by state (one source: Mexico City 4% in 2026, Jalisco 3%). PwC: employer contributions subject to UMA-multiple limits, employer annual maximum MXN 227,286 for a low-risk company",
+        "year": 2026,
+        "source": "EOR payroll guides (Deel, Boundless, RemotePass, Rivermate) + PwC Worldwide Tax Summaries, Mexico - Individual - Other taxes",
+        "url": "https://www.deel.com/blog/employer-costs-for-an-employee-in-mexico/",
+        "seenIn": "search-snippet",
+        "note": "Weak: the summary did not attribute each figure to a specific guide, and EOR blogs are not big-four guides. Other URLs: https://boundlesshq.com/blog/running-payroll-in-mexico/ , https://www.remotepass.com/country/mexico/taxes , https://taxsummaries.pwc.com/mexico/individual/other-taxes . Aguinaldo (13th-month) and 25% vacation premium are pay items, not contributions — not sourced here."
+      },
+      "hours": {
+        "weeklyHours": null,
+        "annualLeaveDays": 12,
+        "publicHolidays": null,
+        "oecdAnnualHoursWorked": 2205,
+        "year": null,
+        "sources": [
+          { "what": "Leave 12 days (first year)", "url": "https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country" },
+          { "what": "Annual hours 2,205 (same year-label doubt as DE)", "url": "https://en.wikipedia.org/wiki/List_of_countries_by_average_annual_labor_hours" }
+        ]
+      }
+    }
+  ],
+  "sellRates": [
+    {
+      "country": "IN", "firm": "KPIT Technologies", "fiscalYear": "FY2025 (to 31 Mar 2025)",
+      "revenue": 691, "revenueCurrency": "USD million", "headcount": null,
+      "url": "https://themachinemaker.com/news/kpit-reports-fy25-results-meets-higher-ebitda-target-of-21/",
+      "seenIn": "search-snippet",
+      "note": "Revenue in INR: 58.4 billion (Simply Wall St, https://simplywall.st/stocks/in/software/nse-kpittech/kpit-technologies-shares/news/kpit-technologies-full-year-2025-earnings-eps-beats-expectat-1). Headcount: only an undated aggregator figure (~12,873, kalkinemedia) — not used."
+    },
+    {
+      "country": "IN", "firm": "Tata Elxsi", "fiscalYear": "FY2025 (to 31 Mar 2025)",
+      "revenue": 3729.0, "revenueCurrency": "INR crore", "headcount": 12414,
+      "url": "https://www.tataelxsi.com/news-and-events/tata-elxsi-operating-revenue-at-rs-3-729-crores-for-fy-25-with-full-year-pbt-at-26-3",
+      "seenIn": "search-snippet",
+      "note": "Revenue = operating revenue per the company release. Headcount 12,414 at fiscal year end (down 985 YoY) came from a news result in the same search whose exact URL the summary did not name (candidates: businesstoday.in Q4 article, theweek.in wire); TipRanks shows 12,969 on a different basis."
+    },
+    {
+      "country": "IN", "firm": "L&T Technology Services", "fiscalYear": "FY2025 (to 31 Mar 2025)",
+      "revenue": 10670.2, "revenueCurrency": "INR crore", "headcount": 23698,
+      "url": "https://www.sharekhan.com/MediaGalary/docs/LTTS-Jul17_2025-202507172043347037678.pdf",
+      "seenIn": "search-snippet",
+      "note": "Revenue from a broker (Sharekhan) valuation table, not the annual report. Headcount 23,698 is end-Q2 FY25 (30 Sep 2024), businessworld.in: https://businessworld.in/article/lt-technology-services-posts-8-revenue-growth-in-q2fy25-net-profit-rises-to-rs-319-cr-536452 — NOT year-end. Different periods: do not divide without checking."
+    },
+    {
+      "country": "IN", "firm": "Tata Technologies", "fiscalYear": "FY2025 (to 31 Mar 2025)",
+      "revenue": 51685, "revenueCurrency": "INR million", "headcount": 12680,
+      "url": "https://trendlyne.com/latest-news/only-news/1792699/TATATECH/tata-technologies-ltd/",
+      "seenIn": "search-snippet",
+      "note": "Headcount 12,680 is Q2 FY25 (Angel One, https://www.angelone.in/news/share-market/tata-technologies-q2-fy25-earnings); 12,402 at 30 Sep 2025 per another result. Includes a non-services (products) segment."
+    },
+    {
+      "country": "DE", "firm": "Bertrandt", "fiscalYear": "FY2023/24 (Oct 2023 - Sep 2024)",
+      "revenue": null, "revenueCurrency": "EUR", "headcount": 14526,
+      "url": "https://bertrandt.com/fileadmin/files/files/00_Unternehmen/01_Investor_Relations/03_Finanzberichte/GJ_23-24/half-year-report_q2_2023-2024_bertrandt.pdf",
+      "seenIn": "search-snippet",
+      "note": "Revenue stored null: the summary gave only 'about EUR 1.19 billion' total revenues (sustainabilityreports.com). Headcount 14,526 is at 31 Mar 2024 (H1 report), not fiscal year end. Annual report PDF: https://www.bertrandt.com/fileadmin/files/files/00_Unternehmen/01_Investor_Relations/03_Finanzberichte/GJ_23-24/annual_report_fy_2023-2024_bertrandt_.pdf (not read)."
+    },
+    {
+      "country": "DE", "firm": "EDAG Group", "fiscalYear": "2024",
+      "revenue": 821.9, "revenueCurrency": "EUR million", "headcount": 9133,
+      "url": "https://www.tipranks.com/stocks/de:ed4/revenue",
+      "seenIn": "search-snippet",
+      "note": "Aggregator (TipRanks), not the annual report; headcount undated; page internally inconsistent per the summary. Low weight."
+    },
+    {
+      "country": "FR", "firm": "Alten", "fiscalYear": "2024",
+      "revenue": null, "revenueCurrency": "EUR", "headcount": 57700,
+      "url": "https://quartr.com/events/alten-s-a-ate-h2-2024_oCKjdg1g",
+      "seenIn": "search-snippet",
+      "note": "Revenue stored null: summary gave 'about EUR 4.14 billion' (+1.8%). Headcount 57,700 (quartr H2 2024 summary); TipRanks shows 56,373. Group-wide, not France only."
+    },
+    {
+      "country": "UK", "framework": "G-Cloud 14 supplier SFIA rate cards (Digital Marketplace)", "role": "development / senior developer, by SFIA level",
+      "value": null, "unit": "day", "currency": "GBP",
+      "url": "https://assets.applytosupply.digitalmarketplace.service.gov.uk/g-cloud-14/documents/715368/205749037968743-sfia-rate-card-2024-05-01-1546.pdf",
+      "seenIn": "search-snippet",
+      "values": [
+        { "supplier": "Ceox", "grade": "Senior Consultant", "value": 723, "basis": "7.5 h day, ex VAT" },
+        { "supplier": "Ceox", "grade": "Principal Consultant (tech lead / architect)", "value": 784, "basis": "7.5 h day, ex VAT" },
+        { "supplier": "myConsole", "grade": "Senior Developer SFIA 1-3 / 4 / 7", "value": [450, 500, 600], "basis": "8 h day" },
+        { "supplier": "CloudSource", "grade": "Solution development & implementation SFIA 1/2/3/4/5", "value": [450, 650, 800, 850, 950], "basis": "8 h day, T&S within M25 included" },
+        { "supplier": "Cohesive UK", "grade": "Development & implementation SFIA 1/2/3/5/6", "value": [265, 445, 735, 1050, 1840], "basis": "maximum charge-out rate" },
+        { "supplier": "Evisa", "grade": "Consultant / Senior Consultant band", "value": [[500, 750], [650, 975]], "basis": "8 h day + VAT" }
+      ],
+      "note": "These are SUPPLIER-set list / maximum rates on G-Cloud 14 (2024), not a CCS benchmark, and not automotive / embedded. The summary did not say which of the returned PDFs belongs to which supplier, so the URL above is one of the set; the others: .../g-cloud-14/documents/708928/637897343491390-pricing-document-2024-05-02-1155.pdf, .../717027/894510156556037-sfia-rate-card-2024-05-06-1313.pdf, .../705036/205531255494502-pricing-document-2024-05-03-1735.pdf, .../717027/991975575271996-sfia-rate-card-2024-05-06-2111.pdf, .../703712/604534922519559-sfia-rate-card-2024-05-06-1523.pdf, .../706149/627673443299633-sfia-rate-card-2024-05-01-1524.pdf, .../720382/850422866349109-sfia-rate-card-2024-05-06-1335.pdf, .../92879/718715890587811-sfia-rate-card-2024-04-23-1136.pdf (host https://assets.applytosupply.digitalmarketplace.service.gov.uk). Read each before use."
+    },
+    {
+      "country": "US", "framework": "GSA CALC+ (MAS awarded ceiling rates)", "role": "Software Engineer / Senior Software Engineer",
+      "value": null, "unit": "hour", "currency": "USD",
+      "url": "https://buy.gsa.gov/pricing/assets/documents/user-guides/CALC+%20User%20Guide%20for%20BLS%20Rates.pdf",
+      "seenIn": "search-snippet",
+      "note": "No rate found: CALC+ is a live query tool (buy.gsa.gov) and was not reachable (WebFetch down). CALC rates are fully burdened master-contract CEILINGS; task-order rates can be substantially lower."
+    }
+  ],
+  "notResearched": [
+    "All WebFetch calls failed (DNS ENOTFOUND on every host) — no page was read; every value is search-snippet only and needs a page read before it is used",
+    "Weekly normal hours for every hub (no budget)",
+    "OECD average annual hours actually worked 2024 from the OECD itself (only a Wikipedia-derived list with a doubtful year label); UK, FR, IT, ES, PT, TR, non-OECD hubs missing",
+    "Public holidays for AT, SE, TR, EG, IN, CN, VN, JP, KR, US, CA, MX; annual leave for RO, EG, VN",
+    "India gratuity (4.81%) and ESI; China Shanghai housing fund; US FUTA / SUTA and Michigan / California items; Canada CPP2 and provincial health taxes; Mexico IMSS branch rates; Spain / Serbia / Korea contribution ceilings; Italy statutory rates; UK apprenticeship levy / auto-enrolment pension",
+    "Sell-rate proxies: Akkodis / Adecco, Thundersoft, Neusoft, FPT, EPAM, Endava (search budget exhausted)",
+    "GSA CALC+ software engineer ceiling rates (live tool, not reachable)"
+  ]
+}

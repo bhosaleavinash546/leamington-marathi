@@ -11,6 +11,8 @@
  * a docs/ copy. NB: the Range Rover L460 report is hand-authored and NOT produced
  * here — its config is intentionally absent so it is never overwritten.
  */
+import { normaliseSWRegion, swLibraryBaseRate } from '../src/engine/sw-should-cost.js';
+import { SW_HUB_RATES } from '../src/engine/sw-country-rates.js';
 import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope, SW_POWERTRAIN_SCOPE, CYBER_UPLIFT_BY_CAL } from '../src/engine/sw-should-cost.js';
 import type { SWPowertrain } from '../src/engine/sw-should-cost.js';
 import { rateValues } from '../src/engine/sw-rate-library.js';
@@ -138,11 +140,12 @@ function report(v: Meta): { file:string; docFile:string; html:string; gt:number;
   const inp = buildInputs(v);
   const r = computeSWProgram(inp as any, { summaryOnly:false });
   const s = r.summary;
-  const seniorMult = v.senior*1.20 + (1-v.senior)*0.75;
-  const rate = L.ukBaseRatePerPM.value * L.regionMultipliers[v.region].value * L.devSourceMultipliers[v.devSource].value * seniorMult * v.overhead;
+  // Oct 2026 country book: the hub's OWN rate (mid / senior blend), no UK base × region multiplier.
+  const hub = normaliseSWRegion(v.region) as keyof typeof SW_HUB_RATES;
+  const hubRate = swLibraryBaseRate({ region: hub, teamSeniorFraction: v.senior });
+  const rate = hubRate * L.devSourceMultipliers[v.devSource].value * v.overhead;
   const lifecycle = s.grandTotal - s.nreTotal;
-  const regionLabel = v.region==='EU' ? 'European Union' : 'United Kingdom';
-  const regionMult = L.regionMultipliers[v.region].value.toFixed(2);
+  const regionLabel = SW_HUB_RATES[hub].label;
   const srcLabel = v.devSource==='OEM_Internal' ? 'OEM in-house' : 'Tier-1 supplier';
   const srcMult = L.devSourceMultipliers[v.devSource].value.toFixed(2);
 
@@ -192,10 +195,8 @@ function report(v: Meta): { file:string; docFile:string; html:string; gt:number;
     <div class="card reveal" style="margin-bottom:16px;">
       <div class="card-h"><span class="t">② Blended labour rate</span><span class="s">£ / PM</span></div>
       <div class="chain">
-        <div class="cstep"><div class="lbl"><span class="k">UK senior-blended base</span></div><div class="out">£28,000</div></div>
-        <div class="cstep sub"><div class="lbl">× Region — ${regionLabel} ${regionMult}</div><div class="out">${P(28000*L.regionMultipliers[v.region].value)}</div></div>
-        <div class="cstep sub"><div class="lbl">× Dev source — ${srcLabel} ${srcMult}</div><div class="out">${P(28000*L.regionMultipliers[v.region].value*L.devSourceMultipliers[v.devSource].value)}</div></div>
-        <div class="cstep sub"><div class="lbl">× Seniority ${seniorMult.toFixed(4)}</div><div class="out">${P(28000*L.regionMultipliers[v.region].value*L.devSourceMultipliers[v.devSource].value*seniorMult)}</div></div>
+        <div class="cstep"><div class="lbl"><span class="k">${regionLabel} hub rate — ${Math.round(v.senior*100)} % senior blend</span><span class="f">its own salaries + statutory on-cost ÷ productive hours × 152 h</span></div><div class="out">${P(hubRate)}</div></div>
+        <div class="cstep sub"><div class="lbl">× Dev source — ${srcLabel} ${srcMult}</div><div class="out">${P(hubRate*L.devSourceMultipliers[v.devSource].value)}</div></div>
         <div class="cstep tot"><div class="lbl"><span class="k">× Overhead ${v.overhead.toFixed(2)}</span></div><div class="out">${P(rate)} / PM</div></div>
       </div>
     </div>
@@ -284,7 +285,7 @@ function report(v: Meta): { file:string; docFile:string; html:string; gt:number;
     <div class="card reveal">
       <div class="card-h"><span class="t">Programme parameters — ${esc(v.name)} (2026)</span><span class="s">${esc(v.arch)}</span></div>
       <div class="inp">
-        <div class="row"><div class="l">Development region<span>sets the labour rate</span></div><div class="val">${regionLabel} (${regionMult}×)</div></div>
+        <div class="row"><div class="l">Engineering hub<span>its own salaries, on-costs and hours</span></div><div class="val">${regionLabel} (${P(hubRate)} / PM)</div></div>
         <div class="row"><div class="l">Development source<span>OEM vs supplier efficiency</span></div><div class="val">${srcLabel} (${srcMult}×)</div></div>
         <div class="row"><div class="l">Annual production volume<span>spreads NRE per car</span></div><div class="val">${v.volume.toLocaleString('en-GB')} / yr</div></div>
         <div class="row"><div class="l">Programme life<span>develop + maintain window</span></div><div class="val">${v.life} years</div></div>

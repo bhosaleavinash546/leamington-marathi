@@ -1,21 +1,22 @@
 /**
- * Excel (.xlsx) template + parser for the SW Should-Cost rate library
- * (base £/PM and the regional / dev-source / ASIL / complexity / reuse
- * multipliers). Each multiplier group is one sheet of key, value, source,
- * as-of date, confidence, note.
+ * Excel (.xlsx) template + parser for the SW Should-Cost rate library: the `Hubs` sheet (each software engineering
+ * hub's own mid / senior £ per person-month, Oct 2026 country book) and the dev-source / ASIL / complexity / reuse
+ * multipliers. Each multiplier group is one sheet of key, value, source, as-of date, confidence, note.
+ * The retired layout (`Base` sheet with ukBaseRatePerPM + `Regions` multipliers — a UK rate × a country ratio) is
+ * refused with a message: a ratio cannot be turned into a hub's own rate.
  *
  * Parses back into a Partial<SWRateLibrary>, which the SW engine already merges
  * over its built-in defaults (resolveRateLibrary) — so a full OR partial upload
  * works, satisfying "full library and/or overrides".
  */
 import * as XLSX from 'xlsx';
-import type { SWRateLibrary, SWRateEntry, RateConfidence } from '../../src/engine/sw-rate-library.js';
+import type { SWRateLibrary, SWRateEntry, RateConfidence, SWHubRateEntry } from '../../src/engine/sw-rate-library.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../../src/engine/sw-rate-library.js';
 
-/** Highest multiplier / factor a sheet may carry. The largest built-in is ~9 (Silicon Valley vs India region ratio is
- *  well inside); anything above this is a typing slip (a £ figure in a multiplier cell). P3 #18. */
+/** Highest multiplier / factor a sheet may carry; anything above this is a typing slip (a £ figure in a multiplier
+ *  cell). P3 #18. */
 export const SW_MAX_MULTIPLIER = 20;
-/** Base rate bounds, £ / person-month — the engine's own validation range (validateSWInputs). */
+/** Hub rate bounds, £ / person-month — the engine's own validation range (validateSWInputs). */
 import { SW_BASE_RATE_RANGE } from '../../src/engine/sw-should-cost.js';
 export { SW_BASE_RATE_RANGE };
 
@@ -26,7 +27,6 @@ export interface SWParseResult {
 }
 
 const GROUPS: Array<{ sheet: string; key: keyof SWRateLibrary }> = [
-  { sheet: 'Regions',      key: 'regionMultipliers' },
   { sheet: 'DevSource',    key: 'devSourceMultipliers' },
   { sheet: 'ASIL-Dev',     key: 'asilDevMultipliers' },
   { sheet: 'ASIL-Test',    key: 'asilTestMultipliers' },
@@ -34,6 +34,7 @@ const GROUPS: Array<{ sheet: string; key: keyof SWRateLibrary }> = [
   { sheet: 'Reuse',        key: 'reuseFactors' },
 ];
 const HEAD = ['key', 'value', 'source', 'asOf', 'confidence', 'note'];
+const HUB_HEAD = ['hub', 'midPerPM', 'seniorPerPM', 'source', 'asOf', 'confidence', 'note'];
 
 const str = (v: unknown) => (v == null ? '' : String(v).trim());
 const num = (v: unknown) => {
@@ -56,7 +57,8 @@ export function buildSWRateWorkbook(lib: SWRateLibrary): Buffer {
   };
   const entryRow = (k: string, e: SWRateEntry) => [k, e.value, e.source, e.asOf, e.confidence, e.note ?? ''];
 
-  add('Base', [HEAD, entryRow('ukBaseRatePerPM', lib.ukBaseRatePerPM)]);
+  add('Hubs', [HUB_HEAD, ...Object.entries(lib.hubRates).map(([k, h]) =>
+    [k, h.mid.value, h.senior.value, h.mid.source, h.mid.asOf, h.mid.confidence, h.mid.note ?? ''])]);
   for (const g of GROUPS) {
     const rec = lib[g.key] as Record<string, SWRateEntry>;
     add(g.sheet, [HEAD, ...Object.entries(rec).map(([k, e]) => entryRow(k, e))]);
@@ -96,18 +98,27 @@ export function parseSWRateWorkbook(buf: Buffer): SWParseResult {
   const lib: Partial<SWRateLibrary> = {};
   const counts: Record<string, number> = {};
 
-  // Base rate (single row on the Base sheet).
-  const baseRows = wb.Sheets['Base'] ? XLSX.utils.sheet_to_json(wb.Sheets['Base'], { defval: '' }) as Record<string, unknown>[] : [];
-  const baseRow = baseRows.find(r => str(r.key) === 'ukBaseRatePerPM') ?? baseRows[0];
-  if (baseRow && str(baseRow.value ?? baseRow.key)) {
-    const v = num(baseRow.value);
-    if (Number.isFinite(v) && v >= SW_BASE_RATE_RANGE[0] && v <= SW_BASE_RATE_RANGE[1]) {
-      lib.ukBaseRatePerPM = { value: v, source: str(baseRow.source), asOf: str(baseRow.asOf), confidence: conf(baseRow.confidence), note: str(baseRow.note) || undefined };
-      counts.base = 1;
-    } else if (baseRow.value !== '') {
-      errors.push(`Base: ukBaseRatePerPM must be £${SW_BASE_RATE_RANGE[0].toLocaleString('en-GB')}–£${SW_BASE_RATE_RANGE[1].toLocaleString('en-GB')} per person-month`);
-    }
+  // The retired layout is refused: a UK base × a region ratio is not a hub's own rate (Oct 2026 country book).
+  if (wb.Sheets['Base'] || wb.Sheets['Regions']) {
+    errors.push('This workbook uses the retired layout (a "Base" UK rate × "Regions" multipliers). Download the new template: '
+      + 'each software hub has its own mid and senior £ per person-month on the "Hubs" sheet.');
   }
+  const hubRows = wb.Sheets['Hubs'] ? XLSX.utils.sheet_to_json(wb.Sheets['Hubs'], { defval: '' }) as Record<string, unknown>[] : [];
+  const knownHubs = Object.keys(DEFAULT_SW_RATE_LIBRARY.hubRates);
+  const hubs: Record<string, SWHubRateEntry> = {};
+  for (const [i, r] of hubRows.entries()) {
+    const key = str(r.hub);
+    if (!key) continue;
+    const row = `Hubs row ${i + 2} (${key})`;
+    if (!knownHubs.includes(key)) { errors.push(`${row}: "${key}" is not a hub in the rate book (expected one of ${knownHubs.join(', ')})`); continue; }
+    if (hubs[key]) { errors.push(`${row}: listed twice`); continue; }
+    const mid = num(r.midPerPM), sen = num(r.seniorPerPM);
+    const bad = [mid, sen].some(v => !Number.isFinite(v) || v < SW_BASE_RATE_RANGE[0] || v > SW_BASE_RATE_RANGE[1]);
+    if (bad) { errors.push(`${row}: midPerPM and seniorPerPM must be £${SW_BASE_RATE_RANGE[0].toLocaleString('en-GB')}–£${SW_BASE_RATE_RANGE[1].toLocaleString('en-GB')} per person-month`); continue; }
+    const e = (v: number): SWRateEntry => ({ value: v, source: str(r.source), asOf: str(r.asOf), confidence: conf(r.confidence), note: str(r.note) || undefined });
+    hubs[key] = { mid: e(mid), senior: e(sen) };
+  }
+  if (Object.keys(hubs).length) { lib.hubRates = hubs as SWRateLibrary['hubRates']; counts.Hubs = Object.keys(hubs).length; }
 
   for (const g of GROUPS) {
     const rec = readGroup(wb, g.sheet, g.key, errors);

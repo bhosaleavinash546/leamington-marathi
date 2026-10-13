@@ -140,7 +140,7 @@ async function main(): Promise<void> {
     await page.selectOption('#currency-selector', 'EUR');
     await page.waitForTimeout(600);
     out.p3_totalEUR = await headline();
-    out.p3_rateTableEUR = await page.evaluate(() => Array.from(document.querySelectorAll('#sw-ratelib-rows td')).map(t => t.textContent ?? '').find(t => /person-month/.test(t)) ?? '');
+    out.p3_rateTableEUR = await page.evaluate(() => document.querySelector('#sw-hub-rates tbody tr td:nth-child(2)')?.textContent ?? '');
     const [dl3] = await Promise.all([page.waitForEvent('download'), page.click('#sw-excel-btn')]);
     const x3 = join(OUT, 'sw-p3-eur.xlsx'); await dl3.saveAs(x3);
     const w3 = XLSX.readFile(x3);
@@ -149,9 +149,9 @@ async function main(): Promise<void> {
     await page.waitForTimeout(600);
     out.p3_totalGBP = await headline();
     out.p3_axe = await page.evaluate(async () => {
-      const r = await (window as unknown as { axe: { run: (c: unknown, o: unknown) => Promise<{ violations: Array<{ id: string; nodes: unknown[] }> }> } })
+      const r = await (window as unknown as { axe: { run: (c: unknown, o: unknown) => Promise<{ violations: Array<{ id: string; nodes: Array<{ target: string[]; failureSummary?: string }> }> }> } })
         .axe.run(document.getElementById('sw-panel'), { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } });
-      return r.violations.map(v => `${v.id} ×${v.nodes.length}`);
+      return r.violations.map(v => `${v.id} ×${v.nodes.length}: ${v.nodes.slice(0, 3).map(n => `${n.target.join(' ')} — ${(n.failureSummary ?? '').replace(/\s+/g, ' ').slice(0, 160)}`).join(' | ')}`);
     });
     out.pageErrors = errors;
   } finally {

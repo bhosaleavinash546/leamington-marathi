@@ -17,6 +17,7 @@ import type {
   SWRegion,
   DevSource,
 } from './sw-should-cost.js';
+import { SW_HUB_RATES, SW_RATE_BOOK_VERSION, type SWHubId } from './sw-country-rates.js';
 
 export type RateConfidence = 'High' | 'Medium' | 'Low';
 
@@ -28,12 +29,18 @@ export interface SWRateEntry {
   note?:      string;
 }
 
+/** One engineering hub's own cost of an engineer, £ per person-month (152 h): salary + statutory employer on-cost,
+ *  before programme overhead. `mid` and `senior` are blended by the programme's senior share. */
+export interface SWHubRateEntry {
+  mid:    SWRateEntry;
+  senior: SWRateEntry;
+}
+
 export interface SWRateLibrary {
   version:               string;
   lastReviewed:          string;
-  /** UK senior-blended bare rate (£/person-month), before overhead. */
-  ukBaseRatePerPM:       SWRateEntry;
-  regionMultipliers:     Record<SWRegion, SWRateEntry>;
+  /** Each software hub's OWN rate (Chief Engineer review, Oct 2026). Replaces the retired UK base × region multiplier. */
+  hubRates:              Record<SWRegion, SWHubRateEntry>;
   devSourceMultipliers:  Record<DevSource, SWRateEntry>;
   asilDevMultipliers:    Record<ASILLevel, SWRateEntry>;
   asilTestMultipliers:   Record<ASILLevel, SWRateEntry>;
@@ -46,28 +53,29 @@ export interface SWRateLibrary {
 const E = (value: number, source: string, asOf: string, confidence: RateConfidence, note?: string): SWRateEntry =>
   ({ value, source, asOf, confidence, note });
 
+/** Book entries from the generated country rates (src/engine/sw-country-rates.ts — scripts/sw-rate-book.ts). */
+function hubEntries(): Record<SWHubId, SWHubRateEntry> {
+  const out = {} as Record<SWHubId, SWHubRateEntry>;
+  for (const h of Object.values(SW_HUB_RATES)) {
+    const src = (lvl: 'mid' | 'senior') =>
+      `${h.label}: ${lvl === 'mid' ? 'mid-level' : 'senior'} engineer ${h.currency} ${(lvl === 'mid' ? h.midAnnualSalary : h.seniorAnnualSalary).toLocaleString('en-GB')} a year`
+      + ` (median of ${(lvl === 'mid' ? h.mid : h.senior).length || h.mid.length} sourced figure${((lvl === 'mid' ? h.mid : h.senior).length || h.mid.length) === 1 ? '' : 's'})`
+      + ` + statutory employer on-cost, ÷ ${h.productiveHours.toLocaleString('en-GB')} productive h × 152 h, at ${h.fxToGBP} ${h.currency}/£`;
+    out[h.id] = {
+      mid:    E(h.midPerPMGBP, src('mid'), '2026-10', h.confidence, h.build),
+      senior: E(h.seniorPerPMGBP, src('senior'), '2026-10', h.confidence, h.seniorBasis),
+    };
+  }
+  return out;
+}
+
 export const DEFAULT_SW_RATE_LIBRARY: SWRateLibrary = {
-  version:      '1.1.0',
+  version:      `2.0.0 (country book ${SW_RATE_BOOK_VERSION})`,
   lastReviewed: '2026-10',
 
-  ukBaseRatePerPM: E(
-    28_000,
-    'UK automotive embedded SW senior-blended day-rate × 20 working days; cross-checked vs Hays Technology Salary Guide 2025 + IR35 contractor norms',
-    '2025-01', 'Medium',
-    'Bare rate (salary + benefits). Programme overhead applied separately via overheadMultiplier.',
-  ),
-
-  regionMultipliers: {
-    UK:             E(1.00, 'Baseline reference region', '2025-01', 'High'),
-    EU:             E(0.95, 'DE/FR/NL blended automotive SW rates vs UK — IG Metall + Syntec benchmarks', '2025-01', 'Medium'),
-    USA_Detroit:    E(1.35, 'US Midwest OEM SW engineering loaded rate vs UK — BLS 15-1252 + supplier data', '2025-01', 'Medium'),
-    USA_SV:         E(1.85, 'Silicon Valley AV/ADAS talent premium — Levels.fyi senior SWE total comp', '2025-01', 'Medium'),
-    China:          E(0.35, 'Tier-1 China SW centre blended rate (Shanghai/Shenzhen) vs UK', '2025-01', 'Low'),
-    India:          E(0.20, 'India offshore automotive SW (Bangalore/Pune) blended rate vs UK', '2025-01', 'Medium'),
-    Mexico:         E(0.28, 'Mexico nearshore SW engineering blended rate vs UK', '2025-01', 'Low'),
-    Eastern_Europe: E(0.45, 'PL/RO/CZ nearshore automotive SW blended rate vs UK', '2025-01', 'Medium'),
-    Japan:          E(0.90, 'Japan OEM SW engineering loaded rate vs UK', '2025-01', 'Low'),
-  },
+  // Each hub's own engineer cost — no UK base and no multiplier (Chief Engineer review, Oct 2026). The retired book
+  // priced every country as £28,000 / PM (≈ £1,400 a day, 2.5× the UK automotive contract day rate) × a ratio.
+  hubRates: hubEntries(),
 
   devSourceMultipliers: {
     OEM_Internal:   E(1.00, 'OEM in-house baseline (full process rigour, full overhead)', '2025-01', 'High'),
@@ -123,6 +131,20 @@ export function rateValues<K extends string>(rec: Record<K, SWRateEntry>): Recor
   return out;
 }
 
+function mergeHubs(d: Record<SWRegion, SWHubRateEntry>, o?: Partial<Record<SWRegion, Partial<SWHubRateEntry>>>): Record<SWRegion, SWHubRateEntry> {
+  const out = { ...d };
+  for (const [k, v] of Object.entries(o ?? {}) as [SWRegion, Partial<SWHubRateEntry>][]) {
+    if (!(k in d) || !v) continue;              // a hub the book does not have is refused upstream (workbook / validation)
+    out[k] = { mid: v.mid ?? d[k].mid, senior: v.senior ?? d[k].senior };
+  }
+  return out;
+}
+
+/** A stored company book from before Oct 2026 carries the retired UK base / region multipliers; they are ignored. */
+export function retiredRateKeys(override?: Record<string, unknown> | null): string[] {
+  return ['ukBaseRatePerPM', 'regionMultipliers'].filter(k => override && k in override);
+}
+
 /** Merge a partial override library over the default (deep on the rate groups). */
 export function resolveRateLibrary(override?: Partial<SWRateLibrary>): SWRateLibrary {
   if (!override) return DEFAULT_SW_RATE_LIBRARY;
@@ -130,8 +152,7 @@ export function resolveRateLibrary(override?: Partial<SWRateLibrary>): SWRateLib
   return {
     version:               override.version      ?? d.version,
     lastReviewed:          override.lastReviewed ?? d.lastReviewed,
-    ukBaseRatePerPM:       override.ukBaseRatePerPM       ?? d.ukBaseRatePerPM,
-    regionMultipliers:     { ...d.regionMultipliers,     ...(override.regionMultipliers     ?? {}) },
+    hubRates:              mergeHubs(d.hubRates, override.hubRates),
     devSourceMultipliers:  { ...d.devSourceMultipliers,  ...(override.devSourceMultipliers  ?? {}) },
     asilDevMultipliers:    { ...d.asilDevMultipliers,    ...(override.asilDevMultipliers    ?? {}) },
     asilTestMultipliers:   { ...d.asilTestMultipliers,   ...(override.asilTestMultipliers   ?? {}) },

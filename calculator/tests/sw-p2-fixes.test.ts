@@ -2,6 +2,7 @@
  * Software costing review — P2 fixes (Oct 2026, docs/review/software-costing-360-2026-10.md §6).
  * One describe block per fix.
  */
+import { swLibraryBaseRate } from '../src/engine/sw-should-cost.js';
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { computeSWProgram, defaultSWProgramInputs, validateSWInputs, SWInputError, SW_MODULES, unitRoyaltyGBP, CYBER_UPLIFT_BY_CAL, calFor, devSourceComparison, swRateBasis } from '../src/engine/sw-should-cost.js';
@@ -51,14 +52,14 @@ describe('#8 engine input validation — invalid inputs are refused with a reaso
 describe('#9 reported person-months are the person-months costed', () => {
   it('module development £ = personMonths × the loaded rate (it reported effort before complexity / safety scaling)', () => {
     const p = defaultSWProgramInputs();
-    const rate = 28_000 * 1 * 1 * (0.5 * 1.2 + 0.5 * 0.75) * p.overheadMultiplier;
+    const rate = swLibraryBaseRate(p) * 1 * p.overheadMultiplier;   // the hub's own blended rate × OEM in-house × overhead
     for (const m of computeSWProgram(p).modules) {
       expect(m.development.total / rate, m.moduleId).toBeCloseTo(m.personMonths, 0);
     }
   });
   it('engineering effort covers every effort-driven bucket, and the summary adds them', () => {
     const p = defaultSWProgramInputs();
-    const rate = 28_000 * (0.5 * 1.2 + 0.5 * 0.75) * p.overheadMultiplier;
+    const rate = swLibraryBaseRate(p) * p.overheadMultiplier;
     const r = computeSWProgram(p);
     const m = r.modules.find(x => x.moduleId === 'bms_core')!;
     const effortGBP = m.development.total + m.testing.total + m.integrationCost + m.cybersecCost + m.calibrationCost + m.mlDataCost;
@@ -229,8 +230,10 @@ describe('#14 exports state the rate basis; static reports are labelled referenc
 
   it('the rate basis names the book, the base rate and its origin, overhead, powertrain and platform volume', () => {
     const rows = swRateBasis(prog(p => { p.powertrain = 'PHEV'; p.platformAnnualVolume = 300_000; }));
-    expect(val(rows, /Rate book/)).toMatch(new RegExp(`built-in v${DEFAULT_SW_RATE_LIBRARY.version.replace(/\./g, '\\.')}`));
-    expect(val(rows, /Base rate/)).toMatch(/rate book/);
+    expect(val(rows, /Rate book/)).toContain(`built-in v${DEFAULT_SW_RATE_LIBRARY.version}`);
+    expect(val(rows, /Engineering hub/)).toMatch(/United Kingdom — its own salaries/);
+    expect(val(rows, /Hub rate/)).toMatch(/mid £[\d,]+ · senior £[\d,]+ — GBP [\d,]+ mid/);
+    expect(val(rows, /Engineer rate used/)).toMatch(/50 % senior blend/);
     expect(val(rows, /Overhead/)).toMatch(/1\.15/);
     expect(val(rows, /Powertrain/)).toBe('PHEV');
     expect(val(rows, /Platform/)).toMatch(/300,000/);
@@ -238,7 +241,7 @@ describe('#14 exports state the rate basis; static reports are labelled referenc
 
   it('a typed base rate and a company book are named as such', () => {
     const rows = swRateBasis(prog(p => { p.baseRateGBP = 9000; p.rateLibrary = { version: 'ACME-1' } as SWProgramInputs['rateLibrary']; }));
-    expect(val(rows, /Base rate/)).toMatch(/£9,000 — typed override/);
+    expect(val(rows, /Engineer rate used/)).toMatch(/£9,000 — typed rate \(replaces the hub book rate\)/);
     expect(val(rows, /Rate book/)).toMatch(/Company rates vACME-1/);
   });
 

@@ -75,24 +75,33 @@ describe('#17 cloud per connected vehicle; tool licences over the development ye
 });
 
 describe('#18 company SW rate workbook: keys checked, 0 refused, every book versioned', () => {
-  const sheet = (rows: unknown[][], name = 'Regions') => {
+  const sheet = (rows: unknown[][], name = 'DevSource') => {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['key', 'value', 'source', 'asOf', 'confidence', 'note'], ...rows]), name);
     return parseSWRateWorkbook(XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer);
   };
+  const hubs = (rows: unknown[][], extra?: string) => {
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['hub', 'midPerPM', 'seniorPerPM', 'source', 'asOf', 'confidence', 'note'], ...rows]), 'Hubs');
+    if (extra) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['key', 'value'], ['ukBaseRatePerPM', 28000]]), extra);
+    return parseSWRateWorkbook(XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer);
+  };
   it('a misspelt key is refused and the known keys are named', () => {
-    const r = sheet([['Indai', 0.3, 's', '2026-10', 'Low', '']]);
+    const r = sheet([['OEM_Interal', 0.9, 's', '2026-10', 'Low', '']]);
     expect(r.library).toBeNull();
-    expect(r.errors.join(' ')).toMatch(/"Indai" is not a known key.*India/);
+    expect(r.errors.join(' ')).toMatch(/"OEM_Interal" is not a known key.*OEM_Internal/);
+    expect(hubs([['Indai', 600, 800, 's', '2026-10', 'Low', '']]).errors.join(' ')).toMatch(/"Indai" is not a hub.*IN/);
   });
   it('a 0 multiplier, a £ figure in a multiplier cell and a duplicate are refused', () => {
-    expect(sheet([['India', 0, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/greater than 0/);
-    expect(sheet([['India', 28000, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/not a £ figure/);
-    expect(sheet([['India', 0.3, 's', '', 'Low', ''], ['India', 0.4, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/listed twice/);
+    expect(sheet([['Tier1_Supplier', 0, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/greater than 0/);
+    expect(sheet([['Tier1_Supplier', 28000, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/not a £ figure/);
+    expect(sheet([['Tier1_Supplier', 0.9, 's', '', 'Low', ''], ['Tier1_Supplier', 0.8, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/listed twice/);
+    expect(hubs([['UK', 6000, 7000, 's', '', 'Low', ''], ['UK', 6100, 7100, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/listed twice/);
   });
-  it('a base rate outside the engine\'s range is refused; the built-in book round-trips', () => {
-    expect(sheet([['ukBaseRatePerPM', 28, 's', '', 'Low', '']], 'Base').errors.join(' ')).toMatch(/ukBaseRatePerPM must be/);
-    expect(validateSWInputs(prog(p => { p.baseRateGBP = 28; })).join(' ')).toMatch(/base rate must be £1,000/);   // engine, same range
+  it('a hub rate outside the engine\'s range is refused; the retired layout is refused; the built-in book round-trips', () => {
+    expect(hubs([['UK', 28, 7000, 's', '', 'Low', '']]).errors.join(' ')).toMatch(/midPerPM and seniorPerPM must be £100/);
+    expect(validateSWInputs(prog(p => { p.baseRateGBP = 28; })).join(' ')).toMatch(/base rate must be £100/);   // engine, same range
+    expect(hubs([['UK', 6000, 7000, 's', '', 'Low', '']], 'Base').errors.join(' ')).toMatch(/retired layout/);
     const rt = parseSWRateWorkbook(buildSWRateWorkbook(DEFAULT_SW_RATE_LIBRARY));
     expect(rt.errors).toEqual([]);
   });
@@ -119,7 +128,7 @@ describe('#15 the software results follow the page\'s display currency', () => {
     const aiStart = lines.findIndex(l => /Per Vehicle: £\$\{Math\.round/.test(l)) - 15;
     const offenders = lines.map((l, i) => [i + 1, l] as const).filter(([i, l]) =>
       /£/.test(l) && !/^\s*(\/\/|\*|\/\*\*)/.test(l)                // comments
-      && !/UK base rate £\/PM|UK Base Rate \(£\/PM\)/.test(l)          // inputs hold £ (money rule)
+      && !/engineer rate £\/PM|engineer rate \(£\/PM|Type your own £ per person-month/.test(l)   // inputs hold £ (money rule)
       && !/unit === '£M'|unit\.replace\('£'/.test(l)                  // engine unit key / its conversion
       && !/per £ \(the engine prices in £/.test(l)                       // the Excel's own currency note
       && !(i > aiStart && i < aiStart + 40)                              // AI brief: engine figures in £

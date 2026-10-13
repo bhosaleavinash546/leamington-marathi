@@ -1,0 +1,2836 @@
+{
+ "version": "2026-10",
+ "researched": "2026-10-13",
+ "method": "mid = median of the hub's central embedded / automotive software salaries and its official software-developer median; senior = median of its senior / upper-quartile figures; + statutory employer on-cost; ÷ productive hours ((260 − statutory leave − public holidays) × 8 h; France 218 forfait days) × 152 h; ÷ the app's FX. Every figure was read from a search result of the cited page (the pages could not be opened in the research environment).",
+ "hubs": [
+  {
+   "id": "UK",
+   "label": "United Kingdom",
+   "country": "UK",
+   "currency": "GBP",
+   "cities": [
+    "Coventry / Gaydon",
+    "Warwick",
+    "Manchester",
+    "Birmingham"
+   ],
+   "evidence": [
+    {
+     "claim": "JLR Global Digital Development Centre, Manchester (Neo building): software / IT / engineering hub for connected-vehicle technology, working with the Gaydon engineering hub",
+     "url": "https://www.bisnow.com/news/manchester/office/jaguar-89950"
+    },
+    {
+     "claim": "JLR headquarters and powertrain engineering at Whitley, Coventry; engineering at Gaydon",
+     "url": "https://careers.jaguarlandrover.com/where-we-are/united-kingdom"
+    },
+    {
+     "claim": "JLR plans a new UK technical centre to develop next-generation connected-car technologies (S&P Global AutoTechInsight)",
+     "url": "https://autotechinsight.spglobal.com/news/5245702/jlr-plans-to-open-new-technical-center-in-uk-to-develop-next-generation-connected-car-technologies"
+    }
+   ],
+   "mid": [
+    {
+     "value": 54615,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "GBP",
+     "statistic": "median",
+     "dataYear": 2024,
+     "source": "ONS ASHE 2024 (revised) SOC 2134 median, as republished by paychecktaxcalculator.net",
+     "url": "https://paychecktaxcalculator.net/highest-paying-jobs-uk/software-developers",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "Full-time employee gross pay excluding bonus per that site. The site is a calculator that republishes ASHE for many titles; weight down. Not verified on ons.gov.uk."
+    },
+    {
+     "value": 65000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "GBP",
+     "statistic": "median",
+     "dataYear": 2026,
+     "source": "IT Jobs Watch — Embedded Software Engineer, permanent job adverts, 6 months to 4 Sep 2026",
+     "url": "https://www.itjobswatch.co.uk/jobs/uk/embedded%20software%20engineer.do",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Advertised salaries, not paid salaries; all industries (not automotive-only)."
+    },
+    {
+     "value": 68750,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "GBP",
+     "statistic": "median",
+     "dataYear": 2026,
+     "source": "IT Jobs Watch — Embedded Software Engineer, Midlands, 6 months to 4 Sep 2026 (96 permanent adverts)",
+     "url": "https://www.itjobswatch.co.uk/jobs/uk/embedded%20software%20engineer.do",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Advertised salaries; Midlands = JLR / Coventry / Warwick region."
+    },
+    {
+     "value": 70000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "GBP",
+     "statistic": "median",
+     "dataYear": 2025,
+     "source": "IT Jobs Watch — AUTOSAR skill, permanent adverts, 6 months to 27 Jan 2025",
+     "url": "https://www.itjobswatch.co.uk/jobs/uk/autosar.do",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Only 6 salaries quoted — very small sample; latest 2026 period had no AUTOSAR salaries."
+    }
+   ],
+   "senior": [
+    {
+     "value": 70000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "GBP",
+     "statistic": "median",
+     "dataYear": 2026,
+     "source": "IT Jobs Watch — Senior Embedded Software Engineer, UK permanent adverts (6 months to Sep 2026 per search summary)",
+     "url": "https://www.itjobswatch.co.uk/jobs/uk/senior%20embedded%20software%20engineer.do",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "senior",
+     "note": "IT Jobs Watch senior embedded, UK (the reviewer saw £65,000 in the Jan 2026 window)"
+    },
+    {
+     "value": 70000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "GBP",
+     "statistic": "median",
+     "dataYear": 2026,
+     "source": "IT Jobs Watch — Senior Embedded Software Engineer, Midlands (36 adverts)",
+     "url": "https://www.itjobswatch.co.uk/jobs/uk/senior%20embedded%20software%20engineer.do",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "senior",
+     "note": "Advertised salaries; small sample."
+    },
+    {
+     "value": 76752,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "GBP",
+     "statistic": "upper end of \"most earn between\" (≈ p75–p80, percentile not stated)",
+     "dataYear": 2025,
+     "source": "ONS ASHE 2025 SOC 2134, as republished by a visa-sponsor site",
+     "url": "https://huntukvisasponsors.com/jobs/role/software-developer",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "Upper end of the 'most earn between' range; basic pay."
+    },
+    {
+     "value": 65000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "GBP",
+     "statistic": "median (Jan 2026 window)",
+     "dataYear": 2026,
+     "source": "IT Jobs Watch — Senior Embedded Software Engineer, UK, 6 months to 11 Jan 2026 (37 salaries) (independent review)",
+     "url": "https://www.itjobswatch.co.uk/jobs/uk/senior%20embedded%20software%20engineer.do",
+     "seenIn": "search-snippet",
+     "note": "gross (advertised)"
+    }
+   ],
+   "seniorBasis": "median of the senior embedded advert medians (IT Jobs Watch, two windows) and the upper end of the ASHE SOC 2134 band",
+   "excluded": [
+    {
+     "what": "PayScale Birmingham £34,392",
+     "why": "self-reported, experience mix unknown, half the advert medians"
+    },
+    {
+     "what": "SOC 2134 \"going rate\" £54,700",
+     "why": "a Skilled Worker visa threshold, not a pay statistic (reviewer)"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "employer Class 1 NIC",
+      "pct": 15,
+      "floorAnnual": 5000
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries UK 2026",
+    "url": "https://taxsummaries.pwc.com/united-kingdom/individual/other-taxes",
+    "note": "workplace-pension auto-enrolment (3 % minimum) and the apprenticeship levy not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 28,
+    "publicHolidays": 8,
+    "leaveIncludesHolidays": true,
+    "source": "statutory 5.6 weeks (28 days) may include the 8 bank holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+    "note": ""
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "UK",
+    "perPMGBP": 27300.0
+   },
+   "notes": "Advertised salaries (IT Jobs Watch) run above paid salaries (ASHE); the ONS table itself was not opened — the ASHE figure is a republisher's."
+  },
+  {
+   "id": "DE",
+   "label": "Germany",
+   "country": "DE",
+   "currency": "EUR",
+   "cities": [
+    "Stuttgart",
+    "Munich",
+    "Wolfsburg",
+    "Ingolstadt",
+    "Erlangen"
+   ],
+   "evidence": [
+    {
+     "claim": "CARIAD SE (Volkswagen Group software company): 6,958 employees (Revelio Labs, Dec 2025 update); software competence centres in Wolfsburg, Ingolstadt, Stuttgart region, Berlin, Munich",
+     "url": "https://www.reveliolabs.com/companies/cariad/employees/"
+    },
+    {
+     "claim": "Elektrobit Automotive GmbH (Erlangen): 3,021 employees per Revelio Labs; German sites incl. Erlangen, München, Ulm, Braunschweig, Radolfzell (job listing)",
+     "url": "https://www.reveliolabs.com/companies/elektrobit-automotive/employees"
+    },
+    {
+     "claim": "ETAS GmbH (Bosch, Stuttgart; automotive software / AUTOSAR tools): 2,497 employees per Revelio Labs (global, not Stuttgart-only)",
+     "url": "https://www.reveliolabs.com/companies/etas/employees"
+    }
+   ],
+   "mid": [
+    {
+     "value": 6301,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "EUR",
+     "statistic": "median",
+     "dataYear": 2025,
+     "source": "Bundesagentur für Arbeit Entgeltatlas — Softwareentwickler/in, Berufe in der Softwareentwicklung, hoch komplexe Tätigkeiten (Experte), Bezugsjahr 2025",
+     "url": "https://web.arbeitsagentur.de/entgeltatlas/beruf/15260",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "Gross monthly, full-time employees subject to social insurance (BA definition); Entgeltatlas includes one-off payments pro rata per BA method — not verified on page. 'Experte' is the complexity level (typically Master/Diplom-level work), not seniority."
+    },
+    {
+     "value": 71692,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "mean",
+     "dataYear": 2026,
+     "source": "jobvector Gehalt 'Embedded Software' 2026 — average",
+     "url": "https://www.jobvector.de/gehalt/embedded+software/",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Range for 'Fachkräfte' 64,000-80,950 per same page."
+    },
+    {
+     "value": 64900,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "median",
+     "dataYear": null,
+     "source": "StepStone Gehalt — Embedded Software Engineer, Stuttgart",
+     "url": "https://www.stepstone.de/gehalt/Embedded-Software-Engineer/city/Stuttgart.html",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Range 56,000-76,100 on same page. DATA YEAR UNKNOWN — the national StepStone page appeared ~4.5 years old in search metadata; may be pre-2024, use only if the year is confirmed."
+    }
+   ],
+   "senior": [
+    {
+     "value": 7723,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "EUR",
+     "statistic": "p75 (BA Entgeltatlas, Experte)",
+     "dataYear": 2025,
+     "source": "BA Entgeltatlas — Softwareentwickler/in, Experte",
+     "url": "https://web.arbeitsagentur.de/entgeltatlas/beruf/15260",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "Upper quartile."
+    },
+    {
+     "value": 78906,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "mean",
+     "dataYear": 2026,
+     "source": "jobvector Gehalt 'Embedded Software' 2026 — mit Berufserfahrung",
+     "url": "https://www.jobvector.de/gehalt/embedded+software/",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "mid",
+     "note": "'With work experience' — years not stated, level is a guess (mid)."
+    },
+    {
+     "value": 75677,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "p75",
+     "dataYear": null,
+     "source": "gehalt.de — 'Embedded Software Ingenieur Automotive'",
+     "url": "https://www.gehalt.de/einkommen/suche/embedded-software-ingenieur-automotive",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Data year not seen."
+    },
+    {
+     "value": 6917,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "EUR",
+     "statistic": "median, Experte level (Systementwickler)",
+     "dataYear": 2026,
+     "source": "JobJump Gehaltsprofil Systementwickler/in 2026 (overall median ~6,281) (independent review)",
+     "url": "https://jobjump.net/gehalt/pdf/gehaltsprofil-systementwickler-in-2026.pdf",
+     "seenIn": "search-snippet",
+     "note": "DIFFERENT job title (Systementwickler); given as 'about' in the summary."
+    }
+   ],
+   "seniorBasis": "median of the BA Entgeltatlas upper quartile, jobvector \"with experience\", gehalt.de p75 and the JobJump Experte median",
+   "excluded": [
+    {
+     "what": "IG Metall ERA BW EG 12 / 14 / 17 tables",
+     "why": "collective-agreement minima excluding performance pay and special payments — cross-check only (EG 14 ≈ €69.5k a year)"
+    },
+    {
+     "what": "BA Spezialist / Fachkraft levels",
+     "why": "complexity levels, not seniority"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "pension",
+      "pct": 9.3,
+      "ceilingAnnual": 101400
+     },
+     {
+      "name": "unemployment",
+      "pct": 1.3,
+      "ceilingAnnual": 101400
+     },
+     {
+      "name": "health 7.3 % + half the 2.9 % supplement",
+      "pct": 8.75,
+      "ceilingAnnual": 69750
+     },
+     {
+      "name": "long-term care",
+      "pct": 1.8,
+      "ceilingAnnual": 69750
+     },
+     {
+      "name": "insolvency levy",
+      "pct": 0.15,
+      "ceilingAnnual": 101400
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Germany 2026",
+    "url": "https://taxsummaries.pwc.com/germany/individual/other-taxes",
+    "note": "employer accident insurance (BG, sector rate) not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 20,
+    "publicHolidays": 12,
+    "leaveIncludesHolidays": false,
+    "source": "20 days statutory (5-day week) + 12 public holidays (Baden-Württemberg / Bavaria; 10–13 by state) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+    "note": "most automotive employers give 30 days leave; the book uses the statutory 20"
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "EU",
+    "perPMGBP": 25935.0
+   },
+   "notes": "The BA Entgeltatlas €6,301 Experte median came via a republisher; the reviewer could not see it on the live tool."
+  },
+  {
+   "id": "AT",
+   "label": "Austria",
+   "country": "AT",
+   "currency": "EUR",
+   "cities": [
+    "Graz",
+    "Vienna",
+    "Steyr"
+   ],
+   "evidence": [
+    {
+     "claim": "TTTech Auto (Vienna HQ; safety software / middleware for ADAS & SDV): 1,100 employees incl. subsidiaries in Europe and Asia (2025 factsheet; 2024 factsheet said 1,200)",
+     "url": "https://tttech-auto.com/sites/default/files/2025-03/TTTech%20Auto%20Factsheet_2025_EN.pdf"
+    },
+    {
+     "claim": "AVL List, Graz: current Graz software roles (vehicle simulation software, test-bed automation platform); company-wide 14,072 employees per Revelio Labs",
+     "url": "https://devjobs.at/team/avl-list/jobs"
+    },
+    {
+     "claim": "Magna Steyr Engineering Center Graz: complete-vehicle engineering with an electrification focus (Magna careers page) — software share not stated",
+     "url": "https://magna.com/engineering-jobs-bei-magna-in-graz"
+    }
+   ],
+   "mid": [
+    {
+     "value": 62000.0,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "midpoint of Glassdoor Graz base range 53,000–71,000",
+     "dataYear": 2025,
+     "source": "Glassdoor — Embedded Software Engineer, Graz (Sep 2025, 10 salaries)",
+     "url": "https://www.glassdoor.com/Salaries/graz-austria-embedded-software-engineer-salary-SRCH_IL.0,12_IM1225_KO13,39.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "(53,000 + 71,000) / 2. Base-pay range low; n=10 — weak."
+    },
+    {
+     "value": 54000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "mean",
+     "dataYear": null,
+     "source": "StepStone.at Gehalt — Embedded-Software-Entwickler/in, Graz",
+     "url": "https://www.stepstone.at/gehalt/Embedded-Software-Entwickler-in/city/Graz.html",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Data year not seen; for title 'Embedded Software Engineer' StepStone gives 49,600."
+    },
+    {
+     "value": 4905.47,
+     "period": "monthly",
+     "annualFactor": 14,
+     "currency": "EUR",
+     "statistic": "collective-agreement minimum EEI group H, × 14 salaries",
+     "dataYear": 2026,
+     "source": "EEI KV Angestellte 2026, Verwendungsgruppe H, Grundstufe",
+     "url": "https://www.gpa.at/content/dam/gpa/downloads/kollektivvertrag/elektro,-it,-telekom/elektro/2026/Gehaltstabelle_EEI_2026.pdf",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "×14 per year."
+    }
+   ],
+   "senior": [
+    {
+     "value": 71000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "top of Glassdoor Graz base range",
+     "dataYear": 2025,
+     "source": "Glassdoor — Embedded Software Engineer, Graz (Sep 2025, 10 salaries)",
+     "url": "https://www.glassdoor.com/Salaries/graz-austria-embedded-software-engineer-salary-SRCH_IL.0,12_IM1225_KO13,39.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Base-pay range high; total-pay median was given only as 'rund 63.000' so not entered."
+    },
+    {
+     "value": 6002.02,
+     "period": "monthly",
+     "annualFactor": 14,
+     "currency": "EUR",
+     "statistic": "collective-agreement minimum EEI group I, × 14 salaries",
+     "dataYear": 2026,
+     "source": "EEI KV Angestellte 2026, Verwendungsgruppe I, Grundstufe",
+     "url": "https://www.gpa.at/content/dam/gpa/downloads/kollektivvertrag/elektro,-it,-telekom/elektro/2026/Gehaltstabelle_EEI_2026.pdf",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "×14 per year."
+    }
+   ],
+   "seniorBasis": "median of the Glassdoor Graz range top and the EEI collective-agreement group I minimum (×14)",
+   "excluded": [
+    {
+     "what": "EEI group J minimum",
+     "why": "a leading-role grade"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "employer social insurance (pension, sickness, unemployment, accident, minor)",
+      "pct": 20.98,
+      "ceilingAnnual": 97020
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Austria",
+    "url": "https://taxsummaries.pwc.com/austria/individual/other-taxes",
+    "note": "FLAF, municipal tax and severance fund (≈ 7 %) not researched",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 25,
+    "publicHolidays": 13,
+    "leaveIncludesHolidays": false,
+    "source": "25 days leave — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 13 public holidays (reviewer, aggregator)",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "EU",
+    "perPMGBP": 25935.0
+   },
+   "notes": "Austria pays 14 monthly salaries; the collective-agreement figures are × 14."
+  },
+  {
+   "id": "SE",
+   "label": "Sweden",
+   "country": "SE",
+   "currency": "SEK",
+   "cities": [
+    "Gothenburg",
+    "Lund",
+    "Södertälje"
+   ],
+   "evidence": [
+    {
+     "claim": "Zenseact (Volvo Cars-owned ADAS / AD software), HQ Lindholmspiren 2, Gothenburg; ~600 employees at formation, offices Gothenburg and Shanghai (Volvo Cars press release)",
+     "url": "https://www.volvocars.com/intl/media/press-releases/679132A32CAF960F/"
+    },
+    {
+     "claim": "Zenseact software engineer vacancy (front-lighting feature teams), Gothenburg",
+     "url": "https://pages.adway.ai/zenseact/3718489/gothenburg-sweden/software-engineer-for-front-lighting-feature-teams"
+    },
+    {
+     "claim": "Lindholmen Science Park area, Gothenburg: ~400 companies, 19,000+ employees; Volvo Cars, Volvo Group Connected Solutions located there (The Yard brochure)",
+     "url": "https://yard.spaces.nexudus.com//files/The%20Yard_techarena_sales_2024.pdf"
+    }
+   ],
+   "mid": [
+    {
+     "value": 52500,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "SEK",
+     "statistic": "median",
+     "dataYear": 2024,
+     "source": "SCB lönestrukturstatistik 2024 (AM0110), SSYK 2512 Mjukvaru- och systemutvecklare, as republished by Alla Yrken",
+     "url": "https://www.allayrken.se/yrke/systemutvecklare/",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "SCB monthly salary (heltidsekvivalent, excl. variable pay per SCB method — not verified). Not read on scb.se."
+    },
+    {
+     "value": 53500,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "SEK",
+     "statistic": "median",
+     "dataYear": 2025,
+     "source": "SSYK 2512 2025 figure as republished by Asta Agency lönekoll",
+     "url": "https://www.astaagency.se/verktyg/lonekoll/mjukvaruutvecklare",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "Site lists 51,000 (2023), 52,500 (2024), 53,500 (2025); SCB attribution for 2025 not seen — weight down."
+    },
+    {
+     "value": 59200,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "SEK",
+     "statistic": "mean",
+     "dataYear": 2024,
+     "source": "Sveriges Ingenjörer branschlöner — civilingenjörer, Konsultverksamhet Data/IT",
+     "url": "https://www.sverigesingenjorer.se/opinion-och-press/nyheter/branschloner-for-ingenjorer/",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "Consultancy employees; same table: 'Data, IT och telekom' 70,900. Mean, not median."
+    },
+    {
+     "value": 52800,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "SEK",
+     "statistic": "mean (secondary, SCB)",
+     "dataYear": null,
+     "source": "Sambla.se citing 'latest' SCB statistics, systemutvecklare (independent review)",
+     "url": "https://www.sambla.se/lonestatistik/systemutvecklare-lon/",
+     "seenIn": "search-snippet",
+     "note": "Year not stated; mean not median."
+    }
+   ],
+   "senior": [
+    {
+     "value": 72200,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "SEK",
+     "statistic": "top of Sveriges Ingenjörer range (percentile not stated; SCB p90 is 72,500)",
+     "dataYear": null,
+     "source": "Sveriges Ingenjörer — civilingenjör lön, datateknik",
+     "url": "https://www.sverigesingenjorer.se/lon/civilingenjor-lon/",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": ""
+    }
+   ],
+   "seniorBasis": "the top of the Sveriges Ingenjörer civilingenjör range — close to the SCB p90, so the senior rate is on the high side",
+   "excluded": [],
+   "onCost": {
+    "components": [
+     {
+      "name": "employer social security",
+      "pct": 31.42
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Sweden",
+    "url": "http://taxsummaries.pwc.com/ID/Sweden-Individual-Other-taxes",
+    "note": "ITP occupational pension (collective agreement) not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 25,
+    "publicHolidays": 11,
+    "leaveIncludesHolidays": false,
+    "source": "25 days leave — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 11 public holidays (reviewer, aggregator)",
+    "note": ""
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "EU",
+    "perPMGBP": 25935.0
+   },
+   "notes": "SCB figures seen through republishers."
+  },
+  {
+   "id": "FR",
+   "label": "France",
+   "country": "FR",
+   "currency": "EUR",
+   "cities": [
+    "Guyancourt",
+    "Paris / Île-de-France",
+    "Créteil",
+    "Vélizy"
+   ],
+   "evidence": [
+    {
+     "claim": "Renault Ampere (EV + software unit): ~10,000 employees at launch, ~3,500 engineers of whom half in software",
+     "url": "https://insideevs.com/news/621374/renault-group-sets-up-ampere-ev-software-standalone-unit/"
+    },
+    {
+     "claim": "SUD Renault union leaflet (May 2023): Software and Systems Engineering Directorate created June 2023 with 1,095 staff, 1,016 at Guyancourt-Aubevoye, transferred to Ampere Software et Systèmes Oct 2023",
+     "url": "https://www.sudrenault.org/IMG/pdf/20230525_tract_sud_n15-2023.pdf"
+    },
+    {
+     "claim": "Ampere Software Technology vacancies at Guyancourt (e.g. FOTA end-to-end specialist)",
+     "url": "https://www.wizbii.com/company/renault/job/specialiste-end-to-end-fota"
+    }
+   ],
+   "mid": [
+    {
+     "value": 50000.0,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "midpoint of Seyos confirmé Paris 45,000–55,000",
+     "dataYear": null,
+     "source": "Seyos baromètre — Ingénieur logiciel embarqué, confirmé",
+     "url": "https://www.seyos.fr/barometre-salaires/ingenieur-logiciel-embarque/",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "mid",
+     "note": "(45,000 + 55,000) / 2. Confirmé Paris 45-55 k€; regions 38-42 k€."
+    },
+    {
+     "value": 45500.0,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "midpoint of Silkhom confirmé Paris 43,000–48,000",
+     "dataYear": 2026,
+     "source": "Silkhom 2026 grid, confirmé",
+     "url": "https://www.silkhom.com/les-salaires-informatique-et-electronique/",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "mid",
+     "note": "(43,000 + 48,000) / 2. Confirmé Paris 43-48 k€."
+    },
+    {
+     "value": 51500.0,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "midpoint of 45,000–58,000 (Optima Industrie, confirmé)",
+     "dataYear": 2025,
+     "source": "Optima Industrie — ingénieur systèmes embarqués, confirmé (3–8 y), citing Khonexio 2025, APEC, IESF (independent review)",
+     "url": "https://optima-industrie.com/?p=4159",
+     "seenIn": "search-snippet",
+     "note": "Recruiter page; range 45,000–58,000."
+    }
+   ],
+   "senior": [
+    {
+     "value": 55000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "senior Paris \"> 55 k€\" (lower bound)",
+     "dataYear": null,
+     "source": "Seyos baromètre — senior '> 55 k€'",
+     "url": "https://www.seyos.fr/barometre-salaires/ingenieur-logiciel-embarque/",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "senior",
+     "note": "Open-ended ('more than'); regions senior > 42 k€."
+    },
+    {
+     "value": 55000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "advert floor, ≥ 5 y, Paris",
+     "dataYear": 2026,
+     "source": "France Travail advert, Ingénieur logiciel embarqué, Paris, ≥8 y experience: 55,000–65,000 (independent review)",
+     "url": "https://candidat.francetravail.fr/offres/recherche/detail/4945984",
+     "seenIn": "search-snippet",
+     "note": "Single advert; URL attribution between the two France Travail adverts uncertain."
+    }
+   ],
+   "seniorBasis": "lower bound of the Seyos senior band and a Paris senior advert floor — senior pay is at least this",
+   "excluded": [
+    {
+     "what": "INSEE 2023 digital-jobs median €3,100 NET a month",
+     "why": "net; cross-check only (≈ €47–48k gross)"
+    },
+    {
+     "what": "APEC IT-function cadres €71k",
+     "why": "all IT functions incl. management, with variable pay"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "employer contributions (PwC average)",
+      "pct": 45
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries France (an average; the rate falls as pay rises)",
+    "url": "https://taxsummaries.pwc.com/france/individual/other-taxes",
+    "note": "an average, not a statutory sum — likely high for a senior",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 42,
+    "publicHolidays": 0,
+    "leaveIncludesHolidays": true,
+    "source": "cadres on \"forfait jours\": 218 days a year (Code du travail L3121-64, reviewer) × 8 h",
+    "note": "218 working days → 42 days off incl. public holidays"
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "EU",
+    "perPMGBP": 25935.0
+   },
+   "notes": "Recruiter salary grids (data basis not published)."
+  },
+  {
+   "id": "IT",
+   "label": "Italy",
+   "country": "IT",
+   "currency": "EUR",
+   "cities": [
+    "Turin",
+    "Modena",
+    "Milan"
+   ],
+   "evidence": [
+    {
+     "claim": "Stellantis lists Turin among its software development centres (eight centres in seven countries incl. the 2023 Gliwice hub).",
+     "url": "https://www.stellantis.com/it/news/comunicati-stampa/2023/febbraio/stellantis-amplia-la-rete-di-sviluppo-software-con-un-nuovo-hub-in-polonia"
+    },
+    {
+     "claim": "Teoresi Group (engineering services): ~1,100 staff after +86% in five years; Turin its largest hiring site (200 hires in 2022, 250 planned) seeking ADAS / autonomous-driving and cybersecurity engineers; Modena site an automotive hub for e-propulsion, autonomous driving and infotelematics; 15 Italian sites.",
+     "url": "https://www.teoresigroup.com/wp-content/uploads/2022/12/cs-11-teoresi-cerca-500-nuovi-talenti-per-progetti-su-tecnologie-di-frontiera-e-lancia-il-programma-di-global-mobility.pdf"
+    }
+   ],
+   "mid": [
+    {
+     "value": 30248,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "mean",
+     "dataYear": null,
+     "source": "PayScale — Early-Career Embedded Software Engineer with C Programming Language skills, Italy",
+     "url": "https://www.payscale.com/research/IT/Job=Embedded_Software_Engineer/Salary/00c9e1ea/Early-Career-C-Programming-Language",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "junior",
+     "note": "Base salary. PayScale 'early career' = 1–4 years. Update date not seen. Summary warned some PayScale IT pages show '€NaN' fields."
+    }
+   ],
+   "senior": [
+    {
+     "value": 46000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "mean",
+     "dataYear": null,
+     "source": "PayScale — Experienced Embedded Software Engineer, Italy",
+     "url": "https://www.payscale.com/research/IT/Job=Embedded_Software_Engineer/Salary/65270849/Experienced",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "lead",
+     "note": "Base salary; PayScale 'experienced' = 10–19 years, mapped to lead. Base range 39,000–83,000. Update date not seen."
+    },
+    {
+     "value": 45009,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "average base",
+     "dataYear": 2026,
+     "source": "PayScale — Experienced Senior Embedded Software Engineer, Italy (range ~41k–54k) (independent review)",
+     "url": "https://www.payscale.com/research/IT/Job=Senior_Embedded_Software_Engineer/Salary/7c98cf40/Experienced",
+     "seenIn": "search-snippet",
+     "note": "gross"
+    }
+   ],
+   "seniorBasis": "PayScale \"experienced\" embedded (two readings)",
+   "excluded": [
+    {
+     "what": "Indeed junior software developer €26,666",
+     "why": "junior, general software"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "employer social security (midpoint of KPMG 29–32 %)",
+      "pct": 30.5
+     }
+    ],
+    "source": "KPMG Taxation of International Executives: Italy, Mar 2025 (reviewer)",
+    "url": "",
+    "note": "midpoint of a range — a judgement; TFR severance accrual (≈ 6.9 %) not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 20,
+    "publicHolidays": 12,
+    "leaveIncludesHolidays": false,
+    "source": "20 days leave, 12 public holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "EU",
+    "perPMGBP": 25935.0
+   },
+   "notes": "Only PayScale; the mid figure is its EARLY-CAREER (1–4 y) average — the mid rate is on the low side."
+  },
+  {
+   "id": "PT",
+   "label": "Portugal",
+   "country": "PT",
+   "currency": "EUR",
+   "cities": [
+    "Braga",
+    "Porto",
+    "Lisbon"
+   ],
+   "evidence": [
+    {
+     "claim": "Bosch Car Multimedia Portugal, Braga: job adverts state the Braga Research & Development Center has more than 350 engineers on car multimedia and sensor solutions; company ~3,600 associates; adverts for software, HW/SW test and test-automation engineers.",
+     "url": "https://builtin.com/job/mes-engineer-fmdiv/3474157"
+    }
+   ],
+   "mid": [
+    {
+     "value": 23892,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "mean",
+     "dataYear": null,
+     "source": "PayScale — Early-Career Embedded Software Engineer, Portugal",
+     "url": "https://www.payscale.com/research/PT/Job=Embedded_Software_Engineer/Salary/741012e6/Early-Career",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "junior",
+     "note": "Base; PayScale early career = 1–4 years. One summary said PayScale embedded data are '2026 estimates'; update date not confirmed."
+    },
+    {
+     "value": 36400,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "not stated",
+     "dataYear": null,
+     "source": "TalentUp — Embedded Engineer salary, Portugal",
+     "url": "https://talentup.io/en/salary/Embedded%20Engineer/Portugal",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Base salary; level rows empty; statistic and year not stated. Conflicts with PayScale (~50% higher)."
+    }
+   ],
+   "senior": [
+    {
+     "value": 41000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EUR",
+     "statistic": "top of PayScale range (≈ p90)",
+     "dataYear": null,
+     "source": "PayScale — Embedded Software Engineer, Portugal",
+     "url": "https://www.payscale.com/research/PT/Job=Embedded_Software_Engineer/Salary",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Base salary range (~p90)."
+    }
+   ],
+   "seniorBasis": "top of the PayScale range (≈ p90) — high for a senior",
+   "excluded": [
+    {
+     "what": "nettocalc.com Braga median €36,000",
+     "why": "a calculator site with figures for every title (reviewer)"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "employer social security",
+      "pct": 23.75
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Portugal",
+    "url": "https://taxsummaries.pwc.com/portugal/individual/other-taxes",
+    "note": "occupational accident insurance not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 22,
+    "publicHolidays": 13,
+    "leaveIncludesHolidays": false,
+    "source": "22 days leave, 13 public holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country (reviewer)",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "EU",
+    "perPMGBP": 25935.0
+   },
+   "notes": "The two mid sources disagree by ~50 %; the median of two is their average."
+  },
+  {
+   "id": "PL",
+   "label": "Poland",
+   "country": "PL",
+   "currency": "PLN",
+   "cities": [
+    "Kraków",
+    "Gliwice",
+    "Wrocław",
+    "Łódź"
+   ],
+   "evidence": [
+    {
+     "claim": "Aptiv Technical Center Kraków described in Aptiv job adverts as a 2,000-strong team; embedded software roles for ADAS / AD, driver-monitoring software and infotainment audio (C/C++). Listings dated 2025.",
+     "url": "https://builtin.com/job/software-engineer-embedded-integration/4463143"
+    },
+    {
+     "claim": "Stellantis opened a software development hub in Gliwice (Feb 2023) to employ up to 300 people on software development, data analysis and validation; GlobalLogic recruiting for it; the 8th Stellantis software centre.",
+     "url": "https://www.stellantis.com/it/news/comunicati-stampa/2023/febbraio/stellantis-amplia-la-rete-di-sviluppo-software-con-un-nuovo-hub-in-polonia"
+    }
+   ],
+   "mid": [
+    {
+     "value": 13800,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "PLN",
+     "statistic": "median",
+     "dataYear": 2025,
+     "source": "Bulldogjob, Badanie Społeczności IT 2025 (Embedded)",
+     "url": "https://bulldogjob.pl/it-report/salaries/embedded",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "mid",
+     "note": "UoP (employment contract), gross."
+    }
+   ],
+   "senior": [
+    {
+     "value": 22800,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "PLN",
+     "statistic": "median",
+     "dataYear": 2025,
+     "source": "Bulldogjob, Badanie Społeczności IT 2025 (Embedded)",
+     "url": "https://bulldogjob.pl/it-report/salaries/embedded",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "senior",
+     "note": "UoP (employment contract), gross."
+    },
+    {
+     "value": 20000.0,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "PLN",
+     "statistic": "midpoint of No Fluff Jobs senior UoP gross offers (all IT) 17,000–23,000",
+     "dataYear": 2024,
+     "source": "No Fluff Jobs, Rynek pracy IT 2024/2025",
+     "url": "https://forsal.pl/praca/wynagrodzenia/artykuly/9717709,powyzej-10-tys-zl-netto-miesiecznie-na-poczatek-w-branzy-it-wciaz-za.html",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "senior",
+     "note": "(17,000 + 23,000) / 2. UoP gross; upper-bracket median 23,000."
+    }
+   ],
+   "seniorBasis": "median of the Bulldogjob senior embedded figure and the No Fluff Jobs senior employment-contract band",
+   "excluded": [
+    {
+     "what": "Bulldogjob B2B 16,000 / 26,000",
+     "why": "net invoice of a self-employed contractor — a supplier rate, not a salary"
+    },
+    {
+     "what": "Bulldogjob year-end 9,300 / 14,000",
+     "why": "take-home (net)"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "employer ZUS + Labour / Solidarity funds (PwC lower bound)",
+      "pct": 19.48
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Poland 2026",
+    "url": "https://taxsummaries.pwc.com/poland/corporate/other-taxes",
+    "note": "pension / disability capped at PLN 282,600 a year — above both salaries",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 20,
+    "publicHolidays": 14,
+    "leaveIncludesHolidays": false,
+    "source": "20 days leave (26 after 10 years incl. study), 14 public holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "Eastern_Europe",
+    "perPMGBP": 12285.0
+   },
+   "notes": "DISPUTED BASIS: the researcher read the Bulldogjob embedded medians as gross, the reviewer as net take-home. If net, the true gross is materially higher and this rate is understated. Read bulldogjob.pl/it-report/salaries/embedded before relying on it."
+  },
+  {
+   "id": "CZ",
+   "label": "Czechia",
+   "country": "CZ",
+   "currency": "CZK",
+   "cities": [
+    "Prague",
+    "Brno",
+    "Mladá Boleslav"
+   ],
+   "evidence": [
+    {
+     "claim": "Valeo Prague R&D centre: ~700 employees, mostly engineers, ADAS / automated-driving development; expansion of 250 engineers planned (S&P Global AutoTechInsight).",
+     "url": "https://autotechinsight.spglobal.com/news/5244675/valeo-expands-czech-development-center"
+    },
+    {
+     "claim": "Valeo Czech Republic country page: Prague development activity since 2002, extended (2013) to sensors, software and systems for automated driving and parking; >4,800 employees on five Czech sites.",
+     "url": "https://www.valeo.com/en/czech-republic/"
+    },
+    {
+     "claim": "Grafton recruiting an 'Embedded Engineer | AUTOSAR & ASPICE | Prague' (archived advert) — AUTOSAR work is done in Prague.",
+     "url": "https://www.grafton.cz/en/jobs/embedded-engineer-autosar-aspice-prague"
+    }
+   ],
+   "mid": [
+    {
+     "value": 77500.0,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CZK",
+     "statistic": "midpoint of Grafton AUTOSAR advert 65,000–90,000",
+     "dataYear": null,
+     "source": "Grafton job advert 'Embedded Engineer | AUTOSAR & ASPICE | Prague'",
+     "url": "https://www.grafton.cz/en/jobs/embedded-engineer-autosar-aspice-prague",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "(65,000 + 90,000) / 2. Single advert, archived, date not seen (dataYear unknown). Gross assumed (Czech adverts quote gross) — not confirmed. Range high 90,000."
+    },
+    {
+     "value": 95000.0,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CZK",
+     "statistic": "midpoint of Jenprace embedded advert 85,000–105,000",
+     "dataYear": null,
+     "source": "Jenprace.cz advert 'Embedded vývojář | Hybridní spolupráce (85-105.000 Kč)'",
+     "url": "https://www.jenprace.cz/nabidka/sbs3m6/embedded-vyvojar-hybridni-spoluprace-85-105-000-kc",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "(85,000 + 105,000) / 2. Embedded Linux developer, commercial experience required; range high 105,000. Single advert, date not seen; not automotive-specific."
+    },
+    {
+     "value": 70000.0,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CZK",
+     "statistic": "midpoint of Pracomat firmware advert 50,000–90,000",
+     "dataYear": null,
+     "source": "Pracomat advert 'Vývojář firmware pro vestavěné systémy (50 - 90.000 Kč)'",
+     "url": "https://www.pracomat.cz/prace/4_1987571-vyvojar-firmware-pro-vestavene-systemy-50-90-000-kc",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "(50,000 + 90,000) / 2. Gross per summary; advert open to junior or senior, band not split by level; range high 90,000."
+    },
+    {
+     "value": 80378,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CZK",
+     "statistic": "mean of advertised salaries",
+     "dataYear": null,
+     "source": "Pracomat — C/C++ vývojář offers in Prague",
+     "url": "https://www.pracomat.cz/hledam-praci/region-praha/profese-c-c-plus-plus-vyvojar",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "Average OFFERED gross salary across live C/C++ developer adverts (range 50,000–100,000); live page, year not stated (2025/2026). Not an official statistic and not embedded-only."
+    },
+    {
+     "value": 73483,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CZK",
+     "statistic": "median, IT section (ČSÚ ISPV 2025)",
+     "dataYear": 2025,
+     "source": "same (independent review)",
+     "url": "https://zpravy.kurzy.cz/856269-median-hrube-mesicni-mzdy-dosahl-v-roce-2025-vyse-43-241-kc-mezirocne-vzrostl-o-6-4--prumerna/",
+     "seenIn": "search-snippet",
+     "note": "gross"
+    }
+   ],
+   "senior": [
+    {
+     "value": 90000,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CZK",
+     "statistic": "advert range top",
+     "dataYear": null,
+     "source": "Grafton job advert 'Embedded Engineer | AUTOSAR & ASPICE | Prague'",
+     "url": "https://www.grafton.cz/en/jobs/embedded-engineer-autosar-aspice-prague",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Grafton AUTOSAR advert top"
+    },
+    {
+     "value": 90000,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CZK",
+     "statistic": "advert range top",
+     "dataYear": null,
+     "source": "Pracomat advert 'Vývojář firmware pro vestavěné systémy (50 - 90.000 Kč)'",
+     "url": "https://www.pracomat.cz/prace/4_1987571-vyvojar-firmware-pro-vestavene-systemy-50-90-000-kc",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "See range low."
+    },
+    {
+     "value": 105000,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CZK",
+     "statistic": "advert range top",
+     "dataYear": null,
+     "source": "Jenprace.cz advert 'Embedded vývojář | Hybridní spolupráce (85-105.000 Kč)'",
+     "url": "https://www.jenprace.cz/nabidka/sbs3m6/embedded-vyvojar-hybridni-spoluprace-85-105-000-kc",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "See range low."
+    }
+   ],
+   "seniorBasis": "median of advert range tops — no survey by level",
+   "excluded": [],
+   "onCost": {
+    "components": [
+     {
+      "name": "employer social security",
+      "pct": 24.8,
+      "ceilingAnnual": 2350416
+     },
+     {
+      "name": "health insurance",
+      "pct": 9
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Czech Republic 2026",
+    "url": "https://taxsummaries.pwc.com/czech-republic/individual/other-taxes",
+    "note": "",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 20,
+    "publicHolidays": 13,
+    "leaveIncludesHolidays": false,
+    "source": "20 days leave, 13 public holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+    "note": ""
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "Eastern_Europe",
+    "perPMGBP": 12285.0
+   },
+   "notes": "Adverts, cross-checked by the ČSÚ IT-section median (official)."
+  },
+  {
+   "id": "RO",
+   "label": "Romania",
+   "country": "RO",
+   "currency": "RON",
+   "cities": [
+    "Timișoara",
+    "Iași",
+    "Sibiu",
+    "Brașov",
+    "Cluj-Napoca"
+   ],
+   "evidence": [
+    {
+     "claim": "Aumovio (the former Continental automotive business) has four R&D centres in Romania (Brașov, Iași, Sibiu, Timișoara) and two production sites. About 13,000 employees, more than half of them engineers and IT specialists in the R&D centres (undated company profile).",
+     "url": "https://www.undelucram.ro/ro/prezentare-aumovio-romania-totul-despre-mediul-de-lucru-195376"
+    },
+    {
+     "claim": "Aumovio is cutting 641 jobs across Iași, Sibiu and Timișoara, including 236 in the Timișoara R&D department (digital and electronics engineering), with most measures in place by end-2026. This is evidence that the activity exists and of a 2025–26 contraction. Attribution between wall-street.ro and economedia.ro is unclear.",
+     "url": "https://www.wall-street.ro/articol/auto/aumovio-se-rupe-de-continental-germanii-au-o-prezenta-majora-in-romania.html"
+    },
+    {
+     "claim": "Continental worked with over 5,700 engineers and IT specialists in R&D in Romania (2018). In 2022 it employed 17,500 in Romania, over a third of them engineers and computer scientists.",
+     "url": "https://www.romania-insider.com/continental-hiring-romania/"
+    }
+   ],
+   "mid": [
+    {
+     "value": 12136,
+     "period": "monthly",
+     "annualFactor": 19.861754652487654,
+     "currency": "RON",
+     "statistic": "mean NET × 1.6551 (INS 2025 whole-economy gross/net 8,716 / 5,266)",
+     "dataYear": 2025,
+     "source": "INS monthly earnings release, September 2025 (via economica.net)",
+     "url": "https://www.economica.net/?p=887615",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "NET, not gross. Activity: 'activități de servicii în tehnologia informației (inclusiv activități de servicii informatice)' (CAEN division 62 group), so this is an industry average, not an occupation. INS monthly earnings include bonuses paid that month. The national gross average for the same month was 9,078 lei. No IT gross figure was found. The IT income-tax exemption ended in 2025, so net/gross for IT now follows the general regime. Convert nothing."
+    },
+    {
+     "value": 12931,
+     "period": "monthly",
+     "annualFactor": 19.861754652487654,
+     "currency": "RON",
+     "statistic": "mean NET × 1.6551 (INS 2025 whole-economy gross/net 8,716 / 5,266)",
+     "dataYear": 2025,
+     "source": "INS, November 2025, IT services (via hotnews.ro) (independent review)",
+     "url": "https://hotnews.ro/salariul-mediu-net-a-crescut-la-5-615-lei-in-noiembrie-2025-in-ce-domenii-s-a-castigat-cel-mai-bine-2151180",
+     "seenIn": "search-snippet",
+     "note": "net"
+    },
+    {
+     "value": 11957,
+     "period": "monthly",
+     "annualFactor": 19.861754652487654,
+     "currency": "RON",
+     "statistic": "mean NET × 1.6551 (INS 2025 whole-economy gross/net 8,716 / 5,266)",
+     "dataYear": 2025,
+     "source": "INS, June 2025, IT services (via g4media.ro) (independent review)",
+     "url": "https://www.g4media.ro/castigul-salarial-mediu-net-in-luna-iunie-a-crescut-usor-la-5-539-lei-cele-mai-mari-salarii-in-industria-petroliera-si-tehnologia-informatiei-cele-mai-mici-in-horeca-si-industria-textila.html",
+     "seenIn": "search-snippet",
+     "note": "net"
+    },
+    {
+     "value": 11810,
+     "period": "monthly",
+     "annualFactor": 19.861754652487654,
+     "currency": "RON",
+     "statistic": "mean NET × 1.6551 (INS 2025 whole-economy gross/net 8,716 / 5,266)",
+     "dataYear": 2025,
+     "source": "INS, October 2025, IT services (via tvrinfo.ro) (independent review)",
+     "url": "https://tvrinfo.ro/salariul-mediu-net-a-ajuns-la-5-492-de-lei-in-octombrie-it-ul-ramane-lider-la-castiguri/",
+     "seenIn": "search-snippet",
+     "note": "net"
+    }
+   ],
+   "senior": [],
+   "seniorBasis": "no senior figure — the mid rate is used (senior share has no effect)",
+   "excluded": [
+    {
+     "what": "INS December 2025 net 12,588",
+     "why": "includes year-end bonuses"
+    },
+    {
+     "what": "PayScale embedded RON 50,050 a year",
+     "why": "contradicts the official figures (researcher)"
+    },
+    {
+     "what": "Paylab p10–p90",
+     "why": "gross / net stated inconsistently"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "work insurance contribution (CAM)",
+      "pct": 2.25
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Romania",
+    "url": "https://taxsummaries.pwc.com/romania/individual/other-taxes",
+    "note": "Romania puts social contributions on the employee — they are inside the gross",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 20,
+    "publicHolidays": 15,
+    "leaveIncludesHolidays": false,
+    "source": "15 public holidays — Wikipedia list of public holidays; 20 days leave not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "Eastern_Europe",
+    "perPMGBP": 12285.0
+   },
+   "notes": "INS publishes the IT-services average NET; gross = net × the 2025 whole-economy gross/net ratio — an assumption. IT-services industry average (all staff), not an occupation."
+  },
+  {
+   "id": "HU",
+   "label": "Hungary",
+   "country": "HU",
+   "currency": "HUF",
+   "cities": [
+    "Budapest",
+    "Veszprém",
+    "Szeged"
+   ],
+   "evidence": [
+    {
+     "claim": "thyssenkrupp Components Technology Hungary operates a steering-software development centre in Budapest with some 500 software engineers on electro-mechanical steering (2018 release; about 400 in 2016).",
+     "url": "https://www.thyssenkrupp-automotive-technology.com/en/press/press-releases/thyssenkrupp-investing-further-in-automotive-components-business-in-hungary--404.html"
+    },
+    {
+     "claim": "thyssenkrupp's Budapest site has more than 1,200 colleagues in its E/E development centre for software and hardware (current company page). Szeged works with Budapest and Veszprém on steering electronics and software.",
+     "url": "https://www.thyssenkrupp-automotive-technology.com/en/innovation/thyssenkrupp-hungary"
+    },
+    {
+     "claim": "Bosch Budapest Engineering Center: more than 2,400 employees in 24+ departments (2018), Bosch's second-largest European R&D site, taking on self-driving systems and a large share of e-mobility R&D. This is a whole-centre headcount, not software only.",
+     "url": "https://hipa.hu/news/bosch-expands-its-second-largest-european-development-centre/"
+    }
+   ],
+   "mid": [
+    {
+     "value": 1150000.0,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "HUF",
+     "statistic": "midpoint of Hays 2024 mid-level developer (gross) 900,000–1,400,000",
+     "dataYear": 2024,
+     "source": "Hays Salary Guide (via Economx, Aug 2024)",
+     "url": "https://www.economx.hu/gazdasag/fejlesztok-berezes-millios-fizetes.795467.html",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "mid",
+     "note": "(900,000 + 1,400,000) / 2. Gross, mid-level developer 900,000 – 1.4 million."
+    }
+   ],
+   "senior": [
+    {
+     "value": 1750000.0,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "HUF",
+     "statistic": "midpoint of Hays 2024 senior developer (gross) 1,500,000–2,000,000",
+     "dataYear": 2024,
+     "source": "Hays Salary Guide (via Economx, Aug 2024)",
+     "url": "https://www.economx.hu/gazdasag/fejlesztok-berezes-millios-fizetes.795467.html",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "senior",
+     "note": "(1,500,000 + 2,000,000) / 2. Gross, senior developer 1.5–2 million."
+    },
+    {
+     "value": 1950000.0,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "HUF",
+     "statistic": "midpoint of Grafton 2025 senior developer 1,600,000–2,300,000",
+     "dataYear": 2025,
+     "source": "Grafton Salary & Market Guide 2025 (via Economx)",
+     "url": "https://www.economx.hu/gazdasag/2025/11/04/erre-fele-orientalodjon-a-munkaeropiacon-ha-nagyon-jol-akar-keresni-818773/",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "senior",
+     "note": "(1,600,000 + 2,300,000) / 2. Senior developers 1.6–2.3 million HUF a month. Gross is not stated in the summary."
+    }
+   ],
+   "seniorBasis": "median of the Hays 2024 and Grafton 2025 senior developer bands",
+   "excluded": [],
+   "onCost": {
+    "components": [
+     {
+      "name": "social contribution tax",
+      "pct": 13
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Hungary 2026",
+    "url": "https://taxsummaries.pwc.com/hungary/individual/other-taxes",
+    "note": "",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 20,
+    "publicHolidays": 12,
+    "leaveIncludesHolidays": false,
+    "source": "20 days leave (ILO table), 11–13 public holidays — Wikipedia",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "Eastern_Europe",
+    "perPMGBP": 12285.0
+   },
+   "notes": "General software developers (no embedded survey found)."
+  },
+  {
+   "id": "RS",
+   "label": "Serbia",
+   "country": "RS",
+   "currency": "RSD",
+   "cities": [
+    "Novi Sad",
+    "Belgrade"
+   ],
+   "evidence": [
+    {
+     "claim": "Continental planned (and opened) a software R&D centre in Novi Sad (AutoTechInsight report, USD 1.1 million initial investment).",
+     "url": "https://autotechinsight.spglobal.com/news/5240318/continental-plans-to-open-software-r-d-center-in-serbia-"
+    },
+    {
+     "claim": "Continental Novi Sad R&D Center job postings (2021–2024): embedded software for vehicle control units, diagnostics, zone control units (x-Domain and Body ZCU), telematics and connectivity.",
+     "url": "https://poslovi.infostud.com/posao/software-engineer-for-embedded-systems/continental-novi-sad-r-d-cente/402165"
+    },
+    {
+     "claim": "ZF Serbia (Novi Sad) expanding R&D teams (2022 postings): model-based software development, software integration, software architect and software test for electric traction drives.",
+     "url": "https://poslovi.infostud.com/posao/Software-Development-Engineer-Model-Based/ZF-Serbia-doo/411302"
+    }
+   ],
+   "mid": [
+    {
+     "value": 288617,
+     "period": "monthly",
+     "annualFactor": 16.25845936562114,
+     "currency": "RSD",
+     "statistic": "mean NET × 1.3549 (RZS Sep 2022 programming gross/net 345,350 / 254,895)",
+     "dataYear": 2025,
+     "source": "RZS monthly earnings, February 2025 (via biznis.rs)",
+     "url": "https://biznis.rs/vesti/srbija/u-februaru-prosecna-neto-zarada-iznosila-103-519-dinara-mesecni-pad-37-odsto/",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "NET, computer programming activity. Attribution to this URL is inferred from its title (February release)."
+    },
+    {
+     "value": 305805,
+     "period": "monthly",
+     "annualFactor": 16.25845936562114,
+     "currency": "RSD",
+     "statistic": "mean NET × 1.3549 (RZS Sep 2022 programming gross/net 345,350 / 254,895)",
+     "dataYear": 2025,
+     "source": "RZS monthly earnings, April 2025 (via media)",
+     "url": "https://vreme.com/vesti/kolik-plate-imaju-frizeri-i-autolimari-koji-su-postali-medju-najplacenijima-u-srbiji",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "NET, computer programming activity. The national average for April 2025 was 150,777 RSD gross and 109,272 RSD net. Which result URL carried this figure is unclear (vreme.com or biznis.rs 'rzs-prosecna-neto-zarada-109-272-dinara-u-aprilu')."
+    },
+    {
+     "value": 295476,
+     "period": "monthly",
+     "annualFactor": 16.25845936562114,
+     "currency": "RSD",
+     "statistic": "mean NET × 1.3549 (RZS Sep 2022 programming gross/net 345,350 / 254,895)",
+     "dataYear": 2025,
+     "source": "RZS monthly earnings, September (or October) 2025 (via Insajder, 25 Nov 2025)",
+     "url": "https://insajder.net/vesti/naftasi-i-it-sektor-u-vrhu-ugostitelji-i-licne-usluge-na-dnu-rzs-objavio-podatke-o-septembarskim-platama",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "NET, computer programming activity. The headline says September but the text reportedly says October, so the month is unverified. National September 2025 average: 150,947 gross / 109,147 net."
+    }
+   ],
+   "senior": [],
+   "seniorBasis": "no senior figure — the mid rate is used",
+   "excluded": [
+    {
+     "what": "RZS November net 281,991",
+     "why": "year not certain (reviewer)"
+    },
+    {
+     "what": "RZS January 2025 400,234",
+     "why": "basis not stated; it matches the converted gross (≈ 400k) — cross-check"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "pension and disability",
+      "pct": 10
+     },
+     {
+      "name": "health",
+      "pct": 5.15
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Serbia",
+    "url": "https://taxsummaries.pwc.com/serbia/individual/other-taxes",
+    "note": "contribution ceiling not researched",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 20,
+    "publicHolidays": 9,
+    "leaveIncludesHolidays": false,
+    "source": "20 days leave (ILO table), 9 public holidays — Wikipedia",
+    "note": ""
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "Eastern_Europe",
+    "perPMGBP": 12285.0
+   },
+   "notes": "RZS publishes NET pay for computer programming; gross = net × RZS's own 2022 gross/net for the same activity."
+  },
+  {
+   "id": "TR",
+   "label": "Türkiye",
+   "country": "TR",
+   "currency": "TRY",
+   "cities": [
+    "Istanbul",
+    "Bursa",
+    "Ankara",
+    "Gebze"
+   ],
+   "evidence": [
+    {
+     "claim": "Ford Otosan Sancaktepe (Istanbul) R&D centre — launched as Türkiye's largest single-site R&D centre with 1,200 engineers. A later profile gives 1,350 R&D engineers, including an engine software development laboratory supporting Ford global projects. Data from 2015, old.",
+     "url": "https://www.invest.gov.tr/en/news/news-from-turkey/pages/040515-turkey-largest-research-development-ford-otosan.aspx"
+    },
+    {
+     "claim": "AVL Araştırma ve Mühendislik (AVL Türkiye) — 2025 senior software developer posting describing intelligent-mobility development and national/international R&D projects in its Istanbul R&D centres. A 2019 press item gave >220 engineers (URL for that figure not identified).",
+     "url": "https://www.techcareer.net/jobs/detail/senior-software-developer-6"
+    },
+    {
+     "claim": "Bosch Türkiye's team developed the 'Rush Hour Assist' driver-assistance function together with Togg.",
+     "url": "https://www.ekonomigazetesi.com/sirket-haberleri/boschtan-togg-ile-yeni-is-birligi-sinyali-77450"
+    }
+   ],
+   "mid": [
+    {
+     "value": 94096,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "TRY",
+     "statistic": "mean EMPLOYER LABOUR COST per employee, ICT section (TÜİK 2024)",
+     "dataYear": 2024,
+     "source": "TÜİK İşgücü Maliyeti İstatistikleri 2024 — section J (via alomaliye.com, 25 Dec 2025)",
+     "url": "https://www.alomaliye.com/2025/12/25/tuik-2024te-aylik-ortalama-isgucu-maliyeti-45-777-tlye-cikti/",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "This is EMPLOYER LABOUR COST per employee per month, not a salary, for section J (Information & Communication). Nationally, gross earnings were 85.7% of labour cost (all sections; not a J-specific ratio). Recorded for the reviewer, not as a salary."
+    }
+   ],
+   "senior": [],
+   "seniorBasis": "no senior figure — the mid rate is used",
+   "excluded": [
+    {
+     "what": "kariyer.net embedded 63,521 / senior 73,472 TL a month",
+     "why": "applicants' NET salary expectations, not paid salaries (reviewer)"
+    },
+    {
+     "what": "eleman.net 70,000 TL",
+     "why": "gross / net not stated"
+    },
+    {
+     "what": "TÜİK 2023 annual gross earnings",
+     "why": "superseded by the 2024 labour-cost figure; high inflation"
+    }
+   ],
+   "onCost": {
+    "components": [],
+    "inSalary": true,
+    "source": "TÜİK labour-cost statistics",
+    "url": "",
+    "note": "TÜİK's figure is the employer's cost — social security is inside it"
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 14,
+    "publicHolidays": 9,
+    "leaveIncludesHolidays": false,
+    "source": "14 days leave (1–5 years) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 9 fixed public holidays (reviewer) — the religious feasts are not in that count",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "Eastern_Europe",
+    "perPMGBP": 12285.0
+   },
+   "notes": "2024 lira at the book's 2026 FX: Turkish inflation since 2024 is NOT applied, so this rate is a lower bound. ICT section average (all staff)."
+  },
+  {
+   "id": "EG",
+   "label": "Egypt",
+   "country": "EG",
+   "currency": "EGP",
+   "cities": [
+    "Cairo (Smart Village / New Cairo)"
+   ],
+   "evidence": [
+    {
+     "claim": "Valeo Cairo: tech hub for automotive software, grown into an innovation hub of more than 2,500 software engineers, contributing roughly half of the Group's global software production (Valeo).",
+     "url": "https://valeo.com/en/valeo-cairo-innovative-tech-hub-for-cutting-edge-automotive-software"
+    },
+    {
+     "claim": "Valeo page dated July 2026: 2,200 Egyptian engineers at Smart Village developing R&D software for automotive. Headcounts conflict across Valeo pages (1,600 in 2018; 2,200; 2,500; 3,000).",
+     "url": "https://www.valeo.com/en/egyptian-engineers-at-valeo-developing-rd-software-solutions-for-automotive-world/"
+    },
+    {
+     "claim": "Valeo celebrated 20 years in Egypt and launched an AI Development Centre in Cairo (50+ engineers at opening, growing to 100+). The talent pool is described as 3,000 engineers.",
+     "url": "https://www.valeo.com/en/valeo-celebrates-20-years-in-egypt-and-launches-ai-development-center-in-cairo/"
+    }
+   ],
+   "mid": [
+    {
+     "value": 197193,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EGP",
+     "statistic": "mean",
+     "dataYear": 2026,
+     "source": "PayScale — Embedded Software Engineer at Valeo, Egypt",
+     "url": "https://www.payscale.com/research/EG/Job=Embedded_Software_Engineer/Salary/6bbe4197/Valeo",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Annual base, labelled '2026'; median EGP 197k. The page's high/low fields show 'EGPNaN', so it is unreliable. PayScale samples likely mix pre- and post-March-2024-devaluation salaries. The Valeo + RTOS-skill page gives an average of 199,925 EGP."
+    },
+    {
+     "value": 610000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "EGP",
+     "statistic": "median total package (Levels.fyi, Valeo embedded)",
+     "dataYear": 2026,
+     "source": "Levels.fyi — Valeo, Software Engineer, Embedded Systems, Egypt (independent review)",
+     "url": "https://www.levels.fyi/companies/valeo/salaries/software-engineer/title/embedded-systems",
+     "seenIn": "search-snippet",
+     "note": "Valeo SWE Egypt median 699K; Greater Cairo 602K (https://www.levels.fyi/companies/valeo/salaries/software-engineer/locations/greater-cairo). Data late 2025–2026."
+    }
+   ],
+   "senior": [],
+   "seniorBasis": "no senior figure — the mid rate is used",
+   "excluded": [
+    {
+     "what": "Paylab p10–p90",
+     "why": "no central figure"
+    },
+    {
+     "what": "CAPMAS 2023 ICT average EGP 19,179 a month",
+     "why": "predates the March 2024 devaluation (the pound lost ~40 %); an industry average"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "social insurance (insurable pay EGP 2,700–16,700 a month)",
+      "pct": 18.75,
+      "floorAnnual": 0,
+      "ceilingAnnual": 200400
+     },
+     {
+      "name": "comprehensive health insurance (base assumed the same)",
+      "pct": 4,
+      "ceilingAnnual": 200400
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Egypt 2026",
+    "url": "https://taxsummaries.pwc.com/egypt/individual/other-taxes",
+    "note": "",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 21,
+    "publicHolidays": 14,
+    "leaveIncludesHolidays": false,
+    "source": "21 days leave and 14 public holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "Eastern_Europe",
+    "perPMGBP": 12285.0
+   },
+   "notes": "Two self-reported sources for the same employer and role disagree three-fold (PayScale EGP 197k v Levels.fyi 610k); the mid is their average. Treat as directional."
+  },
+  {
+   "id": "IN",
+   "label": "India",
+   "country": "IN",
+   "currency": "INR",
+   "cities": [
+    "Bengaluru",
+    "Pune",
+    "Hyderabad",
+    "Chennai"
+   ],
+   "evidence": [
+    {
+     "claim": "KPIT Technologies (Pune) employs AUTOSAR developers: AmbitionBox lists an 'Autosar Developer' salary page for KPIT built from 26 reported salaries (updated July 2025).",
+     "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer"
+    },
+    {
+     "claim": "Mercedes-Benz Research and Development India (Bengaluru): Mercedes-Benz announced creation of 1,000 R&D jobs in India; the report states ~9,000 engineers already employed by Mercedes-Benz in India.",
+     "url": "https://www.investmentmonitor.ai/news/mercedes-benz-announces-creation-of-1000-rd-jobs-in-india"
+    },
+    {
+     "claim": "Bosch India: India is the Bosch Group's largest development centre outside Germany, ~18,500 R&D associates across Bengaluru and Coimbatore; plan to hire up to 10,000 R&D engineers.",
+     "url": "https://www.businesstoday.in/amp/latest/corporate/story/engineers-bosch-india-10-000-job-opportunity-101647-2018-02-08"
+    }
+   ],
+   "mid": [
+    {
+     "value": 770000.0,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "INR",
+     "statistic": "midpoint of AmbitionBox KPIT AUTOSAR developer, 2–4 y 450,000–1,090,000",
+     "dataYear": 2025,
+     "source": "AmbitionBox (job-board aggregate) — KPIT Technologies 'Autosar Developer'",
+     "url": "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "mid",
+     "note": "(450,000 + 1,090,000) / 2. Source band is 2–4 years experience (straddles junior/mid); 26 salaries; page updated July 2025. AmbitionBox figures are normally CTC — not confirmed in snippet. Services firm."
+    },
+    {
+     "value": 860000.0,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "INR",
+     "statistic": "midpoint of AmbitionBox Schaeffler India embedded, 1–5 y 460,000–1,260,000",
+     "dataYear": null,
+     "source": "AmbitionBox (job-board aggregate) — Schaeffler India 'Embedded Software Engineer'",
+     "url": "https://www.ambitionbox.com/salaries/schaeffler-india-salaries/embedded-software-engineer",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "mid",
+     "note": "(460,000 + 1,260,000) / 2. Automotive Tier-1. Band is 1–5 years experience; level figures blurred behind paywall; data year not visible in snippet — verify before use."
+    }
+   ],
+   "senior": [
+    {
+     "value": 1115000.0,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "INR",
+     "statistic": "midpoint of 950,000–1,280,000 (Tata Elxsi embedded, 5–8 y)",
+     "dataYear": null,
+     "source": "AmbitionBox — Tata Elxsi Embedded Developer, individual reports for 5–8 y (independent review)",
+     "url": "https://www.ambitionbox.com/salaries/tata-elxsi-salaries/embedded-developer",
+     "seenIn": "search-snippet",
+     "note": "Individual reports 9.5–12.8 L; overall page range 4.4–11.4 L for 0–8 y."
+    },
+    {
+     "value": 1325000.0,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "INR",
+     "statistic": "midpoint of 650,000–2,000,000 (BGSW senior software engineer, 2–10 y)",
+     "dataYear": null,
+     "source": "AmbitionBox — Bosch Global Software Technologies, Senior Software Engineer (general, 2–10 y): 6.5–20 L (independent review)",
+     "url": null,
+     "seenIn": "search-snippet",
+     "note": "Exact page URL not in the results; BGSW Embedded Engineer page: 4.5–10.5 L for 0–5 y."
+    }
+   ],
+   "seniorBasis": "median of AmbitionBox Tata Elxsi (5–8 y) and Bosch Global Software Technologies senior bands (independent review)",
+   "excluded": [
+    {
+     "what": "AmbitionBox TCS / Tech Mahindra rows",
+     "why": "stored under the KPIT URL — wrong source link (reviewer)"
+    },
+    {
+     "what": "AmbitionBox junior embedded",
+     "why": "junior"
+    }
+   ],
+   "onCost": {
+    "components": [],
+    "inSalary": true,
+    "source": "AmbitionBox figures read as CTC",
+    "url": "https://taxsummaries.pwc.com/india/individual/other-taxes",
+    "note": "AmbitionBox salaries are taken as CTC (cost to company), which includes the employer PF (12 %) and usually gratuity (4.81 %) — UNVERIFIED; if they are not CTC, add ≈ 10 %"
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 25,
+    "publicHolidays": 3,
+    "leaveIncludesHolidays": false,
+    "source": "25 days leave — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country (state Shops & Establishments law varies); 3 national holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "India",
+    "perPMGBP": 5460.0
+   },
+   "notes": "Job-board aggregates only; no official statistic for software engineers."
+  },
+  {
+   "id": "CN",
+   "label": "China",
+   "country": "CN",
+   "currency": "CNY",
+   "cities": [
+    "Shanghai",
+    "Shenzhen",
+    "Huizhou",
+    "Suzhou",
+    "Hefei"
+   ],
+   "evidence": [
+    {
+     "claim": "Bosch opened a software hub in Shanghai for automated driving / digital cockpit (its third such innovation centre in China), reported at ~540 engineers.",
+     "url": "https://technode.com/2022/11/23/bosch-opens-new-software-hub-in-shanghai-for-automated-driving/"
+    },
+    {
+     "claim": "Desay SV (Huizhou) — automotive electronics/software Tier-1: 10,000+ employees worldwide and 4,600+ R&D professionals (company campus-recruitment page).",
+     "url": "https://nus.edu.sg/cfg/events/details/2f1095e028c015fc6c97f91f323698e4"
+    }
+   ],
+   "mid": [
+    {
+     "value": 238966,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "CNY",
+     "statistic": "mean",
+     "dataYear": 2024,
+     "source": "National Bureau of Statistics, 2024年城镇单位就业人员年平均工资情况 (released 16 May 2025) — industry 'Information transmission, software and information technology services'",
+     "url": "https://www.stats.gov.cn/sj/zxfb/202505/t20250516_1959826.html",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "INDUSTRY average (ISIC-like section), not an occupation: includes all staff in the IT-services industry. Highest of 19 sections; national non-private average 124,110. NBS wage totals are understood to include bonuses — not confirmed on the page."
+    },
+    {
+     "value": 22500.0,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CNY",
+     "statistic": "midpoint of 15,000–30,000 a month × 12 (Shanghai AUTOSAR advert, 5–10 y)",
+     "dataYear": 2025,
+     "source": "Shanghai advert, AUTOSAR CP, 5–10 y experience: 1.5–3万 (zhaopin) (independent review)",
+     "url": "https://m-pre.zhaopin.com/jobs/CCL1318168350J40796784508.htm",
+     "seenIn": "search-snippet",
+     "note": "Single advert; URL attribution uncertain; months/year not stated."
+    }
+   ],
+   "senior": [
+    {
+     "value": 30000,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "CNY",
+     "statistic": "advert range top × 12",
+     "dataYear": 2025,
+     "source": "same advert (independent review)",
+     "url": "https://m-pre.zhaopin.com/jobs/CCL1318168350J40796784508.htm",
+     "seenIn": "search-snippet",
+     "note": "gross (advert)"
+    }
+   ],
+   "seniorBasis": "top of a single Shanghai AUTOSAR advert (5–10 y) — weak",
+   "excluded": [
+    {
+     "what": "NBS private-unit IT average ¥123,193",
+     "why": "automotive software employers are mostly non-private / large units"
+    },
+    {
+     "what": "Liepin listings \"20–30k … 16 薪\"",
+     "why": "headhunter adverts without a central figure"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "pension",
+      "pct": 16
+     },
+     {
+      "name": "medical incl. maternity",
+      "pct": 9
+     },
+     {
+      "name": "unemployment",
+      "pct": 0.5
+     },
+     {
+      "name": "work injury (lowest class)",
+      "pct": 0.2
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries China (Shanghai)",
+    "url": "https://taxsummaries.pwc.com/peoples-republic-of-china/individual/other-taxes",
+    "note": "housing provident fund (5–7 %) not sourced — excluded; base cap 300 % of city average not applied",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 5,
+    "publicHolidays": 13,
+    "leaveIncludesHolidays": false,
+    "source": "5 days leave (1–10 years) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 13 public holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "China",
+    "perPMGBP": 9555.0
+   },
+   "notes": "No published salary statistic for embedded / automotive software was found; the NBS figure is an industry average (all staff, all of China). Bonus months (13th–16th) are not included."
+  },
+  {
+   "id": "VN",
+   "label": "Vietnam",
+   "country": "VN",
+   "currency": "VND",
+   "cities": [
+    "Hanoi",
+    "Ho Chi Minh City",
+    "Da Nang"
+   ],
+   "evidence": [
+    {
+     "claim": "FPT (FPT Software / FPT Automotive) has expanded its automotive software workforce to more than 5,000 professionals and targets >30% annual growth in automotive software; it runs an AUTOSAR-based (embedded C/C++) digital automotive engineering lab with Hanoi University of Science and Technology.",
+     "url": "https://fpt.com/en/news/fpt-and-hanoi-university-of-science-and-technology-inaugurate-digital-automotive-engineering-laboratory-to-advance-automotive-talent-development"
+    },
+    {
+     "claim": "LG Electronics' Hanoi R&D centre (LGEDV) does software development and verification for in-vehicle infotainment / telematics; LG planned to grow its Vietnam R&D staff from 750 to 1,000.",
+     "url": "https://theinvestor.vn/lg-electronics-to-power-up-auto-parts-rd-in-vietnam-d4019.html"
+    },
+    {
+     "claim": "LG Vehicle Solution Vietnam — LG company page on its Vietnam vehicle-component R&D subsidiary.",
+     "url": "https://www.lg.com/global/business/insights/mobility/news/20230309-company-lg-vehicle-solution-vietnam/"
+    }
+   ],
+   "mid": [
+    {
+     "value": 28400000,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "VND",
+     "statistic": "median",
+     "dataYear": 2025,
+     "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer",
+     "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "mid",
+     "note": "3–4 years experience. Median by years of experience; gross vs net NOT stated in what was seen — verify (Vietnamese salaries are often quoted net)."
+    },
+    {
+     "value": 34350000,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "VND",
+     "statistic": "median",
+     "dataYear": 2025,
+     "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer",
+     "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "All experience levels. Median by years of experience; gross vs net NOT stated in what was seen — verify (Vietnamese salaries are often quoted net)."
+    }
+   ],
+   "senior": [
+    {
+     "value": 39400000,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "VND",
+     "statistic": "median",
+     "dataYear": 2025,
+     "source": "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer",
+     "url": "https://itviec.com/report/vietnam-it-salary-and-recruitment-market",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "senior",
+     "note": "5–8 years experience (source band, not 6–10). Median by years of experience; gross vs net NOT stated in what was seen — verify (Vietnamese salaries are often quoted net)."
+    }
+   ],
+   "seniorBasis": "ITviec 2025–26 embedded median, 5–8 years",
+   "excluded": [
+    {
+     "what": "ITviec 2024 point 45.6 M",
+     "why": "single 2024 data point"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "social insurance",
+      "pct": 17.5
+     },
+     {
+      "name": "health insurance",
+      "pct": 3
+     },
+     {
+      "name": "unemployment insurance",
+      "pct": 1
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Vietnam",
+    "url": "https://taxsummaries.pwc.com/vietnam/individual/other-taxes",
+    "note": "income cap (20 × reference level) not applied; trade-union fee not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 12,
+    "publicHolidays": 11,
+    "leaveIncludesHolidays": false,
+    "source": "Labour Code 2019: 12 days leave, 11 public holidays (reviewer, lawnet.vn)",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "India",
+    "perPMGBP": 5460.0
+   },
+   "notes": "ITviec does not say gross or net; if net, the rate is understated. Tet (13th-month) bonus not included."
+  },
+  {
+   "id": "JP",
+   "label": "Japan",
+   "country": "JP",
+   "currency": "JPY",
+   "cities": [
+    "Tokyo",
+    "Nagoya / Aichi (Kariya, Toyota City)"
+   ],
+   "evidence": [
+    {
+     "claim": "Toyota set up a Software Development Center and expanded collaboration with Woven by Toyota and Denso (both with software-implementation strengths); Denso's CTO serves as an EVP of the new unit.",
+     "url": "https://toyotatimes.jp/en/toyota_news/1045.html"
+    },
+    {
+     "claim": "Woven by Toyota (Tokyo) develops the Arene vehicle software platform; Arene software roles advertised in Tokyo.",
+     "url": "https://www.marketscreener.com/quote/stock/TOYOTA-INDUSTRIES-CORPORA-6493686/news/Toyota-mobility-tech-unit-CEO-Kuffner-to-leave-post-44791728/"
+    },
+    {
+     "claim": "Japanese job posting for software-development-process improvement on in-vehicle safety ECUs (en-ambi, listing 30 Jul – 12 Aug 2026).",
+     "url": "https://en-ambi.com/job/j-16013831/"
+    }
+   ],
+   "mid": [
+    {
+     "value": 5741200,
+     "period": "monthly",
+     "annualFactor": 1,
+     "currency": "JPY",
+     "statistic": "mean, 12 × monthly contractual earnings ¥386,200 + annual bonus ¥1,106,800",
+     "dataYear": 2024,
+     "source": "MHLW Basic Survey on Wage Structure 2024 (令和6年賃金構造基本統計調査) — ソフトウェア作成者, きまって支給する現金給与額, as quoted by Benesse 職業情報",
+     "url": "https://manabi.benesse.ne.jp/shokugaku/job/list/197/income/",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "MHLW Basic Survey on Wage Structure 2024, ソフトウェア作成者 (all ages); bonus row: https://manabi.benesse.ne.jp/shokugaku/job/list/197/income/"
+    },
+    {
+     "value": 5576000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "JPY",
+     "statistic": "mean",
+     "dataYear": null,
+     "source": "MHLW jobtag — システムエンジニア（組込み、IoT） 賃金（年収）, as quoted by a career article",
+     "url": "https://shigoto.mhlw.go.jp/User/Occupation/Detail/315",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Figure '557.6万円' seen only in a search snippet of a secondary article quoting jobtag; the jobtag page id (315) was returned by the search but NOT confirmed as this occupation, and the underlying wage-census year was not visible. jobtag annual pay is normally derived from the Wage Structure survey incl. bonus — not confirmed."
+    }
+   ],
+   "senior": [],
+   "seniorBasis": "no senior figure — the mid rate is used (Japanese pay rises with age; the survey is all ages)",
+   "excluded": [
+    {
+     "what": "en-ambi posting ¥6.0–12.5 M",
+     "why": "a single employer's advert"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "welfare pension",
+      "pct": 9.15,
+      "ceilingAnnual": 7800000
+     },
+     {
+      "name": "health insurance (Tokyo)",
+      "pct": 4.925
+     },
+     {
+      "name": "employment insurance",
+      "pct": 0.5
+     }
+    ],
+    "source": "PwC Worldwide Tax Summaries Japan 2026",
+    "url": "https://taxsummaries.pwc.com/japan/individual/other-taxes",
+    "note": "nursing-care (40+), child-support levy and accident insurance not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 10,
+    "publicHolidays": 16,
+    "leaveIncludesHolidays": false,
+    "source": "40-hour week (Labour Standards Act, reviewer); 10 days leave (first year) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 16 public holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
+    "note": ""
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "Japan",
+    "perPMGBP": 24570.0
+   },
+   "notes": "MHLW wage-structure survey (official) incl. bonus; jobtag figure year unconfirmed."
+  },
+  {
+   "id": "KR",
+   "label": "South Korea",
+   "country": "KR",
+   "currency": "KRW",
+   "cities": [
+    "Seoul",
+    "Pangyo / Seongnam",
+    "Hwaseong (Namyang R&D)"
+   ],
+   "evidence": [
+    {
+     "claim": "Hyundai Motor Group's SDV developer conference (with Hyundai AutoEver, 42dot, Kia) — group vehicle-software development in Korea.",
+     "url": "https://www.hyundai.com/worldwide/en/newsroom/detail/hyundai-motor-group-accelerates-software-defined-vehicle-advancement-with-second-developer-conference-0000000151"
+    },
+    {
+     "claim": "42dot — Hyundai Motor Group's software / Advanced Vehicle Platform subsidiary (CEO Song Chang-hyeon); group software centre reporting.",
+     "url": "https://www.kedglobal.com/newsView/ked202407010005"
+    }
+   ],
+   "mid": [
+    {
+     "value": 6099042,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "KRW",
+     "statistic": "mean monthly EMPLOYER COST (KOSA: base + allowances + bonus + severance provision + employer 4 insurances)",
+     "dataYear": 2024,
+     "source": "KOSA (Korea Software Industry Association), 2025년 적용 SW기술자 평균임금 (2024 survey, published 4 Dec 2024) — 시스템SW개발자 (임베디드SW개발자 포함)",
+     "url": "https://files-scs.pstatic.net/2024/12/29/Yp9k9cqjwa/2025년_적용_SW기술자_평균임금_공표.pdf",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "KOSA statutory SW-engineer wage survey (SW Industry Promotion Act); amount INCLUDES base pay, allowances, bonus, retirement-pay provision and employer 4-insurance contributions — i.e. close to employer cost, above take-home salary. Basis for public SW procurement labour cost. Daily = monthly ÷ average working days; hourly = daily ÷ 8. Job category 'System SW developer' explicitly includes embedded SW developer."
+    }
+   ],
+   "senior": [],
+   "seniorBasis": "no senior figure — the mid rate is used",
+   "excluded": [
+    {
+     "what": "KOSA all-SW-technician daily rate",
+     "why": "all software roles, not system / embedded"
+    }
+   ],
+   "onCost": {
+    "components": [],
+    "inSalary": true,
+    "source": "KOSA definition (reviewer)",
+    "url": "",
+    "note": "KOSA's average wage already includes severance provision and the employer's four social insurances — nothing added"
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 15,
+    "publicHolidays": 15,
+    "leaveIncludesHolidays": false,
+    "source": "40-hour week (reviewer); 15 days leave after one year — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 15 public holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
+    "note": ""
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "Japan",
+    "perPMGBP": 24570.0
+   },
+   "notes": "KOSA statutory survey (SW Industry Promotion Act), 시스템SW개발자 incl. embedded, 2024 data published for 2025."
+  },
+  {
+   "id": "US-MI",
+   "label": "USA — Michigan",
+   "country": "US",
+   "currency": "USD",
+   "cities": [
+    "Detroit-Warren-Dearborn",
+    "Ann Arbor"
+   ],
+   "evidence": [
+    {
+     "claim": "GM's global software & services organisation is based at the Global Technical Center, Warren MI: a 2025 WARN notice for its software-org cuts covered ~634 employees at the Warren campus (part of >1,000 cuts) - i.e. a large software headcount there.",
+     "url": "https://prod.crainsdetroit.com/node/905551"
+    },
+    {
+     "claim": "GM said it would hire 3,000 more technical workers to develop vehicles and software, most at the Warren Technical Center (article date not shown in result).",
+     "url": "https://www.wkar.org/post/gm-add-3000-tech-jobs-develop-vehicles-and-software"
+    },
+    {
+     "claim": "GM 'Software Engineer - Early Career' job postings located in Warren, MI.",
+     "url": "https://www.themuse.com/jobs/generalmotors/software-engineer-early-career-549526"
+    }
+   ],
+   "mid": [
+    {
+     "value": 124780,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "median",
+     "dataYear": 2024,
+     "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
+     "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=MI",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries). Hourly median shown $59.99 (x2080 = 124,779, consistent)."
+    },
+    {
+     "value": 119310,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "median",
+     "dataYear": 2024,
+     "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
+     "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=MI",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries). Hourly median shown $57.36 (x2080 = 119,309, consistent)."
+    },
+    {
+     "value": 140344,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "mean",
+     "dataYear": 2026,
+     "source": "ZipRecruiter salary data (as of 16 Jun 2026)",
+     "url": "https://www.ziprecruiter.com/Salaries/Embedded-Software-Engineer-Salary-in-Detroit,MI",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Search text: average embedded software engineer in Detroit $140,344 as of June 16, 2026. Other ZipRecruiter Detroit snapshots in 2026 differed by ~$17k ($151,844 'embedded' 6 May 2026; $135,896 'embedded systems engineer' 23 Aug 2026). Bonus inclusion not stated."
+    },
+    {
+     "value": 135000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "median",
+     "dataYear": 2026,
+     "source": "Glassdoor - AUTOSAR Embedded Software Engineer page, Ford employer row",
+     "url": "https://www.glassdoor.com/Salaries/autosar-embedded-software-engineer-salary-SRCH_KO0,34.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Search text: 'A Ford listing for an AUTOSAR-related embedded role shows a range of $114K-$159K with a $135K median'. Level not given; whether base or total pay not stated. The same page's US-wide median total pay $204K was flagged by the search as small-sample/dated and is NOT recorded."
+    },
+    {
+     "value": 130760,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "median, May 2025 (Detroit)",
+     "dataYear": 2025,
+     "source": "BLS OEWS May 2025, Detroit area, 15-1252, as quoted by tradecareerpath.com (national 135,980) (independent review)",
+     "url": "https://tradecareerpath.com/programs/online-computer-science-degree/michigan/detroit/",
+     "seenIn": "search-snippet",
+     "note": "Newer release; +4.8% vs stored May 2024 median — consistent."
+    }
+   ],
+   "senior": [
+    {
+     "value": 135830,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "p75",
+     "dataYear": 2024,
+     "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
+     "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=MI",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries)."
+    },
+    {
+     "value": 138850,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "p75",
+     "dataYear": 2024,
+     "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
+     "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=MI",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries)."
+    },
+    {
+     "value": 159000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "top of a Ford AUTOSAR posted band",
+     "dataYear": 2026,
+     "source": "Glassdoor - AUTOSAR Embedded Software Engineer page, Ford employer row",
+     "url": "https://www.glassdoor.com/Salaries/autosar-embedded-software-engineer-salary-SRCH_KO0,34.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Search text: 'A Ford listing for an AUTOSAR-related embedded role shows a range of $114K-$159K with a $135K median'. Level not given; whether base or total pay not stated. The same page's US-wide median total pay $204K was flagged by the search as small-sample/dated and is NOT recorded."
+    }
+   ],
+   "seniorBasis": "median of the Detroit and Ann Arbor OEWS p75 and a Ford AUTOSAR band top",
+   "excluded": [
+    {
+     "what": "Michigan statewide median $107,820",
+     "why": "the hub is the Detroit / Ann Arbor metros"
+    },
+    {
+     "what": "ZipRecruiter functional-safety $91,188",
+     "why": "implausibly low against posted bands (researcher)"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "OASDI",
+      "pct": 6.2,
+      "ceilingAnnual": 184500
+     },
+     {
+      "name": "Medicare",
+      "pct": 1.45
+     }
+    ],
+    "source": "SSA 2026 contribution base / IRS Pub. 15",
+    "url": "https://www.ssa.gov/oact/cola/cbb.html",
+    "note": "FUTA / state unemployment and employer health cover / 401(k) not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 0,
+    "publicHolidays": 0,
+    "leaveIncludesHolidays": false,
+    "source": "no statutory paid leave or private-sector holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+    "note": "employers typically give ~10 holidays + ~15 days PTO, which would raise the hourly cost ≈ 11 %"
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "USA_Detroit",
+    "perPMGBP": 36855.0
+   },
+   "notes": "BLS OEWS (official) for software developers + automotive embedded figures."
+  },
+  {
+   "id": "US-CA",
+   "label": "USA — California",
+   "country": "US",
+   "currency": "USD",
+   "cities": [
+    "San Jose / Sunnyvale",
+    "San Francisco / Palo Alto",
+    "Irvine"
+   ],
+   "evidence": [
+    {
+     "claim": "Zoox (Amazon-owned robotaxi developer) posts software engineering roles at its Foster City, CA office, with posted pay e.g. $215k-$237k/yr for one role.",
+     "url": "https://app.welcometothejungle.com/jobs/AvEx4GJM/company"
+    },
+    {
+     "claim": "Waymo (autonomous-driving software, ex-Google Self-Driving Car Project 2009) software engineering job listings in Mountain View, CA.",
+     "url": "https://ev.careers/jobs/software-engineer/in-mountain-view-california-united-states?page=7"
+    },
+    {
+     "claim": "Levels.fyi holds Bay Area software-engineer pay records at Rivian (RIV-3..RIV-7), Tesla (P1..P5), GM and the Rivian and Volkswagen Group Technologies JV - i.e. automotive SW engineers employed in the Bay Area.",
+     "url": "https://www.levels.fyi/companies/rivian-and-volkswagen-group-technologies/salaries/software-engineer/levels/senior-staff-software-engineer/locations/san-francisco-bay-area"
+    }
+   ],
+   "mid": [
+    {
+     "value": 213110,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "median (May 2025 per reviewer)",
+     "dataYear": null,
+     "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
+     "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=CA",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "O*NET local-wage table (BLS OEWS). VINTAGE UNCERTAIN: the search tool said the San Jose / SF rows came from a cached copy ~679 days old and the page snippet did not state the year - likely OEWS May 2023, possibly May 2024. dataYear left null. Hourly median $102.46."
+    },
+    {
+     "value": 186640,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "median",
+     "dataYear": null,
+     "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
+     "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=CA",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "O*NET local-wage table (BLS OEWS). VINTAGE UNCERTAIN: the search tool said the San Jose / SF rows came from a cached copy ~679 days old and the page snippet did not state the year - likely OEWS May 2023, possibly May 2024. dataYear left null. Hourly median $89.73."
+    },
+    {
+     "value": 173500.0,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "midpoint of Glassdoor San Jose embedded BASE range 146,000–201,000",
+     "dataYear": 2026,
+     "source": "Glassdoor - Embedded Software Engineer, San Jose CA (2026 page)",
+     "url": "https://www.glassdoor.com/Salaries/san-jose-ca-embedded-software-engineer-salary-SRCH_IL.0,11_IM761_KO12,38.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "(146,000 + 201,000) / 2. BASE pay range $146K-$201K (Glassdoor's base range is normally p25-p75; not stated in result)."
+    },
+    {
+     "value": 180320,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "median, May 2024 (San Jose, third-party quote)",
+     "dataYear": 2024,
+     "source": "resumegeni.com Software Engineer Salary Guide 2026, citing May 2024 OEWS for San Jose metro (independent review)",
+     "url": "https://resumegeni.com/salary-guides/software-engineer-salary-guide",
+     "seenIn": "search-snippet",
+     "note": "Third-party; not confirmed on bls.gov."
+    }
+   ],
+   "senior": [
+    {
+     "value": 226080,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "p75",
+     "dataYear": null,
+     "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
+     "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=CA",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "O*NET local-wage table (BLS OEWS). VINTAGE UNCERTAIN: the search tool said the San Jose / SF rows came from a cached copy ~679 days old and the page snippet did not state the year - likely OEWS May 2023, possibly May 2024. dataYear left null."
+    },
+    {
+     "value": 219670,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "p75",
+     "dataYear": null,
+     "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
+     "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=CA",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "O*NET local-wage table (BLS OEWS). VINTAGE UNCERTAIN: the search tool said the San Jose / SF rows came from a cached copy ~679 days old and the page snippet did not state the year - likely OEWS May 2023, possibly May 2024. dataYear left null."
+    },
+    {
+     "value": 201000,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "USD",
+     "statistic": "top of Glassdoor base range",
+     "dataYear": 2026,
+     "source": "Glassdoor - Embedded Software Engineer, San Jose CA (2026 page)",
+     "url": "https://www.glassdoor.com/Salaries/san-jose-ca-embedded-software-engineer-salary-SRCH_IL.0,11_IM761_KO12,38.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "BASE pay range $146K-$201K."
+    }
+   ],
+   "seniorBasis": "median of the San Jose and San Francisco OEWS p75 and the Glassdoor base-range top (the OEWS p75 may be top-coded)",
+   "excluded": [
+    {
+     "what": "Levels.fyi total compensation (Rivian, Tesla, GM)",
+     "why": "includes stock grants — not comparable with OEWS base wages"
+    },
+    {
+     "what": "Glassdoor total-pay median $237k",
+     "why": "includes bonus / stock"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "OASDI",
+      "pct": 6.2,
+      "ceilingAnnual": 184500
+     },
+     {
+      "name": "Medicare",
+      "pct": 1.45
+     }
+    ],
+    "source": "SSA 2026 contribution base / IRS Pub. 15",
+    "url": "https://www.ssa.gov/oact/cola/cbb.html",
+    "note": "FUTA / state unemployment and employer health cover / 401(k) not included; California SDI is employee-paid",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 0,
+    "publicHolidays": 0,
+    "leaveIncludesHolidays": false,
+    "source": "no statutory paid leave — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+    "note": "typical PTO would raise the hourly cost ≈ 11 %"
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "USA_SV",
+    "perPMGBP": 50505.0
+   },
+   "notes": "OEWS years differ between sources (May 2024 / May 2025) — stated per figure."
+  },
+  {
+   "id": "CA",
+   "label": "Canada (Ontario)",
+   "country": "CA",
+   "currency": "CAD",
+   "cities": [
+    "Toronto / Markham",
+    "Ottawa-Kanata",
+    "Kitchener-Waterloo"
+   ],
+   "evidence": [
+    {
+     "claim": "GM Canadian Technical Centre, Markham ON, opened as GM's automotive software development centre (target ~700 software engineers; 300 at launch, building sized for ~1,000).",
+     "url": "https://www.yorklink.ca/gms-new-markham-based-technical-centre-act-companys-software-hub/"
+    },
+    {
+     "claim": "Globe and Mail: GM ramping up Canadian tech operations - Markham centre with more than 400 engineers and software developers (article date not visible).",
+     "url": "https://www.theglobeandmail.com/business/article-gm-ramping-up-tech-operations-in-canada-as-it-winds-down-oshawa"
+    },
+    {
+     "claim": "BlackBerry QNX (automotive RTOS / vehicle software), Ottawa-Kanata: ~400 engineers in Dec 2016 and an Autonomous Vehicle Innovation Centre planned to hire up to 650 engineers (OLD - 2016).",
+     "url": "https://www.cnbc.com/2016/12/19/blackberry-to-spend-nearly-75-million-in-the-next-few-years-on-self-driving-car-hub-ceo-says.html"
+    }
+   ],
+   "mid": [
+    {
+     "value": 56.73,
+     "period": "hourly",
+     "annualFactor": 2080,
+     "currency": "CAD",
+     "statistic": "median hourly × 2,080 h",
+     "dataYear": 2024,
+     "source": "ESDC Job Bank wages, NOC 21231 Software engineers and designers (source: Statistics Canada Labour Force Survey)",
+     "url": "https://www.jobbank.gc.ca/wagereport/occupation/5485",
+     "seenIn": "search-snippet",
+     "role": "software_developer_general",
+     "level": "all",
+     "note": "Reference period 2023-2024 per result (dataYear set to the period end). Job Bank's low/high are, by its methodology, the 10th/90th percentiles (my reading, not shown in the result). Same range confirmed on the Ontario Ministry of Labour job profile (services.labour.gov.on.ca ...nocCode=21231). Kitchener-Waterloo / Ottawa regional rows not returned by search."
+    },
+    {
+     "value": 89842,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "CAD",
+     "statistic": "mean",
+     "dataYear": 2026,
+     "source": "Glassdoor.ca - Embedded Software Engineer, Toronto (2026 page)",
+     "url": "https://www.glassdoor.ca/Salaries/toronto-embedded-software-engineer-salary-SRCH_IL.0,7_IM976_KO8,34.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "'The average salary is $89,842 per year'; whether base or total pay not stated."
+    },
+    {
+     "value": 86651,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "CAD",
+     "statistic": "mean",
+     "dataYear": null,
+     "source": "Glassdoor.ca - Automotive Embedded Software Engineer (Canada)",
+     "url": "https://www.glassdoor.ca/Salaries/automotive-embedded-software-engineer-salary-SRCH_KO0,37.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "Automotive-specific title; 682 salaries; range roughly $71K-$108K (rounded, not recorded). Search text prefaced the figure with 'about'; page date not shown."
+    }
+   ],
+   "senior": [
+    {
+     "value": 102428,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "CAD",
+     "statistic": "mean",
+     "dataYear": 2026,
+     "source": "PayScale - Senior Embedded Software Engineer, Toronto",
+     "url": "https://www.payscale.com/research/CA/Job=Senior_Embedded_Software_Engineer/Salary/aaf426a9/Toronto-ON",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "senior",
+     "note": "Average BASE salary C$102,428 in 2026; 10th-90th about C$61K-C$141K (rounded, not recorded)."
+    },
+    {
+     "value": 113153,
+     "period": "annual",
+     "annualFactor": 1,
+     "currency": "CAD",
+     "statistic": "top of Glassdoor typical range (≈ p75)",
+     "dataYear": 2026,
+     "source": "Glassdoor.ca - Embedded Software Engineer, Toronto (2026 page)",
+     "url": "https://www.glassdoor.ca/Salaries/toronto-embedded-software-engineer-salary-SRCH_IL.0,7_IM976_KO8,34.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": ""
+    }
+   ],
+   "seniorBasis": "median of PayScale senior embedded (Toronto) and the Glassdoor range top",
+   "excluded": [
+    {
+     "what": "Job Bank NOC 21232 C$48.08 / h",
+     "why": "listed twice (Ontario and Toronto) — the NOC 21231 engineer row is used"
+    },
+    {
+     "what": "Levels.fyi GM Canada",
+     "why": "total compensation"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "CPP",
+      "pct": 5.95,
+      "floorAnnual": 3500,
+      "ceilingAnnual": 74600
+     },
+     {
+      "name": "EI (1.4 × 1.63 %)",
+      "pct": 2.282,
+      "ceilingAnnual": 68900
+     }
+    ],
+    "source": "Canada Revenue Agency 2026",
+    "url": "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/payroll/payroll-deductions-contributions/canada-pension-plan-cpp/cpp-contribution-rates-maximums-exemptions.html",
+    "note": "CPP2 and the Ontario Employer Health Tax not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 10,
+    "publicHolidays": 9,
+    "leaveIncludesHolidays": false,
+    "source": "10 days leave (Ontario 2 weeks), 9 public holidays — reviewer (Statista) / https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
+    "note": ""
+   },
+   "confidence": "Medium",
+   "legacy": {
+    "key": "USA_Detroit",
+    "perPMGBP": 36855.0
+   },
+   "notes": "Job Bank hourly figures annualised at 2,080 h (40 h × 52)."
+  },
+  {
+   "id": "MX",
+   "label": "Mexico",
+   "country": "MX",
+   "currency": "MXN",
+   "cities": [
+    "Guadalajara",
+    "Querétaro",
+    "Monterrey"
+   ],
+   "evidence": [
+    {
+     "claim": "Bosch opened a software development & engineering centre in Guadalajara (2014, ~US$5m, 200+ engineering jobs) for automotive ECU hardware/software development and validation (old figure).",
+     "url": "https://autotechinsight.spglobal.com/news/25709/bosch-opens-software-development-center-in-mexico-"
+    },
+    {
+     "claim": "Bosch strengthens its software development presence in the Americas (Guadalajara centre).",
+     "url": "https://www.autocarpro.in/news-international/bosch-strengthens-software-development-presence-americas-5520?amp=1"
+    },
+    {
+     "claim": "GlobalLogic (Hitachi) building a dedicated automotive engineering centre in Guadalajara for N.S. International - instrument cluster and head-up-display software (Dec 2024).",
+     "url": "https://www.globallogic.com/about/news/n-s-international-ltd-partners-with-globallogic-to-expand-automotive-software-capabilities/"
+    }
+   ],
+   "mid": [
+    {
+     "value": 25000,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "MXN",
+     "statistic": "mean",
+     "dataYear": 2026,
+     "source": "Glassdoor Mexico - Ingeniero de Software Embebido (May 2026)",
+     "url": "https://www.glassdoor.com.mx/Sueldos/ingeniero-de-software-embebido-sueldo-SRCH_KO0,30_IP2.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": "'25 k$/mes Sueldo base promedio' (base pay, rounded). Range 18k-34k/mes. Employers listed include Hella, Capgemini Engineering. Same page also printed '$18,083 (p25) - $39,458 (p75) por año' - unit label inconsistent, not recorded."
+    }
+   ],
+   "senior": [
+    {
+     "value": 34000,
+     "period": "monthly",
+     "annualFactor": 12,
+     "currency": "MXN",
+     "statistic": "top of Glassdoor base range",
+     "dataYear": 2026,
+     "source": "Glassdoor Mexico - Ingeniero de Software Embebido (May 2026)",
+     "url": "https://www.glassdoor.com.mx/Sueldos/ingeniero-de-software-embebido-sueldo-SRCH_KO0,30_IP2.htm",
+     "seenIn": "search-snippet",
+     "role": "embedded_sw_engineer",
+     "level": "all",
+     "note": ""
+    }
+   ],
+   "seniorBasis": "top of the Glassdoor embedded base range",
+   "excluded": [
+    {
+     "what": "DataMéxico MXN 11k",
+     "why": "rounded, all software developers incl. informal work"
+    },
+    {
+     "what": "Indeed / Computrabajo general developer pay",
+     "why": "general software, not embedded"
+    },
+    {
+     "what": "Levels.fyi Guadalajara total comp MXN 730k",
+     "why": "total compensation, international employers"
+    }
+   ],
+   "onCost": {
+    "components": [
+     {
+      "name": "INFONAVIT",
+      "pct": 5
+     },
+     {
+      "name": "SAR retirement",
+      "pct": 2
+     },
+     {
+      "name": "CEAV (lowest band, 2026)",
+      "pct": 3.15
+     }
+    ],
+    "source": "vendor payroll guides (F.json / reviewer) — no big-four source",
+    "url": "https://www.deel.com/blog/employer-costs-for-an-employee-in-mexico/",
+    "note": "PARTIAL: the IMSS sickness, disability, work-risk and childcare branches, the state payroll tax (3–4 %), the aguinaldo (15 days) and the vacation premium are not included",
+    "inSalary": false
+   },
+   "hours": {
+    "weeklyHours": 40,
+    "leaveDays": 12,
+    "publicHolidays": 7,
+    "leaveIncludesHolidays": false,
+    "source": "12 days leave (first year) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 7 mandatory rest days not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
+    "note": ""
+   },
+   "confidence": "Low",
+   "legacy": {
+    "key": "Mexico",
+    "perPMGBP": 7644.000000000001
+   },
+   "notes": "One embedded figure (Glassdoor); the reviewer could not re-find it. Mexican software pay spans MXN 15k–60k a month by employer segment."
+  }
+ ]
+}

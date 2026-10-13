@@ -17,6 +17,7 @@ import {
   rateValues,
 } from './sw-rate-library.js';
 import type { SWRateLibrary } from './sw-rate-library.js';
+import { SW_HUB_RATES, type SWHubId } from './sw-country-rates.js';
 import { mulberry32 } from './uncertainty.js';
 import { SW_PUBLISHED_PROGRAMMES } from './sw-benchmarks.js';
 import { USD_PER_GBP } from './gear-heat-treat-data.js';   // the app's one dated USD→GBP rate
@@ -32,34 +33,57 @@ export type SWReuse         = 'Fresh' | 'Light' | 'Medium' | 'Heavy' | 'Platform
 /** ISO/SAE 21434 cybersecurity assurance level of a module's item / component ('none' = no cybersecurity goal). */
 export type SWCal           = 'none' | 'CAL1' | 'CAL2' | 'CAL3' | 'CAL4';
 export type SWCategory      = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
-export type SWRegion        = 'UK' | 'EU' | 'USA_Detroit' | 'USA_SV' | 'China' | 'India' | 'Mexico' | 'Eastern_Europe' | 'Japan';
+/** A software engineering HUB — a country (or US state) where automotive software is developed, with its own rate
+ *  (src/engine/sw-country-rates.ts). */
+export type SWRegion        = SWHubId;
 export type DevSource       = 'OEM_Internal' | 'Tier1_Supplier' | 'Startup_OSS';
 export type SWPowertrain    = 'ICE' | 'MHEV' | 'PHEV' | 'BEV';
 
+/** The retired hub keys (UK base × multiplier book, before Oct 2026) → today's hub. Saved configurations, company books
+ *  and version snapshots still carry them; every entry point reads them through `normaliseSWRegion`. */
+export const SW_LEGACY_HUBS: Record<string, SWHubId> = {
+  EU: 'DE', Eastern_Europe: 'PL', USA_Detroit: 'US-MI', USA_SV: 'US-CA',
+  China: 'CN', India: 'IN', Mexico: 'MX', Japan: 'JP',
+};
+
+export function normaliseSWRegion(r: string): string {
+  return SW_LEGACY_HUBS[r] ?? r;
+}
+
+/** Countries with no automotive software centre of their own found by the Oct 2026 research: the hub their software is
+ *  costed in, and why. Every other app country IS a hub (its own salaries, on-costs and hours). */
+const SW_NEAREST_HUB: Record<string, [SWHubId, string]> = {
+  ES: ['PT', 'Iberia — the research found no Spanish embedded-automotive salary data; Portugal (Bosch Braga) is the assessed Iberian hub'],
+  NL: ['DE', 'Western Europe — Germany is the nearest assessed hub'],
+  BE: ['DE', 'Western Europe — Germany is the nearest assessed hub'],
+  SK: ['CZ', 'Central Europe — Czechia is the nearest assessed hub'],
+  SI: ['AT', 'Central Europe — Austria is the nearest assessed hub'],
+  LT: ['PL', 'Baltic — Poland is the nearest assessed hub'],
+  BG: ['RO', 'South-East Europe — Romania is the nearest assessed hub'],
+  MA: ['EG', 'North Africa — Egypt (Valeo Cairo) is the assessed North-African hub'],
+  TN: ['EG', 'North Africa — Egypt (Valeo Cairo) is the assessed North-African hub'],
+  ZA: ['IN', 'no assessed African hub south of Egypt — India, the largest offshore automotive software base'],
+  BR: ['MX', 'Latin America — Mexico (Guadalajara) is the assessed hub'],
+  TH: ['VN', 'South-East Asia — Vietnam is the assessed hub'],
+  MY: ['VN', 'South-East Asia — Vietnam is the assessed hub'],
+  ID: ['VN', 'South-East Asia — Vietnam is the assessed hub'],
+  PH: ['VN', 'South-East Asia — Vietnam is the assessed hub'],
+  TW: ['CN', 'Greater China — China is the assessed hub'],
+  SG: ['JP', 'high-cost Asian engineering — Japan is the nearest assessed hub'],
+};
+
 /**
- * The software-engineering rate hub a manufacturing country is costed in. Software
- * has 9 assessed engineering hubs, not 39 factory countries; a country without its own
- * hub takes the nearest one in cost and geography, and the screen SAYS so (country
- * audit, Oct 2026 — the panel used to sit on the UK whatever country was selected).
+ * The software engineering hub a manufacturing country is costed in. A country where automotive software is actually
+ * developed is its own hub (own salaries, on-costs, hours — Oct 2026 research); any other takes the nearest hub and the
+ * screen SAYS so. The US defaults to Michigan (the OEMs' software centres); California is offered on the picker.
  */
 export function swRegionFor(country: string): { region: SWRegion; basis?: string } {
-  const c = country.toUpperCase();
-  if (c === 'UK' || c === 'GB') return { region: 'UK' };
-  if (c === 'IN') return { region: 'India' };
-  if (c === 'CN') return { region: 'China' };
-  if (c === 'MX') return { region: 'Mexico' };
-  if (c === 'JP') return { region: 'Japan' };
-  if (c === 'US') return { region: 'USA_Detroit' };
-  if (c === 'DE') return { region: 'EU' };
-  const near = (region: SWRegion, why: string) => ({ region, basis: why });
-  if (['FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'SE', 'PT'].includes(c)) return near('EU', 'Western European engineering — the EU hub');
-  if (['PL', 'CZ', 'SK', 'SI', 'HU', 'RO', 'BG', 'RS', 'LT'].includes(c)) return near('Eastern_Europe', 'Central / Eastern European engineering hub');
-  if (['TR', 'MA', 'TN', 'EG'].includes(c)) return near('Eastern_Europe', 'Europe-facing low-cost engineering — Eastern Europe is the nearest assessed hub');
-  if (c === 'CA') return near('USA_Detroit', 'North American automotive engineering — Detroit is the nearest assessed hub');
-  if (c === 'BR') return near('Mexico', 'Latin American engineering — Mexico is the nearest assessed hub');
-  if (['KR', 'SG'].includes(c)) return near('Japan', 'high-cost Asian engineering — Japan is the nearest assessed hub');
-  if (c === 'TW') return near('China', 'Greater China engineering hub');
-  return near('India', 'low-cost Asian / African engineering — India is the nearest assessed hub');
+  const c = country.toUpperCase() === 'GB' ? 'UK' : country.toUpperCase();
+  if (c === 'US') return { region: 'US-MI', basis: 'United States — Michigan (Detroit / Ann Arbor OEM software centres); choose California for Bay Area teams' };
+  if (c in SW_HUB_RATES) return { region: c as SWHubId };
+  const near = SW_NEAREST_HUB[c];
+  if (near && near[0] in SW_HUB_RATES) return { region: near[0], basis: near[1] };
+  return { region: 'IN', basis: 'no assessed hub nearby — India, the largest offshore automotive software base' };
 }
 
 // ─── Powertrain scope (software review P1 #5, Oct 2026) ───────────────────────────────────────────────────────────
@@ -177,12 +201,13 @@ export interface SWProgramInputs {
   devSource:                DevSource;
   programLifeYears:         number;   // 10-15 typical
   annualProductionVolume:   number;   // vehicles/yr to amortize SW cost
-  teamSeniorFraction:       number;   // 0-1 fraction that's senior (affects blended rate)
+  teamSeniorFraction:       number;   // 0-1 share of senior engineers: blends the hub's mid and senior rates
   overheadMultiplier:       number;   // facilities/programme overhead on an already-loaded base rate (~1.15 typical)
   includeMaintenanceCost:   boolean;
   includeCloudCost:         boolean;
-  /** UK senior-blended bare rate (£/PM) before overhead. Defaults to UK_PM_RATE_GBP
-   *  when unset — lets a costing engineer override the rate library per engagement. */
+  /** Your own engineer rate, £ / person-month before overhead. When set it REPLACES the hub's book rate (mid / senior
+   *  blend) — it is a figure for this hub, never scaled (code review F4, Oct 2026: it used to be a "UK base" × the
+   *  hub multiplier, so an India rate typed in India was costed at a fifth). */
   baseRateGBP?:             number;
   /** Optional rate-library override (partial). Any group omitted falls back to
    *  DEFAULT_SW_RATE_LIBRARY. Lets an engagement supply its own sourced rates. */
@@ -364,16 +389,14 @@ export const COMPLEXITY_MULT: Record<SWComplexity, number> = rateValues(DEFAULT_
 /** Reuse factor (1.0 = fresh, 0.0 = zero effort) */
 export const REUSE_FACTOR: Record<SWReuse, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.reuseFactors);
 
-/** Regional labour rate relative to the UK senior blended base, before overhead. */
-export const REGION_MULT: Record<SWRegion, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.regionMultipliers);
-
 /** DevSource quality/overhead multiplier */
 export const DEV_SOURCE_MULT: Record<DevSource, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.devSourceMultipliers);
 
 /** Numeric rate bundle resolved once per programme (default library + any override). */
 interface ResolvedRates {
-  baseRate:       number;
-  region:         Record<SWRegion, number>;
+  /** The engineer rate this programme pays, £ / PM before overhead: the typed rate, or the hub's mid / senior blend. */
+  engineerRate:   number;
+  typed:          boolean;
   devSource:      Record<DevSource, number>;
   asilDev:        Record<ASILLevel, number>;
   asilTest:       Record<ASILLevel, number>;
@@ -381,19 +404,23 @@ interface ResolvedRates {
   reuse:          Record<SWReuse, number>;
 }
 
-/** The base rate (£/PM) of the programme's ACTIVE rate book — the company book when one is applied, else the
- *  built-in one. The screen shows this in its base-rate field until the engineer types an override. */
-export function swLibraryBaseRate(prog: Pick<SWProgramInputs, 'rateLibrary'>): number {
-  return resolveRateLibrary(prog.rateLibrary).ukBaseRatePerPM.value;
+/** The hub's book rate (£/PM before overhead) at the programme's senior share, from its ACTIVE rate book — the company
+ *  book when one is applied, else the built-in one. The screen shows it in the rate field until a rate is typed. */
+export function swLibraryBaseRate(prog: Pick<SWProgramInputs, 'rateLibrary' | 'region' | 'teamSeniorFraction'>): number {
+  const lib = resolveRateLibrary(prog.rateLibrary);
+  const hub = lib.hubRates[normaliseSWRegion(prog.region) as SWRegion];
+  if (!hub) return NaN;
+  const s = Math.min(1, Math.max(0, prog.teamSeniorFraction ?? 0.5));
+  return s * hub.senior.value + (1 - s) * hub.mid.value;
 }
 
 function resolveRates(prog: SWProgramInputs): ResolvedRates {
   const lib = resolveRateLibrary(prog.rateLibrary);
-  // Explicit baseRateGBP (the quick UI override) wins over the library's base.
-  const baseRate = prog.baseRateGBP && prog.baseRateGBP > 0 ? prog.baseRateGBP : lib.ukBaseRatePerPM.value;
+  // A typed rate is this hub's own figure and replaces the book's blend (F4).
+  const typed = !!(prog.baseRateGBP && prog.baseRateGBP > 0);
   return {
-    baseRate,
-    region:     rateValues(lib.regionMultipliers),
+    engineerRate: typed ? prog.baseRateGBP! : swLibraryBaseRate(prog),
+    typed,
     devSource:  rateValues(lib.devSourceMultipliers),
     asilDev:    rateValues(lib.asilDevMultipliers),
     asilTest:   rateValues(lib.asilTestMultipliers),
@@ -1071,9 +1098,9 @@ function computeModuleCost(
   prog:   SWProgramInputs,
   rates:  ResolvedRates
 ): SWModuleCostResult {
-  const seniorMult  = prog.teamSeniorFraction * 1.20 + (1 - prog.teamSeniorFraction) * 0.75;
-  const regionRate  = rates.baseRate * rates.region[prog.region] * rates.devSource[prog.devSource]
-                      * seniorMult * prog.overheadMultiplier;
+  // The hub's own engineer rate (senior share already blended), × development source × programme overhead. The old
+  // 1.20 / 0.75 seniority fudge on a "senior-blended" UK base blended seniority twice (F19); it is gone.
+  const regionRate  = rates.engineerRate * rates.devSource[prog.devSource] * prog.overheadMultiplier;
 
   const asilDev    = rates.asilDev[input.asil];
   const complexity = rates.complexity[input.complexity];
@@ -1265,20 +1292,22 @@ export function unitCloudGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annu
  * pairs, shared by both exports.
  */
 export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
+  prog = { ...prog, region: normaliseSWRegion(prog.region) as SWRegion };
   const lib = resolveRateLibrary(prog.rateLibrary);
   const r = resolveRates(prog);
-  const typed = !!(prog.baseRateGBP && prog.baseRateGBP > 0);
-  const seniorMult = prog.teamSeniorFraction * 1.20 + (1 - prog.teamSeniorFraction) * 0.75;
-  const loaded = r.baseRate * r.region[prog.region] * r.devSource[prog.devSource] * seniorMult * prog.overheadMultiplier;
+  const hub = lib.hubRates[prog.region];
+  const book = SW_HUB_RATES[prog.region];
+  const loaded = r.engineerRate * r.devSource[prog.devSource] * prog.overheadMultiplier;
   const gbp = (n: number) => `£${Math.round(n).toLocaleString('en-GB')}`;
   return [
     ['Rate book', `${prog.rateLibrary ? 'Company rates' : 'CostVision built-in'} v${lib.version} (reviewed ${lib.lastReviewed})`],
-    ['Base rate (£ / person-month, pre-overhead)', `${gbp(r.baseRate)} — ${typed ? 'typed override' : `rate book (${lib.ukBaseRatePerPM.source})`}`],
-    ['Engineering region', `${prog.region} × ${r.region[prog.region]}`],
+    ['Engineering hub', `${book?.label ?? prog.region} — its own salaries, statutory employer on-costs and working hours (no UK multiplier)`],
+    ['Hub rate (£ / person-month of 152 h, before overhead)', `mid ${gbp(hub.mid.value)} · senior ${gbp(hub.senior.value)} — ${prog.rateLibrary && hub.mid !== DEFAULT_SW_RATE_LIBRARY.hubRates[prog.region]?.mid ? `company book (${hub.mid.source})` : (book?.build ?? hub.mid.source)}`],
+    ['Engineer rate used', `${gbp(r.engineerRate)} — ${r.typed ? 'typed rate (replaces the hub book rate)' : `${Math.round(prog.teamSeniorFraction * 100)} % senior blend of the hub's mid and senior rates`}`],
     ['Development source', `${prog.devSource} × ${r.devSource[prog.devSource]}`],
-    ['Senior share', `${Math.round(prog.teamSeniorFraction * 100)} % (× ${seniorMult.toFixed(3)})`],
-    ['Overhead multiplier', `× ${prog.overheadMultiplier}`],
+    ['Overhead multiplier', `× ${prog.overheadMultiplier} (facilities / programme overhead on top of the hub rate)`],
     ['Loaded rate (£ / person-month)', gbp(loaded)],
+    ['Rate confidence', book ? `${book.confidence} — figures read from search results of the cited pages (Oct 2026); see the rate book` : 'company book'],
     ['Powertrain', prog.powertrain ?? 'not set (modules as selected)'],
     ['Platform annual volume', prog.platformAnnualVolume && prog.platformAnnualVolume > prog.annualProductionVolume
       ? `${prog.platformAnnualVolume.toLocaleString('en-GB')} (shared software apportioned by volume share)` : 'not shared (this programme carries all of it)'],
@@ -1330,8 +1359,10 @@ export function cocomoNominalPM(ksloc: number): number {
   return SW_COCOMO.A * Math.pow(ksloc, SW_COCOMO_EXPONENT);
 }
 
-/** Accepted UK base rate, £ / person-month — the engine's validation and the company workbook share it. */
-export const SW_BASE_RATE_RANGE = [1_000, 500_000] as const;
+/** Accepted engineer rate, £ / person-month — the engine's validation, the hub book and the company workbook share it.
+ *  The floor catches a £k slip ("28" for £28,000); it is £100, not £1,000, because a sourced hub is below £1,000
+ *  (India ≈ £525 / PM in the Oct 2026 book). */
+export const SW_BASE_RATE_RANGE = [100, 500_000] as const;
 
 /** Cybersecurity engineering (TARA, cyber concept, verification) as a share of development, by ISO/SAE 21434 CAL.
  *  CostVision engineering estimate: the review found no published effort ratio per CAL (software review §5), so these
@@ -1520,14 +1551,21 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   const p: string[] = [];
   const lib = resolveRateLibrary(prog.rateLibrary);
   const fin = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
-  if (!(prog.region in lib.regionMultipliers)) p.push(`region "${String(prog.region)}" is not one of the rate book's hubs`);
+  if (!(normaliseSWRegion(String(prog.region)) in lib.hubRates)) p.push(`region "${String(prog.region)}" is not one of the rate book's hubs`);
+  for (const [k, h] of Object.entries(lib.hubRates)) {
+    for (const lvl of ['mid', 'senior'] as const) {
+      const v = h?.[lvl]?.value;
+      if (!fin(v) || v < SW_BASE_RATE_RANGE[0] || v > SW_BASE_RATE_RANGE[1]) p.push(`rate book: ${k} ${lvl} rate must be £${SW_BASE_RATE_RANGE[0].toLocaleString('en-GB')}–£${SW_BASE_RATE_RANGE[1].toLocaleString('en-GB')} per person-month`);
+    }
+  }
+  for (const [k, v] of Object.entries(lib.devSourceMultipliers)) if (!fin(v.value) || v.value <= 0) p.push(`rate book: development source ${k} multiplier must be above 0`);
   if (!(prog.devSource in lib.devSourceMultipliers)) p.push(`development source "${String(prog.devSource)}" is not known`);
   if (!fin(prog.programLifeYears) || prog.programLifeYears < 1 || prog.programLifeYears > 40) p.push('programme life must be 1–40 years');
   if (!fin(prog.annualProductionVolume) || prog.annualProductionVolume < 1 || prog.annualProductionVolume > 20_000_000) p.push('annual volume must be 1–20,000,000 vehicles');
   if (!fin(prog.teamSeniorFraction) || prog.teamSeniorFraction < 0 || prog.teamSeniorFraction > 1) p.push('senior share must be between 0 and 1');
   if (!fin(prog.overheadMultiplier) || prog.overheadMultiplier < 1 || prog.overheadMultiplier > 5) p.push('overhead multiplier must be 1–5 (1 = no overhead)');
   // £1,000 floor: a UK-base rate below it is a £k slip ("28" for £28,000), which costed a programme at 1/1000 (B8, P3 #18).
-  if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP < SW_BASE_RATE_RANGE[0] || prog.baseRateGBP > SW_BASE_RATE_RANGE[1])) p.push(`base rate must be £${SW_BASE_RATE_RANGE[0].toLocaleString('en-GB')}–£${SW_BASE_RATE_RANGE[1].toLocaleString('en-GB')} per person-month (the UK base, before overhead)`);
+  if (prog.baseRateGBP !== undefined && (!fin(prog.baseRateGBP) || prog.baseRateGBP < SW_BASE_RATE_RANGE[0] || prog.baseRateGBP > SW_BASE_RATE_RANGE[1])) p.push(`base rate must be £${SW_BASE_RATE_RANGE[0].toLocaleString('en-GB')}–£${SW_BASE_RATE_RANGE[1].toLocaleString('en-GB')} per person-month (your own engineer rate for this hub, before overhead)`);
   if (prog.discountRatePct !== undefined && (!fin(prog.discountRatePct) || prog.discountRatePct < 0 || prog.discountRatePct > 50)) p.push('discount rate must be 0–50 %');
   if (prog.effortCalibration !== undefined && (!fin(prog.effortCalibration) || prog.effortCalibration < 0.2 || prog.effortCalibration > 5)) p.push('effort calibration must be between 0.2 and 5 (a fitted factor outside that says the logged actuals and the model describe different work)');
   if (prog.developmentMonths !== undefined && (!fin(prog.developmentMonths) || prog.developmentMonths < 6 || prog.developmentMonths > 180)) p.push('development duration must be 6–180 months');
@@ -1558,6 +1596,8 @@ export function computeSWProgram(
   prog: SWProgramInputs,
   opts: { summaryOnly?: boolean } = {},
 ): SWProgramResult {
+  // A saved configuration / company book from before Oct 2026 names a retired hub key ('EU', 'India' …).
+  prog = { ...prog, region: normaliseSWRegion(String(prog.region)) as SWRegion };
   const problems = validateSWInputs(prog);
   if (problems.length) throw new SWInputError(problems);
   const rates = resolveRates(prog);
@@ -1642,13 +1682,21 @@ export function computeSWProgram(
       high: _recomputeTotal(prog, { reuseOverride: 'Fresh' }),
       unit: '£M',
     },
-    {
-      parameter: 'Region (India vs USA Silicon Valley)',
-      low:  _recomputeTotal(prog, { regionOverride: 'India' }),
-      base: summary.grandTotal,
-      high: _recomputeTotal(prog, { regionOverride: 'USA_SV' }),
-      unit: '£M',
-    },
+    (() => {
+      // Cheapest v dearest hub in the programme's own book, at its senior share (it named India v Silicon Valley).
+      const lib = resolveRateLibrary(prog.rateLibrary);
+      const hubs = (Object.keys(lib.hubRates) as SWRegion[])
+        .map(h => ({ h, r: swLibraryBaseRate({ ...prog, region: h }) }))
+        .sort((a, b) => a.r - b.r);
+      const lo = hubs[0].h, hi = hubs[hubs.length - 1].h;
+      return {
+        parameter: `Engineering hub (${SW_HUB_RATES[lo]?.label ?? lo} vs ${SW_HUB_RATES[hi]?.label ?? hi})`,
+        low:  _recomputeTotal(prog, { regionOverride: lo }),
+        base: summary.grandTotal,
+        high: _recomputeTotal(prog, { regionOverride: hi }),
+        unit: '£M',
+      };
+    })(),
     {
       parameter: 'Program Life (8 vs 14 years)',
       low:  _recomputeTotal(prog, { lifeOverride: 8 }),
@@ -1702,6 +1750,8 @@ function _recomputeSummary(prog: SWProgramInputs, overrides: SWRecomputeOverride
   const p2: SWProgramInputs = {
     ...prog,
     region:           overrides.regionOverride ?? prog.region,
+    // Another hub is priced at ITS book rate: a typed rate is a figure for this hub only.
+    baseRateGBP:      overrides.regionOverride ? undefined : prog.baseRateGBP,
     programLifeYears: overrides.lifeOverride   ?? prog.programLifeYears,
     annualProductionVolume: overrides.volumeOverride ?? prog.annualProductionVolume,
     modules: prog.modules.map(m => ({
@@ -1717,9 +1767,11 @@ function _recomputeSummary(prog: SWProgramInputs, overrides: SWRecomputeOverride
 // ─── Default program inputs ───────────────────────────────────────────────────
 
 /**
- * The ONE overhead default: facilities / programme overhead on a base rate that already includes benefits. The screen's
- * fallback, its tooltip, every vehicle demo and the report scripts read this. They used 1.55–1.62, which this file
- * itself says double-counts benefits (+28 % on a programme) — software review P1 #3, Oct 2026.
+ * The ONE overhead default: facilities / programme overhead on top of the hub rate. The screen's fallback, its tooltip,
+ * every vehicle demo and the report scripts read this (software review P1 #3). Since the Oct 2026 country book the hub
+ * rate is salary + STATUTORY employer on-cost only — non-statutory benefits (pension top-ups, health cover, bonus), site
+ * and IT cost and non-productive time are not in it. 1.15 is a CostVision assumption, not a sourced figure: put your
+ * company's own engineering overhead here.
  */
 export const SW_DEFAULT_OVERHEAD = 1.15;
 
@@ -1730,14 +1782,12 @@ export function defaultSWProgramInputs(): SWProgramInputs {
     programLifeYears:        10,
     annualProductionVolume:  80_000,
     teamSeniorFraction:      0.50,
-    // 1.15 = facilities/programme overhead ONLY. The £28k/PM base rate is a
-    // contractor day-rate equivalent that already includes benefits — the old
-    // 1.60 (benefits 35% + facilities 15%) double-counted benefits (~26% high).
+    // 1.15 = facilities / programme overhead on top of the hub rate (salary + statutory employer on-cost). The
+    // company's own figure belongs here — non-statutory benefits and site costs are not in the book.
     overheadMultiplier:      SW_DEFAULT_OVERHEAD,
     includeMaintenanceCost:  true,
     includeCloudCost:        true,
-    // baseRateGBP intentionally unset → driven by the rate library's ukBaseRatePerPM
-    // unless the user explicitly overrides it in the UI.
+    // baseRateGBP intentionally unset → the hub's own book rate, unless the user types one.
     modules: SW_MODULES.map(m => ({
       moduleId:           m.id,
       enabled:            m.defaultEnabled !== false,
