@@ -688,6 +688,20 @@ what is true** — nothing here has been compared with a price JLR paid.
   notes, consumables) is converted by `src/export/money-text.ts` (PDF via `hardenPdfText`, Excel per string cell) — never
   print "as recorded, GBP". Display FX (`FX_TO_GBP`) is derived from `REGIONAL_DATA.fxToGBP`; the PCB catalogue keeps the
   29 Sep snapshot it was priced at (`FX_TO_GBP_TABLE`). Book notes carry the book's own currency symbol (`currencySymbol`).
+  Germany = `country-books/de.ts` (Oct 2026, `docs/rates/germany-rate-book-2026-10.md`), same generator from
+  `scripts/rate-refresh/2026-10-germany.json` (`germany-2026-10/build-config.py`): 4 clusters (BW, BY, NI, NRW), 2 × 8 h
+  Mon–Fri (4,044 h), IG Metall ERA + 2026 employer contributions, Haas EU capex for CNC, a sourced extrusion line, other
+  capital HELD (UK × 1.049). A machine the UK book runs ≥ 6,000 h (`CONTINUOUS_UK_HOURS`) is a continuous line and takes
+  `continuousHoursPerYear` (6,066 h, 3 × 8) — its note states ONE hour figure. Austria is GENERATED from Germany.
+  C45 / 38MnVS6 / 6082 bar are held (no German price). `tests/germany-rate-book.test.ts`.
+  Germany live review (12–13 Oct 2026, `docs/review/germany-live-review-2026-10-12.md`): the forging route, die life and
+  heat treatment follow the COSTED grade (unanswered → the representative 38MnVS6); a cold former takes a slug ≤ Ø50 mm
+  (`COLD_FORMER_MAX_SLUG_MM`, heuristic); microalloyed steel is controlled-cooled (no normalise); the press basis states the
+  1.2 safety as applied; headless costing amortises over annual × `programmeYears`; Al extrusion runs / die changes a year
+  read the ANNUAL volume, die cost the amortisation volume; levers re-cost only what they act on (lights-out = cutting
+  ops) and the PDF prints each priced lever's re-cost assumption; overhead / packaging / logistics print their basis
+  (`shopDefaultsBasis` — UK basis × the country multipliers, held); book labour rows carry the book's date; an answered
+  grade / Al alloy confirms the material (no "0% confident"); Al Extrusion has its own tab and picker tile.
 - UK rate book (Oct 2026, `docs/rates/uk-rate-book-2026-10.md`): the BASE library's UK literals are written by
   `scripts/uk-book.ts` from `scripts/rate-refresh/2026-10-uk.json` (`uk-2026-10/build-config.py` from sourced research;
   `uk-2026-10/register.csv`; idempotent — never hand-edit a rebuilt rate). Machine rates are MACHINE ONLY (the costing adds
