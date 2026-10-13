@@ -1,0 +1,335 @@
+{
+ "domain": "networking-2",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "TLIN2029DRBRQ1",
+   "family": "TLIN2029",
+   "mfr": "Texas Instruments",
+   "desc": "LIN transceiver, fault-protected, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VSON-8 (3x3)",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "HVAC"
+   ],
+   "observedMpn": "TLIN2029DRBRQ1",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.608,
+     "currency": "USD",
+     "url": "https://support.lcsc.com/product-detail/LIN-Transceivers_Texas-Instruments-TLIN2029DRBRQ1_C2878100.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C2878100, 1000+ row also shows 0.8563 (unlabelled, likely pre-discount; not used). Mouser qty-1 only; no second distributor at >=100."
+  },
+  {
+   "mpn": "TLIN2029DRQ1",
+   "family": "TLIN2029",
+   "mfr": "Texas Instruments",
+   "desc": "LIN transceiver, fault-protected, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "HVAC"
+   ],
+   "observedMpn": "TLIN2029DRQ1",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.6938,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C190996.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C190996. SOIC package sibling of TLIN2029DRBRQ1."
+  },
+  {
+   "mpn": "TLIN2029ADRBRQ1",
+   "family": "TLIN2029A",
+   "mfr": "Texas Instruments",
+   "desc": "LIN transceiver, fault-protected (A revision), AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VSON-8 (3x3)",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "HVAC"
+   ],
+   "observedMpn": "TLIN2029ADRBRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.4941,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/TLIN2029ADRBRQ1/Texas-Instruments",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.482,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/TLIN2029ADRBRQ1/Texas-Instruments",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Both via Findchips detail page naming the exact code, distributor and the 3000 (reel) break."
+  },
+  {
+   "mpn": "TJA1029T/20/1J",
+   "family": "TJA1029",
+   "mfr": "NXP",
+   "desc": "LIN 2.2A / SAE J2602 transceiver, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "HVAC"
+   ],
+   "observedMpn": "TJA1029T/20/1J",
+   "observations": [
+    {
+     "distributor": "element14 (Singapore)",
+     "qty": 1000,
+     "price": 0.707,
+     "currency": "SGD",
+     "url": "https://sg.element14.com/nxp/tja1029t-20-1j/lin-transceiver-aec-q100-soic/dp/2574994",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "element14 SG 1000+ ex-GST (same page family's AU site shows ex/inc GST pair). element14 CN (VAT incl.) and AU (AUD) not used."
+  },
+  {
+   "mpn": "TJA1028T/5V0/20/1J",
+   "family": "TJA1028",
+   "mfr": "NXP",
+   "desc": "LIN transceiver with 5 V 70 mA regulator, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "door",
+    "seat",
+    "sensor node"
+   ],
+   "observedMpn": "TJA1028T/5V0/20/1J",
+   "observations": [
+    {
+     "distributor": "Farnell (Latvia)",
+     "qty": 1000,
+     "price": 0.885,
+     "currency": "EUR",
+     "url": "https://lv.farnell.com/nxp/tja1028t-5v0-20-1j/lin-transceiver-aec-q100-5v-soic/dp/2574978",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Task code TJA1028T/5V0/20/2 not found at an allowed host (LCSC price seen only via datasheet.lcsc / fat.lcsc - not used); /1J is the reel orderable. Farnell EU price ex-VAT. Bürklin (not on list) not used."
+  },
+  {
+   "mpn": "ATA6561-GAQW-N",
+   "family": "ATA6561",
+   "mfr": "Microchip",
+   "desc": "High-speed CAN transceiver 5 Mbps, standby, AEC-Q100 Grade 0",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "body"
+   ],
+   "observedMpn": "ATA6561-GAQW-N",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.2774,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C616016.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 4000,
+     "price": 0.395,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/fr/p/semiconductors--signal-interface--specialty-interface/ata6561-gaqw-n-microchip-6112683",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future 4000+ shown as $ on futureelectronics.com (FR-language page). Maritex (not on list) and Mouser rounded aggregator figures not used. Replaces catalogue estimate."
+  },
+  {
+   "mpn": "ATA6570-GNQW1",
+   "family": "ATA6570",
+   "mfr": "Microchip",
+   "desc": "CAN FD transceiver with partial networking, SPI, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-14",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "body"
+   ],
+   "observedMpn": "ATA6570-GNQW1",
+   "observations": [
+    {
+     "distributor": "RS Components (Japan)",
+     "qty": 4000,
+     "price": 150.33,
+     "currency": "JPY",
+     "url": "https://jp.rs-online.com/web/p/can-interface-ics/0631537",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS JP reel of 4000, per-unit price; temporarily out of stock at read; tax basis not stated in result. Replaces catalogue estimate."
+  },
+  {
+   "mpn": "LAN8671B1-E/U3B",
+   "family": "LAN8671",
+   "mfr": "Microchip",
+   "desc": "10BASE-T1S Ethernet PHY (802.3cg), RMII",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": false,
+   "ecuRoles": [
+    "zonal",
+    "body",
+    "sensor node"
+   ],
+   "observedMpn": "LAN8671B1-E/U3B",
+   "observations": [
+    {
+     "distributor": "RS Components (UK)",
+     "qty": 300,
+     "price": 2.027,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/physical-layer-transceivers/2499765P",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK ex-VAT, tray of 75, 300+ break (75-297 GBP 2.173). AEC-Q100 status of the -E code not confirmed in results (aecq false until confirmed). RS EUR sites show 300+ EUR 2.433 but the exact site URL was ambiguous; not used."
+  },
+  {
+   "mpn": "TUSB1146RGFTQ1",
+   "family": "TUSB1146",
+   "mfr": "Texas Instruments",
+   "desc": "USB Type-C 10 Gbps / DP 2.1 alt-mode linear redriver, automotive, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VQFN-40",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "USB hub",
+    "rear-seat"
+   ],
+   "observedMpn": "TUSB1146RGFTQ1",
+   "observations": [
+    {
+     "distributor": "Mouser (Ireland)",
+     "qty": 250,
+     "price": 6.05,
+     "currency": "EUR",
+     "url": "https://www.mouser.ie/en/c/semiconductors/interface-ics/usb-interface-ic/?pg=42",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser IE category page, ex-VAT, 250 minimum (small reel), new product, non-stocked 26 wk lead time. Large reel TUSB1146RGFRQ1 not listed."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "TCAN1463DRQ1 / TCAN1463DMTRQ1",
+   "why": "CAN SIC transceiver; listed at Digi-Key / LCSC but no price break in results (punchouttest host not usable)"
+  },
+  {
+   "code": "TLE9371VSJXTMA1",
+   "why": "Infineon CAN FD transceiver; Digi-Key lists code but no price; Mouser IN break unidentifiable"
+  },
+  {
+   "code": "NCV7410MW0R2G",
+   "why": "onsemi 10BASE-T1S MAC-PHY; no distributor listing found"
+  },
+  {
+   "code": "SJA1124",
+   "why": "NXP quad LIN commander; no listing found for SJA1124AHG/BHG codes"
+  },
+  {
+   "code": "RTL9000AA / RTL9010AA",
+   "why": "Realtek 100/1000BASE-T1 PHY; no franchised listing (only RFQ / broker)"
+  },
+  {
+   "code": "DS90UB638TRGZRQ1",
+   "why": "FPD-Link III deserializer; orderable code confirmed (TI E2E) but no distributor price found"
+  },
+  {
+   "code": "DS90UB662-Q1",
+   "why": "FPD-Link deserializer; no listing found"
+  },
+  {
+   "code": "TUSB1064-Q1",
+   "why": "Only non-automotive TUSB1064RNQR prices on ambiguous-currency / broker pages"
+  },
+  {
+   "code": "USB7206C / USB7002 / USB5806 automotive",
+   "why": "Only commercial USB7206C qty-1 prices; no automotive VAO code found"
+  },
+  {
+   "code": "PI3EQX1004 / PI3DPX1207B-Q",
+   "why": "Only Avnet rounded figures for non-automotive PI3EQX1004B1ZHEX; no -Q listing"
+  },
+  {
+   "code": "TLIN1028-Q1",
+   "why": "No listing found in the TLIN search; budget spent"
+  },
+  {
+   "code": "ATA6628",
+   "why": "Wave 1 found no orderable code; not retried (budget)"
+  },
+  {
+   "code": "LAN8651",
+   "why": "10BASE-T1S MAC-PHY; wave 1 found no break; not retried (budget)"
+  },
+  {
+   "code": "DP83TD555J-Q1",
+   "why": "10BASE-T1S PHY; orderable code unconfirmed; not retried (budget)"
+  },
+  {
+   "code": "MAX96793",
+   "why": "GMSL3 serializer; wave 1 found no price; not retried (budget)"
+  },
+  {
+   "code": "TPS25772-Q1",
+   "why": "Wave 1 found only broker prices; not retried (budget)"
+  },
+  {
+   "code": "PS8409",
+   "why": "Parade; no franchised listing expected; not researched"
+  },
+  {
+   "code": "VA7044",
+   "why": "Valens A-PHY; likely OEM-direct, no public price"
+  }
+ ]
+}

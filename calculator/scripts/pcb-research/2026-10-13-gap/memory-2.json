@@ -1,0 +1,339 @@
+{
+ "domain": "memory-2",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "GD25Q128ESIGR",
+   "family": "GD25Q128E",
+   "mfr": "GigaDevice",
+   "desc": "SPI NOR flash 128Mbit, quad I/O, 3V, -40..85C, SOP-8",
+   "category": "ic_soic",
+   "pkg": "SOP-8 208mil",
+   "aecq": false,
+   "ecuRoles": [
+    "MCU boot",
+    "telematics",
+    "IVI",
+    "industrial"
+   ],
+   "observedMpn": "GD25Q128ESIGR",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.7634,
+     "currency": "USD",
+     "url": "https://lcsc.com/product-detail/image/GD25Q128ESIGR_C2928891.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.30093,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/gigadevice-semiconductor-hk-limited/GD25Q128ESIGR/14113862",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Industrial grade (automotive GD25Q128E grade code not found priced). LCSC C2928891 1000+ (another LCSC snapshot showed $0.7701 at 1000+). Digi-Key 1000 cut tape read on azcus.digikey.com host, recorded with LCSC as second source; Digi-Key T&R 2000 figure was only given rounded, not recorded."
+  },
+  {
+   "mpn": "MX25L12833FM2I-10G",
+   "family": "MX25L12833F",
+   "mfr": "Macronix",
+   "desc": "SPI NOR flash 128Mbit, 3V, -40..85C, SOP-8 208mil",
+   "category": "ic_soic",
+   "pkg": "SOP-8 208mil",
+   "aecq": false,
+   "ecuRoles": [
+    "MCU boot",
+    "telematics",
+    "industrial"
+   ],
+   "observedMpn": "MX25L12833FM2I-10G",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 100,
+     "price": 3.16,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/mx25l12833fm2i-10g-macronix-6184555",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 2000,
+     "price": 3.16,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/mx25l12833fm2i-10gtr-macronix-8121165",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Industrial grade; automotive MX25L12833F/-73F code not found priced. 100 break: tube listing (13,156 stock; $3.28 at 10). 2000 break is the -10GTR reel listing (observedMpn MX25L12833FM2I-10GTR): reel total $6,320.00 / 2000 = $3.16, 0 stock, 52+ wk lead. Future shows two -10G listings with the same tiers."
+  },
+  {
+   "mpn": "W25Q64JVSSIQ",
+   "family": "W25Q64JV",
+   "mfr": "Winbond",
+   "desc": "SPI NOR flash 64Mbit, quad I/O 133MHz, 3V, -40..85C, SOIC-8 208mil",
+   "category": "ic_soic",
+   "pkg": "SOIC-8 208mil",
+   "aecq": false,
+   "ecuRoles": [
+    "MCU boot",
+    "body",
+    "industrial"
+   ],
+   "observedMpn": "W25Q64JVSSIQE",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 10000,
+     "price": 0.763,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/w25q64jvssiqe/Winbond-Electronics-Corp",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Findchips names Mouser SKU 454-W25Q64JVSSIQE (sibling code with E suffix) at 10,000. Wave-1 LCSC 'about $0.61' was a rounded figure; LCSC C179171 / C83140 snapshots this round were mutually inconsistent ($0.20-$1.29) and are not recorded; Digi-Key breaks were only given rounded. Needs a second distributor."
+  },
+  {
+   "mpn": "CY15B256J-SXE",
+   "family": "CY15B256J",
+   "mfr": "Infineon",
+   "desc": "F-RAM 256Kbit I2C, automotive E grade (-40..125C), SOIC-8",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "airbag",
+    "BMS",
+    "event data recorder"
+   ],
+   "observedMpn": "CY15B256J-SXE",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 485,
+     "price": 6.76,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--memory--RAM--nvram--fram-mram/cy15b256j-sxe-infineon-9163942",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "I2C sibling of task's SPI CY15B256Q-SXE (not found priced; Mouser India tiers had no quantities). Future 485+ break, 0 stock, 10 wk factory lead."
+  },
+  {
+   "mpn": "MTFC8GAKAJCN-AAT",
+   "family": "MTFC8GAKAJCN",
+   "mfr": "Micron",
+   "desc": "Micron automotive eMMC 8GB",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Task code; NOT confirmed to exist by any listing seen. Only -4M IT / -1M WT siblings and fat.lcsc / broker pages; no franchised price."
+  },
+  {
+   "mpn": "MTFC32GAPALNA-AAT",
+   "family": "MTFC32GAPALNA",
+   "mfr": "Micron",
+   "desc": "Micron automotive eMMC 32GB",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "absunshine (broker) inquiry-only; zenode not allowed; no franchised price."
+  },
+  {
+   "mpn": "THGBMJG6C1LBAU7",
+   "family": "THGBMJG6C1LBAU7",
+   "mfr": "Kioxia",
+   "desc": "Kioxia automotive eMMC 8GB",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only fat.lcsc.com (excluded) price at 152+; no franchised listing."
+  },
+  {
+   "mpn": "THGBMTG5D1LBAIT",
+   "family": "THGBMTG5D1LBAIT",
+   "mfr": "Kioxia",
+   "desc": "Kioxia eMMC 32GB",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Task code; NOT confirmed to exist by any listing seen. Exact code not found; -IL sibling only on LCSC with inconsistent snapshots, Avnet without price."
+  },
+  {
+   "mpn": "IS21ES08G-JCLA2",
+   "family": "IS21ES08G",
+   "mfr": "ISSI",
+   "desc": "ISSI automotive eMMC 8GB",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Task code; NOT confirmed to exist by any listing seen. No priced listing; only broker / JLCPCB / Dasenic pages for siblings."
+  },
+  {
+   "mpn": "THGJFGT0T25BAB5",
+   "family": "THGJFGT0T25BAB5",
+   "mfr": "Kioxia",
+   "desc": "Kioxia automotive UFS 128GB",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Task code; NOT confirmed to exist by any listing seen. Not found; BAB8 siblings on Fusion Worldwide (broker) without price."
+  },
+  {
+   "mpn": "IS46TR16256BL-125KBLA2",
+   "family": "IS46TR16256BL",
+   "mfr": "ISSI",
+   "desc": "ISSI automotive DDR3L 4Gb (task code IS43TR16256BL-125KBLA2: automotive grade is the IS46 prefix)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only JLCPCB (not allowed) tiers; Digi-Key punchouttest page without price."
+  },
+  {
+   "mpn": "MT40A512M16TB-062E AAT:R",
+   "family": "MT40A512M16TB",
+   "mfr": "Micron",
+   "desc": "Micron automotive DDR4 8Gb",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Task code; NOT confirmed to exist by any listing seen. Exact automotive codes not found; commercial :R only on azcus Digi-Key/findchips, out of stock, breaks not stated."
+  },
+  {
+   "mpn": "S25HL512TFABHM010",
+   "family": "S25HL512TFABHM010",
+   "mfr": "Infineon",
+   "desc": "Infineon SEMPER 512Mb automotive",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Task code; NOT confirmed to exist by any listing seen. No exact match; only industrial -FAMHI010 at Future / Farnell without clear breaks (catalogue already holds S25HL512TDPMHV010)."
+  },
+  {
+   "mpn": "W35T51NWTBIE",
+   "family": "W35T51NWTBIE",
+   "mfr": "Winbond",
+   "desc": "Winbond octal NOR 512Mb",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Task code; NOT confirmed to exist by any listing seen. No listing found under this code."
+  },
+  {
+   "mpn": "24LC256T-E/SN16KVAO",
+   "family": "24LC256T",
+   "mfr": "Microchip",
+   "desc": "Microchip AEC-Q100 I2C EEPROM 256Kb",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Task code; NOT confirmed to exist by any listing seen. No VAO listing priced; Octopart/Kynix figures did not name a franchised distributor."
+  },
+  {
+   "mpn": "25LC256T-E/SN16KVAO",
+   "family": "25LC256T",
+   "mfr": "Microchip",
+   "desc": "Microchip AEC-Q100 SPI EEPROM 256Kb",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Findchips page showed prices without naming the distributor; Digi-Key page only punchouttest."
+  },
+  {
+   "mpn": "M24C64-DRMN3TP/K",
+   "family": "M24C64",
+   "mfr": "STMicroelectronics",
+   "desc": "ST automotive I2C EEPROM 64Kb",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Digi-Key out of stock no tiers; Mouser tiers only via ciiva (not allowed) without breaks."
+  },
+  {
+   "mpn": "MB85RS256TYPNF-GS-AWE2",
+   "family": "MB85RS256TYPNF",
+   "mfr": "RAMXEED (Fujitsu)",
+   "desc": "RAMXEED automotive SPI FRAM 256Kb",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Digi-Key pages azcus/punchouttest without a second source or price; Mouser not priced."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "Samsung KLM8G1GETF-B041 / KLUCG2K1EA",
+   "why": "Samsung automotive eMMC / UFS; usually not distributor-listed; budget spent"
+  },
+  {
+   "code": "MTFC64GAPALNS-AAT",
+   "why": "Micron automotive eMMC 64GB; one search found no listing"
+  },
+  {
+   "code": "IS43QR16512A-075VBLA2 (ISSI automotive DDR4 is IS46QR\u2026)",
+   "why": "automotive DDR4; budget spent"
+  },
+  {
+   "code": "MT40A1G16KD-062E AUT",
+   "why": "16Gb automotive DDR4; searched once, no listing"
+  },
+  {
+   "code": "IS43LQ32256A-062BLA2 / IS43LQ16256A",
+   "why": "automotive LPDDR4; budget spent (wave 1 found none)"
+  },
+  {
+   "code": "S25HS512TFABHI013",
+   "why": "SEMPER 1.8V 512Mb; searched once, no exact listing"
+  },
+  {
+   "code": "GD25Q128E automotive grade",
+   "why": "automotive-grade orderable code not identified; industrial GD25Q128ESIGR priced instead"
+  }
+ ]
+}
