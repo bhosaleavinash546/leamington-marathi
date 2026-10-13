@@ -1,0 +1,358 @@
+[
+ {
+  "file": "auto-compute-2.json",
+  "mpn": "S32K342NHT0VPASR",
+  "mfr": "NXP",
+  "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, no Ethernet (N variant), tape and reel",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Avnet",
+    "qty": 600,
+    "price": 7.72857,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nxp/s32k342nht0vpasr/evolve-65630115/",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Avnet Americas 600+; 0 in stock, factory lead time 210 weeks stated on listing. Package suffix VPA not decoded from a source."
+ },
+ {
+  "file": "auto-compute-2.json",
+  "mpn": "MIMX8MM6CVTKZAA",
+  "mfr": "NXP",
+  "desc": "i.MX 8M Mini quad Cortex-A53 1.6 GHz applications processor, industrial -40..105 C",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 24.76,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--microprocessors--embedded-processors/mimx8mm6cvtkzaar-nxp-5166441",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Price is for the R-suffix sibling MIMX8MM6CVTKZAAR (1000 per tray). Industrial grade (Farnell JP '-40 to 105deg'), not an automotive code. One distributor only; LCSC entry was fat.lcsc.com (not allowed)."
+ },
+ {
+  "file": "auto-compute-2.json",
+  "mpn": "TLE9853QXXUMA1",
+  "mfr": "Infineon",
+  "desc": "MOTIX TLE985x 32-bit Cortex-M0 40 MHz H-bridge motor-control SoC with LIN",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 500,
+    "price": 3.404,
+    "currency": "USD",
+    "url": "https://il.farnell.com/infineon/tle9853qxxuma1/mcu-32bit-arm-cortex-m0-40mhz/dp/3407350",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Farnell IL ex VAT: 1+ USD 5.950, 10+ 4.435, 500+ 3.404. One distributor only; oemstrade (not allowed) and Cytech (broker) ignored. Package per family datasheet, not on the listing."
+ },
+ {
+  "file": "connectivity-auto-2.json",
+  "mpn": "NCJ29D5CHN/00201Y",
+  "mfr": "NXP",
+  "desc": "Automotive UWB IC (Trimension, car access / digital key), AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 4000,
+    "price": 625.24,
+    "currency": "INR",
+    "url": "https://www.mouser.in/en/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/rf-microcontrollers-mcu/?pg=26",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Mouser India 771-NCJ29D5CHN00201Y, non-stocked, 30 wk, MOQ 4,000; read on a category listing page. GST basis of the India site not confirmed. NXP: product details under NDA."
+ },
+ {
+  "file": "connectivity-auto-2.json",
+  "mpn": "NCJ29D5CHN/00200Y",
+  "mfr": "NXP",
+  "desc": "Automotive UWB IC (Trimension, car access / digital key), AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Avnet",
+    "qty": 4000,
+    "price": 6.37653,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nxp/ncj29d5chn-00200y/evolve-50442176/",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Sibling firmware/variant code of NCJ29D5CHN/00201Y. Avnet Americas: 0 stock, factory lead time stated 210 weeks - treat with caution."
+ },
+ {
+  "file": "connectivity-auto-2.json",
+  "mpn": "LFE5U-25F-8BG256C",
+  "mfr": "Lattice",
+  "desc": "ECP5 FPGA 24k LUT, commercial grade, caBGA-256",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 119,
+    "price": 18.54,
+    "currency": "EUR",
+    "url": "https://www.mouser.sk/c/semiconductors/programmable-logic-ics/fpga-field-programmable-gate-array/?pg=5",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Researched for task line 'LFE5U automotive'; the automotive (-A) code was not listed - commercial sibling priced. Read on a Mouser SK category listing page (URL attribution from the search summary); EU Mouser sites show ex-VAT prices."
+ },
+ {
+  "file": "connectivity-auto-2.json",
+  "mpn": "LFE5U-25F-6TG144C",
+  "mfr": "Lattice",
+  "desc": "ECP5 FPGA 24k LUT, commercial grade, TQFP-144",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 120,
+    "price": 13.3,
+    "currency": "EUR",
+    "url": "https://www.mouser.sk/c/semiconductors/programmable-logic-ics/fpga-field-programmable-gate-array/?pg=5",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Same Mouser SK category listing as LFE5U-25F-8BG256C (URL attribution from the search summary); ex VAT."
+ },
+ {
+  "file": "connectivity-auto-2.json",
+  "mpn": "LCMXO3D-9400HC-6SG72C",
+  "mfr": "Lattice",
+  "desc": "MachXO3D secure-boot CPLD/FPGA 9400 LUT, 2.5/3.3 V, commercial, QFN-72",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 100,
+    "price": 2483.25,
+    "currency": "INR",
+    "url": "https://www.mouser.in/en/c/semiconductors/integrated-circuits-ics/programmable-logic-ics/?pg=5",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Researched for task line 'MachXO3D'; automotive code not listed. Mouser India category listing (URL attribution from the search summary), GST basis not confirmed."
+ },
+ {
+  "file": "interconnect-2.json",
+  "mpn": "9-2304372-9",
+  "mfr": "TE Connectivity",
+  "desc": "MATEnet automotive Ethernet PCB header, 2-way, right angle, 3 A 60 VDC",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 13.51,
+    "currency": "EUR",
+    "url": "https://fr.farnell.com/te-connectivity/9-2304372-9/conn-automobile-male-28p-3a-60vdc/dp/4155204",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Farnell FR ex VAT, 100+ is the top break shown (1+ 18.72, 10+ 15.90, 25+ 14.90). Farnell BE 500+ figure seen only as a hedged summary value - not recorded. AEC-Q not applicable to connectors (USCAR / LV214 automotive series)."
+ },
+ {
+  "file": "interconnect-2.json",
+  "mpn": "0885005.DR",
+  "mfr": "Littelfuse",
+  "desc": "SMD fuse 5 A 450 VDC, 885 series, high-voltage",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1500,
+    "price": 2.02,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/fr/p/electromechanical--circuit-protection--electronic-fuses/0885005-dr-littelfuse-3149327",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 3000,
+    "price": 1.98,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/fr/p/electromechanical--circuit-protection--electronic-fuses/0885005-dr-littelfuse-3149327",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Future: reel 1500, zero stock, 15-week lead, price date not stated. Wave 1 asked 0885002.DR (unpriced); this is the 5 A sibling. AEC-Q200 status not confirmed."
+ },
+ {
+  "file": "memory-2.json",
+  "mpn": "MX25L12833FM2I-10G",
+  "mfr": "Macronix",
+  "desc": "SPI NOR flash 128Mbit, 3V, -40..85C, SOP-8 208mil",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 100,
+    "price": 3.16,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/mx25l12833fm2i-10g-macronix-6184555",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 2000,
+    "price": 3.16,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/mx25l12833fm2i-10gtr-macronix-8121165",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Industrial grade; automotive MX25L12833F/-73F code not found priced. 100 break: tube listing (13,156 stock; $3.28 at 10). 2000 break is the -10GTR reel listing (observedMpn MX25L12833FM2I-10GTR): reel total $6,320.00 / 2000 = $3.16, 0 stock, 52+ wk lead. Future shows two -10G listings with the same tiers."
+ },
+ {
+  "file": "memory-2.json",
+  "mpn": "CY15B256J-SXE",
+  "mfr": "Infineon",
+  "desc": "F-RAM 256Kbit I2C, automotive E grade (-40..125C), SOIC-8",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 485,
+    "price": 6.76,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--memory--RAM--nvram--fram-mram/cy15b256j-sxe-infineon-9163942",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "I2C sibling of task's SPI CY15B256Q-SXE (not found priced; Mouser India tiers had no quantities). Future 485+ break, 0 stock, 10 wk factory lead."
+ },
+ {
+  "file": "networking-2.json",
+  "mpn": "ATA6570-GNQW1",
+  "mfr": "Microchip",
+  "desc": "CAN FD transceiver with partial networking, SPI, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components (Japan)",
+    "qty": 4000,
+    "price": 150.33,
+    "currency": "JPY",
+    "url": "https://jp.rs-online.com/web/p/can-interface-ics/0631537",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS JP reel of 4000, per-unit price; temporarily out of stock at read; tax basis not stated in result. Replaces catalogue estimate."
+ },
+ {
+  "file": "passives-2.json",
+  "mpn": "CGA3E2C0G1H103J080AA",
+  "mfr": "TDK",
+  "desc": "MLCC 10nF 50V C0G ±5% 0603 AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 4000,
+    "price": 0.0534,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga3e2c0g1h103j080aa-tdk-7023124",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "0603 C0G 10nF automotive cell (TDK instead of uncatalogued GCM1885C1H103JA16D, which no search listed). Future reel listing (8,000 stock, 24 wk); a 40k break shown as $0.05 looked rounded and was not recorded; a second Future listing ($0.0965 at 2,000+) not recorded as its URL mapping was unclear. ibselectronics.cn not a franchised source."
+ },
+ {
+  "file": "passives-2.json",
+  "mpn": "IHLP4040DZER100M5A",
+  "mfr": "Vishay Dale",
+  "desc": "Molded power inductor 10uH 20% 4040 (10.2x10.2 mm) AEC-Q200 (-5A)",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 1.43,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--inductors--power-inductors/ihlp4040dzer100m5a-vishay-2156323",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 1.33,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--inductors--power-inductors/ihlp4040dzer100m5a-vishay-8162237",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Two Future listings, 500 MOQ: one $1.45 @500 / $1.43 @1,000, the other $1.34 @500 / $1.33 @1,000 (10 wk). The search summary did not tie each price to its URL; URLs recorded in result order. Second distributor not found. IHCL4040 (different part) ignored."
+ },
+ {
+  "file": "power-2.json",
+  "mpn": "ADBMS6832MWCCSZ",
+  "mfr": "Analog Devices",
+  "desc": "16-cell battery stack monitor, automotive",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 100,
+    "price": 6.5624,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C18166020.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC 100+. ADI 1k list USD 11.90 (manufacturer, not recorded). LCSC reel code ADBMS6832MWCCSZ-RL showed USD 4.4426 @100 - well below the cut-tape price and ADI list, treated as suspect, not recorded. Category assumed LQFP; verify."
+ },
+ {
+  "file": "sensors-2.json",
+  "mpn": "SCH16T-K01-10",
+  "mfr": "Murata",
+  "desc": "6-DOF gyroscope + accelerometer, high-performance, industrial",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 42.1709,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/murata-electronics/SCH16T-K01-10/22966163",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 36.05,
+    "currency": "EUR",
+    "url": "https://at.farnell.com/en-AT/murata/sch16t-k01-10/gyro-sensoraccelerometer/dp/4406668",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Industrial grade (not AEC-Q100). Farnell Austria ex VAT. SCH16T-K01-1 Farnell DE EUR 48.540 @100 (sibling packing). Package type not confirmed in source."
+ },
+ {
+  "file": "sensors-2.json",
+  "mpn": "FXPS7115DS4ST1",
+  "mfr": "STMicroelectronics",
+  "desc": "Digital absolute pressure sensor 40-115 kPa, SPI, automotive (ex-NXP FXPS7)",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2000,
+    "price": 4.25313,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/FXPS7115DS4ST1/13625886",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Representative of the FXPS7xx family (FXPS7550DI4ST1/DS4ST1 had no price; FXPS7550DS4T1 obsolete). Listed under ST at Digi-Key; non-stocked. Package per family datasheet, not in snippet."
+ }
+]

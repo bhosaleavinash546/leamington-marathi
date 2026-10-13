@@ -1,202 +1,485 @@
 {
-  "domain": "connectivity-auto-2",
-  "researched": "2026-10-13",
-  "parts": [
+ "domain": "connectivity-auto-2",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "NEO-M9V-20B",
+   "family": "NEO-M9V",
+   "mfr": "u-blox",
+   "desc": "GNSS module with untethered dead reckoning (ADR), concurrent 4-constellation, LCC",
+   "category": "ic_qfn",
+   "pkg": "LCC module 16.0 x 12.2 mm",
+   "aecq": false,
+   "ecuRoles": [
+    "telematics",
+    "infotainment",
+    "TCU"
+   ],
+   "observedMpn": "NEO-M9V-20B",
+   "observations": [
     {
-      "mpn": "NEO-M9V-20B", "family": "NEO-M9V", "mfr": "u-blox",
-      "desc": "GNSS module with untethered dead reckoning (ADR), concurrent 4-constellation, LCC",
-      "category": "ic_qfn", "pkg": "LCC module 16.0 x 12.2 mm", "aecq": false,
-      "ecuRoles": ["telematics", "infotainment", "TCU"],
-      "observedMpn": "NEO-M9V-20B",
-      "observations": [
-        { "distributor": "Digi-Key", "qty": 500, "price": 12.29168, "currency": "EUR", "url": "https://www.digikey.nl/en/products/detail/u-blox/NEO-M9V-20B/16611140", "date": "2026-10-13" },
-        { "distributor": "Digi-Key", "qty": 500, "price": 14.4625, "currency": "USD", "url": "https://www.digikey.com.mx/en/products/detail/u-blox/NEO-M9V-20B/16611140", "date": "2026-10-13" }
-      ],
-      "notes": "Tape & reel 500 tier (NL extended EUR 6,145.84; MX extended USD 7,231.25), ex VAT. No 1,000 break listed. An older AT snapshot (list EUR 30.23, EUR 19.30368 @250) disagrees with the NL list EUR 15.04 - not recorded. Castellated module filed as ic_qfn (no module category). AEC-Q100 status not confirmed in search."
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 12.29168,
+     "currency": "EUR",
+     "url": "https://www.digikey.nl/en/products/detail/u-blox/NEO-M9V-20B/16611140",
+     "date": "2026-10-13"
     },
     {
-      "mpn": "DW3300QTR13", "family": "DW3300Q", "mfr": "Qorvo",
-      "desc": "IEEE 802.15.4z IR-UWB transceiver, channels 5/9 (6.5/8 GHz), AEC-Q100 Grade 2",
-      "category": "ic_qfn", "pkg": "40-VFLGA exposed pad", "aecq": true,
-      "ecuRoles": ["keyless entry", "digital key", "body"],
-      "observedMpn": "DW3300QTR13",
-      "observations": [
-        { "distributor": "Digi-Key", "qty": 1000, "price": 4.62745, "currency": "EUR", "url": "https://www.digikey.nl/en/products/detail/qorvo/DW3300QTR13/24718414", "date": "2026-10-13" },
-        { "distributor": "Digi-Key", "qty": 1000, "price": 4.59584, "currency": "EUR", "url": "https://www.digikey.bg/en/products/detail/qorvo/DW3300QTR13/24718414", "date": "2026-10-13" },
-        { "distributor": "Digi-Key", "qty": 1000, "price": 8.51281, "currency": "CAD", "url": "https://www.digikey.ca/en/products/detail/qorvo/DW3300QTR13/24718414", "date": "2026-10-13" }
-      ],
-      "notes": "Unit = extended / 1,000 (NL EUR 4,627.45, BG EUR 4,595.84, CA CAD 8,512.81), ex VAT. The 1,000 tier is cut tape / Digi-Reel; T&R starts at 2,500 (price not shown). AEC-Q100 Grade 2 per Qorvo/Mouser product page. Mouser price not found."
-    },
-    {
-      "mpn": "ST25R3920-AQWT", "family": "ST25R3920", "mfr": "STMicroelectronics",
-      "desc": "Automotive NFC reader (car access / digital key, Qi-coexistence), 13.56 MHz",
-      "category": "ic_qfn", "pkg": "VFQFPN-32", "aecq": true,
-      "ecuRoles": ["digital key", "NFC car access", "wireless charger"],
-      "observedMpn": "ST25R3920-AQWT",
-      "observations": [
-        { "distributor": "Future", "qty": 4000, "price": 2.89, "currency": "USD", "url": "https://www.futureelectronics.com/p/semiconductors--wireless-rf--rf-modules-solutions--rfid/st25r3920-aqwt-stmicroelectronics-2152702", "date": "2026-10-13" }
-      ],
-      "notes": "Researched for task line ST25R3916B-AQWT / automotive NFC (no ST25R3916B listing found). ST eStore marks ST25R3920 NRND (USD 3.80 @500, manufacturer list - not used); successor ST25R3920B-AQWT: eStore USD 3.70 @500 (manufacturer), RS Portugal EUR 5.054 @4000 out of stock, VAT basis unclear - not recorded. Future: MOQ 4,000, 0 stock, 20 wk. Farnell NOK prices not usable; Cytech is a broker."
-    },
-    {
-      "mpn": "NCJ29D5CHN/00201Y", "family": "NCJ29D5", "mfr": "NXP",
-      "desc": "Automotive UWB IC (Trimension, car access / digital key), AEC-Q100",
-      "category": "ic_qfn", "pkg": "HVQFN (from NXP 'HN' suffix; not read in listing)", "aecq": true,
-      "ecuRoles": ["digital key", "keyless entry", "UWB anchor"],
-      "observedMpn": "NCJ29D5CHN/00201Y",
-      "observations": [
-        { "distributor": "Mouser", "qty": 4000, "price": 625.24, "currency": "INR", "url": "https://www.mouser.in/en/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/rf-microcontrollers-mcu/?pg=26", "date": "2026-10-13" }
-      ],
-      "notes": "Mouser India 771-NCJ29D5CHN00201Y, non-stocked, 30 wk, MOQ 4,000; read on a category listing page. GST basis of the India site not confirmed. NXP: product details under NDA."
-    },
-    {
-      "mpn": "NCJ29D5CHN/00200Y", "family": "NCJ29D5", "mfr": "NXP",
-      "desc": "Automotive UWB IC (Trimension, car access / digital key), AEC-Q100",
-      "category": "ic_qfn", "pkg": "HVQFN (from NXP 'HN' suffix; not read in listing)", "aecq": true,
-      "ecuRoles": ["digital key", "keyless entry", "UWB anchor"],
-      "observedMpn": "NCJ29D5CHN/00200Y",
-      "observations": [
-        { "distributor": "Avnet", "qty": 4000, "price": 6.37653, "currency": "USD", "url": "https://www.avnet.com/americas/product/nxp/ncj29d5chn-00200y/evolve-50442176/", "date": "2026-10-13" }
-      ],
-      "notes": "Sibling firmware/variant code of NCJ29D5CHN/00201Y. Avnet Americas: 0 stock, factory lead time stated 210 weeks - treat with caution."
-    },
-    {
-      "mpn": "NRF54L15-QFAA-R7", "family": "nRF54L15", "mfr": "Nordic Semiconductor",
-      "desc": "Bluetooth LE 6 / Thread / Zigbee multiprotocol SoC, 1.5 MB RRAM, QFN48",
-      "category": "ic_qfn", "pkg": "QFN-48 6x6", "aecq": false,
-      "ecuRoles": ["IoT", "accessory", "BLE"],
-      "observedMpn": "NRF54L15-QFAA-R7",
-      "observations": [
-        { "distributor": "Future", "qty": 1000, "price": 2.48, "currency": "USD", "url": "https://www.futureelectronics.com/p/7204785", "date": "2026-10-13" }
-      ],
-      "notes": "Future: MOQ 1,000, 16 wk. Digi-Key 1,000 USD 2.65713 (QFAA-R) seen only on punchouttest hosts and Mouser only via an aggregator - not used. Package from Nordic QFAA naming."
-    },
-    {
-      "mpn": "ESP32-C6-WROOM-1-N8", "family": "ESP32-C6-WROOM-1", "mfr": "Espressif",
-      "desc": "Wi-Fi 6 + BLE 5 + 802.15.4 module, 8 MB flash, PCB antenna",
-      "category": "ic_qfn", "pkg": "SMD module 18 x 25.5 mm", "aecq": false,
-      "ecuRoles": ["IoT", "aftermarket", "charger"],
-      "observedMpn": "ESP32-C6-WROOM-1-N8",
-      "observations": [
-        { "distributor": "LCSC", "qty": 650, "price": 3.3107, "currency": "USD", "url": "https://lcsc.com/product-detail/image/ESP32-C6-WROOM-1-N8_C5366877.html", "date": "2026-10-13" },
-        { "distributor": "LCSC", "qty": 1300, "price": 3.2384, "currency": "USD", "url": "https://lcsc.com/product-detail/image/ESP32-C6-WROOM-1-N8_C5366877.html", "date": "2026-10-13" }
-      ],
-      "notes": "LCSC C5366877, 650 per reel. Comet (BG) EUR 2.79 @650 not a listed franchised distributor - not used. Castellated module filed as ic_qfn."
-    },
-    {
-      "mpn": "STM32G071RBT6", "family": "STM32G071", "mfr": "STMicroelectronics",
-      "desc": "Arm Cortex-M0+ MCU 64 MHz, 128 KB flash, USB-C PD, LQFP64",
-      "category": "ic_tqfp", "pkg": "LQFP-64", "aecq": false,
-      "ecuRoles": ["general MCU", "USB-PD", "motor control"],
-      "observedMpn": "STM32G071RBT6",
-      "observations": [
-        { "distributor": "LCSC", "qty": 1000, "price": 1.482, "currency": "USD", "url": "https://www.lcsc.com/product-image/C432213.html", "date": "2026-10-13" }
-      ],
-      "notes": "LCSC C432213, tray 160. TME lists qty-1 only (USD 3.71 / EUR 3.24) - below 100, not recorded. Second distributor not found."
-    },
-    {
-      "mpn": "STM32F030F4P6TR", "family": "STM32F030", "mfr": "STMicroelectronics",
-      "desc": "Arm Cortex-M0 MCU 48 MHz, 16 KB flash, TSSOP20, tape and reel",
-      "category": "ic_soic", "pkg": "TSSOP-20", "aecq": false,
-      "ecuRoles": ["general MCU"],
-      "observedMpn": "STM32F030F4P6TR",
-      "observations": [
-        { "distributor": "LCSC", "qty": 1000, "price": 0.4408, "currency": "USD", "url": "https://www.lcsc.com/product-image/C89040.html", "date": "2026-10-13" }
-      ],
-      "notes": "LCSC C89040, reel 2,500; another LCSC snapshot shows USD 0.4495 @1,000+. Newark USD 0.7450 @2,500 seen only via an aggregator, 0 stock; Digi-Key EUR 0.64672 @2,500 only on a punchouttest host - neither used."
-    },
-    {
-      "mpn": "STM32U575ZIT6Q", "family": "STM32U575", "mfr": "STMicroelectronics",
-      "desc": "Arm Cortex-M33 ultra-low-power MCU 160 MHz, 2 MB flash, SMPS, LQFP144",
-      "category": "ic_tqfp", "pkg": "LQFP-144", "aecq": false,
-      "ecuRoles": ["general MCU", "low-power"],
-      "observedMpn": "STM32U575ZIT6Q",
-      "observations": [
-        { "distributor": "TME", "qty": 120, "price": 11.74, "currency": "EUR", "url": "https://www.tme.eu/si/en/details/stm32u575zit6q/st-microcontrollers/stmicroelectronics/", "date": "2026-10-13" }
-      ],
-      "notes": "TME net (ex VAT) from 120 pcs. TME AU page USD 13.41 @120 (AU site, currency basis unclear) not used; Future lists stock 20,460, MOQ 60, no price in snippet. ST eStore USD 6.55 @10k (wave 1) is manufacturer list."
-    },
-    {
-      "mpn": "LFE5U-25F-8BG256C", "family": "LFE5U-25F", "mfr": "Lattice",
-      "desc": "ECP5 FPGA 24k LUT, commercial grade, caBGA-256",
-      "category": "ic_bga", "pkg": "caBGA-256", "aecq": false,
-      "ecuRoles": ["camera bridge", "industrial", "glue logic"],
-      "observedMpn": "LFE5U-25F-8BG256C",
-      "observations": [
-        { "distributor": "Mouser", "qty": 119, "price": 18.54, "currency": "EUR", "url": "https://www.mouser.sk/c/semiconductors/programmable-logic-ics/fpga-field-programmable-gate-array/?pg=5", "date": "2026-10-13" }
-      ],
-      "notes": "Researched for task line 'LFE5U automotive'; the automotive (-A) code was not listed - commercial sibling priced. Read on a Mouser SK category listing page (URL attribution from the search summary); EU Mouser sites show ex-VAT prices."
-    },
-    {
-      "mpn": "LFE5U-25F-6TG144C", "family": "LFE5U-25F", "mfr": "Lattice",
-      "desc": "ECP5 FPGA 24k LUT, commercial grade, TQFP-144",
-      "category": "ic_tqfp", "pkg": "TQFP-144", "aecq": false,
-      "ecuRoles": ["industrial", "glue logic"],
-      "observedMpn": "LFE5U-25F-6TG144C",
-      "observations": [
-        { "distributor": "Mouser", "qty": 120, "price": 13.30, "currency": "EUR", "url": "https://www.mouser.sk/c/semiconductors/programmable-logic-ics/fpga-field-programmable-gate-array/?pg=5", "date": "2026-10-13" }
-      ],
-      "notes": "Same Mouser SK category listing as LFE5U-25F-8BG256C (URL attribution from the search summary); ex VAT."
-    },
-    {
-      "mpn": "LCMXO3D-9400HC-6SG72C", "family": "LCMXO3D-9400", "mfr": "Lattice",
-      "desc": "MachXO3D secure-boot CPLD/FPGA 9400 LUT, 2.5/3.3 V, commercial, QFN-72",
-      "category": "ic_qfn", "pkg": "QFN-72", "aecq": false,
-      "ecuRoles": ["root of trust", "board control"],
-      "observedMpn": "LCMXO3D-9400HC-6SG72C",
-      "observations": [
-        { "distributor": "Mouser", "qty": 100, "price": 2483.25, "currency": "INR", "url": "https://www.mouser.in/en/c/semiconductors/integrated-circuits-ics/programmable-logic-ics/?pg=5", "date": "2026-10-13" }
-      ],
-      "notes": "Researched for task line 'MachXO3D'; automotive code not listed. Mouser India category listing (URL attribution from the search summary), GST basis not confirmed."
-    },
-    {
-      "mpn": "CC2642R1FTWRGZRQ1", "family": "CC2642R-Q1", "mfr": "Texas Instruments",
-      "desc": "Automotive Bluetooth LE 5 wireless MCU, 352 KB flash, AEC-Q100",
-      "category": "ic_qfn", "pkg": "VQFN-48 7x7", "aecq": true,
-      "ecuRoles": ["digital key", "phone-as-key", "TPMS"],
-      "observedMpn": "CC2642R1FTWRGZRQ1",
-      "observations": [],
-      "notes": "Only Digi-Key China (VAT-inclusive, not allowed: CNY 37.41708 @1,000, 36.03 @2,500) and JLCPCB found. Mouser/Arrow prices seen were for the non-Q1 CC2642R1FRGZR - not used."
-    },
-    {
-      "mpn": "STA8100GATR", "family": "STA8100", "mfr": "STMicroelectronics",
-      "desc": "Teseo V automotive multi-band GNSS receiver",
-      "category": "ic_bga", "pkg": "BGA (ST family; not read in listing)", "aecq": true,
-      "ecuRoles": ["telematics", "infotainment", "ADAS positioning"],
-      "observedMpn": "STA8100GATR",
-      "observations": [],
-      "notes": "Retry: still only ST eStore (manufacturer, USD 7.07 @500, TR out of stock); no franchised-distributor listing returned."
-    },
-    {
-      "mpn": "XA7S25-1CSGA225Q", "family": "XA7S25", "mfr": "AMD (Xilinx)",
-      "desc": "Automotive Spartan-7 FPGA 23k LC, XA grade (-40 to 125 C), CSGA225",
-      "category": "ic_bga", "pkg": "CSGA-225", "aecq": true,
-      "ecuRoles": ["camera", "sensor fusion", "glue logic"],
-      "observedMpn": "XA7S25-1CSGA225Q",
-      "observations": [],
-      "notes": "Only breaks below 100 found (Digi-Key ~qty 7 via findchips, Avnet qty 1) - not recorded. XA7Z010-1CLG225Q and XA7A50T-1CSG325Q: no listing returned."
-    },
-    {
-      "mpn": "CYW89829B0022", "family": "CYW89829", "mfr": "Infineon",
-      "desc": "AIROC automotive Bluetooth LE 5.4 MCU, AEC-Q100 Grade 2, QFN-40",
-      "category": "ic_qfn", "pkg": "QFN-40", "aecq": true,
-      "ecuRoles": ["car access", "BMS wireless", "sensors"],
-      "observedMpn": "",
-      "observations": [],
-      "notes": "Orderable codes CYW89829B0022 (QFN-40) / CYW89829B0232 (BGA-77) per Infineon launch release; no distributor price returned (only press and an eval board)."
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 14.4625,
+     "currency": "USD",
+     "url": "https://www.digikey.com.mx/en/products/detail/u-blox/NEO-M9V-20B/16611140",
+     "date": "2026-10-13"
     }
-  ],
-  "notResearched": [
-    { "code": "ZED-F9K / UBX-M10050-KB / NEO-F10N (break >= 100)", "why": "u-blox automotive GNSS - searched again, no distributor listing or orderable code returned" },
-    { "code": "STA9100MGA (Teseo-APP2)", "why": "automotive ASIL GNSS - not searched (budget); wave 1 found no price" },
-    { "code": "Quectel LC29H / LG69T", "why": "GNSS modules - not searched (budget)" },
-    { "code": "NCJ3310AHN/0J", "why": "NXP automotive NFC reader - only an NXP-supplied findchips row (not a franchised distributor) found" },
-    { "code": "NCF3321 / NCF3340 / NCF29A1MHN/0500IJ", "why": "NXP KESSY / NFC - NCF29A1 only on Digi-Key China (VAT-inclusive); others no listing" },
-    { "code": "Infineon automotive NFC", "why": "not searched (budget)" },
-    { "code": "CYW89570 / CYW43455 automotive / NXP 88W8987 / AW611", "why": "automotive Wi-Fi/BT combos - not searched (budget); likely quote-only" },
-    { "code": "u-blox JODY-W3 / JODY-W5 / NORA-W3, Murata Type 1MW / 1YM", "why": "automotive Wi-Fi modules - not searched (budget)" },
-    { "code": "CC2340R5-Q1 / CC2662R-Q1", "why": "TI automotive BLE - not searched (budget)" },
-    { "code": "Quectel AG15 / AG35 / AG550Q, Telit LE910C1, u-blox TOBY-L4 / LENA-R8 / SARA-R52", "why": "automotive cellular modules - not searched (budget); largely quote-only" },
-    { "code": "XAZU2EG-1SBVA484Q, MPF100T, Intel MAX 10 10M08 A-grade, CertusPro-NX, iCE40UP5K", "why": "FPGAs - not reached / no listing in the combined FPGA searches" }
-  ]
+   ],
+   "notes": "Tape & reel 500 tier (NL extended EUR 6,145.84; MX extended USD 7,231.25), ex VAT. No 1,000 break listed. An older AT snapshot (list EUR 30.23, EUR 19.30368 @250) disagrees with the NL list EUR 15.04 - not recorded. Castellated module filed as ic_qfn (no module category). AEC-Q100 status not confirmed in search."
+  },
+  {
+   "mpn": "DW3300QTR13",
+   "family": "DW3300Q",
+   "mfr": "Qorvo",
+   "desc": "IEEE 802.15.4z IR-UWB transceiver, channels 5/9 (6.5/8 GHz), AEC-Q100 Grade 2",
+   "category": "ic_qfn",
+   "pkg": "40-VFLGA exposed pad",
+   "aecq": true,
+   "ecuRoles": [
+    "keyless entry",
+    "digital key",
+    "body"
+   ],
+   "observedMpn": "DW3300QTR13",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.62745,
+     "currency": "EUR",
+     "url": "https://www.digikey.nl/en/products/detail/qorvo/DW3300QTR13/24718414",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 4.59584,
+     "currency": "EUR",
+     "url": "https://www.digikey.bg/en/products/detail/qorvo/DW3300QTR13/24718414",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 8.51281,
+     "currency": "CAD",
+     "url": "https://www.digikey.ca/en/products/detail/qorvo/DW3300QTR13/24718414",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Unit = extended / 1,000 (NL EUR 4,627.45, BG EUR 4,595.84, CA CAD 8,512.81), ex VAT. The 1,000 tier is cut tape / Digi-Reel; T&R starts at 2,500 (price not shown). AEC-Q100 Grade 2 per Qorvo/Mouser product page. Mouser price not found."
+  },
+  {
+   "mpn": "ST25R3920-AQWT",
+   "family": "ST25R3920",
+   "mfr": "STMicroelectronics",
+   "desc": "Automotive NFC reader (car access / digital key, Qi-coexistence), 13.56 MHz",
+   "category": "ic_qfn",
+   "pkg": "VFQFPN-32",
+   "aecq": true,
+   "ecuRoles": [
+    "digital key",
+    "NFC car access",
+    "wireless charger"
+   ],
+   "observedMpn": "ST25R3920-AQWT",
+   "observations": [
+    {
+     "distributor": "Future",
+     "qty": 4000,
+     "price": 2.89,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--wireless-rf--rf-modules-solutions--rfid/st25r3920-aqwt-stmicroelectronics-2152702",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Researched for task line ST25R3916B-AQWT / automotive NFC (no ST25R3916B listing found). ST eStore marks ST25R3920 NRND (USD 3.80 @500, manufacturer list - not used); successor ST25R3920B-AQWT: eStore USD 3.70 @500 (manufacturer), RS Portugal EUR 5.054 @4000 out of stock, VAT basis unclear - not recorded. Future: MOQ 4,000, 0 stock, 20 wk. Farnell NOK prices not usable; Cytech is a broker."
+  },
+  {
+   "mpn": "NCJ29D5CHN/00201Y",
+   "family": "NCJ29D5",
+   "mfr": "NXP",
+   "desc": "Automotive UWB IC (Trimension, car access / digital key), AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "HVQFN (from NXP 'HN' suffix; not read in listing)",
+   "aecq": true,
+   "ecuRoles": [
+    "digital key",
+    "keyless entry",
+    "UWB anchor"
+   ],
+   "observedMpn": "NCJ29D5CHN/00201Y",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 4000,
+     "price": 625.24,
+     "currency": "INR",
+     "url": "https://www.mouser.in/en/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/rf-microcontrollers-mcu/?pg=26",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser India 771-NCJ29D5CHN00201Y, non-stocked, 30 wk, MOQ 4,000; read on a category listing page. GST basis of the India site not confirmed. NXP: product details under NDA."
+  },
+  {
+   "mpn": "NCJ29D5CHN/00200Y",
+   "family": "NCJ29D5",
+   "mfr": "NXP",
+   "desc": "Automotive UWB IC (Trimension, car access / digital key), AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "HVQFN (from NXP 'HN' suffix; not read in listing)",
+   "aecq": true,
+   "ecuRoles": [
+    "digital key",
+    "keyless entry",
+    "UWB anchor"
+   ],
+   "observedMpn": "NCJ29D5CHN/00200Y",
+   "observations": [
+    {
+     "distributor": "Avnet",
+     "qty": 4000,
+     "price": 6.37653,
+     "currency": "USD",
+     "url": "https://www.avnet.com/americas/product/nxp/ncj29d5chn-00200y/evolve-50442176/",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Sibling firmware/variant code of NCJ29D5CHN/00201Y. Avnet Americas: 0 stock, factory lead time stated 210 weeks - treat with caution."
+  },
+  {
+   "mpn": "NRF54L15-QFAA-R7",
+   "family": "nRF54L15",
+   "mfr": "Nordic Semiconductor",
+   "desc": "Bluetooth LE 6 / Thread / Zigbee multiprotocol SoC, 1.5 MB RRAM, QFN48",
+   "category": "ic_qfn",
+   "pkg": "QFN-48 6x6",
+   "aecq": false,
+   "ecuRoles": [
+    "IoT",
+    "accessory",
+    "BLE"
+   ],
+   "observedMpn": "NRF54L15-QFAA-R7",
+   "observations": [
+    {
+     "distributor": "Future",
+     "qty": 1000,
+     "price": 2.48,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/7204785",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future: MOQ 1,000, 16 wk. Digi-Key 1,000 USD 2.65713 (QFAA-R) seen only on punchouttest hosts and Mouser only via an aggregator - not used. Package from Nordic QFAA naming."
+  },
+  {
+   "mpn": "ESP32-C6-WROOM-1-N8",
+   "family": "ESP32-C6-WROOM-1",
+   "mfr": "Espressif",
+   "desc": "Wi-Fi 6 + BLE 5 + 802.15.4 module, 8 MB flash, PCB antenna",
+   "category": "ic_qfn",
+   "pkg": "SMD module 18 x 25.5 mm",
+   "aecq": false,
+   "ecuRoles": [
+    "IoT",
+    "aftermarket",
+    "charger"
+   ],
+   "observedMpn": "ESP32-C6-WROOM-1-N8",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 650,
+     "price": 3.3107,
+     "currency": "USD",
+     "url": "https://lcsc.com/product-detail/image/ESP32-C6-WROOM-1-N8_C5366877.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1300,
+     "price": 3.2384,
+     "currency": "USD",
+     "url": "https://lcsc.com/product-detail/image/ESP32-C6-WROOM-1-N8_C5366877.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C5366877, 650 per reel. Comet (BG) EUR 2.79 @650 not a listed franchised distributor - not used. Castellated module filed as ic_qfn."
+  },
+  {
+   "mpn": "STM32G071RBT6",
+   "family": "STM32G071",
+   "mfr": "STMicroelectronics",
+   "desc": "Arm Cortex-M0+ MCU 64 MHz, 128 KB flash, USB-C PD, LQFP64",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": false,
+   "ecuRoles": [
+    "general MCU",
+    "USB-PD",
+    "motor control"
+   ],
+   "observedMpn": "STM32G071RBT6",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.482,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C432213.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C432213, tray 160. TME lists qty-1 only (USD 3.71 / EUR 3.24) - below 100, not recorded. Second distributor not found."
+  },
+  {
+   "mpn": "STM32F030F4P6TR",
+   "family": "STM32F030",
+   "mfr": "STMicroelectronics",
+   "desc": "Arm Cortex-M0 MCU 48 MHz, 16 KB flash, TSSOP20, tape and reel",
+   "category": "ic_soic",
+   "pkg": "TSSOP-20",
+   "aecq": false,
+   "ecuRoles": [
+    "general MCU"
+   ],
+   "observedMpn": "STM32F030F4P6TR",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.4408,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C89040.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C89040, reel 2,500; another LCSC snapshot shows USD 0.4495 @1,000+. Newark USD 0.7450 @2,500 seen only via an aggregator, 0 stock; Digi-Key EUR 0.64672 @2,500 only on a punchouttest host - neither used."
+  },
+  {
+   "mpn": "STM32U575ZIT6Q",
+   "family": "STM32U575",
+   "mfr": "STMicroelectronics",
+   "desc": "Arm Cortex-M33 ultra-low-power MCU 160 MHz, 2 MB flash, SMPS, LQFP144",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": false,
+   "ecuRoles": [
+    "general MCU",
+    "low-power"
+   ],
+   "observedMpn": "STM32U575ZIT6Q",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 120,
+     "price": 11.74,
+     "currency": "EUR",
+     "url": "https://www.tme.eu/si/en/details/stm32u575zit6q/st-microcontrollers/stmicroelectronics/",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "TME net (ex VAT) from 120 pcs. TME AU page USD 13.41 @120 (AU site, currency basis unclear) not used; Future lists stock 20,460, MOQ 60, no price in snippet. ST eStore USD 6.55 @10k (wave 1) is manufacturer list."
+  },
+  {
+   "mpn": "LFE5U-25F-8BG256C",
+   "family": "LFE5U-25F",
+   "mfr": "Lattice",
+   "desc": "ECP5 FPGA 24k LUT, commercial grade, caBGA-256",
+   "category": "ic_bga",
+   "pkg": "caBGA-256",
+   "aecq": false,
+   "ecuRoles": [
+    "camera bridge",
+    "industrial",
+    "glue logic"
+   ],
+   "observedMpn": "LFE5U-25F-8BG256C",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 119,
+     "price": 18.54,
+     "currency": "EUR",
+     "url": "https://www.mouser.sk/c/semiconductors/programmable-logic-ics/fpga-field-programmable-gate-array/?pg=5",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Researched for task line 'LFE5U automotive'; the automotive (-A) code was not listed - commercial sibling priced. Read on a Mouser SK category listing page (URL attribution from the search summary); EU Mouser sites show ex-VAT prices."
+  },
+  {
+   "mpn": "LFE5U-25F-6TG144C",
+   "family": "LFE5U-25F",
+   "mfr": "Lattice",
+   "desc": "ECP5 FPGA 24k LUT, commercial grade, TQFP-144",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-144",
+   "aecq": false,
+   "ecuRoles": [
+    "industrial",
+    "glue logic"
+   ],
+   "observedMpn": "LFE5U-25F-6TG144C",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 120,
+     "price": 13.3,
+     "currency": "EUR",
+     "url": "https://www.mouser.sk/c/semiconductors/programmable-logic-ics/fpga-field-programmable-gate-array/?pg=5",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Same Mouser SK category listing as LFE5U-25F-8BG256C (URL attribution from the search summary); ex VAT."
+  },
+  {
+   "mpn": "LCMXO3D-9400HC-6SG72C",
+   "family": "LCMXO3D-9400",
+   "mfr": "Lattice",
+   "desc": "MachXO3D secure-boot CPLD/FPGA 9400 LUT, 2.5/3.3 V, commercial, QFN-72",
+   "category": "ic_qfn",
+   "pkg": "QFN-72",
+   "aecq": false,
+   "ecuRoles": [
+    "root of trust",
+    "board control"
+   ],
+   "observedMpn": "LCMXO3D-9400HC-6SG72C",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 2483.25,
+     "currency": "INR",
+     "url": "https://www.mouser.in/en/c/semiconductors/integrated-circuits-ics/programmable-logic-ics/?pg=5",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Researched for task line 'MachXO3D'; automotive code not listed. Mouser India category listing (URL attribution from the search summary), GST basis not confirmed."
+  },
+  {
+   "mpn": "CC2642R1FTWRGZRQ1",
+   "family": "CC2642R-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive Bluetooth LE 5 wireless MCU, 352 KB flash, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 7x7",
+   "aecq": true,
+   "ecuRoles": [
+    "digital key",
+    "phone-as-key",
+    "TPMS"
+   ],
+   "observedMpn": "CC2642R1FTWRGZRQ1",
+   "observations": [],
+   "notes": "Only Digi-Key China (VAT-inclusive, not allowed: CNY 37.41708 @1,000, 36.03 @2,500) and JLCPCB found. Mouser/Arrow prices seen were for the non-Q1 CC2642R1FRGZR - not used."
+  },
+  {
+   "mpn": "STA8100GATR",
+   "family": "STA8100",
+   "mfr": "STMicroelectronics",
+   "desc": "Teseo V automotive multi-band GNSS receiver",
+   "category": "ic_bga",
+   "pkg": "BGA (ST family; not read in listing)",
+   "aecq": true,
+   "ecuRoles": [
+    "telematics",
+    "infotainment",
+    "ADAS positioning"
+   ],
+   "observedMpn": "STA8100GATR",
+   "observations": [],
+   "notes": "Retry: still only ST eStore (manufacturer, USD 7.07 @500, TR out of stock); no franchised-distributor listing returned."
+  },
+  {
+   "mpn": "XA7S25-1CSGA225Q",
+   "family": "XA7S25",
+   "mfr": "AMD (Xilinx)",
+   "desc": "Automotive Spartan-7 FPGA 23k LC, XA grade (-40 to 125 C), CSGA225",
+   "category": "ic_bga",
+   "pkg": "CSGA-225",
+   "aecq": true,
+   "ecuRoles": [
+    "camera",
+    "sensor fusion",
+    "glue logic"
+   ],
+   "observedMpn": "XA7S25-1CSGA225Q",
+   "observations": [],
+   "notes": "Only breaks below 100 found (Digi-Key ~qty 7 via findchips, Avnet qty 1) - not recorded. XA7Z010-1CLG225Q and XA7A50T-1CSG325Q: no listing returned."
+  },
+  {
+   "mpn": "CYW89829B0022",
+   "family": "CYW89829",
+   "mfr": "Infineon",
+   "desc": "AIROC automotive Bluetooth LE 5.4 MCU, AEC-Q100 Grade 2, QFN-40",
+   "category": "ic_qfn",
+   "pkg": "QFN-40",
+   "aecq": true,
+   "ecuRoles": [
+    "car access",
+    "BMS wireless",
+    "sensors"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Orderable codes CYW89829B0022 (QFN-40) / CYW89829B0232 (BGA-77) per Infineon launch release; no distributor price returned (only press and an eval board)."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "ZED-F9K / UBX-M10050-KB / NEO-F10N (break >= 100)",
+   "why": "u-blox automotive GNSS - searched again, no distributor listing or orderable code returned"
+  },
+  {
+   "code": "STA9100MGA (Teseo-APP2)",
+   "why": "automotive ASIL GNSS - not searched (budget); wave 1 found no price"
+  },
+  {
+   "code": "Quectel LC29H / LG69T",
+   "why": "GNSS modules - not searched (budget)"
+  },
+  {
+   "code": "NCJ3310AHN/0J",
+   "why": "NXP automotive NFC reader - only an NXP-supplied findchips row (not a franchised distributor) found"
+  },
+  {
+   "code": "NCF3321 / NCF3340 / NCF29A1MHN/0500IJ",
+   "why": "NXP KESSY / NFC - NCF29A1 only on Digi-Key China (VAT-inclusive); others no listing"
+  },
+  {
+   "code": "Infineon automotive NFC",
+   "why": "not searched (budget)"
+  },
+  {
+   "code": "CYW89570 / CYW43455 automotive / NXP 88W8987 / AW611",
+   "why": "automotive Wi-Fi/BT combos - not searched (budget); likely quote-only"
+  },
+  {
+   "code": "u-blox JODY-W3 / JODY-W5 / NORA-W3, Murata Type 1MW / 1YM",
+   "why": "automotive Wi-Fi modules - not searched (budget)"
+  },
+  {
+   "code": "CC2340R5-Q1 / CC2662R-Q1",
+   "why": "TI automotive BLE - not searched (budget)"
+  },
+  {
+   "code": "Quectel AG15 / AG35 / AG550Q, Telit LE910C1, u-blox TOBY-L4 / LENA-R8 / SARA-R52",
+   "why": "automotive cellular modules - not searched (budget); largely quote-only"
+  },
+  {
+   "code": "XAZU2EG-1SBVA484Q, MPF100T, Intel MAX 10 10M08 A-grade, CertusPro-NX, iCE40UP5K",
+   "why": "FPGAs - not reached / no listing in the combined FPGA searches"
+  }
+ ]
 }

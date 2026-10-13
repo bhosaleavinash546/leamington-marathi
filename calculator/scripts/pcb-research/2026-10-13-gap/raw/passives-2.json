@@ -1,0 +1,603 @@
+{
+ "domain": "passives-2",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "GCM2195C1H103JA16D",
+   "family": "GCM2195C1H103",
+   "mfr": "Murata",
+   "desc": "MLCC 10nF 50V C0G ±5% 0805 AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "general",
+    "filter",
+    "timing"
+   ],
+   "observedMpn": "GCM2195C1H103JA16D",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 8000,
+     "price": 0.0463,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C161250.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C161250, 4k reel; 8,000+ break stated (8,000 x 0.0463 = $370.40). Second distributor not found within budget."
+  },
+  {
+   "mpn": "CGA3E2C0G1H103J080AA",
+   "family": "CGA3E2C0G1H103",
+   "mfr": "TDK",
+   "desc": "MLCC 10nF 50V C0G ±5% 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "general",
+    "filter",
+    "timing"
+   ],
+   "observedMpn": "CGA3E2C0G1H103J080AA",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 4000,
+     "price": 0.0534,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga3e2c0g1h103j080aa-tdk-7023124",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "0603 C0G 10nF automotive cell (TDK instead of uncatalogued GCM1885C1H103JA16D, which no search listed). Future reel listing (8,000 stock, 24 wk); a 40k break shown as $0.05 looked rounded and was not recorded; a second Future listing ($0.0965 at 2,000+) not recorded as its URL mapping was unclear. ibselectronics.cn not a franchised source."
+  },
+  {
+   "mpn": "CGA3E3X5R1H105K080AB",
+   "family": "CGA3E3X5R1H105",
+   "mfr": "TDK",
+   "desc": "MLCC 1uF 50V X5R ±10% 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "general",
+    "decoupling"
+   ],
+   "observedMpn": "CGA3E3X5R1H105K080AB",
+   "observations": [],
+   "notes": "0603 1uF 50V automotive cell. LCSC C2177538 shows only an out-of-stock reference price; Findchips figures name no distributor. GCM188R71H105KA64D / C0603C105K5RACAUTO returned no listing."
+  },
+  {
+   "mpn": "CRCW08051K00FKEA",
+   "family": "CRCW0805",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film resistor 1k 1% 0805 AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "CRCW08051K00FKEA",
+   "observations": [],
+   "notes": "Wave-2 retry: Digi-Key page shown without prices; only a punchouttest mirror price (not allowed). No usable break."
+  },
+  {
+   "mpn": "ERJ-S03F1002V",
+   "family": "ERJ-S03",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-sulfur resistor 10k 1% 0.1W 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "general",
+    "BCM",
+    "ECU"
+   ],
+   "observedMpn": "ERJ-S03F1002V",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 5000,
+     "price": 0.0239,
+     "currency": "EUR",
+     "url": "https://ie.farnell.com/panasonic/erjs03f1002v/res-10k-1-0-1w-0603-thick-film/dp/3310375",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Anti-sulfur 0603 cell (ERJ-S). Farnell IE, ex-VAT, full reel 5,000 = EUR 119.50. Second distributor not found within budget."
+  },
+  {
+   "mpn": "ERJ-U02F1002X",
+   "family": "ERJ-U02",
+   "mfr": "Panasonic",
+   "desc": "Thick film anti-sulfur resistor 10k 1% 0.1W 0402 AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "general",
+    "BCM",
+    "ECU"
+   ],
+   "observedMpn": "ERJ-U02F1002X",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 10000,
+     "price": 0.009,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/p/surface-mount-resistors/2432028",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 10000,
+     "price": 0.014,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/erj-u02f1002x-panasonic-3044059",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Anti-sulfur 0402 cell (ERJ-U series; ERJ-S02F1002X not listed). RS UK ex-VAT, reel 10,000 = GBP 90.00; RS listing titled 'ERJ Anti-Sulfurated Resistors 0402 10K' (two RS stock nos. 2432028 / 2432026 returned). Future 15 wk lead time."
+  },
+  {
+   "mpn": "ERA-6AEB103V",
+   "family": "ERA-6AEB",
+   "mfr": "Panasonic",
+   "desc": "Thin film resistor 10k 0.1% 25ppm 0805 AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "sensor",
+    "analog",
+    "BMS"
+   ],
+   "observedMpn": "ERA-6AEB103V",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 5000,
+     "price": 0.0423,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C191101.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "0805 thin-film 10k automotive cell. LCSC C191101 (listed as ERA6AEB103V), 5,000 break. Digi-Key out of stock; Master Electronics price not shown."
+  },
+  {
+   "mpn": "CSS2H-2512R-1L00F",
+   "family": "CSS2H-2512R",
+   "mfr": "Bourns",
+   "desc": "Metal-element current-sense resistor 1 mOhm 1% 2512 AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "inverter",
+    "DC-DC",
+    "motor drive"
+   ],
+   "observedMpn": "CSS2H-2512R-1L00F",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.2954,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C4175647.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C4175647, 3,000 reel, 3,033 in stock; 1,000+ break. Mouser / Digi-Key / Future / TTI price for this exact code not found (Flux.ai qty-1 figures for the -1L00FE code not used)."
+  },
+  {
+   "mpn": "PMR100HZPFV1L00",
+   "family": "PMR100",
+   "mfr": "ROHM",
+   "desc": "Metal current-sense resistor 1 mOhm 1% 2512 (6432)",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "inverter"
+   ],
+   "observedMpn": "PMR100HZPFV1L00",
+   "observations": [],
+   "notes": "PMR100HZPFU1L00 not listed; sibling PMR100HZPFV1L00 on LCSC (C509731) with a 'from $0.1892' figure but no break quantity; Findchips $0.2400 / 2,000 reel names no distributor. Not recorded."
+  },
+  {
+   "mpn": "IHLP4040DZER100M5A",
+   "family": "IHLP4040DZ-5A",
+   "mfr": "Vishay Dale",
+   "desc": "Molded power inductor 10uH 20% 4040 (10.2x10.2 mm) AEC-Q200 (-5A)",
+   "category": "passive_1206",
+   "pkg": "4040",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ECU",
+    "infotainment"
+   ],
+   "observedMpn": "IHLP4040DZER100M5A",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 1.43,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--inductors--power-inductors/ihlp4040dzer100m5a-vishay-2156323",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 1.33,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--inductors--power-inductors/ihlp4040dzer100m5a-vishay-8162237",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Two Future listings, 500 MOQ: one $1.45 @500 / $1.43 @1,000, the other $1.34 @500 / $1.33 @1,000 (10 wk). The search summary did not tie each price to its URL; URLs recorded in result order. Second distributor not found. IHCL4040 (different part) ignored."
+  },
+  {
+   "mpn": "IHLP2525CZER2R2M5A",
+   "family": "IHLP2525CZ-5A",
+   "mfr": "Vishay Dale",
+   "desc": "Molded power inductor 2.2uH 20% 2525 (6.5x6.9 mm) AEC-Q200 (-5A)",
+   "category": "passive_1206",
+   "pkg": "2525",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ECU"
+   ],
+   "observedMpn": "IHLP2525CZER2R2M5A",
+   "observations": [],
+   "notes": "Digipart shows stock but 'Inquiry' only; Mouser SKU shown without price. No usable break."
+  },
+  {
+   "mpn": "XAL4020-222MEC",
+   "family": "XAL4020",
+   "mfr": "Coilcraft",
+   "desc": "Molded power inductor 2.2uH 20% 4x4x2.1 mm AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4020",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ADAS",
+    "ECU"
+   ],
+   "observedMpn": "XAL4020-222MEC",
+   "observations": [],
+   "notes": "Coilcraft page: request quote only; LCSC hits were XFL4020-222MEC (different part, rounded figures). Not recorded."
+  },
+  {
+   "mpn": "SRP6540-4R7M",
+   "family": "SRP6540",
+   "mfr": "Bourns",
+   "desc": "Shielded power inductor 4.7uH 20% 6.5x6.9 mm",
+   "category": "passive_1206",
+   "pkg": "6540",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC"
+   ],
+   "observedMpn": "SRP6540-4R7M",
+   "observations": [],
+   "notes": "Wave-2 retry: no listing for this code; only SRP6540-220M (different value, out of stock)."
+  },
+  {
+   "mpn": "CLF6045NIT-4R7N-D",
+   "family": "CLF6045NIT-D",
+   "mfr": "TDK",
+   "desc": "Power inductor 4.7uH 6.0x6.3x4.5 mm AEC-Q200 (-D)",
+   "category": "passive_1206",
+   "pkg": "6045",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ECU"
+   ],
+   "observedMpn": "CLF6045NIT-4R7N-D",
+   "observations": [],
+   "notes": "Only Sierra IC (quote-only, not franchised) listed it. No usable price."
+  },
+  {
+   "mpn": "TFM201610ALM-1R0MTAA",
+   "family": "TFM201610ALM",
+   "mfr": "TDK",
+   "desc": "Thin-film power inductor 1.0uH 2016 (2.0x1.6 mm) AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "2016",
+   "aecq": true,
+   "ecuRoles": [
+    "PMIC",
+    "ADAS",
+    "camera"
+   ],
+   "observedMpn": "TFM201610ALM-1R0MTAA",
+   "observations": [],
+   "notes": "No listing for this code; LCSC TFM201610ALC (other grade) out of stock; Findchips figure names no distributor."
+  },
+  {
+   "mpn": "DLW32MH101XT2L",
+   "family": "DLW32MH",
+   "mfr": "Murata",
+   "desc": "Common-mode choke 100 Ohm 2-line 1210 (3225) automotive Ethernet 100/1000BASE-T1",
+   "category": "transformer",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "Ethernet"
+   ],
+   "observedMpn": "DLW32MH101XT2L",
+   "observations": [],
+   "notes": "No listing returned for this code (nor for TDK ACT1210E-101-2P-TL00; only the catalogued ACT1210-101-2P-TL00 appeared)."
+  },
+  {
+   "mpn": "HHXC350ARA271MJA0G",
+   "family": "HXC",
+   "mfr": "Nippon Chemi-Con",
+   "desc": "Hybrid polymer Al SMD 270uF 35V 20%, HXC series 125C AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ECU",
+    "BCM"
+   ],
+   "observedMpn": "HHXC350ARA271MJA0G",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.3419,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C525845.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Chemi-Con hybrid polymer cell; HXC (automotive hybrid series) taken as HXE/HXD were not priced: HHXD350ARA271MJA0G gave no listing. LCSC C525845, 1,089 in stock, 1+ $0.7175 to 1,000+ $0.3419. Farnell HHXC350ARA470MF61G (47uF 35V, AEC-Q200) listed without a price."
+  },
+  {
+   "mpn": "T598D337M006ATE025",
+   "family": "T598",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 330uF 6.3V 20% 25 mOhm, D case 7343, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7343-31 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ADAS",
+    "infotainment"
+   ],
+   "observedMpn": "T598D337M006ATE025",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 1500,
+     "price": 0.64,
+     "currency": "USD",
+     "url": "https://www.tme.eu/en/details/t598d337m006ate025/polymer-tantalum-capacitors/kemet/",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "TME net (ex-VAT) price from 1,500 pcs; TME marks it AEC-Q200. Second distributor not found within budget."
+  },
+  {
+   "mpn": "T598D336M035ATE065",
+   "family": "T598",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 33uF 35V 20% 65 mOhm, D case 7343, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7343-31 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ECU"
+   ],
+   "observedMpn": "T598D336M035ATE065",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 1.18,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/kemet/t598d336m035ate065/cap-33uf-35v-tant-polymer-d/dp/3299829",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell UK ex-VAT, 1,000+ break; AEC-Q200 in specs. TME also lists it (price not in summary)."
+  },
+  {
+   "mpn": "T598D106M050ATS090",
+   "family": "T598",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 10uF 50V 20% 90 mOhm, D case 7343, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "7343-31 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ECU"
+   ],
+   "observedMpn": "T598D106M050ATS090",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 500,
+     "price": 2.26,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/kemet/t598d106m050ats090/cap-tantalum-polymer-10uf-50v/dp/4545037",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell UK ex-VAT, 500+ break (largest shown); AEC-Q200 in product details."
+  },
+  {
+   "mpn": "T598D227M010AHS025",
+   "family": "T598",
+   "mfr": "KEMET",
+   "desc": "Polymer tantalum 220uF 10V 20% 25 mOhm, D case 7343, T598 automotive series",
+   "category": "passive_1206",
+   "pkg": "7343-31 (D)",
+   "aecq": true,
+   "ecuRoles": [
+    "DC-DC",
+    "ECU"
+   ],
+   "observedMpn": "T598D227M010AHS025",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.1564,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Tantalum-Capacitors_KEMET-T598D227M010AHS025_C1517041.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC C1517041, 'From $1.1564' at 1,000+, 285 in stock. T598 is KEMET's automotive polymer series; listing itself does not state AEC-Q200."
+  },
+  {
+   "mpn": "MKP1848C61012JP4",
+   "family": "MKP1848C",
+   "mfr": "Vishay",
+   "desc": "PP film DC-link capacitor 10uF 5% 1200 VDC, through hole",
+   "category": "through_hole",
+   "pkg": "radial 4-pin",
+   "aecq": false,
+   "ecuRoles": [
+    "inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "MKP1848C61012JP4",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 100,
+     "price": 8.47,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/film-capacitors/8251492",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK ex-VAT, 100+ break (1 off GBP 9.59); RS marks some MKP1848C prices indicative. AEC-Q200 not stated on the listing (aecq false until confirmed)."
+  },
+  {
+   "mpn": "MKP1848C51012JK2",
+   "family": "MKP1848C",
+   "mfr": "Vishay",
+   "desc": "PP film DC-link capacitor 1uF 5% 1200 VDC, through hole",
+   "category": "through_hole",
+   "pkg": "radial",
+   "aecq": false,
+   "ecuRoles": [
+    "inverter",
+    "OBC",
+    "snubber"
+   ],
+   "observedMpn": "MKP1848C51012JK2",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 250,
+     "price": 0.94,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/film-capacitors/8251486",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK ex-VAT, 250+ break (1 off GBP 1.85). AEC-Q200 not stated on the listing. Other MKP1848C codes (100uF 1kV, 15uF 500V) had only <100 breaks / bag-of-65 prices — not recorded."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "0603 2.2uF 25V X7R automotive (GCM188R71E225KA55D / CGA3E1X7R1E225K080AC)",
+   "why": "Neither code returned a listing (likely not catalogue codes); a confirmed orderable code still needed."
+  },
+  {
+   "code": "0603 4.7uF 16V automotive",
+   "why": "Budget spent after the 2.2uF searches found no confirmed 0603 automotive code."
+  },
+  {
+   "code": "0402 2.2uF 6.3V automotive (e.g. TDK CGA2B3X5R0J225K050BB)",
+   "why": "Budget spent; code not confirmed."
+  },
+  {
+   "code": "1206 22uF 25V automotive (GCM31CR71E226 / CGA5L1X7R1E226)",
+   "why": "Budget spent; code not confirmed."
+  },
+  {
+   "code": "1206 100nF 630V automotive X7R",
+   "why": "Descriptive search found only 630V 1206 parts of 1.5nF / 10nF; no confirmed automotive code."
+  },
+  {
+   "code": "CGA5L3X7R2E105K160AB (1206 1uF 250V)",
+   "why": "Budget spent; code not confirmed by a listing."
+  },
+  {
+   "code": "CGA6M3X7S2A475K200AB (1210 4.7uF 100V)",
+   "why": "Budget spent; wave 1 found only excluded sources."
+  },
+  {
+   "code": "TDK CGA soft-termination (…AE) point",
+   "why": "Budget spent."
+  },
+  {
+   "code": "GCM1885C1H103JA16D",
+   "why": "No listing returned; CGA3E2C0G1H103J080AA used for the 0603 C0G 10nF cell."
+  },
+  {
+   "code": "Vishay CRCW-AS / KOA RK73H-A anti-sulfur 0402/0603",
+   "why": "Budget spent; Panasonic ERJ-U02 / ERJ-S03 used for the anti-sulfur cells."
+  },
+  {
+   "code": "KOA TLR / Isabellenhuette BVR shunts",
+   "why": "Budget spent; Bourns CSS2H-2512R-1L00F priced."
+  },
+  {
+   "code": "Wurth WE-XHMA / WE-MAPI 4020 inductors",
+   "why": "Budget spent; orderable codes not confirmed."
+  },
+  {
+   "code": "Nichicon UCJ hybrid / Wurth WCAP-ASLI",
+   "why": "Budget spent; Chemi-Con HXC priced."
+  },
+  {
+   "code": "KYOCERA AVX TCQ automotive polymer tantalum",
+   "why": "Budget spent; KEMET T598 priced (4 codes)."
+  },
+  {
+   "code": "TDK B32776 automotive / KEMET C4AQ DC-link film",
+   "why": "Budget spent; Vishay MKP1848C priced."
+  },
+  {
+   "code": "Wurth WE-CNSW",
+   "why": "Already catalogued with observations (744232090)."
+  },
+  {
+   "code": "0805 10uF 25V X7S automotive",
+   "why": "Already catalogued with observations (CGA4J1X7S1E106K125AC, GCM21BC71E106KE36L)."
+  },
+  {
+   "code": "XGL4020-222MEB / XAL5030-472MEC",
+   "why": "Already catalogued with observations."
+  }
+ ]
+}

@@ -1,0 +1,774 @@
+{
+ "domain": "power-2",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "EPC2302",
+   "family": "EPC2302",
+   "mfr": "EPC",
+   "desc": "eGaN FET 100 V, 1.8 mOhm",
+   "category": "ic_qfn",
+   "pkg": "QFN 3x5 mm",
+   "aecq": false,
+   "ecuRoles": [
+    "DC-DC 48V",
+    "motor drive"
+   ],
+   "observedMpn": "EPC2302",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 3.67001,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/epc/EPC2302/15912607",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 3.61,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/EPC/EPC2302?qs=6avfeC6zeS7dSOCkasbTvw%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.76462,
+     "currency": "GBP",
+     "url": "https://www.digikey.co.uk/en/products/detail/epc/EPC2302/15912607",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Full-reel T&R breaks. AEC-Q101 status not confirmed in results (treated as non-automotive). Mouser stock 37; Digi-Key listing may be old - verify. Digi-Key UK GBP ex VAT."
+  },
+  {
+   "mpn": "IGT65R055D2ATMA1",
+   "family": "IGT65R055D2",
+   "mfr": "Infineon",
+   "desc": "CoolGaN 650 V G5 GaN transistor, 66 mOhm",
+   "category": "ic_qfn",
+   "pkg": "PG-HSOF-8 (TOLL)",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "IGT65R055D2ATMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2000,
+     "price": 2.42,
+     "currency": "EUR",
+     "url": "https://eu.mouser.com/ProductDetail/Infineon-Technologies/IGT65R055D2ATMA1?qs=7%2F6SraaimPTMrjeUYeX5JQ%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser EU full reel of 2,000 (EUR, ex VAT). Industrial/consumer G5 part - automotive qualification not shown. IGT65R050D2 / IGLR65R automotive codes not found."
+  },
+  {
+   "mpn": "IGL65R055D2XUMA1",
+   "family": "IGL65R055D2",
+   "mfr": "Infineon",
+   "desc": "CoolGaN 650 V G5 GaN transistor, 55 mOhm class",
+   "category": "ic_qfn",
+   "pkg": "leadless SMD (package not confirmed in results)",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "IGL65R055D2XUMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 2.64,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Infineon-Technologies/IGL65R055D2XUMA1?qs=lxPAlgZqN%2FxzUbeafhZ28w%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser full reel (multiples of 3,000). Automotive qualification not shown."
+  },
+  {
+   "mpn": "IGLT65R055D2ATMA1",
+   "family": "IGLT65R055D2",
+   "mfr": "Infineon",
+   "desc": "CoolGaN 650 V GaN transistor, 55 mOhm class",
+   "category": "ic_qfn",
+   "pkg": "SMD (package not confirmed in results)",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "IGLT65R055D2ATMA1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1800,
+     "price": 2.89,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/IGLT65R055D2ATMA1?qs=3vio67wFuYqnsEf5QoZQhA%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser full reel (multiples of 1,800). Automotive qualification not shown; listing may be ~800 days old."
+  },
+  {
+   "mpn": "TP65H035G4WS",
+   "family": "TP65H035G4WS",
+   "mfr": "Transphorm (Renesas)",
+   "desc": "GaN FET 650 V 46 A, 35 mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Farnell IE EUR 17.78 @1 only; Digi-Key prices only on punchouttest / CAD and stated as 'about'. No break >=100 usable. Automotive sibling is TP65H035WSQA (Digi-Key lists it, no price seen)."
+  },
+  {
+   "mpn": "TP65H050G4WS",
+   "family": "TP65H050G4WS",
+   "mfr": "Transphorm (Renesas)",
+   "desc": "GaN FET 650 V 34 A, 50 mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Digi-Key 120 break given only as 'about $5.39' in summary - rounded, not recorded. Farnell JP JPY qty 1 only."
+  },
+  {
+   "mpn": "C3M0040120K",
+   "family": "C3M0040120K",
+   "mfr": "Wolfspeed",
+   "desc": "SiC MOSFET 1200 V 40 mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-4",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "RS JP / TW listings only to 25+ / 30 tube - no break >=100."
+  },
+  {
+   "mpn": "E3M0075120K",
+   "family": "E3M0075120K",
+   "mfr": "Wolfspeed",
+   "desc": "SiC MOSFET 1200 V 75 mOhm, automotive",
+   "category": "through_hole",
+   "pkg": "TO-247-4",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Retry found only fat.lcsc.com (forbidden) for sibling E3M0075120D. No franchised price."
+  },
+  {
+   "mpn": "IDW20G120C5BFKSA1",
+   "family": "IDW20G120C5B",
+   "mfr": "Infineon",
+   "desc": "SiC Schottky diode 1200 V 20 A (CoolSiC G5)",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC PFC"
+   ],
+   "observedMpn": "IDW20G120C5BFKSA1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 100,
+     "price": 6.89,
+     "currency": "EUR",
+     "url": "https://de.rs-online.com/web/p/schottky-dioden-und-gleichrichter/2224836",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS Germany 100+ ex VAT. Industrial (not AEC-Q101). Digi-Key 120 break stated only as 'about $4.66' - not recorded. Farnell/TME disagree on configuration (2x10 A common cathode?) - verify."
+  },
+  {
+   "mpn": "FFSH20120A-F085",
+   "family": "FFSH20120A",
+   "mfr": "onsemi",
+   "desc": "SiC Schottky diode 1200 V 20 A, automotive",
+   "category": "through_hole",
+   "pkg": "TO-247-2",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC PFC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Automotive -F085 code confirmed (Arrow, Farnell). Arrow USD 8.611 @30 only (below 100). Plain FFSH20120A not found."
+  },
+  {
+   "mpn": "1EDI2004ASXUMA1",
+   "family": "1EDI2004AS",
+   "mfr": "Infineon",
+   "desc": "EiceDRIVER isolated IGBT gate driver, automotive",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Orderable confirmed by Infineon information note 130/18 (hosted on mm.digikey.com). No price found; Digi-Key line item showed only neighbouring parts' prices."
+  },
+  {
+   "mpn": "MC33XS2410ELR2",
+   "family": "MC33XS2410",
+   "mfr": "NXP",
+   "desc": "Quad high-side switch 24 V, 100 mOhm, SPI, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "HVQFN (EL)",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "truck body"
+   ],
+   "observedMpn": "MC33XS2410ELR2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 6.118,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MC33XS2410ELR2/18711272",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 2500,
+     "price": 6.5915,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/mc33xs2410elr2/nxp-semiconductors",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key T&R 5,000 (0 in stock, incoming). Newark USD 4.530 full reel min 2,500 but break label ('1200+') inconsistent - not recorded. Package from code (EL), not confirmed."
+  },
+  {
+   "mpn": "IAUCN04S7N004ATMA1",
+   "family": "IAUCN04S7N004",
+   "mfr": "Infineon",
+   "desc": "OptiMOS 7 N-MOSFET 40 V 175 A, automotive",
+   "category": "ic_qfn",
+   "pkg": "PG-TDSON-8-53 (sTOLL)",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "48V",
+    "eFuse"
+   ],
+   "observedMpn": "IAUCN04S7N004ATMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 1.8488,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/IAUCN04S7N004ATMA1/20841986",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 1.2485,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/IAUCN04S7N004ATMA1/20841986",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key cut tape 100 and T&R 5,000 (undated snapshot). IAUTN04S7N004 (TOLL) not found in any result."
+  },
+  {
+   "mpn": "TPS1HC100BQPWPRQ1",
+   "family": "TPS1HC100-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Single-channel smart high-side switch 100 mOhm, automotive",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-14 (PWP)",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "zone"
+   ],
+   "observedMpn": "TPS1HC100BQPWPRQ1",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.6116,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C3230071.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.80546,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS1HC100BQPWPRQ1/15857168",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Retry; real hosts (not punchouttest)."
+  },
+  {
+   "mpn": "TPS48111LQDGXRQ1",
+   "family": "TPS48111-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive smart high-side driver with protection and diagnostics",
+   "category": "ic_soic",
+   "pkg": "VSSOP (DGX)",
+   "aecq": true,
+   "ecuRoles": [
+    "zone",
+    "PDU",
+    "48V"
+   ],
+   "observedMpn": "TPS48111LQDGXRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 2.91336,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPS48111LQDGXRQ1/17748329",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 5000,
+     "price": 2.8,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/TPS48111LQDGXRQ1?qs=amGC7iS6iy%2Faisrr5sZ5WQ%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.8413,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C17558994.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key 250 = USD 3.24848; Mouser 250 = USD 3.11 (not recorded, 3-obs limit). LCSC well below US distributors."
+  },
+  {
+   "mpn": "TLE9104SHXUMA1",
+   "family": "TLE9104SH",
+   "mfr": "Infineon",
+   "desc": "Quad low-side switch 60 V 3 A, 0.3 Ohm, SPI, powertrain, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "DSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "engine ECU",
+    "BMS",
+    "TCU"
+   ],
+   "observedMpn": "TLE9104SHXUMA1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.81773,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TLE9104SHXUMA1/8627206",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 1000,
+     "price": 2.084,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/tle9104shxuma1/infineon-technologies-ag?region=nac",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser USD 2.55 @2000 and Newark USD 3.20 @1000 also stated but their page URLs not in results - not recorded. Farnell UK only to 50+."
+  },
+  {
+   "mpn": "LM5060Q1MM/NOPB",
+   "family": "LM5060-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "High-side protection / hot-swap controller 5.5-65 V, automotive",
+   "category": "ic_soic",
+   "pkg": "VSSOP-10 (MSOP)",
+   "aecq": true,
+   "ecuRoles": [
+    "eFuse",
+    "ECU input"
+   ],
+   "observedMpn": "LM5060Q1MM/NOPB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.77995,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/LM5060Q1MM-NOPB/2262901",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Real Digi-Key host. LM5060QDGSRQ1 has no price in results; this is the -Q1 MM (1k reel) orderable. Replaces family estimate LM5060."
+  },
+  {
+   "mpn": "A6983CQTR",
+   "family": "A6983",
+   "mfr": "STMicroelectronics",
+   "desc": "Automotive 38 V 3 A synchronous buck, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "QFN-16 3x3",
+   "aecq": true,
+   "ecuRoles": [
+    "ECU supply",
+    "body"
+   ],
+   "observedMpn": "A6983CQTR",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 1.62,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/A6983CQTR?qs=rQFj71Wb1eVrnVu65udtfg%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 6000,
+     "price": 1.59,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/A6983CQTR?qs=rQFj71Wb1eVrnVu65udtfg%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.62195,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/A6983CQTR/18084504",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Wave-1 had no price. Digi-Key out of stock (backorder). ST launch list USD 1.75/1k for reference."
+  },
+  {
+   "mpn": "A6983IQTR",
+   "family": "A6983I",
+   "mfr": "STMicroelectronics",
+   "desc": "Automotive iso-buck converter 4.5 A, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "QFN-16 3x3",
+   "aecq": true,
+   "ecuRoles": [
+    "isolated bias",
+    "gate driver supply"
+   ],
+   "observedMpn": "A6983IQTR",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 1.62,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/A6983IQTR?qs=Y0Uzf4wQF3lyFAWk8vYLxw%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 1.74578,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/A6983IQTR/18084488",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Full-reel T&R."
+  },
+  {
+   "mpn": "MPQ4430GLE-AEC1-Z",
+   "family": "MPQ4430",
+   "mfr": "Monolithic Power Systems",
+   "desc": "36 V 3.5 A synchronous buck, low Iq, AEC-Q100 (wettable flank)",
+   "category": "ic_qfn",
+   "pkg": "QFN (GLE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ECU supply"
+   ],
+   "observedMpn": "MPQ4430GLE-AEC1-Z",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.8952,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/monolithic-power-systems-inc/MPQ4430GLE-AEC1-Z/7690109",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 2.6642,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/monolithic-power-systems-inc/MPQ4430GLE-AEC1-Z/7690109",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Distributor price (not MPS list). Digi-Key 0 stock, 24 wk; another snippet of the same page showed USD 2.37986 with no break - not recorded. Avnet -AEC1-P USD 2.6132 @500 (different packing code)."
+  },
+  {
+   "mpn": "MPQ4430GL-AEC1-Z",
+   "family": "MPQ4430",
+   "mfr": "Monolithic Power Systems",
+   "desc": "36 V 3.5 A synchronous buck, low Iq, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "QFN (GL)",
+   "aecq": true,
+   "ecuRoles": [
+    "ECU supply"
+   ],
+   "observedMpn": "MPQ4430GL-AEC1-Z",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 5000,
+     "price": 2.22,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Monolithic-Power-Systems-MPS/MPQ4430GL-AEC1-Z?qs=BZBei1rCqCBGxfrWDESXLA%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 2.4174,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/monolithic-power-systems-inc/MPQ4430GL-AEC1-Z/7690105",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Sibling of the GLE (no wettable flank). Mouser full reel 5,000 = USD 11,100."
+  },
+  {
+   "mpn": "MPQ8875AGVE-0000-AEC1-Z",
+   "family": "MPQ8875",
+   "mfr": "Monolithic Power Systems",
+   "desc": "Automotive 4-switch buck-boost controller, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "QFN (GVE)",
+   "aecq": true,
+   "ecuRoles": [
+    "ECU supply",
+    "start-stop"
+   ],
+   "observedMpn": "MPQ8875AGVE-0000-AEC1-Z",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 3.82,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/MPQ8875AGVE-0000-AEC1-Z",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 5000,
+     "price": 3.36,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/MPQ8875AGVE-0000-AEC1-Z",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 3.2833,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/MPQ8875AGVE-0000-AEC1-Z",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Via Findchips naming the distributors and the exact code (Digi-Key 1589-MPQ8875AGVE-0000-AEC1-ZTR-ND). Both out of stock. Future USD 3.29 @5000 also listed. Task code MPQ8875AGV-AEC1-Z not found."
+  },
+  {
+   "mpn": "LDL1117S33R",
+   "family": "LDL1117",
+   "mfr": "STMicroelectronics",
+   "desc": "1.2 A LDO 3.3 V",
+   "category": "ic_soic",
+   "pkg": "SOT-223",
+   "aecq": false,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "LDL1117S33R",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2500,
+     "price": 0.482,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/LDL1117S33R/?qs=AQlKX63v8Rt9Bf6AWSrbFg%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser full reel 2,500 = USD 1,205.00. Standard-grade code; automotive LDL1117-Q orderable not found."
+  },
+  {
+   "mpn": "SN6507DGQRQ1",
+   "family": "SN6507-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive push-pull transformer driver 36 V for isolated supplies",
+   "category": "ic_soic",
+   "pkg": "HVSSOP-10 (DGQ)",
+   "aecq": true,
+   "ecuRoles": [
+    "gate driver supply",
+    "BMS"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Orderable SN6507DGQRQ1 confirmed (Arrow, Mouser). A USD 2.405 @2500 tier seen but the summary did not say which distributor - not recorded."
+  },
+  {
+   "mpn": "UCC14140QDWNRQ1",
+   "family": "UCC14140-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive isolated DC/DC bias module",
+   "category": "ic_soic",
+   "pkg": "SSOP-36 (DWN)",
+   "aecq": true,
+   "ecuRoles": [
+    "inverter gate supply"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Code UCC14140QDWNRQ1 seen on Digi-Key related-parts snippet at USD 8.22 with no quantity - not recorded."
+  },
+  {
+   "mpn": "ADBMS6832MWCCSZ",
+   "family": "ADBMS6832",
+   "mfr": "Analog Devices",
+   "desc": "16-cell battery stack monitor, automotive",
+   "category": "ic_tqfp",
+   "pkg": "not confirmed in results",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS"
+   ],
+   "observedMpn": "ADBMS6832MWCCSZ",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 100,
+     "price": 6.5624,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C18166020.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC 100+. ADI 1k list USD 11.90 (manufacturer, not recorded). LCSC reel code ADBMS6832MWCCSZ-RL showed USD 4.4426 @100 - well below the cut-tape price and ADI list, treated as suspect, not recorded. Category assumed LQFP; verify."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "TI LMG3624",
+   "why": "searched; not automotive (650 V consumer GaN) and no distributor price returned"
+  },
+  {
+   "code": "TI LMG3422R030",
+   "why": "industrial 600 V GaN; budget spent"
+  },
+  {
+   "code": "Navitas NV6169 automotive",
+   "why": "OBC GaN IC; budget spent"
+  },
+  {
+   "code": "Infineon IGT65R050D2 / IGLR65R automotive",
+   "why": "codes not found; only G5 industrial siblings priced"
+  },
+  {
+   "code": "Wolfspeed E3M0040120K",
+   "why": "automotive 1200 V SiC; searched with E3M0075120K, only forbidden host"
+  },
+  {
+   "code": "Infineon AIMBG120R030M1 / AIMZH120R030M1",
+   "why": "automotive 1200 V CoolSiC; budget spent"
+  },
+  {
+   "code": "Wolfspeed E4D20120A",
+   "why": "automotive SiC Schottky; budget spent"
+  },
+  {
+   "code": "NXP GD3160 / GD3162 full code",
+   "why": "ASIL-D SiC gate driver; budget spent"
+  },
+  {
+   "code": "ADI ADuM4146 / ADuM4177 (ARWZ)",
+   "why": "isolated SiC gate drivers; budget spent"
+  },
+  {
+   "code": "Skyworks Si8285 / Si8271 automotive",
+   "why": "isolated gate drivers; budget spent"
+  },
+  {
+   "code": "onsemi NVBLS0D8N08X",
+   "why": "80 V TOLL automotive MOSFET; budget spent (code unconfirmed)"
+  },
+  {
+   "code": "Infineon IAUTN04S7N004",
+   "why": "TOLL OptiMOS 7; searched, code not found"
+  },
+  {
+   "code": "TI TPS65224-Q1",
+   "why": "safety PMIC; searched, orderable (NVM-option suffix) not confirmed, no price"
+  },
+  {
+   "code": "TI LP8764-Q1",
+   "why": "multi-phase PMIC; budget spent"
+  },
+  {
+   "code": "NXP PF09 / FS86 / FS8600",
+   "why": "S32 PMIC / safety SBC; budget spent"
+  },
+  {
+   "code": "Renesas RAA271000",
+   "why": "R-Car PMIC; budget spent"
+  },
+  {
+   "code": "ADI MAX20084 / MAX20478 / LT8636 / LT8390",
+   "why": "automotive regulators; budget spent"
+  },
+  {
+   "code": "Rohm BD39040",
+   "why": "automotive multi-rail power IC; budget spent"
+  },
+  {
+   "code": "ST LDL1117-Q automotive code",
+   "why": "only the standard LDL1117S33R found"
+  }
+ ]
+}

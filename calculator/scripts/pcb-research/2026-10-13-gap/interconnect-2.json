@@ -1,122 +1,441 @@
-{ "domain": "interconnect-2", "researched": "2026-10-13", "parts": [
-  { "mpn": "DF40C-60DP-0.4V(51)", "family": "DF40C", "mfr": "Hirose Electric",
-    "desc": "Board-to-board header, 60-way, 0.4 mm pitch, DF40 series", "category": "connector_smt", "pkg": "SMT 60P 0.4mm",
-    "aecq": false, "ecuRoles": ["infotainment","camera","display"], "observedMpn": "DF40C-60DP-0.4V(51)",
-    "observations": [
-      { "distributor": "LCSC", "qty": 1000, "price": 0.3319, "currency": "USD", "url": "https://www.lcsc.com/product-image/C424647.html", "date": "2026-10-13" },
-      { "distributor": "Future Electronics", "qty": 5000, "price": 0.59, "currency": "USD", "url": "https://www.futureelectronics.com/p/4003293", "date": "2026-10-13" }
-    ],
-    "notes": "Future: zero stock, 14-week lead, min 5000 (only break shown). LCSC reel 5000. Not an automotive-qualified series." },
-  { "mpn": "9-2304372-9", "family": "MATEnet", "mfr": "TE Connectivity",
-    "desc": "MATEnet automotive Ethernet PCB header, 2-way, right angle, 3 A 60 VDC", "category": "connector_smt", "pkg": "PCB header 2P",
-    "aecq": false, "ecuRoles": ["gateway","ADAS","camera"], "observedMpn": "9-2304372-9",
-    "observations": [
-      { "distributor": "Farnell", "qty": 100, "price": 13.51, "currency": "EUR", "url": "https://fr.farnell.com/te-connectivity/9-2304372-9/conn-automobile-male-28p-3a-60vdc/dp/4155204", "date": "2026-10-13" }
-    ],
-    "notes": "Farnell FR ex VAT, 100+ is the top break shown (1+ 18.72, 10+ 15.90, 25+ 14.90). Farnell BE 500+ figure seen only as a hedged summary value - not recorded. AEC-Q not applicable to connectors (USCAR / LV214 automotive series)." },
-  { "mpn": "34912-6040", "family": "Mini50", "mfr": "Molex",
-    "desc": "Mini50 automotive SMT header plug, 4-way, unsealed", "category": "connector_smt", "pkg": "SMT 4P",
-    "aecq": false, "ecuRoles": ["BCM","ECU harness"], "observedMpn": "34912-6040",
-    "observations": [
-      { "distributor": "RS Components", "qty": 250, "price": 1.50, "currency": "GBP", "url": "https://uk.rs-online.com/web/p/automotive-connectors/1620981", "date": "2026-10-13" }
-    ],
-    "notes": "RS UK 250+ (reel of 250), RS UK list price ex VAT. Automotive series; AEC-Q not applicable to connectors." },
-  { "mpn": "E6S20A-40MT5-A", "family": "H-MTD", "mfr": "Rosenberger",
-    "desc": "H-MTD PCB plug with housing (camera / radar coax data)", "category": "connector_smt", "pkg": "PCB plug",
-    "aecq": false, "ecuRoles": ["ADAS","camera","radar"], "observedMpn": "E6S20A-40MT5-A",
-    "observations": [],
-    "notes": "Only a hedged summary figure from a Findchips 'E6S20' search (Mouser 1000 'about 3.85 USD') - not recorded. No E6Z PCB jack listing found." },
-  { "mpn": "59S20K-40MT5-Y", "family": "FAKRA 59S", "mfr": "Rosenberger",
-    "desc": "FAKRA right-angle PCB plug, tape and reel", "category": "connector_smt", "pkg": "PCB plug",
-    "aecq": false, "ecuRoles": ["telematics","infotainment","camera"], "observedMpn": "59S20K-40MT5-Y",
-    "observations": [],
-    "notes": "Code from a Mouser-hosted datasheet; no distributor price found in two searches (59S2MB-40MT5-Y, 59S20X-400T5-C also unpriced)." },
-  { "mpn": "DMP3098LQ-7", "family": "DMP3098LQ", "mfr": "Diodes Incorporated",
-    "desc": "P-channel MOSFET 30 V, SOT-23, AEC-Q101", "category": "ic_soic", "pkg": "SOT-23",
-    "aecq": true, "ecuRoles": ["BCM","load switch","reverse polarity"], "observedMpn": "DMP3098LQ-7",
-    "observations": [
-      { "distributor": "LCSC", "qty": 3000, "price": 0.0776, "currency": "USD", "url": "https://www.lcsc.com/product-image/C460875.html", "date": "2026-10-13" },
-      { "distributor": "LCSC", "qty": 6000, "price": 0.0727, "currency": "USD", "url": "https://www.lcsc.com/product-image/C460875.html", "date": "2026-10-13" }
-    ],
-    "notes": "LCSC full reel 3000." },
-  { "mpn": "DMN3404LQ-7", "family": "DMN3404LQ", "mfr": "Diodes Incorporated",
-    "desc": "N-channel MOSFET 30 V, SOT-23, AEC-Q101", "category": "ic_soic", "pkg": "SOT-23",
-    "aecq": true, "ecuRoles": ["BCM","low-side switch"], "observedMpn": "DMN3404LQ-7",
-    "observations": [],
-    "notes": "Future Electronics shows two conflicting price sets for the same product id 4030927 (0.43 vs 0.196 USD at 3000), zero stock, 40-week lead - not recorded. IBS Electronics (not franchised) ignored." },
-  { "mpn": "DMN6075SQ-7", "family": "DMN6075SQ", "mfr": "Diodes Incorporated",
-    "desc": "N-channel MOSFET 60 V, SOT-23, AEC-Q101", "category": "ic_soic", "pkg": "SOT-23",
-    "aecq": true, "ecuRoles": ["BCM","low-side switch"], "observedMpn": "DMN6075SQ-7",
-    "observations": [],
-    "notes": "No listing of the Q code found. LCSC lists only non-automotive DMN6075S-7 (C155242, 0.0542 USD at 3000) and a Leiditech 'DMN6075SQ' clone - neither recorded." },
-  { "mpn": "TPD1E10B06QDPYRQ1", "family": "TPD1E10B06-Q1", "mfr": "Texas Instruments",
-    "desc": "Single-line bidirectional ESD diode 6 V, X1SON-2 (0402), AEC-Q101", "category": "fuse_tvs", "pkg": "X1SON-2",
-    "aecq": true, "ecuRoles": ["I/O protection"], "observedMpn": "TPD1E10B06QDPYRQ1",
-    "observations": [],
-    "notes": "Orderable code seen only on an eBay listing; no franchised price found in two searches. Non-Q1 TPD1E10B06DPYR prices not used." },
-  { "mpn": "AQ24CANFD-02HTG", "family": "AQ24CANFD", "mfr": "Littelfuse",
-    "desc": "CAN FD TVS diode array, 2-line, 24 V, 200 W, SOT-23, AEC-Q101", "category": "fuse_tvs", "pkg": "SOT-23",
-    "aecq": true, "ecuRoles": ["gateway","BCM","CAN FD"], "observedMpn": "AQ24CANFD-02HTG",
-    "observations": [
-      { "distributor": "LCSC", "qty": 6000, "price": 0.0653, "currency": "USD", "url": "https://www.lcsc.com/product-image/C1975190.html", "date": "2026-10-13" }
-    ],
-    "notes": "LCSC reel 3000. Findchips snapshot breaks (Digi-Key F10993CT-ND, Newark) were internally inconsistent - not recorded." },
-  { "mpn": "SM8S36AHE3/2D", "family": "SM8S36A", "mfr": "Vishay",
-    "desc": "TVS diode 36 V unidirectional, 6.6 kW, DO-218AB, load-dump, AEC-Q101 (HE3)", "category": "fuse_tvs", "pkg": "DO-218AB",
-    "aecq": true, "ecuRoles": ["load dump","12V input","BMS"], "observedMpn": "SM8S36AHE3/2D",
-    "observations": [
-      { "distributor": "RS Components", "qty": 750, "price": 1.272, "currency": "GBP", "url": "https://uk.rs-online.com/web/p/tvs-diodes/1696093", "date": "2026-10-13" }
-    ],
-    "notes": "RS UK reel of 750 = GBP 954.00 ex VAT (954.00/750 = 1.272); 'last RS stock', prices marked indicative. Single-unit _A/I (GBP 2.19) not recorded." },
-  { "mpn": "CX2016DB40000D0FLJCC", "family": "CX2016DB", "mfr": "Kyocera AVX",
-    "desc": "Crystal 40 MHz 2016 SMD, FLJCC automotive suffix", "category": "crystal_osc", "pkg": "2.0x1.6 mm",
-    "aecq": true, "ecuRoles": ["Wi-Fi","telematics","MCU clock"], "observedMpn": "CX2016DB40000D0FLJCC",
-    "observations": [
-      { "distributor": "LCSC", "qty": 1000, "price": 0.8773, "currency": "USD", "url": "https://www.lcsc.com/product-image/C1985269.html", "date": "2026-10-13" }
-    ],
-    "notes": "LCSC 22 in stock. AEC-Q200 inferred from the FLJCC suffix (the 32 MHz FLJCC sibling is listed AEC-Q200); Kyocera says contact them for automotive use." },
-  { "mpn": "CX2016DB38400D0FLJCC", "family": "CX2016DB", "mfr": "Kyocera AVX",
-    "desc": "Crystal 38.4 MHz 2016 SMD, FLJCC automotive suffix", "category": "crystal_osc", "pkg": "2.0x1.6 mm",
-    "aecq": true, "ecuRoles": ["connectivity","MCU clock"], "observedMpn": "CX2016DB38400D0FLJCC",
-    "observations": [
-      { "distributor": "Future Electronics", "qty": 3000, "price": 0.515, "currency": "USD", "url": "https://futureelectronics.com/p/electromechanical--timing-devices--crystals/cx2016db38400d0fljcc-kyocera-avx-2116860", "date": "2026-10-13" }
-    ],
-    "notes": "Future: zero stock, 18-week factory lead. AEC-Q200 inferred from the FLJCC suffix." },
-  { "mpn": "CX2016DB32000D0FLJCC", "family": "CX2016DB", "mfr": "Kyocera AVX",
-    "desc": "Crystal 32 MHz 8 pF 2016 SMD, AEC-Q200", "category": "crystal_osc", "pkg": "2.0x1.6 mm",
-    "aecq": true, "ecuRoles": ["MCU clock"], "observedMpn": "CX2016DB32000D0FLJCC",
-    "observations": [],
-    "notes": "Findchips 'dflj' search shows a Mouser 3000 break but the summary gave it only as 'about 0.538 USD' - not recorded; exact-code search found no listing." },
-  { "mpn": "CB1A-12V", "family": "CB1", "mfr": "Panasonic",
-    "desc": "Automotive PCB relay SPST-NO 40 A, 12 V coil, CB series", "category": "relay_switch", "pkg": "PCB THT relay",
-    "aecq": false, "ecuRoles": ["BCM","power distribution","fan/pump"], "observedMpn": "CB1A-12V",
-    "observations": [
-      { "distributor": "Mouser", "qty": 2500, "price": 3.06, "currency": "USD", "url": "https://origin-www.findchips.com/detail/CB1A-12V/Panasonic-Electronic-Components", "date": "2026-10-13" }
-    ],
-    "notes": "Mouser breaks via Findchips detail page (1+ 3.24, 50+ 3.12). Digi-Key 1000 figure given only as 'about' - not recorded. CB1-12V (SPDT) only on resellers. Relays have no AEC-Q grade." },
-  { "mpn": "0885005.DR", "family": "0885", "mfr": "Littelfuse",
-    "desc": "SMD fuse 5 A 450 VDC, 885 series, high-voltage", "category": "fuse_tvs", "pkg": "SMD fuse (885 series)",
-    "aecq": false, "ecuRoles": ["HV","OBC","BMS"], "observedMpn": "0885005.DR",
-    "observations": [
-      { "distributor": "Future Electronics", "qty": 1500, "price": 2.02, "currency": "USD", "url": "https://futureelectronics.com/fr/p/electromechanical--circuit-protection--electronic-fuses/0885005-dr-littelfuse-3149327", "date": "2026-10-13" },
-      { "distributor": "Future Electronics", "qty": 3000, "price": 1.98, "currency": "USD", "url": "https://futureelectronics.com/fr/p/electromechanical--circuit-protection--electronic-fuses/0885005-dr-littelfuse-3149327", "date": "2026-10-13" }
-    ],
-    "notes": "Future: reel 1500, zero stock, 15-week lead, price date not stated. Wave 1 asked 0885002.DR (unpriced); this is the 5 A sibling. AEC-Q200 status not confirmed." },
-  { "mpn": "KW CSLNM1.TG", "family": "KW CSLNM1", "mfr": "ams OSRAM",
-    "desc": "White LED, OSRAM OSTAR Projection Compact, ceramic SMD", "category": "led", "pkg": "SMD ceramic",
-    "aecq": false, "ecuRoles": ["lighting"], "observedMpn": "KW CSLNM1.TG",
-    "observations": [],
-    "notes": "Only fat.lcsc.com (excluded) priced the CSLNM1 bin. Sibling KW CSLPM1.TG: RS IE reel 1000 EUR 1,994 ex VAT and mouser.ca 1000 2.66 (currency unclear) - not recorded because the full bin code of the RS reel stock number was not shown. Automotive grade not confirmed." }
-],
-"notResearched": [
-  { "code": "Rosenberger H-MTD E6Z… PCB jack", "why": "searched; no E6Z listing or price found - camera / radar coax header" },
-  { "code": "Amphenol FAKRA FA1-…, TE HFM, Molex MX123 / MX150 headers", "why": "main ECU / coax headers; budget spent" },
-  { "code": "Hirose GT8E / GT17 / FX18, JST automotive, USB-C automotive receptacles", "why": "board-to-board and infotainment connectors; budget spent" },
-  { "code": "Diodes SBR / BZT52-Q, Vishay SMBJ…-M3 / VSMB", "why": "AEC-Q101 rail TVS / rectifiers / zeners; budget spent" },
-  { "code": "ESD2CANFD24DBZRQ1", "why": "CAN FD ESD -Q1 retry; budget spent" },
-  { "code": "Littelfuse SMF, onsemi SZESD…, Nexperia PESD2CANFD27 / PMEG / PZU", "why": "automotive ESD / Schottky / zener; budget spent" },
-  { "code": "TXC 7M / 8Y / 7V automotive (AX / AA series)", "why": "searched; only a non-franchised IBS price (AA-8.000MALV-T) found; 8Y is not AEC-Q200" },
-  { "code": "NDK NX2016SA / NX3225GA automotive, Abracon ABM3B, SiTime SiT9396, Epson FA-128 automotive, Murata XRCGB automotive", "why": "crystal / oscillator points; budget spent" },
-  { "code": "Nichia NSSW…AT / NJSW…AT, Lumileds LUXEON automotive, OSRAM LA G6SP", "why": "automotive LEDs; budget spent" },
-  { "code": "Panasonic CT / CV, TE V23234, Littelfuse 501 fuses", "why": "automotive relays / fuses; budget spent" }
-] }
+{
+ "domain": "interconnect-2",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "DF40C-60DP-0.4V(51)",
+   "family": "DF40C",
+   "mfr": "Hirose Electric",
+   "desc": "Board-to-board header, 60-way, 0.4 mm pitch, DF40 series",
+   "category": "connector_smt",
+   "pkg": "SMT 60P 0.4mm",
+   "aecq": false,
+   "ecuRoles": [
+    "infotainment",
+    "camera",
+    "display"
+   ],
+   "observedMpn": "DF40C-60DP-0.4V(51)",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.3319,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C424647.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 5000,
+     "price": 0.59,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/4003293",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future: zero stock, 14-week lead, min 5000 (only break shown). LCSC reel 5000. Not an automotive-qualified series."
+  },
+  {
+   "mpn": "9-2304372-9",
+   "family": "MATEnet",
+   "mfr": "TE Connectivity",
+   "desc": "MATEnet automotive Ethernet PCB header, 2-way, right angle, 3 A 60 VDC",
+   "category": "connector_smt",
+   "pkg": "PCB header 2P",
+   "aecq": false,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "camera"
+   ],
+   "observedMpn": "9-2304372-9",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 13.51,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/te-connectivity/9-2304372-9/conn-automobile-male-28p-3a-60vdc/dp/4155204",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell FR ex VAT, 100+ is the top break shown (1+ 18.72, 10+ 15.90, 25+ 14.90). Farnell BE 500+ figure seen only as a hedged summary value - not recorded. AEC-Q not applicable to connectors (USCAR / LV214 automotive series)."
+  },
+  {
+   "mpn": "34912-6040",
+   "family": "Mini50",
+   "mfr": "Molex",
+   "desc": "Mini50 automotive SMT header plug, 4-way, unsealed",
+   "category": "connector_smt",
+   "pkg": "SMT 4P",
+   "aecq": false,
+   "ecuRoles": [
+    "BCM",
+    "ECU harness"
+   ],
+   "observedMpn": "34912-6040",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 250,
+     "price": 1.5,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/automotive-connectors/1620981",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK 250+ (reel of 250), RS UK list price ex VAT. Automotive series; AEC-Q not applicable to connectors."
+  },
+  {
+   "mpn": "E6S20A-40MT5-A",
+   "family": "H-MTD",
+   "mfr": "Rosenberger",
+   "desc": "H-MTD PCB plug with housing (camera / radar coax data)",
+   "category": "connector_smt",
+   "pkg": "PCB plug",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS",
+    "camera",
+    "radar"
+   ],
+   "observedMpn": "E6S20A-40MT5-A",
+   "observations": [],
+   "notes": "Only a hedged summary figure from a Findchips 'E6S20' search (Mouser 1000 'about 3.85 USD') - not recorded. No E6Z PCB jack listing found."
+  },
+  {
+   "mpn": "59S20K-40MT5-Y",
+   "family": "FAKRA 59S",
+   "mfr": "Rosenberger",
+   "desc": "FAKRA right-angle PCB plug, tape and reel",
+   "category": "connector_smt",
+   "pkg": "PCB plug",
+   "aecq": false,
+   "ecuRoles": [
+    "telematics",
+    "infotainment",
+    "camera"
+   ],
+   "observedMpn": "59S20K-40MT5-Y",
+   "observations": [],
+   "notes": "Code from a Mouser-hosted datasheet; no distributor price found in two searches (59S2MB-40MT5-Y, 59S20X-400T5-C also unpriced)."
+  },
+  {
+   "mpn": "DMP3098LQ-7",
+   "family": "DMP3098LQ",
+   "mfr": "Diodes Incorporated",
+   "desc": "P-channel MOSFET 30 V, SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "load switch",
+    "reverse polarity"
+   ],
+   "observedMpn": "DMP3098LQ-7",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.0776,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C460875.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 6000,
+     "price": 0.0727,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C460875.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC full reel 3000."
+  },
+  {
+   "mpn": "DMN3404LQ-7",
+   "family": "DMN3404LQ",
+   "mfr": "Diodes Incorporated",
+   "desc": "N-channel MOSFET 30 V, SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "low-side switch"
+   ],
+   "observedMpn": "DMN3404LQ-7",
+   "observations": [],
+   "notes": "Future Electronics shows two conflicting price sets for the same product id 4030927 (0.43 vs 0.196 USD at 3000), zero stock, 40-week lead - not recorded. IBS Electronics (not franchised) ignored."
+  },
+  {
+   "mpn": "DMN6075SQ-7",
+   "family": "DMN6075SQ",
+   "mfr": "Diodes Incorporated",
+   "desc": "N-channel MOSFET 60 V, SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "low-side switch"
+   ],
+   "observedMpn": "DMN6075SQ-7",
+   "observations": [],
+   "notes": "No listing of the Q code found. LCSC lists only non-automotive DMN6075S-7 (C155242, 0.0542 USD at 3000) and a Leiditech 'DMN6075SQ' clone - neither recorded."
+  },
+  {
+   "mpn": "TPD1E10B06QDPYRQ1",
+   "family": "TPD1E10B06-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Single-line bidirectional ESD diode 6 V, X1SON-2 (0402), AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "X1SON-2",
+   "aecq": true,
+   "ecuRoles": [
+    "I/O protection"
+   ],
+   "observedMpn": "TPD1E10B06QDPYRQ1",
+   "observations": [],
+   "notes": "Orderable code seen only on an eBay listing; no franchised price found in two searches. Non-Q1 TPD1E10B06DPYR prices not used."
+  },
+  {
+   "mpn": "AQ24CANFD-02HTG",
+   "family": "AQ24CANFD",
+   "mfr": "Littelfuse",
+   "desc": "CAN FD TVS diode array, 2-line, 24 V, 200 W, SOT-23, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "BCM",
+    "CAN FD"
+   ],
+   "observedMpn": "AQ24CANFD-02HTG",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 6000,
+     "price": 0.0653,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C1975190.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC reel 3000. Findchips snapshot breaks (Digi-Key F10993CT-ND, Newark) were internally inconsistent - not recorded."
+  },
+  {
+   "mpn": "SM8S36AHE3/2D",
+   "family": "SM8S36A",
+   "mfr": "Vishay",
+   "desc": "TVS diode 36 V unidirectional, 6.6 kW, DO-218AB, load-dump, AEC-Q101 (HE3)",
+   "category": "fuse_tvs",
+   "pkg": "DO-218AB",
+   "aecq": true,
+   "ecuRoles": [
+    "load dump",
+    "12V input",
+    "BMS"
+   ],
+   "observedMpn": "SM8S36AHE3/2D",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 750,
+     "price": 1.272,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/tvs-diodes/1696093",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK reel of 750 = GBP 954.00 ex VAT (954.00/750 = 1.272); 'last RS stock', prices marked indicative. Single-unit _A/I (GBP 2.19) not recorded."
+  },
+  {
+   "mpn": "CX2016DB40000D0FLJCC",
+   "family": "CX2016DB",
+   "mfr": "Kyocera AVX",
+   "desc": "Crystal 40 MHz 2016 SMD, FLJCC automotive suffix",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "Wi-Fi",
+    "telematics",
+    "MCU clock"
+   ],
+   "observedMpn": "CX2016DB40000D0FLJCC",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.8773,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C1985269.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC 22 in stock. AEC-Q200 inferred from the FLJCC suffix (the 32 MHz FLJCC sibling is listed AEC-Q200); Kyocera says contact them for automotive use."
+  },
+  {
+   "mpn": "CX2016DB38400D0FLJCC",
+   "family": "CX2016DB",
+   "mfr": "Kyocera AVX",
+   "desc": "Crystal 38.4 MHz 2016 SMD, FLJCC automotive suffix",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "connectivity",
+    "MCU clock"
+   ],
+   "observedMpn": "CX2016DB38400D0FLJCC",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 3000,
+     "price": 0.515,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/electromechanical--timing-devices--crystals/cx2016db38400d0fljcc-kyocera-avx-2116860",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future: zero stock, 18-week factory lead. AEC-Q200 inferred from the FLJCC suffix."
+  },
+  {
+   "mpn": "CX2016DB32000D0FLJCC",
+   "family": "CX2016DB",
+   "mfr": "Kyocera AVX",
+   "desc": "Crystal 32 MHz 8 pF 2016 SMD, AEC-Q200",
+   "category": "crystal_osc",
+   "pkg": "2.0x1.6 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "MCU clock"
+   ],
+   "observedMpn": "CX2016DB32000D0FLJCC",
+   "observations": [],
+   "notes": "Findchips 'dflj' search shows a Mouser 3000 break but the summary gave it only as 'about 0.538 USD' - not recorded; exact-code search found no listing."
+  },
+  {
+   "mpn": "CB1A-12V",
+   "family": "CB1",
+   "mfr": "Panasonic",
+   "desc": "Automotive PCB relay SPST-NO 40 A, 12 V coil, CB series",
+   "category": "relay_switch",
+   "pkg": "PCB THT relay",
+   "aecq": false,
+   "ecuRoles": [
+    "BCM",
+    "power distribution",
+    "fan/pump"
+   ],
+   "observedMpn": "CB1A-12V",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2500,
+     "price": 3.06,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/CB1A-12V/Panasonic-Electronic-Components",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser breaks via Findchips detail page (1+ 3.24, 50+ 3.12). Digi-Key 1000 figure given only as 'about' - not recorded. CB1-12V (SPDT) only on resellers. Relays have no AEC-Q grade."
+  },
+  {
+   "mpn": "0885005.DR",
+   "family": "0885",
+   "mfr": "Littelfuse",
+   "desc": "SMD fuse 5 A 450 VDC, 885 series, high-voltage",
+   "category": "fuse_tvs",
+   "pkg": "SMD fuse (885 series)",
+   "aecq": false,
+   "ecuRoles": [
+    "HV",
+    "OBC",
+    "BMS"
+   ],
+   "observedMpn": "0885005.DR",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1500,
+     "price": 2.02,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/fr/p/electromechanical--circuit-protection--electronic-fuses/0885005-dr-littelfuse-3149327",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 3000,
+     "price": 1.98,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/fr/p/electromechanical--circuit-protection--electronic-fuses/0885005-dr-littelfuse-3149327",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future: reel 1500, zero stock, 15-week lead, price date not stated. Wave 1 asked 0885002.DR (unpriced); this is the 5 A sibling. AEC-Q200 status not confirmed."
+  },
+  {
+   "mpn": "KW CSLNM1.TG",
+   "family": "KW CSLNM1",
+   "mfr": "ams OSRAM",
+   "desc": "White LED, OSRAM OSTAR Projection Compact, ceramic SMD",
+   "category": "led",
+   "pkg": "SMD ceramic",
+   "aecq": false,
+   "ecuRoles": [
+    "lighting"
+   ],
+   "observedMpn": "KW CSLNM1.TG",
+   "observations": [],
+   "notes": "Only fat.lcsc.com (excluded) priced the CSLNM1 bin. Sibling KW CSLPM1.TG: RS IE reel 1000 EUR 1,994 ex VAT and mouser.ca 1000 2.66 (currency unclear) - not recorded because the full bin code of the RS reel stock number was not shown. Automotive grade not confirmed."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "Rosenberger H-MTD E6Z… PCB jack",
+   "why": "searched; no E6Z listing or price found - camera / radar coax header"
+  },
+  {
+   "code": "Amphenol FAKRA FA1-…, TE HFM, Molex MX123 / MX150 headers",
+   "why": "main ECU / coax headers; budget spent"
+  },
+  {
+   "code": "Hirose GT8E / GT17 / FX18, JST automotive, USB-C automotive receptacles",
+   "why": "board-to-board and infotainment connectors; budget spent"
+  },
+  {
+   "code": "Diodes SBR / BZT52-Q, Vishay SMBJ…-M3 / VSMB",
+   "why": "AEC-Q101 rail TVS / rectifiers / zeners; budget spent"
+  },
+  {
+   "code": "ESD2CANFD24DBZRQ1",
+   "why": "CAN FD ESD -Q1 retry; budget spent"
+  },
+  {
+   "code": "Littelfuse SMF, onsemi SZESD…, Nexperia PESD2CANFD27 / PMEG / PZU",
+   "why": "automotive ESD / Schottky / zener; budget spent"
+  },
+  {
+   "code": "TXC 7M / 8Y / 7V automotive (AX / AA series)",
+   "why": "searched; only a non-franchised IBS price (AA-8.000MALV-T) found; 8Y is not AEC-Q200"
+  },
+  {
+   "code": "NDK NX2016SA / NX3225GA automotive, Abracon ABM3B, SiTime SiT9396, Epson FA-128 automotive, Murata XRCGB automotive",
+   "why": "crystal / oscillator points; budget spent"
+  },
+  {
+   "code": "Nichia NSSW…AT / NJSW…AT, Lumileds LUXEON automotive, OSRAM LA G6SP",
+   "why": "automotive LEDs; budget spent"
+  },
+  {
+   "code": "Panasonic CT / CV, TE V23234, Littelfuse 501 fuses",
+   "why": "automotive relays / fuses; budget spent"
+  }
+ ]
+}

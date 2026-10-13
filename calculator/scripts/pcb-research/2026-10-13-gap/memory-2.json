@@ -85,17 +85,8 @@
     "industrial"
    ],
    "observedMpn": "W25Q64JVSSIQE",
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 10000,
-     "price": 0.763,
-     "currency": "USD",
-     "url": "https://origin-www.findchips.com/detail/w25q64jvssiqe/Winbond-Electronics-Corp",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Findchips names Mouser SKU 454-W25Q64JVSSIQE (sibling code with E suffix) at 10,000. Wave-1 LCSC 'about $0.61' was a rounded figure; LCSC C179171 / C83140 snapshots this round were mutually inconsistent ($0.20-$1.29) and are not recorded; Digi-Key breaks were only given rounded. Needs a second distributor."
+   "observations": [],
+   "notes": "Findchips names Mouser SKU 454-W25Q64JVSSIQE (sibling code with E suffix) at 10,000. Wave-1 LCSC 'about $0.61' was a rounded figure; LCSC C179171 / C83140 snapshots this round were mutually inconsistent ($0.20-$1.29) and are not recorded; Digi-Key breaks were only given rounded. Needs a second distributor. Review 13 Oct 2026: dropPart - flagged by the researcher and not confirmed by the independent review (list-A-ics): Budget: not searched (lowest value on the list). The recorded LCSC 'about $0.61' @1000 is itself a rounded summary figure, which REVIEW-RULES says is not a confirmed price.."
   },
   {
    "mpn": "CY15B256J-SXE",
@@ -316,7 +307,7 @@
    "why": "Micron automotive eMMC 64GB; one search found no listing"
   },
   {
-   "code": "IS43QR16512A-075VBLA2 (ISSI automotive DDR4 is IS46QR\u2026)",
+   "code": "IS43QR16512A-075VBLA2 (ISSI automotive DDR4 is IS46QR…)",
    "why": "automotive DDR4; budget spent"
   },
   {

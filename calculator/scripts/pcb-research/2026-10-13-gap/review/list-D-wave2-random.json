@@ -1,0 +1,454 @@
+[
+ {
+  "file": "sensors-2.json",
+  "mpn": "MLX91230KDC-BBA-000-SP",
+  "mfr": "Melexis",
+  "desc": "Hall current sensor IC, 12 V, +/-512 mT, SOIC-8, automotive AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 750,
+    "price": 4.39,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/es/p/semiconductors--analog--sensors--current/mlx91230kdc-bba-000-sp-melexis-6179091",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "-SP = tube. 750+ is the top Future break; a second Future snapshot showed $4.67 @750+ (zero stock); the lower kept. No Digi-Key/Mouser break found. Reel code MLX91230KDC-BBA-000-RE also listed by Future (no price)."
+ },
+ {
+  "file": "networking-2.json",
+  "mpn": "TUSB1146RGFTQ1",
+  "mfr": "Texas Instruments",
+  "desc": "USB Type-C 10 Gbps / DP 2.1 alt-mode linear redriver, automotive, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser (Ireland)",
+    "qty": 250,
+    "price": 6.05,
+    "currency": "EUR",
+    "url": "https://www.mouser.ie/en/c/semiconductors/interface-ics/usb-interface-ic/?pg=42",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Mouser IE category page, ex-VAT, 250 minimum (small reel), new product, non-stocked 26 wk lead time. Large reel TUSB1146RGFRQ1 not listed."
+ },
+ {
+  "file": "interconnect-2.json",
+  "mpn": "CB1A-12V",
+  "mfr": "Panasonic",
+  "desc": "Automotive PCB relay SPST-NO 40 A, 12 V coil, CB series",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 2500,
+    "price": 3.06,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/detail/CB1A-12V/Panasonic-Electronic-Components",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Mouser breaks via Findchips detail page (1+ 3.24, 50+ 3.12). Digi-Key 1000 figure given only as 'about' - not recorded. CB1-12V (SPDT) only on resellers. Relays have no AEC-Q grade."
+ },
+ {
+  "file": "sensors-2.json",
+  "mpn": "TLE4941",
+  "mfr": "Infineon Technologies",
+  "desc": "Differential Hall wheel-speed sensor, 2-wire, PG-SSO-2, automotive AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 2.96,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TLE4941?qs=OWKQh20chupucHOxukFfag%3D%3D",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Mouser lists the bare code TLE4941 (4,000 in stock). Current orderable TLE4941PLUSCXAMA1: Digi-Key $1.56 cut tape (no break) - not recorded. TLE4941-1 Mouser ladder to $2.48 (break unclear) - not recorded."
+ },
+ {
+  "file": "sensors-2.json",
+  "mpn": "TAS6584QPHDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "4-ch digital-input class-D audio amplifier, automotive, HTQFP-64",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 11.0451,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TAS6584QPHDRQ1/18159630",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 10.08408,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TAS6584QPHDRQ1/18159630",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "100 = cut tape, 1,000 = T&R."
+ },
+ {
+  "file": "auto-compute-2.json",
+  "mpn": "R7F124FPJ4AFB-C#HA0",
+  "mfr": "Renesas",
+  "desc": "RL78/F24 16-bit automotive MCU 40 MHz, 256 KB flash, CAN FD, tape and reel",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 3.75603,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/renesas-electronics-corporation/R7F124FPJ4AFB-C-HA0/22079184",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Tape and reel; lead time 14 weeks. AEC-Q100 per family, not stated on listing."
+ },
+ {
+  "file": "power-2.json",
+  "mpn": "IDW20G120C5BFKSA1",
+  "mfr": "Infineon",
+  "desc": "SiC Schottky diode 1200 V 20 A (CoolSiC G5)",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 100,
+    "price": 6.89,
+    "currency": "EUR",
+    "url": "https://de.rs-online.com/web/p/schottky-dioden-und-gleichrichter/2224836",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS Germany 100+ ex VAT. Industrial (not AEC-Q101). Digi-Key 120 break stated only as 'about $4.66' - not recorded. Farnell/TME disagree on configuration (2x10 A common cathode?) - verify."
+ },
+ {
+  "file": "auto-compute-2.json",
+  "mpn": "CY8C4147AZE-S475",
+  "mfr": "Infineon",
+  "desc": "PSoC 4100S Plus Cortex-M0+ 48 MHz, 128 KB flash, CapSense",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 1000,
+    "price": 4.81,
+    "currency": "EUR",
+    "url": "https://it.rs-online.com/web/p/microcontroller/0349088",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS IT 1000+ ex VAT. AZE sibling of the AZQ code the task named; AZQ-S475 price not found (Digipart showed no franchised price). AEC-Q100 not confirmed for AZE. Cytech (broker) ignored; Avnet CY8C4147AXI-S475 USD 3.66 @180 is another variant."
+ },
+ {
+  "file": "sensors-2.json",
+  "mpn": "ADS131M04QPWRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "4-ch simultaneous-sampling 24-bit delta-sigma ADC, 32 kSPS, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2000,
+    "price": 5.2513,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/ADS131M04QPWRQ1/17885004",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Digi-Key T&R 2,000; 564 in stock."
+ },
+ {
+  "file": "networking-2.json",
+  "mpn": "LAN8671B1-E/U3B",
+  "mfr": "Microchip",
+  "desc": "10BASE-T1S Ethernet PHY (802.3cg), RMII",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "RS Components (UK)",
+    "qty": 300,
+    "price": 2.027,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/physical-layer-transceivers/2499765P",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS UK ex-VAT, tray of 75, 300+ break (75-297 GBP 2.173). AEC-Q100 status of the -E code not confirmed in results (aecq false until confirmed). RS EUR sites show 300+ EUR 2.433 but the exact site URL was ambiguous; not used."
+ },
+ {
+  "file": "passives-2.json",
+  "mpn": "GCM2195C1H103JA16D",
+  "mfr": "Murata",
+  "desc": "MLCC 10nF 50V C0G ±5% 0805 AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 8000,
+    "price": 0.0463,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C161250.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC C161250, 4k reel; 8,000+ break stated (8,000 x 0.0463 = $370.40). Second distributor not found within budget."
+ },
+ {
+  "file": "auto-compute-2.json",
+  "mpn": "S32K342EHT0MPBST",
+  "mfr": "NXP",
+  "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, Ethernet (E variant)",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 10.35,
+    "currency": "EUR",
+    "url": "https://de.farnell.com/nxp/s32k342eht0mpbst/mcu-32-bit-160mhz-qfp-ep-172/dp/4134287",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Farnell DE ex-VAT, 1+ EUR 13.880 (shown as 13,880 / 10,350 in German decimal format). Package from the Farnell title. Code task named (S32K342NHT1MPBST) not found at any distributor."
+ },
+ {
+  "file": "passives-2.json",
+  "mpn": "T598D227M010AHS025",
+  "mfr": "KEMET",
+  "desc": "Polymer tantalum 220uF 10V 20% 25 mOhm, D case 7343, T598 automotive series",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.1564,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/Tantalum-Capacitors_KEMET-T598D227M010AHS025_C1517041.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC C1517041, 'From $1.1564' at 1,000+, 285 in stock. T598 is KEMET's automotive polymer series; listing itself does not state AEC-Q200."
+ },
+ {
+  "file": "connectivity-auto-2.json",
+  "mpn": "DW3300QTR13",
+  "mfr": "Qorvo",
+  "desc": "IEEE 802.15.4z IR-UWB transceiver, channels 5/9 (6.5/8 GHz), AEC-Q100 Grade 2",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 4.62745,
+    "currency": "EUR",
+    "url": "https://www.digikey.nl/en/products/detail/qorvo/DW3300QTR13/24718414",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 4.59584,
+    "currency": "EUR",
+    "url": "https://www.digikey.bg/en/products/detail/qorvo/DW3300QTR13/24718414",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 8.51281,
+    "currency": "CAD",
+    "url": "https://www.digikey.ca/en/products/detail/qorvo/DW3300QTR13/24718414",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Unit = extended / 1,000 (NL EUR 4,627.45, BG EUR 4,595.84, CA CAD 8,512.81), ex VAT. The 1,000 tier is cut tape / Digi-Reel; T&R starts at 2,500 (price not shown). AEC-Q100 Grade 2 per Qorvo/Mouser product page. Mouser price not found."
+ },
+ {
+  "file": "power-2.json",
+  "mpn": "A6983IQTR",
+  "mfr": "STMicroelectronics",
+  "desc": "Automotive iso-buck converter 4.5 A, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 1.62,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/STMicroelectronics/A6983IQTR?qs=Y0Uzf4wQF3lyFAWk8vYLxw%3D%3D",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 1.74578,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/A6983IQTR/18084488",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Full-reel T&R."
+ },
+ {
+  "file": "sensors-2.json",
+  "mpn": "AIS2IHTR",
+  "mfr": "STMicroelectronics",
+  "desc": "3-axis MEMS accelerometer, high-performance, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 25.45,
+    "currency": "SEK",
+    "url": "https://se.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 26.9,
+    "currency": "NOK",
+    "url": "https://no.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Replaces wave-1 observation (read via sourceesb, not allowed). 1,000 cut tape, 8,000 T&R. RS UK GBP 1.958 @1000-2495 seen on one of two RS listings (2167841/2167842, unclear which) - not recorded. Review 13 Oct 2026: setObs - independent review (list-B-random) corrected the recorded price: Recorded USD 2.73 was read from sourceesb.com, a disallowed source (REVIEW-RULES: never Source ESB). Digi-Key prices in results only on punchouttest hosts (excluded). Farnell lists it as 'MEMS sensor AEC-Q100': 1000+ SEK."
+ },
+ {
+  "file": "connectivity-auto-2.json",
+  "mpn": "NEO-M9V-20B",
+  "mfr": "u-blox",
+  "desc": "GNSS module with untethered dead reckoning (ADR), concurrent 4-constellation, LCC",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 12.29168,
+    "currency": "EUR",
+    "url": "https://www.digikey.nl/en/products/detail/u-blox/NEO-M9V-20B/16611140",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 14.4625,
+    "currency": "USD",
+    "url": "https://www.digikey.com.mx/en/products/detail/u-blox/NEO-M9V-20B/16611140",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Tape & reel 500 tier (NL extended EUR 6,145.84; MX extended USD 7,231.25), ex VAT. No 1,000 break listed. An older AT snapshot (list EUR 30.23, EUR 19.30368 @250) disagrees with the NL list EUR 15.04 - not recorded. Castellated module filed as ic_qfn (no module category). AEC-Q100 status not confirmed in search."
+ },
+ {
+  "file": "networking-2.json",
+  "mpn": "TLIN2029DRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "LIN transceiver, fault-protected, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.6938,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C190996.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC C190996. SOIC package sibling of TLIN2029DRBRQ1."
+ },
+ {
+  "file": "sensors-2.json",
+  "mpn": "FXPS7115DI4ST1",
+  "mfr": "STMicroelectronics",
+  "desc": "Digital absolute pressure sensor 40-115 kPa, I2C, automotive (ex-NXP FXPS7)",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 2000,
+    "price": 24.07,
+    "currency": "SEK",
+    "url": "https://se.farnell.com/en-SE/nxp/fxps7115di4st1/nxp-semiconductors-pressure-sensor/dp/4333522",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Farnell Sweden ex VAT, 2,000 minimum, 34-week lead; listed under NXP there."
+ },
+ {
+  "file": "passives-2.json",
+  "mpn": "CSS2H-2512R-1L00F",
+  "mfr": "Bourns",
+  "desc": "Metal-element current-sense resistor 1 mOhm 1% 2512 AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.2954,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C4175647.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC C4175647, 3,000 reel, 3,033 in stock; 1,000+ break. Mouser / Digi-Key / Future / TTI price for this exact code not found (Flux.ai qty-1 figures for the -1L00FE code not used)."
+ },
+ {
+  "file": "interconnect-2.json",
+  "mpn": "SM8S36AHE3/2D",
+  "mfr": "Vishay",
+  "desc": "TVS diode 36 V unidirectional, 6.6 kW, DO-218AB, load-dump, AEC-Q101 (HE3)",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 750,
+    "price": 1.272,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/tvs-diodes/1696093",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS UK reel of 750 = GBP 954.00 ex VAT (954.00/750 = 1.272); 'last RS stock', prices marked indicative. Single-unit _A/I (GBP 2.19) not recorded."
+ },
+ {
+  "file": "power-2.json",
+  "mpn": "MC33XS2410ELR2",
+  "mfr": "NXP",
+  "desc": "Quad high-side switch 24 V, 100 mOhm, SPI, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 6.118,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MC33XS2410ELR2/18711272",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Arrow",
+    "qty": 2500,
+    "price": 6.5915,
+    "currency": "USD",
+    "url": "https://www.arrow.com/en/products/mc33xs2410elr2/nxp-semiconductors",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Digi-Key T&R 5,000 (0 in stock, incoming). Newark USD 4.530 full reel min 2,500 but break label ('1200+') inconsistent - not recorded. Package from code (EL), not confirmed."
+ }
+]
