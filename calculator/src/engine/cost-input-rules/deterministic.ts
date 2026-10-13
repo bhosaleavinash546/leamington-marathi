@@ -159,7 +159,9 @@ export function buildDeterministicAnalysis(
       // The resin answer counts too: plastics confirm a grade, not a family, and
       // reading only the metal answer warned "confirm the material" on every
       // moulding whose resin the engineer had just picked (moulding review).
-      const answered = ctx.answers['material.family'] ?? ctx.answers['gear.materialClass'] ?? ctx.answers['material.resin'];
+      // An answered GRADE confirms the material too (a forging answered C45 still printed "only 0% confident" — Germany review).
+      const answered = ctx.answers['material.family'] ?? ctx.answers['gear.materialClass'] ?? ctx.answers['material.resin']
+        ?? ctx.answers['material.grade'];
       return {
         fromMetadata: !!answered,
         primarySuggestion: answered

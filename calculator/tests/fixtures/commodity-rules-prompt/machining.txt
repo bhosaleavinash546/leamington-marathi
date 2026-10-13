@@ -19,7 +19,7 @@ MACHINING COST INPUT RULES:
   rejectRate=0.02  [2% machining scrap (first-offs and dimensional rejects) — engineering typical, replace with the supplier's figure — deterministic, use verbatim]
   fixtureCostGBP=10000  [4 dedicated fixture(s) × £2,500 (dedicated above 10,000 parts over 5 years) — deterministic, use verbatim]
   programmingNRE=274  [CAM programming and prove-out 8.25 h (1.5 h × 4 fixturing(s) + 0.25 h × 1 feature group(s) + 2 h surfacing) × £33.27/h manufacturing engineer — deterministic, use verbatim]
-  toolWearCostPerPart=3.696  [92.4 min of cutting × £0.04/min inserts, end mills and drills (aluminium) — not in the machine rate — deterministic, use verbatim]
+  toolWearCostPerPart=3.696  [92.4 min of cutting × £0.0400/min inserts, end mills and drills (aluminium) — not in the machine rate — deterministic, use verbatim]
 
 ### context: degraded
 MACHINING COST INPUT RULES:

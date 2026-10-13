@@ -32,7 +32,7 @@ CAST + MACHINE COST INPUT RULES:
   operations=Finish machining — +Z side 0.002 hr on mach-haas-vf2; Finish machining — -Z side 0.001 hr on mach-haas-vf2; Finish machining — +X side 0.001 hr on mach-haas-vf2; Drilling — 10 holes (10×Ø10.0×24) [geometry-measured] 0.035 hr on mach-drill; Load / clamp / unload — 4 fixturing(s) 0.040 hr on mach-haas-vf2; Deburr and gauge check (bench) 0.025 hr on mach-haas-vf2  [sums to 0.103 hr: measured cutting, handling per fixturing, bench deburr — deterministic, use verbatim]
   fixtureCostGBP=10000  [4 dedicated fixture(s) × £2,500 (dedicated above 10,000 parts over 5 years) — deterministic, use verbatim]
   programmingNRE=208  [CAM programming and prove-out 6.25 h (1.5 h × 4 fixturing(s) + 0.25 h × 1 feature group(s)) × £33.27/h manufacturing engineer — deterministic, use verbatim]
-  toolWearCostPerPart=0.0919  [2.3 min of cutting × £0.04/min inserts, end mills and drills (aluminium) — not in the machine rate — deterministic, use verbatim]
+  toolWearCostPerPart=0.0919  [2.3 min of cutting × £0.0400/min inserts, end mills and drills (aluminium) — not in the machine rate — deterministic, use verbatim]
 
 ### context: degraded
 CAST + MACHINE COST INPUT RULES:

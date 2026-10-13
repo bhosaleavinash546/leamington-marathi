@@ -10,7 +10,7 @@ import { computeCostUncertainty, overallConfidence } from '../engine/uncertainty
 import { measureLabel, measureAgainstLimit } from '../engine/dfm-geometry/measure-format.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { computeRegionalComparison, alBilletMaterialFactors, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
+import { computeRegionalComparison, alBilletMaterialFactors, shopDefaultsBasis, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
 import { computeRegionalComparisonExact } from '../engine/regional-comparison.js';
 import { AL_ALLOY_LIST } from '../engine/al-extrusion-data.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
@@ -929,6 +929,7 @@ export function renderShouldCostSections(
     body: [
       ['Overhead Rate', pct(input.overheadPct * 100), 'Supplier Margin', pct(input.marginPct * 100)],
       ['Packaging / part', c(input.packagingPerPart), 'Logistics / part', c(input.logisticsPerPart)],
+      ['Basis', { content: shopDefaultsBasis(region as ManufacturingRegion | undefined), colSpan: 3 }],
       ...(input.tooling.mode === 'amortized' ? [[
         'Total Tooling Cost', c(input.tooling.totalToolingCost),
         'Amortisation Volume', `${input.tooling.amortizationVolume.toLocaleString()} parts`,
@@ -1344,9 +1345,12 @@ export function renderShouldCostSections(
     });
     featRows.push(['TOTAL costed', '', String(costedCnt), '', costedMin.toFixed(2), c((costedMin / 60) * rate), 'Yes']);
 
+    // The column is minutes × the machine's own rate — machine only; it read as the feature's full cost (Germany review).
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    doc.text(`"Machine" = minutes × the machine rate (${c(rate)}/h, machine only — operator, overhead and margin are added in the stack).`, MG, y); y += 4;
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG },
-      head: [['Feature', 'Ø×depth / area', 'Qty', 'Operation', 'Min', 'Cost', 'Costed?']],
+      head: [['Feature', 'Ø×depth / area', 'Qty', 'Operation', 'Min', 'Machine', 'Costed?']],
       body: featRows,
       theme: 'plain',
       headStyles: { ...TH.headStyles, fontSize: 7 },
@@ -1371,7 +1375,7 @@ export function renderShouldCostSections(
     y = lastFinalY(doc) + 4;
     if (notCnt > 0) {
       y = calloutBox(doc, y, `${notCnt} detected feature(s) NOT costed`, [
-        `${notCnt} machinable feature instance(s) (${notMin.toFixed(1)} min) were detected in the geometry but are NOT included in this cost — on a near-net part they may be as-cast. If they are machined, tick them in the Machined-Features panel and re-cost; this could add up to ${c((notMin / 60) * rate)}.`,
+        `${notCnt} machinable feature instance(s) (${notMin.toFixed(1)} min) were detected in the geometry but are NOT included in this cost — on a near-net part they may be ${/forg/.test(String(commodityType)) ? 'as-forged' : /cast/.test(String(commodityType)) ? 'as-cast' : 'left as supplied'}. If they are machined, tick them in the Machined-Features panel and re-cost; this could add up to ${c((notMin / 60) * rate)} of machine time (operator, overhead and margin come on top in the stack).`,
       ], AM, OR_LT);
     } else {
       y += 4;
@@ -1757,7 +1761,8 @@ export function renderShouldCostSections(
       // col widths: 9 + 22 + 34 + 55 + 16 + 11 + 21 + 14 = 182 ✓
       let rankNo = 0;
       const rows = ranked.groups.flatMap(g => g.opportunities.map(o => [
-        String(++rankNo), g.label, o.action, o.basis,
+        // A priced lever states the assumption it was re-costed on (the "−20%" behind a figure was not printed — Germany review).
+        String(++rankNo), g.label, o.action, o.basis + (o.priced && o.recostBasis ? ` Re-costed on: ${o.recostBasis.split(' \u2192 ')[0]}.` : ''),
         o.priced ? `${c(o.savingPerPart)}` : 'not priced', o.priced ? `${o.savingPct.toFixed(1)}%` : '—', o.timeframe, o.risk,
       ]));
       const flat = ranked.groups.flatMap(g => g.opportunities);

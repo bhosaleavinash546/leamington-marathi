@@ -73,9 +73,11 @@ const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: Part
       tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * 1.7 } },
     basis: '2 cavities (parts per cycle ×2), tooling NRE ×1.7 — at the ASSUMED volume',
   }),
+  // Machine-paced CUTTING operations only: set-up, load / clamp and bench deburr are the operator's own work — the ×0.6
+  // was applied to every operation, overstating the lever by a third (Germany review). No automation capex is added.
   'Unmanned / Lights-Out Running': (input) => ({
-    next: { ...input, operations: input.operations.map(o => ({ ...o, manning: Math.max(0.3, (o.manning ?? 1) * 0.6) })) },
-    basis: 'manning ×0.6 on every operation (a third shift unattended: 30-50% of attended labour passed through)',
+    next: { ...input, operations: input.operations.map(o => (machinePacedCut(o) ? { ...o, manning: Math.max(0.3, (o.manning ?? 1) * 0.6) } : o)) },
+    basis: 'manning ×0.6 on the machine-paced cutting operations (not set-up, loading or bench work); no automation capex added — CostVision engineering heuristic',
   }),
   'Multi-Machine Manning': (input) => ({
     next: { ...input, operations: input.operations.map(o => tendedMachineOp(o) ? { ...o, manning: (o.manning ?? 1) / 2 } : o) },
@@ -111,6 +113,12 @@ const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: Part
     return { next: { ...input, rawMaterial: { ...input.rawMaterial, consumablesCostPerPart: c - 0.2 * core } }, basis: 'core / pattern / shell consumables ×0.8' };
   },
 };
+
+/** A machine-paced cutting operation (not bench, set-up, loading, inspection or packing). */
+function machinePacedCut(o: UniversalStackInput['operations'][number]): boolean {
+  return !o.benchOperation && o.cycleTimeHr > 0
+    && !/load|clamp|unload|handling|set-?up|change-?over|inspect|gauge|deburr|fettl|pack/i.test(o.operationName ?? '');
+}
 
 /**
  * A machine-paced operation one operator tends: not a bench step, not load / clamp / handling (the operator IS the
@@ -192,6 +200,18 @@ const METAL_FORM: CommodityType[] = ['machining', 'cast_and_machine', 'casting',
 const MOULD_FAMILY: CommodityType[] = ['injection_moulding', 'blow_moulding', 'thermoforming'];
 const CAVITY_PROCESSES: CommodityType[] = ['injection_moulding', 'blow_moulding', 'thermoforming', 'rubber', 'casting'];
 const ENERGY_INTENSE: CommodityType[] = ['casting', 'forging', 'painting', 'rubber', 'composites', 'rotational_moulding'];
+/** What the energy is spent on, per energy-intensive process (the lever said "melt, cure, oven" on a forging). */
+const ENERGY_WHAT: Partial<Record<CommodityType, string>> = {
+  casting: 'melting and holding the metal', cast_and_machine: 'melting and holding the metal', forging: 'heating the billet to forging temperature',
+  painting: 'the cure oven', rubber: 'the cure', composites: 'the cure', rotational_moulding: 'the oven',
+};
+/** The upstream cause of finishing work, per process. */
+const FINISH_CAUSE: Partial<Record<CommodityType, string>> = {
+  machining: 'tool condition and tool path', aluminium_extrusion: 'saw blade condition and cut parameters',
+  casting: 'gating, parting line and die condition', cast_and_machine: 'gating, parting line and tool condition',
+  forging: 'flash land and trim die condition', injection_moulding: 'parting line, venting and tool condition',
+  sheet_metal: 'die clearance and die condition', sheet_metal_fab: 'cutting parameters and tool condition',
+};
 
 const LOW_COST_REGIONS = new Set(['cn', 'china', 'in', 'india', 'mx', 'mexico', 'pl', 'poland',
   'cz', 'czechia', 'czech republic', 'tr', 'turkey', 'th', 'thailand', 'vn', 'vietnam']);
@@ -333,7 +353,9 @@ export function generateIdeaLevers(
     out.push({
       category: 'design', lever: 'design',
       title: 'Part-Count / Feature Integration Review (Boothroyd)',
-      description: `${opCount} operations suggest features or joined parts that may not need to exist separately. The Boothroyd minimum-part-count test asks of each: does it move, must it be a different material, must it be separate for assembly?`,
+      description: (['machining', 'cast_and_machine'].includes(commodity)
+        ? `${opCount} operations: each exists for a feature. Ask of each feature whether the function needs it, and of the part whether it must be separate from its neighbours — does it move, must it be a different material, must it come apart for assembly or service (Boothroyd)?`
+        : `${opCount} operations suggest features or joined parts that may not need to exist separately. The Boothroyd minimum-part-count test asks of each: does it move, must it be a different material, must it be separate for assembly?`),
       expectedSavingPct: 6,
       technicalJustification: 'Boothroyd–Dewhurst DFA practice: any part failing all three criteria is a candidate to integrate into its neighbour. Integrating a bracket into a casting or forming a feature instead of fastening it removes its entire operation chain.',
       risk: 'Medium', timeframe: 'Long Term',
@@ -384,7 +406,7 @@ export function generateIdeaLevers(
       title: 'Unmanned / Lights-Out Running',
       description: `Labour is ${labPct.toFixed(1)}% of cost on a machine-paced part with healthy OEE (${(avgOEE * 100).toFixed(0)}%) — the classic profile for bar-feed or pallet-pool unattended running.`,
       expectedSavingPct: Math.min(6, labPct * 0.3),
-      technicalJustification: 'Bar feeders, pallet pools and probing let a stable machining process run a third shift with no operator. Suppliers typically pass through 30–50% of the attended-labour saving on committed volumes.',
+      technicalJustification: 'Bar feeders, pallet pools and probing let a stable machining process run a third shift with no operator. The pass-through of the saving is a negotiation, not a figure (the 30–50% often quoted has no source here).',
       risk: 'Medium', timeframe: 'Medium Term',
     });
   }
@@ -404,7 +426,7 @@ export function generateIdeaLevers(
     out.push({
       category: 'sustainability', lever: 'supplier',
       title: 'Energy Productivity Programme',
-      description: 'This process is energy-intensive (melt, cure, oven or heat-treat content). Energy sits inside the machine rate and overhead — and it is the fastest-moving input cost of the decade.',
+      description: `This process is energy-intensive (${[ENERGY_WHAT[commodity], hasOp(RX_HEAT) ? 'heat treatment' : ''].filter(Boolean).join(' and ')}). Energy sits inside the machine rate and overhead — and it is the fastest-moving input cost of the decade.`,
       expectedSavingPct: 3,
       technicalJustification: 'Melt/furnace scheduling to off-peak tariffs, regenerative burners, cure-recipe optimisation and compressed-air leak programmes typically cut process energy 10–20%, of which 2–4% of part cost reaches the piece price — and the carbon line falls with it.',
       risk: 'Low', timeframe: 'Medium Term',
@@ -514,9 +536,10 @@ export function generateIdeaLevers(
     out.push({
       category: 'quality', lever: 'supplier',
       title: 'Eliminate Manual Finishing at Source',
-      description: `Deburring/fettling/rework operations carry ${(reworkShare * 100).toFixed(1)}% of part cost. Manual finishing is a symptom — the cause is upstream (tool wear, gating, die condition) and cheaper to fix there.`,
+      // Name the upstream causes of THIS process: "gating" was printed on a saw-cut extrusion's deburr (Germany review).
+      description: `Finishing operations (${ops.filter(o => RX_REWORK.test(o.operationName ?? '')).map(o => o.operationName).join(', ')}) carry ${(reworkShare * 100).toFixed(1)}% of part cost. Manual finishing is a symptom — the cause is upstream (${FINISH_CAUSE[commodity] ?? 'tool and die condition'}) and cheaper to fix there.`,
       expectedSavingPct: Math.min(4, 1 + reworkShare * 100 * 0.5),
-      technicalJustification: 'Sharp tooling discipline, gate/overflow redesign and die maintenance remove the burr instead of removing it by hand. Where finishing must remain, tumbling/vibratory processes beat manual labour 3:1.',
+      technicalJustification: 'Removing the burr or flash at its source (tool condition, gating, die maintenance) beats removing it by hand. Where finishing must remain, tumbling / vibratory finishing replaces bench labour — the ratio depends on the part (CostVision engineering heuristic).',
       risk: 'Low', timeframe: 'Medium Term',
     });
   }

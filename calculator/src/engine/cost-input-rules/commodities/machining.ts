@@ -720,7 +720,7 @@ export function machiningRuleDefs(cutFor: CutFor): RuleDef<any>[] {
         if ('blocked' in r) return r.blocked;
         const cd = cuttingDataFor(r.advice.family);
         return decided('machining.toolWearCostPerPart', toolWearPerPart(r.advice.cuttingMin, r.advice.family), 'rule',
-          `${fmt(r.advice.cuttingMin, 1)} min of cutting × £${cd.toolCostPerCutMin.toFixed(2)}/min inserts, end mills and drills `
+          `${fmt(r.advice.cuttingMin, 1)} min of cutting × £${cd.toolCostPerCutMin.toFixed(4)}/min inserts, end mills and drills `
           + `(${r.advice.family}) — not in the machine rate`, 0.5);
       },
     },

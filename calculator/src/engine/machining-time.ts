@@ -466,6 +466,6 @@ export function secondaryMachiningCell(p: {
     toolingGBP: fx.gbp + programming,
     toolWearPerPart: wear,
     basis: `${fx.basis}; programming ${hrs} h × £${p.engineerRatePerHr.toFixed(2)}/h = £${programming}; `
-      + `tool wear ${p.cuttingMin.toFixed(1)} min × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(2)}/min = £${wear.toFixed(3)}`,
+      + `tool wear ${p.cuttingMin.toFixed(1)} min × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(4)}/min = £${wear.toFixed(3)}`,
   };
 }

@@ -106,3 +106,19 @@ describe('materials: European market anchors in EUR', () => {
     expect(BILLET_PREMIUM_USD_PER_T.DE.basis).toMatch(/\$1,070–1,135/);
   });
 });
+
+describe('Germany live review (Oct 2026): what the reports print', () => {
+  it('a continuous line states its own hours only — not the plant pattern\'s 4,044 h as well', () => {
+    const note = mach('al-age-oven-batch').sourceNote ?? '';
+    expect(note).toMatch(/6,066 h/);
+    expect(note).not.toMatch(/4,044/);
+  });
+  it('a book labour rate carries the book\'s date, not the UK entry\'s', () => {
+    expect(lab('lab-uk-skilled').effectiveDate).toBe(GERMANY_BOOK.asOf);
+  });
+  it('the overhead / packaging / logistics defaults say they are the UK basis × the country multipliers, held', async () => {
+    const { shopDefaultsBasis } = await import('../src/engine/regional-rates.js');
+    expect(shopDefaultsBasis('DE')).toMatch(/UK basis .* Germany's multipliers — overhead ×[\d.]+.*Held, not researched for Germany/);
+    expect(shopDefaultsBasis('UK')).not.toMatch(/multipliers/);
+  });
+});

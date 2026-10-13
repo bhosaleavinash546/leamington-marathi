@@ -145,9 +145,10 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
     buildup,
     computedRatePerHr: computeMachineRatePerHr(buildup),
     region: regionName,
+    // A continuous line drops the plant pattern's hours clause: the note stated 6,066 h and 4,044 h (Germany review).
     sourceNote: `${regionName} book ${book.asOf}: ${what}; ${r0(m2)} m² at ${loc(M.rentGbpPerM2Yr, 2)}/m²/yr, `
       + `${r0(kwh * hr).toLocaleString('en-GB')} kWh at ${loc(electricityGbpPerKwh, 4)}/kWh, support staff at ${regionName} wages (${M.labourRatio.toFixed(4)} × the UK rate), `
-      + `${hours.toLocaleString('en-GB')} h × ${b.machineUtilization}${continuous ? ` — a continuous line (${M.continuousBasis ?? 'three shifts'})` : ''} (${g && ref ? M.basis : M.basis.replace(/; maintenance .*$/, '')})`,
+      + `${hours.toLocaleString('en-GB')} h × ${b.machineUtilization}${continuous ? ` — a continuous line (${M.continuousBasis ?? 'three shifts'})` : ''} (${((b0: string) => continuous ? b0.replace(/^[^;]*; /, '') : b0)(g && ref ? M.basis : M.basis.replace(/; maintenance .*$/, ''))})`,
     confidence,
   };
 }

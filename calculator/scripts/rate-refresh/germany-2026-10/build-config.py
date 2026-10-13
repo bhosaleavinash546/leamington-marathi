@@ -188,7 +188,7 @@ labour = {
 energy = {
     'electricityLocalPerKwh': v('energy.electricity.allIn'),
     'gasLocalPerKwh': v('energy.gas.allIn'),
-    'basis': f'Electricity €{v("energy.electricity.allIn")}/kWh ex-VAT: {R["energy.electricity.allIn"]["basis"]} Gas €{v("energy.gas.allIn")}/kWh ex-VAT: {R["energy.gas.allIn"]["basis"]}',
+    'basis': f'Electricity €{v("energy.electricity.allIn")}/kWh ex-VAT: {R["energy.electricity.allIn"]["basis"].rstrip(". ")}. Gas €{v("energy.gas.allIn")}/kWh ex-VAT: {R["energy.gas.allIn"]["basis"]}',
     'sources': [src(k) for k in ['energy.electricity.allIn', 'energy.gas.allIn'] + [k for k in R if k.startswith('energy.') and k not in ('energy.electricity.allIn', 'energy.gas.allIn') and R[k].get('source')]][:8],
 }
 

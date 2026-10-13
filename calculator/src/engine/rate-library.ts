@@ -1932,7 +1932,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       electricityPerKwh: 0.1476,
       gasPerKwh: 0.054,
       effectiveDate: '2026-10-12',
-      sourceNote: 'Germany rate book 2026-10-12: €0.172/kWh electricity, €0.0629/kWh gas — Electricity €0.172/kWh ex-VAT: BDEW Strompreisanalyse (autumn 2026): average electricity price for small–medium industry (160 MWh – 20 GWh/yr, medium-voltage supply, incl. reduced Stromsteuer, excl. VAT) in 2026 to date = 17.2 ct/kWh (−0.4 ct v 2025; rising at the margin after the Iran war). Consistent with the sourced build-up 0.149 + profile/margin Gas €0.0629/kWh ex-VAT: Destatis non-household natural gas, H1 2026 average 6.29 ct/kWh excl. VAT and recoverable taxes (H2 2025: 6.18). Volume-weighted over all sizes; band 1,000–10,000 GJ (≈ 0.3–2.8 GWh, Eurostat I2) was 8.60 in H2 2025 and > 4 million GJ 4.52. A mid-size 2-shift supplier plant (I2–I3) sits around 6.3–8.6',
+      sourceNote: 'Germany rate book 2026-10-12: €0.172/kWh electricity, €0.0629/kWh gas — Electricity €0.172/kWh ex-VAT: BDEW Strompreisanalyse (autumn 2026): average electricity price for small–medium industry (160 MWh – 20 GWh/yr, medium-voltage supply, incl. reduced Stromsteuer, excl. VAT) in 2026 to date = 17.2 ct/kWh (−0.4 ct v 2025; rising at the margin after the Iran war). Consistent with the sourced build-up 0.149 + profile/margin. Gas €0.0629/kWh ex-VAT: Destatis non-household natural gas, H1 2026 average 6.29 ct/kWh excl. VAT and recoverable taxes (H2 2025: 6.18). Volume-weighted over all sizes; band 1,000–10,000 GJ (≈ 0.3–2.8 GWh, Eurostat I2) was 8.60 in H2 2025 and > 4 million GJ 4.52. A mid-size 2-shift supplier plant (I2–I3) sits around 6.3–8.6',
       confidence: 'Medium',
     },
     {

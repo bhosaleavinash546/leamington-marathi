@@ -951,6 +951,15 @@ export function regionalShopDefaults(
   };
 }
 
+/** Where the overhead / packaging / logistics DEFAULTS come from — the reports printed them with no basis (Germany review). */
+export function shopDefaultsBasis(region: ManufacturingRegion | undefined): string {
+  const rd = REGIONAL_DATA[region ?? 'UK'] ?? REGIONAL_DATA.UK;
+  const f = (n: number) => `×${n.toFixed(2)}`;
+  return region && region !== 'UK'
+    ? `Defaults: the UK basis (overhead 12%, packaging and logistics from the part's size) × ${rd.name}'s multipliers — overhead ${f(rd.overheadMultiplier)}, packaging ${f(rd.packagingMultiplier)}, logistics ${f(rd.logisticsMultiplier)} (delivery to the UK). Held, not researched for ${rd.name}; a typed figure is used as given.`
+    : 'Defaults: overhead 12%; packaging and logistics from the part\'s size (delivery within the UK). A typed figure is used as given.';
+}
+
 export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
   const rd = REGIONAL_DATA[region];
   // The country's own book (country-books.ts) wins where it has evidence; the scaling below is the fallback.
@@ -1005,12 +1014,13 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       // where the book has none. It used to be ignored.
       const own = region !== 'UK' ? baseLibrary.labour.find(x => x.id === `lab-${region.toLowerCase()}-${suffix}`) : undefined;
       if (own) {
-        return { ...l, fullyLoadedRatePerHr: own.fullyLoadedRatePerHr, region: rd.name,
+        // the row's date is the rate's own — a German report dated its book rates with the UK entry's date (Germany review)
+        return { ...l, fullyLoadedRatePerHr: own.fullyLoadedRatePerHr, region: rd.name, effectiveDate: own.effectiveDate ?? l.effectiveDate,
           sourceNote: `${own.id} — the rate book's own ${rd.name} rate (${own.sourceNote ?? ''})`.trim(), confidence: own.confidence };
       }
       const grade = book?.labourGrades[suffix];
       if (grade) {
-        return { ...l, fullyLoadedRatePerHr: grade.gbpPerHr, region: rd.name,
+        return { ...l, fullyLoadedRatePerHr: grade.gbpPerHr, region: rd.name, effectiveDate: book!.asOf,
           // the book's own currency (a China report read "furnace INR 32/h" — demo review 2026-10-10)
           sourceNote: `${rd.name} book ${book!.asOf}: ${suffix} ${book!.currencySymbol ?? '₹'}${(grade.gbpPerHr * book!.fxToGBP).toFixed(2)}/h — ${grade.basis} (${grade.source})`,
           confidence: grade.confidence };
@@ -1022,6 +1032,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         ...l,
         fullyLoadedRatePerHr: rate,
         region: rd.name,
+        ...(book && direct !== undefined ? { effectiveDate: book.asOf } : {}),
         sourceNote: direct !== undefined
           // a book country's category rate is its rate book's (a China report read "China foundry rate (regional-rates.ts, 2026-09)")
           ? (book ? `${rd.name} rate book ${book.asOf}: ${suffix} ${rd.currency} ${(direct * rd.fxToGBP).toFixed(2)}/h fully loaded (the rate book's labour model)`

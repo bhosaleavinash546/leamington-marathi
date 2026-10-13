@@ -8,6 +8,7 @@ import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/
 import { currencySymbol } from '../engine/insights.js';
 import { buildWorkbook, workbookBlob, money, pctCell, type SheetSpec } from './xlsx-util.js';
 import { localiseGbpText, localiseRuleValue } from './money-text.js';
+import { shopDefaultsBasis, type ManufacturingRegion } from '../engine/regional-rates.js';
 
 const num4 = (n: number) => +n.toFixed(4);
 /** Hours to 6 dp — at 4 dp a reader recomputing an operation from the sheet was out by up to £0.003. */
@@ -86,6 +87,7 @@ export async function exportToExcelBlob(
   sum.push(['Supplier Margin Rate', `${(input.marginPct * 100).toFixed(1)}%${boughtIn > 0 ? ' (not on bought-in content)' : ''}`]);
   sum.push(['Packaging per Part', m(input.packagingPerPart)]);
   sum.push(['Logistics per Part', m(input.logisticsPerPart)]);
+  sum.push(['Overhead / packaging / logistics basis', shopDefaultsBasis(library.regional?.code as ManufacturingRegion | undefined)]);
   if (input.tooling.mode === 'amortized') {
     sum.push(['Total Tooling Cost', m(input.tooling.totalToolingCost)]);
     for (const t of input.tooling.items ?? []) sum.push([`  ${t.label}`, m(t.gbp)]);

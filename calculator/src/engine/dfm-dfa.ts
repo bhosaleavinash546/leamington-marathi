@@ -124,7 +124,9 @@ export function generateDFMDFA(
   const opCount = (input.operations ?? []).length;
   // OEE of the MACHINE operations only — bench steps carry OEE 1 and lifted a costing run at 80 % to "healthy OEE (87 %)"
   // (uploaded-parts review, Oct 2026).
-  const machineOps = (input.operations ?? []).filter(o => !o.benchOperation && o.cycleTimeHr > 0);
+  // …and not the set-up / handling rows, whose OEE of 1 lifted an 80% costing to "healthy OEE (83%)" (Germany review).
+  const machineOps = (input.operations ?? []).filter(o => !o.benchOperation && o.cycleTimeHr > 0
+    && !/set-?up|load|clamp|unload|change-?over|handling|inspect|gauge|deburr|pack/i.test(o.operationName ?? ''));
   const avgOEE  = machineOps.length > 0 ? (machineOps.reduce((s, o) => s + (o.oee ?? 0.85), 0) / machineOps.length) : 0.85;
   const matUtil = input.rawMaterial?.materialUtilization ?? 0.72;
 
@@ -316,7 +318,7 @@ export function generateDFMDFA(
           : '.'),
       savingPct: 6,
       risk: 'Medium',
-      recommendation: 'Challenge the largest of these lines first (the inspection / NDT sampling plan, tool life, heat treatment, core count) and the consumable pricing open-book',
+      recommendation: 'Challenge the largest of these lines first (the lines are named above) and ask for the consumable pricing open-book',
     });
   }
 
@@ -868,7 +870,9 @@ export function generateDFMDFA(
     costOptimisations.push({
       category: 'process', lever: 'supplier',
       title: 'OEE Improvement Programme (TPM)',
-      description: `OEE at ${(avgOEE * 100).toFixed(0)}% vs 85% world-class target. Each 5% OEE gain reduces effective machine cost by 5%.`,
+      // The arithmetic of OEE: time per good part ∝ 1/OEE, so X% → 85% cuts machine time by 1 − X/85 (a "5% gain = 5%"
+      // rule was printed; 80 → 85% is 5.9%). The 85% is a commonly quoted target, not a sourced benchmark.
+      description: `OEE at ${(avgOEE * 100).toFixed(0)}%. Raising it to 85% (a commonly quoted target — CostVision engineering heuristic) cuts machine time per good part by ${((1 - avgOEE / 0.85) * 100).toFixed(1)}% (time per good part ∝ 1 / OEE).`,
       expectedSavingPct: Math.min(12, (0.85 - avgOEE) * 30),
       technicalJustification: 'Total Productive Maintenance (TPM) with SMED, planned maintenance, and autonomous maintenance typically achieves 5–12% OEE improvement in 12–18 months.',
       risk: 'Low',
@@ -941,12 +945,13 @@ export function generateDFMDFA(
     const millOps = optimisable.filter(o => classifyOpName(o.operationName ?? '') !== 'drill');
     const batch = standardBatchSize(input.tooling?.amortizationVolume ?? 0);
     const given = optimisable.length > 0 ? costRoutingAsGiven(
-      optimisable.map(o => ({ name: o.operationName ?? '', machineId: o.machineId, cycleTimeHr: o.cycleTimeHr })),
+      // per PART: an op that makes n parts a cycle carries 1/n of it (an ageing load of 5,324 parts was booked whole)
+      optimisable.map(o => ({ name: o.operationName ?? '', machineId: o.machineId, cycleTimeHr: o.cycleTimeHr / Math.max(1, o.partsPerCycle ?? 1) })),
       batch) : null;
     if (given) {
       const hrOf = (pred: (cap: string) => boolean) => optimisable
         .filter(o => pred(classifyOpName(o.operationName ?? '')))
-        .reduce((sum, o) => sum + o.cycleTimeHr, 0);
+        .reduce((sum, o) => sum + o.cycleTimeHr / Math.max(1, o.partsPerCycle ?? 1), 0);
       const opt = optimiseMachiningRouting({
         millingHr: hrOf(c => c !== 'drill'),
         drillHr: hrOf(c => c === 'drill'),

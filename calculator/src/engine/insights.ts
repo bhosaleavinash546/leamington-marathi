@@ -433,14 +433,21 @@ export function generateInsights(
       type: 'warning',
       category: 'material',
       title: 'Low material utilisation — high scrap rate',
-      finding: `Material utilisation at ${util.toFixed(0)}% is below the ${commodity.replace(/_/g,'  ')} reference of ${(bm.typicalMatUtil * 100).toFixed(0)}% (engineering estimate). You are paying for ${((1 - input.rawMaterial.materialUtilization) / input.rawMaterial.materialUtilization * 100).toFixed(0)}% more raw material than ends up in the part.`,
+      finding: `Material utilisation at ${util.toFixed(0)}% is below the ${commodity.replace(/_/g, ' ')} reference of ${(bm.typicalMatUtil * 100).toFixed(0)}% (engineering estimate). You are paying for ${((1 - input.rawMaterial.materialUtilization) / input.rawMaterial.materialUtilization * 100).toFixed(0)}% more raw material than ends up in the part.`,
       impact: 'Medium',
       potentialSavingPct: Math.min(8, (bm.typicalMatUtil - input.rawMaterial.materialUtilization) * 20),
+      // Say what THIS process loses: "nesting" was printed on a machined block (Germany review).
       actions: [
-        'Redesign blank/preform geometry to minimise offcuts',
-        'Optimise nesting/layout for sheet or profile stock',
-        'Consider near-net-shape processes (forging, casting) to start closer to final form',
-        'Negotiate scrap buy-back at higher than standard recovery price',
+        ...(['sheet_metal', 'sheet_metal_fab', 'biw_assembly', 'thermoforming'].includes(commodity)
+          ? ['Optimise the nest / strip layout and the blank outline to cut the offcut']
+          : ['machining', 'cast_and_machine'].includes(commodity)
+            ? ['Buy stock closer to the finished envelope (a nearer stocked size, saw-cut blank or near-net preform)']
+            : commodity === 'forging'
+              ? ['Reduce flash and the machining stock left on the forging']
+              : commodity === 'aluminium_extrusion'
+                ? ['Optimise the mill length and the cut-to-length pattern to cut the end crop']
+                : ['Redesign the blank / preform to cut the offcut']),
+        'Negotiate the scrap buy-back price (the credit is in the material line)',
       ],
     });
   }
