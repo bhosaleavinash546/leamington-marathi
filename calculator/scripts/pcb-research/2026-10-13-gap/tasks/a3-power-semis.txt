@@ -1,0 +1,10 @@
+Domain: power-semis — power semiconductors and gate drivers for traction inverters, OBC, DC-DC, 48 V and body loads.
+Priority order:
+1. SiC MOSFET discretes automotive 650 V / 750 V / 1200 V: Wolfspeed E3M / C3M automotive, onsemi NVH4L / NVBG / NTBG EliteSiC, Infineon AIMW / AIMBG CoolSiC, ST SCT…AG / SCTH…AG, Rohm SCT3…AE / SCT4…AE (TO-247-4, D2PAK-7L)
+2. GaN automotive: Infineon CoolGaN automotive, TI LMG3522R030-Q1 / LMG3624, Transphorm TP65H…, EPC EPC2xxx AEC-Q101, Navitas automotive
+3. Isolated gate drivers automotive: TI UCC5870-Q1, UCC5880-Q1, UCC21750-Q1, UCC21520-Q1; Infineon 1EDI3025AS / 1EDI2004AS (EiceDRIVER), 2EDi; ADI ADuM4177 / ADuM4146; NXP GD3160 / GD3162; Skyworks Si828x / Si8285; ST STGAP2SiC / STGAP4S
+4. Automotive low-voltage MOSFETs (LFPAK56 / TOLL / TOLT / D2PAK / DPAK): Nexperia BUK7S / BUK9J / PSMN…, Infineon OptiMOS IAUT / IAUC / IPB…, onsemi NVMFS / NVBLS, Vishay SQJ / SQM, ST STL…AG — 40 V, 80 V, 100 V points
+5. Smart high-side / low-side switches: Infineon PROFET+2 BTS7002 / BTS7004 / BTS7008 / BTS7006, BTT6030, BTS50xx; ST VN7xxx / VND7xxx (VIPower M0-7), VNF1048F eFuse; TI TPS1HC100-Q1 / TPS2HB16-Q1 / TPS48111-Q1 smart fuses; NXP MC33XS2410
+6. Motor / gate pre-drivers: TI DRV8705-Q1 / DRV8714-Q1 / DRV3255-Q1 / DRV8343-Q1, Infineon TLE9180 / 6EDL7141 / TLE9562, NXP GD3000 / MC33937, Allegro A4910 / AMT49502, ST L9907 / L99H92
+7. Traction power modules (only if distributor-listed): Infineon HybridPACK Drive FS820R08A6P2B, onsemi VE-Trac NVXR17S90M2SPB, ST ACEPACK DRIVE ADP… — likely high price; record if a distributor lists them
+8. IGBT discretes automotive (Infineon AIKW / AIKQ, onsemi AFGHL), rectifier diodes / SiC Schottky (Wolfspeed E4D, onsemi NDSH, Infineon IDW…G6)

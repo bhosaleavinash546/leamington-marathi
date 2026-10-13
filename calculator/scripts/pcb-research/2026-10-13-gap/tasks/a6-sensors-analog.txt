@@ -1,0 +1,10 @@
+Domain: sensors-analog — automotive sensors, radar front-ends, data converters and isolators.
+Priority order:
+1. Current sensors: Allegro ACS72981 / ACS37612 / ACS71240 / ACS37002, Melexis MLX91220 / MLX91221 / MLX91230, Infineon TLE4972 / TLI4971, TI TMCS1123-Q1 / TMCS1126-Q1 / INA241-Q1 / INA296-Q1 / INA228-Q1, LEM (if listed)
+2. Position / angle / speed sensors: Infineon TLE5501 / TLE5014 / TLE5109 / TLI5590 / TLE4922, Melexis MLX90377 / MLX90427 / MLX90395, ams OSRAM AS5047U / AS5x47 / AS5172, Allegro A1339 / A33002, TI TMAG5170-Q1 / TMAG5273-Q1 / DRV5055-Q1, NXP KMA36
+3. Inertial: Bosch SMI230 / SMI240 / BMI088, ST ASM330LHHX / ASM330LHB / AIS2IH / IIS3DWB, Murata SCHA634 / SCH16T, TDK IAM-20685
+4. Pressure / environmental / temperature: Infineon KP254 / KP236, NXP MPX / FXPS7xx, Bosch SMP / BMP390 automotive, TI TMP126-Q1 / TMP1075-Q1 / LMT01-Q1, Sensirion SHT4xA / SHT45 automotive, ST LPS22HH automotive
+5. Radar transceivers / radar SoCs: TI AWR1843AOP / AWR2944 / AWR2544 / AWR6843AOP / IWR6843, NXP TEF8232 / SAF85xx, Infineon RASIC CTRX8191 / BGT60 — price only if a franchised distributor lists it (many are OEM-direct; then notResearched)
+6. Data converters / precision analog automotive: TI ADS131M04-Q1 / ADS1115-Q1 / ADS7038-Q1 / DAC80508, ADI AD7124 automotive / AD4130, Microchip MCP3564; automotive op-amps / comparators: TI OPA2991-Q1 / TLV9062-Q1 / OPA388-Q1 / TLV7011-Q1, ADI ADA4522, ST TSV / TSB automotive
+7. Digital isolators automotive: TI ISO7741-Q1 / ISO7721-Q1 / ISO6741-Q1 / ISO1042-Q1 (isolated CAN), ADI ADuM1250 / ADuM141E automotive, Skyworks Si86xx automotive, Infineon ISOFACE, NVE IL7xx
+8. Audio / haptics automotive (Class-D, codecs): TI TAS6424-Q1 / TAS6584-Q1 / TAS2563-Q1 / PCM3168A-Q1, ADI ADAU1452 automotive / A2B AD2428 / AD2433, NXP TDF8530 / TFA9xxx

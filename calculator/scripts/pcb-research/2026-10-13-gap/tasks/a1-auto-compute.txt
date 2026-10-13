@@ -1,0 +1,13 @@
+Domain: auto-compute — automotive MCUs, processors and the latest SoCs a distributor stocks (2023–2026 launches first).
+Priority order (series lines: pick ONE representative automotive orderable code each, say why):
+1. Infineon AURIX TC4x (TC4D7 / TC499 / TC4D9 — the newest family) and TC3xx members not yet catalogued (TC375, TC377, TC364, TC334, TC233)
+2. NXP S32K3 members beyond S32K344: S32K311, S32K312, S32K314, S32K322, S32K324, S32K341, S32K342, S32K358, S32K388, S32K396
+3. NXP S32G2 / S32G3 vehicle network processors (S32G274A, S32G399A), S32Z2 / S32E2 real-time processors
+4. Renesas RH850/U2A, RH850/U2B, RH850/F1KM-S4, RH850/P1x; Renesas RA6 / RA8 automotive; R-Car S4 (if distributor-listed)
+5. ST Stellar SR6P3 / SR6P6 / SR6G7, SPC58 (SPC584B, SPC58NH), SPC56 legacy; STM32 automotive (STM32A, STM32G4 "Q")
+6. TI processors: TDA4VM / TDA4VE / TDA4AL / TDA4VH (Jacinto 7), AM62A7-Q1, AM2732-Q1, AM263x-Q1 (AM2634-Q1), F29H85x, TMS320F28P65x-Q1, F28003x-Q1
+7. NXP i.MX 8QuadMax / i.MX 8M Plus automotive / i.MX 95 / i.MX 93 automotive grades
+8. Microchip automotive: PIC32CK, PIC32CM JH, dsPIC33CK / CH automotive, AVR DA/DB automotive, SAM V71 automotive
+9. Infineon TRAVEO T2G (CYT2B7, CYT2B9, CYT3BB, CYT4BF), PSoC 4 automotive (CY8C4147 AZQ)
+10. Renesas RL78/F24 / F25, NXP KE1x / KEA / MC9S12 ZVM, Melexis MLX81xxx motor MCUs, Elmos E52x
+OEM-direct (do NOT price; list in notResearched): NVIDIA Orin/Thor, Mobileye EyeQ5/6, Qualcomm SA8155/SA8295/SA8650, Renesas R-Car V4H/V3H, Ambarella CV3, Horizon Journey 5/6, Black Sesame.

@@ -1,0 +1,15 @@
+Domain: passives-mlcc — an MLCC price MATRIX, so any capacitor a photo or BOM shows prices from a sourced point.
+Build the matrix with REAL orderable codes, one per cell. For each cell price the AUTOMOTIVE code (AEC-Q200: Murata GCM / GCJ,
+TDK CGA, Samsung CL…-…-Q / CLxx automotive, KEMET C…AUTO, Yageo AC / CQ, Taiyo Yuden M-series automotive) FIRST, then — where
+budget allows — the COMMERCIAL equivalent (Murata GRM, TDK C, Samsung CL, Yageo CC) so the automotive premium is measured.
+Put size, value, voltage, dielectric, tolerance and "AEC-Q200" or "commercial" in desc. Prefer reel breaks (10k, 15k, 20k, 50k)
+— MLCC unit prices at 1k are cut-tape and overstate. Check has.py first: the catalogue already holds some GCM / CGA codes.
+Cells, in priority order:
+1. 0402 X7R: 100 nF 16 V/50 V, 10 nF 50 V, 1 nF 50 V; 0402 C0G: 100 pF 50 V, 22 pF 50 V, 1 nF 50 V; 0402 X5R / X7S 1 µF 10 V, 2.2 µF 6.3 V
+2. 0603 X7R: 100 nF 50 V, 1 µF 25 V/50 V, 2.2 µF 25 V, 4.7 µF 16 V, 10 nF 100 V; 0603 C0G 1 nF / 10 nF 50 V
+3. 0805 X7R: 10 µF 25 V, 4.7 µF 50 V, 1 µF 100 V, 100 nF 100 V; 0805 C0G 10 nF 50 V
+4. 1206 X7R: 10 µF 50 V, 22 µF 25 V, 1 µF 250 V (high voltage), 100 nF 630 V; 1206 C0G 100 nF 50 V
+5. 1210 X7R: 22 µF 25 V, 10 µF 50 V, 4.7 µF 100 V (DC-link / input caps)
+6. 0201 X7R / X5R: 100 nF 6.3 V/10 V, 10 nF 16 V (automotive where listed — GCM033 / CGA1)
+7. Soft-termination / open-mode safety MLCCs for battery-side (Murata GCJ, TDK CGA…FS / CN, KEMET Flex) — two points
+8. Commercial equivalents of cells 1–4 (the premium measurement)

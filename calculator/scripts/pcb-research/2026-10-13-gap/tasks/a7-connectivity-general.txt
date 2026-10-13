@@ -1,0 +1,10 @@
+Domain: connectivity-general — wireless / positioning ICs and modules (automotive first), then the most common NON-automotive
+industrial / consumer ICs a board photo shows, and FPGAs.
+Priority order:
+1. Automotive Wi-Fi / BT: NXP 88Q9098 / AW693 (if listed), Infineon CYW89829 / CYW43439, Murata automotive modules (Type 1MW / 1YM / 2BZ), u-blox JODY-W3 / JODY-W5
+2. GNSS: u-blox NEO-M9V / ZED-F9K / NEO-F10N / UBX-M10050 (chip), ST Teseo-V / Teseo-APP2 (STA8100 / STA9100), Quectel LG69T / LC29H (automotive)
+3. Cellular modules (automotive-grade): Quectel AG15 / AG35 / AG550Q / AG59x, Telit LE910C1-x automotive / FN990, u-blox TOBY-L4 / LENA-R8 / SARA-R5 automotive, Sierra AirPrime AR — price only if a franchised distributor lists it
+4. UWB / NFC / keyless: NXP NCJ29D5 / NCJ3310 / NCF3321 / PN7462 / NCF29A1, Qorvo DW3110 / DW3220 (automotive), ST ST25R3916-AQWT, Infineon automotive NFC, NXP NCF3340 (KESSY)
+5. Industrial / consumer MCUs commonly on boards: STM32F030, STM32G071, STM32G474, STM32H743, STM32H563, STM32U575, STM32L476; NXP i.MX RT1062 / RT1176, LPC55S69, MCXN947; Microchip ATSAMD21, ATmega328P, PIC16F18xxx; Raspberry Pi RP2040 / RP2350; Espressif ESP32-S3 / ESP32-C6 chips and WROOM modules; Nordic nRF52840 / nRF5340 / nRF54L15; TI MSPM0G3507 / CC2652R7; Silicon Labs EFR32MG24
+6. FPGAs / CPLDs: Lattice MachXO3D / CertusPro-NX / CrossLinkU-NX / iCE40UP5K (automotive grades where they exist), AMD Spartan-7 / Artix-7 XA automotive / Zynq-7000 XA7Z010 / Zynq UltraScale+ XAZU2EG / XAZU3EG, Intel MAX 10 automotive, Microchip PolarFire MPF100T, Efinix Titanium Ti60
+7. Industrial / consumer interface staples: FTDI FT232RL / FT234XD, Silicon Labs CP2102N, WCH CH340 (LCSC), USB-C PD (TI TPS65987, Cypress CYPD3177), Ethernet PHY KSZ8081 / LAN8720A / DP83826, RS-485 (TI THVD1450, MAX3485), level shifters (TXS0108E)

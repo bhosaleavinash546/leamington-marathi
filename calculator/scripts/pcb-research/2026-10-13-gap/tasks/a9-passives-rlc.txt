@@ -1,0 +1,13 @@
+Domain: passives-rlc — resistor, inductor / ferrite and electrolytic / polymer / tantalum capacitor MATRIX with REAL orderable codes.
+Automotive (AEC-Q200) first; commercial equivalent where budget allows. Put value, size, tolerance, power / voltage / current
+rating and "AEC-Q200" or "commercial" in desc. Prefer reel breaks (5k, 10k). Check has.py first.
+Cells, in priority order:
+1. Thick-film chip resistors AEC-Q200 (Vishay CRCW…e3 / CRCW-HP, Yageo AC, Panasonic ERJ…, KOA RK73H / RK73B, Rohm ESR / MCR…AEC, Bourns CR…AS): 0402 10 k 1 %, 0402 0 Ω, 0603 10 k 1 %, 0603 100 k, 0805 1 k 1 %, 1206 10 Ω, 1210 / 2010 / 2512 (power) 1 %, anti-sulfur variants (Vishay CRCW-AS, Panasonic ERJ-PA / ERJ-S)
+2. Current-sense shunts AEC-Q200: Vishay WSL / WSLP / WSK, Bourns CSS2H / CRA, Isabellenhütte BVR / VMK / BVS, Panasonic ERJ-MB / ERJ-M1W, Rohm PMR / GMR, KOA TLR — 1 mΩ / 2 mΩ / 10 mΩ in 1206 / 2512 / 2010 / 4026
+3. Thin-film precision AEC-Q200 (Panasonic ERA, Vishay TNPW, Susumu RG automotive) 0603 / 0805 0.1 %
+4. Ferrite beads AEC-Q200 (Murata BLM-KN/-SX/-HG/-PX, TDK MPZ / MMZ, Würth WE-CBF automotive, Laird / Taiyo Yuden FBMH): 0402, 0603, 0805, 1206 high-current
+5. Power inductors AEC-Q200: Coilcraft XGL / XEL / XAL (XAL4020, XAL5030, XGL4020), Würth WE-XHMA / WE-MAPI / WE-HCI, TDK TFM / CLF / SPM / VLS, Murata DFE…-A / LQH automotive, Vishay IHLP-…-5A / IHLE, Bourns SRP / SRN automotive, Sumida CDRH automotive — sizes 2.0×1.2, 2.5×2.0, 4×4, 5×5, 6×6, 10×10 at 1–22 µH
+6. Common-mode chokes AEC-Q200: TDK ACT45B / ACT1210 / ACM2012 / ZJYS, Murata DLW / PLT, Würth WE-CNSW / WE-SL5 HC — CAN, Ethernet (100BASE-T1 / 1000BASE-T1), power-line points
+7. Aluminium electrolytic / hybrid polymer AEC-Q200 SMD: Panasonic EEE-FK / EEE-FT / EEH-ZA / EEH-ZC / EEH-ZK, Nichicon UCJ / UCZ / CZ, Chemi-Con HXE / HXD / MZK, Würth WCAP-ASLI / WCAP-HCGP, Rubycon — 47–470 µF at 25–63 V
+8. Tantalum / polymer tantalum AEC-Q200 (KEMET T598 / T591 / T495, AVX TAJ…AUTO / TCQ, Vishay T55 / 893D automotive) — 3 points
+9. Film capacitors for DC-link / snubber, automotive (TDK B32776 / B3277x automotive, Vishay MKP1848 / MKP1848C, KEMET C4AQ / R75 automotive, Panasonic EZPV) — 3 points
