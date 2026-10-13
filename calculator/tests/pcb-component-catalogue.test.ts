@@ -169,6 +169,21 @@ describe('the research merge rules', () => {
   it('the catalogue holds no slope taken across distributors', () => {
     for (const e of raw.parts) if (e.volumeModel) expect(e.volumeModel.basis, e.mpn).toMatch(/^(slope from the part's own breaks|franchise curve)/);
   });
+  it('a family match takes over only a family-key estimate, never another priced part (round 4: CRCW0402 0 ohm v 10 k)', () => {
+    const tenK = priceFromObservations([o('Digi-Key', 10000, 0.004)])!;
+    const cat = { parts: [
+      { mpn: 'CRCW040210K0FKED', family: 'CRCW0402', mfr: 'Vishay', desc: '10k', category: 'passive_0402', pkg: '0402', aecq: true,
+        gbp: tenK.gbp, confidence: 'distributor' as const, source: 'dk', asOf: '2026-10-06', observations: tenK.obs.map(x => ({ ...x })),
+        volumeModel: { b: tenK.b, basis: tenK.basis, derivedAbove: 10000 } },
+      { mpn: 'TLS4120', family: 'TLS4120', mfr: 'Infineon', desc: 'buck', category: 'ic_soic', pkg: '', aecq: true,
+        gbp: { q1k: 2, q10k: 1.7, q100k: 1.4 }, confidence: 'estimate' as const, source: 'est', asOf: '2026-10-01' }] };
+    const rep = mergeResearch(cat, [
+      { mpn: 'CRCW04020000Z0ED', family: 'CRCW0402', mfr: 'Vishay', desc: '0 ohm', category: 'passive_0402', pkg: '0402', aecq: true, observations: [o('LCSC', 50000, 0.0013)] },
+      { mpn: 'TLS4120D0EPV33XUMA1', family: 'TLS4120', mfr: 'Infineon', desc: 'buck', category: 'ic_soic', pkg: '', aecq: true, observations: [o('RS Components', 500, 1.5, 'GBP')] }], '2026-10-13');
+    expect(rep.added).toContain('CRCW04020000Z0ED');                                   // its own entry
+    expect(cat.parts.find(p => p.mpn === 'CRCW040210K0FKED')!.gbp.q1k).toBe(tenK.gbp.q1k);   // the 10 k is untouched
+    expect(rep.replacedEstimate).toEqual(['TLS4120 → TLS4120D0EPV33XUMA1']);            // the family-key estimate is taken over
+  });
   it('a cross-check adds to the stored observations and re-prices from both', () => {
     const first = priceFromObservations([o('Digi-Key', 1000, 2.0)])!;
     const cat = { parts: [{ mpn: 'TEST123Q1', family: 'TEST123', mfr: 'X', desc: 'd', category: 'ic_soic', pkg: 'SOIC-8', aecq: true,

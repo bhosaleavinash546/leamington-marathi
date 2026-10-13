@@ -1830,14 +1830,14 @@
    "pkg": "HDQFP/QFP-EP-172",
    "aecq": true,
    "gbp": {
-    "q1k": 5.6307,
-    "q10k": 4.7861,
-    "q100k": 4.0682,
-    "q200k": 3.8739,
-    "q300k": 3.7646
+    "q1k": 7.5518,
+    "q10k": 6.419,
+    "q100k": 5.4562,
+    "q200k": 5.1956,
+    "q300k": 5.0491
    },
    "confidence": "distributor",
-   "source": "Avnet $7.72857 @600 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "Farnell €10.35 @100 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
    "asOf": "2026-10-13",
    "ecuRoles": [
     "BCM",
@@ -1847,23 +1847,22 @@
    ],
    "observations": [
     {
-     "distributor": "Avnet",
-     "qty": 600,
-     "price": 7.72857,
-     "currency": "USD",
-     "url": "https://www.avnet.com/americas/product/nxp/s32k342nht0vpasr/evolve-65630115/",
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 10.35,
+     "currency": "EUR",
+     "url": "https://de.farnell.com/nxp/s32k342eht0mpbst/mcu-32-bit-160mhz-qfp-ep-172/dp/4134287",
      "date": "2026-10-13",
-     "gbp": 5.8374
+     "gbp": 8.8844
     }
    ],
    "volumeModel": {
     "b": 0.0706,
     "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 600
+    "derivedAbove": 100
    },
    "aliases": [
-    "S32K342",
-    "S32K342EHT0MPBST"
+    "S32K342"
    ]
   },
   {
@@ -9258,19 +9257,19 @@
    "pkg": "SMD/THT",
    "aecq": true,
    "gbp": {
-    "q1k": 0.0013,
-    "q10k": 0.0012,
-    "q100k": 0.0011,
-    "q200k": 0.0011,
-    "q300k": 0.0011
+    "q1k": 0.0039,
+    "q10k": 0.0033,
+    "q100k": 0.0028,
+    "q200k": 0.0027,
+    "q300k": 0.0026
    },
    "confidence": "estimate",
-   "source": "Family key priced as its catalogued member CRCW040210K0FKED (distributor-priced, 2026-10-13; representative: Vishay CRCW 0402 10 k 1% AEC-Q200). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.00529 @1k.",
-   "asOf": "2026-10-13",
+   "source": "Family key priced as its catalogued member CRCW040210K0FKED (distributor-priced, 2026-10-09; representative: Vishay CRCW 0402 10 k 1% AEC-Q200). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.00529 @1k.",
+   "asOf": "2026-10-09",
    "volumeModel": {
-    "b": 0.0368,
-    "basis": "slope from the part's own breaks (1 pair)",
-    "derivedAbove": 750000
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 10000
    }
   },
   {
@@ -9382,19 +9381,19 @@
    "pkg": "SMD/THT",
    "aecq": true,
    "gbp": {
-    "q1k": 0.4442,
-    "q10k": 0.3775,
-    "q100k": 0.3209,
-    "q200k": 0.3056,
-    "q300k": 0.297
+    "q1k": 0.158,
+    "q10k": 0.1251,
+    "q100k": 0.099,
+    "q200k": 0.0923,
+    "q300k": 0.0886
    },
    "confidence": "estimate",
-   "source": "Family key priced as its catalogued member WSL2512R0100FEA (distributor-priced, 2026-10-13; representative: Vishay WSL2512 10 mohm). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.2 @1k.",
-   "asOf": "2026-10-13",
+   "source": "Family key priced as its catalogued member WSL2512R0100FEA (distributor-priced, 2026-10-06; representative: Vishay WSL2512 10 mohm). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.2 @1k.",
+   "asOf": "2026-10-06",
    "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 2000
+    "b": 0.1016,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 10000
    }
   },
   {
@@ -10880,15 +10879,15 @@
    "pkg": "0402",
    "aecq": true,
    "gbp": {
-    "q1k": 0.0013,
-    "q10k": 0.0012,
-    "q100k": 0.0011,
-    "q200k": 0.0011,
-    "q300k": 0.0011
+    "q1k": 0.0039,
+    "q10k": 0.0033,
+    "q100k": 0.0028,
+    "q200k": 0.0027,
+    "q300k": 0.0026
    },
    "confidence": "distributor",
-   "source": "Future Electronics $0.0016 @20,000; Future Electronics $0.0014 @750,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0368, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-13",
+   "source": "Priced on the sibling orderable code CRCW04020000Z0ED (same Vishay CRCW0402 AEC-Q200 series, 0 ohm jumper - thick-film series pricing does not depend on the value; no 10 k listing was recorded). Digi-Key $0.00452 @10,000; Farnell £0.0033 @10,000; TTI $0.0027 @10,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-09",
    "ecuRoles": [
     "ECU",
     "BCM",
@@ -10897,28 +10896,37 @@
    ],
    "observations": [
     {
-     "distributor": "Future Electronics",
-     "qty": 20000,
-     "price": 0.0016,
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00452,
      "currency": "USD",
-     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw04020000z0edc-vishay-9093751",
-     "date": "2026-10-13",
-     "gbp": 0.0012
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0ED/1177495",
+     "date": "2026-10-09",
+     "gbp": 0.0034
     },
     {
-     "distributor": "Future Electronics",
-     "qty": 750000,
-     "price": 0.0014,
+     "distributor": "Farnell",
+     "qty": 10000,
+     "price": 0.0033,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/vishay/crcw04020000z0ed/res-0r-0-063w-0402-thick-film/dp/1469661",
+     "date": "2026-10-09",
+     "gbp": 0.0033
+    },
+    {
+     "distributor": "TTI",
+     "qty": 10000,
+     "price": 0.0027,
      "currency": "USD",
-     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw04020000z0edc-vishay-9093751",
-     "date": "2026-10-13",
-     "gbp": 0.0011
+     "url": "https://www.findchips.com/search/crcw04020000z0ed",
+     "date": "2026-10-09",
+     "gbp": 0.002
     }
    ],
    "volumeModel": {
-    "b": 0.0368,
-    "basis": "slope from the part's own breaks (1 pair)",
-    "derivedAbove": 750000
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 10000
    },
    "aliases": [
     "CRCW040210K0FKED"
@@ -11255,15 +11263,15 @@
    "pkg": "2512",
    "aecq": true,
    "gbp": {
-    "q1k": 0.4442,
-    "q10k": 0.3775,
-    "q100k": 0.3209,
-    "q200k": 0.3056,
-    "q300k": 0.297
+    "q1k": 0.158,
+    "q10k": 0.1251,
+    "q100k": 0.099,
+    "q200k": 0.0923,
+    "q300k": 0.0886
    },
    "confidence": "distributor",
-   "source": "Mouser $0.56 @2,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-13",
+   "source": "Digi-Key $0.20924 @1,000; Digi-Key $0.16561 @10,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1016, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-06",
    "ecuRoles": [
     "BMS",
     "ECU-PSU",
@@ -11271,23 +11279,31 @@
    ],
    "observations": [
     {
-     "distributor": "Mouser",
-     "qty": 2000,
-     "price": 0.56,
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.20924,
      "currency": "USD",
-     "url": "https://origin-www.findchips.com/search/WSL25122L000FEA18",
-     "date": "2026-10-13",
-     "gbp": 0.423
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL2512R0100FEA/713493",
+     "date": "2026-10-06",
+     "gbp": 0.158
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.16561,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/WSL2512R0100FEA/713493",
+     "date": "2026-10-06",
+     "gbp": 0.1251
     }
    ],
    "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 2000
+    "b": 0.1016,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 10000
    },
    "aliases": [
-    "WSL2512R1000FEA",
-    "WSL2512R0100FEA"
+    "WSL2512R1000FEA"
    ]
   },
   {
@@ -26812,15 +26828,15 @@
    "pkg": "1210 (3.2x2.5mm)",
    "aecq": true,
    "gbp": {
-    "q1k": 0.233,
-    "q10k": 0.1981,
-    "q100k": 0.1683,
-    "q200k": 0.1603,
-    "q300k": 0.1558
+    "q1k": 0.6717,
+    "q10k": 0.557,
+    "q100k": 0.4619,
+    "q200k": 0.4365,
+    "q300k": 0.4224
    },
    "confidence": "distributor",
-   "source": "LCSC $0.3085 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-13",
+   "source": "Digi-Key $0.94096 @500; Digi-Key $0.76875 @6,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0813, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-06",
    "ecuRoles": [
     "BCM",
     "gateway",
@@ -26828,23 +26844,29 @@
    ],
    "observations": [
     {
-     "distributor": "LCSC",
-     "qty": 1000,
-     "price": 0.3085,
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.94096,
      "currency": "USD",
-     "url": "https://www.lcsc.com/product-image/C529452.html",
-     "date": "2026-10-13",
-     "gbp": 0.233
+     "url": "https://www.digikey.com/en/products/detail/tdk-corporation/ACT1210-510-2P-TL00/4918056",
+     "date": "2026-10-06",
+     "gbp": 0.7107
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 6000,
+     "price": 0.76875,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/tdk-corporation/ACT1210-510-2P-TL00/4918056",
+     "date": "2026-10-06",
+     "gbp": 0.5806
     }
    ],
    "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 1000
-   },
-   "aliases": [
-    "ACT1210-510-2P-TL00"
-   ]
+    "b": 0.0813,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 6000
+   }
   },
   {
    "mpn": "744232090",
@@ -35316,37 +35338,43 @@
    "pkg": "0603",
    "aecq": true,
    "gbp": {
-    "q1k": 0.027,
-    "q10k": 0.0229,
-    "q100k": 0.0195,
-    "q200k": 0.0186,
-    "q300k": 0.0181
+    "q1k": 0.0067,
+    "q10k": 0.0045,
+    "q100k": 0.0029,
+    "q200k": 0.0026,
+    "q300k": 0.0024
    },
    "confidence": "distributor",
-   "source": "RS Components £0.027 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-13",
+   "source": "Digi-Key $0.00893 @1,000; Digi-Key $0.00614 @5,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.18, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-09",
    "ecuRoles": [
     "ADAS"
    ],
    "observations": [
     {
-     "distributor": "RS Components",
+     "distributor": "Digi-Key",
      "qty": 1000,
-     "price": 0.027,
-     "currency": "GBP",
-     "url": "https://uk.rs-online.com/web/p/surface-mount-fixed-resistors/6789673",
-     "date": "2026-10-13",
-     "gbp": 0.027
+     "price": 0.00893,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW060310K0FKEA/1174782",
+     "date": "2026-10-09",
+     "gbp": 0.0067
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.00614,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW060310K0FKEA/1174782",
+     "date": "2026-10-09",
+     "gbp": 0.0046
     }
    ],
    "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 1000
-   },
-   "aliases": [
-    "CRCW060310K0FKEA"
-   ]
+    "b": 0.18,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 5000
+   }
   },
   {
    "mpn": "PESD2CANFD24V-TR",
@@ -39292,15 +39320,15 @@
    "pkg": "1210 (3225)",
    "aecq": true,
    "gbp": {
-    "q1k": 0.248,
-    "q10k": 0.2108,
-    "q100k": 0.1792,
-    "q200k": 0.1707,
-    "q300k": 0.1658
+    "q1k": 0.2189,
+    "q10k": 0.1861,
+    "q100k": 0.1581,
+    "q200k": 0.1506,
+    "q300k": 0.1463
    },
    "confidence": "distributor",
-   "source": "LCSC $0.3284 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-13",
+   "source": "LCSC $0.2898 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-09",
    "ecuRoles": [
     "gateway",
     "ADAS",
@@ -39310,21 +39338,18 @@
     {
      "distributor": "LCSC",
      "qty": 1000,
-     "price": 0.3284,
+     "price": 0.2898,
      "currency": "USD",
-     "url": "https://www.lcsc.com/product-image/C307643.html",
-     "date": "2026-10-13",
-     "gbp": 0.248
+     "url": "https://www.lcsc.com/product-image/C131444.html",
+     "date": "2026-10-09",
+     "gbp": 0.2189
     }
    ],
    "volumeModel": {
     "b": 0.0706,
     "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
     "derivedAbove": 1000
-   },
-   "aliases": [
-    "ACT1210L-201-2P-TL00"
-   ]
+   }
   },
   {
    "mpn": "ACM2012-900-2P-T001",
@@ -47978,6 +48003,47 @@
    }
   },
   {
+   "mpn": "S32K342NHT0VPASR",
+   "family": "S32K342",
+   "mfr": "NXP",
+   "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, no Ethernet (N variant), tape and reel",
+   "category": "ic_tqfp",
+   "pkg": "not stated in listing (VPA code)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 5.6307,
+    "q10k": 4.7861,
+    "q100k": 4.0682,
+    "q200k": 3.8739,
+    "q300k": 3.7646
+   },
+   "confidence": "distributor",
+   "source": "Avnet $7.72857 @600 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "BCM",
+    "zonal",
+    "BMS",
+    "chassis"
+   ],
+   "observations": [
+    {
+     "distributor": "Avnet",
+     "qty": 600,
+     "price": 7.72857,
+     "currency": "USD",
+     "url": "https://www.avnet.com/americas/product/nxp/s32k342nht0vpasr/evolve-65630115/",
+     "date": "2026-10-13",
+     "gbp": 5.8374
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 600
+   }
+  },
+  {
    "mpn": "MIMX8MN6CVTIZAA",
    "family": "MIMX8MN6",
    "mfr": "NXP",
@@ -53389,6 +53455,147 @@
    }
   },
   {
+   "mpn": "CRCW04020000Z0ED",
+   "family": "CRCW0402",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film jumper 0 ohm, 0402, AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.0039,
+    "q10k": 0.0033,
+    "q100k": 0.0028,
+    "q200k": 0.0027,
+    "q300k": 0.0026
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.00452 @10,000; Farnell £0.0033 @10,000; TTI $0.0027 @10,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00452,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0ED/1177495",
+     "date": "2026-10-09",
+     "gbp": 0.0034
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 10000,
+     "price": 0.0033,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/vishay/crcw04020000z0ed/res-0r-0-063w-0402-thick-film/dp/1469661",
+     "date": "2026-10-09",
+     "gbp": 0.0033
+    },
+    {
+     "distributor": "TTI",
+     "qty": 10000,
+     "price": 0.0027,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/crcw04020000z0ed",
+     "date": "2026-10-09",
+     "gbp": 0.002
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 10000
+   }
+  },
+  {
+   "mpn": "CRCW04020000Z0EDC",
+   "family": "CRCW0402",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film jumper 0 ohm, 0402, AEC-Q200 (EDC packing)",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.0013,
+    "q10k": 0.0012,
+    "q100k": 0.0011,
+    "q200k": 0.0011,
+    "q300k": 0.0011
+   },
+   "confidence": "distributor",
+   "source": "Future Electronics $0.0016 @20,000; Future Electronics $0.0014 @750,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0368, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 20000,
+     "price": 0.0016,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw04020000z0edc-vishay-9093751",
+     "date": "2026-10-13",
+     "gbp": 0.0012
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 750000,
+     "price": 0.0014,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw04020000z0edc-vishay-9093751",
+     "date": "2026-10-13",
+     "gbp": 0.0011
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0368,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 750000
+   }
+  },
+  {
+   "mpn": "CRCW0603100KFKEA",
+   "family": "CRCW0603",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film 100k 1% 0.1W, 0603, AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.027,
+    "q10k": 0.0229,
+    "q100k": 0.0195,
+    "q200k": 0.0186,
+    "q300k": 0.0181
+   },
+   "confidence": "distributor",
+   "source": "RS Components £0.027 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 1000,
+     "price": 0.027,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/surface-mount-fixed-resistors/6789673",
+     "date": "2026-10-13",
+     "gbp": 0.027
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
+   }
+  },
+  {
    "mpn": "ERJ-UP6F1001V",
    "family": "ERJ-UP6",
    "mfr": "Panasonic",
@@ -53636,6 +53843,46 @@
    }
   },
   {
+   "mpn": "WSL25122L000FEA",
+   "family": "WSL2512",
+   "mfr": "Vishay Dale",
+   "desc": "Metal-strip current-sense 2 mOhm 1% 1W, 2512, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.4442,
+    "q10k": 0.3775,
+    "q100k": 0.3209,
+    "q200k": 0.3056,
+    "q300k": 0.297
+   },
+   "confidence": "distributor",
+   "source": "Mouser $0.56 @2,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "BMS",
+    "inverter",
+    "power"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2000,
+     "price": 0.56,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/WSL25122L000FEA18",
+     "date": "2026-10-13",
+     "gbp": 0.423
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 2000
+   }
+  },
+  {
    "mpn": "TNPW080513K0BEEA",
    "family": "TNPW0805",
    "mfr": "Vishay Dale",
@@ -53787,6 +54034,84 @@
     "b": 0.0706,
     "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
     "derivedAbove": 500
+   }
+  },
+  {
+   "mpn": "ACT1210L-101-2P-TL00",
+   "family": "ACT1210L",
+   "mfr": "TDK",
+   "desc": "Common-mode choke 100uH 2-line, 1210, AEC-Q200, CAN-FD / in-vehicle network",
+   "category": "transformer",
+   "pkg": "1210",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.248,
+    "q10k": 0.2108,
+    "q100k": 0.1792,
+    "q200k": 0.1707,
+    "q300k": 0.1658
+   },
+   "confidence": "distributor",
+   "source": "LCSC $0.3284 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "gateway",
+    "BCM"
+   ],
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.3284,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C307643.html",
+     "date": "2026-10-13",
+     "gbp": 0.248
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
+   }
+  },
+  {
+   "mpn": "ACT1210-101-2P-TL00",
+   "family": "ACT1210",
+   "mfr": "TDK",
+   "desc": "CAN common-mode choke 100uH 2-line, 1210, AEC-Q200",
+   "category": "transformer",
+   "pkg": "1210",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.233,
+    "q10k": 0.1981,
+    "q100k": 0.1683,
+    "q200k": 0.1603,
+    "q300k": 0.1558
+   },
+   "confidence": "distributor",
+   "source": "LCSC $0.3085 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "gateway",
+    "BCM"
+   ],
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.3085,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C529452.html",
+     "date": "2026-10-13",
+     "gbp": 0.233
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
    }
   },
   {

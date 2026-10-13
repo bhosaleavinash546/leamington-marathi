@@ -378,6 +378,45 @@
    "field": "observedMpn",
    "value": "ATA6570-GNQW0",
    "reason": "independent review (list-C): the replacement price is LCSC's listing of the sibling code ATA6570-GNQW0"
+  },
+  {
+   "mpn": "CRCW04020000Z0ED",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 50000,
+     "price": 0.0013,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C190119.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00452,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0ED/1177495",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 10000,
+     "price": 0.0033,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/vishay/crcw04020000z0ed/res-0r-0-063w-0402-thick-film/dp/1469661",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "TTI",
+     "qty": 10000,
+     "price": 0.0027,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/crcw04020000z0ed",
+     "date": "2026-10-09"
+    }
+   ],
+   "reason": "catalogue integrity: three listings of CRCW04020000Z0ED (Digi-Key, Farnell, TTI; URLs name this code) had been merged onto the 10 k CRCW040210K0FKED by a family match in an earlier round; they belong here"
   }
  ]
 }

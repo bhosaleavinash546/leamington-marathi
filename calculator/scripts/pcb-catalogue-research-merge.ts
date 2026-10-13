@@ -187,7 +187,11 @@ export function mergeResearch(catalogue: { parts: Entry[] }, research: Researche
       volumeModel: { b: priced.b, basis: priced.basis, derivedAbove: Math.max(...priced.obs.map(o => o.qty)) },
     };
     if (r.observedMpn && norm(r.observedMpn) !== norm(entry.mpn)) entry.aliases = [r.observedMpn];
-    const hit = index.get(norm(entry.mpn)) ?? (norm(entry.family).length >= 6 ? index.get(norm(entry.family)) : undefined);
+    // A FAMILY match may only take over a family-key ESTIMATE ("TLS4120" -> TLS4120D0EPV33XUMA1). It must never merge into
+    // another priced part of the same family: round 4 put the 0 ohm jumper CRCW04020000Z0ED's observations onto the 10 k
+    // CRCW040210K0FKED, a 2 mohm shunt onto the 10 mohm WSL2512R0100FEA and a 100 uH choke onto a 200 uH one.
+    const famHit = norm(entry.family).length >= 6 ? index.get(norm(entry.family)) : undefined;
+    const hit = index.get(norm(entry.mpn)) ?? (famHit != null && catalogue.parts[famHit].confidence === 'estimate' ? famHit : undefined);
     if (hit == null) {
       index.set(norm(entry.mpn), catalogue.parts.length);
       catalogue.parts.push(entry);

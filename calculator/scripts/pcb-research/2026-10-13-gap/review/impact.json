@@ -18,6 +18,15 @@
   "ratio": 0.030707070707070707
  },
  {
+  "mpn": "WSL25122L000FEA",
+  "cat": "passive_1206",
+  "desc": "Metal-strip current-sense 2 mOhm 1% 1W, 2512, AEC-Q200",
+  "now": 0.4442,
+  "prior": 0.016,
+  "basis": "chip resistor 1206, AEC-Q",
+  "ratio": 27.7625
+ },
+ {
   "mpn": "T598D106M050ATS090",
   "cat": "passive_1206",
   "desc": "Polymer tantalum 10uF 50V 20% 90 mOhm, D case 7343, AEC-Q200",
@@ -169,6 +178,15 @@
   "prior": 0.51,
   "basis": "SOIC / SOT IC (unidentified)",
   "ratio": 8.294313725490197
+ },
+ {
+  "mpn": "CRCW04020000Z0EDC",
+  "cat": "passive_0402",
+  "desc": "Thick film jumper 0 ohm, 0402, AEC-Q200 (EDC packing)",
+  "now": 0.0013,
+  "prior": 0.01,
+  "basis": "MLCC 0402, AEC-Q",
+  "ratio": 0.13
  },
  {
   "mpn": "MT62F2G32D4DS-026 AAT:B TR",
@@ -810,9 +828,9 @@
   "ratio": 0.3747809523809524
  },
  {
-  "mpn": "S32K342EHT0MPBST",
+  "mpn": "S32K342NHT0VPASR",
   "cat": "ic_tqfp",
-  "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, Ethernet (E variant)",
+  "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, no Ethernet (N variant), tape and reel",
   "now": 5.6307,
   "prior": 15,
   "basis": "MCU TQFP, AEC-Q",
@@ -826,6 +844,15 @@
   "prior": 4.875,
   "basis": "PMIC QFN, AEC-Q",
   "ratio": 0.3768205128205128
+ },
+ {
+  "mpn": "CRCW04020000Z0ED",
+  "cat": "passive_0402",
+  "desc": "Thick film jumper 0 ohm, 0402, AEC-Q200",
+  "now": 0.0039,
+  "prior": 0.01,
+  "basis": "MLCC 0402, AEC-Q",
+  "ratio": 0.38999999999999996
  },
  {
   "mpn": "KSZ8081RNACA-TR",
@@ -1033,6 +1060,15 @@
   "prior": 3.75,
   "basis": "RF IC QFN",
   "ratio": 0.49949333333333334
+ },
+ {
+  "mpn": "S32K342EHT0MPBST",
+  "cat": "ic_tqfp",
+  "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, Ethernet (E variant)",
+  "now": 7.5518,
+  "prior": 15,
+  "basis": "MCU TQFP, AEC-Q",
+  "ratio": 0.5034533333333333
  },
  {
   "mpn": "STM32F031G6U7TR",
@@ -1503,6 +1539,15 @@
   "ratio": 0.7390476190476191
  },
  {
+  "mpn": "ACT1210-101-2P-TL00",
+  "cat": "transformer",
+  "desc": "CAN common-mode choke 100uH 2-line, 1210, AEC-Q200",
+  "now": 0.233,
+  "prior": 0.315,
+  "basis": "common-mode choke, AEC-Q",
+  "ratio": 0.7396825396825397
+ },
+ {
   "mpn": "ACS37612LLUATR-015B5",
   "cat": "ic_soic",
   "desc": "Coreless differential Hall current sensor (busbar), 15 mV/A, 5 V, automotive AEC-Q100",
@@ -1573,6 +1618,15 @@
   "prior": 0.2225,
   "basis": "power inductor 1206-class",
   "ratio": 1.2768539325842698
+ },
+ {
+  "mpn": "ACT1210L-101-2P-TL00",
+  "cat": "transformer",
+  "desc": "Common-mode choke 100uH 2-line, 1210, AEC-Q200, CAN-FD / in-vehicle network",
+  "now": 0.248,
+  "prior": 0.315,
+  "basis": "common-mode choke, AEC-Q",
+  "ratio": 0.7873015873015873
  },
  {
   "mpn": "MPQ4430GLE-AEC1-Z",
@@ -1780,6 +1834,15 @@
   "prior": 0.1475,
   "basis": "MLCC 0805, AEC-Q",
   "ratio": 1.1267796610169492
+ },
+ {
+  "mpn": "CRCW0603100KFKEA",
+  "cat": "passive_0603",
+  "desc": "Thick film 100k 1% 0.1W, 0603, AEC-Q200",
+  "now": 0.027,
+  "prior": 0.024,
+  "basis": "MLCC 0603, AEC-Q",
+  "ratio": 1.125
  },
  {
   "mpn": "TPS48111LQDGXRQ1",

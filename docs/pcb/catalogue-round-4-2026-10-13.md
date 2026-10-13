@@ -5,7 +5,7 @@ the rest of the industry's common ICs, and everyday SMT / SMD parts. This round 
 researched by parallel agents and checked by independent reviewers. Automotive came first, passives were built as a
 matrix, and 10 research agents ran.
 
-**Result:** 1,217 → **1,425 parts**; distributor-priced 880 → **1,099**; **219 parts** priced from distributor listings that
+**Result:** 1,217 → **1,432 parts**; distributor-priced 880 → **1,106**; **226 parts** priced from distributor listings that
 had no sourced price before. Catalogue audit: 0 errors. Tests: all pass.
 
 ## 1. How it was done
@@ -40,21 +40,25 @@ had no sourced price before. Catalogue audit: 0 errors. Tests: all pass.
 |---|---|---|---|---|---|
 | ic_soic | 352 | 421 | 265 → 336 | 383 | 126 |
 | ic_qfn | 280 | 333 | 206 → 265 | 279 | 89 |
-| ic_tqfp | 119 | 141 | 94 → 118 | 120 | 42 |
+| ic_tqfp | 119 | 142 | 94 → 119 | 121 | 42 |
 | ic_bga | 103 | 111 | 82 → 90 | 95 | 32 |
 | fuse_tvs | 85 | 87 | 51 → 54 | 74 | 16 |
-| passive_1206 | 49 | 67 | 39 → 57 | 62 | 22 |
+| passive_1206 | 49 | 68 | 39 → 58 | 63 | 22 |
 | through_hole | 55 | 62 | 33 → 40 | 47 | 8 |
 | crystal_osc | 38 | 43 | 24 → 29 | 28 | 2 |
 | passive_0805 | 30 | 37 | 19 → 26 | 33 | 11 |
-| passive_0603 | 26 | 31 | 20 → 25 | 26 | 9 |
-| passive_0402 | 22 | 30 | 17 → 25 | 27 | 14 |
+| passive_0402 | 22 | 32 | 17 → 27 | 29 | 16 |
+| passive_0603 | 26 | 32 | 20 → 26 | 27 | 9 |
 | connector_smt | 16 | 18 | 5 → 7 | 13 | 1 |
-| led / transformer / mechanical / relay / power module | 42 | 44 | 25 → 27 | 34 | 8 |
-| **Total** | **1,217** | **1,425** | **880 → 1,099** | **1,221** | **380** |
+| transformer | 11 | 13 | 8 → 10 | 13 | 1 |
+| led | 12 | 13 | 8 → 9 | 8 | 2 |
+| mechanical | 10 | 10 | 3 → 3 | 9 | 1 |
+| relay_switch | 8 | 9 | 5 → 6 | 5 | 4 |
+| power_module | 1 | 1 | 1 → 1 | 1 | 0 |
+| **Total** | **1217** | **1432** | **880 → 1106** | **1228** | **382** |
 
-The merge added 208 new parts, replaced 11 estimates with distributor prices, and cross-checked 15 entries already priced
-(observations added).
+The merge added 215 new parts, replaced 11 family-key or part estimates with distributor prices, and cross-checked 8
+entries already priced (observations added).
 
 **Highlights by domain:**
 - **Automotive compute:** Infineon AURIX TC4D7 (the newest family), RH850/F1KM and F1K, NXP S32K342, i.MX 93 automotive,
@@ -143,6 +147,24 @@ order of magnitude, not a guarantee. Every price in the samples was corrected or
     majority.
   - No entry already in the catalogue changes (audit 0 errors). A test pins it.
 
+**A second merge defect found and fixed:**
+- **The bug.** A part whose code did not match any entry was merged by its FAMILY key ("CRCW0402", "WSL2512", "ACT1210")
+  into another, already priced part of the same family. In this round that would have put:
+  - the 0 Ω jumper CRCW04020000Z0ED's observations onto the 10 k CRCW040210K0FKED;
+  - a 100 k resistor onto the 10 k CRCW060310K0FKEA;
+  - the 2 mΩ shunt WSL25122L000FEA onto the 10 mΩ WSL2512R0100FEA;
+  - two TDK chokes onto other inductance values.
+
+  Those six parts would have been missing as entries.
+- **The fix.** A family match now takes over only a family-key ESTIMATE (as intended: "TLS4120" → TLS4120D0EPV33XUMA1),
+  never another priced part. A test pins it. The merge was re-run from the pre-round catalogue.
+- **An earlier round had done the same once.** A scan of every observation URL against the catalogue's codes found that
+  CRCW040210K0FKED (10 k) had carried three listings of the 0 Ω jumper since round 2.
+  - Those listings now also price the jumper, CRCW04020000Z0ED, where they belong (review decision).
+  - The 10 k entry keeps its price — thick-film CRCW0402 AEC-Q200 pricing does not depend on the value — but its source
+    now says it was read on that sibling code (`fix-crcw0402-label.py`).
+  - No other entry in the catalogue carries a listing that names another catalogued code.
+
 **Known spreads (not errors, but read prices with them in mind):**
 - **MLCC and resistor reel prices** differ **4–14×** between distributors for the same code (LCSC $0.0096 v RS £0.066 v
   Future $0.135 for one Murata 0603). The catalogue keeps every distributor that agrees with another and states the spread.
@@ -152,9 +174,9 @@ order of magnitude, not a guarantee. Every price in the samples was corrected or
 
 ## 4. What changed for costing
 
-**Measured on the 219 parts now distributor-priced.** Before this round, a BOM line naming one of these parts was priced
-from its class range or an old estimate. For **53%** of them that figure was more than 2× away from the sourced price:
-59 were too low and 56 too high. Examples:
+**Measured on the 226 parts now distributor-priced.** Before this round, a BOM line naming one of these parts was priced
+from its class range or an old estimate. For **52%** of them (118) that figure was more than 2× away from the sourced price:
+60 were too low and 58 too high. Examples:
 
 | Part | Before (class or estimate) | Now (sourced) |
 |---|---|---|
@@ -213,7 +235,7 @@ The research queue (`scripts/pcb-research/queue.json`) now lists 486 parts witho
   - the cleaned research files;
   - `review/` — reviewer lists, rules and verdicts;
   - `review-decisions.json` + `apply-review.py`;
-  - `validate.mts`, `has.py`, `coverage.py`;
+  - `validate.mts`, `has.py`, `coverage.py`, `impact.mts`, `fix-crcw0402-label.py`;
   - `merge-report.json`.
 - `server/data/pcb-component-catalogue.json` (merged), `scripts/pcb-research/queue.json` (updated),
   `scripts/pcb-research/family-links.json` (the TLE9263 link removed: the family key is now carried by its priced member,

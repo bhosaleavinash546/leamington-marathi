@@ -22,9 +22,33 @@
      "currency": "USD",
      "url": "https://www.lcsc.com/product-image/C190119.html",
      "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.00452,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW04020000Z0ED/1177495",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 10000,
+     "price": 0.0033,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/vishay/crcw04020000z0ed/res-0r-0-063w-0402-thick-film/dp/1469661",
+     "date": "2026-10-09"
+    },
+    {
+     "distributor": "TTI",
+     "qty": 10000,
+     "price": 0.0027,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/crcw04020000z0ed",
+     "date": "2026-10-09"
     }
    ],
-   "notes": "LCSC C190119, 10k reel. Mouser/TME only qty-1 prices seen."
+   "notes": "LCSC C190119, 10k reel. Mouser/TME only qty-1 prices seen. Review 13 Oct 2026: setObs - catalogue integrity: three listings of CRCW04020000Z0ED (Digi-Key, Farnell, TTI; URLs name this code) had been merged onto the 10 k CRCW040210K0FKED by a family match in an earlier round; they belong here."
   },
   {
    "mpn": "CRCW04020000Z0EDC",
