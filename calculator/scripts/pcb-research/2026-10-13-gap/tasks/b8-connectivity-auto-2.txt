@@ -1,0 +1,7 @@
+Domain: connectivity-auto-2. Read raw/connectivity-general.json (wave 1). Retry the AUTOMOTIVE targets it could not reach, in priority order:
+1. GNSS automotive: u-blox NEO-M9V / NEO-F10N / ZED-F9K / UBX-M10050-KB (chip), ST Teseo-V STA8100GA / Teseo-APP2 STA9100 (distributor, not ST eStore), Quectel LC29H automotive / LG69T
+2. UWB / NFC / keyless: NXP NCJ29D5 / NCJ3310 / NCF3321 / NCF3340 / NCF29A1, Qorvo DW3300Q (automotive UWB), ST ST25R3916B-AQWT, Infineon automotive NFC
+3. Wi-Fi / BT automotive: Infineon CYW89829 / CYW89570 / CYW43455 automotive, NXP 88W8987 automotive / AW611, u-blox JODY-W3 / JODY-W5 / NORA-W3 (automotive), Murata Type 1MW / 1YM automotive, TI CC2642R-Q1 / CC2340R5-Q1 / CC2662R-Q1 (BLE automotive)
+4. Cellular automotive modules (only if a franchised distributor lists them): Quectel AG15 / AG35 / AG550Q, Telit LE910C1 automotive, u-blox TOBY-L4 / LENA-R8 / SARA-R52 automotive
+5. FPGAs automotive / industrial: AMD XA7Z010-1CLG225Q / XA7A50T / XAZU2EG-1SBVA484Q, Lattice MachXO3D / LFE5U automotive / CertusPro-NX, Intel MAX 10 automotive (10M08 A), Microchip PolarFire MPF100T, iCE40UP5K retry
+6. STM32 retry: STM32F030F4P6TR / STM32G071RBT6 / STM32U575ZIT6Q (two sources each), ESP32-C6-WROOM-1, nRF54L15

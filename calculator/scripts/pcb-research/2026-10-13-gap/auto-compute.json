@@ -155,17 +155,8 @@
     "gateway"
    ],
    "observedMpn": "R7F7016493AFP-C#BA1",
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 500,
-     "price": 13.12,
-     "currency": "USD",
-     "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/?core=G3KH",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Mouser breaks $22.27 @1 to $13.12 @500; no 1000 break. Renesas list $13.21 (qty not stated) for R7F7016493AFP-C#AA1."
+   "observations": [],
+   "notes": "Mouser breaks $22.27 @1 to $13.12 @500; no 1000 break. Renesas list $13.21 (qty not stated) for R7F7016493AFP-C#AA1. Review 13 Oct 2026: dropPart - flagged by the researcher and not confirmed by the independent review (list-A-ics): No franchised price found for #BA1. Mouser HK/TW list the sibling R7F7016493AFP-C#AA1 (968-F7016493AFPCAA1), 263 in stock, NT$666 @1 falling to roughly NT$431 at the top break (~$13.4) (https://www.mouser.tw/c/semiconduc."
   },
   {
    "mpn": "R7F7015873AFP-C#AA3",

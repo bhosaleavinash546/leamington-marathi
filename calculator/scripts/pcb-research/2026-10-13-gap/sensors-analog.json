@@ -142,7 +142,7 @@
      "date": "2026-10-13"
     }
    ],
-   "notes": "Read on azcus.digikey.com (DigiKey regional host); 500 = highest cut-tape break shown, 2,500 = T&R; values approximate in snippet."
+   "notes": "Read on azcus.digikey.com (DigiKey regional host); 500 = highest cut-tape break shown, 2,500 = T&R; values approximate in snippet. Review 13 Oct 2026: note - independent review: the recorded Digi-Key figures were seen only on azcus.digikey.com (a Digi-Key US server host; its prices matched www.digikey.com wherever both were seen) - kept, check against digikey.com."
   },
   {
    "mpn": "INA296B4QDDFRQ1",
@@ -350,23 +350,15 @@
    "observedMpn": "TLE5501E0002XUMA1",
    "observations": [
     {
-     "distributor": "Mouser",
+     "distributor": "Digi-Key",
      "qty": 1000,
-     "price": 1.19,
+     "price": 1.2264,
      "currency": "USD",
-     "url": "https://ciiva.com/part/tle5501e0002xuma1-26590453",
-     "date": "2026-10-13"
-    },
-    {
-     "distributor": "RS Components",
-     "qty": 500,
-     "price": 3.204,
-     "currency": "USD",
-     "url": "https://hken.rs-online.com/web/p/motion-sensor-ics/2186350P",
+     "url": "https://origin-www.findchips.com/search/TLE5501E0002XUMA1",
      "date": "2026-10-13"
     }
    ],
-   "notes": "Mouser break via ciiva aggregator (date unclear). RS HK (USD) 500+ is ~2.7x Mouser; large spread, verify."
+   "notes": "Mouser break via ciiva aggregator (date unclear). RS HK (USD) 500+ is ~2.7x Mouser; large spread, verify. Review 13 Oct 2026: setObs - independent review (list-A-ics) corrected the recorded price: The recorded Mouser $1.19 @1000 came via ciiva.com, which is not an allowed aggregator. Findchips names Digi-Key at $1.2264 @1000 (temporarily out of stock, 39 wk) (https://origin-www.findchips.com/search/TLE5501E0002XUM."
   },
   {
    "mpn": "TLE5109",
@@ -497,15 +489,23 @@
    "observedMpn": "AIS2IHTR",
    "observations": [
     {
-     "distributor": "Digi-Key",
+     "distributor": "Farnell",
      "qty": 1000,
-     "price": 2.73,
-     "currency": "USD",
-     "url": "https://sourceesb.com/part/ais2ihtr~stmicroelectronicssemiconductors",
+     "price": 25.45,
+     "currency": "SEK",
+     "url": "https://se.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 26.9,
+     "currency": "NOK",
+     "url": "https://no.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
      "date": "2026-10-13"
     }
    ],
-   "notes": "DigiKey 1K cut-tape price via sourceesb aggregator; a T&R figure ($2.50) shown without a clear break, not recorded."
+   "notes": "DigiKey 1K cut-tape price via sourceesb aggregator; a T&R figure ($2.50) shown without a clear break, not recorded. Review 13 Oct 2026: setObs - independent review (list-B-random) corrected the recorded price: Recorded USD 2.73 was read from sourceesb.com, a disallowed source (REVIEW-RULES: never Source ESB). Digi-Key prices in results only on punchouttest hosts (excluded). Farnell lists it as 'MEMS sensor AEC-Q100': 1000+ SEK."
   },
   {
    "mpn": "BMI088",

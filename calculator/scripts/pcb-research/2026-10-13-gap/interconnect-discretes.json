@@ -163,15 +163,15 @@
      "date": "2026-10-13"
     },
     {
-     "distributor": "Mouser",
-     "qty": 3000,
-     "price": 0.009,
+     "distributor": "LCSC",
+     "qty": 21000,
+     "price": 0.0104,
      "currency": "USD",
-     "url": "https://www.digipart.com/part/BAS16%2B215",
+     "url": "https://www.lcsc.com/product-image/C79997.html",
      "date": "2026-10-13"
     }
    ],
-   "notes": "Mouser 3000 read from an aggregator snapshot (Digipart page assumed source) - verify. LCSC datasheet page showed 0.0095 at 3000 (conflict, product page used). Newark 10000+ 0.0158 via Digipart not recorded (higher than 3000 breaks).",
+   "notes": "Mouser 3000 read from an aggregator snapshot (Digipart page assumed source) - verify. LCSC datasheet page showed 0.0095 at 3000 (conflict, product page used). Newark 10000+ 0.0158 via Digipart not recorded (higher than 3000 breaks). Review 13 Oct 2026: setObs - independent review (list-A-passives-discretes) corrected the recorded price: LCSC C79997 product page: 3000+ $0.0127 (matches recorded) and 21000+ $0.0104, https://www.lcsc.com/product-image/C79997.html; the LCSC datasheet PDF shows an older $0.0095 @3000. The recorded Mouser $0.009 @3000 came fr.",
    "observedMpn": "BAS16,215"
   },
   {
@@ -552,25 +552,8 @@
     "window lift",
     "door module"
    ],
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 150,
-     "price": 2.66,
-     "currency": "USD",
-     "url": "https://api-websites-cached.sourceesb.com/part/g8nd2sassk~omronelectroniccomponents",
-     "date": "2026-10-13"
-    },
-    {
-     "distributor": "Digi-Key",
-     "qty": 570,
-     "price": 2.56,
-     "currency": "USD",
-     "url": "https://api-websites-cached.sourceesb.com/part/g8nd2sassk~omronelectroniccomponents",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Digi-Key breaks via a Source ESB aggregator snapshot (may be stale); full orderable code with coil voltage suffix not shown. Relays have no AEC-Q grade.",
+   "observations": [],
+   "notes": "Digi-Key breaks via a Source ESB aggregator snapshot (may be stale); full orderable code with coil voltage suffix not shown. Relays have no AEC-Q grade. Review 13 Oct 2026: dropPart - independent review (list-A-passives-discretes): Both recorded observations were read from Source ESB (api-websites-cached.sourceesb.com), a disallowed source. The only Digi-Key listing (https://www.digikey.com.mx/en/products/detail/wec/G8ND-2S-ASSK/14750515: $2.70 @30.",
    "observedMpn": "G8ND-2S-ASSK"
   },
   {

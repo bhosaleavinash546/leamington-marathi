@@ -1,12 +1,268 @@
 {
-  "note": "Review decisions, round 4 (13 Oct 2026). Applied to raw/*.json by apply-review.py; the cleaned files at this level are what the merge reads. dropObs removes the matching observations (distributor + currency [+ qty]); dropPart removes every observation (the part is reported, not added); setObs replaces observations with re-verified ones.",
-  "decisions": [
-    { "mpn": "ADIN1110BCPZ-R7", "action": "dropObs", "match": { "currency": "CNY" }, "reason": "Digi-Key China price includes 13% VAT" },
-    { "mpn": "LM25149QRGYRQ1", "action": "dropObs", "match": { "currency": "CNY" }, "reason": "Digi-Key China price includes 13% VAT" },
-    { "mpn": "SQM120N04-1M7L_GE3", "action": "dropObs", "match": { "currency": "CNY" }, "reason": "Digi-Key China price includes 13% VAT" },
-    { "mpn": "BUK7J1R0-40HX", "action": "dropObs", "match": { "currency": "CNY" }, "reason": "element14 China price may include 13% VAT (and element14.cn is not a listed price host)" },
-    { "mpn": "NVBG040N120SC1", "action": "dropObs", "match": { "qty": 800 }, "reason": "the 800 reel listing (out of stock) is dearer than the 200+ break - a stale listing" },
-    { "mpn": "AIKQ120N75CP2XKSA1", "action": "dropObs", "match": { "currency": "ZAR" }, "reason": "figure was rounded in the search result ('about R155') - not a read price" },
-    { "mpn": "AIKQ200N75CP2XKSA1", "action": "dropObs", "match": { "currency": "PHP" }, "reason": "figures were rounded in the search result ('about') - not a read price" }
-  ]
+ "note": "Review decisions, round 4 (13 Oct 2026). Applied to raw/*.json by apply-review.py; the cleaned files at this level are what the merge reads. dropObs removes the matching observations (distributor + currency [+ qty]); dropPart removes every observation (the part is reported, not added); setObs replaces observations with re-verified ones.",
+ "decisions": [
+  {
+   "mpn": "ADIN1110BCPZ-R7",
+   "action": "dropObs",
+   "match": {
+    "currency": "CNY"
+   },
+   "reason": "Digi-Key China price includes 13% VAT"
+  },
+  {
+   "mpn": "LM25149QRGYRQ1",
+   "action": "dropObs",
+   "match": {
+    "currency": "CNY"
+   },
+   "reason": "Digi-Key China price includes 13% VAT"
+  },
+  {
+   "mpn": "SQM120N04-1M7L_GE3",
+   "action": "dropObs",
+   "match": {
+    "currency": "CNY"
+   },
+   "reason": "Digi-Key China price includes 13% VAT"
+  },
+  {
+   "mpn": "BUK7J1R0-40HX",
+   "action": "dropObs",
+   "match": {
+    "currency": "CNY"
+   },
+   "reason": "element14 China price may include 13% VAT (and element14.cn is not a listed price host)"
+  },
+  {
+   "mpn": "NVBG040N120SC1",
+   "action": "dropObs",
+   "match": {
+    "qty": 800
+   },
+   "reason": "the 800 reel listing (out of stock) is dearer than the 200+ break - a stale listing"
+  },
+  {
+   "mpn": "AIKQ120N75CP2XKSA1",
+   "action": "dropObs",
+   "match": {
+    "currency": "ZAR"
+   },
+   "reason": "figure was rounded in the search result ('about R155') - not a read price"
+  },
+  {
+   "mpn": "AIKQ200N75CP2XKSA1",
+   "action": "dropObs",
+   "match": {
+    "currency": "PHP"
+   },
+   "reason": "figures were rounded in the search result ('about') - not a read price"
+  },
+  {
+   "mpn": "NVBG020N120SC1",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 800,
+     "price": 30.43,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvbg020n120sc1-onsemi-2121603",
+     "date": "2026-10-13"
+    }
+   ],
+   "reason": "independent review (list-A-ics) corrected the recorded price: Recorded RS Malaysia MYR 382.39 @800 (~USD 90) is ~2.6-3x every other franchised price at the same break, and its own ladder is inverted (1-199 MYR 338.60 < reel MYR 382.39) - not usable. Future Electronics 'Web Price 80"
+  },
+  {
+   "mpn": "R7F7016493AFP-C#BA1",
+   "action": "dropPart",
+   "reason": "flagged by the researcher and not confirmed by the independent review (list-A-ics): No franchised price found for #BA1. Mouser HK/TW list the sibling R7F7016493AFP-C#AA1 (968-F7016493AFPCAA1), 263 in stock, NT$666 @1 falling to roughly NT$431 at the top break (~$13.4) (https://www.mouser.tw/c/semiconduc"
+  },
+  {
+   "mpn": "TLE5501E0002XUMA1",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 1.2264,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/TLE5501E0002XUMA1",
+     "date": "2026-10-13"
+    }
+   ],
+   "reason": "independent review (list-A-ics) corrected the recorded price: The recorded Mouser $1.19 @1000 came via ciiva.com, which is not an allowed aggregator. Findchips names Digi-Key at $1.2264 @1000 (temporarily out of stock, 39 wk) (https://origin-www.findchips.com/search/TLE5501E0002XUM"
+  },
+  {
+   "mpn": "W25Q64JVSSIQ",
+   "action": "dropPart",
+   "reason": "flagged by the researcher and not confirmed by the independent review (list-A-ics): Budget: not searched (lowest value on the list). The recorded LCSC 'about $0.61' @1000 is itself a rounded summary figure, which REVIEW-RULES says is not a confirmed price."
+  },
+  {
+   "mpn": "BAS16,215",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.0127,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C79997.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 21000,
+     "price": 0.0104,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C79997.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "reason": "independent review (list-A-passives-discretes) corrected the recorded price: LCSC C79997 product page: 3000+ $0.0127 (matches recorded) and 21000+ $0.0104, https://www.lcsc.com/product-image/C79997.html; the LCSC datasheet PDF shows an older $0.0095 @3000. The recorded Mouser $0.009 @3000 came fr"
+  },
+  {
+   "mpn": "G8ND-2S-ASSK",
+   "action": "dropPart",
+   "reason": "independent review (list-A-passives-discretes): Both recorded observations were read from Source ESB (api-websites-cached.sourceesb.com), a disallowed source. The only Digi-Key listing (https://www.digikey.com.mx/en/products/detail/wec/G8ND-2S-ASSK/14750515: $2.70 @30"
+  },
+  {
+   "mpn": "GCM188R71E105KA64D",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.0096,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C85862.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 48000,
+     "price": 0.0087,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C85862.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 4000,
+     "price": 0.066,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mlccs-multilayer-ceramic-capacitors/1693944",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future",
+     "qty": 4000,
+     "price": 0.135,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/gcm188r71e105ka64d-murata-8052670",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future",
+     "qty": 12000,
+     "price": 0.131,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/gcm188r71e105ka64d-murata-8052670",
+     "date": "2026-10-13"
+    }
+   ],
+   "reason": "independent review (list-A-passives-discretes) corrected the recorded price: LCSC C85862 shows 4000+ $0.0096 ($38.40 per reel) and 48000+ $0.0087, https://www.lcsc.com/product-image/C85862.html - the recorded LCSC $0.0286 (product-detail) was not reproduced. RS reel (1693944) not seen in GBP; RS "
+  },
+  {
+   "mpn": "GCJ188R71H104KA12D",
+   "action": "dropPart",
+   "reason": "flagged by the researcher and not confirmed by the independent review (list-A-passives-discretes): Three searches found no TTI/Rutronik/Mouser/Digi-Key price for this exact code. The recorded source (https://www.findchips.com/search/1h104k) is a generic search, so the TTI/Rutronik rows may belong to another 1H104K cod"
+  },
+  {
+   "mpn": "CC0603KRX7R9BB105",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.0161,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C559769.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "reason": "independent review (list-A-passives-discretes) corrected the recorded price: LCSC C559769 shows 4000+ at $0.0161 ($64.40, 1,235,240 stock) and, in a second snapshot, $0.0141 ($56.40) - https://www.lcsc.com/product-image/C559769.html. The recorded $0.0629 @4000 (~4x) was not reproduced and is wron"
+  },
+  {
+   "mpn": "VNF1048FTR",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 3000,
+     "price": 2.11,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/2170859",
+     "date": "2026-10-13"
+    }
+   ],
+   "reason": "independent review (list-B-random) corrected the recorded price: RS AU 248-9694 AUD 8.13 at 500+ ex GST confirmed as listed (https://au.rs-online.com/web/p/power-switch-ics/2489694), but it is an out-of-stock catalogue price: ~USD 5.3, about 2.5x Future USD 2.11 at 3,000+ (https://www"
+  },
+  {
+   "mpn": "AIS2IHTR",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 25.45,
+     "currency": "SEK",
+     "url": "https://se.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 26.9,
+     "currency": "NOK",
+     "url": "https://no.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+     "date": "2026-10-13"
+    }
+   ],
+   "reason": "independent review (list-B-random) corrected the recorded price: Recorded USD 2.73 was read from sourceesb.com, a disallowed source (REVIEW-RULES: never Source ESB). Digi-Key prices in results only on punchouttest hosts (excluded). Farnell lists it as 'MEMS sensor AEC-Q100': 1000+ SEK"
+  },
+  {
+   "mpn": "TJA1124BHG/1Z",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "element14",
+     "qty": 1000,
+     "price": 7.67,
+     "currency": "MYR",
+     "url": "https://my.element14.com/nxp/tja1124bhg-1z/lin-transceiver-20kbaud-dhvqfn/dp/4147384",
+     "date": "2026-10-13"
+    }
+   ],
+   "reason": "independent review (list-B-random) corrected the recorded price: Farnell ES 1000+ EUR 1.300 ex VAT confirmed (https://es.farnell.com/nxp/tja1124bhg-1z/transceptor-lin-20kbaud-dhvqfn/dp/4147384); element14 MY 1000+ MYR 7.67 (https://my.element14.com/nxp/tja1124bhg-1z/lin-transceiver-20"
+  },
+  {
+   "mpn": "TLI4971A120T5E0001XUMA1",
+   "action": "note",
+   "reason": "independent review: the recorded Digi-Key figures were seen only on azcus.digikey.com (a Digi-Key US server host; its prices matched www.digikey.com wherever both were seen) - kept, check against digikey.com"
+  },
+  {
+   "mpn": "IS25LP512M-JLLA3",
+   "action": "setField",
+   "field": "observedMpn",
+   "value": "IS25LP512MJ-JLLA3",
+   "reason": "independent review: the price is Avnet's listing under IS25LP512MJ-JLLA3 (extra J); recorded as a sibling code"
+  },
+  {
+   "mpn": "DW3220TR13",
+   "action": "setField",
+   "field": "pkg",
+   "value": "QFN-40",
+   "reason": "independent review: DW3220 is a 40-pin QFN, not WLCSP"
+  }
+ ]
 }

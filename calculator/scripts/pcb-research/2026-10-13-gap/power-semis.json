@@ -333,23 +333,15 @@
    "observedMpn": "VNF1048FTR",
    "observations": [
     {
-     "distributor": "RS Components",
-     "qty": 100,
-     "price": 2.94,
-     "currency": "GBP",
-     "url": "https://uk.rs-online.com/web/p/power-switch-ics/2489694",
-     "date": "2026-10-13"
-    },
-    {
-     "distributor": "RS Components",
-     "qty": 500,
-     "price": 8.13,
-     "currency": "AUD",
-     "url": "https://au.rs-online.com/web/p/power-switch-ics/2489694",
+     "distributor": "Future Electronics",
+     "qty": 3000,
+     "price": 2.11,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/2170859",
      "date": "2026-10-13"
     }
    ],
-   "notes": "RS UK ex VAT, out of stock till Mar 2027; RS AU ex GST. Farnell JP says no longer manufactured, ST page says Active - check status."
+   "notes": "RS UK ex VAT, out of stock till Mar 2027; RS AU ex GST. Farnell JP says no longer manufactured, ST page says Active - check status. Review 13 Oct 2026: setObs - independent review (list-B-random) corrected the recorded price: RS AU 248-9694 AUD 8.13 at 500+ ex GST confirmed as listed (https://au.rs-online.com/web/p/power-switch-ics/2489694), but it is an out-of-stock catalogue price: ~USD 5.3, about 2.5x Future USD 2.11 at 3,000+ (https://www."
   },
   {
    "mpn": "DRV3255-Q1",
@@ -645,15 +637,15 @@
    "observedMpn": "NVBG020N120SC1",
    "observations": [
     {
-     "distributor": "RS Components",
+     "distributor": "Future Electronics",
      "qty": 800,
-     "price": 382.39,
-     "currency": "MYR",
-     "url": "https://my.rs-online.com/web/p/mosfets/1958969",
+     "price": 30.43,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvbg020n120sc1-onsemi-2121603",
      "date": "2026-10-13"
     }
    ],
-   "notes": "RS Malaysia reel of 800 (MYR 305,908 per reel); back-order date stale. 1-199 break MYR 338.60."
+   "notes": "RS Malaysia reel of 800 (MYR 305,908 per reel); back-order date stale. 1-199 break MYR 338.60. Review 13 Oct 2026: setObs - independent review (list-A-ics) corrected the recorded price: Recorded RS Malaysia MYR 382.39 @800 (~USD 90) is ~2.6-3x every other franchised price at the same break, and its own ladder is inverted (1-199 MYR 338.60 < reel MYR 382.39) - not usable. Future Electronics 'Web Price 80."
   }
  ],
  "notResearched": [

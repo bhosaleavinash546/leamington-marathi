@@ -1,0 +1,5 @@
+Domain: sensors-2. Read raw/sensors-analog.json (wave 1). Retry the unpriced and not-reached parts, in priority order:
+1. Current: Melexis MLX91220KDC / MLX91221 / MLX91230 / MLX91216, Infineon TLE4972-AE35S5 / TLE4973, TI TMCS1123-Q1 / INA241A-Q1 / INA228-Q1 / INA296 retry, Allegro ACS72981LLR / ACS37612
+2. Position / speed: Melexis MLX90377 / MLX90427 / MLX90395, ams AS5172 / AS5147P / AS5600 automotive, Allegro A1339 / A33002 / A17301, Infineon TLE5014 / TLE5109 / TLI5590 / TLE4922 / TLE4941
+3. Inertial / environment: Bosch SMI230 / SMI240 / BMI270 automotive, ST ASM330LHHX / ASM330LHB / AIS2IH retry / LIS2DW12 automotive, Murata SCHA634 / SCH16T, TDK IAM-20685 / IAM-20380HT, Infineon KP236, NXP FXPS7550, TI TMP126-Q1 / TMP1075-Q1 / LMT01-Q1, Sensirion SHT45 / SHT4xA automotive
+4. Analog / isolation / audio: TI ADS131M04-Q1 / ADS7038-Q1 / OPA388-Q1 / TLV9062-Q1 / TLV7011-Q1 / ISO7741-Q1 / ISO7721-Q1 / ISO6741-Q1 / ISO1042-Q1, ADI ADuM1250 automotive / ADuM141E, TI TAS6424-Q1 / TAS6584-Q1 / TAS2563-Q1, ADI AD2428 / AD2433 (A2B), NXP TFA9xxx automotive

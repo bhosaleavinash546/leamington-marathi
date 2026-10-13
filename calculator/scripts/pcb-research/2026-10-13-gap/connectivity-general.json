@@ -109,7 +109,7 @@
    "mfr": "Qorvo",
    "desc": "UWB transceiver IEEE 802.15.4z, dual antenna PDoA/AoA",
    "category": "ic_bga",
-   "pkg": "WLCSP",
+   "pkg": "QFN-40",
    "aecq": false,
    "ecuRoles": [
     "keyless",
@@ -134,7 +134,7 @@
      "date": "2026-10-13"
     }
    ],
-   "notes": "Package inferred from Qorvo naming (DW3x2x = WLCSP), not read in the listing. Host azcus.digikey.com. Not AEC-Q100 (automotive is DW3300Q)."
+   "notes": "Package inferred from Qorvo naming (DW3x2x = WLCSP), not read in the listing. Host azcus.digikey.com. Not AEC-Q100 (automotive is DW3300Q). Review 13 Oct 2026: setField - independent review: DW3220 is a 40-pin QFN, not WLCSP."
   },
   {
    "mpn": "PN7462AUHN/C300Y",

@@ -136,6 +136,22 @@
    "observedMpn": "GCM188R71E105KA64D",
    "observations": [
     {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.0096,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C85862.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 48000,
+     "price": 0.0087,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C85862.html",
+     "date": "2026-10-13"
+    },
+    {
      "distributor": "RS Components",
      "qty": 4000,
      "price": 0.066,
@@ -144,15 +160,23 @@
      "date": "2026-10-13"
     },
     {
-     "distributor": "LCSC",
+     "distributor": "Future",
      "qty": 4000,
-     "price": 0.0286,
+     "price": 0.135,
      "currency": "USD",
-     "url": "https://www.lcsc.com/product-detail/C85862.html",
+     "url": "https://www.futureelectronics.com/p/capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/gcm188r71e105ka64d-murata-8052670",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future",
+     "qty": 12000,
+     "price": 0.131,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/gcm188r71e105ka64d-murata-8052670",
      "date": "2026-10-13"
     }
    ],
-   "notes": "RS: reel of 4000 at £264.00 ex-VAT. LCSC: another snapshot (product-image/C85862) showed $0.0096 at 4000 — conflicting, the product-detail figure kept. Already in catalogue without obs."
+   "notes": "RS: reel of 4000 at £264.00 ex-VAT. LCSC: another snapshot (product-image/C85862) showed $0.0096 at 4000 — conflicting, the product-detail figure kept. Already in catalogue without obs. Review 13 Oct 2026: setObs - independent review (list-A-passives-discretes) corrected the recorded price: LCSC C85862 shows 4000+ $0.0096 ($38.40 per reel) and 48000+ $0.0087, https://www.lcsc.com/product-image/C85862.html - the recorded LCSC $0.0286 (product-detail) was not reproduced. RS reel (1693944) not seen in GBP; RS ."
   },
   {
    "mpn": "GCM188R72A103KA37D",
@@ -271,33 +295,8 @@
     "general decoupling"
    ],
    "observedMpn": "GCJ188R71H104KA12D",
-   "observations": [
-    {
-     "distributor": "TTI",
-     "qty": 4000,
-     "price": 0.021,
-     "currency": "USD",
-     "url": "https://www.findchips.com/search/1h104k",
-     "date": "2026-10-13"
-    },
-    {
-     "distributor": "TTI",
-     "qty": 100000,
-     "price": 0.0169,
-     "currency": "USD",
-     "url": "https://www.findchips.com/search/1h104k",
-     "date": "2026-10-13"
-    },
-    {
-     "distributor": "Rutronik",
-     "qty": 4000,
-     "price": 0.0095,
-     "currency": "USD",
-     "url": "https://www.findchips.com/search/1h104k",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Soft-termination point 2 (point 1 GCJ21BR71H105KA01L already in catalogue). Findchips snapshot; Rutronik stock DE 8000 only."
+   "observations": [],
+   "notes": "Soft-termination point 2 (point 1 GCJ21BR71H105KA01L already in catalogue). Findchips snapshot; Rutronik stock DE 8000 only. Review 13 Oct 2026: dropPart - flagged by the researcher and not confirmed by the independent review (list-A-passives-discretes): Three searches found no TTI/Rutronik/Mouser/Digi-Key price for this exact code. The recorded source (https://www.findchips.com/search/1h104k) is a generic search, so the TTI/Rutronik rows may belong to another 1H104K cod."
   },
   {
    "mpn": "GRM155R71C104KA88D",
@@ -491,13 +490,13 @@
     {
      "distributor": "LCSC",
      "qty": 4000,
-     "price": 0.0629,
+     "price": 0.0161,
      "currency": "USD",
-     "url": "https://www.lcsc.com/product-detail/C559769.html",
+     "url": "https://www.lcsc.com/product-image/C559769.html",
      "date": "2026-10-13"
     }
    ],
-   "notes": "Yageo CC commercial; price ~2.8x Walsin at same break — single snapshot, verify."
+   "notes": "Yageo CC commercial; price ~2.8x Walsin at same break — single snapshot, verify. Review 13 Oct 2026: setObs - independent review (list-A-passives-discretes) corrected the recorded price: LCSC C559769 shows 4000+ at $0.0161 ($64.40, 1,235,240 stock) and, in a second snapshot, $0.0141 ($56.40) - https://www.lcsc.com/product-image/C559769.html. The recorded $0.0629 @4000 (~4x) was not reproduced and is wron."
   },
   {
    "mpn": "GRM31CR71E106KA12L",

@@ -141,17 +141,8 @@
     "BCM"
    ],
    "observedMpn": "W25Q64JVSSIQ",
-   "observations": [
-    {
-     "distributor": "LCSC",
-     "qty": 1000,
-     "price": 0.61,
-     "currency": "USD",
-     "url": "https://lcsc.com/product-detail/NOR-FLASH_WINBOND-W25Q64JVSSIQ_C179171.html",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Industrial staple. Search summary gave 'about $0.61' at 1000+ (C179171); other LCSC listings were inconsistent and were discarded. Automotive W25Q64JVSSAQ / W25Q128JVSAQ not found priced."
+   "observations": [],
+   "notes": "Industrial staple. Search summary gave 'about $0.61' at 1000+ (C179171); other LCSC listings were inconsistent and were discarded. Automotive W25Q64JVSSAQ / W25Q128JVSAQ not found priced. Review 13 Oct 2026: dropPart - flagged by the researcher and not confirmed by the independent review (list-A-ics): Budget: not searched (lowest value on the list). The recorded LCSC 'about $0.61' @1000 is itself a rounded summary figure, which REVIEW-RULES says is not a confirmed price.."
   },
   {
    "mpn": "MX25L25645GMI-08GTR",
@@ -229,7 +220,7 @@
      "date": "2026-10-13"
     }
    ],
-   "notes": "Avnet lists code as IS25LP512MJ-JLLA3 (verify vs ISSI IS25LP512M-JLLA3); price 'about $9.92' at its 480 break, 0 stock."
+   "notes": "Avnet lists code as IS25LP512MJ-JLLA3 (verify vs ISSI IS25LP512M-JLLA3); price 'about $9.92' at its 480 break, 0 stock. Review 13 Oct 2026: setField - independent review: the price is Avnet's listing under IS25LP512MJ-JLLA3 (extra J); recorded as a sibling code."
   },
   {
    "mpn": "W25N01GVZEIG",

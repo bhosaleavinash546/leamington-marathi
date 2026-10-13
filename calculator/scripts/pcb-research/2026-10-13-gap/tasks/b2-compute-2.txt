@@ -1,0 +1,8 @@
+Domain: auto-compute-2. Read raw/auto-compute.json (wave 1). Retry, in priority order:
+1. NXP S32K3 orderable codes wave 1 could not name: S32K341NHT1MPAST / S32K342NHT1MPBST / S32K322NHT0MPAST (or the current S32K3xx…MPxST codes) — find the CODE on Digi-Key / Mouser / Farnell first, then its price
+2. NXP i.MX 95 automotive (MIMX9596AVZXN / current), i.MX 8M Nano / Mini automotive (MIMX8MN6CVTIZAA, MIMX8MM6CVTKZAA), i.MX 8DualX automotive
+3. TI Jacinto: TDA4AL88 / TDA4VEN / TDA4VPE (current orderable codes, e.g. XJ721…), AM62A3-Q1, AM62P-Q1, AM6442 automotive, TMS320F280039C-Q1 / F28P559-Q1 retry
+4. Renesas RA6 / RA8 automotive (R7FA6M5BH3CFC… "automotive" grades), RL78/F24 / F25 (R7F124FPJ5CFB / R7F125…), RH850/U2B (R7F702Z…) if any distributor lists them
+5. ST: STM32G474RET3 / STM32G431 (automotive-capable, -40..125), SPC572L / SPC574K, Stellar SR5E1 (SR5E1E3)
+6. Microchip / Infineon: AVR128DA48 / AVR64DD automotive (-E…VAO), PIC18F-Q84 automotive, Infineon CYT2B98 / CYT2B78 TRAVEO T2G codes, PSoC 4100S automotive (CY8C4147AZQ-S475 retry)
+7. Motor MCUs: Melexis MLX81116 / MLX81160 / MLX81339, Elmos E523.52 / E521.39, NXP S32M2 (S32M244), Infineon MOTIX TLE9893 / TLE9853 / TLE9879 (if not catalogued)

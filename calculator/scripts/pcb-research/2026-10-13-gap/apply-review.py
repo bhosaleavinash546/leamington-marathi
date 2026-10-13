@@ -20,6 +20,9 @@ for f in sorted(glob.glob(os.path.join(D, 'raw', '*.json'))):
                 p['observations'] = [o for o in obs if not matches(o, d['match'])]
             elif d['action'] == 'setObs':
                 p['observations'] = d['observations']
+            elif d['action'] == 'setField':
+                p[d['field']] = d['value']
+            # 'note': nothing changes but the notes
             p['notes'] = ((p.get('notes') or '') + f" Review 13 Oct 2026: {d['action']} - {d['reason']}.").strip()
     json.dump(j, open(os.path.join(D, os.path.basename(f)), 'w'), indent=1, ensure_ascii=False)
 missing = [d['mpn'] for i, d in enumerate(dec) if i not in used]
