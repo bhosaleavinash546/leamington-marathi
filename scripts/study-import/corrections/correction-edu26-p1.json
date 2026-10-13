@@ -1,0 +1,98 @@
+{
+ "id": "edu26-p1",
+ "originalId": "P1",
+ "original": {
+  "perUnitLowGBP": 72.52,
+  "perUnitHighGBP": 108.78,
+  "basis": "Register booked 40-60% of the £181.30 SiC power module (component #14) as a device-level saving = £72.52-£108.78, risk-adjusted £54.39-£81.59 at P=0.75, Develop, ranked #2 in the pack. That contradicts its own text: 'must not be judged at part level... Present it as a system trade study, not a saving'."
+ },
+ "corrected": {
+  "perUnitLowGBP": null,
+  "perUnitHighGBP": null,
+  "booked": false,
+  "basis": "No part-level saving is booked. The idea's own text says it must be judged at system level and presented as a trade study, and none of the offsetting system costs it names have been quantified by the study: battery capacity to hold range, cooling, a larger DC-link capacitor at lower switching frequency, gate-driver redesign. The device-level delta (40-60% of £181.30 = £72.52-£108.78) is kept only as the gross input to an unbooked system trade note. Public data puts SiC modules at roughly 2-5x the price of an equivalent Si IGBT, which would imply a delta of 50-80%, but those ratios are retail/vendor and older, so the study's own 40-60% is retained. Against it, SiC is reported to cut WLTP/WLTC inverter-related consumption by about 4% (Infineon) to 6% (Rohm). Holding range constant, that consumption rise costs about 4-6% of pack capacity at the BNEF 2025 BEV pack price of USD 99/kWh (£78.21/kWh at 0.79), i.e. £3.13-£4.69 per kWh of pack capacity. The study does not state the pack size, so no single net figure can be computed. The module saving is wiped out by the battery penalty alone for any pack above about 15.5-34.8 kWh, which a 250 kW, 800 V vehicle will almost certainly exceed. Cooling and DC-link growth would make it worse.",
+  "statusNote": "system trade study, not a part saving (its own text); the £72.52–£108.78 module delta is offset by the battery needed for SiC’s ~4–6% drive-cycle efficiency, break-even at a ~15–35 kWh pack"
+ },
+ "derivation": [
+  {
+   "line": "Power module (component #14) SiC six-pack replaced by Si IGBT six-pack: device-level delta per the idea's own mechanism (40-60%) - GROSS, NOT BOOKED",
+   "lowGBP": 72.52,
+   "highGBP": 108.78,
+   "source": "edu-components.txt row 14 (£181.30); register P1 mechanism"
+  },
+  {
+   "line": "Battery capacity to hold range: per kWh of pack capacity, 4-6% consumption penalty x USD 99/kWh x 0.79 (pack size not given in study)",
+   "lowGBP": -4.69,
+   "highGBP": -3.13,
+   "source": "https://www.infineon.com/cms/en/applications/automotive/hev-ev/main-inverter/ (about 4% WLTP); Rohm 6% WLTC (via search); https://about.bnef.com/insights/clean-transport/lithium-ion-battery-pack-prices-fall-to-108-per-kilowatt-hour (BEV pack USD 99/kWh)"
+  },
+  {
+   "line": "Cooling re-size, DC-link capacitor growth at lower fsw, gate driver redesign: not quantified by study or found in public data",
+   "lowGBP": null,
+   "highGBP": null,
+   "source": "register P1 trade-offs; not found"
+  },
+  {
+   "line": "Booked part-level saving",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "idea's own instruction: system trade study, not a saving"
+  }
+ ],
+ "riskAdjusted": {
+  "pSuccess": 0.75,
+  "lowGBP": null,
+  "highGBP": null,
+  "nreGBP": 150000.0,
+  "paybackYears": null,
+  "note": "Nothing booked, so no risk-adjusted saving or payback. P(success) 0.75 and NRE £150,000 unchanged from the record; the study's own investment text adds that cooling and capacitor may both grow, which the NRE does not cover."
+ },
+ "conflictsAdded": [],
+ "systemTradeNote": "UNBOOKED system trade note. Net per unit = £72.52-£108.78 module delta minus pack kWh x (£3.13-£4.69) battery penalty, minus unpriced cooling and DC-link growth. Break-even pack size is about 15.5-34.8 kWh: above that, Si IGBT costs the system money on battery alone. Illustration from Automotive IQ: a 10% efficiency gain on a 50 kWh, 200-mile EV is worth 4-5 kWh or USD 500-600 of pack. The study must supply its pack kWh and run the WLTP energy simulation the idea itself demands. 800 V issue: on an 800 V bus a Si solution needs 1200 V IGBTs (e.g. Infineon HybridPACK Drive FS380R12A6T4B, 1200 V/380 A, offered as an 800 V main-inverter kit). 1200 V IGBTs have higher conduction and switching losses than 750 V parts, so the efficiency gap at 800 V is at least as large as the 400 V figures and the 'Nissan Leaf / pre-2020 400 V' benchmark does not transfer. Consider the Si/SiC fusion module (Infineon HybridPACK Drive G2 Fusion, about 30% SiC area claimed to approach full-SiC system efficiency) as the realistic cost-down path.",
+ "research": [
+  {
+   "claim": "Si IGBT six-pack is 40-60% cheaper than SiC at device level",
+   "finding": "IET Power Electronics review (Shi et al. 2023): SiC modules about 3-5x Si IGBT on Digi-Key pricing; IDTechEx: SiC about 3x on average; HIITIO (vendor): 2-3x per ampere. That implies Si at 20-50% of SiC (a 50-80% delta), larger than the study's 40-60%, but the data is retail/vendor and not automotive contract pricing.",
+   "url": "https://www.idtechex.com/en/research-article/the-emerging-adoption-and-future-trends-of-sic-and-gan-in-evs/31201",
+   "verdict": "partly"
+  },
+  {
+   "claim": "SiC die cost per area vs Si",
+   "finding": "Infineon/Stellantis fusion paper: SiC MOSFET die cost per area is still 8-12x that of Si IGBT/diodes, more than the study's 4-6x.",
+   "url": "https://www.infineon.com/assets/row/public/documents/10/54/sia26-fusion.pdf",
+   "verdict": "contradicts"
+  },
+  {
+   "claim": "SiC efficiency gain on drive cycle",
+   "finding": "Infineon: about 4% efficiency gain over Si on WLTP; Rohm: 6% lower power consumption vs IGBT on WLTC (vendor); Hyundai E-GMP: more than 5% range from SiC.",
+   "url": "https://www.infineon.com/cms/en/applications/automotive/hev-ev/main-inverter/",
+   "verdict": "supports"
+  },
+  {
+   "claim": "SiC wins back its premium at system level",
+   "finding": "Automotive IQ illustration: a 10% efficiency gain on a 50 kWh EV saves 4-5 kWh, i.e. USD 500-600 of pack. The IET review cost table (snippet) shows inverter USD 707 Si vs 1,369 SiC and vehicle total USD 6,541 vs 6,798. Its battery assumptions could not be verified because the full text was unreachable, so the system result is mixed.",
+   "url": "https://automotive-iq.com/powertrain/articles/high-voltage-power-supply-systems",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Pack price for battery penalty",
+   "finding": "BNEF 2025 survey: average pack USD 108/kWh; BEV packs USD 99/kWh.",
+   "url": "https://about.bnef.com/insights/clean-transport/lithium-ion-battery-pack-prices-fall-to-108-per-kilowatt-hour",
+   "verdict": "supports"
+  },
+  {
+   "claim": "800 V Si inverter needs 1200 V IGBTs",
+   "finding": "Infineon HybridPACK Drive 1200 V IGBT4 module FS380R12A6T4B is offered in an evaluation kit 'for an 800 V main inverter'. A ZF PCIM 2019 paper compares 800 V Si-IGBT and SiC inverters on efficiency.",
+   "url": "https://www.infineon.com/cms/en/product/evaluation-boards/hybrid-kit-drive-1200v/",
+   "verdict": "supports"
+  }
+ ],
+ "summary": "P1 booked a £72.52-£108.78 device-level saving even though its own text says it must not be judged at part level and is a system trade study, not a saving. Corrected booked saving is nil. As an unbooked trade note, the module delta is cancelled by the extra battery needed for the 4-6% efficiency loss on any pack above about 15-35 kWh, before cooling and DC-link growth, and at 800 V it needs 1200 V IGBTs.",
+ "confidence": "high",
+ "openQuestions": [
+  "What is the target vehicle's usable pack kWh and range target? Needed to turn the per-kWh penalty into a net £ figure.",
+  "Run the WLTP energy simulation for an 800 V 1200 V-IGBT inverter vs the SiC baseline; the 4-6% figures are vendor/OEM numbers, not this drive unit.",
+  "Price the cooling and DC-link capacitor (component #15, £42.00) growth at lower switching frequency.",
+  "Evaluate a Si/SiC fusion module as an intermediate option instead of all-Si."
+ ]
+}

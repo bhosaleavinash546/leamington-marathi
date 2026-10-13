@@ -1,0 +1,108 @@
+{
+ "id": "edu26-r5",
+ "originalId": "R5",
+ "original": {
+  "perUnitLowGBP": 153.75,
+  "perUnitHighGBP": 184.5,
+  "basis": "Register applied 75-90% to an affected cost of £205.00 (Rotor permanent magnets £171.00 + Rotor core lamination stack £34.00) = £153.75-£184.50; risk-adjusted £92.25-£110.70 at P=0.6; conflict set listed only A1, A2, A3, A5, R17, R3, R4, S3, so ten other selected magnet ideas were credited on the same £171 magnets."
+ },
+ "corrected": {
+  "perUnitLowGBP": 102.6,
+  "perUnitHighGBP": 128.25,
+  "booked": true,
+  "basis": "R5's own cost mechanism states that roughly 60-75% of the magnet cost is removed net of the excitation hardware that comes back. Applied to the study's own magnet line (component #6, £171.00, central NdPr case) this gives £102.60-£128.25 per unit. The rotor lamination stack (#5, £34.00) is not credited because a wound-field rotor still needs a laminated salient-pole stack. The implied returning excitation hardware (rotor copper winding and insulation, slip rings and brushes or a rotating transformer, and a field-excitation converter) is therefore £42.75-£68.40 (25-40% of £171). No public source was found that prices these items individually, so that figure is implied by the mechanism and not researched. The only published per-vehicle money figure found is Tula's vendor claim of USD 150-200 per vehicle system-level saving for an EESM versus an IPM, which is £118.50-£158.00 at USD 1 = GBP 0.79. That overlaps the upper half of the corrected band, so it is consistent with it but does not verify it, because it is a system-level vendor claim. Book this only as the R5 (magnet-free) package, mutually exclusive with the PM-rotor optimisation package. The band also scales with the magnet line: on the study's own Low/High magnet costs (£96.32/£254.26) the same 60-75% would give £57.79-£190.70."
+ },
+ "derivation": [
+  {
+   "line": "Rotor permanent magnets (component #6) removed",
+   "lowGBP": 171.0,
+   "highGBP": 171.0,
+   "source": "edu-components.txt row 6 (£171.00, central case of '1b. Cost basis and sensitivity')"
+  },
+  {
+   "line": "Excitation hardware added back (rotor winding copper + insulation, slip-ring/brush or rotating transformer, field-excitation converter), implied by R5's mechanism 'roughly 60-75% removed net'. Not independently priced: no public line-item cost found",
+   "lowGBP": -68.4,
+   "highGBP": -42.75,
+   "source": "EDU_Function_Analysis.xlsx '7. Creativity idea register' R5 cost mechanism; research found no priced line items"
+  },
+  {
+   "line": "Rotor core lamination stack (component #5) retained as wound-rotor pole stack: no credit",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "edu-components.txt row 5 (£34.00); R5 trade-offs (wound rotor still laminated)"
+  },
+  {
+   "line": "Net corrected saving",
+   "lowGBP": 102.6,
+   "highGBP": 128.25,
+   "source": "arithmetic: £171.00 x 60% / x 75%"
+  }
+ ],
+ "riskAdjusted": {
+  "pSuccess": 0.6,
+  "lowGBP": 61.56,
+  "highGBP": 76.95,
+  "nreGBP": 1000000.0,
+  "paybackYears": 0.16,
+  "note": "Corrected band x the study's own P(success) 0.6. NRE £1,000,000 unchanged from the record. The study's own investment text says 'High. New rotor line, excitation converter development and additional control software', so a £1M NRE looks light and should be challenged; payback = £1,000,000 / (£61.56 x 100,000) = 0.16 years."
+ },
+ "conflictsAdded": [
+  "R1",
+  "R6",
+  "R13",
+  "R16",
+  "R19",
+  "M2",
+  "Z5",
+  "Z9",
+  "X2",
+  "Z10"
+ ],
+ "systemTradeNote": "Conflict set. R5 removes the NdFeB magnets entirely, so it is fully mutually exclusive with every idea that only optimises or re-sources those magnets: R1 (grain boundary diffusion), R6 (fewer segments), R13 (rectangular blocks), R19 (dual source and price index), M2 (coating spec), and R16 (cast resin magnet retention: there are no magnets to retain, so the magnet share of its saving vanishes and the end-plate share must be re-assessed for a wound rotor). It partly conflicts with Z5 (second gear ratio to shrink the machine 'and its magnets'), Z9 (end-of-life magnet recovery), X2 and Z10 (volume pricing that includes the magnets). These four must be re-based so that the magnet portion of their saving is removed under the R5 path. Their gear, housing, SiC and bearing portions stay valid. Joint cap: magnet-related claims cannot exceed the £171.00 magnet cost. Selected risk-adjusted high claims touching the magnet line sum to £339.72 (R5 £110.70 + the ten others £229.02), which is 199% of the part. Present two alternative packages. (A) PM-rotor optimisation, magnet-only ideas R1+R6+R13+R19+M2: unrisked £49.59-£116.28 if added, or £44.44-£89.80 when compounded on the shrinking residual magnet cost (each percentage applied to what is left); risk-adjusted high £97.73 added. Either way this is within the £171 cap. Ideas Z5/Z9/X2/Z10/R16 add their magnet share on top, which still must keep the total under £171. (B) Magnet-free R5: £102.60-£128.25 unrisked, £61.56-£76.95 risk-adjusted, with none of the magnet-only ideas allowed alongside it.",
+ "research": [
+  {
+   "claim": "EESM can be cost-competitive with or cheaper than a PMSM at high power",
+   "finding": "Schaeffler: at higher power the PMSM's larger magnets make it dearer; break-even could be as low as about 120 kW depending on raw-material prices. Brush system and larger design space are the traditional EESM cost drawbacks. A more compact rotor could cut material cost 8-12%.",
+   "url": "https://schaeffler-tomorrow.com/en/article/increasingly-attractive-without-magnets",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Published per-vehicle EESM vs IPM money figure",
+   "finding": "Tula (vendor) claims its optimised EESM plus control saves USD 150-200 per vehicle at system level vs IPM = £118.50-£158.00 at 0.79. This is a system-level vendor claim, not a BOM teardown.",
+   "url": "https://www.assemblymag.com/articles/98011-whats-new-with-ev-traction-motors",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Active-material cost of a wound-rotor machine is well below that of an IPM",
+   "finding": "A literature review reports IPM active-material cost about 2x a comparable wound-rotor design (light EV) and about 3.6x in a truck case. The ratios are for active materials only, excluding excitation hardware (seen via search snippet; full text could not be fetched).",
+   "url": "https://doi.org/10.3390/wevj16110633",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Excitation hardware (slip rings/brushes, rotating transformer, field converter) adds cost",
+   "finding": "Several papers and patents state qualitatively that the extra field converter and rotating transformer add size, weight and cost. No USD/EUR line-item price was found for any of them.",
+   "url": "https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/11476786",
+   "verdict": "not found"
+  },
+  {
+   "claim": "BMW Gen5 eDrive EESM teardown cost of rotor winding / slip rings",
+   "finding": "BMW confirms the in-house wound rotor and slip rings/brushes and no rare earths; Gen6 package claims -20% cost vs Gen5 xDrive (whole two-motor system, not the EESM rotor). No teardown cost for rotor copper or slip rings was found (Munro/A2Mac1 data is paywalled).",
+   "url": "https://www.press.bmwgroup.com/global/article/detail/T0448099EN/charge-faster-drive-further:-bmw-group-reveals-revolutionary-electric-drive-concept-with-800v-technology-for-the-neue-klasse?language=en",
+   "verdict": "not found"
+  },
+  {
+   "claim": "Mahle contactless magnet-free motor cost advantage",
+   "finding": "Mahle claims a cost and resource-security advantage and more than 95% efficiency in common driving conditions, but publishes no cost figure.",
+   "url": "https://www.electrive.com/2021/05/06/mahle-announces-highly-efficient-and-magnet-free-e-motor",
+   "verdict": "not found"
+  }
+ ],
+ "summary": "R5 was credited 75-90% of the magnets plus the rotor laminations (£153.75-£184.50), but its own mechanism says only 60-75% of the £171 magnet cost is removed once excitation hardware comes back, and a wound rotor still needs its laminations. The corrected saving is £102.60-£128.25 a unit (£61.56-£76.95 risk-adjusted), consistent with the only published vendor figure (USD 150-200 per vehicle). It must be shown as an alternative to the ten magnet-optimisation ideas, which today double-count the same £171 part (£339.72 claimed against it).",
+ "confidence": "medium",
+ "openQuestions": [
+  "No public line-item cost was found for rotor copper winding, slip-ring/brush or rotating-transformer exciter, and field converter; an RFQ or teardown (Munro/A2Mac1 BMW Gen5 rotor) is needed to validate the implied £42.75-£68.40 of returning hardware.",
+  "Does the wound rotor at 250 kW / 16,000 rpm need a longer stack or added rotor cooling (Chalmers thesis found an EESM about 87% longer at equal torque in a compressor case)? That would add stator and housing cost not counted here.",
+  "Is the £1,000,000 NRE credible for a new rotor line plus an excitation converter and control software (the study's own text rates investment High)?",
+  "Re-base Z5, Z9, X2, Z10 and R16 to exclude their magnet share under the R5 package."
+ ]
+}

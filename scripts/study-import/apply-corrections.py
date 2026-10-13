@@ -53,12 +53,12 @@ for f in sorted(glob.glob(os.path.join(PACKS, 'marketplace-study-*.json'))):
             d.update({'savingPerUnitLowGBP': lo, 'savingPerUnitHighGBP': hi,
                       'annualSavingLowGBP': lo * vol, 'annualSavingHighGBP': hi * vol})
             per = f'{gbp(lo)} to {gbp(hi)} per {one} (review-corrected; {was})'
-            ann = f'{money(lo * vol)} to {money(hi * vol)} at {vol:,} {plural}/yr (review-corrected; {was})'
+            ann = f'{money(lo * vol)} to {money(hi * vol)} at {vol:,} {plural}/yr (review-corrected)'
         else:
             for key in ('savingPerUnitLowGBP', 'savingPerUnitHighGBP', 'annualSavingLowGBP', 'annualSavingHighGBP'):
                 d.pop(key, None)
-            per = f'No part-level saving booked (review-corrected; {was})'
-            ann = f'No saving booked — {k.get("statusNote") or "not a part-level saving"} (review-corrected; {was})'
+            per = f'Not booked — {k.get("statusNote") or "not a part-level saving"} (review-corrected; {was})'
+            ann = 'No saving booked — review-corrected (see the correction note)'
         for key, src in (('riskAdjustedLowGBP', 'lowGBP'), ('riskAdjustedHighGBP', 'highGBP'), ('paybackYears', 'paybackYears'), ('nreGBP', 'nreGBP')):
             if key == 'nreGBP' and ra.get('nreGBP') is None:
                 continue

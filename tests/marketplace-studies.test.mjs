@@ -76,6 +76,22 @@ describe('user-supplied study packs', () => {
     }
     assert.ok(open >= 150 && dup >= 70, `${open} open, ${dup} dup`);
   });
+  it('a review correction keeps the study original and shows its derivation (DECISIONS 129)', () => {
+    const fixed = {};
+    for (const f of Object.keys(PACKS)) for (const x of load(f)) if (x.ideaData.reviewCorrection) fixed[x.id] = x;
+    assert.deepEqual(Object.keys(fixed).sort(), ['edu26-p1', 'edu26-p17', 'edu26-r5', 'mhev48s-id-006', 'mhev48s-id-011', 'mhev48s-id-138', 'mhev48s-id-150']);
+    for (const x of Object.values(fixed)) {
+      const d = x.ideaData, c = d.reviewCorrection;
+      assert.ok(Number.isFinite(d.studyOriginal.savingPerUnitLowGBP), x.id);
+      assert.ok(c.summary && c.basis && c.derivation.length && c.confidence, x.id);
+      assert.ok(d.evidenceSources.some(e => e.type === 'review research' && /^https?:/.test(e.url)), x.id);
+      assert.match(x.annualSaving, /review-corrected/, x.id);
+      if (Number.isFinite(d.savingPerUnitLowGBP)) assert.ok(d.savingPerUnitHighGBP < d.studyOriginal.savingPerUnitHighGBP, `${x.id} correction must not raise the claim`);
+      else assert.doesNotMatch(x.annualSaving, /[£€$]\s?\d/, `${x.id}: an unbooked correction quotes no figure in its headline`);
+    }
+    assert.equal(fixed['mhev48s-id-011'].ideaData.savingPerUnitHighGBP, 1.87);
+    assert.equal(fixed['edu26-r5'].ideaData.savingPerUnitLowGBP, 102.6);
+  });
   it('is registered with the seeder', () => {
     const src = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
     for (const f of Object.keys(PACKS)) assert.ok(src.includes(`'${f}'`), f);

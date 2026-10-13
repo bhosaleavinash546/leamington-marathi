@@ -139,3 +139,23 @@ Most other automatic flags are the same lever on a different part, for example a
 Library ideas show "Library idea" as their status.
 
 The review inputs are committed under `scripts/study-import/review/`. `apply-review.py` stamps them onto the packs, so the open points regenerate from data rather than hand edits.
+
+## 7. Corrections applied at the user's request (DECISIONS 129)
+
+The seven critical ideas were re-derived from each study's own cost lines, with public research for any percentage the study did not state. The study's figures are kept on each idea under `studyOriginal`, and the study's decision is unchanged.
+
+| Idea | Study claimed (£/unit) | Corrected (£/unit) | Booked? | Risk-adjusted · payback | Why |
+|---|---|---|---|---|---|
+| EDU R5 magnet-free rotor | 153.75–184.50 | **102.60–128.25** | Yes | 61.56–76.95 at P 0.6 · 0.16 yr | R5's own mechanism is 60–75% of the £171 magnets, not 75–90% of magnets plus laminations; the wound rotor still needs its lamination stack. R5 is now in conflict with R1, R6, R13, R16, R19 and M2 (fully) and with Z5, Z9, X2 and Z10 (partly). Selected claims on the £171 magnets total £339.72, so present two alternative packages: optimise the magnet rotor (≤ £97.73 risk-adjusted) or R5 alone (≤ £76.95). |
+| EDU P1 Si IGBT for SiC | 72.52–108.78 | **Not booked** | No | — | Its own text says it is a system trade study. The SiC drive-cycle advantage of about 4–6% (Infineon, Rohm) costs £3.13–£4.69 per pack kWh at BNEF's US$99/kWh, so the module delta is wiped out above a pack of roughly 15–35 kWh. At 800 V it also needs 1200 V IGBTs. |
+| EDU P17 shunt current sensing | 38.22–66.89 | **−13.25 to +3.27** (note) | No | — | Only the £9.80 Hall-sensor line can go. Three AMC1305M25-Q1 isolated modulators alone cost £23.05 at distributor price. N3 also targets the same £9.80 line. |
+| 48V ID-011 casting floor flatness | 4.60–8.74 | **1.63–1.87** | Yes | 1.38–1.59 at p 0.85 · 0.42 yr | Only the £3.78 adhesive falls (by its own halving arithmetic), less £0.02–£0.07 of face-milling. The housing does not get cheaper. ID-011 is now in conflict with ID-001, which claims the same adhesive. |
+| 48V ID-006 cell-to-pack | 16.20–32.40 | **3.58–7.83 gross** (note) | No | — | The cell and the busbars do not change; only module-frame hardware goes, at the study's own parts prices. The housing features that replace the frame are unpriced. The idea's own text gives NRE as about £350k, not the £70k used, which puts payback at about 1.6 years. |
+| 48V ID-150 laser → ultrasonic welding | 19.77–39.55 | **−1.64 to +0.08** (note) | No | never pays back | The laser step is only £1.36 (Conversion sheet). Ultrasonic is slower across 26 joints and its sonotrode wear is £0.59–£1.47 per pack. It is mainly a pouch-tab process and risks damaging hard-can cells. **Recommend withdrawing.** ID-008 already contains this switch. |
+| 48V ID-138 de-bundle turnkey supply | 27.24–54.49 | **4.25–8.08 ceiling** (note) | No | — | The study's whole margin layer is £18.76. Only the 6% SG&A and 6% profit on the BMS and housing (£7.32) and the £1.84 cell handling charge can move, less 0.59–1.2% OEM purchasing cost. Integration, safety-case and warranty costs are unpriced. ID-058 (BMS retender) now looks stronger. |
+
+Effect on the totals:
+- **48V:** ID-011 drops from £0.55M–£1.05M a year to £0.20M–£0.22M a year, and the other three 48V ideas leave the totals.
+- **EDU:** R5 drops from £15.4M–£18.5M a year to £10.3M–£12.8M a year, and P1 and P17 leave the totals.
+
+All research came from search-result text, because the page fetches were blocked. Vendor sources are flagged as such in each correction file.

@@ -6905,20 +6905,16 @@
    "powertrain": "BEV (single-motor EDU)",
    "weightedScore": 3.857,
    "pSuccess": 0.75,
-   "riskAdjustedLowGBP": 54.39,
-   "riskAdjustedHighGBP": 81.59,
+   "riskAdjustedLowGBP": null,
+   "riskAdjustedHighGBP": null,
    "nreGBP": 150000.0,
    "nreShared": "marginal",
-   "paybackYears": 0.03,
-   "savingPerUnitLowGBP": 72.52,
-   "savingPerUnitHighGBP": 108.78,
-   "annualSavingLowGBP": 7252000.0,
-   "annualSavingHighGBP": 10878000.0,
+   "paybackYears": null,
    "costSavingPotential": {
-    "perVehicle": "£72.52 to £108.78 per unit",
-    "annualValue": "£7.25M to £10.88M at 100,000 units/yr",
+    "perVehicle": "Not booked — system trade study, not a part saving (its own text); the £72.52–£108.78 module delta is offset by the battery needed for SiC’s ~4–6% drive-cycle efficiency, break-even at a ~15–35 kWh pack (review-corrected; study claimed £72.52 to £108.78 per unit)",
+    "annualValue": "No saving booked — review-corrected (see the correction note)",
     "percentage": "40-60% of the affected component cost",
-    "calculationBasis": "Study register band: 40-60% of the affected component cost of £181.30 affected cost = £72.52 to £108.78 per unit × 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: £54.39 to £81.59 per unit at P(success) 0.75; NRE £150,000 (marginal); payback 0.03 yrs. Indicative band, not a quotation.",
+    "calculationBasis": "Review-corrected: No part-level saving is booked. The idea's own text says it must be judged at system level and presented as a trade study, and none of the offsetting system costs it names have been quantified by the study: battery capacity to hold range, cooling, a larger DC-link capacitor at lower switching frequency, gate-driver redesign. The device-level delta (40-60% of £181.30 = £72.52-£108.78) is kept only as the gross input to an unbooked system trade note. Public data puts SiC modules at roughly 2-5x the price of an equivalent Si IGBT, which would imply a delta of 50-80%, but those ratios are retail/vendor and older, so the study's own 40-60% is retained. Against it, SiC is reported to cut WLTP/WLTC inverter-related consumption by about 4% (Infineon) to 6% (Rohm). Holding range constant, that consumption rise costs about 4-6% of pack capacity at the BNEF 2025 BEV pack price of USD 99/kWh (£78.21/kWh at 0.79), i.e. £3.13-£4.69 per kWh of pack capacity. The study does not state the pack size, so no single net figure can be computed. The module saving is wiped out by the battery penalty alone for any pack above about 15.5-34.8 kWh, which a 250 kW, 800 V vehicle will almost certainly exceed. Cooling and DC-link growth would make it worse. Original study basis: Study register band: 40-60% of the affected component cost of £181.30 affected cost = £72.52 to £108.78 per unit × 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: £54.39 to £81.59 per unit at P(success) 0.75; NRE £150,000 (marginal); payback 0.03 yrs. Indicative band, not a quotation.",
     "qualitative": "Conventional · Technology shift"
    },
    "volumeBasis": "Study volume 100,000 units/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards. Conflicts with: A6, P12, P2, Z13.",
@@ -6931,10 +6927,108 @@
     26
    ],
    "reviewSeverity": "critical",
-   "reviewOpenPoints": "[CRITICAL · quality] Status contradicts the idea's own text. The register says this 'must not be judged at part level' and to 'Present it as a system trade study, not a saving', yet it is Develop with a device-level saving of £72.52-£108.78 (40-60% of the module) and is the #2 ranked saving in the pack (£81.59 a unit). The offsetting system costs it names (battery capacity for range, cooling, a larger DC-link capacitor at lower switching frequency) are not netted. Evidence: EDU_Function_Analysis.xlsx '7. Creativity idea register' P1 Trade-offs: 'This is the one idea that must not be judged at part level. On an 800 V bus SiC usually wins back its premium through battery sizing and cooling... Present it as a system trade study, not a saving.' '11. Phase 4 evaluation' P1 Decision 'Develop', Risk-adj high 81.59; pack slide 6 rank 2. Recommendation: Show P1 as a system trade study with no saving credited until the WLTP/range and cooling study is done, or show the saving net of the system penalty."
+   "reviewOpenPoints": "[CORRECTED 13 Oct 2026] P1 booked a £72.52-£108.78 device-level saving even though its own text says it must not be judged at part level and is a system trade study, not a saving. Corrected booked saving is nil. As an unbooked trade note, the module delta is cancelled by the extra battery needed for the 4-6% efficiency loss on any pack above about 15-35 kWh, before cooling and DC-link growth, and at 800 V it needs 1200 V IGBTs. ¶ [CRITICAL · quality] Status contradicts the idea's own text. The register says this 'must not be judged at part level' and to 'Present it as a system trade study, not a saving', yet it is Develop with a device-level saving of £72.52-£108.78 (40-60% of the module) and is the #2 ranked saving in the pack (£81.59 a unit). The offsetting system costs it names (battery capacity for range, cooling, a larger DC-link capacitor at lower switching frequency) are not netted. Evidence: EDU_Function_Analysis.xlsx '7. Creativity idea register' P1 Trade-offs: 'This is the one idea that must not be judged at part level. On an 800 V bus SiC usually wins back its premium through battery sizing and cooling... Present it as a system trade study, not a saving.' '11. Phase 4 evaluation' P1 Decision 'Develop', Risk-adj high 81.59; pack slide 6 rank 2. Recommendation: Show P1 as a system trade study with no saving credited until the WLTP/range and cooling study is done, or show the saving net of the system penalty.",
+   "studyOriginal": {
+    "annualSaving": "£7.25M to £10.88M at 100,000 units/yr",
+    "perUnit": "£72.52 to £108.78 per unit",
+    "annualValue": "£7.25M to £10.88M at 100,000 units/yr",
+    "calculationBasis": "Study register band: 40-60% of the affected component cost of £181.30 affected cost = £72.52 to £108.78 per unit × 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: £54.39 to £81.59 per unit at P(success) 0.75; NRE £150,000 (marginal); payback 0.03 yrs. Indicative band, not a quotation.",
+    "savingPerUnitLowGBP": 72.52,
+    "savingPerUnitHighGBP": 108.78,
+    "riskAdjustedLowGBP": 54.39,
+    "riskAdjustedHighGBP": 81.59,
+    "paybackYears": 0.03,
+    "conflictsWith": "A6, P12, P2, Z13",
+    "nreGBP": 150000.0
+   },
+   "reviewCorrection": {
+    "summary": "P1 booked a £72.52-£108.78 device-level saving even though its own text says it must not be judged at part level and is a system trade study, not a saving. Corrected booked saving is nil. As an unbooked trade note, the module delta is cancelled by the extra battery needed for the 4-6% efficiency loss on any pack above about 15-35 kWh, before cooling and DC-link growth, and at 800 V it needs 1200 V IGBTs.",
+    "basis": "No part-level saving is booked. The idea's own text says it must be judged at system level and presented as a trade study, and none of the offsetting system costs it names have been quantified by the study: battery capacity to hold range, cooling, a larger DC-link capacitor at lower switching frequency, gate-driver redesign. The device-level delta (40-60% of £181.30 = £72.52-£108.78) is kept only as the gross input to an unbooked system trade note. Public data puts SiC modules at roughly 2-5x the price of an equivalent Si IGBT, which would imply a delta of 50-80%, but those ratios are retail/vendor and older, so the study's own 40-60% is retained. Against it, SiC is reported to cut WLTP/WLTC inverter-related consumption by about 4% (Infineon) to 6% (Rohm). Holding range constant, that consumption rise costs about 4-6% of pack capacity at the BNEF 2025 BEV pack price of USD 99/kWh (£78.21/kWh at 0.79), i.e. £3.13-£4.69 per kWh of pack capacity. The study does not state the pack size, so no single net figure can be computed. The module saving is wiped out by the battery penalty alone for any pack above about 15.5-34.8 kWh, which a 250 kW, 800 V vehicle will almost certainly exceed. Cooling and DC-link growth would make it worse.",
+    "derivation": [
+     {
+      "line": "Power module (component #14) SiC six-pack replaced by Si IGBT six-pack: device-level delta per the idea's own mechanism (40-60%) - GROSS, NOT BOOKED",
+      "lowGBP": 72.52,
+      "highGBP": 108.78,
+      "source": "edu-components.txt row 14 (£181.30); register P1 mechanism"
+     },
+     {
+      "line": "Battery capacity to hold range: per kWh of pack capacity, 4-6% consumption penalty x USD 99/kWh x 0.79 (pack size not given in study)",
+      "lowGBP": -4.69,
+      "highGBP": -3.13,
+      "source": "https://www.infineon.com/cms/en/applications/automotive/hev-ev/main-inverter/ (about 4% WLTP); Rohm 6% WLTC (via search); https://about.bnef.com/insights/clean-transport/lithium-ion-battery-pack-prices-fall-to-108-per-kilowatt-hour (BEV pack USD 99/kWh)"
+     },
+     {
+      "line": "Cooling re-size, DC-link capacitor growth at lower fsw, gate driver redesign: not quantified by study or found in public data",
+      "lowGBP": null,
+      "highGBP": null,
+      "source": "register P1 trade-offs; not found"
+     },
+     {
+      "line": "Booked part-level saving",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "idea's own instruction: system trade study, not a saving"
+     }
+    ],
+    "riskAdjustedNote": "Nothing booked, so no risk-adjusted saving or payback. P(success) 0.75 and NRE £150,000 unchanged from the record; the study's own investment text adds that cooling and capacitor may both grow, which the NRE does not cover.",
+    "systemTradeNote": "UNBOOKED system trade note. Net per unit = £72.52-£108.78 module delta minus pack kWh x (£3.13-£4.69) battery penalty, minus unpriced cooling and DC-link growth. Break-even pack size is about 15.5-34.8 kWh: above that, Si IGBT costs the system money on battery alone. Illustration from Automotive IQ: a 10% efficiency gain on a 50 kWh, 200-mile EV is worth 4-5 kWh or USD 500-600 of pack. The study must supply its pack kWh and run the WLTP energy simulation the idea itself demands. 800 V issue: on an 800 V bus a Si solution needs 1200 V IGBTs (e.g. Infineon HybridPACK Drive FS380R12A6T4B, 1200 V/380 A, offered as an 800 V main-inverter kit). 1200 V IGBTs have higher conduction and switching losses than 750 V parts, so the efficiency gap at 800 V is at least as large as the 400 V figures and the 'Nissan Leaf / pre-2020 400 V' benchmark does not transfer. Consider the Si/SiC fusion module (Infineon HybridPACK Drive G2 Fusion, about 30% SiC area claimed to approach full-SiC system efficiency) as the realistic cost-down path.",
+    "confidence": "high",
+    "openQuestions": [
+     "What is the target vehicle's usable pack kWh and range target? Needed to turn the per-kWh penalty into a net £ figure.",
+     "Run the WLTP energy simulation for an 800 V 1200 V-IGBT inverter vs the SiC baseline; the 4-6% figures are vendor/OEM numbers, not this drive unit.",
+     "Price the cooling and DC-link capacitor (component #15, £42.00) growth at lower switching frequency.",
+     "Evaluate a Si/SiC fusion module as an intermediate option instead of all-Si."
+    ],
+    "date": "2026-10-13"
+   },
+   "evidenceSources": [
+    {
+     "title": "Si IGBT six-pack is 40-60% cheaper than SiC at device level",
+     "url": "https://www.idtechex.com/en/research-article/the-emerging-adoption-and-future-trends-of-sic-and-gan-in-evs/31201",
+     "type": "review research",
+     "supports": "partly: IET Power Electronics review (Shi et al. 2023): SiC modules about 3-5x Si IGBT on Digi-Key pricing; IDTechEx: SiC about 3x on average; HIITIO (vendor): 2-3x per ampere. That implies Si at 20-50% of SiC (a 50-80% delta), larger than the study's 40-60%, but the data is retail/vendor and not automotive contract pricing.",
+     "confidence": "partly"
+    },
+    {
+     "title": "SiC die cost per area vs Si",
+     "url": "https://www.infineon.com/assets/row/public/documents/10/54/sia26-fusion.pdf",
+     "type": "review research",
+     "supports": "contradicts: Infineon/Stellantis fusion paper: SiC MOSFET die cost per area is still 8-12x that of Si IGBT/diodes, more than the study's 4-6x.",
+     "confidence": "contradicts"
+    },
+    {
+     "title": "SiC efficiency gain on drive cycle",
+     "url": "https://www.infineon.com/cms/en/applications/automotive/hev-ev/main-inverter/",
+     "type": "review research",
+     "supports": "supports: Infineon: about 4% efficiency gain over Si on WLTP; Rohm: 6% lower power consumption vs IGBT on WLTC (vendor); Hyundai E-GMP: more than 5% range from SiC.",
+     "confidence": "supports"
+    },
+    {
+     "title": "SiC wins back its premium at system level",
+     "url": "https://automotive-iq.com/powertrain/articles/high-voltage-power-supply-systems",
+     "type": "review research",
+     "supports": "partly: Automotive IQ illustration: a 10% efficiency gain on a 50 kWh EV saves 4-5 kWh, i.e. USD 500-600 of pack. The IET review cost table (snippet) shows inverter USD 707 Si vs 1,369 SiC and vehicle total USD 6,541 vs 6,798. Its battery assumptions could not be verified because the full text was unreachable, so the system result is mixed.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Pack price for battery penalty",
+     "url": "https://about.bnef.com/insights/clean-transport/lithium-ion-battery-pack-prices-fall-to-108-per-kilowatt-hour",
+     "type": "review research",
+     "supports": "supports: BNEF 2025 survey: average pack USD 108/kWh; BEV packs USD 99/kWh.",
+     "confidence": "supports"
+    },
+    {
+     "title": "800 V Si inverter needs 1200 V IGBTs",
+     "url": "https://www.infineon.com/cms/en/product/evaluation-boards/hybrid-kit-drive-1200v/",
+     "type": "review research",
+     "supports": "supports: Infineon HybridPACK Drive 1200 V IGBT4 module FS380R12A6T4B is offered in an evaluation kit 'for an 800 V main inverter'. A ZF PCIM 2019 paper compares 800 V Si-IGBT and SiC inverters on efficiency.",
+     "confidence": "supports"
+    }
+   ],
+   "reviewCorrectionStatus": "corrected"
   },
   "costSavingType": "Technology shift",
-  "annualSaving": "£7.25M to £10.88M at 100,000 units/yr",
+  "annualSaving": "No saving booked — review-corrected (see the correction note)",
   "difficulty": "Medium",
   "timeToImplement": "18-24 months.",
   "description": "[EDU study · Develop] Silicon IGBT module in place of silicon carbide, judged at system level. A Si IGBT six-pack at the same current rating typically costs 40 to 60% less at device level. The honest question is not device cost but system cost: SiC efficiency buys battery capacity, cooling capacity and switching frequency."
@@ -7492,20 +7586,16 @@
    "powertrain": "BEV (single-motor EDU)",
    "weightedScore": 4.036,
    "pSuccess": 0.75,
-   "riskAdjustedLowGBP": 28.66,
-   "riskAdjustedHighGBP": 50.16,
+   "riskAdjustedLowGBP": -9.94,
+   "riskAdjustedHighGBP": 2.45,
    "nreGBP": 150000.0,
    "nreShared": "marginal",
-   "paybackYears": 0.05,
-   "savingPerUnitLowGBP": 38.22,
-   "savingPerUnitHighGBP": 66.885,
-   "annualSavingLowGBP": 3822000.0,
-   "annualSavingHighGBP": 6688500.000000001,
+   "paybackYears": null,
    "costSavingPotential": {
-    "perVehicle": "£38.22 to £66.89 per unit",
-    "annualValue": "£3.82M to £6.69M at 100,000 units/yr",
+    "perVehicle": "Not booked — corrected range −£13.25 to +£3.27 per unit, likely a cost increase; only the £9.80 Hall-sensor line can go (review-corrected; study claimed £38.22 to £66.89 per unit)",
+    "annualValue": "No saving booked — review-corrected (see the correction note)",
     "percentage": "20-35% of the affected component cost",
-    "calculationBasis": "Study register band: 20-35% of the affected component cost of £191.10 affected cost = £38.22 to £66.89 per unit × 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: £28.66 to £50.16 per unit at P(success) 0.75; NRE £150,000 (marginal); payback 0.05 yrs. Indicative band, not a quotation.",
+    "calculationBasis": "Review-corrected: The mechanism deletes only the three discrete Hall sensors with their mounting and wiring: component #21, £9.80. That is the absolute ceiling. Nothing in the text reduces the £181.30 module, which instead gains integrated shunts. Against the £9.80, three isolated channels are added. The automotive isolated delta-sigma modulator AMC1305M25-Q1 is listed at USD 9.7272 each at 1,000+, so 3 x 9.7272 x 0.79 = £23.05. The net is then -£13.25 (a cost increase) before the shunts, the isolated supply on the driver board and the module change, none of which could be priced from public sources. The best supplier claim found (Riedon) is that an integrated shunt module costs one third less than Hall sensing at 500 A and above; one third of £9.80 is £3.27. TI's own comparison rates shunt and Hall cost as 'Similar'. The corrected band is therefore -£13.25 to +£3.27, centring on roughly zero. It should not be booked as a saving; the idea's case is accuracy and bandwidth, not cost. Distributor coreless Hall prices (Infineon TLE4972 at £1.67-£2.83 each) confirm that the £9.80 baseline line is already lean. Original study basis: Study register band: 20-35% of the affected component cost of £191.10 affected cost = £38.22 to £66.89 per unit × 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: £28.66 to £50.16 per unit at P(success) 0.75; NRE £150,000 (marginal); payback 0.05 yrs. Indicative band, not a quotation.",
     "qualitative": "Conventional · Technology shift"
    },
    "volumeBasis": "Study volume 100,000 units/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards. Conflicts with: N3.",
@@ -7518,11 +7608,115 @@
     26
    ],
    "reviewSeverity": "critical",
-   "reviewOpenPoints": "[CRITICAL · quality] Over-claim: the saving is several times the cost of what the idea deletes. The mechanism removes three discrete current sensors ('Phase current sensors', £9.80 in the component list) and adds a shunt to 'a module that is already being bought'; isolation 'adds cost back on the driver board'. The band is still 20-35% of £191.10, because the £181.30 power module is included in the affected cost, giving £38.22-£66.88 (risk-adjusted £50.16, #3 in the pack). Nothing in the text makes the module itself cheaper. Evidence: EDU_Function_Analysis.xlsx '7. Creativity idea register' P17: Components 'Phase current sensors; Power module (SiC)', Affected 191.1, % 0.2-0.35; Mechanism 'Three discrete sensors, their mountings and their wiring are removed and replaced by a shunt integrated into a module that is already being bought.' '1. Components': Phase current sensors 9.8, Power module (SiC) 181.3. Recommendation: Re-base the saving on the deleted sensors, mounting and wiring (at most about £9.80 gross, less the added shunt and isolation cost) or give the module-cost mechanism that justifies 20-35%. ¶ [MINOR · duplicate] True duplicate of an existing Marketplace library idea (same move on the same part). Evidence: Library \"Shunt-in-busbar current sensing deletes discrete phase sensors\" [deep-library]: shunts replace Hall phase-current sensors (location busbar vs module). Recommendation: Link or merge with the library record; keep the study record as the sourced (verbatim) version. ¶ [MINOR · benchmark] Benchmark claim not found: Practice note: shunt current sensing 'Widely used in integrated traction inverters' Evidence: https://www.ti.com/document-viewer/lit/html/SBAA293 — Only an industry trend from Hall to shunt sensing and supplier products (TI, Riedon); no named production traction inverter found. TI is still launching coreless Hall sensors for traction inverters. Recommendation: Soften to 'emerging; supplier solutions available' and keep maturity under review (currently 'Proven').",
-   "possibleDuplicateOf": "deep-7516c0a9f7c9"
+   "reviewOpenPoints": "[CORRECTED 13 Oct 2026] P17 claimed £38-£67 by charging the saving against the whole £181 power module, but the idea deletes only the £9.80 phase-sensor line and adds shunts and isolated measurement channels. With a published automotive isolated-modulator price the net is a £13.25 cost increase, and the best supplier claim found allows at most £3.27, so the corrected band is -£13.25 to +£3.27. It should not be booked as a saving. The case for it is accuracy, not cost. ¶ [CRITICAL · quality] Over-claim: the saving is several times the cost of what the idea deletes. The mechanism removes three discrete current sensors ('Phase current sensors', £9.80 in the component list) and adds a shunt to 'a module that is already being bought'; isolation 'adds cost back on the driver board'. The band is still 20-35% of £191.10, because the £181.30 power module is included in the affected cost, giving £38.22-£66.88 (risk-adjusted £50.16, #3 in the pack). Nothing in the text makes the module itself cheaper. Evidence: EDU_Function_Analysis.xlsx '7. Creativity idea register' P17: Components 'Phase current sensors; Power module (SiC)', Affected 191.1, % 0.2-0.35; Mechanism 'Three discrete sensors, their mountings and their wiring are removed and replaced by a shunt integrated into a module that is already being bought.' '1. Components': Phase current sensors 9.8, Power module (SiC) 181.3. Recommendation: Re-base the saving on the deleted sensors, mounting and wiring (at most about £9.80 gross, less the added shunt and isolation cost) or give the module-cost mechanism that justifies 20-35%. ¶ [MINOR · duplicate] True duplicate of an existing Marketplace library idea (same move on the same part). Evidence: Library \"Shunt-in-busbar current sensing deletes discrete phase sensors\" [deep-library]: shunts replace Hall phase-current sensors (location busbar vs module). Recommendation: Link or merge with the library record; keep the study record as the sourced (verbatim) version. ¶ [MINOR · benchmark] Benchmark claim not found: Practice note: shunt current sensing 'Widely used in integrated traction inverters' Evidence: https://www.ti.com/document-viewer/lit/html/SBAA293 — Only an industry trend from Hall to shunt sensing and supplier products (TI, Riedon); no named production traction inverter found. TI is still launching coreless Hall sensors for traction inverters. Recommendation: Soften to 'emerging; supplier solutions available' and keep maturity under review (currently 'Proven').",
+   "possibleDuplicateOf": "deep-7516c0a9f7c9",
+   "studyOriginal": {
+    "annualSaving": "£3.82M to £6.69M at 100,000 units/yr",
+    "perUnit": "£38.22 to £66.89 per unit",
+    "annualValue": "£3.82M to £6.69M at 100,000 units/yr",
+    "calculationBasis": "Study register band: 20-35% of the affected component cost of £191.10 affected cost = £38.22 to £66.89 per unit × 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: £28.66 to £50.16 per unit at P(success) 0.75; NRE £150,000 (marginal); payback 0.05 yrs. Indicative band, not a quotation.",
+    "savingPerUnitLowGBP": 38.22,
+    "savingPerUnitHighGBP": 66.885,
+    "riskAdjustedLowGBP": 28.66,
+    "riskAdjustedHighGBP": 50.16,
+    "paybackYears": 0.05,
+    "conflictsWith": "N3",
+    "nreGBP": 150000.0
+   },
+   "reviewCorrection": {
+    "summary": "P17 claimed £38-£67 by charging the saving against the whole £181 power module, but the idea deletes only the £9.80 phase-sensor line and adds shunts and isolated measurement channels. With a published automotive isolated-modulator price the net is a £13.25 cost increase, and the best supplier claim found allows at most £3.27, so the corrected band is -£13.25 to +£3.27. It should not be booked as a saving. The case for it is accuracy, not cost.",
+    "basis": "The mechanism deletes only the three discrete Hall sensors with their mounting and wiring: component #21, £9.80. That is the absolute ceiling. Nothing in the text reduces the £181.30 module, which instead gains integrated shunts. Against the £9.80, three isolated channels are added. The automotive isolated delta-sigma modulator AMC1305M25-Q1 is listed at USD 9.7272 each at 1,000+, so 3 x 9.7272 x 0.79 = £23.05. The net is then -£13.25 (a cost increase) before the shunts, the isolated supply on the driver board and the module change, none of which could be priced from public sources. The best supplier claim found (Riedon) is that an integrated shunt module costs one third less than Hall sensing at 500 A and above; one third of £9.80 is £3.27. TI's own comparison rates shunt and Hall cost as 'Similar'. The corrected band is therefore -£13.25 to +£3.27, centring on roughly zero. It should not be booked as a saving; the idea's case is accuracy and bandwidth, not cost. Distributor coreless Hall prices (Infineon TLE4972 at £1.67-£2.83 each) confirm that the £9.80 baseline line is already lean.",
+    "derivation": [
+     {
+      "line": "Phase current sensors (component #21), mountings and wiring deleted",
+      "lowGBP": 9.8,
+      "highGBP": 9.8,
+      "source": "edu-components.txt row 21 (£9.80)"
+     },
+     {
+      "line": "3x isolated delta-sigma modulator AMC1305M25-Q1 at USD 9.7272 (1,000+ distributor) x 0.79 (low case); high case uses Riedon vendor claim instead",
+      "lowGBP": -23.05,
+      "highGBP": -6.53,
+      "source": "https://www.cytechsystems.com.cn/fr/product/amc1305m25qdwrq1 ; Riedon claim via https://international.electronica-azi.ro/?p=22671"
+     },
+     {
+      "line": "3x integrated power shunts in module, isolated supply for modulators, module change: price not found",
+      "lowGBP": null,
+      "highGBP": null,
+      "source": "not found (distributor shunt prices found were for 2512 SMD parts, not a traction-class in-module shunt)"
+     },
+     {
+      "line": "Power module (component #14): no cost reduction in mechanism",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "register P17 mechanism"
+     },
+     {
+      "line": "Net corrected (bounded by £9.80)",
+      "lowGBP": -13.25,
+      "highGBP": 3.27,
+      "source": "arithmetic"
+     }
+    ],
+    "riskAdjustedNote": "Corrected band x P(success) 0.75. NRE £150,000 unchanged from the record. Payback is null because the risk-adjusted low case is a cost increase. Even on the high case, payback would be £150,000 / (£2.45 x 100,000) = 0.61 years.",
+    "systemTradeNote": "Keep the existing N3 conflict: N3 (two sensors plus third-phase reconstruction, £2.45-£3.43) attacks the same £9.80 line, and the two cannot both be credited in full. TI also recommends two shunts plus software reconstruction for cost. If P17 proceeds, the realistic cost lever is two channels instead of three, which removes one modulator (USD 9.7272 x 0.79 = £7.68 at 1,000+ pricing).",
+    "confidence": "medium",
+    "openQuestions": [
+     "OEM-volume (100k/yr) quotes for the isolated modulator or amplifier, the in-module shunts and the isolated supply; distributor 1k prices overstate volume cost.",
+     "Does the power module supplier charge for integrated shunts, and does the module need a re-layout?",
+     "Can the existing gate-driver isolated supply feed the modulators at no added cost?",
+     "Decide between N3 and P17 (or combine as two shunts) rather than crediting both."
+    ],
+    "date": "2026-10-13"
+   },
+   "evidenceSources": [
+    {
+     "title": "Shunt sensing is cheaper than Hall in traction inverters",
+     "url": "https://www.ti.com/document-viewer/lit/html/SBAA293",
+     "type": "review research",
+     "supports": "contradicts: TI application brief SBAA293 rates cost 'Similar | Similar' for shunt vs Hall isolated sensing. It says the move is driven by accuracy (<0.5% vs <2% after calibration).",
+     "confidence": "contradicts"
+    },
+    {
+     "title": "Isolated shunt sensing adds supply and BOM cost",
+     "url": "https://www.allegromicro.com/-/media/files/application-notes/an296301_shunt-vs-hall.pdf",
+     "type": "review research",
+     "supports": "supports: Allegro: isolated amplifiers require an additional, bulky supply that increases BOM and footprint.",
+     "confidence": "supports"
+    },
+    {
+     "title": "Price of automotive isolated delta-sigma modulator",
+     "url": "https://www.cytechsystems.com.cn/fr/product/amc1305m25qdwrq1",
+     "type": "review research",
+     "supports": "partly: AMC1305M25-Q1 (AEC-Q100) listed at USD 9.7272 at 1,000+. No public price found for AMC3306M25-Q1; non-automotive AMC1306M25 at USD 1.1444 (LCSC) is not automotive-qualified. 100k-volume OEM pricing would be lower but is not public.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Integrated shunt module saving vs Hall",
+     "url": "https://international.electronica-azi.ro/?p=22671",
+     "type": "review research",
+     "supports": "partly: Riedon (vendor) claims its reinforced isolated shunt module costs one third less than Hall sensors at 500 A and above.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Baseline Hall sensor cost",
+     "url": "https://uk.rs-online.com/web/p/current-sensor-ics/2361589?gb=s",
+     "type": "review research",
+     "supports": "supports: Infineon TLE4972 coreless AEC-Q100 sensor: £2.83 at 500+ and £1.67 at 2,500+ (RS UK), so 3 sensors cost about £5.01-£8.49, consistent with the £9.80 line including mounting and wiring.",
+     "confidence": "supports"
+    },
+    {
+     "title": "Shunt sensing 'widely used in integrated traction inverters'",
+     "url": "https://www.ti.com/document-viewer/lit/html/SBAA293",
+     "type": "review research",
+     "supports": "not found: Found only supplier products and an industry trend; no named production traction inverter.",
+     "confidence": "not found"
+    }
+   ],
+   "reviewCorrectionStatus": "corrected"
   },
   "costSavingType": "Technology shift",
-  "annualSaving": "£3.82M to £6.69M at 100,000 units/yr",
+  "annualSaving": "No saving booked — review-corrected (see the correction note)",
   "difficulty": "Medium",
   "timeToImplement": "18-24 months.",
   "description": "[EDU study · Develop] Shunt-based current sensing integrated into the power module. An integrated shunt in the module source path with isolated amplification removes the external sensors, their mounting and their wiring. Accuracy and bandwidth are typically better than Hall sensing."
@@ -9535,24 +9729,24 @@
    "maturity": "Proven",
    "implementationDifficulty": "High",
    "studyEffort": "High",
-   "conflictsWith": "A1, A2, A3, A5, R17, R3, R4, S3",
+   "conflictsWith": "A1, A2, A3, A5, R17, R3, R4, S3 · Review-added conflicts: R1, R6, R13, R16, R19, M2, Z5, Z9, X2, Z10",
    "powertrain": "BEV (single-motor EDU)",
    "weightedScore": 3.464,
    "pSuccess": 0.6,
-   "riskAdjustedLowGBP": 92.25,
-   "riskAdjustedHighGBP": 110.7,
+   "riskAdjustedLowGBP": 61.56,
+   "riskAdjustedHighGBP": 76.95,
    "nreGBP": 1000000.0,
    "nreShared": "marginal",
-   "paybackYears": 0.11,
-   "savingPerUnitLowGBP": 153.75,
-   "savingPerUnitHighGBP": 184.5,
-   "annualSavingLowGBP": 15375000.0,
-   "annualSavingHighGBP": 18450000.0,
+   "paybackYears": 0.16,
+   "savingPerUnitLowGBP": 102.6,
+   "savingPerUnitHighGBP": 128.25,
+   "annualSavingLowGBP": 10260000.0,
+   "annualSavingHighGBP": 12825000.0,
    "costSavingPotential": {
-    "perVehicle": "£153.75 to £184.50 per unit",
-    "annualValue": "£15.38M to £18.45M at 100,000 units/yr",
+    "perVehicle": "£102.60 to £128.25 per unit (review-corrected; study claimed £153.75 to £184.50 per unit)",
+    "annualValue": "£10.26M to £12.82M at 100,000 units/yr (review-corrected)",
     "percentage": "75-90% of the affected component cost",
-    "calculationBasis": "Study register band: 75-90% of the affected component cost of £205.00 affected cost = £153.75 to £184.50 per unit × 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: £92.25 to £110.70 per unit at P(success) 0.6; NRE £1,000,000 (marginal); payback 0.11 yrs. Indicative band, not a quotation.",
+    "calculationBasis": "Review-corrected: R5's own cost mechanism states that roughly 60-75% of the magnet cost is removed net of the excitation hardware that comes back. Applied to the study's own magnet line (component #6, £171.00, central NdPr case) this gives £102.60-£128.25 per unit. The rotor lamination stack (#5, £34.00) is not credited because a wound-field rotor still needs a laminated salient-pole stack. The implied returning excitation hardware (rotor copper winding and insulation, slip rings and brushes or a rotating transformer, and a field-excitation converter) is therefore £42.75-£68.40 (25-40% of £171). No public source was found that prices these items individually, so that figure is implied by the mechanism and not researched. The only published per-vehicle money figure found is Tula's vendor claim of USD 150-200 per vehicle system-level saving for an EESM versus an IPM, which is £118.50-£158.00 at USD 1 = GBP 0.79. That overlaps the upper half of the corrected band, so it is consistent with it but does not verify it, because it is a system-level vendor claim. Book this only as the R5 (magnet-free) package, mutually exclusive with the PM-rotor optimisation package. The band also scales with the magnet line: on the study's own Low/High magnet costs (£96.32/£254.26) the same 60-75% would give £57.79-£190.70. Original study basis: Study register band: 75-90% of the affected component cost of £205.00 affected cost = £153.75 to £184.50 per unit × 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: £92.25 to £110.70 per unit at P(success) 0.6; NRE £1,000,000 (marginal); payback 0.11 yrs. Indicative band, not a quotation.",
     "qualitative": "Conventional · Technology shift"
    },
    "volumeBasis": "Study volume 100,000 units/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards. Conflicts with: A1, A2, A3, A5, R17, R3, R4, S3.",
@@ -9565,11 +9759,109 @@
     12
    ],
    "reviewSeverity": "critical",
-   "reviewOpenPoints": "[CRITICAL · quality] Conflict set omits every other magnet idea that was also selected. R5 removes the NdFeB magnets entirely, yet R1 (grain boundary diffusion), R6 (segment count), R13 (rectangular blocks), R16 (resin retention), R19 (dual source/index), M2 (coating), Z5 (shrink machine 'and its magnets'), Z9 (recover magnet value), X2 and Z10 (magnet volume pricing) are all Develop alongside it. Their savings cannot coexist with a magnet-free rotor. Risk-adjusted high savings on the £171.00 magnet part from the Develop list sum to £339.72 for every idea that touches it, or £97.73 for magnet-only ideas plus R5's £110.70. The pack's Rotor group header shows £260.51 of saving against about £269.90 of total rotor part cost. That contradicts the pack's statement that the 77 'do not clash with each other' and Phase 4's statement that 'no two selected ideas can be mutually exclusive'. Evidence: EDU_Function_Analysis.xlsx '7. Creativity idea register' R5 'Conflicts with' = 'A1, A2, A3, A5, R17, R3, R4, S3'; R1 = 'A4, R12, R2, Z8'; R13/R6 = 'none'; R16 = 'R9, Z19'; R19 = 'Z7, Z8'. '11. Phase 4 evaluation' all = 'Develop'. Pack slide 4: '77 carried forward | These do not clash with each other'; slide 12: 'Rotor | 13 proposals | £260.51 Saving a unit'. Recommendation: Make R5 mutually exclusive with the magnet-optimisation ideas (or present the PM-rotor path and the R5 path as two alternative packages), then re-run the conflict resolution and the group and headline totals before the Director/President review. ¶ [CRITICAL · quality] The saving band does not follow from the idea's own cost mechanism. The mechanism says 'roughly 60-75% of the magnet cost is removed net of the excitation hardware', which is £102.60-£128.25 on the £171.00 magnet. The register instead applies 75-90% to £205.00 (magnets plus rotor lamination stack), giving £153.75-£184.50. A wound rotor still needs a laminated pole stack, so crediting up to 90% of the lamination cost as well is not supported. This is the #1 ranked proposal in the pack (£110.70 a unit). Evidence: EDU_Function_Analysis.xlsx '7. Creativity idea register' R5: Affected cost 205, Saving % low 0.75, high 0.9, Saving 153.75-184.5; Cost mechanism: 'Roughly 60-75% of the magnet cost is removed net of the excitation hardware that comes back.' Trade-offs: 'Adds a rotor winding, slip rings or a rotating transformer, and an excitation converter.' Recommendation: Ask the study author to reconcile the band with the stated mechanism (60-75% of £171 gives £102.60-£128.25, or about £61.56-£76.95 risk-adjusted at P=0.6) before the deck is shown. ¶ [MINOR · duplicate] True duplicate of an existing Marketplace library idea (same move on the same part). Evidence: Library add150 \"Magnet-free externally-excited rotor EDU eliminating rare earth\" [extra]; also pt034 \"Wound rotor synchronous motor — eliminates rare earth permanent magnets entirely\" [legacy-seed]. Recommendation: Link or merge with the library record; keep the study record as the sourced (verbatim) version.",
-   "possibleDuplicateOf": "add150"
+   "reviewOpenPoints": "[CORRECTED 13 Oct 2026] R5 was credited 75-90% of the magnets plus the rotor laminations (£153.75-£184.50), but its own mechanism says only 60-75% of the £171 magnet cost is removed once excitation hardware comes back, and a wound rotor still needs its laminations. The corrected saving is £102.60-£128.25 a unit (£61.56-£76.95 risk-adjusted), consistent with the only published vendor figure (USD 150-200 per vehicle). It must be shown as an alternative to the ten magnet-optimisation ideas, which today double-count the same £171 part (£339.72 claimed against it). ¶ [CRITICAL · quality] Conflict set omits every other magnet idea that was also selected. R5 removes the NdFeB magnets entirely, yet R1 (grain boundary diffusion), R6 (segment count), R13 (rectangular blocks), R16 (resin retention), R19 (dual source/index), M2 (coating), Z5 (shrink machine 'and its magnets'), Z9 (recover magnet value), X2 and Z10 (magnet volume pricing) are all Develop alongside it. Their savings cannot coexist with a magnet-free rotor. Risk-adjusted high savings on the £171.00 magnet part from the Develop list sum to £339.72 for every idea that touches it, or £97.73 for magnet-only ideas plus R5's £110.70. The pack's Rotor group header shows £260.51 of saving against about £269.90 of total rotor part cost. That contradicts the pack's statement that the 77 'do not clash with each other' and Phase 4's statement that 'no two selected ideas can be mutually exclusive'. Evidence: EDU_Function_Analysis.xlsx '7. Creativity idea register' R5 'Conflicts with' = 'A1, A2, A3, A5, R17, R3, R4, S3'; R1 = 'A4, R12, R2, Z8'; R13/R6 = 'none'; R16 = 'R9, Z19'; R19 = 'Z7, Z8'. '11. Phase 4 evaluation' all = 'Develop'. Pack slide 4: '77 carried forward | These do not clash with each other'; slide 12: 'Rotor | 13 proposals | £260.51 Saving a unit'. Recommendation: Make R5 mutually exclusive with the magnet-optimisation ideas (or present the PM-rotor path and the R5 path as two alternative packages), then re-run the conflict resolution and the group and headline totals before the Director/President review. ¶ [CRITICAL · quality] The saving band does not follow from the idea's own cost mechanism. The mechanism says 'roughly 60-75% of the magnet cost is removed net of the excitation hardware', which is £102.60-£128.25 on the £171.00 magnet. The register instead applies 75-90% to £205.00 (magnets plus rotor lamination stack), giving £153.75-£184.50. A wound rotor still needs a laminated pole stack, so crediting up to 90% of the lamination cost as well is not supported. This is the #1 ranked proposal in the pack (£110.70 a unit). Evidence: EDU_Function_Analysis.xlsx '7. Creativity idea register' R5: Affected cost 205, Saving % low 0.75, high 0.9, Saving 153.75-184.5; Cost mechanism: 'Roughly 60-75% of the magnet cost is removed net of the excitation hardware that comes back.' Trade-offs: 'Adds a rotor winding, slip rings or a rotating transformer, and an excitation converter.' Recommendation: Ask the study author to reconcile the band with the stated mechanism (60-75% of £171 gives £102.60-£128.25, or about £61.56-£76.95 risk-adjusted at P=0.6) before the deck is shown. ¶ [MINOR · duplicate] True duplicate of an existing Marketplace library idea (same move on the same part). Evidence: Library add150 \"Magnet-free externally-excited rotor EDU eliminating rare earth\" [extra]; also pt034 \"Wound rotor synchronous motor — eliminates rare earth permanent magnets entirely\" [legacy-seed]. Recommendation: Link or merge with the library record; keep the study record as the sourced (verbatim) version.",
+   "possibleDuplicateOf": "add150",
+   "studyOriginal": {
+    "annualSaving": "£15.38M to £18.45M at 100,000 units/yr",
+    "perUnit": "£153.75 to £184.50 per unit",
+    "annualValue": "£15.38M to £18.45M at 100,000 units/yr",
+    "calculationBasis": "Study register band: 75-90% of the affected component cost of £205.00 affected cost = £153.75 to £184.50 per unit × 100,000 units/yr (study volume, Assumptions tab). Phase 4 risk-adjusted: £92.25 to £110.70 per unit at P(success) 0.6; NRE £1,000,000 (marginal); payback 0.11 yrs. Indicative band, not a quotation.",
+    "savingPerUnitLowGBP": 153.75,
+    "savingPerUnitHighGBP": 184.5,
+    "riskAdjustedLowGBP": 92.25,
+    "riskAdjustedHighGBP": 110.7,
+    "paybackYears": 0.11,
+    "conflictsWith": "A1, A2, A3, A5, R17, R3, R4, S3",
+    "nreGBP": 1000000.0
+   },
+   "reviewCorrection": {
+    "summary": "R5 was credited 75-90% of the magnets plus the rotor laminations (£153.75-£184.50), but its own mechanism says only 60-75% of the £171 magnet cost is removed once excitation hardware comes back, and a wound rotor still needs its laminations. The corrected saving is £102.60-£128.25 a unit (£61.56-£76.95 risk-adjusted), consistent with the only published vendor figure (USD 150-200 per vehicle). It must be shown as an alternative to the ten magnet-optimisation ideas, which today double-count the same £171 part (£339.72 claimed against it).",
+    "basis": "R5's own cost mechanism states that roughly 60-75% of the magnet cost is removed net of the excitation hardware that comes back. Applied to the study's own magnet line (component #6, £171.00, central NdPr case) this gives £102.60-£128.25 per unit. The rotor lamination stack (#5, £34.00) is not credited because a wound-field rotor still needs a laminated salient-pole stack. The implied returning excitation hardware (rotor copper winding and insulation, slip rings and brushes or a rotating transformer, and a field-excitation converter) is therefore £42.75-£68.40 (25-40% of £171). No public source was found that prices these items individually, so that figure is implied by the mechanism and not researched. The only published per-vehicle money figure found is Tula's vendor claim of USD 150-200 per vehicle system-level saving for an EESM versus an IPM, which is £118.50-£158.00 at USD 1 = GBP 0.79. That overlaps the upper half of the corrected band, so it is consistent with it but does not verify it, because it is a system-level vendor claim. Book this only as the R5 (magnet-free) package, mutually exclusive with the PM-rotor optimisation package. The band also scales with the magnet line: on the study's own Low/High magnet costs (£96.32/£254.26) the same 60-75% would give £57.79-£190.70.",
+    "derivation": [
+     {
+      "line": "Rotor permanent magnets (component #6) removed",
+      "lowGBP": 171.0,
+      "highGBP": 171.0,
+      "source": "edu-components.txt row 6 (£171.00, central case of '1b. Cost basis and sensitivity')"
+     },
+     {
+      "line": "Excitation hardware added back (rotor winding copper + insulation, slip-ring/brush or rotating transformer, field-excitation converter), implied by R5's mechanism 'roughly 60-75% removed net'. Not independently priced: no public line-item cost found",
+      "lowGBP": -68.4,
+      "highGBP": -42.75,
+      "source": "EDU_Function_Analysis.xlsx '7. Creativity idea register' R5 cost mechanism; research found no priced line items"
+     },
+     {
+      "line": "Rotor core lamination stack (component #5) retained as wound-rotor pole stack: no credit",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "edu-components.txt row 5 (£34.00); R5 trade-offs (wound rotor still laminated)"
+     },
+     {
+      "line": "Net corrected saving",
+      "lowGBP": 102.6,
+      "highGBP": 128.25,
+      "source": "arithmetic: £171.00 x 60% / x 75%"
+     }
+    ],
+    "riskAdjustedNote": "Corrected band x the study's own P(success) 0.6. NRE £1,000,000 unchanged from the record. The study's own investment text says 'High. New rotor line, excitation converter development and additional control software', so a £1M NRE looks light and should be challenged; payback = £1,000,000 / (£61.56 x 100,000) = 0.16 years.",
+    "systemTradeNote": "Conflict set. R5 removes the NdFeB magnets entirely, so it is fully mutually exclusive with every idea that only optimises or re-sources those magnets: R1 (grain boundary diffusion), R6 (fewer segments), R13 (rectangular blocks), R19 (dual source and price index), M2 (coating spec), and R16 (cast resin magnet retention: there are no magnets to retain, so the magnet share of its saving vanishes and the end-plate share must be re-assessed for a wound rotor). It partly conflicts with Z5 (second gear ratio to shrink the machine 'and its magnets'), Z9 (end-of-life magnet recovery), X2 and Z10 (volume pricing that includes the magnets). These four must be re-based so that the magnet portion of their saving is removed under the R5 path. Their gear, housing, SiC and bearing portions stay valid. Joint cap: magnet-related claims cannot exceed the £171.00 magnet cost. Selected risk-adjusted high claims touching the magnet line sum to £339.72 (R5 £110.70 + the ten others £229.02), which is 199% of the part. Present two alternative packages. (A) PM-rotor optimisation, magnet-only ideas R1+R6+R13+R19+M2: unrisked £49.59-£116.28 if added, or £44.44-£89.80 when compounded on the shrinking residual magnet cost (each percentage applied to what is left); risk-adjusted high £97.73 added. Either way this is within the £171 cap. Ideas Z5/Z9/X2/Z10/R16 add their magnet share on top, which still must keep the total under £171. (B) Magnet-free R5: £102.60-£128.25 unrisked, £61.56-£76.95 risk-adjusted, with none of the magnet-only ideas allowed alongside it.",
+    "confidence": "medium",
+    "openQuestions": [
+     "No public line-item cost was found for rotor copper winding, slip-ring/brush or rotating-transformer exciter, and field converter; an RFQ or teardown (Munro/A2Mac1 BMW Gen5 rotor) is needed to validate the implied £42.75-£68.40 of returning hardware.",
+     "Does the wound rotor at 250 kW / 16,000 rpm need a longer stack or added rotor cooling (Chalmers thesis found an EESM about 87% longer at equal torque in a compressor case)? That would add stator and housing cost not counted here.",
+     "Is the £1,000,000 NRE credible for a new rotor line plus an excitation converter and control software (the study's own text rates investment High)?",
+     "Re-base Z5, Z9, X2, Z10 and R16 to exclude their magnet share under the R5 package."
+    ],
+    "date": "2026-10-13"
+   },
+   "evidenceSources": [
+    {
+     "title": "EESM can be cost-competitive with or cheaper than a PMSM at high power",
+     "url": "https://schaeffler-tomorrow.com/en/article/increasingly-attractive-without-magnets",
+     "type": "review research",
+     "supports": "partly: Schaeffler: at higher power the PMSM's larger magnets make it dearer; break-even could be as low as about 120 kW depending on raw-material prices. Brush system and larger design space are the traditional EESM cost drawbacks. A more compact rotor could cut material cost 8-12%.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Published per-vehicle EESM vs IPM money figure",
+     "url": "https://www.assemblymag.com/articles/98011-whats-new-with-ev-traction-motors",
+     "type": "review research",
+     "supports": "partly: Tula (vendor) claims its optimised EESM plus control saves USD 150-200 per vehicle at system level vs IPM = £118.50-£158.00 at 0.79. This is a system-level vendor claim, not a BOM teardown.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Active-material cost of a wound-rotor machine is well below that of an IPM",
+     "url": "https://doi.org/10.3390/wevj16110633",
+     "type": "review research",
+     "supports": "partly: A literature review reports IPM active-material cost about 2x a comparable wound-rotor design (light EV) and about 3.6x in a truck case. The ratios are for active materials only, excluding excitation hardware (seen via search snippet; full text could not be fetched).",
+     "confidence": "partly"
+    },
+    {
+     "title": "Excitation hardware (slip rings/brushes, rotating transformer, field converter) adds cost",
+     "url": "https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/11476786",
+     "type": "review research",
+     "supports": "not found: Several papers and patents state qualitatively that the extra field converter and rotating transformer add size, weight and cost. No USD/EUR line-item price was found for any of them.",
+     "confidence": "not found"
+    },
+    {
+     "title": "BMW Gen5 eDrive EESM teardown cost of rotor winding / slip rings",
+     "url": "https://www.press.bmwgroup.com/global/article/detail/T0448099EN/charge-faster-drive-further:-bmw-group-reveals-revolutionary-electric-drive-concept-with-800v-technology-for-the-neue-klasse?language=en",
+     "type": "review research",
+     "supports": "not found: BMW confirms the in-house wound rotor and slip rings/brushes and no rare earths; Gen6 package claims -20% cost vs Gen5 xDrive (whole two-motor system, not the EESM rotor). No teardown cost for rotor copper or slip rings was found (Munro/A2Mac1 data is paywalled).",
+     "confidence": "not found"
+    },
+    {
+     "title": "Mahle contactless magnet-free motor cost advantage",
+     "url": "https://www.electrive.com/2021/05/06/mahle-announces-highly-efficient-and-magnet-free-e-motor",
+     "type": "review research",
+     "supports": "not found: Mahle claims a cost and resource-security advantage and more than 95% efficiency in common driving conditions, but publishes no cost figure.",
+     "confidence": "not found"
+    }
+   ],
+   "reviewCorrectionStatus": "corrected"
   },
   "costSavingType": "Technology shift",
-  "annualSaving": "£15.38M to £18.45M at 100,000 units/yr",
+  "annualSaving": "£10.26M to £12.82M at 100,000 units/yr (review-corrected)",
   "difficulty": "High",
   "timeToImplement": "36-48 months.",
   "description": "[EDU study · Develop] Current-excited synchronous rotor, magnet free. Wound rotor with brush or contactless inductive excitation. Excitation is controllable, so field weakening at high speed is far more efficient than an IPM, which suits a high-speed motorway duty cycle."

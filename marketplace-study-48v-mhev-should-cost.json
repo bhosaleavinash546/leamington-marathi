@@ -385,20 +385,16 @@
    "studyLevel": "assembly",
    "weightedScore": 2.933332,
    "pSuccess": 0.5,
-   "riskAdjustedLowGBP": 8.1012,
-   "riskAdjustedHighGBP": 16.2024,
-   "nreGBP": 70000.0,
+   "riskAdjustedLowGBP": 1.79,
+   "riskAdjustedHighGBP": 3.92,
+   "nreGBP": 350000,
    "nreShared": "yes",
-   "paybackYears": 0.07,
+   "paybackYears": 1.63,
    "nreNote": "Marginal share only. The full Moulding tooling investment is carried by ID-064; summing full NRE on every idea would overstate investment badly.",
-   "savingPerUnitLowGBP": 16.2024,
-   "savingPerUnitHighGBP": 32.4048,
-   "annualSavingLowGBP": 1944288.0,
-   "annualSavingHighGBP": 3888576.0,
    "costSavingPotential": {
-    "perVehicle": "£16.20 to £32.40 per pack",
-    "annualValue": "£1.94M to £3.89M at 120,000 packs/yr",
-    "calculationBasis": "Study register band (part-specific band) on £135.02 affected cost = £16.20 to £32.40 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £8.10 to £16.20 per pack at p 0.5; NRE £70,000; payback 0.07 yrs. No teardown or quotation exists (study README).",
+    "perVehicle": "Not booked — gross £3.58–£7.83 per pack of module-frame hardware; the housing features that replace the frame are unpriced (review-corrected; study claimed £16.20 to £32.40 per pack)",
+    "annualValue": "No saving booked — review-corrected (see the correction note)",
+    "calculationBasis": "Review-corrected: The cell is unchanged by CTP and leaves the affected cost; the 13 busbars stay because a 12S string still needs every series joint. What is deleted is module-frame hardware, at the study's own Parts prices. High case = the idea's full scope ('no module frame, no stack cover') plus the busbar-locating top insulation plate: side plates £2.20 + end plates £2.60 + tie rods £0.90 + nuts £0.10 + frame fasteners £0.20 + dowels £0.18 + stack cover £1.10 + top insulation plate £0.55 = £7.83. Low case = the CTP form in which end plates and the top cover are retained (a CTP patent summary states the existing CTP structure still requires separate end plates and top covers), so only side plates, tie rods, nuts, fasteners and dowels go = £3.58. Both are GROSS: the added housing features that take over location and preload, and any change in stack-build/module-set conversion, are not priced in the study or in any source found, so the net is lower by an unknown amount. Bounded by £12.61 non-cell content. Not booked until the housing change is costed. Original study basis: Study register band (part-specific band) on £135.02 affected cost = £16.20 to £32.40 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £8.10 to £16.20 per pack at p 0.5; NRE £70,000; payback 0.07 yrs. No teardown or quotation exists (study README).",
     "qualitative": "Radical · Technology shift"
    },
    "volumeBasis": "Study volume 120,000 packs/yr for 7 years. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards. Conflicts: C3, C38.",
@@ -408,10 +404,149 @@
    ],
    "developmentPackNotes": "ID-006  Cell-to-pack construction, deleting the module as an intermediate level | A Cell stack  ·  assembly level  ·  Technology shift  ·  Radical | Representative schematic, drawn for this study. Not production hardware. | Saving per pack, risk-adjusted | £8.10 to £16.20 | Chance of working | 50% | Lead time | 36 to 42 months. | Cost to do | £70,000 | Payback | 0.07 years | Benchmark | Cell-to-pack and cell-to-body are documented architecture generations; electrode-to-pack has been demonstrated by 24M (batterydesign.net). No published 48V cell-to-pack benchmark was found, and on twelve cells the case is weaker than on a traction pack. | What we do today | Current design: twelve 19 Ah prismatic NMC cells in one series string, £122.41; two stamped steel side plates, £2.20; two aluminium end plates, £2.60; two rolled-thread steel tie rods, £0.90; one moulded cover over the cell tops, £1.10; one moulded plate locating the busbar plane, £0.55; | What would change | Assemble cells directly into the housing with no module frame, no stack cover and a simplified interconnect laid straight onto the cell tops, following the documented cell-to-pack architecture generation used on traction packs. | Why it costs less | A whole level of the product structure disappears. Parts, interfaces, assembly steps and the tolerance stack between module and housing all go. The housing absorbs the retention and location duties. The functions this idea targets carry a combined value gap of £45.34 at Stage 3, against an affected component cost of £135.02; the saving claimed here is capped at that gap when the register is totalled. ¶ ID-006  risk and validation | Cell-to-pack construction, deleting the module as an intermediate level | What could go wrong | Serviceability falls to zero at cell level and the pack becomes a single unrepairable unit, which is already the DO-13 position so the loss is smaller than it looks. Housing tooling complexity rises. On a twelve-cell pack the gain is smaller than on a traction pack because there is only one module to delete. | What we must test | Tolerance stack study from cell to housing, and a vibration test of cells retained by housing features rather than by a steel frame. | Components affected | NMC prismatic cell; Module side plate; Module end plate; Module tie rod; Stack cover… | Functions targeted: Store energy; Deliver power; Accept charge; Deliver current; Conduct current… | Money and effort | Saving before risk adjustment: £16.20 to £32.40 before risk | Risk-adjusted: £8.10 to £16.20 | Chance of working: 50% | Investment: £70,000 (marginal share) | Payback on the risk-adjusted low case: 0.07 years | Lead time: 36 to 42 months. | Payback is computed on the risk-adjusted low case, never the optimistic case. Where several ideas share a tooling asset, the highest scoring idea carries the full investment and the others a marginal share.",
    "reviewSeverity": "critical",
-   "reviewOpenPoints": "[CRITICAL · quality] The claimed saving is larger than the content the idea can remove. Cell-to-pack deletes the frame, cover and plate parts; it does not change the cell. Yet the £122.41 cell is in the £135.02 affected cost. The non-cell content affected is £12.61, and even the LOW saving (£16.20) exceeds it, as does the risk-adjusted high (£16.20). No arithmetic is given, and the benchmark admits 'No published 48V cell-to-pack benchmark was found'. Evidence: Deck slide 14 'What we do today': cells £122.41; side plates £2.20; end plates £2.60; tie rods £0.90; stack cover £1.10; top insulation plate £0.55; + busbars £5.26 = £135.02. Saving low/high £16.20-£32.40. Recommendation: Show it as unverified. At most the £12.61 non-cell content (less the added housing tooling cost) can be at stake, unless the author shows a cell-price mechanism. ¶ [MAJOR · quality] The NRE is understated in the same way as ID-004. The investment text says '350k GBP' (housing tooling and line rework), but the Evaluation carries a £70,000 'marginal share' of a moulding asset held by ID-064 (£30k panel tooling). The payback falls from about 0.36 to the 0.07 years shown. Evidence: investmentText 'of the order of 350k GBP'; nreGBP 70000; nreNote '...carried by ID-064'. Recommendation: Show £350k, or flag it. ¶ [MINOR · quality] Weighted score 2.93 is below the 3.95 threshold. The selection is defensible through the 1%-of-BOM material route (risk-adjusted high above £2.42), but the recorded reason cites only 'won its position in the conflict graph'. Evidence: Evaluation ID-006: Weighted 2.93. Recommendation: Make the reason state the material-saving route."
+   "reviewOpenPoints": "[CORRECTED 13 Oct 2026] Cell-to-pack does not change the £122.41 cell or remove the busbars, so the saving is limited to deleted module-frame hardware: £3.58-£7.83 per pack gross at the study's own prices, against the claimed £16.20-£32.40. Risk-adjusted at 50% that is £1.79-£3.92, and on the idea's own ~£350k investment payback is about 1.6 years before the unpriced housing changes are netted off. It should be shown as unverified and re-compared with the cheaper frame ideas in its conflict set. ¶ [CRITICAL · quality] The claimed saving is larger than the content the idea can remove. Cell-to-pack deletes the frame, cover and plate parts; it does not change the cell. Yet the £122.41 cell is in the £135.02 affected cost. The non-cell content affected is £12.61, and even the LOW saving (£16.20) exceeds it, as does the risk-adjusted high (£16.20). No arithmetic is given, and the benchmark admits 'No published 48V cell-to-pack benchmark was found'. Evidence: Deck slide 14 'What we do today': cells £122.41; side plates £2.20; end plates £2.60; tie rods £0.90; stack cover £1.10; top insulation plate £0.55; + busbars £5.26 = £135.02. Saving low/high £16.20-£32.40. Recommendation: Show it as unverified. At most the £12.61 non-cell content (less the added housing tooling cost) can be at stake, unless the author shows a cell-price mechanism. ¶ [MAJOR · quality] The NRE is understated in the same way as ID-004. The investment text says '350k GBP' (housing tooling and line rework), but the Evaluation carries a £70,000 'marginal share' of a moulding asset held by ID-064 (£30k panel tooling). The payback falls from about 0.36 to the 0.07 years shown. Evidence: investmentText 'of the order of 350k GBP'; nreGBP 70000; nreNote '...carried by ID-064'. Recommendation: Show £350k, or flag it. ¶ [MINOR · quality] Weighted score 2.93 is below the 3.95 threshold. The selection is defensible through the 1%-of-BOM material route (risk-adjusted high above £2.42), but the recorded reason cites only 'won its position in the conflict graph'. Evidence: Evaluation ID-006: Weighted 2.93. Recommendation: Make the reason state the material-saving route.",
+   "studyOriginal": {
+    "annualSaving": "£1.94M to £3.89M at 120,000 packs/yr",
+    "perUnit": "£16.20 to £32.40 per pack",
+    "annualValue": "£1.94M to £3.89M at 120,000 packs/yr",
+    "calculationBasis": "Study register band (part-specific band) on £135.02 affected cost = £16.20 to £32.40 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £8.10 to £16.20 per pack at p 0.5; NRE £70,000; payback 0.07 yrs. No teardown or quotation exists (study README).",
+    "savingPerUnitLowGBP": 16.2024,
+    "savingPerUnitHighGBP": 32.4048,
+    "riskAdjustedLowGBP": 8.1012,
+    "riskAdjustedHighGBP": 16.2024,
+    "paybackYears": 0.07,
+    "conflictsWith": "C3, C38",
+    "nreGBP": 70000.0
+   },
+   "reviewCorrection": {
+    "summary": "Cell-to-pack does not change the £122.41 cell or remove the busbars, so the saving is limited to deleted module-frame hardware: £3.58-£7.83 per pack gross at the study's own prices, against the claimed £16.20-£32.40. Risk-adjusted at 50% that is £1.79-£3.92, and on the idea's own ~£350k investment payback is about 1.6 years before the unpriced housing changes are netted off. It should be shown as unverified and re-compared with the cheaper frame ideas in its conflict set.",
+    "basis": "The cell is unchanged by CTP and leaves the affected cost; the 13 busbars stay because a 12S string still needs every series joint. What is deleted is module-frame hardware, at the study's own Parts prices. High case = the idea's full scope ('no module frame, no stack cover') plus the busbar-locating top insulation plate: side plates £2.20 + end plates £2.60 + tie rods £0.90 + nuts £0.10 + frame fasteners £0.20 + dowels £0.18 + stack cover £1.10 + top insulation plate £0.55 = £7.83. Low case = the CTP form in which end plates and the top cover are retained (a CTP patent summary states the existing CTP structure still requires separate end plates and top covers), so only side plates, tie rods, nuts, fasteners and dowels go = £3.58. Both are GROSS: the added housing features that take over location and preload, and any change in stack-build/module-set conversion, are not priced in the study or in any source found, so the net is lower by an unknown amount. Bounded by £12.61 non-cell content. Not booked until the housing change is costed.",
+    "derivation": [
+     {
+      "line": "Deleted: Module side plate (Parts #6, 2 x £1.10)",
+      "lowGBP": 2.2,
+      "highGBP": 2.2,
+      "source": "48v-Parts.txt; Subassembly B Module frame"
+     },
+     {
+      "line": "Deleted: Module end plate (Parts #7, 2 x £1.30)",
+      "lowGBP": 0.0,
+      "highGBP": 2.6,
+      "source": "48v-Parts.txt; Subassembly B Module frame"
+     },
+     {
+      "line": "Deleted: Module tie rod (Parts #8, 2 x £0.45)",
+      "lowGBP": 0.9,
+      "highGBP": 0.9,
+      "source": "48v-Parts.txt; Subassembly B Module frame"
+     },
+     {
+      "line": "Deleted: Tie rod nut (Parts #12, 2 x £0.05)",
+      "lowGBP": 0.1,
+      "highGBP": 0.1,
+      "source": "48v-Parts.txt; Subassembly B Module frame"
+     },
+     {
+      "line": "Deleted: Module frame fastener (Parts #11, 4 x £0.05)",
+      "lowGBP": 0.2,
+      "highGBP": 0.2,
+      "source": "48v-Parts.txt; Subassembly B Module frame"
+     },
+     {
+      "line": "Deleted: Module locating dowel (Parts #10, 2 x £0.09)",
+      "lowGBP": 0.18,
+      "highGBP": 0.18,
+      "source": "48v-Parts.txt; Subassembly B Module frame"
+     },
+     {
+      "line": "Deleted: Stack cover (Parts #9)",
+      "lowGBP": 0.0,
+      "highGBP": 1.1,
+      "source": "48v-Parts.txt; Subassembly B Module frame"
+     },
+     {
+      "line": "Deleted: Cell top insulation plate (Parts #4)",
+      "lowGBP": 0.0,
+      "highGBP": 0.55,
+      "source": "48v-Parts.txt row 8 (#4); high case only - 'simplified interconnect' may let the cell contacting system (#28) carry the busbar plane"
+     },
+     {
+      "line": "NMC prismatic cell (Parts #1, £122.41) - not changed by CTP; removed from affected cost",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "48v-Parts.txt row 5 (#1)"
+     },
+     {
+      "line": "Cell interconnect busbar x13 (Parts #15, £5.26) - still required for the 12S series string (26 laser welds remain, Conversion r6); not deleted",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "48v-Parts.txt row 19; 48v-Conversion.txt row 6"
+     },
+     {
+      "line": "Stack side compliance foam (#13 £0.32), compression pads (#3 £0.56) - retained: the housing must still react cell swelling through a compliance layer",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "48v-Parts.txt rows 7,17; ID-002 Specifics"
+     },
+     {
+      "line": "Conversion: 'Cell sorting and stack build' (£0.65) and 'Adhesive dispense and module set' (£0.80) - cells are still stacked and set, now into the housing; no reduction stated or cited",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "48v-Conversion.txt rows 5,7 - NOT PRICED"
+     },
+     {
+      "line": "Added: housing features to locate cells and react preload (bosses, walls, possibly structural adhesive) - piece-cost increase",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "NOT PRICED - no study line and no cited figure; makes the band a GROSS upper bound"
+     }
+    ],
+    "riskAdjustedNote": "Corrected (gross) x study p 0.5 = £1.79-£3.92. Payback on the risk-adjusted low: at the record's £70,000 = 0.33 yr; at the idea's own ~£350,000 (housing tooling and line rework) = 1.63 yr. £350k is carried here because the £70k 'marginal share' points at ID-064, an unrelated PCB panelisation asset. Payback lengthens further once the unpriced housing additions are netted off.",
+    "systemTradeNote": "ID-006 is functionally the same change as ID-002 (move compression into the housing, delete the frame; £5.31-£8.84 on its own scope) and supersedes ID-029/ID-033/ID-141 - all already in C3, so no new conflict is needed, but the C3 'winner' should be re-run on the corrected bands: ID-006 at p 0.5 and £350k no longer clearly beats ID-002 or the cheaper ID-029 banding. Housing takes on a fourth duty (preload) on top of structure, heat path and coolant containment; creep and vibration validation as listed. Cells sit directly on the thermal adhesive, so it interacts with ID-011's bond-line control (both should be designed together).",
+    "confidence": "medium",
+    "openQuestions": [
+     "Cost of the housing features (location bosses, preload walls, any structural adhesive) that replace the frame - piece-cost and tooling.",
+     "Is the £350k NRE right, and why does the Evaluation point the £70k marginal share at ID-064 (PCB panel tooling)?",
+     "Can the top insulation plate go, i.e. can the cell contacting system (Parts #28, £3.80) carry the busbar plane?",
+     "Assembly time change from stacking 12 cells into the housing vs building a module - no study rate or source.",
+     "Re-run C3 with corrected bands: does ID-006 still win over ID-002 / ID-029?"
+    ],
+    "date": "2026-10-13"
+   },
+   "evidenceSources": [
+    {
+     "title": "Published CTP benefit: ~40% fewer pack parts",
+     "url": "https://en.42how.com/2021/11/15/battery-pack-technology-development-path-from-ctp-to-ctc/ ; https://autonews.gasgoo.com/china_news/70016402.html",
+     "type": "review research",
+     "supports": "partly: CATL claims for CTP: 15-20% (or 20-30%, sources differ) higher volume utilisation, 40% fewer parts, 50% higher production efficiency - traction packs, secondary reporting. Not applied as a % to this pack: on a 12-cell single-module pack the deletable parts are listed individually instead.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Published CTP cost reduction",
+     "url": "https://www.globenewswire.com/fr/news-release/2022/02/02/2377457/28124/en/World-Module-less-Cell-to-Pack-Battery-Structure-Market-Report-2021-Featuring-Leading-Manufacturers-BYD-CATL-and-LG-Chem.html",
+     "type": "review research",
+     "supports": "partly: A market-research summary says module-less packs cut price 25-30% from fewer connections and circuits; no BYD primary disclosure found. Traction-pack, whole-pack figure; not applicable to a pack whose non-cell module content is £12.61.",
+     "confidence": "partly"
+    },
+    {
+     "title": "CTP still needs end plates and a top cover in its common form",
+     "url": "https://eureka.patsnap.com/triz-case/ctp-battery-integrated-cover",
+     "type": "review research",
+     "supports": "supports: Patent summary: 'the existing cell-to-pack (CTP) battery structure requires separate endplates and top covers, increasing the number of components'. Used to set the low case.",
+     "confidence": "supports"
+    },
+    {
+     "title": "CTP is used on 48V MHEV packs",
+     "url": "https://saemobilus.sae.org/content/2020-01-0441 ; https://www.hitachi.com/New/cnews/month/2017/05/170522.pdf",
+     "type": "review research",
+     "supports": "not found: No 48V cell-to-pack or module-less benchmark found; MAHLE (SAE 2020-01-0441) and Hitachi 48V packs describe cells, cooling and BMS integration but not CTP. Consistent with the study's own admission.",
+     "confidence": "not found"
+    }
+   ],
+   "reviewCorrectionStatus": "corrected"
   },
   "costSavingType": "Technology shift",
-  "annualSaving": "£1.94M to £3.89M at 120,000 packs/yr",
+  "annualSaving": "No saving booked — review-corrected (see the correction note)",
   "difficulty": "High",
   "timeToImplement": "36 to 42 months.",
   "description": "[48V MHEV study · Develop] Cell-to-pack construction, deleting the module as an intermediate level. Assemble cells directly into the housing with no module frame, no stack cover and a simplified interconnect laid straight onto the cell tops, following the documented cell-to-pack architecture generation used on traction packs."
@@ -717,26 +852,26 @@
    "investmentText": "Machining fixture or process capability work, of the order of 70k GBP.",
    "timeToImplement": "12 to 18 months.",
    "implementationDifficulty": "Low",
-   "conflictsWith": "C19",
+   "conflictsWith": "C19 · Review-added conflicts: ID-001",
    "savingBasis": "part-specific band, deep-dive",
    "powertrain": "MHEV (48V battery pack)",
    "studyLevel": "sub-assembly",
    "weightedScore": 4.733334,
    "pSuccess": 0.85,
-   "riskAdjustedLowGBP": 3.9083,
-   "riskAdjustedHighGBP": 7.4258,
-   "nreGBP": 70000.0,
+   "riskAdjustedLowGBP": 1.38,
+   "riskAdjustedHighGBP": 1.59,
+   "nreGBP": 70000,
    "nreShared": "no",
-   "paybackYears": 0.15,
+   "paybackYears": 0.42,
    "nreNote": "No shared asset.",
-   "savingPerUnitLowGBP": 4.598,
-   "savingPerUnitHighGBP": 8.7362,
-   "annualSavingLowGBP": 551760.0,
-   "annualSavingHighGBP": 1048344.0,
+   "savingPerUnitLowGBP": 1.63,
+   "savingPerUnitHighGBP": 1.87,
+   "annualSavingLowGBP": 195600.0,
+   "annualSavingHighGBP": 224400.0,
    "costSavingPotential": {
-    "perVehicle": "£4.60 to £8.74 per pack",
-    "annualValue": "£551.8K to £1.05M at 120,000 packs/yr",
-    "calculationBasis": "Study register band (part-specific band, deep-dive) on £22.99 affected cost = £4.60 to £8.74 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £3.91 to £7.43 per pack at p 0.85; NRE £70,000; payback 0.15 yrs. No teardown or quotation exists (study README).",
+    "perVehicle": "£1.63 to £1.87 per pack (review-corrected; study claimed £4.60 to £8.74 per pack)",
+    "annualValue": "£195.6K to £224.4K at 120,000 packs/yr (review-corrected)",
+    "calculationBasis": "Review-corrected: Only the thermal conductive adhesive line falls (Parts #48: 0.42 kg, £3.78, i.e. £9.00/kg). The housing does not fall - it gains a flatness operation - so it is removed from the saving and enters only as an added cost. Adhesive saved uses the idea's own mechanism text: low £1.70 (its stated figure), high 50% of £3.78 = £1.89 ('halving the design gap roughly halves the dispensed mass'). Plausibility check on the starting bond line: 0.42 kg at 3.0 g/cc (Bergquist TGF 3010APS) = 140 cc spread over at most the 668 cm2 internal floor (Derivations r15 envelope 390 x 180 mm less 3.0 mm walls) gives an average >= 2.1 mm, so halving to ~1.05 mm is physically reachable; a 0.5 mm floor would be the ceiling at £2.88, not booked. Added cost: face-milling the floor, priced as cut time only, assuming it rides in the housing's existing machining setup (Rate_Card r13 HPDC rate already includes machining of sealing faces): 3 passes x 484 mm = 1,452 mm at 12,800-20,000 mm/min (Tungaloy die-cast examples) = 0.073-0.113 min at USD 20-50/hr (China 3-axis) x 0.79 = £0.02-£0.07/pack. Corrected = £1.70 - £0.07 = £1.63 to £1.89 - £0.02 = £1.87, within the £3.78 bound. Non-cutting time (tool change, any extra setup) and the scrap cost of the process-control route are NOT priced. Original study basis: Study register band (part-specific band, deep-dive) on £22.99 affected cost = £4.60 to £8.74 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £3.91 to £7.43 per pack at p 0.85; NRE £70,000; payback 0.15 yrs. No teardown or quotation exists (study README).",
     "qualitative": "Conventional · Tolerance and specification"
    },
    "volumeBasis": "Study volume 120,000 packs/yr for 7 years. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards. Conflicts: C19.",
@@ -746,10 +881,116 @@
    ],
    "developmentPackNotes": "ID-011  Control casting floor flatness to cut the thermal interface material volume, following Valeo&apos;s published practice | E Housing and closure  ·  sub-assembly level  ·  Tolerance and specification  ·  Conventional  ·  deep dive | Representative schematic, drawn for this study. Not production hardware. | Saving per pack, risk-adjusted | £3.91 to £7.43 | Chance of working | 85% | Lead time | 12 to 18 months. | Cost to do | £70,000 | Payback | 0.15 years | Benchmark | Valeo: battery coolers are built to best-in-class flatness specifically to minimise the amount of thermal interface material, and coolers are integrated inside the pack with a larger contact surface to the cells or modules as energy density and cooling density rise (valeo.com, 2 Sep 2024). | What we do today | Current design: 0.42 kg of gap-filling thermally conductive adhesive, £3.78; one A380 high-pressure die casting with an integral coolant jacket, £19.21. Affected cost £22.99, 9.5 per cent of the bill of materials. | What would change | Machine or process-control the casting floor under the stack to a stated flatness, so the thermally conductive adhesive bond line falls from a gap-filling thickness set by worst-case casting variation to a controlled minimum. Valeo states it has developed a robust manufacturing process to hold best-in-class battery cooler flatness specifically to minimise the amount of thermal interface material. | Why it costs less | Thermally conductive gap filler is priced per kilogram and dispensed by volume, and the volume is set by the worst-case gap, not the average. Our current content is 0.42 kg at £3.78. Halving the design gap roughly halves the dispensed mass, about £1.70, and the thinner bond line also cuts thermal resistance, which is a second-order gain against DO-05&apos;s 55 degC and 5 degC spread. ¶ ID-011  risk and validation | Control casting floor flatness to cut the thermal interface material volume, following Valeo&apos;s published practice | What could go wrong | Flatness on a die casting is bought either with machining time or with tighter process control and higher scrap, and if the floor has to be machined the operation may cost more than the adhesive it saves. | What we must test | Flatness capability study on the as-cast floor across a production sample, then a machined-floor comparison including cycle time and cost. Bond line thickness measurement by section on built packs. Thermal cycling and cell expansion cycling on the reduced bond line to confirm no loss of adhesion or shear retention. | Components affected | Thermal conductive adhesive; Housing, A380 die casting | Functions targeted: Transfer heat; Support mass; Contain liquid; Exclude water; Transfer load… | Money and effort | Saving before risk adjustment: £4.60 to £8.74 before risk | Risk-adjusted: £3.91 to £7.43 | Chance of working: 85% | Investment: £70,000 | Payback on the risk-adjusted low case: 0.15 years | Lead time: 12 to 18 months. | Payback is computed on the risk-adjusted low case, never the optimistic case. Where several ideas share a tooling asset, the highest scoring idea carries the full investment and the others a marginal share.",
    "reviewSeverity": "critical",
-   "reviewOpenPoints": "[CRITICAL · quality] The claimed saving is larger than the only cost line that actually falls. This is the top-ranked Develop idea (weighted 4.73). It saves thermal adhesive: the content is £3.78, and the mechanism's own arithmetic is 'about £1.70'. The band of £4.60-£8.74 (risk-adjusted £3.91-£7.43) is reached only by counting the £19.21 A380 housing in the affected cost. But the idea makes the housing MORE expensive (flatness control or machining, which the risk text acknowledges). The high case is 2.3x the entire adhesive line and 5x the stated mechanism. Evidence: Parts: Thermal conductive adhesive 0.42 kg £3.78; Housing A380 £19.21. ID-011 Mechanism: 'Halving the design gap roughly halves the dispensed mass, about £1.70'. Risk: 'if the floor has to be machined the operation may cost more than the adhesive it saves'. Saving low/high 4.598/8.7362 on affected £22.99. Recommendation: Show the saving as unverified or overstated in front of the Director. The study's own deck (slide 4) warns that the bands are overstated. Do not quote £4.60-£8.74 per pack or the implied £0.55M-£1.05M a year. ¶ [MINOR · benchmark] The Valeo benchmark is confirmed, but it applies to a different kind of part. The Valeo source is a large EV battery cold plate (2000 x 1500 mm, flatness under 0.5 mm, glued into the pack), not the as-cast floor of an HPDC housing. It supports the principle, not the cost or feasibility of controlling flatness on an A380 die casting. Evidence: https://www.valeo.com/en/catalogue/ths/large-battery-liquid-cooler-for-ev/ Recommendation: Present it as a principle reference only."
+   "reviewOpenPoints": "[CORRECTED 13 Oct 2026] ID-011 saves thermal adhesive only; the housing it also counted gets dearer, not cheaper. On the study's own £3.78 adhesive line and the idea's own 'halving' arithmetic, less a priced face-milling cut, the saving is £1.63-£1.87 per pack (£1.38-£1.59 risk-adjusted, about £166k-£191k a year), not £4.60-£8.74. It is still worth doing at £70k NRE (payback ~0.4 yr), and ID-001 must be put in conflict with it because both claim the same adhesive. ¶ [CRITICAL · quality] The claimed saving is larger than the only cost line that actually falls. This is the top-ranked Develop idea (weighted 4.73). It saves thermal adhesive: the content is £3.78, and the mechanism's own arithmetic is 'about £1.70'. The band of £4.60-£8.74 (risk-adjusted £3.91-£7.43) is reached only by counting the £19.21 A380 housing in the affected cost. But the idea makes the housing MORE expensive (flatness control or machining, which the risk text acknowledges). The high case is 2.3x the entire adhesive line and 5x the stated mechanism. Evidence: Parts: Thermal conductive adhesive 0.42 kg £3.78; Housing A380 £19.21. ID-011 Mechanism: 'Halving the design gap roughly halves the dispensed mass, about £1.70'. Risk: 'if the floor has to be machined the operation may cost more than the adhesive it saves'. Saving low/high 4.598/8.7362 on affected £22.99. Recommendation: Show the saving as unverified or overstated in front of the Director. The study's own deck (slide 4) warns that the bands are overstated. Do not quote £4.60-£8.74 per pack or the implied £0.55M-£1.05M a year. ¶ [MINOR · benchmark] The Valeo benchmark is confirmed, but it applies to a different kind of part. The Valeo source is a large EV battery cold plate (2000 x 1500 mm, flatness under 0.5 mm, glued into the pack), not the as-cast floor of an HPDC housing. It supports the principle, not the cost or feasibility of controlling flatness on an A380 die casting. Evidence: https://www.valeo.com/en/catalogue/ths/large-battery-liquid-cooler-for-ev/ Recommendation: Present it as a principle reference only.",
+   "studyOriginal": {
+    "annualSaving": "£551.8K to £1.05M at 120,000 packs/yr",
+    "perUnit": "£4.60 to £8.74 per pack",
+    "annualValue": "£551.8K to £1.05M at 120,000 packs/yr",
+    "calculationBasis": "Study register band (part-specific band, deep-dive) on £22.99 affected cost = £4.60 to £8.74 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £3.91 to £7.43 per pack at p 0.85; NRE £70,000; payback 0.15 yrs. No teardown or quotation exists (study README).",
+    "savingPerUnitLowGBP": 4.598,
+    "savingPerUnitHighGBP": 8.7362,
+    "riskAdjustedLowGBP": 3.9083,
+    "riskAdjustedHighGBP": 7.4258,
+    "paybackYears": 0.15,
+    "conflictsWith": "C19",
+    "nreGBP": 70000.0
+   },
+   "reviewCorrection": {
+    "summary": "ID-011 saves thermal adhesive only; the housing it also counted gets dearer, not cheaper. On the study's own £3.78 adhesive line and the idea's own 'halving' arithmetic, less a priced face-milling cut, the saving is £1.63-£1.87 per pack (£1.38-£1.59 risk-adjusted, about £166k-£191k a year), not £4.60-£8.74. It is still worth doing at £70k NRE (payback ~0.4 yr), and ID-001 must be put in conflict with it because both claim the same adhesive.",
+    "basis": "Only the thermal conductive adhesive line falls (Parts #48: 0.42 kg, £3.78, i.e. £9.00/kg). The housing does not fall - it gains a flatness operation - so it is removed from the saving and enters only as an added cost. Adhesive saved uses the idea's own mechanism text: low £1.70 (its stated figure), high 50% of £3.78 = £1.89 ('halving the design gap roughly halves the dispensed mass'). Plausibility check on the starting bond line: 0.42 kg at 3.0 g/cc (Bergquist TGF 3010APS) = 140 cc spread over at most the 668 cm2 internal floor (Derivations r15 envelope 390 x 180 mm less 3.0 mm walls) gives an average >= 2.1 mm, so halving to ~1.05 mm is physically reachable; a 0.5 mm floor would be the ceiling at £2.88, not booked. Added cost: face-milling the floor, priced as cut time only, assuming it rides in the housing's existing machining setup (Rate_Card r13 HPDC rate already includes machining of sealing faces): 3 passes x 484 mm = 1,452 mm at 12,800-20,000 mm/min (Tungaloy die-cast examples) = 0.073-0.113 min at USD 20-50/hr (China 3-axis) x 0.79 = £0.02-£0.07/pack. Corrected = £1.70 - £0.07 = £1.63 to £1.89 - £0.02 = £1.87, within the £3.78 bound. Non-cutting time (tool change, any extra setup) and the scrap cost of the process-control route are NOT priced.",
+    "derivation": [
+     {
+      "line": "Thermal conductive adhesive saved (Parts #48, £3.78): low = idea's stated 'about £1.70'; high = 50% x £3.78 per idea's 'halving' mechanism",
+      "lowGBP": 1.7,
+      "highGBP": 1.89,
+      "source": "48v-Parts.txt row 52 (#48); Ideas row 15 ID-011 Cost mechanism"
+     },
+     {
+      "line": "Housing A380 die casting (Parts #39, £19.21) - removed from saving: the idea adds a flatness operation to it, it does not delete content",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "48v-Parts.txt row 43 (#39); ID-011 Trade-offs text"
+     },
+     {
+      "line": "Added: face-mill housing floor, cut time only (0.073-0.113 min x USD 20-50/hr x 0.79)",
+      "lowGBP": -0.07,
+      "highGBP": -0.02,
+      "source": "Derivations r15 envelope; feed https://tungaloy.com/?p=11944; rate https://www.stylecnc.com/blog/china-cnc-machining-service-vs-buying.html"
+     },
+     {
+      "line": "Added: non-cutting machining time / separate setup / extra scrap if process-control route is chosen",
+      "lowGBP": 0.0,
+      "highGBP": 0.0,
+      "source": "NOT PRICED - no study rate and no cited figure; see openQuestions"
+     }
+    ],
+    "riskAdjustedNote": "Corrected x study p 0.85. Payback = £70,000 / (£1.38 x 120,000) = 0.42 yr (was 0.15). Annual risk-adjusted £166k-£191k, not £0.47M-£0.89M.",
+    "systemTradeNote": "ID-001 (Develop, delete liquid cooling) also 'reduces the adhesive to a controlled thin bond line' and counts the adhesive in its £26.61 affected cost, but sits in C1/C27-C31 while ID-011 sits in C19, so both are selected and the same £3.78 line is claimed twice. Add a conflict (or net ID-001's adhesive share off once ID-011 is taken). ID-111 (gap pad) and ID-112 (bead pattern) remain correctly exclusive in C19. Second-order: thinner bond line lowers thermal resistance (helps DO-05 55 degC / 5 degC spread) but loses compliance for cell swelling and Al/Al CTE mismatch; machining an HPDC floor over a cast coolant gallery can open sub-surface porosity, which the study already pays to vacuum-impregnate (Derivations r20).",
+    "confidence": "medium",
+    "openQuestions": [
+     "Actual bond-line thickness on built packs and the share of it driven by floor flatness vs cell-base tolerance (sets whether 'halving' is reachable).",
+     "Does the floor face-mill ride in the existing sealing-face setup, or need its own setup/fixture? Non-cutting time is unpriced.",
+     "Process-control route (no machining): scrap and die-maintenance cost of holding flatness as-cast - unpriced.",
+     "Adhesive line itself is [Guessing] at £9.00/kg; obtain a Henkel/Parker/DELO volume quote.",
+     "Porosity exposure when machining the floor above the cast gallery, and leak-test fallout."
+    ],
+    "date": "2026-10-13"
+   },
+   "evidenceSources": [
+    {
+     "title": "Gap filler density for converting 0.42 kg to dispensed volume",
+     "url": "https://datasheets.tdx.henkel.com/BERGQUIST-GAP-FILLER-TGF-3010APS-de_DE.pdf",
+     "type": "review research",
+     "supports": "supports: Bergquist Gap Filler TGF 3010APS (2-part, 3.0 W/m.K, automotive power storage) lists density 3.0 g/cc, ASTM D792.",
+     "confidence": "supports"
+    },
+    {
+     "title": "Study's adhesive price of £9.00/kg is plausible at automotive volume",
+     "url": "https://atlascopco.com/ar-sa/itba/expert-hub/articles/thermal-management-and-gap-filling-in-joining-process-of-ev-batteries ; https://giikorea.co.kr/report/qyr1861222-thermal-interface-material-ev-battery-global.html",
+     "type": "review research",
+     "supports": "partly: Dispensing-equipment vendor (SCA, via Atlas Copco) cites ~EUR 10/kg (= £8.50/kg at 0.85); a paid market report gives 2024 average ~USD 20.52/kg (= £16.21/kg at 0.79). No manufacturer volume price list published (Henkel, Parker statements give no figures).",
+     "confidence": "partly"
+    },
+    {
+     "title": "Dispensed gap-filler volume can be matched to housing tolerance to save material",
+     "url": "https://www.atlascopco.com/en-uk/itba/expert-hub/articles/ev-battery-assembly-gap-filler-application",
+     "type": "review research",
+     "supports": "partly: Atlas Copco describes 3D scanning of the tray to dispense the specific volume needed to match its tolerances, 'optimising the use of this costly material'. A '20% of material cost' figure appeared in a search summary but could not be verified on the page (fetch blocked) - not used.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Bond line can fall to ~0.5 mm",
+     "url": "https://prostech.vn/thermally-conductive-gap-filler-tgf-solutions/",
+     "type": "review research",
+     "supports": "partly: Prostech (Henkel distributor) states gap fillers suit gaps above 0.5 mm to avoid voids; thin-bond-line grades (<50-70 um) exist but are TIMs for flat machined faces. Used only as a ceiling, not booked.",
+     "confidence": "partly"
+    },
+    {
+     "title": "As-cast HPDC flatness is coarse vs machined faces",
+     "url": "https://industry.plantautomation-technology.com/suppliers/a-b-die-casting-company/catalog/1780046535-Section-04a-Tolerancing.pdf ; https://www.valeo.com/en/catalogue/ths/large-battery-liquid-cooler-for-ev/",
+     "type": "review research",
+     "supports": "partly: NADCA Section 4A has separate standard/precision flatness tables (S-4A-8 / P-4A-8); the values for a 390 mm floor could not be retrieved. A casting guide gives 0.30 mm as-cast vs 0.20 mm machined TIR at only 50-75 mm size. Valeo's flatness reference is a 2000 x 1500 mm cold plate held under 0.5 mm, not an HPDC floor.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Face-milling feed rate in aluminium die castings",
+     "url": "https://tungaloy.com/?p=11944",
+     "type": "review research",
+     "supports": "supports: Tungaloy TungSpeed-Mill die-casting examples: 80 mm 16-tooth at Vf 12,800 mm/min; 100 mm 22-tooth at Vf 20,000 mm/min.",
+     "confidence": "supports"
+    },
+    {
+     "title": "China 3-axis CNC machine-hour rate",
+     "url": "https://www.stylecnc.com/blog/china-cnc-machining-service-vs-buying.html",
+     "type": "review research",
+     "supports": "partly: USD 20-50/hr for 3-axis milling in China incl. machine, operator and overhead (excl. setup/tooling). Supplier marketing, not an index.",
+     "confidence": "partly"
+    }
+   ],
+   "reviewCorrectionStatus": "corrected"
   },
   "costSavingType": "Tolerance and specification",
-  "annualSaving": "£551.8K to £1.05M at 120,000 packs/yr",
+  "annualSaving": "£195.6K to £224.4K at 120,000 packs/yr (review-corrected)",
   "difficulty": "Low",
   "timeToImplement": "12 to 18 months.",
   "description": "[48V MHEV study · Develop] Control casting floor flatness to cut the thermal interface material volume, following Valeo's published practice. Machine or process-control the casting floor under the stack to a stated flatness, so the thermally conductive adhesive bond line falls from a gap-filling thickness set by worst-case casting variation to a controlled minimum. Valeo states it has developed a robust manufacturing process to hold best-in-class battery cooler flatness specifically to minimise the amount of thermal interface material. Pair it with locating the module on cast bosses referenced to the same machined datum, so the bond line is set by one feature rather than by a tolerance stack."
@@ -9189,20 +9430,16 @@
    "studyLevel": "assembly",
    "weightedScore": 3.933333,
    "pSuccess": 0.7,
-   "riskAdjustedLowGBP": 19.0701,
-   "riskAdjustedHighGBP": 38.1402,
-   "nreGBP": 50000.0,
+   "riskAdjustedLowGBP": 2.98,
+   "riskAdjustedHighGBP": 5.66,
+   "nreGBP": 50000,
    "nreShared": "no",
-   "paybackYears": 0.02,
+   "paybackYears": 0.14,
    "nreNote": "No shared asset.",
-   "savingPerUnitLowGBP": 27.243,
-   "savingPerUnitHighGBP": 54.486,
-   "annualSavingLowGBP": 3269160.0,
-   "annualSavingHighGBP": 6538320.0,
    "costSavingPotential": {
-    "perVehicle": "£27.24 to £54.49 per pack",
-    "annualValue": "£3.27M to £6.54M at 120,000 packs/yr",
-    "calculationBasis": "Study register band (class default band, no part-specific estimate made) on £181.62 affected cost = £27.24 to £54.49 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £19.07 to £38.14 per pack at p 0.7; NRE £50,000; payback 0.02 yrs. No teardown or quotation exists (study README).",
+    "perVehicle": "Not booked — ceiling £4.25–£8.08 per pack; OEM integration, safety-case and warranty costs are unpriced (review-corrected; study claimed £27.24 to £54.49 per pack)",
+    "annualValue": "No saving booked — review-corrected (see the correction note)",
+    "calculationBasis": "Review-corrected: De-bundling removes margin, not part cost, so the ceiling is the margin the study's own cascade puts on the content being moved. Summary_Assembly charges SG&A at 6% on supplier cost minus the cell (£259.33 - £122.41 = £136.91, giving £8.21). It charges profit at 6% on that base plus SG&A (£8.71), which is margin-on-margin. The cell carries no SG&A or profit, only a 1.5% handling charge (£1.84), because EVE makes both the cells and the pack and the cell price already includes the cell maker's margin. The total removable pool is therefore £18.76, not £27-£54. The idea moves the BMS (£40.00) and the housing (£19.21) out of the assembler's marked-up base. The margin on that £59.21 is £59.21 x (1.06 x 1.06 - 1) = £7.32. The rest of the bought-in parts and the assembly conversion stay with whoever assembles the pack and keep their margin. The low case assumes the assembler still charges the study's own 1.5% handling rate on directed BMS and housing (-£0.89) and that cell handling stays. The high case assumes the cell handling charge is also removed (+£1.84). Both cases then deduct the OEM's added purchasing cost on the £181.62 now contracted directly: 1.2% of spend (CAPS industrial-manufacturing average) in the low case and 0.59% (Hackett world class) in the high case, i.e. £2.18 / £1.07. The result is £4.25-£8.08/pack, within the £18.76 margin pool. Not booked: in-house integration engineering, the functional safety case, incoming quality and the warranty liability that moves to the OEM under a directed-buy arrangement have no cited public percentage and are not deducted. Together they could plausibly absorb the remainder. The figure is a ceiling to test with the idea's own validation step (turnkey quote against direct content plus integration cost). Original study basis: Study register band (class default band, no part-specific estimate made) on £181.62 affected cost = £27.24 to £54.49 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £19.07 to £38.14 per pack at p 0.7; NRE £50,000; payback 0.02 yrs. No teardown or quotation exists (study README).",
     "qualitative": "Adjacent · Sourcing"
    },
    "volumeBasis": "Study volume 120,000 packs/yr for 7 years. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards. Conflicts: C20, C36.",
@@ -9212,10 +9449,120 @@
    ],
    "developmentPackNotes": "ID-138  Break the pack into separately sourced content instead of a single turnkey supply | A Cell stack  ·  assembly level  ·  Sourcing  ·  Adjacent | Representative schematic, drawn for this study. Not production hardware. | Saving per pack, risk-adjusted | £19.07 to £38.14 | Chance of working | 70% | Lead time | 18 to 24 months | Cost to do | £50,000 | Payback | 0.02 years | Benchmark | No published benchmark. No comparable public 48V pack design was found for this specific change. | What we do today | Current design: twelve 19 Ah prismatic NMC cells in one series string, £122.41; one populated conformal-coated board, £40.00, user-stated; one A380 high-pressure die casting with an integral coolant jacket, £19.21. Affected cost £181.62, 75.0 per cent of the bill of materials. | What would change | Buy the cells, the electronics and the housing on separate contracts and have the pack assembled to our own design, rather than buying a complete pack from one supplier. | Why it costs less | A turnkey supplier applies its own margin and overhead across content it buys in, including the electronics and the casting. Contracting each directly removes one layer of margin from roughly half the bill of materials. The functions this idea targets carry a combined value gap of £75.89 at Stage 3, against an affected component cost of £181.62; ¶ ID-138  risk and validation | Break the pack into separately sourced content instead of a single turnkey supply | What could go wrong | The integration risk, the warranty and the functional safety case all move in-house, which is a substantial capability commitment. A single supplier who owns the whole pack is also easier to hold to a performance guarantee. | What we must test | Compare a turnkey quotation against the sum of directly contracted content plus our own integration cost, including warranty provision. | Components affected | NMC prismatic cell; BMS printed circuit assembly; Housing, A380 die casting | Functions targeted: Store energy; Deliver power; Accept charge; Monitor voltage; Balance voltage… | Money and effort | Saving before risk adjustment: £27.24 to £54.49 before risk | Risk-adjusted: £19.07 to £38.14 | Chance of working: 70% | Investment: £50,000 | Payback on the risk-adjusted low case: 0.02 years | Lead time: 18 to 24 months | Payback is computed on the risk-adjusted low case, never the optimistic case. Where several ideas share a tooling asset, the highest scoring idea carries the full investment and the others a marginal share.",
    "reviewSeverity": "critical",
-   "reviewOpenPoints": "[CRITICAL · quality] Over-claim on a Develop idea. 'Removes one layer of margin' is credited £27.24-£54.49/pack (risk-adjusted £19.07-£38.14). The study's own cascade carries only £8.21 SG&A + £8.71 profit on bought-in content and conversion plus a £1.84 cell handling charge (£18.76 total), and states the cell content already carries no pack-supplier SG&A or profit. The claimed saving exceeds the entire modelled margin layer. Evidence: Summary_Assembly: 'SG&A on bought-in and conversion 8.21 ... Cell content excluded from the base'; 'Profit on bought-in and conversion 8.71'; 'Cell handling charge 1.84'; 'EVE Energy manufactures both the cells and the pack. The cell price already carries a cell-maker's margin.' Saving basis: 'class default band'. Recommendation: Cap at the modelled margin actually removable (well under £18.76, net of in-house integration, warranty and safety-case cost the trade-offs list) and re-run the evaluation. ¶ [MINOR · quality] NRE £50,000 sits at/above the idea's own investment band 'Low, under 50k GBP'. Same placeholder on ID-136, 137, 140, 143, 144, 148, 149, 151. Evidence: Ideas ID-138 Investment 'Low, under 50k GBP'; Evaluation NRE GBP 50000. Recommendation: Replace the £50k placeholder with an estimate or label it as a placeholder."
+   "reviewOpenPoints": "[CORRECTED 13 Oct 2026] The £27-£54/pack claim exceeded the entire margin layer in the study's own cost build-up, which is £18.76: SG&A £8.21 + profit £8.71 + cell handling £1.84. The cells carry no pack-supplier margin because EVE makes both. Removing the margin on the directly sourced BMS and housing, net of the OEM's added purchasing cost, gives at most £4.25-£8.08/pack (£2.98-£5.66 risk-adjusted), before integration, safety-case and warranty costs that move in-house. Treat it as a ceiling to be tested by quotation, not a booked saving, and re-run the conflict with the BMS retender (ID-058), which now looks the stronger idea. ¶ [CRITICAL · quality] Over-claim on a Develop idea. 'Removes one layer of margin' is credited £27.24-£54.49/pack (risk-adjusted £19.07-£38.14). The study's own cascade carries only £8.21 SG&A + £8.71 profit on bought-in content and conversion plus a £1.84 cell handling charge (£18.76 total), and states the cell content already carries no pack-supplier SG&A or profit. The claimed saving exceeds the entire modelled margin layer. Evidence: Summary_Assembly: 'SG&A on bought-in and conversion 8.21 ... Cell content excluded from the base'; 'Profit on bought-in and conversion 8.71'; 'Cell handling charge 1.84'; 'EVE Energy manufactures both the cells and the pack. The cell price already carries a cell-maker's margin.' Saving basis: 'class default band'. Recommendation: Cap at the modelled margin actually removable (well under £18.76, net of in-house integration, warranty and safety-case cost the trade-offs list) and re-run the evaluation. ¶ [MINOR · quality] NRE £50,000 sits at/above the idea's own investment band 'Low, under 50k GBP'. Same placeholder on ID-136, 137, 140, 143, 144, 148, 149, 151. Evidence: Ideas ID-138 Investment 'Low, under 50k GBP'; Evaluation NRE GBP 50000. Recommendation: Replace the £50k placeholder with an estimate or label it as a placeholder.",
+   "studyOriginal": {
+    "annualSaving": "£3.27M to £6.54M at 120,000 packs/yr",
+    "perUnit": "£27.24 to £54.49 per pack",
+    "annualValue": "£3.27M to £6.54M at 120,000 packs/yr",
+    "calculationBasis": "Study register band (class default band, no part-specific estimate made) on £181.62 affected cost = £27.24 to £54.49 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £19.07 to £38.14 per pack at p 0.7; NRE £50,000; payback 0.02 yrs. No teardown or quotation exists (study README).",
+    "savingPerUnitLowGBP": 27.243,
+    "savingPerUnitHighGBP": 54.486,
+    "riskAdjustedLowGBP": 19.0701,
+    "riskAdjustedHighGBP": 38.1402,
+    "paybackYears": 0.02,
+    "conflictsWith": "C20, C36",
+    "nreGBP": 50000.0
+   },
+   "reviewCorrection": {
+    "summary": "The £27-£54/pack claim exceeded the entire margin layer in the study's own cost build-up, which is £18.76: SG&A £8.21 + profit £8.71 + cell handling £1.84. The cells carry no pack-supplier margin because EVE makes both. Removing the margin on the directly sourced BMS and housing, net of the OEM's added purchasing cost, gives at most £4.25-£8.08/pack (£2.98-£5.66 risk-adjusted), before integration, safety-case and warranty costs that move in-house. Treat it as a ceiling to be tested by quotation, not a booked saving, and re-run the conflict with the BMS retender (ID-058), which now looks the stronger idea.",
+    "basis": "De-bundling removes margin, not part cost, so the ceiling is the margin the study's own cascade puts on the content being moved. Summary_Assembly charges SG&A at 6% on supplier cost minus the cell (£259.33 - £122.41 = £136.91, giving £8.21). It charges profit at 6% on that base plus SG&A (£8.71), which is margin-on-margin. The cell carries no SG&A or profit, only a 1.5% handling charge (£1.84), because EVE makes both the cells and the pack and the cell price already includes the cell maker's margin. The total removable pool is therefore £18.76, not £27-£54. The idea moves the BMS (£40.00) and the housing (£19.21) out of the assembler's marked-up base. The margin on that £59.21 is £59.21 x (1.06 x 1.06 - 1) = £7.32. The rest of the bought-in parts and the assembly conversion stay with whoever assembles the pack and keep their margin. The low case assumes the assembler still charges the study's own 1.5% handling rate on directed BMS and housing (-£0.89) and that cell handling stays. The high case assumes the cell handling charge is also removed (+£1.84). Both cases then deduct the OEM's added purchasing cost on the £181.62 now contracted directly: 1.2% of spend (CAPS industrial-manufacturing average) in the low case and 0.59% (Hackett world class) in the high case, i.e. £2.18 / £1.07. The result is £4.25-£8.08/pack, within the £18.76 margin pool. Not booked: in-house integration engineering, the functional safety case, incoming quality and the warranty liability that moves to the OEM under a directed-buy arrangement have no cited public percentage and are not deducted. Together they could plausibly absorb the remainder. The figure is a ceiling to test with the idea's own validation step (turnkey quote against direct content plus integration cost).",
+    "derivation": [
+     {
+      "line": "SG&A 6% removed on directed BMS + housing (£59.21)",
+      "lowGBP": 3.55,
+      "highGBP": 3.55,
+      "source": "48v-Summary_Assembly row 14; Rate_Card row 19; Parts rows 27, 43"
+     },
+     {
+      "line": "Profit 6% removed on directed content + its SG&A (£59.21 x 1.06)",
+      "lowGBP": 3.77,
+      "highGBP": 3.77,
+      "source": "48v-Summary_Assembly row 15; Rate_Card row 20"
+     },
+     {
+      "line": "Assembler handling fee retained on directed BMS + housing at the study's 1.5% handling rate (low case only)",
+      "lowGBP": -0.89,
+      "highGBP": 0.0,
+      "source": "48v-Rate_Card row 25 (rate applied by analogy to directed content)"
+     },
+     {
+      "line": "Cell handling charge removed (high case only; low case assumes the assembler still handles the cells)",
+      "lowGBP": 0.0,
+      "highGBP": 1.84,
+      "source": "48v-Summary_Assembly row 16"
+     },
+     {
+      "line": "OEM added purchasing cost on £181.62 directly contracted spend: 1.2% (low) / 0.59% (high)",
+      "lowGBP": -2.18,
+      "highGBP": -1.07,
+      "source": "https://www.ismworld.org/supply-management-news-and-reports/news-publications/inside-supply-management-magazine/blog/2018-05/the-monthly-metric-cost-of-procurement-as-a-percentage-of-spend/ ; https://www.zycus.com/knowledge-hub/research-report/benchmarking-the-cost-of-procurement-as-a-percentage-of-spend.html"
+     },
+     {
+      "line": "Net corrected saving per pack (before unpriced integration, FuSa, quality and warranty cost)",
+      "lowGBP": 4.25,
+      "highGBP": 8.08,
+      "source": "arithmetic on the lines above; bounded by £18.76 pool (Summary_Assembly rows 14-16)"
+     }
+    ],
+    "riskAdjustedNote": "NRE unchanged at the record's £50,000, but it is a placeholder: the idea's own investment band is 'Low, under 50k GBP', and it excludes building in-house pack integration and safety-case capability. Payback = 50,000 / (£2.98 x 120,000) = 0.14 yr. It is short only because the NRE is unpriced.",
+    "systemTradeNote": "ID-138 currently wins C20 over ID-013 (dual-source the cell, risk-adjusted £3.43-£7.71) and C36 over ID-058 (BMS retender, deep-dive part-specific, £4.20-£8.40). Corrected, ID-138 at £2.98-£5.66 is below ID-058, and both ID-013 and ID-058 score higher on weighted score (4.80 and 4.47 against 3.93), so re-run the conflict graph. ID-058 attacks the BMS price directly and probably captures more than de-bundling its margin. De-bundling also moves warranty, the functional safety case and pack performance guarantees from EVE to the OEM. The study's warranty provision (£3.34, 1.2%) and the single-supplier performance guarantee are system-level costs this idea shifts rather than removes.",
+    "confidence": "medium",
+    "openQuestions": [
+     "Would EVE quote a directed-buy or consigned arrangement, and at what handling fee on directed BMS and housing?",
+     "Who assembles the pack after de-bundling (EVE, a contract assembler or the OEM in-house), and what is the margin on conversion and the remaining £60.64 of bought-in parts?",
+     "Annual OEM cost for integration engineering, the functional safety case (ASIL), incoming quality and warranty self-insurance. This sets whether any net saving remains.",
+     "Is the 6% SG&A / 6% profit (Assumptions A-07, [Guessing]) the right rate for EVE? Roland Berger's China supplier EBIT is 5.7%."
+    ],
+    "date": "2026-10-13"
+   },
+   "evidenceSources": [
+    {
+     "title": "Supplier margins around 6% (the study's profit rate) are realistic",
+     "url": "https://www.rolandberger.com/en/Media/Global-Automotive-Supplier-Study-Average-industry-profit-margin-drops-to-just.html",
+     "type": "review research",
+     "supports": "partly: Roland Berger/Lazard Global Automotive Supplier Study 2025: average supplier EBIT 4.7% in 2024 (5.3% in 2023); Chinese suppliers highest at 5.7%. The study's 6% is at or slightly above the benchmark, so the margin pool is if anything generous.",
+     "confidence": "partly"
+    },
+    {
+     "title": "OEM purchasing cost as a share of spend",
+     "url": "https://www.ismworld.org/supply-management-news-and-reports/news-publications/inside-supply-management-magazine/blog/2018-05/the-monthly-metric-cost-of-procurement-as-a-percentage-of-spend/",
+     "type": "review research",
+     "supports": "supports: ISM citing Hackett (2016): average 0.72%, world class 0.59% of spend. CAPS Research (2014): industrial manufacturing 1.2%, overall average 1.2%. Dated, and covers purchasing only, not integration, quality or warranty.",
+     "confidence": "supports"
+    },
+    {
+     "title": "OEMs commonly source cells directly and use a third party for the rest (system integration model)",
+     "url": "https://www.spglobal.com/mobility/en/research-analysis/briefcase-oems-battery-sourcing-conundrum.html",
+     "type": "review research",
+     "supports": "partly: S&P Global Mobility: the 'system integration' model, where the OEM manages supply of one or two components and a third party sources the rest, covers about 54% of battery GWh. The model is real, but no margin saving is quantified.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Published tier-1 handling fee / markup on OEM-directed (directed-buy) parts",
+     "url": "https://direitosp.fgv.br/sites/default/files/arquivos/directed-buy-agreement-sob-a-perspectiva-do-direito-brasileiro.pdf",
+     "type": "review research",
+     "supports": "not found: No public figure found. An FGV paper on directed-buy agreements covers tier-1 liability limits for warranty and line stoppage on OEM-imposed tier-2s, which supports the point that liability moves to the OEM, but gives no fee.",
+     "confidence": "not found"
+    },
+    {
+     "title": "Consultancy (McKinsey/BCG/Bain/PwC) benchmark for margin stacking on bought-in cells in turnkey battery supply",
+     "url": "https://www.rolandberger.com/en/Insights/Publications/E-mobility-Automakers-in-need-of-battery-strategy.html",
+     "type": "review research",
+     "supports": "not found: None found in the searches run. Roland Berger's battery-strategy piece discusses OEM dependency on cell makers but gives no margin-stack figure.",
+     "confidence": "not found"
+    },
+    {
+     "title": "Tier-1 retail-price-equivalent markup about 1.5x",
+     "url": "https://nap.nationalacademies.org/read/12924/chapter/18",
+     "type": "review research",
+     "supports": "contradicts: The National Academies figure covers vehicle-level indirect costs (OEM RPE), not tier-1 margin on bought-in content. Not used.",
+     "confidence": "contradicts"
+    }
+   ],
+   "reviewCorrectionStatus": "corrected"
   },
   "costSavingType": "Sourcing",
-  "annualSaving": "£3.27M to £6.54M at 120,000 packs/yr",
+  "annualSaving": "No saving booked — review-corrected (see the correction note)",
   "difficulty": "Medium",
   "timeToImplement": "18 to 24 months",
   "description": "[48V MHEV study · Develop] Break the pack into separately sourced content instead of a single turnkey supply. Buy the cells, the electronics and the housing on separate contracts and have the pack assembled to our own design, rather than buying a complete pack from one supplier."
@@ -10014,26 +10361,22 @@
    "investmentText": "Ultrasonic station, of the order of 150k GBP.",
    "timeToImplement": "24 months",
    "implementationDifficulty": "Medium",
-   "conflictsWith": "C26, C37",
+   "conflictsWith": "C26, C37 · Review-added conflicts: ID-150 vs ID-008: ID-008 already specifies the laser-to-ultrasonic switch together with aluminium busbars. Both cannot be credited, so add ID-150 to set C6 or mark it as absorbed by ID-008.",
    "savingBasis": "class default band, no part-specific estimate made",
    "powertrain": "MHEV (48V battery pack)",
    "studyLevel": "sub-assembly",
    "weightedScore": 4.0,
    "pSuccess": 0.7,
-   "riskAdjustedLowGBP": 13.8421,
-   "riskAdjustedHighGBP": 27.6843,
-   "nreGBP": 150000.0,
+   "riskAdjustedLowGBP": -1.15,
+   "riskAdjustedHighGBP": 0.06,
+   "nreGBP": 150000,
    "nreShared": "no",
-   "paybackYears": 0.09,
+   "paybackYears": null,
    "nreNote": "Carries the full investment for this asset.",
-   "savingPerUnitLowGBP": 19.7745,
-   "savingPerUnitHighGBP": 39.549,
-   "annualSavingLowGBP": 2372940.0,
-   "annualSavingHighGBP": 4745880.0,
    "costSavingPotential": {
-    "perVehicle": "£19.77 to £39.55 per pack",
-    "annualValue": "£2.37M to £4.75M at 120,000 packs/yr",
-    "calculationBasis": "Study register band (class default band, no part-specific estimate made) on £131.83 affected cost = £19.77 to £39.55 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £13.84 to £27.68 per pack at p 0.7; NRE £150,000; payback 0.09 yrs. No teardown or quotation exists (study README).",
+    "perVehicle": "Not booked — corrected range −£1.64 to +£0.08 per pack, likely a cost increase; recommend withdrawing (review-corrected; study claimed £19.77 to £39.55 per pack)",
+    "annualValue": "No saving booked — review-corrected (see the correction note)",
+    "calculationBasis": "Review-corrected: A joining-process change can only save on the joining step, so the affected cost is the study's laser-welding step: Conversion row 6, 26 joints, 3 min, machine £1.10 (£22/hr) + labour £0.26 (Rate_Card row 16, £5.20/hr) = £1.36/pack. The ultrasonic step was costed with the study's own rates: (i) cycle time = the study's 3 min plus 0.4-0.9 s more weld time per joint x 26 joints. That is the gap between published ultrasonic weld times of 0.5-1.0 s (Laserax; LEONI/Telsonic busbar line about 0.9 s) and laser at under 0.1 s. Handling and clamping are assumed equal. (ii) Machine rate = £22/hr x a capex ratio: 0.36 in the best case (lowest ultrasonic list price $18k against the 'from $50k' laser entry price, Assembly Magazine) and 1.0 in the worst case. The worst case reflects the idea's own £150k ultrasonic-station estimate and Manz's statement only that laser costs more to buy. (iii) Labour at £5.20/hr x cycle. (iv) Sonotrode wear, which a laser does not have: $2k-5k per sonotrode per about 70,000 copper welds (EWI) x 26 joints x 0.79 = £0.59-£1.47/pack. The anvil is excluded, which flatters ultrasonic. The ultrasonic step comes out at £1.28-£3.00 against £1.36 for laser, a change of +£0.08 to -£1.64/pack, so the best case is bounded by and almost equal to the laser step. Beyond the arithmetic, the cell is a prismatic hard-can format. Ultrasonic welding is mainly a pouch-tab process because its vibration and clamping pressure can damage prismatic and cylindrical cells, and the study's own risk note says the same. Not booked: the idea is a probable cost increase and a cell-damage risk. Any aluminium-busbar benefit belongs to ID-008, which already includes the switch to ultrasonic welding. Fed through the study's cascade (burden 60%, scrap 1.8%, SG&A 6%, profit 6%, x1.83), the delivered-price effect would be +£0.14 to -£3.01. Original study basis: Study register band (class default band, no part-specific estimate made) on £131.83 affected cost = £19.77 to £39.55 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £13.84 to £27.68 per pack at p 0.7; NRE £150,000; payback 0.09 yrs. No teardown or quotation exists (study README).",
     "qualitative": "Adjacent · Process change"
    },
    "volumeBasis": "Study volume 120,000 packs/yr for 7 years. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards. Conflicts: C26, C37.",
@@ -10043,10 +10386,134 @@
    ],
    "developmentPackNotes": "ID-150  Move from laser welding to ultrasonic welding at the cell terminals | A Cell stack  ·  sub-assembly level  ·  Process change  ·  Adjacent | Representative schematic, drawn for this study. Not production hardware. | Saving per pack, risk-adjusted | £13.84 to £27.68 | Chance of working | 70% | Lead time | 24 months | Cost to do | £150,000 | Payback | 0.09 years | Benchmark | Ultrasonic welding, which does not melt the metal, pairs well with aluminium busbars; laser weld depth control is critical because excessive penetration can damage the cell (SunLith Energy, 15 Jul 2026; Joining Technologies). | What we do today | Current design: twelve 19 Ah prismatic NMC cells in one series string, £122.41; thirteen stamped and plated hard-copper busbars, £5.26; one flexible printed circuit carrying sense traces, £3.80; four NTC thermistors bonded across the stack, £0.36. | What would change | Weld busbars to cell terminals ultrasonically rather than by laser, which also opens the door to aluminium busbars. | Why it costs less | Ultrasonic welding does not melt the metal, so it avoids the weld depth control problem that makes laser welding onto a cell terminal risky, and it tolerates the oxide layer that makes aluminium hard to laser weld. The functions this idea targets carry a combined value gap of £53.35 at Stage 3, against an affected component cost of £131.83; the saving claimed here is capped at that gap when the register is totalled. ¶ ID-150  risk and validation | Move from laser welding to ultrasonic welding at the cell terminals | What could go wrong | Ultrasonic welding applies mechanical load to the cell terminal, which prismatic cells tolerate less well than a laser process, and joint area is limited by the sonotrode. Cycle time for 26 joints may be worse. | What we must test | Joint strength and resistance comparison, plus a cell terminal load check during welding. | Components affected | NMC prismatic cell; Cell interconnect busbar, Cu T2Y; Cell contacting system; NTC thermistor | Functions targeted: Store energy; Deliver power; Accept charge; Deliver current; Conduct current… | Money and effort | Saving before risk adjustment: £19.77 to £39.55 before risk | Risk-adjusted: £13.84 to £27.68 | Chance of working: 70% | Investment: £150,000 | Payback on the risk-adjusted low case: 0.09 years | Lead time: 24 months | Payback is computed on the risk-adjusted low case, never the optimistic case. Where several ideas share a tooling asset, the highest scoring idea carries the full investment and the others a marginal share.",
    "reviewSeverity": "critical",
-   "reviewOpenPoints": "[CRITICAL · quality] Over-claim on a Develop idea. A weld-process change is credited £19.77-£39.55/pack (risk-adjusted £13.84-£27.68, ~£1.7-3.3M/yr) because the class-default 15-30% band was applied to an affected cost of £131.83 that is 93% the cell (£122.41). The study's own Conversion sheet prices the entire laser-welding step at £1.36/pack, and the non-cell parts touched total £9.42. Evidence: Conversion: 'Laser welding, 26 joints | 3 min | £22/hr | machine £1.10 | labour £0.26'. Parts: cell £122.41, busbars £5.26, contacting system £3.80, NTC £0.36. Ideas ID-150 Saving basis: 'class default band, no part-specific estimate made'. Deck slide 82: class-default bands are 'almost all on parts below half a per cent of the bill of materials'. Recommendation: Re-estimate on the weld step and busbar content only (order of £1-2/pack before any Al-busbar benefit, which belongs to ID-008); remove the cell from the affected cost; withdraw the current figure from the Director deck."
+   "reviewOpenPoints": "[CORRECTED 13 Oct 2026] The £19.77-£39.55/pack claim priced the cell, not the weld. The whole laser-welding step in the study costs £1.36/pack. Re-costed with the study's own rates and published cycle-time and tool-wear data, ultrasonic welding runs from £0.08/pack cheaper to £1.64/pack dearer, and the process is generally avoided on prismatic hard-can cells because of terminal damage risk. Recommend withdrawing ID-150 from the Develop list and the Director deck. ¶ [CRITICAL · quality] Over-claim on a Develop idea. A weld-process change is credited £19.77-£39.55/pack (risk-adjusted £13.84-£27.68, ~£1.7-3.3M/yr) because the class-default 15-30% band was applied to an affected cost of £131.83 that is 93% the cell (£122.41). The study's own Conversion sheet prices the entire laser-welding step at £1.36/pack, and the non-cell parts touched total £9.42. Evidence: Conversion: 'Laser welding, 26 joints | 3 min | £22/hr | machine £1.10 | labour £0.26'. Parts: cell £122.41, busbars £5.26, contacting system £3.80, NTC £0.36. Ideas ID-150 Saving basis: 'class default band, no part-specific estimate made'. Deck slide 82: class-default bands are 'almost all on parts below half a per cent of the bill of materials'. Recommendation: Re-estimate on the weld step and busbar content only (order of £1-2/pack before any Al-busbar benefit, which belongs to ID-008); remove the cell from the affected cost; withdraw the current figure from the Director deck.",
+   "studyOriginal": {
+    "annualSaving": "£2.37M to £4.75M at 120,000 packs/yr",
+    "perUnit": "£19.77 to £39.55 per pack",
+    "annualValue": "£2.37M to £4.75M at 120,000 packs/yr",
+    "calculationBasis": "Study register band (class default band, no part-specific estimate made) on £131.83 affected cost = £19.77 to £39.55 per pack × 120,000 packs/yr (study volume, README). Evaluation risk-adjusted: £13.84 to £27.68 per pack at p 0.7; NRE £150,000; payback 0.09 yrs. No teardown or quotation exists (study README).",
+    "savingPerUnitLowGBP": 19.7745,
+    "savingPerUnitHighGBP": 39.549,
+    "riskAdjustedLowGBP": 13.8421,
+    "riskAdjustedHighGBP": 27.6843,
+    "paybackYears": 0.09,
+    "conflictsWith": "C26, C37",
+    "nreGBP": 150000.0
+   },
+   "reviewCorrection": {
+    "summary": "The £19.77-£39.55/pack claim priced the cell, not the weld. The whole laser-welding step in the study costs £1.36/pack. Re-costed with the study's own rates and published cycle-time and tool-wear data, ultrasonic welding runs from £0.08/pack cheaper to £1.64/pack dearer, and the process is generally avoided on prismatic hard-can cells because of terminal damage risk. Recommend withdrawing ID-150 from the Develop list and the Director deck.",
+    "basis": "A joining-process change can only save on the joining step, so the affected cost is the study's laser-welding step: Conversion row 6, 26 joints, 3 min, machine £1.10 (£22/hr) + labour £0.26 (Rate_Card row 16, £5.20/hr) = £1.36/pack. The ultrasonic step was costed with the study's own rates: (i) cycle time = the study's 3 min plus 0.4-0.9 s more weld time per joint x 26 joints. That is the gap between published ultrasonic weld times of 0.5-1.0 s (Laserax; LEONI/Telsonic busbar line about 0.9 s) and laser at under 0.1 s. Handling and clamping are assumed equal. (ii) Machine rate = £22/hr x a capex ratio: 0.36 in the best case (lowest ultrasonic list price $18k against the 'from $50k' laser entry price, Assembly Magazine) and 1.0 in the worst case. The worst case reflects the idea's own £150k ultrasonic-station estimate and Manz's statement only that laser costs more to buy. (iii) Labour at £5.20/hr x cycle. (iv) Sonotrode wear, which a laser does not have: $2k-5k per sonotrode per about 70,000 copper welds (EWI) x 26 joints x 0.79 = £0.59-£1.47/pack. The anvil is excluded, which flatters ultrasonic. The ultrasonic step comes out at £1.28-£3.00 against £1.36 for laser, a change of +£0.08 to -£1.64/pack, so the best case is bounded by and almost equal to the laser step. Beyond the arithmetic, the cell is a prismatic hard-can format. Ultrasonic welding is mainly a pouch-tab process because its vibration and clamping pressure can damage prismatic and cylindrical cells, and the study's own risk note says the same. Not booked: the idea is a probable cost increase and a cell-damage risk. Any aluminium-busbar benefit belongs to ID-008, which already includes the switch to ultrasonic welding. Fed through the study's cascade (burden 60%, scrap 1.8%, SG&A 6%, profit 6%, x1.83), the delivered-price effect would be +£0.14 to -£3.01.",
+    "derivation": [
+     {
+      "line": "Laser welding step removed: machine (3 min x £22/hr)",
+      "lowGBP": 1.1,
+      "highGBP": 1.1,
+      "source": "48v-Conversion row 6"
+     },
+     {
+      "line": "Laser welding step removed: labour (3 min x £5.20/hr)",
+      "lowGBP": 0.26,
+      "highGBP": 0.26,
+      "source": "48v-Conversion row 6; 48v-Rate_Card row 16"
+     },
+     {
+      "line": "Ultrasonic machine cost added: worst 3.39 min x £22/hr; best 3.17 min x £7.92/hr (0.36 x £22)",
+      "lowGBP": -1.243,
+      "highGBP": -0.4189,
+      "source": "Conversion row 6 rate; cycle delta from https://www.laserax.com/battery-laser-welding-applications and https://assemblymag.com/articles/92643-ultrasonic-metal-welder-improves-bus-bar-assembly; capex ratio from https://assemblymag.com/articles/83104-the-economics-of-ultrasonics"
+     },
+     {
+      "line": "Ultrasonic labour added (cycle x £5.20/hr)",
+      "lowGBP": -0.2938,
+      "highGBP": -0.275,
+      "source": "48v-Rate_Card row 16; cycle as above"
+     },
+     {
+      "line": "Sonotrode wear: $2k-5k per 70,000 welds x 26 joints x 0.79 USD-GBP",
+      "lowGBP": -1.4671,
+      "highGBP": -0.5869,
+      "source": "https://ewi.org/development-of-sonotrode-with-replaceable-knurl-pad-for-use-in-ultrasonic-welding/"
+     },
+     {
+      "line": "Net corrected saving per pack (direct step cost)",
+      "lowGBP": -1.64,
+      "highGBP": 0.08,
+      "source": "arithmetic on the lines above"
+     }
+    ],
+    "riskAdjustedNote": "NRE unchanged at the record's £150,000 (ultrasonic station). The risk-adjusted low case is negative, so the idea never pays back. Even the high case (£0.06/pack x 120,000 = about £6.6k/yr) would take about 23 years, against a 7-year programme. p 0.7 is kept as recorded, but it looks optimistic for a prismatic hard-can terminal.",
+    "systemTradeNote": "ID-150 currently displaces ID-054 (C26) and ID-135 (C37). With the corrected saving below 0.2% of the BOM, its saving-potential score falls from 5 to 1 (Evaluation scoring rule), and the conflict graph should be re-run. Do not let ID-135 inherit the slot unexamined: its £12.24-£26.93 is also a class-default band on the £122.41 cell and needs the same re-estimate. Changing the weld process also touches the cell supplier's terminal design and validation (terminal load, joint resistance over thermal cycling), so the trade is pack-level, not just a line change.",
+    "confidence": "medium",
+    "openQuestions": [
+     "Is the cell terminal design (EVE M41-type prismatic, Al/Cu terminals) qualified by the cell maker for ultrasonic welding at all?",
+     "Does the £22/hr laser machine rate already include laser consumables (cover glass, gas, power)? If not, the laser step is understated slightly.",
+     "Busbar thickness: at or over 3 mm Cu, published guidance favours laser.",
+     "Actual ultrasonic station capex for 26 joints at a 3 min takt; the record's £150k is not sourced."
+    ],
+    "date": "2026-10-13"
+   },
+   "evidenceSources": [
+    {
+     "title": "Ultrasonic welding suits pouch tabs; laser is the norm for prismatic/cylindrical terminals",
+     "url": "https://www.batterypowertips.com/what-joining-methods-optimize-ev-battery-production-efficiency-part-1/",
+     "type": "review research",
+     "supports": "supports: Trade press states ultrasonic welding is mostly useful for pouch cells because shocks and pressure can damage cylindrical or prismatic cells. Laser welds busbars directly to cylindrical cells.",
+     "confidence": "supports"
+    },
+    {
+     "title": "No single tab-to-busbar process is universally superior; ultrasonic is sensitive to thickness, stack geometry and tool wear",
+     "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12843912/",
+     "type": "review research",
+     "supports": "partly: A Micromachines (Dec 2025) open-access review of resistance, laser and ultrasonic tab-to-busbar welding. Read from the abstract via search only; the full text was blocked by the egress proxy.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Ultrasonic weld time 0.5-1.0 s per joint against laser under 0.1 s",
+     "url": "https://www.laserax.com/battery-laser-welding-applications",
+     "type": "review research",
+     "supports": "partly: Laserax (a laser vendor, so biased) says ultrasonic wire bonding takes 500-1000 ms per weld and its laser averages under 100 ms per cell including movement.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Production ultrasonic busbar weld cycle about 0.9 s",
+     "url": "https://assemblymag.com/articles/92643-ultrasonic-metal-welder-improves-bus-bar-assembly",
+     "type": "review research",
+     "supports": "partly: LEONI's line for Jaguar uses Telsonic Soniqtwist torsional welding on an aluminium busbar, with a weld cycle of about 0.9 s. This is a busbar-to-sleeve joint, not a cell terminal.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Ultrasonic equipment costs less than laser",
+     "url": "https://assemblymag.com/articles/83104-the-economics-of-ultrasonics",
+     "type": "review research",
+     "supports": "partly: Assembly Magazine: ultrasonic welders $18k-45k against laser 'from $50k' (general-purpose machines, undated). Manz: laser acquisition costs are higher than ultrasonic but operating costs are lower.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Sonotrode wear is a per-weld consumable",
+     "url": "https://ewi.org/development-of-sonotrode-with-replaceable-knurl-pad-for-use-in-ultrasonic-welding/",
+     "type": "review research",
+     "supports": "supports: EWI: tool-steel sonotrodes last about 70,000 welds in copper ultrasonic metal welding and cost about $2k-5k each; high-volume battery plants spend $0.5M-2M a year on sonotrodes.",
+     "confidence": "supports"
+    },
+    {
+     "title": "Ultrasonic suits thin busbars and aluminium; laser suits thicker copper",
+     "url": "https://sunlithenergy.com/?p=5924",
+     "type": "review research",
+     "supports": "partly: SunLith Energy (cited by the study itself): under about 3 mm favours ultrasonic, over 3 mm favours laser or resistance welding, and aluminium oxide favours a non-melting process. Seen via search snippet only.",
+     "confidence": "partly"
+    },
+    {
+     "title": "Torsional ultrasonic welding reduces the load on prismatic cell terminals",
+     "url": "https://telsonic.com/fileadmin/news/2023/Automotiv__Battery_Cellproduction_EN.pdf",
+     "type": "review research",
+     "supports": "not found: No published terminal-load or process-window data were found for prismatic cell terminals; the material available is vendor marketing only.",
+     "confidence": "not found"
+    }
+   ],
+   "reviewCorrectionStatus": "corrected"
   },
   "costSavingType": "Process change",
-  "annualSaving": "£2.37M to £4.75M at 120,000 packs/yr",
+  "annualSaving": "No saving booked — review-corrected (see the correction note)",
   "difficulty": "Medium",
   "timeToImplement": "24 months",
   "description": "[48V MHEV study · Develop] Move from laser welding to ultrasonic welding at the cell terminals. Weld busbars to cell terminals ultrasonically rather than by laser, which also opens the door to aluminium busbars."

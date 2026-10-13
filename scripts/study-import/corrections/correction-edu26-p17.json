@@ -1,0 +1,104 @@
+{
+ "id": "edu26-p17",
+ "originalId": "P17",
+ "original": {
+  "perUnitLowGBP": 38.22,
+  "perUnitHighGBP": 66.885,
+  "basis": "Register applied 20-35% to an affected cost of £191.10 (Phase current sensors £9.80 + Power module (SiC) £181.30) = £38.22-£66.89, risk-adjusted £28.66-£50.16 at P=0.75, ranked #3 in the pack, although nothing in the mechanism makes the module cheaper."
+ },
+ "corrected": {
+  "perUnitLowGBP": -13.25,
+  "perUnitHighGBP": 3.27,
+  "booked": false,
+  "basis": "The mechanism deletes only the three discrete Hall sensors with their mounting and wiring: component #21, £9.80. That is the absolute ceiling. Nothing in the text reduces the £181.30 module, which instead gains integrated shunts. Against the £9.80, three isolated channels are added. The automotive isolated delta-sigma modulator AMC1305M25-Q1 is listed at USD 9.7272 each at 1,000+, so 3 x 9.7272 x 0.79 = £23.05. The net is then -£13.25 (a cost increase) before the shunts, the isolated supply on the driver board and the module change, none of which could be priced from public sources. The best supplier claim found (Riedon) is that an integrated shunt module costs one third less than Hall sensing at 500 A and above; one third of £9.80 is £3.27. TI's own comparison rates shunt and Hall cost as 'Similar'. The corrected band is therefore -£13.25 to +£3.27, centring on roughly zero. It should not be booked as a saving; the idea's case is accuracy and bandwidth, not cost. Distributor coreless Hall prices (Infineon TLE4972 at £1.67-£2.83 each) confirm that the £9.80 baseline line is already lean.",
+  "statusNote": "corrected range −£13.25 to +£3.27 per unit, likely a cost increase; only the £9.80 Hall-sensor line can go"
+ },
+ "derivation": [
+  {
+   "line": "Phase current sensors (component #21), mountings and wiring deleted",
+   "lowGBP": 9.8,
+   "highGBP": 9.8,
+   "source": "edu-components.txt row 21 (£9.80)"
+  },
+  {
+   "line": "3x isolated delta-sigma modulator AMC1305M25-Q1 at USD 9.7272 (1,000+ distributor) x 0.79 (low case); high case uses Riedon vendor claim instead",
+   "lowGBP": -23.05,
+   "highGBP": -6.53,
+   "source": "https://www.cytechsystems.com.cn/fr/product/amc1305m25qdwrq1 ; Riedon claim via https://international.electronica-azi.ro/?p=22671"
+  },
+  {
+   "line": "3x integrated power shunts in module, isolated supply for modulators, module change: price not found",
+   "lowGBP": null,
+   "highGBP": null,
+   "source": "not found (distributor shunt prices found were for 2512 SMD parts, not a traction-class in-module shunt)"
+  },
+  {
+   "line": "Power module (component #14): no cost reduction in mechanism",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "register P17 mechanism"
+  },
+  {
+   "line": "Net corrected (bounded by £9.80)",
+   "lowGBP": -13.25,
+   "highGBP": 3.27,
+   "source": "arithmetic"
+  }
+ ],
+ "riskAdjusted": {
+  "pSuccess": 0.75,
+  "lowGBP": -9.94,
+  "highGBP": 2.45,
+  "nreGBP": 150000.0,
+  "paybackYears": null,
+  "note": "Corrected band x P(success) 0.75. NRE £150,000 unchanged from the record. Payback is null because the risk-adjusted low case is a cost increase. Even on the high case, payback would be £150,000 / (£2.45 x 100,000) = 0.61 years."
+ },
+ "conflictsAdded": [],
+ "systemTradeNote": "Keep the existing N3 conflict: N3 (two sensors plus third-phase reconstruction, £2.45-£3.43) attacks the same £9.80 line, and the two cannot both be credited in full. TI also recommends two shunts plus software reconstruction for cost. If P17 proceeds, the realistic cost lever is two channels instead of three, which removes one modulator (USD 9.7272 x 0.79 = £7.68 at 1,000+ pricing).",
+ "research": [
+  {
+   "claim": "Shunt sensing is cheaper than Hall in traction inverters",
+   "finding": "TI application brief SBAA293 rates cost 'Similar | Similar' for shunt vs Hall isolated sensing. It says the move is driven by accuracy (<0.5% vs <2% after calibration).",
+   "url": "https://www.ti.com/document-viewer/lit/html/SBAA293",
+   "verdict": "contradicts"
+  },
+  {
+   "claim": "Isolated shunt sensing adds supply and BOM cost",
+   "finding": "Allegro: isolated amplifiers require an additional, bulky supply that increases BOM and footprint.",
+   "url": "https://www.allegromicro.com/-/media/files/application-notes/an296301_shunt-vs-hall.pdf",
+   "verdict": "supports"
+  },
+  {
+   "claim": "Price of automotive isolated delta-sigma modulator",
+   "finding": "AMC1305M25-Q1 (AEC-Q100) listed at USD 9.7272 at 1,000+. No public price found for AMC3306M25-Q1; non-automotive AMC1306M25 at USD 1.1444 (LCSC) is not automotive-qualified. 100k-volume OEM pricing would be lower but is not public.",
+   "url": "https://www.cytechsystems.com.cn/fr/product/amc1305m25qdwrq1",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Integrated shunt module saving vs Hall",
+   "finding": "Riedon (vendor) claims its reinforced isolated shunt module costs one third less than Hall sensors at 500 A and above.",
+   "url": "https://international.electronica-azi.ro/?p=22671",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Baseline Hall sensor cost",
+   "finding": "Infineon TLE4972 coreless AEC-Q100 sensor: £2.83 at 500+ and £1.67 at 2,500+ (RS UK), so 3 sensors cost about £5.01-£8.49, consistent with the £9.80 line including mounting and wiring.",
+   "url": "https://uk.rs-online.com/web/p/current-sensor-ics/2361589?gb=s",
+   "verdict": "supports"
+  },
+  {
+   "claim": "Shunt sensing 'widely used in integrated traction inverters'",
+   "finding": "Found only supplier products and an industry trend; no named production traction inverter.",
+   "url": "https://www.ti.com/document-viewer/lit/html/SBAA293",
+   "verdict": "not found"
+  }
+ ],
+ "summary": "P17 claimed £38-£67 by charging the saving against the whole £181 power module, but the idea deletes only the £9.80 phase-sensor line and adds shunts and isolated measurement channels. With a published automotive isolated-modulator price the net is a £13.25 cost increase, and the best supplier claim found allows at most £3.27, so the corrected band is -£13.25 to +£3.27. It should not be booked as a saving. The case for it is accuracy, not cost.",
+ "confidence": "medium",
+ "openQuestions": [
+  "OEM-volume (100k/yr) quotes for the isolated modulator or amplifier, the in-module shunts and the isolated supply; distributor 1k prices overstate volume cost.",
+  "Does the power module supplier charge for integrated shunts, and does the module need a re-layout?",
+  "Can the existing gate-driver isolated supply feed the modulators at no added cost?",
+  "Decide between N3 and P17 (or combine as two shunts) rather than crediting both."
+ ]
+}

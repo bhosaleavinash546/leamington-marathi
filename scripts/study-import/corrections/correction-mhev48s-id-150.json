@@ -1,0 +1,124 @@
+{
+ "id": "mhev48s-id-150",
+ "originalId": "ID-150",
+ "original": {
+  "perUnitLowGBP": 19.77,
+  "perUnitHighGBP": 39.55,
+  "basis": "Class-default 15-30% band ('class default band, no part-specific estimate made') applied to an affected cost of £131.83 = cell £122.41 + busbars £5.26 + cell contacting system £3.80 + NTC £0.36 (Parts rows 5, 19, 32, 31). 93% of the base is the cell itself, which a joining-process change does not alter. Risk-adjusted £13.84-£27.68 at p 0.7, NRE £150,000, payback 0.09 yr (Evaluation, ID-150)."
+ },
+ "corrected": {
+  "perUnitLowGBP": -1.64,
+  "perUnitHighGBP": 0.08,
+  "booked": false,
+  "basis": "A joining-process change can only save on the joining step, so the affected cost is the study's laser-welding step: Conversion row 6, 26 joints, 3 min, machine £1.10 (£22/hr) + labour £0.26 (Rate_Card row 16, £5.20/hr) = £1.36/pack. The ultrasonic step was costed with the study's own rates: (i) cycle time = the study's 3 min plus 0.4-0.9 s more weld time per joint x 26 joints. That is the gap between published ultrasonic weld times of 0.5-1.0 s (Laserax; LEONI/Telsonic busbar line about 0.9 s) and laser at under 0.1 s. Handling and clamping are assumed equal. (ii) Machine rate = £22/hr x a capex ratio: 0.36 in the best case (lowest ultrasonic list price $18k against the 'from $50k' laser entry price, Assembly Magazine) and 1.0 in the worst case. The worst case reflects the idea's own £150k ultrasonic-station estimate and Manz's statement only that laser costs more to buy. (iii) Labour at £5.20/hr x cycle. (iv) Sonotrode wear, which a laser does not have: $2k-5k per sonotrode per about 70,000 copper welds (EWI) x 26 joints x 0.79 = £0.59-£1.47/pack. The anvil is excluded, which flatters ultrasonic. The ultrasonic step comes out at £1.28-£3.00 against £1.36 for laser, a change of +£0.08 to -£1.64/pack, so the best case is bounded by and almost equal to the laser step. Beyond the arithmetic, the cell is a prismatic hard-can format. Ultrasonic welding is mainly a pouch-tab process because its vibration and clamping pressure can damage prismatic and cylindrical cells, and the study's own risk note says the same. Not booked: the idea is a probable cost increase and a cell-damage risk. Any aluminium-busbar benefit belongs to ID-008, which already includes the switch to ultrasonic welding. Fed through the study's cascade (burden 60%, scrap 1.8%, SG&A 6%, profit 6%, x1.83), the delivered-price effect would be +£0.14 to -£3.01.",
+  "statusNote": "corrected range −£1.64 to +£0.08 per pack, likely a cost increase; recommend withdrawing"
+ },
+ "derivation": [
+  {
+   "line": "Laser welding step removed: machine (3 min x £22/hr)",
+   "lowGBP": 1.1,
+   "highGBP": 1.1,
+   "source": "48v-Conversion row 6"
+  },
+  {
+   "line": "Laser welding step removed: labour (3 min x £5.20/hr)",
+   "lowGBP": 0.26,
+   "highGBP": 0.26,
+   "source": "48v-Conversion row 6; 48v-Rate_Card row 16"
+  },
+  {
+   "line": "Ultrasonic machine cost added: worst 3.39 min x £22/hr; best 3.17 min x £7.92/hr (0.36 x £22)",
+   "lowGBP": -1.243,
+   "highGBP": -0.4189,
+   "source": "Conversion row 6 rate; cycle delta from https://www.laserax.com/battery-laser-welding-applications and https://assemblymag.com/articles/92643-ultrasonic-metal-welder-improves-bus-bar-assembly; capex ratio from https://assemblymag.com/articles/83104-the-economics-of-ultrasonics"
+  },
+  {
+   "line": "Ultrasonic labour added (cycle x £5.20/hr)",
+   "lowGBP": -0.2938,
+   "highGBP": -0.275,
+   "source": "48v-Rate_Card row 16; cycle as above"
+  },
+  {
+   "line": "Sonotrode wear: $2k-5k per 70,000 welds x 26 joints x 0.79 USD-GBP",
+   "lowGBP": -1.4671,
+   "highGBP": -0.5869,
+   "source": "https://ewi.org/development-of-sonotrode-with-replaceable-knurl-pad-for-use-in-ultrasonic-welding/"
+  },
+  {
+   "line": "Net corrected saving per pack (direct step cost)",
+   "lowGBP": -1.64,
+   "highGBP": 0.08,
+   "source": "arithmetic on the lines above"
+  }
+ ],
+ "riskAdjusted": {
+  "pSuccess": 0.7,
+  "lowGBP": -1.15,
+  "highGBP": 0.06,
+  "nreGBP": 150000,
+  "paybackYears": null,
+  "note": "NRE unchanged at the record's £150,000 (ultrasonic station). The risk-adjusted low case is negative, so the idea never pays back. Even the high case (£0.06/pack x 120,000 = about £6.6k/yr) would take about 23 years, against a 7-year programme. p 0.7 is kept as recorded, but it looks optimistic for a prismatic hard-can terminal."
+ },
+ "conflictsAdded": [
+  "ID-150 vs ID-008: ID-008 already specifies the laser-to-ultrasonic switch together with aluminium busbars. Both cannot be credited, so add ID-150 to set C6 or mark it as absorbed by ID-008."
+ ],
+ "systemTradeNote": "ID-150 currently displaces ID-054 (C26) and ID-135 (C37). With the corrected saving below 0.2% of the BOM, its saving-potential score falls from 5 to 1 (Evaluation scoring rule), and the conflict graph should be re-run. Do not let ID-135 inherit the slot unexamined: its £12.24-£26.93 is also a class-default band on the £122.41 cell and needs the same re-estimate. Changing the weld process also touches the cell supplier's terminal design and validation (terminal load, joint resistance over thermal cycling), so the trade is pack-level, not just a line change.",
+ "research": [
+  {
+   "claim": "Ultrasonic welding suits pouch tabs; laser is the norm for prismatic/cylindrical terminals",
+   "finding": "Trade press states ultrasonic welding is mostly useful for pouch cells because shocks and pressure can damage cylindrical or prismatic cells. Laser welds busbars directly to cylindrical cells.",
+   "url": "https://www.batterypowertips.com/what-joining-methods-optimize-ev-battery-production-efficiency-part-1/",
+   "verdict": "supports"
+  },
+  {
+   "claim": "No single tab-to-busbar process is universally superior; ultrasonic is sensitive to thickness, stack geometry and tool wear",
+   "finding": "A Micromachines (Dec 2025) open-access review of resistance, laser and ultrasonic tab-to-busbar welding. Read from the abstract via search only; the full text was blocked by the egress proxy.",
+   "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12843912/",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Ultrasonic weld time 0.5-1.0 s per joint against laser under 0.1 s",
+   "finding": "Laserax (a laser vendor, so biased) says ultrasonic wire bonding takes 500-1000 ms per weld and its laser averages under 100 ms per cell including movement.",
+   "url": "https://www.laserax.com/battery-laser-welding-applications",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Production ultrasonic busbar weld cycle about 0.9 s",
+   "finding": "LEONI's line for Jaguar uses Telsonic Soniqtwist torsional welding on an aluminium busbar, with a weld cycle of about 0.9 s. This is a busbar-to-sleeve joint, not a cell terminal.",
+   "url": "https://assemblymag.com/articles/92643-ultrasonic-metal-welder-improves-bus-bar-assembly",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Ultrasonic equipment costs less than laser",
+   "finding": "Assembly Magazine: ultrasonic welders $18k-45k against laser 'from $50k' (general-purpose machines, undated). Manz: laser acquisition costs are higher than ultrasonic but operating costs are lower.",
+   "url": "https://assemblymag.com/articles/83104-the-economics-of-ultrasonics",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Sonotrode wear is a per-weld consumable",
+   "finding": "EWI: tool-steel sonotrodes last about 70,000 welds in copper ultrasonic metal welding and cost about $2k-5k each; high-volume battery plants spend $0.5M-2M a year on sonotrodes.",
+   "url": "https://ewi.org/development-of-sonotrode-with-replaceable-knurl-pad-for-use-in-ultrasonic-welding/",
+   "verdict": "supports"
+  },
+  {
+   "claim": "Ultrasonic suits thin busbars and aluminium; laser suits thicker copper",
+   "finding": "SunLith Energy (cited by the study itself): under about 3 mm favours ultrasonic, over 3 mm favours laser or resistance welding, and aluminium oxide favours a non-melting process. Seen via search snippet only.",
+   "url": "https://sunlithenergy.com/?p=5924",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Torsional ultrasonic welding reduces the load on prismatic cell terminals",
+   "finding": "No published terminal-load or process-window data were found for prismatic cell terminals; the material available is vendor marketing only.",
+   "url": "https://telsonic.com/fileadmin/news/2023/Automotiv__Battery_Cellproduction_EN.pdf",
+   "verdict": "not found"
+  }
+ ],
+ "summary": "The £19.77-£39.55/pack claim priced the cell, not the weld. The whole laser-welding step in the study costs £1.36/pack. Re-costed with the study's own rates and published cycle-time and tool-wear data, ultrasonic welding runs from £0.08/pack cheaper to £1.64/pack dearer, and the process is generally avoided on prismatic hard-can cells because of terminal damage risk. Recommend withdrawing ID-150 from the Develop list and the Director deck.",
+ "confidence": "medium",
+ "openQuestions": [
+  "Is the cell terminal design (EVE M41-type prismatic, Al/Cu terminals) qualified by the cell maker for ultrasonic welding at all?",
+  "Does the £22/hr laser machine rate already include laser consumables (cover glass, gas, power)? If not, the laser step is understated slightly.",
+  "Busbar thickness: at or over 3 mm Cu, published guidance favours laser.",
+  "Actual ultrasonic station capex for 26 joints at a 3 min takt; the record's £150k is not sourced."
+ ]
+}

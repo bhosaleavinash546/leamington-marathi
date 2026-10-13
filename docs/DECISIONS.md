@@ -4973,3 +4973,13 @@ coverage and Horizon still see a locker as Driveline.
 
 **Where the tab appears.** The Marketplace tab (lime), the PDF export and
 the Excel export (tab and dashboard filter) all use the one resolver.
+
+## 129. A study idea is re-priced only on request, from the study's own cost lines, with the original kept beside it
+
+**Context.** DECISIONS 128 imports the user's studies verbatim. The review then found seven Develop ideas whose saving exceeds the content they change (EDU R5, P1, P17; 48V ID-011, 006, 150, 138), and the user asked for them to be fixed.
+
+**Decision.** `scripts/study-import/apply-corrections.py` applies `corrections/correction-<id>.json`. Each corrected band is arithmetic on the study's own component or parts lines. The percentage is either the idea's own stated mechanism or a cited source, and every derivation line names its source. The study's figures are kept verbatim under `ideaData.studyOriginal`. The study's decision (`studyStatus`) is not changed; the correction states its recommendation instead.
+
+A correction is **booked** (its numbers enter the totals) only when every line is priced. A correction whose added costs cannot be priced is **not booked**: P1 is a system trade study; P17 and ID-150 have ranges that run negative; ID-006 and ID-138 leave cost lines unpriced. An unbooked correction shows its range as a note, and its headline carries no figure, so neither the claimed saving nor a ceiling reaches a total.
+
+**Why.** It follows "math for numbers": a number nobody can derive is not booked. Keeping the study original means the user's own work is never overwritten and the correction can be argued with line by line.

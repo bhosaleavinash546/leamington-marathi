@@ -1,0 +1,110 @@
+{
+ "id": "mhev48s-id-138",
+ "originalId": "ID-138",
+ "original": {
+  "perUnitLowGBP": 27.24,
+  "perUnitHighGBP": 54.49,
+  "basis": "Class-default 15-30% band ('class default band, no part-specific estimate made') applied to an affected cost of £181.62 = cell £122.41 + BMS £40.00 + housing £19.21, as if de-bundling saved a share of the parts' own price. Risk-adjusted £19.07-£38.14 at p 0.7, NRE £50,000, payback 0.02 yr (Evaluation, ID-138)."
+ },
+ "corrected": {
+  "perUnitLowGBP": 4.25,
+  "perUnitHighGBP": 8.08,
+  "booked": false,
+  "basis": "De-bundling removes margin, not part cost, so the ceiling is the margin the study's own cascade puts on the content being moved. Summary_Assembly charges SG&A at 6% on supplier cost minus the cell (£259.33 - £122.41 = £136.91, giving £8.21). It charges profit at 6% on that base plus SG&A (£8.71), which is margin-on-margin. The cell carries no SG&A or profit, only a 1.5% handling charge (£1.84), because EVE makes both the cells and the pack and the cell price already includes the cell maker's margin. The total removable pool is therefore £18.76, not £27-£54. The idea moves the BMS (£40.00) and the housing (£19.21) out of the assembler's marked-up base. The margin on that £59.21 is £59.21 x (1.06 x 1.06 - 1) = £7.32. The rest of the bought-in parts and the assembly conversion stay with whoever assembles the pack and keep their margin. The low case assumes the assembler still charges the study's own 1.5% handling rate on directed BMS and housing (-£0.89) and that cell handling stays. The high case assumes the cell handling charge is also removed (+£1.84). Both cases then deduct the OEM's added purchasing cost on the £181.62 now contracted directly: 1.2% of spend (CAPS industrial-manufacturing average) in the low case and 0.59% (Hackett world class) in the high case, i.e. £2.18 / £1.07. The result is £4.25-£8.08/pack, within the £18.76 margin pool. Not booked: in-house integration engineering, the functional safety case, incoming quality and the warranty liability that moves to the OEM under a directed-buy arrangement have no cited public percentage and are not deducted. Together they could plausibly absorb the remainder. The figure is a ceiling to test with the idea's own validation step (turnkey quote against direct content plus integration cost).",
+  "statusNote": "ceiling £4.25–£8.08 per pack; OEM integration, safety-case and warranty costs are unpriced"
+ },
+ "derivation": [
+  {
+   "line": "SG&A 6% removed on directed BMS + housing (£59.21)",
+   "lowGBP": 3.55,
+   "highGBP": 3.55,
+   "source": "48v-Summary_Assembly row 14; Rate_Card row 19; Parts rows 27, 43"
+  },
+  {
+   "line": "Profit 6% removed on directed content + its SG&A (£59.21 x 1.06)",
+   "lowGBP": 3.77,
+   "highGBP": 3.77,
+   "source": "48v-Summary_Assembly row 15; Rate_Card row 20"
+  },
+  {
+   "line": "Assembler handling fee retained on directed BMS + housing at the study's 1.5% handling rate (low case only)",
+   "lowGBP": -0.89,
+   "highGBP": 0.0,
+   "source": "48v-Rate_Card row 25 (rate applied by analogy to directed content)"
+  },
+  {
+   "line": "Cell handling charge removed (high case only; low case assumes the assembler still handles the cells)",
+   "lowGBP": 0.0,
+   "highGBP": 1.84,
+   "source": "48v-Summary_Assembly row 16"
+  },
+  {
+   "line": "OEM added purchasing cost on £181.62 directly contracted spend: 1.2% (low) / 0.59% (high)",
+   "lowGBP": -2.18,
+   "highGBP": -1.07,
+   "source": "https://www.ismworld.org/supply-management-news-and-reports/news-publications/inside-supply-management-magazine/blog/2018-05/the-monthly-metric-cost-of-procurement-as-a-percentage-of-spend/ ; https://www.zycus.com/knowledge-hub/research-report/benchmarking-the-cost-of-procurement-as-a-percentage-of-spend.html"
+  },
+  {
+   "line": "Net corrected saving per pack (before unpriced integration, FuSa, quality and warranty cost)",
+   "lowGBP": 4.25,
+   "highGBP": 8.08,
+   "source": "arithmetic on the lines above; bounded by £18.76 pool (Summary_Assembly rows 14-16)"
+  }
+ ],
+ "riskAdjusted": {
+  "pSuccess": 0.7,
+  "lowGBP": 2.98,
+  "highGBP": 5.66,
+  "nreGBP": 50000,
+  "paybackYears": 0.14,
+  "note": "NRE unchanged at the record's £50,000, but it is a placeholder: the idea's own investment band is 'Low, under 50k GBP', and it excludes building in-house pack integration and safety-case capability. Payback = 50,000 / (£2.98 x 120,000) = 0.14 yr. It is short only because the NRE is unpriced."
+ },
+ "conflictsAdded": [],
+ "systemTradeNote": "ID-138 currently wins C20 over ID-013 (dual-source the cell, risk-adjusted £3.43-£7.71) and C36 over ID-058 (BMS retender, deep-dive part-specific, £4.20-£8.40). Corrected, ID-138 at £2.98-£5.66 is below ID-058, and both ID-013 and ID-058 score higher on weighted score (4.80 and 4.47 against 3.93), so re-run the conflict graph. ID-058 attacks the BMS price directly and probably captures more than de-bundling its margin. De-bundling also moves warranty, the functional safety case and pack performance guarantees from EVE to the OEM. The study's warranty provision (£3.34, 1.2%) and the single-supplier performance guarantee are system-level costs this idea shifts rather than removes.",
+ "research": [
+  {
+   "claim": "Supplier margins around 6% (the study's profit rate) are realistic",
+   "finding": "Roland Berger/Lazard Global Automotive Supplier Study 2025: average supplier EBIT 4.7% in 2024 (5.3% in 2023); Chinese suppliers highest at 5.7%. The study's 6% is at or slightly above the benchmark, so the margin pool is if anything generous.",
+   "url": "https://www.rolandberger.com/en/Media/Global-Automotive-Supplier-Study-Average-industry-profit-margin-drops-to-just.html",
+   "verdict": "partly"
+  },
+  {
+   "claim": "OEM purchasing cost as a share of spend",
+   "finding": "ISM citing Hackett (2016): average 0.72%, world class 0.59% of spend. CAPS Research (2014): industrial manufacturing 1.2%, overall average 1.2%. Dated, and covers purchasing only, not integration, quality or warranty.",
+   "url": "https://www.ismworld.org/supply-management-news-and-reports/news-publications/inside-supply-management-magazine/blog/2018-05/the-monthly-metric-cost-of-procurement-as-a-percentage-of-spend/",
+   "verdict": "supports"
+  },
+  {
+   "claim": "OEMs commonly source cells directly and use a third party for the rest (system integration model)",
+   "finding": "S&P Global Mobility: the 'system integration' model, where the OEM manages supply of one or two components and a third party sources the rest, covers about 54% of battery GWh. The model is real, but no margin saving is quantified.",
+   "url": "https://www.spglobal.com/mobility/en/research-analysis/briefcase-oems-battery-sourcing-conundrum.html",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Published tier-1 handling fee / markup on OEM-directed (directed-buy) parts",
+   "finding": "No public figure found. An FGV paper on directed-buy agreements covers tier-1 liability limits for warranty and line stoppage on OEM-imposed tier-2s, which supports the point that liability moves to the OEM, but gives no fee.",
+   "url": "https://direitosp.fgv.br/sites/default/files/arquivos/directed-buy-agreement-sob-a-perspectiva-do-direito-brasileiro.pdf",
+   "verdict": "not found"
+  },
+  {
+   "claim": "Consultancy (McKinsey/BCG/Bain/PwC) benchmark for margin stacking on bought-in cells in turnkey battery supply",
+   "finding": "None found in the searches run. Roland Berger's battery-strategy piece discusses OEM dependency on cell makers but gives no margin-stack figure.",
+   "url": "https://www.rolandberger.com/en/Insights/Publications/E-mobility-Automakers-in-need-of-battery-strategy.html",
+   "verdict": "not found"
+  },
+  {
+   "claim": "Tier-1 retail-price-equivalent markup about 1.5x",
+   "finding": "The National Academies figure covers vehicle-level indirect costs (OEM RPE), not tier-1 margin on bought-in content. Not used.",
+   "url": "https://nap.nationalacademies.org/read/12924/chapter/18",
+   "verdict": "contradicts"
+  }
+ ],
+ "summary": "The £27-£54/pack claim exceeded the entire margin layer in the study's own cost build-up, which is £18.76: SG&A £8.21 + profit £8.71 + cell handling £1.84. The cells carry no pack-supplier margin because EVE makes both. Removing the margin on the directly sourced BMS and housing, net of the OEM's added purchasing cost, gives at most £4.25-£8.08/pack (£2.98-£5.66 risk-adjusted), before integration, safety-case and warranty costs that move in-house. Treat it as a ceiling to be tested by quotation, not a booked saving, and re-run the conflict with the BMS retender (ID-058), which now looks the stronger idea.",
+ "confidence": "medium",
+ "openQuestions": [
+  "Would EVE quote a directed-buy or consigned arrangement, and at what handling fee on directed BMS and housing?",
+  "Who assembles the pack after de-bundling (EVE, a contract assembler or the OEM in-house), and what is the margin on conversion and the remaining £60.64 of bought-in parts?",
+  "Annual OEM cost for integration engineering, the functional safety case (ASIL), incoming quality and warranty self-insurance. This sets whether any net saving remains.",
+  "Is the 6% SG&A / 6% profit (Assumptions A-07, [Guessing]) the right rate for EVE? Roland Berger's China supplier EBIT is 5.7%."
+ ]
+}

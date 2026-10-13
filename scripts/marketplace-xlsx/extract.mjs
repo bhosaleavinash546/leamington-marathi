@@ -51,9 +51,11 @@ for (const f of files) for (const x of JSON.parse(readFileSync(`${REPO}/${f}`, '
   const annualText = x.annualSaving || csp.annualValue || '';
   // Study imports carry their signed numbers (a negative low case is a cost increase); the text parser drops signs.
   const num2 = (a, b) => (Number.isFinite(d[a]) && Number.isFinite(d[b]) ? { lo: g(a), hi: g(b) } : null);
-  const ann = num2('annualSavingLowGBP', 'annualSavingHighGBP') || parseMoneyRange(annualText);
+  // A review-corrected idea that books nothing must not fall back to the study's claimed figure quoted in its text.
+  const corrected = !!d.reviewCorrection;
+  const ann = num2('annualSavingLowGBP', 'annualSavingHighGBP') || (corrected ? null : parseMoneyRange(annualText));
   const pvText = csp.perVehicle || '';
-  const pv = num2('savingPerUnitLowGBP', 'savingPerUnitHighGBP') || (pvText ? parseMoneyRange(pvText) : null);
+  const pv = num2('savingPerUnitLowGBP', 'savingPerUnitHighGBP') || (pvText && !corrected ? parseMoneyRange(pvText) : null);
   const ec = g('engineCheck');
   const ba = g('benchmarkAnchor') || {};
   const inv = g('investment') || {};

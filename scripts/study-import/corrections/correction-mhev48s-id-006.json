@@ -1,0 +1,147 @@
+{
+ "id": "mhev48s-id-006",
+ "originalId": "ID-006",
+ "original": {
+  "perUnitLowGBP": 16.2,
+  "perUnitHighGBP": 32.4,
+  "basis": "Study register 'part-specific band' (12%-24%) applied to an affected cost of £135.02 that includes the £122.41 cell. Non-cell content in scope is only £12.61, below even the low case. No arithmetic. Risk-adjusted £8.10-£16.20 at p 0.5; NRE £70k 'marginal share' of ID-064's PCB-panel tooling, although the idea's own investment text is ~£350k."
+ },
+ "corrected": {
+  "perUnitLowGBP": 3.58,
+  "perUnitHighGBP": 7.83,
+  "booked": false,
+  "basis": "The cell is unchanged by CTP and leaves the affected cost; the 13 busbars stay because a 12S string still needs every series joint. What is deleted is module-frame hardware, at the study's own Parts prices. High case = the idea's full scope ('no module frame, no stack cover') plus the busbar-locating top insulation plate: side plates £2.20 + end plates £2.60 + tie rods £0.90 + nuts £0.10 + frame fasteners £0.20 + dowels £0.18 + stack cover £1.10 + top insulation plate £0.55 = £7.83. Low case = the CTP form in which end plates and the top cover are retained (a CTP patent summary states the existing CTP structure still requires separate end plates and top covers), so only side plates, tie rods, nuts, fasteners and dowels go = £3.58. Both are GROSS: the added housing features that take over location and preload, and any change in stack-build/module-set conversion, are not priced in the study or in any source found, so the net is lower by an unknown amount. Bounded by £12.61 non-cell content. Not booked until the housing change is costed.",
+  "statusNote": "gross £3.58–£7.83 per pack of module-frame hardware; the housing features that replace the frame are unpriced"
+ },
+ "derivation": [
+  {
+   "line": "Deleted: Module side plate (Parts #6, 2 x £1.10)",
+   "lowGBP": 2.2,
+   "highGBP": 2.2,
+   "source": "48v-Parts.txt; Subassembly B Module frame"
+  },
+  {
+   "line": "Deleted: Module end plate (Parts #7, 2 x £1.30)",
+   "lowGBP": 0.0,
+   "highGBP": 2.6,
+   "source": "48v-Parts.txt; Subassembly B Module frame"
+  },
+  {
+   "line": "Deleted: Module tie rod (Parts #8, 2 x £0.45)",
+   "lowGBP": 0.9,
+   "highGBP": 0.9,
+   "source": "48v-Parts.txt; Subassembly B Module frame"
+  },
+  {
+   "line": "Deleted: Tie rod nut (Parts #12, 2 x £0.05)",
+   "lowGBP": 0.1,
+   "highGBP": 0.1,
+   "source": "48v-Parts.txt; Subassembly B Module frame"
+  },
+  {
+   "line": "Deleted: Module frame fastener (Parts #11, 4 x £0.05)",
+   "lowGBP": 0.2,
+   "highGBP": 0.2,
+   "source": "48v-Parts.txt; Subassembly B Module frame"
+  },
+  {
+   "line": "Deleted: Module locating dowel (Parts #10, 2 x £0.09)",
+   "lowGBP": 0.18,
+   "highGBP": 0.18,
+   "source": "48v-Parts.txt; Subassembly B Module frame"
+  },
+  {
+   "line": "Deleted: Stack cover (Parts #9)",
+   "lowGBP": 0.0,
+   "highGBP": 1.1,
+   "source": "48v-Parts.txt; Subassembly B Module frame"
+  },
+  {
+   "line": "Deleted: Cell top insulation plate (Parts #4)",
+   "lowGBP": 0.0,
+   "highGBP": 0.55,
+   "source": "48v-Parts.txt row 8 (#4); high case only - 'simplified interconnect' may let the cell contacting system (#28) carry the busbar plane"
+  },
+  {
+   "line": "NMC prismatic cell (Parts #1, £122.41) - not changed by CTP; removed from affected cost",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "48v-Parts.txt row 5 (#1)"
+  },
+  {
+   "line": "Cell interconnect busbar x13 (Parts #15, £5.26) - still required for the 12S series string (26 laser welds remain, Conversion r6); not deleted",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "48v-Parts.txt row 19; 48v-Conversion.txt row 6"
+  },
+  {
+   "line": "Stack side compliance foam (#13 £0.32), compression pads (#3 £0.56) - retained: the housing must still react cell swelling through a compliance layer",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "48v-Parts.txt rows 7,17; ID-002 Specifics"
+  },
+  {
+   "line": "Conversion: 'Cell sorting and stack build' (£0.65) and 'Adhesive dispense and module set' (£0.80) - cells are still stacked and set, now into the housing; no reduction stated or cited",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "48v-Conversion.txt rows 5,7 - NOT PRICED"
+  },
+  {
+   "line": "Added: housing features to locate cells and react preload (bosses, walls, possibly structural adhesive) - piece-cost increase",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "NOT PRICED - no study line and no cited figure; makes the band a GROSS upper bound"
+  }
+ ],
+ "riskAdjusted": {
+  "pSuccess": 0.5,
+  "lowGBP": 1.79,
+  "highGBP": 3.92,
+  "nreGBP": 350000,
+  "paybackYears": 1.63,
+  "note": "Corrected (gross) x study p 0.5 = £1.79-£3.92. Payback on the risk-adjusted low: at the record's £70,000 = 0.33 yr; at the idea's own ~£350,000 (housing tooling and line rework) = 1.63 yr. £350k is carried here because the £70k 'marginal share' points at ID-064, an unrelated PCB panelisation asset. Payback lengthens further once the unpriced housing additions are netted off."
+ },
+ "conflictsAdded": [],
+ "systemTradeNote": "ID-006 is functionally the same change as ID-002 (move compression into the housing, delete the frame; £5.31-£8.84 on its own scope) and supersedes ID-029/ID-033/ID-141 - all already in C3, so no new conflict is needed, but the C3 'winner' should be re-run on the corrected bands: ID-006 at p 0.5 and £350k no longer clearly beats ID-002 or the cheaper ID-029 banding. Housing takes on a fourth duty (preload) on top of structure, heat path and coolant containment; creep and vibration validation as listed. Cells sit directly on the thermal adhesive, so it interacts with ID-011's bond-line control (both should be designed together).",
+ "research": [
+  {
+   "claim": "Published CTP benefit: ~40% fewer pack parts",
+   "finding": "CATL claims for CTP: 15-20% (or 20-30%, sources differ) higher volume utilisation, 40% fewer parts, 50% higher production efficiency - traction packs, secondary reporting. Not applied as a % to this pack: on a 12-cell single-module pack the deletable parts are listed individually instead.",
+   "url": "https://en.42how.com/2021/11/15/battery-pack-technology-development-path-from-ctp-to-ctc/ ; https://autonews.gasgoo.com/china_news/70016402.html",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Published CTP cost reduction",
+   "finding": "A market-research summary says module-less packs cut price 25-30% from fewer connections and circuits; no BYD primary disclosure found. Traction-pack, whole-pack figure; not applicable to a pack whose non-cell module content is £12.61.",
+   "url": "https://www.globenewswire.com/fr/news-release/2022/02/02/2377457/28124/en/World-Module-less-Cell-to-Pack-Battery-Structure-Market-Report-2021-Featuring-Leading-Manufacturers-BYD-CATL-and-LG-Chem.html",
+   "verdict": "partly"
+  },
+  {
+   "claim": "CTP still needs end plates and a top cover in its common form",
+   "finding": "Patent summary: 'the existing cell-to-pack (CTP) battery structure requires separate endplates and top covers, increasing the number of components'. Used to set the low case.",
+   "url": "https://eureka.patsnap.com/triz-case/ctp-battery-integrated-cover",
+   "verdict": "supports"
+  },
+  {
+   "claim": "CTP is used on 48V MHEV packs",
+   "finding": "No 48V cell-to-pack or module-less benchmark found; MAHLE (SAE 2020-01-0441) and Hitachi 48V packs describe cells, cooling and BMS integration but not CTP. Consistent with the study's own admission.",
+   "url": "https://saemobilus.sae.org/content/2020-01-0441 ; https://www.hitachi.com/New/cnews/month/2017/05/170522.pdf",
+   "verdict": "not found"
+  },
+  {
+   "claim": "CTP lowers cell price",
+   "finding": "No source found for a cell-price mechanism from CTP; the cell (£122.41) is therefore excluded.",
+   "url": "",
+   "verdict": "not found"
+  }
+ ],
+ "summary": "Cell-to-pack does not change the £122.41 cell or remove the busbars, so the saving is limited to deleted module-frame hardware: £3.58-£7.83 per pack gross at the study's own prices, against the claimed £16.20-£32.40. Risk-adjusted at 50% that is £1.79-£3.92, and on the idea's own ~£350k investment payback is about 1.6 years before the unpriced housing changes are netted off. It should be shown as unverified and re-compared with the cheaper frame ideas in its conflict set.",
+ "confidence": "medium",
+ "openQuestions": [
+  "Cost of the housing features (location bosses, preload walls, any structural adhesive) that replace the frame - piece-cost and tooling.",
+  "Is the £350k NRE right, and why does the Evaluation point the £70k marginal share at ID-064 (PCB panel tooling)?",
+  "Can the top insulation plate go, i.e. can the cell contacting system (Parts #28, £3.80) carry the busbar plane?",
+  "Assembly time change from stacking 12 cells into the housing vs building a module - no study rate or source.",
+  "Re-run C3 with corrected bands: does ID-006 still win over ID-002 / ID-029?"
+ ]
+}

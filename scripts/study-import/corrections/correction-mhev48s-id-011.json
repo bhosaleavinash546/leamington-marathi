@@ -1,0 +1,106 @@
+{
+ "id": "mhev48s-id-011",
+ "originalId": "ID-011",
+ "original": {
+  "perUnitLowGBP": 4.6,
+  "perUnitHighGBP": 8.74,
+  "basis": "Study register 'part-specific band, deep-dive' applied to an affected cost of £22.99 = thermal adhesive £3.78 + A380 housing £19.21 (20%-38% of the combined line). No line-by-line arithmetic; the idea's own mechanism says 'about £1.70'. Risk-adjusted £3.91-£7.43 at p 0.85, NRE £70k, payback 0.15 yr."
+ },
+ "corrected": {
+  "perUnitLowGBP": 1.63,
+  "perUnitHighGBP": 1.87,
+  "booked": true,
+  "basis": "Only the thermal conductive adhesive line falls (Parts #48: 0.42 kg, £3.78, i.e. £9.00/kg). The housing does not fall - it gains a flatness operation - so it is removed from the saving and enters only as an added cost. Adhesive saved uses the idea's own mechanism text: low £1.70 (its stated figure), high 50% of £3.78 = £1.89 ('halving the design gap roughly halves the dispensed mass'). Plausibility check on the starting bond line: 0.42 kg at 3.0 g/cc (Bergquist TGF 3010APS) = 140 cc spread over at most the 668 cm2 internal floor (Derivations r15 envelope 390 x 180 mm less 3.0 mm walls) gives an average >= 2.1 mm, so halving to ~1.05 mm is physically reachable; a 0.5 mm floor would be the ceiling at £2.88, not booked. Added cost: face-milling the floor, priced as cut time only, assuming it rides in the housing's existing machining setup (Rate_Card r13 HPDC rate already includes machining of sealing faces): 3 passes x 484 mm = 1,452 mm at 12,800-20,000 mm/min (Tungaloy die-cast examples) = 0.073-0.113 min at USD 20-50/hr (China 3-axis) x 0.79 = £0.02-£0.07/pack. Corrected = £1.70 - £0.07 = £1.63 to £1.89 - £0.02 = £1.87, within the £3.78 bound. Non-cutting time (tool change, any extra setup) and the scrap cost of the process-control route are NOT priced."
+ },
+ "derivation": [
+  {
+   "line": "Thermal conductive adhesive saved (Parts #48, £3.78): low = idea's stated 'about £1.70'; high = 50% x £3.78 per idea's 'halving' mechanism",
+   "lowGBP": 1.7,
+   "highGBP": 1.89,
+   "source": "48v-Parts.txt row 52 (#48); Ideas row 15 ID-011 Cost mechanism"
+  },
+  {
+   "line": "Housing A380 die casting (Parts #39, £19.21) - removed from saving: the idea adds a flatness operation to it, it does not delete content",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "48v-Parts.txt row 43 (#39); ID-011 Trade-offs text"
+  },
+  {
+   "line": "Added: face-mill housing floor, cut time only (0.073-0.113 min x USD 20-50/hr x 0.79)",
+   "lowGBP": -0.07,
+   "highGBP": -0.02,
+   "source": "Derivations r15 envelope; feed https://tungaloy.com/?p=11944; rate https://www.stylecnc.com/blog/china-cnc-machining-service-vs-buying.html"
+  },
+  {
+   "line": "Added: non-cutting machining time / separate setup / extra scrap if process-control route is chosen",
+   "lowGBP": 0.0,
+   "highGBP": 0.0,
+   "source": "NOT PRICED - no study rate and no cited figure; see openQuestions"
+  }
+ ],
+ "riskAdjusted": {
+  "pSuccess": 0.85,
+  "lowGBP": 1.38,
+  "highGBP": 1.59,
+  "nreGBP": 70000,
+  "paybackYears": 0.42,
+  "note": "Corrected x study p 0.85. Payback = £70,000 / (£1.38 x 120,000) = 0.42 yr (was 0.15). Annual risk-adjusted £166k-£191k, not £0.47M-£0.89M."
+ },
+ "conflictsAdded": [
+  "ID-001"
+ ],
+ "systemTradeNote": "ID-001 (Develop, delete liquid cooling) also 'reduces the adhesive to a controlled thin bond line' and counts the adhesive in its £26.61 affected cost, but sits in C1/C27-C31 while ID-011 sits in C19, so both are selected and the same £3.78 line is claimed twice. Add a conflict (or net ID-001's adhesive share off once ID-011 is taken). ID-111 (gap pad) and ID-112 (bead pattern) remain correctly exclusive in C19. Second-order: thinner bond line lowers thermal resistance (helps DO-05 55 degC / 5 degC spread) but loses compliance for cell swelling and Al/Al CTE mismatch; machining an HPDC floor over a cast coolant gallery can open sub-surface porosity, which the study already pays to vacuum-impregnate (Derivations r20).",
+ "research": [
+  {
+   "claim": "Gap filler density for converting 0.42 kg to dispensed volume",
+   "finding": "Bergquist Gap Filler TGF 3010APS (2-part, 3.0 W/m.K, automotive power storage) lists density 3.0 g/cc, ASTM D792.",
+   "url": "https://datasheets.tdx.henkel.com/BERGQUIST-GAP-FILLER-TGF-3010APS-de_DE.pdf",
+   "verdict": "supports"
+  },
+  {
+   "claim": "Study's adhesive price of £9.00/kg is plausible at automotive volume",
+   "finding": "Dispensing-equipment vendor (SCA, via Atlas Copco) cites ~EUR 10/kg (= £8.50/kg at 0.85); a paid market report gives 2024 average ~USD 20.52/kg (= £16.21/kg at 0.79). No manufacturer volume price list published (Henkel, Parker statements give no figures).",
+   "url": "https://atlascopco.com/ar-sa/itba/expert-hub/articles/thermal-management-and-gap-filling-in-joining-process-of-ev-batteries ; https://giikorea.co.kr/report/qyr1861222-thermal-interface-material-ev-battery-global.html",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Dispensed gap-filler volume can be matched to housing tolerance to save material",
+   "finding": "Atlas Copco describes 3D scanning of the tray to dispense the specific volume needed to match its tolerances, 'optimising the use of this costly material'. A '20% of material cost' figure appeared in a search summary but could not be verified on the page (fetch blocked) - not used.",
+   "url": "https://www.atlascopco.com/en-uk/itba/expert-hub/articles/ev-battery-assembly-gap-filler-application",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Bond line can fall to ~0.5 mm",
+   "finding": "Prostech (Henkel distributor) states gap fillers suit gaps above 0.5 mm to avoid voids; thin-bond-line grades (<50-70 um) exist but are TIMs for flat machined faces. Used only as a ceiling, not booked.",
+   "url": "https://prostech.vn/thermally-conductive-gap-filler-tgf-solutions/",
+   "verdict": "partly"
+  },
+  {
+   "claim": "As-cast HPDC flatness is coarse vs machined faces",
+   "finding": "NADCA Section 4A has separate standard/precision flatness tables (S-4A-8 / P-4A-8); the values for a 390 mm floor could not be retrieved. A casting guide gives 0.30 mm as-cast vs 0.20 mm machined TIR at only 50-75 mm size. Valeo's flatness reference is a 2000 x 1500 mm cold plate held under 0.5 mm, not an HPDC floor.",
+   "url": "https://industry.plantautomation-technology.com/suppliers/a-b-die-casting-company/catalog/1780046535-Section-04a-Tolerancing.pdf ; https://www.valeo.com/en/catalogue/ths/large-battery-liquid-cooler-for-ev/",
+   "verdict": "partly"
+  },
+  {
+   "claim": "Face-milling feed rate in aluminium die castings",
+   "finding": "Tungaloy TungSpeed-Mill die-casting examples: 80 mm 16-tooth at Vf 12,800 mm/min; 100 mm 22-tooth at Vf 20,000 mm/min.",
+   "url": "https://tungaloy.com/?p=11944",
+   "verdict": "supports"
+  },
+  {
+   "claim": "China 3-axis CNC machine-hour rate",
+   "finding": "USD 20-50/hr for 3-axis milling in China incl. machine, operator and overhead (excl. setup/tooling). Supplier marketing, not an index.",
+   "url": "https://www.stylecnc.com/blog/china-cnc-machining-service-vs-buying.html",
+   "verdict": "partly"
+  }
+ ],
+ "summary": "ID-011 saves thermal adhesive only; the housing it also counted gets dearer, not cheaper. On the study's own £3.78 adhesive line and the idea's own 'halving' arithmetic, less a priced face-milling cut, the saving is £1.63-£1.87 per pack (£1.38-£1.59 risk-adjusted, about £166k-£191k a year), not £4.60-£8.74. It is still worth doing at £70k NRE (payback ~0.4 yr), and ID-001 must be put in conflict with it because both claim the same adhesive.",
+ "confidence": "medium",
+ "openQuestions": [
+  "Actual bond-line thickness on built packs and the share of it driven by floor flatness vs cell-base tolerance (sets whether 'halving' is reachable).",
+  "Does the floor face-mill ride in the existing sealing-face setup, or need its own setup/fixture? Non-cutting time is unpriced.",
+  "Process-control route (no machining): scrap and die-maintenance cost of holding flatness as-cast - unpriced.",
+  "Adhesive line itself is [Guessing] at £9.00/kg; obtain a Henkel/Parker/DELO volume quote.",
+  "Porosity exposure when machining the floor above the cast gallery, and leak-test fallout."
+ ]
+}
