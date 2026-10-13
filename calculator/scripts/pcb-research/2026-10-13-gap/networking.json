@@ -1,0 +1,681 @@
+{
+ "domain": "networking",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "TJA1104",
+   "family": "TJA1104",
+   "mfr": "NXP",
+   "desc": "100BASE-T1 automotive Ethernet PHY, MACsec, ASIL B",
+   "category": "ic_qfn",
+   "pkg": "HVQFN",
+   "aecq": true,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "zonal"
+   ],
+   "observedMpn": "TJA1104",
+   "observations": [],
+   "notes": "NXP page: silicon available to selected NDA customers only; no distributor chip listing found (only eval kits). Orderable code not public."
+  },
+  {
+   "mpn": "LAN8870T-I/PUA",
+   "family": "LAN8870",
+   "mfr": "Microchip",
+   "desc": "100/1000BASE-T1 Ethernet PHY, RGMII/SGMII, industrial temp",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 7x7",
+   "aecq": false,
+   "ecuRoles": [
+    "gateway",
+    "ADAS",
+    "zonal"
+   ],
+   "observedMpn": "LAN8870T-I/PUA",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 2.65,
+     "currency": "EUR",
+     "url": "https://www.tme.eu/gb/details/lan8870t-i_pua/ethernet-interfaces-integrated-circuits/microchip-technology/",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "-I industrial grade (no automotive -V code found). TME net price, 0 stock at read. Microchip-direct 1000 = USD 3.4865 (manufacturer price, not used). Mouser only qty-1 prices seen."
+  },
+  {
+   "mpn": "LAN8650B1T-E/LMX",
+   "family": "LAN8650",
+   "mfr": "Microchip",
+   "desc": "10BASE-T1S MAC-PHY, SPI",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": false,
+   "ecuRoles": [
+    "body",
+    "zonal",
+    "lighting"
+   ],
+   "observedMpn": "LAN8650B1T-E/LMX",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 5000,
+     "price": 3.9,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/fr/p/semiconductors--comm-products--switch/lan8650b1t-e-lmx-microchip-7189098",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 5000,
+     "price": 174.4,
+     "currency": "TWD",
+     "url": "https://twcn.rs-online.com/web/p/ethernet-interface-ics/0333087",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "T = tape-and-reel (5000/reel). AEC-Q100 status of the -E code not confirmed in results. Both out of stock at read."
+  },
+  {
+   "mpn": "LAN8651B1-E/LMX",
+   "family": "LAN8651",
+   "mfr": "Microchip",
+   "desc": "10BASE-T1S MAC-PHY, SPI, 1.8V IO variant",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": false,
+   "ecuRoles": [
+    "body",
+    "zonal"
+   ],
+   "observedMpn": "LAN8651B1-E/LMX",
+   "observations": [],
+   "notes": "Listed by RS (KR) but no price break in results."
+  },
+  {
+   "mpn": "NCN26010XMNTXG",
+   "family": "NCN26010",
+   "mfr": "onsemi",
+   "desc": "10BASE-T1S MAC-PHY, SPI, -40 to 125C (industrial NCN line)",
+   "category": "ic_qfn",
+   "pkg": "QFN",
+   "aecq": false,
+   "ecuRoles": [
+    "zonal",
+    "industrial"
+   ],
+   "observedMpn": "NCN26010XMNTXG",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 500,
+     "price": 2.74,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/onsemi/ncn26010xmntxg/commutateur-ethernet-10mbps-40/dp/4036809RL",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 36.67,
+     "currency": "NOK",
+     "url": "https://no.farnell.com/en-NO/onsemi/ncn26010xmntxg/ethernet-switch-10mbps-40-to-125deg/dp/4036809",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 33.11,
+     "currency": "NOK",
+     "url": "https://no.farnell.com/en-NO/onsemi/ncn26010xmntxg/ethernet-switch-10mbps-40-to-125deg/dp/4036809",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Ex-VAT. Farnell ES shows 500+ EUR 2.61 for same code (inconsistent with FR 2.74). Automotive sibling is NCV7410 (not found)."
+  },
+  {
+   "mpn": "NCV7410",
+   "family": "NCV7410",
+   "mfr": "onsemi",
+   "desc": "10BASE-T1S PHY, automotive",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "zonal"
+   ],
+   "observedMpn": "NCV7410",
+   "observations": [],
+   "notes": "No distributor listing found; orderable code not confirmed."
+  },
+  {
+   "mpn": "DP83TD555J-Q1",
+   "family": "DP83TD555J",
+   "mfr": "Texas Instruments",
+   "desc": "10BASE-T1S MAC-PHY, SPI, automotive",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "zonal"
+   ],
+   "observedMpn": "DP83TD555J-Q1",
+   "observations": [],
+   "notes": "No distributor result in search; orderable code not confirmed."
+  },
+  {
+   "mpn": "ADIN1110BCPZ-R7",
+   "family": "ADIN1110",
+   "mfr": "Analog Devices",
+   "desc": "10BASE-T1L MAC-PHY, SPI, industrial",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-40 6x6",
+   "aecq": false,
+   "ecuRoles": [
+    "industrial"
+   ],
+   "observedMpn": "ADIN1110BCPZ-R7",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 750,
+     "price": 58.82,
+     "currency": "CNY",
+     "url": "https://digikey.cn/en/products/detail/analog-devices-inc/ADIN1110BCPZ-R7/14290386",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 1500,
+     "price": 51.23,
+     "currency": "CNY",
+     "url": "https://digikey.cn/en/products/detail/analog-devices-inc/ADIN1110BCPZ-R7/14290386",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key China prices INCLUDE 13% VAT. Industrial (10BASE-T1L), not automotive."
+  },
+  {
+   "mpn": "KSZ9567RTXI-TR",
+   "family": "KSZ9567",
+   "mfr": "Microchip",
+   "desc": "7-port gigabit Ethernet switch, 5 integrated 1000BASE-T PHYs, industrial",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-128-EP 14x14",
+   "aecq": false,
+   "ecuRoles": [
+    "gateway",
+    "industrial"
+   ],
+   "observedMpn": "KSZ9567RTXI-TR",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 1000,
+     "price": 16.44,
+     "currency": "USD",
+     "url": "https://www.tme.com/us/en-us/details/ksz9567rtxi-tr/ethernet-interfaces-integrated-circuits/microchip-technology/",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 13.52,
+     "currency": "EUR",
+     "url": "https://tr.farnell.com/microchip/ksz9567rtxi-tr/ethernet-switch-7-port-1gbps-tqfp/dp/2759342",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 13.34,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/KSZ9567RTXI/6623475",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key obs is the tray sibling KSZ9567RTXI. TME and Farnell 0 stock at read. No automotive (-VAO) code found."
+  },
+  {
+   "mpn": "SJA1124BHG/1Z",
+   "family": "SJA1124",
+   "mfr": "NXP",
+   "desc": "Quad LIN commander transceiver with SPI, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "DHVQFN-24",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "zonal"
+   ],
+   "observedMpn": "SJA1124BHG/1Z",
+   "observations": [],
+   "notes": "Code seen on Farnell JP (dp 4147387) but no price in results."
+  },
+  {
+   "mpn": "TCAN1463DRQ1",
+   "family": "TCAN1463",
+   "mfr": "Texas Instruments",
+   "desc": "CAN SIC transceiver with sleep / inhibit, 8 Mbps, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-14",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "TCAN1463DRQ1",
+   "observations": [],
+   "notes": "Digi-Key lists code (active, 12 wk) but no price break in results."
+  },
+  {
+   "mpn": "TLE9351SJXTMA1",
+   "family": "TLE9351",
+   "mfr": "Infineon",
+   "desc": "HS-CAN / CAN FD transceiver, 5 Mbps, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "DSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "powertrain",
+    "BMS"
+   ],
+   "observedMpn": "TLE9351SJXTMA1",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1250,
+     "price": 0.72,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--comm-products--can/tle9351sjxtma1-infineon-4166335",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future 0 stock, 8 wk lead time at read."
+  },
+  {
+   "mpn": "TLE9351VSJXTMA1",
+   "family": "TLE9351",
+   "mfr": "Infineon",
+   "desc": "HS-CAN / CAN FD transceiver, 5 Mbps, VIO, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "DSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "powertrain",
+    "BMS"
+   ],
+   "observedMpn": "TLE9351VSJXTMA1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 500,
+     "price": 25.6,
+     "currency": "TWD",
+     "url": "https://twcn.rs-online.com/web/p/can-interface-ics/2584153",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "mpn": "TLE9371SJXTMA1",
+   "family": "TLE9371",
+   "mfr": "Infineon",
+   "desc": "HS-CAN / CAN FD transceiver, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "DSO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "powertrain"
+   ],
+   "observedMpn": "TLE9371SJXTMA1",
+   "observations": [],
+   "notes": "Mouser India lists INR 130.45 @1 and INR 62.24 at an unstated higher break; break not identifiable, not used."
+  },
+  {
+   "mpn": "MCP2562FDT-E/SN",
+   "family": "MCP2562FD",
+   "mfr": "Microchip",
+   "desc": "CAN FD transceiver, VIO, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "body"
+   ],
+   "observedMpn": "MCP2562FDT-E/SN",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.774,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C511335.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "TME",
+     "qty": 3300,
+     "price": 0.99,
+     "currency": "USD",
+     "url": "https://www.tme.com/us/en-us/katalog/can-interfaces-integrated-circuits_112853/params/b392_data-transfer-rate/p1519684_8mbps/",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "TME 0 stock at read; 3300 = full reel."
+  },
+  {
+   "mpn": "MCP251863T-E/9PX",
+   "family": "MCP251863",
+   "mfr": "Microchip",
+   "desc": "CAN FD controller + transceiver, SPI",
+   "category": "ic_qfn",
+   "pkg": "VQFN-28",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "body"
+   ],
+   "observedMpn": "MCP251863T-E/9PX",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 3300,
+     "price": 1.717,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/can-interface-ics/0598228?gb=s",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 3300,
+     "price": 2.039,
+     "currency": "EUR",
+     "url": "https://befr.rs-online.com/web/p/can-interface-ics/0598228",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Reel price (3300). Out of stock at read. Same distributor, two regions."
+  },
+  {
+   "mpn": "NCV7357D10R2G",
+   "family": "NCV7357",
+   "mfr": "onsemi",
+   "desc": "HS-CAN / CAN FD transceiver, 5 Mbps, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "powertrain",
+    "body"
+   ],
+   "observedMpn": "NCV7357D10R2G",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 3000,
+     "price": 0.245,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--wireless-rf--transceiver-ics/ncv7357d10r2g-onsemi-9117101",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 15000,
+     "price": 0.235,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--wireless-rf--transceiver-ics/ncv7357d10r2g-onsemi-9117101",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 1000,
+     "price": 0.227,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/can-interface-ics/1952449",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future 0 stock, 24 wk; RS UK out of stock at read."
+  },
+  {
+   "mpn": "TJA1465AT/0Z",
+   "family": "TJA1465",
+   "mfr": "NXP",
+   "desc": "CAN SIC / CAN FD transceiver, 8 Mbps, 150C, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway",
+    "zonal"
+   ],
+   "observedMpn": "TJA1465AT/0Z",
+   "observations": [
+    {
+     "distributor": "element14",
+     "qty": 1000,
+     "price": 1.42,
+     "currency": "SGD",
+     "url": "https://sg.element14.com/nxp/tja1465at-0z/can-fd-txrx-8mbps-150degc-soic/dp/4752410",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Ex-GST price (SGD 1.5478 incl. GST)."
+  },
+  {
+   "mpn": "TJA1028T/5V0/20/1J",
+   "family": "TJA1028",
+   "mfr": "NXP",
+   "desc": "LIN transceiver with integrated 5V LDO, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SO-8",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "seat",
+    "door"
+   ],
+   "observedMpn": "TJA1028T/5V0/20/1J",
+   "observations": [],
+   "notes": "Mouser IN shows only qty-1 price (INR 164.93). Sibling TJA1028T/3V3/10:11 USD 1.30 @2500 (Mouser MX) is EOL; not used."
+  },
+  {
+   "mpn": "TLIN2029DRBTQ1",
+   "family": "TLIN2029",
+   "mfr": "Texas Instruments",
+   "desc": "LIN transceiver, fault protected, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "VSON-8",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "door",
+    "seat"
+   ],
+   "observedMpn": "TLIN2029DRBTQ1",
+   "observations": [],
+   "notes": "Mouser CR tier row '2 500 / 292,50 CRC' seen but quantity/currency mapping ambiguous; not used."
+  },
+  {
+   "mpn": "TJA1124BHG/1Z",
+   "family": "TJA1124",
+   "mfr": "NXP",
+   "desc": "Quad LIN transceiver, 20 kbaud, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "DHVQFN-24",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "zonal"
+   ],
+   "observedMpn": "TJA1124BHG/1Z",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 1.3,
+     "currency": "EUR",
+     "url": "https://es.farnell.com/nxp/tja1124bhg-1z/transceptor-lin-20kbaud-dhvqfn/dp/4147384",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 3000,
+     "price": 2.2,
+     "currency": "USD",
+     "url": "https://canada.newark.com/nxp/tja1124bhg-0z/lin-transceiver-20-kbaud-dhvqfn/dp/70AC4346",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell ES ex-VAT (1+ EUR 2.49). Newark obs is packing sibling TJA1124BHG/0Z: 500+ break, minimum order 3000."
+  },
+  {
+   "mpn": "ATA6628",
+   "family": "ATA6628",
+   "mfr": "Microchip",
+   "desc": "LIN system basis chip",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "body"
+   ],
+   "observedMpn": "ATA6628",
+   "observations": [],
+   "notes": "No listing found for ATA6628; orderable code not confirmed."
+  },
+  {
+   "mpn": "MAX96793",
+   "family": "MAX96793",
+   "mfr": "Analog Devices",
+   "desc": "GMSL3/GMSL2 CSI-2 camera serializer, 12 Gbps, AEC-Q100 G2",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "camera",
+    "ADAS"
+   ],
+   "observedMpn": "MAX96793",
+   "observations": [],
+   "notes": "Only ADI / Arrow articles and a Mouser category page; no price."
+  },
+  {
+   "mpn": "TUSB8041IRGCR",
+   "family": "TUSB8041",
+   "mfr": "Texas Instruments",
+   "desc": "4-port USB 3.0 hub, industrial temp",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": false,
+   "ecuRoles": [
+    "infotainment",
+    "telematics"
+   ],
+   "observedMpn": "TUSB8041IRGCR",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 2.5055,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C544686.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Non-automotive. Automotive TUSB8041IPAPRQ1 (HTQFP-64) Mouser UK only qty-1 GBP 11.09. Digi-Key prices seen only on punchouttest (excluded)."
+  },
+  {
+   "mpn": "TPS25772CQRQLRQ1",
+   "family": "TPS25772",
+   "mfr": "Texas Instruments",
+   "desc": "Dual-port USB-C PD controller with buck-boost, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "USB charger"
+   ],
+   "observedMpn": "TPS25772CQRQLRQ1",
+   "observations": [],
+   "notes": "Only broker (Dasenic) and non-franchised prices found; not used."
+  },
+  {
+   "mpn": "USB7206C-I/KDX",
+   "family": "USB7206",
+   "mfr": "Microchip",
+   "desc": "6-port USB 3.1 Gen 2 SmartHub, industrial",
+   "category": "ic_qfn",
+   "pkg": "VQFN-100",
+   "aecq": false,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "USB7206C-I/KDX",
+   "observations": [],
+   "notes": "Mouser SG 168+ 11.74 seen but currency unclear (SG site); RS says not automotive; no automotive VAO code found."
+  },
+  {
+   "mpn": "USB5806",
+   "family": "USB5806",
+   "mfr": "Microchip",
+   "desc": "USB 3.x hub",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": false,
+   "ecuRoles": [
+    "infotainment"
+   ],
+   "observedMpn": "USB5806",
+   "observations": [],
+   "notes": "Search returned nothing for this code."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "88Q4364",
+   "why": "Marvell 10G automotive Ethernet PHY; budget spent"
+  },
+  {
+   "code": "RTL9000A",
+   "why": "Realtek 100BASE-T1 PHY, common in Asian ECUs; budget spent"
+  },
+  {
+   "code": "88Q5050",
+   "why": "Marvell automotive switch, catalogue holds estimate only; budget spent"
+  },
+  {
+   "code": "VA7044",
+   "why": "Valens MIPI A-PHY; budget spent (likely no distributor listing)"
+  },
+  {
+   "code": "VA7031",
+   "why": "Valens A-PHY; budget spent (likely no distributor listing)"
+  },
+  {
+   "code": "TUSB1146-Q1",
+   "why": "USB-C redriver for infotainment; budget spent"
+  },
+  {
+   "code": "PI3EQX",
+   "why": "Diodes automotive redrivers; budget spent"
+  }
+ ]
+}
