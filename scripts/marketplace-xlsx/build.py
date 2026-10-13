@@ -111,7 +111,7 @@ def idea_sheet(title, data, table_name, helpers=False):
                     f'AND(F_PROP="Powertrain-agnostic",{CL["ICE"]}{r}+{CL["MHEV"]}{r}+{CL["PHEV"]}{r}+{CL["BEV"]}{r}=0))')
             f_ = (f'=IF(AND(OR(F_COM="All",{CL["Commodity"]}{r}=F_COM),OR(F_LVL="All",{CL["Level"]}{r}=F_LVL),'
                   f'OR(F_DIF="All",{CL["Difficulty"]}{r}=F_DIF),OR(F_OFF="All",{CL["Off-road"]}{r}=F_OFF),'
-                  f'OR(F_CONF="All",{CL["Confidence"]}{r}=F_CONF),OR(F_QW="All",{CL["Quick win"]}{r}=F_QW),{prop}),1,0)')
+                  f'OR(F_CONF="All",{CL["Confidence"]}{r}=F_CONF),OR(F_QW="All",{CL["Quick win"]}{r}=F_QW),OR(F_STAT="All",{CL["Study status"]}{r}=F_STAT),{prop}),1,0)')
             m = ws.cell(row=r, column=len(cols) + 1, value=f_); m.font = font(color=MUTED)
             mcol = L(len(cols) + 1)
             sc = ws.cell(row=r, column=len(cols) + 2,
@@ -148,6 +148,7 @@ LEVELS = ['Assembly', 'Subassembly', 'Part', 'System', 'Not stated']
 DIFFS = ['Low', 'Medium', 'High']
 CONFS = ['verified', 'benchmarked', 'estimated', 'Not stated']
 PROPS = ['ICE', 'MHEV', 'PHEV', 'BEV', '800V BEV', 'Powertrain-agnostic']
+STATUSES = ['Library idea'] + sorted(set(r['Study status'] for r in rows) - {'Library idea'})
 assert set(r['Commodity'] for r in rows) <= set(COMMODITIES), set(r['Commodity'] for r in rows)
 assert set(r['Level'] for r in rows) <= set(LEVELS), set(r['Level'] for r in rows)
 assert set(r['Confidence'] for r in rows) <= set(CONFS), set(r['Confidence'] for r in rows)
@@ -203,6 +204,7 @@ LIST_RNG = {
     'F_LVL': put_list(3, 'Level', LEVELS), 'F_DIF': put_list(4, 'Difficulty', DIFFS),
     'F_OFF': put_list(5, 'Off-road', ['Yes', 'No', 'Not stated']), 'F_CONF': put_list(6, 'Confidence', CONFS),
     'F_QW': put_list(7, 'Quick win', ['Yes', 'No']),
+    'F_STAT': put_list(8, 'Study status', STATUSES),
 }
 last = N + 1
 A = lambda c: f"'All Ideas'!${CL[c]}$2:${CL[c]}${last}"
@@ -242,7 +244,7 @@ d.row_dimensions[2].height = 30
 # Filters panel
 d['B4'] = 'FILTERS'; d['B4'].font = font(bold=True, color=NAVY, size=11)
 filters = [('Commodity', 'F_COM'), ('Propulsion', 'F_PROP'), ('Level', 'F_LVL'), ('Difficulty', 'F_DIF'),
-           ('Off-road', 'F_OFF'), ('Confidence', 'F_CONF'), ('Quick wins', 'F_QW')]
+           ('Off-road', 'F_OFF'), ('Confidence', 'F_CONF'), ('Quick wins', 'F_QW'), ('Study status', 'F_STAT')]
 for i, (lab, nm) in enumerate(filters):
     r = 5 + i
     d.cell(row=r, column=2, value=lab).font = font(bold=True)
@@ -251,13 +253,13 @@ for i, (lab, nm) in enumerate(filters):
     dv = DataValidation(type='list', formula1=LIST_RNG[nm], allow_blank=False, showDropDown=False)
     dv.error = 'Pick a value from the list'; dv.prompt = f'Filter the dashboard by {lab.lower()}'; d.add_data_validation(dv); dv.add(c)
     wb.defined_names[nm] = DefinedName(nm, attr_text=f'Dashboard!$C${r}')
-d['B12'] = 'Yellow cells are inputs: pick from the dropdown; "All" clears a filter.'; d['B12'].font = font(size=8, italic=True, color=MUTED)
-d['B14'] = 'ASSUMPTION'; d['B14'].font = font(bold=True, color=NAVY, size=11)
-d['B15'] = '£ per €1 (EUR→GBP)'; d['B15'].font = font(bold=True)
-fx = d['C15']; fx.value = 0.85; fx.number_format = '0.0000'; fx.font = Font(name=F, size=10, bold=True, color='0000FF'); fx.fill = fill('FFF9DB'); fx.border = box
+d['B13'] = 'Yellow cells are inputs: pick from the dropdown; "All" clears a filter.'; d['B13'].font = font(size=8, italic=True, color=MUTED)
+d['B16'] = 'ASSUMPTION'; d['B16'].font = font(bold=True, color=NAVY, size=11)
+d['B17'] = '£ per €1 (EUR→GBP)'; d['B17'].font = font(bold=True)
+fx = d['C17']; fx.value = 0.85; fx.number_format = '0.0000'; fx.font = Font(name=F, size=10, bold=True, color='0000FF'); fx.fill = fill('FFF9DB'); fx.border = box
 fx.comment = Comment('Source: BrainSpark fx-rates.mjs reference table (FX_FALLBACK GBP 0.85 per EUR, as of 1 Sep 2026). No live ECB rate was reachable when this workbook was built. Change this cell and every £ figure recalculates.', 'BrainSpark')
-wb.defined_names['FX_EUR_GBP'] = DefinedName('FX_EUR_GBP', attr_text='Dashboard!$C$15')
-d['B16'] = 'Converts the ideas stated in €; ideas stated in £ are used as stated.'; d['B16'].font = font(size=8, italic=True, color=MUTED)
+wb.defined_names['FX_EUR_GBP'] = DefinedName('FX_EUR_GBP', attr_text='Dashboard!$C$17')
+d['B18'] = 'Converts the ideas stated in €; ideas stated in £ are used as stated.'; d['B18'].font = font(size=8, italic=True, color=MUTED)
 
 # KPI tiles (row 4–7, columns E..S in pairs)
 kpis = [
@@ -341,6 +343,17 @@ for i, lv in enumerate(LEVELS):
              [None, '#,##0', '£#,##0.0', '#,##0', '0.0%'])
 LEV_LAST = L0 + len(LEVELS)
 
+# By study status (user-supplied studies) — column H, below the level table
+ST0 = LEV_LAST + 3
+section(ST0 - 1, 8, 'By study status (user-supplied studies)')
+header(ST0, 8, ['Study status', 'Ideas', 'Savings (£M)', 'Quick wins', 'Share of view'])
+for i, stv in enumerate(STATUSES):
+    r = ST0 + 1 + i
+    grid_row(r, 8, [stv, f'=COUNTIFS({A("Study status")},H{r},{MATCH},1)', f'=SUMIFS({MID},{A("Study status")},H{r},{MATCH},1)/1000000',
+                    f'=COUNTIFS({A("Study status")},H{r},{MATCH},1,{A("Quick win")},"Yes")', f'=IFERROR(I{r}/$F$5,0)'],
+             [None, '#,##0', '£#,##0.0', '#,##0', '0.0%'])
+STAT_LAST = ST0 + len(STATUSES)
+
 # Difficulty + confidence + engine (N19)
 section(R0 - 1, 14, 'By difficulty')
 header(R0, 14, ['Difficulty', 'Ideas', 'Savings (£M)', 'Share of view'])
@@ -364,7 +377,7 @@ for i, ev in enumerate(['Confirmed', 'Contradicted', 'Not engine-checked']):
 ENG_LAST = E0 + 3
 
 # Commodity × level matrix
-M0 = max(COM_LAST, LEV_LAST, ENG_LAST) + 4
+M0 = max(COM_LAST, LEV_LAST, ENG_LAST, STAT_LAST) + 4
 section(M0 - 1, 2, 'Commodity × level — number of ideas (heat map)')
 header(M0, 2, ['Commodity'] + LEVELS + ['Total'])
 for i, c in enumerate(COMMODITIES):
@@ -393,7 +406,7 @@ tp = wb.create_sheet('Top 20'); tp.sheet_properties.tabColor = 'C9A227'; tp.shee
 tp.merge_cells('B1:M1'); tp['B1'] = 'Top 20 ideas in view — ranked by annual saving (£, mid of the stated range)'
 tp['B1'].font = Font(name=F, size=16, bold=True, color=WHITE); tp['B1'].fill = fill(NAVY); tp['B1'].alignment = Alignment(vertical='center', indent=1)
 tp.row_dimensions[1].height = 32
-tp['B2'] = '=CONCATENATE("Filters from the Dashboard — Commodity: ",F_COM,"  ·  Propulsion: ",F_PROP,"  ·  Level: ",F_LVL,"  ·  Difficulty: ",F_DIF,"  ·  Off-road: ",F_OFF,"  ·  Confidence: ",F_CONF,"  ·  Quick wins: ",F_QW)'
+tp['B2'] = '=CONCATENATE("Filters from the Dashboard — Commodity: ",F_COM,"  ·  Propulsion: ",F_PROP,"  ·  Level: ",F_LVL,"  ·  Difficulty: ",F_DIF,"  ·  Off-road: ",F_OFF,"  ·  Confidence: ",F_CONF,"  ·  Quick wins: ",F_QW,"  ·  Study status: ",F_STAT)'
 tp['B2'].font = font(size=9, italic=True, color=MUTED)
 tp['B3'] = 'Back to Dashboard'; tp['B3'].hyperlink = "#'Dashboard'!A1"; tp['B3'].font = font(color='1D4ED8', underline='single', size=9)
 tcols = ['#', 'Idea ID', 'Title', 'Commodity', 'Sub-system', 'Level', 'Propulsion', 'Annual saving (£)', 'Difficulty', 'Time to implement', 'Engine check', 'Confidence']
@@ -419,7 +432,7 @@ for val, col in (('Low', 'DCFCE7'), ('Medium', 'FEF3C7'), ('High', 'FEE2E2')):
 tp.conditional_formatting.add(f'L{T0+1}:L{T0+20}', CellIsRule(operator='equal', formula=['"Confirmed"'], fill=fill('DCFCE7')))
 tp.conditional_formatting.add(f'L{T0+1}:L{T0+20}', CellIsRule(operator='equal', formula=['"Contradicted"'], fill=fill('FEE2E2')))
 tp.page_setup.orientation = 'landscape'; tp.page_setup.fitToWidth = 1; tp.sheet_properties.pageSetUpPr.fitToPage = True
-d['B13'] = 'Top 20 ideas for these filters →'; d['B13'].hyperlink = "#'Top 20'!A1"; d['B13'].font = font(color='1D4ED8', underline='single', bold=True)
+d['B14'] = 'Top 20 ideas for these filters →'; d['B14'].hyperlink = "#'Top 20'!A1"; d['B14'].font = font(color='1D4ED8', underline='single', bold=True)
 TOP_LAST = max(MAT_LAST, SUB_LAST)
 
 # Charts
@@ -466,7 +479,7 @@ cv['B3'] = 'Cost-reduction idea library — full export with dashboard'; cv['B3'
 cv['B4'] = f'Prepared {datetime.date(2026, 10, 13).strftime("%d %B %Y")} · for the Cost Engineering Director and President review'; cv['B4'].font = Font(name=F, size=10, color='D6E4F0')
 cv['B7'] = 'Scope'; cv['B7'].font = font(bold=True, color=NAVY, size=12)
 facts = [
-    ('Ideas exported', f"=COUNTA('All Ideas'!A2:A{last})", 'Every live idea in the marketplace library (15 packs); ideas retired after engineering review are excluded.'),
+    ('Ideas exported', f"=COUNTA('All Ideas'!A2:A{last})", 'Every live idea in the marketplace library (all packs, including the user-supplied study packs); ideas retired after engineering review are excluded.'),
     ('Fields per idea', len(cols), 'Every stored field, plus clearly labelled derived columns (commodity, propulsion tags, £ figures, quick win).'),
     ('Evidence sources', f"=COUNTA(Sources!A2:A{len(sources)+1})", 'One row per web or industry source behind a benchmark fact (Sources tab, clickable links).'),
     ('Cost-bridge lines', f"=COUNTA('Cost Bridges'!A2:A{len(bridges)+1})", 'Baseline → proposed € per line for ideas that carry a bridge (Cost Bridges tab).'),
@@ -497,6 +510,7 @@ notes = [
     '"Sources flagged unreviewed" = Yes means the benchmark sources were found by AI web search and have not been reviewed by an engineer; they support the benchmark fact, never the saving.',
     'Propulsion tags are derived from each idea\'s stated powertrain and its text (an idea can carry several). "Powertrain-agnostic" = none detected.',
     '"Review open points" are findings from the engineering review that need an engineer\'s judgement before the idea is used.',
+    'Ideas whose Library pack starts "Study:" are imported VERBATIM from the user-supplied study files (EDU function analysis, 48V MHEV should-cost, half-shaft, differential, prop-shaft and transfer-case masters, BMW iX3 Gen6 benchmark). "Study status" is the study\'s own decision (Develop / Hold / Not selected / Screened out) or the card type (Saving, Cost adder, Refused saving, Deferred, Cost avoidance, Cost transfer, No cost change). Only savings carry a £ figure; adders, refusals, transfers and avoidance are excluded from every total. "Source pointer" names the exact file, sheet and row.',
 ]
 for i, n in enumerate(notes, NR + 1):
     x = cv.cell(row=i, column=2, value=f'•  {n}'); x.font = font(); x.alignment = Alignment(wrap_text=True, vertical='top')

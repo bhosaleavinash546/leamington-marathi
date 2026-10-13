@@ -1,0 +1,770 @@
+[
+ {
+  "id": "tc26-m1",
+  "title": "Drop the sun and planets one steel grade",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-m1",
+   "title": "Drop the sun and planets one steel grade",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "M1",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 5",
+   "studyStatus": "Saving",
+   "lever": "material",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): The planetary is currently specified at 20MnCr5 carburised. 16MnCr5 carburised to the same case depth is a cheaper, widely used grade and is what most volume planetary sets in production actually run. The rating changes, so the set has to be re-rated rather than assumed equivalent. SPEC: 16MnCr5 in place of 20MnCr5, case depth held at 0.8-1.5 mm, ISO 6336 rating repeated at 542 N/mm* unit load",
+   "costReductionMechanism": "Cost effect (study): -£1.30*. SPEC: 16MnCr5 in place of 20MnCr5, case depth held at 0.8-1.5 mm, ISO 6336 rating repeated at 542 N/mm* unit load",
+   "riskNotes": "Duty / environment: Re-test: ISO 6336 rating repeated and one rig durability run. No change to wading, articulation or thermal. Trade-off: Lower core strength margin at the V8 rating. If we rate to the gearbox rather than the V8, this idea dies.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£1.30*",
+   "implementationDifficulty": "Low",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "£1.30 per vehicle",
+    "annualValue": "£104.0K at 80,000 vehicles/yr",
+    "calculationBasis": "Study cost effect -£1.30* per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.",
+    "qualitative": "Saving"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    24
+   ],
+   "studyPdfPages": [
+    24
+   ]
+  },
+  "annualSaving": "£104.0K at 80,000 vehicles/yr",
+  "costSavingType": "material",
+  "difficulty": "Low",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Saving] Drop the sun and planets one steel grade. The planetary is currently specified at 20MnCr5 carburised. 16MnCr5 carburised to the same case depth is a cheaper, widely used grade and is what most volume planetary sets in production actually run. The rating changes, so the set has to be re-rated rather than assumed equivalent."
+ },
+ {
+  "id": "tc26-m2",
+  "title": "Induction-harden the chain sprockets instead of carburising them",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-m2",
+   "title": "Induction-harden the chain sprockets instead of carburising them",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "M2",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 6",
+   "studyStatus": "Saving",
+   "lever": "material",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): A gear mesh concentrates load on one or two teeth, so it needs a deep uniform case. A chain spreads load across many links at once, which is why sprockets tolerate a shallower induction case. BorgWarner and Magna both run induction-hardened sprockets in production chain cases. SPEC: induction case in place of carburised case on both sprockets, hardness 55-60 HRC at the flank",
+   "costReductionMechanism": "Cost effect (study): -£2.16*. SPEC: induction case in place of carburised case on both sprockets, hardness 55-60 HRC at the flank",
+   "riskNotes": "Duty / environment: None. The chain path is not affected by wading or articulation. Trade-off: Slightly lower wear margin over 240,000 km of continuous full-time operation. Verify at durability.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£2.16*",
+   "implementationDifficulty": "Low",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "£2.16 per vehicle",
+    "annualValue": "£172.8K at 80,000 vehicles/yr",
+    "calculationBasis": "Study cost effect -£2.16* per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.",
+    "qualitative": "Saving"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    24
+   ],
+   "studyPdfPages": [
+    24
+   ]
+  },
+  "annualSaving": "£172.8K at 80,000 vehicles/yr",
+  "costSavingType": "material",
+  "difficulty": "Low",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Saving] Induction-harden the chain sprockets instead of carburising them. A gear mesh concentrates load on one or two teeth, so it needs a deep uniform case. A chain spreads load across many links at once, which is why sprockets tolerate a shallower induction case. BorgWarner and Magna both run induction-hardened sprockets in production chain cases."
+ },
+ {
+  "id": "tc26-m3",
+  "title": "Do not buy carbon friction plates for the torque-biasing clutch",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-m3",
+   "title": "Do not buy carbon friction plates for the torque-biasing clutch",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "M3",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 7",
+   "studyStatus": "Cost avoidance",
+   "lever": "material",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): Carbon friction material is bought where sustained slip is a design case. On a full-time system with a mechanical lock available, the clutch slips briefly and rarely. Paper friction is what most on-demand clutches in this class run. SPEC: paper friction material retained; specify slip energy per engagement and cumulative energy on the 3,500 kg tow gradient",
+   "costReductionMechanism": "Cost effect (study): -£9* avoided (a cost we do not add). SPEC: paper friction material retained; specify slip energy per engagement and cumulative energy on the 3,500 kg tow gradient",
+   "riskNotes": "Duty / environment: Re-validate if the tow-hill thermal case shows clutch temperature rising — this idea is conditional on that test. Trade-off: If the thermal case fails, this reverses and becomes a cost adder. Say so now rather than discovering it later.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£9* avoided (a cost we do not add)",
+   "implementationDifficulty": "Low",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "No saving booked",
+    "annualValue": "No saving booked — cost avoidance",
+    "calculationBasis": "Study cost effect: -£9* avoided (a cost we do not add). Classed as 'Cost avoidance', so it is NOT counted as a saving. Figures marked * are the study's directional estimates.",
+    "qualitative": "Cost avoidance"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    24
+   ],
+   "studyPdfPages": [
+    24
+   ]
+  },
+  "annualSaving": "No saving booked — cost avoidance",
+  "costSavingType": "material",
+  "difficulty": "Low",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Cost avoidance] Do not buy carbon friction plates for the torque-biasing clutch. Carbon friction material is bought where sustained slip is a design case. On a full-time system with a mechanical lock available, the clutch slips briefly and rarely. Paper friction is what most on-demand clutches in this class run."
+ },
+ {
+  "id": "tc26-p1",
+  "title": "Cast the bearing bores and mount faces closer to net shape",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-p1",
+   "title": "Cast the bearing bores and mount faces closer to net shape",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "P1",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 8",
+   "studyStatus": "Saving",
+   "lever": "process",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): The main case carries about 14 minutes of machining, the largest single machining line in the assembly. Casting the bores closer to net and holding the datum strategy to one setup takes minutes out without touching function. The bore true position tolerance is unchanged — only the amount of metal removed changes. SPEC: housing machining from 14.0 to 10.0 minutes; bearing bore true position tolerance unchanged",
+   "costReductionMechanism": "Cost effect (study): -£4.93*. SPEC: housing machining from 14.0 to 10.0 minutes; bearing bore true position tolerance unchanged",
+   "riskNotes": "Duty / environment: None. Bore position, which is what sets chain centre distance, is unchanged. Trade-off: Requires the caster to hold tighter as-cast tolerance, which needs die investment and a capable supplier.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£4.93*",
+   "implementationDifficulty": "Medium",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "£4.93 per vehicle",
+    "annualValue": "£394.4K at 80,000 vehicles/yr",
+    "calculationBasis": "Study cost effect -£4.93* per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.",
+    "qualitative": "Saving"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    25,
+    27
+   ],
+   "studyPdfPages": [
+    25,
+    27
+   ]
+  },
+  "annualSaving": "£394.4K at 80,000 vehicles/yr",
+  "costSavingType": "process",
+  "difficulty": "Medium",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Saving] Cast the bearing bores and mount faces closer to net shape. The main case carries about 14 minutes of machining, the largest single machining line in the assembly. Casting the bores closer to net and holding the datum strategy to one setup takes minutes out without touching function. The bore true position tolerance is unchanged — only the amount of metal removed changes."
+ },
+ {
+  "id": "tc26-p2",
+  "title": "Power-skive the internal ring gear instead of shaping it",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-p2",
+   "title": "Power-skive the internal ring gear instead of shaping it",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "P2",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 9",
+   "studyStatus": "Saving",
+   "lever": "process",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): The ring gear is currently shaped, which is slow on an internal tooth form. Power skiving is the established alternative and Liebherr and EMAG sell machines specifically for it. It is a straight cycle-time substitution on the same part. SPEC: ring gear cutting from 4.0 to 2.2 minutes; quality grade held at the current ISO 1328 class",
+   "costReductionMechanism": "Cost effect (study): -£3.63*. SPEC: ring gear cutting from 4.0 to 2.2 minutes; quality grade held at the current ISO 1328 class",
+   "riskNotes": "Duty / environment: None. Same geometry, same heat treatment, same rating. Trade-off: Needs the capability in house or at the supplier. If we buy the case complete, this is the supplier's saving and we only capture it through the RFQ.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£3.63*",
+   "implementationDifficulty": "Medium",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "£3.63 per vehicle",
+    "annualValue": "£290.4K at 80,000 vehicles/yr",
+    "calculationBasis": "Study cost effect -£3.63* per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.",
+    "qualitative": "Saving"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    25,
+    27
+   ],
+   "studyPdfPages": [
+    25,
+    27
+   ]
+  },
+  "annualSaving": "£290.4K at 80,000 vehicles/yr",
+  "costSavingType": "process",
+  "difficulty": "Medium",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Saving] Power-skive the internal ring gear instead of shaping it. The ring gear is currently shaped, which is slow on an internal tooth form. Power skiving is the established alternative and Liebherr and EMAG sell machines specifically for it. It is a straight cycle-time substitution on the same part."
+ },
+ {
+  "id": "tc26-p3",
+  "title": "Near-net forge the output flanges",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-p3",
+   "title": "Near-net forge the output flanges",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "P3",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 10",
+   "studyStatus": "Saving",
+   "lever": "process",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): Both output flanges are machined from bar today. Near-net forging removes most of the metal before the machine sees it, which is standard practice for flanges at this volume. SPEC: flange machining from 2.4 to 1.4 minutes for the pair; flange face runout tolerance unchanged",
+   "costReductionMechanism": "Cost effect (study): -£1.21*. SPEC: flange machining from 2.4 to 1.4 minutes for the pair; flange face runout tolerance unchanged",
+   "riskNotes": "Duty / environment: None mechanically, but flange face runout feeds propshaft balance, so the runout tolerance is held, not relaxed. Trade-off: Forging tooling investment amortised over the family. Below 80,000/yr the case weakens.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£1.21*",
+   "implementationDifficulty": "Low",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "£1.21 per vehicle",
+    "annualValue": "£96.8K at 80,000 vehicles/yr",
+    "calculationBasis": "Study cost effect -£1.21* per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.",
+    "qualitative": "Saving"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    25,
+    27
+   ],
+   "studyPdfPages": [
+    25,
+    27
+   ]
+  },
+  "annualSaving": "£96.8K at 80,000 vehicles/yr",
+  "costSavingType": "process",
+  "difficulty": "Low",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Saving] Near-net forge the output flanges. Both output flanges are machined from bar today. Near-net forging removes most of the metal before the machine sees it, which is standard practice for flanges at this volume."
+ },
+ {
+  "id": "tc26-p4",
+  "title": "Set bearing preload with a solid spacer rather than a collapsible one",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-p4",
+   "title": "Set bearing preload with a solid spacer rather than a collapsible one",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "P4",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 11",
+   "studyStatus": "Cost adder (defended)",
+   "lever": "process",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): A collapsible spacer is cheaper per piece and depends on a crush force applied on the line. A solid spacer costs a selection operation but sets preload by dimension instead of by force. SPEC: preload set by ground solid spacer; pinion bearing preload window held at 1.5–3.0 Nm rolling torque, spacer ground to 0.01 mm at build",
+   "costReductionMechanism": "Cost effect (study): +£1.90* — a cost ADDER we defend. SPEC: preload set by ground solid spacer; pinion bearing preload window held at 1.5–3.0 Nm rolling torque, spacer ground to 0.01 mm at build",
+   "riskNotes": "Duty / environment: This is a PROTECTED line. Preload loss is heard as order content long before it is found as damage. Trade-off: Adds an assembly selection step and a small inventory of spacer thicknesses. It is not available as a saving in the other direction.",
+   "evidencePointer": "",
+   "studyCostEffect": "+£1.90* — a cost ADDER we defend",
+   "implementationDifficulty": "Low",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "No saving booked",
+    "annualValue": "No saving booked — cost adder (defended)",
+    "calculationBasis": "Study cost effect: +£1.90* — a cost ADDER we defend. Classed as 'Cost adder (defended)', so it is NOT counted as a saving. Figures marked * are the study's directional estimates.",
+    "qualitative": "Cost adder (defended)"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    24,
+    27
+   ],
+   "studyPdfPages": [
+    24,
+    27
+   ]
+  },
+  "annualSaving": "No saving booked — cost adder (defended)",
+  "costSavingType": "process",
+  "difficulty": "Low",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Cost adder (defended)] Set bearing preload with a solid spacer rather than a collapsible one. A collapsible spacer is cheaper per piece and depends on a crush force applied on the line. A solid spacer costs a selection operation but sets preload by dimension instead of by force."
+ },
+ {
+  "id": "tc26-d1",
+  "title": "Delete the torque-biasing multiplate clutch and lock the centre differential mechanically",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-d1",
+   "title": "Delete the torque-biasing multiplate clutch and lock the centre differential mechanically",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "D1",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 12",
+   "studyStatus": "Saving",
+   "lever": "design",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): The clutch gives a controllable front/rear bias and a software asset. A dog-clutch lock gives 100% lock and nothing else. INEOS ships the Grenadier this way with a mechanical centre lock usable in both ranges, and still sells it as a serious off-road vehicle. Traction between the axles then falls to brake intervention, which we already have. SPEC: 6-plate clutch pack and ball-ramp deleted; centre lock by dog clutch giving 100% lock in place of a 0–100% variable bias; brake-based intervention calibration extended to the centre path",
+   "costReductionMechanism": "Cost effect (study): -£25*. SPEC: 6-plate clutch pack and ball-ramp deleted; centre lock by dog clutch giving 100% lock in place of a 0–100% variable bias; brake-based intervention calibration extended to the centre path",
+   "riskNotes": "Duty / environment: Re-validate. Traction strategy changes, so articulation and low-mu testing repeat. Wading and thermal improve slightly. Trade-off: Loses pre-emptive on-road torque bias, which is a refinement and dynamics claim in a luxury vehicle. This is a brand decision with a price, not an engineering decision.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£25*",
+   "implementationDifficulty": "High",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "£25.00 per vehicle",
+    "annualValue": "£2.00M at 80,000 vehicles/yr",
+    "calculationBasis": "Study cost effect -£25* per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.",
+    "qualitative": "Saving"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    26,
+    27
+   ],
+   "studyPdfPages": [
+    26,
+    27
+   ]
+  },
+  "annualSaving": "£2.00M at 80,000 vehicles/yr",
+  "costSavingType": "design",
+  "difficulty": "High",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Saving] Delete the torque-biasing multiplate clutch and lock the centre differential mechanically. The clutch gives a controllable front/rear bias and a software asset. A dog-clutch lock gives 100% lock and nothing else. INEOS ships the Grenadier this way with a mechanical centre lock usable in both ranges, and still sells it as a serious off-road vehicle. Traction between the axles then falls to brake intervention, which we already have."
+ },
+ {
+  "id": "tc26-d2",
+  "title": "Delete the actuator module and motor and shift range with a mechanical lever",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-d2",
+   "title": "Delete the actuator module and motor and shift range with a mechanical lever",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "D2",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 13",
+   "studyStatus": "Saving",
+   "lever": "design",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): One motor currently drives both the range change and the clutch on the Defender architecture. The Grenadier does the same job with a lever and no module at all. It also removes the failure mode where the case hangs in neutral, which is a documented field complaint on this class of vehicle. SPEC: control module, brushless DC motor and position sensor deleted; lever, linkage and detent added at about £5",
+   "costReductionMechanism": "Cost effect (study): -£43*. SPEC: control module, brushless DC motor and position sensor deleted; lever, linkage and detent added at about £5",
+   "riskNotes": "Duty / environment: None mechanically. Loses shift-on-the-fly within a speed window and terrain-mode integration. Trade-off: Almost certainly rejected on brand grounds in a luxury vehicle. It is in the register because the number belongs in front of the people making that call. Note that D1 and D2 overlap: taking both does not save the sum, because one motor serves both functions today.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£43*",
+   "implementationDifficulty": "High",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "£43.00 per vehicle",
+    "annualValue": "£3.44M at 80,000 vehicles/yr",
+    "calculationBasis": "Study cost effect -£43* per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.",
+    "qualitative": "Saving"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    26,
+    27
+   ],
+   "studyPdfPages": [
+    26,
+    27
+   ]
+  },
+  "annualSaving": "£3.44M at 80,000 vehicles/yr",
+  "costSavingType": "design",
+  "difficulty": "High",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Saving] Delete the actuator module and motor and shift range with a mechanical lever. One motor currently drives both the range change and the clutch on the Defender architecture. The Grenadier does the same job with a lever and no module at all. It also removes the failure mode where the case hangs in neutral, which is a documented field complaint on this class of vehicle."
+ },
+ {
+  "id": "tc26-d3",
+  "title": "Flange-mount the transfer case directly to the transmission and delete the adapter housing",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-d3",
+   "title": "Flange-mount the transfer case directly to the transmission and delete the adapter housing",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "D3",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 14",
+   "studyStatus": "Saving",
+   "lever": "design",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): The G-Class W464 transfer case is flange-mounted directly onto the 9G-TRONIC. That deletes a separate front output housing interface, a set of fasteners, a shaft coupling and one sealing joint. SPEC: front output housing / adapter cover deleted; interface moved to the transmission rear face; 1 shaft exit, 1 lip seal and 8 fasteners removed; overall driveline length shortened by about 35 mm*",
+   "costReductionMechanism": "Cost effect (study): -£16*. SPEC: front output housing / adapter cover deleted; interface moved to the transmission rear face; 1 shaft exit, 1 lip seal and 8 fasteners removed; overall driveline length shortened by about 35 mm*",
+   "riskNotes": "Duty / environment: Re-validate. It changes the mounting reaction path under 3,500 kg tow and moves the case position, so ground clearance and propshaft angles are re-checked. Trade-off: Only available if it is decided at the package gate. After that the interface is frozen and this idea is dead for the life of the programme.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£16*",
+   "implementationDifficulty": "Medium",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "£16.00 per vehicle",
+    "annualValue": "£1.28M at 80,000 vehicles/yr",
+    "calculationBasis": "Study cost effect -£16* per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.",
+    "qualitative": "Saving"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    26,
+    27
+   ],
+   "studyPdfPages": [
+    26,
+    27
+   ]
+  },
+  "annualSaving": "£1.28M at 80,000 vehicles/yr",
+  "costSavingType": "design",
+  "difficulty": "Medium",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Saving] Flange-mount the transfer case directly to the transmission and delete the adapter housing. The G-Class W464 transfer case is flange-mounted directly onto the 9G-TRONIC. That deletes a separate front output housing interface, a set of fasteners, a shaft coupling and one sealing joint."
+ },
+ {
+  "id": "tc26-d4",
+  "title": "Carry one transfer case across the I6 and V8 variants at the V8 rating",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-d4",
+   "title": "Carry one transfer case across the I6 and V8 variants at the V8 rating",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "D4",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 15",
+   "studyStatus": "Saving",
+   "lever": "design",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): Two ratings means two gear sets, two chains, two validation programmes and two service part numbers. One case rated for the V8 over-specifies the I6 by about 40% in input torque, and the over-specification costs less than the duplication does at this volume. SPEC: single specification rated to 3,168 Nm transfer case INPUT torque; I6 variant carries the over-specification",
+   "costReductionMechanism": "Cost effect (study): -£8* per unit across the family. SPEC: single specification rated to 3,168 Nm transfer case INPUT torque; I6 variant carries the over-specification",
+   "riskNotes": "Duty / environment: None. The I6 sees a stronger unit than it needs. Trade-off: The I6 carries mass and cost it does not need. If the V8 take rate is very low this reverses, so it depends on the volume split — state that assumption when it is presented.",
+   "evidencePointer": "",
+   "studyCostEffect": "-£8* per unit across the family",
+   "implementationDifficulty": "Medium",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "£8.00 per vehicle",
+    "annualValue": "£640.0K at 80,000 vehicles/yr",
+    "calculationBasis": "Study cost effect -£8* per unit across the family per vehicle × 80,000 vehicles/yr (the study's stated amortisation volume). Figures marked * are the study's directional estimates, at its declared FX EUR→GBP 0.8644.",
+    "qualitative": "Saving"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    26,
+    27,
+    28
+   ],
+   "studyPdfPages": [
+    26,
+    27,
+    28
+   ]
+  },
+  "annualSaving": "£640.0K at 80,000 vehicles/yr",
+  "costSavingType": "design",
+  "difficulty": "Medium",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Saving] Carry one transfer case across the I6 and V8 variants at the V8 rating. Two ratings means two gear sets, two chains, two validation programmes and two service part numbers. One case rated for the V8 over-specifies the I6 by about 40% in input torque, and the over-specification costs less than the duplication does at this volume."
+ },
+ {
+  "id": "tc26-d5",
+  "title": "Route the breather above the 900 mm wading line with a filtered cap",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-d5",
+   "title": "Route the breather above the 900 mm wading line with a filtered cap",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "D5",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 16",
+   "studyStatus": "Cost adder (defended)",
+   "lever": "design",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): A breather below the wading line lets water in on a single crossing and the unit is finished. Raising it is a hose, a bracket and a filtered cap. SPEC: breather outlet above the 900 mm wading line, filtered cap, hose routed clear of the exhaust",
+   "costReductionMechanism": "Cost effect (study): +£4* — a cost ADDER we defend. SPEC: breather outlet above the 900 mm wading line, filtered cap, hose routed clear of the exhaust",
+   "riskNotes": "Duty / environment: PROTECTED LINE. This is the wading duty case and it is not a saving in either direction. Trade-off: None worth arguing about. It is in the register so nobody deletes it later looking for percentage points.",
+   "evidencePointer": "",
+   "studyCostEffect": "+£4* — a cost ADDER we defend",
+   "implementationDifficulty": "Low",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "No saving booked",
+    "annualValue": "No saving booked — cost adder (defended)",
+    "calculationBasis": "Study cost effect: +£4* — a cost ADDER we defend. Classed as 'Cost adder (defended)', so it is NOT counted as a saving. Figures marked * are the study's directional estimates.",
+    "qualitative": "Cost adder (defended)"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    27
+   ],
+   "studyPdfPages": [
+    27
+   ]
+  },
+  "annualSaving": "No saving booked — cost adder (defended)",
+  "costSavingType": "design",
+  "difficulty": "Low",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Cost adder (defended)] Route the breather above the 900 mm wading line with a filtered cap. A breather below the wading line lets water in on a single crossing and the unit is finished. Raising it is a hose, a bracket and a filtered cap."
+ },
+ {
+  "id": "tc26-d6",
+  "title": "Add a front-axle disconnect at the transfer case",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-d6",
+   "title": "Add a front-axle disconnect at the transfer case",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "D6",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 17",
+   "studyStatus": "Cost adder (defended)",
+   "lever": "design",
+   "maturity": "Emerging",
+   "technicalDescription": "How it works (benchmark as named by the study): In full-time 4WD the front path turns continuously and the front hypoid churns oil while carrying almost no torque on tarmac. A disconnect stops that. It is the standard answer on car-derived AWD and is spreading into off-road applications. SPEC: front output disconnect clutch or dog; target measured WLTP driveline loss reduction of 1-2%*, to be confirmed by measurement before the cost is committed",
+   "costReductionMechanism": "Cost effect (study): +£48* — a cost ADDER assessed against a measured cycle gain. SPEC: front output disconnect clutch or dog; target measured WLTP driveline loss reduction of 1-2%*, to be confirmed by measurement before the cost is committed",
+   "riskNotes": "Duty / environment: Re-validate. Re-engagement behaviour on the trail becomes a new failure mode, and the disconnect must fail engaged, not disengaged. Trade-off: Adds a mechanism and a control path to an assembly whose main virtue is that it always works. Cost it honestly against a measured number, not a modelled one.",
+   "evidencePointer": "",
+   "studyCostEffect": "+£48* — a cost ADDER assessed against a measured cycle gain",
+   "implementationDifficulty": "High",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "No saving booked",
+    "annualValue": "No saving booked — cost adder (defended)",
+    "calculationBasis": "Study cost effect: +£48* — a cost ADDER assessed against a measured cycle gain. Classed as 'Cost adder (defended)', so it is NOT counted as a saving. Figures marked * are the study's directional estimates.",
+    "qualitative": "Cost adder (defended)"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    27
+   ],
+   "studyPdfPages": [
+    27
+   ]
+  },
+  "annualSaving": "No saving booked — cost adder (defended)",
+  "costSavingType": "design",
+  "difficulty": "High",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Cost adder (defended)] Add a front-axle disconnect at the transfer case. In full-time 4WD the front path turns continuously and the front hypoid churns oil while carrying almost no torque on tarmac. A disconnect stops that. It is the standard answer on car-derived AWD and is spreading into off-road applications."
+ },
+ {
+  "id": "tc26-d7",
+  "title": "Do not delete the lubrication pump",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-d7",
+   "title": "Do not delete the lubrication pump",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "D7",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 18",
+   "studyStatus": "Refused saving (protected)",
+   "lever": "design",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): Deleting the pump and relying on splash saves about £10 and is the kind of idea that looks attractive on a spreadsheet. Sustained low-range crawl is high torque with essentially no airflow, and it is exactly the case where splash lubrication runs out of margin. SPEC: pump retained; specify a 150 °C* oil temperature limit and run the 30-minute sustained low-range crawl case at 6,398 Nm transfer case OUTPUT torque to confirm the margin",
+   "costReductionMechanism": "Cost effect (study): £0 — the saving is refused. SPEC: pump retained; specify a 150 °C* oil temperature limit and run the 30-minute sustained low-range crawl case at 6,398 Nm transfer case OUTPUT torque to confirm the margin",
+   "riskNotes": "Duty / environment: PROTECTED in effect. The duty case that kills it is sustained crawl, which is the vehicle's headline capability. Trade-off: None. It is listed so that when somebody proposes it in six months, the answer is already written down with the reason.",
+   "evidencePointer": "",
+   "studyCostEffect": "£0 — the saving is refused",
+   "implementationDifficulty": "Low",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "No saving booked",
+    "annualValue": "No saving booked — refused saving (protected)",
+    "calculationBasis": "Study cost effect: £0 — the saving is refused. Classed as 'Refused saving (protected)', so it is NOT counted as a saving. Figures marked * are the study's directional estimates.",
+    "qualitative": "Refused saving (protected)"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    27
+   ],
+   "studyPdfPages": [
+    27
+   ]
+  },
+  "annualSaving": "No saving booked — refused saving (protected)",
+  "costSavingType": "design",
+  "difficulty": "Low",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Refused saving (protected)] Do not delete the lubrication pump. Deleting the pump and relying on splash saves about £10 and is the kind of idea that looks attractive on a spreadsheet. Sustained low-range crawl is high torque with essentially no airflow, and it is exactly the case where splash lubrication runs out of margin."
+ },
+ {
+  "id": "tc26-d8",
+  "title": "Resist the gear-drive upgrade until there is a measurement",
+  "system": "Transfer Case",
+  "submittedBy": "Study: Transfer-Case Study 2026 (user-supplied)",
+  "verified": 0,
+  "stars": 0,
+  "level": null,
+  "ideaData": {
+   "id": "tc26-d8",
+   "title": "Resist the gear-drive upgrade until there is a measurement",
+   "study": "Transfer-Case Study 2026",
+   "studyCode": "TC26",
+   "sourceFile": "Transfer_Case_Master_2026.xlsx",
+   "confidenceLevel": "estimated",
+   "originalId": "D8",
+   "sourcePointer": "Transfer_Case_Master_2026.xlsx › '10 VAVE Register' row 19",
+   "studyStatus": "Cost avoidance",
+   "lever": "design",
+   "maturity": "Proven",
+   "technicalDescription": "How it works (benchmark as named by the study): A gear drive between the shafts is periodically proposed on NVH grounds. BorgWarner, which makes both, states chain beats gear on cost, axial load, noise, efficiency and centre-distance tolerance. Our own inherited workbook says the opposite. Neither is a measurement. SPEC: chain retained; commission a rig loss and gear-order measurement on 2 units at matched centre distance, target resolution 0.2 percentage points of efficiency, before any gear-drive cost is committed",
+   "costReductionMechanism": "Cost effect (study): +£30* avoided*. SPEC: chain retained; commission a rig loss and gear-order measurement on 2 units at matched centre distance, target resolution 0.2 percentage points of efficiency, before any gear-drive cost is committed",
+   "riskNotes": "Duty / environment: None while we stay on chain. Trade-off: If the measurement goes the other way, this reverses. That is the point of taking the measurement rather than repeating either claim.",
+   "evidencePointer": "",
+   "studyCostEffect": "+£30* avoided*",
+   "implementationDifficulty": "Low",
+   "powertrain": "ICE / MHEV (longitudinal I6 ~500 Nm, V8 ~700 Nm, 8AT — study reference vehicle)",
+   "offRoad": true,
+   "targetVehicle": "SCOPE: two-speed transfer case with lockable centre differential and 2.93:1 low range, for the reference vehicle in A1 (longitudinal I6 ~500 Nm, V8 variant ~700 Nm, 8AT rated 750 Nm INPUT torque, final drive 3.54, 33-in tyres, 3,500 kg braked tow, 900 mm wading, 240,000 km durability, EU plant, >=80,000/yr, 2026 prices). DIRECTIONAL should-cost, not a validated teardown BOM. It ranks effort and tests sensitivity. Every rate below is an input you can argue with — change one and the whole model moves.",
+   "studyCombinedCapture": "COMBINED CAPTURE — honest, and NOT the sum. The saving cards add to roughly £105 and that number is wrong for four reasons. D1 and D2 overlap, because one motor drives both the range change and the clutch today, so taking both saves less than the two figures added together. D1 and D2 are also brand decisions that will most likely be refused in a luxury vehicle, and a refused idea captures nothing. P1, P2 and P3 are supplier savings if we buy the case complete, which we probably will — we capture them through the RFQ, not through our own plant. And D3 is only available if it is taken at the package gate, while D4 depends on a volume split we have not fixed. A realistic engineering-only capture, excluding D1 and D2, is £22-29* gross; net of the protected adders P4 and D5 it is £16-23* on a £355 assembly, roughly 5-7%. Add the actuator RFQ at -25% and it becomes £27-34*. That is the number to commit to, and it is the number this study will be judged on.",
+   "costSavingPotential": {
+    "perVehicle": "No saving booked",
+    "annualValue": "No saving booked — cost avoidance",
+    "calculationBasis": "Study cost effect: +£30* avoided*. Classed as 'Cost avoidance', so it is NOT counted as a saving. Figures marked * are the study's directional estimates.",
+    "qualitative": "Cost avoidance"
+   },
+   "volumeBasis": "Study amortisation volume 80,000 vehicles/yr. Savings across ideas are NOT additive: the study states that ideas in a conflict set are mutually exclusive and that its combined capture is not the sum of the cards.",
+   "studyDeckSlides": [
+    25
+   ],
+   "studyPdfPages": [
+    25
+   ]
+  },
+  "annualSaving": "No saving booked — cost avoidance",
+  "costSavingType": "design",
+  "difficulty": "Low",
+  "timeToImplement": "Not stated",
+  "description": "[Transfer-Case Study 2026 · Cost avoidance] Resist the gear-drive upgrade until there is a measurement. A gear drive between the shafts is periodically proposed on NVH grounds. BorgWarner, which makes both, states chain beats gear on cost, axial load, noise, efficiency and centre-distance tolerance. Our own inherited workbook says the opposite. Neither is a measurement."
+ }
+]

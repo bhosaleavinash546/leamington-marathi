@@ -790,6 +790,17 @@ seedMarketplaceIdeasFromFile('marketplace-interior-exterior-biw-chassis-ideas.js
 // Off-Road Features commodity (DECISIONS 127): researched off-road ideas for the
 // luxury off-road SUV, filed by ideaData.commodity; engineering-reviewed.
 seedMarketplaceIdeasFromFile('marketplace-offroad-features-ideas.json', 'Off-Road Features researched ideas');
+// User-supplied value-engineering studies, imported VERBATIM with their own
+// decisions as studyStatus and an exact source pointer per idea (DECISIONS 128).
+for (const [file, label] of [
+  ['marketplace-study-edu-function-analysis.json', 'study: EDU Function Analysis'],
+  ['marketplace-study-48v-mhev-should-cost.json', 'study: 48V MHEV Should-Cost v1.8'],
+  ['marketplace-study-hs26-half-shafts.json', 'study: Half-Shaft 2026'],
+  ['marketplace-study-dif26-differentials.json', 'study: Differential 2026'],
+  ['marketplace-study-ps26-prop-shafts.json', 'study: Prop-Shaft 2026'],
+  ['marketplace-study-tc26-transfer-case.json', 'study: Transfer-Case 2026'],
+  ['marketplace-study-ix3-gen6-battery-benchmark.json', 'study: BMW iX3 Gen6 Battery Benchmark'],
+]) seedMarketplaceIdeasFromFile(file, label);
 
 // Retired ideas: removed from their pack after review (impossible physics, a
 // negative saving, or not feasible as described). The seeder only inserts and
