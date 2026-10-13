@@ -491,21 +491,21 @@
     {
      "distributor": "Farnell",
      "qty": 1000,
-     "price": 25.45,
-     "currency": "SEK",
-     "url": "https://se.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+     "price": 2.34,
+     "currency": "EUR",
+     "url": "https://nl.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
      "date": "2026-10-13"
     },
     {
      "distributor": "Farnell",
      "qty": 1000,
-     "price": 26.9,
-     "currency": "NOK",
-     "url": "https://no.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+     "price": 25.45,
+     "currency": "SEK",
+     "url": "https://se.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
      "date": "2026-10-13"
     }
    ],
-   "notes": "DigiKey 1K cut-tape price via sourceesb aggregator; a T&R figure ($2.50) shown without a clear break, not recorded. Review 13 Oct 2026: setObs - independent review (list-B-random) corrected the recorded price: Recorded USD 2.73 was read from sourceesb.com, a disallowed source (REVIEW-RULES: never Source ESB). Digi-Key prices in results only on punchouttest hosts (excluded). Farnell lists it as 'MEMS sensor AEC-Q100': 1000+ SEK."
+   "notes": "DigiKey 1K cut-tape price via sourceesb aggregator; a T&R figure ($2.50) shown without a clear break, not recorded. Review 13 Oct 2026: setObs - independent review (list-B-random) corrected the recorded price: Recorded USD 2.73 was read from sourceesb.com, a disallowed source (REVIEW-RULES: never Source ESB). Digi-Key prices in results only on punchouttest hosts (excluded). Farnell lists it as 'MEMS sensor AEC-Q100': 1000+ SEK. Review 13 Oct 2026: setObs - independent review (list-D) corrected the recorded price: Farnell NL (https://nl.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958): 1000+ EUR 2.34 ex VAT, cut tape, 3,477 in stock, listed 'MEMS sensor AEC-Q100'. The recorded SEK 25.45 @1000 (~."
   },
   {
    "mpn": "BMI088",

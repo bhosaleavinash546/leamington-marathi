@@ -263,6 +263,121 @@
    "field": "pkg",
    "value": "QFN-40",
    "reason": "independent review: DW3220 is a 40-pin QFN, not WLCSP"
+  },
+  {
+   "mpn": "LFE5U-25F-8BG256C",
+   "action": "dropPart",
+   "reason": "flagged and not confirmed by the independent review (list-C): Two searches: no Mouser/Digi-Key/Farnell price for the exact C-grade code (code exists - reseller Dasenic lists it, IC FPGA 197 I/O 256CABGA, 0..85 C). Only seen: Digi-Key tray price of the I-grade sibling LFE5U-25F-8BG2"
+  },
+  {
+   "mpn": "LFE5U-25F-6TG144C",
+   "action": "dropPart",
+   "reason": "flagged and not confirmed by the independent review (list-C): No listing found for the exact -6 TQFP-144 code. Reseller Dasenic (not franchised) lists LFE5U-25F-8TG144C at USD 37.58 @11-300 and LFE5U-12F-6TG144C at USD 10.35 @26-100 (https://ru.dasenic.com/product/lattice-semicondu"
+  },
+  {
+   "mpn": "9-2304372-9",
+   "action": "dropPart",
+   "reason": "flagged and not confirmed by the independent review (list-C): Two searches (exact code + MATEnet; Farnell order code 4155204) found no listing at all. NOTE: the recorded Farnell FR URL slug reads 'conn-automobile-male-28p-3a-60vdc' - a 28-position connector - which contradicts desc"
+  },
+  {
+   "mpn": "NCJ29D5CHN/00201Y",
+   "action": "dropPart",
+   "reason": "flagged and not confirmed by the independent review (list-C): Search for the exact code returned nothing for 00201Y. Cross-check only: sibling 00200Y Avnet USD 6.38 @4000; recorded INR 625.24 @4000 ~ USD 7.1 - consistent within 25% whether or not GST is included, but the INR figure"
+  },
+  {
+   "mpn": "ADBMS6832MWCCSZ",
+   "action": "dropPart",
+   "reason": "flagged and not confirmed by the independent review (list-C): No distributor price found (JLCPCB page C18166020 is not an allowed price source). ADI lists the ADBMS6832M family at USD 10.82 per 1k (https://www.analog.com/jp/products/adbms6832m.html, manufacturer). Recorded LCSC USD"
+  },
+  {
+   "mpn": "FXPS7115DS4ST1",
+   "action": "dropPart",
+   "reason": "flagged and not confirmed by the independent review (list-C): Only a broker reference price found (Cytech, USD 2.70 @1000, 'last sale', not allowed). ST product page shows no price/distributor; NXP lists DS4ST1 as recommended for new designs. Recorded Digi-Key USD 4.25313 @2000 not"
+  },
+  {
+   "mpn": "0885005.DR",
+   "action": "dropPart",
+   "reason": "flagged and not confirmed by the independent review (list-C): Search for the exact code found no listing (only 0154xxx.DR siblings at LCSC USD 0.70-1.10 single-unit, a different, low-voltage series). Recorded Future USD 2.02 @1500 / 1.98 @3000 (0 stock, no price date) not seen. A 4"
+  },
+  {
+   "mpn": "ATA6570-GNQW1",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.5248,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C2987165.html",
+     "date": "2026-10-13",
+     "observedMpn": "ATA6570-GNQW0"
+    }
+   ],
+   "reason": "independent review (list-C) corrected the recorded price: Exact -GNQW1 code not found priced. RS JP JPY 150.33 @4000 (~USD 1.00; out of stock; consumption-tax basis not shown) is ~2x the LCSC price of the sibling ATA6570-GNQW0 (USD 0.5248 at 1,000+, 3,802 stock, 4,000/reel; htt"
+  },
+  {
+   "mpn": "IHLP4040DZER100M5A",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.6265,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/ihlp4040dzer100m5a/Vishay-Dale",
+     "date": "2026-10-13",
+     "observedMpn": "IHLP4040DZER100M5A"
+    }
+   ],
+   "reason": "independent review (list-C) corrected the recorded price: Findchips naming Digi-Key: USD 0.6265 @1000, 2,701 stock (https://origin-www.findchips.com/detail/ihlp4040dzer100m5a/Vishay-Dale); Digi-Key punchout page (not allowed, corroborating only) shows USD 0.62648 @1000 T&R. The"
+  },
+  {
+   "mpn": "CGA3E2C0G1H103J080AA",
+   "action": "dropPart",
+   "reason": "flagged and not confirmed by the independent review (list-C): Search for the exact code and reel price found no listing (only CGA3E siblings at LCSC; 100 pF C0G USD 0.0139 @1000 - not comparable for 10 nF). Recorded Future USD 0.0534 @4000 single-source, not seen; appears high for "
+  },
+  {
+   "mpn": "AIS2IHTR",
+   "action": "setObs",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 2.34,
+     "currency": "EUR",
+     "url": "https://nl.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 25.45,
+     "currency": "SEK",
+     "url": "https://se.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+     "date": "2026-10-13"
+    }
+   ],
+   "reason": "independent review (list-D) corrected the recorded price: Farnell NL (https://nl.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958): 1000+ EUR 2.34 ex VAT, cut tape, 3,477 in stock, listed 'MEMS sensor AEC-Q100'. The recorded SEK 25.45 @1000 (~"
+  },
+  {
+   "mpn": "MX25L12833FM2I-10G",
+   "action": "dropObs",
+   "match": {
+    "qty": 2000
+   },
+   "reason": "independent review (list-C): the 2,000 reel figure was a reel total divided by 2,000 on a zero-stock listing"
+  },
+  {
+   "mpn": "TLE4941",
+   "action": "dropPart",
+   "reason": "independent review (list-D): the price is for a bare, not-recommended code, 50-90% above the current orderable versions (USD 1.56-1.93)"
+  },
+  {
+   "mpn": "ATA6570-GNQW1",
+   "action": "setField",
+   "field": "observedMpn",
+   "value": "ATA6570-GNQW0",
+   "reason": "independent review (list-C): the replacement price is LCSC's listing of the sibling code ATA6570-GNQW0"
   }
  ]
 }

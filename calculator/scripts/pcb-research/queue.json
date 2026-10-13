@@ -1,5 +1,5 @@
 {
- "note": "Listed parts still WITHOUT a franchised-distributor price after six research rounds (6 Oct 2026); why = the last result. group: ndaOrDirect (no public price), qty1Only (listed only below 100 units), codeMayNotExist (the code as listed is not orderable - find the real automotive code), noUsablePrice (searched; brokers / unstated quantities / contradictory), notReSearched (budget). Next step is a Purchasing quote / BOM-tool export (scripts/pcb-catalogue-import.ts) or a Nexar key.",
+ "note": "Listed parts still WITHOUT a franchised-distributor price after six research rounds (6 Oct 2026); why = the last result. group: ndaOrDirect (no public price), qty1Only (listed only below 100 units), codeMayNotExist (the code as listed is not orderable - find the real automotive code), noUsablePrice (searched; brokers / unstated quantities / contradictory), notReSearched (budget). Next step is a Purchasing quote / BOM-tool export (scripts/pcb-catalogue-import.ts) or a Nexar key. Round 4 (13 Oct 2026, scripts/pcb-research/2026-10-13-gap) added its unpriced and not-reached lines; group notReached = budget ran out before the part was searched.",
  "remaining": [
   {
    "mpn": "DRA821U",
@@ -460,6 +460,1976 @@
    "mpn": "XRCGB24M000F2P51R0",
    "group": "noUsablePrice",
    "why": "Exact P51 automotive code still not listed; only consumer F2P00R0 (LCSC/Mouser/Newark) - different spec code, not recorded."
+  },
+  {
+   "mpn": "S32K341EHT0MPAST",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): Code confirmed (NXP part page; Farnell 4218655 'MaxQFP-100') but no price shown. Sibling S32K341EHT0MPBST (QFP-EP-172) on Mouser SE in SEK with break quantity not shown; element14 NZ only. Farnell UK S32K341 snippets give no code."
+  },
+  {
+   "mpn": "S32K322EHT0MPBST",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): Code confirmed (Farnell 4134289). Only 1+ prices found: Farnell UK GBP 11.670, Farnell IL USD 12.382 ex VAT; element14 AU/NZ (AUD/NZD, not usable). Farnell JP flags it 'no longer stocked'. S32K322EHT0MPAST (MaxQFP-100) only at element14 AU incl GST. Digi-Key listing is punchouttest (not allowed)."
+  },
+  {
+   "mpn": "SPC572L64E3BC6AR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): Mouser shows USD 15.15 @1 to 8.02 @1000 (reel), but the snippet mixed mouser.mx (USD) and mouser.ca (CAD) pages and the row mapping was uncertain, so not recorded. ST eStore USD 7.42 @500 (manufacturer). Digi-Key page shows no price."
+  },
+  {
+   "mpn": "SPC574K72E5C6FAR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): Mouser 800 (MOQ, one reel) at 15.94, 26-week lead; site currency (mouser.mx USD or mouser.ca CAD) not determinable, so not recorded."
+  },
+  {
+   "mpn": "AM62A34ASMSIAMBRQ1",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): Code active per TI package addendum (500-unit reel). Mouser IE EUR 40.64 @1 / UK GBP 40.29 @1, 2,019 in stock; lower break ('about EUR 27.92') quantity not shown, not recorded. AM62P-Q1 not found at distributors."
+  },
+  {
+   "mpn": "MIMX9596AVZXNAD",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): Code on NXP part page only; no distributor listing. Industrial sibling MIMX9596CVZXNAC on Mouser SK EUR 70.43 @1, lower tiers 58.07 / 54.98 with quantities not shown (not recorded)."
+  },
+  {
+   "mpn": "S32M244CCABWKHST",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): Farnell CH only (CHF 15.460 @1 to 10.810 @100+ ex VAT) - CHF not usable. Avnet lists CCABWKHST / LCABWKHST without prices. Tanotis is a reseller (not allowed)."
+  },
+  {
+   "mpn": "CYT2B98CACQ0AZEGS",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): Infineon part page (active, tray 400). Mouser lists two CYT2B98 variants non-stocked, MOQ 300, 39-week lead, no price. CYT2B78 not found. Cytech CYT2B75 is a broker (not recorded)."
+  },
+  {
+   "mpn": "MLX81116",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): No orderable chip code or price found; Mouser lists only the MLX81116 development kit. MLX81160 appears only in a programmer description; MLX81339 not found."
+  },
+  {
+   "mpn": "TDA4AL88 / TDA4VEN / TDA4VPE (TI Jacinto)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): ADAS / vision SoCs; wave 1 found no listing, budget spent on higher-yield parts"
+  },
+  {
+   "mpn": "TMS320F28P559-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): C2000 real-time MCU for traction / OBC; budget spent"
+  },
+  {
+   "mpn": "AM6442 automotive / AM62P-Q1 orderable codes",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): Sitara gateway / display processors; AM62P codes not found, budget spent"
+  },
+  {
+   "mpn": "i.MX 8DualX automotive (MIMX8DX…)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): cluster / display processor; budget spent"
+  },
+  {
+   "mpn": "Renesas RA6 / RA8 automotive, RL78/F25, RH850/U2B (R7F702Z…)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): body / zonal MCUs; budget spent"
+  },
+  {
+   "mpn": "Stellar SR5E1E3",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): ST electrification MCU (OBC / DC-DC); budget spent"
+  },
+  {
+   "mpn": "AVR64DD automotive (VAO)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): 8-bit sensor MCU; no VAO listing found for AVR DA, DD not searched separately"
+  },
+  {
+   "mpn": "Elmos E523.52 / E521.39",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): LIN motor-control SoCs; budget spent"
+  },
+  {
+   "mpn": "NVIDIA DRIVE Orin / Thor, Mobileye EyeQ, Qualcomm SA8xxx, Renesas R-Car V4H",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, auto-compute-2): OEM-direct, no public price"
+  },
+  {
+   "mpn": "SAK-TC334LP-32F200F AA",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): No franchised distributor price found: only JLCPCB (SAL- variant $37.30, not allowed) and Cytech (broker, TC334LP32F200FAAKXUMA1). Farnell lists sibling TC333LP32F200FAAKXUMA1 at EUR 27.92 @10+ only."
+  },
+  {
+   "mpn": "S32K322",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Farnell UK snippets show 100+ GBP 8.60 (100 MaxQFP) and 100+ GBP 7.50 (172 QFP-EP); orderable codes not shown, so not recorded."
+  },
+  {
+   "mpn": "S32K341",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, auto-compute): Search summaries contradicted each other (one gave Farnell UK 100+ GBP 7.54, another found no MaxQFP listing); no orderable code shown. Not recorded."
+  },
+  {
+   "mpn": "S32K388",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Only the S32K388EVB-Q289 evaluation board ($950 NXP) found; no distributor chip listing."
+  },
+  {
+   "mpn": "S32Z280",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Mouser lists S32Z280 (ABCK0MJET suffix) $72.98 @90 only; below the 100-unit floor. S32Z270 not found."
+  },
+  {
+   "mpn": "R7F7016493AFP-C#BA1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Mouser breaks $22.27 @1 to $13.12 @500; no 1000 break. Renesas list $13.21 (qty not stated) for R7F7016493AFP-C#AA1. Review 13 Oct 2026: dropPart - flagged by the researcher and not confirmed by the independent review (list-A-ics): No franchised price found for #BA1. Mouser HK/TW list the sibling R7"
+  },
+  {
+   "mpn": "R7F702546AFABB-C",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Renesas part pages only (R7F702546/547 variants); no distributor price found."
+  },
+  {
+   "mpn": "SR6P3C490D42FX0R",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): ST eStore manufacturer list $81.38-82.65 @500 (not a distributor price); RS EUR 52.00 @1 only. No >=100 distributor break."
+  },
+  {
+   "mpn": "SR6G7C6A2C42FX0R",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): ST eStore manufacturer list $157.81 @500 only; no distributor listing found. SR6P6C6 is a 'Proposal' on st.com (not orderable)."
+  },
+  {
+   "mpn": "STM32A6",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): No STM32A6 listing found at any distributor; may not be in volume production."
+  },
+  {
+   "mpn": "AM2732ADRFGQZCERQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Only fat.lcsc.com (staging host, not a price source) found. Not recorded."
+  },
+  {
+   "mpn": "TDA4AL",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): No distributor listing found for any TDA4AL orderable code."
+  },
+  {
+   "mpn": "F29H859TU-Q1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Pre-release on TI; TI list $11.75 @1ku (manufacturer list, not recorded). No distributor chip listing."
+  },
+  {
+   "mpn": "CYT4BFCCJDQ0BZEGS",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Farnell FR breaks stop at 50+ (EUR 28.23); below the 100 floor."
+  },
+  {
+   "mpn": "CYT3BB5CEBQ0AEEGS",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, auto-compute): Only a punchouttest.digikey.es page (EUR 18.69 @1) found - not allowed."
+  },
+  {
+   "mpn": "CYT2B93CACQ0AZEGS",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Farnell TR listing found; price breaks not shown in snippet."
+  },
+  {
+   "mpn": "CY8C4147AZQ-S455",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): No distributor price for AZQ (automotive) code; siblings only via broker (Cytech) or without a stated break."
+  },
+  {
+   "mpn": "R7F124FLJ4AFB-C#AA0",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Renesas list $3.62-4.17 across F24 codes (manufacturer list, not recorded); Farnell/element14 show no volume price."
+  },
+  {
+   "mpn": "MC9S12ZVML128",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): Only dev kit and OEMsTrade sibling prices (not allowed) found."
+  },
+  {
+   "mpn": "ATSAMV71Q21B-AAB",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, auto-compute): RS EUR 16.25-16.57 @60+ only (below 100 floor); Digi-Key listing without breaks in snippet."
+  },
+  {
+   "mpn": "i.MX 95 (MIMX95xx automotive)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute): newest NXP automotive application processor; budget spent"
+  },
+  {
+   "mpn": "AVR DA/DB automotive (AVR128DA64-E/PT)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute): 8-bit body/sensor MCU staple; budget spent"
+  },
+  {
+   "mpn": "Melexis MLX81116 / MLX81332",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute): LIN motor/lighting MCUs common on actuators; budget spent"
+  },
+  {
+   "mpn": "Elmos E521.xx",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute): LIN motor-control SoCs; budget spent"
+  },
+  {
+   "mpn": "NXP S9KEAZ (KEA) / MC9S12ZVL",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): low-cost automotive body MCUs; only OEMsTrade prices seen"
+  },
+  {
+   "mpn": "Renesas RL78/F25, RA6/RA8 automotive, R-Car S4",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, auto-compute): budget spent"
+  },
+  {
+   "mpn": "STM32G4 automotive (STM32G474 ...Q/ -3 grade)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, auto-compute): catalogue has STM32G474RET3; automotive code not searched"
+  },
+  {
+   "mpn": "NVIDIA DRIVE Orin / Thor",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, auto-compute): OEM-direct, no public price"
+  },
+  {
+   "mpn": "Mobileye EyeQ5 / EyeQ6",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, auto-compute): OEM-direct, no public price"
+  },
+  {
+   "mpn": "Qualcomm SA8155P / SA8295P / SA8650P",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, auto-compute): OEM-direct, no public price"
+  },
+  {
+   "mpn": "Renesas R-Car V4H / V3H",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, auto-compute): OEM-direct, no public price"
+  },
+  {
+   "mpn": "Ambarella CV3",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, auto-compute): OEM-direct, no public price"
+  },
+  {
+   "mpn": "Horizon Journey 5 / 6",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, auto-compute): OEM-direct, no public price"
+  },
+  {
+   "mpn": "Black Sesame A1000 / C1200",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, auto-compute): OEM-direct, no public price"
+  },
+  {
+   "mpn": "NCJ29D5CHN/00201Y",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): Mouser India 771-NCJ29D5CHN00201Y, non-stocked, 30 wk, MOQ 4,000; read on a category listing page. GST basis of the India site not confirmed. NXP: product details under NDA. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): Search for the exact code returne"
+  },
+  {
+   "mpn": "LFE5U-25F-8BG256C",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): Researched for task line 'LFE5U automotive'; the automotive (-A) code was not listed - commercial sibling priced. Read on a Mouser SK category listing page (URL attribution from the search summary); EU Mouser sites show ex-VAT prices. Review 13 Oct 2026: dropPart - flagged and not confirmed by the i"
+  },
+  {
+   "mpn": "LFE5U-25F-6TG144C",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): Same Mouser SK category listing as LFE5U-25F-8BG256C (URL attribution from the search summary); ex VAT. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): No listing found for the exact -6 TQFP-144 code. Reseller Dasenic (not franchised) lists LFE5U-25F-8TG1"
+  },
+  {
+   "mpn": "CC2642R1FTWRGZRQ1",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): Only Digi-Key China (VAT-inclusive, not allowed: CNY 37.41708 @1,000, 36.03 @2,500) and JLCPCB found. Mouser/Arrow prices seen were for the non-Q1 CC2642R1FRGZR - not used."
+  },
+  {
+   "mpn": "STA8100GATR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): Retry: still only ST eStore (manufacturer, USD 7.07 @500, TR out of stock); no franchised-distributor listing returned."
+  },
+  {
+   "mpn": "XA7S25-1CSGA225Q",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): Only breaks below 100 found (Digi-Key ~qty 7 via findchips, Avnet qty 1) - not recorded. XA7Z010-1CLG225Q and XA7A50T-1CSG325Q: no listing returned."
+  },
+  {
+   "mpn": "CYW89829B0022",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): Orderable codes CYW89829B0022 (QFN-40) / CYW89829B0232 (BGA-77) per Infineon launch release; no distributor price returned (only press and an eval board)."
+  },
+  {
+   "mpn": "ZED-F9K / UBX-M10050-KB / NEO-F10N (break >= 100)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): u-blox automotive GNSS - searched again, no distributor listing or orderable code returned"
+  },
+  {
+   "mpn": "STA9100MGA (Teseo-APP2)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): automotive ASIL GNSS - not searched (budget); wave 1 found no price"
+  },
+  {
+   "mpn": "Quectel LC29H / LG69T",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): GNSS modules - not searched (budget)"
+  },
+  {
+   "mpn": "NCJ3310AHN/0J",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): NXP automotive NFC reader - only an NXP-supplied findchips row (not a franchised distributor) found"
+  },
+  {
+   "mpn": "NCF3321 / NCF3340 / NCF29A1MHN/0500IJ",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): NXP KESSY / NFC - NCF29A1 only on Digi-Key China (VAT-inclusive); others no listing"
+  },
+  {
+   "mpn": "Infineon automotive NFC",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): not searched (budget)"
+  },
+  {
+   "mpn": "CYW89570 / CYW43455 automotive / NXP 88W8987 / AW611",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): automotive Wi-Fi/BT combos - not searched (budget); likely quote-only"
+  },
+  {
+   "mpn": "u-blox JODY-W3 / JODY-W5 / NORA-W3, Murata Type 1MW / 1YM",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): automotive Wi-Fi modules - not searched (budget)"
+  },
+  {
+   "mpn": "CC2340R5-Q1 / CC2662R-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): TI automotive BLE - not searched (budget)"
+  },
+  {
+   "mpn": "Quectel AG15 / AG35 / AG550Q, Telit LE910C1, u-blox TOBY-L4 / LENA-R8 / SARA-R52",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): automotive cellular modules - not searched (budget); largely quote-only"
+  },
+  {
+   "mpn": "XAZU2EG-1SBVA484Q, MPF100T, Intel MAX 10 10M08 A-grade, CertusPro-NX, iCE40UP5K",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-auto-2): FPGAs - not reached / no listing in the combined FPGA searches"
+  },
+  {
+   "mpn": "NEO-F10N-00B",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, connectivity-general): Mouser shows qty-1 only (~USD 12.74); no break >= 100 found. Not the automotive NEO-M9V/ZED-F9K (no listing found)."
+  },
+  {
+   "mpn": "STA8100GA",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): Automotive Teseo V. Only ST eStore (manufacturer list) found: USD 8.11 @100, 7.74 @250, 7.07 @500 - not a distributor price. Package from ST family, not confirmed in search."
+  },
+  {
+   "mpn": "STA9100MGA",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): Automotive (ASIL) GNSS. No distributor or eStore price found."
+  },
+  {
+   "mpn": "ICE40UP5K-SG48ITR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): Distributor listings without price; findchips USD 8.45 @100 for ICE40UP5K-SG48I without a named distributor - not used."
+  },
+  {
+   "mpn": "XC7S25-1CSGA225I",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, connectivity-general): Digi-Key qty-1 only (EUR 44.64 BG); LCSC 'starts at USD 13.23' without a break - inconsistent, not used. XA (automotive) code not found."
+  },
+  {
+   "mpn": "JODY-W374-00B",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, connectivity-general): u-blox JODY-W3 automotive grade. Mouser snippet showed USD 19.88 @500 for -00B but USD 52.41 qty-1 for -00A and USD 41.02 @100 for JODY-W377-00A; listing URL not identified - inconsistent, not used."
+  },
+  {
+   "mpn": "88Q9098 / AW693",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): NXP automotive Wi-Fi 6 - no distributor listing expected; not searched (budget)"
+  },
+  {
+   "mpn": "CYW89829",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): Infineon automotive BT LE - not searched (budget)"
+  },
+  {
+   "mpn": "Murata Type 1MW / 1YM / 2BZ automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): searched with JODY; no Murata listing found"
+  },
+  {
+   "mpn": "JODY-W5",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): u-blox automotive Wi-Fi 6 - not searched (budget)"
+  },
+  {
+   "mpn": "NEO-M9V / ZED-F9K / UBX-M10050",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): u-blox automotive GNSS - searched, no distributor price found"
+  },
+  {
+   "mpn": "Quectel LG69T / LC29H",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): GNSS modules - not searched (budget)"
+  },
+  {
+   "mpn": "Quectel AG15 / AG35 / AG550Q / AG59x, Telit LE910C1 / FN990, u-blox TOBY-L4 / LENA-R8 / SARA-R5, Sierra AirPrime AR",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, connectivity-general): automotive cellular modules - largely OEM-direct / quote-only; not searched (budget)"
+  },
+  {
+   "mpn": "NCJ29D5 / NCJ3310 / NCF3321 / NCF29A1 / NCF3340",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, connectivity-general): NXP automotive UWB / NFC / KESSY - NCF3321 and NCJ3310 searched, no result; rest OEM-direct-like, not searched"
+  },
+  {
+   "mpn": "STM32F030F4P6TR / STM32G071RBT6 / STM32L476RGT6",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): searched; no price for these exact codes (siblings G070RBT6 / F070RBT6TR / F031G6U7TR priced)"
+  },
+  {
+   "mpn": "MIMXRT1176 / LPC55S69JBD100 / MCXN947",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): LPC55S69 searched, no result; others not searched (budget)"
+  },
+  {
+   "mpn": "PIC16F18xxx",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): not searched (budget)"
+  },
+  {
+   "mpn": "RP2040",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): only Raspberry Pi list price (USD 0.70 @3,400 reel) found - manufacturer price"
+  },
+  {
+   "mpn": "ESP32-C6 chip / WROOM",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): searched with S3; no C6 result"
+  },
+  {
+   "mpn": "nRF54L15, MSPM0G3507 (in catalogue with obs), CC2652R7RGZR, EFR32MG24",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): CC2652R7 / EFR32MG24 searched, no result; nRF54L15 not searched"
+  },
+  {
+   "mpn": "Lattice MachXO3D / CertusPro-NX / CrossLinkU-NX",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): not searched (budget)"
+  },
+  {
+   "mpn": "XA7Z010-1CLG225Q / XAZU2EG / XAZU3EG / XA7A",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): automotive Zynq / Artix - searched XA7Z010, no listing; rest not searched"
+  },
+  {
+   "mpn": "Intel MAX 10 automotive / MPF100T / Efinix Ti60",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): not searched (budget)"
+  },
+  {
+   "mpn": "FT234XD / CH340 / TPS65987 / CYPD3177",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): not searched (budget)"
+  },
+  {
+   "mpn": "DP83826ERHBR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, connectivity-general): searched with LAN8720A / KSZ8081; no result"
+  },
+  {
+   "mpn": "THVD1450 / MAX3485 / TXS0108E",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, connectivity-general): in catalogue as estimates (TXS0108EQPWRQ1 has obs); not searched (budget)"
+  },
+  {
+   "mpn": "9-2304372-9",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): Farnell FR ex VAT, 100+ is the top break shown (1+ 18.72, 10+ 15.90, 25+ 14.90). Farnell BE 500+ figure seen only as a hedged summary value - not recorded. AEC-Q not applicable to connectors (USCAR / LV214 automotive series). Review 13 Oct 2026: dropPart - flagged and not confirmed by the independen"
+  },
+  {
+   "mpn": "E6S20A-40MT5-A",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): Only a hedged summary figure from a Findchips 'E6S20' search (Mouser 1000 'about 3.85 USD') - not recorded. No E6Z PCB jack listing found."
+  },
+  {
+   "mpn": "59S20K-40MT5-Y",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): Code from a Mouser-hosted datasheet; no distributor price found in two searches (59S2MB-40MT5-Y, 59S20X-400T5-C also unpriced)."
+  },
+  {
+   "mpn": "DMN3404LQ-7",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): Future Electronics shows two conflicting price sets for the same product id 4030927 (0.43 vs 0.196 USD at 3000), zero stock, 40-week lead - not recorded. IBS Electronics (not franchised) ignored."
+  },
+  {
+   "mpn": "DMN6075SQ-7",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): No listing of the Q code found. LCSC lists only non-automotive DMN6075S-7 (C155242, 0.0542 USD at 3000) and a Leiditech 'DMN6075SQ' clone - neither recorded."
+  },
+  {
+   "mpn": "TPD1E10B06QDPYRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): Orderable code seen only on an eBay listing; no franchised price found in two searches. Non-Q1 TPD1E10B06DPYR prices not used."
+  },
+  {
+   "mpn": "CX2016DB32000D0FLJCC",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): Findchips 'dflj' search shows a Mouser 3000 break but the summary gave it only as 'about 0.538 USD' - not recorded; exact-code search found no listing."
+  },
+  {
+   "mpn": "0885005.DR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): Future: reel 1500, zero stock, 15-week lead, price date not stated. Wave 1 asked 0885002.DR (unpriced); this is the 5 A sibling. AEC-Q200 status not confirmed. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): Search for the exact code found no listing (onl"
+  },
+  {
+   "mpn": "KW CSLNM1.TG",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, interconnect-2): Only fat.lcsc.com (excluded) priced the CSLNM1 bin. Sibling KW CSLPM1.TG: RS IE reel 1000 EUR 1,994 ex VAT and mouser.ca 1000 2.66 (currency unclear) - not recorded because the full bin code of the RS reel stock number was not shown. Automotive grade not confirmed."
+  },
+  {
+   "mpn": "Rosenberger H-MTD E6Z… PCB jack",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): searched; no E6Z listing or price found - camera / radar coax header"
+  },
+  {
+   "mpn": "Amphenol FAKRA FA1-…, TE HFM, Molex MX123 / MX150 headers",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, interconnect-2): main ECU / coax headers; budget spent"
+  },
+  {
+   "mpn": "Hirose GT8E / GT17 / FX18, JST automotive, USB-C automotive receptacles",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, interconnect-2): board-to-board and infotainment connectors; budget spent"
+  },
+  {
+   "mpn": "Diodes SBR / BZT52-Q, Vishay SMBJ…-M3 / VSMB",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, interconnect-2): AEC-Q101 rail TVS / rectifiers / zeners; budget spent"
+  },
+  {
+   "mpn": "ESD2CANFD24DBZRQ1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, interconnect-2): CAN FD ESD -Q1 retry; budget spent"
+  },
+  {
+   "mpn": "Littelfuse SMF, onsemi SZESD…, Nexperia PESD2CANFD27 / PMEG / PZU",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, interconnect-2): automotive ESD / Schottky / zener; budget spent"
+  },
+  {
+   "mpn": "TXC 7M / 8Y / 7V automotive (AX / AA series)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-2): searched; only a non-franchised IBS price (AA-8.000MALV-T) found; 8Y is not AEC-Q200"
+  },
+  {
+   "mpn": "NDK NX2016SA / NX3225GA automotive, Abracon ABM3B, SiTime SiT9396, Epson FA-128 automotive, Murata XRCGB automotive",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, interconnect-2): crystal / oscillator points; budget spent"
+  },
+  {
+   "mpn": "Nichia NSSW…AT / NJSW…AT, Lumileds LUXEON automotive, OSRAM LA G6SP",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, interconnect-2): automotive LEDs; budget spent"
+  },
+  {
+   "mpn": "Panasonic CT / CV, TE V23234, Littelfuse 501 fuses",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, interconnect-2): automotive relays / fuses; budget spent"
+  },
+  {
+   "mpn": "0885002.DR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): Only a non-franchised reseller (Novapart) price found; Mouser series page has no price. Not a 1206 part."
+  },
+  {
+   "mpn": "KRTBI D2LM31.31",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): Mouser (720-KRTBID2LM3131C5D) shows EUR 0.394 / INR 42.68 at its highest break but the quantity was not given - not recorded. D3LM31.31 not found."
+  },
+  {
+   "mpn": "G8ND-2S-ASSK",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): Digi-Key breaks via a Source ESB aggregator snapshot (may be stale); full orderable code with coil voltage suffix not shown. Relays have no AEC-Q grade. Review 13 Oct 2026: dropPart - independent review (list-A-passives-discretes): Both recorded observations were read from Source ESB (api-websites-c"
+  },
+  {
+   "mpn": "DMN/DMP …Q (Diodes Inc)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): AEC-Q101 small MOSFETs, very common; budget spent"
+  },
+  {
+   "mpn": "Vishay SMBJ…-M3 / SS…-M3 / TPSMB automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): rail TVS and Schottky on every 12 V input"
+  },
+  {
+   "mpn": "Rohm RB / RSR automotive Schottky",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): common reverse-polarity / OR-ing diodes"
+  },
+  {
+   "mpn": "Infineon BSS / BAS automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): small-signal alternatives"
+  },
+  {
+   "mpn": "TPD1E10B06DPYRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): single-line ESD -Q1 for I/O"
+  },
+  {
+   "mpn": "AQ24CANFD (Littelfuse)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): CAN FD TVS"
+  },
+  {
+   "mpn": "onsemi ESD8 automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): ESD for high-speed lines"
+  },
+  {
+   "mpn": "Bourns SF-0603/SF-1206 automotive fuses, Eaton CC12",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): SMD board fuses"
+  },
+  {
+   "mpn": "Rosenberger H-MTD E6Z / Amphenol FAKRA / HFM",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): camera / radar coax headers (E6S20A sibling already in catalogue)"
+  },
+  {
+   "mpn": "Molex Mini50 / MX123, TE MCON / NanoMQS / AMPSEAL headers",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): main ECU harness headers"
+  },
+  {
+   "mpn": "Hirose GT17 / DF40 / FX18, Samtec automotive, USB-C automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): board-to-board and infotainment connectors"
+  },
+  {
+   "mpn": "TXC 7M / 8Y / 7V / 8W automotive, Kyocera CX2016, NDK automotive 32.768 kHz",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): crystal points 8/16/20/40 MHz and 32.768 kHz"
+  },
+  {
+   "mpn": "SiT9396 / Epson SG-8018 automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): oscillators (SG-8018 only an estimate in catalogue)"
+  },
+  {
+   "mpn": "Nichia NSSW…AT, Lumileds LUXEON automotive, Würth / Kingbright automotive indicator LEDs, Inova ISELED",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): automotive LEDs"
+  },
+  {
+   "mpn": "Panasonic CT / CQ / CV / TQ, TE MCR / F7, Omron G8NB / G5V, Song Chuan 896H",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): automotive PCB relays"
+  },
+  {
+   "mpn": "TDK / Murata automotive piezo buzzers, C&K PTS645 automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, interconnect-discretes): buzzers / switches"
+  },
+  {
+   "mpn": "W25Q64JVSSIQ",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory-2): Findchips names Mouser SKU 454-W25Q64JVSSIQE (sibling code with E suffix) at 10,000. Wave-1 LCSC 'about $0.61' was a rounded figure; LCSC C179171 / C83140 snapshots this round were mutually inconsistent ($0.20-$1.29) and are not recorded; Digi-Key breaks were only given rounded. Needs a second distr"
+  },
+  {
+   "mpn": "MTFC8GAKAJCN-AAT",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory-2): Task code; NOT confirmed to exist by any listing seen. Only -4M IT / -1M WT siblings and fat.lcsc / broker pages; no franchised price."
+  },
+  {
+   "mpn": "MTFC32GAPALNA-AAT",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): absunshine (broker) inquiry-only; zenode not allowed; no franchised price."
+  },
+  {
+   "mpn": "THGBMJG6C1LBAU7",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): Only fat.lcsc.com (excluded) price at 152+; no franchised listing."
+  },
+  {
+   "mpn": "THGBMTG5D1LBAIT",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory-2): Task code; NOT confirmed to exist by any listing seen. Exact code not found; -IL sibling only on LCSC with inconsistent snapshots, Avnet without price."
+  },
+  {
+   "mpn": "IS21ES08G-JCLA2",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory-2): Task code; NOT confirmed to exist by any listing seen. No priced listing; only broker / JLCPCB / Dasenic pages for siblings."
+  },
+  {
+   "mpn": "THGJFGT0T25BAB5",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory-2): Task code; NOT confirmed to exist by any listing seen. Not found; BAB8 siblings on Fusion Worldwide (broker) without price."
+  },
+  {
+   "mpn": "IS46TR16256BL-125KBLA2",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): Only JLCPCB (not allowed) tiers; Digi-Key punchouttest page without price."
+  },
+  {
+   "mpn": "MT40A512M16TB-062E AAT:R",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory-2): Task code; NOT confirmed to exist by any listing seen. Exact automotive codes not found; commercial :R only on azcus Digi-Key/findchips, out of stock, breaks not stated."
+  },
+  {
+   "mpn": "S25HL512TFABHM010",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory-2): Task code; NOT confirmed to exist by any listing seen. No exact match; only industrial -FAMHI010 at Future / Farnell without clear breaks (catalogue already holds S25HL512TDPMHV010)."
+  },
+  {
+   "mpn": "W35T51NWTBIE",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory-2): Task code; NOT confirmed to exist by any listing seen. No listing found under this code."
+  },
+  {
+   "mpn": "24LC256T-E/SN16KVAO",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory-2): Task code; NOT confirmed to exist by any listing seen. No VAO listing priced; Octopart/Kynix figures did not name a franchised distributor."
+  },
+  {
+   "mpn": "25LC256T-E/SN16KVAO",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): Findchips page showed prices without naming the distributor; Digi-Key page only punchouttest."
+  },
+  {
+   "mpn": "M24C64-DRMN3TP/K",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): Digi-Key out of stock no tiers; Mouser tiers only via ciiva (not allowed) without breaks."
+  },
+  {
+   "mpn": "MB85RS256TYPNF-GS-AWE2",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): Digi-Key pages azcus/punchouttest without a second source or price; Mouser not priced."
+  },
+  {
+   "mpn": "Samsung KLM8G1GETF-B041 / KLUCG2K1EA",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, memory-2): Samsung automotive eMMC / UFS; usually not distributor-listed; budget spent"
+  },
+  {
+   "mpn": "MTFC64GAPALNS-AAT",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): Micron automotive eMMC 64GB; one search found no listing"
+  },
+  {
+   "mpn": "IS43QR16512A-075VBLA2 (ISSI automotive DDR4 is IS46QR…)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, memory-2): automotive DDR4; budget spent"
+  },
+  {
+   "mpn": "MT40A1G16KD-062E AUT",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): 16Gb automotive DDR4; searched once, no listing"
+  },
+  {
+   "mpn": "IS43LQ32256A-062BLA2 / IS43LQ16256A",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, memory-2): automotive LPDDR4; budget spent (wave 1 found none)"
+  },
+  {
+   "mpn": "S25HS512TFABHI013",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): SEMPER 1.8V 512Mb; searched once, no exact listing"
+  },
+  {
+   "mpn": "GD25Q128E automotive grade",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory-2): automotive-grade orderable code not identified; industrial GD25Q128ESIGR priced instead"
+  },
+  {
+   "mpn": "MT62F1G32D2DS-026 AUT:B",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory): No franchised price found: Digi-Key page seen is WT:C TR (commercial) with no price; Avnet price was a different speed grade (-020 WT:D)."
+  },
+  {
+   "mpn": "MT53E2G32D4DE-046 AIT:C TR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory): No franchised listing price read. zenode.ai (not an allowed aggregator, 'design reference only') shows Digi-Key 2000 pcs $56.01 for AIT:A TR - not recorded."
+  },
+  {
+   "mpn": "MT40A512M16TD-062E AUT:R TR",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, memory): Arrow lists the part as active automotive but showed no price; MT40A512M16TB-062E AAT / MT40A1G16 AAT codes not found priced."
+  },
+  {
+   "mpn": "IS43LQ32256A-062BLA2",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory): Only industrial -BLI codes surfaced on Mouser India (INR, break quantities not shown); no automotive A2 price found."
+  },
+  {
+   "mpn": "MTFC32GAZAQHD-AAT",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory): Only fat.lcsc.com (staging, excluded) and broker pages carried prices; Digi-Key -AAT TR page showed no price."
+  },
+  {
+   "mpn": "S25HS512TDSBHV010",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory): Only broker (Dasenic) and an unattributed Mouser MX figure without clear code; nothing recorded."
+  },
+  {
+   "mpn": "Micron UFS 3.1 automotive (MTFC…UFS), Kioxia THGJFG, Samsung KLUD",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, memory): UFS storage for ADAS / IVI; search budget spent"
+  },
+  {
+   "mpn": "Kioxia THGBMJG6C1LBAU7 (8GB auto eMMC)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory): only fat.lcsc / quote-only pages found; common IVI/telematics eMMC"
+  },
+  {
+   "mpn": "Samsung KLM… automotive eMMC, ISSI IS21ES",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, memory): automotive eMMC alternatives; budget spent"
+  },
+  {
+   "mpn": "DDR3L IS43TR16256BL-125KBLA2, DDR4 IS43QR16256B…A2, MT40A1G16 AAT (16Gb)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, memory): automotive DDR3L/DDR4; no priced listing found in budget"
+  },
+  {
+   "mpn": "Winbond W35T51NW octal, GigaDevice GD25 automotive, MX25U/MX66 automotive (…-AL…)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, memory): automotive NOR alternates; budget spent"
+  },
+  {
+   "mpn": "S25HL01GT / S28HS family 1Gb automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory): SEMPER 1Gb quad; searched, no priced listing"
+  },
+  {
+   "mpn": "Microchip 24AA/25LC …VAO, Fujitsu MB85RS automotive",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, memory): AEC-Q100 EEPROM / FRAM; budget spent"
+  },
+  {
+   "mpn": "Samsung LPDDR4X/LPDDR5 automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, memory): usually not distributor-listed"
+  },
+  {
+   "mpn": "TCAN1463DRQ1 / TCAN1463DMTRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): CAN SIC transceiver; listed at Digi-Key / LCSC but no price break in results (punchouttest host not usable)"
+  },
+  {
+   "mpn": "TLE9371VSJXTMA1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): Infineon CAN FD transceiver; Digi-Key lists code but no price; Mouser IN break unidentifiable"
+  },
+  {
+   "mpn": "NCV7410MW0R2G",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): onsemi 10BASE-T1S MAC-PHY; no distributor listing found"
+  },
+  {
+   "mpn": "SJA1124",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): NXP quad LIN commander; no listing found for SJA1124AHG/BHG codes"
+  },
+  {
+   "mpn": "RTL9000AA / RTL9010AA",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): Realtek 100/1000BASE-T1 PHY; no franchised listing (only RFQ / broker)"
+  },
+  {
+   "mpn": "DS90UB638TRGZRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): FPD-Link III deserializer; orderable code confirmed (TI E2E) but no distributor price found"
+  },
+  {
+   "mpn": "DS90UB662-Q1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): FPD-Link deserializer; no listing found"
+  },
+  {
+   "mpn": "TUSB1064-Q1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): Only non-automotive TUSB1064RNQR prices on ambiguous-currency / broker pages"
+  },
+  {
+   "mpn": "USB7206C / USB7002 / USB5806 automotive",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, networking-2): Only commercial USB7206C qty-1 prices; no automotive VAO code found"
+  },
+  {
+   "mpn": "PI3EQX1004 / PI3DPX1207B-Q",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): Only Avnet rounded figures for non-automotive PI3EQX1004B1ZHEX; no -Q listing"
+  },
+  {
+   "mpn": "TLIN1028-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking-2): No listing found in the TLIN search; budget spent"
+  },
+  {
+   "mpn": "ATA6628",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, networking-2): Wave 1 found no orderable code; not retried (budget)"
+  },
+  {
+   "mpn": "LAN8651",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking-2): 10BASE-T1S MAC-PHY; wave 1 found no break; not retried (budget)"
+  },
+  {
+   "mpn": "DP83TD555J-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking-2): 10BASE-T1S PHY; orderable code unconfirmed; not retried (budget)"
+  },
+  {
+   "mpn": "MAX96793",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking-2): GMSL3 serializer; wave 1 found no price; not retried (budget)"
+  },
+  {
+   "mpn": "TPS25772-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking-2): Wave 1 found only broker prices; not retried (budget)"
+  },
+  {
+   "mpn": "PS8409",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking-2): Parade; no franchised listing expected; not researched"
+  },
+  {
+   "mpn": "VA7044",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, networking-2): Valens A-PHY; likely OEM-direct, no public price"
+  },
+  {
+   "mpn": "TJA1104",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, networking): NXP page: silicon available to selected NDA customers only; no distributor chip listing found (only eval kits). Orderable code not public."
+  },
+  {
+   "mpn": "LAN8651B1-E/LMX",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking): Listed by RS (KR) but no price break in results."
+  },
+  {
+   "mpn": "NCV7410",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, networking): No distributor listing found; orderable code not confirmed."
+  },
+  {
+   "mpn": "ADIN1110BCPZ-R7",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking): Digi-Key China prices INCLUDE 13% VAT. Industrial (10BASE-T1L), not automotive. Review 13 Oct 2026: dropObs - Digi-Key China price includes 13% VAT."
+  },
+  {
+   "mpn": "SJA1124BHG/1Z",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking): Code seen on Farnell JP (dp 4147387) but no price in results."
+  },
+  {
+   "mpn": "TCAN1463DRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking): Digi-Key lists code (active, 12 wk) but no price break in results."
+  },
+  {
+   "mpn": "TLE9371SJXTMA1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking): Mouser India lists INR 130.45 @1 and INR 62.24 at an unstated higher break; break not identifiable, not used."
+  },
+  {
+   "mpn": "TLIN2029DRBTQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking): Mouser CR tier row '2 500 / 292,50 CRC' seen but quantity/currency mapping ambiguous; not used."
+  },
+  {
+   "mpn": "TPS25772CQRQLRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking): Only broker (Dasenic) and non-franchised prices found; not used."
+  },
+  {
+   "mpn": "USB7206C-I/KDX",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking): Mouser SG 168+ 11.74 seen but currency unclear (SG site); RS says not automotive; no automotive VAO code found."
+  },
+  {
+   "mpn": "USB5806",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, networking): Search returned nothing for this code."
+  },
+  {
+   "mpn": "88Q4364",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking): Marvell 10G automotive Ethernet PHY; budget spent"
+  },
+  {
+   "mpn": "RTL9000A",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking): Realtek 100BASE-T1 PHY, common in Asian ECUs; budget spent"
+  },
+  {
+   "mpn": "88Q5050",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking): Marvell automotive switch, catalogue holds estimate only; budget spent"
+  },
+  {
+   "mpn": "VA7031",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking): Valens A-PHY; budget spent (likely no distributor listing)"
+  },
+  {
+   "mpn": "TUSB1146-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking): USB-C redriver for infotainment; budget spent"
+  },
+  {
+   "mpn": "PI3EQX",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, networking): Diodes automotive redrivers; budget spent"
+  },
+  {
+   "mpn": "CGA3E2C0G1H103J080AA",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): 0603 C0G 10nF automotive cell (TDK instead of uncatalogued GCM1885C1H103JA16D, which no search listed). Future reel listing (8,000 stock, 24 wk); a 40k break shown as $0.05 looked rounded and was not recorded; a second Future listing ($0.0965 at 2,000+) not recorded as its URL mapping was unclear. i"
+  },
+  {
+   "mpn": "CGA3E3X5R1H105K080AB",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): 0603 1uF 50V automotive cell. LCSC C2177538 shows only an out-of-stock reference price; Findchips figures name no distributor. GCM188R71H105KA64D / C0603C105K5RACAUTO returned no listing."
+  },
+  {
+   "mpn": "CRCW08051K00FKEA",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Wave-2 retry: Digi-Key page shown without prices; only a punchouttest mirror price (not allowed). No usable break."
+  },
+  {
+   "mpn": "PMR100HZPFV1L00",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): PMR100HZPFU1L00 not listed; sibling PMR100HZPFV1L00 on LCSC (C509731) with a 'from $0.1892' figure but no break quantity; Findchips $0.2400 / 2,000 reel names no distributor. Not recorded."
+  },
+  {
+   "mpn": "IHLP2525CZER2R2M5A",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Digipart shows stock but 'Inquiry' only; Mouser SKU shown without price. No usable break."
+  },
+  {
+   "mpn": "XAL4020-222MEC",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Coilcraft page: request quote only; LCSC hits were XFL4020-222MEC (different part, rounded figures). Not recorded."
+  },
+  {
+   "mpn": "SRP6540-4R7M",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Wave-2 retry: no listing for this code; only SRP6540-220M (different value, out of stock)."
+  },
+  {
+   "mpn": "CLF6045NIT-4R7N-D",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Only Sierra IC (quote-only, not franchised) listed it. No usable price."
+  },
+  {
+   "mpn": "TFM201610ALM-1R0MTAA",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): No listing for this code; LCSC TFM201610ALC (other grade) out of stock; Findchips figure names no distributor."
+  },
+  {
+   "mpn": "DLW32MH101XT2L",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): No listing returned for this code (nor for TDK ACT1210E-101-2P-TL00; only the catalogued ACT1210-101-2P-TL00 appeared)."
+  },
+  {
+   "mpn": "0603 2.2uF 25V X7R automotive (GCM188R71E225KA55D / CGA3E1X7R1E225K080AC)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Neither code returned a listing (likely not catalogue codes); a confirmed orderable code still needed."
+  },
+  {
+   "mpn": "0603 4.7uF 16V automotive",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent after the 2.2uF searches found no confirmed 0603 automotive code."
+  },
+  {
+   "mpn": "0402 2.2uF 6.3V automotive (e.g. TDK CGA2B3X5R0J225K050BB)",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; code not confirmed."
+  },
+  {
+   "mpn": "1206 22uF 25V automotive (GCM31CR71E226 / CGA5L1X7R1E226)",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; code not confirmed."
+  },
+  {
+   "mpn": "1206 100nF 630V automotive X7R",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Descriptive search found only 630V 1206 parts of 1.5nF / 10nF; no confirmed automotive code."
+  },
+  {
+   "mpn": "CGA5L3X7R2E105K160AB (1206 1uF 250V)",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; code not confirmed by a listing."
+  },
+  {
+   "mpn": "CGA6M3X7S2A475K200AB (1210 4.7uF 100V)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; wave 1 found only excluded sources."
+  },
+  {
+   "mpn": "TDK CGA soft-termination (…AE) point",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent."
+  },
+  {
+   "mpn": "GCM1885C1H103JA16D",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): No listing returned; CGA3E2C0G1H103J080AA used for the 0603 C0G 10nF cell."
+  },
+  {
+   "mpn": "Vishay CRCW-AS / KOA RK73H-A anti-sulfur 0402/0603",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; Panasonic ERJ-U02 / ERJ-S03 used for the anti-sulfur cells."
+  },
+  {
+   "mpn": "KOA TLR / Isabellenhuette BVR shunts",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; Bourns CSS2H-2512R-1L00F priced."
+  },
+  {
+   "mpn": "Wurth WE-XHMA / WE-MAPI 4020 inductors",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; orderable codes not confirmed."
+  },
+  {
+   "mpn": "Nichicon UCJ hybrid / Wurth WCAP-ASLI",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; Chemi-Con HXC priced."
+  },
+  {
+   "mpn": "KYOCERA AVX TCQ automotive polymer tantalum",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; KEMET T598 priced (4 codes)."
+  },
+  {
+   "mpn": "TDK B32776 automotive / KEMET C4AQ DC-link film",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-2): Budget spent; Vishay MKP1848C priced."
+  },
+  {
+   "mpn": "Wurth WE-CNSW",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Already catalogued with observations (744232090)."
+  },
+  {
+   "mpn": "0805 10uF 25V X7S automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Already catalogued with observations (CGA4J1X7S1E106K125AC, GCM21BC71E106KE36L)."
+  },
+  {
+   "mpn": "XGL4020-222MEB / XAL5030-472MEC",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-2): Already catalogued with observations."
+  },
+  {
+   "mpn": "GCM21BR72A104KA37L",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): No usable price: only LCSC hit was fat.lcsc.com (staging host, excluded); Future $0.151 @3000 discarded as implausible (~14x LCSC). LCSC marks it not recommended for new designs."
+  },
+  {
+   "mpn": "GCJ188R71H104KA12D",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): Soft-termination point 2 (point 1 GCJ21BR71H105KA01L already in catalogue). Findchips snapshot; Rutronik stock DE 8000 only. Review 13 Oct 2026: dropPart - flagged by the researcher and not confirmed by the independent review (list-A-passives-discretes): Three searches found no TTI/Rutronik/Mouser/D"
+  },
+  {
+   "mpn": "CGA4J1X7R1E106K125AC",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): 0805 10uF 25V X7R: no listing found — TDK/Murata list this rating as X7S (CGA4J1X7S1E106K125AC, GCM21BC71E106KE36L already in catalogue with obs)."
+  },
+  {
+   "mpn": "CGA6M3X7S2A475K200AB",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): 1210 4.7uF 100V DC-link cell: only OEMsTrade / IBS (excluded) and RS 5+ found — no usable break."
+  },
+  {
+   "mpn": "CGA5L3X7R2E105K160AB",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): 1206 1uF 250V HV cell: code not confirmed by any listing; budget spent."
+  },
+  {
+   "mpn": "GCM1885C1H102JA16D",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): 0603 C0G 1nF 50V: LCSC listing out of stock with no break table."
+  },
+  {
+   "mpn": "0402 2.2uF 6.3V X5R/X7S (automotive)",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): code not confirmed; budget spent."
+  },
+  {
+   "mpn": "0603 2.2uF 25V / 4.7uF 16V X7R (automotive)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): GCM188R71E225 search returned no listing; budget spent."
+  },
+  {
+   "mpn": "0603 1uF 50V X7R (automotive GCM/CGA)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): no confirmed orderable code found."
+  },
+  {
+   "mpn": "1206 22uF 25V X7R / 100nF 630V X7R / 100nF C0G 50V (automotive)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): budget spent."
+  },
+  {
+   "mpn": "0201 100nF 6.3V/10V automotive",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): AC0201KRX6S5BB104 in catalogue has 1 obs; no new search."
+  },
+  {
+   "mpn": "TDK CGA soft-termination (…AE / flexible) point",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): budget spent; Murata GCJ two points covered."
+  },
+  {
+   "mpn": "Commercial 0805 / 1206 remaining cells (GRM21B…, GRM31C…)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-mlcc): budget spent."
+  },
+  {
+   "mpn": "WSL25121L000FEA",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-rlc): Digipart shows Mouser SKU 71-WSL25121L000FEA but no price; no franchised price found."
+  },
+  {
+   "mpn": "TNPW080510K0BEEA",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-rlc): Mouser SKU 71-TNPW080510K0BEEA listed, no price in results; Digipart 'Inquiry' only."
+  },
+  {
+   "mpn": "XAL1010-103MEB",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-rlc): No franchised distributor price found (only Quest broker). Coilcraft direct list price: $1.67 at 1,200 (manufacturer, not an observation)."
+  },
+  {
+   "mpn": "MKP1848C62010JP5",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-rlc): RS UK GBP 10.27 at 50+ ex-VAT (below the 100 floor, not recorded); RS page shows 85C max, no AEC-Q200 tag."
+  },
+  {
+   "mpn": "Ethernet CMC 100/1000BASE-T1 (Murata DLW43MH / TDK ACT1210E / Wurth WE-CNSW)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, passives-rlc): search found no listing for the Murata codes tried; ACT1210L-101 recorded instead"
+  },
+  {
+   "mpn": "Isabellenhuette BVR / VMK / BVS, Bourns CRA2512, Rohm PMR/GMR, KOA TLR, Panasonic ERJ-MB",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-rlc): shunt alternatives to Vishay WSL; budget spent"
+  },
+  {
+   "mpn": "Vishay CRCW-AS / Panasonic ERJ-S anti-sulfur 0402/0603",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-rlc): anti-sulfur covered only by ERJ-UP6F1001V (0805); budget spent"
+  },
+  {
+   "mpn": "Susumu RG automotive, Panasonic ERA-6A 0805 0.1%",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-rlc): thin-film alternatives; budget spent"
+  },
+  {
+   "mpn": "TDK TFM2012 / Murata DFE2012 (2.0x1.2), Wurth WE-XHMA / WE-MAPI / WE-HCI, Vishay IHLE, Sumida CDRH, Coilcraft XAL7070",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-rlc): power inductor cells; budget spent"
+  },
+  {
+   "mpn": "Chemi-Con HXE/HXD/MZK, Wurth WCAP-ASLI/HCGP, Nichicon UCJ/CZ, Panasonic EEH-ZK / EEE-FT, 63V points",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-rlc): electrolytic / hybrid cells; budget spent"
+  },
+  {
+   "mpn": "KEMET T591 / T495 AUTO, KYOCERA AVX TAJ AUTO / TCQ, Vishay T55 / 893D",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-rlc): automotive tantalum cells; budget spent"
+  },
+  {
+   "mpn": "KEMET C4AQ / R75 automotive, Vishay MKP1848C AEC-Q200 code",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, passives-rlc): film DC-link / snubber cells; budget spent"
+  },
+  {
+   "mpn": "TP65H035G4WS",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-2): Farnell IE EUR 17.78 @1 only; Digi-Key prices only on punchouttest / CAD and stated as 'about'. No break >=100 usable. Automotive sibling is TP65H035WSQA (Digi-Key lists it, no price seen)."
+  },
+  {
+   "mpn": "TP65H050G4WS",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, power-2): Digi-Key 120 break given only as 'about $5.39' in summary - rounded, not recorded. Farnell JP JPY qty 1 only."
+  },
+  {
+   "mpn": "C3M0040120K",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-2): RS JP / TW listings only to 25+ / 30 tube - no break >=100."
+  },
+  {
+   "mpn": "E3M0075120K",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-2): Retry found only fat.lcsc.com (forbidden) for sibling E3M0075120D. No franchised price."
+  },
+  {
+   "mpn": "FFSH20120A-F085",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, power-2): Automotive -F085 code confirmed (Arrow, Farnell). Arrow USD 8.611 @30 only (below 100). Plain FFSH20120A not found."
+  },
+  {
+   "mpn": "1EDI2004ASXUMA1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-2): Orderable confirmed by Infineon information note 130/18 (hosted on mm.digikey.com). No price found; Digi-Key line item showed only neighbouring parts' prices."
+  },
+  {
+   "mpn": "SN6507DGQRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-2): Orderable SN6507DGQRQ1 confirmed (Arrow, Mouser). A USD 2.405 @2500 tier seen but the summary did not say which distributor - not recorded."
+  },
+  {
+   "mpn": "ADBMS6832MWCCSZ",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, power-2): LCSC 100+. ADI 1k list USD 11.90 (manufacturer, not recorded). LCSC reel code ADBMS6832MWCCSZ-RL showed USD 4.4426 @100 - well below the cut-tape price and ADI list, treated as suspect, not recorded. Category assumed LQFP; verify. Review 13 Oct 2026: dropPart - flagged and not confirmed by the indep"
+  },
+  {
+   "mpn": "TI LMG3624",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-2): searched; not automotive (650 V consumer GaN) and no distributor price returned"
+  },
+  {
+   "mpn": "TI LMG3422R030",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): industrial 600 V GaN; budget spent"
+  },
+  {
+   "mpn": "Navitas NV6169 automotive",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): OBC GaN IC; budget spent"
+  },
+  {
+   "mpn": "Infineon IGT65R050D2 / IGLR65R automotive",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, power-2): codes not found; only G5 industrial siblings priced"
+  },
+  {
+   "mpn": "Wolfspeed E3M0040120K",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-2): automotive 1200 V SiC; searched with E3M0075120K, only forbidden host"
+  },
+  {
+   "mpn": "Infineon AIMBG120R030M1 / AIMZH120R030M1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): automotive 1200 V CoolSiC; budget spent"
+  },
+  {
+   "mpn": "Wolfspeed E4D20120A",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): automotive SiC Schottky; budget spent"
+  },
+  {
+   "mpn": "NXP GD3160 / GD3162 full code",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): ASIL-D SiC gate driver; budget spent"
+  },
+  {
+   "mpn": "ADI ADuM4146 / ADuM4177 (ARWZ)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): isolated SiC gate drivers; budget spent"
+  },
+  {
+   "mpn": "Skyworks Si8285 / Si8271 automotive",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): isolated gate drivers; budget spent"
+  },
+  {
+   "mpn": "onsemi NVBLS0D8N08X",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): 80 V TOLL automotive MOSFET; budget spent (code unconfirmed)"
+  },
+  {
+   "mpn": "Infineon IAUTN04S7N004",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, power-2): TOLL OptiMOS 7; searched, code not found"
+  },
+  {
+   "mpn": "TI TPS65224-Q1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-2): safety PMIC; searched, orderable (NVM-option suffix) not confirmed, no price"
+  },
+  {
+   "mpn": "TI LP8764-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): multi-phase PMIC; budget spent"
+  },
+  {
+   "mpn": "NXP PF09 / FS86 / FS8600",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): S32 PMIC / safety SBC; budget spent"
+  },
+  {
+   "mpn": "Renesas RAA271000",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): R-Car PMIC; budget spent"
+  },
+  {
+   "mpn": "ADI MAX20084 / MAX20478 / LT8636 / LT8390",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): automotive regulators; budget spent"
+  },
+  {
+   "mpn": "Rohm BD39040",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-2): automotive multi-rail power IC; budget spent"
+  },
+  {
+   "mpn": "ST LDL1117-Q automotive code",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, power-2): only the standard LDL1117S33R found"
+  },
+  {
+   "mpn": "LP876411B4RQKRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Orderable code confirmed on TI part-details page; two searches found no franchised distributor price."
+  },
+  {
+   "mpn": "TPS65224-Q1",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Orderable code not confirmed in search; no distributor price found. Family key only (no code invented)."
+  },
+  {
+   "mpn": "MAX20084",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Search returned no listing for MAX20084 at any distributor; orderable code not confirmed."
+  },
+  {
+   "mpn": "TLE9273",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): No Farnell/RS/Mouser listing found for TLE9273QXV33XUMA1; orderable not confirmed."
+  },
+  {
+   "mpn": "LT8636HV#PBF",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Code listed active (Lisle Apex); no franchised distributor price found (only broker reference prices, discarded)."
+  },
+  {
+   "mpn": "LT8390AHFE#PBF",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Code on Farnell JP (no price in snippet). Prices found only via OEMsTrade (forbidden) - discarded."
+  },
+  {
+   "mpn": "A6983",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): No distributor listing found. ST launch press: USD 1.75 per 1k (A6983), 1.81 (A6983I) - manufacturer list, not recorded as an observation."
+  },
+  {
+   "mpn": "MPQ4430GLE-5-AEC1-Z",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): MPS direct list USD 2.31 at 1k (manufacturer price, not recorded). Digi-Key result was a punchouttest host - excluded."
+  },
+  {
+   "mpn": "NCV8114ASN330T1G",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Aggregator shows Digi-Key/Mouser USD 0.28 and Farnell 0.10 with no break stated; Digi-Key pages were punchouttest - excluded."
+  },
+  {
+   "mpn": "LM5060QDGSRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Digi-Key breaks (1k USD 1.365, 3.5k 1.307, 7k 1.282) seen only on a punchouttest host - excluded by rule; Mouser figures only on a datasheet site. TI direct USD 2.15 (manufacturer)."
+  },
+  {
+   "mpn": "UCC14140QDWNQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): TI doc names UCC14140QDWNQ1 as orderable; no distributor price found (Digi-Key hit was punchouttest, no price)."
+  },
+  {
+   "mpn": "SN6507-Q1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Findchips lists distributors but no price; exact orderable not confirmed in search."
+  },
+  {
+   "mpn": "2EP130R",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Search returned nothing for 2EP130RXUMA1; orderable code not confirmed."
+  },
+  {
+   "mpn": "PF09 (NXP)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Next-gen i.MX 9 / S32 processor PMIC; budget spent"
+  },
+  {
+   "mpn": "RAA271000 / RAA271005 (Renesas)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): R-Car ASIL-D PMIC; budget spent"
+  },
+  {
+   "mpn": "MAX20478 (ADI)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Automotive SoC PMIC / multi-output buck; budget spent"
+  },
+  {
+   "mpn": "BD39040 (Rohm)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Automotive multi-rail power IC; budget spent"
+  },
+  {
+   "mpn": "FS86 / FS8600 (NXP)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): ASIL-D safety SBC for S32 processors; budget spent"
+  },
+  {
+   "mpn": "ADBMS6832 (ADI)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): 16-cell BMS monitor; budget spent"
+  },
+  {
+   "mpn": "MAX25262 (ADI)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Automotive dual buck / PMIC; budget spent"
+  },
+  {
+   "mpn": "MPQ8875 (MPS)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Automotive buck-boost; budget spent"
+  },
+  {
+   "mpn": "LDL1117-Q (ST)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Common automotive 1.2 A LDO; budget spent"
+  },
+  {
+   "mpn": "TPS35-Q1 (TI)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Automotive supervisor; budget spent"
+  },
+  {
+   "mpn": "LTC4380 (ADI)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Surge stopper; budget spent"
+  },
+  {
+   "mpn": "TLE9104 (Infineon)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): 4-channel low-side driver used with supervisors; budget spent"
+  },
+  {
+   "mpn": "MGJ2 (Murata)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): Isolated gate-driver DC-DC (industrial, check automotive status); budget spent"
+  },
+  {
+   "mpn": "MLX81116 (Melexis)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-mgmt): RGB LIN LED driver for ambient lighting; budget spent"
+  },
+  {
+   "mpn": "AIMBG120R030M1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): Only the Infineon datasheet found; no distributor price in results. Orderable suffix not confirmed."
+  },
+  {
+   "mpn": "MGD3160AM315EK",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): No franchised price. NXP site list price US$4.47 @1k (manufacturer list, not an observation). Cytech / Indian reseller quotes are brokers. Code seen only on reseller pages."
+  },
+  {
+   "mpn": "1EDI2004AS",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): Only the Infineon product page found. Siblings 1EDI2002ASXUMA2 / 1EDI2010ASXUMA1 already in catalogue with obs."
+  },
+  {
+   "mpn": "ADUM4146WARWZ",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): Search returned no listing for ADuM4146 or ADuM4177 (only other ADuM isolators)."
+  },
+  {
+   "mpn": "SI8285CD-AS",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): Only broker prices found (Kynix, Dasenic, Cytech) - not used."
+  },
+  {
+   "mpn": "TPS48111-Q1",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, power-semis): Searched (same query as TPS1HC100); no listing returned. Orderable code not confirmed."
+  },
+  {
+   "mpn": "DRV3255-Q1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): Only TI product pages returned; no distributor price."
+  },
+  {
+   "mpn": "6EDL7141",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): No results returned."
+  },
+  {
+   "mpn": "FS820R08A6P2BBPSA1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): No distributor listing found; Infineon forum confirms OPN FS820R08A6P2BBPSA1 (laser-weld variant FS820R08A6P2BPSA1)."
+  },
+  {
+   "mpn": "BUK7J1R0-40HX",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): element14 China; CNY price may include 13% VAT. LCSC page C503359 had no price in result. Review 13 Oct 2026: dropObs - element14 China price may include 13% VAT (and element14.cn is not a listed price host)."
+  },
+  {
+   "mpn": "E4D20120A",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, power-semis): Searched; no listing returned. Code not confirmed."
+  },
+  {
+   "mpn": "AIKQ120N75CP2XKSA1",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, power-semis): RS South Africa ex VAT, figure rounded in result ('about R155'). RS UK GBP 6.45 @50+ (below 100). Review 13 Oct 2026: dropObs - figure was rounded in the search result ('about R155') - not a read price."
+  },
+  {
+   "mpn": "Infineon CoolGaN automotive",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): 650 V GaN for OBC / DC-DC; budget spent"
+  },
+  {
+   "mpn": "TI LMG3624-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): integrated GaN for OBC; budget spent (LMG3522R030-Q1 already in catalogue)"
+  },
+  {
+   "mpn": "Transphorm TP65H035G4WSQA",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): AEC-Q101 650 V GaN cascode; budget spent"
+  },
+  {
+   "mpn": "Navitas automotive GaNFast",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): OBC GaN IC; budget spent"
+  },
+  {
+   "mpn": "ADuM4177",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): ADI isolated SiC gate driver; searched with ADuM4146, nothing returned"
+  },
+  {
+   "mpn": "Nexperia BUK9J / PSMN LFPAK88",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): logic-level automotive 40 V MOSFETs; budget spent"
+  },
+  {
+   "mpn": "onsemi NVBLS (TOLL)",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): 80/100 V automotive TOLL MOSFET; guessed codes returned nothing - needs exact orderable code"
+  },
+  {
+   "mpn": "Infineon IAUC300N08S5N012 / IPB…",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): 80 V OptiMOS points; budget spent (other IAUC/IAUT parts in catalogue)"
+  },
+  {
+   "mpn": "ST STL…AG (PowerFLAT)",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): automotive LV MOSFETs; budget spent"
+  },
+  {
+   "mpn": "Infineon BTS50xx",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): PROFET high-current switches; budget spent"
+  },
+  {
+   "mpn": "NXP MC33XS2410",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): 4-ch high-side switch; budget spent"
+  },
+  {
+   "mpn": "onsemi NVXR17S90M2SPB",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): VE-Trac Direct SiC traction module; budget spent"
+  },
+  {
+   "mpn": "ST ACEPACK DRIVE ADP…",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): SiC traction module; budget spent"
+  },
+  {
+   "mpn": "Infineon IDW…G6 SiC Schottky",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): OBC PFC diode; one search returned no G6 listing"
+  },
+  {
+   "mpn": "onsemi NTBG020N090SC1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, power-semis): 900 V SiC D2PAK-7L (industrial); budget spent"
+  },
+  {
+   "mpn": "Rohm SCT3…KRHR / SCT4018KWAHR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, power-semis): automotive TO-247-4L SiC; searched SCT4018KWAHR / SCT4036KWAHR, nothing returned"
+  },
+  {
+   "mpn": "TLE4941",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Mouser lists the bare code TLE4941 (4,000 in stock). Current orderable TLE4941PLUSCXAMA1: Digi-Key $1.56 cut tape (no break) - not recorded. TLE4941-1 Mouser ladder to $2.48 (break unclear) - not recorded. Review 13 Oct 2026: dropPart - independent review (list-D): the price is for a bare, not-recom"
+  },
+  {
+   "mpn": "FXPS7115DS4ST1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Representative of the FXPS7xx family (FXPS7550DI4ST1/DS4ST1 had no price; FXPS7550DS4T1 obsolete). Listed under ST at Digi-Key; non-stocked. Package per family datasheet, not in snippet. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): Only a broker refere"
+  },
+  {
+   "mpn": "TLE4922",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Only a Digi-Key highlight page ~9 years old (TLE4922XINFHALA1 $0.95 @2000 TB) - stale, not recorded."
+  },
+  {
+   "mpn": "A17301PUCFTN",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Arrow $1.4709 without a quantity break; Digi-Key highlight $2.55 stale. None recorded."
+  },
+  {
+   "mpn": "A1339LLETR-T",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Only a broker reference price found; no franchised break."
+  },
+  {
+   "mpn": "AS5600-ASOM",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Future lists (reel 500) without price; AS5600-ASOT LCSC price only on fat.lcsc.com (excluded); brokers only. None recorded."
+  },
+  {
+   "mpn": "OPA388QDBVRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Digi-Key T&R 3,000 seen only as 'about $1.71' (rounded) - not recorded."
+  },
+  {
+   "mpn": "SCHA634",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): No distributor listing found."
+  },
+  {
+   "mpn": "SMI240",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): No distributor listing found."
+  },
+  {
+   "mpn": "TMP1075-Q1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): No listing for a Q1 orderable; TMP1075NDRLR broker reference only."
+  },
+  {
+   "mpn": "TLV7011",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): No results."
+  },
+  {
+   "mpn": "TLE5109",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): No results."
+  },
+  {
+   "mpn": "TLI5590",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): No results."
+  },
+  {
+   "mpn": "AS5172",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): No results."
+  },
+  {
+   "mpn": "AD2433",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): No results."
+  },
+  {
+   "mpn": "TAS2563",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): No results."
+  },
+  {
+   "mpn": "BMI270",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-2): Bosch consumer IMU (no automotive grade); budget spent"
+  },
+  {
+   "mpn": "TFA9xxx",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-2): NXP automotive class-D / smart amplifiers; budget spent"
+  },
+  {
+   "mpn": "FXPS7550DI4ST1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Searched; no price (family represented by FXPS7115)"
+  },
+  {
+   "mpn": "ACS72981LLRATR-050B5",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Still unpriced; sibling -100U5 priced here"
+  },
+  {
+   "mpn": "INA241A4QDGSRQ1",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-2): Still unpriced; sibling INA241A5QDDFRQ1 priced here"
+  },
+  {
+   "mpn": "TMCS1126",
+   "group": "codeMayNotExist",
+   "why": "round 4 (13 Oct 2026, sensors-analog): No distributor listing returned; orderable -Q1 code not confirmed, so family key only."
+  },
+  {
+   "mpn": "MLX91221",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): No results for any MLX91221 orderable code."
+  },
+  {
+   "mpn": "MLX90377GGO-ADB-510-RE",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): DigiKey page found (26-week lead time) but no price captured."
+  },
+  {
+   "mpn": "MLX90395",
+   "group": "qty1Only",
+   "why": "round 4 (13 Oct 2026, sensors-analog): DigiKey only qty-1 prices ($1.47 KDC-BBA-001-SP, $3.47 KGO-BBA-001-SP); no break >= 100."
+  },
+  {
+   "mpn": "MLX90427",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Only an evaluation board listed (EVB90427-SFI)."
+  },
+  {
+   "mpn": "SCH16T-K01",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Findchips page lists DigiKey/Mouser but no price in snippet."
+  },
+  {
+   "mpn": "TMP1075",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Only non-Q1 TMP1075DGKR at <=25 units; Q1 orderable not found."
+  },
+  {
+   "mpn": "TMP126",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): No results."
+  },
+  {
+   "mpn": "AWR2944",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Only evaluation boards listed (AWR2944EVM, AWR2944PEVM); no chip price found."
+  },
+  {
+   "mpn": "AWR2544",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Only AWR2544LOPEVM evaluation board listed."
+  },
+  {
+   "mpn": "ADS131M04IPWR",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Only punchouttest DigiKey (KRW) and a Mouser figure with no break; LCSC only on fat.lcsc.com. None recorded; -Q1 not found."
+  },
+  {
+   "mpn": "TAS6584",
+   "group": "noUsablePrice",
+   "why": "round 4 (13 Oct 2026, sensors-analog): No results."
+  },
+  {
+   "mpn": "SAF85xx",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, sensors-analog): OEM-direct, no public price (NXP radar SoC)"
+  },
+  {
+   "mpn": "CTRX8191",
+   "group": "ndaOrDirect",
+   "why": "round 4 (13 Oct 2026, sensors-analog): OEM-direct, no public price (Infineon RASIC radar MMIC)"
+  },
+  {
+   "mpn": "MLX91230",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Melexis current sensor; budget spent"
+  },
+  {
+   "mpn": "A1339",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Allegro automotive angle sensor (EPS); budget spent"
+  },
+  {
+   "mpn": "A33002",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Allegro angle sensor; budget spent"
+  },
+  {
+   "mpn": "KMA36",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): NXP magnetic angle sensor; budget spent"
+  },
+  {
+   "mpn": "FXPS7xx",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): NXP automotive pressure sensors; budget spent"
+  },
+  {
+   "mpn": "LPS22HH",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): ST barometer; budget spent"
+  },
+  {
+   "mpn": "ADS1115-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Common 16-bit ADC, catalogue estimate only; budget spent"
+  },
+  {
+   "mpn": "DAC80508",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): 8-ch 16-bit DAC; budget spent"
+  },
+  {
+   "mpn": "AD7124",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): ADI precision ADC; budget spent"
+  },
+  {
+   "mpn": "AD4130",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): ADI ultra-low-power ADC; budget spent"
+  },
+  {
+   "mpn": "MCP3564",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Microchip 24-bit ADC; budget spent"
+  },
+  {
+   "mpn": "OPA388-Q1",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Zero-drift op amp; budget spent"
+  },
+  {
+   "mpn": "ADA4522",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): ADI zero-drift op amp; budget spent"
+  },
+  {
+   "mpn": "TSV/TSB automotive",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): ST op amps; budget spent"
+  },
+  {
+   "mpn": "ADuM1250",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): ADI I2C isolator; budget spent"
+  },
+  {
+   "mpn": "ADuM141E",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): ADI quad isolator; budget spent"
+  },
+  {
+   "mpn": "IL7xx",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): NVE isolators; budget spent"
+  },
+  {
+   "mpn": "ISOFACE",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): Infineon isolated switches; budget spent"
+  },
+  {
+   "mpn": "TDF8530",
+   "group": "notReached",
+   "why": "round 4 (13 Oct 2026, sensors-analog): NXP Class-D amplifier; budget spent"
   }
  ]
 }

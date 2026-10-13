@@ -680,17 +680,8 @@
     "BMS"
    ],
    "observedMpn": "ADBMS6832MWCCSZ",
-   "observations": [
-    {
-     "distributor": "LCSC",
-     "qty": 100,
-     "price": 6.5624,
-     "currency": "USD",
-     "url": "https://www.lcsc.com/product-detail/C18166020.html",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "LCSC 100+. ADI 1k list USD 11.90 (manufacturer, not recorded). LCSC reel code ADBMS6832MWCCSZ-RL showed USD 4.4426 @100 - well below the cut-tape price and ADI list, treated as suspect, not recorded. Category assumed LQFP; verify."
+   "observations": [],
+   "notes": "LCSC 100+. ADI 1k list USD 11.90 (manufacturer, not recorded). LCSC reel code ADBMS6832MWCCSZ-RL showed USD 4.4426 @100 - well below the cut-tape price and ADI list, treated as suspect, not recorded. Category assumed LQFP; verify. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): No distributor price found (JLCPCB page C18166020 is not an allowed price source). ADI lists the ADBMS6832M family at USD 10.82 per 1k (https://www.analog.com/jp/products/adbms6832m.html, manufacturer). Recorded LCSC USD."
   }
  ],
  "notResearched": [

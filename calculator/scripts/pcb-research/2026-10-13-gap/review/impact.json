@@ -1,0 +1,1973 @@
+[
+ {
+  "mpn": "SCH16T-K01-10",
+  "cat": "ic_soic",
+  "desc": "6-DOF gyroscope + accelerometer, high-performance, industrial",
+  "now": 31.3985,
+  "prior": 0.51,
+  "basis": "SOIC / SOT IC (unidentified)",
+  "ratio": 61.5656862745098
+ },
+ {
+  "mpn": "BLM21PG221SH1D",
+  "cat": "passive_0805",
+  "desc": "Ferrite bead 220R@100MHz, 0805, automotive (SH1)",
+  "now": 0.0152,
+  "prior": 0.495,
+  "basis": "power / RF inductor 0805-class, AEC-Q",
+  "ratio": 0.030707070707070707
+ },
+ {
+  "mpn": "T598D106M050ATS090",
+  "cat": "passive_1206",
+  "desc": "Polymer tantalum 10uF 50V 20% 90 mOhm, D case 7343, AEC-Q200",
+  "now": 2.1521,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 23.912222222222223
+ },
+ {
+  "mpn": "NVBG020N120SC1",
+  "cat": "ic_soic",
+  "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 98 A, AEC-Q101",
+  "now": 22.6246,
+  "prior": 1.0125,
+  "basis": "power MOSFET DPAK-class, AEC-Q",
+  "ratio": 22.345283950617286
+ },
+ {
+  "mpn": "CYW43439KUBGT",
+  "cat": "ic_bga",
+  "desc": "Wi-Fi 4 802.11b/g/n + Bluetooth 5.2 combo IC, SDIO/SPI",
+  "now": 2.2536,
+  "prior": 44.5,
+  "basis": "BGA IC (unidentified)",
+  "ratio": 0.05064269662921348
+ },
+ {
+  "mpn": "TLIN2029ADRBRQ1",
+  "cat": "ic_qfn",
+  "desc": "LIN transceiver, fault-protected (A revision), AEC-Q100",
+  "now": 0.3983,
+  "prior": 7.75,
+  "basis": "RF IC QFN, AEC-Q",
+  "ratio": 0.051393548387096775
+ },
+ {
+  "mpn": "TLIN2029DRBRQ1",
+  "cat": "ic_qfn",
+  "desc": "LIN transceiver, fault-protected, AEC-Q100",
+  "now": 0.4592,
+  "prior": 7.75,
+  "basis": "RF IC QFN, AEC-Q",
+  "ratio": 0.05925161290322581
+ },
+ {
+  "mpn": "MKP1848C61012JP4",
+  "cat": "through_hole",
+  "desc": "PP film DC-link capacitor 10uF 5% 1200 VDC, through hole",
+  "now": 7.1995,
+  "prior": 0.4875,
+  "basis": "through-hole part (unidentified)",
+  "ratio": 14.768205128205128
+ },
+ {
+  "mpn": "NVH4L020N120SC1",
+  "cat": "through_hole",
+  "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 102 A, Kelvin source, AEC-Q101",
+  "now": 22.3975,
+  "prior": 1.55,
+  "basis": "TO-220 / D2PAK power device, AEC-Q",
+  "ratio": 14.45
+ },
+ {
+  "mpn": "CSS2H-2512R-1L00F",
+  "cat": "passive_1206",
+  "desc": "Metal-element current-sense resistor 1 mOhm 1% 2512 AEC-Q200",
+  "now": 0.2231,
+  "prior": 0.016,
+  "basis": "chip resistor 1206, AEC-Q",
+  "ratio": 13.94375
+ },
+ {
+  "mpn": "MIMXRT1062DVL6B",
+  "cat": "ic_bga",
+  "desc": "i.MX RT1062 crossover MCU Cortex-M7 600 MHz, 1 MB SRAM",
+  "now": 3.9541,
+  "prior": 53.5,
+  "basis": "SoC / processor BGA",
+  "ratio": 0.07390841121495327
+ },
+ {
+  "mpn": "T598D336M035ATE065",
+  "cat": "passive_1206",
+  "desc": "Polymer tantalum 33uF 35V 20% 65 mOhm, D case 7343, AEC-Q200",
+  "now": 1.18,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 13.11111111111111
+ },
+ {
+  "mpn": "ERJ-P06F1001V",
+  "cat": "passive_0805",
+  "desc": "Thick film anti-surge 1k 1% 0.5W, 0805, AEC-Q200",
+  "now": 0.0119,
+  "prior": 0.1475,
+  "basis": "MLCC 0805, AEC-Q",
+  "ratio": 0.08067796610169492
+ },
+ {
+  "mpn": "PIC32CM5164JH01032-I/PT",
+  "cat": "ic_tqfp",
+  "desc": "PIC32CM JH Cortex-M0+ 48 MHz, 512 KB flash, 5 V, TQFP-32, AEC-Q100",
+  "now": 1.4535,
+  "prior": 15,
+  "basis": "MCU TQFP, AEC-Q",
+  "ratio": 0.0969
+ },
+ {
+  "mpn": "NVBG040N120SC1",
+  "cat": "ic_soic",
+  "desc": "EliteSiC SiC MOSFET 1200 V 40 mOhm 60 A, AEC-Q101",
+  "now": 10.1759,
+  "prior": 1.0125,
+  "basis": "power MOSFET DPAK-class, AEC-Q",
+  "ratio": 10.050271604938272
+ },
+ {
+  "mpn": "PN7462AUHN/C300Y",
+  "cat": "ic_qfn",
+  "desc": "NFC controller with Cortex-M0 MCU, 160 kB flash, contact interface",
+  "now": 5.7841,
+  "prior": 0.585,
+  "basis": "simple MCU QFN",
+  "ratio": 9.887350427350427
+ },
+ {
+  "mpn": "T598D227M010AHS025",
+  "cat": "passive_1206",
+  "desc": "Polymer tantalum 220uF 10V 20% 25 mOhm, D case 7343, T598 automotive series",
+  "now": 0.8734,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 9.704444444444444
+ },
+ {
+  "mpn": "IS25LP512M-JLLA3",
+  "cat": "ic_soic",
+  "desc": "Quad SPI NOR 512Mb, 3 V, automotive A3",
+  "now": 7.1143,
+  "prior": 0.85,
+  "basis": "serial memory SOIC, AEC-Q",
+  "ratio": 8.369764705882353
+ },
+ {
+  "mpn": "AS5047U-HTSM",
+  "cat": "ic_soic",
+  "desc": "14-bit magnetic rotary position sensor, SPI/ABI/UVW/PWM, DAEC",
+  "now": 4.2301,
+  "prior": 0.51,
+  "basis": "SOIC / SOT IC (unidentified)",
+  "ratio": 8.294313725490197
+ },
+ {
+  "mpn": "MT62F2G32D4DS-026 AAT:B TR",
+  "cat": "ic_bga",
+  "desc": "LPDDR5 64Gb (8GB) 2G x32, automotive -40..105 C",
+  "now": 55.1809,
+  "prior": 7.25,
+  "basis": "DDR / NAND memory BGA, AEC-Q",
+  "ratio": 7.611158620689656
+ },
+ {
+  "mpn": "ADUM1250ARZ-RL7",
+  "cat": "ic_soic",
+  "desc": "Hot-swappable dual I2C isolator, 2.5 kV, SOIC-8",
+  "now": 3.3528,
+  "prior": 0.51,
+  "basis": "SOIC / SOT IC (unidentified)",
+  "ratio": 6.574117647058823
+ },
+ {
+  "mpn": "LCMXO3D-9400HC-6SG72C",
+  "cat": "ic_qfn",
+  "desc": "MachXO3D secure-boot CPLD/FPGA 9400 LUT, 2.5/3.3 V, commercial, QFN-72",
+  "now": 16.5948,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 6.321828571428571
+ },
+ {
+  "mpn": "SCT060HU75G3AG",
+  "cat": "ic_soic",
+  "desc": "Gen3 automotive SiC MOSFET 750 V 60 mOhm, AEC-Q101",
+  "now": 9.0404,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 6.2889739130434785
+ },
+ {
+  "mpn": "B32776T8685K000",
+  "cat": "through_hole",
+  "desc": "DC-link PP film capacitor 6.8uF 10% 875 VDC, radial 4-pin",
+  "now": 3.0526,
+  "prior": 0.4875,
+  "basis": "through-hole part (unidentified)",
+  "ratio": 6.26174358974359
+ },
+ {
+  "mpn": "IDW20G120C5BFKSA1",
+  "cat": "through_hole",
+  "desc": "SiC Schottky diode 1200 V 20 A (CoolSiC G5)",
+  "now": 5.0272,
+  "prior": 0.805,
+  "basis": "TO-220 / D2PAK power device",
+  "ratio": 6.244968944099378
+ },
+ {
+  "mpn": "ST25R3920-AQWT",
+  "cat": "ic_qfn",
+  "desc": "Automotive NFC reader (car access / digital key, Qi-coexistence), 13.56 MHz",
+  "now": 2.4072,
+  "prior": 15,
+  "basis": "MCU TQFP, AEC-Q",
+  "ratio": 0.16048
+ },
+ {
+  "mpn": "CGA6P3X7S1H106K250AB",
+  "cat": "passive_1206",
+  "desc": "MLCC 10uF 50V X7S ±10% 1210 AEC-Q200",
+  "now": 0.5428,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 6.031111111111111
+ },
+ {
+  "mpn": "MR20H40CDFR",
+  "cat": "ic_qfn",
+  "desc": "SPI MRAM 4Mb, DFN-8 (industrial)",
+  "now": 15.6251,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 5.952419047619047
+ },
+ {
+  "mpn": "CRCW251210R0FKEG",
+  "cat": "passive_1206",
+  "desc": "Thick film 10 ohm 1% 1W, 2512, AEC-Q200",
+  "now": 0.092,
+  "prior": 0.016,
+  "basis": "chip resistor 1206, AEC-Q",
+  "ratio": 5.75
+ },
+ {
+  "mpn": "T598D337M006ATE025",
+  "cat": "passive_1206",
+  "desc": "Polymer tantalum 330uF 6.3V 20% 25 mOhm, D case 7343, AEC-Q200",
+  "now": 0.4974,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 5.526666666666667
+ },
+ {
+  "mpn": "SCT4045DWAHRTL",
+  "cat": "ic_soic",
+  "desc": "4th-gen SiC MOSFET 750 V 45 mOhm 31 A, automotive",
+  "now": 5.542,
+  "prior": 1.0125,
+  "basis": "power MOSFET DPAK-class, AEC-Q",
+  "ratio": 5.47358024691358
+ },
+ {
+  "mpn": "TJA1124BHG/1Z",
+  "cat": "ic_qfn",
+  "desc": "Quad LIN transceiver, 20 kbaud, AEC-Q100",
+  "now": 1.419,
+  "prior": 7.75,
+  "basis": "RF IC QFN, AEC-Q",
+  "ratio": 0.1830967741935484
+ },
+ {
+  "mpn": "ATA6561-GAQW-N",
+  "cat": "ic_soic",
+  "desc": "High-speed CAN transceiver 5 Mbps, standby, AEC-Q100 Grade 0",
+  "now": 0.2095,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.1862222222222222
+ },
+ {
+  "mpn": "KSZ9567RTXI-TR",
+  "cat": "ic_tqfp",
+  "desc": "7-port gigabit Ethernet switch, 5 integrated 1000BASE-T PHYs, industrial",
+  "now": 12.0114,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 5.3384
+ },
+ {
+  "mpn": "R7F124FPJ4AFB-C#HA0",
+  "cat": "ic_tqfp",
+  "desc": "RL78/F24 16-bit automotive MCU 40 MHz, 256 KB flash, CAN FD, tape and reel",
+  "now": 2.8369,
+  "prior": 15,
+  "basis": "MCU TQFP, AEC-Q",
+  "ratio": 0.18912666666666667
+ },
+ {
+  "mpn": "R7F124FPJ4AFB-C#AA0",
+  "cat": "ic_tqfp",
+  "desc": "RL78/F24 16-bit automotive MCU 40 MHz, 256 KB flash, CAN FD, tray",
+  "now": 2.8589,
+  "prior": 15,
+  "basis": "MCU TQFP, AEC-Q",
+  "ratio": 0.19059333333333334
+ },
+ {
+  "mpn": "T495D107K016ATA100",
+  "cat": "passive_1206",
+  "desc": "Tantalum MnO2 100uF 16V 10% 100 mOhm, D case 7343, commercial",
+  "now": 0.3482,
+  "prior": 0.0685,
+  "basis": "MLCC 1206",
+  "ratio": 5.083211678832116
+ },
+ {
+  "mpn": "34912-6040",
+  "cat": "connector_smt",
+  "desc": "Mini50 automotive SMT header plug, 4-way, unsealed",
+  "now": 1.3602,
+  "prior": 6.75,
+  "basis": "sealed automotive connector body",
+  "ratio": 0.2015111111111111
+ },
+ {
+  "mpn": "NCV7357D10R2G",
+  "cat": "ic_soic",
+  "desc": "HS-CAN / CAN FD transceiver, 5 Mbps, AEC-Q100",
+  "now": 0.227,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.20177777777777778
+ },
+ {
+  "mpn": "BAS16,215",
+  "cat": "ic_soic",
+  "desc": "Switching diode 85 V 215 mA, SOT-23, AEC-Q101",
+  "now": 0.0107,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 0.2038095238095238
+ },
+ {
+  "mpn": "FT232RL-REEL",
+  "cat": "ic_soic",
+  "desc": "USB to UART bridge with internal EEPROM and clock",
+  "now": 2.3399,
+  "prior": 0.4875,
+  "basis": "serial memory SOIC",
+  "ratio": 4.799794871794872
+ },
+ {
+  "mpn": "NDSH20120C",
+  "cat": "through_hole",
+  "desc": "SiC Schottky diode 1200 V 20 A",
+  "now": 3.8448,
+  "prior": 0.805,
+  "basis": "TO-220 / D2PAK power device",
+  "ratio": 4.776149068322981
+ },
+ {
+  "mpn": "IAUCN04S7N004ATMA1",
+  "cat": "ic_qfn",
+  "desc": "OptiMOS 7 N-MOSFET 40 V 175 A, automotive",
+  "now": 1.1083,
+  "prior": 5.25,
+  "basis": "QFN IC (unidentified), AEC-Q",
+  "ratio": 0.2111047619047619
+ },
+ {
+  "mpn": "EEH-ZA1H101P",
+  "cat": "passive_1206",
+  "desc": "Hybrid polymer Al SMD 100uF 50V, ZA series, AEC-Q200",
+  "now": 0.4239,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 4.71
+ },
+ {
+  "mpn": "ERJ-UP6F1001V",
+  "cat": "passive_0805",
+  "desc": "Thick film anti-surge / anti-sulfur 1k 1%, 0805, AEC-Q200",
+  "now": 0.0314,
+  "prior": 0.1475,
+  "basis": "MLCC 0805, AEC-Q",
+  "ratio": 0.2128813559322034
+ },
+ {
+  "mpn": "LMT01QDQXRQ1",
+  "cat": "ic_qfn",
+  "desc": "2-pin pulse-count digital temperature sensor, +/-0.5 C, AEC-Q100",
+  "now": 1.1998,
+  "prior": 5.25,
+  "basis": "QFN IC (unidentified), AEC-Q",
+  "ratio": 0.22853333333333334
+ },
+ {
+  "mpn": "MIMX8MN6CVTIZAA",
+  "cat": "ic_bga",
+  "desc": "i.MX 8M Nano quad Cortex-A53 applications processor, industrial -40..105 C",
+  "now": 12.3223,
+  "prior": 53.5,
+  "basis": "SoC / processor BGA",
+  "ratio": 0.2303233644859813
+ },
+ {
+  "mpn": "NV24C64DWVLT3G",
+  "cat": "ic_soic",
+  "desc": "I2C EEPROM 64Kb, AEC-Q100 automotive",
+  "now": 0.1959,
+  "prior": 0.85,
+  "basis": "serial memory SOIC, AEC-Q",
+  "ratio": 0.23047058823529412
+ },
+ {
+  "mpn": "INA241A5QDDFRQ1",
+  "cat": "ic_soic",
+  "desc": "Bidirectional current-sense amplifier, -5 to 110 V CM, enhanced PWM rejection, AEC-Q100",
+  "now": 1.6902,
+  "prior": 0.39,
+  "basis": "small IC in SOT-23 / SC-70, AEC-Q",
+  "ratio": 4.333846153846154
+ },
+ {
+  "mpn": "SM8S36AHE3/2D",
+  "cat": "fuse_tvs",
+  "desc": "TVS diode 36 V unidirectional, 6.6 kW, DO-218AB, load-dump, AEC-Q101 (HE3)",
+  "now": 1.2464,
+  "prior": 0.29,
+  "basis": "TVS diode, AEC-Q",
+  "ratio": 4.297931034482759
+ },
+ {
+  "mpn": "IIS3DWBTR",
+  "cat": "ic_qfn",
+  "desc": "Wideband 3-axis vibration accelerometer, 6.3 kHz BW, SPI, industrial",
+  "now": 11.0936,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 4.226133333333333
+ },
+ {
+  "mpn": "MX25L12833FM2I-10G",
+  "cat": "ic_soic",
+  "desc": "SPI NOR flash 128Mbit, 3V, -40..85C, SOP-8 208mil",
+  "now": 2.0287,
+  "prior": 0.4875,
+  "basis": "serial memory SOIC",
+  "ratio": 4.161435897435898
+ },
+ {
+  "mpn": "M95640-DRMN3TP/K",
+  "cat": "ic_soic",
+  "desc": "SPI EEPROM 64Kb, automotive -40..125 C",
+  "now": 0.2057,
+  "prior": 0.85,
+  "basis": "serial memory SOIC, AEC-Q",
+  "ratio": 0.242
+ },
+ {
+  "mpn": "MCP251863T-E/9PX",
+  "cat": "ic_qfn",
+  "desc": "CAN FD controller + transceiver, SPI",
+  "now": 1.8861,
+  "prior": 7.75,
+  "basis": "RF IC QFN, AEC-Q",
+  "ratio": 0.24336774193548388
+ },
+ {
+  "mpn": "ADUM141E1BRQZ-RL7",
+  "cat": "ic_soic",
+  "desc": "Quad digital isolator (3/1), 150 Mbps, 3 kV, QSOP-16",
+  "now": 2.0774,
+  "prior": 0.51,
+  "basis": "SOIC / SOT IC (unidentified)",
+  "ratio": 4.073333333333333
+ },
+ {
+  "mpn": "MC33XS2410ELR2",
+  "cat": "ic_qfn",
+  "desc": "Quad high-side switch 24 V, 100 mOhm, SPI, AEC-Q100",
+  "now": 5.3112,
+  "prior": 1.325,
+  "basis": "driver IC QFN, AEC-Q",
+  "ratio": 4.00845283018868
+ },
+ {
+  "mpn": "MIMX9352AVTXMBC",
+  "cat": "ic_bga",
+  "desc": "i.MX 93 automotive applications processor, 2x Cortex-A55 + M33 + NPU",
+  "now": 16.7711,
+  "prior": 66.5,
+  "basis": "SoC / processor BGA, AEC-Q",
+  "ratio": 0.25219699248120303
+ },
+ {
+  "mpn": "EPC2206",
+  "cat": "ic_qfn",
+  "desc": "eGaN FET 80 V 2.2 mOhm, AEC-Q101",
+  "now": 1.3343,
+  "prior": 5.25,
+  "basis": "QFN IC (unidentified), AEC-Q",
+  "ratio": 0.25415238095238096
+ },
+ {
+  "mpn": "STM32U575ZIT6Q",
+  "cat": "ic_tqfp",
+  "desc": "Arm Cortex-M33 ultra-low-power MCU 160 MHz, 2 MB flash, SMPS, LQFP144",
+  "now": 8.6769,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 3.8564
+ },
+ {
+  "mpn": "GCM1555C1H102JA16D",
+  "cat": "passive_0402",
+  "desc": "MLCC 1nF 50V C0G ±5% 0402 AEC-Q200",
+  "now": 0.005,
+  "prior": 0.019,
+  "basis": "MLCC C0G 0402, AEC-Q",
+  "ratio": 0.2631578947368421
+ },
+ {
+  "mpn": "SCT040HU120G3AG",
+  "cat": "ic_soic",
+  "desc": "Gen3 automotive SiC MOSFET 1200 V 40 mOhm, AEC-Q101",
+  "now": 5.2966,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 3.684591304347826
+ },
+ {
+  "mpn": "GCM2195C1H103JA16D",
+  "cat": "passive_0805",
+  "desc": "MLCC 10nF 50V C0G ±5% 0805 AEC-Q200",
+  "now": 0.0405,
+  "prior": 0.1475,
+  "basis": "MLCC 0805, AEC-Q",
+  "ratio": 0.2745762711864407
+ },
+ {
+  "mpn": "UCZ1V221MCL1GS",
+  "cat": "passive_1206",
+  "desc": "Al electrolytic SMD 220uF 35V 20%, UCZ 125C automotive",
+  "now": 0.3273,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 3.6366666666666667
+ },
+ {
+  "mpn": "GCM1555C1H220JA16D",
+  "cat": "passive_0402",
+  "desc": "MLCC 22pF 50V C0G ±5% 0402 AEC-Q200",
+  "now": 0.0053,
+  "prior": 0.019,
+  "basis": "MLCC C0G 0402, AEC-Q",
+  "ratio": 0.27894736842105267
+ },
+ {
+  "mpn": "MGD3162",
+  "cat": "ic_soic",
+  "desc": "GD3162 advanced isolated single-channel gate driver for SiC/IGBT traction, AEC-Q100",
+  "now": 5.5157,
+  "prior": 1.55,
+  "basis": "driver IC SOIC, AEC-Q",
+  "ratio": 3.558516129032258
+ },
+ {
+  "mpn": "TUSB1146RGFTQ1",
+  "cat": "ic_qfn",
+  "desc": "USB Type-C 10 Gbps / DP 2.1 alt-mode linear redriver, automotive, AEC-Q100",
+  "now": 4.7092,
+  "prior": 1.325,
+  "basis": "driver IC QFN, AEC-Q",
+  "ratio": 3.5541132075471698
+ },
+ {
+  "mpn": "AIS2DW12TR",
+  "cat": "ic_qfn",
+  "desc": "3-axis MEMS accelerometer, ultra-low-power, AEC-Q100 (automotive LIS2DW12)",
+  "now": 1.4839,
+  "prior": 5.25,
+  "basis": "QFN IC (unidentified), AEC-Q",
+  "ratio": 0.28264761904761904
+ },
+ {
+  "mpn": "KMR221GLFS",
+  "cat": "relay_switch",
+  "desc": "Tactile switch SMD 200 gf 4.2x2.8 mm",
+  "now": 0.2471,
+  "prior": 0.07,
+  "basis": "tactile switch",
+  "ratio": 3.5299999999999994
+ },
+ {
+  "mpn": "ERJ-S03F1002V",
+  "cat": "passive_0603",
+  "desc": "Thick film anti-sulfur resistor 10k 1% 0.1W 0603 AEC-Q200",
+  "now": 0.023,
+  "prior": 0.00675,
+  "basis": "chip resistor 0603, AEC-Q",
+  "ratio": 3.4074074074074074
+ },
+ {
+  "mpn": "SMMBT3904LT1G",
+  "cat": "ic_soic",
+  "desc": "NPN BJT 40 V 200 mA, SOT-23, AEC-Q101",
+  "now": 0.0155,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 0.29523809523809524
+ },
+ {
+  "mpn": "CY15B256J-SXE",
+  "cat": "ic_soic",
+  "desc": "F-RAM 256Kbit I2C, automotive E grade (-40..125C), SOIC-8",
+  "now": 4.8516,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 3.375026086956522
+ },
+ {
+  "mpn": "INA296B4QDDFRQ1",
+  "cat": "ic_soic",
+  "desc": "Bidirectional current-sense amplifier, -5 to 110 V CM, gain 200, AEC-Q100",
+  "now": 1.3142,
+  "prior": 0.39,
+  "basis": "small IC in SOT-23 / SC-70, AEC-Q",
+  "ratio": 3.3697435897435897
+ },
+ {
+  "mpn": "TPS1HC100BQPWPRQ1",
+  "cat": "ic_soic",
+  "desc": "Single-channel smart high-side switch 100 mOhm, automotive",
+  "now": 0.4619,
+  "prior": 1.55,
+  "basis": "driver IC SOIC, AEC-Q",
+  "ratio": 0.298
+ },
+ {
+  "mpn": "AS5147P-HTSM",
+  "cat": "ic_soic",
+  "desc": "14-bit on-axis magnetic rotary position sensor, ABI/UVW/PWM, 28k rpm, AEC-Q100 Gr.0",
+  "now": 4.4642,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 3.1055304347826085
+ },
+ {
+  "mpn": "OPA2991IDSGR",
+  "cat": "ic_qfn",
+  "desc": "Dual 40 V RRIO op amp, 4.5 MHz, industrial (OPA2991-Q1 exists)",
+  "now": 0.8645,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.32933333333333337
+ },
+ {
+  "mpn": "TMP126EDBVRQ1",
+  "cat": "ic_soic",
+  "desc": "Digital temperature sensor, +/-0.3 C, SPI, with slew-rate alert, AEC-Q100",
+  "now": 1.1789,
+  "prior": 0.39,
+  "basis": "small IC in SOT-23 / SC-70, AEC-Q",
+  "ratio": 3.022820512820513
+ },
+ {
+  "mpn": "ERA-6AEB103V",
+  "cat": "passive_0805",
+  "desc": "Thin film resistor 10k 0.1% 25ppm 0805 AEC-Q200",
+  "now": 0.0358,
+  "prior": 0.012,
+  "basis": "chip resistor 0805, AEC-Q",
+  "ratio": 2.983333333333333
+ },
+ {
+  "mpn": "ADS131M04QPWRQ1",
+  "cat": "ic_soic",
+  "desc": "4-ch simultaneous-sampling 24-bit delta-sigma ADC, 32 kSPS, AEC-Q100",
+  "now": 4.1652,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 2.8975304347826083
+ },
+ {
+  "mpn": "HHXC350ARA271MJA0G",
+  "cat": "passive_1206",
+  "desc": "Hybrid polymer Al SMD 270uF 35V 20%, HXC series 125C AEC-Q200",
+  "now": 0.2582,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 2.868888888888889
+ },
+ {
+  "mpn": "MIMX8MM6CVTKZAA",
+  "cat": "ic_bga",
+  "desc": "i.MX 8M Mini quad Cortex-A53 1.6 GHz applications processor, industrial -40..105 C",
+  "now": 18.7012,
+  "prior": 53.5,
+  "basis": "SoC / processor BGA",
+  "ratio": 0.3495551401869159
+ },
+ {
+  "mpn": "EEE-FK1E471P",
+  "cat": "passive_1206",
+  "desc": "Al electrolytic SMD 470uF 25V 20%, FK series, 105C, AEC-Q200",
+  "now": 0.2569,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 2.854444444444445
+ },
+ {
+  "mpn": "ATA6570-GNQW1",
+  "cat": "ic_soic",
+  "desc": "CAN FD transceiver with partial networking, SPI, AEC-Q100",
+  "now": 0.3964,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.35235555555555553
+ },
+ {
+  "mpn": "MX25L25645GMI-08GTR",
+  "cat": "ic_soic",
+  "desc": "Quad SPI NOR 256Mb, 3 V, industrial -40..85 C, SOP-16 (not automotive)",
+  "now": 1.3746,
+  "prior": 0.4875,
+  "basis": "serial memory SOIC",
+  "ratio": 2.819692307692308
+ },
+ {
+  "mpn": "CRCW120612R0FKEA",
+  "cat": "passive_1206",
+  "desc": "Thick film 12 ohm 1% 0.25W, 1206, AEC-Q200",
+  "now": 0.0058,
+  "prior": 0.016,
+  "basis": "chip resistor 1206, AEC-Q",
+  "ratio": 0.3625
+ },
+ {
+  "mpn": "FXPS7115DI4ST1",
+  "cat": "ic_qfn",
+  "desc": "Digital absolute pressure sensor 40-115 kPa, I2C, automotive (ex-NXP FXPS7)",
+  "now": 1.9135,
+  "prior": 5.25,
+  "basis": "QFN IC (unidentified), AEC-Q",
+  "ratio": 0.36447619047619045
+ },
+ {
+  "mpn": "NEO-M9V-20B",
+  "cat": "ic_qfn",
+  "desc": "GNSS module with untethered dead reckoning (ADR), concurrent 4-constellation, LCC",
+  "now": 10.2247,
+  "prior": 3.75,
+  "basis": "RF IC QFN",
+  "ratio": 2.726586666666667
+ },
+ {
+  "mpn": "TJA1029T/20/1J",
+  "cat": "ic_soic",
+  "desc": "LIN 2.2A / SAE J2602 transceiver, AEC-Q100",
+  "now": 0.4177,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.3712888888888889
+ },
+ {
+  "mpn": "BC857B,215",
+  "cat": "ic_soic",
+  "desc": "PNP BJT 45 V 100 mA, SOT-23, AEC-Q101",
+  "now": 0.0195,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 0.37142857142857144
+ },
+ {
+  "mpn": "LR G6SP.02-8D6E-46-G3R3-140-R18",
+  "cat": "led",
+  "desc": "LED red TOPLED PLCC-6",
+  "now": 0.1339,
+  "prior": 0.05,
+  "basis": "indicator LED",
+  "ratio": 2.6779999999999995
+ },
+ {
+  "mpn": "AIS2IHTR",
+  "cat": "ic_qfn",
+  "desc": "3-axis MEMS accelerometer, high-performance, AEC-Q100",
+  "now": 1.9676,
+  "prior": 5.25,
+  "basis": "QFN IC (unidentified), AEC-Q",
+  "ratio": 0.3747809523809524
+ },
+ {
+  "mpn": "S32K342EHT0MPBST",
+  "cat": "ic_tqfp",
+  "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, Ethernet (E variant)",
+  "now": 5.6307,
+  "prior": 15,
+  "basis": "MCU TQFP, AEC-Q",
+  "ratio": 0.37538
+ },
+ {
+  "mpn": "TLE9263BQXV33XUMA1",
+  "cat": "ic_qfn",
+  "desc": "Mid-range SBC, CAN + LIN, 3.3 V LDO, AEC-Q100",
+  "now": 1.837,
+  "prior": 4.875,
+  "basis": "PMIC QFN, AEC-Q",
+  "ratio": 0.3768205128205128
+ },
+ {
+  "mpn": "KSZ8081RNACA-TR",
+  "cat": "ic_qfn",
+  "desc": "10/100BASE-TX Ethernet PHY, RMII, commercial temp",
+  "now": 0.6524,
+  "prior": 1.625,
+  "basis": "interface / PHY QFN",
+  "ratio": 0.40147692307692306
+ },
+ {
+  "mpn": "MLX90377GVS-ADB-308-RE",
+  "cat": "through_hole",
+  "desc": "Triaxis rotary/linear position sensor, dual die, SENT/PWM/analog, automotive AEC-Q100",
+  "now": 2.6993,
+  "prior": 1.09,
+  "basis": "through-hole part (unidentified), AEC-Q",
+  "ratio": 2.476422018348624
+ },
+ {
+  "mpn": "LAN8720A-CP-TR",
+  "cat": "ic_qfn",
+  "desc": "10/100 Ethernet PHY, RMII, HP Auto-MDIX",
+  "now": 0.6642,
+  "prior": 1.625,
+  "basis": "interface / PHY QFN",
+  "ratio": 0.40873846153846155
+ },
+ {
+  "mpn": "LAN8650B1T-E/LMX",
+  "cat": "ic_qfn",
+  "desc": "10BASE-T1S MAC-PHY, SPI",
+  "now": 3.9672,
+  "prior": 1.625,
+  "basis": "interface / PHY QFN",
+  "ratio": 2.441353846153846
+ },
+ {
+  "mpn": "TMAG5273B1QDBVR",
+  "cat": "ic_soic",
+  "desc": "3D linear Hall sensor, I2C, low power",
+  "now": 0.4537,
+  "prior": 0.1875,
+  "basis": "small IC in SOT-23 / SC-70",
+  "ratio": 2.4197333333333333
+ },
+ {
+  "mpn": "TAS6684QPHDRQ1",
+  "cat": "ic_tqfp",
+  "desc": "4-ch digital-input class-D audio amplifier, 45 V, automotive, HTQFP-64",
+  "now": 6.2078,
+  "prior": 15,
+  "basis": "MCU TQFP, AEC-Q",
+  "ratio": 0.4138533333333333
+ },
+ {
+  "mpn": "STM32G070RBT6",
+  "cat": "ic_tqfp",
+  "desc": "Cortex-M0+ MCU 64 MHz, 128 kB flash, 36 kB RAM",
+  "now": 0.9693,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.4308
+ },
+ {
+  "mpn": "BUK7Y4R8-60EX",
+  "cat": "ic_soic",
+  "desc": "N-MOSFET 60 V 4.8 mOhm, AEC-Q101",
+  "now": 0.623,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 0.4333913043478261
+ },
+ {
+  "mpn": "MLX91230KDC-BBA-000-SP",
+  "cat": "ic_soic",
+  "desc": "Hall current sensor IC, 12 V, +/-512 mT, SOIC-8, automotive AEC-Q100",
+  "now": 3.2491,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 2.2602434782608696
+ },
+ {
+  "mpn": "TMAG5170A1QDGKR",
+  "cat": "ic_soic",
+  "desc": "3D linear Hall sensor, SPI, 12-bit, industrial (Q1 sibling TMAG5170A1EDGKRQ1)",
+  "now": 1.149,
+  "prior": 0.51,
+  "basis": "SOIC / SOT IC (unidentified)",
+  "ratio": 2.2529411764705882
+ },
+ {
+  "mpn": "GRM155R71H103KA88D",
+  "cat": "passive_0402",
+  "desc": "MLCC 10nF 50V X7R ±10% 0402 commercial",
+  "now": 0.002,
+  "prior": 0.0045,
+  "basis": "MLCC 0402",
+  "ratio": 0.4444444444444445
+ },
+ {
+  "mpn": "L5150BNTR",
+  "cat": "ic_soic",
+  "desc": "Automotive 40 V 150 mA LDO, 5 V, with reset, AEC-Q100",
+  "now": 0.438,
+  "prior": 0.975,
+  "basis": "LDO regulator SOIC, AEC-Q",
+  "ratio": 0.44923076923076927
+ },
+ {
+  "mpn": "ERJ-U02F1002X",
+  "cat": "passive_0402",
+  "desc": "Thick film anti-sulfur resistor 10k 1% 0.1W 0402 AEC-Q200",
+  "now": 0.0115,
+  "prior": 0.00525,
+  "basis": "chip resistor 0402, AEC-Q",
+  "ratio": 2.1904761904761902
+ },
+ {
+  "mpn": "2N7002BK,215",
+  "cat": "ic_soic",
+  "desc": "N-channel MOSFET 60 V 350 mA, ESD protected, SOT-23, AEC-Q101",
+  "now": 0.0242,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 0.46095238095238095
+ },
+ {
+  "mpn": "TLIN2029DRQ1",
+  "cat": "ic_soic",
+  "desc": "LIN transceiver, fault-protected, AEC-Q100",
+  "now": 0.524,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.4657777777777778
+ },
+ {
+  "mpn": "CL05B104KO5NNNC",
+  "cat": "passive_0402",
+  "desc": "MLCC 100nF 16V X7R ±10% 0402 commercial",
+  "now": 0.0021,
+  "prior": 0.0045,
+  "basis": "MLCC 0402",
+  "ratio": 0.4666666666666667
+ },
+ {
+  "mpn": "GCM033R71A103KA03D",
+  "cat": "passive_0402",
+  "desc": "MLCC 10nF 10V X7R ±10% 0201 AEC-Q200",
+  "now": 0.0048,
+  "prior": 0.01,
+  "basis": "MLCC 0402, AEC-Q",
+  "ratio": 0.4799999999999999
+ },
+ {
+  "mpn": "TLS715B0EJV50XUMA1",
+  "cat": "ic_soic",
+  "desc": "OPTIREG 40 V 150 mA LDO, 5 V fixed, AEC-Q100",
+  "now": 0.4726,
+  "prior": 0.975,
+  "basis": "LDO regulator SOIC, AEC-Q",
+  "ratio": 0.48471794871794877
+ },
+ {
+  "mpn": "GCM155R71H102KA37D",
+  "cat": "passive_0402",
+  "desc": "MLCC 1nF 50V X7R ±10% 0402 AEC-Q200",
+  "now": 0.0049,
+  "prior": 0.01,
+  "basis": "MLCC 0402, AEC-Q",
+  "ratio": 0.49
+ },
+ {
+  "mpn": "TLE9351SJXTMA1",
+  "cat": "ic_soic",
+  "desc": "HS-CAN / CAN FD transceiver, 5 Mbps, AEC-Q100",
+  "now": 0.5524,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.49102222222222225
+ },
+ {
+  "mpn": "MLX90395KDC-BBA-101-RE",
+  "cat": "ic_soic",
+  "desc": "Triaxis 3D magnetometer, SPI/I2C",
+  "now": 1.0366,
+  "prior": 0.51,
+  "basis": "SOIC / SOT IC (unidentified)",
+  "ratio": 2.032549019607843
+ },
+ {
+  "mpn": "STM32G071RBT6",
+  "cat": "ic_tqfp",
+  "desc": "Arm Cortex-M0+ MCU 64 MHz, 128 KB flash, USB-C PD, LQFP64",
+  "now": 1.1194,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.49751111111111107
+ },
+ {
+  "mpn": "NRF54L15-QFAA-R7",
+  "cat": "ic_qfn",
+  "desc": "Bluetooth LE 6 / Thread / Zigbee multiprotocol SoC, 1.5 MB RRAM, QFN48",
+  "now": 1.8731,
+  "prior": 3.75,
+  "basis": "RF IC QFN",
+  "ratio": 0.49949333333333334
+ },
+ {
+  "mpn": "STM32F031G6U7TR",
+  "cat": "ic_qfn",
+  "desc": "Cortex-M0 MCU 48 MHz, 32 kB flash",
+  "now": 1.1339,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.5039555555555555
+ },
+ {
+  "mpn": "TAS6584QPHDRQ1",
+  "cat": "ic_tqfp",
+  "desc": "4-ch digital-input class-D audio amplifier, automotive, HTQFP-64",
+  "now": 7.6165,
+  "prior": 15,
+  "basis": "MCU TQFP, AEC-Q",
+  "ratio": 0.5077666666666667
+ },
+ {
+  "mpn": "DW3300QTR13",
+  "cat": "ic_qfn",
+  "desc": "IEEE 802.15.4z IR-UWB transceiver, channels 5/9 (6.5/8 GHz), AEC-Q100 Grade 2",
+  "now": 3.9722,
+  "prior": 7.75,
+  "basis": "RF IC QFN, AEC-Q",
+  "ratio": 0.512541935483871
+ },
+ {
+  "mpn": "TLE9351VSJXTMA1",
+  "cat": "ic_soic",
+  "desc": "HS-CAN / CAN FD transceiver, 5 Mbps, VIO, AEC-Q100",
+  "now": 0.5782,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.5139555555555556
+ },
+ {
+  "mpn": "MCP2562FDT-E/SN",
+  "cat": "ic_soic",
+  "desc": "CAN FD transceiver, VIO, AEC-Q100",
+  "now": 0.5846,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.5196444444444445
+ },
+ {
+  "mpn": "CY15B064Q-SXET",
+  "cat": "ic_soic",
+  "desc": "SPI F-RAM 64Kb, automotive -40..125 C",
+  "now": 2.7557,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 1.917008695652174
+ },
+ {
+  "mpn": "ATMEGA328P-AU",
+  "cat": "ic_tqfp",
+  "desc": "8-bit AVR MCU 20 MHz, 32 kB flash",
+  "now": 1.1867,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.5274222222222222
+ },
+ {
+  "mpn": "R7F7015873AFP-C#AA3",
+  "cat": "ic_tqfp",
+  "desc": "RH850/F1K premium (F1KH) 32-bit MCU, 3-5.5 V, AEC-Q100",
+  "now": 7.9231,
+  "prior": 15,
+  "basis": "MCU TQFP, AEC-Q",
+  "ratio": 0.5282066666666666
+ },
+ {
+  "mpn": "CX2016DB40000D0FLJCC",
+  "cat": "crystal_osc",
+  "desc": "Crystal 40 MHz 2016 SMD, FLJCC automotive suffix",
+  "now": 0.6626,
+  "prior": 0.35,
+  "basis": "SMD crystal, AEC-Q",
+  "ratio": 1.8931428571428572
+ },
+ {
+  "mpn": "GRM32ER71H106KA12L",
+  "cat": "passive_1206",
+  "desc": "MLCC 10uF 50V X7R ±10% 1210 commercial",
+  "now": 0.1295,
+  "prior": 0.0685,
+  "basis": "MLCC 1206",
+  "ratio": 1.8905109489051093
+ },
+ {
+  "mpn": "CRCW25121K00FKEG",
+  "cat": "passive_1206",
+  "desc": "Thick film 1k 1% 1W, 2512, AEC-Q200",
+  "now": 0.0488,
+  "prior": 0.09,
+  "basis": "MLCC 1206, AEC-Q",
+  "ratio": 0.5422222222222223
+ },
+ {
+  "mpn": "CY8C4147AZE-S475",
+  "cat": "ic_tqfp",
+  "desc": "PSoC 4100S Plus Cortex-M0+ 48 MHz, 128 KB flash, CapSense",
+  "now": 4.1289,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 1.8350666666666666
+ },
+ {
+  "mpn": "MKE17Z256VLL7",
+  "cat": "ic_tqfp",
+  "desc": "Kinetis KE17Z Cortex-M0+ 72 MHz, 256 KB flash, 5 V, LQFP-100",
+  "now": 4.1259,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 1.8337333333333332
+ },
+ {
+  "mpn": "PIC32CK2051SG01144-E/4KB",
+  "cat": "ic_tqfp",
+  "desc": "PIC32CK SG Cortex-M33 120 MHz, 2 MB flash, TQFP-144, E-temp",
+  "now": 4.1022,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 1.8232
+ },
+ {
+  "mpn": "MC33937APEKR2",
+  "cat": "ic_soic",
+  "desc": "Three-phase field-effect transistor pre-driver, 58 V, AEC-Q100",
+  "now": 2.772,
+  "prior": 1.55,
+  "basis": "driver IC SOIC, AEC-Q",
+  "ratio": 1.7883870967741933
+ },
+ {
+  "mpn": "CRCW120610R0FKEB",
+  "cat": "passive_1206",
+  "desc": "Thick film 10 ohm 1% 0.25W, 1206, AEC-Q200",
+  "now": 0.009,
+  "prior": 0.016,
+  "basis": "chip resistor 1206, AEC-Q",
+  "ratio": 0.5625
+ },
+ {
+  "mpn": "MKP1848C51012JK2",
+  "cat": "through_hole",
+  "desc": "PP film DC-link capacitor 1uF 5% 1200 VDC, through hole",
+  "now": 0.8524,
+  "prior": 0.4875,
+  "basis": "through-hole part (unidentified)",
+  "ratio": 1.7485128205128206
+ },
+ {
+  "mpn": "KP254XTMA2",
+  "cat": "ic_soic",
+  "desc": "Digital barometric absolute pressure sensor (BAP/MAP), SPI, AEC-Q100",
+  "now": 2.4931,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 1.7343304347826087
+ },
+ {
+  "mpn": "BMI088",
+  "cat": "ic_qfn",
+  "desc": "6-axis IMU (16-bit accel + gyro), high vibration robustness, industrial",
+  "now": 3.0741,
+  "prior": 5.2941,
+  "basis": "estimate",
+  "ratio": 0.5806652688842296
+ },
+ {
+  "mpn": "NRF5340-QKAA-R7",
+  "cat": "ic_qfn",
+  "desc": "Dual-core BLE 5.3 SoC Cortex-M33, 1 MB flash",
+  "now": 4.4828,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 1.7077333333333333
+ },
+ {
+  "mpn": "PESD2IVN24-TR",
+  "cat": "fuse_tvs",
+  "desc": "2-line ESD protection 24 V for CAN / LIN / FlexRay, SOT-23, AEC-Q101",
+  "now": 0.0878,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 1.6723809523809525
+ },
+ {
+  "mpn": "SC1510(13)",
+  "cat": "ic_qfn",
+  "desc": "RP2350B dual Cortex-M33/RISC-V MCU, 520 kB SRAM, QFN-80, 13-inch reel",
+  "now": 0.9669,
+  "prior": 0.585,
+  "basis": "simple MCU QFN",
+  "ratio": 1.652820512820513
+ },
+ {
+  "mpn": "0603B105K500CT",
+  "cat": "passive_0603",
+  "desc": "MLCC 1uF 50V X7R ±10% 0603 commercial",
+  "now": 0.0187,
+  "prior": 0.0115,
+  "basis": "MLCC 0603",
+  "ratio": 1.6260869565217393
+ },
+ {
+  "mpn": "GD25Q128ESIGR",
+  "cat": "ic_soic",
+  "desc": "SPI NOR flash 128Mbit, quad I/O, 3V, -40..85C, SOP-8",
+  "now": 0.7796,
+  "prior": 0.4875,
+  "basis": "serial memory SOIC",
+  "ratio": 1.599179487179487
+ },
+ {
+  "mpn": "ACS72981LLRATR-100U5",
+  "cat": "ic_soic",
+  "desc": "Hall current sensor 100 A unidirectional, high-bandwidth, 5 V, PSOF-7, automotive AEC-Q100",
+  "now": 2.2859,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 1.590191304347826
+ },
+ {
+  "mpn": "STM32F070RBT6TR",
+  "cat": "ic_tqfp",
+  "desc": "Cortex-M0 MCU 48 MHz, 128 kB flash, USB",
+  "now": 1.4272,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.6343111111111112
+ },
+ {
+  "mpn": "TLE5501E0002XUMA1",
+  "cat": "ic_soic",
+  "desc": "TMR angle sensor, analog sin/cos, ASIL-D ready, AEC-Q100",
+  "now": 0.9263,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 0.6443826086956522
+ },
+ {
+  "mpn": "MPQ8875AGVE-0000-AEC1-Z",
+  "cat": "ic_qfn",
+  "desc": "Automotive 4-switch buck-boost controller, AEC-Q100",
+  "now": 2.6754,
+  "prior": 1.725,
+  "basis": "DC-DC converter / controller QFN, AEC-Q",
+  "ratio": 1.5509565217391301
+ },
+ {
+  "mpn": "34830-2001",
+  "cat": "connector_smt",
+  "desc": "MX150 PCB header, right-angle, 20 circuits, 3.50 mm pitch",
+  "now": 4.3998,
+  "prior": 6.75,
+  "basis": "sealed automotive connector body",
+  "ratio": 0.6518222222222222
+ },
+ {
+  "mpn": "TNPW080513K0BEEA",
+  "cat": "passive_0805",
+  "desc": "Thin film 13k 0.1% 25ppm, 0805, AEC-Q200",
+  "now": 0.0965,
+  "prior": 0.1475,
+  "basis": "MLCC 0805, AEC-Q",
+  "ratio": 0.6542372881355932
+ },
+ {
+  "mpn": "CDSOT23-T24CAN-Q",
+  "cat": "fuse_tvs",
+  "desc": "Dual bidirectional TVS 24 V for CAN, SOT-23, AEC-Q101",
+  "now": 0.0789,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 1.502857142857143
+ },
+ {
+  "mpn": "TJA1028T/5V0/20/1J",
+  "cat": "ic_soic",
+  "desc": "LIN transceiver with 5 V 70 mA regulator, AEC-Q100",
+  "now": 0.7597,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.6752888888888889
+ },
+ {
+  "mpn": "STM32F030F4P6TR",
+  "cat": "ic_soic",
+  "desc": "Arm Cortex-M0 MCU 48 MHz, 16 KB flash, TSSOP20, tape and reel",
+  "now": 0.3329,
+  "prior": 0.4875,
+  "basis": "serial memory SOIC",
+  "ratio": 0.6828717948717948
+ },
+ {
+  "mpn": "DW3220TR13",
+  "cat": "ic_bga",
+  "desc": "UWB transceiver IEEE 802.15.4z, dual antenna PDoA/AoA",
+  "now": 5.4835,
+  "prior": 3.75,
+  "basis": "RF IC QFN",
+  "ratio": 1.4622666666666668
+ },
+ {
+  "mpn": "W25N01GVZEIG",
+  "cat": "ic_qfn",
+  "desc": "SPI NAND 1Gb, 3 V, industrial -40..85 C (not automotive)",
+  "now": 1.8255,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.6954285714285714
+ },
+ {
+  "mpn": "CP2102N-A02-GQFN28R",
+  "cat": "ic_qfn",
+  "desc": "USB 2.0 to UART bridge",
+  "now": 1.843,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.7020952380952381
+ },
+ {
+  "mpn": "FM25V02A-DGQTR",
+  "cat": "ic_qfn",
+  "desc": "SPI F-RAM 256Kb, DFN-8",
+  "now": 3.7382,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 1.4240761904761905
+ },
+ {
+  "mpn": "ACS71240LLCBTR-030B3",
+  "cat": "ic_soic",
+  "desc": "Hall current sensor, 30 A bidirectional, 3.3 V, integrated conductor",
+  "now": 1.0122,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 0.7041391304347826
+ },
+ {
+  "mpn": "CY62157EV30LL-45ZSXI",
+  "cat": "ic_tqfp",
+  "desc": "Async SRAM 8Mb 512K x16, 45 ns, industrial",
+  "now": 3.1501,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 1.4000444444444444
+ },
+ {
+  "mpn": "LAN8870T-I/PUA",
+  "cat": "ic_qfn",
+  "desc": "100/1000BASE-T1 Ethernet PHY, RGMII/SGMII, industrial temp",
+  "now": 2.2748,
+  "prior": 1.625,
+  "basis": "interface / PHY QFN",
+  "ratio": 1.399876923076923
+ },
+ {
+  "mpn": "AVR128DA48T-E/PT",
+  "cat": "ic_tqfp",
+  "desc": "AVR DA 8-bit MCU 24 MHz, 128 KB flash, -40..125 C, tape and reel",
+  "now": 1.6076,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.7144888888888888
+ },
+ {
+  "mpn": "ATSAMD21G18A-AU",
+  "cat": "ic_tqfp",
+  "desc": "Cortex-M0+ MCU 48 MHz, 256 kB flash, USB",
+  "now": 1.6084,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.7148444444444445
+ },
+ {
+  "mpn": "PIC18F57Q84T-E/PT",
+  "cat": "ic_tqfp",
+  "desc": "PIC18-Q84 8-bit MCU 64 MHz, 128 KB flash, CAN FD, -40..125 C, tape and reel",
+  "now": 1.6194,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.7197333333333333
+ },
+ {
+  "mpn": "STM32H563VGT6",
+  "cat": "ic_tqfp",
+  "desc": "Cortex-M33 MCU 250 MHz, 1 MB flash, TrustZone",
+  "now": 3.1253,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 1.3890222222222224
+ },
+ {
+  "mpn": "TUSB8041IRGCR",
+  "cat": "ic_qfn",
+  "desc": "4-port USB 3.0 hub, industrial temp",
+  "now": 1.8924,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.7209142857142857
+ },
+ {
+  "mpn": "IS61WV25616BLL-10TLI",
+  "cat": "ic_tqfp",
+  "desc": "Async SRAM 4Mb 256K x16, 10 ns, industrial -40..85 C",
+  "now": 1.6231,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.7213777777777778
+ },
+ {
+  "mpn": "BZT52C5V1Q-7-F",
+  "cat": "ic_soic",
+  "desc": "Zener diode 5.1 V 500 mW SOD-123, AEC-Q101",
+  "now": 0.0379,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 0.7219047619047619
+ },
+ {
+  "mpn": "TLS4120D0EPV33XUMA1",
+  "cat": "ic_soic",
+  "desc": "OPTIREG 35 V 2 A synchronous buck, 3.3 V fixed, 2.8 MHz, AEC-Q100",
+  "now": 1.9877,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 1.3827478260869566
+ },
+ {
+  "mpn": "NCN26010XMNTXG",
+  "cat": "ic_qfn",
+  "desc": "10BASE-T1S MAC-PHY, SPI, -40 to 125C (industrial NCN line)",
+  "now": 2.2397,
+  "prior": 1.625,
+  "basis": "interface / PHY QFN",
+  "ratio": 1.3782769230769232
+ },
+ {
+  "mpn": "A6983CQTR",
+  "cat": "ic_qfn",
+  "desc": "Automotive 38 V 3 A synchronous buck, AEC-Q100",
+  "now": 1.2604,
+  "prior": 1.725,
+  "basis": "DC-DC converter / controller QFN, AEC-Q",
+  "ratio": 0.7306666666666666
+ },
+ {
+  "mpn": "MLX91221KDC-ABF-050-RE",
+  "cat": "ic_soic",
+  "desc": "Integrated Hall current sensor (conductor in package) 50 A, SOIC-8, automotive AEC-Q100",
+  "now": 1.967,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 1.3683478260869566
+ },
+ {
+  "mpn": "BSS138BK,215",
+  "cat": "ic_soic",
+  "desc": "N-channel MOSFET 60 V 360 mA, ESD protected, SOT-23, AEC-Q101",
+  "now": 0.0388,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 0.7390476190476191
+ },
+ {
+  "mpn": "ACS37612LLUATR-015B5",
+  "cat": "ic_soic",
+  "desc": "Coreless differential Hall current sensor (busbar), 15 mV/A, 5 V, automotive AEC-Q100",
+  "now": 1.9419,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 1.3508869565217392
+ },
+ {
+  "mpn": "TJA1465AT/0Z",
+  "cat": "ic_soic",
+  "desc": "CAN SIC / CAN FD transceiver, 8 Mbps, 150C, AEC-Q100",
+  "now": 0.8389,
+  "prior": 1.125,
+  "basis": "interface transceiver SOIC, AEC-Q",
+  "ratio": 0.7456888888888888
+ },
+ {
+  "mpn": "DW3110TR13",
+  "cat": "ic_qfn",
+  "desc": "UWB transceiver IEEE 802.15.4z, ch5/ch9, single antenna",
+  "now": 4.9787,
+  "prior": 3.75,
+  "basis": "RF IC QFN",
+  "ratio": 1.3276533333333334
+ },
+ {
+  "mpn": "TLD5099EPXUMA1",
+  "cat": "ic_soic",
+  "desc": "LITIX Power DC-DC LED controller, multi-topology, 500 kHz, AEC-Q100",
+  "now": 1.089,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 0.7575652173913043
+ },
+ {
+  "mpn": "VNF1048FTR",
+  "cat": "ic_qfn",
+  "desc": "Automotive high-side eFuse / switch controller (external MOSFET), VIPower",
+  "now": 1.7222,
+  "prior": 1.325,
+  "basis": "driver IC QFN, AEC-Q",
+  "ratio": 1.2997735849056604
+ },
+ {
+  "mpn": "ACS37612LLUATR-010B5",
+  "cat": "ic_soic",
+  "desc": "Coreless differential Hall current sensor (busbar), 10 mV/A, 5 V, automotive AEC-Q100",
+  "now": 1.8659,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 1.2980173913043478
+ },
+ {
+  "mpn": "TLI4971A050T5E0001XUMA1",
+  "cat": "ic_qfn",
+  "desc": "Coreless magnetic current sensor 50 A, analog, industrial",
+  "now": 2.0393,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.7768761904761904
+ },
+ {
+  "mpn": "IHLP4040DZER100MA1",
+  "cat": "passive_1206",
+  "desc": "Molded power inductor 10uH 20%, 10.2x10.2 mm (4040), commercial",
+  "now": 0.2841,
+  "prior": 0.2225,
+  "basis": "power inductor 1206-class",
+  "ratio": 1.2768539325842698
+ },
+ {
+  "mpn": "MPQ4430GLE-AEC1-Z",
+  "cat": "ic_qfn",
+  "desc": "36 V 3.5 A synchronous buck, low Iq, AEC-Q100 (wettable flank)",
+  "now": 2.1867,
+  "prior": 1.725,
+  "basis": "DC-DC converter / controller QFN, AEC-Q",
+  "ratio": 1.2676521739130435
+ },
+ {
+  "mpn": "A6983IQTR",
+  "cat": "ic_qfn",
+  "desc": "Automotive iso-buck converter 4.5 A, AEC-Q100",
+  "now": 1.3736,
+  "prior": 1.725,
+  "basis": "DC-DC converter / controller QFN, AEC-Q",
+  "ratio": 0.7962898550724636
+ },
+ {
+  "mpn": "ISO6741QDWRQ1",
+  "cat": "ic_soic",
+  "desc": "Quad-channel (3/1) basic/reinforced digital isolator, 50 Mbps, AEC-Q100",
+  "now": 1.1485,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 0.7989565217391305
+ },
+ {
+  "mpn": "ESP32-S3-WROOM-1-N16R8",
+  "cat": "ic_qfn",
+  "desc": "Wi-Fi 4 + BLE 5 module, ESP32-S3, 16 MB flash, 8 MB PSRAM, PCB antenna",
+  "now": 3.2705,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 1.245904761904762
+ },
+ {
+  "mpn": "DMP3098LQ-7",
+  "cat": "ic_soic",
+  "desc": "P-channel MOSFET 30 V, SOT-23, AEC-Q101",
+  "now": 0.065,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 1.2380952380952381
+ },
+ {
+  "mpn": "GRM188R71H104KA93D",
+  "cat": "passive_0603",
+  "desc": "MLCC 100nF 50V X7R ±10% 0603 commercial",
+  "now": 0.0142,
+  "prior": 0.0115,
+  "basis": "MLCC 0603",
+  "ratio": 1.2347826086956524
+ },
+ {
+  "mpn": "ST25R3916-AQWT",
+  "cat": "ic_qfn",
+  "desc": "NFC reader IC 13.56 MHz, ISO14443/15693/FeliCa, I2C/SPI",
+  "now": 3.2099,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 1.2228190476190477
+ },
+ {
+  "mpn": "IGL65R055D2XUMA1",
+  "cat": "ic_qfn",
+  "desc": "CoolGaN 650 V G5 GaN transistor, 55 mOhm class",
+  "now": 2.1548,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.8208761904761904
+ },
+ {
+  "mpn": "SHT45-AD1B-R2",
+  "cat": "ic_qfn",
+  "desc": "Digital humidity + temperature sensor, +/-1 %RH, I2C",
+  "now": 3.18,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 1.2114285714285715
+ },
+ {
+  "mpn": "IGT65R055D2ATMA1",
+  "cat": "ic_qfn",
+  "desc": "CoolGaN 650 V G5 GaN transistor, 66 mOhm",
+  "now": 2.1815,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.8310476190476191
+ },
+ {
+  "mpn": "CX2016DB38400D0FLJCC",
+  "cat": "crystal_osc",
+  "desc": "Crystal 38.4 MHz 2016 SMD, FLJCC automotive suffix",
+  "now": 0.4203,
+  "prior": 0.35,
+  "basis": "SMD crystal, AEC-Q",
+  "ratio": 1.2008571428571428
+ },
+ {
+  "mpn": "XRCGB25M000F3A00R0",
+  "cat": "crystal_osc",
+  "desc": "Crystal 25 MHz, XRCGB 2.0x1.6 mm",
+  "now": 0.2425,
+  "prior": 0.2025,
+  "basis": "SMD crystal",
+  "ratio": 1.1975308641975309
+ },
+ {
+  "mpn": "TLI4971A120T5E0001XUMA1",
+  "cat": "ic_qfn",
+  "desc": "Coreless magnetic current sensor 120 A, analog, industrial",
+  "now": 2.2063,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.8404952380952382
+ },
+ {
+  "mpn": "GRM155R71C104KA88D",
+  "cat": "passive_0402",
+  "desc": "MLCC 100nF 16V X7R ±10% 0402 commercial",
+  "now": 0.0038,
+  "prior": 0.0045,
+  "basis": "MLCC 0402",
+  "ratio": 0.8444444444444446
+ },
+ {
+  "mpn": "IS25LP064A-JBLA3-TR",
+  "cat": "ic_soic",
+  "desc": "Quad SPI NOR 64Mb, 3 V, automotive A3 -40..125 C",
+  "now": 0.9981,
+  "prior": 0.85,
+  "basis": "serial memory SOIC, AEC-Q",
+  "ratio": 1.174235294117647
+ },
+ {
+  "mpn": "CC0603KRX7R9BB105",
+  "cat": "passive_0603",
+  "desc": "MLCC 1uF 50V X7R ±10% 0603 commercial",
+  "now": 0.0134,
+  "prior": 0.0115,
+  "basis": "MLCC 0603",
+  "ratio": 1.165217391304348
+ },
+ {
+  "mpn": "TLE9853QXXUMA1",
+  "cat": "ic_qfn",
+  "desc": "MOTIX TLE985x 32-bit Cortex-M0 40 MHz H-bridge motor-control SoC with LIN",
+  "now": 2.4483,
+  "prior": 2.85,
+  "basis": "interface / PHY QFN, AEC-Q",
+  "ratio": 0.8590526315789474
+ },
+ {
+  "mpn": "STM32G431RBT3",
+  "cat": "ic_tqfp",
+  "desc": "STM32G4 Cortex-M4 170 MHz, 128 KB flash, -40..125 C (suffix 3)",
+  "now": 2.6045,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 1.1575555555555554
+ },
+ {
+  "mpn": "IGLT65R055D2ATMA1",
+  "cat": "ic_qfn",
+  "desc": "CoolGaN 650 V GaN transistor, 55 mOhm class",
+  "now": 2.2753,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.8667809523809524
+ },
+ {
+  "mpn": "LAN8671B1-E/U3B",
+  "cat": "ic_qfn",
+  "desc": "10BASE-T1S Ethernet PHY (802.3cg), RMII",
+  "now": 1.8619,
+  "prior": 1.625,
+  "basis": "interface / PHY QFN",
+  "ratio": 1.1457846153846154
+ },
+ {
+  "mpn": "EPC2302",
+  "cat": "ic_qfn",
+  "desc": "eGaN FET 100 V, 1.8 mOhm",
+  "now": 2.9875,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 1.138095238095238
+ },
+ {
+  "mpn": "24LC64T-E/SN",
+  "cat": "ic_soic",
+  "desc": "I2C EEPROM 64Kb, extended temp -40..125 C",
+  "now": 0.5514,
+  "prior": 0.4875,
+  "basis": "serial memory SOIC",
+  "ratio": 1.131076923076923
+ },
+ {
+  "mpn": "TNPW080512K0BEEA",
+  "cat": "passive_0805",
+  "desc": "Thin film 12k 0.1% 25ppm, 0805, AEC-Q200",
+  "now": 0.1662,
+  "prior": 0.1475,
+  "basis": "MLCC 0805, AEC-Q",
+  "ratio": 1.1267796610169492
+ },
+ {
+  "mpn": "TPS48111LQDGXRQ1",
+  "cat": "ic_soic",
+  "desc": "Automotive smart high-side driver with protection and diagnostics",
+  "now": 1.3907,
+  "prior": 1.55,
+  "basis": "driver IC SOIC, AEC-Q",
+  "ratio": 0.8972258064516129
+ },
+ {
+  "mpn": "IAM-20380HT",
+  "cat": "ic_qfn",
+  "desc": "3-axis MEMS gyroscope, high-temperature, AEC-Q100",
+  "now": 5.8245,
+  "prior": 5.25,
+  "basis": "QFN IC (unidentified), AEC-Q",
+  "ratio": 1.1094285714285714
+ },
+ {
+  "mpn": "MLX90427GDC-AAC-900-RE",
+  "cat": "ic_soic",
+  "desc": "Triaxis mainstream rotary / joystick position sensor, automotive AEC-Q100",
+  "now": 1.566,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 1.089391304347826
+ },
+ {
+  "mpn": "TC4D7XP20MF500MCABKXUMA1",
+  "cat": "ic_bga",
+  "desc": "AURIX TC4Dx TC4D7 multi-core TriCore 500 MHz, 20 MB flash, ASIL-D",
+  "now": 58.8001,
+  "prior": 63.5,
+  "basis": "BGA IC (unidentified), AEC-Q",
+  "ratio": 0.9259858267716535
+ },
+ {
+  "mpn": "LDL1117S33R",
+  "cat": "ic_soic",
+  "desc": "1.2 A LDO 3.3 V",
+  "now": 0.3884,
+  "prior": 0.36,
+  "basis": "LDO regulator SOIC",
+  "ratio": 1.078888888888889
+ },
+ {
+  "mpn": "IHLP4040DZER100M5A",
+  "cat": "passive_1206",
+  "desc": "Molded power inductor 10uH 20% 4040 (10.2x10.2 mm) AEC-Q200 (-5A)",
+  "now": 0.4732,
+  "prior": 0.51,
+  "basis": "power inductor 1206-class, AEC-Q",
+  "ratio": 0.927843137254902
+ },
+ {
+  "mpn": "LM5060Q1MM/NOPB",
+  "cat": "ic_soic",
+  "desc": "High-side protection / hot-swap controller 5.5-65 V, automotive",
+  "now": 1.3444,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 0.9352347826086956
+ },
+ {
+  "mpn": "A33002LLEATR",
+  "cat": "ic_soic",
+  "desc": "Magnetic angle sensor, dual die, ASIL, TSSOP-14, automotive AEC-Q100",
+  "now": 1.5347,
+  "prior": 1.4375,
+  "basis": "SOIC / SOT IC (unidentified), AEC-Q",
+  "ratio": 1.0676173913043479
+ },
+ {
+  "mpn": "AQ24CANFD-02HTG",
+  "cat": "fuse_tvs",
+  "desc": "CAN FD TVS diode array, 2-line, 24 V, 200 W, SOT-23, AEC-Q101",
+  "now": 0.056,
+  "prior": 0.0525,
+  "basis": "SOT-23 / SOD-123 discrete, AEC-Q",
+  "ratio": 1.0666666666666667
+ },
+ {
+  "mpn": "ESP32-C6-WROOM-1-N8",
+  "cat": "ic_qfn",
+  "desc": "Wi-Fi 6 + BLE 5 + 802.15.4 module, 8 MB flash, PCB antenna",
+  "now": 2.4665,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 0.9396190476190476
+ },
+ {
+  "mpn": "NRF52840-QIAA-R7",
+  "cat": "ic_qfn",
+  "desc": "BLE 5 / Thread / Zigbee SoC Cortex-M4F 64 MHz, 1 MB flash",
+  "now": 2.7807,
+  "prior": 2.625,
+  "basis": "QFN IC (unidentified)",
+  "ratio": 1.0593142857142857
+ },
+ {
+  "mpn": "GCM188R72A103KA37D",
+  "cat": "passive_0603",
+  "desc": "MLCC 10nF 100V X7R ±10% 0603 AEC-Q200",
+  "now": 0.0228,
+  "prior": 0.024,
+  "basis": "MLCC 0603, AEC-Q",
+  "ratio": 0.9500000000000001
+ },
+ {
+  "mpn": "TLC6C5724QDAPRQ1",
+  "cat": "ic_soic",
+  "desc": "24-channel automotive LED driver with diagnostics, AEC-Q100",
+  "now": 1.4879,
+  "prior": 1.55,
+  "basis": "driver IC SOIC, AEC-Q",
+  "ratio": 0.9599354838709677
+ },
+ {
+  "mpn": "BMP390",
+  "cat": "ic_qfn",
+  "desc": "Barometric pressure sensor, +/-0.5 hPa, I2C/SPI, consumer",
+  "now": 1.6999,
+  "prior": 1.6471,
+  "basis": "estimate",
+  "ratio": 1.0320563414486066
+ },
+ {
+  "mpn": "FA-128 31.2500MB30X-K0",
+  "cat": "crystal_osc",
+  "desc": "Crystal 31.25 MHz +-50/+-30 ppm -40..85 C, 2.0x1.6 mm",
+  "now": 0.207,
+  "prior": 0.2025,
+  "basis": "SMD crystal",
+  "ratio": 1.0222222222222221
+ },
+ {
+  "mpn": "FA-128 54.00M-C0AANNG60RE5",
+  "cat": "crystal_osc",
+  "desc": "Crystal 54 MHz 12 pF +-10/+-20 ppm, 2.0x1.6 mm",
+  "now": 0.2065,
+  "prior": 0.2025,
+  "basis": "SMD crystal",
+  "ratio": 1.019753086419753
+ },
+ {
+  "mpn": "TLE9104SHXUMA1",
+  "cat": "ic_soic",
+  "desc": "Quad low-side switch 60 V 3 A, 0.3 Ohm, SPI, powertrain, AEC-Q100",
+  "now": 1.574,
+  "prior": 1.55,
+  "basis": "driver IC SOIC, AEC-Q",
+  "ratio": 1.0154838709677418
+ },
+ {
+  "mpn": "NCJ29D5CHN/00200Y",
+  "cat": "ic_qfn",
+  "desc": "Automotive UWB IC (Trimension, car access / digital key), AEC-Q100",
+  "now": 5.3113,
+  "prior": 5.25,
+  "basis": "QFN IC (unidentified), AEC-Q",
+  "ratio": 1.0116761904761904
+ },
+ {
+  "mpn": "MPQ4430GL-AEC1-Z",
+  "cat": "ic_qfn",
+  "desc": "36 V 3.5 A synchronous buck, low Iq, AEC-Q100",
+  "now": 1.7387,
+  "prior": 1.725,
+  "basis": "DC-DC converter / controller QFN, AEC-Q",
+  "ratio": 1.0079420289855072
+ },
+ {
+  "mpn": "LM25149QRGYRQ1",
+  "cat": "ic_qfn",
+  "desc": "42 V synchronous buck controller, active EMI filter, AEC-Q100",
+  "now": 1.7296,
+  "prior": 1.725,
+  "basis": "DC-DC converter / controller QFN, AEC-Q",
+  "ratio": 1.0026666666666666
+ },
+ {
+  "mpn": "dsPIC33CH512MP506T-I/PT",
+  "cat": "ic_tqfp",
+  "desc": "dsPIC33CH dual-core DSC 180 MHz, 512 KB flash, TQFP-64",
+  "now": 2.2488,
+  "prior": 2.25,
+  "basis": "MCU TQFP",
+  "ratio": 0.9994666666666667
+ }
+]

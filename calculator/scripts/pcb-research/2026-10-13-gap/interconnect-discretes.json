@@ -397,7 +397,7 @@
     "camera"
    ],
    "observations": [],
-   "notes": "Only RS UK small-quantity breaks seen (GBP 18.07 1-9, 16.62 10+ ex VAT) - below the 100 break rule, not recorded.",
+   "notes": "Only RS UK small-quantity breaks seen (GBP 18.07 1-9, 16.62 10+ ex VAT) - below the 100 break rule, not recorded. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): Two searches (exact code + MATEnet; Farnell order code 4155204) found no listing at all. NOTE: the recorded Farnell FR URL slug reads 'conn-automobile-male-28p-3a-60vdc' - a 28-position connector - which contradicts desc.",
    "observedMpn": "9-2304372-9"
   },
   {

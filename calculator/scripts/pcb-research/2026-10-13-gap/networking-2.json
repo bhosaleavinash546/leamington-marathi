@@ -192,18 +192,19 @@
     "gateway",
     "body"
    ],
-   "observedMpn": "ATA6570-GNQW1",
+   "observedMpn": "ATA6570-GNQW0",
    "observations": [
     {
-     "distributor": "RS Components (Japan)",
-     "qty": 4000,
-     "price": 150.33,
-     "currency": "JPY",
-     "url": "https://jp.rs-online.com/web/p/can-interface-ics/0631537",
-     "date": "2026-10-13"
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.5248,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C2987165.html",
+     "date": "2026-10-13",
+     "observedMpn": "ATA6570-GNQW0"
     }
    ],
-   "notes": "RS JP reel of 4000, per-unit price; temporarily out of stock at read; tax basis not stated in result. Replaces catalogue estimate."
+   "notes": "RS JP reel of 4000, per-unit price; temporarily out of stock at read; tax basis not stated in result. Replaces catalogue estimate. Review 13 Oct 2026: setObs - independent review (list-C) corrected the recorded price: Exact -GNQW1 code not found priced. RS JP JPY 150.33 @4000 (~USD 1.00; out of stock; consumption-tax basis not shown) is ~2x the LCSC price of the sibling ATA6570-GNQW0 (USD 0.5248 at 1,000+, 3,802 stock, 4,000/reel; htt. Review 13 Oct 2026: setField - independent review (list-C): the replacement price is LCSC's listing of the sibling code ATA6570-GNQW0."
   },
   {
    "mpn": "LAN8671B1-E/U3B",

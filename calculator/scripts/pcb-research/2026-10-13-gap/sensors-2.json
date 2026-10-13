@@ -302,17 +302,8 @@
     "ESC"
    ],
    "observedMpn": "TLE4941",
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 1000,
-     "price": 2.96,
-     "currency": "USD",
-     "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TLE4941?qs=OWKQh20chupucHOxukFfag%3D%3D",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Mouser lists the bare code TLE4941 (4,000 in stock). Current orderable TLE4941PLUSCXAMA1: Digi-Key $1.56 cut tape (no break) - not recorded. TLE4941-1 Mouser ladder to $2.48 (break unclear) - not recorded."
+   "observations": [],
+   "notes": "Mouser lists the bare code TLE4941 (4,000 in stock). Current orderable TLE4941PLUSCXAMA1: Digi-Key $1.56 cut tape (no break) - not recorded. TLE4941-1 Mouser ladder to $2.48 (break unclear) - not recorded. Review 13 Oct 2026: dropPart - independent review (list-D): the price is for a bare, not-recommended code, 50-90% above the current orderable versions (USD 1.56-1.93)."
   },
   {
    "mpn": "IAM-20380HT",
@@ -434,21 +425,21 @@
     {
      "distributor": "Farnell",
      "qty": 1000,
-     "price": 25.45,
-     "currency": "SEK",
-     "url": "https://se.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+     "price": 2.34,
+     "currency": "EUR",
+     "url": "https://nl.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
      "date": "2026-10-13"
     },
     {
      "distributor": "Farnell",
      "qty": 1000,
-     "price": 26.9,
-     "currency": "NOK",
-     "url": "https://no.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
+     "price": 25.45,
+     "currency": "SEK",
+     "url": "https://se.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958",
      "date": "2026-10-13"
     }
    ],
-   "notes": "Replaces wave-1 observation (read via sourceesb, not allowed). 1,000 cut tape, 8,000 T&R. RS UK GBP 1.958 @1000-2495 seen on one of two RS listings (2167841/2167842, unclear which) - not recorded. Review 13 Oct 2026: setObs - independent review (list-B-random) corrected the recorded price: Recorded USD 2.73 was read from sourceesb.com, a disallowed source (REVIEW-RULES: never Source ESB). Digi-Key prices in results only on punchouttest hosts (excluded). Farnell lists it as 'MEMS sensor AEC-Q100': 1000+ SEK."
+   "notes": "Replaces wave-1 observation (read via sourceesb, not allowed). 1,000 cut tape, 8,000 T&R. RS UK GBP 1.958 @1000-2495 seen on one of two RS listings (2167841/2167842, unclear which) - not recorded. Review 13 Oct 2026: setObs - independent review (list-B-random) corrected the recorded price: Recorded USD 2.73 was read from sourceesb.com, a disallowed source (REVIEW-RULES: never Source ESB). Digi-Key prices in results only on punchouttest hosts (excluded). Farnell lists it as 'MEMS sensor AEC-Q100': 1000+ SEK. Review 13 Oct 2026: setObs - independent review (list-D) corrected the recorded price: Farnell NL (https://nl.farnell.com/stmicroelectronics/ais2ihtr/mems-sensor-aec-q100-digital-lga/dp/3678958): 1000+ EUR 2.34 ex VAT, cut tape, 3,477 in stock, listed 'MEMS sensor AEC-Q100'. The recorded SEK 25.45 @1000 (~."
   },
   {
    "mpn": "TMP126EDBVRQ1",
@@ -759,17 +750,8 @@
     "BMS"
    ],
    "observedMpn": "FXPS7115DS4ST1",
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 2000,
-     "price": 4.25313,
-     "currency": "USD",
-     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/FXPS7115DS4ST1/13625886",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Representative of the FXPS7xx family (FXPS7550DI4ST1/DS4ST1 had no price; FXPS7550DS4T1 obsolete). Listed under ST at Digi-Key; non-stocked. Package per family datasheet, not in snippet."
+   "observations": [],
+   "notes": "Representative of the FXPS7xx family (FXPS7550DI4ST1/DS4ST1 had no price; FXPS7550DS4T1 obsolete). Listed under ST at Digi-Key; non-stocked. Package per family datasheet, not in snippet. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): Only a broker reference price found (Cytech, USD 2.70 @1000, 'last sale', not allowed). ST product page shows no price/distributor; NXP lists DS4ST1 as recommended for new designs. Recorded Digi-Key USD 4.25313 @2000 not."
   },
   {
    "mpn": "FXPS7115DI4ST1",

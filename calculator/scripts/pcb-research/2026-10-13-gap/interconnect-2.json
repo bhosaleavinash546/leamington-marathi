@@ -50,17 +50,8 @@
     "camera"
    ],
    "observedMpn": "9-2304372-9",
-   "observations": [
-    {
-     "distributor": "Farnell",
-     "qty": 100,
-     "price": 13.51,
-     "currency": "EUR",
-     "url": "https://fr.farnell.com/te-connectivity/9-2304372-9/conn-automobile-male-28p-3a-60vdc/dp/4155204",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Farnell FR ex VAT, 100+ is the top break shown (1+ 18.72, 10+ 15.90, 25+ 14.90). Farnell BE 500+ figure seen only as a hedged summary value - not recorded. AEC-Q not applicable to connectors (USCAR / LV214 automotive series)."
+   "observations": [],
+   "notes": "Farnell FR ex VAT, 100+ is the top break shown (1+ 18.72, 10+ 15.90, 25+ 14.90). Farnell BE 500+ figure seen only as a hedged summary value - not recorded. AEC-Q not applicable to connectors (USCAR / LV214 automotive series). Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): Two searches (exact code + MATEnet; Farnell order code 4155204) found no listing at all. NOTE: the recorded Farnell FR URL slug reads 'conn-automobile-male-28p-3a-60vdc' - a 28-position connector - which contradicts desc."
   },
   {
    "mpn": "34912-6040",
@@ -360,25 +351,8 @@
     "BMS"
    ],
    "observedMpn": "0885005.DR",
-   "observations": [
-    {
-     "distributor": "Future Electronics",
-     "qty": 1500,
-     "price": 2.02,
-     "currency": "USD",
-     "url": "https://futureelectronics.com/fr/p/electromechanical--circuit-protection--electronic-fuses/0885005-dr-littelfuse-3149327",
-     "date": "2026-10-13"
-    },
-    {
-     "distributor": "Future Electronics",
-     "qty": 3000,
-     "price": 1.98,
-     "currency": "USD",
-     "url": "https://futureelectronics.com/fr/p/electromechanical--circuit-protection--electronic-fuses/0885005-dr-littelfuse-3149327",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Future: reel 1500, zero stock, 15-week lead, price date not stated. Wave 1 asked 0885002.DR (unpriced); this is the 5 A sibling. AEC-Q200 status not confirmed."
+   "observations": [],
+   "notes": "Future: reel 1500, zero stock, 15-week lead, price date not stated. Wave 1 asked 0885002.DR (unpriced); this is the 5 A sibling. AEC-Q200 status not confirmed. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): Search for the exact code found no listing (only 0154xxx.DR siblings at LCSC USD 0.70-1.10 single-unit, a different, low-voltage series). Recorded Future USD 2.02 @1500 / 1.98 @3000 (0 stock, no price date) not seen. A 4."
   },
   {
    "mpn": "KW CSLNM1.TG",

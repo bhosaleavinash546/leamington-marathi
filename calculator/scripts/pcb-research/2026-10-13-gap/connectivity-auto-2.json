@@ -118,17 +118,8 @@
     "UWB anchor"
    ],
    "observedMpn": "NCJ29D5CHN/00201Y",
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 4000,
-     "price": 625.24,
-     "currency": "INR",
-     "url": "https://www.mouser.in/en/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/rf-microcontrollers-mcu/?pg=26",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Mouser India 771-NCJ29D5CHN00201Y, non-stocked, 30 wk, MOQ 4,000; read on a category listing page. GST basis of the India site not confirmed. NXP: product details under NDA."
+   "observations": [],
+   "notes": "Mouser India 771-NCJ29D5CHN00201Y, non-stocked, 30 wk, MOQ 4,000; read on a category listing page. GST basis of the India site not confirmed. NXP: product details under NDA. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): Search for the exact code returned nothing for 00201Y. Cross-check only: sibling 00200Y Avnet USD 6.38 @4000; recorded INR 625.24 @4000 ~ USD 7.1 - consistent within 25% whether or not GST is included, but the INR figure."
   },
   {
    "mpn": "NCJ29D5CHN/00200Y",
@@ -305,17 +296,8 @@
     "glue logic"
    ],
    "observedMpn": "LFE5U-25F-8BG256C",
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 119,
-     "price": 18.54,
-     "currency": "EUR",
-     "url": "https://www.mouser.sk/c/semiconductors/programmable-logic-ics/fpga-field-programmable-gate-array/?pg=5",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Researched for task line 'LFE5U automotive'; the automotive (-A) code was not listed - commercial sibling priced. Read on a Mouser SK category listing page (URL attribution from the search summary); EU Mouser sites show ex-VAT prices."
+   "observations": [],
+   "notes": "Researched for task line 'LFE5U automotive'; the automotive (-A) code was not listed - commercial sibling priced. Read on a Mouser SK category listing page (URL attribution from the search summary); EU Mouser sites show ex-VAT prices. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): Two searches: no Mouser/Digi-Key/Farnell price for the exact C-grade code (code exists - reseller Dasenic lists it, IC FPGA 197 I/O 256CABGA, 0..85 C). Only seen: Digi-Key tray price of the I-grade sibling LFE5U-25F-8BG2."
   },
   {
    "mpn": "LFE5U-25F-6TG144C",
@@ -330,17 +312,8 @@
     "glue logic"
    ],
    "observedMpn": "LFE5U-25F-6TG144C",
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 120,
-     "price": 13.3,
-     "currency": "EUR",
-     "url": "https://www.mouser.sk/c/semiconductors/programmable-logic-ics/fpga-field-programmable-gate-array/?pg=5",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Same Mouser SK category listing as LFE5U-25F-8BG256C (URL attribution from the search summary); ex VAT."
+   "observations": [],
+   "notes": "Same Mouser SK category listing as LFE5U-25F-8BG256C (URL attribution from the search summary); ex VAT. Review 13 Oct 2026: dropPart - flagged and not confirmed by the independent review (list-C): No listing found for the exact -6 TQFP-144 code. Reseller Dasenic (not franchised) lists LFE5U-25F-8TG144C at USD 37.58 @11-300 and LFE5U-12F-6TG144C at USD 10.35 @26-100 (https://ru.dasenic.com/product/lattice-semicondu."
   },
   {
    "mpn": "LCMXO3D-9400HC-6SG72C",

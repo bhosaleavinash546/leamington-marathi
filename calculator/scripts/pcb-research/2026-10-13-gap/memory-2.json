@@ -59,17 +59,9 @@
      "currency": "USD",
      "url": "https://www.futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/mx25l12833fm2i-10g-macronix-6184555",
      "date": "2026-10-13"
-    },
-    {
-     "distributor": "Future Electronics",
-     "qty": 2000,
-     "price": 3.16,
-     "currency": "USD",
-     "url": "https://www.futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/mx25l12833fm2i-10gtr-macronix-8121165",
-     "date": "2026-10-13"
     }
    ],
-   "notes": "Industrial grade; automotive MX25L12833F/-73F code not found priced. 100 break: tube listing (13,156 stock; $3.28 at 10). 2000 break is the -10GTR reel listing (observedMpn MX25L12833FM2I-10GTR): reel total $6,320.00 / 2000 = $3.16, 0 stock, 52+ wk lead. Future shows two -10G listings with the same tiers."
+   "notes": "Industrial grade; automotive MX25L12833F/-73F code not found priced. 100 break: tube listing (13,156 stock; $3.28 at 10). 2000 break is the -10GTR reel listing (observedMpn MX25L12833FM2I-10GTR): reel total $6,320.00 / 2000 = $3.16, 0 stock, 52+ wk lead. Future shows two -10G listings with the same tiers. Review 13 Oct 2026: dropObs - independent review (list-C): the 2,000 reel figure was a reel total divided by 2,000 on a zero-stock listing."
   },
   {
    "mpn": "W25Q64JVSSIQ",
