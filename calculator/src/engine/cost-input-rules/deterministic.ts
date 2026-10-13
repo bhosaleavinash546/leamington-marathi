@@ -20,6 +20,7 @@
  *     run needed a drawing callout the kernel cannot read, `analysisLimitations`
  *     says so — an empty list must never read as a clean bill of health.
  */
+import { materialFacts } from './derive/material.js';
 import type {
   CADAnalysisResult, CADGeometry, DetectedFeature, OCCTGeometry,
   ProcessRecommendation, SuggestedOperation,
@@ -160,14 +161,23 @@ export function buildDeterministicAnalysis(
       // reading only the metal answer warned "confirm the material" on every
       // moulding whose resin the engineer had just picked (moulding review).
       // An answered GRADE confirms the material too (a forging answered C45 still printed "only 0% confident" — Germany review).
+      // The answered extrusion alloy too (a crash box answered 6082 read "only 0% confident" — Germany review).
       const answered = ctx.answers['material.family'] ?? ctx.answers['gear.materialClass'] ?? ctx.answers['material.resin']
-        ?? ctx.answers['material.grade'];
+        ?? ctx.answers['material.grade'] ?? (ctx.answers['material.alAlloy'] ? `EN AW-${ctx.answers['material.alAlloy']}` : undefined);
+      // Unanswered: a family the rules read from the file (a STEP name "… C45 …", a declared material) is a stated
+      // leaning, not a coin toss — 0% made the sanity layer demand a photo of a forging whose name gives its steel.
+      const named = answered ? null : (() => {
+        try { const f = materialFacts(ctx); return f.family && !f.decision ? f : null; } catch { return null; }
+      })();
       return {
-        fromMetadata: !!answered,
+        fromMetadata: !!answered || !!named,
         primarySuggestion: answered
           ? { materialId: '', name: String(answered).replace(/_/g, ' '), confidencePct: 100,
               reasoning: 'confirmed by the engineer — not inferred from the shape' }
-          : { materialId: '', name: '', confidencePct: 0, reasoning: '' },
+          : named
+            ? { materialId: '', name: String(named.family), confidencePct: 60,
+                reasoning: `${named.basis} — read from the file, not engineer-confirmed` }
+            : { materialId: '', name: '', confidencePct: 0, reasoning: '' },
         alternatives: [],
       };
     })(),

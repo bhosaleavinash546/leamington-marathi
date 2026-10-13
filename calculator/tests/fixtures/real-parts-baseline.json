@@ -326,10 +326,7 @@
         "logistics": 0.03,
         "overhead": 0.07,
         "margin": 0.06
-      },
-      "warnings": [
-        "material_low_confidence"
-      ]
+      }
     }
   },
   {
@@ -728,10 +725,7 @@
         "logistics": 0.68,
         "overhead": 3.26,
         "margin": 2.51
-      },
-      "warnings": [
-        "material_low_confidence"
-      ]
+      }
     }
   },
   {
@@ -1103,10 +1097,7 @@
         "logistics": 0.42,
         "overhead": 2.69,
         "margin": 2.06
-      },
-      "warnings": [
-        "material_low_confidence"
-      ]
+      }
     }
   },
   {
@@ -1458,10 +1449,7 @@
         "logistics": 0.06,
         "overhead": 0.32,
         "margin": 0.25
-      },
-      "warnings": [
-        "material_low_confidence"
-      ]
+      }
     }
   },
   {
@@ -1884,10 +1872,7 @@
         "logistics": 0.18,
         "overhead": 0.98,
         "margin": 0.75
-      },
-      "warnings": [
-        "material_low_confidence"
-      ]
+      }
     }
   },
   {
@@ -2408,10 +2393,7 @@
         "logistics": 0.09,
         "overhead": 0.41,
         "margin": 0.32
-      },
-      "warnings": [
-        "material_low_confidence"
-      ]
+      }
     }
   },
   {
@@ -2807,10 +2789,7 @@
         "logistics": 0.12,
         "overhead": 0.67,
         "margin": 0.52
-      },
-      "warnings": [
-        "material_low_confidence"
-      ]
+      }
     }
   },
   {
@@ -3199,10 +3178,7 @@
         "logistics": 0.11,
         "overhead": 0.35,
         "margin": 0.28
-      },
-      "warnings": [
-        "material_low_confidence"
-      ]
+      }
     }
   },
   {
@@ -3564,10 +3540,7 @@
         "logistics": 0.08,
         "overhead": 0.34,
         "margin": 0.27
-      },
-      "warnings": [
-        "material_low_confidence"
-      ]
+      }
     }
   },
   {
@@ -11796,16 +11769,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 25.16,
+      "total": 24.39,
       "breakdown": {
-        "rawMaterial": 9.34,
+        "rawMaterial": 8.7,
         "process": 4.8,
         "labour": 5.71,
         "tooling": 0.62,
         "packaging": 0.14,
         "logistics": 0.23,
-        "overhead": 2.46,
-        "margin": 1.86
+        "overhead": 2.38,
+        "margin": 1.81
       }
     }
   },
@@ -12166,16 +12139,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 18.48,
+      "total": 17.45,
       "breakdown": {
-        "rawMaterial": 7.55,
+        "rawMaterial": 6.69,
         "process": 3.13,
         "labour": 3.55,
         "tooling": 0.63,
         "packaging": 0.17,
         "logistics": 0.3,
-        "overhead": 1.78,
-        "margin": 1.37
+        "overhead": 1.68,
+        "margin": 1.29
       }
     }
   },
@@ -23824,16 +23797,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 25.4,
+      "total": 24.22,
       "breakdown": {
-        "rawMaterial": 11.19,
+        "rawMaterial": 10.22,
         "process": 3.87,
         "labour": 4.44,
         "tooling": 1.01,
         "packaging": 0.19,
         "logistics": 0.34,
-        "overhead": 2.46,
-        "margin": 1.88
+        "overhead": 2.35,
+        "margin": 1.79
       }
     }
   },

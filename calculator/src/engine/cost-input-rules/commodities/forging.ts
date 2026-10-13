@@ -93,9 +93,11 @@ const NDT_BY_PROCESS: Record<ForgingProcess, 'mpi' | 'ut' | 'ct' | 'none'> = {
   'cold-forming': 'none',
 };
 
-const HEAT_TREAT: Record<ForgingAlloyFamily, 'normalise' | 'quench-temper' | 'anneal' | 'solution-age'> = {
+// A microalloyed (V / Nb) steel gets its strength from controlled cooling OFF THE FORGE HEAT — that is why it is chosen; a
+// separate normalise was charged on 38MnVS6 whose own library note says "no separate Q&T" (Germany live review, Oct 2026).
+const HEAT_TREAT: Record<ForgingAlloyFamily, 'none' | 'normalise' | 'quench-temper' | 'anneal' | 'solution-age'> = {
   'carbon-steel': 'normalise',
-  'microalloyed-steel': 'normalise',
+  'microalloyed-steel': 'none',
   'alloy-steel': 'quench-temper',
   'stainless-steel': 'anneal',
   copper: 'anneal',
@@ -590,7 +592,9 @@ export const FORGING_RULES: CommodityRuleSpec = {
         return decided('forging.forgeId', pickForgePressId(r.advice.tonnes), 'advisor',
           `F = Kt × σflow × A: ${r.advice.shape} shape in ${r.advice.alloy} over `
           + `${r.advice.areaCm2} cm²${r.advice.flashFrac > 0 ? ` + ${fmt(flashGeometry(r.advice.areaCm2).landAreaCm2, 0)} cm² flash land` : ''}`
-          + ` = ${r.advice.tonnes} t (1.2 safety)`, 0.85);
+          // the force is the die-fill force; the 1.2 is applied by the picker — "446 t (1.2 safety)" read as if it was in
+          // the 446 and a 500 t press would do (Germany live review)
+          + ` = ${r.advice.tonnes} t × 1.2 safety = ${Math.round(r.advice.tonnes * 1.2)} t → the smallest forge press at or above it`, 0.85);
       },
     },
     {
@@ -816,7 +820,9 @@ export const FORGING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('forging.heatTreatCostPerKg', adderUnit(r.advice, /Heat treat/), 'library',
-          `${HEAT_TREAT[r.advice.alloy]} for a ${r.advice.alloy} forging`, 0.6);
+          HEAT_TREAT[r.advice.alloy] === 'none'
+            ? `none — a ${r.advice.alloy} forging is controlled-cooled from the forge heat (no separate heat treatment)`
+            : `${HEAT_TREAT[r.advice.alloy]} for a ${r.advice.alloy} forging`, 0.6);
       },
     },
     {

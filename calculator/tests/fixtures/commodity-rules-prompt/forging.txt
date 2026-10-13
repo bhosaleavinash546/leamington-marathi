@@ -14,7 +14,7 @@ FORGING COST INPUT RULES:
   shapeComplexity=moderate  [4 free-form face(s), 2 undercut face(s), 120 faces total — deterministic, use verbatim]
   yieldFraction=0.743  [closed-die stock yield band 0.55–0.8, midpoint 0.675, scaled by the 10% flash so the billet lands at part ÷ 0.675 — deterministic, use verbatim]
   flashAndScaleKg=0.285  [10% of part weight squeezed out at the flash land — deterministic, use verbatim]
-  forgeId=forge-press-1600t  [F = Kt × σflow × A: moderate shape in aluminium over 288.4 cm² + 57 cm² flash land = 969 t (1.2 safety) — deterministic, use verbatim]
+  forgeId=forge-press-1600t  [F = Kt × σflow × A: moderate shape in aluminium over 288.4 cm² + 57 cm² flash land = 969 t × 1.2 safety = 1163 t → the smallest forge press at or above it — deterministic, use verbatim]
   strokesToForm=3  [3 s billet from the heater + 3 hit(s) (2 impression(s) + 1 extra finisher hit(s), moderate shape) × 4 s mechanical press hit + transfer = 15 s takt — deterministic, use verbatim]
   timePerBlowSec=4  [hit + transfer on the press (informational — the cycle below is the line takt) — deterministic, use verbatim]
   cycleTimeHr=0.004167  [3 s billet from the heater + 3 hit(s) (2 impression(s) + 1 extra finisher hit(s), moderate shape) × 4 s mechanical press hit + transfer = 15 s takt — deterministic, use verbatim]

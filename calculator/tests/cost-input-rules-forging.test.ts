@@ -337,3 +337,22 @@ describe('the prompt cannot say anything the engine would not compute', () => {
     }
   });
 });
+
+describe('Germany live review: heat treatment follows the grade', () => {
+  it('a microalloyed forging (38MnVS6) is controlled-cooled from the forge heat — no normalise is charged', () => {
+    const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
+    const f = r.suggestions.forging as Record<string, number>;
+    expect(f.heatTreatCostPerKg).toBe(0);
+    expect(r.provenance['forge-ht-cost'].basis).toMatch(/controlled-cooled from the forge heat/);
+  });
+  it('a carbon-steel forging (C45 answered) is still normalised', () => {
+    const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, { ...STEEL_ANSWERED, 'material.grade': 'mat-steel-c45' }));
+    const f = r.suggestions.forging as Record<string, number>;
+    expect(f.heatTreatCostPerKg).toBeGreaterThan(0);
+    expect(r.provenance['forge-ht-cost'].basis).toMatch(/normalise for a carbon-steel forging/);
+  });
+  it('the press basis states the 1.2 safety as applied, not as if it were inside the die-fill force', () => {
+    const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
+    expect(r.provenance['forge-mach'].basis).toMatch(/= \d+ t × 1\.2 safety = \d+ t → the smallest forge press at or above it/);
+  });
+});
