@@ -114,7 +114,11 @@ describe(`${name} marketplace library`, () => {
   });
 
   it('is free of duplicates inside itself and against every other pack — by title and by concept', () => {
-    const lib = loadLibrary().filter(y => y.src !== FILE);
+    // The user-supplied study packs (marketplace-study-*) are a separate primary
+    // source imported verbatim; their overlaps with these researched packs are
+    // judged by meaning in the study review and recorded on the study ideas
+    // (DECISIONS 128), so they are not part of this gate.
+    const lib = loadLibrary().filter(y => y.src !== FILE && !y.src.startsWith('marketplace-study-'));
     const res = checkAgainst(pack, lib, { titleMax: 0.5, conceptMax: 0.55 });
     const bad = res.filter(r => r.flagged).map(r => `${r.title} ~ ${r.conceptSim >= 0.55 ? r.conceptNearest : r.titleNearest}`);
     assert.deepEqual(bad, [], 'near-duplicates of the existing library');
