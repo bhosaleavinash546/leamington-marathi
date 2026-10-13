@@ -463,10 +463,10 @@ for r in range(1, 6):
 cv.column_dimensions['E'].width = 3
 cv['B2'] = 'BrainSpark Idea Marketplace'; cv['B2'].font = Font(name=F, size=24, bold=True, color=WHITE)
 cv['B3'] = 'Cost-reduction idea library — full export with dashboard'; cv['B3'].font = Font(name=F, size=13, color='D6E4F0')
-cv['B4'] = f'Prepared {datetime.date(2026, 10, 12).strftime("%d %B %Y")} · for the Cost Engineering Director and President review'; cv['B4'].font = Font(name=F, size=10, color='D6E4F0')
+cv['B4'] = f'Prepared {datetime.date(2026, 10, 13).strftime("%d %B %Y")} · for the Cost Engineering Director and President review'; cv['B4'].font = Font(name=F, size=10, color='D6E4F0')
 cv['B7'] = 'Scope'; cv['B7'].font = font(bold=True, color=NAVY, size=12)
 facts = [
-    ('Ideas exported', f"=COUNTA('All Ideas'!A2:A{last})", 'Every live idea in the marketplace library (14 packs); ideas retired after engineering review are excluded.'),
+    ('Ideas exported', f"=COUNTA('All Ideas'!A2:A{last})", 'Every live idea in the marketplace library (15 packs); ideas retired after engineering review are excluded.'),
     ('Fields per idea', len(cols), 'Every stored field, plus clearly labelled derived columns (commodity, propulsion tags, £ figures, quick win).'),
     ('Evidence sources', f"=COUNTA(Sources!A2:A{len(sources)+1})", 'One row per web or industry source behind a benchmark fact (Sources tab, clickable links).'),
     ('Cost-bridge lines', f"=COUNTA('Cost Bridges'!A2:A{len(bridges)+1})", 'Baseline → proposed € per line for ideas that carry a bridge (Cost Bridges tab).'),

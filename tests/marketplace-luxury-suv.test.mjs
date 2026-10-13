@@ -61,9 +61,11 @@ const PACKS = [
   },
   {
     file: 'marketplace-offroad-features-ideas.json', name: 'Off-Road Features',
-    total: 272, levels: { assembly: 77, subassembly: 101, part: 94 },
+    // 300 commissioned; 28 retired in review and 28 replaced, 5 of those
+    // retired again — one replacement round, then stop (DECISIONS 125).
+    total: 295, levels: { assembly: 87, subassembly: 106, part: 102 },
     // Every idea is an off-road idea; shared-platform ideas dominate.
-    mix: (pt, offRoad) => offRoad === 272 && (pt['MHEV & 800V BEV'] ?? 0) >= 150 && (pt['800V BEV'] ?? 0) >= 40 && (pt.MHEV ?? 0) >= 40,
+    mix: (pt, offRoad) => offRoad === 295 && (pt['MHEV & 800V BEV'] ?? 0) >= 150 && (pt['800V BEV'] ?? 0) >= 40 && (pt.MHEV ?? 0) >= 40,
     // The engineering commodities of the hardware the ideas act on; the
     // marketplace files them all under Off-Road Features (DECISIONS 127).
     commodities: ['Driveline', 'Chassis', 'Electrical', 'BIW', 'Battery', 'Exterior'],
