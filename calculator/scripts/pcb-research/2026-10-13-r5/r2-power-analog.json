@@ -1,0 +1,630 @@
+{
+  "domain": "r2-power-analog",
+  "researched": "2026-10-13",
+  "parts": [
+    {
+      "mpn": "MFS8600BMDA0ES",
+      "family": "FS8600",
+      "mfr": "NXP Semiconductors",
+      "desc": "Fail-safe system basis chip with multiple SMPSs and LDOs (FS86 safety SBC for S32 processors)",
+      "category": "ic_qfn",
+      "pkg": "HVQFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "domain controller",
+        "zonal"
+      ],
+      "observedMpn": "MFS8600BMDA0ES",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1040,
+          "price": 4.96186,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MFS8600BMDA0ES/15902809",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Digi-Key break table: 1,040 | $4.96186 | $5,160.33 (qty 1 $8.37000). 100-break shown only as 'about $5.49' - not recorded. EBV listed on Findchips without price. Single distributor. Package from FS86 family (HVQFN) - confirm on datasheet."
+    },
+    {
+      "mpn": "MPF0900AMDA0ES",
+      "family": "PF09",
+      "mfr": "NXP Semiconductors",
+      "desc": "PF09 5 V multi-rail PMIC for S32 / i.MX processors",
+      "category": "ic_qfn",
+      "pkg": "QFN",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "domain controller"
+      ],
+      "observedMpn": "MPF0900AMDA0ES",
+      "observations": [],
+      "notes": "Orderable codes MPF0900AMDA0ES / AVSA0ES / AMBA1ES seen on nxp.com part pages; no franchised distributor price found in one search. Package not confirmed."
+    },
+    {
+      "mpn": "TPS65224-Q1",
+      "family": "TPS65224-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Functional-safety PMIC, 4 buck (dual-phase capable) + 3 LDO, VQFN-HR-36 5x6, AEC-Q100",
+      "category": "ic_qfn",
+      "pkg": "VQFN-HR-36",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "radar",
+        "MCU supply"
+      ],
+      "observedMpn": "TPS65224-Q1",
+      "observations": [],
+      "notes": "Two searches: orderable (TPS6522430RHARQ1 / TPS6522405RHARQ1) not found at any distributor; EVM uses TPS6522430-Q1. No code invented, family key only."
+    },
+    {
+      "mpn": "LT8636JV#PBF",
+      "family": "LT8636",
+      "mfr": "Analog Devices",
+      "desc": "42V 5A synchronous step-down Silent Switcher regulator, LQFN-20, J grade",
+      "category": "ic_qfn",
+      "pkg": "LQFN-20",
+      "aecq": false,
+      "ecuRoles": [
+        "body",
+        "infotainment",
+        "ADAS"
+      ],
+      "observedMpn": "LT8636JV#PBF",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 980,
+          "price": 7.7448,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8636JV-PBF/10668270",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 980,
+          "price": 7.74,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Analog-Devices/LT8636JVPBF?qs=P1JMDcb91o40oO2YRvBxSw%3D%3D",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "No AEC-Q100 (#W) LT8636 orderable found; Arrow marks LT8636EV#PBF 'Automotive No'. E-grade LT8636EV#PBF Digi-Key 980 $7.04270. Octopart 'Price @1000' figures name no distributor - not recorded."
+    },
+    {
+      "mpn": "LT8390IUFD#PBF",
+      "family": "LT8390",
+      "mfr": "Analog Devices",
+      "desc": "60V synchronous 4-switch buck-boost controller, QFN-28 4x5, I grade",
+      "category": "ic_qfn",
+      "pkg": "QFN-28 (UFD)",
+      "aecq": false,
+      "ecuRoles": [
+        "infotainment",
+        "lighting",
+        "start-stop"
+      ],
+      "observedMpn": "LT8390IUFD#PBF",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 511,
+          "price": 8.07319,
+          "currency": "USD",
+          "url": "https://digikey.com/product-detail/en/linear-technology-analog-devices/LT8390IUFD-PBF/LT8390IUFD-PBF-ND/6234693",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 1022,
+          "price": 7.89659,
+          "currency": "USD",
+          "url": "https://digikey.com/product-detail/en/linear-technology-analog-devices/LT8390IUFD-PBF/LT8390IUFD-PBF-ND/6234693",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Automotive #W code not found. LT8390AIUFD#PBF Digi-Key 1022 $9.05479. Mouser shows small breaks only. Single distributor (own slope)."
+    },
+    {
+      "mpn": "LT8390IFE#PBF",
+      "family": "LT8390",
+      "mfr": "Analog Devices",
+      "desc": "60V synchronous 4-switch buck-boost controller, TSSOP-28 exposed pad, I grade",
+      "category": "ic_soic",
+      "pkg": "TSSOP-28 (FE)",
+      "aecq": false,
+      "ecuRoles": [
+        "infotainment",
+        "lighting",
+        "start-stop"
+      ],
+      "observedMpn": "LT8390IFE#PBF",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 9.25003,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8390IFE-PBF/6234692",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Single distributor. LT8390EFE#PBF Digi-Key 1000 $8.82498 but another Digi-Key page marks LT8390EFE obsolete."
+    },
+    {
+      "mpn": "NCV8114ASN330T1G",
+      "family": "NCV8114",
+      "mfr": "onsemi",
+      "desc": "300 mA LDO, 3.3 V fixed, TSOP-5 / SOT-23-5, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "TSOP-5",
+      "aecq": true,
+      "ecuRoles": [
+        "body",
+        "sensor supply",
+        "MCU supply"
+      ],
+      "observedMpn": "NCV8114ASN330T1G",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 6000,
+          "price": 0.1969,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-detail/C604020.html",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Digi-Key 3,000 break seen only as 'about $0.099' (rounded) - not recorded; Arrow $0.1104 at qty 1 only; TME no stock. LCSC may be ~2x Digi-Key reel - second distributor needed."
+    },
+    {
+      "mpn": "ADUM4146ARWZ-RL",
+      "family": "ADuM4146",
+      "mfr": "Analog Devices",
+      "desc": "Isolated single-channel gate driver for SiC, 4.61 A, 5 kVrms, magnetic coupling, SOIC-16W",
+      "category": "ic_soic",
+      "pkg": "SOIC-16W",
+      "aecq": false,
+      "ecuRoles": [
+        "traction inverter",
+        "OBC",
+        "DC-DC"
+      ],
+      "observedMpn": "ADUM4146ARWZ-RL",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 3.63428,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADUM4146ARWZ-RL/16592115",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 3.55673,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADUM4146ARWZ-RL/16592115",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Automotive W-grade orderable not found. Tube ADUM4146ARWZ Digi-Key 1034 $3.63016 / 2538 $3.53338. ADI-direct (manufacturer) and Richardson RFPD (excluded) prices on Findchips not recorded; Arrow $3.507 without break."
+    },
+    {
+      "mpn": "SI8271GB-ISR",
+      "family": "Si8271",
+      "mfr": "Skyworks Solutions",
+      "desc": "Isolated single-channel gate driver, 4 A, 2.5 kVrms, SOIC-8 narrow, tape & reel",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": false,
+      "ecuRoles": [
+        "OBC",
+        "DC-DC",
+        "inverter auxiliaries"
+      ],
+      "observedMpn": "SI8271GB-ISR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 2.35784,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI8271GB-ISR/7201541",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 2.24288,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/skyworks-solutions-inc/SI8271GB-ISR/7201541",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "AEC grade unclear: an Octopart description of the GB-ISR says 'Automotive AEC-Q100' but Arrow marks SI8271GB-IS 'Automotive No' - aecq left false. Mouser bulk tiers on Octopart not attributable to a break - not recorded. Si8285 not found."
+    },
+    {
+      "mpn": "AIMBG120R030M1XTMA1",
+      "family": "AIMBG120R030M1",
+      "mfr": "Infineon Technologies",
+      "desc": "CoolSiC 1200 V 30 mOhm SiC MOSFET, D2PAK-7 (TO-263-7), automotive",
+      "category": "ic_soic",
+      "pkg": "TO-263-7",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DC-DC",
+        "traction auxiliaries"
+      ],
+      "observedMpn": "AIMBG120R030M1XTMA1",
+      "observations": [
+        {
+          "distributor": "Rutronik",
+          "qty": 1000,
+          "price": 8.06,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/aimb-",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Rutronik via Findchips (DISTI # TMOS6320, 1000 $8.06, stock DE 20). Other Findchips snapshots show Rutronik $7.83 / $7.94 / $8.18 (break not stated or other date) - not recorded. Digi-Key related-list ~$15.85 without table - not recorded. AIMZH120R030M1 (TO-247-4) not found."
+    },
+    {
+      "mpn": "BMI270",
+      "family": "BMI270",
+      "mfr": "Bosch Sensortec",
+      "desc": "6-axis IMU (accelerometer + gyroscope), LGA-14 2.5x3",
+      "category": "ic_qfn",
+      "pkg": "LGA-14",
+      "aecq": false,
+      "ecuRoles": [
+        "telematics",
+        "infotainment",
+        "aftermarket"
+      ],
+      "observedMpn": "BMI270",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 2.78,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Bosch-Sensortec/BMI270?qs=u16ybLDytRYIj%2BjQEee88A%3D%3D",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 5000,
+          "price": 2.6,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/Bosch-Sensortec/BMI270?qs=u16ybLDytRYIj%2BjQEee88A%3D%3D",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 2.64746,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/bosch-sensortec/BMI270/9974486",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Consumer grade (no AEC-Q100). LCSC 1000+ $1.2785 (https://www.lcsc.com/product-detail/C2836813.html) - ~2x below Mouser. Digi-Key 1000 only 'about $2.83' - not recorded. Mouser notes possible 8% US tariff."
+    },
+    {
+      "mpn": "AS5600-ASOM",
+      "family": "AS5600",
+      "mfr": "ams OSRAM",
+      "desc": "12-bit magnetic rotary position sensor, I2C / PWM / analog out, SOIC-8, tape & reel",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": false,
+      "ecuRoles": [
+        "actuators",
+        "HVAC",
+        "seat",
+        "industrial"
+      ],
+      "observedMpn": "AS5600-ASOM",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 1.74282,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/ams-osram-usa-inc/AS5600-ASOM/4914332",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 1.68836,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/ams-osram-usa-inc/AS5600-ASOM/4914332",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Non-automotive. Other Digi-Key snapshots: 1000 $1.79088 / 2500 $1.70134 (T&R), cut tape 1000 $1.99363. Mouser only via Octopart, unlabeled column - not recorded. Single distributor."
+    },
+    {
+      "mpn": "OPA388QDBVRQ1",
+      "family": "OPA388-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Precision zero-drift rail-to-rail I/O op amp, 10 MHz, SOT-23-5, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "SOT-23-5",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "current sense",
+        "sensor interface"
+      ],
+      "observedMpn": "OPA388QDBVRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.7,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/c/semiconductors/amplifier-ics/precision-amplifiers/?m=Texas+Instruments&series=OPA388",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 3000,
+          "price": 1.65,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/c/semiconductors/amplifier-ics/precision-amplifiers/?m=Texas+Instruments&series=OPA388",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 2.02174,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/OPA388QDBVRQ1/13173861",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Mouser 1000 is cut tape, 3000 full reel. LCSC 1000+ $1.4339 (C2871496); Findchips LCSC feed $1.3832 - not recorded (3-observation limit)."
+    },
+    {
+      "mpn": "SN6507DGQRQ1",
+      "family": "SN6507-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Low-EMI push-pull transformer driver for isolated supplies, 36 V, HVSSOP-10, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "HVSSOP-10",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "isolated CAN",
+        "gate-driver supply"
+      ],
+      "observedMpn": "SN6507DGQRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 2500,
+          "price": 2.43,
+          "currency": "USD",
+          "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/SN6507DGQRQ1?qs=IPgv5n7u5QZ%2Bp55Hz2oW4w%3D%3D",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Arrow",
+          "qty": 2500,
+          "price": 2.405,
+          "currency": "USD",
+          "url": "https://www.arrow.com/en/products/sn6507dgqrq1/texas-instruments",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Mouser full reel 2500 $2.43 (ext $6,075.00; qty 1 $4.22). Arrow 2500+ $2.405, no stock. Two distributors agree within 1%."
+    },
+    {
+      "mpn": "UCC14140QDWNRQ1",
+      "family": "UCC14140-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "1.5 W isolated DC/DC bias supply module, 5 kVrms, SSOP-36, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "SSOP-36 (DWN)",
+      "aecq": true,
+      "ecuRoles": [
+        "traction inverter",
+        "OBC"
+      ],
+      "observedMpn": "UCC14140QDWNRQ1",
+      "observations": [],
+      "notes": "Only a Digi-Key parametric-substitute line: 7 in stock, $8.22000 with no quantity break - not recorded. Mouser / Arrow: no listing found."
+    },
+    {
+      "mpn": "E3M0075120K",
+      "family": "E3M0075120K",
+      "mfr": "Wolfspeed",
+      "desc": "1200 V 75 mOhm SiC MOSFET, TO-247-4, automotive",
+      "category": "through_hole",
+      "pkg": "TO-247-4",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DC-DC"
+      ],
+      "observedMpn": "E3M0075120K",
+      "observations": [],
+      "notes": "Digi-Key break seen at qty 60 ($7.28117) only; 120 tier not shown - no break >= 100 recorded."
+    },
+    {
+      "mpn": "E3M0040120K",
+      "family": "E3M0040120K",
+      "mfr": "Wolfspeed",
+      "desc": "1200 V 40 mOhm SiC MOSFET, TO-247-4, automotive",
+      "category": "through_hole",
+      "pkg": "TO-247-4",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DC-DC"
+      ],
+      "observedMpn": "E3M0040120K",
+      "observations": [],
+      "notes": "Octopart lists Mouser / Digi-Key tube tiers but the snippet did not attribute a break >= 100."
+    },
+    {
+      "mpn": "E4D20120A",
+      "family": "E4D20120A",
+      "mfr": "Wolfspeed",
+      "desc": "1200 V SiC Schottky diode, 54.5 A, TO-220-2, automotive E-series",
+      "category": "through_hole",
+      "pkg": "TO-220-2",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "PFC"
+      ],
+      "observedMpn": "E4D20120A",
+      "observations": [],
+      "notes": "Farnell BE EUR 22.590 @1 / 18.090 @10 only (ex VAT) - no break >= 100."
+    },
+    {
+      "mpn": "TMP1075-Q1",
+      "family": "TMP1075-Q1",
+      "mfr": "Texas Instruments",
+      "desc": "Digital I2C temperature sensor, +/-1 C, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "VSSOP-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "ECU board temp"
+      ],
+      "observedMpn": "TMP1075-Q1",
+      "observations": [],
+      "notes": "No Q1 orderable listed at any distributor; only commercial TMP1075DGKR (Mouser reel 'roughly $0.26', rounded) - not recorded. No code invented."
+    },
+    {
+      "mpn": "MAX20478",
+      "family": "MAX20478",
+      "mfr": "Analog Devices",
+      "desc": "Automotive SoC PMIC / multi-output buck",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "infotainment"
+      ],
+      "observedMpn": "MAX20478",
+      "observations": [],
+      "notes": "One combined search with MAX25262 / MAX20084: no distributor listing for any of the three; orderable not confirmed."
+    }
+  ],
+  "notResearched": [
+    {
+      "code": "TI LP8764-Q1 (LP876411B4RQKRQ1)",
+      "why": "multi-phase ADAS PMIC; round 4 found no price; budget spent"
+    },
+    {
+      "code": "TI TPS6594-Q1 variants",
+      "why": "already in catalogue [distributor, obs] - skipped"
+    },
+    {
+      "code": "NXP PF5020 (MPF5020CMMACESR2)",
+      "why": "already in catalogue [distributor, obs] - skipped"
+    },
+    {
+      "code": "Renesas RAA271000 / RAA271005",
+      "why": "R-Car ASIL-D PMIC; budget spent"
+    },
+    {
+      "code": "ADI MAX25262 / MAX20084",
+      "why": "searched with MAX20478 - no listing; not retried, budget"
+    },
+    {
+      "code": "Rohm BD39040",
+      "why": "automotive multi-rail power IC; budget spent"
+    },
+    {
+      "code": "ST LDL1117-Q automotive code",
+      "why": "common 1.2 A LDO; standard LDL1117S33R already in catalogue; budget spent"
+    },
+    {
+      "code": "TI TPS7B81-Q1 / TLV760-Q1",
+      "why": "TPS7B8150QDGNRQ1 already in catalogue with obs; TLV760 Q1 orderable not searched, budget"
+    },
+    {
+      "code": "Infineon 1EDI2004AS (1EDI2004ASXUMA1)",
+      "why": "ASIL-D IGBT/SiC gate driver; budget spent"
+    },
+    {
+      "code": "NXP GD3160",
+      "why": "ASIL-D SiC gate driver; budget spent"
+    },
+    {
+      "code": "ADI ADuM4177",
+      "why": "isolated SiC gate driver; budget spent"
+    },
+    {
+      "code": "Skyworks Si8285",
+      "why": "isolated gate driver with sense; not found in Si8271 search"
+    },
+    {
+      "code": "TI ISO7721-Q1 / ISO1042-Q1",
+      "why": "already in catalogue [distributor, obs] - skipped"
+    },
+    {
+      "code": "Wolfspeed C3M0040120K",
+      "why": "1200 V SiC MOSFET; round 4 only <100 breaks; budget spent"
+    },
+    {
+      "code": "Infineon AIMZH120R030M1",
+      "why": "1200 V CoolSiC TO-247-4; not found in AIMBG search"
+    },
+    {
+      "code": "Transphorm TP65H035G4WS / TP65H050G4WS",
+      "why": "650 V GaN; round 4 found only rounded / qty-1 prices; budget spent"
+    },
+    {
+      "code": "onsemi FFSH20120A-F085",
+      "why": "automotive SiC diode; round 4 Arrow @30 only; budget spent"
+    },
+    {
+      "code": "Infineon TLE4922 / TLE5109 / TLI5590",
+      "why": "speed / angle sensors; budget spent"
+    },
+    {
+      "code": "Infineon TLE5014",
+      "why": "already in catalogue [distributor, obs] - skipped"
+    },
+    {
+      "code": "ams AS5172",
+      "why": "automotive angle sensor; budget spent"
+    },
+    {
+      "code": "Allegro A1339 / A17301",
+      "why": "automotive angle / speed sensors; budget spent"
+    },
+    {
+      "code": "Bosch SMI240 / Murata SCHA634 / TDK IAM-20685",
+      "why": "automotive IMUs; round 4 found no distributor listing; budget spent"
+    },
+    {
+      "code": "TI TLV7011-Q1",
+      "why": "comparator; budget spent"
+    },
+    {
+      "code": "ADI AD2433",
+      "why": "A2B transceiver; budget spent"
+    },
+    {
+      "code": "TI TAS2563",
+      "why": "audio amplifier; budget spent"
+    }
+  ]
+}
