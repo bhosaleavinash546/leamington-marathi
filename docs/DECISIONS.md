@@ -4943,3 +4943,33 @@ From the Prism 360° review (`docs/PRISM-REVIEW-2026-10-09.md`).
 - **Engine constants are left alone.** The hot vs cold forging tooling
   assumptions were not tuned to make one demo number look right
   (benchmark-gate rule). The process step states its bucket bridge instead.
+
+## 127. "Off-Road Features" is a marketplace commodity, filed by data, not inferred from the system name
+
+**The decision.** Off-road ideas get their own Marketplace tab, but only an
+idea whose `ideaData.commodity` says "Off-Road Features" is filed there
+(`marketplaceCommodityOf`).
+
+**Why it is a marketplace commodity, not an engineering one.**
+- An off-road feature acts on hardware that already belongs to another
+  commodity: a skid plate is BIW, a locker is Driveline, battery armour is
+  Battery.
+- Horizon's BOM tree and the idea archive are built on `COMMODITY_KEYS`, and
+  a test requires the BOM to span every commodity.
+- So `COMMODITY_KEYS` is unchanged, and the marketplace adds `OffRoad` on
+  top (`MARKETPLACE_COMMODITY_KEYS`).
+
+**Why it is filed by data, not by keyword.**
+- A keyword rule would have quietly moved every idea that mentions
+  "off-road" from the commodity an engineer looks for it in.
+- The explicit field moves only what was meant to move: the 300-idea
+  off-road luxury pack (by the user's decision) and the new researched pack.
+- The roughly 150 other ideas tagged `offRoad` elsewhere stay in their
+  commodities.
+
+**What `system` keeps.** It still names the hardware. The 17 Off-Road
+Features sub-systems are mapped to their engineering commodity, so analysis,
+coverage and Horizon still see a locker as Driveline.
+
+**Where the tab appears.** The Marketplace tab (lime), the PDF export and
+the Excel export (tab and dashboard filter) all use the one resolver.
