@@ -1,0 +1,984 @@
+{
+  "domain": "sensors-analog",
+  "researched": "2026-10-13",
+  "parts": [
+    {
+      "mpn": "ACS71240LLCBTR-030B3",
+      "family": "ACS71240",
+      "mfr": "Allegro MicroSystems",
+      "desc": "Hall current sensor, 30 A bidirectional, 3.3 V, integrated conductor",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "DC-DC",
+        "motor control"
+      ],
+      "observedMpn": "ACS71240LLCBTR-030B3",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 1.35016,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS71240LLCBTR-030B3/10146687",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Future Electronics",
+          "qty": 3000,
+          "price": 1.13,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/2188451",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Future showed 1.20 and 1.13 at 3,000+ in two snapshots; latest (1.13) kept. LCSC price only seen on fat.lcsc.com (excluded)."
+    },
+    {
+      "mpn": "ACS37612LLUATR-015B5",
+      "family": "ACS37612",
+      "mfr": "Allegro MicroSystems",
+      "desc": "Coreless differential Hall field current sensor, 5 V, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "inverter",
+        "BMS"
+      ],
+      "observedMpn": "ACS37612LLUATR-015B5",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 4000,
+          "price": 2.02,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/c/semiconductors/analog--sensors--current/products?navigMW=mm",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Read from Future category listing snippet; package not confirmed in source."
+    },
+    {
+      "mpn": "ACS72981LLRATR-050B5",
+      "family": "ACS72981",
+      "mfr": "Allegro MicroSystems",
+      "desc": "High-precision Hall current sensor, 200 uOhm conductor, 50 A bidirectional, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "inverter",
+        "DC-DC"
+      ],
+      "observedMpn": "ACS72981LLRATR-050B5",
+      "observations": [],
+      "notes": "No franchised price with a quantity break >= 100: only an aggregator range ($7.65, no break), a punchouttest DigiKey page and JLCPCB (all excluded)."
+    },
+    {
+      "mpn": "TLI4971A050T5E0001XUMA1",
+      "family": "TLI4971",
+      "mfr": "Infineon",
+      "desc": "Coreless magnetic current sensor 50 A, analog, industrial",
+      "category": "ic_qfn",
+      "pkg": "TISON-8",
+      "aecq": false,
+      "ecuRoles": [
+        "DC-DC",
+        "charger"
+      ],
+      "observedMpn": "TLI4971A050T5E0001XUMA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 2.7,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLI4971A050T5E0001XUMA1/14321768",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 2.55,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLI4971A050T5E0001XUMA1/14321768",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Industrial grade (automotive sibling is TLE4972, already catalogued). Read on azcus.digikey.com (DigiKey regional host); 1,000 = cut tape/Digi-Reel, 2,500 = T&R; values approximate ('about') in snippet."
+    },
+    {
+      "mpn": "TLI4971A120T5E0001XUMA1",
+      "family": "TLI4971",
+      "mfr": "Infineon",
+      "desc": "Coreless magnetic current sensor 120 A, analog, industrial",
+      "category": "ic_qfn",
+      "pkg": "TISON-8",
+      "aecq": false,
+      "ecuRoles": [
+        "DC-DC",
+        "charger"
+      ],
+      "observedMpn": "TLI4971A120T5E0001XUMA1",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 3.19,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLI4971A120T5E0001XUMA1/11500489",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 2.6,
+          "currency": "USD",
+          "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLI4971A120T5E0001XUMA1/11500489",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Read on azcus.digikey.com (DigiKey regional host); 500 = highest cut-tape break shown, 2,500 = T&R; values approximate in snippet."
+    },
+    {
+      "mpn": "INA296B4QDDFRQ1",
+      "family": "INA296",
+      "mfr": "Texas Instruments",
+      "desc": "Bidirectional current-sense amplifier, -5 to 110 V CM, 1.1 MHz, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "SOT-23-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "DC-DC",
+        "48V"
+      ],
+      "observedMpn": "INA296B4QDDFRQ1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.74,
+          "currency": "USD",
+          "url": "https://www.mouser.co.il/c/semiconductors/amplifier-ics/current-sense-amplifiers?pg=21",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "1,000 break read from a Mouser category-page snippet whose layout was hard to read (ladder $3.15 @1 to ~$1.74 @1k); verify."
+    },
+    {
+      "mpn": "INA241A4QDGSRQ1",
+      "family": "INA241",
+      "mfr": "Texas Instruments",
+      "desc": "Ultra-precise bidirectional current-sense amplifier, -5 to 110 V CM, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "VSSOP-10",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "inverter",
+        "48V"
+      ],
+      "observedMpn": "INA241A4QDGSRQ1",
+      "observations": [],
+      "notes": "Only qty-1 Mouser prices found (CAD 8.39; INA241A3QDGSRQ1 EUR 4.64); no break >= 100."
+    },
+    {
+      "mpn": "TMCS1126",
+      "family": "TMCS1126",
+      "mfr": "Texas Instruments",
+      "desc": "Hall-effect current sensor, reinforced isolation, AEC-Q100 (-Q1)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "OBC",
+        "DC-DC"
+      ],
+      "observedMpn": "TMCS1126",
+      "observations": [],
+      "notes": "No distributor listing returned; orderable -Q1 code not confirmed, so family key only."
+    },
+    {
+      "mpn": "MLX91221",
+      "family": "MLX91221",
+      "mfr": "Melexis",
+      "desc": "Integrated Hall current sensor (conductor in package)",
+      "category": "ic_soic",
+      "pkg": "SOIC-16",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "DC-DC"
+      ],
+      "observedMpn": "MLX91221",
+      "observations": [],
+      "notes": "No results for any MLX91221 orderable code."
+    },
+    {
+      "mpn": "TMAG5170A1QDGKR",
+      "family": "TMAG5170",
+      "mfr": "Texas Instruments",
+      "desc": "3D linear Hall sensor, SPI, 12-bit, industrial (Q1 sibling TMAG5170A1EDGKRQ1)",
+      "category": "ic_soic",
+      "pkg": "VSSOP-8",
+      "aecq": false,
+      "ecuRoles": [
+        "actuator",
+        "position sensing"
+      ],
+      "observedMpn": "TMAG5170A1QDGKR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 1.55206,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMAG5170A1QDGKR/15284508",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 2500,
+          "price": 1.2639,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMAG5170A1QDGKR/15284508",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Industrial code; automotive TMAG5170A1EDGKRQ1 named on TI page but no distributor price found. 1,000 = cut tape, 2,500 = T&R."
+    },
+    {
+      "mpn": "TMAG5273B1QDBVR",
+      "family": "TMAG5273",
+      "mfr": "Texas Instruments",
+      "desc": "3D linear Hall sensor, I2C, low power",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6",
+      "aecq": false,
+      "ecuRoles": [
+        "position sensing",
+        "HMI"
+      ],
+      "observedMpn": "TMAG5273B1QDBVR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 0.60069,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMAG5273B1QDBVR/21298856",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 3000,
+          "price": 0.56684,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMAG5273B1QDBVR/21298856",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "No -Q1 orderable found; industrial part. TMAG5273C1QDBVR same 1k price ($0.60069)."
+    },
+    {
+      "mpn": "AS5047U-HTSM",
+      "family": "AS5047U",
+      "mfr": "ams OSRAM",
+      "desc": "14-bit magnetic rotary position sensor, SPI/ABI/UVW/PWM, DAEC",
+      "category": "ic_soic",
+      "pkg": "TSSOP-14",
+      "aecq": false,
+      "ecuRoles": [
+        "motor control",
+        "EPS"
+      ],
+      "observedMpn": "AS5047U-HTSM",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 5.861,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/047UH",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Newark",
+          "qty": 1000,
+          "price": 5.34,
+          "currency": "USD",
+          "url": "https://www.findchips.com/search/047UH",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Via Findchips (names distributor and 1k break). Automotive sibling AS5147U-HTSM: only an ambiguous RS TWD listing, not recorded."
+    },
+    {
+      "mpn": "AS5172",
+      "family": "AS5172",
+      "mfr": "ams OSRAM",
+      "desc": "Automotive 3D Hall position sensor, SENT/PWM/analog",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "pedal",
+        "throttle",
+        "actuator"
+      ],
+      "observedMpn": "AS5172",
+      "observations": [],
+      "notes": "No results for AS5172 orderable codes."
+    },
+    {
+      "mpn": "TLE5501E0002XUMA1",
+      "family": "TLE5501",
+      "mfr": "Infineon",
+      "desc": "TMR angle sensor, analog sin/cos, ASIL-D ready, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "DSO-8",
+      "aecq": true,
+      "ecuRoles": [
+        "EPS",
+        "motor control"
+      ],
+      "observedMpn": "TLE5501E0002XUMA1",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.19,
+          "currency": "USD",
+          "url": "https://ciiva.com/part/tle5501e0002xuma1-26590453",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "RS Components",
+          "qty": 500,
+          "price": 3.204,
+          "currency": "USD",
+          "url": "https://hken.rs-online.com/web/p/motion-sensor-ics/2186350P",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Mouser break via ciiva aggregator (date unclear). RS HK (USD) 500+ is ~2.7x Mouser; large spread, verify."
+    },
+    {
+      "mpn": "TLE5109",
+      "family": "TLE5109",
+      "mfr": "Infineon",
+      "desc": "AMR angle sensor, analog sin/cos, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "DSO-16",
+      "aecq": true,
+      "ecuRoles": [
+        "EPS",
+        "wiper",
+        "actuator"
+      ],
+      "observedMpn": "TLE5109",
+      "observations": [],
+      "notes": "No results; orderable code not confirmed, family key only."
+    },
+    {
+      "mpn": "TLE4922",
+      "family": "TLE4922",
+      "mfr": "Infineon",
+      "desc": "Differential Hall speed sensor (transmission/wheel), AEC-Q100",
+      "category": "through_hole",
+      "pkg": "SSO-4",
+      "aecq": true,
+      "ecuRoles": [
+        "transmission",
+        "ABS"
+      ],
+      "observedMpn": "TLE4922",
+      "observations": [],
+      "notes": "Only a punchouttest DigiKey page for TLE4922XINFHALA1 (no price); none recorded."
+    },
+    {
+      "mpn": "MLX90377GGO-ADB-510-RE",
+      "family": "MLX90377",
+      "mfr": "Melexis",
+      "desc": "Triaxis 3D magnetic position sensor, dual die, SENT/PWM, ASIL",
+      "category": "ic_soic",
+      "pkg": "TSSOP-16",
+      "aecq": true,
+      "ecuRoles": [
+        "pedal",
+        "actuator",
+        "EPS"
+      ],
+      "observedMpn": "MLX90377GGO-ADB-510-RE",
+      "observations": [],
+      "notes": "DigiKey page found (26-week lead time) but no price captured."
+    },
+    {
+      "mpn": "MLX90395",
+      "family": "MLX90395",
+      "mfr": "Melexis",
+      "desc": "Triaxis 3D magnetometer, I2C/SPI",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": false,
+      "ecuRoles": [
+        "position sensing"
+      ],
+      "observedMpn": "MLX90395",
+      "observations": [],
+      "notes": "DigiKey only qty-1 prices ($1.47 KDC-BBA-001-SP, $3.47 KGO-BBA-001-SP); no break >= 100."
+    },
+    {
+      "mpn": "MLX90427",
+      "family": "MLX90427",
+      "mfr": "Melexis",
+      "desc": "Triaxis position sensor, stray-field immune",
+      "category": "ic_soic",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "actuator"
+      ],
+      "observedMpn": "MLX90427",
+      "observations": [],
+      "notes": "Only an evaluation board listed (EVB90427-SFI)."
+    },
+    {
+      "mpn": "IIS3DWBTR",
+      "family": "IIS3DWB",
+      "mfr": "STMicroelectronics",
+      "desc": "Wideband 3-axis vibration accelerometer, 6.3 kHz BW, SPI, industrial",
+      "category": "ic_qfn",
+      "pkg": "LGA-14",
+      "aecq": false,
+      "ecuRoles": [
+        "condition monitoring",
+        "NVH"
+      ],
+      "observedMpn": "IIS3DWBTR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 500,
+          "price": 15.04,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/IIS3DWBTR/11610895",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 13.90126,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/IIS3DWBTR/11610895",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "500 = cut tape top break, 5,000 = T&R. ST budgetary price US$10.78/1k (manufacturer, not used)."
+    },
+    {
+      "mpn": "AIS2IHTR",
+      "family": "AIS2IH",
+      "mfr": "STMicroelectronics",
+      "desc": "3-axis automotive MEMS accelerometer, I2C/SPI, AEC-Q100",
+      "category": "ic_qfn",
+      "pkg": "LGA-12",
+      "aecq": true,
+      "ecuRoles": [
+        "telematics",
+        "eCall",
+        "alarm"
+      ],
+      "observedMpn": "AIS2IHTR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 2.73,
+          "currency": "USD",
+          "url": "https://sourceesb.com/part/ais2ihtr~stmicroelectronicssemiconductors",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "DigiKey 1K cut-tape price via sourceesb aggregator; a T&R figure ($2.50) shown without a clear break, not recorded."
+    },
+    {
+      "mpn": "BMI088",
+      "family": "BMI088",
+      "mfr": "Bosch Sensortec",
+      "desc": "6-axis IMU (16-bit accel + gyro), high vibration robustness, industrial",
+      "category": "ic_qfn",
+      "pkg": "LGA-16",
+      "aecq": false,
+      "ecuRoles": [
+        "telematics",
+        "ADAS (non-safety)"
+      ],
+      "observedMpn": "BMI088",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 4.07,
+          "currency": "USD",
+          "url": "https://www.digikey.com.br/en/products/detail/bosch-sensortec/BMI088/8634936",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 5000,
+          "price": 3.78,
+          "currency": "USD",
+          "url": "https://www.digikey.com.br/en/products/detail/bosch-sensortec/BMI088/8634936",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Not AEC-Q100. DigiKey Brazil site priced in USD; 1,000 = cut tape/Digi-Reel, 5,000 = T&R. DigiKey IE: EUR 3.15 @1k, 2.94 @5k. Replaces catalogue estimate."
+    },
+    {
+      "mpn": "SCH16T-K01",
+      "family": "SCH16T",
+      "mfr": "Murata",
+      "desc": "6-DoF automotive/industrial IMU (XYZ gyro + accel)",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "autonomous"
+      ],
+      "observedMpn": "SCH16T-K01",
+      "observations": [],
+      "notes": "Findchips page lists DigiKey/Mouser but no price in snippet."
+    },
+    {
+      "mpn": "SCHA634",
+      "family": "SCHA634",
+      "mfr": "Murata",
+      "desc": "6-DoF automotive IMU, ASIL-D",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "ESC"
+      ],
+      "observedMpn": "SCHA634",
+      "observations": [],
+      "notes": "No results."
+    },
+    {
+      "mpn": "IAM-20685",
+      "family": "IAM-20685",
+      "mfr": "TDK InvenSense",
+      "desc": "6-axis automotive IMU, AEC-Q100",
+      "category": "ic_qfn",
+      "pkg": "LGA",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "telematics"
+      ],
+      "observedMpn": "IAM-20685",
+      "observations": [],
+      "notes": "No results."
+    },
+    {
+      "mpn": "KP254XTMA2",
+      "family": "KP254",
+      "mfr": "Infineon",
+      "desc": "Digital barometric absolute pressure sensor (BAP/MAP), SPI, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "DSOF-8",
+      "aecq": true,
+      "ecuRoles": [
+        "engine",
+        "BMS",
+        "airbag"
+      ],
+      "observedMpn": "KP254XTMA2",
+      "observations": [
+        {
+          "distributor": "element14",
+          "qty": 500,
+          "price": 5.63,
+          "currency": "AUD",
+          "url": "https://au.element14.com/infineon/kp254xtma2/pressure-sensor-absolute-40kpa/dp/3816971RL",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Farnell",
+          "qty": 500,
+          "price": 3.05,
+          "currency": "EUR",
+          "url": "https://es.farnell.com/infineon/kp254xtma2/pressure-sensor-absolute-40kpa/dp/3816971",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "element14 AU price in AUD (site default ex-GST assumed, check). Farnell ES '3,050 EUR' read as EUR 3.05 (decimal comma)."
+    },
+    {
+      "mpn": "BMP390",
+      "family": "BMP390",
+      "mfr": "Bosch Sensortec",
+      "desc": "Barometric pressure sensor, +/-0.5 hPa, I2C/SPI, consumer",
+      "category": "ic_qfn",
+      "pkg": "LGA-10",
+      "aecq": false,
+      "ecuRoles": [
+        "telematics",
+        "HVAC"
+      ],
+      "observedMpn": "BMP390",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 10000,
+          "price": 1.68331,
+          "currency": "EUR",
+          "url": "https://www.digikey.lt/en/products/detail/bosch-sensortec/BMP390/16164577",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Not AEC-Q100. DigiKey Lithuania T&R 10k break (EUR, ex-VAT assumed). Replaces catalogue estimate."
+    },
+    {
+      "mpn": "SHT45-AD1B-R2",
+      "family": "SHT45",
+      "mfr": "Sensirion",
+      "desc": "Humidity/temperature sensor +/-1% RH, I2C",
+      "category": "ic_qfn",
+      "pkg": "DFN-4",
+      "aecq": false,
+      "ecuRoles": [
+        "HVAC",
+        "cabin"
+      ],
+      "observedMpn": "SHT45-AD1B-R2",
+      "observations": [],
+      "notes": "Findchips 500 @ $4.16 without the distributor named; Mouser ($7.24) and Arrow ($4.525) without breaks; DigiKey EU ladder only on punchouttest hosts. None recorded."
+    },
+    {
+      "mpn": "LMT01QDQXRQ1",
+      "family": "LMT01",
+      "mfr": "Texas Instruments",
+      "desc": "Pulse-count digital temperature sensor, 0.5 C, AEC-Q100",
+      "category": "ic_qfn",
+      "pkg": "WSON-2",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "battery"
+      ],
+      "observedMpn": "LMT01QDQXRQ1",
+      "observations": [],
+      "notes": "DigiKey page found, no price in snippet."
+    },
+    {
+      "mpn": "TMP1075",
+      "family": "TMP1075",
+      "mfr": "Texas Instruments",
+      "desc": "Digital temperature sensor, I2C, LM75 compatible",
+      "category": "ic_soic",
+      "pkg": "VSSOP-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "ECU"
+      ],
+      "observedMpn": "TMP1075",
+      "observations": [],
+      "notes": "Only non-Q1 TMP1075DGKR at <=25 units; Q1 orderable not found."
+    },
+    {
+      "mpn": "TMP126",
+      "family": "TMP126",
+      "mfr": "Texas Instruments",
+      "desc": "Digital temperature sensor, SPI, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "SOT-23-6",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "ECU"
+      ],
+      "observedMpn": "TMP126",
+      "observations": [],
+      "notes": "No results."
+    },
+    {
+      "mpn": "AWR2944",
+      "family": "AWR2944",
+      "mfr": "Texas Instruments",
+      "desc": "77 GHz radar SoC 4T4R with DSP/MCU, AEC-Q100",
+      "category": "ic_bga",
+      "pkg": "FCBGA",
+      "aecq": true,
+      "ecuRoles": [
+        "corner radar",
+        "front radar"
+      ],
+      "observedMpn": "AWR2944",
+      "observations": [],
+      "notes": "Only evaluation boards listed (AWR2944EVM, AWR2944PEVM); no chip price found."
+    },
+    {
+      "mpn": "AWR2544",
+      "family": "AWR2544",
+      "mfr": "Texas Instruments",
+      "desc": "77 GHz radar SoC, launch-on-package, AEC-Q100",
+      "category": "ic_bga",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "satellite radar"
+      ],
+      "observedMpn": "AWR2544",
+      "observations": [],
+      "notes": "Only AWR2544LOPEVM evaluation board listed."
+    },
+    {
+      "mpn": "OPA2991IDSGR",
+      "family": "OPA2991",
+      "mfr": "Texas Instruments",
+      "desc": "Dual 40 V RRIO op amp, 4.5 MHz, industrial (OPA2991-Q1 exists)",
+      "category": "ic_qfn",
+      "pkg": "WSON-8",
+      "aecq": false,
+      "ecuRoles": [
+        "sensor conditioning"
+      ],
+      "observedMpn": "OPA2991IDSGR",
+      "observations": [
+        {
+          "distributor": "Mouser",
+          "qty": 1000,
+          "price": 1.06,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/OPA2991IDSGR",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Digi-Key",
+          "qty": 1000,
+          "price": 1.2292,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/OPA2991IDSGR",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Via Findchips. Industrial code; no -Q1 price found."
+    },
+    {
+      "mpn": "ADS131M04IPWR",
+      "family": "ADS131M04",
+      "mfr": "Texas Instruments",
+      "desc": "4-ch simultaneous 24-bit delta-sigma ADC, 32 kSPS",
+      "category": "ic_soic",
+      "pkg": "TSSOP-20",
+      "aecq": false,
+      "ecuRoles": [
+        "BMS",
+        "metering"
+      ],
+      "observedMpn": "ADS131M04IPWR",
+      "observations": [],
+      "notes": "Only punchouttest DigiKey (KRW) and a Mouser figure with no break; LCSC only on fat.lcsc.com. None recorded; -Q1 not found."
+    },
+    {
+      "mpn": "TLV7011",
+      "family": "TLV7011",
+      "mfr": "Texas Instruments",
+      "desc": "Nano-power comparator",
+      "category": "ic_soic",
+      "pkg": "SOT-23-5",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM"
+      ],
+      "observedMpn": "TLV7011",
+      "observations": [],
+      "notes": "No results."
+    },
+    {
+      "mpn": "ISO6741QDWRQ1",
+      "family": "ISO6741",
+      "mfr": "Texas Instruments",
+      "desc": "Quad digital isolator 5 kVrms, 3/1, AEC-Q100",
+      "category": "ic_soic",
+      "pkg": "SOIC-16",
+      "aecq": true,
+      "ecuRoles": [
+        "BMS",
+        "OBC",
+        "inverter"
+      ],
+      "observedMpn": "ISO6741QDWRQ1",
+      "observations": [],
+      "notes": "Only punchouttest DigiKey hosts (excluded) and azcus FQDWRQ1 with no break."
+    },
+    {
+      "mpn": "PCM3168ATPAPRQ1",
+      "family": "PCM3168A",
+      "mfr": "Texas Instruments",
+      "desc": "24-bit 6-in/8-out audio codec, AEC-Q100",
+      "category": "ic_tqfp",
+      "pkg": "HTQFP-64",
+      "aecq": true,
+      "ecuRoles": [
+        "infotainment",
+        "amplifier"
+      ],
+      "observedMpn": "PCM3168ATPAPRQ1",
+      "observations": [
+        {
+          "distributor": "Verical",
+          "qty": 3000,
+          "price": 6.36,
+          "currency": "USD",
+          "url": "https://electronicsdatasheets.com/manufacturers/texas-instruments/parts/pcm3168atpaprq1",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Via aggregator naming Verical and break. TI direct 1,030 @ $9.17 (manufacturer, not used); Mouser $6.41 with no break."
+    },
+    {
+      "mpn": "TAS2563",
+      "family": "TAS2563",
+      "mfr": "Texas Instruments",
+      "desc": "Mono Class-D smart amplifier with DSP",
+      "category": "ic_qfn",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "infotainment",
+        "AVAS"
+      ],
+      "observedMpn": "TAS2563",
+      "observations": [],
+      "notes": "No results."
+    },
+    {
+      "mpn": "TAS6584",
+      "family": "TAS6584",
+      "mfr": "Texas Instruments",
+      "desc": "4-ch Class-D automotive amplifier",
+      "category": "ic_tqfp",
+      "pkg": "",
+      "aecq": true,
+      "ecuRoles": [
+        "amplifier"
+      ],
+      "observedMpn": "TAS6584",
+      "observations": [],
+      "notes": "No results."
+    }
+  ],
+  "notResearched": [
+    {
+      "code": "SAF85xx",
+      "why": "OEM-direct, no public price (NXP radar SoC)"
+    },
+    {
+      "code": "CTRX8191",
+      "why": "OEM-direct, no public price (Infineon RASIC radar MMIC)"
+    },
+    {
+      "code": "MLX91230",
+      "why": "Melexis current sensor; budget spent"
+    },
+    {
+      "code": "TLI5590",
+      "why": "Infineon TMR linear sensor; budget spent"
+    },
+    {
+      "code": "A1339",
+      "why": "Allegro automotive angle sensor (EPS); budget spent"
+    },
+    {
+      "code": "A33002",
+      "why": "Allegro angle sensor; budget spent"
+    },
+    {
+      "code": "KMA36",
+      "why": "NXP magnetic angle sensor; budget spent"
+    },
+    {
+      "code": "SMI240",
+      "why": "Bosch automotive gyro/IMU for ESC/ADAS; budget spent"
+    },
+    {
+      "code": "FXPS7xx",
+      "why": "NXP automotive pressure sensors; budget spent"
+    },
+    {
+      "code": "LPS22HH",
+      "why": "ST barometer; budget spent"
+    },
+    {
+      "code": "ADS1115-Q1",
+      "why": "Common 16-bit ADC, catalogue estimate only; budget spent"
+    },
+    {
+      "code": "DAC80508",
+      "why": "8-ch 16-bit DAC; budget spent"
+    },
+    {
+      "code": "AD7124",
+      "why": "ADI precision ADC; budget spent"
+    },
+    {
+      "code": "AD4130",
+      "why": "ADI ultra-low-power ADC; budget spent"
+    },
+    {
+      "code": "MCP3564",
+      "why": "Microchip 24-bit ADC; budget spent"
+    },
+    {
+      "code": "OPA388-Q1",
+      "why": "Zero-drift op amp; budget spent"
+    },
+    {
+      "code": "ADA4522",
+      "why": "ADI zero-drift op amp; budget spent"
+    },
+    {
+      "code": "TSV/TSB automotive",
+      "why": "ST op amps; budget spent"
+    },
+    {
+      "code": "ADuM1250",
+      "why": "ADI I2C isolator; budget spent"
+    },
+    {
+      "code": "ADuM141E",
+      "why": "ADI quad isolator; budget spent"
+    },
+    {
+      "code": "IL7xx",
+      "why": "NVE isolators; budget spent"
+    },
+    {
+      "code": "ISOFACE",
+      "why": "Infineon isolated switches; budget spent"
+    },
+    {
+      "code": "AD2433",
+      "why": "ADI A2B transceiver; budget spent"
+    },
+    {
+      "code": "TDF8530",
+      "why": "NXP Class-D amplifier; budget spent"
+    },
+    {
+      "code": "TFA9xxx",
+      "why": "NXP smart amplifiers; budget spent"
+    }
+  ]
+}
