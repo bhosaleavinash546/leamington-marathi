@@ -1,0 +1,195 @@
+{
+ "reviewer": "list-C-wave2-flagged",
+ "reviewed": "2026-10-13",
+ "verdicts": [
+  {
+   "mpn": "SCH16T-K01-10",
+   "verdict": "CONFIRMED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Findchips naming Digi-Key 490-SCH16T-K01-10CT-ND: 1,000 break USD 38.70 (1 pc USD 67.19), temporarily out of stock, 15 wk (search summary of https://findchips.com/search/SCH16T-K01-1; summary phrased it 'about'). -8% v recorded Digi-Key USD 42.1709 @1000; Farnell AT EUR 36.05 consistent. Industrial grade, aecq false is right.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "LCMXO3D-9400HC-6SG72C",
+   "verdict": "CONFIRMED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Mouser category listings for the exact code: mouser.do USD 26.65 at its highest tier shown (1+ 31.75), https://www.mouser.do/en/c/semiconductors/integrated-circuits-ics/programmable-logic-ics/?pg=6 ; mouser.ca CAD 38.38 top tier (https://www.mouser.ca/c/semiconductors/integrated-circuits-ics/programmable-logic-ics/?pg=5). Recorded INR 2483.25 @100 ~ USD 28, within 25%. Caveat: top-tier quantity not stated in the summary; GST basis of mouser.in still unconfirmed. Commercial grade, aecq false right.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "MIMX8MM6CVTKZAA",
+   "verdict": "CONFIRMED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Future Electronics, non-R listing of the exact code: USD 25.63 at 152+, 0 stock, 16 wk (https://futureelectronics.com/p/semiconductors--microcontrollers--32-bit/mimx8mm6cvtkzaa-nxp-4109089). Recorded USD 24.76 @1000 (R-tray sibling, same distributor) is -3%. Still a single distributor (LCSC hit is fat.lcsc.com, not allowed). Industrial -40..105 C, aecq false right.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "LFE5U-25F-8BG256C",
+   "verdict": "UNVERIFIED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Two searches: no Mouser/Digi-Key/Farnell price for the exact C-grade code (code exists - reseller Dasenic lists it, IC FPGA 197 I/O 256CABGA, 0..85 C). Only seen: Digi-Key tray price of the I-grade sibling LFE5U-25F-8BG256I USD 23.20 @25 via zenode.ai (not a valid source). Recorded EUR 18.54 @119 was read off a Mouser SK category page with URL attribution from the summary: not reproducible. Do not merge on this evidence alone.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "LFE5U-25F-6TG144C",
+   "verdict": "UNVERIFIED",
+   "codeExists": null,
+   "aecqCorrect": true,
+   "evidence": "No listing found for the exact -6 TQFP-144 code. Reseller Dasenic (not franchised) lists LFE5U-25F-8TG144C at USD 37.58 @11-300 and LFE5U-12F-6TG144C at USD 10.35 @26-100 (https://ru.dasenic.com/product/lattice-semiconductor-corporation-lfe5u-25f-8tg144c-8100890). The recorded EUR 13.30 @120 (category-page attribution) cannot be tied to this code and sits far below the -8 TQFP sibling; treat as doubtful.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "9-2304372-9",
+   "verdict": "UNVERIFIED",
+   "codeExists": null,
+   "aecqCorrect": null,
+   "evidence": "Two searches (exact code + MATEnet; Farnell order code 4155204) found no listing at all. NOTE: the recorded Farnell FR URL slug reads 'conn-automobile-male-28p-3a-60vdc' - a 28-position connector - which contradicts desc '2-way MATEnet header'. Desc and price both need re-checking before merge; aecqCorrect left null (desc doubtful).",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "S32K342NHT0VPASR",
+   "verdict": "CONFIRMED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Same source re-seen: Avnet Americas, MOQ 600, USD ~7.73 at 600, 0 stock, factory lead 210 weeks (https://www.avnet.com/americas/product/nxp/s32k342nht0vpasr/evolve-65630115/). NXP lists the T&R sibling S32K342NHT0VPAST (https://www.nxp.com/part/S32K342NHT0VPAST). Single distributor, non-stocked (210 wk is Avnet's non-stock placeholder): confirms the listing, not a second source.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "NCJ29D5CHN/00200Y",
+   "verdict": "CONFIRMED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Same source re-seen: Avnet Americas USD 6.38 at 4,000+ (MOQ 4,000), USD 5.96 at 64,000+, 0 stock, 210 wk (https://www.avnet.com/americas/product/nxp/ncj29d5chn-00200y/evolve-50442176/). Single distributor, non-stocked. The 64,000 break (USD ~5.96) could be added as a same-distributor slope point if read exactly.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "NCJ29D5CHN/00201Y",
+   "verdict": "UNVERIFIED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Search for the exact code returned nothing for 00201Y. Cross-check only: sibling 00200Y Avnet USD 6.38 @4000; recorded INR 625.24 @4000 ~ USD 7.1 - consistent within 25% whether or not GST is included, but the INR figure itself (category-listing page) was not seen.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "ADBMS6832MWCCSZ",
+   "verdict": "UNVERIFIED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "No distributor price found (JLCPCB page C18166020 is not an allowed price source). ADI lists the ADBMS6832M family at USD 10.82 per 1k (https://www.analog.com/jp/products/adbms6832m.html, manufacturer). Recorded LCSC USD 6.5624 @100 is 39% BELOW the maker's 1k list - implausible for a 100 break; hold. ALSO desc '16-cell' looks wrong: the JLCPCB/LCSC listing gives 1 to 18 cells.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "CY15B256J-SXE",
+   "verdict": "CONFIRMED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Same listing re-seen: Future Electronics USD 6.76 at 485+, 0 stock, 10 wk (https://futureelectronics.com/p/semiconductors--memory--RAM--nvram--fram-mram/cy15b256j-sxe-infineon-9163942). Single distributor, out of stock. LCSC shows the -SXA (A-grade) sibling at USD 12.08 @10 (small qty, different grade). E grade (-40..125 C) automotive: aecq true right.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "FXPS7115DS4ST1",
+   "verdict": "UNVERIFIED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Only a broker reference price found (Cytech, USD 2.70 @1000, 'last sale', not allowed). ST product page shows no price/distributor; NXP lists DS4ST1 as recommended for new designs. Recorded Digi-Key USD 4.25313 @2000 not seen; non-stocked.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "TLE9853QXXUMA1",
+   "verdict": "CONFIRMED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Farnell IL USD 3.404 @500 ex VAT re-seen (https://il.farnell.com/infineon/tle9853qxxuma1/mcu-32bit-arm-cortex-m0-40mhz/dp/3407350). Second region: element14 Malaysia MYR 11.99 @1000 (https://my.element14.com/infineon/tle9853qxxuma1/mcu-32bit-arm-cortex-m0-40mhz/dp/3407350) ~ USD 2.85, -16%. OEMsTrade USD 3.11 @1000 also seen (not allowed, not used).",
+   "replacementObservations": [],
+   "additionalObservations": [
+    {
+     "distributor": "element14 (Malaysia)",
+     "qty": 1000,
+     "price": 11.99,
+     "currency": "MYR",
+     "url": "https://my.element14.com/infineon/tle9853qxxuma1/mcu-32bit-arm-cortex-m0-40mhz/dp/3407350",
+     "date": "2026-10-13",
+     "note": "same Farnell group; SST basis not stated in summary"
+    }
+   ]
+  },
+  {
+   "mpn": "MX25L12833FM2I-10G",
+   "verdict": "CONFIRMED",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Future listing re-seen: USD 3.28 @10, 13,156 stock (https://www.futureelectronics.com/p/semiconductors--memory--flash--norflash--serial/mx25l12833fm2i-10g-macronix-8106463), consistent with the recorded USD 3.16 @100 tier. BUT: drop the qty-2000 observation - it is a reel TOTAL divided by 2000 on a 0-stock, 52+ wk listing. Warning: other signals put the market much lower (Findchips USD 2.35 @1000 with no distributor named; digikey.cn CNY 9.24 @92 incl. VAT - neither usable), so Future is likely the high end.",
+   "replacementObservations": [],
+   "observationsToDrop": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 2000,
+     "price": 3.16,
+     "reason": "derived from reel total, 0 stock, 52+ wk lead"
+    }
+   ]
+  },
+  {
+   "mpn": "0885005.DR",
+   "verdict": "UNVERIFIED",
+   "codeExists": null,
+   "aecqCorrect": true,
+   "evidence": "Search for the exact code found no listing (only 0154xxx.DR siblings at LCSC USD 0.70-1.10 single-unit, a different, low-voltage series). Recorded Future USD 2.02 @1500 / 1.98 @3000 (0 stock, no price date) not seen. A 450 VDC fuse at ~USD 2 is plausible for an HV part - the doubt is the CLASS it is mapped to, not necessarily the number. AEC-Q200 not claimed (aecq false) - consistent.",
+   "replacementObservations": []
+  },
+  {
+   "mpn": "ATA6570-GNQW1",
+   "verdict": "CORRECT",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Exact -GNQW1 code not found priced. RS JP JPY 150.33 @4000 (~USD 1.00; out of stock; consumption-tax basis not shown) is ~2x the LCSC price of the sibling ATA6570-GNQW0 (USD 0.5248 at 1,000+, 3,802 stock, 4,000/reel; https://www.lcsc.com/product-image/C2987165.html). Replace the JPY figure with the sibling observation (observedMpn ATA6570-GNQW0, the grade-0 variant).",
+   "replacementObservations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.5248,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C2987165.html",
+     "date": "2026-10-13",
+     "observedMpn": "ATA6570-GNQW0"
+    }
+   ]
+  },
+  {
+   "mpn": "IHLP4040DZER100M5A",
+   "verdict": "CORRECT",
+   "codeExists": true,
+   "aecqCorrect": true,
+   "evidence": "Findchips naming Digi-Key: USD 0.6265 @1000, 2,701 stock (https://origin-www.findchips.com/detail/ihlp4040dzer100m5a/Vishay-Dale); Digi-Key punchout page (not allowed, corroborating only) shows USD 0.62648 @1000 T&R. The two recorded Future prices (USD 1.43 / 1.33 @1000, URL-to-price mapping unclear, one 0 stock) are 2.1-2.3x the Digi-Key price. Replace with the Digi-Key observation. 10 uH 6.5 A 33 mOhm shielded; -5A suffix = automotive.",
+   "replacementObservations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.6265,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/ihlp4040dzer100m5a/Vishay-Dale",
+     "date": "2026-10-13",
+     "observedMpn": "IHLP4040DZER100M5A"
+    }
+   ]
+  },
+  {
+   "mpn": "CGA3E2C0G1H103J080AA",
+   "verdict": "UNVERIFIED",
+   "codeExists": null,
+   "aecqCorrect": true,
+   "evidence": "Search for the exact code and reel price found no listing (only CGA3E siblings at LCSC; 100 pF C0G USD 0.0139 @1000 - not comparable for 10 nF). Recorded Future USD 0.0534 @4000 single-source, not seen; appears high for a 0603 C0G 10 nF reel price. Budget exhausted (20/20).",
+   "replacementObservations": []
+  }
+ ],
+ "notes": [
+  "20 of 20 WebSearch calls used.",
+  "additionalObservations / observationsToDrop are reviewer extras beside the standard fields: one new same-group observation for TLE9853QXXUMA1, one derived reel observation to drop for MX25L12833FM2I-10G.",
+  "Single-source confirmations (S32K342NHT0VPASR, NCJ29D5CHN/00200Y, CY15B256J-SXE, MIMX8MM6CVTKZAA) re-read the SAME non-stocked distributor listing; they confirm the number exists, not that it is a market price.",
+  "Most serious: Future Electronics prices run ~2x other franchised distributors on the parts checked (IHLP4040 2.1-2.3x Digi-Key; MX25L12833 likely high). ADBMS6832MWCCSZ LCSC price is 39% below ADI's own 1k list and its desc cell count looks wrong. 9-2304372-9's Farnell URL describes a 28-position part, not 2-way."
+ ]
+}
