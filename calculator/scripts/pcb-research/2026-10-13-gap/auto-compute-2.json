@@ -1,0 +1,88 @@
+{ "domain": "auto-compute-2", "researched": "2026-10-13", "parts": [
+  { "mpn": "S32K342EHT0MPBST", "family": "S32K342", "mfr": "NXP", "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, Ethernet (E variant)", "category": "ic_tqfp", "pkg": "HDQFP/QFP-EP-172", "aecq": true, "ecuRoles": ["BCM","zonal","BMS","chassis"], "observedMpn": "S32K342EHT0MPBST",
+    "observations": [
+      { "distributor": "Farnell", "qty": 100, "price": 10.350, "currency": "EUR", "url": "https://de.farnell.com/nxp/s32k342eht0mpbst/mcu-32-bit-160mhz-qfp-ep-172/dp/4134287", "date": "2026-10-13" } ],
+    "notes": "Farnell DE ex-VAT, 1+ EUR 13.880 (shown as 13,880 / 10,350 in German decimal format). Package from the Farnell title. Code task named (S32K342NHT1MPBST) not found at any distributor." },
+  { "mpn": "S32K342NHT0VPASR", "family": "S32K342", "mfr": "NXP", "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, no Ethernet (N variant), tape and reel", "category": "ic_tqfp", "pkg": "not stated in listing (VPA code)", "aecq": true, "ecuRoles": ["BCM","zonal","BMS","chassis"], "observedMpn": "S32K342NHT0VPASR",
+    "observations": [
+      { "distributor": "Avnet", "qty": 600, "price": 7.72857, "currency": "USD", "url": "https://www.avnet.com/americas/product/nxp/s32k342nht0vpasr/evolve-65630115/", "date": "2026-10-13" } ],
+    "notes": "Avnet Americas 600+; 0 in stock, factory lead time 210 weeks stated on listing. Package suffix VPA not decoded from a source." },
+  { "mpn": "S32K341EHT0MPAST", "family": "S32K341", "mfr": "NXP", "desc": "S32K3 automotive MCU, Cortex-M7 lockstep 160 MHz, 1 MB, Ethernet", "category": "ic_tqfp", "pkg": "MaxQFP-100", "aecq": true, "ecuRoles": ["BCM","zonal","chassis"], "observedMpn": "S32K341EHT0MPAST",
+    "observations": [],
+    "notes": "Code confirmed (NXP part page; Farnell 4218655 'MaxQFP-100') but no price shown. Sibling S32K341EHT0MPBST (QFP-EP-172) on Mouser SE in SEK with break quantity not shown; element14 NZ only. Farnell UK S32K341 snippets give no code." },
+  { "mpn": "S32K322EHT0MPBST", "family": "S32K322", "mfr": "NXP", "desc": "S32K3 automotive MCU, 2x Cortex-M7 160 MHz, 2 MB, Ethernet", "category": "ic_tqfp", "pkg": "HDQFP/QFP-EP-172", "aecq": true, "ecuRoles": ["BCM","zonal","chassis"], "observedMpn": "S32K322EHT0MPBST",
+    "observations": [],
+    "notes": "Code confirmed (Farnell 4134289). Only 1+ prices found: Farnell UK GBP 11.670, Farnell IL USD 12.382 ex VAT; element14 AU/NZ (AUD/NZD, not usable). Farnell JP flags it 'no longer stocked'. S32K322EHT0MPAST (MaxQFP-100) only at element14 AU incl GST. Digi-Key listing is punchouttest (not allowed)." },
+  { "mpn": "MIMX8MN6CVTIZAA", "family": "MIMX8MN6", "mfr": "NXP", "desc": "i.MX 8M Nano quad Cortex-A53 applications processor, industrial -40..105 C", "category": "ic_bga", "pkg": "FCBGA", "aecq": false, "ecuRoles": ["display","gateway","telematics"], "observedMpn": "MIMX8MN6CVTIZAA",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 304, "price": 19.53, "currency": "USD", "url": "https://www.digikey.com/product-detail/en/nxp-usa-inc/MIMX8MN6CVTIZAA/568-MIMX8MN6CVTIZAA-ND/10669041", "date": "2026-10-13" },
+      { "distributor": "Future Electronics", "qty": 152, "price": 16.76, "currency": "USD", "url": "https://www.futureelectronics.com/p/1148117", "date": "2026-10-13" } ],
+    "notes": "C grade = industrial (-40..105 C), not an AEC-Q100 automotive code; no automotive i.MX 8M Nano code found. Digi-Key tray 1 pc USD 28.95, out of stock (backorder); Future 0 stock. Mouser 1 pc USD 41.27, lowest tier break not shown (not recorded)." },
+  { "mpn": "MIMX8MM6CVTKZAA", "family": "MIMX8MM6", "mfr": "NXP", "desc": "i.MX 8M Mini quad Cortex-A53 1.6 GHz applications processor, industrial -40..105 C", "category": "ic_bga", "pkg": "LFBGA-486", "aecq": false, "ecuRoles": ["display","gateway","telematics"], "observedMpn": "MIMX8MM6CVTKZAAR",
+    "observations": [
+      { "distributor": "Future Electronics", "qty": 1000, "price": 24.76, "currency": "USD", "url": "https://futureelectronics.com/p/semiconductors--microprocessors--embedded-processors/mimx8mm6cvtkzaar-nxp-5166441", "date": "2026-10-13" } ],
+    "notes": "Price is for the R-suffix sibling MIMX8MM6CVTKZAAR (1000 per tray). Industrial grade (Farnell JP '-40 to 105deg'), not an automotive code. One distributor only; LCSC entry was fat.lcsc.com (not allowed)." },
+  { "mpn": "R7F124FPJ4AFB-C#AA0", "family": "R7F124FPJ", "mfr": "Renesas", "desc": "RL78/F24 16-bit automotive MCU 40 MHz, 256 KB flash, CAN FD, tray", "category": "ic_tqfp", "pkg": "LQFP-100 (14x14)", "aecq": true, "ecuRoles": ["BCM","body","actuator"], "observedMpn": "R7F124FPJ4AFB-C#AA0",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 540, "price": 3.86993, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/renesas-electronics-corporation/R7F124FPJ4AFB-C-AA0/22079183", "date": "2026-10-13" },
+      { "distributor": "Digi-Key", "qty": 1080, "price": 3.77462, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/renesas-electronics-corporation/R7F124FPJ4AFB-C-AA0/22079183", "date": "2026-10-13" } ],
+    "notes": "RL78/F24 is Renesas's automotive line (AEC-Q100 per family, not stated on the listing). 315 in stock. Tray sibling #BA0 Digi-Key 720 USD 3.79958. Mouser 1 pc USD 6.74 (other breaks not mapped, not recorded)." },
+  { "mpn": "R7F124FPJ4AFB-C#HA0", "family": "R7F124FPJ", "mfr": "Renesas", "desc": "RL78/F24 16-bit automotive MCU 40 MHz, 256 KB flash, CAN FD, tape and reel", "category": "ic_tqfp", "pkg": "LQFP-100 (14x14)", "aecq": true, "ecuRoles": ["BCM","body","actuator"], "observedMpn": "R7F124FPJ4AFB-C#HA0",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 1000, "price": 3.75603, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/renesas-electronics-corporation/R7F124FPJ4AFB-C-HA0/22079184", "date": "2026-10-13" } ],
+    "notes": "Tape and reel; lead time 14 weeks. AEC-Q100 per family, not stated on listing." },
+  { "mpn": "STM32G431RBT3", "family": "STM32G431", "mfr": "STMicroelectronics", "desc": "STM32G4 Cortex-M4 170 MHz, 128 KB flash, -40..125 C (suffix 3)", "category": "ic_tqfp", "pkg": "LQFP-64 (10x10)", "aecq": false, "ecuRoles": ["motor control","DC-DC","OBC"], "observedMpn": "STM32G431RBT3",
+    "observations": [
+      { "distributor": "Digi-Key", "qty": 960, "price": 3.45279, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STM32G431RBT3/12337606", "date": "2026-10-13" },
+      { "distributor": "Digi-Key", "qty": 1920, "price": 3.37765, "currency": "USD", "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/STM32G431RBT3/12337606", "date": "2026-10-13" } ],
+    "notes": "Tray, 619 in stock. 125 C temperature grade, not AEC-Q100. Future STM32G431RBT3TR 1000+ showed USD 2.93 and 2.97 in two snapshots (conflict, not recorded). ST eStore STM32G431CBT3 USD 4.04 @500 is a manufacturer price." },
+  { "mpn": "SPC572L64E3BC6AR", "family": "SPC572L", "mfr": "STMicroelectronics", "desc": "SPC57 Power Architecture automotive MCU, 2 MB, 80 MHz", "category": "ic_tqfp", "pkg": "not stated in listing", "aecq": true, "ecuRoles": ["powertrain","BMS","chassis"], "observedMpn": "SPC572L64E3BC6AR",
+    "observations": [],
+    "notes": "Mouser shows USD 15.15 @1 to 8.02 @1000 (reel), but the snippet mixed mouser.mx (USD) and mouser.ca (CAD) pages and the row mapping was uncertain, so not recorded. ST eStore USD 7.42 @500 (manufacturer). Digi-Key page shows no price." },
+  { "mpn": "SPC574K72E5C6FAR", "family": "SPC574K", "mfr": "STMicroelectronics", "desc": "SPC57 Power Architecture automotive MCU, 2.5 MB, triple core", "category": "ic_tqfp", "pkg": "not stated in listing", "aecq": true, "ecuRoles": ["powertrain","chassis"], "observedMpn": "SPC574K72E5C6FAR",
+    "observations": [],
+    "notes": "Mouser 800 (MOQ, one reel) at 15.94, 26-week lead; site currency (mouser.mx USD or mouser.ca CAD) not determinable, so not recorded." },
+  { "mpn": "AVR128DA48T-E/PT", "family": "AVR128DA48", "mfr": "Microchip", "desc": "AVR DA 8-bit MCU 24 MHz, 128 KB flash, -40..125 C, tape and reel", "category": "ic_tqfp", "pkg": "TQFP-48", "aecq": false, "ecuRoles": ["body","sensor","HVAC"], "observedMpn": "AVR128DA48T-E/PT",
+    "observations": [
+      { "distributor": "Farnell", "qty": 1600, "price": 1.50, "currency": "GBP", "url": "https://uk.farnell.com/microchip/avr128da48t-e-pt/mcu-8bit-24mhz-tqfp-48/dp/3630852", "date": "2026-10-13" },
+      { "distributor": "RS Components", "qty": 1600, "price": 1.876, "currency": "EUR", "url": "https://es.rs-online.com/web/p/microcontroladores/0585140", "date": "2026-10-13" } ],
+    "notes": "Ex VAT: Farnell UK reel GBP 2,400.00 / 1,600; RS ES reel EUR 3,001.60 / 1,600. -E = extended temperature; VAO (AEC-Q100) codes not found at any distributor. RS TH THB 75.065 @500 out of stock (not recorded). AVR64DD not found." },
+  { "mpn": "PIC18F57Q84T-E/PT", "family": "PIC18F57Q84", "mfr": "Microchip", "desc": "PIC18-Q84 8-bit MCU 64 MHz, 128 KB flash, CAN FD, -40..125 C, tape and reel", "category": "ic_tqfp", "pkg": "TQFP-48", "aecq": false, "ecuRoles": ["body","actuator","sensor"], "observedMpn": "PIC18F57Q84T-E/PT",
+    "observations": [
+      { "distributor": "RS Components", "qty": 1600, "price": 1.825, "currency": "EUR", "url": "https://de.rs-online.com/web/p/mikrocontroller/0722754", "date": "2026-10-13" } ],
+    "notes": "RS reel EUR 2,920 / 1,600 ex VAT; ships from early Dec 2026 (backorder). AEC-Q100 code PIC18F57Q84-E/6MXVAO seen only on RS HK (HKD, not usable). Farnell industrial siblings: PIC18F57Q84-I/6MX EUR 1.59 @250 (ES), PIC18F57Q84T-I/6MX EUR 1.660 @3300 (FR) - not recorded as different codes." },
+  { "mpn": "TLE9853QXXUMA1", "family": "TLE9853", "mfr": "Infineon", "desc": "MOTIX TLE985x 32-bit Cortex-M0 40 MHz H-bridge motor-control SoC with LIN", "category": "ic_qfn", "pkg": "VQFN-48", "aecq": true, "ecuRoles": ["window lift","sunroof","actuator"], "observedMpn": "TLE9853QXXUMA1",
+    "observations": [
+      { "distributor": "Farnell", "qty": 500, "price": 3.404, "currency": "USD", "url": "https://il.farnell.com/infineon/tle9853qxxuma1/mcu-32bit-arm-cortex-m0-40mhz/dp/3407350", "date": "2026-10-13" } ],
+    "notes": "Farnell IL ex VAT: 1+ USD 5.950, 10+ 4.435, 500+ 3.404. One distributor only; oemstrade (not allowed) and Cytech (broker) ignored. Package per family datasheet, not on the listing." },
+  { "mpn": "CY8C4147AZE-S475", "family": "CY8C4147", "mfr": "Infineon", "desc": "PSoC 4100S Plus Cortex-M0+ 48 MHz, 128 KB flash, CapSense", "category": "ic_tqfp", "pkg": "TQFP-64", "aecq": false, "ecuRoles": ["HMI","capacitive touch","body"], "observedMpn": "CY8C4147AZE-S475",
+    "observations": [
+      { "distributor": "RS Components", "qty": 1000, "price": 4.81, "currency": "EUR", "url": "https://it.rs-online.com/web/p/microcontroller/0349088", "date": "2026-10-13" } ],
+    "notes": "RS IT 1000+ ex VAT. AZE sibling of the AZQ code the task named; AZQ-S475 price not found (Digipart showed no franchised price). AEC-Q100 not confirmed for AZE. Cytech (broker) ignored; Avnet CY8C4147AXI-S475 USD 3.66 @180 is another variant." },
+  { "mpn": "AM62A34ASMSIAMBRQ1", "family": "AM62A3", "mfr": "Texas Instruments", "desc": "AM62A3-Q1 vision processor, Cortex-A53 + C7x/MMA, AEC-Q100, -40..125 C", "category": "ic_bga", "pkg": "not stated in listing", "aecq": true, "ecuRoles": ["camera","driver monitoring"], "observedMpn": "AM62A34ASMSIAMBRQ1",
+    "observations": [],
+    "notes": "Code active per TI package addendum (500-unit reel). Mouser IE EUR 40.64 @1 / UK GBP 40.29 @1, 2,019 in stock; lower break ('about EUR 27.92') quantity not shown, not recorded. AM62P-Q1 not found at distributors." },
+  { "mpn": "MIMX9596AVZXNAD", "family": "MIMX9596", "mfr": "NXP", "desc": "i.MX 95 6x Cortex-A55 applications processor, automotive grade", "category": "ic_bga", "pkg": "not stated in listing", "aecq": true, "ecuRoles": ["display","gateway","ADAS"], "observedMpn": "MIMX9596AVZXNAD",
+    "observations": [],
+    "notes": "Code on NXP part page only; no distributor listing. Industrial sibling MIMX9596CVZXNAC on Mouser SK EUR 70.43 @1, lower tiers 58.07 / 54.98 with quantities not shown (not recorded)." },
+  { "mpn": "S32M244CCABWKHST", "family": "S32M244", "mfr": "NXP", "desc": "S32M2 motor-control SiP, Cortex-M4F 80 MHz, 512 KB, gate pre-drivers, LIN/CAN FD", "category": "ic_tqfp", "pkg": "LQFP-EP-64", "aecq": true, "ecuRoles": ["pump","fan","actuator"], "observedMpn": "S32M244CCABWKHST",
+    "observations": [],
+    "notes": "Farnell CH only (CHF 15.460 @1 to 10.810 @100+ ex VAT) - CHF not usable. Avnet lists CCABWKHST / LCABWKHST without prices. Tanotis is a reseller (not allowed)." },
+  { "mpn": "CYT2B98CACQ0AZEGS", "family": "CYT2B98", "mfr": "Infineon", "desc": "TRAVEO T2G body MCU Cortex-M4F, 4 MB class", "category": "ic_tqfp", "pkg": "LQFP-176", "aecq": true, "ecuRoles": ["BCM","gateway"], "observedMpn": "CYT2B98CACQ0AZEGS",
+    "observations": [],
+    "notes": "Infineon part page (active, tray 400). Mouser lists two CYT2B98 variants non-stocked, MOQ 300, 39-week lead, no price. CYT2B78 not found. Cytech CYT2B75 is a broker (not recorded)." },
+  { "mpn": "MLX81116", "family": "MLX81116", "mfr": "Melexis", "desc": "LIN RGB LED / motor driver SoC", "category": "ic_qfn", "pkg": "not found", "aecq": true, "ecuRoles": ["ambient lighting","actuator"], "observedMpn": "",
+    "observations": [],
+    "notes": "No orderable chip code or price found; Mouser lists only the MLX81116 development kit. MLX81160 appears only in a programmer description; MLX81339 not found." }
+],
+"notResearched": [
+  { "code": "TDA4AL88 / TDA4VEN / TDA4VPE (TI Jacinto)", "why": "ADAS / vision SoCs; wave 1 found no listing, budget spent on higher-yield parts" },
+  { "code": "TMS320F28P559-Q1", "why": "C2000 real-time MCU for traction / OBC; budget spent" },
+  { "code": "AM6442 automotive / AM62P-Q1 orderable codes", "why": "Sitara gateway / display processors; AM62P codes not found, budget spent" },
+  { "code": "i.MX 8DualX automotive (MIMX8DX…)", "why": "cluster / display processor; budget spent" },
+  { "code": "Renesas RA6 / RA8 automotive, RL78/F25, RH850/U2B (R7F702Z…)", "why": "body / zonal MCUs; budget spent" },
+  { "code": "Stellar SR5E1E3", "why": "ST electrification MCU (OBC / DC-DC); budget spent" },
+  { "code": "AVR64DD automotive (VAO)", "why": "8-bit sensor MCU; no VAO listing found for AVR DA, DD not searched separately" },
+  { "code": "Elmos E523.52 / E521.39", "why": "LIN motor-control SoCs; budget spent" },
+  { "code": "NVIDIA DRIVE Orin / Thor, Mobileye EyeQ, Qualcomm SA8xxx, Renesas R-Car V4H", "why": "OEM-direct, no public price" }
+] }
