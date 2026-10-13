@@ -1,0 +1,330 @@
+{
+ "domain": "r5-passives-gaps",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "CGA3E3X7R1H105K080AB",
+   "family": "CGA3E3X7R1H105",
+   "mfr": "TDK",
+   "desc": "MLCC 1uF 50V X7R ±10% 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "general decoupling",
+    "BCM",
+    "ADAS"
+   ],
+   "observedMpn": "CGA3E3X7R1H105K080AB",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.07133,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/tdk-corporation/CGA3E3X7R1H105K080AB/25982689",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100000,
+     "price": 0.04906,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/tdk-corporation/CGA3E3X7R1H105K080AB/25982689",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "0603 1uF 50V automotive cell. Digi-Key only (1k cut-tape tier and 100k reel tier); a second distributor search (LCSC / Mouser / Newark / Future / Farnell / RS / Arrow) returned no listing for this code."
+  },
+  {
+   "mpn": "CGA6M3X7S2A475K200AB",
+   "family": "CGA6M3X7S2A475",
+   "mfr": "TDK",
+   "desc": "MLCC 4.7uF 100V X7S ±10% 1210 AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "48V",
+    "DC-DC input",
+    "BMS"
+   ],
+   "observedMpn": "CGA6M3X7S2A475K200AB",
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 1000,
+     "price": 0.535,
+     "currency": "USD",
+     "url": "https://www.newark.com/tdk/cga6m3x7s2a475k200ab/cap-4-7uf-100v-mlcc-1210/dp/40Y2338",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 0.425,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga6m3x7s2a475k200ab-tdk-8014499",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "1210 4.7uF 100V automotive cell (X7S - TDK offers this rating in X7S, not X7R). Future web price shown with zero stock (lower than Newark, so not the stale-dearer case). Discarded: OEMsTrade / IBS (excluded), Digi-Key / Mouser / LCSC figures given only as 'about'. Ratio Newark/Future 1.26."
+  },
+  {
+   "mpn": "CGA5L1X5R1C226M160AC",
+   "family": "CGA5L1X5R1C226",
+   "mfr": "TDK",
+   "desc": "MLCC 22uF 16V X5R ±20% 1206 AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "bulk decoupling"
+   ],
+   "observedMpn": "CGA5L1X5R1C226M160AC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.3444,
+     "currency": "EUR",
+     "url": "https://www.digikey.es/en/products/detail/tdk/CGA5L1X5R1C226M160AC/3950083",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Found while searching the 1206 22uF 25V automotive cell: no 25V 22uF 1206 AEC-Q200 code was listed (GCM31 / CGA5L); this is the nearest automotive 22uF 1206 (16V X5R). Digi-Key ES ex-VAT EUR, cut-tape 1,000 tier; listing showed 13 in stock, 12-week lead time. One distributor only."
+  },
+  {
+   "mpn": "CRCW08051K00FKEA",
+   "family": "CRCW0805",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film resistor 1k 1% 0.125W 0805 AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observedMpn": "CRCW08051K00FKEA",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.00965,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW08051K00FKEA/1175637",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 5000,
+     "price": 0.0046,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw08051k00fkea-vishay-7592892?loc=1",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 5000,
+     "price": 0.007,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/surface-mount-resistors/1694547",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Retry succeeded. RS UK reel of 5,000 at GBP 35.00 ex-VAT (0.007 each). Also seen: LCSC C844939 USD 0.0058 @5,000; Mouser USD 35.00 per 5,000 reel; Newark USD 0.020 @5,000 (outlier, 2-4x the others, not recorded). Digi-Key / Future spread 2.1x."
+  },
+  {
+   "mpn": "DLW32MH101XT2L",
+   "family": "DLW32MH",
+   "mfr": "Murata",
+   "desc": "Common-mode choke 100uH 2-line, 1210 (3225), automotive Ethernet 100BASE-T1",
+   "category": "transformer",
+   "pkg": "1210 (3225)",
+   "aecq": true,
+   "ecuRoles": [
+    "automotive Ethernet",
+    "gateway",
+    "ADAS camera"
+   ],
+   "observedMpn": "DLW32MH101XT2L",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1500,
+     "price": 0.9817,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C2935101.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 1500,
+     "price": 1.37,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--filters--common-mode-chokes/dlw32mh101xt2l-murata-3178342",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 1500,
+     "price": 0.602,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/common-mode-chokes/2235041",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Retry succeeded. RS UK ex-VAT reel of 1,500. Future listing showed zero stock. AEC-Q200 per Murata's DLW32MH automotive-Ethernet series (not stated in the snippets read). Newark hits were the XK2L sibling, not recorded."
+  },
+  {
+   "mpn": "XAL4020-222MEC",
+   "family": "XAL4020",
+   "mfr": "Coilcraft",
+   "desc": "Molded power inductor 2.2uH 5.5A 20%, 4x4x2.1mm, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "4.0x4.0x2.1 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "PoL buck",
+    "ADAS",
+    "infotainment"
+   ],
+   "observedMpn": "XAL4020-222MEC",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 1.01,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/coilcraft/xal4020-222mec/inductor-2-2uh-5-5a-20-pwr-52mhz/dp/2289054",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell UK ex-VAT, 42-week lead time. LCSC C3151182 USD 6.8785 @1,000 (81 in stock) DISCARDED as implausible (~5x Farnell). One usable distributor."
+  },
+  {
+   "mpn": "IHLP2525CZER3R3M5A",
+   "family": "IHLP-2525CZ-5A",
+   "mfr": "Vishay Dale",
+   "desc": "Molded power inductor 3.3uH 20%, IHLP-2525CZ-5A automotive grade, 6.5x6.9 mm",
+   "category": "passive_1206",
+   "pkg": "2525",
+   "aecq": true,
+   "ecuRoles": [
+    "PoL buck"
+   ],
+   "observedMpn": "IHLP2525CZER3R3M5A",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 2000,
+     "price": 0.29,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--inductors--power-inductors/ihlp2525czer3r3m5a-vishay-3144633",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Recorded in place of IHLP2525CZER2R2M5A (no franchised listing for that code; the 2.2uH listings found were the commercial -01 / -11 grades). One distributor; the -5A suffix is Vishay's automotive (AEC-Q200) grade."
+  },
+  {
+   "mpn": "PMR100HZPFV1L00",
+   "family": "PMR100",
+   "mfr": "ROHM",
+   "desc": "Metal plate current-sense shunt 1 mOhm 1% 2W, 2512, AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "2512",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "motor drive"
+   ],
+   "observedMpn": "PMR100HZPFV1L00",
+   "observations": [],
+   "notes": "Retry: listed by LCSC (C509731), Newark (08AC2860), Farnell (2696213), Mouser; but every figure in the results was given only as 'about' (LCSC ~0.21 @1k, Farnell ~0.218 @2k reel, Newark ~0.46 @100) - rounded, not recorded."
+  },
+  {
+   "mpn": "IHLP2525CZER2R2M5A",
+   "family": "IHLP-2525CZ-5A",
+   "mfr": "Vishay Dale",
+   "desc": "Molded power inductor 2.2uH 20%, IHLP-2525CZ-5A automotive grade",
+   "category": "passive_1206",
+   "pkg": "2525",
+   "aecq": true,
+   "ecuRoles": [
+    "PoL buck"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Retry: no franchised listing for this exact code; only -01 / -11 (commercial) 2.2uH and the -5A 3.3uH (recorded separately)."
+  },
+  {
+   "mpn": "UCJ1C101MCL1GS",
+   "family": "UCJ",
+   "mfr": "Nichicon",
+   "desc": "Al electrolytic SMD 100uF 16V 20%, UCJ high-reliability chip type",
+   "category": "passive_1206",
+   "pkg": "SMD can",
+   "aecq": true,
+   "ecuRoles": [
+    "power input"
+   ],
+   "observedMpn": "UCJ1C101MCL1GS",
+   "observations": [],
+   "notes": "LCSC C2163711 shows USD 0.1026 @1,000 marked 'Reference Only' (no stock confirmed) - not recorded. UCJ is a liquid Al electrolytic (not a hybrid polymer) per the Nichicon catalogue CAT.8100L; AEC-Q200 not confirmed in the results. UCJ1V101MCL1GS / UCJ1E331MCL1GS are catalogue codes with no distributor price found."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "0603 2.2uF 25V X7R automotive",
+   "why": "No orderable automotive code found: GCM188R71E225KA55D and CGA3E1X7R1E225K080AC return no listing (only 220nF 224 codes); Murata GCM188 2.2uF is listed at 6.3V (GCM188R70J225KE22D). Probably not offered in X7R 25V 0603 - use X7S / X5R or 0805."
+  },
+  {
+   "code": "0603 4.7uF 16V X7R automotive",
+   "why": "No AEC-Q200 code found in a Digi-Key search (only Cal-Chip GMC10X7R475K16NT, non-automotive); Yageo AC HiCap datasheet covers the cell but the orderable code was not read."
+  },
+  {
+   "code": "0402 2.2uF 6.3V automotive",
+   "why": "Not reached; web-search budget (shared) exhausted. GRT155R61E225KE13D (2.2uF 25V X5R 0402 AEC-Q200) is already catalogued."
+  },
+  {
+   "code": "1206 22uF 25V automotive",
+   "why": "No 25V 22uF 1206 AEC-Q200 code listed (GCM31 / CGA5L searched); nearest automotive 22uF 1206 is 16V (CGA5L1X5R1C226M160AC recorded)."
+  },
+  {
+   "code": "1206 100nF 630V",
+   "why": "Not reached; budget exhausted."
+  },
+  {
+   "code": "1206 1uF 250V",
+   "why": "Digi-Key search of TDK CGA5L found 0.1uF 250V (CGA5L3X7R2E104K160AA/AE) and 1uF 100V (CGA5L2X7R2A105K160AA), no 1uF 250V 1206 code - likely not offered."
+  },
+  {
+   "code": "0805 C0G 10nF automotive",
+   "why": "Already catalogued with observations (GCM2195C1H103JA16D)."
+  },
+  {
+   "code": "Vishay CRCW-HP / anti-sulfur, KOA RK73H-A, Panasonic ERJ-PA2 (0402/0603)",
+   "why": "Not reached; budget exhausted (Panasonic ERJ-U02 / ERJ-S03 anti-sulfur already catalogued)."
+  },
+  {
+   "code": "KOA TLR 2512, Isabellenhuette BVR / BVS shunts",
+   "why": "Search refused: shared web-search budget used up."
+  },
+  {
+   "code": "Wurth WE-XHMA 4020 / WE-MAPI 4020",
+   "why": "WE-XHMA search found no 4020 orderable code with a price (Digi-Key shows WE-XHMI 74439344022 at a stale single-unit price only)."
+  },
+  {
+   "code": "TDK TFM201610ALM / CLF6045NIT",
+   "why": "Not reached; budget exhausted (round 4 found no listing)."
+  },
+  {
+   "code": "Bourns SRP6540-4R7M",
+   "why": "Not reached; budget exhausted (round 4 found only a broker)."
+  },
+  {
+   "code": "Wurth WCAP-ASLI, KYOCERA AVX TCQ, TDK B32776 automotive, KEMET C4AQ",
+   "why": "Not reached; shared web-search budget exhausted."
+  }
+ ]
+}

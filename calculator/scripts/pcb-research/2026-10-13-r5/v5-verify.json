@@ -176,17 +176,8 @@
    "pkg": "HTQFP-64",
    "aecq": true,
    "observedMpn": "BQ79656PAPRQ1",
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 1000,
-     "price": 16.36,
-     "currency": "USD",
-     "url": "https://www.findchips.com/search/BQ796",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "UNVERIFIED: no second distributor. Same-distributor cross-check: Findchips lists Digi-Key $16.36 @1,000 (18 wk lead) vs stored Digi-Key $14.46 @1,000 -> 1.13x; consistent."
+   "observations": [],
+   "notes": "UNVERIFIED: no second distributor. Same-distributor cross-check: Findchips lists Digi-Key $16.36 @1,000 (18 wk lead) vs stored Digi-Key $14.46 @1,000 -> 1.13x; consistent. Review 13 Oct 2026: dropObs - rule 1: aggregator search that does not name the code (https://www.findchips.com/search/BQ796)."
   },
   {
    "mpn": "NEO-M9V-20B",
@@ -274,17 +265,8 @@
    "pkg": "VQFN-64",
    "aecq": false,
    "observedMpn": "UCD3138RGCR",
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 2000,
-     "price": 7.72,
-     "currency": "USD",
-     "url": "https://www.findchips.com/search/138RG",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "CONFIRMED: Findchips lists Mouser (595-UCD3138RGCR, authorised) $7.72 @2,000 vs stored Digi-Key GBP 8.88 @100 -> 0.77x stored 1k-equiv (GBP 5.83 v 7.55). Findchips page is one of /search/138RG or /search/UCD31 (summary did not pin which); Avnet Europe ~$10.72 seen only on electronicsdatasheets, not used."
+   "observations": [],
+   "notes": "CONFIRMED: Findchips lists Mouser (595-UCD3138RGCR, authorised) $7.72 @2,000 vs stored Digi-Key GBP 8.88 @100 -> 0.77x stored 1k-equiv (GBP 5.83 v 7.55). Findchips page is one of /search/138RG or /search/UCD31 (summary did not pin which); Avnet Europe ~$10.72 seen only on electronicsdatasheets, not used. Review 13 Oct 2026: dropObs - rule 1: aggregator search that does not name the code (https://www.findchips.com/search/138RG)."
   },
   {
    "mpn": "DS90UB934TRGZRQ1",

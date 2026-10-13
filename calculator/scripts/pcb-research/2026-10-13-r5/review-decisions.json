@@ -1,0 +1,229 @@
+{
+ "note": "Round 5 decisions, written by decide-r5.py (see its header). Applied by apply-review.py to raw/*.json.",
+ "decisions": [
+  {
+   "mpn": "LPC55S69JBD100K",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "F28P559SG2PZRQ1",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "PIC16LF18446-E/SS",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "R7F125FPL4AFB-C#UA0",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "SR5E1E370C30F01X",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "10M08SAU169I7G",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "MIMX8DX6AVLFZAC",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "MIMX8DL1AVNFZAB",
+   "action": "dropObs",
+   "match": {
+    "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/?q=IMX8"
+   },
+   "reason": "rule 1: Mouser category page (https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/?q=IMX)"
+  },
+  {
+   "mpn": "MIMX8DL1AVNFZAB",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "MFS8600BMDA0ES",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "LT8390IUFD#PBF",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "LT8390IFE#PBF",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "NCV8114ASN330T1G",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "ADUM4146ARWZ-RL",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "SI8271GB-ISR",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "AIMBG120R030M1XTMA1",
+   "action": "dropObs",
+   "match": {
+    "url": "https://www.findchips.com/search/aimb-"
+   },
+   "reason": "rule 1: aggregator search that does not name the code (https://www.findchips.com/search/aimb-)"
+  },
+  {
+   "mpn": "AS5600-ASOM",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "TCAN1463DMTRQ1",
+   "action": "dropObs",
+   "match": {
+    "url": "https://www.mouser.co.il/c/semiconductors/interface-ics/can-interface-ic/?pg=10&q=CA"
+   },
+   "reason": "rule 1: Mouser category page (https://www.mouser.co.il/c/semiconductors/interface-ics/can-interface-ic/?pg=10&)"
+  },
+  {
+   "mpn": "IS46QR16512A-083TBLA2-TR",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "MT40A1G16TD-062E AUT:F",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "TUSB1064RNQR",
+   "action": "dropObs",
+   "match": {
+    "url": "https://www.mouser.ca/c/semiconductors/interface-ics/usb-interface-ic?pg=41"
+   },
+   "reason": "rule 1: Mouser category page (https://www.mouser.ca/c/semiconductors/interface-ics/usb-interface-ic?pg=41)"
+  },
+  {
+   "mpn": "PESD2CANFD27V-TR",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "TPSMB24AHE3_A/I",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "12401610E4#2A",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "ABM3BAIG-26.000MHZ-1Z-T",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "ABM3BAIG-8.000MHZ-1Z-T",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "0501012.WRA",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "0501010.WRA",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "0501015.WR",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "34691-0080",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "GT17V-10DP-DS(70)",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "2304372-1",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "CGA3E3X7R1H105K080AB",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "CGA5L1X5R1C226M160AC",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "XAL4020-222MEC",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "IHLP2525CZER3R3M5A",
+   "action": "dropPart",
+   "reason": "rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/"
+  },
+  {
+   "mpn": "MAX96792AGTM/VY+",
+   "action": "dropObs",
+   "match": {
+    "url": "https://findchips.com/search/6792A"
+   },
+   "reason": "rule 1: aggregator search that does not name the code (https://findchips.com/search/6792A)"
+  },
+  {
+   "mpn": "BQ79656PAPRQ1",
+   "action": "dropObs",
+   "match": {
+    "url": "https://www.findchips.com/search/BQ796"
+   },
+   "reason": "rule 1: aggregator search that does not name the code (https://www.findchips.com/search/BQ796)"
+  },
+  {
+   "mpn": "UCD3138RGCR",
+   "action": "dropObs",
+   "match": {
+    "url": "https://www.findchips.com/search/138RG"
+   },
+   "reason": "rule 1: aggregator search that does not name the code (https://www.findchips.com/search/138RG)"
+  },
+  {
+   "mpn": "S32K344EHT1VMMST",
+   "action": "dropObs",
+   "match": {
+    "currency": "JPY"
+   },
+   "reason": "the Farnell JP figure is a snapshot dated about July 2025 - too old to replace the stored price; the entry is marked DISPUTED instead"
+  }
+ ]
+}

@@ -195,6 +195,15 @@ describe('the research merge rules', () => {
     mergeResearch(cat, [], '2026-10-13');                       // the re-price pass
     expect(cat.parts[0].gbp.q1k).toBeCloseTo(2.0 * 0.7553, 3);
   });
+  it('an entry the audit leaves with no observation leaves the catalogue (no unsourced price)', () => {
+    const p = priceFromObservations([{ ...o('Mouser', 1000, 9.0), url: 'https://www.mouser.com/c/category' }])!;
+    const cat = { parts: [{ mpn: 'GONE1', family: 'GONE1', mfr: 'X', desc: 'd', category: 'ic_soic', pkg: '', aecq: true,
+      gbp: p.gbp, confidence: 'distributor' as const, source: 's', asOf: '2026-10-06', observations: p.obs.map(x => ({ ...x })),
+      volumeModel: { b: p.b, basis: p.basis, derivedAbove: 1000 } }] };
+    const out = applyAuditToCatalogue(cat, { observations: [{ mpn: 'GONE1', url: 'mouser.com/c/', reason: 'category page' }] });
+    expect(cat.parts.length).toBe(0);
+    expect(out.join(' ')).toMatch(/removed from the catalogue/);
+  });
   it('a cross-check adds to the stored observations and re-prices from both', () => {
     const first = priceFromObservations([o('Digi-Key', 1000, 2.0)])!;
     const cat = { parts: [{ mpn: 'TEST123Q1', family: 'TEST123', mfr: 'X', desc: 'd', category: 'ic_soic', pkg: 'SOIC-8', aecq: true,

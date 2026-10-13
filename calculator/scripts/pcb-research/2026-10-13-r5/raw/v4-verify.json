@@ -1,0 +1,589 @@
+{
+ "domain": "v4-verify",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "S32G399AAAK1VUCR",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32G3 vehicle network processor, 4x A53 + M7, 20x CAN FD, 4x GbE",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "family": "S32G399AAAK1VUCR",
+   "ecuRoles": [],
+   "observedMpn": "S32G399AAAK1VUCR",
+   "observations": [],
+   "notes": "UNVERIFIED: 2 searches (Mouser; Findchips/Octopart) found no exact-code listing. Only sibling S32G399AACK1VUCT at Newark, qty 1-10 (below 100), not recorded. Stored URL is the Digi-Key BASE-PRODUCT family page (S32G399), not this code's detail page: the $94.25@500 may belong to another S32G399 variant."
+  },
+  {
+   "mpn": "S32G274AABK1VUCT",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32G2 vehicle network processor, 4x A53 + 3x M7 lockstep",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "family": "S32G274AABK1VUCT",
+   "ecuRoles": [],
+   "observedMpn": "S32G274AABK1VUCT",
+   "observations": [],
+   "notes": "UNVERIFIED: exact-code search returned only a Findchips S32G2 family page with no pricing."
+  },
+  {
+   "mpn": "R7F702300BFABA-C#BC6",
+   "mfr": "Renesas",
+   "desc": "RH850/U2A multi-core domain MCU, 16MB flash, 292-FBGA",
+   "category": "ic_bga",
+   "pkg": "FBGA-292",
+   "aecq": true,
+   "family": "R7F702300BFABA",
+   "ecuRoles": [],
+   "observedMpn": "R7F702300BFABA-C#BC6",
+   "observations": [],
+   "notes": "UNVERIFIED: Mouser/Arrow/Avnet search found only a TechInsights die analysis; no distributor listing."
+  },
+  {
+   "mpn": "AM62A74AUMSIAMBRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AM62A7-Q1 vision SoC, 4x Cortex-A53, 2 TOPS",
+   "category": "ic_bga",
+   "pkg": "FCBGA-484 (AMB)",
+   "aecq": true,
+   "family": "AM62A74AUMSIAMBRQ1",
+   "ecuRoles": [],
+   "observedMpn": "AM62A74AUMSIAMBRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: Mouser/Digi-Key search found only TI reliability doc (part ACTIVE); no price."
+  },
+  {
+   "mpn": "AR0820ATSC18XMEA0-DPBR",
+   "mfr": "onsemi",
+   "desc": "8.3 MP 1/2in automotive HDR image sensor",
+   "category": "ic_bga",
+   "pkg": "IBGA-95",
+   "aecq": true,
+   "family": "AR0820ATSC18XMEA0",
+   "ecuRoles": [],
+   "observedMpn": "AR0820ATSC18XMEA0-DPBR",
+   "observations": [
+    {
+     "distributor": "Online Components (Master Electronics)",
+     "qty": 2700,
+     "price": 35.62,
+     "currency": "USD",
+     "url": "https://onlinecomponents.com/en/onsemi/ar0820atsc18xmea0dpbr-60414330.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Online Components (Master Electronics' franchised web store) $35.62@2700 for the exact -DPBR code vs stored Digi-Key $40.98@100 (ratio 0.87). Listing backordered (39 wk, ship date 8/22/25). Its $104.55@675 break is implausible vs Digi-Key @100 and was NOT recorded. Note: the stored Digi-Key URL is for sibling -DRBR (Online Components prices -DRBR at $35.29@2700, same level)."
+  },
+  {
+   "mpn": "NVHL020N120SC1",
+   "mfr": "onsemi",
+   "desc": "Automotive SiC MOSFET 1200V 20mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "family": "NVHL020N120SC1",
+   "ecuRoles": [],
+   "observedMpn": "NVHL020N120SC1",
+   "observations": [],
+   "notes": "UNVERIFIED: no Mouser/Digi-Key hit. Richardson RFPD (not an allowed source) shows $34.73, MOQ 450 - the same figure as the stored 'Avnet' $34.726@450 via Octopart, so the stored figure may be a Richardson listing relayed by Octopart; check it. IBS Electronics (not franchised) ~$50.92 not used."
+  },
+  {
+   "mpn": "NVBG020N120SC1",
+   "mfr": "onsemi",
+   "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 98 A, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "D2PAK-7L",
+   "aecq": true,
+   "family": "NVBG020N120SC1",
+   "ecuRoles": [],
+   "observedMpn": "NVBG020N120SC1",
+   "observations": [],
+   "notes": "CONFIRMED: Digi-Key (digikey.be) 800-reel ~EUR 29.91 and Digi-Key US 800-reel ~$34.63 vs stored Future $30.43@800 (ratio ~1.14 in USD). Not recorded as observations: the search summary rounded the reel prices; the exact breaks it gave (EUR 36.61 / $42.39) are at qty 10 (<100). URLs: https://www.digikey.be/en/products/detail/onsemi/NVBG020N120SC1/10670070"
+  },
+  {
+   "mpn": "NVH4L020N120SC1",
+   "mfr": "onsemi",
+   "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 102 A, Kelvin source, AEC-Q101",
+   "category": "through_hole",
+   "pkg": "TO-247-4L",
+   "aecq": true,
+   "family": "NVH4L020N120SC1",
+   "ecuRoles": [],
+   "observedMpn": "NVH4L020N120SC1",
+   "observations": [],
+   "notes": "UNVERIFIED: stored RS UK listing re-seen at the same price (GBP 26.35 @100+, out of stock); no second franchised distributor found (Richardson RFPD $35.39 and IBS ~$51.88 are not allowed sources; JLCPCB not allowed)."
+  },
+  {
+   "mpn": "AR0822NPSC10SMTA0-DR",
+   "mfr": "onsemi",
+   "desc": "8 MP 1/2in eHDR CMOS image sensor, RGB, tray (industrial 'NP' grade)",
+   "category": "ic_bga",
+   "pkg": "BGA-75 (per Digi-Key eval-board description)",
+   "aecq": false,
+   "family": "AR0822NPSC10SMTA0",
+   "ecuRoles": [],
+   "observedMpn": "AR0822NPSC10SMTA0-DR",
+   "observations": [],
+   "notes": "UNVERIFIED: no second-distributor price for the exact -DR code (Digi-Key listing has no price; punchouttest host not allowed). Siblings support the stored Future $28.49@1470: Online Components AR0822NPSC10SMTA0-DP ~$30.68@1470 and Future mono AR0822NPSM10SMTA0-DR $31.24@1470 (siblings, not recorded)."
+  },
+  {
+   "mpn": "R7F702002AEABA-C#BC0",
+   "mfr": "Renesas",
+   "desc": "RH850/E2M automotive powertrain MCU, 400 MHz, 8 MB flash",
+   "category": "ic_bga",
+   "pkg": "FBGA-373 (21x21)",
+   "aecq": true,
+   "family": "R7F702002AEABA",
+   "ecuRoles": [],
+   "observedMpn": "R7F702002AEABA-C#BC0",
+   "observations": [],
+   "notes": "UNVERIFIED: exact-code search found only sibling R7F702002AEABG-C#BC0 at Avnet Silica with no price."
+  },
+  {
+   "mpn": "AD500-8 TO52S1",
+   "mfr": "TE Connectivity (First Sensor)",
+   "desc": "Si APD 0.5 mm, TO-52 (order 3001349)",
+   "category": "through_hole",
+   "pkg": "TO-52",
+   "aecq": false,
+   "family": "AD500",
+   "ecuRoles": [],
+   "observedMpn": "AD500-8 TO52S1",
+   "observations": [],
+   "notes": "UNVERIFIED: only Dasenic (broker, not allowed) $47.74@100 and Sierra IC 'quote'. No franchised listing found."
+  },
+  {
+   "mpn": "AR0147ATSC00XUEA5-DPBR",
+   "mfr": "onsemi",
+   "desc": "1.3 MP automotive HDR CMOS image sensor, colour, tray",
+   "category": "ic_bga",
+   "pkg": "iBGA-89",
+   "aecq": true,
+   "family": "AR0147ATSC00XUEA5",
+   "ecuRoles": [],
+   "observedMpn": "AR0147ATSC00XUEA5-DPBR",
+   "observations": [],
+   "notes": "UNVERIFIED: Master Electronics page for exact code shows no stock/price. Online Components (same group as the stored Master Electronics, so not independent) lists siblings: AR0147ATSC00XUEG5-DPBR $15.10@3000 and AR0147ATSC00XUEA5-TRBR $13.63@2000, consistent with stored $13.76@2600."
+  },
+  {
+   "mpn": "MICROFJ-30035-TSV-TR",
+   "mfr": "onsemi",
+   "desc": "J-series SiPM 3 mm, TSV chip-scale",
+   "category": "ic_bga",
+   "pkg": "TSV CSP",
+   "aecq": false,
+   "family": "MICROFJ",
+   "ecuRoles": [],
+   "observedMpn": "MICROFJ-30035-TSV-TR",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  },
+  {
+   "mpn": "NVH4L022N120M3S",
+   "mfr": "onsemi",
+   "desc": "Automotive SiC MOSFET 1200 V 22 mOhm 68 A, M3S EliteSiC, TO-247-4L, AEC-Q101",
+   "category": "through_hole",
+   "pkg": "TO-247-4L",
+   "aecq": true,
+   "family": "NVH4L022N120M3S",
+   "ecuRoles": [],
+   "observedMpn": "NVH4L022N120M3S",
+   "observations": [],
+   "notes": "UNVERIFIED: Future listing shows no price (450/tube); IBS (~$26.27@25, not franchised) and Richardson (not allowed) not used; RS result was NTH4L022N120M3S (industrial sibling)."
+  },
+  {
+   "mpn": "AR0144ATSM20XUEA0-DRBR",
+   "mfr": "onsemi",
+   "desc": "1 MP 1/4in global-shutter mono CMOS sensor, 1280x800",
+   "category": "ic_bga",
+   "pkg": "iBGA-63",
+   "aecq": true,
+   "family": "AR0144ATSM20XUEA0",
+   "ecuRoles": [],
+   "observedMpn": "AR0144ATSM20XUEA0-DRBR",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  },
+  {
+   "mpn": "IIS3DWBTR",
+   "mfr": "STMicroelectronics",
+   "desc": "Wideband 3-axis vibration accelerometer, 6.3 kHz BW, SPI, industrial",
+   "category": "ic_qfn",
+   "pkg": "LGA-14",
+   "aecq": false,
+   "family": "IIS3DWBTR",
+   "ecuRoles": [],
+   "observedMpn": "IIS3DWBTR",
+   "observations": [
+    {
+     "distributor": "Farnell (fr.farnell.com)",
+     "qty": 100,
+     "price": 13.89,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/stmicroelectronics/iis3dwbtr/capteur-vibration-num-x-y-z-lga/dp/3399559",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Farnell FR (order code 3399559) EUR 13.89 @100+ ex-VAT vs stored Digi-Key $15.04@500 (ratio ~1.07 in USD). Aggregator figures (electronicsdatasheets, flux.ai) not used."
+  },
+  {
+   "mpn": "S32K344EHT1VMMST",
+   "mfr": "NXP Semiconductors",
+   "desc": "S32K344 Cortex-M7 lockstep MCU, 4 MB",
+   "category": "ic_bga",
+   "pkg": "MAPBGA-257",
+   "aecq": true,
+   "family": "S32K344EHT1VMMST",
+   "ecuRoles": [],
+   "observedMpn": "S32K344EHT1VMMST",
+   "observations": [
+    {
+     "distributor": "Farnell (jp.farnell.com)",
+     "qty": 100,
+     "price": 5106,
+     "currency": "JPY",
+     "url": "https://jp.farnell.com/en-JP/nxp/s32k344eht1vmmst/mcu-32bit-160mhz-mapbga-257/dp/3912114",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "UNVERIFIED: Farnell JP (order code 3912114) JPY 5,106 @100+ (~$34) is ~2.2x the stored Mouser $15.42@100: outside +/-40% but below the 2.5x dispute threshold. Farnell snapshot dated ~Jul 2025. The stored Mouser observations come from a GENERIC Findchips search URL (findchips.com/search/k344, RULES-R4b #6) and may be for another S32K344 package (e.g. 172-HDQFP) - see disputes. Digi-Key listing (568-S32K344EHT1VMMST-ND) showed no price."
+  },
+  {
+   "mpn": "NVBG040N120SC1",
+   "mfr": "onsemi",
+   "desc": "EliteSiC SiC MOSFET 1200 V 40 mOhm 60 A, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "D2PAK-7L",
+   "aecq": true,
+   "family": "NVBG040N120SC1",
+   "ecuRoles": [],
+   "observedMpn": "NVBG040N120SC1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 200,
+     "price": 14.98,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mosfets/2025731",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Digi-Key (digikey.at) 800-reel ~EUR 14.57 (summary-rounded, not recorded; https://www.digikey.at/en/products/detail/onsemi/NVBG040N120SC1/12181411) vs stored RS GBP 11.40@200 (ratio ~1.1-1.3). The stored distributor RS UK now shows GBP 14.98 @200+ (1.31x the stored GBP 11.40) - recorded."
+  },
+  {
+   "mpn": "SCT060HU75G3AG",
+   "mfr": "STMicroelectronics",
+   "desc": "Gen3 automotive SiC MOSFET 750 V 60 mOhm, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "HU3PAK (7-lead SMD top-cool)",
+   "aecq": true,
+   "family": "SCT060HU75G3AG",
+   "ecuRoles": [],
+   "observedMpn": "SCT060HU75G3AG",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 7.7265,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SCT060HU75G3AG/22106607",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 600,
+     "price": 6.3125,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SCT060HU75G3AG/22106607",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "UNVERIFIED: Digi-Key $7.7265@100 (cut tape) and $6.3125@600 (T&R) are ~0.48x the stored RS JP JPY 1,953.78@600 (~$13): outside +/-40% but below the 2.5x dispute threshold. Stored RS JP price may include JP consumption tax; RS Europe lists the part as being discontinued. ST budgetary $7.1@100 (not a distributor price) agrees with Digi-Key. Farnell ES EUR 8.50 is a 10+ break (<100)."
+  },
+  {
+   "mpn": "R7F7016443AFP",
+   "mfr": "Renesas",
+   "desc": "RH850/F1KM-S4 automotive MCU",
+   "category": "ic_tqfp",
+   "pkg": "LFQFP-100",
+   "aecq": true,
+   "family": "R7F7016443AFP",
+   "ecuRoles": [],
+   "observedMpn": "R7F7016443AFP",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries. Stored URL is for orderable R7F7016443AFP-C#KA1 (same device, packing suffix)."
+  },
+  {
+   "mpn": "STM32U575ZIT6Q",
+   "mfr": "STMicroelectronics",
+   "desc": "Arm Cortex-M33 ultra-low-power MCU 160 MHz, 2 MB flash, SMPS, LQFP144",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": false,
+   "family": "STM32U575ZIT6Q",
+   "ecuRoles": [],
+   "observedMpn": "STM32U575ZIT6Q",
+   "observations": [],
+   "notes": "UNVERIFIED: stored distributor TME re-seen at EUR 11.78 @120 (stored EUR 11.74, 0 stock). Future listing shows no price; digikey.cn result is VAT-inclusive and for STM32U575ZIT6 (no Q) - not used."
+  },
+  {
+   "mpn": "EZP-V80506MTS",
+   "mfr": "Panasonic",
+   "desc": "DC-link PP film capacitor 50 uF 800 VDC, 105 C, AEC-Q200",
+   "category": "through_hole",
+   "pkg": "Radial molded 4-lead",
+   "aecq": true,
+   "family": "EZP",
+   "ecuRoles": [],
+   "observedMpn": "EZP-V80506MTS",
+   "observations": [],
+   "notes": "UNVERIFIED: only a SnapEDA aggregator line (Avnet America, qty 1, $11.53) - qty <100, not used. No Mouser/Farnell/TTI listing found."
+  },
+  {
+   "mpn": "R7F7015873AFP-C#AA3",
+   "mfr": "Renesas",
+   "desc": "RH850/F1K premium (F1KH) 32-bit MCU, 3-5.5 V, AEC-Q100",
+   "category": "ic_tqfp",
+   "pkg": "LQFP",
+   "aecq": true,
+   "family": "R7F7015873AFP",
+   "ecuRoles": [],
+   "observedMpn": "R7F7015873AFP-C#AA3",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries. The stored URL is a Mouser CATEGORY listing filtered by core (G3KH), not this part's product page - see disputes."
+  },
+  {
+   "mpn": "L9788TR",
+   "mfr": "STMicroelectronics",
+   "desc": "Multifunction U-chip for VCU / EMS (with SPC574), AEC-Q100",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100 EP 14x14",
+   "aecq": true,
+   "family": "L9788TR",
+   "ecuRoles": [],
+   "observedMpn": "L9788TR",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  },
+  {
+   "mpn": "R7F701382EAFP-C#KA2",
+   "mfr": "Renesas Electronics",
+   "desc": "RH850/P1M-E 32-bit MCU 160 MHz, 1 MB flash, 192 kB RAM (EPS)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "family": "R7F701382EAFP",
+   "ecuRoles": [],
+   "observedMpn": "R7F701382EAFP-C#KA2",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  },
+  {
+   "mpn": "MVR5510AMBA6ES",
+   "mfr": "NXP Semiconductors",
+   "desc": "PMIC for S32G, ASIL B, 3 buck + boost + 4 LDO",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-56",
+   "aecq": true,
+   "family": "MVR5510AMBA6ES",
+   "ecuRoles": [],
+   "observedMpn": "MVR5510AMBA6ES",
+   "observations": [],
+   "notes": "WRONG-CODE: the stored Avnet observation's URL is for MVR5510AMBANES (a different VR5510 OTP variant), not MVR5510AMBA6ES. Not re-searched (budget)."
+  },
+  {
+   "mpn": "SCT4045DWAHRTL",
+   "mfr": "Rohm",
+   "desc": "4th-gen SiC MOSFET 750 V 45 mOhm 31 A, automotive",
+   "category": "ic_soic",
+   "pkg": "TO-263-7LA (D2PAK-7L)",
+   "aecq": true,
+   "family": "SCT4045DWAHRTL",
+   "ecuRoles": [],
+   "observedMpn": "SCT4045DWAHRTL",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  },
+  {
+   "mpn": "DW3220TR13",
+   "mfr": "Qorvo",
+   "desc": "UWB transceiver IEEE 802.15.4z, dual antenna PDoA/AoA",
+   "category": "ic_bga",
+   "pkg": "QFN-40",
+   "aecq": false,
+   "family": "DW3220TR13",
+   "ecuRoles": [],
+   "observedMpn": "DW3220TR13",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries. Stored observations are from azcus.digikey.com only (RULES-R4b #4: allowed only with a second source)."
+  },
+  {
+   "mpn": "MMA6801KW",
+   "mfr": "NXP Semiconductors",
+   "desc": "Dual-axis airbag central accelerometer, 16-QFN (RDAIRBAGPSI5 local safing sensor)",
+   "category": "ic_qfn",
+   "pkg": "QFN-16 6x6",
+   "aecq": true,
+   "family": "MMA6801KW",
+   "ecuRoles": [],
+   "observedMpn": "MMA6801KW",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  },
+  {
+   "mpn": "SCT040HU120G3AG",
+   "mfr": "STMicroelectronics",
+   "desc": "Gen3 automotive SiC MOSFET 1200 V 40 mOhm, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "HU3PAK (7-lead SMD top-cool)",
+   "aecq": true,
+   "family": "SCT040HU120G3AG",
+   "ecuRoles": [],
+   "observedMpn": "SCT040HU120G3AG",
+   "observations": [],
+   "notes": "UNVERIFIED: combined Digi-Key/Mouser search returned results only for SCT060HU75G3AG."
+  },
+  {
+   "mpn": "RGS80TSX2DHRC11",
+   "mfr": "ROHM",
+   "desc": "1200 V 40 A field-stop trench IGBT, AEC-Q101 (ROHM REF66011 7 kW PTC heater)",
+   "category": "through_hole",
+   "pkg": "TO-247N",
+   "aecq": true,
+   "family": "RGS80TSX2DHRC11",
+   "ecuRoles": [],
+   "observedMpn": "RGS80TSX2DHRC11",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries. Stored Digi-Key observation is from a GENERIC Findchips search URL (findchips.com/search/RGS80, RULES-R4b #6) - see disputes."
+  },
+  {
+   "mpn": "TJA1085GHN/0Z",
+   "mfr": "NXP Semiconductors",
+   "desc": "FlexRay active star transceiver",
+   "category": "ic_qfn",
+   "pkg": "HVQFN-44",
+   "aecq": true,
+   "family": "TJA1085GHN",
+   "ecuRoles": [],
+   "observedMpn": "TJA1085GHN/0Z",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  },
+  {
+   "mpn": "ASM330LHHXTR",
+   "mfr": "STMicroelectronics",
+   "desc": "6-axis automotive IMU with ML core, AEC-Q100, 105 °C",
+   "category": "ic_qfn",
+   "pkg": "LGA-14 (2.5x3x0.83)",
+   "aecq": true,
+   "family": "ASM330LHHXTR",
+   "ecuRoles": [],
+   "observedMpn": "ASM330LHHXTR",
+   "observations": [
+    {
+     "distributor": "Farnell (it.farnell.com)",
+     "qty": 250,
+     "price": 6.45,
+     "currency": "EUR",
+     "url": "https://it.farnell.com/stmicroelectronics/asm330lhhxtr/unit-misuraz-inerziale-modulo/dp/3993596",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Farnell IT (order code 3993596) EUR 6,450 (= 6.45, Italian decimal) @250+ vs stored Digi-Key $6.7872@1k (ratio ~1.1 in USD). Farnell EU sites list ex-VAT by default (not stated in the snippet)."
+  },
+  {
+   "mpn": "SIT8008BI-71-33E-25.000000",
+   "mfr": "SiTime",
+   "desc": "25 MHz MEMS oscillator",
+   "category": "crystal_osc",
+   "pkg": "2520",
+   "aecq": false,
+   "family": "SIT8008BI",
+   "ecuRoles": [],
+   "observedMpn": "SIT8008BI-71-33E-25.000000",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries. Stored value is a SiTime list-price range, not a distributor listing."
+  },
+  {
+   "mpn": "EEH-ZC1V470P",
+   "mfr": "Panasonic",
+   "desc": "47 µF 35 V hybrid polymer SMD",
+   "category": "through_hole",
+   "pkg": "SMD 6.3×7.7",
+   "aecq": true,
+   "family": "EEH",
+   "ecuRoles": [],
+   "observedMpn": "EEH-ZC1V470P",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  },
+  {
+   "mpn": "SS34",
+   "mfr": "onsemi",
+   "desc": "40 V 3 A Schottky SMA",
+   "category": "fuse_tvs",
+   "pkg": "SMA",
+   "aecq": false,
+   "family": "SS34",
+   "ecuRoles": [],
+   "observedMpn": "SS34",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries. Stored LCSC $0.017 vs TME/Digi-Key ~$0.25 is a 14x spread; the 'mid' $0.10 is not any listing."
+  },
+  {
+   "mpn": "BSS138",
+   "mfr": "onsemi",
+   "desc": "N-MOSFET 50 V 220 mA SOT-23",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23",
+   "aecq": false,
+   "family": "BSS138",
+   "ecuRoles": [],
+   "observedMpn": "BSS138",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  },
+  {
+   "mpn": "1N4148WS",
+   "mfr": "onsemi/Vishay",
+   "desc": "75 V switching diode SOD-323",
+   "category": "fuse_tvs",
+   "pkg": "SOD-323",
+   "aecq": false,
+   "family": "1N4148WS",
+   "ecuRoles": [],
+   "observedMpn": "1N4148WS",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched, 20-search budget spent on dearer entries."
+  }
+ ],
+ "disputes": [
+  {
+   "mpn": "MVR5510AMBA6ES",
+   "url": "https://www.avnet.com/americas/product/nxp/mvr5510ambanes/evolve-64144456/",
+   "reason": "WRONG-CODE: listing is for MVR5510AMBANES, a different VR5510 OTP variant."
+  },
+  {
+   "mpn": "S32K344EHT1VMMST",
+   "url": "https://www.findchips.com/search/k344",
+   "reason": "Generic Findchips search (RULES-R4b #6), does not name the orderable code; Farnell JP lists the exact code at ~2.2x (JPY 5,106 @100)."
+  },
+  {
+   "mpn": "RGS80TSX2DHRC11",
+   "url": "https://www.findchips.com/search/RGS80",
+   "reason": "Generic Findchips search (RULES-R4b #6), does not name the orderable code."
+  },
+  {
+   "mpn": "R7F7015873AFP-C#AA3",
+   "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/?core=G3KH",
+   "reason": "Mouser category listing filtered by CPU core, not this part's product page."
+  },
+  {
+   "mpn": "S32G399AAAK1VUCR",
+   "url": "https://www.digikey.com/en/products/base-product/nxp-usa-inc/568/S32G399/734426",
+   "reason": "Digi-Key base-product (family) page, not the exact code's detail page; the price may belong to another S32G399 variant (possible, not proven)."
+  }
+ ]
+}

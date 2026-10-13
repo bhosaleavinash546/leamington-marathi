@@ -163,17 +163,8 @@
    "ecuRoles": [
     "CAN"
    ],
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 1000,
-     "price": 0.11948,
-     "currency": "USD",
-     "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PESD2CANFD27V-TR/11686246",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Out of stock, backorder. Automotive grade not confirmed for this code.",
+   "observations": [],
+   "notes": "Out of stock, backorder. Automotive grade not confirmed for this code. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "PESD2CANFD27V-TR"
   },
   {
@@ -264,17 +255,8 @@
     "BCM",
     "general"
    ],
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 3200,
-     "price": 0.137,
-     "currency": "USD",
-     "url": "https://www.mouser.com/en/ProductDetail/Vishay-Semiconductors/TPSMB24AHE3_A-I?qs=BZBei1rCqCC9ckTcJX%2Ftdw%3D%3D",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Chosen as the stocked automotive 600 W SMB TVS (Vishay automotive code = HE3/HM3 suffix); no SMBJ24A HE3 listing found. Mouser full reel 3200; a lower top tier 0.129 had no stated quantity - not recorded.",
+   "observations": [],
+   "notes": "Chosen as the stocked automotive 600 W SMB TVS (Vishay automotive code = HE3/HM3 suffix); no SMBJ24A HE3 listing found. Mouser full reel 3200; a lower top tier 0.129 had no stated quantity - not recorded. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "TPSMB24AHE3_A/I"
   },
   {
@@ -322,17 +304,8 @@
     "infotainment",
     "USB"
    ],
-   "observations": [
-    {
-     "distributor": "Newark",
-     "qty": 500,
-     "price": 0.932,
-     "currency": "USD",
-     "url": "https://www.newark.com/amphenol-icc-commercial-products/12401610e4-2a/usb-conn-3-1-type-c-rcpt-r-a-smt/dp/59AC8815",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "No AEC-Q / automotive qualification stated. Digi-Key, LCSC, Arrow figures in the source were rounded ('about') - not recorded.",
+   "observations": [],
+   "notes": "No AEC-Q / automotive qualification stated. Digi-Key, LCSC, Arrow figures in the source were rounded ('about') - not recorded. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "12401610E4#2A"
   },
   {
@@ -346,17 +319,8 @@
    "ecuRoles": [
     "general"
    ],
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 1000,
-     "price": 0.606,
-     "currency": "USD",
-     "url": "https://www.mouser.com/ProductDetail/ABRACON/ABM3BAIG-26000MHZ-1Z-T?qs=uwxL4vQweFOFvzJgwkKDxg%3D%3D",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Full reel 1000 (ext 606.00). ABM3BAIG is Abracon's AEC-Q200 ABM3B variant (Mouser / Farnell listings state AEC-Q200).",
+   "observations": [],
+   "notes": "Full reel 1000 (ext 606.00). ABM3BAIG is Abracon's AEC-Q200 ABM3B variant (Mouser / Farnell listings state AEC-Q200). Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "ABM3BAIG-26.000MHZ-1Z-T"
   },
   {
@@ -370,17 +334,8 @@
    "ecuRoles": [
     "general"
    ],
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 1000,
-     "price": 0.7153,
-     "currency": "USD",
-     "url": "https://www.digikey.com/en/products/detail/abracon-llc/ABM3BAIG-8-000MHZ-1Z-T/10313749",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Digi-Key 1000 tier.",
+   "observations": [],
+   "notes": "Digi-Key 1000 tier. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "ABM3BAIG-8.000MHZ-1Z-T"
   },
   {
@@ -395,17 +350,8 @@
     "power input",
     "general"
    ],
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 3000,
-     "price": 0.552,
-     "currency": "USD",
-     "url": "https://www.mouser.com/en/ProductDetail/Littelfuse/0501012.WRA?qs=r5DSvlrkXmL6WmckR9m8eg%3D%3D",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Full reel 3000 (ext 1,656.00); Mouser states AEC-Q200.",
+   "observations": [],
+   "notes": "Full reel 3000 (ext 1,656.00); Mouser states AEC-Q200. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "0501012.WRA"
   },
   {
@@ -420,17 +366,8 @@
     "power input",
     "general"
    ],
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 3000,
-     "price": 0.552,
-     "currency": "USD",
-     "url": "https://www.mouser.com/ProductDetail/Littelfuse/0501010.WRA?qs=r5DSvlrkXmJq5C1cQtOwrg%3D%3D",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Full reel tier (multiples of 3000).",
+   "observations": [],
+   "notes": "Full reel tier (multiples of 3000). Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "0501010.WRA"
   },
   {
@@ -445,17 +382,8 @@
     "power input",
     "general"
    ],
-   "observations": [
-    {
-     "distributor": "Newark",
-     "qty": 3000,
-     "price": 0.369,
-     "currency": "USD",
-     "url": "https://www.newark.com/littelfuse/0501015-wr/fuse-smd-15a-1206-fast-acting/dp/28X4630?CMP=AFC-ECIA",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Full reel, min 3000. AEC-Q200 not confirmed for the .WR (non-A) code.",
+   "observations": [],
+   "notes": "Full reel, min 3000. AEC-Q200 not confirmed for the .WR (non-A) code. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "0501015.WR"
   },
   {
@@ -502,17 +430,8 @@
    "ecuRoles": [
     "ECU harness"
    ],
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 10080,
-     "price": 0.79,
-     "currency": "USD",
-     "url": "https://www.mouser.com/ProductDetail/Molex/34691-0080?qs=5gX812lLwiGOlfdVvZU2ng%3D%3D",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Mouser classes 34691 as Stac64, not MX150 (task assumed MX150). Mounting style not confirmed in the source. 16-/20-way siblings' top-tier quantities not stated - not recorded.",
+   "observations": [],
+   "notes": "Mouser classes 34691 as Stac64, not MX150 (task assumed MX150). Mounting style not confirmed in the source. 16-/20-way siblings' top-tier quantities not stated - not recorded. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "34691-0080"
   },
   {
@@ -527,17 +446,8 @@
     "ECU harness",
     "camera"
    ],
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 1000,
-     "price": 3.32,
-     "currency": "USD",
-     "url": "https://www.mouser.com/ProductDetail/Hirose-Connector/GT17V-10DP-DS70?qs=gyfFsMMHMKyS3U5hC8rSqg%3D%3D",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Mouser 1000 tier (ext 3,320.00), category Automotive Connectors.",
+   "observations": [],
+   "notes": "Mouser 1000 tier (ext 3,320.00), category Automotive Connectors. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "GT17V-10DP-DS(70)"
   },
   {
@@ -553,17 +463,8 @@
     "gateway",
     "ADAS"
    ],
-   "observations": [
-    {
-     "distributor": "Farnell",
-     "qty": 500,
-     "price": 2.43,
-     "currency": "GBP",
-     "url": "https://uk.farnell.com/te-connectivity/2304372-1/automotive-connector-r-a-header/dp/3793577",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Farnell UK 500+ ex VAT. Digi-Key snapshot (850 qty) was internally inconsistent (unit vs extended) - not recorded. Newark top shown break 50+ (< 100) - not recorded.",
+   "observations": [],
+   "notes": "Farnell UK 500+ ex VAT. Digi-Key snapshot (850 qty) was internally inconsistent (unit vs extended) - not recorded. Newark top shown break 50+ (< 100) - not recorded. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/.",
    "observedMpn": "2304372-1"
   },
   {
@@ -601,11 +502,11 @@
  ],
  "notResearched": [
   {
-   "code": "Amphenol FAKRA FA1-\u2026 PCB jack",
+   "code": "Amphenol FAKRA FA1-… PCB jack",
    "why": "coax camera/antenna header; budget spent"
   },
   {
-   "code": "Rosenberger H-MTD E6Z\u2026 PCB jack",
+   "code": "Rosenberger H-MTD E6Z… PCB jack",
    "why": "E6S20A-40MT5-Z already priced; E6Z not reached"
   },
   {
@@ -613,11 +514,11 @@
    "why": "high-speed coax header; budget spent"
   },
   {
-   "code": "Molex MX150 headers (33472-\u2026), Mini50 retry, MX123, TE AMPSEAL 16, JST JWPF, Hirose GT8E",
+   "code": "Molex MX150 headers (33472-…), Mini50 retry, MX123, TE AMPSEAL 16, JST JWPF, Hirose GT8E",
    "why": "main ECU harness headers; budget spent"
   },
   {
-   "code": "Nexperia PZU5.1 (\u2026-Q), Littelfuse SMF, onsemi SZESD\u2026",
+   "code": "Nexperia PZU5.1 (…-Q), Littelfuse SMF, onsemi SZESD…",
    "why": "automotive zener / TVS / ESD; budget spent"
   },
   {
@@ -629,7 +530,7 @@
    "why": "searched once: no listing or price found on franchised sites"
   },
   {
-   "code": "Nichia NSSW\u2026AT / NJSW\u2026AT",
+   "code": "Nichia NSSW…AT / NJSW…AT",
    "why": "searched once: no automotive code priced (only non-automotive NSSW157BT on RS, no breaks)"
   },
   {

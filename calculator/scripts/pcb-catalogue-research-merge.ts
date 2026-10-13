@@ -277,6 +277,11 @@ export function applyAuditToCatalogue(catalogue: { parts: Entry[] }, audit: { ob
     const keep = e.observations.filter(o => !String(o.url).includes(x.url));
     if (keep.length !== e.observations.length) { out.push(`${x.mpn}: stored ${e.observations.length - keep.length} observation(s) at ${x.url} removed — ${x.reason}`); e.observations = keep; }
   }
+  // Rule 7 holds here too: an entry the audit leaves with no observation has no source and leaves the catalogue (the re-price
+  // pass skips entries without observations, so it would have stayed "distributor"-priced on nothing).
+  const gone = catalogue.parts.filter(e => e.confidence === 'distributor' && e.observations && e.observations.length === 0);
+  for (const e of gone) out.push(`${e.mpn}: removed from the catalogue — no valid observation left after the audit`);
+  catalogue.parts = catalogue.parts.filter(e => !gone.includes(e));
   return out;
 }
 

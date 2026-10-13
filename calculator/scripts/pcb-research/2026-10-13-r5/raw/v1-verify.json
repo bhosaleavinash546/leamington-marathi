@@ -1,0 +1,540 @@
+{
+ "domain": "v1-verify",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "MAX96792AGTM/VY+",
+   "family": "MAX96792AGTM",
+   "mfr": "Analog Devices",
+   "desc": "GMSL deserializer (GMSL3 class), CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "SWTQFN-48 (7x7)",
+   "aecq": true,
+   "observedMpn": "MAX96792AGTM/VY+",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 41.81,
+     "currency": "USD",
+     "url": "https://findchips.com/search/6792A",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Mouser (700-MAX96792AGTM/VY+, via Findchips naming Mouser and its break) $41.81 @100 v stored Digi-Key $43.06 @100, ratio 0.97. Same Findchips listing shows the reel code MAX96792AGTM/VY+T at $40.50 @2,500 (not recorded: other orderable code)."
+  },
+  {
+   "mpn": "AFBR-S50MV85G",
+   "family": "AFBR-S50MV85G",
+   "mfr": "Broadcom",
+   "desc": "Multipixel ToF distance sensor module, 850 nm",
+   "category": "ic_qfn",
+   "pkg": "module (LGA)",
+   "aecq": false,
+   "observedMpn": "AFBR-S50MV85G",
+   "observations": [],
+   "notes": "UNVERIFIED: only qty-1 prices seen (Mouser $56.32 @1 via Flux, Digi-Key $58.08 @1) — below the 100 break. Note: the stored observation is on azcus.digikey.com only (allowed only with a second source)."
+  },
+  {
+   "mpn": "MAX9286GTN/V+T",
+   "family": "MAX9286GTN",
+   "mfr": "Analog Devices (Maxim)",
+   "desc": "GMSL 4-channel deserializer, 1.5 Gbps, CSI-2 out",
+   "category": "ic_qfn",
+   "pkg": "TQFN-56",
+   "aecq": true,
+   "observedMpn": "MAX9286GTN/V+T",
+   "observations": [],
+   "notes": "UNVERIFIED: no second distributor found (Digi-Key / Mouser / Findchips searched). Stored Farnell IE €26.610 @2,500 (full reel, ex-VAT) re-seen unchanged, 20-week lead time."
+  },
+  {
+   "mpn": "MAX96724GTN/VY+T",
+   "family": "MAX96724GTN",
+   "mfr": "Analog Devices",
+   "desc": "GMSL quad deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "TQFN (GTN)",
+   "aecq": true,
+   "observedMpn": "MAX96724GTN/VY+",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 20.08,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/analog-devices/max96724gtn-vy/de-s-rialiseur-6gbps-swtqfn-ep/dp/4382290",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 260,
+     "price": 19.78,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/analog-devices/max96724gtn-vy/de-s-rialiseur-6gbps-swtqfn-ep/dp/4382290",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Farnell FR (ex-VAT) on the non-reel sibling MAX96724GTN/VY+ (same code the stored Digi-Key @260 observation uses) €19.78 @260 v stored Digi-Key $25.73 @260 (≈ €22 at ~1.17 USD/EUR), ratio ≈ 0.9. Farnell BE reel code 4566542RL (MAX96724GTN/VY+T) listed without a price in the snippet."
+  },
+  {
+   "mpn": "AIMZA75R016M1HXKSA1",
+   "family": "AIMZA75R016M1HXKSA1",
+   "mfr": "Infineon",
+   "desc": "Automotive CoolSiC MOSFET 750 V 16 mOhm 89 A, PG-TO247-4, AEC-Q101",
+   "category": "through_hole",
+   "pkg": "PG-TO247-4",
+   "aecq": true,
+   "observedMpn": "AIMZA75R016M1HXKSA1",
+   "observations": [],
+   "notes": "UNVERIFIED: no Digi-Key / Mouser / Farnell listing for the 016 code. Plausibility only: RS lists the 8 mOhm sibling AIMZA75R008M1HXKSA1 at €43.93 @100 (not recorded)."
+  },
+  {
+   "mpn": "MR20H40CDFR",
+   "family": "MR20H40CDFR",
+   "mfr": "Everspin",
+   "desc": "SPI MRAM 4Mb, DFN-8 (industrial)",
+   "category": "ic_qfn",
+   "pkg": "DFN-8",
+   "aecq": false,
+   "observedMpn": "MR20H40CDFR",
+   "observations": [],
+   "notes": "UNVERIFIED: Findchips lists Mouser only for MR20H40CDF (no R, price not shown); Arrow / Avnet listed without price. Stored Digi-Key $18.759 @4,000 is shown as temporarily out of stock (20-week lead time)."
+  },
+  {
+   "mpn": "MAX96752GTN/VY+T",
+   "family": "MAX96752GTN",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 display deserializer",
+   "category": "ic_qfn",
+   "pkg": "TQFN (GTN)",
+   "aecq": true,
+   "observedMpn": "MAX96752GTN/VY+T",
+   "observations": [],
+   "notes": "UNVERIFIED: no Farnell / Mouser / Newark listing for the exact code (JLCPCB and punchouttest hits not allowed). Stored Digi-Key reel break @2,500 ($18.634) is dearer than @520 ($17.043) — check it is not stale (R4b rule 7)."
+  },
+  {
+   "mpn": "BGT60ATR24CE6327XTMA1",
+   "family": "BGT60ATR24CE6327XTMA1",
+   "mfr": "Infineon",
+   "desc": "XENSIV 60 GHz radar MMIC with antennas in package (in-cabin occupancy)",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "observedMpn": "BGT60ATR24CE6327XTMA1",
+   "observations": [],
+   "notes": "UNVERIFIED: no Mouser / Farnell / RS price found. Digi-Key lists the part as 'Last Time Buy'. Stored observations are on azcus.digikey.com only (allowed only with a second source)."
+  },
+  {
+   "mpn": "LTC6811HG-1#PBF",
+   "family": "LTC6811HG-1",
+   "mfr": "Analog Devices",
+   "desc": "12-cell battery stack monitor, isoSPI, H grade",
+   "category": "ic_soic",
+   "pkg": "SSOP-48",
+   "aecq": true,
+   "observedMpn": "LTC6811HG-1#PBF",
+   "observations": [],
+   "notes": "UNVERIFIED: Mouser category pages show $28.69 (break not stated) and Mouser.ca $44.04 @1; no usable break. If $28.69 is a ≥100 break it is 1.6× the stored Digi-Key $17.58 @518 (not >2.5×). Arrow Europe listed with stock, no price."
+  },
+  {
+   "mpn": "AD2S1205WYSTZ",
+   "family": "AD2S1205WYSTZ",
+   "mfr": "Analog Devices",
+   "desc": "Resolver-to-digital converter 12-bit",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-44",
+   "aecq": true,
+   "observedMpn": "AD2S1205WYSTZ",
+   "observations": [],
+   "notes": "WRONG-CODE: the stored observation is AD2S1205YSTZ (industrial Y grade), not an automotive W grade. No distributor lists 'AD2S1205WYSTZ'; the automotive orderable found is AD2S1205WSTZ (LCSC C91729, Findchips names Mouser / Digi-Key; no usable break price seen) — the entry code itself may be wrong, check it. For reference the YSTZ price stands: Mouser (Findchips) $20.57 @250 v stored Digi-Key YSTZ $19.497 @160."
+  },
+  {
+   "mpn": "MAX96716AGTM/VY+T",
+   "family": "MAX96716AGTM",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 dual deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "SWTQFN-48 (7x7)",
+   "aecq": true,
+   "observedMpn": "MAX96716AGTM/VY+T",
+   "observations": [],
+   "notes": "UNVERIFIED: only OEMsTrade (not allowed) shows Mouser tiers for MAX96716AGTM/VY+; no Farnell listing found."
+  },
+  {
+   "mpn": "AIMW120R045M1",
+   "family": "AIMW120R045M1",
+   "mfr": "Infineon",
+   "desc": "Automotive CoolSiC MOSFET 1200V 45mOhm",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "observedMpn": "AIMW120R045M1",
+   "observations": [],
+   "notes": "CONFIRMED: RS Hong Kong (hkcn.rs-online.com/web/p/mosfets/2442909, AIMW120R045M1XKSA1) HK$141.969 @240 ≈ $18.2 v stored Digi-Key $14.22 @120, ratio ≈ 1.28. Not recorded as an observation: HKD is not an allowed currency. RS listing text says '75 V' (listing error; part is 1200 V). No Mouser / Farnell listing found."
+  },
+  {
+   "mpn": "LTC2949HLXE#3ZZTRPBF",
+   "family": "LTC2949HLXE",
+   "mfr": "Analog Devices",
+   "desc": "High-voltage battery pack monitor: current, voltage, charge/energy, isoSPI, H grade",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-48 (LXE)",
+   "aecq": true,
+   "observedMpn": "LTC2949HLXE#3ZZTRPBF",
+   "observations": [],
+   "notes": "UNVERIFIED: no Digi-Key / Mouser / Farnell listing found. Only LCSC (stored, $15.6034 @100, 0 stock). Concern: Richardson RFPD (not an allowed source) shows $35.08–$39.84 @2,000 for this code and $37.04–$39.84 @250 for #3ZZPBF, i.e. 2.2–2.6× the stored LCSC price — needs a franchised quote before the price is trusted."
+  },
+  {
+   "mpn": "MAX9295DGTM/V+T",
+   "family": "MAX9295DGTM",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 dual CSI-2 camera serializer, AEC-Q100 Grade 2",
+   "category": "ic_qfn",
+   "pkg": "TQFN-48-EP (7x7)",
+   "aecq": true,
+   "observedMpn": "MAX9295DGTM/V+T",
+   "observations": [],
+   "notes": "UNVERIFIED: no Digi-Key / Mouser listing found (Digipart lists the code without price)."
+  },
+  {
+   "mpn": "ADBMS2950WFSCCSZ",
+   "family": "ADBMS2950WFSCCSZ",
+   "mfr": "Analog Devices",
+   "desc": "Battery pack monitor: dual current + voltage, ASIL-D",
+   "category": "ic_qfn",
+   "pkg": "LFCSP-48",
+   "aecq": true,
+   "observedMpn": "ADBMS2950WFSCCSZ",
+   "observations": [],
+   "notes": "WRONG-CODE: the stored Digi-Key URL is ADBMS2950WCCSZ, not ADBMS2950WFSCCSZ. Analog Devices states the ADBMS295xWFS models are the ISO 26262 ASIL-D variants (analog.com/ADBMS2950), so the stored price is for the non-FuSa grade while the entry is the ASIL-D part. No distributor price found for either code in this search."
+  },
+  {
+   "mpn": "PI7C9X2G608GPBNJE",
+   "family": "PI7C9X2G608GPBNJE",
+   "mfr": "Diodes Incorporated",
+   "desc": "PCIe 2.0 packet switch, 6-port",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": false,
+   "observedMpn": "PI7C9X2G608GPBNJE",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 126,
+     "price": 12.45,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/de/p/semiconductors--analog--analog-switches/pi7c9x2g608gpbnje-pericom-saronix-ecera-7100640",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Future $12.45 @126 (tray, 0 stock, 35-week lead time) v stored Digi-Key $13.117 @504, ratio 0.95. Mouser India lists it in INR (break not stated; not recorded)."
+  },
+  {
+   "mpn": "MAX96722GTB/V+T",
+   "family": "MAX96722GTB",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 quad deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "TQFN (GTB)",
+   "aecq": true,
+   "observedMpn": "MAX96722GTB/V+T",
+   "observations": [],
+   "notes": "UNVERIFIED: no Digi-Key / Mouser / Farnell listing found (Cytech reference price is a reseller, not used). Stored LCSC only."
+  },
+  {
+   "mpn": "BGT24ATR22E6433XUMA1",
+   "family": "BGT24ATR22E6433XUMA1",
+   "mfr": "Infineon",
+   "desc": "24 GHz radar transceiver MMIC, 2TX/2RX",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32",
+   "aecq": true,
+   "observedMpn": "BGT24ATR22E6433XUMA1",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 1161.76,
+     "currency": "JPY",
+     "url": "https://jp.farnell.com/en-JP/infineon/bgt24atr22e6433xuma1/rf-transceiver-24-24-25ghz-vqfn/dp/4531830",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 100,
+     "price": 123.2,
+     "currency": "SEK",
+     "url": "https://se.rs-online.com/web/p/rf-ics/0349349",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Farnell JP ¥1,161.76 @250 ex-tax (¥1,277.94 incl.) ≈ £5.8–6.0 v stored RS UK £8.90 @100, ratio ≈ 0.65–0.68 (FX-dependent, inside ±40%). RS SE 123.20 SEK @100 ex-VAT (same distributor as stored, other storefront) ≈ £9–10, consistent. RS UK showed temporarily out of stock."
+  },
+  {
+   "mpn": "SPL S1L90H_3",
+   "family": "SPL S1L90H_3",
+   "mfr": "ams OSRAM",
+   "desc": "907 nm 65 W single-channel pulsed laser, QFN",
+   "category": "led",
+   "pkg": "QFN",
+   "aecq": false,
+   "observedMpn": "SPL S1L90H_3",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "PI7C9X2G404SVAFDEEX",
+   "family": "PI7C9X2G404SVAFDEEX",
+   "mfr": "Diodes Incorporated",
+   "desc": "PCIe 2.0 packet switch, 4-port",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-128",
+   "aecq": false,
+   "observedMpn": "PI7C9X2G404SVAFDEEX",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 8.87,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--analog--analog-switches/pi7c9x2g404svafdeex-pericom-saronix-ecera-1137957",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Future $8.87 @1,000 (reel, 0 stock) v stored Mouser $9.30 @1,000, ratio 0.95. Stored Mouser URL is a series/category page, not the part page."
+  },
+  {
+   "mpn": "MAX96714GTJ/VY+T",
+   "family": "MAX96714GTJ",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32 (GTJ)",
+   "aecq": true,
+   "observedMpn": "MAX96714GTJ/VY+T",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries). Stored Digi-Key @2,500 ($9.4864) is dearer than @500 ($8.82494) — check for a stale reel price (R4b rule 7)."
+  },
+  {
+   "mpn": "LTC6813HLWE-1#3ZZPBF",
+   "family": "LTC6813HLWE-1",
+   "mfr": "Analog Devices",
+   "desc": "18-cell battery stack monitor, isoSPI, H grade AEC",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64 EP",
+   "aecq": true,
+   "observedMpn": "LTC6813HLWE-1#3ZZPBF",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "SPL DS90A_3",
+   "family": "SPL DS90A_3",
+   "mfr": "ams OSRAM",
+   "desc": "903 nm SMT pulsed laser diode",
+   "category": "led",
+   "pkg": "SMT (laser module)",
+   "aecq": false,
+   "observedMpn": "SPL DS90A_3",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "MAX17853",
+   "family": "MAX17853",
+   "mfr": "Analog Devices",
+   "desc": "14-ch battery monitor (data acquisition)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-64",
+   "aecq": true,
+   "observedMpn": "MAX17853",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "V105Q121A-940",
+   "family": "V105Q121A-940",
+   "mfr": "ams OSRAM",
+   "desc": "940 nm VCSEL power array, 3.2 W, QFN (flood illumination)",
+   "category": "led",
+   "pkg": "4-SMD QFN",
+   "aecq": false,
+   "observedMpn": "V105Q121A-940",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries). Stored observations are on azcus.digikey.com only (allowed only with a second source)."
+  },
+  {
+   "mpn": "LT8638SJV#WPBF",
+   "family": "LT8638SJV",
+   "mfr": "Analog Devices",
+   "desc": "Automotive 2.8-42V 10A Silent Switcher 2 synchronous buck",
+   "category": "ic_qfn",
+   "pkg": "LQFN-28",
+   "aecq": true,
+   "observedMpn": "LT8638SJV#WPBF",
+   "observations": [],
+   "notes": "WRONG-CODE: stored observation is the sibling LT8638SJV#PBF (non-W grade, entry is the #WPBF automotive code) AND its URL is punchouttest.digikey.com.mx (not an allowed source, R4b rule 4). No price found for #WPBF (only a bare electronicsdatasheets listing). For #PBF: Richardson RFPD $9.78 @490 (not allowed); Mouser $13.55 seen with break not stated (not recorded)."
+  },
+  {
+   "mpn": "MAX96717FGTJ/VY+T",
+   "family": "MAX96717FGTJ",
+   "mfr": "Analog Devices",
+   "desc": "GMSL2 CSI-2 camera serializer, 3 Gbps",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32-EP (5x5)",
+   "aecq": true,
+   "observedMpn": "MAX96717FGTJ/VY+T",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries). Stored observations are on azcus.digikey.com only (allowed only with a second source)."
+  },
+  {
+   "mpn": "MAX20048ATGB/VY+",
+   "family": "MAX20048ATGB",
+   "mfr": "Analog Devices",
+   "desc": "Automotive 40 V H-bridge buck-boost controller, 2.2 MHz",
+   "category": "ic_qfn",
+   "pkg": "SWTQFN-24",
+   "aecq": true,
+   "observedMpn": "MAX20048ATGB/VY+",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "MAX20096ATJ/VY+",
+   "family": "MAX20096ATJ",
+   "mfr": "Analog Devices",
+   "desc": "Dual buck LED controller",
+   "category": "ic_qfn",
+   "pkg": "TQFN-32",
+   "aecq": true,
+   "observedMpn": "MAX20096ATJ/VY+",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries). Stored Digi-Key reel @2,500 ($7.3304) is dearer than @1,470 ($6.63316) — check for a stale reel price (R4b rule 7)."
+  },
+  {
+   "mpn": "IDW20G120C5BFKSA1",
+   "family": "IDW20G120C5BFKSA1",
+   "mfr": "Infineon",
+   "desc": "SiC Schottky diode 1200 V 20 A (CoolSiC G5)",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": false,
+   "observedMpn": "IDW20G120C5BFKSA1",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "XAL7030-472MEC",
+   "family": "XAL7030-472MEC",
+   "mfr": "Coilcraft",
+   "desc": "4.7 µH 10 A shielded power inductor",
+   "category": "passive_0805",
+   "pkg": "7×7×3 mm",
+   "aecq": true,
+   "observedMpn": "XAL7030-472MEC",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "USB4085-GF-A",
+   "family": "USB4085-GF-A",
+   "mfr": "GCT",
+   "desc": "USB-C 2.0 receptacle 16-way",
+   "category": "connector_smt",
+   "pkg": "SMT/TH",
+   "aecq": false,
+   "observedMpn": "USB4085-GF-A",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "SRN6045TA-4R7M",
+   "family": "SRN6045TA-4R7M",
+   "mfr": "Bourns",
+   "desc": "4.7 µH 4.5 A semi-shielded inductor 6×6",
+   "category": "passive_0805",
+   "pkg": "6045",
+   "aecq": false,
+   "observedMpn": "SRN6045TA-4R7M",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "ABM8-25.000MHZ-B2-T",
+   "family": "ABM8-25.000MHZ-B2-T",
+   "mfr": "Abracon",
+   "desc": "25 MHz crystal 3.2×2.5 18 pF",
+   "category": "crystal_osc",
+   "pkg": "3225",
+   "aecq": false,
+   "observedMpn": "ABM8-25.000MHZ-B2-T",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "ABS07-32.768KHZ-T",
+   "family": "ABS07-32.768KHZ-T",
+   "mfr": "Abracon",
+   "desc": "32.768 kHz crystal 3.2×1.5",
+   "category": "crystal_osc",
+   "pkg": "3215",
+   "aecq": false,
+   "observedMpn": "ABS07-32.768KHZ-T",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "ECS-250-20-3X-TR",
+   "family": "ECS-250-20-3X-TR",
+   "mfr": "ECS",
+   "desc": "25 MHz crystal 7×5 20 pF",
+   "category": "crystal_osc",
+   "pkg": "7050",
+   "aecq": false,
+   "observedMpn": "ECS-250-20-3X-TR",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "SMBJ33A-Q",
+   "family": "SMBJ33A-Q",
+   "mfr": "Bourns",
+   "desc": "600 W TVS diode 33 V, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SMB",
+   "aecq": true,
+   "observedMpn": "SMBJ33A-Q",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  },
+  {
+   "mpn": "LG L29K-G2J1-24",
+   "family": "LG L29K-G2J1-24",
+   "mfr": "ams OSRAM",
+   "desc": "Green 0603 SmartLED",
+   "category": "led",
+   "pkg": "0603",
+   "aecq": false,
+   "observedMpn": "LG L29K-G2J1-24",
+   "observations": [],
+   "notes": "UNVERIFIED: not searched (20-search budget used on the more expensive entries)."
+  }
+ ],
+ "disputes": [
+  {
+   "mpn": "AD2S1205WYSTZ",
+   "url": "https://www.digikey.com/product-detail/en/AD2S1205YSTZ/AD2S1205YSTZ-ND/1551344",
+   "reason": "Listing is AD2S1205YSTZ (industrial Y grade), not the automotive W-grade code of the entry."
+  },
+  {
+   "mpn": "ADBMS2950WFSCCSZ",
+   "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADBMS2950WCCSZ/22118755",
+   "reason": "Listing is ADBMS2950WCCSZ (non-WFS); ADI states the WFS models are the ASIL-D variants — another grade."
+  },
+  {
+   "mpn": "LT8638SJV#WPBF",
+   "url": "https://punchouttest.digikey.com.mx/en/products/detail/analog-devices-inc/LT8638SJV-PBF/14290674",
+   "reason": "punchouttest.* host is not an allowed source (R4b rule 4), and the listing is LT8638SJV#PBF, not the #WPBF code."
+  }
+ ]
+}

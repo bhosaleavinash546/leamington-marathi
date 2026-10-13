@@ -1,0 +1,162 @@
+[
+ {
+  "mpn": "LPC55S69JBD100K",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r1-compute-wireless): single-distributor price held for review: Farnell 4.62 EUR @250"
+ },
+ {
+  "mpn": "F28P559SG2PZRQ1",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r1-compute-wireless): single-distributor price held for review: Mouser 10.24 USD @100; Mouser 8.37 USD @1000"
+ },
+ {
+  "mpn": "PIC16LF18446-E/SS",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r1-compute-wireless): single-distributor price held for review: Farnell 1.447 USD @469"
+ },
+ {
+  "mpn": "R7F125FPL4AFB-C#UA0",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r1-compute-wireless): single-distributor price held for review: Mouser 4.28 USD @2520"
+ },
+ {
+  "mpn": "SR5E1E370C30F01X",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r1-compute-wireless): single-distributor price held for review: RS Components 373.09 THB @100"
+ },
+ {
+  "mpn": "10M08SAU169I7G",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r1-compute-wireless): single-distributor price held for review: Digi-Key 17.4701 USD @500"
+ },
+ {
+  "mpn": "MIMX8DX6AVLFZAC",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r1-compute-wireless): single-distributor price held for review: Future Electronics 63.61 USD @120"
+ },
+ {
+  "mpn": "MIMX8DL1AVNFZAB",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r1-compute-wireless): single-distributor price held for review: Future Electronics 29.84 USD @126"
+ },
+ {
+  "mpn": "MFS8600BMDA0ES",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r2-power-analog): single-distributor price held for review: Digi-Key 4.96186 USD @1040"
+ },
+ {
+  "mpn": "LT8390IUFD#PBF",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r2-power-analog): single-distributor price held for review: Digi-Key 8.07319 USD @511; Digi-Key 7.89659 USD @1022"
+ },
+ {
+  "mpn": "LT8390IFE#PBF",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r2-power-analog): single-distributor price held for review: Digi-Key 9.25003 USD @1000"
+ },
+ {
+  "mpn": "NCV8114ASN330T1G",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r2-power-analog): single-distributor price held for review: LCSC 0.1969 USD @6000"
+ },
+ {
+  "mpn": "ADUM4146ARWZ-RL",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r2-power-analog): single-distributor price held for review: Digi-Key 3.63428 USD @1000; Digi-Key 3.55673 USD @2000"
+ },
+ {
+  "mpn": "SI8271GB-ISR",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r2-power-analog): single-distributor price held for review: Digi-Key 2.35784 USD @1000; Digi-Key 2.24288 USD @2500"
+ },
+ {
+  "mpn": "AS5600-ASOM",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r2-power-analog): single-distributor price held for review: Digi-Key 1.74282 USD @1000; Digi-Key 1.68836 USD @2500"
+ },
+ {
+  "mpn": "IS46QR16512A-083TBLA2-TR",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r3-networking-memory): single-distributor price held for review: Avnet 31.37143 USD @2000"
+ },
+ {
+  "mpn": "MT40A1G16TD-062E AUT:F",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r3-networking-memory): single-distributor price held for review: Avnet 139.2613 USD @1020"
+ },
+ {
+  "mpn": "PESD2CANFD27V-TR",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Digi-Key 0.11948 USD @1000"
+ },
+ {
+  "mpn": "TPSMB24AHE3_A/I",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Mouser 0.137 USD @3200"
+ },
+ {
+  "mpn": "12401610E4#2A",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Newark 0.932 USD @500"
+ },
+ {
+  "mpn": "ABM3BAIG-26.000MHZ-1Z-T",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Mouser 0.606 USD @1000"
+ },
+ {
+  "mpn": "ABM3BAIG-8.000MHZ-1Z-T",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Digi-Key 0.7153 USD @1000"
+ },
+ {
+  "mpn": "0501012.WRA",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Mouser 0.552 USD @3000"
+ },
+ {
+  "mpn": "0501010.WRA",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Mouser 0.552 USD @3000"
+ },
+ {
+  "mpn": "0501015.WR",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Newark 0.369 USD @3000"
+ },
+ {
+  "mpn": "34691-0080",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Mouser 0.79 USD @10080"
+ },
+ {
+  "mpn": "GT17V-10DP-DS(70)",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Mouser 3.32 USD @1000"
+ },
+ {
+  "mpn": "2304372-1",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r4-interconnect-discretes): single-distributor price held for review: Farnell 2.43 GBP @500"
+ },
+ {
+  "mpn": "CGA3E3X7R1H105K080AB",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r5-passives-gaps): single-distributor price held for review: Digi-Key 0.07133 USD @1000; Digi-Key 0.04906 USD @100000"
+ },
+ {
+  "mpn": "CGA5L1X5R1C226M160AC",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r5-passives-gaps): single-distributor price held for review: Digi-Key 0.3444 EUR @1000"
+ },
+ {
+  "mpn": "XAL4020-222MEC",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r5-passives-gaps): single-distributor price held for review: Farnell 1.01 GBP @1000"
+ },
+ {
+  "mpn": "IHLP2525CZER3R3M5A",
+  "group": "pendingReview",
+  "why": "round 5 (13 Oct 2026, r5-passives-gaps): single-distributor price held for review: Future Electronics 0.29 USD @2000"
+ }
+]

@@ -1,0 +1,51 @@
+{
+ "note": "Round 5 audit (13 Oct 2026). observations: a stored observation the verifier showed is for another code / a disallowed host - dropped by the merge (applyAuditToCatalogue). disputed: the price is kept, the source states the dispute until a quote settles it.",
+ "observations": [
+  {
+   "mpn": "AD2S1205WYSTZ",
+   "url": "www.digikey.com/product-detail/en/AD2S1205YSTZ/AD2S1205YSTZ-ND/1551344",
+   "reason": "Listing is AD2S1205YSTZ (industrial Y grade), not the automotive W-grade code of the entry."
+  },
+  {
+   "mpn": "ADBMS2950WFSCCSZ",
+   "url": "www.digikey.com/en/products/detail/analog-devices-inc/ADBMS2950WCCSZ/22118755",
+   "reason": "Listing is ADBMS2950WCCSZ (non-WFS); ADI states the WFS models are the ASIL-D variants — another grade."
+  },
+  {
+   "mpn": "LT8638SJV#WPBF",
+   "url": "punchouttest.digikey.com.mx/en/products/detail/analog-devices-inc/LT8638SJV-PBF/14290674",
+   "reason": "punchouttest.* host is not an allowed source (R4b rule 4), and the listing is LT8638SJV#PBF, not the #WPBF code."
+  },
+  {
+   "mpn": "MVR5510AMBA6ES",
+   "url": "www.avnet.com/americas/product/nxp/mvr5510ambanes/evolve-64144456/",
+   "reason": "WRONG-CODE: listing is for MVR5510AMBANES, a different VR5510 OTP variant."
+  },
+  {
+   "mpn": "RGS80TSX2DHRC11",
+   "url": "www.findchips.com/search/RGS80",
+   "reason": "Generic Findchips search (RULES-R4b #6), does not name the orderable code."
+  },
+  {
+   "mpn": "R7F7015873AFP-C#AA3",
+   "url": "www.mouser.co.il/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/?core=G3KH",
+   "reason": "Mouser category listing filtered by CPU core, not this part's product page."
+  }
+ ],
+ "disputed": {
+  "MT29F4G08ABAFAWP-AAT": "Stored price is the industrial sibling MT29F4G08ABAFAWP-IT:F (Digi-Key $21.06951 @960); the automotive orderable MT29F4G08ABAFAWP-AAT:F exists (Farnell 3861373). Stored URL not in task file.",
+  "IS46LQ32512A-046BLA1": "Price conflict, not a wrong code: Farnell EUR 20.31 @136 for the exact code vs stored Mouser INR 7542.92 @100 (3.4x). Do not drop either without a quote; stored URL not in task file.",
+  "S32G399AAAK1VUCR": "Digi-Key base-product (family) page, not the exact code's detail page; the price may belong to another S32G399 variant (possible, not proven).",
+  "NEO-M9V-20B": "round 5 verify: Future $22.56 @125 and Digi-Key IE EUR 19.30 @250 are ~1.6x the stored Digi-Key EUR 12.29 @500 - verify with a quote",
+  "WSBE8518L1000JKA2": "round 5 verify: stored CAD 21.69 @100 is far below every other listing seen (sibling JTA2 $64.01 @1) - verify with a quote",
+  "FS32R294KCMJD": "round 5 verify: this code is not orderable anywhere (real S32R294 codes are FS32R294KCK0MJDR / -T); the stored price has no URL",
+  "MPC5744PK1AMLQ9": "round 5 verify: priced on SPC5744PK1AMLQ8 - the last digit is probably a different frequency grade, not packing",
+  "LMR33630AQDDARQ1": "round 5 verify: this exact code was not found at any distributor - check that it exists",
+  "MTFC128GBCAUTC-AAT": "round 5 verify: not found at any distributor; priced only on the sibling ...CAVTC-AAT from azcus.digikey.com with no second source",
+  "LTC2949HLXE#3ZZTRPBF": "round 5 verify: only LCSC $15.60 @100 (no stock); another listing shows 2.2-2.6x higher - verify with a quote",
+  "S32K344EHT1VMMST": "round 5 verify: Farnell JP lists the exact code at JPY 5,106 @100 (~2.2x); the stored Mouser price came from a search page that does not name the code",
+  "SCT060HU75G3AG": "round 5 verify: Digi-Key $7.73 @100 / $6.31 @600 is ~0.48x the stored RS Japan JPY 1,953.78 @600",
+  "NVHL020N120SC1": "round 5 verify: the stored \"Avnet\" $34.726 equals a Richardson RFPD listing relayed by an aggregator - Richardson is not an allowed source",
+  "MC33771CTA1AE": "round 5 verify: Newark appeared at $12.64 @500 v the stored Mouser $8.79 @250 (generic search page, not recorded) - may be under-priced"
+ }
+}

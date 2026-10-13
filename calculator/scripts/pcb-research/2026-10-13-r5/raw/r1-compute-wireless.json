@@ -1,0 +1,482 @@
+{
+ "domain": "r1-compute-wireless",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "MIMXRT1176DVMAA",
+   "family": "MIMXRT1176",
+   "mfr": "NXP",
+   "desc": "i.MX RT1176 crossover MCU, Cortex-M7 1 GHz + M4, 2 MB SRAM",
+   "category": "ic_bga",
+   "pkg": "MAPBGA-289",
+   "aecq": false,
+   "ecuRoles": [
+    "cluster",
+    "gateway",
+    "HMI"
+   ],
+   "observedMpn": "MIMXRT1176DVMAA",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 152,
+     "price": 11.05,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/8133426",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 11.81,
+     "currency": "EUR",
+     "url": "https://ie.farnell.com/nxp/mimxrt1176dvmaa/mcu-1ghz-32bit-mapbga-289/dp/3586897",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future 152+ (0 stock, 19 wk); Farnell IE 100+ ex VAT. Digi-Key marks it Not For New Designs (breaks to 608, figure seen only as approximate on azcus host - not recorded); Mouser lists successor MIMXRT1176DVMAB. Not an automotive (AEC-Q100) code."
+  },
+  {
+   "mpn": "LPC55S69JBD100K",
+   "family": "LPC55S69",
+   "mfr": "NXP",
+   "desc": "LPC55S69 dual Cortex-M33 MCU 150 MHz, 640 kB flash, TrustZone",
+   "category": "ic_tqfp",
+   "pkg": "HLQFP-100",
+   "aecq": false,
+   "ecuRoles": [
+    "gateway",
+    "body"
+   ],
+   "observedMpn": "LPC55S69JBD100K",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 4.62,
+     "currency": "EUR",
+     "url": "https://ie.farnell.com/nxp/lpc55s69jbd100k/mcu-32bit-100mhz-hlqfp/dp/2992430",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Task code LPC55S69JBD100; K = tray orderable (Y = reel, no price seen). Farnell IE 250+ ex VAT, 1+ EUR 6.880. Rocelec (Rochester) 1000+ USD 4.92 not used (not allowed). Industrial, not AEC-Q100."
+  },
+  {
+   "mpn": "F28P559SG2PZRQ1",
+   "family": "TMS320F28P559-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 real-time MCU TMS320F28P559SG-Q1, 150 MHz, 512 kB flash, AEC-Q100",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC",
+    "traction inverter"
+   ],
+   "observedMpn": "F28P559SG2PZRQ1",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 10.24,
+     "currency": "USD",
+     "url": "https://www.mouser.mx/en/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?pg=40&q=NX",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 8.37,
+     "currency": "USD",
+     "url": "https://www.mouser.mx/en/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?pg=40&q=NX",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Task named the SJ variant; SJ9 codes (F28P559SJ9PMQ1) seen only at TME qty-1 (USD 12.80, 0 stock). SG2 sibling priced; read on a Mouser MX category listing page (USD, ~929 stock) - single distributor; a Mouser SG category page showed USD 8.76 @1000 (other snapshot, not recorded)."
+  },
+  {
+   "mpn": "AVR128DA64-E/PT",
+   "family": "AVR128DA64",
+   "mfr": "Microchip",
+   "desc": "AVR DA 8-bit MCU 24 MHz, 128 kB flash, 16 kB RAM, extended temp",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64",
+   "aecq": false,
+   "ecuRoles": [
+    "body",
+    "sensor",
+    "actuator"
+   ],
+   "observedMpn": "AVR128DA64-E/PT",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 1.63,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/microchip/avr128da64-e-pt/mcu-8bit-avr-24mhz-tqfp-64/dp/3481944",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 480,
+     "price": 2.007,
+     "currency": "EUR",
+     "url": "https://es.rs-online.com/web/p/microcontroladores/0585262",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell UK ex VAT (1+ GBP 1.81, 396 stock). RS ES tray of 480 = EUR 963.36 ex VAT (= 2.007/unit), snapshot said shipping from 12 May 2026 (older snapshot). -E = extended temperature; VAO (AEC-Q100) code not found."
+  },
+  {
+   "mpn": "PIC16LF18446-E/SS",
+   "family": "PIC16LF18446",
+   "mfr": "Microchip",
+   "desc": "PIC16LF18446 8-bit MCU 32 MHz, 28 kB flash, low-voltage, extended temp",
+   "category": "ic_soic",
+   "pkg": "SSOP-20",
+   "aecq": false,
+   "ecuRoles": [
+    "body",
+    "sensor",
+    "actuator"
+   ],
+   "observedMpn": "PIC16LF18446-E/SS",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 469,
+     "price": 1.447,
+     "currency": "USD",
+     "url": "https://il.farnell.com/microchip/pic16lf18446-e-ss/mcu-8bit-32mhz-ssop-20/dp/3633109",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Representative for task line 'PIC16F18xxx automotive': PIC16F18446-E/SS found only at Digi-Key qty-1 (not normally stocked). Farnell IL (USD, ex VAT) 469+, 8 wk lead. LF = low-voltage variant; AEC-Q100 not confirmed."
+  },
+  {
+   "mpn": "R7F125FPL4AFB-C#UA0",
+   "family": "RL78/F25",
+   "mfr": "Renesas",
+   "desc": "RL78/F25 16-bit automotive MCU, 512 kB flash, -40 to 125 C",
+   "category": "ic_tqfp",
+   "pkg": "LFQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "zonal",
+    "actuator"
+   ],
+   "observedMpn": "R7F125FPL4AFB-C#UA0",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2520,
+     "price": 4.28,
+     "currency": "USD",
+     "url": "https://www.mouser.vn/vi/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/16-bit-microcontrollers-mcu/?core=RL78",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Read on a Mouser VN category listing (USD): 1 USD 9.24, 90 USD 5.51, 2,520 USD 4.28; 86 stock, new product. Mouser UK GBP 6.94 @1 (breaks below 100 only seen). AEC-Q100 per RL78/F family, not stated on listing. One distributor."
+  },
+  {
+   "mpn": "SR5E1E370C30F01X",
+   "family": "SR5E1E3",
+   "mfr": "STMicroelectronics",
+   "desc": "Stellar E1 SR5E1E3 automotive MCU 306.7 MHz, 2 MB flash (OBC / DC-DC)",
+   "category": "ic_tqfp",
+   "pkg": "eTQFP-100",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC",
+    "DC-DC",
+    "BMS"
+   ],
+   "observedMpn": "SR5E1E370C30F01X",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 100,
+     "price": 373.09,
+     "currency": "THB",
+     "url": "https://th.rs-online.com/web/p/microcontrollers/0330431P",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS Thailand 100+ (10-99 THB 404.26), marked indicative; VAT basis not confirmed for this page. ST eStore lists SR5E1E770C30F00X USD 17.66 @25 (manufacturer, not recorded). One distributor."
+  },
+  {
+   "mpn": "10M08SAU169I7G",
+   "family": "10M08",
+   "mfr": "Intel (Altera)",
+   "desc": "MAX 10 FPGA 8k LE, single supply, industrial",
+   "category": "ic_bga",
+   "pkg": "UBGA-169",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS",
+    "gateway",
+    "glue logic"
+   ],
+   "observedMpn": "10M08SAU169I7G",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 17.4701,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/10m08sau169i7g",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Task named the automotive A-grade (10M08SAE144A7G / 10M08SAU169A7G): no listing found. Industrial I7G priced via Findchips naming Digi-Key (7,843 stock, 1 pc USD 23.30). Mouser I7G figures seen only via an unnamed aggregator - not used."
+  },
+  {
+   "mpn": "MIMX8DX6AVLFZAC",
+   "family": "MIMX8DX",
+   "mfr": "NXP",
+   "desc": "i.MX 8DualXPlus application processor 2x Cortex-A35 1.2 GHz, automotive -40 to 125 C",
+   "category": "ic_bga",
+   "pkg": "FCPBGA",
+   "aecq": true,
+   "ecuRoles": [
+    "cluster",
+    "IVI",
+    "telematics"
+   ],
+   "observedMpn": "MIMX8DX6AVLFZAC",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 120,
+     "price": 63.61,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/fr/p/semiconductors--microprocessors--digital-signal-processors/mimx8dx6avlfzac-nxp-3163377",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future 120+ (0 stock, 26 wk). Mouser IE EUR 95.23 @1 (lower break only approximate - not recorded); Mouser ZA USD 110.75 @1. Package ball count not read. MIMX8DX5AVLFZAC not priced (only C-grade sibling qty-1). A = automotive grade per NXP naming."
+  },
+  {
+   "mpn": "MIMX8DL1AVNFZAB",
+   "family": "MIMX8DXL",
+   "mfr": "NXP",
+   "desc": "i.MX 8DualXLite processor 2x Cortex-A35 1.2 GHz, V2X / telematics, automotive -40 to 125 C",
+   "category": "ic_bga",
+   "pkg": "FCPBGA-388",
+   "aecq": true,
+   "ecuRoles": [
+    "telematics",
+    "V2X",
+    "gateway"
+   ],
+   "observedMpn": "MIMX8DL1AVNFZAB",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 100,
+     "price": 37.8,
+     "currency": "USD",
+     "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/?q=IMX8",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 126,
+     "price": 29.84,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/fr/c/semiconductors/microprocessors/products",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser IL (USD) category listing: 1 USD 52.10, 25 USD 40.16, 100 USD 37.80, 252 stock. Future MOQ 126 USD 29.84 read on a category listing (de/fr). Package from element14 title. Mouser/Future ratio 1.27."
+  },
+  {
+   "mpn": "CC2340R52E0WRHBRQ1",
+   "family": "CC2340R5-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Bluetooth LE 5.3 wireless MCU, 512 kB flash, AEC-Q100 Grade 2",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 (RHB)",
+   "aecq": true,
+   "ecuRoles": [
+    "keyless",
+    "TPMS",
+    "sensor"
+   ],
+   "observedMpn": "CC2340R52E0WRHBRQ1",
+   "observations": [],
+   "notes": "Orderable code confirmed ACTIVE on TI part-details page. No distributor price found; Findchips showed only an approximate figure for sibling CC2340R53E0WRHBRQ1 without a named distributor - not recorded."
+  },
+  {
+   "mpn": "AVR64DD32-E/PT",
+   "family": "AVR64DD32",
+   "mfr": "Microchip",
+   "desc": "AVR DD 8-bit MCU 24 MHz, 64 kB flash, extended temp",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-32",
+   "aecq": false,
+   "ecuRoles": [
+    "sensor",
+    "actuator"
+   ],
+   "observedMpn": "AVR64DD32-E/PT",
+   "observations": [],
+   "notes": "RS BE breaks stop at 20+ (EUR 1.23) - below the 100 floor. VAO (automotive) code not found."
+  },
+  {
+   "mpn": "MLX81116KLW-AAC-100-SP",
+   "family": "MLX81116",
+   "mfr": "Melexis",
+   "desc": "LIN RGB LED driver / controller, 12 outputs",
+   "category": "ic_qfn",
+   "pkg": "QFN-24",
+   "aecq": true,
+   "ecuRoles": [
+    "ambient lighting"
+   ],
+   "observedMpn": "MLX81116KLW-AAC-100-SP",
+   "observations": [],
+   "notes": "Mouser lists qty-1 only (INR 349.43, bulk). MLX81332 only as EVB, MLX81160 only as programmer support - no chip prices."
+  },
+  {
+   "mpn": "AM6442BSEFHAALV",
+   "family": "AM6442",
+   "mfr": "Texas Instruments",
+   "desc": "Sitara AM6442 2x Cortex-A53 + 4x R5F, Ethernet TSN gateway processor",
+   "category": "ic_bga",
+   "pkg": "FCBGA-441",
+   "aecq": false,
+   "ecuRoles": [
+    "gateway"
+   ],
+   "observedMpn": "AM6442BSEFHAALV",
+   "observations": [],
+   "notes": "Arrow lists the code (active, tray) without price; only broker prices (Lioncircuits, Nyang-tech) found. No -Q1 automotive AM64x code found."
+  },
+  {
+   "mpn": "MPF100T-FCVG484I",
+   "family": "MPF100T",
+   "mfr": "Microchip",
+   "desc": "PolarFire FPGA 109k LE, industrial",
+   "category": "ic_bga",
+   "pkg": "FCVG-484",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS",
+    "gateway"
+   ],
+   "observedMpn": "MPF100T-FCVG484I",
+   "observations": [],
+   "notes": "RS TH/HK qty-1 only (THB 9,882.79; HKD not usable). No >=100 break found."
+  },
+  {
+   "mpn": "LC29HEAMD",
+   "family": "LC29H",
+   "mfr": "Quectel",
+   "desc": "Dual-band L1/L5 GNSS module with RTK",
+   "category": "ic_qfn",
+   "pkg": "LCC module",
+   "aecq": false,
+   "ecuRoles": [
+    "telematics",
+    "V2X"
+   ],
+   "observedMpn": "LC29HEAMD",
+   "observations": [],
+   "notes": "Digi-Key SG 100 break seen only as an approximate SGD figure - not recorded. LC29HAA / LG69T not found."
+  },
+  {
+   "mpn": "JODY-W374-00A",
+   "family": "JODY-W3",
+   "mfr": "u-blox",
+   "desc": "Automotive Wi-Fi 6 / Bluetooth LE 5.3 module",
+   "category": "ic_qfn",
+   "pkg": "LGA module",
+   "aecq": true,
+   "ecuRoles": [
+    "IVI",
+    "telematics"
+   ],
+   "observedMpn": "JODY-W374-00A",
+   "observations": [],
+   "notes": "Mouser breaks seen stop at 10 (USD 39.33). -00B not found."
+  },
+  {
+   "mpn": "MCXN947VDFT",
+   "family": "MCXN947",
+   "mfr": "NXP",
+   "desc": "MCX N947 dual Cortex-M33 150 MHz MCU, 2 MB flash, NPU",
+   "category": "ic_bga",
+   "pkg": "VFBGA-184",
+   "aecq": false,
+   "ecuRoles": [
+    "gateway",
+    "body"
+   ],
+   "observedMpn": "MCXN947VDFT",
+   "observations": [],
+   "notes": "No distributor listing returned for the exact code. Package from NXP naming (VDF), not read."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "MIMX95 (i.MX 95 automotive)",
+   "why": "Newest NXP automotive application processor; wave 2 found only the NXP part page, not re-searched (budget)"
+  },
+  {
+   "code": "TDA4AL88 / TDA4VPE",
+   "why": "TI Jacinto ADAS SoCs; no distributor listing found in round 4; not re-searched (TDA4VE88 already priced in catalogue)"
+  },
+  {
+   "code": "AM62P-Q1 (AM62P5...RQ1)",
+   "why": "Display / cluster processor; searched, no orderable RQ1 code or price returned"
+  },
+  {
+   "code": "CC2662R-Q1 / CC2642R1FTWRGZRQ1",
+   "why": "TI automotive BLE; round 4 found only VAT-inclusive Digi-Key China; not retried (budget)"
+  },
+  {
+   "code": "Renesas RA8 / RA6 automotive, RH850/U2B",
+   "why": "Body / zonal MCUs; not searched (budget)"
+  },
+  {
+   "code": "MLX81332 / MLX81160",
+   "why": "Melexis LIN motor MCUs; only eval boards / programmer listings found"
+  },
+  {
+   "code": "Elmos E521.39 / E523.52",
+   "why": "LIN motor-control SoCs; not searched (budget, no distributor listing in round 4)"
+  },
+  {
+   "code": "CYW89829 / CYW43455 automotive",
+   "why": "Infineon automotive BT / Wi-Fi; round 4 found no price; not re-searched"
+  },
+  {
+   "code": "88W8987 automotive / AW611",
+   "why": "NXP automotive Wi-Fi/BT; likely quote-only; not searched (budget)"
+  },
+  {
+   "code": "NORA-W306",
+   "why": "u-blox Wi-Fi/BLE module; searched with JODY, no listing returned"
+  },
+  {
+   "code": "STA9100MGA (Teseo-APP2)",
+   "why": "Automotive ASIL GNSS; round 4 found no distributor price; not re-searched"
+  },
+  {
+   "code": "LG69T",
+   "why": "Quectel automotive GNSS; searched with LC29H, no listing"
+  },
+  {
+   "code": "XA7Z010-1CLG225Q / XAZU2EG-1SBVA484Q",
+   "why": "AMD automotive FPGAs/SoCs; round 4 found no >=100 listing; not re-searched"
+  },
+  {
+   "code": "Lattice CertusPro-NX / CrossLinkU-NX automotive",
+   "why": "Not searched (budget)"
+  }
+ ]
+}

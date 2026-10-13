@@ -238,17 +238,8 @@
    "family": "S32K344EHT1VMMST",
    "ecuRoles": [],
    "observedMpn": "S32K344EHT1VMMST",
-   "observations": [
-    {
-     "distributor": "Farnell (jp.farnell.com)",
-     "qty": 100,
-     "price": 5106,
-     "currency": "JPY",
-     "url": "https://jp.farnell.com/en-JP/nxp/s32k344eht1vmmst/mcu-32bit-160mhz-mapbga-257/dp/3912114",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "UNVERIFIED: Farnell JP (order code 3912114) JPY 5,106 @100+ (~$34) is ~2.2x the stored Mouser $15.42@100: outside +/-40% but below the 2.5x dispute threshold. Farnell snapshot dated ~Jul 2025. The stored Mouser observations come from a GENERIC Findchips search URL (findchips.com/search/k344, RULES-R4b #6) and may be for another S32K344 package (e.g. 172-HDQFP) - see disputes. Digi-Key listing (568-S32K344EHT1VMMST-ND) showed no price."
+   "observations": [],
+   "notes": "UNVERIFIED: Farnell JP (order code 3912114) JPY 5,106 @100+ (~$34) is ~2.2x the stored Mouser $15.42@100: outside +/-40% but below the 2.5x dispute threshold. Farnell snapshot dated ~Jul 2025. The stored Mouser observations come from a GENERIC Findchips search URL (findchips.com/search/k344, RULES-R4b #6) and may be for another S32K344 package (e.g. 172-HDQFP) - see disputes. Digi-Key listing (568-S32K344EHT1VMMST-ND) showed no price. Review 13 Oct 2026: dropObs - the Farnell JP figure is a snapshot dated about July 2025 - too old to replace the stored price; the entry is marked DISPUTED instead."
   },
   {
    "mpn": "NVBG040N120SC1",

@@ -1,0 +1,644 @@
+{
+ "domain": "r4-interconnect-discretes",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "ESD2CANFD24DBZRQ1",
+   "family": "ESD2CANFD24",
+   "mfr": "Texas Instruments",
+   "desc": "CAN FD ESD protection diode, 24 V bidirectional, 2-line, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23-3",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN",
+    "gateway",
+    "BCM"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.158,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/ESD2CANFD24DBZRQ1?qs=rQFj71Wb1eWBqdGG%2FVj1Ug%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.1588,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/ESD2CANFD24DBZRQ1/17394929",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Full reel 3000 at both (Mouser ext 474.00, Digi-Key ext 476.40 - consistent). Wave 1/2 retry.",
+   "observedMpn": "ESD2CANFD24DBZRQ1"
+  },
+  {
+   "mpn": "DMN3404LQ-7",
+   "family": "DMN3404LQ",
+   "mfr": "Diodes Incorporated",
+   "desc": "N-channel MOSFET 30 V, logic level, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "load switch",
+    "BCM",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.183,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Diodes-Incorporated/DMN3404LQ-7?qs=W%2FMpXkg%252BdQ6%2FYpf84J7szA%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.19607,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/diodes-incorporated/DMN3404LQ-7/16548806",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Full reel 3000 (Mouser ext 549.00, 40-week lead, mostly on order; Digi-Key ext 588.21). Digi-Key lists Automotive / AEC-Q101. Wave 2 retry.",
+   "observedMpn": "DMN3404LQ-7"
+  },
+  {
+   "mpn": "DMN6075SQ-7",
+   "family": "DMN6075SQ",
+   "mfr": "Diodes Incorporated",
+   "desc": "N-channel MOSFET 60 V, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "load switch",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.14748,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/diodes-incorporated/DMN6075SQ-7/16547187",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.12769,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/diodes-incorporated/DMN6075SQ-7/16547187",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.138,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Diodes-Incorporated/DMN6075SQ-7?qs=OTrKUuiFdkZBTPnT/2GqPA%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key T&R tiers (ext 442.44 at 3000). Mouser full reel ext 414.00, 0 stock, 40-week lead. LCSC 'DMN6075SQ' is a Leiditech part - not used. AEC-Q101 from the Q suffix.",
+   "observedMpn": "DMN6075SQ-7"
+  },
+  {
+   "mpn": "PESD2CANFD27V-QBZ",
+   "family": "PESD2CANFD27V-QB",
+   "mfr": "Nexperia",
+   "desc": "CAN FD ESD protection diode, 27 V, 2-line, automotive (-Q)",
+   "category": "fuse_tvs",
+   "pkg": "DFN (leadless)",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN",
+    "gateway"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 5000,
+     "price": 0.093,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Nexperia/PESD2CANFD27V-QBZ?qs=KUoIvG/9IlZ0eciurI482g%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 10000,
+     "price": 0.085,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Nexperia/PESD2CANFD27V-QBZ?qs=KUoIvG/9IlZ0eciurI482g%3D%3D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 5000,
+     "price": 0.0869,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C3715372.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser full reel multiples of 5000 (also 500 at 0.144, 25000 at 0.08). Exact DFN package name not shown in the source. AEC-Q101 from Nexperia -Q suffix, not read on the listing.",
+   "observedMpn": "PESD2CANFD27V-QBZ"
+  },
+  {
+   "mpn": "PESD2CANFD27V-TR",
+   "family": "PESD2CANFD27V",
+   "mfr": "Nexperia",
+   "desc": "CAN FD ESD protection diode, 27 V, 2-line",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23",
+   "aecq": false,
+   "ecuRoles": [
+    "CAN"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.11948,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PESD2CANFD27V-TR/11686246",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Out of stock, backorder. Automotive grade not confirmed for this code.",
+   "observedMpn": "PESD2CANFD27V-TR"
+  },
+  {
+   "mpn": "PMEG3010EH,115",
+   "family": "PMEG3010EH",
+   "mfr": "Nexperia",
+   "desc": "Schottky rectifier 30 V 1 A, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOD-123F",
+   "aecq": true,
+   "ecuRoles": [
+    "reverse polarity",
+    "OR-ing",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.0843,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMEG3010EH-115/1157694",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.0633,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_Nexperia_C426864.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key T&R 3000 ext 252.90; listing states Automotive / AEC-Q101. A second Digi-Key listing showed 0.06550 at 3000 (not recorded, conflicting). LCSC 3000+ ext 189.90. No separate -Q code exists in listings.",
+   "observedMpn": "PMEG3010EH,115"
+  },
+  {
+   "mpn": "TPD1E10B06QDPYRQ1",
+   "family": "TPD1E10B06-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Single-line bidirectional ESD diode, 6 V, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "X1SON-2 (0402, DPY)",
+   "aecq": true,
+   "ecuRoles": [
+    "I/O",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.13067,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD1E10B06QDPYRQ1/6609845",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.11579,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD1E10B06QDPYRQ1/6609845",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 5000,
+     "price": 0.127,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/ESD-Protection-Devices_Texas-Instruments-TPD1E10B06QDPYRQ1_C1847696.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key T&R tiers; LCSC TI listing (full reel 10000). LCSC also lists a Leiditech part with the same name (C2972451) - not used. Mouser UK GBP reel tiers unclear in source - not recorded. Package name from TI DPY code.",
+   "observedMpn": "TPD1E10B06QDPYRQ1"
+  },
+  {
+   "mpn": "TPSMB24AHE3_A/I",
+   "family": "TPSMB24A",
+   "mfr": "Vishay",
+   "desc": "TVS diode 600 W, 24 V (breakdown-rated series), unidirectional, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AA (SMB)",
+   "aecq": true,
+   "ecuRoles": [
+    "12 V input",
+    "BCM",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3200,
+     "price": 0.137,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Vishay-Semiconductors/TPSMB24AHE3_A-I?qs=BZBei1rCqCC9ckTcJX%2Ftdw%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Chosen as the stocked automotive 600 W SMB TVS (Vishay automotive code = HE3/HM3 suffix); no SMBJ24A HE3 listing found. Mouser full reel 3200; a lower top tier 0.129 had no stated quantity - not recorded.",
+   "observedMpn": "TPSMB24AHE3_A/I"
+  },
+  {
+   "mpn": "SMBJ24A-E3/52",
+   "family": "SMBJ24A",
+   "mfr": "Vishay",
+   "desc": "TVS diode 600 W, 24 V stand-off, unidirectional (commercial)",
+   "category": "fuse_tvs",
+   "pkg": "DO-214AA (SMB)",
+   "aecq": false,
+   "ecuRoles": [
+    "12 V input",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2250,
+     "price": 0.11675,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-general-semiconductor-diodes-division/SMBJ24A-E3-52/1091517",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 2250,
+     "price": 0.0893,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C435936.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Commercial grade (automotive = HE3/HM3 suffix per Vishay datasheet). Replaces the SMBJ24A estimate's basis.",
+   "observedMpn": "SMBJ24A-E3/52"
+  },
+  {
+   "mpn": "12401610E4#2A",
+   "family": "12401610E4",
+   "mfr": "Amphenol ICC",
+   "desc": "USB 3.1 Type-C receptacle, right angle, SMT",
+   "category": "connector_smt",
+   "pkg": "SMT R/A",
+   "aecq": false,
+   "ecuRoles": [
+    "infotainment",
+    "USB"
+   ],
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 500,
+     "price": 0.932,
+     "currency": "USD",
+     "url": "https://www.newark.com/amphenol-icc-commercial-products/12401610e4-2a/usb-conn-3-1-type-c-rcpt-r-a-smt/dp/59AC8815",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "No AEC-Q / automotive qualification stated. Digi-Key, LCSC, Arrow figures in the source were rounded ('about') - not recorded.",
+   "observedMpn": "12401610E4#2A"
+  },
+  {
+   "mpn": "ABM3BAIG-26.000MHZ-1Z-T",
+   "family": "ABM3BAIG",
+   "mfr": "Abracon",
+   "desc": "Crystal 26 MHz, 5.0x3.2 mm, AEC-Q200",
+   "category": "crystal_osc",
+   "pkg": "4-SMD 5.0x3.2",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.606,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/ABRACON/ABM3BAIG-26000MHZ-1Z-T?qs=uwxL4vQweFOFvzJgwkKDxg%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Full reel 1000 (ext 606.00). ABM3BAIG is Abracon's AEC-Q200 ABM3B variant (Mouser / Farnell listings state AEC-Q200).",
+   "observedMpn": "ABM3BAIG-26.000MHZ-1Z-T"
+  },
+  {
+   "mpn": "ABM3BAIG-8.000MHZ-1Z-T",
+   "family": "ABM3BAIG",
+   "mfr": "Abracon",
+   "desc": "Crystal 8 MHz, 5.0x3.2 mm, AEC-Q200",
+   "category": "crystal_osc",
+   "pkg": "4-SMD 5.0x3.2",
+   "aecq": true,
+   "ecuRoles": [
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.7153,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/abracon-llc/ABM3BAIG-8-000MHZ-1Z-T/10313749",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key 1000 tier.",
+   "observedMpn": "ABM3BAIG-8.000MHZ-1Z-T"
+  },
+  {
+   "mpn": "0501012.WRA",
+   "family": "0501",
+   "mfr": "Littelfuse",
+   "desc": "SMD fuse 12 A fast-acting, 1206, AEC-Q200 (501A series)",
+   "category": "fuse_tvs",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "power input",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.552,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Littelfuse/0501012.WRA?qs=r5DSvlrkXmL6WmckR9m8eg%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Full reel 3000 (ext 1,656.00); Mouser states AEC-Q200.",
+   "observedMpn": "0501012.WRA"
+  },
+  {
+   "mpn": "0501010.WRA",
+   "family": "0501",
+   "mfr": "Littelfuse",
+   "desc": "SMD fuse 10 A fast-acting, 1206, AEC-Q200 (501A series)",
+   "category": "fuse_tvs",
+   "pkg": "1206",
+   "aecq": true,
+   "ecuRoles": [
+    "power input",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.552,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Littelfuse/0501010.WRA?qs=r5DSvlrkXmJq5C1cQtOwrg%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Full reel tier (multiples of 3000).",
+   "observedMpn": "0501010.WRA"
+  },
+  {
+   "mpn": "0501015.WR",
+   "family": "0501",
+   "mfr": "Littelfuse",
+   "desc": "SMD fuse 15 A fast-acting, 24 VDC, 1206 (501 series)",
+   "category": "fuse_tvs",
+   "pkg": "1206",
+   "aecq": false,
+   "ecuRoles": [
+    "power input",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 3000,
+     "price": 0.369,
+     "currency": "USD",
+     "url": "https://www.newark.com/littelfuse/0501015-wr/fuse-smd-15a-1206-fast-acting/dp/28X4630?CMP=AFC-ECIA",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Full reel, min 3000. AEC-Q200 not confirmed for the .WR (non-A) code.",
+   "observedMpn": "0501015.WR"
+  },
+  {
+   "mpn": "ACT512",
+   "family": "ACT",
+   "mfr": "Panasonic",
+   "desc": "Automotive PCB relay (CT), SPDT, 12 VDC coil, 20 A",
+   "category": "relay_switch",
+   "pkg": "PCB through-hole",
+   "aecq": false,
+   "ecuRoles": [
+    "BCM",
+    "motor drive"
+   ],
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 100,
+     "price": 4.55,
+     "currency": "USD",
+     "url": "https://www.newark.com/panasonic/act512/relay-automotive-spdt-14vdc-20a/dp/68X2297",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 510,
+     "price": 3.06,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-electric-works/ACT512/644614",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Automotive relay (AEC-Q n/a to relays). A second Digi-Key snapshot gave a different 510 tier (rounded, ~3.55) - the 3.06 snapshot recorded; verify. Farnell UK pages inconsistent - not recorded.",
+   "observedMpn": "ACT512"
+  },
+  {
+   "mpn": "34691-0080",
+   "family": "34691",
+   "mfr": "Molex",
+   "desc": "Automotive PCB header 8-way, right angle (Stac64)",
+   "category": "through_hole",
+   "pkg": "R/A header 8-way",
+   "aecq": false,
+   "ecuRoles": [
+    "ECU harness"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 10080,
+     "price": 0.79,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Molex/34691-0080?qs=5gX812lLwiGOlfdVvZU2ng%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser classes 34691 as Stac64, not MX150 (task assumed MX150). Mounting style not confirmed in the source. 16-/20-way siblings' top-tier quantities not stated - not recorded.",
+   "observedMpn": "34691-0080"
+  },
+  {
+   "mpn": "GT17V-10DP-DS(70)",
+   "family": "GT17",
+   "mfr": "Hirose",
+   "desc": "Automotive wire-to-board plug header 10-way, vertical, through hole",
+   "category": "through_hole",
+   "pkg": "TH vertical 10-way",
+   "aecq": false,
+   "ecuRoles": [
+    "ECU harness",
+    "camera"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 3.32,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Hirose-Connector/GT17V-10DP-DS70?qs=gyfFsMMHMKyS3U5hC8rSqg%3D%3D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser 1000 tier (ext 3,320.00), category Automotive Connectors.",
+   "observedMpn": "GT17V-10DP-DS(70)"
+  },
+  {
+   "mpn": "2304372-1",
+   "family": "2304372",
+   "mfr": "TE Connectivity",
+   "desc": "MATEnet automotive Ethernet PCB header, 2-position, right angle, through hole",
+   "category": "through_hole",
+   "pkg": "TH R/A 2-way",
+   "aecq": false,
+   "ecuRoles": [
+    "automotive Ethernet",
+    "gateway",
+    "ADAS"
+   ],
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 500,
+     "price": 2.43,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/te-connectivity/2304372-1/automotive-connector-r-a-header/dp/3793577",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell UK 500+ ex VAT. Digi-Key snapshot (850 qty) was internally inconsistent (unit vs extended) - not recorded. Newark top shown break 50+ (< 100) - not recorded.",
+   "observedMpn": "2304372-1"
+  },
+  {
+   "mpn": "59S20K-40MT5-Y",
+   "family": "59S20K",
+   "mfr": "Rosenberger",
+   "desc": "FAKRA PCB jack/plug, coax",
+   "category": "connector_smt",
+   "pkg": "PCB",
+   "aecq": false,
+   "ecuRoles": [
+    "camera",
+    "radar",
+    "antenna"
+   ],
+   "observations": [],
+   "notes": "Two searches: no listing / price for 59S20K. Sibling 59S1AC-40MT5-D on Mouser showed a top tier with no stated quantity - not recorded.",
+   "observedMpn": "59S20K-40MT5-Y"
+  },
+  {
+   "mpn": "V23234-A1001-X036",
+   "family": "V23234",
+   "mfr": "TE Connectivity",
+   "desc": "Automotive power relay, SPDT, 12 VDC, 50 A",
+   "category": "relay_switch",
+   "pkg": "plug-in / socket",
+   "aecq": false,
+   "ecuRoles": [
+    "power distribution"
+   ],
+   "observations": [],
+   "notes": "Farnell UK: no longer stocked, breaks unclear. Newark tiers seen only on a canada.newark.com category page (CAD, inconsistent 1+ tier) - not recorded.",
+   "observedMpn": "V23234-A1001-X036"
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "Amphenol FAKRA FA1-\u2026 PCB jack",
+   "why": "coax camera/antenna header; budget spent"
+  },
+  {
+   "code": "Rosenberger H-MTD E6Z\u2026 PCB jack",
+   "why": "E6S20A-40MT5-Z already priced; E6Z not reached"
+  },
+  {
+   "code": "TE HFM PCB header",
+   "why": "high-speed coax header; budget spent"
+  },
+  {
+   "code": "Molex MX150 headers (33472-\u2026), Mini50 retry, MX123, TE AMPSEAL 16, JST JWPF, Hirose GT8E",
+   "why": "main ECU harness headers; budget spent"
+  },
+  {
+   "code": "Nexperia PZU5.1 (\u2026-Q), Littelfuse SMF, onsemi SZESD\u2026",
+   "why": "automotive zener / TVS / ESD; budget spent"
+  },
+  {
+   "code": "NDK NX2016SA / NX3225GA automotive, TXC 7M / 8Y automotive, Epson FA-128 automotive",
+   "why": "crystals; siblings in catalogue, budget spent"
+  },
+  {
+   "code": "SiTime SiT9396",
+   "why": "searched once: no listing or price found on franchised sites"
+  },
+  {
+   "code": "Nichia NSSW\u2026AT / NJSW\u2026AT",
+   "why": "searched once: no automotive code priced (only non-automotive NSSW157BT on RS, no breaks)"
+  },
+  {
+   "code": "Lumileds LUXEON automotive, OSRAM KW CSLNM1",
+   "why": "automotive LEDs; budget spent"
+  },
+  {
+   "code": "Panasonic CV relay, Littelfuse 885 automotive fuses",
+   "why": "budget spent (0885005.DR priced in round 4)"
+  }
+ ]
+}

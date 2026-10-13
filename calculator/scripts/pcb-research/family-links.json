@@ -223,6 +223,50 @@
   "TXS0108E": {
    "member": "TXS0108EQPWRQ1",
    "why": "the AEC-Q100 orderable of TXS0108E (ADAS round 2)"
+  },
+  "TCAN1462": {
+   "member": "TCAN1462VDRBRQ1",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "LM5060": {
+   "member": "LM5060Q1MM/NOPB",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "TPS65313": {
+   "member": "TPS65313QRWGRQ1",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "TAS6424": {
+   "member": "TAS6424QDKQRQ1",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "74HC595": {
+   "member": "74HC595D-Q100,118",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "W25N01": {
+   "member": "W25N01GVZEIG",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "MT41K256M16": {
+   "member": "MT41K256M16TW-107 AAT:P",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "AT24C02": {
+   "member": "AT24C02D-SSHM-T",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "ESD9B5": {
+   "member": "ESD9B5.0ST5G",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "BAS16": {
+   "member": "BAS16,215",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
+  },
+  "BC857": {
+   "member": "BC857B,215",
+   "why": "round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code"
   }
  }
 }

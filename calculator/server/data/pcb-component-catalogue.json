@@ -247,15 +247,31 @@
    "pkg": "SOIC-8",
    "aecq": true,
    "gbp": {
-    "q1k": 0.4212,
-    "q10k": 0.358,
-    "q100k": 0.3033,
-    "q200k": 0.2888,
-    "q300k": 0.2807
+    "q1k": 0.3467,
+    "q10k": 0.2947,
+    "q100k": 0.2505,
+    "q200k": 0.2385,
+    "q300k": 0.2318
    },
    "confidence": "distributor",
-   "source": "Digi-Key $0.5168 @2.5k reel (1k ≈ $0.54); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
-   "asOf": "2026-10-01",
+   "source": "LCSC $0.459 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.459,
+     "currency": "USD",
+     "url": "https://support.lcsc.com/product-detail/CAN-Transceivers_Texas-Instruments-TCAN1044AVDRQ1_C3234993.html",
+     "date": "2026-10-13",
+     "gbp": 0.3467
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
+   },
    "aliases": [
     "1044AV",
     "1044V",
@@ -522,7 +538,7 @@
     "q300k": 9.1811
    },
    "confidence": "distributor",
-   "source": "Mouser $15.42 @100; Mouser $14.7 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0297, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "source": "Mouser $15.42 @100; Mouser $14.7 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0297, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted. DISPUTED: round 5 verify: Farnell JP lists the exact code at JPY 5,106 @100 (~2.2x); the stored Mouser price came from a search page that does not name the code.",
    "asOf": "2026-10-09",
    "ecuRoles": [
     "radar",
@@ -784,8 +800,8 @@
     "q300k": 15.4981
    },
    "confidence": "distributor",
-   "source": "Mouser $30.69 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-06",
+   "source": "Mouser $30.69 @1,000; Digi-Key $31.18 @176 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
    "observations": [
     {
      "distributor": "Mouser",
@@ -795,13 +811,25 @@
      "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/AWR1843ABGABLRQ1?qs=%2B6g0mu59x7LDewSwpLCJ2g%3D%3D",
      "date": "2026-10-06",
      "gbp": 23.1802
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 176,
+     "price": 31.18,
+     "currency": "USD",
+     "url": "https://digikey.com/en/products/detail/texas-instruments/AWR1843ABGABLQ1/10715316",
+     "date": "2026-10-13",
+     "gbp": 23.5503
     }
    ],
    "volumeModel": {
     "b": 0.0706,
     "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
     "derivedAbove": 1000
-   }
+   },
+   "aliases": [
+    "AWR1843ABGABLQ1"
+   ]
   },
   {
    "mpn": "AWR2944ALBGALTRQ1",
@@ -838,7 +866,7 @@
     "q300k": 15.0713
    },
    "confidence": "distributor",
-   "source": "Arrow $29.00, Mouser $30.33, Avnet $27.11, Newark $26.54 @1k+; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+   "source": "Arrow $29.00, Mouser $30.33, Avnet $27.11, Newark $26.54 @1k+; 1k → 10k ×0.85, 100k ×0.72 (franchise curve) DISPUTED: round 5 verify: this code is not orderable anywhere (real S32R294 codes are FS32R294KCK0MJDR / -T); the stored price has no URL.",
    "asOf": "2026-10-01",
    "aliases": [
     "S32R294",
@@ -945,7 +973,7 @@
     "q300k": 0.8471
    },
    "confidence": "distributor",
-   "source": "Digi-Key LMR33630CDDA $1.63 @1,050 (Q1 variant similar); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
+   "source": "Digi-Key LMR33630CDDA $1.63 @1,050 (Q1 variant similar); 1k → 10k ×0.85, 100k ×0.72 (franchise curve) DISPUTED: round 5 verify: this exact code was not found at any distributor - check that it exists.",
    "asOf": "2026-10-01"
   },
   {
@@ -1106,15 +1134,31 @@
    "pkg": "SOIC-8",
    "aecq": true,
    "gbp": {
-    "q1k": 0.624,
-    "q10k": 0.5304,
-    "q100k": 0.4493,
-    "q200k": 0.4278,
-    "q300k": 0.4158
+    "q1k": 0.7851,
+    "q10k": 0.6673,
+    "q100k": 0.5672,
+    "q200k": 0.5401,
+    "q300k": 0.5249
    },
    "confidence": "distributor",
-   "source": "Master $0.888 @1k; LCSC $0.711 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)",
-   "asOf": "2026-10-01"
+   "source": "LCSC $1.0394 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.0394,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C124016.html",
+     "date": "2026-10-13",
+     "gbp": 0.7851
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
+   }
   },
   {
    "mpn": "ATA6560-GBQW",
@@ -2309,7 +2353,7 @@
     "q300k": 9.9434
    },
    "confidence": "distributor",
-   "source": "Priced on the sibling orderable code SPC5744PK1AMLQ8 (the listed code was not found at a distributor). Digi-Key $21.4368 @300 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "Priced on the sibling orderable code SPC5744PK1AMLQ8 (the listed code was not found at a distributor). Digi-Key $21.4368 @300 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: round 5 verify: priced on SPC5744PK1AMLQ8 - the last digit is probably a different frequency grade, not packing.",
    "asOf": "2026-10-06",
    "ecuRoles": [
     "EPS",
@@ -2966,48 +3010,6 @@
    "asOf": "2026-10-01"
   },
   {
-   "mpn": "R7F7015873AFP-C#AA3",
-   "family": "RH850F1KH",
-   "mfr": "Renesas",
-   "desc": "RH850/F1K premium (F1KH) 32-bit MCU, 3-5.5 V, AEC-Q100",
-   "category": "ic_tqfp",
-   "pkg": "LQFP",
-   "aecq": true,
-   "gbp": {
-    "q1k": 7.9231,
-    "q10k": 6.7346,
-    "q100k": 5.7244,
-    "q200k": 5.4511,
-    "q300k": 5.2973
-   },
-   "confidence": "distributor",
-   "source": "Mouser $10.49 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-13",
-   "ecuRoles": [
-    "body",
-    "gateway"
-   ],
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 1000,
-     "price": 10.49,
-     "currency": "USD",
-     "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/?core=G3KH",
-     "date": "2026-10-13",
-     "gbp": 7.9231
-    }
-   ],
-   "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 1000
-   },
-   "aliases": [
-    "RH850F1KH"
-   ]
-  },
-  {
    "mpn": "RH850U2A",
    "family": "RH850U2A",
    "mfr": "Renesas",
@@ -3631,15 +3633,20 @@
    "pkg": "SOIC/VQFN",
    "aecq": true,
    "gbp": {
-    "q1k": 0.6471,
-    "q10k": 0.55,
-    "q100k": 0.4675,
-    "q200k": 0.4452,
-    "q300k": 0.4326
+    "q1k": 0.5826,
+    "q10k": 0.4952,
+    "q100k": 0.4209,
+    "q200k": 0.4008,
+    "q300k": 0.3895
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member TCAN1462VDRBRQ1 (distributor-priced, 2026-10-09; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.6471 @1k.",
+   "asOf": "2026-10-09",
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 15000
+   }
   },
   {
    "mpn": "TCAN4550RGYRQ1",
@@ -5247,15 +5254,20 @@
    "pkg": "SOIC/VQFN/TSDSO",
    "aecq": true,
    "gbp": {
-    "q1k": 1.7647,
-    "q10k": 1.5,
-    "q100k": 1.275,
-    "q200k": 1.2141,
-    "q300k": 1.1799
+    "q1k": 1.3444,
+    "q10k": 1.1427,
+    "q100k": 0.9713,
+    "q200k": 0.9249,
+    "q300k": 0.8989
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member LM5060Q1MM/NOPB (distributor-priced, 2026-10-13; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.7647 @1k.",
+   "asOf": "2026-10-13",
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
+   }
   },
   {
    "mpn": "TPS65313",
@@ -5266,15 +5278,20 @@
    "pkg": "SOIC/VQFN/TSDSO",
    "aecq": true,
    "gbp": {
-    "q1k": 7.0588,
-    "q10k": 6,
-    "q100k": 5.1,
-    "q200k": 4.8565,
-    "q300k": 4.7195
+    "q1k": 4.5161,
+    "q10k": 4.1288,
+    "q100k": 3.7748,
+    "q200k": 3.6743,
+    "q300k": 3.6167
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member TPS65313QRWGRQ1 (distributor-priced, 2026-10-06; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £7.0588 @1k.",
+   "asOf": "2026-10-06",
+   "volumeModel": {
+    "b": 0.0389,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 2000
+   }
   },
   {
    "mpn": "TPS65381",
@@ -6171,15 +6188,20 @@
    "pkg": "SOIC/VQFN/TSDSO",
    "aecq": true,
    "gbp": {
-    "q1k": 6.4706,
-    "q10k": 5.5,
-    "q100k": 4.675,
-    "q200k": 4.4518,
-    "q300k": 4.3262
+    "q1k": 7.0289,
+    "q10k": 5.8161,
+    "q100k": 4.8126,
+    "q200k": 4.5459,
+    "q300k": 4.3968
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member TAS6424QDKQRQ1 (distributor-priced, 2026-10-06; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £6.4706 @1k.",
+   "asOf": "2026-10-06",
+   "volumeModel": {
+    "b": 0.0823,
+    "basis": "slope from the part's own breaks (2 pairs)",
+    "derivedAbove": 1000
+   }
   },
   {
    "mpn": "FDA803",
@@ -6626,15 +6648,20 @@
    "pkg": "SOIC/TSSOP",
    "aecq": true,
    "gbp": {
-    "q1k": 0.1647,
-    "q10k": 0.14,
-    "q100k": 0.119,
-    "q200k": 0.1133,
-    "q300k": 0.1101
+    "q1k": 0.1016,
+    "q10k": 0.0863,
+    "q100k": 0.0734,
+    "q200k": 0.0699,
+    "q300k": 0.0679
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member 74HC595D-Q100,118 (distributor-priced, 2026-10-06; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.1647 @1k.",
+   "asOf": "2026-10-06",
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
+   }
   },
   {
    "mpn": "SN65HVD230",
@@ -6955,15 +6982,20 @@
    "pkg": "SOIC/BGA",
    "aecq": true,
    "gbp": {
-    "q1k": 1.7647,
-    "q10k": 1.5,
-    "q100k": 1.275,
-    "q200k": 1.2141,
-    "q300k": 1.1799
+    "q1k": 1.8255,
+    "q10k": 1.5517,
+    "q100k": 1.3189,
+    "q200k": 1.256,
+    "q300k": 1.2205
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member W25N01GVZEIG (distributor-priced, 2026-10-13; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £1.7647 @1k.",
+   "asOf": "2026-10-13",
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 960
+   }
   },
   {
    "mpn": "MX25L12835",
@@ -7295,15 +7327,20 @@
    "pkg": "SOIC/BGA",
    "aecq": true,
    "gbp": {
-    "q1k": 3.5294,
-    "q10k": 3,
-    "q100k": 2.55,
-    "q200k": 2.4282,
-    "q300k": 2.3597
+    "q1k": 2.7723,
+    "q10k": 2.3564,
+    "q100k": 2.003,
+    "q200k": 1.9073,
+    "q300k": 1.8535
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member MT41K256M16TW-107 AAT:P (distributor-priced, 2026-10-06; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £3.5294 @1k.",
+   "asOf": "2026-10-06",
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
+   }
   },
   {
    "mpn": "MT53E",
@@ -7409,15 +7446,20 @@
    "pkg": "SOIC/BGA",
    "aecq": true,
    "gbp": {
-    "q1k": 0.0824,
-    "q10k": 0.07,
-    "q100k": 0.0595,
-    "q200k": 0.0567,
-    "q300k": 0.0551
+    "q1k": 0.1026,
+    "q10k": 0.0921,
+    "q100k": 0.0827,
+    "q200k": 0.0801,
+    "q300k": 0.0786
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member AT24C02D-SSHM-T (distributor-priced, 2026-10-09; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.0824 @1k.",
+   "asOf": "2026-10-09",
+   "volumeModel": {
+    "b": 0.0468,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 4000
+   }
   },
   {
    "mpn": "CAT24C",
@@ -8306,23 +8348,55 @@
    "asOf": "2026-10-01"
   },
   {
-   "mpn": "SMBJ24A",
+   "mpn": "SMBJ24A-E3/52",
    "family": "SMBJ24A",
-   "mfr": "Littelfuse",
-   "desc": "TVS 600 W 24 V",
+   "mfr": "Vishay",
+   "desc": "TVS diode 600 W, 24 V stand-off, unidirectional (commercial)",
    "category": "fuse_tvs",
-   "pkg": "SMD",
-   "aecq": true,
+   "pkg": "DO-214AA (SMB)",
+   "aecq": false,
    "gbp": {
-    "q1k": 0.1176,
-    "q10k": 0.1,
-    "q100k": 0.085,
-    "q200k": 0.0809,
-    "q300k": 0.0787
+    "q1k": 0.0824,
+    "q10k": 0.07,
+    "q100k": 0.0595,
+    "q200k": 0.0567,
+    "q300k": 0.0551
    },
-   "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "confidence": "distributor",
+   "source": "Digi-Key $0.11675 @2,250; LCSC $0.0893 @2,250 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "12 V input",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 2250,
+     "price": 0.11675,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-general-semiconductor-diodes-division/SMBJ24A-E3-52/1091517",
+     "date": "2026-10-13",
+     "gbp": 0.0882
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 2250,
+     "price": 0.0893,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C435936.html",
+     "date": "2026-10-13",
+     "gbp": 0.0674
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 2250
+   },
+   "aliases": [
+    "SMBJ24A"
+   ]
   },
   {
    "mpn": "SMCJ33A",
@@ -8490,15 +8564,20 @@
    "pkg": "SMD",
    "aecq": true,
    "gbp": {
-    "q1k": 0.0353,
-    "q10k": 0.03,
-    "q100k": 0.0255,
-    "q200k": 0.0243,
-    "q300k": 0.0236
+    "q1k": 0.0165,
+    "q10k": 0.0133,
+    "q100k": 0.0108,
+    "q200k": 0.0101,
+    "q300k": 0.0097
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member ESD9B5.0ST5G (distributor-priced, 2026-10-09; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.0353 @1k.",
+   "asOf": "2026-10-09",
+   "volumeModel": {
+    "b": 0.0918,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 16000
+   }
   },
   {
    "mpn": "BAS16",
@@ -8509,15 +8588,20 @@
    "pkg": "SMD",
    "aecq": true,
    "gbp": {
-    "q1k": 0.0165,
-    "q10k": 0.014,
-    "q100k": 0.0119,
-    "q200k": 0.0113,
-    "q300k": 0.011
+    "q1k": 0.0107,
+    "q10k": 0.0085,
+    "q100k": 0.0067,
+    "q200k": 0.0062,
+    "q300k": 0.006
    },
    "confidence": "estimate",
-   "source": "engineering estimate, 2025/26 distributor levels",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member BAS16,215 (distributor-priced, 2026-10-13; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.0165 @1k.",
+   "asOf": "2026-10-13",
+   "volumeModel": {
+    "b": 0.1027,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 21000
+   }
   },
   {
    "mpn": "BAT54S",
@@ -8818,15 +8902,20 @@
    "pkg": "SOT-23/DPAK",
    "aecq": true,
    "gbp": {
-    "q1k": 0.01529,
-    "q10k": 0.013,
-    "q100k": 0.01105,
-    "q200k": 0.0105,
-    "q300k": 0.0102
+    "q1k": 0.0195,
+    "q10k": 0.0165,
+    "q100k": 0.0141,
+    "q200k": 0.0134,
+    "q300k": 0.013
    },
    "confidence": "estimate",
-   "source": "engineering estimate re-based on as BC847 (2026-10-01)",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member BC857B,215 (distributor-priced, 2026-10-13; round 5 review (13 Oct 2026): the family key names one device; the member is its catalogued, distributor-priced orderable code). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.01529 @1k.",
+   "asOf": "2026-10-13",
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 3000
+   }
   },
   {
    "mpn": "SMMBT3904LT1G",
@@ -8972,15 +9061,20 @@
    "pkg": "SOT-23/DPAK",
    "aecq": true,
    "gbp": {
-    "q1k": 0.0702,
-    "q10k": 0.05967,
-    "q100k": 0.05054,
-    "q200k": 0.0481,
-    "q300k": 0.0468
+    "q1k": 0.1218,
+    "q10k": 0.1035,
+    "q100k": 0.088,
+    "q200k": 0.0838,
+    "q300k": 0.0814
    },
    "confidence": "estimate",
-   "source": "Family key priced as its catalogued member SI2301CDS-T1-GE3 (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.08235 @1k.",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member SI2301CDS-T1-GE3 (distributor-priced, 2026-10-13). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.08235 @1k.",
+   "asOf": "2026-10-13",
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 3000
+   }
   },
   {
    "mpn": "IRLML6344",
@@ -8991,15 +9085,20 @@
    "pkg": "SOT-23/DPAK",
    "aecq": true,
    "gbp": {
-    "q1k": 0.08057,
-    "q10k": 0.06848,
-    "q100k": 0.05801,
-    "q200k": 0.0552,
-    "q300k": 0.0537
+    "q1k": 0.0913,
+    "q10k": 0.0776,
+    "q100k": 0.066,
+    "q200k": 0.0628,
+    "q300k": 0.0611
    },
    "confidence": "estimate",
-   "source": "Family key priced as its catalogued member IRLML6344TRPBF (distributor-priced, 2026-10-01). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.0941 @1k.",
-   "asOf": "2026-10-01"
+   "source": "Family key priced as its catalogued member IRLML6344TRPBF (distributor-priced, 2026-10-13). A BOM line that names only the family does not say which variant, so this stays an estimate to verify. Was an engineering estimate of £0.0941 @1k.",
+   "asOf": "2026-10-13",
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 3000
+   }
   },
   {
    "mpn": "IRLML2502",
@@ -10886,7 +10985,7 @@
     "q300k": 0.0026
    },
    "confidence": "distributor",
-   "source": "Priced on the sibling orderable code CRCW04020000Z0ED (same Vishay CRCW0402 AEC-Q200 series, 0 ohm jumper - thick-film series pricing does not depend on the value; no 10 k listing was recorded). Digi-Key $0.00452 @10,000; Farnell £0.0033 @10,000; TTI $0.0027 @10,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "Priced on the sibling orderable code CRCW04020000Z0ED (the listed code was not found at a distributor). Digi-Key $0.00452 @10,000; Farnell £0.0033 @10,000; TTI $0.0027 @10,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
    "asOf": "2026-10-09",
    "ecuRoles": [
     "ECU",
@@ -11428,15 +11527,49 @@
    "pkg": "SOT-23",
    "aecq": false,
    "gbp": {
-    "q1k": 0.08057,
-    "q10k": 0.06848,
-    "q100k": 0.05801,
-    "q200k": 0.0552,
-    "q300k": 0.0537
+    "q1k": 0.0913,
+    "q10k": 0.0776,
+    "q100k": 0.066,
+    "q200k": 0.0628,
+    "q300k": 0.0611
    },
    "confidence": "distributor",
-   "source": "Digi-Key $0.1033 @3k: $0.1033 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
-   "asOf": "2026-10-01"
+   "source": "Future Electronics $0.0815 @3,000; LCSC $0.1119 @3,000; element14 Singapore SGD 0.149 @3,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 3000,
+     "price": 0.0815,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--discretes--transistors--mosfets/irlml6344trpbf-infineon-1004163",
+     "date": "2026-10-13",
+     "gbp": 0.0616
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.1119,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C53550.html",
+     "date": "2026-10-13",
+     "gbp": 0.0845
+    },
+    {
+     "distributor": "element14 Singapore",
+     "qty": 3000,
+     "price": 0.149,
+     "currency": "SGD",
+     "url": "https://sg.element14.com/infineon/irlml6344trpbf/mosfet-n-ch-30v-5a-sot23/dp/1857299",
+     "date": "2026-10-13",
+     "gbp": 0.088
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 3000
+   }
   },
   {
    "mpn": "SI2301CDS-T1-GE3",
@@ -11447,15 +11580,49 @@
    "pkg": "SOT-23",
    "aecq": false,
    "gbp": {
-    "q1k": 0.0702,
-    "q10k": 0.05967,
-    "q100k": 0.05054,
-    "q200k": 0.0481,
-    "q300k": 0.0468
+    "q1k": 0.1218,
+    "q10k": 0.1035,
+    "q100k": 0.088,
+    "q200k": 0.0838,
+    "q300k": 0.0814
    },
    "confidence": "distributor",
-   "source": "TTI €0.075–0.082, Arrow $0.115, LCSC $0.047, Digi-Key $0.17 @3k; mid $0.09: $0.09 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
-   "asOf": "2026-10-01"
+   "source": "TME $0.089 @3,000; Mouser $0.132 @3,000; RS Components £0.116 @2,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 3000,
+     "price": 0.089,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/si2301cds-t1-ge3",
+     "date": "2026-10-13",
+     "gbp": 0.0672
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.132,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/si2301cds-t1-ge3",
+     "date": "2026-10-13",
+     "gbp": 0.0997
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 2000,
+     "price": 0.116,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mosfets/7103238?gb=s",
+     "date": "2026-10-13",
+     "gbp": 0.116
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 3000
+   }
   },
   {
    "mpn": "NCP18XH103F03RB",
@@ -11715,15 +11882,43 @@
    "pkg": "SMT",
    "aecq": false,
    "gbp": {
-    "q1k": 0.234,
-    "q10k": 0.1989,
-    "q100k": 0.16848,
-    "q200k": 0.1604,
-    "q300k": 0.1559
+    "q1k": 0.1268,
+    "q10k": 0.1192,
+    "q100k": 0.1121,
+    "q200k": 0.11,
+    "q300k": 0.1089
    },
    "confidence": "distributor",
-   "source": "Digi-Key $0.300, JAK $0.291, GAM $0.336 @1k (LCSC $0.475, TLC $0.196): $0.3 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72",
-   "asOf": "2026-10-01"
+   "source": "Priced on the sibling orderable code SM06B-GHS-TB(LF)(SN) (the listed code was not found at a distributor). LCSC $0.171 @500; LCSC $0.1638 @2,500 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0267, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 500,
+     "price": 0.171,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C133065.html",
+     "date": "2026-10-13",
+     "gbp": 0.1292
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 2500,
+     "price": 0.1638,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C133065.html",
+     "date": "2026-10-13",
+     "gbp": 0.1237
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0267,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 2500
+   },
+   "aliases": [
+    "SM06B-GHS-TB(LF)(SN)"
+   ]
   },
   {
    "mpn": "DF40C-60DP-0.4V(51)",
@@ -12483,7 +12678,7 @@
     "q300k": 5.2985
    },
    "confidence": "distributor",
-   "source": "Mouser $8.79 @250; Mouser $9.05 @100 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0318, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "source": "Mouser $8.79 @250; Mouser $9.05 @100 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0318, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted. DISPUTED: round 5 verify: Newark appeared at $12.64 @500 v the stored Mouser $8.79 @250 (generic search page, not recorded) - may be under-priced.",
    "asOf": "2026-10-06",
    "ecuRoles": [
     "BMS",
@@ -12757,46 +12952,6 @@
     "b": 0.0706,
     "basis": "franchise curve (no second break found): 10k = 1k × 0.85; distributors disagree > 2.5× — every distributor kept, the median used",
     "derivedAbove": 500
-   }
-  },
-  {
-   "mpn": "ADBMS2950WFSCCSZ",
-   "family": "ADBMS2950",
-   "mfr": "Analog Devices",
-   "desc": "Battery pack monitor: dual current + voltage, ASIL-D",
-   "category": "ic_qfn",
-   "pkg": "LFCSP-48",
-   "aecq": true,
-   "gbp": {
-    "q1k": 9.9173,
-    "q10k": 8.4297,
-    "q100k": 7.1653,
-    "q200k": 6.8232,
-    "q300k": 6.6307
-   },
-   "confidence": "distributor",
-   "source": "Digi-Key $14.44 @260 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-06",
-   "ecuRoles": [
-    "BMS",
-    "BJB",
-    "pack controller"
-   ],
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 260,
-     "price": 14.44,
-     "currency": "USD",
-     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/ADBMS2950WCCSZ/22118755",
-     "date": "2026-10-06",
-     "gbp": 10.9065
-    }
-   ],
-   "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 260
    }
   },
   {
@@ -16220,48 +16375,6 @@
    }
   },
   {
-   "mpn": "MVR5510AMBA6ES",
-   "family": "VR5510",
-   "mfr": "NXP Semiconductors",
-   "desc": "PMIC for S32G, ASIL B, 3 buck + boost + 4 LDO",
-   "category": "ic_qfn",
-   "pkg": "HVQFN-56",
-   "aecq": true,
-   "gbp": {
-    "q1k": 6.2271,
-    "q10k": 5.293,
-    "q100k": 4.4991,
-    "q200k": 4.2843,
-    "q300k": 4.1634
-   },
-   "confidence": "distributor",
-   "source": "Avnet $8.634 @520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-09",
-   "ecuRoles": [
-    "gateway",
-    "domain controller"
-   ],
-   "observations": [
-    {
-     "distributor": "Avnet",
-     "qty": 520,
-     "price": 8.634,
-     "currency": "USD",
-     "url": "https://www.avnet.com/americas/product/nxp/mvr5510ambanes/evolve-64144456/",
-     "date": "2026-10-09",
-     "gbp": 6.5213
-    }
-   ],
-   "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 520
-   },
-   "aliases": [
-    "MVR5510AMBA6ES"
-   ]
-  },
-  {
    "mpn": "MC33PF8200D2ES",
    "family": "PF8200",
    "mfr": "NXP Semiconductors",
@@ -17944,8 +18057,8 @@
     "q300k": 3.3046
    },
    "confidence": "distributor",
-   "source": "Mouser $7.69 @800; Mouser $8.59 @250 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0952, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-06",
+   "source": "Mouser $7.69 @800; Mouser $8.59 @250; Farnell JPY 904.32 @250 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0952, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
    "ecuRoles": [
     "ECM",
     "BCM"
@@ -17968,13 +18081,25 @@
      "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TLE6240GP?qs=mzcOS1kGbgeKpMCv3zq/WA%3D%3D",
      "date": "2026-10-06",
      "gbp": 6.488
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 904.32,
+     "currency": "JPY",
+     "url": "https://jp.farnell.com/en-JP/infineon/tle6240gpauma1/power-load-sw-low-side-5-5v-soic/dp/2480895",
+     "date": "2026-10-13",
+     "gbp": 4.338
     }
    ],
    "volumeModel": {
     "b": 0.0952,
     "basis": "slope from the part's own breaks (1 pair)",
     "derivedAbove": 800
-   }
+   },
+   "aliases": [
+    "TLE6240GPAUMA1"
+   ]
   },
   {
    "mpn": "MC33816AE",
@@ -20394,15 +20519,15 @@
    "pkg": "416-MAPBGA",
    "aecq": true,
    "gbp": {
-    "q1k": 38.4489,
-    "q10k": 32.6815,
-    "q100k": 27.7793,
-    "q200k": 26.453,
-    "q300k": 25.7067
+    "q1k": 28.8127,
+    "q10k": 24.4908,
+    "q100k": 20.8171,
+    "q200k": 19.8232,
+    "q300k": 19.264
    },
    "confidence": "distributor",
-   "source": "Digi-Key $57.0293 @200 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-06",
+   "source": "Digi-Key $57.0293 @200; Avnet $40.06 @500 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
    "ecuRoles": [
     "engine control",
     "transmission",
@@ -20417,13 +20542,25 @@
      "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SPC5777CCK3MME3/7648118",
      "date": "2026-10-06",
      "gbp": 43.0742
+    },
+    {
+     "distributor": "Avnet",
+     "qty": 500,
+     "price": 40.06,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/spc5777cck3mme3r/NXP-Semiconductors",
+     "date": "2026-10-13",
+     "gbp": 30.2573
     }
    ],
    "volumeModel": {
     "b": 0.0706,
     "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 200
-   }
+    "derivedAbove": 500
+   },
+   "aliases": [
+    "SPC5777CCK3MME3R"
+   ]
   },
   {
    "mpn": "STM32G474RET3",
@@ -21636,48 +21773,6 @@
     "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
     "derivedAbove": 1000
    }
-  },
-  {
-   "mpn": "AD2S1205WYSTZ",
-   "family": "AD2S1205",
-   "mfr": "Analog Devices",
-   "desc": "Resolver-to-digital converter 12-bit",
-   "category": "ic_tqfp",
-   "pkg": "LQFP-44",
-   "aecq": true,
-   "gbp": {
-    "q1k": 12.9394,
-    "q10k": 10.9985,
-    "q100k": 9.3487,
-    "q200k": 8.9023,
-    "q300k": 8.6512
-   },
-   "confidence": "distributor",
-   "source": "Priced on the sibling orderable code AD2S1205YSTZ (the listed code was not found at a distributor). Digi-Key $19.497 @160 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-06",
-   "ecuRoles": [
-    "traction inverter",
-    "EPS"
-   ],
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 160,
-     "price": 19.497,
-     "currency": "USD",
-     "url": "https://www.digikey.com/product-detail/en/AD2S1205YSTZ/AD2S1205YSTZ-ND/1551344",
-     "date": "2026-10-06",
-     "gbp": 14.7261
-    }
-   ],
-   "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 160
-   },
-   "aliases": [
-    "AD2S1205YSTZ"
-   ]
   },
   {
    "mpn": "AIMW120R045M1",
@@ -29500,7 +29595,7 @@
     "q300k": 16.5752
    },
    "confidence": "distributor",
-   "source": "Avnet $34.726 @450 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "Avnet $34.726 @450 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: round 5 verify: the stored \"Avnet\" $34.726 equals a Richardson RFPD listing relayed by an aggregator - Richardson is not an allowed source.",
    "asOf": "2026-10-06",
    "ecuRoles": [
     "OBC",
@@ -31278,7 +31373,7 @@
     "q300k": 45.3216
    },
    "confidence": "distributor",
-   "source": "Digi-Key $94.24758 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "Digi-Key $94.24758 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: Digi-Key base-product (family) page, not the exact code's detail page; the price may belong to another S32G399 variant (possible, not proven)..",
    "asOf": "2026-10-09",
    "ecuRoles": [
     "gateway",
@@ -32023,15 +32118,15 @@
    "pkg": "TQFN (GTN)",
    "aecq": true,
    "gbp": {
-    "q1k": 18.7758,
-    "q10k": 17.6988,
-    "q100k": 16.6837,
-    "q200k": 16.3897,
-    "q300k": 16.2201
+    "q1k": 18.6908,
+    "q10k": 17.8207,
+    "q100k": 16.9911,
+    "q200k": 16.749,
+    "q300k": 16.609
    },
    "confidence": "distributor",
-   "source": "Priced on the sibling orderable code MAX96724GTN/VY+T; (the listed code was not found at a distributor). Digi-Key $25.73269 @260; Digi-Key $24.28118 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0257, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-09",
+   "source": "Priced on the sibling orderable code MAX96724GTN/VY+T; (the listed code was not found at a distributor). Digi-Key $25.73269 @260; Digi-Key $24.28118 @2,500; Farnell €20.08 @100; Farnell €19.78 @260 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0207, slope from the part's own breaks (2 pairs). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
    "ecuRoles": [
     "ADAS",
     "ADAS domain controller",
@@ -32055,15 +32150,34 @@
      "url": "https://www.digikey.com/en/products/detail/analog-devices-inc-maxim-integrated/MAX96724GTN-VY-T/21412074",
      "date": "2026-10-09",
      "gbp": 18.3396
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 20.08,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/analog-devices/max96724gtn-vy/de-s-rialiseur-6gbps-swtqfn-ep/dp/4382290",
+     "date": "2026-10-13",
+     "gbp": 17.2367
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 260,
+     "price": 19.78,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/analog-devices/max96724gtn-vy/de-s-rialiseur-6gbps-swtqfn-ep/dp/4382290",
+     "date": "2026-10-13",
+     "gbp": 16.9792
     }
    ],
    "volumeModel": {
-    "b": 0.0257,
-    "basis": "slope from the part's own breaks (1 pair)",
+    "b": 0.0207,
+    "basis": "slope from the part's own breaks (2 pairs)",
     "derivedAbove": 2500
    },
    "aliases": [
-    "MAX96724GTN/VY+T; tray MAX96724GTN/VY+ for the 260 break"
+    "MAX96724GTN/VY+T; tray MAX96724GTN/VY+ for the 260 break",
+    "MAX96724GTN/VY+"
    ]
   },
   {
@@ -32888,15 +33002,15 @@
    "pkg": "LQFP-128",
    "aecq": false,
    "gbp": {
-    "q1k": 7.0243,
-    "q10k": 5.9706,
-    "q100k": 5.075,
-    "q200k": 4.8327,
-    "q300k": 4.6964
+    "q1k": 6.8619,
+    "q10k": 5.8326,
+    "q100k": 4.9577,
+    "q200k": 4.721,
+    "q300k": 4.5878
    },
    "confidence": "distributor",
-   "source": "Mouser $9.3 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-09",
+   "source": "Mouser $9.3 @1,000; Future Electronics $8.87 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
    "ecuRoles": [
     "ADAS domain controller"
    ],
@@ -32909,6 +33023,15 @@
      "url": "https://www.mouser.com/c/semiconductors/interface-ics/pci-interface-ic/?m=Diodes+Incorporated&series=PI7C9X2G404",
      "date": "2026-10-09",
      "gbp": 7.0243
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 8.87,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--analog--analog-switches/pi7c9x2g404svafdeex-pericom-saronix-ecera-1137957",
+     "date": "2026-10-13",
+     "gbp": 6.6995
     }
    ],
    "volumeModel": {
@@ -32933,8 +33056,8 @@
     "q300k": 6.3114
    },
    "confidence": "distributor",
-   "source": "Digi-Key $13.11736 @504 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-09",
+   "source": "Digi-Key $13.11736 @504; Future Electronics $12.45 @126 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
    "ecuRoles": [
     "ADAS domain controller"
    ],
@@ -32947,6 +33070,15 @@
      "url": "https://www.digikey.com/en/products/detail/diodes-incorporated/PI7C9X2G608GPBNJE/5980248",
      "date": "2026-10-09",
      "gbp": 9.9075
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 126,
+     "price": 12.45,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/de/p/semiconductors--analog--analog-switches/pi7c9x2g608gpbnje-pericom-saronix-ecera-7100640",
+     "date": "2026-10-13",
+     "gbp": 9.4035
     }
    ],
    "volumeModel": {
@@ -33147,15 +33279,15 @@
    "pkg": "200-BGA",
    "aecq": true,
    "gbp": {
-    "q1k": 50.4071,
-    "q10k": 42.846,
-    "q100k": 36.4191,
-    "q200k": 34.6803,
-    "q300k": 33.7018
+    "q1k": 32.7756,
+    "q10k": 27.8593,
+    "q100k": 23.6804,
+    "q200k": 22.5497,
+    "q300k": 21.9135
    },
    "confidence": "distributor",
-   "source": "Mouser INR 7542.92 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-09",
+   "source": "Mouser INR 7542.92 @100; Farnell €20.31 @136 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85; distributors disagree > 2.5× — every distributor kept, the median used. Above the largest published break these are modelled, not quoted. DISPUTED: Price conflict, not a wrong code: Farnell EUR 20.31 @136 for the exact code vs stored Mouser INR 7542.92 @100 (3.4x). Do not drop either without a quote; stored URL not in task file..",
+   "asOf": "2026-10-13",
    "ecuRoles": [
     "ADAS domain controller",
     "front camera",
@@ -33170,12 +33302,21 @@
      "url": "https://www.mouser.in/c/semiconductors/memory-ics/dram/",
      "date": "2026-10-09",
      "gbp": 59.3024
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 136,
+     "price": 20.31,
+     "currency": "EUR",
+     "url": "https://it.farnell.com/en-IT/integrated-silicon-solution-issi/is46lq32512a-046bla1/dram-2-133ghz-16gbit-1-1v-bga/dp/4732792",
+     "date": "2026-10-13",
+     "gbp": 17.4341
     }
    ],
    "volumeModel": {
     "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 100
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85; distributors disagree > 2.5× — every distributor kept, the median used",
+    "derivedAbove": 136
    },
    "aliases": [
     "IS46LQ32512A-046BLA1"
@@ -33559,7 +33700,7 @@
     "q300k": 26.3473
    },
    "confidence": "distributor",
-   "source": "Priced on the sibling orderable code MTFC128GBCAVTC-AAT (the listed code was not found at a distributor). Digi-Key $50.6548 @1,520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "Priced on the sibling orderable code MTFC128GBCAVTC-AAT (the listed code was not found at a distributor). Digi-Key $50.6548 @1,520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: round 5 verify: not found at any distributor; priced only on the sibling ...CAVTC-AAT from azcus.digikey.com with no second source.",
    "asOf": "2026-10-09",
    "ecuRoles": [
     "ADAS domain controller",
@@ -37589,48 +37730,6 @@
    }
   },
   {
-   "mpn": "LT8638SJV#WPBF",
-   "family": "LT8638S",
-   "mfr": "Analog Devices",
-   "desc": "Automotive 2.8-42V 10A Silent Switcher 2 synchronous buck",
-   "category": "ic_qfn",
-   "pkg": "LQFN-28",
-   "aecq": true,
-   "gbp": {
-    "q1k": 5.7637,
-    "q10k": 4.8991,
-    "q100k": 4.1642,
-    "q200k": 3.9654,
-    "q300k": 3.8535
-   },
-   "confidence": "distributor",
-   "source": "Priced on the sibling orderable code LT8638SJV#PBF (the listed code was not found at a distributor). Digi-Key $8.025 @490 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. Read on a Digi-Key 'punchouttest' regional storefront (9 Oct 2026) - check against the live Digi-Key listing before quoting.",
-   "asOf": "2026-10-09",
-   "ecuRoles": [
-    "ADAS domain controller",
-    "radar"
-   ],
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 490,
-     "price": 8.025,
-     "currency": "USD",
-     "url": "https://punchouttest.digikey.com.mx/en/products/detail/analog-devices-inc/LT8638SJV-PBF/14290674",
-     "date": "2026-10-09",
-     "gbp": 6.0613
-    }
-   ],
-   "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 490
-   },
-   "aliases": [
-    "LT8638SJV#PBF"
-   ]
-  },
-  {
    "mpn": "LTC3310SIV#WTRMPBF",
    "family": "LTC3310S",
    "mfr": "Analog Devices",
@@ -37833,8 +37932,8 @@
     "q300k": 5.0579
    },
    "confidence": "distributor",
-   "source": "RS Components £8.9 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-09",
+   "source": "RS Components £8.9 @100; Farnell JPY 1161.76 @250; RS Components SEK 123.2 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
    "ecuRoles": [
     "ADAS",
     "radar"
@@ -37848,12 +37947,30 @@
      "url": "https://uk.rs-online.com/web/p/rf-ics/0349349?gb=s",
      "date": "2026-10-09",
      "gbp": 8.9
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 1161.76,
+     "currency": "JPY",
+     "url": "https://jp.farnell.com/en-JP/infineon/bgt24atr22e6433xuma1/rf-transceiver-24-24-25ghz-vqfn/dp/4531830",
+     "date": "2026-10-13",
+     "gbp": 5.573
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 100,
+     "price": 123.2,
+     "currency": "SEK",
+     "url": "https://se.rs-online.com/web/p/rf-ics/0349349",
+     "date": "2026-10-13",
+     "gbp": 9.3262
     }
    ],
    "volumeModel": {
     "b": 0.0706,
     "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 100
+    "derivedAbove": 250
    }
   },
   {
@@ -38763,8 +38880,8 @@
     "q300k": 4.2742
    },
    "confidence": "distributor",
-   "source": "Digi-Key $6.7872 @1,000; Digi-Key $6.4478 @5,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0319, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-09",
+   "source": "Digi-Key $6.7872 @1,000; Digi-Key $6.4478 @5,000; Farnell (it.farnell.com) €6.45 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0319, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
    "ecuRoles": [
     "ADAS",
     "ADAS domain controller"
@@ -38787,6 +38904,15 @@
      "url": "https://findchips.com/search/ASM330LHHX",
      "date": "2026-10-09",
      "gbp": 4.87
+    },
+    {
+     "distributor": "Farnell (it.farnell.com)",
+     "qty": 250,
+     "price": 6.45,
+     "currency": "EUR",
+     "url": "https://it.farnell.com/stmicroelectronics/asm330lhhxtr/unit-misuraz-inerziale-modulo/dp/3993596",
+     "date": "2026-10-13",
+     "gbp": 5.5367
     }
    ],
    "volumeModel": {
@@ -43863,7 +43989,7 @@
     "q300k": 6.5626
    },
    "confidence": "distributor",
-   "source": "Digi-Key CAD 21.69 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. Read on a Digi-Key 'punchouttest' regional storefront (9 Oct 2026) - check against the live Digi-Key listing before quoting.",
+   "source": "Digi-Key CAD 21.69 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. Read on a Digi-Key 'punchouttest' regional storefront (9 Oct 2026) - check against the live Digi-Key listing before quoting. DISPUTED: round 5 verify: stored CAD 21.69 @100 is far below every other listing seen (sibling JTA2 $64.01 @1) - verify with a quote.",
    "asOf": "2026-10-09",
    "ecuRoles": [
     "BMS_BMU"
@@ -46497,44 +46623,6 @@
    }
   },
   {
-   "mpn": "RGS80TSX2DHRC11",
-   "family": "RGS80TSX2DHR",
-   "mfr": "ROHM",
-   "desc": "1200 V 40 A field-stop trench IGBT, AEC-Q101 (ROHM REF66011 7 kW PTC heater)",
-   "category": "through_hole",
-   "pkg": "TO-247N",
-   "aecq": true,
-   "gbp": {
-    "q1k": 5.1497,
-    "q10k": 4.3773,
-    "q100k": 3.7207,
-    "q200k": 3.543,
-    "q300k": 3.4431
-   },
-   "confidence": "distributor",
-   "source": "Digi-Key $7.15 @510 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
-   "asOf": "2026-10-09",
-   "ecuRoles": [
-    "PTC"
-   ],
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 510,
-     "price": 7.15,
-     "currency": "USD",
-     "url": "https://www.findchips.com/search/RGS80",
-     "date": "2026-10-09",
-     "gbp": 5.4004
-    }
-   ],
-   "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
-    "derivedAbove": 510
-   }
-  },
-  {
    "mpn": "AFGHL40T65SPD",
    "family": "AFGHL40T65SPD",
    "mfr": "onsemi",
@@ -48451,14 +48539,14 @@
    "pkg": "BGA",
    "aecq": true,
    "gbp": {
-    "q1k": 58.8001,
-    "q10k": 49.9801,
-    "q100k": 42.4831,
-    "q200k": 40.4547,
-    "q300k": 39.3134
+    "q1k": 52.4971,
+    "q10k": 44.6226,
+    "q100k": 37.9292,
+    "q200k": 36.1182,
+    "q300k": 35.0992
    },
    "confidence": "distributor",
-   "source": "Mouser $77.85 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "Mouser $77.85 @1,000; Future Electronics $61.16 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
    "asOf": "2026-10-13",
    "ecuRoles": [
     "domain controller",
@@ -48474,6 +48562,15 @@
      "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?m=Infineon",
      "date": "2026-10-13",
      "gbp": 58.8001
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 61.16,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--microcontrollers--32-bit/tc4d7xp20mf500mcabkxuma1-infineon-5207455",
+     "date": "2026-10-13",
+     "gbp": 46.1941
     }
    ],
    "volumeModel": {
@@ -48687,14 +48784,14 @@
    "pkg": "LCC module 16.0 x 12.2 mm",
    "aecq": false,
    "gbp": {
-    "q1k": 10.2247,
-    "q10k": 8.691,
-    "q100k": 7.3873,
-    "q200k": 7.0346,
-    "q300k": 6.8362
+    "q1k": 9.4779,
+    "q10k": 6.262,
+    "q100k": 4.1373,
+    "q200k": 3.652,
+    "q300k": 3.3949
    },
    "confidence": "distributor",
-   "source": "Digi-Key €12.29168 @500; Digi-Key $14.4625 @500 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "Digi-Key €12.29168 @500; Digi-Key $14.4625 @500; Future Electronics $22.56 @125; Digi-Key €19.30368 @250 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.18, slope from the part's own breaks (2 pairs). Above the largest published break these are modelled, not quoted. DISPUTED: round 5 verify: Future $22.56 @125 and Digi-Key IE EUR 19.30 @250 are ~1.6x the stored Digi-Key EUR 12.29 @500 - verify with a quote.",
    "asOf": "2026-10-13",
    "ecuRoles": [
     "telematics",
@@ -48719,11 +48816,29 @@
      "url": "https://www.digikey.com.mx/en/products/detail/u-blox/NEO-M9V-20B/16611140",
      "date": "2026-10-13",
      "gbp": 10.9235
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 125,
+     "price": 22.56,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--wireless-rf--rf-modules-solutions--gps/neo-m9v-20b-u-blox-4167640",
+     "date": "2026-10-13",
+     "gbp": 17.0396
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 19.30368,
+     "currency": "EUR",
+     "url": "https://www.digikey.ie/en/products/detail/u-blox/NEO-M9V-20B/16611140",
+     "date": "2026-10-13",
+     "gbp": 16.5703
     }
    ],
    "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "b": 0.18,
+    "basis": "slope from the part's own breaks (2 pairs)",
     "derivedAbove": 500
    }
   },
@@ -55446,14 +55561,14 @@
    "pkg": "HU3PAK (7-lead SMD top-cool)",
    "aecq": true,
    "gbp": {
-    "q1k": 9.0404,
-    "q10k": 7.6843,
-    "q100k": 6.5317,
-    "q200k": 6.2198,
-    "q300k": 6.0443
+    "q1k": 6.6742,
+    "q10k": 5.1474,
+    "q100k": 3.9699,
+    "q200k": 3.6713,
+    "q300k": 3.5072
    },
    "confidence": "distributor",
-   "source": "RS Components JPY 1953.78 @600 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "RS Components JPY 1953.78 @600; Digi-Key $7.7265 @100; Digi-Key $6.3125 @600 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1128, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted. DISPUTED: round 5 verify: Digi-Key $7.73 @100 / $6.31 @600 is ~0.48x the stored RS Japan JPY 1,953.78 @600.",
    "asOf": "2026-10-13",
    "ecuRoles": [
     "traction inverter",
@@ -55469,11 +55584,29 @@
      "url": "https://jp.rs-online.com/web/p/mosfets/0215239",
      "date": "2026-10-13",
      "gbp": 9.3723
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 7.7265,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SCT060HU75G3AG/22106607",
+     "date": "2026-10-13",
+     "gbp": 5.8358
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 600,
+     "price": 6.3125,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/SCT060HU75G3AG/22106607",
+     "date": "2026-10-13",
+     "gbp": 4.7678
     }
    ],
    "volumeModel": {
-    "b": 0.0706,
-    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "b": 0.1128,
+    "basis": "slope from the part's own breaks (1 pair)",
     "derivedAbove": 600
    }
   },
@@ -55752,14 +55885,14 @@
    "pkg": "D2PAK-7L",
    "aecq": true,
    "gbp": {
-    "q1k": 10.1759,
-    "q10k": 8.6495,
-    "q100k": 7.3521,
-    "q200k": 7.001,
-    "q300k": 6.8035
+    "q1k": 11.7736,
+    "q10k": 10.0076,
+    "q100k": 8.5065,
+    "q200k": 8.1003,
+    "q300k": 7.8718
    },
    "confidence": "distributor",
-   "source": "RS Components £11.4 @200 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "source": "RS Components £11.4 @200; RS Components £14.98 @200 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
    "asOf": "2026-10-13",
    "ecuRoles": [
     "traction inverter",
@@ -55775,6 +55908,15 @@
      "url": "https://uk.rs-online.com/web/p/mosfets/2025731",
      "date": "2026-10-13",
      "gbp": 11.4
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 200,
+     "price": 14.98,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mosfets/2025731",
+     "date": "2026-10-13",
+     "gbp": 14.98
     }
    ],
    "volumeModel": {
@@ -57349,7 +57491,7 @@
     "q300k": 9.1279
    },
    "confidence": "distributor",
-   "source": "Digi-Key $15.04 @500; Digi-Key $13.90126 @5,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0342, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "source": "Digi-Key $15.04 @500; Digi-Key $13.90126 @5,000; Farnell (fr.farnell.com) €13.89 @100 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0342, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
    "asOf": "2026-10-13",
    "ecuRoles": [
     "condition monitoring",
@@ -57373,6 +57515,15 @@
      "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/IIS3DWBTR/11610895",
      "date": "2026-10-13",
      "gbp": 10.4996
+    },
+    {
+     "distributor": "Farnell (fr.farnell.com)",
+     "qty": 100,
+     "price": 13.89,
+     "currency": "EUR",
+     "url": "https://fr.farnell.com/stmicroelectronics/iis3dwbtr/capteur-vibration-num-x-y-z-lga/dp/3399559",
+     "date": "2026-10-13",
+     "gbp": 11.9232
     }
    ],
    "volumeModel": {
@@ -57466,6 +57617,896 @@
     "b": 0.0706,
     "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
     "derivedAbove": 1000
+   }
+  },
+  {
+   "mpn": "MIMXRT1176DVMAA",
+   "family": "MIMXRT1176",
+   "mfr": "NXP",
+   "desc": "i.MX RT1176 crossover MCU, Cortex-M7 1 GHz + M4, 2 MB SRAM",
+   "category": "ic_bga",
+   "pkg": "MAPBGA-289",
+   "aecq": false,
+   "gbp": {
+    "q1k": 7.962,
+    "q10k": 6.7677,
+    "q100k": 5.7525,
+    "q200k": 5.4779,
+    "q300k": 5.3233
+   },
+   "confidence": "distributor",
+   "source": "Future Electronics $11.05 @152; Farnell €11.81 @100 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "cluster",
+    "gateway",
+    "HMI"
+   ],
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 152,
+     "price": 11.05,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/8133426",
+     "date": "2026-10-13",
+     "gbp": 8.3461
+    },
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 11.81,
+     "currency": "EUR",
+     "url": "https://ie.farnell.com/nxp/mimxrt1176dvmaa/mcu-1ghz-32bit-mapbga-289/dp/3586897",
+     "date": "2026-10-13",
+     "gbp": 10.1377
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 152
+   }
+  },
+  {
+   "mpn": "AVR128DA64-E/PT",
+   "family": "AVR128DA64",
+   "mfr": "Microchip",
+   "desc": "AVR DA 8-bit MCU 24 MHz, 128 kB flash, 16 kB RAM, extended temp",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-64",
+   "aecq": false,
+   "gbp": {
+    "q1k": 1.5107,
+    "q10k": 1.2841,
+    "q100k": 1.0915,
+    "q200k": 1.0393,
+    "q300k": 1.01
+   },
+   "confidence": "distributor",
+   "source": "Farnell £1.63 @100; RS Components €2.007 @480 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "body",
+    "sensor",
+    "actuator"
+   ],
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 100,
+     "price": 1.63,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/microchip/avr128da64-e-pt/mcu-8bit-avr-24mhz-tqfp-64/dp/3481944",
+     "date": "2026-10-13",
+     "gbp": 1.63
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 480,
+     "price": 2.007,
+     "currency": "EUR",
+     "url": "https://es.rs-online.com/web/p/microcontroladores/0585262",
+     "date": "2026-10-13",
+     "gbp": 1.7228
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 480
+   }
+  },
+  {
+   "mpn": "LT8636JV#PBF",
+   "family": "LT8636",
+   "mfr": "Analog Devices",
+   "desc": "42V 5A synchronous step-down Silent Switcher regulator, LQFN-20, J grade",
+   "category": "ic_qfn",
+   "pkg": "LQFN-20",
+   "aecq": false,
+   "gbp": {
+    "q1k": 5.8395,
+    "q10k": 4.9636,
+    "q100k": 4.219,
+    "q200k": 4.0176,
+    "q300k": 3.9043
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $7.7448 @980; Mouser $7.74 @980 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "body",
+    "infotainment",
+    "ADAS"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 980,
+     "price": 7.7448,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/analog-devices-inc/LT8636JV-PBF/10668270",
+     "date": "2026-10-13",
+     "gbp": 5.8496
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 980,
+     "price": 7.74,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Analog-Devices/LT8636JVPBF?qs=P1JMDcb91o40oO2YRvBxSw%3D%3D",
+     "date": "2026-10-13",
+     "gbp": 5.846
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 980
+   }
+  },
+  {
+   "mpn": "BMI270",
+   "family": "BMI270",
+   "mfr": "Bosch Sensortec",
+   "desc": "6-axis IMU (accelerometer + gyroscope), LGA-14 2.5x3",
+   "category": "ic_qfn",
+   "pkg": "LGA-14",
+   "aecq": false,
+   "gbp": {
+    "q1k": 2.0997,
+    "q10k": 1.908,
+    "q100k": 1.7337,
+    "q200k": 1.6845,
+    "q300k": 1.6563
+   },
+   "confidence": "distributor",
+   "source": "Mouser $2.78 @1,000; Mouser $2.6 @5,000; Digi-Key $2.64746 @5,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0416, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "telematics",
+    "infotainment",
+    "aftermarket"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 2.78,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Bosch-Sensortec/BMI270?qs=u16ybLDytRYIj%2BjQEee88A%3D%3D",
+     "date": "2026-10-13",
+     "gbp": 2.0997
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 5000,
+     "price": 2.6,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Bosch-Sensortec/BMI270?qs=u16ybLDytRYIj%2BjQEee88A%3D%3D",
+     "date": "2026-10-13",
+     "gbp": 1.9638
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 2.64746,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/bosch-sensortec/BMI270/9974486",
+     "date": "2026-10-13",
+     "gbp": 1.9996
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0416,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 5000
+   }
+  },
+  {
+   "mpn": "OPA388QDBVRQ1",
+   "family": "OPA388-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Precision zero-drift rail-to-rail I/O op amp, 10 MHz, SOT-23-5, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOT-23-5",
+   "aecq": true,
+   "gbp": {
+    "q1k": 1.284,
+    "q10k": 1.2061,
+    "q100k": 1.133,
+    "q200k": 1.1118,
+    "q300k": 1.0997
+   },
+   "confidence": "distributor",
+   "source": "Mouser $1.7 @1,000; Mouser $1.65 @3,000; Digi-Key $2.02174 @3,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0272, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "BMS",
+    "current sense",
+    "sensor interface"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 1.7,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/c/semiconductors/amplifier-ics/precision-amplifiers/?m=Texas+Instruments&series=OPA388",
+     "date": "2026-10-13",
+     "gbp": 1.284
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 1.65,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/c/semiconductors/amplifier-ics/precision-amplifiers/?m=Texas+Instruments&series=OPA388",
+     "date": "2026-10-13",
+     "gbp": 1.2462
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 2.02174,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/OPA388QDBVRQ1/13173861",
+     "date": "2026-10-13",
+     "gbp": 1.527
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0272,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 3000
+   }
+  },
+  {
+   "mpn": "SN6507DGQRQ1",
+   "family": "SN6507-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Low-EMI push-pull transformer driver for isolated supplies, 36 V, HVSSOP-10, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "HVSSOP-10",
+   "aecq": true,
+   "gbp": {
+    "q1k": 1.9479,
+    "q10k": 1.6557,
+    "q100k": 1.4074,
+    "q200k": 1.3402,
+    "q300k": 1.3024
+   },
+   "confidence": "distributor",
+   "source": "Mouser $2.43 @2,500; Arrow $2.405 @2,500 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "BMS",
+    "isolated CAN",
+    "gate-driver supply"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2500,
+     "price": 2.43,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/SN6507DGQRQ1?qs=IPgv5n7u5QZ%2Bp55Hz2oW4w%3D%3D",
+     "date": "2026-10-13",
+     "gbp": 1.8354
+    },
+    {
+     "distributor": "Arrow",
+     "qty": 2500,
+     "price": 2.405,
+     "currency": "USD",
+     "url": "https://www.arrow.com/en/products/sn6507dgqrq1/texas-instruments",
+     "date": "2026-10-13",
+     "gbp": 1.8165
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 2500
+   }
+  },
+  {
+   "mpn": "USB7206C-I/KDX",
+   "family": "USB7206C",
+   "mfr": "Microchip",
+   "desc": "USB 3.1 Gen 2 6-port hub controller, industrial -40..85 C",
+   "category": "ic_qfn",
+   "pkg": "VQFN-100 12x12",
+   "aecq": false,
+   "gbp": {
+    "q1k": 5.7196,
+    "q10k": 4.8616,
+    "q100k": 4.1324,
+    "q200k": 3.9351,
+    "q300k": 3.8241
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $8.2229 @100; TME $9.25 @168 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "IVI",
+    "cockpit",
+    "telematics"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 100,
+     "price": 8.2229,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/microchip-technology/USB7206C-I-KDX/13985926",
+     "date": "2026-10-13",
+     "gbp": 6.2108
+    },
+    {
+     "distributor": "TME",
+     "qty": 168,
+     "price": 9.25,
+     "currency": "USD",
+     "url": "https://www.tme.com/us/en-us/details/usb7206c-i_kdx/usb-interfaces-integrated-circuits/microchip-technology/",
+     "date": "2026-10-13",
+     "gbp": 6.9865
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 168
+   }
+  },
+  {
+   "mpn": "ESD2CANFD24DBZRQ1",
+   "family": "ESD2CANFD24",
+   "mfr": "Texas Instruments",
+   "desc": "CAN FD ESD protection diode, 24 V bidirectional, 2-line, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23-3",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.1293,
+    "q10k": 0.1099,
+    "q100k": 0.0934,
+    "q200k": 0.0889,
+    "q300k": 0.0864
+   },
+   "confidence": "distributor",
+   "source": "Mouser $0.158 @3,000; Digi-Key $0.1588 @3,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "CAN",
+    "gateway",
+    "BCM"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.158,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/ESD2CANFD24DBZRQ1?qs=rQFj71Wb1eWBqdGG%2FVj1Ug%3D%3D",
+     "date": "2026-10-13",
+     "gbp": 0.1193
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.1588,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/ESD2CANFD24DBZRQ1/17394929",
+     "date": "2026-10-13",
+     "gbp": 0.1199
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 3000
+   }
+  },
+  {
+   "mpn": "DMN3404LQ-7",
+   "family": "DMN3404LQ",
+   "mfr": "Diodes Incorporated",
+   "desc": "N-channel MOSFET 30 V, logic level, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.1547,
+    "q10k": 0.1315,
+    "q100k": 0.1118,
+    "q200k": 0.1064,
+    "q300k": 0.1034
+   },
+   "confidence": "distributor",
+   "source": "Mouser $0.183 @3,000; Digi-Key $0.19607 @3,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "load switch",
+    "BCM",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.183,
+     "currency": "USD",
+     "url": "https://www.mouser.com/en/ProductDetail/Diodes-Incorporated/DMN3404LQ-7?qs=W%2FMpXkg%252BdQ6%2FYpf84J7szA%3D%3D",
+     "date": "2026-10-13",
+     "gbp": 0.1382
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.19607,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/diodes-incorporated/DMN3404LQ-7/16548806",
+     "date": "2026-10-13",
+     "gbp": 0.1481
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 3000
+   }
+  },
+  {
+   "mpn": "DMN6075SQ-7",
+   "family": "DMN6075SQ",
+   "mfr": "Diodes Incorporated",
+   "desc": "N-channel MOSFET 60 V, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.1287,
+    "q10k": 0.0951,
+    "q100k": 0.0703,
+    "q200k": 0.0642,
+    "q300k": 0.0609
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.14748 @3,000; Digi-Key $0.12769 @9,000; Mouser $0.138 @3,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1312, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "load switch",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.14748,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/diodes-incorporated/DMN6075SQ-7/16547187",
+     "date": "2026-10-13",
+     "gbp": 0.1114
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 9000,
+     "price": 0.12769,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/diodes-incorporated/DMN6075SQ-7/16547187",
+     "date": "2026-10-13",
+     "gbp": 0.0964
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.138,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Diodes-Incorporated/DMN6075SQ-7?qs=OTrKUuiFdkZBTPnT/2GqPA%3D%3D",
+     "date": "2026-10-13",
+     "gbp": 0.1042
+    }
+   ],
+   "volumeModel": {
+    "b": 0.1312,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 9000
+   }
+  },
+  {
+   "mpn": "PESD2CANFD27V-QBZ",
+   "family": "PESD2CANFD27V-QB",
+   "mfr": "Nexperia",
+   "desc": "CAN FD ESD protection diode, 27 V, 2-line, automotive (-Q)",
+   "category": "fuse_tvs",
+   "pkg": "DFN (leadless)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.0866,
+    "q10k": 0.0642,
+    "q100k": 0.0476,
+    "q200k": 0.0435,
+    "q300k": 0.0413
+   },
+   "confidence": "distributor",
+   "source": "Mouser $0.093 @5,000; Mouser $0.085 @10,000; LCSC $0.0869 @5,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1298, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "CAN",
+    "gateway"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 5000,
+     "price": 0.093,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Nexperia/PESD2CANFD27V-QBZ?qs=KUoIvG/9IlZ0eciurI482g%3D%3D",
+     "date": "2026-10-13",
+     "gbp": 0.0702
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 10000,
+     "price": 0.085,
+     "currency": "USD",
+     "url": "https://www.mouser.com/ProductDetail/Nexperia/PESD2CANFD27V-QBZ?qs=KUoIvG/9IlZ0eciurI482g%3D%3D",
+     "date": "2026-10-13",
+     "gbp": 0.0642
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 5000,
+     "price": 0.0869,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C3715372.html",
+     "date": "2026-10-13",
+     "gbp": 0.0656
+    }
+   ],
+   "volumeModel": {
+    "b": 0.1298,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 10000
+   }
+  },
+  {
+   "mpn": "PMEG3010EH,115",
+   "family": "PMEG3010EH",
+   "mfr": "Nexperia",
+   "desc": "Schottky rectifier 30 V 1 A, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOD-123F",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.0602,
+    "q10k": 0.0512,
+    "q100k": 0.0435,
+    "q200k": 0.0414,
+    "q300k": 0.0403
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.0843 @3,000; LCSC $0.0633 @3,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "reverse polarity",
+    "OR-ing",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.0843,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/nexperia-usa-inc/PMEG3010EH-115/1157694",
+     "date": "2026-10-13",
+     "gbp": 0.0637
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.0633,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_Nexperia_C426864.html",
+     "date": "2026-10-13",
+     "gbp": 0.0478
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 3000
+   }
+  },
+  {
+   "mpn": "TPD1E10B06QDPYRQ1",
+   "family": "TPD1E10B06-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Single-line bidirectional ESD diode, 6 V, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "X1SON-2 (0402, DPY)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.1272,
+    "q10k": 0.0987,
+    "q100k": 0.0766,
+    "q200k": 0.071,
+    "q300k": 0.0679
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.13067 @10,000; Digi-Key $0.11579 @30,000; LCSC $0.127 @5,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.11, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "I/O",
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.13067,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD1E10B06QDPYRQ1/6609845",
+     "date": "2026-10-13",
+     "gbp": 0.0987
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 30000,
+     "price": 0.11579,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/texas-instruments/TPD1E10B06QDPYRQ1/6609845",
+     "date": "2026-10-13",
+     "gbp": 0.0875
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 5000,
+     "price": 0.127,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/ESD-Protection-Devices_Texas-Instruments-TPD1E10B06QDPYRQ1_C1847696.html",
+     "date": "2026-10-13",
+     "gbp": 0.0959
+    }
+   ],
+   "volumeModel": {
+    "b": 0.11,
+    "basis": "slope from the part's own breaks (1 pair)",
+    "derivedAbove": 30000
+   }
+  },
+  {
+   "mpn": "ACT512",
+   "family": "ACT",
+   "mfr": "Panasonic",
+   "desc": "Automotive PCB relay (CT), SPDT, 12 VDC coil, 20 A",
+   "category": "relay_switch",
+   "pkg": "PCB through-hole",
+   "aecq": false,
+   "gbp": {
+    "q1k": 2.2039,
+    "q10k": 1.8734,
+    "q100k": 1.5924,
+    "q200k": 1.5163,
+    "q300k": 1.4735
+   },
+   "confidence": "distributor",
+   "source": "Newark $4.55 @100; Digi-Key $3.06 @510 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "BCM",
+    "motor drive"
+   ],
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 100,
+     "price": 4.55,
+     "currency": "USD",
+     "url": "https://www.newark.com/panasonic/act512/relay-automotive-spdt-14vdc-20a/dp/68X2297",
+     "date": "2026-10-13",
+     "gbp": 3.4366
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 510,
+     "price": 3.06,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/panasonic-electric-works/ACT512/644614",
+     "date": "2026-10-13",
+     "gbp": 2.3112
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 510
+   }
+  },
+  {
+   "mpn": "CGA6M3X7S2A475K200AB",
+   "family": "CGA6M3X7S2A475",
+   "mfr": "TDK",
+   "desc": "MLCC 4.7uF 100V X7S ±10% 1210 AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.3625,
+    "q10k": 0.3082,
+    "q100k": 0.2619,
+    "q200k": 0.2494,
+    "q300k": 0.2424
+   },
+   "confidence": "distributor",
+   "source": "Newark $0.535 @1,000; Future Electronics $0.425 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "48V",
+    "DC-DC input",
+    "BMS"
+   ],
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 1000,
+     "price": 0.535,
+     "currency": "USD",
+     "url": "https://www.newark.com/tdk/cga6m3x7s2a475k200ab/cap-4-7uf-100v-mlcc-1210/dp/40Y2338",
+     "date": "2026-10-13",
+     "gbp": 0.4041
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 0.425,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/cga6m3x7s2a475k200ab-tdk-8014499",
+     "date": "2026-10-13",
+     "gbp": 0.321
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1000
+   }
+  },
+  {
+   "mpn": "CRCW08051K00FKEA",
+   "family": "CRCW0805",
+   "mfr": "Vishay Dale",
+   "desc": "Thick film resistor 1k 1% 0.125W 0805 AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.0078,
+    "q10k": 0.0067,
+    "q100k": 0.0057,
+    "q200k": 0.0054,
+    "q300k": 0.0052
+   },
+   "confidence": "distributor",
+   "source": "Digi-Key $0.00965 @5,000; Future Electronics $0.0046 @5,000; RS Components £0.007 @5,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "general"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 5000,
+     "price": 0.00965,
+     "currency": "USD",
+     "url": "https://www.digikey.com/en/products/detail/vishay-dale/CRCW08051K00FKEA/1175637",
+     "date": "2026-10-13",
+     "gbp": 0.0073
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 5000,
+     "price": 0.0046,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw08051k00fkea-vishay-7592892?loc=1",
+     "date": "2026-10-13",
+     "gbp": 0.0035
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 5000,
+     "price": 0.007,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/surface-mount-resistors/1694547",
+     "date": "2026-10-13",
+     "gbp": 0.007
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 5000
+   }
+  },
+  {
+   "mpn": "DLW32MH101XT2L",
+   "family": "DLW32MH",
+   "mfr": "Murata",
+   "desc": "Common-mode choke 100uH 2-line, 1210 (3225), automotive Ethernet 100BASE-T1",
+   "category": "transformer",
+   "pkg": "1210 (3225)",
+   "aecq": true,
+   "gbp": {
+    "q1k": 0.763,
+    "q10k": 0.6486,
+    "q100k": 0.5513,
+    "q200k": 0.5249,
+    "q300k": 0.5101
+   },
+   "confidence": "distributor",
+   "source": "LCSC $0.9817 @1,500; Future Electronics $1.37 @1,500; RS Components £0.602 @1,500 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted.",
+   "asOf": "2026-10-13",
+   "ecuRoles": [
+    "automotive Ethernet",
+    "gateway",
+    "ADAS camera"
+   ],
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1500,
+     "price": 0.9817,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C2935101.html",
+     "date": "2026-10-13",
+     "gbp": 0.7415
+    },
+    {
+     "distributor": "Future Electronics",
+     "qty": 1500,
+     "price": 1.37,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--filters--common-mode-chokes/dlw32mh101xt2l-murata-3178342",
+     "date": "2026-10-13",
+     "gbp": 1.0348
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 1500,
+     "price": 0.602,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/common-mode-chokes/2235041",
+     "date": "2026-10-13",
+     "gbp": 0.602
+    }
+   ],
+   "volumeModel": {
+    "b": 0.0706,
+    "basis": "franchise curve (no second break found): 10k = 1k × 0.85",
+    "derivedAbove": 1500
    }
   }
  ]

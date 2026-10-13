@@ -11,17 +11,8 @@
    "pkg": "SWTQFN-48 (7x7)",
    "aecq": true,
    "observedMpn": "MAX96792AGTM/VY+",
-   "observations": [
-    {
-     "distributor": "Mouser",
-     "qty": 100,
-     "price": 41.81,
-     "currency": "USD",
-     "url": "https://findchips.com/search/6792A",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "CONFIRMED: Mouser (700-MAX96792AGTM/VY+, via Findchips naming Mouser and its break) $41.81 @100 v stored Digi-Key $43.06 @100, ratio 0.97. Same Findchips listing shows the reel code MAX96792AGTM/VY+T at $40.50 @2,500 (not recorded: other orderable code)."
+   "observations": [],
+   "notes": "CONFIRMED: Mouser (700-MAX96792AGTM/VY+, via Findchips naming Mouser and its break) $41.81 @100 v stored Digi-Key $43.06 @100, ratio 0.97. Same Findchips listing shows the reel code MAX96792AGTM/VY+T at $40.50 @2,500 (not recorded: other orderable code). Review 13 Oct 2026: dropObs - rule 1: aggregator search that does not name the code (https://findchips.com/search/6792A)."
   },
   {
    "mpn": "AFBR-S50MV85G",

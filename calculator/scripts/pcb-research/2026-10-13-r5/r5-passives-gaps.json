@@ -16,25 +16,8 @@
     "ADAS"
    ],
    "observedMpn": "CGA3E3X7R1H105K080AB",
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 1000,
-     "price": 0.07133,
-     "currency": "USD",
-     "url": "https://www.digikey.com/en/products/detail/tdk-corporation/CGA3E3X7R1H105K080AB/25982689",
-     "date": "2026-10-13"
-    },
-    {
-     "distributor": "Digi-Key",
-     "qty": 100000,
-     "price": 0.04906,
-     "currency": "USD",
-     "url": "https://www.digikey.com/en/products/detail/tdk-corporation/CGA3E3X7R1H105K080AB/25982689",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "0603 1uF 50V automotive cell. Digi-Key only (1k cut-tape tier and 100k reel tier); a second distributor search (LCSC / Mouser / Newark / Future / Farnell / RS / Arrow) returned no listing for this code."
+   "observations": [],
+   "notes": "0603 1uF 50V automotive cell. Digi-Key only (1k cut-tape tier and 100k reel tier); a second distributor search (LCSC / Mouser / Newark / Future / Farnell / RS / Arrow) returned no listing for this code. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/."
   },
   {
    "mpn": "CGA6M3X7S2A475K200AB",
@@ -82,17 +65,8 @@
     "bulk decoupling"
    ],
    "observedMpn": "CGA5L1X5R1C226M160AC",
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 1000,
-     "price": 0.3444,
-     "currency": "EUR",
-     "url": "https://www.digikey.es/en/products/detail/tdk/CGA5L1X5R1C226M160AC/3950083",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Found while searching the 1206 22uF 25V automotive cell: no 25V 22uF 1206 AEC-Q200 code was listed (GCM31 / CGA5L); this is the nearest automotive 22uF 1206 (16V X5R). Digi-Key ES ex-VAT EUR, cut-tape 1,000 tier; listing showed 13 in stock, 12-week lead time. One distributor only."
+   "observations": [],
+   "notes": "Found while searching the 1206 22uF 25V automotive cell: no 25V 22uF 1206 AEC-Q200 code was listed (GCM31 / CGA5L); this is the nearest automotive 22uF 1206 (16V X5R). Digi-Key ES ex-VAT EUR, cut-tape 1,000 tier; listing showed 13 in stock, 12-week lead time. One distributor only. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/."
   },
   {
    "mpn": "CRCW08051K00FKEA",
@@ -190,17 +164,8 @@
     "infotainment"
    ],
    "observedMpn": "XAL4020-222MEC",
-   "observations": [
-    {
-     "distributor": "Farnell",
-     "qty": 1000,
-     "price": 1.01,
-     "currency": "GBP",
-     "url": "https://uk.farnell.com/coilcraft/xal4020-222mec/inductor-2-2uh-5-5a-20-pwr-52mhz/dp/2289054",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Farnell UK ex-VAT, 42-week lead time. LCSC C3151182 USD 6.8785 @1,000 (81 in stock) DISCARDED as implausible (~5x Farnell). One usable distributor."
+   "observations": [],
+   "notes": "Farnell UK ex-VAT, 42-week lead time. LCSC C3151182 USD 6.8785 @1,000 (81 in stock) DISCARDED as implausible (~5x Farnell). One usable distributor. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/."
   },
   {
    "mpn": "IHLP2525CZER3R3M5A",
@@ -214,17 +179,8 @@
     "PoL buck"
    ],
    "observedMpn": "IHLP2525CZER3R3M5A",
-   "observations": [
-    {
-     "distributor": "Future Electronics",
-     "qty": 2000,
-     "price": 0.29,
-     "currency": "USD",
-     "url": "https://www.futureelectronics.com/p/passives--inductors--power-inductors/ihlp2525czer3r3m5a-vishay-3144633",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Recorded in place of IHLP2525CZER2R2M5A (no franchised listing for that code; the 2.2uH listings found were the commercial -01 / -11 grades). One distributor; the -5A suffix is Vishay's automotive (AEC-Q200) grade."
+   "observations": [],
+   "notes": "Recorded in place of IHLP2525CZER2R2M5A (no franchised listing for that code; the 2.2uH listings found were the commercial -01 / -11 grades). One distributor; the -5A suffix is Vishay's automotive (AEC-Q200) grade. Review 13 Oct 2026: dropPart - rule 2: held for independent review (single distributor; round-5 search budget spent) - observations kept in raw/."
   },
   {
    "mpn": "PMR100HZPFV1L00",
