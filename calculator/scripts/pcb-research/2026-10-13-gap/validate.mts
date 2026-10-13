@@ -41,7 +41,8 @@ for (const f of files) {
   for (const p of list) {
     parts++;
     const id = `${f}:${p.mpn}`;
-    if (!p.mpn || /MATRIX|placeholder|TBD|\s{2,}|series|family/i.test(p.mpn) || /\s/.test(p.mpn.trim())) errors.push(`${id}: not an orderable code`);
+    // Micron, Epson, OSRAM and Infineon orderable codes contain spaces ("MT62F2G32D4DS-026 AAT:B TR") — only a placeholder is an error.
+    if (!p.mpn || /MATRIX|placeholder|TBD|\s{2,}|series|family/i.test(p.mpn)) errors.push(`${id}: not an orderable code`);
     if (!CATS.has(p.category)) errors.push(`${id}: category "${p.category}"`);
     const k = norm(p.mpn);
     const prev = seen.get(k);

@@ -1,621 +1,621 @@
 {
-  "domain": "passives-mlcc",
-  "researched": "2026-10-13",
-  "parts": [
+ "domain": "passives-mlcc",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "GCM155R71H102KA37D",
+   "family": "GCM155R71H102",
+   "mfr": "Murata",
+   "desc": "MLCC 1nF 50V X7R ±10% 0402 AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GCM155R71H102KA37D",
+   "observations": [
     {
-      "mpn": "GCM155R71H102KA37D",
-      "family": "GCM155R71H102",
-      "mfr": "Murata",
-      "desc": "MLCC 1nF 50V X7R ±10% 0402 AEC-Q200",
-      "category": "passive_0402",
-      "pkg": "0402",
-      "aecq": true,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GCM155R71H102KA37D",
-      "observations": [
-        {
-          "distributor": "Digi-Key",
-          "qty": 10000,
-          "price": 0.0055,
-          "currency": "USD",
-          "url": "https://origin-www.findchips.com/search/GCM155R71H102KA37D",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Mouser",
-          "qty": 10000,
-          "price": 0.006,
-          "currency": "USD",
-          "url": "https://origin-www.findchips.com/search/GCM155R71H102KA37D",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Avnet",
-          "qty": 10000,
-          "price": 0.0032,
-          "currency": "USD",
-          "url": "https://origin-www.findchips.com/search/GCM155R71H102KA37D",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Prices via Findchips snapshot naming each distributor and its 10k break."
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.0055,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/GCM155R71H102KA37D",
+     "date": "2026-10-13"
     },
     {
-      "mpn": "GCM1555C1H220JA16D",
-      "family": "GCM1555C1H220",
-      "mfr": "Murata",
-      "desc": "MLCC 22pF 50V C0G ±5% 0402 AEC-Q200",
-      "category": "passive_0402",
-      "pkg": "0402",
-      "aecq": true,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GCM1555C1H220JA16D",
-      "observations": [
-        {
-          "distributor": "LCSC",
-          "qty": 10000,
-          "price": 0.0061,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-image/C126502.html",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "LCSC",
-          "qty": 100000,
-          "price": 0.0053,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-image/C126502.html",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "RS Components",
-          "qty": 10000,
-          "price": 9.4,
-          "currency": "KRW",
-          "url": "https://kr.rs-online.com/web/p/mlccs-multilayer-ceramic-capacitors/1138727",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "RS KR price is a stated reference price (out of stock). Future 10k $0.0219 discarded as implausible (3.6x LCSC and 4x Future's own 1nF GCM1555 price)."
+     "distributor": "Mouser",
+     "qty": 10000,
+     "price": 0.006,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/GCM155R71H102KA37D",
+     "date": "2026-10-13"
     },
     {
-      "mpn": "GCM1555C1H102JA16D",
-      "family": "GCM1555C1H102",
-      "mfr": "Murata",
-      "desc": "MLCC 1nF 50V C0G ±5% 0402 AEC-Q200",
-      "category": "passive_0402",
-      "pkg": "0402",
-      "aecq": true,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GCM1555C1H102JA16D",
-      "observations": [
-        {
-          "distributor": "Digi-Key",
-          "qty": 10000,
-          "price": 0.0065,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/GCM1555C1H102JA16D?manufacturer=Murata-Manufacturing-Co-Ltd",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Future",
-          "qty": 10000,
-          "price": 0.0056,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/GCM1555C1H102JA16D?manufacturer=Murata-Manufacturing-Co-Ltd",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Verical",
-          "qty": 10000,
-          "price": 0.0055,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/GCM1555C1H102JA16D?manufacturer=Murata-Manufacturing-Co-Ltd",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Digi-Key shown temporarily out of stock (16 wk). LCSC 10k $0.0084 / $0.0067 (two snapshots) not used."
-    },
-    {
-      "mpn": "GCM188R71E105KA64D",
-      "family": "GCM188R71E105",
-      "mfr": "Murata",
-      "desc": "MLCC 1uF 25V X7R ±10% 0603 AEC-Q200",
-      "category": "passive_0603",
-      "pkg": "0603",
-      "aecq": true,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GCM188R71E105KA64D",
-      "observations": [
-        {
-          "distributor": "RS Components",
-          "qty": 4000,
-          "price": 0.066,
-          "currency": "GBP",
-          "url": "https://uk.rs-online.com/web/p/mlccs-multilayer-ceramic-capacitors/1693944",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "LCSC",
-          "qty": 4000,
-          "price": 0.0286,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/C85862.html",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "RS: reel of 4000 at £264.00 ex-VAT. LCSC: another snapshot (product-image/C85862) showed $0.0096 at 4000 — conflicting, the product-detail figure kept. Already in catalogue without obs."
-    },
-    {
-      "mpn": "GCM188R72A103KA37D",
-      "family": "GCM188R72A103",
-      "mfr": "Murata",
-      "desc": "MLCC 10nF 100V X7R ±10% 0603 AEC-Q200",
-      "category": "passive_0603",
-      "pkg": "0603",
-      "aecq": true,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GCM188R72A103KA37D",
-      "observations": [
-        {
-          "distributor": "LCSC",
-          "qty": 4000,
-          "price": 0.011,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-image/C161232.html",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Future",
-          "qty": 4000,
-          "price": 0.0437,
-          "currency": "USD",
-          "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/gcm188r72a103ka37d-murata-5201404",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "LCSC snapshots show $0.0110 and $0.0112 at 4000."
-    },
-    {
-      "mpn": "GCM21BR72A104KA37L",
-      "family": "GCM21BR72A104",
-      "mfr": "Murata",
-      "desc": "MLCC 100nF 100V X7R ±10% 0805 AEC-Q200",
-      "category": "passive_0805",
-      "pkg": "0805",
-      "aecq": true,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GCM21BR72A104KA37L",
-      "observations": [],
-      "notes": "No usable price: only LCSC hit was fat.lcsc.com (staging host, excluded); Future $0.151 @3000 discarded as implausible (~14x LCSC). LCSC marks it not recommended for new designs."
-    },
-    {
-      "mpn": "CGA6P3X7S1H106K250AB",
-      "family": "CGA6P3X7S1H106",
-      "mfr": "TDK",
-      "desc": "MLCC 10uF 50V X7S ±10% 1210 AEC-Q200",
-      "category": "passive_1206",
-      "pkg": "1210",
-      "aecq": true,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "CGA6P3X7S1H106K250AB",
-      "observations": [
-        {
-          "distributor": "RS Components",
-          "qty": 500,
-          "price": 0.57,
-          "currency": "GBP",
-          "url": "https://uk.rs-online.com/p/mlccs-multilayer-ceramic-capacitors/7883082",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Cell 1210 10uF 50V X7R: TDK lists this rating as X7S (no CGA6P3X7R1H106K250AB listing found). RS price ex-VAT at 500+. A Mouser 1k $0.254 figure seen without a citable franchised page — not used."
-    },
-    {
-      "mpn": "GCM033R71A103KA03D",
-      "family": "GCM033R71A103",
-      "mfr": "Murata",
-      "desc": "MLCC 10nF 10V X7R ±10% 0201 AEC-Q200",
-      "category": "passive_0402",
-      "pkg": "0201",
-      "aecq": true,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GCM033R71A103KA03D",
-      "observations": [
-        {
-          "distributor": "LCSC",
-          "qty": 15000,
-          "price": 0.0074,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Murata-Electronics-GCM033R71A103KA03D_C524550.html",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "TTI",
-          "qty": 15000,
-          "price": 0.0031,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/gcm03?f=dsa",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Cell asked 10nF 16V (GCM033R71C103KA03D) — not found; 10V sibling used."
-    },
-    {
-      "mpn": "GCJ188R71H104KA12D",
-      "family": "GCJ188R71H104",
-      "mfr": "Murata",
-      "desc": "MLCC 100nF 50V X7R ±10% 0603 soft termination (GCJ) AEC-Q200",
-      "category": "passive_0603",
-      "pkg": "0603",
-      "aecq": true,
-      "ecuRoles": [
-        "BMS",
-        "battery-side",
-        "general decoupling"
-      ],
-      "observedMpn": "GCJ188R71H104KA12D",
-      "observations": [
-        {
-          "distributor": "TTI",
-          "qty": 4000,
-          "price": 0.021,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/1h104k",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "TTI",
-          "qty": 100000,
-          "price": 0.0169,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/1h104k",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Rutronik",
-          "qty": 4000,
-          "price": 0.0095,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/1h104k",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Soft-termination point 2 (point 1 GCJ21BR71H105KA01L already in catalogue). Findchips snapshot; Rutronik stock DE 8000 only."
-    },
-    {
-      "mpn": "GRM155R71C104KA88D",
-      "family": "GRM155R71C104",
-      "mfr": "Murata",
-      "desc": "MLCC 100nF 16V X7R ±10% 0402 commercial",
-      "category": "passive_0402",
-      "pkg": "0402",
-      "aecq": false,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GRM155R71C104KA88D",
-      "observations": [
-        {
-          "distributor": "LCSC",
-          "qty": 10000,
-          "price": 0.0043,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/C71629.html",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Newark",
-          "qty": 10000,
-          "price": 0.0066,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/GRM155R71C104KA88D",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Avnet",
-          "qty": 10000,
-          "price": 0.0029,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/GRM155R71C104KA88D",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Commercial equivalent of GCM155R71C104KA55D (premium measurement)."
-    },
-    {
-      "mpn": "GRM155R71H103KA88D",
-      "family": "GRM155R71H103",
-      "mfr": "Murata",
-      "desc": "MLCC 10nF 50V X7R ±10% 0402 commercial",
-      "category": "passive_0402",
-      "pkg": "0402",
-      "aecq": false,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GRM155R71H103KA88D",
-      "observations": [
-        {
-          "distributor": "LCSC",
-          "qty": 10000,
-          "price": 0.0058,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Murata-Electronics_C77019.html",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Avnet",
-          "qty": 10000,
-          "price": 0.0026,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/grm155r71h103ka88d",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "TME",
-          "qty": 10000,
-          "price": 0.002,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/grm155r71h103ka88d",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Commercial equivalent of GCM155R71H103KA55D."
-    },
-    {
-      "mpn": "CL05B104KO5NNNC",
-      "family": "CL05B104KO5",
-      "mfr": "Samsung Electro-Mechanics",
-      "desc": "MLCC 100nF 16V X7R ±10% 0402 commercial",
-      "category": "passive_0402",
-      "pkg": "0402",
-      "aecq": false,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "CL05B104KO5NNNC",
-      "observations": [
-        {
-          "distributor": "Digi-Key",
-          "qty": 10000,
-          "price": 0.0024,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/CL05B104KO5NNNC",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Mouser",
-          "qty": 10000,
-          "price": 0.002,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/CL05B104KO5NNNC",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "LCSC",
-          "qty": 10000,
-          "price": 0.0025,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Samsung-Electro-Mechanics-CL05B104KO5NNNC_C1525.html",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Commercial Samsung 0402 100nF; automotive sibling CL05B104KB5VPNC (50V) in catalogue."
-    },
-    {
-      "mpn": "GRM188R71H104KA93D",
-      "family": "GRM188R71H104",
-      "mfr": "Murata",
-      "desc": "MLCC 100nF 50V X7R ±10% 0603 commercial",
-      "category": "passive_0603",
-      "pkg": "0603",
-      "aecq": false,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GRM188R71H104KA93D",
-      "observations": [
-        {
-          "distributor": "TME",
-          "qty": 4000,
-          "price": 0.0122,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/grm188r71h104ka93d",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Verical",
-          "qty": 4000,
-          "price": 0.0218,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/grm188r71h104ka93d",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Commercial equivalent of GCM188R71H104KA57D. LCSC 4000 snapshots conflict ($0.0174 / $0.0095) — not used."
-    },
-    {
-      "mpn": "0603B105K500CT",
-      "family": "0603B105K500",
-      "mfr": "Walsin",
-      "desc": "MLCC 1uF 50V X7R ±10% 0603 commercial",
-      "category": "passive_0603",
-      "pkg": "0603",
-      "aecq": false,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "0603B105K500CT",
-      "observations": [
-        {
-          "distributor": "LCSC",
-          "qty": 4000,
-          "price": 0.0225,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/C388003.html",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Commercial 0603 1uF 50V point (no automotive GCM188 1uF 50V code confirmed this round)."
-    },
-    {
-      "mpn": "CC0603KRX7R9BB105",
-      "family": "CC0603KRX7R9BB105",
-      "mfr": "Yageo",
-      "desc": "MLCC 1uF 50V X7R ±10% 0603 commercial",
-      "category": "passive_0603",
-      "pkg": "0603",
-      "aecq": false,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "CC0603KRX7R9BB105",
-      "observations": [
-        {
-          "distributor": "LCSC",
-          "qty": 4000,
-          "price": 0.0629,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/C559769.html",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Yageo CC commercial; price ~2.8x Walsin at same break — single snapshot, verify."
-    },
-    {
-      "mpn": "GRM31CR71E106KA12L",
-      "family": "GRM31CR71E106",
-      "mfr": "Murata",
-      "desc": "MLCC 10uF 25V X7R ±10% 1206 commercial",
-      "category": "passive_1206",
-      "pkg": "1206",
-      "aecq": false,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GRM31CR71E106KA12L",
-      "observations": [
-        {
-          "distributor": "LCSC",
-          "qty": 2000,
-          "price": 0.2165,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/C77093.html",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Already in catalogue as [distributor] without obs; full reel 2000."
-    },
-    {
-      "mpn": "GRM32ER71H106KA12L",
-      "family": "GRM32ER71H106",
-      "mfr": "Murata",
-      "desc": "MLCC 10uF 50V X7R ±10% 1210 commercial",
-      "category": "passive_1206",
-      "pkg": "1210",
-      "aecq": false,
-      "ecuRoles": [
-        "general decoupling"
-      ],
-      "observedMpn": "GRM32ER71H106KA12L",
-      "observations": [
-        {
-          "distributor": "Newark",
-          "qty": 1000,
-          "price": 0.13,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/GRM32ER71H106KA12L",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Newark",
-          "qty": 5000,
-          "price": 0.108,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/GRM32ER71H106KA12L",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "LCSC",
-          "qty": 1000,
-          "price": 0.213,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/C77102.html",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Commercial pair for CGA6P3X7S1H106K250AB (1210 10uF 50V). Newark showed 0 stock; TME 1000 $0.262 also listed."
+     "distributor": "Avnet",
+     "qty": 10000,
+     "price": 0.0032,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/GCM155R71H102KA37D",
+     "date": "2026-10-13"
     }
-  ],
-  "notResearched": [
+   ],
+   "notes": "Prices via Findchips snapshot naming each distributor and its 10k break."
+  },
+  {
+   "mpn": "GCM1555C1H220JA16D",
+   "family": "GCM1555C1H220",
+   "mfr": "Murata",
+   "desc": "MLCC 22pF 50V C0G ±5% 0402 AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GCM1555C1H220JA16D",
+   "observations": [
     {
-      "code": "CGA4J1X7R1E106K125AC",
-      "why": "0805 10uF 25V X7R: no listing found — TDK/Murata list this rating as X7S (CGA4J1X7S1E106K125AC, GCM21BC71E106KE36L already in catalogue with obs)."
+     "distributor": "LCSC",
+     "qty": 10000,
+     "price": 0.0061,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C126502.html",
+     "date": "2026-10-13"
     },
     {
-      "code": "CGA6M3X7S2A475K200AB",
-      "why": "1210 4.7uF 100V DC-link cell: only OEMsTrade / IBS (excluded) and RS 5+ found — no usable break."
+     "distributor": "LCSC",
+     "qty": 100000,
+     "price": 0.0053,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C126502.html",
+     "date": "2026-10-13"
     },
     {
-      "code": "CGA5L3X7R2E105K160AB",
-      "why": "1206 1uF 250V HV cell: code not confirmed by any listing; budget spent."
-    },
-    {
-      "code": "GCM1885C1H102JA16D",
-      "why": "0603 C0G 1nF 50V: LCSC listing out of stock with no break table."
-    },
-    {
-      "code": "GCM1885C1H103JA16D",
-      "why": "0603 C0G 10nF 50V: no listing returned."
-    },
-    {
-      "code": "0402 2.2uF 6.3V X5R/X7S (automotive)",
-      "why": "code not confirmed; budget spent."
-    },
-    {
-      "code": "0603 2.2uF 25V / 4.7uF 16V X7R (automotive)",
-      "why": "GCM188R71E225 search returned no listing; budget spent."
-    },
-    {
-      "code": "0603 1uF 50V X7R (automotive GCM/CGA)",
-      "why": "no confirmed orderable code found."
-    },
-    {
-      "code": "GCM2195C1H103JA16D",
-      "why": "0805 C0G 10nF 50V: budget spent."
-    },
-    {
-      "code": "1206 22uF 25V X7R / 100nF 630V X7R / 100nF C0G 50V (automotive)",
-      "why": "budget spent."
-    },
-    {
-      "code": "0201 100nF 6.3V/10V automotive",
-      "why": "AC0201KRX6S5BB104 in catalogue has 1 obs; no new search."
-    },
-    {
-      "code": "TDK CGA soft-termination (…AE / flexible) point",
-      "why": "budget spent; Murata GCJ two points covered."
-    },
-    {
-      "code": "Commercial 0805 / 1206 remaining cells (GRM21B…, GRM31C…)",
-      "why": "budget spent."
+     "distributor": "RS Components",
+     "qty": 10000,
+     "price": 9.4,
+     "currency": "KRW",
+     "url": "https://kr.rs-online.com/web/p/mlccs-multilayer-ceramic-capacitors/1138727",
+     "date": "2026-10-13"
     }
-  ]
+   ],
+   "notes": "RS KR price is a stated reference price (out of stock). Future 10k $0.0219 discarded as implausible (3.6x LCSC and 4x Future's own 1nF GCM1555 price)."
+  },
+  {
+   "mpn": "GCM1555C1H102JA16D",
+   "family": "GCM1555C1H102",
+   "mfr": "Murata",
+   "desc": "MLCC 1nF 50V C0G ±5% 0402 AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": true,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GCM1555C1H102JA16D",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.0065,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/GCM1555C1H102JA16D?manufacturer=Murata-Manufacturing-Co-Ltd",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future",
+     "qty": 10000,
+     "price": 0.0056,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/GCM1555C1H102JA16D?manufacturer=Murata-Manufacturing-Co-Ltd",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Verical",
+     "qty": 10000,
+     "price": 0.0055,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/GCM1555C1H102JA16D?manufacturer=Murata-Manufacturing-Co-Ltd",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key shown temporarily out of stock (16 wk). LCSC 10k $0.0084 / $0.0067 (two snapshots) not used."
+  },
+  {
+   "mpn": "GCM188R71E105KA64D",
+   "family": "GCM188R71E105",
+   "mfr": "Murata",
+   "desc": "MLCC 1uF 25V X7R ±10% 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GCM188R71E105KA64D",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 4000,
+     "price": 0.066,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mlccs-multilayer-ceramic-capacitors/1693944",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.0286,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C85862.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS: reel of 4000 at £264.00 ex-VAT. LCSC: another snapshot (product-image/C85862) showed $0.0096 at 4000 — conflicting, the product-detail figure kept. Already in catalogue without obs."
+  },
+  {
+   "mpn": "GCM188R72A103KA37D",
+   "family": "GCM188R72A103",
+   "mfr": "Murata",
+   "desc": "MLCC 10nF 100V X7R ±10% 0603 AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GCM188R72A103KA37D",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.011,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C161232.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Future",
+     "qty": 4000,
+     "price": 0.0437,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/gcm188r72a103ka37d-murata-5201404",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC snapshots show $0.0110 and $0.0112 at 4000."
+  },
+  {
+   "mpn": "GCM21BR72A104KA37L",
+   "family": "GCM21BR72A104",
+   "mfr": "Murata",
+   "desc": "MLCC 100nF 100V X7R ±10% 0805 AEC-Q200",
+   "category": "passive_0805",
+   "pkg": "0805",
+   "aecq": true,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GCM21BR72A104KA37L",
+   "observations": [],
+   "notes": "No usable price: only LCSC hit was fat.lcsc.com (staging host, excluded); Future $0.151 @3000 discarded as implausible (~14x LCSC). LCSC marks it not recommended for new designs."
+  },
+  {
+   "mpn": "CGA6P3X7S1H106K250AB",
+   "family": "CGA6P3X7S1H106",
+   "mfr": "TDK",
+   "desc": "MLCC 10uF 50V X7S ±10% 1210 AEC-Q200",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": true,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "CGA6P3X7S1H106K250AB",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 500,
+     "price": 0.57,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/p/mlccs-multilayer-ceramic-capacitors/7883082",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Cell 1210 10uF 50V X7R: TDK lists this rating as X7S (no CGA6P3X7R1H106K250AB listing found). RS price ex-VAT at 500+. A Mouser 1k $0.254 figure seen without a citable franchised page — not used."
+  },
+  {
+   "mpn": "GCM033R71A103KA03D",
+   "family": "GCM033R71A103",
+   "mfr": "Murata",
+   "desc": "MLCC 10nF 10V X7R ±10% 0201 AEC-Q200",
+   "category": "passive_0402",
+   "pkg": "0201",
+   "aecq": true,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GCM033R71A103KA03D",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 15000,
+     "price": 0.0074,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Murata-Electronics-GCM033R71A103KA03D_C524550.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "TTI",
+     "qty": 15000,
+     "price": 0.0031,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/gcm03?f=dsa",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Cell asked 10nF 16V (GCM033R71C103KA03D) — not found; 10V sibling used."
+  },
+  {
+   "mpn": "GCJ188R71H104KA12D",
+   "family": "GCJ188R71H104",
+   "mfr": "Murata",
+   "desc": "MLCC 100nF 50V X7R ±10% 0603 soft termination (GCJ) AEC-Q200",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "battery-side",
+    "general decoupling"
+   ],
+   "observedMpn": "GCJ188R71H104KA12D",
+   "observations": [
+    {
+     "distributor": "TTI",
+     "qty": 4000,
+     "price": 0.021,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/1h104k",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "TTI",
+     "qty": 100000,
+     "price": 0.0169,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/1h104k",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Rutronik",
+     "qty": 4000,
+     "price": 0.0095,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/1h104k",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Soft-termination point 2 (point 1 GCJ21BR71H105KA01L already in catalogue). Findchips snapshot; Rutronik stock DE 8000 only."
+  },
+  {
+   "mpn": "GRM155R71C104KA88D",
+   "family": "GRM155R71C104",
+   "mfr": "Murata",
+   "desc": "MLCC 100nF 16V X7R ±10% 0402 commercial",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": false,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GRM155R71C104KA88D",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 10000,
+     "price": 0.0043,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C71629.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 10000,
+     "price": 0.0066,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/GRM155R71C104KA88D",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Avnet",
+     "qty": 10000,
+     "price": 0.0029,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/GRM155R71C104KA88D",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Commercial equivalent of GCM155R71C104KA55D (premium measurement)."
+  },
+  {
+   "mpn": "GRM155R71H103KA88D",
+   "family": "GRM155R71H103",
+   "mfr": "Murata",
+   "desc": "MLCC 10nF 50V X7R ±10% 0402 commercial",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": false,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GRM155R71H103KA88D",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 10000,
+     "price": 0.0058,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Murata-Electronics_C77019.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Avnet",
+     "qty": 10000,
+     "price": 0.0026,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/grm155r71h103ka88d",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "TME",
+     "qty": 10000,
+     "price": 0.002,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/grm155r71h103ka88d",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Commercial equivalent of GCM155R71H103KA55D."
+  },
+  {
+   "mpn": "CL05B104KO5NNNC",
+   "family": "CL05B104KO5",
+   "mfr": "Samsung Electro-Mechanics",
+   "desc": "MLCC 100nF 16V X7R ±10% 0402 commercial",
+   "category": "passive_0402",
+   "pkg": "0402",
+   "aecq": false,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "CL05B104KO5NNNC",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 10000,
+     "price": 0.0024,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/CL05B104KO5NNNC",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 10000,
+     "price": 0.002,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/CL05B104KO5NNNC",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 10000,
+     "price": 0.0025,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Samsung-Electro-Mechanics-CL05B104KO5NNNC_C1525.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Commercial Samsung 0402 100nF; automotive sibling CL05B104KB5VPNC (50V) in catalogue."
+  },
+  {
+   "mpn": "GRM188R71H104KA93D",
+   "family": "GRM188R71H104",
+   "mfr": "Murata",
+   "desc": "MLCC 100nF 50V X7R ±10% 0603 commercial",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": false,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GRM188R71H104KA93D",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 4000,
+     "price": 0.0122,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/grm188r71h104ka93d",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Verical",
+     "qty": 4000,
+     "price": 0.0218,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/grm188r71h104ka93d",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Commercial equivalent of GCM188R71H104KA57D. LCSC 4000 snapshots conflict ($0.0174 / $0.0095) — not used."
+  },
+  {
+   "mpn": "0603B105K500CT",
+   "family": "0603B105K500",
+   "mfr": "Walsin",
+   "desc": "MLCC 1uF 50V X7R ±10% 0603 commercial",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": false,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "0603B105K500CT",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.0225,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C388003.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Commercial 0603 1uF 50V point (no automotive GCM188 1uF 50V code confirmed this round)."
+  },
+  {
+   "mpn": "CC0603KRX7R9BB105",
+   "family": "CC0603KRX7R9BB105",
+   "mfr": "Yageo",
+   "desc": "MLCC 1uF 50V X7R ±10% 0603 commercial",
+   "category": "passive_0603",
+   "pkg": "0603",
+   "aecq": false,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "CC0603KRX7R9BB105",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 4000,
+     "price": 0.0629,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C559769.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Yageo CC commercial; price ~2.8x Walsin at same break — single snapshot, verify."
+  },
+  {
+   "mpn": "GRM31CR71E106KA12L",
+   "family": "GRM31CR71E106",
+   "mfr": "Murata",
+   "desc": "MLCC 10uF 25V X7R ±10% 1206 commercial",
+   "category": "passive_1206",
+   "pkg": "1206",
+   "aecq": false,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GRM31CR71E106KA12L",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 2000,
+     "price": 0.2165,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C77093.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Already in catalogue as [distributor] without obs; full reel 2000."
+  },
+  {
+   "mpn": "GRM32ER71H106KA12L",
+   "family": "GRM32ER71H106",
+   "mfr": "Murata",
+   "desc": "MLCC 10uF 50V X7R ±10% 1210 commercial",
+   "category": "passive_1206",
+   "pkg": "1210",
+   "aecq": false,
+   "ecuRoles": [
+    "general decoupling"
+   ],
+   "observedMpn": "GRM32ER71H106KA12L",
+   "observations": [
+    {
+     "distributor": "Newark",
+     "qty": 1000,
+     "price": 0.13,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/GRM32ER71H106KA12L",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Newark",
+     "qty": 5000,
+     "price": 0.108,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/GRM32ER71H106KA12L",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.213,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C77102.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Commercial pair for CGA6P3X7S1H106K250AB (1210 10uF 50V). Newark showed 0 stock; TME 1000 $0.262 also listed."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "CGA4J1X7R1E106K125AC",
+   "why": "0805 10uF 25V X7R: no listing found — TDK/Murata list this rating as X7S (CGA4J1X7S1E106K125AC, GCM21BC71E106KE36L already in catalogue with obs)."
+  },
+  {
+   "code": "CGA6M3X7S2A475K200AB",
+   "why": "1210 4.7uF 100V DC-link cell: only OEMsTrade / IBS (excluded) and RS 5+ found — no usable break."
+  },
+  {
+   "code": "CGA5L3X7R2E105K160AB",
+   "why": "1206 1uF 250V HV cell: code not confirmed by any listing; budget spent."
+  },
+  {
+   "code": "GCM1885C1H102JA16D",
+   "why": "0603 C0G 1nF 50V: LCSC listing out of stock with no break table."
+  },
+  {
+   "code": "GCM1885C1H103JA16D",
+   "why": "0603 C0G 10nF 50V: no listing returned."
+  },
+  {
+   "code": "0402 2.2uF 6.3V X5R/X7S (automotive)",
+   "why": "code not confirmed; budget spent."
+  },
+  {
+   "code": "0603 2.2uF 25V / 4.7uF 16V X7R (automotive)",
+   "why": "GCM188R71E225 search returned no listing; budget spent."
+  },
+  {
+   "code": "0603 1uF 50V X7R (automotive GCM/CGA)",
+   "why": "no confirmed orderable code found."
+  },
+  {
+   "code": "GCM2195C1H103JA16D",
+   "why": "0805 C0G 10nF 50V: budget spent."
+  },
+  {
+   "code": "1206 22uF 25V X7R / 100nF 630V X7R / 100nF C0G 50V (automotive)",
+   "why": "budget spent."
+  },
+  {
+   "code": "0201 100nF 6.3V/10V automotive",
+   "why": "AC0201KRX6S5BB104 in catalogue has 1 obs; no new search."
+  },
+  {
+   "code": "TDK CGA soft-termination (…AE / flexible) point",
+   "why": "budget spent; Murata GCJ two points covered."
+  },
+  {
+   "code": "Commercial 0805 / 1206 remaining cells (GRM21B…, GRM31C…)",
+   "why": "budget spent."
+  }
+ ]
 }

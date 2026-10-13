@@ -1,0 +1,12 @@
+{
+  "note": "Review decisions, round 4 (13 Oct 2026). Applied to raw/*.json by apply-review.py; the cleaned files at this level are what the merge reads. dropObs removes the matching observations (distributor + currency [+ qty]); dropPart removes every observation (the part is reported, not added); setObs replaces observations with re-verified ones.",
+  "decisions": [
+    { "mpn": "ADIN1110BCPZ-R7", "action": "dropObs", "match": { "currency": "CNY" }, "reason": "Digi-Key China price includes 13% VAT" },
+    { "mpn": "LM25149QRGYRQ1", "action": "dropObs", "match": { "currency": "CNY" }, "reason": "Digi-Key China price includes 13% VAT" },
+    { "mpn": "SQM120N04-1M7L_GE3", "action": "dropObs", "match": { "currency": "CNY" }, "reason": "Digi-Key China price includes 13% VAT" },
+    { "mpn": "BUK7J1R0-40HX", "action": "dropObs", "match": { "currency": "CNY" }, "reason": "element14 China price may include 13% VAT (and element14.cn is not a listed price host)" },
+    { "mpn": "NVBG040N120SC1", "action": "dropObs", "match": { "qty": 800 }, "reason": "the 800 reel listing (out of stock) is dearer than the 200+ break - a stale listing" },
+    { "mpn": "AIKQ120N75CP2XKSA1", "action": "dropObs", "match": { "currency": "ZAR" }, "reason": "figure was rounded in the search result ('about R155') - not a read price" },
+    { "mpn": "AIKQ200N75CP2XKSA1", "action": "dropObs", "match": { "currency": "PHP" }, "reason": "figures were rounded in the search result ('about') - not a read price" }
+  ]
+}

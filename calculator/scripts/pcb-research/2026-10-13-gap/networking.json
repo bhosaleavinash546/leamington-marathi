@@ -180,25 +180,8 @@
     "industrial"
    ],
    "observedMpn": "ADIN1110BCPZ-R7",
-   "observations": [
-    {
-     "distributor": "Digi-Key",
-     "qty": 750,
-     "price": 58.82,
-     "currency": "CNY",
-     "url": "https://digikey.cn/en/products/detail/analog-devices-inc/ADIN1110BCPZ-R7/14290386",
-     "date": "2026-10-13"
-    },
-    {
-     "distributor": "Digi-Key",
-     "qty": 1500,
-     "price": 51.23,
-     "currency": "CNY",
-     "url": "https://digikey.cn/en/products/detail/analog-devices-inc/ADIN1110BCPZ-R7/14290386",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "Digi-Key China prices INCLUDE 13% VAT. Industrial (10BASE-T1L), not automotive."
+   "observations": [],
+   "notes": "Digi-Key China prices INCLUDE 13% VAT. Industrial (10BASE-T1L), not automotive. Review 13 Oct 2026: dropObs - Digi-Key China price includes 13% VAT."
   },
   {
    "mpn": "KSZ9567RTXI-TR",

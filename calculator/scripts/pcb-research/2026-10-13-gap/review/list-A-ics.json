@@ -1,0 +1,354 @@
+[
+ {
+  "file": "auto-compute.json",
+  "mpn": "TC4D7XP20MF500MCABKXUMA1",
+  "mfr": "Infineon",
+  "desc": "AURIX TC4Dx TC4D7 multi-core TriCore 500 MHz, 20 MB flash, ASIL-D",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 77.85,
+    "currency": "USD",
+    "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?m=Infineon",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Mouser IL listing 726-TC4D7XP20MF500MC: 1 pc $108.07, 1000 $77.85 (Mouser US snapshot $77.86). Only one distributor found. Package per family (TC4D9 BGA); confirm pin count."
+ },
+ {
+  "file": "auto-compute.json",
+  "mpn": "R7F7016493AFP-C#BA1",
+  "mfr": "Renesas",
+  "desc": "RH850/F1KM-S4 32-bit MCU, LQFP-176",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 500,
+    "price": 13.12,
+    "currency": "USD",
+    "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/?core=G3KH",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Mouser breaks $22.27 @1 to $13.12 @500; no 1000 break. Renesas list $13.21 (qty not stated) for R7F7016493AFP-C#AA1."
+ },
+ {
+  "file": "auto-compute.json",
+  "mpn": "MIMX9352AVTXMBC",
+  "mfr": "NXP",
+  "desc": "i.MX 93 automotive applications processor, 2x Cortex-A55 + M33 + NPU",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 456,
+    "price": 23.47,
+    "currency": "USD",
+    "url": "https://www.mouser.vn/en/c/semiconductors/embedded-processors-controllers/microprocessors-mpu/",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Mouser 'i.MX 93 AUTO-TM': $34.98 @1 to ~$23.47 @456; 1064 tier is quote-only. Mouser CA snapshot higher. i.MX 95 not searched."
+ },
+ {
+  "file": "connectivity-general.json",
+  "mpn": "PN7462AUHN/C300Y",
+  "mfr": "NXP",
+  "desc": "NFC controller with Cortex-M0 MCU, 160 kB flash, contact interface",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 7.29925,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/nxp-usa-inc/PN7462AUHN-C300Y/5980001",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 7.658,
+    "currency": "USD",
+    "url": "https://www.mouser.cl/c/semiconductors/wireless-rf-integrated-circuits/rf-microcontrollers-mcu/?pg=3",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 8.32,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/5069209",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Industrial/consumer grade. Digi-Key 1,000 extended USD 7,299.25. Mouser read on the Chile site (USD). Future: MOQ 1,000, 16 wk lead."
+ },
+ {
+  "file": "memory.json",
+  "mpn": "MT62F2G32D4DS-026 AAT:B TR",
+  "mfr": "Micron",
+  "desc": "LPDDR5 64Gb (8GB) 2G x32, automotive -40..105 C",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2000,
+    "price": 69.57,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT62F2G32D4DS-026-AAT-B-TR/17631799",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Task asked AUT:B; Digi-Key lists AAT:B TR (AAT = -40..105 C automotive). Single reel break only."
+ },
+ {
+  "file": "memory.json",
+  "mpn": "W25Q64JVSSIQ",
+  "mfr": "Winbond",
+  "desc": "Quad SPI NOR 64Mb, 3 V, industrial -40..85 C (not automotive)",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.61,
+    "currency": "USD",
+    "url": "https://lcsc.com/product-detail/NOR-FLASH_WINBOND-W25Q64JVSSIQ_C179171.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Industrial staple. Search summary gave 'about $0.61' at 1000+ (C179171); other LCSC listings were inconsistent and were discarded. Automotive W25Q64JVSSAQ / W25Q128JVSAQ not found priced."
+ },
+ {
+  "file": "memory.json",
+  "mpn": "IS25LP512M-JLLA3",
+  "mfr": "ISSI",
+  "desc": "Quad SPI NOR 512Mb, 3 V, automotive A3",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Avnet",
+    "qty": 480,
+    "price": 9.92,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/issi/is25lp512mj-jlla3/evolve-119503018/",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Avnet lists code as IS25LP512MJ-JLLA3 (verify vs ISSI IS25LP512M-JLLA3); price 'about $9.92' at its 480 break, 0 stock."
+ },
+ {
+  "file": "networking.json",
+  "mpn": "MCP251863T-E/9PX",
+  "mfr": "Microchip",
+  "desc": "CAN FD controller + transceiver, SPI",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 3300,
+    "price": 1.717,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/can-interface-ics/0598228?gb=s",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 3300,
+    "price": 2.039,
+    "currency": "EUR",
+    "url": "https://befr.rs-online.com/web/p/can-interface-ics/0598228",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Reel price (3300). Out of stock at read. Same distributor, two regions."
+ },
+ {
+  "file": "power-semis.json",
+  "mpn": "NVH4L020N120SC1",
+  "mfr": "onsemi",
+  "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 102 A, Kelvin source, AEC-Q101",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 100,
+    "price": 26.35,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/2025735",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 225,
+    "price": 60.49,
+    "currency": "AUD",
+    "url": "https://au.rs-online.com/web/p/mosfets/2025735",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS UK ex VAT; AU ex GST. Digi-Key seen only on punchouttest (not used). Both RS listings out of stock."
+ },
+ {
+  "file": "power-semis.json",
+  "mpn": "SCT040HU120G3AG",
+  "mfr": "STMicroelectronics",
+  "desc": "Gen3 automotive SiC MOSFET 1200 V 40 mOhm, AEC-Q101",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 600,
+    "price": 7.27,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/9186969",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Future 600+ break, 0 stock, 36 wk. Low vs retail SiC prices - verify before relying on it."
+ },
+ {
+  "file": "power-semis.json",
+  "mpn": "NVBG020N120SC1",
+  "mfr": "onsemi",
+  "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 98 A, AEC-Q101",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 800,
+    "price": 382.39,
+    "currency": "MYR",
+    "url": "https://my.rs-online.com/web/p/mosfets/1958969",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS Malaysia reel of 800 (MYR 305,908 per reel); back-order date stale. 1-199 break MYR 338.60."
+ },
+ {
+  "file": "sensors-analog.json",
+  "mpn": "ACS71240LLCBTR-030B3",
+  "mfr": "Allegro MicroSystems",
+  "desc": "Hall current sensor, 30 A bidirectional, 3.3 V, integrated conductor",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 1.35016,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/allegro-microsystems/ACS71240LLCBTR-030B3/10146687",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 3000,
+    "price": 1.13,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/2188451",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Future showed 1.20 and 1.13 at 3,000+ in two snapshots; latest (1.13) kept. LCSC price only seen on fat.lcsc.com (excluded)."
+ },
+ {
+  "file": "sensors-analog.json",
+  "mpn": "TLI4971A050T5E0001XUMA1",
+  "mfr": "Infineon",
+  "desc": "Coreless magnetic current sensor 50 A, analog, industrial",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 2.7,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLI4971A050T5E0001XUMA1/14321768",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 2.55,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLI4971A050T5E0001XUMA1/14321768",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Industrial grade (automotive sibling is TLE4972, already catalogued). Read on azcus.digikey.com (DigiKey regional host); 1,000 = cut tape/Digi-Reel, 2,500 = T&R; values approximate ('about') in snippet."
+ },
+ {
+  "file": "sensors-analog.json",
+  "mpn": "TLI4971A120T5E0001XUMA1",
+  "mfr": "Infineon",
+  "desc": "Coreless magnetic current sensor 120 A, analog, industrial",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 3.19,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLI4971A120T5E0001XUMA1/11500489",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 2.6,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/infineon-technologies/TLI4971A120T5E0001XUMA1/11500489",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Read on azcus.digikey.com (DigiKey regional host); 500 = highest cut-tape break shown, 2,500 = T&R; values approximate in snippet."
+ },
+ {
+  "file": "sensors-analog.json",
+  "mpn": "INA296B4QDDFRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Bidirectional current-sense amplifier, -5 to 110 V CM, 1.1 MHz, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.74,
+    "currency": "USD",
+    "url": "https://www.mouser.co.il/c/semiconductors/amplifier-ics/current-sense-amplifiers?pg=21",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "1,000 break read from a Mouser category-page snippet whose layout was hard to read (ladder $3.15 @1 to ~$1.74 @1k); verify."
+ },
+ {
+  "file": "sensors-analog.json",
+  "mpn": "TLE5501E0002XUMA1",
+  "mfr": "Infineon",
+  "desc": "TMR angle sensor, analog sin/cos, ASIL-D ready, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 1.19,
+    "currency": "USD",
+    "url": "https://ciiva.com/part/tle5501e0002xuma1-26590453",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 3.204,
+    "currency": "USD",
+    "url": "https://hken.rs-online.com/web/p/motion-sensor-ics/2186350P",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Mouser break via ciiva aggregator (date unclear). RS HK (USD) 500+ is ~2.7x Mouser; large spread, verify."
+ }
+]

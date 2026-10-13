@@ -487,17 +487,8 @@
     "48V"
    ],
    "observedMpn": "BUK7J1R0-40HX",
-   "observations": [
-    {
-     "distributor": "element14",
-     "qty": 1000,
-     "price": 14.15,
-     "currency": "CNY",
-     "url": "https://www.element14.cn/en-CN/nexperia/buk7j1r0-40hx/mosfet-aec-q101-n-ch-40v-sot-1023/dp/2901026",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "element14 China; CNY price may include 13% VAT. LCSC page C503359 had no price in result."
+   "observations": [],
+   "notes": "element14 China; CNY price may include 13% VAT. LCSC page C503359 had no price in result. Review 13 Oct 2026: dropObs - element14 China price may include 13% VAT (and element14.cn is not a listed price host)."
   },
   {
    "mpn": "SQM120N04-1M7L_GE3",
@@ -529,17 +520,9 @@
      "currency": "NZD",
      "url": "https://nz.rs-online.com/web/p/mosfets/2567444",
      "date": "2026-10-13"
-    },
-    {
-     "distributor": "Digi-Key",
-     "qty": 800,
-     "price": 16.37,
-     "currency": "CNY",
-     "url": "https://digikey.cn/en/products/detail/vishay-siliconix/SQM120N04-1M7L-GE3/4439630",
-     "date": "2026-10-13"
     }
    ],
-   "notes": "Digi-Key China price INCLUDES 13% VAT. RS NZ out of stock."
+   "notes": "Digi-Key China price INCLUDES 13% VAT. RS NZ out of stock. Review 13 Oct 2026: dropObs - Digi-Key China price includes 13% VAT."
   },
   {
    "mpn": "NDSH20120C",
@@ -593,17 +576,8 @@
     "traction inverter"
    ],
    "observedMpn": "AIKQ120N75CP2XKSA1",
-   "observations": [
-    {
-     "distributor": "RS Components",
-     "qty": 150,
-     "price": 155,
-     "currency": "ZAR",
-     "url": "https://za.rs-online.com/web/p/igbts/2486655",
-     "date": "2026-10-13"
-    }
-   ],
-   "notes": "RS South Africa ex VAT, figure rounded in result ('about R155'). RS UK GBP 6.45 @50+ (below 100)."
+   "observations": [],
+   "notes": "RS South Africa ex VAT, figure rounded in result ('about R155'). RS UK GBP 6.45 @50+ (below 100). Review 13 Oct 2026: dropObs - figure was rounded in the search result ('about R155') - not a read price."
   },
   {
    "mpn": "AIKQ200N75CP2XKSA1",
@@ -625,17 +599,9 @@
      "currency": "NZD",
      "url": "https://nz.rs-online.com/web/p/igbts/2486657",
      "date": "2026-10-13"
-    },
-    {
-     "distributor": "RS Components",
-     "qty": 240,
-     "price": 820,
-     "currency": "PHP",
-     "url": "https://ph.rs-online.com/web/p/igbts/2486656",
-     "date": "2026-10-13"
     }
    ],
-   "notes": "Figures rounded in result ('about'); NZ ex GST; PH tube of 240, out of stock."
+   "notes": "Figures rounded in result ('about'); NZ ex GST; PH tube of 240, out of stock. Review 13 Oct 2026: dropObs - figures were rounded in the search result ('about') - not a read price."
   },
   {
    "mpn": "NVBG040N120SC1",
@@ -659,17 +625,9 @@
      "currency": "GBP",
      "url": "https://uk.rs-online.com/web/p/mosfets/2025731",
      "date": "2026-10-13"
-    },
-    {
-     "distributor": "RS Components",
-     "qty": 800,
-     "price": 13.205,
-     "currency": "GBP",
-     "url": "https://uk.rs-online.com/web/p/mosfets/2025730?gb=s",
-     "date": "2026-10-13"
     }
    ],
-   "notes": "RS UK ex VAT. The 800 reel listing (out of stock) is dearer than the 200+ cut-tape break - stale. Richardson RFPD USD 15.64 MOQ 800 not used."
+   "notes": "RS UK ex VAT. The 800 reel listing (out of stock) is dearer than the 200+ cut-tape break - stale. Richardson RFPD USD 15.64 MOQ 800 not used. Review 13 Oct 2026: dropObs - the 800 reel listing (out of stock) is dearer than the 200+ break - a stale listing."
   },
   {
    "mpn": "NVBG020N120SC1",
@@ -728,11 +686,11 @@
    "why": "80/100 V automotive TOLL MOSFET; guessed codes returned nothing - needs exact orderable code"
   },
   {
-   "code": "Infineon IAUC300N08S5N012 / IPB\u2026",
+   "code": "Infineon IAUC300N08S5N012 / IPB…",
    "why": "80 V OptiMOS points; budget spent (other IAUC/IAUT parts in catalogue)"
   },
   {
-   "code": "ST STL\u2026AG (PowerFLAT)",
+   "code": "ST STL…AG (PowerFLAT)",
    "why": "automotive LV MOSFETs; budget spent"
   },
   {
@@ -748,11 +706,11 @@
    "why": "VE-Trac Direct SiC traction module; budget spent"
   },
   {
-   "code": "ST ACEPACK DRIVE ADP\u2026",
+   "code": "ST ACEPACK DRIVE ADP…",
    "why": "SiC traction module; budget spent"
   },
   {
-   "code": "Infineon IDW\u2026G6 SiC Schottky",
+   "code": "Infineon IDW…G6 SiC Schottky",
    "why": "OBC PFC diode; one search returned no G6 listing"
   },
   {
@@ -760,7 +718,7 @@
    "why": "900 V SiC D2PAK-7L (industrial); budget spent"
   },
   {
-   "code": "Rohm SCT3\u2026KRHR / SCT4018KWAHR",
+   "code": "Rohm SCT3…KRHR / SCT4018KWAHR",
    "why": "automotive TO-247-4L SiC; searched SCT4018KWAHR / SCT4036KWAHR, nothing returned"
   }
  ]

@@ -1,475 +1,467 @@
 {
-  "domain": "power-mgmt",
-  "researched": "2026-10-13",
-  "parts": [
+ "domain": "power-mgmt",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "LP876411B4RQKRQ1",
+   "family": "LP8764",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 4 x 5 A / 20 A multiphase buck for SoCs",
+   "category": "ic_qfn",
+   "pkg": "VQFN-32 (RQK)",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "domain controller"
+   ],
+   "observedMpn": "LP876411B4RQKRQ1",
+   "observations": [],
+   "notes": "Orderable code confirmed on TI part-details page; two searches found no franchised distributor price."
+  },
+  {
+   "mpn": "TPS65224-Q1",
+   "family": "TPS65224",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive PMIC, 4 buck + 3 LDO, functional safety",
+   "category": "ic_qfn",
+   "pkg": "VQFN",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS",
+    "MCU/SoC power"
+   ],
+   "observedMpn": "TPS65224-Q1",
+   "observations": [],
+   "notes": "Orderable code not confirmed in search; no distributor price found. Family key only (no code invented)."
+  },
+  {
+   "mpn": "MAX20084",
+   "family": "MAX20084",
+   "mfr": "Analog Devices (Maxim)",
+   "desc": "Automotive PMIC / buck (task list)",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "ADAS"
+   ],
+   "observedMpn": "MAX20084",
+   "observations": [],
+   "notes": "Search returned no listing for MAX20084 at any distributor; orderable code not confirmed."
+  },
+  {
+   "mpn": "TLE9273",
+   "family": "TLE9273",
+   "mfr": "Infineon",
+   "desc": "System basis chip, CAN FD (task list)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "gateway"
+   ],
+   "observedMpn": "TLE9273",
+   "observations": [],
+   "notes": "No Farnell/RS/Mouser listing found for TLE9273QXV33XUMA1; orderable not confirmed."
+  },
+  {
+   "mpn": "TLE9263BQXV33XUMA1",
+   "family": "TLE9263",
+   "mfr": "Infineon",
+   "desc": "Mid-range SBC, CAN + LIN, 3.3 V LDO, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "body",
+    "gateway"
+   ],
+   "observedMpn": "TLE9263BQXV33XUMA1",
+   "observations": [
     {
-      "mpn": "LP876411B4RQKRQ1",
-      "family": "LP8764",
-      "mfr": "Texas Instruments",
-      "desc": "Automotive PMIC, 4 x 5 A / 20 A multiphase buck for SoCs",
-      "category": "ic_qfn",
-      "pkg": "VQFN-32 (RQK)",
-      "aecq": true,
-      "ecuRoles": [
-        "ADAS",
-        "domain controller"
-      ],
-      "observedMpn": "LP876411B4RQKRQ1",
-      "observations": [],
-      "notes": "Orderable code confirmed on TI part-details page; two searches found no franchised distributor price."
-    },
-    {
-      "mpn": "TPS65224-Q1",
-      "family": "TPS65224",
-      "mfr": "Texas Instruments",
-      "desc": "Automotive PMIC, 4 buck + 3 LDO, functional safety",
-      "category": "ic_qfn",
-      "pkg": "VQFN",
-      "aecq": true,
-      "ecuRoles": [
-        "ADAS",
-        "MCU/SoC power"
-      ],
-      "observedMpn": "TPS65224-Q1",
-      "observations": [],
-      "notes": "Orderable code not confirmed in search; no distributor price found. Family key only (no code invented)."
-    },
-    {
-      "mpn": "MAX20084",
-      "family": "MAX20084",
-      "mfr": "Analog Devices (Maxim)",
-      "desc": "Automotive PMIC / buck (task list)",
-      "category": "ic_qfn",
-      "pkg": "",
-      "aecq": true,
-      "ecuRoles": [
-        "ADAS"
-      ],
-      "observedMpn": "MAX20084",
-      "observations": [],
-      "notes": "Search returned no listing for MAX20084 at any distributor; orderable code not confirmed."
-    },
-    {
-      "mpn": "TLE9273",
-      "family": "TLE9273",
-      "mfr": "Infineon",
-      "desc": "System basis chip, CAN FD (task list)",
-      "category": "ic_qfn",
-      "pkg": "VQFN-48",
-      "aecq": true,
-      "ecuRoles": [
-        "BCM",
-        "gateway"
-      ],
-      "observedMpn": "TLE9273",
-      "observations": [],
-      "notes": "No Farnell/RS/Mouser listing found for TLE9273QXV33XUMA1; orderable not confirmed."
-    },
-    {
-      "mpn": "TLE9263BQXV33XUMA1",
-      "family": "TLE9263",
-      "mfr": "Infineon",
-      "desc": "Mid-range SBC, CAN + LIN, 3.3 V LDO, AEC-Q100",
-      "category": "ic_qfn",
-      "pkg": "VQFN-48",
-      "aecq": true,
-      "ecuRoles": [
-        "BCM",
-        "body",
-        "gateway"
-      ],
-      "observedMpn": "TLE9263BQXV33XUMA1",
-      "observations": [
-        {
-          "distributor": "Farnell",
-          "qty": 1000,
-          "price": 2.14,
-          "currency": "EUR",
-          "url": "https://ie.farnell.com/infineon/tle9263bqxv33xuma1/sys-basis-chip-aec-q100-3-3v-vqfn/dp/2986321",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Farnell IE price ex-VAT (page shows 1+ EUR 3.81 ex / 4.6863 inc VAT); 52-week lead time. Found while searching TLE9273."
-    },
-    {
-      "mpn": "LM25149QRGYRQ1",
-      "family": "LM25149",
-      "mfr": "Texas Instruments",
-      "desc": "42 V synchronous buck controller, active EMI filter, AEC-Q100",
-      "category": "ic_qfn",
-      "pkg": "VQFN-24 (5.5x3.5)",
-      "aecq": true,
-      "ecuRoles": [
-        "infotainment",
-        "ADAS",
-        "body"
-      ],
-      "observedMpn": "LM25149QRGYRQ1",
-      "observations": [
-        {
-          "distributor": "Digi-Key",
-          "qty": 1000,
-          "price": 2.29,
-          "currency": "USD",
-          "url": "https://www.findchips.com/search/149Q",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "Digi-Key",
-          "qty": 1000,
-          "price": 17.08,
-          "currency": "CNY",
-          "url": "https://digikey.cn/en/products/detail/texas-instruments/LM25149QRGYRQ1/18111364",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "USD break via Findchips naming Digi-Key (296-LM25149QRGYRQ1CT-ND), undated snapshot. Digi-Key CN price includes 13% VAT."
-    },
-    {
-      "mpn": "LT8636HV#PBF",
-      "family": "LT8636",
-      "mfr": "Analog Devices",
-      "desc": "42 V, 5 A/7 A silent switcher buck, LQFN-20, H grade",
-      "category": "ic_qfn",
-      "pkg": "LQFN-20",
-      "aecq": true,
-      "ecuRoles": [
-        "infotainment",
-        "ADAS"
-      ],
-      "observedMpn": "LT8636HV#PBF",
-      "observations": [],
-      "notes": "Code listed active (Lisle Apex); no franchised distributor price found (only broker reference prices, discarded)."
-    },
-    {
-      "mpn": "LT8390AHFE#PBF",
-      "family": "LT8390",
-      "mfr": "Analog Devices",
-      "desc": "60 V synchronous 4-switch buck-boost controller, 2 MHz, H grade",
-      "category": "ic_soic",
-      "pkg": "TSSOP-28-EP",
-      "aecq": true,
-      "ecuRoles": [
-        "infotainment",
-        "lighting"
-      ],
-      "observedMpn": "LT8390AHFE#PBF",
-      "observations": [],
-      "notes": "Code on Farnell JP (no price in snippet). Prices found only via OEMsTrade (forbidden) - discarded."
-    },
-    {
-      "mpn": "TLS4120D0EPV33XUMA1",
-      "family": "TLS4120",
-      "mfr": "Infineon",
-      "desc": "OPTIREG 35 V 2 A synchronous buck, 3.3 V fixed, 2.8 MHz, AEC-Q100",
-      "category": "ic_soic",
-      "pkg": "TSDSO-14",
-      "aecq": true,
-      "ecuRoles": [
-        "body",
-        "MCU power"
-      ],
-      "observedMpn": "TLS4120D0EPV33XUMA1",
-      "observations": [
-        {
-          "distributor": "RS Components",
-          "qty": 500,
-          "price": 88.0,
-          "currency": "TWD",
-          "url": "https://twcn.rs-online.com/web/p/voltage-regulators/2581675",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "RS Taiwan ex-tax, page marks prices as reference; 2-8 = TWD 126.50. Replaces estimate family TLS4120."
-    },
-    {
-      "mpn": "A6983",
-      "family": "A6983",
-      "mfr": "STMicroelectronics",
-      "desc": "Automotive 38 V 3 A synchronous buck (task list)",
-      "category": "ic_qfn",
-      "pkg": "QFN-16",
-      "aecq": true,
-      "ecuRoles": [
-        "body",
-        "infotainment"
-      ],
-      "observedMpn": "A6983",
-      "observations": [],
-      "notes": "No distributor listing found. ST launch press: USD 1.75 per 1k (A6983), 1.81 (A6983I) - manufacturer list, not recorded as an observation."
-    },
-    {
-      "mpn": "MPQ4430GLE-5-AEC1-Z",
-      "family": "MPQ4430",
-      "mfr": "Monolithic Power Systems",
-      "desc": "36 V 3.5 A synchronous buck, AEC-Q100",
-      "category": "ic_qfn",
-      "pkg": "QFN",
-      "aecq": true,
-      "ecuRoles": [
-        "body",
-        "infotainment"
-      ],
-      "observedMpn": "MPQ4430GLE-5-AEC1-Z",
-      "observations": [],
-      "notes": "MPS direct list USD 2.31 at 1k (manufacturer price, not recorded). Digi-Key result was a punchouttest host - excluded."
-    },
-    {
-      "mpn": "TLS715B0EJV50XUMA1",
-      "family": "TLS715",
-      "mfr": "Infineon",
-      "desc": "OPTIREG 40 V 150 mA LDO, 5 V fixed, AEC-Q100",
-      "category": "ic_soic",
-      "pkg": "DSO-8 (PG-DSO-8 EP)",
-      "aecq": true,
-      "ecuRoles": [
-        "body",
-        "sensor supply",
-        "BCM"
-      ],
-      "observedMpn": "TLS715B0EJV50XUMA1",
-      "observations": [
-        {
-          "distributor": "Farnell",
-          "qty": 2500,
-          "price": 0.49,
-          "currency": "GBP",
-          "url": "https://uk.farnell.com/infineon/tls715b0ejv50xuma1/linear-voltage-regulator/dp/2780912",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "RS Components",
-          "qty": 2500,
-          "price": 0.396,
-          "currency": "GBP",
-          "url": "https://uk.rs-online.com/web/p/voltage-regulators/2581681?gb=s",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "RS UK reel of 2,500 = GBP 990 ex VAT (temporarily out of stock). RS IE same reel EUR 0.475."
-    },
-    {
-      "mpn": "L5150BNTR",
-      "family": "L5150",
-      "mfr": "STMicroelectronics",
-      "desc": "Automotive 40 V 150 mA LDO, 5 V, with reset, AEC-Q100",
-      "category": "ic_soic",
-      "pkg": "SOT-223",
-      "aecq": true,
-      "ecuRoles": [
-        "body",
-        "sensor supply"
-      ],
-      "observedMpn": "L5150BNTR",
-      "observations": [
-        {
-          "distributor": "RS Components",
-          "qty": 1000,
-          "price": 0.438,
-          "currency": "GBP",
-          "url": "https://uk.rs-online.com/web/p/voltage-regulators/1785072",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "RS UK reel of 1,000 = GBP 438 ex VAT (stock no. 178-5072); cut tape 20+ = GBP 0.488."
-    },
-    {
-      "mpn": "NCV8114ASN330T1G",
-      "family": "NCV8114",
-      "mfr": "onsemi",
-      "desc": "300 mA LDO, 3.3 V, low Iq, AEC-Q100",
-      "category": "ic_soic",
-      "pkg": "TSOP-5",
-      "aecq": true,
-      "ecuRoles": [
-        "body",
-        "MCU power"
-      ],
-      "observedMpn": "NCV8114ASN330T1G",
-      "observations": [],
-      "notes": "Aggregator shows Digi-Key/Mouser USD 0.28 and Farnell 0.10 with no break stated; Digi-Key pages were punchouttest - excluded."
-    },
-    {
-      "mpn": "LM5060QDGSRQ1",
-      "family": "LM5060",
-      "mfr": "Texas Instruments",
-      "desc": "High-side protection / hot-swap controller with timer, AEC-Q100",
-      "category": "ic_soic",
-      "pkg": "VSSOP-10",
-      "aecq": true,
-      "ecuRoles": [
-        "power distribution",
-        "ECU input protection"
-      ],
-      "observedMpn": "LM5060QDGSRQ1",
-      "observations": [],
-      "notes": "Digi-Key breaks (1k USD 1.365, 3.5k 1.307, 7k 1.282) seen only on a punchouttest host - excluded by rule; Mouser figures only on a datasheet site. TI direct USD 2.15 (manufacturer)."
-    },
-    {
-      "mpn": "UCC14140QDWNQ1",
-      "family": "UCC14140",
-      "mfr": "Texas Instruments",
-      "desc": "Isolated DC-DC bias module, 1.5 W, integrated transformer, gate-driver supply",
-      "category": "ic_soic",
-      "pkg": "SSOP-36 (DWN)",
-      "aecq": true,
-      "ecuRoles": [
-        "traction inverter",
-        "OBC"
-      ],
-      "observedMpn": "UCC14140QDWNQ1",
-      "observations": [],
-      "notes": "TI doc names UCC14140QDWNQ1 as orderable; no distributor price found (Digi-Key hit was punchouttest, no price)."
-    },
-    {
-      "mpn": "SN6507-Q1",
-      "family": "SN6507",
-      "mfr": "Texas Instruments",
-      "desc": "Push-pull transformer driver, 36 V, 0.5 A, isolated bias",
-      "category": "ic_soic",
-      "pkg": "HVSSOP-10 (DGQ)",
-      "aecq": true,
-      "ecuRoles": [
-        "traction inverter",
-        "BMS",
-        "OBC"
-      ],
-      "observedMpn": "SN6507-Q1",
-      "observations": [],
-      "notes": "Findchips lists distributors but no price; exact orderable not confirmed in search."
-    },
-    {
-      "mpn": "2EP130R",
-      "family": "2EP130R",
-      "mfr": "Infineon",
-      "desc": "EiceDRIVER Power full-bridge transformer driver for isolated gate-driver supplies",
-      "category": "ic_soic",
-      "pkg": "",
-      "aecq": true,
-      "ecuRoles": [
-        "traction inverter"
-      ],
-      "observedMpn": "2EP130R",
-      "observations": [],
-      "notes": "Search returned nothing for 2EP130RXUMA1; orderable code not confirmed."
-    },
-    {
-      "mpn": "TLD5099EPXUMA1",
-      "family": "TLD5099",
-      "mfr": "Infineon",
-      "desc": "LITIX Power DC-DC LED controller, multi-topology, 500 kHz, AEC-Q100",
-      "category": "ic_soic",
-      "pkg": "TSDSO-14",
-      "aecq": true,
-      "ecuRoles": [
-        "lighting",
-        "headlamp",
-        "rear lamp"
-      ],
-      "observedMpn": "TLD5099EPXUMA1",
-      "observations": [
-        {
-          "distributor": "RS Components",
-          "qty": 200,
-          "price": 1.22,
-          "currency": "GBP",
-          "url": "https://uk.rs-online.com/web/p/ac-dc-converters/2584064",
-          "date": "2026-10-13"
-        },
-        {
-          "distributor": "RS Components",
-          "qty": 3000,
-          "price": 1.808,
-          "currency": "NZD",
-          "url": "https://nz.rs-online.com/web/c/semiconductors/power-management-ics/ac-dc-converters",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "RS UK ex VAT (2-18 = GBP 1.76); RS NZ reel of 3,000 ex GST (stock no. 258-4063). Replaces estimate family TLD5099."
-    },
-    {
-      "mpn": "TLC6C5724QDAPRQ1",
-      "family": "TLC6C5724",
-      "mfr": "Texas Instruments",
-      "desc": "24-channel automotive LED driver with diagnostics, AEC-Q100",
-      "category": "ic_soic",
-      "pkg": "HTSSOP-38 (DAP)",
-      "aecq": true,
-      "ecuRoles": [
-        "lighting",
-        "cluster",
-        "interior lamp"
-      ],
-      "observedMpn": "TLC6C5724QDAPRQ1",
-      "observations": [
-        {
-          "distributor": "LCSC",
-          "qty": 1000,
-          "price": 1.97,
-          "currency": "USD",
-          "url": "https://www.lcsc.com/product-detail/C702093.html",
-          "date": "2026-10-13"
-        }
-      ],
-      "notes": "Orderable is the DAP package (task guess QDCARQ1 does not exist). RS NL 2+ = EUR 2.55 (break <100, not recorded)."
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 2.14,
+     "currency": "EUR",
+     "url": "https://ie.farnell.com/infineon/tle9263bqxv33xuma1/sys-basis-chip-aec-q100-3-3v-vqfn/dp/2986321",
+     "date": "2026-10-13"
     }
-  ],
-  "notResearched": [
+   ],
+   "notes": "Farnell IE price ex-VAT (page shows 1+ EUR 3.81 ex / 4.6863 inc VAT); 52-week lead time. Found while searching TLE9273."
+  },
+  {
+   "mpn": "LM25149QRGYRQ1",
+   "family": "LM25149",
+   "mfr": "Texas Instruments",
+   "desc": "42 V synchronous buck controller, active EMI filter, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "VQFN-24 (5.5x3.5)",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "ADAS",
+    "body"
+   ],
+   "observedMpn": "LM25149QRGYRQ1",
+   "observations": [
     {
-      "code": "PF09 (NXP)",
-      "why": "Next-gen i.MX 9 / S32 processor PMIC; budget spent"
-    },
-    {
-      "code": "RAA271000 / RAA271005 (Renesas)",
-      "why": "R-Car ASIL-D PMIC; budget spent"
-    },
-    {
-      "code": "MAX20478 (ADI)",
-      "why": "Automotive SoC PMIC / multi-output buck; budget spent"
-    },
-    {
-      "code": "BD39040 (Rohm)",
-      "why": "Automotive multi-rail power IC; budget spent"
-    },
-    {
-      "code": "FS86 / FS8600 (NXP)",
-      "why": "ASIL-D safety SBC for S32 processors; budget spent"
-    },
-    {
-      "code": "ADBMS6832 (ADI)",
-      "why": "16-cell BMS monitor; budget spent"
-    },
-    {
-      "code": "MAX25262 (ADI)",
-      "why": "Automotive dual buck / PMIC; budget spent"
-    },
-    {
-      "code": "MPQ8875 (MPS)",
-      "why": "Automotive buck-boost; budget spent"
-    },
-    {
-      "code": "LDL1117-Q (ST)",
-      "why": "Common automotive 1.2 A LDO; budget spent"
-    },
-    {
-      "code": "TPS35-Q1 (TI)",
-      "why": "Automotive supervisor; budget spent"
-    },
-    {
-      "code": "LTC4380 (ADI)",
-      "why": "Surge stopper; budget spent"
-    },
-    {
-      "code": "TLE9104 (Infineon)",
-      "why": "4-channel low-side driver used with supervisors; budget spent"
-    },
-    {
-      "code": "MGJ2 (Murata)",
-      "why": "Isolated gate-driver DC-DC (industrial, check automotive status); budget spent"
-    },
-    {
-      "code": "MLX81116 (Melexis)",
-      "why": "RGB LIN LED driver for ambient lighting; budget spent"
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 2.29,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/149Q",
+     "date": "2026-10-13"
     }
-  ]
+   ],
+   "notes": "USD break via Findchips naming Digi-Key (296-LM25149QRGYRQ1CT-ND), undated snapshot. Digi-Key CN price includes 13% VAT. Review 13 Oct 2026: dropObs - Digi-Key China price includes 13% VAT."
+  },
+  {
+   "mpn": "LT8636HV#PBF",
+   "family": "LT8636",
+   "mfr": "Analog Devices",
+   "desc": "42 V, 5 A/7 A silent switcher buck, LQFN-20, H grade",
+   "category": "ic_qfn",
+   "pkg": "LQFN-20",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "ADAS"
+   ],
+   "observedMpn": "LT8636HV#PBF",
+   "observations": [],
+   "notes": "Code listed active (Lisle Apex); no franchised distributor price found (only broker reference prices, discarded)."
+  },
+  {
+   "mpn": "LT8390AHFE#PBF",
+   "family": "LT8390",
+   "mfr": "Analog Devices",
+   "desc": "60 V synchronous 4-switch buck-boost controller, 2 MHz, H grade",
+   "category": "ic_soic",
+   "pkg": "TSSOP-28-EP",
+   "aecq": true,
+   "ecuRoles": [
+    "infotainment",
+    "lighting"
+   ],
+   "observedMpn": "LT8390AHFE#PBF",
+   "observations": [],
+   "notes": "Code on Farnell JP (no price in snippet). Prices found only via OEMsTrade (forbidden) - discarded."
+  },
+  {
+   "mpn": "TLS4120D0EPV33XUMA1",
+   "family": "TLS4120",
+   "mfr": "Infineon",
+   "desc": "OPTIREG 35 V 2 A synchronous buck, 3.3 V fixed, 2.8 MHz, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "MCU power"
+   ],
+   "observedMpn": "TLS4120D0EPV33XUMA1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 500,
+     "price": 88.0,
+     "currency": "TWD",
+     "url": "https://twcn.rs-online.com/web/p/voltage-regulators/2581675",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS Taiwan ex-tax, page marks prices as reference; 2-8 = TWD 126.50. Replaces estimate family TLS4120."
+  },
+  {
+   "mpn": "A6983",
+   "family": "A6983",
+   "mfr": "STMicroelectronics",
+   "desc": "Automotive 38 V 3 A synchronous buck (task list)",
+   "category": "ic_qfn",
+   "pkg": "QFN-16",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "infotainment"
+   ],
+   "observedMpn": "A6983",
+   "observations": [],
+   "notes": "No distributor listing found. ST launch press: USD 1.75 per 1k (A6983), 1.81 (A6983I) - manufacturer list, not recorded as an observation."
+  },
+  {
+   "mpn": "MPQ4430GLE-5-AEC1-Z",
+   "family": "MPQ4430",
+   "mfr": "Monolithic Power Systems",
+   "desc": "36 V 3.5 A synchronous buck, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "QFN",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "infotainment"
+   ],
+   "observedMpn": "MPQ4430GLE-5-AEC1-Z",
+   "observations": [],
+   "notes": "MPS direct list USD 2.31 at 1k (manufacturer price, not recorded). Digi-Key result was a punchouttest host - excluded."
+  },
+  {
+   "mpn": "TLS715B0EJV50XUMA1",
+   "family": "TLS715",
+   "mfr": "Infineon",
+   "desc": "OPTIREG 40 V 150 mA LDO, 5 V fixed, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "DSO-8 (PG-DSO-8 EP)",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "sensor supply",
+    "BCM"
+   ],
+   "observedMpn": "TLS715B0EJV50XUMA1",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 2500,
+     "price": 0.49,
+     "currency": "GBP",
+     "url": "https://uk.farnell.com/infineon/tls715b0ejv50xuma1/linear-voltage-regulator/dp/2780912",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 2500,
+     "price": 0.396,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/voltage-regulators/2581681?gb=s",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK reel of 2,500 = GBP 990 ex VAT (temporarily out of stock). RS IE same reel EUR 0.475."
+  },
+  {
+   "mpn": "L5150BNTR",
+   "family": "L5150",
+   "mfr": "STMicroelectronics",
+   "desc": "Automotive 40 V 150 mA LDO, 5 V, with reset, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOT-223",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "sensor supply"
+   ],
+   "observedMpn": "L5150BNTR",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 1000,
+     "price": 0.438,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/voltage-regulators/1785072",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK reel of 1,000 = GBP 438 ex VAT (stock no. 178-5072); cut tape 20+ = GBP 0.488."
+  },
+  {
+   "mpn": "NCV8114ASN330T1G",
+   "family": "NCV8114",
+   "mfr": "onsemi",
+   "desc": "300 mA LDO, 3.3 V, low Iq, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSOP-5",
+   "aecq": true,
+   "ecuRoles": [
+    "body",
+    "MCU power"
+   ],
+   "observedMpn": "NCV8114ASN330T1G",
+   "observations": [],
+   "notes": "Aggregator shows Digi-Key/Mouser USD 0.28 and Farnell 0.10 with no break stated; Digi-Key pages were punchouttest - excluded."
+  },
+  {
+   "mpn": "LM5060QDGSRQ1",
+   "family": "LM5060",
+   "mfr": "Texas Instruments",
+   "desc": "High-side protection / hot-swap controller with timer, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "VSSOP-10",
+   "aecq": true,
+   "ecuRoles": [
+    "power distribution",
+    "ECU input protection"
+   ],
+   "observedMpn": "LM5060QDGSRQ1",
+   "observations": [],
+   "notes": "Digi-Key breaks (1k USD 1.365, 3.5k 1.307, 7k 1.282) seen only on a punchouttest host - excluded by rule; Mouser figures only on a datasheet site. TI direct USD 2.15 (manufacturer)."
+  },
+  {
+   "mpn": "UCC14140QDWNQ1",
+   "family": "UCC14140",
+   "mfr": "Texas Instruments",
+   "desc": "Isolated DC-DC bias module, 1.5 W, integrated transformer, gate-driver supply",
+   "category": "ic_soic",
+   "pkg": "SSOP-36 (DWN)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC"
+   ],
+   "observedMpn": "UCC14140QDWNQ1",
+   "observations": [],
+   "notes": "TI doc names UCC14140QDWNQ1 as orderable; no distributor price found (Digi-Key hit was punchouttest, no price)."
+  },
+  {
+   "mpn": "SN6507-Q1",
+   "family": "SN6507",
+   "mfr": "Texas Instruments",
+   "desc": "Push-pull transformer driver, 36 V, 0.5 A, isolated bias",
+   "category": "ic_soic",
+   "pkg": "HVSSOP-10 (DGQ)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "BMS",
+    "OBC"
+   ],
+   "observedMpn": "SN6507-Q1",
+   "observations": [],
+   "notes": "Findchips lists distributors but no price; exact orderable not confirmed in search."
+  },
+  {
+   "mpn": "2EP130R",
+   "family": "2EP130R",
+   "mfr": "Infineon",
+   "desc": "EiceDRIVER Power full-bridge transformer driver for isolated gate-driver supplies",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter"
+   ],
+   "observedMpn": "2EP130R",
+   "observations": [],
+   "notes": "Search returned nothing for 2EP130RXUMA1; orderable code not confirmed."
+  },
+  {
+   "mpn": "TLD5099EPXUMA1",
+   "family": "TLD5099",
+   "mfr": "Infineon",
+   "desc": "LITIX Power DC-DC LED controller, multi-topology, 500 kHz, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "TSDSO-14",
+   "aecq": true,
+   "ecuRoles": [
+    "lighting",
+    "headlamp",
+    "rear lamp"
+   ],
+   "observedMpn": "TLD5099EPXUMA1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 200,
+     "price": 1.22,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/ac-dc-converters/2584064",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 3000,
+     "price": 1.808,
+     "currency": "NZD",
+     "url": "https://nz.rs-online.com/web/c/semiconductors/power-management-ics/ac-dc-converters",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK ex VAT (2-18 = GBP 1.76); RS NZ reel of 3,000 ex GST (stock no. 258-4063). Replaces estimate family TLD5099."
+  },
+  {
+   "mpn": "TLC6C5724QDAPRQ1",
+   "family": "TLC6C5724",
+   "mfr": "Texas Instruments",
+   "desc": "24-channel automotive LED driver with diagnostics, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-38 (DAP)",
+   "aecq": true,
+   "ecuRoles": [
+    "lighting",
+    "cluster",
+    "interior lamp"
+   ],
+   "observedMpn": "TLC6C5724QDAPRQ1",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.97,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C702093.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Orderable is the DAP package (task guess QDCARQ1 does not exist). RS NL 2+ = EUR 2.55 (break <100, not recorded)."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "PF09 (NXP)",
+   "why": "Next-gen i.MX 9 / S32 processor PMIC; budget spent"
+  },
+  {
+   "code": "RAA271000 / RAA271005 (Renesas)",
+   "why": "R-Car ASIL-D PMIC; budget spent"
+  },
+  {
+   "code": "MAX20478 (ADI)",
+   "why": "Automotive SoC PMIC / multi-output buck; budget spent"
+  },
+  {
+   "code": "BD39040 (Rohm)",
+   "why": "Automotive multi-rail power IC; budget spent"
+  },
+  {
+   "code": "FS86 / FS8600 (NXP)",
+   "why": "ASIL-D safety SBC for S32 processors; budget spent"
+  },
+  {
+   "code": "ADBMS6832 (ADI)",
+   "why": "16-cell BMS monitor; budget spent"
+  },
+  {
+   "code": "MAX25262 (ADI)",
+   "why": "Automotive dual buck / PMIC; budget spent"
+  },
+  {
+   "code": "MPQ8875 (MPS)",
+   "why": "Automotive buck-boost; budget spent"
+  },
+  {
+   "code": "LDL1117-Q (ST)",
+   "why": "Common automotive 1.2 A LDO; budget spent"
+  },
+  {
+   "code": "TPS35-Q1 (TI)",
+   "why": "Automotive supervisor; budget spent"
+  },
+  {
+   "code": "LTC4380 (ADI)",
+   "why": "Surge stopper; budget spent"
+  },
+  {
+   "code": "TLE9104 (Infineon)",
+   "why": "4-channel low-side driver used with supervisors; budget spent"
+  },
+  {
+   "code": "MGJ2 (Murata)",
+   "why": "Isolated gate-driver DC-DC (industrial, check automotive status); budget spent"
+  },
+  {
+   "code": "MLX81116 (Melexis)",
+   "why": "RGB LIN LED driver for ambient lighting; budget spent"
+  }
+ ]
 }

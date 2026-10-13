@@ -1,0 +1,767 @@
+{
+ "domain": "power-semis",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "NVH4L020N120SC1",
+   "family": "NVH4L020N120SC1",
+   "mfr": "onsemi",
+   "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 102 A, Kelvin source, AEC-Q101",
+   "category": "through_hole",
+   "pkg": "TO-247-4L",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "NVH4L020N120SC1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 100,
+     "price": 26.35,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mosfets/2025735",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 225,
+     "price": 60.49,
+     "currency": "AUD",
+     "url": "https://au.rs-online.com/web/p/mosfets/2025735",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK ex VAT; AU ex GST. Digi-Key seen only on punchouttest (not used). Both RS listings out of stock."
+  },
+  {
+   "mpn": "E3M0075120K",
+   "family": "E3M0075120K",
+   "mfr": "Wolfspeed",
+   "desc": "Automotive SiC MOSFET 1200 V 75 mOhm 32 A, Kelvin source",
+   "category": "through_hole",
+   "pkg": "TO-247-4",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No franchised listing at >=100. Richardson RFPD showed $5.98 in multiples of 30 (below 100, and implausibly low vs C3M0075120K ~$20 @1) - discarded; Dasenic is a broker."
+  },
+  {
+   "mpn": "AIMW120R035M1HXKSA1",
+   "family": "AIMW120R035M1H",
+   "mfr": "Infineon",
+   "desc": "CoolSiC automotive SiC MOSFET 1200 V 35 mOhm 52 A",
+   "category": "through_hole",
+   "pkg": "TO-247-3",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "AIMW120R035M1HXKSA1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 150,
+     "price": 261.6,
+     "currency": "HKD",
+     "url": "https://hkcn.rs-online.com/web/p/mosfets/2333487",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS Hong Kong; HK$283.60 @1-9."
+  },
+  {
+   "mpn": "AIMBG120R030M1",
+   "family": "AIMBG120R030M1",
+   "mfr": "Infineon",
+   "desc": "CoolSiC automotive SiC MOSFET 1200 V 30 mOhm 70 A",
+   "category": "ic_soic",
+   "pkg": "PG-TO263-7 (D2PAK-7L)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only the Infineon datasheet found; no distributor price in results. Orderable suffix not confirmed."
+  },
+  {
+   "mpn": "SCT4045DWAHRTL",
+   "family": "SCT4045DWAHR",
+   "mfr": "Rohm",
+   "desc": "4th-gen SiC MOSFET 750 V 45 mOhm 31 A, automotive",
+   "category": "ic_soic",
+   "pkg": "TO-263-7LA (D2PAK-7L)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "SCT4045DWAHRTL",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 100,
+     "price": 6.52,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mosfets/0264590",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK ex VAT (5-45: 7.408, 50-95: 7.038). Digi-Key lists it, 27 wk, no price in result. SCT4018KWAHR / SCT4036KWAHR not found."
+  },
+  {
+   "mpn": "SCT040HU120G3AG",
+   "family": "SCT040HU120G3AG",
+   "mfr": "STMicroelectronics",
+   "desc": "Gen3 automotive SiC MOSFET 1200 V 40 mOhm, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "HU3PAK (7-lead SMD top-cool)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "SCT040HU120G3AG",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 600,
+     "price": 7.27,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/9186969",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Future 600+ break, 0 stock, 36 wk. Low vs retail SiC prices - verify before relying on it."
+  },
+  {
+   "mpn": "SCT060HU75G3AG",
+   "family": "SCT060HU75G3AG",
+   "mfr": "STMicroelectronics",
+   "desc": "Gen3 automotive SiC MOSFET 750 V 60 mOhm, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "HU3PAK (7-lead SMD top-cool)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "SCT060HU75G3AG",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 600,
+     "price": 1953.78,
+     "currency": "JPY",
+     "url": "https://jp.rs-online.com/web/p/mosfets/0215239",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS Japan. Sibling SCT055HU65G3AG: RS UK GBP 10.01 @2 (below 100, not used); Digi-Key SCT040HU65G3AG USD 14.04 qty not shown."
+  },
+  {
+   "mpn": "EPC2206",
+   "family": "EPC2206",
+   "mfr": "EPC",
+   "desc": "eGaN FET 80 V 2.2 mOhm, AEC-Q101",
+   "category": "ic_qfn",
+   "pkg": "wafer-level chip-scale LGA",
+   "aecq": true,
+   "ecuRoles": [
+    "48V DC-DC",
+    "LiDAR"
+   ],
+   "observedMpn": "EPC2206",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 115.99,
+     "currency": "PHP",
+     "url": "https://www.digikey.ph/en/products/detail/epc/EPC2206/9586555",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key Philippines T&R break from 500. EPC2218A already in catalogue with obs (not repeated)."
+  },
+  {
+   "mpn": "MGD3162",
+   "family": "GD3162",
+   "mfr": "NXP",
+   "desc": "GD3162 advanced isolated single-channel gate driver for SiC/IGBT traction, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-32 (WSOIC)",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter"
+   ],
+   "observedMpn": "MGD3162 (full ordering suffix not shown in result)",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2640,
+     "price": 6.0,
+     "currency": "EUR",
+     "url": "https://www.mouser.bg/c/power/power-management-ics/galvanically-isolated-gate-drivers/?m=NXP",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser Bulgaria: EUR 9.73 @1 to 6.00 @2640; exact orderable code not visible - verify suffix."
+  },
+  {
+   "mpn": "MGD3160AM315EK",
+   "family": "GD3160",
+   "mfr": "NXP",
+   "desc": "GD3160 advanced isolated single-channel gate driver for SiC MOSFET, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "WSOIC-32",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No franchised price. NXP site list price US$4.47 @1k (manufacturer list, not an observation). Cytech / Indian reseller quotes are brokers. Code seen only on reseller pages."
+  },
+  {
+   "mpn": "1EDI2004AS",
+   "family": "1EDI2004AS",
+   "mfr": "Infineon",
+   "desc": "EiceDRIVER isolated IGBT gate driver for >5 kW automotive drives, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "PG-DSO-36",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only the Infineon product page found. Siblings 1EDI2002ASXUMA2 / 1EDI2010ASXUMA1 already in catalogue with obs."
+  },
+  {
+   "mpn": "ADUM4146WARWZ",
+   "family": "ADuM4146",
+   "mfr": "Analog Devices",
+   "desc": "Isolated SiC gate driver 11 A, automotive grade",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Search returned no listing for ADuM4146 or ADuM4177 (only other ADuM isolators)."
+  },
+  {
+   "mpn": "SI8285CD-AS",
+   "family": "Si8285",
+   "mfr": "Skyworks",
+   "desc": "Isolated gate driver 4 A with DESAT, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-16W",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only broker prices found (Kynix, Dasenic, Cytech) - not used."
+  },
+  {
+   "mpn": "TPS1HC100BQPWPRQ1",
+   "family": "TPS1HC100-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Smart high-side switch / fuse 100 mOhm, 40 V, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "HTSSOP-16",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "zone controller"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Digi-Key (296-TPS1HC100BQPWPRQ1TR-ND) and Mouser (595-PS1HC100BQPWPRQ1) listed without price in results; Digipart shows 'Inquiry'."
+  },
+  {
+   "mpn": "TPS48111-Q1",
+   "family": "TPS48111-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "Smart high-side driver / eFuse controller with protection, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "zone controller"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Searched (same query as TPS1HC100); no listing returned. Orderable code not confirmed."
+  },
+  {
+   "mpn": "VNF1048FTR",
+   "family": "VNF1048F",
+   "mfr": "STMicroelectronics",
+   "desc": "Automotive high-side eFuse / switch controller (external MOSFET), VIPower",
+   "category": "ic_qfn",
+   "pkg": "QFN-32L",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "zone controller",
+    "48V"
+   ],
+   "observedMpn": "VNF1048FTR",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 100,
+     "price": 2.94,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/power-switch-ics/2489694",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 500,
+     "price": 8.13,
+     "currency": "AUD",
+     "url": "https://au.rs-online.com/web/p/power-switch-ics/2489694",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK ex VAT, out of stock till Mar 2027; RS AU ex GST. Farnell JP says no longer manufactured, ST page says Active - check status."
+  },
+  {
+   "mpn": "DRV3255-Q1",
+   "family": "DRV3255-Q1",
+   "mfr": "Texas Instruments",
+   "desc": "48 V three-phase smart gate driver, AEC-Q100",
+   "category": "ic_qfn",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [
+    "48V e-motor",
+    "P2 hybrid"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Only TI product pages returned; no distributor price."
+  },
+  {
+   "mpn": "6EDL7141",
+   "family": "6EDL7141",
+   "mfr": "Infineon",
+   "desc": "MOTIX three-phase smart gate driver",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48",
+   "aecq": false,
+   "ecuRoles": [
+    "BLDC pump/fan"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No results returned."
+  },
+  {
+   "mpn": "MC33937APEKR2",
+   "family": "MC33937",
+   "mfr": "NXP",
+   "desc": "Three-phase field-effect transistor pre-driver, 58 V, AEC-Q100",
+   "category": "ic_soic",
+   "pkg": "SOIC-54 EP",
+   "aecq": true,
+   "ecuRoles": [
+    "e-pump",
+    "EPS",
+    "BLDC"
+   ],
+   "observedMpn": "MC33937APEKR2",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 3.67,
+     "currency": "USD",
+     "url": "https://findchips.com/search/mc33937?f=dsa",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 2000,
+     "price": 3.59,
+     "currency": "USD",
+     "url": "https://findchips.com/search/mc33937?f=dsa",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key T&R via Findchips; out of stock, 26 wk. An unnamed distributor on the same page was not used."
+  },
+  {
+   "mpn": "FS820R08A6P2BBPSA1",
+   "family": "FS820R08A6P2B",
+   "mfr": "Infineon",
+   "desc": "HybridPACK Drive 750 V 820 A six-pack IGBT traction module",
+   "category": "power_module",
+   "pkg": "HybridPACK Drive",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "No distributor listing found; Infineon forum confirms OPN FS820R08A6P2BBPSA1 (laser-weld variant FS820R08A6P2BPSA1)."
+  },
+  {
+   "mpn": "BUK7Y4R8-60EX",
+   "family": "BUK7Y4R8-60E",
+   "mfr": "Nexperia",
+   "desc": "N-MOSFET 60 V 4.8 mOhm, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "LFPAK56 (SOT669)",
+   "aecq": true,
+   "ecuRoles": [
+    "BCM",
+    "pump",
+    "DC-DC"
+   ],
+   "observedMpn": "BUK7Y4R8-60EX",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 500,
+     "price": 0.9667,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/buk7y4r8-60ex",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.7961,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/buk7y4r8-60ex",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.753,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/buk7y4r8-60ex",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Via Findchips. Avnet USD 0.7056 @1500 also listed."
+  },
+  {
+   "mpn": "BUK7J1R0-40HX",
+   "family": "BUK7J1R0-40H",
+   "mfr": "Nexperia",
+   "desc": "N-MOSFET 40 V 1.0 mOhm 220 A, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "LFPAK56E (SOT1023)",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "pump",
+    "48V"
+   ],
+   "observedMpn": "BUK7J1R0-40HX",
+   "observations": [
+    {
+     "distributor": "element14",
+     "qty": 1000,
+     "price": 14.15,
+     "currency": "CNY",
+     "url": "https://www.element14.cn/en-CN/nexperia/buk7j1r0-40hx/mosfet-aec-q101-n-ch-40v-sot-1023/dp/2901026",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "element14 China; CNY price may include 13% VAT. LCSC page C503359 had no price in result."
+  },
+  {
+   "mpn": "SQM120N04-1M7L_GE3",
+   "family": "SQM120N04-1M7L",
+   "mfr": "Vishay",
+   "desc": "N-MOSFET 40 V 1.7 mOhm 120 A, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "TO-263 (D2PAK)",
+   "aecq": true,
+   "ecuRoles": [
+    "EPS",
+    "BCM",
+    "pump"
+   ],
+   "observedMpn": "SQM120N04-1M7L_GE3",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 800,
+     "price": 4.13,
+     "currency": "NZD",
+     "url": "https://nz.rs-online.com/web/p/mosfets/2567444",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 1600,
+     "price": 3.516,
+     "currency": "NZD",
+     "url": "https://nz.rs-online.com/web/p/mosfets/2567444",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 800,
+     "price": 16.37,
+     "currency": "CNY",
+     "url": "https://digikey.cn/en/products/detail/vishay-siliconix/SQM120N04-1M7L-GE3/4439630",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key China price INCLUDES 13% VAT. RS NZ out of stock."
+  },
+  {
+   "mpn": "NDSH20120C",
+   "family": "NDSH20120C",
+   "mfr": "onsemi",
+   "desc": "SiC Schottky diode 1200 V 20 A",
+   "category": "through_hole",
+   "pkg": "TO-247-2",
+   "aecq": false,
+   "ecuRoles": [
+    "OBC",
+    "PFC"
+   ],
+   "observedMpn": "NDSH20120C",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 4.24,
+     "currency": "GBP",
+     "url": "https://export.farnell.com/onsemi/ndsh20120c/sic-schottky-diode-1-2kv-20a-to/dp/4036810",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell ex VAT. AEC-Q101 not confirmed (industrial). Richardson RFPD $4.99 MOQ 450 (not in the franchised list, not used). E4D20120A / IDW20G120C5B: no results."
+  },
+  {
+   "mpn": "E4D20120A",
+   "family": "E4D20120A",
+   "mfr": "Wolfspeed",
+   "desc": "Automotive SiC Schottky diode 1200 V 20 A",
+   "category": "through_hole",
+   "pkg": "TO-220-2",
+   "aecq": true,
+   "ecuRoles": [
+    "OBC"
+   ],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "Searched; no listing returned. Code not confirmed."
+  },
+  {
+   "mpn": "AIKQ120N75CP2XKSA1",
+   "family": "AIKQ120N75CP2",
+   "mfr": "Infineon",
+   "desc": "Automotive IGBT 750 V 120 A with diode (EDT2)",
+   "category": "through_hole",
+   "pkg": "TO-247PLUS-3",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter"
+   ],
+   "observedMpn": "AIKQ120N75CP2XKSA1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 150,
+     "price": 155,
+     "currency": "ZAR",
+     "url": "https://za.rs-online.com/web/p/igbts/2486655",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS South Africa ex VAT, figure rounded in result ('about R155'). RS UK GBP 6.45 @50+ (below 100)."
+  },
+  {
+   "mpn": "AIKQ200N75CP2XKSA1",
+   "family": "AIKQ200N75CP2",
+   "mfr": "Infineon",
+   "desc": "Automotive IGBT 750 V 200 A with diode (EDT2)",
+   "category": "through_hole",
+   "pkg": "TO-247PLUS-3",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter"
+   ],
+   "observedMpn": "AIKQ200N75CP2XKSA1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 150,
+     "price": 17,
+     "currency": "NZD",
+     "url": "https://nz.rs-online.com/web/p/igbts/2486657",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 240,
+     "price": 820,
+     "currency": "PHP",
+     "url": "https://ph.rs-online.com/web/p/igbts/2486656",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Figures rounded in result ('about'); NZ ex GST; PH tube of 240, out of stock."
+  },
+  {
+   "mpn": "NVBG040N120SC1",
+   "family": "NVBG040N120SC1",
+   "mfr": "onsemi",
+   "desc": "EliteSiC SiC MOSFET 1200 V 40 mOhm 60 A, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "D2PAK-7L",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "NVBG040N120SC1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 200,
+     "price": 11.4,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mosfets/2025731",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 800,
+     "price": 13.205,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mosfets/2025730?gb=s",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK ex VAT. The 800 reel listing (out of stock) is dearer than the 200+ cut-tape break - stale. Richardson RFPD USD 15.64 MOQ 800 not used."
+  },
+  {
+   "mpn": "NVBG020N120SC1",
+   "family": "NVBG020N120SC1",
+   "mfr": "onsemi",
+   "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 98 A, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "D2PAK-7L",
+   "aecq": true,
+   "ecuRoles": [
+    "traction inverter",
+    "OBC",
+    "DC-DC"
+   ],
+   "observedMpn": "NVBG020N120SC1",
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 800,
+     "price": 382.39,
+     "currency": "MYR",
+     "url": "https://my.rs-online.com/web/p/mosfets/1958969",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS Malaysia reel of 800 (MYR 305,908 per reel); back-order date stale. 1-199 break MYR 338.60."
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "Infineon CoolGaN automotive",
+   "why": "650 V GaN for OBC / DC-DC; budget spent"
+  },
+  {
+   "code": "TI LMG3624-Q1",
+   "why": "integrated GaN for OBC; budget spent (LMG3522R030-Q1 already in catalogue)"
+  },
+  {
+   "code": "Transphorm TP65H035G4WSQA",
+   "why": "AEC-Q101 650 V GaN cascode; budget spent"
+  },
+  {
+   "code": "Navitas automotive GaNFast",
+   "why": "OBC GaN IC; budget spent"
+  },
+  {
+   "code": "ADuM4177",
+   "why": "ADI isolated SiC gate driver; searched with ADuM4146, nothing returned"
+  },
+  {
+   "code": "Nexperia BUK9J / PSMN LFPAK88",
+   "why": "logic-level automotive 40 V MOSFETs; budget spent"
+  },
+  {
+   "code": "onsemi NVBLS (TOLL)",
+   "why": "80/100 V automotive TOLL MOSFET; guessed codes returned nothing - needs exact orderable code"
+  },
+  {
+   "code": "Infineon IAUC300N08S5N012 / IPB\u2026",
+   "why": "80 V OptiMOS points; budget spent (other IAUC/IAUT parts in catalogue)"
+  },
+  {
+   "code": "ST STL\u2026AG (PowerFLAT)",
+   "why": "automotive LV MOSFETs; budget spent"
+  },
+  {
+   "code": "Infineon BTS50xx",
+   "why": "PROFET high-current switches; budget spent"
+  },
+  {
+   "code": "NXP MC33XS2410",
+   "why": "4-ch high-side switch; budget spent"
+  },
+  {
+   "code": "onsemi NVXR17S90M2SPB",
+   "why": "VE-Trac Direct SiC traction module; budget spent"
+  },
+  {
+   "code": "ST ACEPACK DRIVE ADP\u2026",
+   "why": "SiC traction module; budget spent"
+  },
+  {
+   "code": "Infineon IDW\u2026G6 SiC Schottky",
+   "why": "OBC PFC diode; one search returned no G6 listing"
+  },
+  {
+   "code": "onsemi NTBG020N090SC1",
+   "why": "900 V SiC D2PAK-7L (industrial); budget spent"
+  },
+  {
+   "code": "Rohm SCT3\u2026KRHR / SCT4018KWAHR",
+   "why": "automotive TO-247-4L SiC; searched SCT4018KWAHR / SCT4036KWAHR, nothing returned"
+  }
+ ]
+}

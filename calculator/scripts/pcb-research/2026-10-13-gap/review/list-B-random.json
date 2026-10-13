@@ -1,0 +1,646 @@
+[
+ {
+  "file": "passives-rlc.json",
+  "mpn": "ERJ-P06F1001V",
+  "mfr": "Panasonic",
+  "desc": "Thick film anti-surge 1k 1% 0.5W, 0805, AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 5000,
+    "price": 0.0141,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C441981.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC C441981: snippet gave $70.50 at 5,000+ (read as the reel extended price = $0.0141 each); 0 in stock at read."
+ },
+ {
+  "file": "networking.json",
+  "mpn": "NCV7357D10R2G",
+  "mfr": "onsemi",
+  "desc": "HS-CAN / CAN FD transceiver, 5 Mbps, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 3000,
+    "price": 0.245,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--wireless-rf--transceiver-ics/ncv7357d10r2g-onsemi-9117101",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 15000,
+    "price": 0.235,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--wireless-rf--transceiver-ics/ncv7357d10r2g-onsemi-9117101",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 1000,
+    "price": 0.227,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/can-interface-ics/1952449",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Future 0 stock, 24 wk; RS UK out of stock at read."
+ },
+ {
+  "file": "interconnect-discretes.json",
+  "mpn": "2N7002BK,215",
+  "mfr": "Nexperia",
+  "desc": "N-channel MOSFET 60 V 350 mA, ESD protected, SOT-23, AEC-Q101",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.0296,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/2N7002BK%2C215",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Digi-Key T&R 3000 via Findchips. Newark figures in the same results were inconsistent (two listings) and not recorded; Digi-Key punchouttest pages ignored."
+ },
+ {
+  "file": "passives-mlcc.json",
+  "mpn": "GRM32ER71H106KA12L",
+  "mfr": "Murata",
+  "desc": "MLCC 10uF 50V X7R ±10% 1210 commercial",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Newark",
+    "qty": 1000,
+    "price": 0.13,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/GRM32ER71H106KA12L",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Newark",
+    "qty": 5000,
+    "price": 0.108,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/GRM32ER71H106KA12L",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.213,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C77102.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Commercial pair for CGA6P3X7S1H106K250AB (1210 10uF 50V). Newark showed 0 stock; TME 1000 $0.262 also listed."
+ },
+ {
+  "file": "sensors-analog.json",
+  "mpn": "TMAG5170A1QDGKR",
+  "mfr": "Texas Instruments",
+  "desc": "3D linear Hall sensor, SPI, 12-bit, industrial (Q1 sibling TMAG5170A1EDGKRQ1)",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.55206,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMAG5170A1QDGKR/15284508",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 1.2639,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TMAG5170A1QDGKR/15284508",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Industrial code; automotive TMAG5170A1EDGKRQ1 named on TI page but no distributor price found. 1,000 = cut tape, 2,500 = T&R."
+ },
+ {
+  "file": "sensors-analog.json",
+  "mpn": "AIS2IHTR",
+  "mfr": "STMicroelectronics",
+  "desc": "3-axis automotive MEMS accelerometer, I2C/SPI, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 2.73,
+    "currency": "USD",
+    "url": "https://sourceesb.com/part/ais2ihtr~stmicroelectronicssemiconductors",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "DigiKey 1K cut-tape price via sourceesb aggregator; a T&R figure ($2.50) shown without a clear break, not recorded."
+ },
+ {
+  "file": "passives-rlc.json",
+  "mpn": "T495D107K016ATA100",
+  "mfr": "KEMET",
+  "desc": "Tantalum MnO2 100uF 16V 10% 100 mOhm, D case 7343, commercial",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 500,
+    "price": 0.4811,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C603137.html",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.461,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C603137.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "No listing for T495D107K016ATE100; this is the code LCSC lists (0 in stock at read)."
+ },
+ {
+  "file": "memory.json",
+  "mpn": "W25N01GVZEIG",
+  "mfr": "Winbond",
+  "desc": "SPI NAND 1Gb, 3 V, industrial -40..85 C (not automotive)",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 960,
+    "price": 2.4239,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/detail/w25n01gvzeig/Winbond-Electronics-Corp",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 504,
+    "price": 2.42,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/detail/w25n01gvzeig/Winbond-Electronics-Corp",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 960,
+    "price": 2.8813,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C88868.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Digi-Key / Mouser via Findchips. LCSC C907680 at $0.62/4000 discarded as implausible. Automotive W25N01GVZEJG and Kioxia TC58CVG0S3HRAIJ not found priced."
+ },
+ {
+  "file": "networking.json",
+  "mpn": "TJA1124BHG/1Z",
+  "mfr": "NXP",
+  "desc": "Quad LIN transceiver, 20 kbaud, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 1.3,
+    "currency": "EUR",
+    "url": "https://es.farnell.com/nxp/tja1124bhg-1z/transceptor-lin-20kbaud-dhvqfn/dp/4147384",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Newark",
+    "qty": 3000,
+    "price": 2.2,
+    "currency": "USD",
+    "url": "https://canada.newark.com/nxp/tja1124bhg-0z/lin-transceiver-20-kbaud-dhvqfn/dp/70AC4346",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Farnell ES ex-VAT (1+ EUR 2.49). Newark obs is packing sibling TJA1124BHG/0Z: 500+ break, minimum order 3000."
+ },
+ {
+  "file": "connectivity-general.json",
+  "mpn": "STM32F031G6U7TR",
+  "mfr": "STMicroelectronics",
+  "desc": "Cortex-M0 MCU 48 MHz, 32 kB flash",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 1.5012,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/stm32f031g6u7tr",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Found in the STM32F030 search (no STM32F030F4P6TR price found). Findchips naming Digi-Key."
+ },
+ {
+  "file": "networking.json",
+  "mpn": "NCN26010XMNTXG",
+  "mfr": "onsemi",
+  "desc": "10BASE-T1S MAC-PHY, SPI, -40 to 125C (industrial NCN line)",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 500,
+    "price": 2.74,
+    "currency": "EUR",
+    "url": "https://fr.farnell.com/onsemi/ncn26010xmntxg/commutateur-ethernet-10mbps-40/dp/4036809RL",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 36.67,
+    "currency": "NOK",
+    "url": "https://no.farnell.com/en-NO/onsemi/ncn26010xmntxg/ethernet-switch-10mbps-40-to-125deg/dp/4036809",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 250,
+    "price": 33.11,
+    "currency": "NOK",
+    "url": "https://no.farnell.com/en-NO/onsemi/ncn26010xmntxg/ethernet-switch-10mbps-40-to-125deg/dp/4036809",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Ex-VAT. Farnell ES shows 500+ EUR 2.61 for same code (inconsistent with FR 2.74). Automotive sibling is NCV7410 (not found)."
+ },
+ {
+  "file": "passives-rlc.json",
+  "mpn": "CRCW25121K00FKEG",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film 1k 1% 1W, 2512, AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 2000,
+    "price": 0.0561,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw25121k00fkeg-vishay-9757535",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 30000,
+    "price": 0.0519,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw25121k00fkeg-vishay-9757535",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 1250,
+    "price": 0.054,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/p/surface-mount-resistors/6792424",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Power-size 2512 cell. RS UK ex-VAT."
+ },
+ {
+  "file": "power-semis.json",
+  "mpn": "NVBG040N120SC1",
+  "mfr": "onsemi",
+  "desc": "EliteSiC SiC MOSFET 1200 V 40 mOhm 60 A, AEC-Q101",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 200,
+    "price": 11.4,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/2025731",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS UK ex VAT. The 800 reel listing (out of stock) is dearer than the 200+ cut-tape break - stale. Richardson RFPD USD 15.64 MOQ 800 not used. Review 13 Oct 2026: dropObs - the 800 reel listing (out of stock) is dearer than the 200+ break - a stale listing."
+ },
+ {
+  "file": "passives-rlc.json",
+  "mpn": "B32776T8685K000",
+  "mfr": "TDK (EPCOS)",
+  "desc": "DC-link PP film capacitor 6.8uF 10% 875 VDC, radial 4-pin",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 300,
+    "price": 4.4,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/6026301",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Future: 0 stock, 20-week lead, MOQ 1,040 at read. AEC-Q200 not stated for this code (B32776H8106K000 is tagged AEC-Q200 by Farnell). Burklin B32776G0206K000 EUR 7.69 at 150 (distributor not on the allowed list)."
+ },
+ {
+  "file": "passives-rlc.json",
+  "mpn": "CRCW0603100KFKEA",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film 100k 1% 0.1W, 0603, AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 1000,
+    "price": 0.027,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/surface-mount-fixed-resistors/6789673",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS UK ex-VAT; the price is RS's 50-1,200 tier (recorded at 1,000, which it covers). Digi-Key out of stock, no price."
+ },
+ {
+  "file": "connectivity-general.json",
+  "mpn": "CYW43439KUBGT",
+  "mfr": "Infineon",
+  "desc": "Wi-Fi 4 802.11b/g/n + Bluetooth 5.2 combo IC, SDIO/SPI",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 3.618,
+    "currency": "USD",
+    "url": "https://jp.farnell.com/en-JP/infineon/cyw43439kubgt/wi-fibluetooth-pcm-sdio-spi-uart/dp/4035676",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 500,
+    "price": 3.162,
+    "currency": "USD",
+    "url": "https://jp.farnell.com/en-JP/infineon/cyw43439kubgt/wi-fibluetooth-pcm-sdio-spi-uart/dp/4035676",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 5000,
+    "price": 2.329,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/wi-fi-modules/2733364?gb=s",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Consumer/industrial grade (automotive line is CYW89xxx). RS: 5,000 reel GBP 11,645 ex VAT = 2.329/unit. Digi-Key KRW price seen only on a punchouttest host - discarded."
+ },
+ {
+  "file": "power-semis.json",
+  "mpn": "MC33937APEKR2",
+  "mfr": "NXP",
+  "desc": "Three-phase field-effect transistor pre-driver, 58 V, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 3.67,
+    "currency": "USD",
+    "url": "https://findchips.com/search/mc33937?f=dsa",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 2000,
+    "price": 3.59,
+    "currency": "USD",
+    "url": "https://findchips.com/search/mc33937?f=dsa",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Digi-Key T&R via Findchips; out of stock, 26 wk. An unnamed distributor on the same page was not used."
+ },
+ {
+  "file": "power-mgmt.json",
+  "mpn": "TLE9263BQXV33XUMA1",
+  "mfr": "Infineon",
+  "desc": "Mid-range SBC, CAN + LIN, 3.3 V LDO, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 1000,
+    "price": 2.14,
+    "currency": "EUR",
+    "url": "https://ie.farnell.com/infineon/tle9263bqxv33xuma1/sys-basis-chip-aec-q100-3-3v-vqfn/dp/2986321",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Farnell IE price ex-VAT (page shows 1+ EUR 3.81 ex / 4.6863 inc VAT); 52-week lead time. Found while searching TLE9273."
+ },
+ {
+  "file": "interconnect-discretes.json",
+  "mpn": "PESD2IVN24-TR",
+  "mfr": "Nexperia",
+  "desc": "2-line ESD protection 24 V for CAN / LIN / FlexRay, SOT-23, AEC-Q101",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Farnell",
+    "qty": 1500,
+    "price": 0.113,
+    "currency": "USD",
+    "url": "https://il.farnell.com/nexperia/pesd2ivn24-tr/diode-aec-q101-esd-24v-sot-23/dp/2835442",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Digi-Key 3000 prices only seen on punchouttest storefronts (excluded). Farnell Israel site in USD."
+ },
+ {
+  "file": "passives-rlc.json",
+  "mpn": "CRCW04020000Z0EDC",
+  "mfr": "Vishay Dale",
+  "desc": "Thick film jumper 0 ohm, 0402, AEC-Q200 (EDC packing)",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 20000,
+    "price": 0.0016,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw04020000z0edc-vishay-9093751",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 750000,
+    "price": 0.0014,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--resistors--fixed-resistors/crcw04020000z0edc-vishay-9093751",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Packing sibling of CRCW04020000Z0ED; Future MOQ 20,000."
+ },
+ {
+  "file": "connectivity-general.json",
+  "mpn": "DW3220TR13",
+  "mfr": "Qorvo",
+  "desc": "UWB transceiver IEEE 802.15.4z, dual antenna PDoA/AoA",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 7.26,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/qorvo/DW3220TR13/24717855",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 4000,
+    "price": 6.23,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/qorvo/DW3220TR13/24717855",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Package inferred from Qorvo naming (DW3x2x = WLCSP), not read in the listing. Host azcus.digikey.com. Not AEC-Q100 (automotive is DW3300Q)."
+ },
+ {
+  "file": "auto-compute.json",
+  "mpn": "PIC32CM5164JH01032-I/PT",
+  "mfr": "Microchip",
+  "desc": "PIC32CM JH Cortex-M0+ 48 MHz, 512 KB flash, 5 V, TQFP-32, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 100,
+    "price": 1.71,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/microcontrollers/0838756",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS UK GBP 1.92 @1 to 1.71 @100+, AEC-Q100 per RS. 48-pin -I/Y8X GBP 1.81 @100+."
+ },
+ {
+  "file": "interconnect-discretes.json",
+  "mpn": "SMMBT3904LT1G",
+  "mfr": "onsemi",
+  "desc": "NPN BJT 40 V 200 mA, SOT-23, AEC-Q101",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.019,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/SMMBT3904LT1G",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 0.0218,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/SMMBT3904LT1G",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Avnet",
+    "qty": 3000,
+    "price": 0.0118,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/SMMBT3904LT1G",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "All via Findchips snapshots; an older Digi-Key snapshot showed 0.0253 at 3000."
+ },
+ {
+  "file": "power-semis.json",
+  "mpn": "VNF1048FTR",
+  "mfr": "STMicroelectronics",
+  "desc": "Automotive high-side eFuse / switch controller (external MOSFET), VIPower",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 100,
+    "price": 2.94,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/power-switch-ics/2489694",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 8.13,
+    "currency": "AUD",
+    "url": "https://au.rs-online.com/web/p/power-switch-ics/2489694",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS UK ex VAT, out of stock till Mar 2027; RS AU ex GST. Farnell JP says no longer manufactured, ST page says Active - check status."
+ },
+ {
+  "file": "power-mgmt.json",
+  "mpn": "LM25149QRGYRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "42 V synchronous buck controller, active EMI filter, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 2.29,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/149Q",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "USD break via Findchips naming Digi-Key (296-LM25149QRGYRQ1CT-ND), undated snapshot. Digi-Key CN price includes 13% VAT. Review 13 Oct 2026: dropObs - Digi-Key China price includes 13% VAT."
+ },
+ {
+  "file": "sensors-analog.json",
+  "mpn": "KP254XTMA2",
+  "mfr": "Infineon",
+  "desc": "Digital barometric absolute pressure sensor (BAP/MAP), SPI, AEC-Q100",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "element14",
+    "qty": 500,
+    "price": 5.63,
+    "currency": "AUD",
+    "url": "https://au.element14.com/infineon/kp254xtma2/pressure-sensor-absolute-40kpa/dp/3816971RL",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 500,
+    "price": 3.05,
+    "currency": "EUR",
+    "url": "https://es.farnell.com/infineon/kp254xtma2/pressure-sensor-absolute-40kpa/dp/3816971",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "element14 AU price in AUD (site default ex-GST assumed, check). Farnell ES '3,050 EUR' read as EUR 3.05 (decimal comma)."
+ }
+]

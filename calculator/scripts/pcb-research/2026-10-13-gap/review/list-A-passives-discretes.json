@@ -1,0 +1,282 @@
+[
+ {
+  "file": "connectivity-general.json",
+  "mpn": "ATMEGA328P-AU",
+  "mfr": "Microchip",
+  "desc": "8-bit AVR MCU 20 MHz, 32 kB flash",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 1.5712,
+    "currency": "USD",
+    "url": "https://lcsc.com/product-detail/image/ATMEGA328P-AU_C14877.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC C14877; another LCSC snapshot (0 stock) showed USD 2.02 @1000+ - snapshot dates unknown."
+ },
+ {
+  "file": "connectivity-general.json",
+  "mpn": "ATSAMD21G18A-AU",
+  "mfr": "Microchip",
+  "desc": "Cortex-M0+ MCU 48 MHz, 256 kB flash, USB",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 2.1295,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C78624.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC C78624; snapshots range USD 2.13-2.28 @1000+."
+ },
+ {
+  "file": "interconnect-discretes.json",
+  "mpn": "BAS16,215",
+  "mfr": "Nexperia",
+  "desc": "Switching diode 85 V 215 mA, SOT-23, AEC-Q101",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 3000,
+    "price": 0.0127,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C79997.html",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 3000,
+    "price": 0.009,
+    "currency": "USD",
+    "url": "https://www.digipart.com/part/BAS16%2B215",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Mouser 3000 read from an aggregator snapshot (Digipart page assumed source) - verify. LCSC datasheet page showed 0.0095 at 3000 (conflict, product page used). Newark 10000+ 0.0158 via Digipart not recorded (higher than 3000 breaks)."
+ },
+ {
+  "file": "interconnect-discretes.json",
+  "mpn": "34830-2001",
+  "mfr": "Molex",
+  "desc": "MX150 PCB header, right-angle, 20 circuits, 3.50 mm pitch",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1200,
+    "price": 5.06,
+    "currency": "EUR",
+    "url": "https://www.digikey.bg/en/products/detail/molex/0348302001/4693138",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Digi-Key Bulgaria, ex VAT, summary said 'about 5.06'. 33472 codes asked for were not found. Automotive-sealed header family, AEC-Q not applicable. Catalogue has 34830-0801 (2x4)."
+ },
+ {
+  "file": "interconnect-discretes.json",
+  "mpn": "G8ND-2S-ASSK",
+  "mfr": "Omron",
+  "desc": "Automotive PCB relay, twin changeover (H-bridge), 12 VDC coil",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 150,
+    "price": 2.66,
+    "currency": "USD",
+    "url": "https://api-websites-cached.sourceesb.com/part/g8nd2sassk~omronelectroniccomponents",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 570,
+    "price": 2.56,
+    "currency": "USD",
+    "url": "https://api-websites-cached.sourceesb.com/part/g8nd2sassk~omronelectroniccomponents",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Digi-Key breaks via a Source ESB aggregator snapshot (may be stale); full orderable code with coil voltage suffix not shown. Relays have no AEC-Q grade."
+ },
+ {
+  "file": "passives-mlcc.json",
+  "mpn": "GCM188R71E105KA64D",
+  "mfr": "Murata",
+  "desc": "MLCC 1uF 25V X7R ±10% 0603 AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "RS Components",
+    "qty": 4000,
+    "price": 0.066,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mlccs-multilayer-ceramic-capacitors/1693944",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 4000,
+    "price": 0.0286,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C85862.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "RS: reel of 4000 at £264.00 ex-VAT. LCSC: another snapshot (product-image/C85862) showed $0.0096 at 4000 — conflicting, the product-detail figure kept. Already in catalogue without obs."
+ },
+ {
+  "file": "passives-mlcc.json",
+  "mpn": "GCM188R72A103KA37D",
+  "mfr": "Murata",
+  "desc": "MLCC 10nF 100V X7R ±10% 0603 AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 4000,
+    "price": 0.011,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C161232.html",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Future",
+    "qty": 4000,
+    "price": 0.0437,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/passives--capacitors--ceramic-capacitors--multilayer-ceramic-capacitors/gcm188r72a103ka37d-murata-5201404",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC snapshots show $0.0110 and $0.0112 at 4000."
+ },
+ {
+  "file": "passives-mlcc.json",
+  "mpn": "GCJ188R71H104KA12D",
+  "mfr": "Murata",
+  "desc": "MLCC 100nF 50V X7R ±10% 0603 soft termination (GCJ) AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "TTI",
+    "qty": 4000,
+    "price": 0.021,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/1h104k",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "TTI",
+    "qty": 100000,
+    "price": 0.0169,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/1h104k",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "Rutronik",
+    "qty": 4000,
+    "price": 0.0095,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/1h104k",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Soft-termination point 2 (point 1 GCJ21BR71H105KA01L already in catalogue). Findchips snapshot; Rutronik stock DE 8000 only."
+ },
+ {
+  "file": "passives-mlcc.json",
+  "mpn": "CC0603KRX7R9BB105",
+  "mfr": "Yageo",
+  "desc": "MLCC 1uF 50V X7R ±10% 0603 commercial",
+  "aecq": false,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 4000,
+    "price": 0.0629,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C559769.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "Yageo CC commercial; price ~2.8x Walsin at same break — single snapshot, verify."
+ },
+ {
+  "file": "passives-rlc.json",
+  "mpn": "WSL25122L000FEA",
+  "mfr": "Vishay Dale",
+  "desc": "Metal-strip current-sense 2 mOhm 1% 1W, 2512, AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "Mouser",
+    "qty": 2000,
+    "price": 0.56,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/WSL25122L000FEA18",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "FindChips naming Mouser (stock 18,662): ~$2.13 at 1 down to ~$0.56 at 2,000 (summary said 'about'; verify). Avnet $0.84-1.26, break not given."
+ },
+ {
+  "file": "passives-rlc.json",
+  "mpn": "TNPW080512K0BEEA",
+  "mfr": "Vishay Dale",
+  "desc": "Thin film 12k 0.1% 25ppm, 0805, AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 0.22,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C7125390.html",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC C7125390; summary gave 'about $0.22' at 1,000+ (about $0.42 at 1) - verify."
+ },
+ {
+  "file": "passives-rlc.json",
+  "mpn": "EEE-FK1E471P",
+  "mfr": "Panasonic",
+  "desc": "Al electrolytic SMD 470uF 25V 20%, FK series, 105C, AEC-Q200",
+  "aecq": true,
+  "observations": [
+   {
+    "distributor": "LCSC",
+    "qty": 5000,
+    "price": 0.2024,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C248607.html",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 250,
+    "price": 0.506,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/aluminium-capacitors/5370528P",
+    "date": "2026-10-13"
+   },
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 0.339,
+    "currency": "EUR",
+    "url": "https://fr.rs-online.com/web/p/condensateurs-electrolytiques-aluminium/7479002",
+    "date": "2026-10-13"
+   }
+  ],
+  "notes": "LCSC lowest (5,000+) tier. RS UK ex-VAT; RS France reel of 500 at EUR 169.50 HT."
+ }
+]

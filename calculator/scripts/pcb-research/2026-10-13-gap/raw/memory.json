@@ -1,0 +1,565 @@
+{
+  "domain": "memory",
+  "researched": "2026-10-13",
+  "parts": [
+    {
+      "mpn": "MT62F2G32D4DS-026 AAT:B TR",
+      "family": "MT62F2G32D4DS",
+      "mfr": "Micron",
+      "desc": "LPDDR5 64Gb (8GB) 2G x32, automotive -40..105 C",
+      "category": "ic_bga",
+      "pkg": "TFBGA-315",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "IVI",
+        "domain controller"
+      ],
+      "observedMpn": "MT62F2G32D4DS-026 AAT:B TR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 2000,
+          "price": 69.57,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT62F2G32D4DS-026-AAT-B-TR/17631799",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Task asked AUT:B; Digi-Key lists AAT:B TR (AAT = -40..105 C automotive). Single reel break only."
+    },
+    {
+      "mpn": "MT62F1G32D2DS-026 AUT:B",
+      "family": "MT62F1G32D2DS",
+      "mfr": "Micron",
+      "desc": "LPDDR5 32Gb (4GB) 1G x32, automotive",
+      "category": "ic_bga",
+      "pkg": "TFBGA-315",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "IVI"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No franchised price found: Digi-Key page seen is WT:C TR (commercial) with no price; Avnet price was a different speed grade (-020 WT:D)."
+    },
+    {
+      "mpn": "MT53E2G32D4DE-046 AIT:C TR",
+      "family": "MT53E2G32D4DE",
+      "mfr": "Micron",
+      "desc": "LPDDR4X 64Gb (8GB) 2G x32, AEC-Q100 -40..95 C",
+      "category": "ic_bga",
+      "pkg": "TFBGA-200",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "IVI",
+        "domain controller"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "No franchised listing price read. zenode.ai (not an allowed aggregator, 'design reference only') shows Digi-Key 2000 pcs $56.01 for AIT:A TR - not recorded."
+    },
+    {
+      "mpn": "MT40A512M16TD-062E AUT:R TR",
+      "family": "MT40A512M16TD",
+      "mfr": "Micron",
+      "desc": "DDR4 8Gb 512M x16, AEC-Q100 -40..125 C",
+      "category": "ic_bga",
+      "pkg": "FBGA-96",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "gateway",
+        "IVI"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Arrow lists the part as active automotive but showed no price; MT40A512M16TB-062E AAT / MT40A1G16 AAT codes not found priced."
+    },
+    {
+      "mpn": "IS43LQ32256A-062BLA2",
+      "family": "IS43LQ32256A",
+      "mfr": "ISSI",
+      "desc": "LPDDR4 8Gb 256M x32, automotive A2",
+      "category": "ic_bga",
+      "pkg": "FBGA-200",
+      "aecq": true,
+      "ecuRoles": [
+        "IVI",
+        "cluster"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Only industrial -BLI codes surfaced on Mouser India (INR, break quantities not shown); no automotive A2 price found."
+    },
+    {
+      "mpn": "MTFC32GAZAQHD-AAT",
+      "family": "MTFC32GAZAQHD",
+      "mfr": "Micron",
+      "desc": "eMMC 5.1 32GB, automotive -40..105 C",
+      "category": "ic_bga",
+      "pkg": "TFBGA-153",
+      "aecq": true,
+      "ecuRoles": [
+        "IVI",
+        "telematics",
+        "cluster"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Only fat.lcsc.com (staging, excluded) and broker pages carried prices; Digi-Key -AAT TR page showed no price."
+    },
+    {
+      "mpn": "S25HS512TDSBHV010",
+      "family": "S25HS512T",
+      "mfr": "Infineon",
+      "desc": "SEMPER quad SPI NOR 512Mb, 1.8 V, automotive -40..105 C",
+      "category": "ic_bga",
+      "pkg": "BGA-24",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "cluster",
+        "gateway"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Only broker (Dasenic) and an unattributed Mouser MX figure without clear code; nothing recorded."
+    },
+    {
+      "mpn": "W25Q64JVSSIQ",
+      "family": "W25Q64JV",
+      "mfr": "Winbond",
+      "desc": "Quad SPI NOR 64Mb, 3 V, industrial -40..85 C (not automotive)",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": false,
+      "ecuRoles": [
+        "general",
+        "BCM"
+      ],
+      "observedMpn": "W25Q64JVSSIQ",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.61,
+          "currency": "USD",
+          "url": "https://lcsc.com/product-detail/NOR-FLASH_WINBOND-W25Q64JVSSIQ_C179171.html",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Industrial staple. Search summary gave 'about $0.61' at 1000+ (C179171); other LCSC listings were inconsistent and were discarded. Automotive W25Q64JVSSAQ / W25Q128JVSAQ not found priced."
+    },
+    {
+      "mpn": "MX25L25645GMI-08GTR",
+      "family": "MX25L25645GMI",
+      "mfr": "Macronix",
+      "desc": "Quad SPI NOR 256Mb, 3 V, industrial -40..85 C, SOP-16 (not automotive)",
+      "category": "ic_soic",
+      "pkg": "SOP-16",
+      "aecq": false,
+      "ecuRoles": [
+        "IVI",
+        "gateway",
+        "general"
+      ],
+      "observedMpn": "MX25L25645GMI-08GTR",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 1000,
+          "price": 1.82,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/6149014",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "SOP-16 sibling of catalogued MX25L25645GZ2I-08G. Future price at 1000+, 0 stock, 20 wk lead."
+    },
+    {
+      "mpn": "IS25LP064A-JBLA3-TR",
+      "family": "IS25LP064A",
+      "mfr": "ISSI",
+      "desc": "Quad SPI NOR 64Mb, 3 V, automotive A3 -40..125 C",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "cluster",
+        "ADAS"
+      ],
+      "observedMpn": "IS25LP064A-JBLA3-TR",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 1.3215,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C2972290.html",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "LCSC 1000+ tier; 2000/reel."
+    },
+    {
+      "mpn": "IS25LP512M-JLLA3",
+      "family": "IS25LP512M",
+      "mfr": "ISSI",
+      "desc": "Quad SPI NOR 512Mb, 3 V, automotive A3",
+      "category": "ic_soic",
+      "pkg": "SOIC-16",
+      "aecq": true,
+      "ecuRoles": [
+        "ADAS",
+        "IVI",
+        "cluster"
+      ],
+      "observedMpn": "IS25LP512MJ-JLLA3",
+      "observations": [
+        {
+          "distributor": "Avnet",
+          "qty": 480,
+          "price": 9.92,
+          "currency": "USD",
+          "url": "https://www.avnet.com/americas/product/issi/is25lp512mj-jlla3/evolve-119503018/",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Avnet lists code as IS25LP512MJ-JLLA3 (verify vs ISSI IS25LP512M-JLLA3); price 'about $9.92' at its 480 break, 0 stock."
+    },
+    {
+      "mpn": "W25N01GVZEIG",
+      "family": "W25N01GV",
+      "mfr": "Winbond",
+      "desc": "SPI NAND 1Gb, 3 V, industrial -40..85 C (not automotive)",
+      "category": "ic_qfn",
+      "pkg": "WSON-8 8x6",
+      "aecq": false,
+      "ecuRoles": [
+        "telematics",
+        "IVI",
+        "general"
+      ],
+      "observedMpn": "W25N01GVZEIG",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 960,
+          "price": 2.4239,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/detail/w25n01gvzeig/Winbond-Electronics-Corp",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "Mouser",
+          "qty": 504,
+          "price": 2.42,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/detail/w25n01gvzeig/Winbond-Electronics-Corp",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 960,
+          "price": 2.8813,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C88868.html",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Digi-Key / Mouser via Findchips. LCSC C907680 at $0.62/4000 discarded as implausible. Automotive W25N01GVZEJG and Kioxia TC58CVG0S3HRAIJ not found priced."
+    },
+    {
+      "mpn": "M95640-DRMN3TP/K",
+      "family": "M95640",
+      "mfr": "STMicroelectronics",
+      "desc": "SPI EEPROM 64Kb, automotive -40..125 C",
+      "category": "ic_soic",
+      "pkg": "SO-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "ECU",
+        "sensor"
+      ],
+      "observedMpn": "M95640-DRMN3TP/K",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.2723,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C314019.html",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "LCSC 1000+ reference price; 2500/reel."
+    },
+    {
+      "mpn": "M24C64-DRMN3TP/K",
+      "family": "M24C64",
+      "mfr": "STMicroelectronics",
+      "desc": "I2C EEPROM 64Kb, automotive -40..125 C",
+      "category": "ic_soic",
+      "pkg": "SO-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "ECU"
+      ],
+      "observedMpn": "",
+      "observations": [],
+      "notes": "Farnell DE tiers seen but break quantities not shown; a $0.2922 @1000 figure had no named distributor - not recorded."
+    },
+    {
+      "mpn": "NV24C64DWVLT3G",
+      "family": "NV24C64",
+      "mfr": "onsemi",
+      "desc": "I2C EEPROM 64Kb, AEC-Q100 automotive",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "ECU",
+        "sensor"
+      ],
+      "observedMpn": "NV24C64DWVLT3G",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 3000,
+          "price": 0.24,
+          "currency": "USD",
+          "url": "https://futureelectronics.com/fr/p/electromechanical--power-supplies--dc-dc/nv24c64dwvlt3g-onsemi-6131103",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Future 3000 break, 0 stock. Digi-Key out of stock, no price. NV24C02DWVLT3G / NV25080DWHFT3G not found priced."
+    },
+    {
+      "mpn": "24LC64T-E/SN",
+      "family": "24LC64",
+      "mfr": "Microchip",
+      "desc": "I2C EEPROM 64Kb, extended temp -40..125 C",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": false,
+      "ecuRoles": [
+        "BCM",
+        "ECU",
+        "general"
+      ],
+      "observedMpn": "24LC64T-E/SN",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 0.73,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C615720.html",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "-E = extended temperature; not a VAO (AEC-Q100) code. 3300/reel."
+    },
+    {
+      "mpn": "24LC256T-E/SN",
+      "family": "24LC256",
+      "mfr": "Microchip",
+      "desc": "I2C EEPROM 256Kb, extended temp -40..125 C",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": false,
+      "ecuRoles": [
+        "BCM",
+        "ECU",
+        "general"
+      ],
+      "observedMpn": "24LC256T-E/SN",
+      "observations": [
+        {
+          "distributor": "RS Components",
+          "qty": 3300,
+          "price": 10.473,
+          "currency": "HKD",
+          "url": "https://hkcn.rs-online.com/web/p/eeprom/0764355",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "RS Hong Kong reel price (HK, no VAT); out of stock at time read. -E extended temp, not VAO."
+    },
+    {
+      "mpn": "CY15B064Q-SXET",
+      "family": "CY15B064Q",
+      "mfr": "Infineon",
+      "desc": "SPI F-RAM 64Kb, automotive -40..125 C",
+      "category": "ic_soic",
+      "pkg": "SOIC-8",
+      "aecq": true,
+      "ecuRoles": [
+        "BCM",
+        "airbag",
+        "EDR"
+      ],
+      "observedMpn": "CY15B064Q-SXET",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 2500,
+          "price": 3.42,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/c/semiconductors/memory--RAM--nvram--fram-mram/products",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Future category listing; automotive E grade. FM25CL64B-GATR / CY15B104Q-SXA not found priced."
+    },
+    {
+      "mpn": "FM25V02A-DGQTR",
+      "family": "FM25V02A",
+      "mfr": "Infineon",
+      "desc": "SPI F-RAM 256Kb, DFN-8",
+      "category": "ic_qfn",
+      "pkg": "DFN-8",
+      "aecq": false,
+      "ecuRoles": [
+        "BCM",
+        "general"
+      ],
+      "observedMpn": "FM25V02A-DGQTR",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 3000,
+          "price": 4.58,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/c/semiconductors/memory--RAM--nvram--fram-mram/products",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Grade not confirmed by the listing (treated as industrial)."
+    },
+    {
+      "mpn": "MR20H40CDFR",
+      "family": "MR20H40",
+      "mfr": "Everspin",
+      "desc": "SPI MRAM 4Mb, DFN-8 (industrial)",
+      "category": "ic_qfn",
+      "pkg": "DFN-8",
+      "aecq": false,
+      "ecuRoles": [
+        "BCM",
+        "EDR"
+      ],
+      "observedMpn": "MR20H40CDFR",
+      "observations": [
+        {
+          "distributor": "Digi-Key",
+          "qty": 4000,
+          "price": 18.759,
+          "currency": "USD",
+          "url": "https://origin-www.findchips.com/search/MR20H40CDFR",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Digi-Key via Findchips, min 4000, temporarily out of stock. MR25H40CDF / MR25H256ACDF / MR25H10CDF not found priced."
+    },
+    {
+      "mpn": "IS61WV25616BLL-10TLI",
+      "family": "IS61WV25616BLL",
+      "mfr": "ISSI",
+      "desc": "Async SRAM 4Mb 256K x16, 10 ns, industrial -40..85 C",
+      "category": "ic_tqfp",
+      "pkg": "TSOP-II-44",
+      "aecq": false,
+      "ecuRoles": [
+        "ECU",
+        "general"
+      ],
+      "observedMpn": "IS61WV25616BLL-10TLI",
+      "observations": [
+        {
+          "distributor": "LCSC",
+          "qty": 1000,
+          "price": 2.149,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C53825.html",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Industrial sibling; automotive IS61WV25616BLL-10TLA3 not found priced."
+    },
+    {
+      "mpn": "CY62157EV30LL-45ZSXI",
+      "family": "CY62157EV30",
+      "mfr": "Infineon",
+      "desc": "Async SRAM 8Mb 512K x16, 45 ns, industrial",
+      "category": "ic_tqfp",
+      "pkg": "TSOP-II-44",
+      "aecq": false,
+      "ecuRoles": [
+        "ECU",
+        "general"
+      ],
+      "observedMpn": "CY62157EV30LL-45ZSXI",
+      "observations": [
+        {
+          "distributor": "Future Electronics",
+          "qty": 125,
+          "price": 4.5,
+          "currency": "USD",
+          "url": "https://www.futureelectronics.com/p/semiconductors--memory--RAM--static-ram--asynchronous/cy62157ev30ll-45zsxi-infineon-technologies-7557713",
+          "date": "2026-10-13"
+        },
+        {
+          "distributor": "LCSC",
+          "qty": 100,
+          "price": 5.242,
+          "currency": "USD",
+          "url": "https://www.lcsc.com/product-image/C511145.html",
+          "date": "2026-10-13"
+        }
+      ],
+      "notes": "Industrial sibling; automotive -45ZSXA not found priced."
+    }
+  ],
+  "notResearched": [
+    {
+      "code": "Micron UFS 3.1 automotive (MTFC\u2026UFS), Kioxia THGJFG, Samsung KLUD",
+      "why": "UFS storage for ADAS / IVI; search budget spent"
+    },
+    {
+      "code": "Kioxia THGBMJG6C1LBAU7 (8GB auto eMMC)",
+      "why": "only fat.lcsc / quote-only pages found; common IVI/telematics eMMC"
+    },
+    {
+      "code": "Samsung KLM\u2026 automotive eMMC, ISSI IS21ES",
+      "why": "automotive eMMC alternatives; budget spent"
+    },
+    {
+      "code": "DDR3L IS43TR16256BL-125KBLA2, DDR4 IS43QR16256B\u2026A2, MT40A1G16 AAT (16Gb)",
+      "why": "automotive DDR3L/DDR4; no priced listing found in budget"
+    },
+    {
+      "code": "Winbond W35T51NW octal, GigaDevice GD25 automotive, MX25U/MX66 automotive (\u2026-AL\u2026)",
+      "why": "automotive NOR alternates; budget spent"
+    },
+    {
+      "code": "S25HL01GT / S28HS family 1Gb automotive",
+      "why": "SEMPER 1Gb quad; searched, no priced listing"
+    },
+    {
+      "code": "Microchip 24AA/25LC \u2026VAO, Fujitsu MB85RS automotive",
+      "why": "AEC-Q100 EEPROM / FRAM; budget spent"
+    },
+    {
+      "code": "Samsung LPDDR4X/LPDDR5 automotive",
+      "why": "usually not distributor-listed"
+    }
+  ]
+}

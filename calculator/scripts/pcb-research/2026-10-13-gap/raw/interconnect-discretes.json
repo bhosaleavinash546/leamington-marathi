@@ -1,0 +1,701 @@
+{
+ "domain": "interconnect-discretes",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "BSS138BK,215",
+   "family": "BSS138BK",
+   "mfr": "Nexperia",
+   "desc": "N-channel MOSFET 60 V 360 mA, ESD protected, SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "level shift",
+    "load switch",
+    "any ECU"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 0.0567,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/BSS138BK%2C215/Nexperia",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.0398,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/BSS138BK%2C215/Nexperia",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.046,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/BSS138BK%2C215/Nexperia",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Via Findchips snapshot naming the distributor; Mouser 3000 = 0.0400 USD on same page (not recorded, 3 obs max).",
+   "observedMpn": "BSS138BK,215"
+  },
+  {
+   "mpn": "2N7002BK,215",
+   "family": "2N7002BK",
+   "mfr": "Nexperia",
+   "desc": "N-channel MOSFET 60 V 350 mA, ESD protected, SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "level shift",
+    "load switch",
+    "any ECU"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.0296,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/2N7002BK%2C215",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key T&R 3000 via Findchips. Newark figures in the same results were inconsistent (two listings) and not recorded; Digi-Key punchouttest pages ignored.",
+   "observedMpn": "2N7002BK,215"
+  },
+  {
+   "mpn": "BC847B,215",
+   "family": "BC847B",
+   "mfr": "Nexperia",
+   "desc": "NPN BJT 45 V 100 mA, SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.0252,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/bc847b%2C215/Nexperia",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.017,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C57668.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 21000,
+     "price": 0.0143,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C57668.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Avnet 3000 ~0.0068 USD also shown on Findchips; not recorded (snapshot looked inconsistent). fat.lcsc.com ignored.",
+   "observedMpn": "BC847B,215"
+  },
+  {
+   "mpn": "BC857B,215",
+   "family": "BC857B",
+   "mfr": "Nexperia",
+   "desc": "PNP BJT 45 V 100 mA, SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.0219,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/detail/BC857B%2C215/Nexperia",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.0258,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C59205.html?whichImg=0",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Avnet line on Findchips (min 3000 / ~0.0074) did not match cleanly; not recorded.",
+   "observedMpn": "BC857B,215"
+  },
+  {
+   "mpn": "BAS16,215",
+   "family": "BAS16",
+   "mfr": "Nexperia",
+   "desc": "Switching diode 85 V 215 mA, SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.0127,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C79997.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.009,
+     "currency": "USD",
+     "url": "https://www.digipart.com/part/BAS16%2B215",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser 3000 read from an aggregator snapshot (Digipart page assumed source) - verify. LCSC datasheet page showed 0.0095 at 3000 (conflict, product page used). Newark 10000+ 0.0158 via Digipart not recorded (higher than 3000 breaks).",
+   "observedMpn": "BAS16,215"
+  },
+  {
+   "mpn": "BZT52C5V1Q-7-F",
+   "family": "BZT52C5V1Q",
+   "mfr": "Diodes Incorporated",
+   "desc": "Zener diode 5.1 V 500 mW SOD-123, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOD-123",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU",
+    "reference clamp"
+   ],
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.0464,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C674396.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC showed 0 in stock (list price only). Digi-Key page (31-BZT52C5V1Q-7-FTR-ND) found but no price in snippet.",
+   "observedMpn": "BZT52C5V1Q-7-F"
+  },
+  {
+   "mpn": "SMMBT3904LT1G",
+   "family": "MMBT3904",
+   "mfr": "onsemi",
+   "desc": "NPN BJT 40 V 200 mA, SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.019,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/SMMBT3904LT1G",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.0218,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/SMMBT3904LT1G",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Avnet",
+     "qty": 3000,
+     "price": 0.0118,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/SMMBT3904LT1G",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "All via Findchips snapshots; an older Digi-Key snapshot showed 0.0253 at 3000.",
+   "observedMpn": "SMMBT3904LT1G"
+  },
+  {
+   "mpn": "BZX84-C5V1,215",
+   "family": "BZX84-C5V1",
+   "mfr": "Nexperia",
+   "desc": "Zener diode 5.1 V 5% 250 mW SOT-23, AEC-Q101",
+   "category": "ic_soic",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "any ECU",
+    "reference clamp"
+   ],
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.0429,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C294621.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 9000,
+     "price": 0.0363,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C294621.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "LCSC datasheet page showed 0.0102 at 3000 (conflict, product page used). Buerklin / Comet / Maritex prices seen but not on the allowed list. PZU5.1B2,115 not found.",
+   "observedMpn": "BZX84-C5V1,215"
+  },
+  {
+   "mpn": "ESD2CANFD24DBZRQ1",
+   "family": "ESD2CANFD24",
+   "mfr": "Texas Instruments",
+   "desc": "CAN FD ESD/TVS dual 24 V SOT-23, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN",
+    "gateway",
+    "BCM"
+   ],
+   "observations": [],
+   "notes": "Digi-Key page found with no price in snippet; only a non-automotive sibling from a non-franchised reseller (not used).",
+   "observedMpn": "ESD2CANFD24DBZRQ1"
+  },
+  {
+   "mpn": "PESD2IVN24-TR",
+   "family": "PESD2IVN24",
+   "mfr": "Nexperia",
+   "desc": "2-line ESD protection 24 V for CAN / LIN / FlexRay, SOT-23, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN",
+    "LIN",
+    "gateway"
+   ],
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1500,
+     "price": 0.113,
+     "currency": "USD",
+     "url": "https://il.farnell.com/nexperia/pesd2ivn24-tr/diode-aec-q101-esd-24v-sot-23/dp/2835442",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key 3000 prices only seen on punchouttest storefronts (excluded). Farnell Israel site in USD.",
+   "observedMpn": "PESD2IVN24-TR"
+  },
+  {
+   "mpn": "CDSOT23-T24CAN-Q",
+   "family": "CDSOT23-T24CAN",
+   "mfr": "Bourns",
+   "desc": "Dual bidirectional TVS 24 V for CAN, SOT-23, AEC-Q101",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23",
+   "aecq": true,
+   "ecuRoles": [
+    "CAN",
+    "gateway",
+    "BCM"
+   ],
+   "observations": [
+    {
+     "distributor": "RS Components",
+     "qty": 3000,
+     "price": 0.073,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/tvs-diodes/1651337",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "RS UK reel of 3000 = GBP 219.00 ex VAT (= 0.073/unit); listed temporarily out of stock.",
+   "observedMpn": "CDSOT23-T24CAN-Q"
+  },
+  {
+   "mpn": "0885002.DR",
+   "family": "0885",
+   "mfr": "Littelfuse",
+   "desc": "Fuse SMD 2 A 500 VDC, NANO2 885 series, AEC-Q200 (approx. 10.9 x 4.8 mm)",
+   "category": "fuse_tvs",
+   "pkg": "SMD 10.9x4.8 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "BMS",
+    "OBC",
+    "HV"
+   ],
+   "observations": [],
+   "notes": "Only a non-franchised reseller (Novapart) price found; Mouser series page has no price. Not a 1206 part.",
+   "observedMpn": "0885002.DR"
+  },
+  {
+   "mpn": "34830-2001",
+   "family": "MX150 34830",
+   "mfr": "Molex",
+   "desc": "MX150 PCB header, right-angle, 20 circuits, 3.50 mm pitch",
+   "category": "connector_smt",
+   "pkg": "THT header 20-pos",
+   "aecq": false,
+   "ecuRoles": [
+    "BCM",
+    "any ECU harness interface"
+   ],
+   "observedMpn": "0348302001",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1200,
+     "price": 5.06,
+     "currency": "EUR",
+     "url": "https://www.digikey.bg/en/products/detail/molex/0348302001/4693138",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key Bulgaria, ex VAT, summary said 'about 5.06'. 33472 codes asked for were not found. Automotive-sealed header family, AEC-Q not applicable. Catalogue has 34830-0801 (2x4)."
+  },
+  {
+   "mpn": "9-2304372-9",
+   "family": "MATEnet 2304372",
+   "mfr": "TE Connectivity",
+   "desc": "MATEnet header 2-way board mount, right-angle, 1.8 mm, automotive Ethernet",
+   "category": "connector_smt",
+   "pkg": "THT header 2-pos",
+   "aecq": false,
+   "ecuRoles": [
+    "ADAS",
+    "gateway",
+    "camera"
+   ],
+   "observations": [],
+   "notes": "Only RS UK small-quantity breaks seen (GBP 18.07 1-9, 16.62 10+ ex VAT) - below the 100 break rule, not recorded.",
+   "observedMpn": "9-2304372-9"
+  },
+  {
+   "mpn": "FA-128 31.2500MB30X-K0",
+   "family": "FA-128",
+   "mfr": "Epson",
+   "desc": "Crystal 31.25 MHz +-50/+-30 ppm -40..85 C, 2.0x1.6 mm",
+   "category": "crystal_osc",
+   "pkg": "2016",
+   "aecq": false,
+   "ecuRoles": [
+    "any ECU"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.274,
+     "currency": "USD",
+     "url": "https://www.mouser.sg/en/c/passive-components/frequency-control-timing-devices/?q=4541",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser full-reel tier (multiples of 1000), USD page. Non-automotive FA-128; the automotive X1E000021 code was not found.",
+   "observedMpn": "FA-128 31.2500MB30X-K0"
+  },
+  {
+   "mpn": "FA-128 54.00M-C0AANNG60RE5",
+   "family": "FA-128",
+   "mfr": "Epson",
+   "desc": "Crystal 54 MHz 12 pF +-10/+-20 ppm, 2.0x1.6 mm",
+   "category": "crystal_osc",
+   "pkg": "2016",
+   "aecq": false,
+   "ecuRoles": [
+    "Wi-Fi",
+    "infotainment"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.253,
+     "currency": "USD",
+     "url": "https://www.mouser.ec/es/c/passive-components/frequency-control-timing-devices/?q=6740",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser non-stocked, 26-week lead, full reel multiples of 3000.",
+   "observedMpn": "FA-128 54.00M-C0AANNG60RE5"
+  },
+  {
+   "mpn": "XRCGB25M000F3A00R0",
+   "family": "XRCGB",
+   "mfr": "Murata",
+   "desc": "Crystal 25 MHz, XRCGB 2.0x1.6 mm",
+   "category": "crystal_osc",
+   "pkg": "2016",
+   "aecq": false,
+   "ecuRoles": [
+    "Ethernet",
+    "MCU clock"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 3000,
+     "price": 0.2971,
+     "currency": "USD",
+     "url": "https://azcus.digikey.com/en/products/detail/murata-electronics/XRCGB25M000F3A00R0/5403569",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Sibling of the asked XRCGB25M000F3M00R0 (no franchised price found for it). Automotive grade of this suffix not confirmed.",
+   "observedMpn": "XRCGB25M000F3A00R0"
+  },
+  {
+   "mpn": "LR G6SP.02-8D6E-46-G3R3-140-R18",
+   "family": "LR G6SP",
+   "mfr": "ams OSRAM",
+   "desc": "LED red TOPLED PLCC-6",
+   "category": "led",
+   "pkg": "PLCC-6",
+   "aecq": false,
+   "ecuRoles": [
+    "interior lighting",
+    "indicator"
+   ],
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 1000,
+     "price": 0.156,
+     "currency": "EUR",
+     "url": "https://www.mouser.fi/en/c/optoelectronics/leds/?q=1066",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Mouser full reel (multiples of 1000), non-stocked; lower tier ~EUR 0.125 at an unstated larger reel multiple. RS lists no automotive standard for G6SP.02 series - verify grade.",
+   "observedMpn": "LR G6SP.02-8D6E-46-G3R3-140-R18"
+  },
+  {
+   "mpn": "LS G6SP.02-5D7D-78-G3R3-140-R18-Z",
+   "family": "LS G6SP",
+   "mfr": "ams OSRAM",
+   "desc": "LED super-red 630 nm 6.3 cd 120 deg TOPLED PLCC-6",
+   "category": "led",
+   "pkg": "PLCC-6",
+   "aecq": false,
+   "ecuRoles": [
+    "interior lighting",
+    "indicator"
+   ],
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 1000,
+     "price": 1.17,
+     "currency": "DKK",
+     "url": "https://dk.farnell.com/en-DK/ams-osram-group/ls-g6sp-02-5d7d-78-g3r3-140-r18-z/led-red-6-3cd-630nm-17-8lm-120deg/dp/4313126",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Farnell Denmark 1000+ ex VAT, 12-week lead. Automotive grade not confirmed.",
+   "observedMpn": "LS G6SP.02-5D7D-78-G3R3-140-R18-Z"
+  },
+  {
+   "mpn": "KRTBI D2LM31.31",
+   "family": "OSIRE E3731i",
+   "mfr": "ams OSRAM",
+   "desc": "RGB LED with integrated driver (OSIRE E3731i), automotive ambient lighting",
+   "category": "led",
+   "pkg": "SMD 3.7x3.1 mm",
+   "aecq": true,
+   "ecuRoles": [
+    "ambient lighting"
+   ],
+   "observations": [],
+   "notes": "Mouser (720-KRTBID2LM3131C5D) shows EUR 0.394 / INR 42.68 at its highest break but the quantity was not given - not recorded. D3LM31.31 not found.",
+   "observedMpn": "KRTBI D2LM31.31"
+  },
+  {
+   "mpn": "G8ND-2S-ASSK",
+   "family": "G8ND",
+   "mfr": "Omron",
+   "desc": "Automotive PCB relay, twin changeover (H-bridge), 12 VDC coil",
+   "category": "relay_switch",
+   "pkg": "THT",
+   "aecq": false,
+   "ecuRoles": [
+    "BCM",
+    "window lift",
+    "door module"
+   ],
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 150,
+     "price": 2.66,
+     "currency": "USD",
+     "url": "https://api-websites-cached.sourceesb.com/part/g8nd2sassk~omronelectroniccomponents",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 570,
+     "price": 2.56,
+     "currency": "USD",
+     "url": "https://api-websites-cached.sourceesb.com/part/g8nd2sassk~omronelectroniccomponents",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Digi-Key breaks via a Source ESB aggregator snapshot (may be stale); full orderable code with coil voltage suffix not shown. Relays have no AEC-Q grade.",
+   "observedMpn": "G8ND-2S-ASSK"
+  },
+  {
+   "mpn": "KMR221GLFS",
+   "family": "KMR2",
+   "mfr": "C&K",
+   "desc": "Tactile switch SMD 200 gf 4.2x2.8 mm",
+   "category": "relay_switch",
+   "pkg": "SMD",
+   "aecq": false,
+   "ecuRoles": [
+    "HMI",
+    "any ECU"
+   ],
+   "observations": [
+    {
+     "distributor": "Future",
+     "qty": 7000,
+     "price": 0.27,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/electromechanical--switches--tactile/kmr221glfs-c&k-7327125",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.3271,
+     "currency": "USD",
+     "url": "https://lcsc.com/product-detail/Others_C-K-KMR221GLFS_C72443.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "Automotive qualification of this code not confirmed.",
+   "observedMpn": "KMR221GLFS"
+  },
+  {
+   "mpn": "KMR211GLFS",
+   "family": "KMR2",
+   "mfr": "C&K",
+   "desc": "Tactile switch SMD 120 gf 4.2x2.8 mm",
+   "category": "relay_switch",
+   "pkg": "SMD",
+   "aecq": false,
+   "ecuRoles": [
+    "HMI",
+    "any ECU"
+   ],
+   "observations": [
+    {
+     "distributor": "element14",
+     "qty": 250,
+     "price": 0.461,
+     "currency": "AUD",
+     "url": "https://au.element14.com/c-k-components/kmr211g-lfs/switch-spst-0-05a-32vdc-smd/dp/1437635",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "element14 Australia cut tape 250+; currency taken as the AU site's AUD (snippet showed '$'). Automotive qualification not confirmed.",
+   "observedMpn": "KMR211GLFS"
+  }
+ ],
+ "notResearched": [
+  {
+   "code": "DMN/DMP …Q (Diodes Inc)",
+   "why": "AEC-Q101 small MOSFETs, very common; budget spent"
+  },
+  {
+   "code": "Vishay SMBJ…-M3 / SS…-M3 / TPSMB automotive",
+   "why": "rail TVS and Schottky on every 12 V input"
+  },
+  {
+   "code": "Rohm RB / RSR automotive Schottky",
+   "why": "common reverse-polarity / OR-ing diodes"
+  },
+  {
+   "code": "Infineon BSS / BAS automotive",
+   "why": "small-signal alternatives"
+  },
+  {
+   "code": "TPD1E10B06DPYRQ1",
+   "why": "single-line ESD -Q1 for I/O"
+  },
+  {
+   "code": "AQ24CANFD (Littelfuse)",
+   "why": "CAN FD TVS"
+  },
+  {
+   "code": "onsemi ESD8 automotive",
+   "why": "ESD for high-speed lines"
+  },
+  {
+   "code": "Bourns SF-0603/SF-1206 automotive fuses, Eaton CC12",
+   "why": "SMD board fuses"
+  },
+  {
+   "code": "Rosenberger H-MTD E6Z / Amphenol FAKRA / HFM",
+   "why": "camera / radar coax headers (E6S20A sibling already in catalogue)"
+  },
+  {
+   "code": "Molex Mini50 / MX123, TE MCON / NanoMQS / AMPSEAL headers",
+   "why": "main ECU harness headers"
+  },
+  {
+   "code": "Hirose GT17 / DF40 / FX18, Samtec automotive, USB-C automotive",
+   "why": "board-to-board and infotainment connectors"
+  },
+  {
+   "code": "TXC 7M / 8Y / 7V / 8W automotive, Kyocera CX2016, NDK automotive 32.768 kHz",
+   "why": "crystal points 8/16/20/40 MHz and 32.768 kHz"
+  },
+  {
+   "code": "SiT9396 / Epson SG-8018 automotive",
+   "why": "oscillators (SG-8018 only an estimate in catalogue)"
+  },
+  {
+   "code": "Nichia NSSW…AT, Lumileds LUXEON automotive, Würth / Kingbright automotive indicator LEDs, Inova ISELED",
+   "why": "automotive LEDs"
+  },
+  {
+   "code": "Panasonic CT / CQ / CV / TQ, TE MCR / F7, Omron G8NB / G5V, Song Chuan 896H",
+   "why": "automotive PCB relays"
+  },
+  {
+   "code": "TDK / Murata automotive piezo buzzers, C&K PTS645 automotive",
+   "why": "buzzers / switches"
+  }
+ ]
+}
