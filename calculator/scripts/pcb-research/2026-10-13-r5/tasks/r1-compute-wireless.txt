@@ -1,0 +1,7 @@
+Task r1 (extend): automotive compute and wireless still unpriced after round 4. Priority order:
+1. NXP i.MX 95 automotive (MIMX95… current orderable), i.MX 8DualX / 8DXL automotive (MIMX8DX…), i.MX RT1176 (MIMXRT1176DVMAA), MCX N947, LPC55S69JBD100
+2. TI Jacinto TDA4AL88 / TDA4VEN / TDA4VPE (orderable XJ7… / TDA4…RQ1 codes), AM62P-Q1, AM6442 automotive, TMS320F28P559SJ-Q1
+3. Renesas RA8 / RA6 automotive grades, RL78/F25 (R7F125…), RH850/U2B; ST Stellar SR5E1E3; Microchip AVR128DA64-E/PT VAO / AVR64DD; PIC16F18xxx automotive
+4. Melexis MLX81116 / MLX81332 / MLX81160 (motor / LIN MCUs), Elmos E521.39 / E523.52
+5. Wireless automotive: TI CC2340R5-Q1 / CC2662R-Q1 / CC2642R-Q1 (retry real codes), Infineon CYW89829 / CYW43455 automotive, NXP 88W8987 automotive / AW611, u-blox JODY-W3 / NORA-W3, ST STA9100 (Teseo-APP2), Quectel LC29H / LG69T
+6. FPGAs: AMD XA7Z010-1CLG225Q / XAZU2EG-1SBVA484Q, Lattice CertusPro-NX / CrossLinkU-NX automotive, Intel MAX 10 10M08 A-grade, Microchip MPF100T

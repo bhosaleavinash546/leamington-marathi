@@ -1,0 +1,590 @@
+{
+ "domain": "v2-verify",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "MT53E1G32D2FW-046 AUT:B",
+   "family": "MT53E1G32D2FW-046",
+   "mfr": "Micron",
+   "desc": "LPDDR4X 32Gb x32 automotive, 200-TFBGA",
+   "category": "ic_bga",
+   "pkg": "TFBGA-200",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: searched exact code at Mouser/Farnell/Arrow (2 searches); only a punchouttest.digikey.es page (EUR 60.5791 @100, not an allowed source) and Farnell AAT:B (no price). Note that disallowed reading is ~0.6x the stored Digi-Key $105.36 @2,000 on the gradeless sibling - verify with a quote."
+  },
+  {
+   "mpn": "TC4D9XP20MF500MCABKXUMA1",
+   "family": "TC4D9XP20MF500MCABKXUMA1",
+   "mfr": "Infineon",
+   "desc": "AURIX TC4Dx 6-core TriCore 500 MHz, 20 MB, ASIL-D",
+   "category": "ic_bga",
+   "pkg": "PG-F2BGA-436 (Digi-Key: PG-F2HBGA-436)",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: 2 searches (exact code at Mouser/Arrow/Avnet; family search) returned no listing for the TC4D9 code."
+  },
+  {
+   "mpn": "TC4D7XP20MF500MCABKXUMA1",
+   "family": "TC4D7XP20MF500MCABKXUMA1",
+   "mfr": "Infineon",
+   "desc": "AURIX TC4Dx TC4D7 multi-core TriCore 500 MHz, 20 MB flash, ASIL-D",
+   "category": "ic_bga",
+   "pkg": "BGA",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TC4D7XP20MF500MCABKXUMA1",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 1000,
+     "price": 61.16,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--microcontrollers--32-bit/tc4d7xp20mf500mcabkxuma1-infineon-5207455",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Future $61.16 @1,000 (=GBP 46.19) vs stored Mouser $77.85 @1,000 / catalogue 1k GBP 58.80 -> ratio 0.79. Future lists 43-week factory lead time, MOQ 1,000. A Mouser PH category page also showed PHP 4,515.30 @1,000 (consistent with stored Mouser) but the URL is a category list, not recorded."
+  },
+  {
+   "mpn": "MT62F2G32D4DS-026 AAT:B TR",
+   "family": "MT62F2G32D4DS-026",
+   "mfr": "Micron",
+   "desc": "LPDDR5 64Gb (8GB) 2G x32, automotive -40..105 C",
+   "category": "ic_bga",
+   "pkg": "TFBGA-315",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: exact code at Mouser/Farnell/Arrow searched; Digi-Key page found without a price in the summary, no other distributor listing."
+  },
+  {
+   "mpn": "IS46LQ32512A-046BLA1",
+   "family": "IS46LQ32512A-046BLA1",
+   "mfr": "ISSI",
+   "desc": "LPDDR4 16Gb (512M x32), 2133 MHz, A1 automotive -40..85 C",
+   "category": "ic_bga",
+   "pkg": "200-BGA",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "IS46LQ32512A-046BLA1",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 136,
+     "price": 20.31,
+     "currency": "EUR",
+     "url": "https://it.farnell.com/en-IT/integrated-silicon-solution-issi/is46lq32512a-046bla1/dram-2-133ghz-16gbit-1-1v-bga/dp/4732792",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "DISPUTED: Farnell IT lists the exact code at EUR 20.31 @136 ex-VAT (=GBP 17.43, MOQ 136, 18-wk lead time) vs stored Mouser INR 7542.92 @100 (=GBP 59.30) / catalogue 1k GBP 50.41 -> catalogue is 2.89x the Farnell price. Against Farnell: a Mouser listing of the industrial sibling IS43LQ32512A-046BLI was summarised at $98.36 @1 falling to $82.46 at volume, which supports the stored figure. Two franchised readings 3-4x apart for a 16Gb LPDDR4 - needs a supplier quote. Stored observation URL not in the task file."
+  },
+  {
+   "mpn": "TC499PP20MF400MSABKXUMA1",
+   "family": "TC499PP20MF400MSABKXUMA1",
+   "mfr": "Infineon",
+   "desc": "AURIX TC49x 5-core TriCore 400 MHz, 20 MB",
+   "category": "ic_bga",
+   "pkg": "PG-F2BGA-436",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: exact-code search returned no distributor listing."
+  },
+  {
+   "mpn": "MT25QU01GBBB8E12-0AUT",
+   "family": "MT25QU01GBBB8E12-0AUT",
+   "mfr": "Micron",
+   "desc": "1Gb 1.8V serial NOR flash, automotive",
+   "category": "ic_bga",
+   "pkg": "TBGA-24",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: Digi-Key (azcus host) and Arrow pages found without price in summary; Mouser MX showed the -0AAT sibling at a single-unit price only (and MXN/USD unclear) - not recorded."
+  },
+  {
+   "mpn": "IS46LQ32256AL",
+   "family": "IS46LQ32256AL",
+   "mfr": "ISSI",
+   "desc": "LPDDR4/4X 8Gb x32, automotive",
+   "category": "ic_bga",
+   "pkg": "TFBGA-200",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "TC375TP96F300W",
+   "family": "TC375TP96F300W",
+   "mfr": "Infineon",
+   "desc": "AURIX TC375 (3x TriCore, 6 MB)",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: Farnell JP lists TC375TP96F300WAAKXUMA1 but 'pricing unavailable'; no Mouser price found. NOTE: Farnell describes the part as LQFP-176 (mcu-32bit-300mhz-lqfp-176, order code 3625285), not LFBGA-292 - TC375 is the LQFP-176 member; pkg/category (ic_bga) look wrong, left unchanged for a person to fix."
+  },
+  {
+   "mpn": "SAK-TC1766-192F80HL BD",
+   "family": "SAK-TC1766-192F80HL",
+   "mfr": "Infineon",
+   "desc": "TriCore 32-bit MCU 80 MHz, 1.5 MB flash (Bosch DCU17HD01 dosing control unit)",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-176",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "LCMXO3D-9400HC-6SG72C",
+   "family": "LCMXO3D-9400HC-6SG72C",
+   "mfr": "Lattice",
+   "desc": "MachXO3D secure-boot CPLD/FPGA 9400 LUT, 2.5/3.3 V, commercial, QFN-72",
+   "category": "ic_qfn",
+   "pkg": "QFN-72",
+   "aecq": false,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: Mouser CA (842-O3D9400HC6SG72C) summarised only at a single-unit price (45.72, CAD storefront) - below the 100 break, not recorded; Dasenic is a broker."
+  },
+  {
+   "mpn": "MT29F4G08ABAFAWP-AAT",
+   "family": "MT29F4G08ABAFAWP-AAT",
+   "mfr": "Micron",
+   "desc": "4Gb SLC NAND x8, automotive",
+   "category": "ic_soic",
+   "pkg": "TSOP-48",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "WRONG-CODE: the stored price is the industrial sibling MT29F4G08ABAFAWP-IT:F; the automotive orderable MT29F4G08ABAFAWP-AAT:F exists (Farnell EE order code 3861373, https://ee.farnell.com/micron/mt29f4g08abafawp-aat-f/flash-memory-4gbit-40-to-105deg/dp/3861373; Mouser CR lists it in CRC, a currency the merge cannot use). No usable AAT:F price found; observedMpn for a re-price should be MT29F4G08ABAFAWP-AAT:F."
+  },
+  {
+   "mpn": "88Q5072-B2-BYZ2A000-P123",
+   "family": "88Q5072-B2-BYZ2A000-P123",
+   "mfr": "Infineon Technologies (ex-Marvell)",
+   "desc": "Automotive Ethernet switch",
+   "category": "ic_bga",
+   "pkg": "",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "LIFCL-17-7MG121A",
+   "family": "LIFCL-17-7MG121A",
+   "mfr": "Lattice Semiconductor",
+   "desc": "CrossLink-NX 17k FPGA, automotive grade",
+   "category": "ic_bga",
+   "pkg": "csfBGA-121",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "SAK-TC277TP-64F200S DC",
+   "family": "SAK-TC277TP-64F200S",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 tri-core TriCore 200 MHz, 4 MB flash",
+   "category": "ic_bga",
+   "pkg": "LFBGA-292",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "SAK-TC264DA-40F200W BC",
+   "family": "SAK-TC264DA-40F200W",
+   "mfr": "Infineon",
+   "desc": "AURIX TC2 dual-core TriCore 200 MHz, 2.5 MB flash, Ethernet",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-144",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: exact code at Mouser/Farnell/LCSC searched; only the SAK-TC264D-40F200N BC variant at LCSC (0 stock) found."
+  },
+  {
+   "mpn": "S28HS01GTGZBHA030",
+   "family": "S28HS01GTGZBHA030",
+   "mfr": "Infineon",
+   "desc": "SEMPER octal xSPI NOR 1Gb, 200 MHz, 1.8 V",
+   "category": "ic_bga",
+   "pkg": "24-BGA 8x8",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "MX25UM51245GXDR00-T",
+   "family": "MX25UM51245GXDR00-T",
+   "mfr": "Macronix",
+   "desc": "OctaFlash octal NOR 512Mb, 200 MHz, 1.8 V, automotive -40..105 C",
+   "category": "ic_bga",
+   "pkg": "24-BGA",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "KSZ9563RNXV-VAO",
+   "family": "KSZ9563RNXV-VAO",
+   "mfr": "Microchip",
+   "desc": "3-port Gigabit Ethernet switch (automotive)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: exact code not listed in results; only other variants with rounded 'about' figures from non-franchised sites."
+  },
+  {
+   "mpn": "SAK-TC234LP-32F200N",
+   "family": "SAK-TC234LP-32F200N",
+   "mfr": "Infineon",
+   "desc": "AURIX TC234 (1× TriCore, 2 MB)",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-144",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "IS25LP512M-JLLA3",
+   "family": "IS25LP512M-JLLA3",
+   "mfr": "ISSI",
+   "desc": "Quad SPI NOR 512Mb, 3 V, automotive A3",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "MT25QL256ABA1EW9",
+   "family": "MT25QL256ABA1EW9",
+   "mfr": "Micron",
+   "desc": "256 Mbit SPI NOR flash",
+   "category": "ic_soic",
+   "pkg": "W-PDFN-8",
+   "aecq": false,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "MT25QL512ABB8ESF-0AUT",
+   "family": "MT25QL512ABB8ESF-0AUT",
+   "mfr": "Micron",
+   "desc": "512Mb 3V QSPI NOR flash, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "MT35XU512ABA1G12-0AAT",
+   "family": "MT35XU512ABA1G12-0AAT",
+   "mfr": "Micron",
+   "desc": "Xccela octal xSPI NOR 512Mb, 200 MHz, 1.8 V, automotive",
+   "category": "ic_bga",
+   "pkg": "24-TPBGA",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "CYT2B75CADQ0AZEGS",
+   "family": "CYT2B75CADQ0AZEGS",
+   "mfr": "Infineon Technologies",
+   "desc": "TRAVEO T2G Body Entry Cortex-M4F 160 MHz, 1088 KB flash, CAN FD, LIN",
+   "category": "ic_tqfp",
+   "pkg": "LQFP-100",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: exact code at Digi-Key/Mouser/Farnell searched; no listing (only a broker for CYT2B78...)."
+  },
+  {
+   "mpn": "IS32CG5317-LQLA2",
+   "family": "IS32CG5317-LQLA2",
+   "mfr": "Lumissil (ISSI)",
+   "desc": "AEC-Q100 Grade 2 HomePlug Green PHY transceiver, SPI/MII/RMII host (ISO 15118 / DIN 70121)",
+   "category": "ic_tqfp",
+   "pkg": "EP-LQFP-80",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "TLE6240GP",
+   "family": "TLE6240GP",
+   "mfr": "Infineon",
+   "desc": "16-ch low-side switch, SPI",
+   "category": "ic_soic",
+   "pkg": "P-DSO-36",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "TLE6240GPAUMA1",
+   "observations": [
+    {
+     "distributor": "Farnell",
+     "qty": 250,
+     "price": 904.32,
+     "currency": "JPY",
+     "url": "https://jp.farnell.com/en-JP/infineon/tle6240gpauma1/power-load-sw-low-side-5-5v-soic/dp/2480895",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Farnell JP TLE6240GPAUMA1 (orderable code of TLE6240GP) JPY 904.32 @250 ex-tax (=GBP 4.34) vs catalogue 1k GBP 5.69 (stored Mouser $7.69 @800) -> ratio 0.76, at a smaller break. Farnell marks it no longer manufactured."
+  },
+  {
+   "mpn": "LAN9370-V/KCXVAO",
+   "family": "LAN9370-V/KCXVAO",
+   "mfr": "Microchip",
+   "desc": "Automotive Ethernet switch with 100BASE-T1 PHYs",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "TLF30682QVS01XUMA1",
+   "family": "TLF30682QVS01XUMA1",
+   "mfr": "Infineon",
+   "desc": "OPTIREG multi-rail PMIC (RS: 3-channel buck-boost, 3.5 A, 2.2 MHz)",
+   "category": "ic_qfn",
+   "pkg": "PG-VQFN-48",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "LAN9372-I/ZMX",
+   "family": "LAN9372-I/ZMX",
+   "mfr": "Microchip",
+   "desc": "Managed switch, 5x 100BASE-T1 PHY + 100BASE-TX",
+   "category": "ic_qfn",
+   "pkg": "VQFN-128",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "LAN9373-V/ZMXVAO",
+   "family": "LAN9373-V/ZMXVAO",
+   "mfr": "Microchip",
+   "desc": "Automotive Ethernet switch",
+   "category": "ic_tqfp",
+   "pkg": "TQFP-128-EP",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "S26HS512TGABHI010",
+   "family": "S26HS512TGABHI010",
+   "mfr": "Infineon",
+   "desc": "SEMPER HyperFlash/HyperBus NOR 512Mb, 200 MHz, 1.8 V, -40..85 C",
+   "category": "ic_bga",
+   "pkg": "24-FBGA 6x8",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "S25FL512SAGMFV011",
+   "family": "S25FL512SAGMFV011",
+   "mfr": "Infineon",
+   "desc": "512Mb QSPI NOR flash, automotive",
+   "category": "ic_soic",
+   "pkg": "SOIC-16",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no listing for the MFV011 code; MFI011 figures came only from electronicsdatasheets.com (not an allowed source)."
+  },
+  {
+   "mpn": "MCP2562FD-E/SN",
+   "family": "MCP2562FD-E/SN",
+   "mfr": "Microchip",
+   "desc": "CAN FD transceiver",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "MCP2562FD-E/SN",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 1.0394,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C124016.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: LCSC $1.0394 @1,000 (=GBP 0.785) vs catalogue 1k GBP 0.624 -> ratio 1.26. LCSC is one of the two distributors named in the stored source (Master, LCSC; stored LCSC $0.711 @1k), so this is a fresh re-read, not an independent distributor."
+  },
+  {
+   "mpn": "ATA6560-GBQW",
+   "family": "ATA6560-GBQW",
+   "mfr": "Microchip",
+   "desc": "High-speed CAN transceiver",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: RS listing summarised as EUR 18.90 per 50-pack (break < 100, and the summary mixed the -GBQW and -GBQW-N URLs); LCSC/Mouser figures were for the -N variant via flux.ai - nothing recorded."
+  },
+  {
+   "mpn": "0603SFF200F/32-2",
+   "family": "0603SFF200F/32-2",
+   "mfr": "Littelfuse",
+   "desc": "2 A 32 V chip fuse 0603 (obsolete; SFP successor)",
+   "category": "fuse_tvs",
+   "pkg": "0603",
+   "aecq": false,
+   "ecuRoles": [],
+   "observedMpn": "",
+   "observations": [],
+   "notes": "UNVERIFIED: no franchised listing with a usable break >=100 found in the search budget (not searched - budget)."
+  },
+  {
+   "mpn": "SM06B-GHS-TB",
+   "family": "SM06B-GHS-TB",
+   "mfr": "JST",
+   "desc": "GH 1.25 mm 6-way SMT header",
+   "category": "connector_smt",
+   "pkg": "SMT",
+   "aecq": false,
+   "ecuRoles": [],
+   "observedMpn": "SM06B-GHS-TB(LF)(SN)",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 500,
+     "price": 0.171,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C133065.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 2500,
+     "price": 0.1638,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-image/C133065.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "UNVERIFIED: LCSC SM06B-GHS-TB(LF)(SN) $0.171 @500, $0.1638 @2,500 (=GBP 0.129 / 0.124) vs catalogue 1k GBP 0.234 (stored Digi-Key $0.300 @1k) -> ratio 0.55: outside +-40% but under 2.5x. Stored source already shows a wide spread ($0.196-$0.475); LCSC was named in it at $0.475, now $0.171. A Digi-Key figure ($0.26638) appeared only on an aggregator without a break - not recorded."
+  },
+  {
+   "mpn": "IRLML6344TRPBF",
+   "family": "IRLML6344TRPBF",
+   "mfr": "Infineon",
+   "desc": "N-MOSFET 30 V 5 A SOT-23",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23",
+   "aecq": false,
+   "ecuRoles": [],
+   "observedMpn": "IRLML6344TRPBF",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 3000,
+     "price": 0.0815,
+     "currency": "USD",
+     "url": "https://www.futureelectronics.com/p/semiconductors--discretes--transistors--mosfets/irlml6344trpbf-infineon-1004163",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "LCSC",
+     "qty": 3000,
+     "price": 0.1119,
+     "currency": "USD",
+     "url": "https://www.lcsc.com/product-detail/C53550.html",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "element14 Singapore",
+     "qty": 3000,
+     "price": 0.149,
+     "currency": "SGD",
+     "url": "https://sg.element14.com/infineon/irlml6344trpbf/mosfet-n-ch-30v-5a-sot23/dp/1857299",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Future $0.0815 @3,000 (0 stock, MOQ 6,000), LCSC $0.1119 @3,000, element14 SG S$0.149 @3,000 ex-GST (cut tape) vs stored Digi-Key $0.1033 @3,000 -> ratios 0.79 / 1.08 / 1.13 (SGD at 0.5908 GBP)."
+  }
+ ],
+ "disputes": [
+  {
+   "mpn": "MT29F4G08ABAFAWP-AAT",
+   "url": null,
+   "reason": "Stored price is the industrial sibling MT29F4G08ABAFAWP-IT:F (Digi-Key $21.06951 @960); the automotive orderable MT29F4G08ABAFAWP-AAT:F exists (Farnell 3861373). Stored URL not in task file."
+  },
+  {
+   "mpn": "IS46LQ32512A-046BLA1",
+   "url": null,
+   "reason": "Price conflict, not a wrong code: Farnell EUR 20.31 @136 for the exact code vs stored Mouser INR 7542.92 @100 (3.4x). Do not drop either without a quote; stored URL not in task file."
+  }
+ ]
+}

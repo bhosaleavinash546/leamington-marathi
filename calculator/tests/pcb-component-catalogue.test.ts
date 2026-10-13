@@ -124,7 +124,7 @@ describe('grounding with the catalogue', () => {
   });
 });
 
-import { priceFromObservations, mergeResearch, applyFamilyLinks, DEFAULT_B } from '../scripts/pcb-catalogue-research-merge.js';
+import { priceFromObservations, mergeResearch, applyFamilyLinks, applyAuditToCatalogue, DEFAULT_B } from '../scripts/pcb-catalogue-research-merge.js';
 describe('the research merge rules', () => {
   const o = (distributor: string, qty: number, price: number, currency = 'USD') => ({ distributor, qty, price, currency, url: 'https://www.digikey.com/x', date: '2026-10-06' });
   it('uses the part\'s own slope from one distributor\'s two breaks', () => {
@@ -183,6 +183,17 @@ describe('the research merge rules', () => {
     expect(rep.added).toContain('CRCW04020000Z0ED');                                   // its own entry
     expect(cat.parts.find(p => p.mpn === 'CRCW040210K0FKED')!.gbp.q1k).toBe(tenK.gbp.q1k);   // the 10 k is untouched
     expect(rep.replacedEstimate).toEqual(['TLS4120 → TLS4120D0EPV33XUMA1']);            // the family-key estimate is taken over
+  });
+  it('an audit exclusion also removes a wrong STORED observation, and the re-price pass prices from what is left (round 5)', () => {
+    const p = priceFromObservations([o('Digi-Key', 1000, 2.0), { ...o('Mouser', 1000, 9.0), url: 'https://www.mouser.com/wrong-code' }])!;
+    const cat = { parts: [{ mpn: 'TEST9Q1', family: 'TEST9', mfr: 'X', desc: 'd', category: 'ic_soic', pkg: 'SOIC-8', aecq: true,
+      gbp: p.gbp, confidence: 'distributor' as const, source: 's', asOf: '2026-10-06', observations: p.obs.map(x => ({ ...x })),
+      volumeModel: { b: p.b, basis: p.basis, derivedAbove: 1000 } }] };
+    const removed = applyAuditToCatalogue(cat, { observations: [{ mpn: 'TEST9Q1', url: 'mouser.com/wrong-code', reason: 'another code' }] });
+    expect(removed.length).toBe(1);
+    expect(cat.parts[0].observations!.map(x => x.distributor)).toEqual(['Digi-Key']);
+    mergeResearch(cat, [], '2026-10-13');                       // the re-price pass
+    expect(cat.parts[0].gbp.q1k).toBeCloseTo(2.0 * 0.7553, 3);
   });
   it('a cross-check adds to the stored observations and re-prices from both', () => {
     const first = priceFromObservations([o('Digi-Key', 1000, 2.0)])!;

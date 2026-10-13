@@ -1,0 +1,6 @@
+Task r2 (extend): power and analog parts round 4 searched but could not price, or did not reach. Priority order:
+1. PMICs / SBCs: TI TPS65224-Q1 (TPS6522430RHARQ1 or current), LP8764-Q1, TPS6594-Q1 variants; NXP PF09, FS86 (FS8600), PF5020 retry; Renesas RAA271000 / RAA271005; ADI MAX20084 / MAX20478; Rohm BD39040
+2. Converters / LDOs: ADI LT8636 / LT8390 (automotive -IV / #PBF codes), MAX25262; ST LDL1117-Q (LDL1117S33R automotive code), TI TPS7B81-Q1 / TLV760-Q1 retry, onsemi NCV8114
+3. Gate drivers / isolators: Infineon 1EDI2004AS, NXP GD3160, ADI ADuM4146 / ADuM4177 automotive, Skyworks Si8285 / Si8271 automotive, TI SN6507-Q1 / UCC14140-Q1, TI ISO7721-Q1 / ISO1042-Q1
+4. SiC / GaN automotive: Wolfspeed E3M0075120K / E3M0040120K / C3M0040120K, Infineon AIMBG120R030M1 / AIMZH120R030M1, Transphorm TP65H035G4WS / TP65H050G4WS, onsemi FFSH20120A-F085, Wolfspeed E4D20120A
+5. Sensors / analog retry: Infineon TLE4922 / TLE5109 / TLI5590 / TLE5014, ams AS5172 / AS5600, Allegro A1339 / A17301, Bosch SMI240 / BMI270, Murata SCHA634, TDK IAM-20685, TI TMP1075-Q1 / TLV7011-Q1 / OPA388-Q1, ADI AD2433, TI TAS2563

@@ -1,0 +1,733 @@
+[
+ {
+  "mpn": "MMA6801KW",
+  "mfr": "NXP Semiconductors",
+  "desc": "Dual-axis airbag central accelerometer, 16-QFN (RDAIRBAGPSI5 local safing sensor)",
+  "category": "ic_qfn",
+  "pkg": "QFN-16 6x6",
+  "aecq": true,
+  "currentQ1kGBP": 5.3067,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 756,
+    "price": 6.30533,
+    "currency": "EUR",
+    "url": "https://www.digikey.be/en/products/detail/nxp-usa-inc/MMA6801KW/2817418"
+   }
+  ],
+  "storedSource": "Digi-Key €6.30533 @756 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MVR5510AMBA6ES",
+  "mfr": "NXP Semiconductors",
+  "desc": "PMIC for S32G, ASIL B, 3 buck + boost + 4 LDO",
+  "category": "ic_qfn",
+  "pkg": "HVQFN-56",
+  "aecq": true,
+  "currentQ1kGBP": 6.2271,
+  "storedObservations": [
+   {
+    "distributor": "Avnet",
+    "qty": 520,
+    "price": 8.634,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nxp/mvr5510ambanes/evolve-64144456/"
+   }
+  ],
+  "storedSource": "Avnet $8.634 @520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "S32G274AABK1VUCT",
+  "mfr": "NXP Semiconductors",
+  "desc": "S32G2 vehicle network processor, 4x A53 + 3x M7 lockstep",
+  "category": "ic_bga",
+  "pkg": "FCBGA",
+  "aecq": true,
+  "currentQ1kGBP": 53.73,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 73.6391,
+    "currency": "EUR",
+    "url": "https://www.digikey.gr/en/products/detail/nxp-usa-inc/S32G274AABK1VUCT/19492720"
+   }
+  ],
+  "storedSource": "Digi-Key €73.6391 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "S32G399AAAK1VUCR",
+  "mfr": "NXP Semiconductors",
+  "desc": "S32G3 vehicle network processor, 4x A53 + M7, 20x CAN FD, 4x GbE",
+  "category": "ic_bga",
+  "pkg": "FCBGA",
+  "aecq": true,
+  "currentQ1kGBP": 67.7864,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 94.24758,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/base-product/nxp-usa-inc/568/S32G399/734426"
+   }
+  ],
+  "storedSource": "Digi-Key $94.24758 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "S32K344EHT1VMMST",
+  "mfr": "NXP Semiconductors",
+  "desc": "S32K344 Cortex-M7 lockstep MCU, 4 MB",
+  "category": "ic_bga",
+  "pkg": "MAPBGA-257",
+  "aecq": true,
+  "currentQ1kGBP": 10.8766,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 100,
+    "price": 15.42,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/k344"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 500,
+    "price": 14.7,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/k344"
+   }
+  ],
+  "storedSource": "Mouser $15.42 @100; Mouser $14.7 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0297, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TJA1085GHN/0Z",
+  "mfr": "NXP Semiconductors",
+  "desc": "FlexRay active star transceiver",
+  "category": "ic_qfn",
+  "pkg": "HVQFN-44",
+  "aecq": true,
+  "currentQ1kGBP": 5.1314,
+  "storedObservations": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 6.7938,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/C3226279.html"
+   }
+  ],
+  "storedSource": "LCSC $6.7938 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "AR0144ATSM20XUEA0-DRBR",
+  "mfr": "onsemi",
+  "desc": "1 MP 1/4in global-shutter mono CMOS sensor, 1280x800",
+  "category": "ic_bga",
+  "pkg": "iBGA-63",
+  "aecq": true,
+  "currentQ1kGBP": 11.1392,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 440,
+    "price": 15.62784,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/on-semiconductor/AR0144ATSM20XUEA0-DRBR/9829016"
+   }
+  ],
+  "storedSource": "Digi-Key $15.62784 @440 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "AR0147ATSC00XUEA5-DPBR",
+  "mfr": "onsemi",
+  "desc": "1.3 MP automotive HDR CMOS image sensor, colour, tray",
+  "category": "ic_bga",
+  "pkg": "iBGA-89",
+  "aecq": true,
+  "currentQ1kGBP": 16.3274,
+  "storedObservations": [
+   {
+    "distributor": "Master Electronics",
+    "qty": 1300,
+    "price": 20.62,
+    "currency": "USD",
+    "url": "https://masterelectronics.com/en/onsemi/ar0147atsc00xuea5dpbr-60414286.html"
+   },
+   {
+    "distributor": "Master Electronics",
+    "qty": 2600,
+    "price": 13.76,
+    "currency": "USD",
+    "url": "https://masterelectronics.com/en/onsemi/ar0147atsc00xuea5dpbr-60414286.html"
+   }
+  ],
+  "storedSource": "Master Electronics $20.62 @1,300; Master Electronics $13.76 @2,600 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.18, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "AR0820ATSC18XMEA0-DPBR",
+  "mfr": "onsemi",
+  "desc": "8.3 MP 1/2in automotive HDR image sensor",
+  "category": "ic_bga",
+  "pkg": "IBGA-95",
+  "aecq": true,
+  "currentQ1kGBP": 26.3099,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 40.9808,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/AR0820ATSC18XMEA0-DRBR/17629347"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code AR0820ATSC18XMEA0-DRBR (the listed code was not found at a distributor). Digi-Key $40.9808 @100 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the l"
+ },
+ {
+  "mpn": "AR0822NPSC10SMTA0-DR",
+  "mfr": "onsemi",
+  "desc": "8 MP 1/2in eHDR CMOS image sensor, RGB, tray (industrial 'NP' grade)",
+  "category": "ic_bga",
+  "pkg": "BGA-75 (per Digi-Key eval-board description)",
+  "aecq": false,
+  "currentQ1kGBP": 22.1117,
+  "storedObservations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1470,
+    "price": 28.49,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--analog--sensors--image/ar0822npsc10smta0-dr-onsemi-8173590"
+   }
+  ],
+  "storedSource": "Future Electronics $28.49 @1,470 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "BSS138",
+  "mfr": "onsemi",
+  "desc": "N-MOSFET 50 V 220 mA SOT-23",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": false,
+  "currentQ1kGBP": 0.05276,
+  "storedObservations": [],
+  "storedSource": "Digi-Key: $0.0575 @3,000 (Diodes BSS138-7-F $0.0457); to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "MICROFJ-30035-TSV-TR",
+  "mfr": "onsemi",
+  "desc": "J-series SiPM 3 mm, TSV chip-scale",
+  "category": "ic_bga",
+  "pkg": "TSV CSP",
+  "aecq": false,
+  "currentQ1kGBP": 13.0697,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 17.304,
+    "currency": "USD",
+    "url": "https://octopart.com/part/onsemi/MICROFJ-30035-TSV-TR"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 3000,
+    "price": 14.4926,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/onsemi/MICROFJ-30035-TSV-TR/9742620"
+   }
+  ],
+  "storedSource": "Digi-Key $17.304 @1,000; Digi-Key $14.4926 @3,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1614, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "NVBG020N120SC1",
+  "mfr": "onsemi",
+  "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 98 A, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "D2PAK-7L",
+  "aecq": true,
+  "currentQ1kGBP": 22.6246,
+  "storedObservations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 800,
+    "price": 30.43,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvbg020n120sc1-onsemi-2121603"
+   }
+  ],
+  "storedSource": "Future Electronics $30.43 @800 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "NVBG040N120SC1",
+  "mfr": "onsemi",
+  "desc": "EliteSiC SiC MOSFET 1200 V 40 mOhm 60 A, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "D2PAK-7L",
+  "aecq": true,
+  "currentQ1kGBP": 10.1759,
+  "storedObservations": [
+   {
+    "distributor": "RS Components",
+    "qty": 200,
+    "price": 11.4,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/2025731"
+   }
+  ],
+  "storedSource": "RS Components £11.4 @200 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "NVH4L020N120SC1",
+  "mfr": "onsemi",
+  "desc": "EliteSiC SiC MOSFET 1200 V 20 mOhm 102 A, Kelvin source, AEC-Q101",
+  "category": "through_hole",
+  "pkg": "TO-247-4L",
+  "aecq": true,
+  "currentQ1kGBP": 22.3975,
+  "storedObservations": [
+   {
+    "distributor": "RS Components",
+    "qty": 100,
+    "price": 26.35,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/2025735"
+   }
+  ],
+  "storedSource": "RS Components £26.35 @100 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "NVH4L022N120M3S",
+  "mfr": "onsemi",
+  "desc": "Automotive SiC MOSFET 1200 V 22 mOhm 68 A, M3S EliteSiC, TO-247-4L, AEC-Q101",
+  "category": "through_hole",
+  "pkg": "TO-247-4L",
+  "aecq": true,
+  "currentQ1kGBP": 11.4725,
+  "storedObservations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 450,
+    "price": 16.07,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--discretes--transistors--silicon-carbide-mosfets-sic-mosfets/nvh4l022n120m3s-onsemi-9191191"
+   }
+  ],
+  "storedSource": "Future Electronics $16.07 @450 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "NVHL020N120SC1",
+  "mfr": "onsemi",
+  "desc": "Automotive SiC MOSFET 1200V 20mOhm",
+  "category": "through_hole",
+  "pkg": "TO-247-3",
+  "aecq": true,
+  "currentQ1kGBP": 24.7912,
+  "storedObservations": [
+   {
+    "distributor": "Avnet",
+    "qty": 450,
+    "price": 34.726,
+    "currency": "USD",
+    "url": "https://octopart.com/nvhl020n120sc1-on+semiconductor-93583284"
+   }
+  ],
+  "storedSource": "Avnet $34.726 @450 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SS34",
+  "mfr": "onsemi",
+  "desc": "40 V 3 A Schottky SMA",
+  "category": "fuse_tvs",
+  "pkg": "SMA",
+  "aecq": false,
+  "currentQ1kGBP": 0.09176,
+  "storedObservations": [],
+  "storedSource": "TME $0.26 @1.5k, Digi-Key $0.246 @3k, LCSC $0.017 @5k; mid $0.10 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "1N4148WS",
+  "mfr": "onsemi/Vishay",
+  "desc": "75 V switching diode SOD-323",
+  "category": "fuse_tvs",
+  "pkg": "SOD-323",
+  "aecq": false,
+  "currentQ1kGBP": 0.01918,
+  "storedObservations": [],
+  "storedSource": "Future (Vishay 1N4148WS-E3-08): $0.0209 @3,000; onsemi $0.0238–0.034; LCSC $0.0045; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "EEH-ZC1V470P",
+  "mfr": "Panasonic",
+  "desc": "47 µF 35 V hybrid polymer SMD",
+  "category": "through_hole",
+  "pkg": "SMD 6.3×7.7",
+  "aecq": true,
+  "currentQ1kGBP": 0.1794,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.266, TTI/Avnet $0.195, Future $0.32 @1k: $0.23 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "EZP-V80506MTS",
+  "mfr": "Panasonic",
+  "desc": "DC-link PP film capacitor 50 uF 800 VDC, 105 C, AEC-Q200",
+  "category": "through_hole",
+  "pkg": "Radial molded 4-lead",
+  "aecq": true,
+  "currentQ1kGBP": 7.9449,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 12.3752,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/panasonic-electronic-components/EZP-V80506MTS/11687429"
+   }
+  ],
+  "storedSource": "Digi-Key $12.3752 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "DW3220TR13",
+  "mfr": "Qorvo",
+  "desc": "UWB transceiver IEEE 802.15.4z, dual antenna PDoA/AoA",
+  "category": "ic_bga",
+  "pkg": "QFN-40",
+  "aecq": false,
+  "currentQ1kGBP": 5.4835,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 7.26,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/qorvo/DW3220TR13/24717855"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 4000,
+    "price": 6.23,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/qorvo/DW3220TR13/24717855"
+   }
+  ],
+  "storedSource": "Digi-Key $7.26 @1,000; Digi-Key $6.23 @4,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1104, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "R7F7015873AFP-C#AA3",
+  "mfr": "Renesas",
+  "desc": "RH850/F1K premium (F1KH) 32-bit MCU, 3-5.5 V, AEC-Q100",
+  "category": "ic_tqfp",
+  "pkg": "LQFP",
+  "aecq": true,
+  "currentQ1kGBP": 7.9231,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 10.49,
+    "currency": "USD",
+    "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/?core=G3KH"
+   }
+  ],
+  "storedSource": "Mouser $10.49 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "R7F7016443AFP",
+  "mfr": "Renesas",
+  "desc": "RH850/F1KM-S4 automotive MCU",
+  "category": "ic_tqfp",
+  "pkg": "LFQFP-100",
+  "aecq": true,
+  "currentQ1kGBP": 8.7185,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 11.54309,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/renesas-electronics-america-inc/R7F7016443AFP-C-KA1/8342106"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code R7F7016443AFP-C#KA1 (the listed code was not found at a distributor). Digi-Key $11.54309 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the l"
+ },
+ {
+  "mpn": "R7F702002AEABA-C#BC0",
+  "mfr": "Renesas",
+  "desc": "RH850/E2M automotive powertrain MCU, 400 MHz, 8 MB flash",
+  "category": "ic_bga",
+  "pkg": "FBGA-373 (21x21)",
+  "aecq": true,
+  "currentQ1kGBP": 20.8471,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 250,
+    "price": 22.99,
+    "currency": "GBP",
+    "url": "https://www.digikey.co.uk/en/products/detail/renesas-electronics-corporation/R7F702002AEABA-C-BC0/19235704"
+   }
+  ],
+  "storedSource": "Digi-Key £22.99 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "R7F702300BFABA-C#BC6",
+  "mfr": "Renesas",
+  "desc": "RH850/U2A multi-core domain MCU, 16MB flash, 292-FBGA",
+  "category": "ic_bga",
+  "pkg": "FBGA-292",
+  "aecq": true,
+  "currentQ1kGBP": 38.1993,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 59.5,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/renesas-electronics-corporation/R7F702300BFABA-C-BC6/19235696"
+   }
+  ],
+  "storedSource": "Digi-Key $59.5 @100 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "R7F701382EAFP-C#KA2",
+  "mfr": "Renesas Electronics",
+  "desc": "RH850/P1M-E 32-bit MCU 160 MHz, 1 MB flash, 192 kB RAM (EPS)",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-100",
+  "aecq": true,
+  "currentQ1kGBP": 7.8022,
+  "storedObservations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 10.33,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--microcontrollers--32-bit/r7f701382eafp-c-ka2-renesas-9186676"
+   }
+  ],
+  "storedSource": "Future Electronics $10.33 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "RGS80TSX2DHRC11",
+  "mfr": "ROHM",
+  "desc": "1200 V 40 A field-stop trench IGBT, AEC-Q101 (ROHM REF66011 7 kW PTC heater)",
+  "category": "through_hole",
+  "pkg": "TO-247N",
+  "aecq": true,
+  "currentQ1kGBP": 5.1497,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 510,
+    "price": 7.15,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/RGS80"
+   }
+  ],
+  "storedSource": "Digi-Key $7.15 @510 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SCT4045DWAHRTL",
+  "mfr": "Rohm",
+  "desc": "4th-gen SiC MOSFET 750 V 45 mOhm 31 A, automotive",
+  "category": "ic_soic",
+  "pkg": "TO-263-7LA (D2PAK-7L)",
+  "aecq": true,
+  "currentQ1kGBP": 5.542,
+  "storedObservations": [
+   {
+    "distributor": "RS Components",
+    "qty": 100,
+    "price": 6.52,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/mosfets/0264590"
+   }
+  ],
+  "storedSource": "RS Components £6.52 @100 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SIT8008BI-71-33E-25.000000",
+  "mfr": "SiTime",
+  "desc": "25 MHz MEMS oscillator",
+  "category": "crystal_osc",
+  "pkg": "2520",
+  "aecq": false,
+  "currentQ1kGBP": 0.585,
+  "storedObservations": [],
+  "storedSource": "SiTime list $0.67–0.84 @1k for SiT8008BI-71 variants: $0.75 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "ASM330LHHXTR",
+  "mfr": "STMicroelectronics",
+  "desc": "6-axis automotive IMU with ML core, AEC-Q100, 105 °C",
+  "category": "ic_qfn",
+  "pkg": "LGA-14 (2.5x3x0.83)",
+  "aecq": true,
+  "currentQ1kGBP": 5.1264,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 6.7872,
+    "currency": "USD",
+    "url": "https://findchips.com/search/ASM330LHHX"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 6.4478,
+    "currency": "USD",
+    "url": "https://findchips.com/search/ASM330LHHX"
+   }
+  ],
+  "storedSource": "Digi-Key $6.7872 @1,000; Digi-Key $6.4478 @5,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0319, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "IIS3DWBTR",
+  "mfr": "STMicroelectronics",
+  "desc": "Wideband 3-axis vibration accelerometer, 6.3 kHz BW, SPI, industrial",
+  "category": "ic_qfn",
+  "pkg": "LGA-14",
+  "aecq": false,
+  "currentQ1kGBP": 11.0936,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 15.04,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/IIS3DWBTR/11610895"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 5000,
+    "price": 13.90126,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/stmicroelectronics/IIS3DWBTR/11610895"
+   }
+  ],
+  "storedSource": "Digi-Key $15.04 @500; Digi-Key $13.90126 @5,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0342, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "L9788TR",
+  "mfr": "STMicroelectronics",
+  "desc": "Multifunction U-chip for VCU / EMS (with SPC574), AEC-Q100",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-100 EP 14x14",
+  "aecq": true,
+  "currentQ1kGBP": 7.806,
+  "storedObservations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 10.45,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--wireless-rf--detectors/l9788tr-stmicroelectronics-5177306"
+   },
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 10.22,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/semiconductors--wireless-rf--detectors/l9788tr-stmicroelectronics-7221566"
+   }
+  ],
+  "storedSource": "Future Electronics $10.45 @1,000; Future Electronics $10.22 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SCT040HU120G3AG",
+  "mfr": "STMicroelectronics",
+  "desc": "Gen3 automotive SiC MOSFET 1200 V 40 mOhm, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "HU3PAK (7-lead SMD top-cool)",
+  "aecq": true,
+  "currentQ1kGBP": 5.2966,
+  "storedObservations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 600,
+    "price": 7.27,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/9186969"
+   }
+  ],
+  "storedSource": "Future Electronics $7.27 @600 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SCT060HU75G3AG",
+  "mfr": "STMicroelectronics",
+  "desc": "Gen3 automotive SiC MOSFET 750 V 60 mOhm, AEC-Q101",
+  "category": "ic_soic",
+  "pkg": "HU3PAK (7-lead SMD top-cool)",
+  "aecq": true,
+  "currentQ1kGBP": 9.0404,
+  "storedObservations": [
+   {
+    "distributor": "RS Components",
+    "qty": 600,
+    "price": 1953.78,
+    "currency": "JPY",
+    "url": "https://jp.rs-online.com/web/p/mosfets/0215239"
+   }
+  ],
+  "storedSource": "RS Components JPY 1953.78 @600 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "STM32U575ZIT6Q",
+  "mfr": "STMicroelectronics",
+  "desc": "Arm Cortex-M33 ultra-low-power MCU 160 MHz, 2 MB flash, SMPS, LQFP144",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-144",
+  "aecq": false,
+  "currentQ1kGBP": 8.6769,
+  "storedObservations": [
+   {
+    "distributor": "TME",
+    "qty": 120,
+    "price": 11.74,
+    "currency": "EUR",
+    "url": "https://www.tme.eu/si/en/details/stm32u575zit6q/st-microcontrollers/stmicroelectronics/"
+   }
+  ],
+  "storedSource": "TME €11.74 @120 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "AD500-8 TO52S1",
+  "mfr": "TE Connectivity (First Sensor)",
+  "desc": "Si APD 0.5 mm, TO-52 (order 3001349)",
+  "category": "through_hole",
+  "pkg": "TO-52",
+  "aecq": false,
+  "currentQ1kGBP": 20.0672,
+  "storedObservations": [
+   {
+    "distributor": "Farnell",
+    "qty": 250,
+    "price": 22.13,
+    "currency": "GBP",
+    "url": "https://uk.farnell.com/te-connectivity/ad500-8-to/photodiode-sensor-detector-850nm/dp/4164063"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code AD500-8 (the listed code was not found at a distributor). Farnell £22.13 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published b"
+ },
+ {
+  "mpn": "AM62A74AUMSIAMBRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Sitara AM62A7-Q1 vision SoC, 4x Cortex-A53, 2 TOPS",
+  "category": "ic_bga",
+  "pkg": "FCBGA-484 (AMB)",
+  "aecq": true,
+  "currentQ1kGBP": 30.5234,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 4077.05352,
+    "currency": "INR",
+    "url": "https://www.digikey.in/en/products/detail/texas-instruments/AM62A74AUMSIAMBRQ1/21600636"
+   }
+  ],
+  "storedSource": "Digi-Key INR 4077.05352 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ }
+]

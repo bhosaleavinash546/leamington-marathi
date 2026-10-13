@@ -266,6 +266,20 @@ export function applyFamilyLinks(catalogue: { parts: Entry[] }, links: Record<st
   return out;
 }
 
+/** An audit exclusion also removes the matching STORED observation (round 5: a verifier that proves a catalogued listing
+ *  is for another code must be able to take it out; before, the exclusion filtered only new research). The entry is then
+ *  re-priced from what is left by the merge's re-price pass. Returns what was removed. */
+export function applyAuditToCatalogue(catalogue: { parts: Entry[] }, audit: { observations?: Array<{ mpn: string; url: string; reason: string }> }): string[] {
+  const out: string[] = [];
+  for (const x of audit.observations ?? []) {
+    const e = catalogue.parts.find(p => p.mpn === x.mpn);
+    if (!e?.observations?.length) continue;
+    const keep = e.observations.filter(o => !String(o.url).includes(x.url));
+    if (keep.length !== e.observations.length) { out.push(`${x.mpn}: stored ${e.observations.length - keep.length} observation(s) at ${x.url} removed — ${x.reason}`); e.observations = keep; }
+  }
+  return out;
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const dir = process.argv[2];
   if (!dir) { console.error('usage: pcb-catalogue-research-merge.ts <research dir> [--write]'); process.exit(1); }
@@ -284,8 +298,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     if (audit.parts?.[r.mpn]) { r.notes = `excluded by audit: ${audit.parts[r.mpn]}`; r.observations = []; }
     for (const x of audit.observations ?? []) if (x.mpn === r.mpn) r.observations = r.observations.filter(o => !String(o.url).includes(x.url));
   }
+  const auditRemoved = applyAuditToCatalogue(cat, audit);
   const date = new Date().toISOString().slice(0, 10);
   const report = mergeResearch(cat, research, date);
+  (report as Record<string, string[]>).auditRemoved = auditRemoved;
   const linksFile = new URL('./pcb-research/family-links.json', import.meta.url);
   try { (report as Record<string, string[]>).familyLinked = applyFamilyLinks(cat, JSON.parse(readFileSync(linksFile, 'utf8')).links); } catch { /* no link file */ }
   for (const [mpn, why] of Object.entries(audit.disputed ?? {})) {

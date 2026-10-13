@@ -1,0 +1,655 @@
+[
+ {
+  "mpn": "MTFC128GBCAUTC-AAT",
+  "mfr": "Micron",
+  "desc": "UFS 128GB (1Tb), automotive",
+  "category": "ic_bga",
+  "pkg": "153-LFBGA",
+  "aecq": true,
+  "currentQ1kGBP": 39.4071,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1520,
+    "price": 50.6548,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/micron-technology-inc/MTFC128GBCAVTC-AAT/22041333"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code MTFC128GBCAVTC-AAT (the listed code was not found at a distributor). Digi-Key $50.6548 @1,520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the lar"
+ },
+ {
+  "mpn": "MTFC16GAPALBH-AAT",
+  "mfr": "Micron",
+  "desc": "eMMC 5.1 16GB, automotive",
+  "category": "ic_bga",
+  "pkg": "BGA-153",
+  "aecq": true,
+  "currentQ1kGBP": 12.6282,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 19.67,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MTFC16GAPALBH-AAT/7918870"
+   }
+  ],
+  "storedSource": "Digi-Key $19.67 @100 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MTFC64GBCAQTC-AAT",
+  "mfr": "Micron",
+  "desc": "eMMC 5.1 64GB, automotive -40..105 C",
+  "category": "ic_bga",
+  "pkg": "153-LFBGA",
+  "aecq": true,
+  "currentQ1kGBP": 24.17,
+  "storedObservations": [
+   {
+    "distributor": "Newark",
+    "qty": 250,
+    "price": 35.29,
+    "currency": "USD",
+    "url": "https://origin-www.findchips.com/search/MTFC64GBCAQTC-AAT"
+   }
+  ],
+  "storedSource": "Newark $35.29 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "0039281043",
+  "mfr": "Molex",
+  "desc": "Mini-Fit Jr 4-way vertical header",
+  "category": "through_hole",
+  "pkg": "TH",
+  "aecq": false,
+  "currentQ1kGBP": 0.4056,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.535 @700, $0.509 @1.4k: $0.52 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "0334824001",
+  "mfr": "Molex",
+  "desc": "MX150 12-way sealed PCB header",
+  "category": "connector_smt",
+  "pkg": "TH header",
+  "aecq": true,
+  "currentQ1kGBP": 0.8557,
+  "storedObservations": [],
+  "storedSource": "ICC / Heilind $1.097 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "43045-0800",
+  "mfr": "Molex",
+  "desc": "Micro-Fit 3.0 8-way right-angle header",
+  "category": "through_hole",
+  "pkg": "TH",
+  "aecq": false,
+  "currentQ1kGBP": 0.72462,
+  "storedObservations": [],
+  "storedSource": "distributor $0.929 @1k; Jameco $1.12 @1.2k: $0.929 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "BLM18AG601SN1D",
+  "mfr": "Murata",
+  "desc": "600 Ω ferrite bead 0603",
+  "category": "passive_0603",
+  "pkg": "0603",
+  "aecq": false,
+  "currentQ1kGBP": 0.01638,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.021 @4k; LCSC $0.017; TME $0.02: $0.021 @4,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "GCM1555C1H100JA16D",
+  "mfr": "Murata",
+  "desc": "10 pF C0G 0402, AEC-Q200",
+  "category": "passive_0402",
+  "pkg": "0402",
+  "aecq": true,
+  "currentQ1kGBP": 0.00459,
+  "storedObservations": [],
+  "storedSource": "Mouser $0.005 @10k; Farnell £0.0058 @5k: $0.005 @10,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "GRM32ER71A476KE15L",
+  "mfr": "Murata",
+  "desc": "47 µF 10 V X7R 1210",
+  "category": "passive_1206",
+  "pkg": "1210",
+  "aecq": false,
+  "currentQ1kGBP": 0.2191,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.2809 @2k reel; TTI €0.178 @3k: $0.2809 @2,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "NCP18XH103F03RB",
+  "mfr": "Murata",
+  "desc": "NTC 10 kΩ 1% 0603",
+  "category": "fuse_tvs",
+  "pkg": "0603",
+  "aecq": false,
+  "currentQ1kGBP": 0.0351,
+  "storedObservations": [],
+  "storedSource": "Avnet $0.0619, LCSC $0.0303, Future $0.0784 @4k; mid $0.045: $0.045 @4,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "SCL3300-D01-10",
+  "mfr": "Murata",
+  "desc": "3-axis inclinometer, SPI",
+  "category": "ic_soic",
+  "pkg": "SOIC-12 (Murata chip carrier)",
+  "aecq": false,
+  "currentQ1kGBP": 21.1078,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 27.9463,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/scl33"
+   }
+  ],
+  "storedSource": "Digi-Key $27.9463 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "NX3225GD-25MHZ",
+  "mfr": "NDK",
+  "desc": "25 MHz crystal 3.2×2.5, AEC-Q200",
+  "category": "crystal_osc",
+  "pkg": "3225",
+  "aecq": true,
+  "currentQ1kGBP": 0.39,
+  "storedObservations": [],
+  "storedSource": "DigiPart/FindChips listings: NX3225GA (non-auto) $0.279 @1k; GD 8 MHz $0.73 @1k; 25 MHz GD ≈ $0.50; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "2N7002,215",
+  "mfr": "Nexperia",
+  "desc": "N-MOSFET 60 V SOT-23, AEC-Q101",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": true,
+  "currentQ1kGBP": 0.03822,
+  "storedObservations": [],
+  "storedSource": "Mouser $0.049 @3k (LCSC $0.011): $0.049 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "BAT54S,215",
+  "mfr": "Nexperia",
+  "desc": "Dual Schottky SOT-23",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": false,
+  "currentQ1kGBP": 0.03596,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.0461 @3k (UK £0.0208): $0.0461 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "PMEG4010ER,115",
+  "mfr": "Nexperia",
+  "desc": "40 V 1 A Schottky SOD-123W",
+  "category": "fuse_tvs",
+  "pkg": "SOD-123W",
+  "aecq": false,
+  "currentQ1kGBP": 0.06958,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.0892 @3k; Future $0.0896; TTI $0.10: $0.0892 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "UCD2A101MNQ1MS",
+  "mfr": "Nichicon",
+  "desc": "100 µF 100 V radial electrolytic 105 °C",
+  "category": "through_hole",
+  "pkg": "radial 10×16",
+  "aecq": false,
+  "currentQ1kGBP": 0.8112,
+  "storedObservations": [],
+  "storedSource": "LCSC $1.0426 / JLCPCB $1.0365 @1k: $1.04 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "FS32K148UAT0VLQT",
+  "mfr": "NXP",
+  "desc": "S32K148 Cortex-M4F 112 MHz, 2 MB flash, Ethernet",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-144",
+  "aecq": true,
+  "currentQ1kGBP": 10.6282,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 300,
+    "price": 15.31953,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/FS32K148UAT0VLQT/8628236"
+   }
+  ],
+  "storedSource": "Digi-Key $15.31953 @300 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "FS32R294KCMJD",
+  "mfr": "NXP",
+  "desc": "S32R294 radar MCU (ASIL-B)",
+  "category": "ic_bga",
+  "pkg": "MAPBGA-257",
+  "aecq": true,
+  "currentQ1kGBP": 22.62,
+  "storedObservations": [],
+  "storedSource": "Arrow $29.00, Mouser $30.33, Avnet $27.11, Newark $26.54 @1k+; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "MC33771CTA1AE",
+  "mfr": "NXP",
+  "desc": "14-ch Li-ion battery cell controller, TPL",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-64",
+  "aecq": true,
+  "currentQ1kGBP": 6.3527,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 250,
+    "price": 8.79,
+    "currency": "USD",
+    "url": "https://www.mouser.co.uk/ProductDetail/NXP-Semiconductors/MC33771CTA1AE?qs=wnTfsH77Xs6jFzaitZGTPg%3D%3D"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 100,
+    "price": 9.05,
+    "currency": "USD",
+    "url": "https://www.mouser.co.uk/ProductDetail/NXP-Semiconductors/MC33771CTA1AE?qs=wnTfsH77Xs6jFzaitZGTPg%3D%3D"
+   }
+  ],
+  "storedSource": "Mouser $8.79 @250; Mouser $9.05 @100 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0318, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MC33775ATA1AER2",
+  "mfr": "NXP",
+  "desc": "18-ch Li-ion battery cell controller, ASIL-D",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-64 (unverified)",
+  "aecq": true,
+  "currentQ1kGBP": 5.6854,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1500,
+    "price": 7.315,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/MC33775ATA1AE/21186614"
+   }
+  ],
+  "storedSource": "Digi-Key $7.315 @1,500 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MC33777ATA1AE",
+  "mfr": "NXP",
+  "desc": "Battery junction box monitor IC: redundant pack current (27-bit + 16-bit ADC), voltage, temperature, pyro-fuse/switch actuation, ASIL-D",
+  "category": "ic_tqfp",
+  "pkg": "not confirmed in sources read",
+  "aecq": true,
+  "currentQ1kGBP": 6.9671,
+  "storedObservations": [
+   {
+    "distributor": "Avnet",
+    "qty": 480,
+    "price": 9.24,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nxp/mc33777ata1ae/evolve-119355131"
+   },
+   {
+    "distributor": "Avnet",
+    "qty": 7680,
+    "price": 8.97,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nxp/mc33777ata1ae/evolve-119355131"
+   }
+  ],
+  "storedSource": "Avnet $9.24 @480; Avnet $8.97 @7,680 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.02, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MC33FS8430G2KSR2",
+  "mfr": "NXP",
+  "desc": "Safety SBC / PMIC for S32 MCUs, ASIL-B (FS84 family; FS8430 OTP G2, reel)",
+  "category": "ic_qfn",
+  "pkg": "HVQFN-56 EP 8x8",
+  "aecq": true,
+  "currentQ1kGBP": 6.0173,
+  "storedObservations": [
+   {
+    "distributor": "Avnet",
+    "qty": 4000,
+    "price": 7.22414,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nxp/mc33fs8430g2ksr2/evolve-54632953/"
+   }
+  ],
+  "storedSource": "Avnet $7.22414 @4,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MC33FS8530A0ES",
+  "mfr": "NXP",
+  "desc": "Safety SBC / PMIC for S32 MCUs, ASIL-D (FS8530, OTP A0)",
+  "category": "ic_qfn",
+  "pkg": "HVQFN-56 EP 8x8 (wettable flanks)",
+  "aecq": true,
+  "currentQ1kGBP": 5.204,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 7.6149,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/nxp-usa-inc/MC33FS8530A0ES/10815725"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 260,
+    "price": 7.28062,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/nxp-usa-inc/MC33FS8530A0ES/10815725"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 520,
+    "price": 7.08854,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/nxp-usa-inc/MC33FS8530A0ES/10815725"
+   }
+  ],
+  "storedSource": "Digi-Key $7.6149 @100; Digi-Key $7.28062 @260; Digi-Key $7.08854 @520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0434, slope from the part's own breaks (3 pairs). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MCIMX6Q6AVT10AD",
+  "mfr": "NXP",
+  "desc": "i.MX 6Quad automotive applications processor",
+  "category": "ic_bga",
+  "pkg": "FCPBGA-624",
+  "aecq": true,
+  "currentQ1kGBP": 51.3846,
+  "storedObservations": [
+   {
+    "distributor": "Avnet",
+    "qty": 1000,
+    "price": 68.032,
+    "currency": "USD",
+    "url": "https://octopart.com/mcimx6q6avt10ad-nxp+semiconductors-70303352"
+   }
+  ],
+  "storedSource": "Avnet $68.032 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MGD3162",
+  "mfr": "NXP",
+  "desc": "GD3162 advanced isolated single-channel gate driver for SiC/IGBT traction, AEC-Q100",
+  "category": "ic_soic",
+  "pkg": "SOIC-32 (WSOIC)",
+  "aecq": true,
+  "currentQ1kGBP": 5.5157,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 2640,
+    "price": 6,
+    "currency": "EUR",
+    "url": "https://www.mouser.bg/c/power/power-management-ics/galvanically-isolated-gate-drivers/?m=NXP"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code MGD3162 (full ordering suffix not shown in result) (the listed code was not found at a distributor). Mouser €6 @2,640 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = "
+ },
+ {
+  "mpn": "MIMX8MM6CVTKZAA",
+  "mfr": "NXP",
+  "desc": "i.MX 8M Mini quad Cortex-A53 1.6 GHz applications processor, industrial -40..105 C",
+  "category": "ic_bga",
+  "pkg": "LFBGA-486",
+  "aecq": false,
+  "currentQ1kGBP": 18.7012,
+  "storedObservations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 1000,
+    "price": 24.76,
+    "currency": "USD",
+    "url": "https://futureelectronics.com/p/semiconductors--microprocessors--embedded-processors/mimx8mm6cvtkzaar-nxp-5166441"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code MIMX8MM6CVTKZAAR (the listed code was not found at a distributor). Future Electronics $24.76 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above t"
+ },
+ {
+  "mpn": "MIMX8QM6AVUFFAB",
+  "mfr": "NXP",
+  "desc": "i.MX 8QuadMax applications processor, 2x A72 + 4x A53, dual GPU, automotive -40..125 C",
+  "category": "ic_bga",
+  "pkg": "FCPBGA-1313",
+  "aecq": true,
+  "currentQ1kGBP": 79.4918,
+  "storedObservations": [
+   {
+    "distributor": "Future Electronics",
+    "qty": 350,
+    "price": 113.34,
+    "currency": "USD",
+    "url": "https://www.futureelectronics.com/p/mimx8qm6avuffabr-C524721019"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code MIMX8QM6AVUFFABR (the listed code was not found at a distributor). Future Electronics $113.34 @350 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above th"
+ },
+ {
+  "mpn": "MIMX9352AVTXMBC",
+  "mfr": "NXP",
+  "desc": "i.MX 93 automotive applications processor, 2x Cortex-A55 + M33 + NPU",
+  "category": "ic_bga",
+  "pkg": "FCBGA",
+  "aecq": true,
+  "currentQ1kGBP": 16.7711,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 456,
+    "price": 23.47,
+    "currency": "USD",
+    "url": "https://www.mouser.vn/en/c/semiconductors/embedded-processors-controllers/microprocessors-mpu/"
+   }
+  ],
+  "storedSource": "Mouser $23.47 @456 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MPC5744PK1AMLQ9",
+  "mfr": "NXP",
+  "desc": "MPC5744P e200z4 lockstep 200 MHz, 2.5 MB flash",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-144",
+  "aecq": true,
+  "currentQ1kGBP": 14.8722,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 300,
+    "price": 21.4368,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SPC5744PK1AMLQ8/7648043"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code SPC5744PK1AMLQ8 (the listed code was not found at a distributor). Digi-Key $21.4368 @300 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest "
+ },
+ {
+  "mpn": "NCJ29D5CHN/00200Y",
+  "mfr": "NXP",
+  "desc": "Automotive UWB IC (Trimension, car access / digital key), AEC-Q100",
+  "category": "ic_qfn",
+  "pkg": "HVQFN (from NXP 'HN' suffix; not read in listing)",
+  "aecq": true,
+  "currentQ1kGBP": 5.3113,
+  "storedObservations": [
+   {
+    "distributor": "Avnet",
+    "qty": 4000,
+    "price": 6.37653,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nxp/ncj29d5chn-00200y/evolve-50442176/"
+   }
+  ],
+  "storedSource": "Avnet $6.37653 @4,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "S32K324NHT1MPBST",
+  "mfr": "NXP",
+  "desc": "S32K3 Cortex-M7 lockstep MCU 160 MHz (MCTPTX1AK324 thermal-management reference)",
+  "category": "ic_tqfp",
+  "pkg": "HDQFP-172",
+  "aecq": true,
+  "currentQ1kGBP": 10.8293,
+  "storedObservations": [
+   {
+    "distributor": "element14",
+    "qty": 100,
+    "price": 22906,
+    "currency": "KRW",
+    "url": "https://kr.element14.com/nxp/s32k324nht1mpbit/mcu-32bit-160mhz-hdqfp-172/dp/4784028"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code S32K324NHT1MPBIT (the listed code was not found at a distributor). element14 KRW 22906 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the large"
+ },
+ {
+  "mpn": "S32K342EHT0MPBST",
+  "mfr": "NXP",
+  "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, Ethernet (E variant)",
+  "category": "ic_tqfp",
+  "pkg": "HDQFP/QFP-EP-172",
+  "aecq": true,
+  "currentQ1kGBP": 7.5518,
+  "storedObservations": [
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 10.35,
+    "currency": "EUR",
+    "url": "https://de.farnell.com/nxp/s32k342eht0mpbst/mcu-32-bit-160mhz-qfp-ep-172/dp/4134287"
+   }
+  ],
+  "storedSource": "Farnell €10.35 @100 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "S32K342NHT0VPASR",
+  "mfr": "NXP",
+  "desc": "S32K3 automotive MCU, 2x Cortex-M7 lockstep 160 MHz, no Ethernet (N variant), tape and reel",
+  "category": "ic_tqfp",
+  "pkg": "not stated in listing (VPA code)",
+  "aecq": true,
+  "currentQ1kGBP": 5.6307,
+  "storedObservations": [
+   {
+    "distributor": "Avnet",
+    "qty": 600,
+    "price": 7.72857,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/nxp/s32k342nht0vpasr/evolve-65630115/"
+   }
+  ],
+  "storedSource": "Avnet $7.72857 @600 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SJA1110BEL/0Y",
+  "mfr": "NXP",
+  "desc": "Automotive TSN Ethernet switch with integrated 100BASE-T1 PHYs",
+  "category": "ic_bga",
+  "pkg": "LFBGA-256",
+  "aecq": true,
+  "currentQ1kGBP": 9.6603,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 12.79,
+    "currency": "USD",
+    "url": "https://www.mouser.com/c/semiconductors/communication-networking-ics/ethernet-ics/?m=NXP&series=SJA1110"
+   }
+  ],
+  "storedSource": "Mouser $12.79 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SPC5775BDK3MME2",
+  "mfr": "NXP",
+  "desc": "MPC5775B e200z7 220 MHz, 4 MB flash, BMS/inverter MCU, MAPBGA-416",
+  "category": "ic_bga",
+  "pkg": "MAPBGA-416 27x27",
+  "aecq": true,
+  "currentQ1kGBP": 27.7105,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 100,
+    "price": 33.76,
+    "currency": "EUR",
+    "url": "https://www.mouser.fi/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?pg=21"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 200,
+    "price": 33.38,
+    "currency": "EUR",
+    "url": "https://www.mouser.fi/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?pg=21"
+   }
+  ],
+  "storedSource": "Mouser €33.76 @100; Mouser €33.38 @200 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.02, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SPC5777CCK3MME3",
+  "mfr": "NXP",
+  "desc": "MPC5777C tri-core 264MHz 8MB powertrain MCU",
+  "category": "ic_bga",
+  "pkg": "416-MAPBGA",
+  "aecq": true,
+  "currentQ1kGBP": 38.4489,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 200,
+    "price": 57.0293,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/nxp-usa-inc/SPC5777CCK3MME3/7648118"
+   }
+  ],
+  "storedSource": "Digi-Key $57.0293 @200 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "FS32V234BMN2VUB",
+  "mfr": "NXP Semiconductors",
+  "desc": "S32V234 vision processor, 4x Cortex-A53 800 MHz + M4",
+  "category": "ic_bga",
+  "pkg": "FCPBGA-621 (17x17)",
+  "aecq": true,
+  "currentQ1kGBP": 64.0656,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 450,
+    "price": 67.78,
+    "currency": "GBP",
+    "url": "https://www.digikey.co.uk/en/products/detail/nxp-usa-inc/FS32V234BMN2VUB/16592102"
+   }
+  ],
+  "storedSource": "Digi-Key £67.78 @450 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MCZ33789BAE",
+  "mfr": "NXP Semiconductors",
+  "desc": "Airbag power supply and 4x PSI5 sensor-interface SBC (RDAIRBAGPSI5)",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-EP",
+  "aecq": true,
+  "currentQ1kGBP": 6.3734,
+  "storedObservations": [
+   {
+    "distributor": "Farnell",
+    "qty": 160,
+    "price": 8.45,
+    "currency": "EUR",
+    "url": "https://it.farnell.com/en-IT/nxp/mcz33789bae/system-basis-chip-125deg-c-lqfp/dp/4333749"
+   }
+  ],
+  "storedSource": "Farnell €8.45 @160 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ }
+]

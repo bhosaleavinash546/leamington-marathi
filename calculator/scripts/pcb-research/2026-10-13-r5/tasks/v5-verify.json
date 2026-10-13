@@ -1,0 +1,746 @@
+[
+ {
+  "mpn": "AWR1243FBIGABLRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "76-81 GHz FMCW radar transceiver, 3TX/4RX (cascade front end)",
+  "category": "ic_bga",
+  "pkg": "FCBGA-161",
+  "aecq": true,
+  "currentQ1kGBP": 14.8288,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 19.63302,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/AWR1243FBIGABLRQ1/9861529"
+   }
+  ],
+  "storedSource": "Digi-Key $19.63302 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "AWR1443FQIGABLRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "76-81 GHz single-chip radar sensor with HWA + R4F, 3TX/4RX",
+  "category": "ic_bga",
+  "pkg": "FCBGA-161 (ABL)",
+  "aecq": true,
+  "currentQ1kGBP": 18.2905,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 176,
+    "price": 27.37534,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/AWR1443FQIGABLQ1/9757447"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code AWR1443FQIGABLQ1 (the listed code was not found at a distributor). Digi-Key $27.37534 @176 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the larges"
+ },
+ {
+  "mpn": "AWR1843ABGABLRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "AWR1843 77 GHz radar SoC",
+  "category": "ic_bga",
+  "pkg": "FCBGA-161",
+  "aecq": true,
+  "currentQ1kGBP": 23.1802,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 30.69,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Texas-Instruments/AWR1843ABGABLRQ1?qs=%2B6g0mu59x7LDewSwpLCJ2g%3D%3D"
+   }
+  ],
+  "storedSource": "Mouser $30.69 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "AWR6843ARBGALPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "60-64 GHz radar SoC, antenna-on-package (reference)",
+  "category": "ic_bga",
+  "pkg": "FCCSP-180",
+  "aecq": true,
+  "currentQ1kGBP": 33.7619,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 44.7,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/AWR6843ARBGALPRQ1/15856913"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 126,
+    "price": 48.08,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/AWR6843ARBGALPQ1/15857116"
+   }
+  ],
+  "storedSource": "Digi-Key $44.7 @1,000; Digi-Key $48.08 @126 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0352, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "BQ79612PAPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "12S battery monitor/balancer, daisy-chain",
+  "category": "ic_tqfp",
+  "pkg": "HTQFP-64",
+  "aecq": true,
+  "currentQ1kGBP": 9.0769,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 12.01766,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79612PAPRQ1/14641468"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 13.21,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79612PAPRQ1/14641468"
+   }
+  ],
+  "storedSource": "Digi-Key $12.01766 @1,000; Digi-Key $13.21 @100 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0411, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "BQ79631PAPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Battery junction box / pack monitor: HV divided-node voltages, shunt current ADC, insulation-resistance measurement, isolated daisy chain",
+  "category": "ic_tqfp",
+  "pkg": "HTQFP-64",
+  "aecq": true,
+  "currentQ1kGBP": 15.4541,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 19.9801,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/BQ796"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 21.8957,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/BQ796"
+   }
+  ],
+  "storedSource": "Digi-Key $19.9801 @500; Digi-Key $21.8957 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. DISPUTED: the 500-unit break "
+ },
+ {
+  "mpn": "BQ79656PAPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "16S battery monitor/balancer with protector, ASIL-D",
+  "category": "ic_tqfp",
+  "pkg": "HTQFP-64",
+  "aecq": true,
+  "currentQ1kGBP": 10.9216,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 14.46,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79656PAPRQ1/15666834"
+   }
+  ],
+  "storedSource": "Digi-Key $14.46 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "BQ79718BQPAPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "18S battery monitor/balancer, daisy-chain",
+  "category": "ic_tqfp",
+  "pkg": "HTQFP-64",
+  "aecq": true,
+  "currentQ1kGBP": 7.146,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 9.48606,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79718BQPAPRQ1/27634620"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 10.3587,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79718BQPAPRQ1/27634620"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 10.36,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79718BQPAPRQ1/27634620"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 9.69,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/BQ79718BQPAPRQ1/27634620"
+   }
+  ],
+  "storedSource": "Digi-Key $9.48606 @1,000; Digi-Key $10.3587 @100; Digi-Key $10.36 @100; Digi-Key $9.69 @500 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0383, slope from the part's own breaks (5 pairs). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "DRV3946QPWPRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Dual contactor/solenoid driver with diagnostics",
+  "category": "ic_soic",
+  "pkg": "HTSSOP",
+  "aecq": true,
+  "currentQ1kGBP": 6.0916,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 7.56,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/DRV3946QPWPRQ1/22119522"
+   }
+  ],
+  "storedSource": "Digi-Key $7.56 @2,500 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "DS90UB927QSQX/NOPB",
+  "mfr": "Texas Instruments",
+  "desc": "FPD-Link III serializer 2.975 Gbps, 24-bit RGB",
+  "category": "ic_qfn",
+  "pkg": "WQFN-40 6x6",
+  "aecq": true,
+  "currentQ1kGBP": 5.9043,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 7.81717,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB927QSQX-NOPB/296-48540-1-ND/8567584"
+   }
+  ],
+  "storedSource": "Digi-Key $7.81717 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "DS90UB934TRGZRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "FPD-Link III deserializer, 12-bit parallel output, 1 MP camera",
+  "category": "ic_qfn",
+  "pkg": "VQFN-48 (RGZ)",
+  "aecq": true,
+  "currentQ1kGBP": 7.5379,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 9.98,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/DS90UB934TRGZRQ1/7312768"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 9.20302,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/DS90UB934TRGZRQ1/7312768"
+   }
+  ],
+  "storedSource": "Digi-Key $9.98 @1,000; Digi-Key $9.20302 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0885, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "DS90UB936TRGZRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "FPD-Link III dual deserializer, CSI-2 output",
+  "category": "ic_qfn",
+  "pkg": "VQFN-48 (RGZ)",
+  "aecq": true,
+  "currentQ1kGBP": 6.9627,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 250,
+    "price": 9.52,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB936TRGZRQ1/9371248"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 9.02445,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB936TRGZRQ1/9371248"
+   }
+  ],
+  "storedSource": "Digi-Key $9.52 @250; Digi-Key $9.02445 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0232, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "DS90UB949ATRGCRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "HDMI to FPD-Link III serializer, 2K",
+  "category": "ic_qfn",
+  "pkg": "VQFN-64 (RGC)",
+  "aecq": true,
+  "currentQ1kGBP": 13.7527,
+  "storedObservations": [
+   {
+    "distributor": "Arrow",
+    "qty": 250,
+    "price": 20.08,
+    "currency": "USD",
+    "url": "https://octopart.com/search?q=DS90UB949&view=matrix"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code DS90UB949ATRGCTQ1 (the listed code was not found at a distributor). Arrow $20.08 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest pub"
+ },
+ {
+  "mpn": "DS90UB962WRTDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "FPD-Link III quad deserializer hub, single CSI-2 output",
+  "category": "ic_qfn",
+  "pkg": "VQFN-64 (RTD)",
+  "aecq": true,
+  "currentQ1kGBP": 12.6495,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 250,
+    "price": 18.4692,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/DS90UB962WRTDTQ1/9608018"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code DS90UB962WRTDTQ1 (the listed code was not found at a distributor). Digi-Key $18.4692 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest"
+ },
+ {
+  "mpn": "DS90UB9702TRURRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "FPD-Link IV quad deserializer hub, CSI-2 D-PHY output",
+  "category": "ic_qfn",
+  "pkg": "VQFNP-88 (RUR)",
+  "aecq": true,
+  "currentQ1kGBP": 19.5961,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 2500,
+    "price": 24.32,
+    "currency": "USD",
+    "url": "https://www.mouser.com/en/ProductDetail/Texas-Instruments/DS90UB9702TRURRQ1?qs=dbcCsuKDzFXfWvpbPtkBXQ%3D%3D"
+   }
+  ],
+  "storedSource": "Mouser $24.32 @2,500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "DS90UB983RTDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "DisplayPort/eDP to FPD-Link IV serializer",
+  "category": "ic_qfn",
+  "pkg": "VQFN-64 (RTD)",
+  "aecq": true,
+  "currentQ1kGBP": 12.4651,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 250,
+    "price": 18.2,
+    "currency": "USD",
+    "url": "https://www.findchips.com/search/ds90"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code DS90UB983RTDTQ1 (the listed code was not found at a distributor). Mouser $18.2 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest publi"
+ },
+ {
+  "mpn": "F28386DPTPQR",
+  "mfr": "Texas Instruments",
+  "desc": "C2000 F28386D-Q1 dual-core C28x 200 MHz + connectivity manager, 1 MB flash",
+  "category": "ic_tqfp",
+  "pkg": "HLQFP-176 (PTP, 24x24)",
+  "aecq": true,
+  "currentQ1kGBP": 13.9529,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 200,
+    "price": 18.21,
+    "currency": "EUR",
+    "url": "https://www.mouser.com.tr/ProductDetail/Texas-Instruments/F28386DPTPQR?qs=81r%252BiQLm7BRZo466lFlgYQ%3D%3D"
+   }
+  ],
+  "storedSource": "Mouser €18.21 @200 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "F28P659DK8PTPQ1",
+  "mfr": "Texas Instruments",
+  "desc": "C2000 TMS320F28P659DK-Q1 dual C28x + CLA real-time MCU (alternative controller in TIDM-02013; F28P650DK in PMP41139)",
+  "category": "ic_tqfp",
+  "pkg": "HLQFP-176 (PTP)",
+  "aecq": true,
+  "currentQ1kGBP": 9.4933,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 120,
+    "price": 13.64,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/F28P659DK8PTPQ1/22462747"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 520,
+    "price": 12.89,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/F28P659DK8PTPQ1/22462747"
+   }
+  ],
+  "storedSource": "Digi-Key $13.64 @120; Digi-Key $12.89 @520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0386, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "LMG3522R030QRQSRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Automotive 650 V 30 mOhm GaN FET with integrated driver and protection (TIDM-02013 OBC, PMP41078 HV-LV DC-DC)",
+  "category": "ic_qfn",
+  "pkg": "VQFN-52 (RQS)",
+  "aecq": true,
+  "currentQ1kGBP": 17.6211,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 25.46,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/LMG3522R030QRQSTQ1/21283875"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 250,
+    "price": 24.59,
+    "currency": "USD",
+    "url": "https://azcus.digikey.com/en/products/detail/texas-instruments/LMG3522R030QRQSTQ1/21283875"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code LMG3522R030QRQSTQ1 (the listed code was not found at a distributor). Digi-Key $25.46 @100; Digi-Key $24.59 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0379, slope from the part's own breaks (1 pair). Above the "
+ },
+ {
+  "mpn": "SN65LVDS93AIDGGRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "FlatLink LVDS serializer / transmitter",
+  "category": "ic_soic",
+  "pkg": "TSSOP-56",
+  "aecq": true,
+  "currentQ1kGBP": 5.1445,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 7.53,
+    "currency": "USD",
+    "url": "https://digikey.com/product-detail/en/SN65LVDS93AIDGGRQ1/SN65LVDS93AIDGGRQ1-ND/5174177"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 7.02,
+    "currency": "USD",
+    "url": "https://digikey.com/product-detail/en/SN65LVDS93AIDGGRQ1/SN65LVDS93AIDGGRQ1-ND/5174177"
+   }
+  ],
+  "storedSource": "Digi-Key $7.53 @100; Digi-Key $7.02 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0436, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TAS6584QPHDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "4-ch digital-input class-D audio amplifier, automotive, HTQFP-64",
+  "category": "ic_tqfp",
+  "pkg": "HTQFP-64",
+  "aecq": true,
+  "currentQ1kGBP": 7.6165,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 11.0451,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TAS6584QPHDRQ1/18159630"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 10.08408,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TAS6584QPHDRQ1/18159630"
+   }
+  ],
+  "storedSource": "Digi-Key $11.0451 @100; Digi-Key $10.08408 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0395, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TAS6684QPHDRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "4-ch digital-input class-D audio amplifier, 45 V, automotive, HTQFP-64",
+  "category": "ic_tqfp",
+  "pkg": "HTQFP-64",
+  "aecq": true,
+  "currentQ1kGBP": 6.2078,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 8.21893,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TAS6684QPHDRQ1/25619016"
+   }
+  ],
+  "storedSource": "Digi-Key $8.21893 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TDA2SXBTQABCRQ1",
+  "mfr": "Texas Instruments",
+  "desc": "TDA2x ADAS SoC (surround view)",
+  "category": "ic_bga",
+  "pkg": "FCBGA (ABC)",
+  "aecq": true,
+  "currentQ1kGBP": 72.2699,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 250,
+    "price": 105.51928,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/texas-instruments/TDA2SXBTQABCRQ1/15856648"
+   }
+  ],
+  "storedSource": "Digi-Key $105.51928 @250 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TPS65941120RWERQ1",
+  "mfr": "Texas Instruments",
+  "desc": "Safety PMIC: 5 buck + 4 LDO (radar/ADAS processor supply)",
+  "category": "ic_qfn",
+  "pkg": "VQFNP-56 (8x8)",
+  "aecq": true,
+  "currentQ1kGBP": 5.1714,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 6.84677,
+    "currency": "USD",
+    "url": "https://digikey.com/en/products/detail/texas-instruments/TPS65941120RWERQ1/17873871"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 2000,
+    "price": 6.71666,
+    "currency": "USD",
+    "url": "https://digikey.com/en/products/detail/texas-instruments/TPS65941120RWERQ1/17873871"
+   }
+  ],
+  "storedSource": "Digi-Key $6.84677 @1,000; Digi-Key $6.71666 @2,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0277, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "UCD3138RGCR",
+  "mfr": "Texas Instruments",
+  "desc": "Digital power controller, 64-VQFN 9x9",
+  "category": "ic_qfn",
+  "pkg": "VQFN-64",
+  "aecq": false,
+  "currentQ1kGBP": 7.548,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 8.88,
+    "currency": "GBP",
+    "url": "https://www.digikey.co.uk/en/products/detail/texas-instruments/UCD3138RGCT/3451635"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code UCD3138RGCT (the listed code was not found at a distributor). Digi-Key £8.88 @100 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest publish"
+ },
+ {
+  "mpn": "AWR2944ALBGALTRQ1",
+  "mfr": "TI",
+  "desc": "AWR2944 77 GHz radar SoC (4T4R)",
+  "category": "ic_bga",
+  "pkg": "FCBGA",
+  "aecq": true,
+  "currentQ1kGBP": 21.7409,
+  "storedObservations": [],
+  "storedSource": "TI/Digi-Key $27.87–34.62 per unit; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "LMR33630AQDDARQ1",
+  "mfr": "TI",
+  "desc": "36 V 3 A step-down converter",
+  "category": "ic_soic",
+  "pkg": "HSOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 1.2714,
+  "storedObservations": [],
+  "storedSource": "Digi-Key LMR33630CDDA $1.63 @1,050 (Q1 variant similar); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "TCAN1044AVDRQ1",
+  "mfr": "TI",
+  "desc": "CAN FD transceiver, 5 Mbps, VIO",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.4212,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.5168 @2.5k reel (1k ≈ $0.54); 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "TLV9002QDGKRQ1",
+  "mfr": "TI",
+  "desc": "Dual 1 MHz RRIO op-amp",
+  "category": "ic_soic",
+  "pkg": "VSSOP-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.234,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.360 @1k; XON $0.171 @2.5k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "XPQR3004PB,LXHQ",
+  "mfr": "Toshiba",
+  "desc": "Automotive 40 V 400 A N-ch MOSFET, 0.23 mOhm typ. (Toshiba 3 kW 48 V-12 V reference, 12 V side)",
+  "category": "ic_soic",
+  "pkg": "L-TOGL",
+  "aecq": true,
+  "currentQ1kGBP": 6.3967,
+  "storedObservations": [
+   {
+    "distributor": "Farnell",
+    "qty": 200,
+    "price": 8.31,
+    "currency": "EUR",
+    "url": "https://ie.farnell.com/toshiba/xpqr3004pb-lxhq-o/mosfet-n-ch-400v-40a-750w/dp/4132235"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 500,
+    "price": 7.81,
+    "currency": "EUR",
+    "url": "https://ie.farnell.com/toshiba/xpqr3004pb-lxhq-o/mosfet-n-ch-400v-40a-750w/dp/4132235"
+   }
+  ],
+  "storedSource": "Farnell €8.31 @200; Farnell €7.81 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0677, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "7V-25.000MAAE-T",
+  "mfr": "TXC",
+  "desc": "25 MHz crystal 3.2×2.5 ±30 ppm",
+  "category": "crystal_osc",
+  "pkg": "3225",
+  "aecq": false,
+  "currentQ1kGBP": 0.3588,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.463, Mouser $0.459 @1k: $0.46 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "NEO-M9V-20B",
+  "mfr": "u-blox",
+  "desc": "GNSS module with untethered dead reckoning (ADR), concurrent 4-constellation, LCC",
+  "category": "ic_qfn",
+  "pkg": "LCC module 16.0 x 12.2 mm",
+  "aecq": false,
+  "currentQ1kGBP": 10.2247,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 12.29168,
+    "currency": "EUR",
+    "url": "https://www.digikey.nl/en/products/detail/u-blox/NEO-M9V-20B/16611140"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 14.4625,
+    "currency": "USD",
+    "url": "https://www.digikey.com.mx/en/products/detail/u-blox/NEO-M9V-20B/16611140"
+   }
+  ],
+  "storedSource": "Digi-Key €12.29168 @500; Digi-Key $14.4625 @500 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MKP1848C61012JP4",
+  "mfr": "Vishay",
+  "desc": "PP film DC-link capacitor 10uF 5% 1200 VDC, through hole",
+  "category": "through_hole",
+  "pkg": "radial 4-pin",
+  "aecq": false,
+  "currentQ1kGBP": 7.1995,
+  "storedObservations": [
+   {
+    "distributor": "RS Components",
+    "qty": 100,
+    "price": 8.47,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/film-capacitors/8251492"
+   }
+  ],
+  "storedSource": "RS Components £8.47 @100 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SI2301CDS-T1-GE3",
+  "mfr": "Vishay",
+  "desc": "P-MOSFET 20 V 3.1 A SOT-23",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": false,
+  "currentQ1kGBP": 0.0702,
+  "storedObservations": [],
+  "storedSource": "TTI €0.075–0.082, Arrow $0.115, LCSC $0.047, Digi-Key $0.17 @3k; mid $0.09: $0.09 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "WSBE8518L1000JKA2",
+  "mfr": "Vishay Dale",
+  "desc": "Battery shunt 100 uOhm 5% 36 W, Power Metal Strip, 8518, AEC-Q200 (pack current sensing)",
+  "category": "mechanical",
+  "pkg": "8518 SMD bar",
+  "aecq": true,
+  "currentQ1kGBP": 9.8156,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 21.69,
+    "currency": "CAD",
+    "url": "https://punchouttest.digikey.ca/en/products/detail/vishay-dale/WSBE8518L1000JKA2/18587686"
+   }
+  ],
+  "storedSource": "Digi-Key CAD 21.69 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted. Read on a Digi-Key 'punchouttest' regional storefront "
+ },
+ {
+  "mpn": "W25Q32JWSSIQ",
+  "mfr": "Winbond",
+  "desc": "32 Mbit SPI NOR flash, 1.8 V (JW)",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.7933,
+  "storedObservations": [],
+  "storedSource": "LCSC $1.0168 @990+; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "744043100",
+  "mfr": "Würth",
+  "desc": "10 µH 1.19 A shielded inductor 4.8×4.8",
+  "category": "passive_0805",
+  "pkg": "4848",
+  "aecq": false,
+  "currentQ1kGBP": 0.5733,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.735 @1k reel: $0.735 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ }
+]

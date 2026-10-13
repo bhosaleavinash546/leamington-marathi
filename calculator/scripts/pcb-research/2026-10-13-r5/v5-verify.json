@@ -1,0 +1,529 @@
+{
+ "domain": "v5-verify",
+ "researched": "2026-10-13",
+ "parts": [
+  {
+   "mpn": "TDA2SXBTQABCRQ1",
+   "family": "TDA2SXBTQABCRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "TDA2x ADAS SoC (surround view)",
+   "category": "ic_bga",
+   "pkg": "FCBGA (ABC)",
+   "aecq": true,
+   "observedMpn": "TDA2SXBTQABCRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: no recordable second listing. Mouser regional pages (595-TDA2SXBTQABCRQ1) seen only via search summary: mouser.ca 100 @ 142.92 (summary says USD, but mouser.ca may display CAD -> 1.49x stored 1k-equiv if USD, 1.05x if CAD), mouser.sg qty 1 $178.39; currency of the 100 break not certain, so not recorded. https://www.mouser.ca/en/c/semiconductors/integrated-circuits-ics/embedded-processors-controllers/processors-application-specialized?pg=11 . electronicsdatasheets / findchips qty-1 figures not used."
+  },
+  {
+   "mpn": "AWR6843ARBGALPRQ1",
+   "family": "AWR6843ARBGALPRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "60-64 GHz radar SoC, antenna-on-package (reference)",
+   "category": "ic_bga",
+   "pkg": "FCCSP-180",
+   "aecq": true,
+   "observedMpn": "AWR6843ARBGALPRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: Digi-Key RQ1 reel listing (azcus host) shows no price, not stocked; only broker figures found (Lisleapex $28.798, Cytech for the PQ1 tray code) - not allowed. Searched '\"AWR6843ARBGALPRQ1\" price 1000 mouser OR arrow OR farnell'."
+  },
+  {
+   "mpn": "AWR1843ABGABLRQ1",
+   "family": "AWR1843ABGABLRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "AWR1843 77 GHz radar SoC",
+   "category": "ic_bga",
+   "pkg": "FCBGA-161",
+   "aecq": true,
+   "observedMpn": "AWR1843ABGABLQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 176,
+     "price": 31.18,
+     "currency": "USD",
+     "url": "https://digikey.com/en/products/detail/texas-instruments/AWR1843ABGABLQ1/10715316",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Digi-Key tray sibling AWR1843ABGABLQ1 (same die/package, tray not reel) $31.18 @176 vs stored Mouser $30.69 @1,000 -> 1.02x stored 1k-equiv (GBP 23.55 v 23.18). Exact RQ1 reel DK page (punchouttest host, not used) showed no price. Ex-VAT US site."
+  },
+  {
+   "mpn": "AWR2944ALBGALTRQ1",
+   "family": "AWR2944ALBGALTRQ1",
+   "mfr": "TI",
+   "desc": "AWR2944 77 GHz radar SoC (4T4R)",
+   "category": "ic_bga",
+   "pkg": "FCBGA",
+   "aecq": true,
+   "observedMpn": "AWR2944ALBGALTRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "DS90UB9702TRURRQ1",
+   "family": "DS90UB9702TRURRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link IV quad deserializer hub, CSI-2 D-PHY output",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-88 (RUR)",
+   "aecq": true,
+   "observedMpn": "DS90UB9702TRURRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: searched '\"DS90UB9702TRURRQ1\" price digikey' - only TI pages, no distributor price."
+  },
+  {
+   "mpn": "AWR1443FQIGABLRQ1",
+   "family": "AWR1443FQIGABLRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "76-81 GHz single-chip radar sensor with HWA + R4F, 3TX/4RX",
+   "category": "ic_bga",
+   "pkg": "FCBGA-161 (ABL)",
+   "aecq": true,
+   "observedMpn": "AWR1443FQIGABLRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: only electronicsdatasheets.com (not an allowed source) listing a Mouser 595-WR1443FQIGABLRQ1 at $20.67 with 0 stock; no allowed second listing."
+  },
+  {
+   "mpn": "LMG3522R030QRQSRQ1",
+   "family": "LMG3522R030QRQSRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "Automotive 650 V 30 mOhm GaN FET with integrated driver and protection (TIDM-02013 OBC, PMP41078 HV-LV DC-DC)",
+   "category": "ic_qfn",
+   "pkg": "VQFN-52 (RQS)",
+   "aecq": true,
+   "observedMpn": "LMG3522R030QRQSRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: searched 'LMG3522R030QRQSRQ1 mouser' - only Digi-Key listings for LMG3522R030QRQSTQ1 (small reel, azcus/punchouttest hosts) and the non-Q1 RQSR without prices."
+  },
+  {
+   "mpn": "BQ79631PAPRQ1",
+   "family": "BQ79631PAPRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "Battery junction box / pack monitor: HV divided-node voltages, shunt current ADC, insulation-resistance measurement, isolated daisy chain",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "observedMpn": "BQ79631PAPRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: only Cytech Systems (broker) $22.08 @1,000 'reference'; Digi-Key pages were punchouttest hosts without price."
+  },
+  {
+   "mpn": "AWR1243FBIGABLRQ1",
+   "family": "AWR1243FBIGABLRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "76-81 GHz FMCW radar transceiver, 3TX/4RX (cascade front end)",
+   "category": "ic_bga",
+   "pkg": "FCBGA-161",
+   "aecq": true,
+   "observedMpn": "AWR1243FBIGABLRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: only electronicsdatasheets.com (not allowed) showing Mouser 595-WR1243FBIGABLRQ1 $17.22 (0 stock) and Digi-Key $28.71 - stale, unrecorded. digikey.cn result is a VAT-inclusive storefront."
+  },
+  {
+   "mpn": "F28386DPTPQR",
+   "family": "F28386DPTPQR",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 F28386D-Q1 dual-core C28x 200 MHz + connectivity manager, 1 MB flash",
+   "category": "ic_tqfp",
+   "pkg": "HLQFP-176 (PTP, 24x24)",
+   "aecq": true,
+   "observedMpn": "F28386DPTPQR",
+   "observations": [],
+   "notes": "UNVERIFIED: searched '\"F28386DPTPQR\" price' - only TI ordering list (HLQFP-176, 200/reel) and sibling F28388DPTPS broker figures; nothing usable."
+  },
+  {
+   "mpn": "DS90UB949ATRGCRQ1",
+   "family": "DS90UB949ATRGCRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "HDMI to FPD-Link III serializer, 2K",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RGC)",
+   "aecq": true,
+   "observedMpn": "DS90UB949ATRGCRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: combined Mouser/Arrow/Farnell search returned no listing for this code."
+  },
+  {
+   "mpn": "DS90UB962WRTDRQ1",
+   "family": "DS90UB962WRTDRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III quad deserializer hub, single CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RTD)",
+   "aecq": true,
+   "observedMpn": "DS90UB962WRTDRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: combined Mouser/Arrow/Farnell search returned no listing for this code."
+  },
+  {
+   "mpn": "DS90UB983RTDRQ1",
+   "family": "DS90UB983RTDRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "DisplayPort/eDP to FPD-Link IV serializer",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64 (RTD)",
+   "aecq": true,
+   "observedMpn": "DS90UB983RTDRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: combined Mouser/Arrow/Farnell search returned no listing for this code."
+  },
+  {
+   "mpn": "BQ79656PAPRQ1",
+   "family": "BQ79656PAPRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "16S battery monitor/balancer with protector, ASIL-D",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "observedMpn": "BQ79656PAPRQ1",
+   "observations": [
+    {
+     "distributor": "Digi-Key",
+     "qty": 1000,
+     "price": 16.36,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/BQ796",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "UNVERIFIED: no second distributor. Same-distributor cross-check: Findchips lists Digi-Key $16.36 @1,000 (18 wk lead) vs stored Digi-Key $14.46 @1,000 -> 1.13x; consistent."
+  },
+  {
+   "mpn": "NEO-M9V-20B",
+   "family": "NEO-M9V-20B",
+   "mfr": "u-blox",
+   "desc": "GNSS module with untethered dead reckoning (ADR), concurrent 4-constellation, LCC",
+   "category": "ic_qfn",
+   "pkg": "LCC module 16.0 x 12.2 mm",
+   "aecq": false,
+   "observedMpn": "NEO-M9V-20B",
+   "observations": [
+    {
+     "distributor": "Future Electronics",
+     "qty": 125,
+     "price": 22.56,
+     "currency": "USD",
+     "url": "https://futureelectronics.com/p/semiconductors--wireless-rf--rf-modules-solutions--gps/neo-m9v-20b-u-blox-4167640",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Digi-Key",
+     "qty": 250,
+     "price": 19.30368,
+     "currency": "EUR",
+     "url": "https://www.digikey.ie/en/products/detail/u-blox/NEO-M9V-20B/16611140",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "UNVERIFIED (leaning high): Future $22.56 @125 = 1.67x stored 1k-equiv (GBP 17.04 v 10.22); Digi-Key IE EUR 19.30368 @250 T&R = 1.62x - neither within 40% nor >2.5x. Stored Digi-Key EUR 12.29168 @500 is 36% below DK's own 250 break - check it is not a different DK listing (DK also has product 21274071). Richardson RFPD / Dasenic / IBS not used. Ex-VAT."
+  },
+  {
+   "mpn": "WSBE8518L1000JKA2",
+   "family": "WSBE8518L1000JKA2",
+   "mfr": "Vishay Dale",
+   "desc": "Battery shunt 100 uOhm 5% 36 W, Power Metal Strip, 8518, AEC-Q200 (pack current sensing)",
+   "category": "mechanical",
+   "pkg": "8518 SMD bar",
+   "aecq": true,
+   "observedMpn": "WSBE8518L1000JKA2",
+   "observations": [],
+   "notes": "UNVERIFIED (flag): no allowed >=100 break found. digikey.cn (VAT-inclusive, not allowed) shows $205.33; Future lists sibling WSBE8518L1000JTA2 at $64.01 qty 1 (https://futureelectronics.com/p/passives--resistors--fixed-resistors/wsbe8518l1000jta2-vishay-5179313). Stored CAD 21.69 @100 (GBP 11.55) is well below both - recheck the stored Digi-Key CA listing is this exact code."
+  },
+  {
+   "mpn": "F28P659DK8PTPQ1",
+   "family": "F28P659DK8PTPQ1",
+   "mfr": "Texas Instruments",
+   "desc": "C2000 TMS320F28P659DK-Q1 dual C28x + CLA real-time MCU (alternative controller in TIDM-02013; F28P650DK in PMP41139)",
+   "category": "ic_tqfp",
+   "pkg": "HLQFP-176 (PTP)",
+   "aecq": true,
+   "observedMpn": "F28P659DK8PTPQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "BQ79612PAPRQ1",
+   "family": "BQ79612PAPRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "12S battery monitor/balancer, daisy-chain",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "observedMpn": "BQ79612PAPRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: Digi-Key (punchouttest host) out of stock / backorder, findchips snippet cut before price."
+  },
+  {
+   "mpn": "TAS6584QPHDRQ1",
+   "family": "TAS6584QPHDRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "4-ch digital-input class-D audio amplifier, automotive, HTQFP-64",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "observedMpn": "TAS6584QPHDRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "UCD3138RGCR",
+   "family": "UCD3138RGCR",
+   "mfr": "Texas Instruments",
+   "desc": "Digital power controller, 64-VQFN 9x9",
+   "category": "ic_qfn",
+   "pkg": "VQFN-64",
+   "aecq": false,
+   "observedMpn": "UCD3138RGCR",
+   "observations": [
+    {
+     "distributor": "Mouser",
+     "qty": 2000,
+     "price": 7.72,
+     "currency": "USD",
+     "url": "https://www.findchips.com/search/138RG",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: Findchips lists Mouser (595-UCD3138RGCR, authorised) $7.72 @2,000 vs stored Digi-Key GBP 8.88 @100 -> 0.77x stored 1k-equiv (GBP 5.83 v 7.55). Findchips page is one of /search/138RG or /search/UCD31 (summary did not pin which); Avnet Europe ~$10.72 seen only on electronicsdatasheets, not used."
+  },
+  {
+   "mpn": "DS90UB934TRGZRQ1",
+   "family": "DS90UB934TRGZRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III deserializer, 12-bit parallel output, 1 MP camera",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 (RGZ)",
+   "aecq": true,
+   "observedMpn": "DS90UB934TRGZRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: searched LCSC - only DS90UB954 listings; Digi-Key (azcus host) without price."
+  },
+  {
+   "mpn": "MKP1848C61012JP4",
+   "family": "MKP1848C61012JP4",
+   "mfr": "Vishay",
+   "desc": "PP film DC-link capacitor 10uF 5% 1200 VDC, through hole",
+   "category": "through_hole",
+   "pkg": "radial 4-pin",
+   "aecq": false,
+   "observedMpn": "MKP1848C61012JP4",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "BQ79718BQPAPRQ1",
+   "family": "BQ79718BQPAPRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "18S battery monitor/balancer, daisy-chain",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "observedMpn": "BQ79718BQPAPRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "DS90UB936TRGZRQ1",
+   "family": "DS90UB936TRGZRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III dual deserializer, CSI-2 output",
+   "category": "ic_qfn",
+   "pkg": "VQFN-48 (RGZ)",
+   "aecq": true,
+   "observedMpn": "DS90UB936TRGZRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "XPQR3004PB,LXHQ",
+   "family": "XPQR3004PB,LXHQ",
+   "mfr": "Toshiba",
+   "desc": "Automotive 40 V 400 A N-ch MOSFET, 0.23 mOhm typ. (Toshiba 3 kW 48 V-12 V reference, 12 V side)",
+   "category": "ic_soic",
+   "pkg": "L-TOGL",
+   "aecq": true,
+   "observedMpn": "XPQR3004PB,LXHQ",
+   "observations": [],
+   "notes": "UNVERIFIED: only the stored distributor found - Farnell IE (XPQR3004PB,LXHQ(O) EUR 8.310 @200, ex-VAT, same as stored). element14.cn CNY 33.600 @500 is a VAT-inclusive China storefront (not allowed) but would be ~half the stored price - worth a second distributor. Note: Farnell title says 400V 40A; Toshiba datasheet 40 V / 400 A."
+  },
+  {
+   "mpn": "TAS6684QPHDRQ1",
+   "family": "TAS6684QPHDRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "4-ch digital-input class-D audio amplifier, 45 V, automotive, HTQFP-64",
+   "category": "ic_tqfp",
+   "pkg": "HTQFP-64",
+   "aecq": true,
+   "observedMpn": "TAS6684QPHDRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "DRV3946QPWPRQ1",
+   "family": "DRV3946QPWPRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "Dual contactor/solenoid driver with diagnostics",
+   "category": "ic_soic",
+   "pkg": "HTSSOP",
+   "aecq": true,
+   "observedMpn": "DRV3946QPWPRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "DS90UB927QSQX/NOPB",
+   "family": "DS90UB927QSQX/NOPB",
+   "mfr": "Texas Instruments",
+   "desc": "FPD-Link III serializer 2.975 Gbps, 24-bit RGB",
+   "category": "ic_qfn",
+   "pkg": "WQFN-40 6x6",
+   "aecq": true,
+   "observedMpn": "DS90UB927QSQX/NOPB",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "TPS65941120RWERQ1",
+   "family": "TPS65941120RWERQ1",
+   "mfr": "Texas Instruments",
+   "desc": "Safety PMIC: 5 buck + 4 LDO (radar/ADAS processor supply)",
+   "category": "ic_qfn",
+   "pkg": "VQFNP-56 (8x8)",
+   "aecq": true,
+   "observedMpn": "TPS65941120RWERQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "SN65LVDS93AIDGGRQ1",
+   "family": "SN65LVDS93AIDGGRQ1",
+   "mfr": "Texas Instruments",
+   "desc": "FlatLink LVDS serializer / transmitter",
+   "category": "ic_soic",
+   "pkg": "TSSOP-56",
+   "aecq": true,
+   "observedMpn": "SN65LVDS93AIDGGRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "LMR33630AQDDARQ1",
+   "family": "LMR33630AQDDARQ1",
+   "mfr": "TI",
+   "desc": "36 V 3 A step-down converter",
+   "category": "ic_soic",
+   "pkg": "HSOIC-8",
+   "aecq": true,
+   "observedMpn": "LMR33630AQDDARQ1",
+   "observations": [],
+   "notes": "UNVERIFIED (code doubt): no listing anywhere for the exact code LMR33630AQDDARQ1; results show only the RNX (VQFN-HR) Q1 codes LMR33630AQRNXRQ1 / AQRNXTQ1 (LCSC). A different package, so not used. Confirm the DDA (HSOIC-8) -Q1 orderable exists."
+  },
+  {
+   "mpn": "W25Q32JWSSIQ",
+   "family": "W25Q32JWSSIQ",
+   "mfr": "Winbond",
+   "desc": "32 Mbit SPI NOR flash, 1.8 V (JW)",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "observedMpn": "W25Q32JWSSIQ",
+   "observations": [],
+   "notes": "UNVERIFIED: only punchouttest Digi-Key ($0.74 qty 1), an LCSC aggregator line at qty 1 with no stock, and Cytech (broker) - nothing recordable."
+  },
+  {
+   "mpn": "744043100",
+   "family": "744043100",
+   "mfr": "Würth",
+   "desc": "10 µH 1.19 A shielded inductor 4.8×4.8",
+   "category": "passive_0805",
+   "pkg": "4848",
+   "aecq": false,
+   "observedMpn": "744043100",
+   "observations": [],
+   "notes": "UNVERIFIED: searched '\"744043100\" Wurth price 1000 mouser OR digikey OR farnell' - only OEMsTrade pages for other Wurth codes."
+  },
+  {
+   "mpn": "TCAN1044AVDRQ1",
+   "family": "TCAN1044AVDRQ1",
+   "mfr": "TI",
+   "desc": "CAN FD transceiver, 5 Mbps, VIO",
+   "category": "ic_soic",
+   "pkg": "SOIC-8",
+   "aecq": true,
+   "observedMpn": "TCAN1044AVDRQ1",
+   "observations": [
+    {
+     "distributor": "LCSC",
+     "qty": 1000,
+     "price": 0.459,
+     "currency": "USD",
+     "url": "https://support.lcsc.com/product-detail/CAN-Transceivers_Texas-Instruments-TCAN1044AVDRQ1_C3234993.html",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: LCSC C3234993 $0.459 @1,000 -> 0.82x current 1k (GBP 0.347 v 0.421). Cached page showed no stock. Digi-Key exact code out of stock, 12 wk (punchouttest host, not used)."
+  },
+  {
+   "mpn": "7V-25.000MAAE-T",
+   "family": "7V-25.000MAAE-T",
+   "mfr": "TXC",
+   "desc": "25 MHz crystal 3.2×2.5 ±30 ppm",
+   "category": "crystal_osc",
+   "pkg": "3225",
+   "aecq": false,
+   "observedMpn": "7V-25.000MAAE-T",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "TLV9002QDGKRQ1",
+   "family": "TLV9002QDGKRQ1",
+   "mfr": "TI",
+   "desc": "Dual 1 MHz RRIO op-amp",
+   "category": "ic_soic",
+   "pkg": "VSSOP-8",
+   "aecq": true,
+   "observedMpn": "TLV9002QDGKRQ1",
+   "observations": [],
+   "notes": "UNVERIFIED: budget (20 searches shared across the list, most expensive first); not searched."
+  },
+  {
+   "mpn": "SI2301CDS-T1-GE3",
+   "family": "SI2301CDS-T1-GE3",
+   "mfr": "Vishay",
+   "desc": "P-MOSFET 20 V 3.1 A SOT-23",
+   "category": "fuse_tvs",
+   "pkg": "SOT-23",
+   "aecq": false,
+   "observedMpn": "SI2301CDS-T1-GE3",
+   "observations": [
+    {
+     "distributor": "TME",
+     "qty": 3000,
+     "price": 0.089,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/si2301cds-t1-ge3",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "Mouser",
+     "qty": 3000,
+     "price": 0.132,
+     "currency": "USD",
+     "url": "https://origin-www.findchips.com/search/si2301cds-t1-ge3",
+     "date": "2026-10-13"
+    },
+    {
+     "distributor": "RS Components",
+     "qty": 2000,
+     "price": 0.116,
+     "currency": "GBP",
+     "url": "https://uk.rs-online.com/web/p/mosfets/7103238?gb=s",
+     "date": "2026-10-13"
+    }
+   ],
+   "notes": "CONFIRMED: no stored listing; TME $0.0890 @3,000 (Findchips) = 0.96x current 1k (GBP 0.0702). Spread is wide: Mouser $0.1320 @3,000 (1.42x), Arrow $0.1335 @3,000 (Findchips), RS GBP 0.116 @2,000 (1.65x), LCSC C10487 $0.0384 @3,000 ($115.20 extended, https://www.lcsc.com/product-detail/C10487.html, 0.41x)."
+  }
+ ],
+ "disputes": []
+}

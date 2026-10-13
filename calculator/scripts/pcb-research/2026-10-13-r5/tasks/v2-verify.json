@@ -1,0 +1,731 @@
+[
+ {
+  "mpn": "IRLML6344TRPBF",
+  "mfr": "Infineon",
+  "desc": "N-MOSFET 30 V 5 A SOT-23",
+  "category": "fuse_tvs",
+  "pkg": "SOT-23",
+  "aecq": false,
+  "currentQ1kGBP": 0.08057,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.1033 @3k: $0.1033 @3,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "S25FL512SAGMFV011",
+  "mfr": "Infineon",
+  "desc": "512Mb QSPI NOR flash, automotive",
+  "category": "ic_soic",
+  "pkg": "SOIC-16",
+  "aecq": true,
+  "currentQ1kGBP": 5.0921,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 100,
+    "price": 7.93,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/S25FL512SAGMFI011?qs=rDGpJoRV1kJ%252BPU3pl%252BHK1A%3D%3D"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 705,
+    "price": 6.91,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/S25FL512SAGMFI011?qs=rDGpJoRV1kJ%252BPU3pl%252BHK1A%3D%3D"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code S25FL512SAGMFI011 (the listed code was not found at a distributor). Mouser $7.93 @100; Mouser $6.91 @705 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0705, slope from the part's own breaks (1 pair). Above the largest"
+ },
+ {
+  "mpn": "S26HS512TGABHI010",
+  "mfr": "Infineon",
+  "desc": "SEMPER HyperFlash/HyperBus NOR 512Mb, 200 MHz, 1.8 V, -40..85 C",
+  "category": "ic_bga",
+  "pkg": "24-FBGA 6x8",
+  "aecq": true,
+  "currentQ1kGBP": 5.2307,
+  "storedObservations": [
+   {
+    "distributor": "RS Components",
+    "qty": 169,
+    "price": 250,
+    "currency": "TWD",
+    "url": "https://twcn.rs-online.com/web/p/flash-memory/1976886"
+   }
+  ],
+  "storedSource": "RS Components TWD 250 @169 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "S28HS01GTGZBHA030",
+  "mfr": "Infineon",
+  "desc": "SEMPER octal xSPI NOR 1Gb, 200 MHz, 1.8 V",
+  "category": "ic_bga",
+  "pkg": "24-BGA 8x8",
+  "aecq": true,
+  "currentQ1kGBP": 10.0204,
+  "storedObservations": [
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 15.97,
+    "currency": "EUR",
+    "url": "https://at.farnell.com/en-AT/cypress-semiconductor/s28hs01gtgzbhi030/flash-memory-1gbit-40-to-85deg/dp/3935552"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 520,
+    "price": 12.76,
+    "currency": "EUR",
+    "url": "https://it.farnell.com/en-IT/infineon/s28hs01gtgzbhi030/flash-memory-1gbit-40-to-85deg/dp/3935552"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code S28HS01GTGZBHI030 (the listed code was not found at a distributor). Farnell €15.97 @100; Farnell €12.76 @520 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.1361, slope from the part's own breaks (1 pair). Above the lar"
+ },
+ {
+  "mpn": "SAK-TC1766-192F80HL BD",
+  "mfr": "Infineon",
+  "desc": "TriCore 32-bit MCU 80 MHz, 1.5 MB flash (Bosch DCU17HD01 dosing control unit)",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-176",
+  "aecq": true,
+  "currentQ1kGBP": 17.0325,
+  "storedObservations": [
+   {
+    "distributor": "LCSC",
+    "qty": 500,
+    "price": 22.9642,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C538735.html"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 22.5507,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-image/C538735.html"
+   }
+  ],
+  "storedSource": "LCSC $22.9642 @500; LCSC $22.5507 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0262, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted. DISPUTED: LCSC reference prices with 0 units in stoc"
+ },
+ {
+  "mpn": "SAK-TC234LP-32F200N",
+  "mfr": "Infineon",
+  "desc": "AURIX TC234 (1× TriCore, 2 MB)",
+  "category": "ic_tqfp",
+  "pkg": "TQFP-144",
+  "aecq": true,
+  "currentQ1kGBP": 7.41,
+  "storedObservations": [],
+  "storedSource": "LCSC $5.46 @100 (older stock); brokers $54 @1k disregarded; 1k ≈ $9.5; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "SAK-TC264DA-40F200W BC",
+  "mfr": "Infineon",
+  "desc": "AURIX TC2 dual-core TriCore 200 MHz, 2.5 MB flash, Ethernet",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-144",
+  "aecq": true,
+  "currentQ1kGBP": 10.2834,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 13.615,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC264D40F200NBCKXUMA2/7791594"
+   }
+  ],
+  "storedSource": "Digi-Key $13.615 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SAK-TC277TP-64F200S DC",
+  "mfr": "Infineon",
+  "desc": "AURIX TC2 tri-core TriCore 200 MHz, 4 MB flash",
+  "category": "ic_bga",
+  "pkg": "LFBGA-292",
+  "aecq": true,
+  "currentQ1kGBP": 12.5569,
+  "storedObservations": [
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 14.56,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/microcontrollers-mcu-mpu-soc_infineon-technologies-sak-tc277tp-64f200s-dc_C538817.html"
+   },
+   {
+    "distributor": "LCSC",
+    "qty": 1000,
+    "price": 18.69,
+    "currency": "USD",
+    "url": "https://www.lcsc.com/product-detail/microcontrollers-mcu-mpu-soc_infineon-technologies-sak-tc277tp-64f200s-ca_C538816.html"
+   }
+  ],
+  "storedSource": "LCSC $14.56 @1,000; LCSC $18.69 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TC375TP96F300W",
+  "mfr": "Infineon",
+  "desc": "AURIX TC375 (3x TriCore, 6 MB)",
+  "category": "ic_bga",
+  "pkg": "LFBGA-292",
+  "aecq": true,
+  "currentQ1kGBP": 18.5555,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 25.18,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC375TP96F300WAAKXUMA1/11500298"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 24.91,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC375TP96F300WAAKXUMA1/11500298"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code TC375TP96F300WAAKXUMA1 (the listed code was not found at a distributor). Digi-Key $25.18 @100; Digi-Key $24.91 @500 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.02, slope from the part's own breaks (1 pair). Above th"
+ },
+ {
+  "mpn": "TC499PP20MF400MSABKXUMA1",
+  "mfr": "Infineon",
+  "desc": "AURIX TC49x 5-core TriCore 400 MHz, 20 MB",
+  "category": "ic_bga",
+  "pkg": "PG-F2BGA-436",
+  "aecq": true,
+  "currentQ1kGBP": 42.9756,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 59.75166,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC499PP20MF400MSABKXUMA1/27356926"
+   }
+  ],
+  "storedSource": "Digi-Key $59.75166 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TC4D7XP20MF500MCABKXUMA1",
+  "mfr": "Infineon",
+  "desc": "AURIX TC4Dx TC4D7 multi-core TriCore 500 MHz, 20 MB flash, ASIL-D",
+  "category": "ic_bga",
+  "pkg": "BGA",
+  "aecq": true,
+  "currentQ1kGBP": 58.8001,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 77.85,
+    "currency": "USD",
+    "url": "https://www.mouser.co.il/c/semiconductors/embedded-processors-controllers/microcontrollers-mcu/32-bit-microcontrollers-mcu/?m=Infineon"
+   }
+  ],
+  "storedSource": "Mouser $77.85 @1,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TC4D9XP20MF500MCABKXUMA1",
+  "mfr": "Infineon",
+  "desc": "AURIX TC4Dx 6-core TriCore 500 MHz, 20 MB, ASIL-D",
+  "category": "ic_bga",
+  "pkg": "PG-F2BGA-436 (Digi-Key: PG-F2HBGA-436)",
+  "aecq": true,
+  "currentQ1kGBP": 61.3101,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 86.6,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC4D9XP20MF500MCABKXUMA1/27346308"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 82.77,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/infineon-technologies/TC4D9XP20MF500MCABKXUMA1/27346308"
+   }
+  ],
+  "storedSource": "Digi-Key $86.6 @100; Digi-Key $82.77 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0281, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TLE6240GP",
+  "mfr": "Infineon",
+  "desc": "16-ch low-side switch, SPI",
+  "category": "ic_soic",
+  "pkg": "P-DSO-36",
+  "aecq": true,
+  "currentQ1kGBP": 5.6862,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 800,
+    "price": 7.69,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TLE6240GP?qs=mzcOS1kGbgeKpMCv3zq/WA%3D%3D"
+   },
+   {
+    "distributor": "Mouser",
+    "qty": 250,
+    "price": 8.59,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Infineon-Technologies/TLE6240GP?qs=mzcOS1kGbgeKpMCv3zq/WA%3D%3D"
+   }
+  ],
+  "storedSource": "Mouser $7.69 @800; Mouser $8.59 @250 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0952, slope from the part's own breaks (1 pair). Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "TLF30682QVS01XUMA1",
+  "mfr": "Infineon",
+  "desc": "OPTIREG multi-rail PMIC (RS: 3-channel buck-boost, 3.5 A, 2.2 MHz)",
+  "category": "ic_qfn",
+  "pkg": "PG-VQFN-48",
+  "aecq": true,
+  "currentQ1kGBP": 5.4074,
+  "storedObservations": [
+   {
+    "distributor": "RS Components",
+    "qty": 500,
+    "price": 252.83,
+    "currency": "THB",
+    "url": "https://th.rs-online.com/web/p/voltage-regulators/2584169"
+   }
+  ],
+  "storedSource": "RS Components THB 252.83 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "CYT2B75CADQ0AZEGS",
+  "mfr": "Infineon Technologies",
+  "desc": "TRAVEO T2G Body Entry Cortex-M4F 160 MHz, 1088 KB flash, CAN FD, LIN",
+  "category": "ic_tqfp",
+  "pkg": "LQFP-100",
+  "aecq": true,
+  "currentQ1kGBP": 6.29,
+  "storedObservations": [
+   {
+    "distributor": "RS Components",
+    "qty": 100,
+    "price": 7.4,
+    "currency": "GBP",
+    "url": "https://uk.rs-online.com/web/p/microcontrollers/2735292"
+   }
+  ],
+  "storedSource": "RS Components £7.4 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "88Q5072-B2-BYZ2A000-P123",
+  "mfr": "Infineon Technologies (ex-Marvell)",
+  "desc": "Automotive Ethernet switch",
+  "category": "ic_bga",
+  "pkg": "",
+  "aecq": true,
+  "currentQ1kGBP": 13.5794,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 500,
+    "price": 24.1372,
+    "currency": "SGD",
+    "url": "https://www.digikey.sg/en/products/detail/infineon-technologies/88Q5072-B2-BYZ2A000-P123/29513260"
+   }
+  ],
+  "storedSource": "Digi-Key SGD 24.1372 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "IS25LP512M-JLLA3",
+  "mfr": "ISSI",
+  "desc": "Quad SPI NOR 512Mb, 3 V, automotive A3",
+  "category": "ic_soic",
+  "pkg": "SOIC-16",
+  "aecq": true,
+  "currentQ1kGBP": 7.1143,
+  "storedObservations": [
+   {
+    "distributor": "Avnet",
+    "qty": 480,
+    "price": 9.92,
+    "currency": "USD",
+    "url": "https://www.avnet.com/americas/product/issi/is25lp512mj-jlla3/evolve-119503018/"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code IS25LP512MJ-JLLA3 (the listed code was not found at a distributor). Avnet $9.92 @480 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest publ"
+ },
+ {
+  "mpn": "IS46LQ32256AL",
+  "mfr": "ISSI",
+  "desc": "LPDDR4/4X 8Gb x32, automotive",
+  "category": "ic_bga",
+  "pkg": "TFBGA-200",
+  "aecq": true,
+  "currentQ1kGBP": 22.1199,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 136,
+    "price": 31.49537,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/base-product/issi-integrated-silicon-solution-inc/706/IS46LQ32256/730926"
+   },
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 28.32424,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/base-product/issi-integrated-silicon-solution-inc/706/IS46LQ32256/730926"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code IS46LQ32256AL-062BLA1 (the listed code was not found at a distributor). Digi-Key $31.49537 @136; Digi-Key $28.32424 @2,500 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0365, slope from the part's own breaks (1 pair)."
+ },
+ {
+  "mpn": "IS46LQ32512A-046BLA1",
+  "mfr": "ISSI",
+  "desc": "LPDDR4 16Gb (512M x32), 2133 MHz, A1 automotive -40..85 C",
+  "category": "ic_bga",
+  "pkg": "200-BGA",
+  "aecq": true,
+  "currentQ1kGBP": 50.4071,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 100,
+    "price": 7542.92,
+    "currency": "INR",
+    "url": "https://www.mouser.in/c/semiconductors/memory-ics/dram/"
+   }
+  ],
+  "storedSource": "Mouser INR 7542.92 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "SM06B-GHS-TB",
+  "mfr": "JST",
+  "desc": "GH 1.25 mm 6-way SMT header",
+  "category": "connector_smt",
+  "pkg": "SMT",
+  "aecq": false,
+  "currentQ1kGBP": 0.234,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.300, JAK $0.291, GAM $0.336 @1k (LCSC $0.475, TLC $0.196): $0.3 @1,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "LCMXO3D-9400HC-6SG72C",
+  "mfr": "Lattice",
+  "desc": "MachXO3D secure-boot CPLD/FPGA 9400 LUT, 2.5/3.3 V, commercial, QFN-72",
+  "category": "ic_qfn",
+  "pkg": "QFN-72",
+  "aecq": false,
+  "currentQ1kGBP": 16.5948,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 100,
+    "price": 2483.25,
+    "currency": "INR",
+    "url": "https://www.mouser.in/en/c/semiconductors/integrated-circuits-ics/programmable-logic-ics/?pg=5"
+   }
+  ],
+  "storedSource": "Mouser INR 2483.25 @100 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "LIFCL-17-7MG121A",
+  "mfr": "Lattice Semiconductor",
+  "desc": "CrossLink-NX 17k FPGA, automotive grade",
+  "category": "ic_bga",
+  "pkg": "csfBGA-121",
+  "aecq": true,
+  "currentQ1kGBP": 13.5238,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 21.065,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/lattice-semiconductor-corporation/LIFCL-17-7MG121A/18138225"
+   }
+  ],
+  "storedSource": "Digi-Key $21.065 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "0603SFF200F/32-2",
+  "mfr": "Littelfuse",
+  "desc": "2 A 32 V chip fuse 0603 (obsolete; SFP successor)",
+  "category": "fuse_tvs",
+  "pkg": "0603",
+  "aecq": false,
+  "currentQ1kGBP": 0.24648,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $0.316 @4k reel, $0.367 @1k: $0.316 @4,000; to 1k by the curve, 10k ×0.85, 100k ×0.72"
+ },
+ {
+  "mpn": "IS32CG5317-LQLA2",
+  "mfr": "Lumissil (ISSI)",
+  "desc": "AEC-Q100 Grade 2 HomePlug Green PHY transceiver, SPI/MII/RMII host (ISO 15118 / DIN 70121)",
+  "category": "ic_tqfp",
+  "pkg": "EP-LQFP-80",
+  "aecq": true,
+  "currentQ1kGBP": 6.2492,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 7.28,
+    "currency": "EUR",
+    "url": "https://www.mouser.bg/c/semiconductors/communication-networking-ics/ethernet-ics/?m=Lumissil"
+   }
+  ],
+  "storedSource": "Mouser €7.28 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "MX25UM51245GXDR00-T",
+  "mfr": "Macronix",
+  "desc": "OctaFlash octal NOR 512Mb, 200 MHz, 1.8 V, automotive -40..105 C",
+  "category": "ic_bga",
+  "pkg": "24-BGA",
+  "aecq": true,
+  "currentQ1kGBP": 8.8929,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 480,
+    "price": 12.4,
+    "currency": "USD",
+    "url": "https://www.mouser.co.il/c/semiconductors/memory-ics/nor-flash/?m=Macronix"
+   }
+  ],
+  "storedSource": "Mouser $12.4 @480 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "ATA6560-GBQW",
+  "mfr": "Microchip",
+  "desc": "High-speed CAN transceiver",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.2886,
+  "storedObservations": [],
+  "storedSource": "Comet €0.333 @1k; Digi-Key $0.40 @6k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "KSZ9563RNXV-VAO",
+  "mfr": "Microchip",
+  "desc": "3-port Gigabit Ethernet switch (automotive)",
+  "category": "ic_qfn",
+  "pkg": "VQFN-64",
+  "aecq": true,
+  "currentQ1kGBP": 8.2331,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 10.9004,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/microchip-technology/KSZ9563RNXI-TR/8536611"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code KSZ9563RNXI-TR (the listed code was not found at a distributor). Digi-Key $10.9004 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest"
+ },
+ {
+  "mpn": "LAN9370-V/KCXVAO",
+  "mfr": "Microchip",
+  "desc": "Automotive Ethernet switch with 100BASE-T1 PHYs",
+  "category": "ic_qfn",
+  "pkg": "VQFN-64",
+  "aecq": true,
+  "currentQ1kGBP": 5.4476,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 1000,
+    "price": 7.2125,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/microchip-technology/LAN9370T-I-KCX/16915523"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code LAN9370T-I/KCX (the listed code was not found at a distributor). Digi-Key $7.2125 @1,000 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest "
+ },
+ {
+  "mpn": "LAN9372-I/ZMX",
+  "mfr": "Microchip",
+  "desc": "Managed switch, 5x 100BASE-T1 PHY + 100BASE-TX",
+  "category": "ic_qfn",
+  "pkg": "VQFN-128",
+  "aecq": true,
+  "currentQ1kGBP": 5.3688,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 8.3625,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/microchip-technology/LAN9372-I-ZMX/16915526"
+   }
+  ],
+  "storedSource": "Digi-Key $8.3625 @100 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ },
+ {
+  "mpn": "LAN9373-V/ZMXVAO",
+  "mfr": "Microchip",
+  "desc": "Automotive Ethernet switch",
+  "category": "ic_tqfp",
+  "pkg": "TQFP-128-EP",
+  "aecq": true,
+  "currentQ1kGBP": 5.3672,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 100,
+    "price": 8.36,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/microchip-technology/LAN9373-I/ZMX/16915525"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code LAN9373-I/ZMX (the listed code was not found at a distributor). Digi-Key $8.36 @100 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest publi"
+ },
+ {
+  "mpn": "MCP2562FD-E/SN",
+  "mfr": "Microchip",
+  "desc": "CAN FD transceiver",
+  "category": "ic_soic",
+  "pkg": "SOIC-8",
+  "aecq": true,
+  "currentQ1kGBP": 0.624,
+  "storedObservations": [],
+  "storedSource": "Master $0.888 @1k; LCSC $0.711 @1k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve)"
+ },
+ {
+  "mpn": "MT25QL256ABA1EW9",
+  "mfr": "Micron",
+  "desc": "256 Mbit SPI NOR flash",
+  "category": "ic_soic",
+  "pkg": "W-PDFN-8",
+  "aecq": false,
+  "currentQ1kGBP": 6.8024,
+  "storedObservations": [],
+  "storedSource": "Digi-Key $8.721 @1k, $7.377 @4k; 1k → 10k ×0.85, 100k ×0.72 (franchise curve) DISPUTED: round 4 re-check found contradictory figures; one reading (tray $3.49 @1,920) is ~2.6x below the catalogue - verify with a quote."
+ },
+ {
+  "mpn": "MT25QL512ABB8ESF-0AUT",
+  "mfr": "Micron",
+  "desc": "512Mb 3V QSPI NOR flash, automotive",
+  "category": "ic_soic",
+  "pkg": "SOIC-16",
+  "aecq": true,
+  "currentQ1kGBP": 6.7977,
+  "storedObservations": [
+   {
+    "distributor": "Mouser",
+    "qty": 1000,
+    "price": 9,
+    "currency": "USD",
+    "url": "https://www.mouser.com/ProductDetail/Micron/MT25QL512ABB8ESF-0AAT?qs=rrS6PyfT74da2PZ8DoLIJg%3D%3D"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code MT25QL512ABB8ESF-0AAT (the listed code was not found at a distributor). Mouser $9 @1,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest "
+ },
+ {
+  "mpn": "MT25QU01GBBB8E12-0AUT",
+  "mfr": "Micron",
+  "desc": "1Gb 1.8V serial NOR flash, automotive",
+  "category": "ic_bga",
+  "pkg": "TBGA-24",
+  "aecq": true,
+  "currentQ1kGBP": 25.7605,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2500,
+    "price": 31.9704,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT25QU01GBBB8E12-0AUT-TR/7598127"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code MT25QU01GBBB8E12-0AUT (the listed code was not found at a distributor). Digi-Key $31.9704 @2,500 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the "
+ },
+ {
+  "mpn": "MT29F4G08ABAFAWP-AAT",
+  "mfr": "Micron",
+  "desc": "4Gb SLC NAND x8, automotive",
+  "category": "ic_soic",
+  "pkg": "TSOP-48",
+  "aecq": true,
+  "currentQ1kGBP": 15.868,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 960,
+    "price": 21.06951,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT29F4G08ABAFAWP-IT-F-TR/10321012"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code MT29F4G08ABAFAWP-IT:F (the listed code was not found at a distributor). Digi-Key $21.06951 @960 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the l"
+ },
+ {
+  "mpn": "MT35XU512ABA1G12-0AAT",
+  "mfr": "Micron",
+  "desc": "Xccela octal xSPI NOR 512Mb, 200 MHz, 1.8 V, automotive",
+  "category": "ic_bga",
+  "pkg": "24-TPBGA",
+  "aecq": true,
+  "currentQ1kGBP": 6.3607,
+  "storedObservations": [
+   {
+    "distributor": "Farnell",
+    "qty": 100,
+    "price": 7.99,
+    "currency": "EUR",
+    "url": "https://fr.farnell.com/en-FR/micron/mt35xu512aba1g12-0aut/flash-memory-aec-q100-512mbit/dp/4588111"
+   },
+   {
+    "distributor": "Farnell",
+    "qty": 500,
+    "price": 7.58,
+    "currency": "EUR",
+    "url": "https://fr.farnell.com/en-FR/micron/mt35xu512aba1g12-0aut/flash-memory-aec-q100-512mbit/dp/4588111"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code MT35XU512ABA1G12-0AUT (the listed code was not found at a distributor). Farnell €7.99 @100; Farnell €7.58 @500 (search of distributor listings, 2026-10-09). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0327, slope from the part's own breaks (1 pair). Above the l"
+ },
+ {
+  "mpn": "MT53E1G32D2FW-046 AUT:B",
+  "mfr": "Micron",
+  "desc": "LPDDR4X 32Gb x32 automotive, 200-TFBGA",
+  "category": "ic_bga",
+  "pkg": "TFBGA-200",
+  "aecq": true,
+  "currentQ1kGBP": 83.5698,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2000,
+    "price": 105.36178,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT53E1G32D2FW-046-AAT-B-TR/17632040"
+   }
+  ],
+  "storedSource": "Priced on the sibling orderable code MT53E1G32D2FW-046 (the listed code was not found at a distributor). Digi-Key $105.36178 @2,000 (search of distributor listings, 2026-10-06). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the la"
+ },
+ {
+  "mpn": "MT62F2G32D4DS-026 AAT:B TR",
+  "mfr": "Micron",
+  "desc": "LPDDR5 64Gb (8GB) 2G x32, automotive -40..105 C",
+  "category": "ic_bga",
+  "pkg": "TFBGA-315",
+  "aecq": true,
+  "currentQ1kGBP": 55.1809,
+  "storedObservations": [
+   {
+    "distributor": "Digi-Key",
+    "qty": 2000,
+    "price": 69.57,
+    "currency": "USD",
+    "url": "https://www.digikey.com/en/products/detail/micron-technology-inc/MT62F2G32D4DS-026-AAT-B-TR/17631799"
+   }
+  ],
+  "storedSource": "Digi-Key $69.57 @2,000 (search of distributor listings, 2026-10-13). 10k/100k/200k/300k derived: P1k × (Q/1000)^−0.0706, franchise curve (no second break found): 10k = 1k × 0.85. Above the largest published break these are modelled, not quoted."
+ }
+]

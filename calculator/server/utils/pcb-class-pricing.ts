@@ -47,6 +47,9 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'cap', row: R(0.005, 0.18, 'MLCC 0805', [0.03, 0.5]) },   // GCM21B 10 µF AEC $0.113–0.124 @10k (2026-10-01)
   ],
   passive_1206: [
+    // Round 5: SMD tantalum / polymer tantalum, 6 catalogue parts (KEMET T598 / T495, AVX), 10k p10–p90 £0.36–1.42 (AEC-Q £0.55–1.50) —
+    // they were priced as an MLCC (£0.09 v £1.18–2.15 sourced).
+    { kind: 'tant', test: /tantal|polymer tant/i, row: R(0.36, 1.42, 'tantalum / polymer tantalum capacitor', [0.55, 1.5]) },
     { kind: 'res', test: /resist|\bres\b|(^|\s)\d+(\.\d+)?\s*[kKmM]?(Ω|ohm|R)(?=\s|$)/i, row: R(0.003, 0.015, 'chip resistor 1206', [0.008, 0.04]) },
     { kind: 'ind', test: /inductor|choke/i, row: R(0.03, 0.8, 'power inductor 1206-class', [0.08, 1.8]) },
     { kind: 'cap', row: R(0.008, 0.25, 'MLCC 1206', [0.02, 0.3]) },
@@ -83,6 +86,8 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'fuse', row: R(0.08, 0.4, 'SMD chip fuse', [0.15, 0.6]) },   // Littelfuse 0603SF $0.32–0.37 @1–4k (2026-10-01)
   ],
   ic_soic: [
+    // Round 5: IMU / accelerometer / gyroscope, 14 catalogue parts, 10k p10–p90 £1.43–15.6 (AEC-Q 10: £1.32–5.11).
+    { kind: 'imu', test: /\bimu\b|accelerometer|gyro|inertial|6-?(dof|axis)/i, row: R(1.4, 15.6, 'IMU / inertial sensor', [1.3, 5.1]) },
     { kind: 'sot', test: /\b(SOT-?23-?[5-8]?|SOT-?353|SOT-?363|SC-?70|TSOT|SOT-?553)\b/i, row: R(0.05, 0.6, 'small IC in SOT-23 / SC-70', [0.12, 1.2]) },
     { kind: 'flash', test: /flash|eeprom|memory|\bnor\b|fram/i, row: R(0.15, 1.5, 'serial memory SOIC', [0.3, 2.5]) },
     { kind: 'can', test: /\bcan\b|\blin\b|transceiver|rs-?485|rs-?232/i, row: R(0.3, 1.5, 'interface transceiver SOIC', [0.5, 3]) },
@@ -94,8 +99,12 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'any', row: R(0.08, 1.8, 'SOIC / SOT IC (unidentified)', [0.25, 5]) },
   ],
   ic_qfn: [
-    { kind: 'rf', test: /\brf\b|radar|transceiver|mmic|\bghz\b|wireless|bluetooth|wifi|gnss|gps/i, row: R(1, 12, 'RF IC QFN', [3, 22]) },
+    { kind: 'imu', test: /\bimu\b|accelerometer|gyro|inertial|6-?(dof|axis)/i, row: R(1.4, 15.6, 'IMU / inertial sensor', [1.3, 5.1]) },
     { kind: 'pmic', test: /pmic|\bsbc\b|system basis|power management|supervisor/i, row: R(0.7, 7, 'PMIC QFN', [2.5, 12]) },
+    // Round 5: a CAN / LIN transceiver matched "transceiver" in the RF row (TLIN2029-Q1 £7.75 v £0.40 sourced). 7 catalogue
+    // AEC-Q parts in QFN / VSON, 10k p10–p90 £0.37–1.75.
+    { kind: 'can_lin', test: /^(?!.*\b(mcu|microcontroller|soc|processor|sbc|system basis)\b).*(\b(can|lin|flexray)\b.*\b(transceiver|phy)\b|\b(transceiver|phy)\b.*\b(can|lin|flexray)\b)/i, row: R(0.37, 1.75, 'CAN / LIN transceiver QFN', [0.37, 1.75]) },
+    { kind: 'rf', test: /\brf\b|radar|transceiver|mmic|\bghz\b|wireless|bluetooth|wifi|gnss|gps/i, row: R(1, 12, 'RF IC QFN', [3, 22]) },
     { kind: 'mcu_c', test: /(complex|32-?bit|cortex-m[47]|arm).*(mcu|micro)|(mcu|micro).*(complex|32-?bit|cortex-m[47])/i, row: R(1.5, 9, 'complex MCU QFN', [3, 18]) },
     { kind: 'mcu', test: /\bmcu\b|microcontroller/i, row: R(0.18, 1.8, 'simple MCU QFN', [3, 18]) },
     { kind: 'phy', test: /ethernet|\bphy\b|\bcan\b|\blin\b|interface/i, row: R(0.5, 5, 'interface / PHY QFN', [0.8, 9]) },
@@ -117,6 +126,9 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
     { kind: 'fpga_l', test: /fpga.*(large|ultrascale|kintex|virtex|stratix|arria)/i, row: R(30, 250, 'large FPGA') },
     { kind: 'fpga', test: /fpga|cpld/i, row: R(6, 40, 'small FPGA', [12, 60]) },
     { kind: 'ddr', test: /ddr|lpddr|sdram|dram|emmc|nand/i, row: R(1.5, 12, 'DDR / NAND memory BGA', [3, 20]) },
+    // Round 5: an MCU in BGA (TC3xx / S32K3 BGA / i.MX RT) took the SoC row (i.MX RT1062 £53.50 v £3.95 sourced). 12 catalogue
+    // parts, 10k p10–p90 £6.8–31.9 (AEC-Q 10: £15.5–32.5; the 2 non-automotive parts £3.36 / £6.48).
+    { kind: 'mcu', test: /\bmcu\b|microcontroller|cortex-m|crossover/i, row: R(3.3, 32, 'MCU in BGA', [15.5, 32.5]) },   // non-automotive lower bound: i.MX RT1062 £3.36, STM32H735 £6.48
     { kind: 'soc', test: /\bsoc\b|application|processor|\bmcu\b|\bcpu\b/i, row: R(18, 160, 'SoC / processor BGA', [22, 200]) },
     { kind: 'any', row: R(6, 160, 'BGA IC (unidentified)', [18, 200]) },
   ],
@@ -139,6 +151,11 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
   through_hole: [
     { kind: 'elec_l', test: /electrolytic.*(\d{3,}\s*[uµ]F|\d{2,}x\d{2,}|large)|(\d{3,}\s*[uµ]F).*electrolytic/i, row: R(0.22, 2.8, 'large electrolytic', [0.4, 3.5]) },
     { kind: 'elec', test: /electrolytic|\balu\b/i, row: R(0.12, 0.9, 'electrolytic capacitor', [0.2, 1.2]) },   // Nichicon UCD 100 µF/100 V $1.04, EEE-FK 100 µF/35 V $0.17–0.27 @1k (2026-10-01)
+    // Round 5: DC-link film £0.72–6.75 (4 catalogue parts: EZP-V80506MTS, MKP1848C, B32776); X / Y safety film £0.11–0.15 (2 parts) —
+    // a film capacitor fell to "through-hole part (unidentified)" (£0.49 v £7.20 sourced).
+    { kind: 'film_dclink', test: /dc-?link/i, row: R(0.7, 6.8, 'DC-link film capacitor', [0.7, 6.8]) },
+    { kind: 'film_safety', test: /\b(x1|x2|y1|y2)\b.*\b(cap|capacitor|film)\b|\b(cap|capacitor|film)\b.*\b(x1|x2|y1|y2)\b|suppression cap|safety.*film|film.*safety/i, row: R(0.08, 0.3, 'X / Y safety film capacitor', [0.1, 0.35]) },
+    { kind: 'film', test: /film cap|film capacitor|\bmkp\b|\bmkt\b|polypropylene/i, row: R(0.1, 2, 'film capacitor', [0.15, 3]) },
     { kind: 'to220', test: /to-?220|to-?247|to-?263/i, row: R(0.14, 2.8, 'TO-220 / D2PAK power device', [0.4, 5]) },
     { kind: 'pwr_conn', test: /power connector|automotive.*connector/i, row: R(0.4, 4.5, 'TH power connector', [2, 12]) },
     { kind: 'conn', test: /connector|header|terminal|socket/i, row: R(0.12, 1.8, 'TH connector', [0.4, 4]) },
@@ -155,9 +172,15 @@ const TABLE: Record<string, Array<{ kind: string; test?: RegExp; row: Row }>> = 
 /** Discrete semiconductors have no component type of their own in the prompt's
  *  list, so they arrive as fuse_tvs / ic_soic / passive. Description wins. */
 const DISCRETE: Array<{ test: RegExp; row: Row }> = [
+  // Round 5 (13 Oct 2026): from the catalogue's own distributor prices at 10k (p10–p90). A 1200 V SiC MOSFET used to
+  // fall to "power MOSFET DPAK-class" (£1.01 v £22.62 sourced) — SiC / GaN (24 parts, AEC-Q 17) and IGBTs (16 parts).
+  { test: /\b(sic|silicon carbide|coolsic|elitesic|gan|gallium nitride|coolgan)\b.*\b(mosfet|fet|transistor|hemt|diode|schottky|switch)\b|\b(mosfet|fet|transistor|hemt|diode|schottky)\b.*\b(sic|silicon carbide|gan|gallium nitride)\b/i,
+    row: R(1.6, 18, 'SiC / GaN power semiconductor', [4.3, 19]) },
+  { test: /\bigbt\b/i, row: R(0.95, 4.5, 'discrete IGBT', [0.95, 4.5]) },
   { test: /\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b.*\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt|npn|pnp)\b|\b(diode|tvs|transistor|mosfet|\bfet\b|\besd\b|rectifier|zener|schottky|bjt|npn|pnp)\b.*\b(SOT-?23|SOD-?123|SOD-?323|SOD-?523|SC-?70|SOT-?323|SOT-?363)\b/i,
     row: R(0.015, 0.1, 'SOT-23 / SOD-123 discrete', [0.03, 0.12]) },   // BC847 $0.017–0.023, 2N7002 AEC $0.025–0.049, BSS138 $0.045–0.06 @3k (2026-10-01)
-  { test: /\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak)\b.*(mosfet|fet|transistor)|(mosfet|fet|transistor).*\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak)\b/i,
+  // "LFPAK56" / "TOLL" did not match \blfpak\b and fell to "SOIC IC (unidentified)" (round 5).
+  { test: /\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak\d*|toll|tolt)\b.*(mosfet|fet|transistor)|(mosfet|fet|transistor).*\b(dpak|d2pak|to-?252|to-?263|powerpak|lfpak\d*|toll|tolt)\b/i,
     row: R(0.15, 1.5, 'power MOSFET DPAK-class', [0.35, 3]) },
 ];
 
@@ -173,6 +196,8 @@ function pick(ct: string, text: string, refDes = ''): { key: string; row: Row } 
     const ref = refDes.toUpperCase();
     const want = /^R/.test(ref) ? 'res' : /^C/.test(ref) ? 'cap' : /^(L|FB)/.test(ref) ? 'ind'
       : CAP_WORDS.test(text) ? 'cap' : IND_WORDS.test(text) ? 'ind' : null;
+    const tant = /tantal|polymer tant/i.test(text) ? rows.find(x => x.kind === 'tant') : undefined;
+    if (tant) return { key: `${ct}.tant`, row: tant.row };
     if (want) {
       const r = rows.find(x => x.kind === want || (want === 'ind' && x.kind === 'fb') || (want === 'cap' && x.kind === 'cap_c0g' && /c0g|np0/i.test(text)))
         ?? rows.find(x => x.kind === want);
@@ -213,6 +238,7 @@ export function tableTypeOf(componentType: string, pkg = '', description = ''): 
   const size = (/(?:^|[^0-9])(0402|0603|0805|1206|1210|2512)(?![0-9])/.exec(`${ct} ${p}`) ?? [])[1];
   if (/^(resistor|capacitor|inductor|ferrite)/.test(ct) || ct.startsWith('passive')) {
     if (ct === 'capacitor_electrolytic' || /electrolytic|radial|tht|through/.test(p)) return 'through_hole';
+    if (/tantal|polymer tant/.test(p)) return 'passive_1206';   // case A–E (3216–7343): not an 0603 MLCC (round 5)
     return size === '0402' ? 'passive_0402' : size === '0603' ? 'passive_0603' : size === '0805' ? 'passive_0805' : size ? 'passive_1206' : 'passive_0603';
   }
   if (ct.startsWith('ic') || ct === 'unknown') {

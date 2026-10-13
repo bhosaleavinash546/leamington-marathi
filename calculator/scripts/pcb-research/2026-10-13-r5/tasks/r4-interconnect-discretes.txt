@@ -1,0 +1,6 @@
+Task r4 (extend): interconnect, protection, timing, LEDs, relays not reached in round 4. Priority order:
+1. Coax / data connectors on the board: Rosenberger FAKRA PCB jack (59S20K-40MT5 or current) and H-MTD (E6Z… / E6S20A-40MT5), Amphenol FAKRA (FA1-…), TE HFM PCB header, TE MATEnet PCB header (2-2304… / 9-2304… exact code, 2-way)
+2. Wire-to-board automotive: Molex MX150 headers (33472-…, 34691-…), Molex Mini50 retry, Molex MX123, TE AMPSEAL 16, Hirose GT8E / GT17 headers, JST automotive (JWPF), USB-C automotive receptacle (Amphenol 12401610E4#2A or similar AEC-Q listed)
+3. Discretes / protection AEC-Q101: Diodes DMN3404LQ-7 (retry) / DMN6075SQ-7, Vishay SMBJ24A-M3 automotive / VSMB, TI ESD2CANFD24-Q1 (ESD2CANFD24DBZRQ1) / TPD1E10B06-Q1, Nexperia PESD2CANFD27V / PMEG3010 / PZU5.1, Littelfuse SMF / SZESD…
+4. Timing: NDK NX2016SA / NX3225GA automotive, Abracon ABM3B, SiTime SiT9396 / SiT2024B automotive, TXC automotive crystals (7M / 8Y automotive codes), Epson FA-128 automotive code
+5. LEDs / relays / fuses: Nichia NSSW…AT / NJSW…AT automotive, Lumileds LUXEON automotive, OSRAM KW CSLNM1 retry, Panasonic CT / CV automotive relays, TE V23234, Littelfuse 501 / 885 automotive fuses

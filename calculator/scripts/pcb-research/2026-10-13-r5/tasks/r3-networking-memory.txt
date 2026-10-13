@@ -1,0 +1,4 @@
+Task r3 (extend): networking and memory still unpriced. Priority order:
+1. CAN / LIN / Ethernet: TI TCAN1463-Q1 (TCAN1463DMTRQ1 / TCAN1463DRQ1), TLIN1028-Q1, DP83TD555J-Q1, Infineon TLE9371VSJ, NXP SJA1124 / TJA1028 (exact /2 code), Microchip ATA6628 / LAN8651, onsemi NCV7410
+2. SerDes / USB: ADI MAX96793 (GMSL3), TI DS90UB638-Q1 (DS90UB638TRGZRQ1) / DS90UB662-Q1, TUSB1064-Q1, Microchip USB7206C automotive / USB7002, Diodes PI3EQX1004 automotive, TI TPS25772-Q1
+3. Memory (automotive, distributor-listed codes only): ISSI IS46QR16512A / IS46TR16256BL automotive DDR4 / DDR3L (the IS46 prefix), ISSI IS43LQ / IS46LQ automotive LPDDR4, Micron MT40A1G16KD-062E AUT, Infineon S25HS512TFABHI013 / S25HL512T, GigaDevice GD25Q128E automotive (GD25B / -A grade), Kioxia THGBMJG6C1LBAU7 automotive eMMC, Swissbit / SkyHigh automotive eMMC if listed
