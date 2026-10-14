@@ -19,20 +19,20 @@ export function reportOptionsHTML(): string {
   return `<div class="sw-rep" id="sw-rep" data-no-live>
     <div class="sw-rep-grid">
       <div class="sw-rep-f"><label class="sw-label" for="sw-rep-profile">Report type</label>
-        <select id="sw-rep-profile" class="sw-input">${prof}</select>
+        <select id="sw-rep-profile" class="sw-config-sel">${prof}</select>
         <p class="sw-rep-hint" id="sw-rep-what">${esc(SW_REPORT_PROFILES.vehicle.what)}</p></div>
       <div class="sw-rep-f"><label class="sw-label" for="sw-rep-body">Body for the vehicle skeleton</label>
-        <select id="sw-rep-body" class="sw-input">${body}</select>
+        <select id="sw-rep-body" class="sw-config-sel">${body}</select>
         <p class="sw-rep-hint">A schematic top view: parts are placed by vehicle zone.</p></div>
     </div>
     <fieldset class="sw-rep-scope" id="sw-rep-domains" hidden><legend class="sw-label">Domains in the report</legend><div class="sw-rep-checks" id="sw-rep-domain-list"></div></fieldset>
     <div class="sw-rep-scope" id="sw-rep-modules-wrap" hidden><label class="sw-label" for="sw-rep-modules">Modules in the report (Ctrl / ⌘ to pick several)</label>
-      <select id="sw-rep-modules" class="sw-input" multiple size="8"></select></div>
+      <select id="sw-rep-modules" class="sw-config-sel" multiple size="8"></select></div>
     <div class="sw-rep-grid">
-      <div class="sw-rep-f"><label class="sw-label" for="sw-rep-by">Prepared by</label><input id="sw-rep-by" class="sw-input" type="text" maxlength="80" autocomplete="name"></div>
-      <div class="sw-rep-f"><label class="sw-label" for="sw-rep-for">Prepared for</label><input id="sw-rep-for" class="sw-input" type="text" maxlength="80"></div>
-      <div class="sw-rep-f"><label class="sw-label" for="sw-rep-ref">Document reference</label><input id="sw-rep-ref" class="sw-input" type="text" maxlength="60"></div>
-      <div class="sw-rep-f"><label class="sw-label" for="sw-rep-conf">Confidentiality label</label><input id="sw-rep-conf" class="sw-input" type="text" maxlength="60" placeholder="e.g. Confidential"></div>
+      <div class="sw-rep-f"><label class="sw-label" for="sw-rep-by">Prepared by</label><input id="sw-rep-by" class="sw-config-inp" type="text" maxlength="80" autocomplete="name"></div>
+      <div class="sw-rep-f"><label class="sw-label" for="sw-rep-for">Prepared for</label><input id="sw-rep-for" class="sw-config-inp" type="text" maxlength="80"></div>
+      <div class="sw-rep-f"><label class="sw-label" for="sw-rep-ref">Document reference</label><input id="sw-rep-ref" class="sw-config-inp" type="text" maxlength="60"></div>
+      <div class="sw-rep-f"><label class="sw-label" for="sw-rep-conf">Confidentiality label</label><input id="sw-rep-conf" class="sw-config-inp" type="text" maxlength="60" placeholder="e.g. Confidential"></div>
     </div>
     <p class="sw-rep-status" id="sw-rep-status" role="status" aria-live="polite"></p>
   </div>`;
