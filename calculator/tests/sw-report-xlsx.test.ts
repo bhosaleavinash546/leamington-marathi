@@ -45,6 +45,16 @@ describe('the vehicle workbook', () => {
     chk.eachRow((row, i) => { if (i >= 9 && typeof row.getCell(3).value === 'object' && row.getCell(3).value && 'formula' in (row.getCell(3).value as object)) n++; });
     expect(n).toBeGreaterThan(result.modules.length * 2);
   });
+  it('cached results read correctly before any recalculation (shares, spend totals)', async () => {
+    const { wb } = await book('vehicle');
+    const res = (c: ExcelJS.CellValue) => Number(typeof c === 'object' && c && 'result' in c ? (c as ExcelJS.CellFormulaValue).result : c);
+    const b = wb.getWorksheet('Cost build-up')!;
+    let total = NaN;
+    b.eachRow(r => { if (r.getCell(2).value === 'Programme total') total = res(r.getCell(6).value); });
+    expect(total).toBeCloseTo(1, 9);
+    const sp = wb.getWorksheet('Spend by year')!;
+    sp.eachRow(r => { if (r.getCell(2).value === 'Total') expect(res(r.getCell(3).value)).toBeGreaterThan(0); });
+  });
   it('money is in the report currency: a € workbook is the £ one × the rate', async () => {
     const gbp = await book('vehicle'), eur = await book('vehicle', {}, { code: 'EUR', sym: '€', perGbp: 1.17 });
     const tot = (wb: ExcelJS.Workbook) => { const reg = wb.getWorksheet('Module register')!; let v = 0; reg.eachRow(r => { const c = r.getCell(2).value; if (c === 'Programme total') v = Number((r.getCell(20).value as ExcelJS.CellFormulaValue).result); }); return v; };

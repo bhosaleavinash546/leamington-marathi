@@ -150,6 +150,7 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
     ws.addImage(id, { tl: { col: col - 1 + 0.05, row: row - 1 + 0.1 }, ext: { width: widthPx, height: h }, editAs: 'oneCell' });
     return Math.ceil(h / 20) + 1;   // rows used at 15 pt ≈ 20 px
   };
+const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const v = ws.getCell(rr, c).value; return typeof v === 'number' ? v : Number((v as ExcelJSType.CellFormulaValue | null)?.result ?? 0); };
   const has = (id: string) => md.sections.some(x => x.id === id);
   const v = md.profile;
   const want = {
@@ -455,7 +456,7 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
   const totRow = ++br;
   val(B, br, 2, md.slice.isWhole ? 'Programme total' : 'This report', undefined, font(11, C.navy, true), 'left'); val(B, br, 3, F(`C${nreRow}+C${lifeRow}`, X(md.slice.total)), NF.money);
   val(B, br, 4, 0, NF.money, font(9, C.muted)); val(B, br, 5, F(`C${br}`, X(md.slice.total)), NF.money, font(9, C.muted)); strong(B, br, 2, 7);
-  for (let i = firstEl; i <= totRow; i++) val(B, i, 6, F(`C${i}/$C$${totRow}`, 0), NF.pct);
+  for (let i = firstEl; i <= totRow; i++) val(B, i, 6, F(`C${i}/$C$${totRow}`, cachedNum(B, i, 3) / (cachedNum(B, totRow, 3) || 1)), NF.pct);
   const BT = `${BN}!$C$${totRow}`, BNRE = `${BN}!$C$${nreRow}`, BLIFE = `${BN}!$C$${lifeRow}`;
   check('Cost build-up total = module register total', BT, X(md.slice.total));
   const wfCats = Array.from({ length: totRow - firstEl + 1 }, (_, i) => String(B.getCell(firstEl + i, 2).value));
@@ -500,7 +501,7 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
     val(ws, dr, 7, F(`SUM(G${first}:G${last})`, d.effortPM), NF.pm);
     for (const [c, vv] of [[8, d.nre], [9, d.lifecycle], [10, d.total]] as Array<[number, number]>) val(ws, dr, c, F(`SUM(${A(c)}${first}:${A(c)}${last})`, X(vv)), NF.money);
     strong(ws, dr, 2, 11);
-    for (let i = first; i <= dr; i++) val(ws, i, 11, F(`J${i}/$J$${dr}`, 0), NF.pct);
+    for (let i = first; i <= dr; i++) val(ws, i, 11, F(`J${i}/$J$${dr}`, cachedNum(ws, i, 10) / (cachedNum(ws, dr, 10) || 1)), NF.pct);
     domTotalRef.set(d.category, `${DNm}!$J$${dr}`);
     check(`${d.label}: domain total`, `${DNm}!$J$${dr}`, X(d.total));
     charts.push({ sheet: ws.name, kind: 'bar', title: 'Modules: engineering and lifecycle', stacked: true, reverseCats: true, numFmt: NF.M, legend: 'b',
@@ -624,8 +625,8 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
     });
     const pl = 8 + yrs.length, pt = pl + 1;
     val(P, pt, 2, 'Total', undefined, font(10, C.navy, true), 'left');
-    for (let c = 3; c <= 8; c++) val(P, pt, c, F(`SUM(${A(c)}9:${A(c)}${pl})`, 0), NF.money);
-    (P.getCell(pt, 8).value as ExcelJSType.CellFormulaValue).result = X(md.spend.nominalTotal);
+    const colSum = (k: 'engineering' | 'maintenance' | 'licences' | 'royalties' | 'cloud' | 'total') => X(yrs.reduce((a, y) => a + y[k], 0));
+    (['engineering', 'maintenance', 'licences', 'royalties', 'cloud', 'total'] as const).forEach((k, i) => val(P, pt, 3 + i, F(`SUM(${A(3 + i)}9:${A(3 + i)}${pl})`, colSum(k)), NF.money));
     strong(P, pt, 2, 9);
     if (!(p.discountRatePct ?? 0)) check('Spend by year (nominal) = programme total', `${PN}!$H$${pt}`, X(s.grandTotal));
     const keys = ['Engineering', 'Maintenance', 'Licences', 'Royalties', 'Cloud'];
@@ -732,7 +733,7 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
       const rr = 9 + i, amt = lines.filter(l => l.grade === g).reduce((a, l) => a + l.amount, 0);
       const cell = val(E, rr, 2, GRADE_NAME[g], undefined, font(10, GRADE_C[g][0], true), 'left'); cell.fill = fill(GRADE_C[g][1]);
       val(E, rr, 3, F(`SUMIF($D$${l0}:$D$${l1},B${rr},$E$${l0}:$E$${l1})`, X(amt)), NF.money);
-      val(E, rr, 4, F(`C${rr}/SUM($C$9:$C$${8 + grades.length})`, 0), NF.pct);
+      val(E, rr, 4, F(`C${rr}/SUM($C$9:$C$${8 + grades.length})`, amt / (lines.reduce((a, l) => a + l.amount, 0) || 1)), NF.pct);
       val(E, rr, 5, `× ${SW_MC_RANGE_BY_GRADE[g][0]} – × ${SW_MC_RANGE_BY_GRADE[g][2]}`, undefined, font(9, C.muted), 'right');
     });
     const gt = 9 + grades.length;

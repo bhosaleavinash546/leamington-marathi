@@ -54,16 +54,42 @@ export function fillReportScope(root: ParentNode, result: SWProgramResult): void
   const dl = root.querySelector<HTMLElement>('#sw-rep-domain-list');
   const ms = root.querySelector<HTMLSelectElement>('#sw-rep-modules');
   if (!dl || !ms) return;
-  const ticked = new Set(Array.from(dl.querySelectorAll<HTMLInputElement>('input:checked')).map(i => i.value));
+  const domNow = Array.from(dl.querySelectorAll<HTMLInputElement>('input:checked')).map(i => i.value);
+  const ticked = new Set(domNow.length || dl.children.length ? domNow : stored.domains ?? []);
   const cats = [...new Map(result.modules.map(m => [m.category, m.categoryLabel])).entries()].sort((a, b) => a[0].localeCompare(b[0]));
   dl.innerHTML = cats.map(([c, l]) => `<label><input type="checkbox" value="${esc(c)}"${ticked.has(c) ? ' checked' : ''}> ${esc(l)}</label>`).join('');
-  const picked = new Set(Array.from(ms.selectedOptions).map(o => o.value));
+  const msNow = Array.from(ms.selectedOptions).map(o => o.value);
+  const picked = new Set(msNow.length || ms.options.length ? msNow : stored.modules ?? []);
   ms.innerHTML = cats.map(([c, l]) => `<optgroup label="${esc(l)}">${result.modules.filter(m => m.category === c)
     .map(m => `<option value="${esc(m.moduleId)}"${picked.has(m.moduleId) ? ' selected' : ''}>${esc(m.moduleName)}</option>`).join('')}</optgroup>`).join('');
 }
 
-/** Show the scope picker the chosen report needs. */
+// The options survive a panel re-render (a vehicle demo rebuilds the panel) and a reload in this browser: the user typed
+// them once. Browser storage is a per-viewer convenience only — read and written in try / catch.
+const STORE_KEY = 'cv-sw-report-options';
+interface StoredOptions { profile?: string; body?: string; by?: string; for?: string; ref?: string; conf?: string; domains?: string[]; modules?: string[] }
+let stored: StoredOptions = (() => { try { return JSON.parse(localStorage.getItem(STORE_KEY) ?? '{}') as StoredOptions; } catch { return {}; } })();
+const FIELDS: Array<[keyof StoredOptions, string]> = [['profile', 'sw-rep-profile'], ['body', 'sw-rep-body'], ['by', 'sw-rep-by'], ['for', 'sw-rep-for'], ['ref', 'sw-rep-ref'], ['conf', 'sw-rep-conf']];
+function saveOptions(root: ParentNode): void {
+  const next: StoredOptions = {};
+  for (const [k, id] of FIELDS) { const el = root.querySelector<HTMLInputElement | HTMLSelectElement>(`#${id}`); if (el) (next as Record<string, unknown>)[k] = el.value; }
+  next.domains = Array.from(root.querySelectorAll<HTMLInputElement>('#sw-rep-domain-list input:checked')).map(i => i.value);
+  const ms = root.querySelector<HTMLSelectElement>('#sw-rep-modules');
+  next.modules = ms ? Array.from(ms.selectedOptions).map(o => o.value) : [];
+  stored = next;
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(next)); } catch { /* private window — kept in memory */ }
+}
+
+/** Show the scope picker the chosen report needs; restore what the user typed before. */
 export function wireReportOptions(root: ParentNode): void {
+  for (const [k, id] of FIELDS) {
+    const el = root.querySelector<HTMLInputElement | HTMLSelectElement>(`#${id}`);
+    const v = stored[k];
+    if (el && typeof v === 'string' && (el.tagName !== 'SELECT' || Array.from((el as HTMLSelectElement).options).some(o => o.value === v))) el.value = v;
+  }
+  const rep = (root as Element).id === 'sw-rep' ? root : root.querySelector('#sw-rep');
+  rep?.addEventListener('input', () => saveOptions(root));
+  rep?.addEventListener('change', () => saveOptions(root));
   const sel = root.querySelector<HTMLSelectElement>('#sw-rep-profile');
   const sync = () => {
     const p = (sel?.value ?? 'vehicle') as SWReportProfile;
