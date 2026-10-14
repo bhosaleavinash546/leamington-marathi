@@ -91,12 +91,15 @@ export const DEFAULT_SW_RATE_LIBRARY: SWRateLibrary = {
                        'Lower effort reflects leaner process, not lower scope — pair with higher risk weighting. Supplier margin added on top.'),
   },
 
-  // Median of four engineering-services firms' latest published margins: ALTEN 8.5 % (operating margin on activity,
-  // 2025), LTTS 14.9 % (EBIT, FY25), KPIT 21.0 % (EBITDA, FY25), Tata Elxsi 26.3 % (PBT, FY25) → (14.9 + 21.0) / 2.
-  // The measures differ (EBIT / EBITDA / PBT), said so; read from search results (costing review data, 14 Oct 2026).
-  supplierMargin: E(0.18,
-    'Median of ALTEN 8.5 % (op. margin 2025), LTTS 14.9 % (EBIT FY25), KPIT 21.0 % (EBITDA FY25), Tata Elxsi 26.3 % (PBT FY25)',
-    '2026-10', 'Low', 'Mixed margin measures; set your own supplier\'s margin when known. Price = cost ÷ (1 − margin).'),
+  // Median of six engineering-services firms' latest published margins (open-items round, 14 Oct 2026 — two German firms
+  // added; each figure re-checked by an independent search): Bertrandt −3.7 % (EBIT −€36M on €978M output, FY2024/25),
+  // EDAG −1.8 % (adjusted EBIT 2025), ALTEN 8.5 % (operating margin on activity, 2025), LTTS 14.9 % (EBIT, FY25), KPIT
+  // 21.0 % (EBITDA, FY25), Tata Elxsi 26.3 % (PBT, FY25) → (8.5 + 14.9) / 2 = 11.7 %. It was 18 % on the four without the
+  // German firms (three of them Indian). The measures differ (EBIT / EBITDA / PBT) and the German years are a downturn —
+  // Bertrandt's medium-term target is 6–9 % — said so; the range (−3.7 … 26.3 %) is why it is graded Low.
+  supplierMargin: E(0.117,
+    'Median of Bertrandt −3.7 % (EBIT FY24/25), EDAG −1.8 % (adj. EBIT 2025), ALTEN 8.5 % (op. margin 2025), LTTS 14.9 % (EBIT FY25), KPIT 21.0 % (EBITDA FY25), Tata Elxsi 26.3 % (PBT FY25)',
+    '2026-10', 'Low', 'Mixed margin measures, range −3.7 … 26.3 %; set your own supplier\'s margin when known. Price = cost ÷ (1 − margin).'),
 
   // ASIL uplift — ONE factor on total effort (software review P1 #20, Oct 2026). It was ×1.35–3.20 on development AND a
   // test fraction rising 0.35 → 1.80 on top (an ASIL-D module's testing ≈ 16× a QM one), against ×1.26–×1.8 in every

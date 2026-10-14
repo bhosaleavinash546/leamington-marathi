@@ -239,7 +239,7 @@ export interface SWProgramInputs {
    *  a typed custom person-months is the user's own figure and is not scaled. 1 / absent = uncalibrated (P2 #21). */
   effortCalibration?:       number;
   /** Development duration, months (feasibility → SOP). Tool licences are paid over it, and the phase timeline is
-   *  scaled to it. Absent = SW_DEFAULT_DEVELOPMENT_MONTHS, the tool's own M1–M90 timeline (software review P3 #17). */
+   *  scaled to it. Absent = SW_DEFAULT_DEVELOPMENT_MONTHS, 54 months (Volkswagen's stated cycle — SW_DEVELOPMENT_BASIS; it was the tool's own M1–M90 timeline). */
   developmentMonths?:       number;
   /** Share of the vehicles built that use the cloud back-end (0–1). Absent = 1 (every vehicle connected). */
   connectedVehicleShare?:   number;
@@ -260,6 +260,11 @@ export interface SWProgramInputs {
   toolSeatGBPPerYear?:      number;
   /** Wage escalation on the sustaining team, % / yr. Absent = 0 (real terms). */
   wageEscalationPct?:       number;
+  /** Years of security monitoring, vulnerability response and patches AFTER the last vehicle is built (UN R155 /
+   *  R156: the duty runs until the end of life of all vehicles of the type). Absent = SW_POST_EOP_YEARS; 0 = none. */
+  postProductionSupportYears?: number;
+  /** Share of the production-years tail team kept for that support (0–1). Absent = SW_POST_EOP_SHARE. */
+  postProductionSupportShare?: number;
   /** Vehicle types that share the organisation's CSMS / SUMS certification (UNECE R155 / R156). This programme carries
    *  1 ÷ that share of it. Absent = 1 (this programme carries all of it). */
   csmsTypesSharing?:        number;
@@ -695,8 +700,8 @@ export const SW_MODULES: SWModuleDef[] = [
     annualToolLicenceGBP: 168_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 120_000,
     calibrationFractionBase: 0.02,
     perVehicleRoyaltyGBP: Math.round(25 / USD_PER_GBP * 100) / 100,
-    royaltyBasis: 'Unsourced placeholder ~$25 / vehicle for Google Automotive Services (GAS) or a QNX runtime licence — neither price is public; Android Automotive OS itself is open source with no licence fee (costing review #6). Replace with your supplier quote.',
-    notes: 'Google AAOS licence fee (~$25/vehicle) or QNX royalty. Boot < 4s target.',
+    royaltyBasis: 'Unsourced placeholder ~$25 / vehicle for Google Automotive Services (GAS) or a QNX runtime licence — neither price is public: Google does not publish a GAS fee, and BlackBerry licenses QNX per unit but publishes no per-vehicle royalty (FY26 QNX revenue US$268M, royalty backlog ~US$950M, 275M+ vehicles — SEC 10-K). Android Automotive OS itself is open source with no licence fee. Replace with your supplier quote.',
+    notes: 'GAS or QNX per-unit licence (no public price). Boot < 4s target.',
   },
   {
     id: 'navigation', name: 'Navigation Stack', shortName: 'Navigation',
@@ -708,8 +713,8 @@ export const SW_MODULES: SWModuleDef[] = [
     annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 380_000,
     calibrationFractionBase: 0.02,
     perVehiclePerYearGBP: 11.5,
-    royaltyBasis: 'This module\'s own note: map data £8–15 / vehicle / yr — midpoint £11.50 (unsourced estimate; neither HERE nor TomTom publishes a per-car price), paid for the subscription years after each vehicle is built (default 3 — OEM map-update terms).',
-    notes: 'Map data licence: HERE ~£8-15/vehicle/yr OR TomTom similar. Real-time traffic API cloud cost significant.',
+    royaltyBasis: 'Map data £8–15 / vehicle / yr — midpoint £11.50, an unsourced estimate: neither HERE nor TomTom publishes a per-car price (TomTom FY25: automotive revenue €322M, backlog €2.4bn, no vehicle count), paid for the subscription years after each vehicle is built (default 3 — OEM map-update terms).',
+    notes: 'Map data licence (HERE / TomTom, no public per-car price). Real-time traffic API cloud cost significant.',
   },
   {
     id: 'voice_assistant', name: 'Vehicle Voice Assistant', shortName: 'Voice Assistant',
@@ -718,14 +723,14 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 65,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true, defaultCal: 'CAL4',
     testingFractionBase: 0.35, integrationFractionBase: 0.18, maintenancePctPerYear: 16,
-    // Cerence's own average price per unit is US$5.05 (TTM, Q4 FY25) and INCLUDES its connected (cloud) services, so the
-    // separate £450k / yr voice cloud is gone — it counted the cloud twice (costing review #5, Oct 2026; search result
-    // of Cerence's FY25 results, not the filing itself).
+    // Cerence's own average price per unit INCLUDES its connected (cloud) services, so the separate £450k / yr voice cloud
+    // is gone — it counted the cloud twice (costing review #5, Oct 2026). US$5.09 = TTM to Q2 FY2026 (US$5.05 at Q4 FY25),
+    // Cerence earnings decks filed with the SEC — re-checked 14 Oct 2026.
     annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.04,
-    perVehicleRoyaltyGBP: Math.round(5.05 / USD_PER_GBP * 100) / 100,
-    royaltyBasis: 'Cerence average price per unit US$5.05 (TTM, Q4 FY2025, includes connected services) at the app\'s USD_PER_GBP — read from a search result of Cerence\'s FY25 results.',
-    notes: 'On-device + cloud voice (Cerence, SoundHound). Cerence PPU $5.05 includes connected services (FY25).',
+    perVehicleRoyaltyGBP: Math.round(5.09 / USD_PER_GBP * 100) / 100,
+    royaltyBasis: 'Cerence average price per unit US$5.09 (TTM to Q2 FY2026; US$5.05 at Q4 FY2025; includes connected services) at the app\'s USD_PER_GBP — Cerence earnings decks filed with the SEC (EX-99), read via search results.',
+    notes: 'On-device + cloud voice (Cerence, SoundHound). Cerence PPU $5.09 (TTM Q2 FY26) includes connected services.',
   },
   {
     id: 'tcu_software', name: 'Telematics Control Unit (TCU) Software', shortName: 'TCU Software',
@@ -736,7 +741,11 @@ export const SW_MODULES: SWModuleDef[] = [
     testingFractionBase: 0.38, integrationFractionBase: 0.15, maintenancePctPerYear: 12,
     annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 90_000,
     calibrationFractionBase: 0.04,
-    notes: 'eCall path ASIL-B per EU regulation. 3GPP modem certification adds cost.',
+    // Cellular standard-essential patents: the Avanci vehicle licence is taken by the CAR MAKER, once per vehicle —
+    // 4G US$20 (5G US$32; 3G US$9; eCall only US$3), avanci.com, re-checked 14 Oct 2026.
+    perVehicleRoyaltyGBP: Math.round(20 / USD_PER_GBP * 100) / 100,
+    royaltyBasis: 'Avanci 4G vehicle licence (cellular standard-essential patents) US$20 per vehicle, paid once by the car maker — avanci.com published rate (5G US$32, 3G US$9, eCall only US$3), at the app\'s USD_PER_GBP. Set to 0 if your TCU supplier\'s price already carries it.',
+    notes: 'eCall path ASIL-B per EU regulation. 3GPP modem certification adds cost. Avanci cellular SEP licence US$20 (4G) / US$32 (5G) per vehicle.',
   },
   {
     id: 'connectivity_stack', name: 'Bluetooth / WiFi / 5G Connectivity Stack', shortName: 'Connectivity',
@@ -747,7 +756,7 @@ export const SW_MODULES: SWModuleDef[] = [
     testingFractionBase: 0.30, integrationFractionBase: 0.12, maintenancePctPerYear: 10,
     annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 35_000, annualCloudCostGBP: 20_000,
     calibrationFractionBase: 0.03,
-    notes: 'Qualcomm/NXP modem IP licensing. PTCRB/GCF certification. BT SIG licence fees.',
+    notes: 'Qualcomm/NXP modem IP licensing. PTCRB/GCF certification. Bluetooth: patent licence royalty-free; SIG qualification fee US$12,000 per product design (bluetooth.com fee schedule, from 1 Mar 2026) — one-off.',
   },
   {
     id: 'hmi_framework', name: 'App Framework & HMI Layer', shortName: 'HMI Framework',
@@ -758,7 +767,7 @@ export const SW_MODULES: SWModuleDef[] = [
     testingFractionBase: 0.30, integrationFractionBase: 0.15, maintenancePctPerYear: 14,
     annualToolLicenceGBP: 39_000, annualIPLicenceGBP: 90_000, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.02,
-    notes: 'Qt licence ~£90k/yr for automotive. 60fps rendering on large displays.',
+    notes: 'Qt licence ~£90k/yr (unsourced — The Qt Company publishes no automotive price; Qt Group 2025 distribution licences €56.8M across all industries). 60fps rendering on large displays.',
   },
 
   // ── CATEGORY D: Vehicle Domain Controllers ────────────────────────────────
@@ -1165,10 +1174,13 @@ export function swOverhead(prog: Pick<SWProgramInputs, 'burden' | 'overheadMulti
  *  3 years; some give 5 or lifetime (Citroën) — search results of OEM pages, Oct 2026. */
 export const SW_DEFAULT_SUBSCRIPTION_YEARS = 3;
 export const SW_SUBSCRIPTION_BASIS = '3 years of map updates per vehicle — Nissan, Subaru, Hyundai, Honda (2021–24) include 3; some brands 5 or lifetime (OEM pages, read from search results).';
-/** Connected-service life per vehicle. Audi offered basic telematics for 10 years; BMW, Mercedes-Benz and PSA for the
- *  vehicle's lifetime (Berg Insight via search results, 2015–16 — dated). 10 years is the lower of the two. */
-export const SW_DEFAULT_SERVICE_YEARS = 10;
-export const SW_SERVICE_BASIS = 'Each connected vehicle served 10 years from build: Audi offered basic telematics for 10 years, BMW, Mercedes-Benz and PSA for life (Berg Insight, 2015–16, read from search results — dated).';
+/** Connected-service life per vehicle — current OEM terms (re-checked 14 Oct 2026): GM OnStar Basics 8 years on model
+ *  year 2025+ (onstar.com, GM release Feb 2024); Tesla Standard Connectivity 8 years for cars ordered after 20 Jul 2022
+ *  (tesla.com); Toyota Safety / Service Connect up to 10 years (4G-dependent, 2022); Mercedes-Benz mbrace Connect 5 years
+ *  (US). The median, 8, replaces the 10 read from 2015–16 Berg Insight terms. A cellular network shutdown can end
+ *  service earlier (AT&T 3G off 22 Feb 2022 — EU 2G/3G phase-out 2025–2030 per Del. Reg. 2024/1180). */
+export const SW_DEFAULT_SERVICE_YEARS = 8;
+export const SW_SERVICE_BASIS = 'Each connected vehicle served 8 years from build — the median of current OEM terms: GM OnStar Basics 8 yr (MY2025+), Tesla Standard Connectivity 8 yr (ordered after 20 Jul 2022), Toyota up to 10 yr, Mercedes-Benz mbrace Connect 5 yr (US); OEM pages, re-checked 14 Oct 2026. A 2G / 3G / 4G shutdown can end it sooner.';
 /** Tools per engineer-seat-year. No public price (Vector CANoe: quote only; a full suite + interface "> $15k" is an
  *  anecdote). CostVision estimate = the module catalogue's tool £ at the default programme ÷ its engineer-years. */
 export const SW_TOOL_SEAT_GBP = 39_500;
@@ -1188,10 +1200,24 @@ export const SW_HOMOLOGATION = {
 } as const;
 export const SW_HOMOLOGATION_BASIS = 'Type approval ≈ $1M (S&P Global: R155 on one legacy model "can easily exceed $1M"); ISO 26262 assessor £600k (ASIL-D) / £250k; organisation CSMS £1.5M + SUMS £0.8M ÷ vehicle types sharing them — CostVision estimates.';
 
-/** Last programme year that carries cost: production + the longest per-vehicle tail. */
-export function swHorizon(prog: Pick<SWProgramInputs, 'programLifeYears' | 'subscriptionYears' | 'connectedServiceYears'>): number {
+/** Post-production security support (open-items round, 14 Oct 2026). UN R155 defines the post-production phase as
+ *  running "until the end-of-life of all vehicles under the vehicle type" and requires the CSMS to cover it (monitoring,
+ *  response); UN R156 requires updates to be possible during the vehicles' lifetime. No regulation states a number of
+ *  years, and no published study or price gives its cost. Years: Volkswagen / CARIAD (2023, via the press) — software
+ *  releases up to 10 years after end of production. Share: CostVision ASSUMPTION — a quarter of the production-years
+ *  tail team (security monitoring, vulnerability response, patch releases), graded unsourced. */
+export const SW_POST_EOP_YEARS = 10;
+export const SW_POST_EOP_SHARE = 0.25;
+export const SW_POST_EOP_BASIS = 'After the last build: each module\'s tail sustaining team × 25 % for 10 years — the duty is regulatory (UN R155: the post-production phase runs "until the end-of-life of all vehicles under the vehicle type"; R156: updates over the vehicles\' lifetime); 10 years = Volkswagen / CARIAD\'s stated software support after end of production (2023, via the press); 25 % is a CostVision assumption — no published cost.';
+
+/** Last programme year that carries cost: production + the longest per-vehicle tail, and the post-production support. */
+export function swHorizon(prog: Pick<SWProgramInputs, 'programLifeYears' | 'subscriptionYears' | 'connectedServiceYears'> & Pick<Partial<SWProgramInputs>, 'postProductionSupportYears' | 'includeMaintenanceCost'>): number {
   const n = Math.max(prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS, prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS, 1);
-  return prog.programLifeYears + n - 1;
+  const post = prog.includeMaintenanceCost === false ? 0 : postYears(prog);
+  return Math.max(prog.programLifeYears + n - 1, prog.programLifeYears + post);
+}
+function postYears(prog: Pick<Partial<SWProgramInputs>, 'postProductionSupportYears'>): number {
+  return Math.max(0, Math.round(prog.postProductionSupportYears ?? SW_POST_EOP_YEARS));
 }
 const dfAt = (r: number, t: number) => (r > 0 ? 1 / Math.pow(1 + r, t) : 1);
 const pvOf = (xs: number[], r: number) => xs.reduce((a, v, i) => a + v * dfAt(r, i + 1), 0);
@@ -1199,10 +1225,14 @@ const pvOf = (xs: number[], r: number) => xs.reduce((a, v, i) => a + v * dfAt(r,
 function cohortsInService(y: number, life: number, years: number): number {
   return Math.max(0, Math.min(y, life) - Math.max(1, y - years + 1) + 1);
 }
-/** Maintenance weight per production year: the sustaining profile × wage escalation. */
-export function maintenanceWeights(prog: Pick<SWProgramInputs, 'programLifeYears' | 'wageEscalationPct'>): number[] {
+/** Maintenance weight per programme year: the sustaining profile × wage escalation over production, then the
+ *  post-production security support (tail × share) for its years after the last build. */
+export function maintenanceWeights(prog: Pick<SWProgramInputs, 'programLifeYears' | 'wageEscalationPct'> & Pick<Partial<SWProgramInputs>, 'postProductionSupportYears' | 'postProductionSupportShare'>): number[] {
   const e = (prog.wageEscalationPct ?? 0) / 100;
-  return Array.from({ length: prog.programLifeYears }, (_, i) => (i < SW_MAINT_FULL_YEARS ? 1 : SW_MAINT_TAIL) * Math.pow(1 + e, i));
+  const life = prog.programLifeYears;
+  const share = prog.postProductionSupportShare ?? SW_POST_EOP_SHARE;
+  return Array.from({ length: life + postYears(prog) }, (_, i) =>
+    (i < SW_MAINT_FULL_YEARS ? 1 : SW_MAINT_TAIL) * (i >= life ? share : 1) * Math.pow(1 + e, i));
 }
 /** Royalties per programme year, nominal £: per vehicle built (each build year) + per vehicle per year for the
  *  subscription years after build. */
@@ -1422,8 +1452,12 @@ function snapshotInputs(prog: SWProgramInputs): SWProgramInputs {
   return { ...prog, modules: prog.modules.map(m => ({ ...m })) };
 }
 
-/** The tool's own development timeline (M1–M90, the phase table) — the default development duration. */
-export const SW_DEFAULT_DEVELOPMENT_MONTHS = 90;
+/** Default development duration, feasibility → SOP: Volkswagen's stated 54-month vehicle development cycle (Kai Grünitz,
+ *  IAA 2023 — automobile-propre, Motor1, Autocar; being cut to a 36-month target, ID.2 as pilot). Others: GM "around four
+ *  years" (CNBC 2022), Chinese OEMs ~18–24 months (Reuters, Bloomberg 2025–26). It replaces the tool's own unsourced M1–M90
+ *  timeline; the phase table scales to it. Undiscounted cost does not depend on it (tools follow engineer-years). */
+export const SW_DEFAULT_DEVELOPMENT_MONTHS = 54;
+export const SW_DEVELOPMENT_BASIS = '54 months feasibility → SOP: Volkswagen\'s stated development cycle (IAA 2023; target 36 months). GM "around four years" (2022); Chinese OEMs ~18–24 months. Set your programme\'s own.';
 
 /**
  * The fleet the modules' annual cloud figures describe. They were written as flat £ / yr for the default programme
@@ -1432,6 +1466,12 @@ export const SW_DEFAULT_DEVELOPMENT_MONTHS = 90;
  * reproduces the default programme exactly and scales any other one by its own fleet (P3 #17).
  */
 export const SW_CLOUD_REFERENCE_FLEET = 440_000;
+/** What is known about the cloud rate (open-items round, 14 Oct 2026). No OEM or analyst publishes a back-end cost per
+ *  vehicle; the one priced anchor is AWS IoT FleetWise's list price — US$0.60 per vehicle-month (first 10,000 vehicles),
+ *  US$0.45 the next 40,000, messages and storage extra (aws.amazon.com/iot-fleetwise/pricing) — i.e. US$5.4–7.2 per
+ *  vehicle-year for the data-collection service alone; it closed to new customers on 30 Apr 2026. The catalogue's
+ *  ≈ £10.8 per connected vehicle-year (all modules) stays an unsourced estimate. */
+export const SW_CLOUD_BASIS = 'Module cloud £ / yr ÷ reference fleet — an unsourced estimate (≈ £10.8 per connected vehicle-year, all modules). No OEM publishes a back-end cost; the only list price, AWS IoT FleetWise (US$0.60 / 0.45 per vehicle-month, messages and storage extra; closed to new customers 30 Apr 2026), is US$5.4–7.2 per vehicle-year for data collection alone.';
 
 /** Cloud cost over the programme, £ (PV when discounted): the sum of `cloudYearly`. */
 export function unitCloudGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct' | 'connectedVehicleShare' | 'subscriptionYears' | 'connectedServiceYears'>): number {
@@ -1473,6 +1513,7 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['Map / per-vehicle-year royalties', `${prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS} yr per vehicle`],
     ['Development tools', `£${Math.round(prog.toolSeatGBPPerYear ?? SW_TOOL_SEAT_GBP).toLocaleString('en-GB')} per engineer-seat-year`],
     ['Maintenance profile', `full ${SW_MAINT_FULL_YEARS} yr after SOP, then ${SW_MAINT_TAIL * 100} %; wage escalation ${prog.wageEscalationPct ?? 0} % / yr`],
+    ['Security support after the last build', `${postYears(prog)} yr at ${Math.round((prog.postProductionSupportShare ?? SW_POST_EOP_SHARE) * 100)} % of the tail team — ${SW_POST_EOP_BASIS}`],
     ['Homologation', (prog.includeHomologation ?? true) ? `on — organisation CSMS / SUMS shared by ${prog.csmsTypesSharing ?? 1} vehicle type(s)` : 'off'],
     ['Nominal effort basis', (() => {
       const on = prog.modules.filter(m => m.enabled);
@@ -1588,12 +1629,17 @@ export function swEvidenceLines(prog: SWProgramInputs, modules: SWModuleCostResu
     out.push({ kind: 'effort', label: `${m.moduleName} — engineering`, amount: effort, grade: eGrade, nre: true,
       basis: m.effortBasis === 'custom' ? 'your person-months' : m.effortBasis === 'size' ? 'COCOMO II on your KSLOC' : calibrated ? 'catalogue × your calibration' : 'module catalogue person-months (unsourced)' });
     out.push({ kind: 'tools', label: `${m.moduleName} — tools`, amount: m.toolchainCost, grade: prog.toolSeatGBPPerYear !== undefined ? 'entered' : 'estimate', nre: true, basis: SW_TOOL_SEAT_BASIS });
-    out.push({ kind: 'maintenance', label: `${m.moduleName} — maintenance`, amount: m.maintenanceCost, grade: 'estimate', nre: false, basis: SW_MAINT_BASIS });
+    // Production-years sustaining (a rule of thumb, estimate) and the post-production security support after the last
+    // build (an unsourced share — the duty is regulatory, its cost is not published).
+    const life = prog.programLifeYears;
+    const post = m.yearly.maintenance.reduce((a, v, i) => (i >= life ? a + v * dfAt(r, i + 1) : a), 0);
+    out.push({ kind: 'maintenance', label: `${m.moduleName} — maintenance`, amount: m.maintenanceCost - post, grade: 'estimate', nre: false, basis: SW_MAINT_BASIS });
+    if (post > 1e-6) out.push({ kind: 'postSupport', label: `${m.moduleName} — security support after the last build`, amount: post, grade: prog.postProductionSupportShare !== undefined ? 'entered' : 'unsourced', nre: false, basis: SW_POST_EOP_BASIS });
     const ip = pvOf(m.yearly.licences, r);
     out.push({ kind: 'licences', label: `${m.moduleName} — IP licences`, amount: ip, grade: 'unsourced', nre: false, basis: 'module catalogue £ / yr (unsourced)' });
     const roy = m.licensingCost - ip;
     if (Math.abs(roy) > 1e-6) out.push({ kind: 'royalties', label: `${m.moduleName} — royalties`, amount: roy, grade: /unsourced/i.test(def.royaltyBasis ?? 'unsourced') ? 'unsourced' : 'sourced', nre: false, basis: def.royaltyBasis ?? '' });
-    if (m.cloudCost) out.push({ kind: 'cloud', label: `${m.moduleName} — cloud`, amount: m.cloudCost, grade: 'unsourced', nre: false, basis: `module cloud £ / yr ÷ reference fleet (unsourced); ${SW_SERVICE_BASIS}` });
+    if (m.cloudCost) out.push({ kind: 'cloud', label: `${m.moduleName} — cloud`, amount: m.cloudCost, grade: 'unsourced', nre: false, basis: `${SW_CLOUD_BASIS} ${SW_SERVICE_BASIS}` });
   }
   if (summary.totalHomologation) out.push({ kind: 'homologation', label: 'Homologation (R155 / R156 / ISO 26262)', amount: summary.totalHomologation, grade: 'estimate', nre: true, basis: SW_HOMOLOGATION_BASIS });
   const fixedCloud = pvOf(summary.cloudFixedYearly, r);
@@ -1772,6 +1818,8 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   if (prog.burden) for (const [k, v] of Object.entries(prog.burden)) if (!fin(v) || v < 0 || v > 300) p.push(`burden ${k} must be 0–300 %`);
   if (prog.subscriptionYears !== undefined && (!fin(prog.subscriptionYears) || prog.subscriptionYears < 0 || prog.subscriptionYears > 20)) p.push('subscription years must be 0–20');
   if (prog.connectedServiceYears !== undefined && (!fin(prog.connectedServiceYears) || prog.connectedServiceYears < 1 || prog.connectedServiceYears > 25)) p.push('connected-service years must be 1–25');
+  if (prog.postProductionSupportYears !== undefined && (!fin(prog.postProductionSupportYears) || prog.postProductionSupportYears < 0 || prog.postProductionSupportYears > 30)) p.push('security support after the last build must be 0–30 years');
+  if (prog.postProductionSupportShare !== undefined && (!fin(prog.postProductionSupportShare) || prog.postProductionSupportShare < 0 || prog.postProductionSupportShare > 1)) p.push('security support share must be 0–100 %');
   if (prog.cloudFixedPerYearGBP !== undefined && (!fin(prog.cloudFixedPerYearGBP) || prog.cloudFixedPerYearGBP < 0 || prog.cloudFixedPerYearGBP > 1e9)) p.push('fixed cloud platform must be £0–1bn a year');
   if (prog.toolSeatGBPPerYear !== undefined && (!fin(prog.toolSeatGBPPerYear) || prog.toolSeatGBPPerYear < 0 || prog.toolSeatGBPPerYear > 1_000_000)) p.push('tools must be £0–1M per seat-year');
   if (prog.wageEscalationPct !== undefined && (!fin(prog.wageEscalationPct) || prog.wageEscalationPct < -10 || prog.wageEscalationPct > 30)) p.push('wage escalation must be −10–30 % a year');
@@ -1938,6 +1986,13 @@ export function computeSWProgram(
       unit: '£M',
     },
     {
+      parameter: 'Security support after the last build (0 vs 15 years)',
+      low:  _recomputeTotal(prog, { postYears: 0 }),
+      base: summary.grandTotal,
+      high: _recomputeTotal(prog, { postYears: 15 }),
+      unit: '£M',
+    },
+    {
       parameter: 'Map subscription (1 vs 7 years)',
       low:  _recomputeTotal(prog, { subscriptionYears: 1 }),
       base: summary.grandTotal,
@@ -1984,6 +2039,7 @@ type SWRecomputeOverrides = {
   companyBurdenPct?:   number;
   serviceYears?:       number;
   subscriptionYears?:  number;
+  postYears?:          number;
 };
 
 function _recomputeTotal(prog: SWProgramInputs, overrides: SWRecomputeOverrides): number {
@@ -2002,6 +2058,7 @@ function _recomputeSummary(prog: SWProgramInputs, overrides: SWRecomputeOverride
     burden: overrides.companyBurdenPct !== undefined ? { ...(prog.burden ?? SW_DEFAULT_BURDEN), companyPct: overrides.companyBurdenPct } : prog.burden,
     connectedServiceYears: overrides.serviceYears ?? prog.connectedServiceYears,
     subscriptionYears: overrides.subscriptionYears ?? prog.subscriptionYears,
+    postProductionSupportYears: overrides.postYears ?? prog.postProductionSupportYears,
     modules: prog.modules.map(m => ({
       ...m,
       asil:       overrides.asilOverride       ?? m.asil,

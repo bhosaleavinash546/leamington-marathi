@@ -113,13 +113,17 @@ describe('#11 per-vehicle royalties scale with volume', () => {
     expect(def('ivi_os').perVehicleRoyaltyGBP).toBeCloseTo(25 / USD_PER_GBP, 2);
     // Voice: Cerence's published price per unit (cockpit costing review #5) — it includes connected services, so the
     // module carries no separate cloud line.
-    expect(def('voice_assistant').perVehicleRoyaltyGBP).toBeCloseTo(5.05 / USD_PER_GBP, 2);
+    expect(def('voice_assistant').perVehicleRoyaltyGBP).toBeCloseTo(5.09 / USD_PER_GBP, 2);   // TTM to Q2 FY2026
     expect(def('voice_assistant').annualCloudCostGBP).toBe(0);
     expect(def('voice_assistant').royaltyBasis).toMatch(/Cerence/);
     expect(def('navigation').perVehiclePerYearGBP).toBe(11.5);
     for (const id of ['ivi_os', 'voice_assistant', 'navigation']) expect(def(id).annualIPLicenceGBP).toBe(0);
     expect(def('ivi_os').royaltyBasis).toMatch(/Unsourced placeholder/);
     expect(def('navigation').royaltyBasis).toMatch(/unsourced estimate/i);
+    // TCU: the Avanci cellular SEP vehicle licence (4G US$20, avanci.com published rate) — the car maker pays it once.
+    expect(def('tcu_software').perVehicleRoyaltyGBP).toBeCloseTo(20 / USD_PER_GBP, 2);
+    expect(def('tcu_software').royaltyBasis).toMatch(/Avanci 4G.*US\$20/);
+    expect(def('tcu_software').royaltyBasis).not.toMatch(/unsourced/i);
   });
 
   it('a built-vehicle royalty is volume × life × rate (no discount)', () => {

@@ -72,7 +72,9 @@ describe('#17 cloud per connected vehicle; tool licences over the development ye
   });
 
   it('the phase timeline follows the development duration; bad values are refused', () => {
-    expect(computeSWProgram(prog()).phases.map(p => p.months)).toEqual(['M1–M6', 'M7–M18', 'M19–M54', 'M55–M78', 'M79–M90']);
+    // The phase shares of the original M1–M90 timeline, scaled to the default 54 months (Volkswagen's stated cycle).
+    expect(computeSWProgram(prog(p => { p.developmentMonths = 90; })).phases.map(p => p.months)).toEqual(['M1–M6', 'M7–M18', 'M19–M54', 'M55–M78', 'M79–M90']);
+    expect(computeSWProgram(prog()).phases.map(p => p.months)).toEqual(['M1–M4', 'M5–M11', 'M12–M32', 'M33–M47', 'M48–M54']);
     expect(computeSWProgram(prog(p => { p.developmentMonths = 45; })).phases.at(-1)!.months).toBe('M40–M45');
     expect(validateSWInputs(prog(p => { p.developmentMonths = 2; })).join(' ')).toMatch(/development duration/);
     expect(validateSWInputs(prog(p => { p.connectedVehicleShare = 1.5; })).join(' ')).toMatch(/connected/);

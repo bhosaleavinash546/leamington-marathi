@@ -13,7 +13,7 @@
  */
 import { normaliseSWRegion, swLibraryBaseRate } from '../src/engine/sw-should-cost.js';
 import { SW_HUB_RATES } from '../src/engine/sw-country-rates.js';
-import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope, SW_POWERTRAIN_SCOPE, CYBER_UPLIFT_BY_CAL } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, SW_MODULES, SW_DEFAULT_OVERHEAD, applyPowertrainScope, SW_POWERTRAIN_SCOPE, CYBER_UPLIFT_BY_CAL, SW_DEFAULT_DEVELOPMENT_MONTHS } from '../src/engine/sw-should-cost.js';
 import type { SWPowertrain } from '../src/engine/sw-should-cost.js';
 import { rateValues } from '../src/engine/sw-rate-library.js';
 import type { SWModuleInput, SWReuse } from '../src/engine/sw-should-cost.js';
@@ -344,8 +344,8 @@ ${rows}        </tbody>
 
   <section>
     <div class="reveal"><div class="eyebrow">Cash-flow shape</div><h2><span class="n">06</span>When the NRE is spent</h2>
-      <p class="lede">The ${M(s.nreTotal)} of one-off engineering spreads across a 90-month programme. Series development is the peak-burn phase — half the entire NRE budget.</p></div>
-    <div class="card reveal"><div class="card-h"><span class="t">NRE spend by programme phase</span><span class="s">${M(s.nreTotal)} over 90 months</span></div>
+      <p class="lede">The ${M(s.nreTotal)} of one-off engineering spreads across a ${SW_DEFAULT_DEVELOPMENT_MONTHS}-month programme. Series development is the peak-burn phase — half the entire NRE budget.</p></div>
+    <div class="card reveal"><div class="card-h"><span class="t">NRE spend by programme phase</span><span class="s">${M(s.nreTotal)} over ${SW_DEFAULT_DEVELOPMENT_MONTHS} months</span></div>
       <div class="phases" id="phases">${phases}</div></div>
   </section>
 

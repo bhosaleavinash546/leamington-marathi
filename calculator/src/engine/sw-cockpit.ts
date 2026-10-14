@@ -255,7 +255,7 @@ export interface SWEvidence {
 const KIND_LABEL: Record<string, string> = {
   effort: 'Engineering effort (module catalogue)', tools: 'Development tools', maintenance: 'Maintenance',
   licences: 'IP licences (module catalogue)', royalties: 'Royalties', cloud: 'Cloud (per connected vehicle-year)',
-  homologation: 'Homologation', cloudFixed: 'Cloud platform (fixed)',
+  homologation: 'Homologation', cloudFixed: 'Cloud platform (fixed)', postSupport: 'Security support after the last build (share assumed)',
 };
 
 export function swEvidence(result: SWProgramResult): SWEvidence {
@@ -296,7 +296,10 @@ export interface SWRateCheck {
 
 export const RATE_EVIDENCE = {
   employment: { low: 1.25, high: 1.4, source: 'Hadzima, "How much does an employee cost?", MIT — employment cost 1.25–1.4 × salary (search result)' },
-  ukContractDay: { value: 600, source: 'IT Jobs Watch, embedded software contract median £600 / day (Jan 2026, search result)' },
+  // IT Jobs Watch: "Embedded Systems" UK contracts, median £525 / day over the 6 months to 3 Oct 2026 (35 rates) —
+  // the larger, newer sample; the "embedded software engineer" title page shows £600 on 6 rates to Jan 2026 and £500 on
+  // 11 to May 2025 (open-items round, re-checked 14 Oct 2026, search results).
+  ukContractDay: { value: 525, source: 'IT Jobs Watch, UK "Embedded Systems" contract median £525 / day, 6 months to 3 Oct 2026, 35 rates (search result)' },
 } as const;
 
 export function swRateCheck(result: SWProgramResult): SWRateCheck {

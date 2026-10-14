@@ -3,7 +3,7 @@
  * COCOMO schedule. The map carries no money; the steps read every figure off the engine's result.
  */
 import { describe, it, expect } from 'vitest';
-import { SW_MODULES, computeSWProgram, defaultSWProgramInputs, applyPowertrainScope } from '../src/engine/sw-should-cost.js';
+import { SW_MODULES, computeSWProgram, defaultSWProgramInputs, applyPowertrainScope, SW_DEFAULT_DEVELOPMENT_MONTHS } from '../src/engine/sw-should-cost.js';
 import { SW_MODULE_COMPONENTS, SW_VEHICLE_COMPONENTS, componentsForModule, vehicleComponent } from '../src/engine/sw-vehicle-map.js';
 import { swCostingSteps } from '../src/engine/sw-costing-steps.js';
 import { cocomoTdevMonths, swSchedule } from '../src/engine/sw-schedule.js';
@@ -62,7 +62,8 @@ describe('schedule (COCOMO II.2000)', () => {
   it('average team is effort over the DEVELOPMENT window, not the production life (code review F7)', () => {
     const r = computeSWProgram(defaultSWProgramInputs());
     const s = swSchedule(r);
-    expect(s.averageTeam).toBeCloseTo(r.summary.totalEffortPersonMonths / 90, 6);
+    expect(s.averageTeam).toBeCloseTo(r.summary.totalEffortPersonMonths / SW_DEFAULT_DEVELOPMENT_MONTHS, 6);
+    expect(SW_DEFAULT_DEVELOPMENT_MONTHS).toBe(54);
     expect(s.rows[0].tdevMonths).toBe(s.longestMonths);
     expect(s.rows.every(x => x.avgStaff > 0)).toBe(true);
   });

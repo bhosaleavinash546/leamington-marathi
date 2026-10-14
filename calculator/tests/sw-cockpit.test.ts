@@ -6,11 +6,11 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { computeSWProgram, defaultSWProgramInputs, swLoadedRate, priceFactors, devSourceComparison, SW_DEFAULT_BURDEN, SW_DEFAULT_OVERHEAD, SW_BURDEN_BASIS, swOverhead, maintenanceWeights, SW_MODULES, SW_MC_RANGE_BY_GRADE, validateSWInputs } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, swLoadedRate, priceFactors, devSourceComparison, SW_DEFAULT_BURDEN, SW_DEFAULT_OVERHEAD, SW_BURDEN_BASIS, swOverhead, maintenanceWeights, SW_MODULES, SW_MC_RANGE_BY_GRADE, validateSWInputs, SW_POST_EOP_YEARS, SW_POST_EOP_SHARE, SW_DEFAULT_SERVICE_YEARS, SW_DEFAULT_DEVELOPMENT_MONTHS } from '../src/engine/sw-should-cost.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-rate-library.js';
 import { swSpendProfile, swUnitEconomics, swQuoteCheck, swRateCheck, swMakeBuy, swEvidence } from '../src/engine/sw-cockpit.js';
-import { waterfallChart, treemapChart, tornadoChart, distributionChart, spendChart } from '../src/ui/panels/sw-charts.js';
+import { waterfallChart, treemapChart, tornadoChart, distributionChart, spendChart, setChartWidth } from '../src/ui/panels/sw-charts.js';
 import { COCKPIT_TABS, tabsHTML } from '../src/ui/panels/sw-cockpit-ui.js';
 import { compareScenarios, diffInputs, devSourceSet, hubSet, reuseSet } from '../src/engine/sw-scenarios.js';
 
@@ -41,14 +41,18 @@ describe('spend profile and unit economics reconcile to the programme total', ()
 });
 
 describe('supplier price carries a margin (costing review #2)', () => {
-  it('Tier-1 costs more than in-house in the same hub; the factor is efficiency ÷ (1 − margin)', () => {
+  it('a bought source is priced at its effort ÷ (1 − margin); the margin is the median of six published ESP margins', () => {
+    const m = DEFAULT_SW_RATE_LIBRARY.supplierMargin!.value;
+    // Open-items round (14 Oct 2026): median of Bertrandt −3.7, EDAG −1.8, ALTEN 8.5, LTTS 14.9, KPIT 21.0, Tata Elxsi 26.3.
+    const published = [-3.7, -1.8, 8.5, 14.9, 21.0, 26.3];
+    expect(m * 100).toBeCloseTo((published[2] + published[3]) / 2, 6);
+    expect(DEFAULT_SW_RATE_LIBRARY.supplierMargin!.source).toMatch(/Bertrandt.*EDAG.*ALTEN.*LTTS.*KPIT.*Tata Elxsi/s);
+    expect(priceFactors({ OEM_Internal: 1, Tier1_Supplier: 0.88, Startup_OSS: 0.72 }, m).Tier1_Supplier).toBeCloseTo(0.88 / (1 - m), 10);
+    // At the sourced median a Tier-1 lands at about the in-house price (× 0.997) — the efficiency (× 0.88) is unsourced,
+    // so the comparison is near break-even, and the re-costed table says so rather than a rule forcing Tier-1 above.
     const rows = devSourceComparison(prog());
     const inHouse = rows.find(x => x.devSource === 'OEM_Internal')!, t1 = rows.find(x => x.devSource === 'Tier1_Supplier')!;
-    expect(t1.grandTotal).toBeGreaterThan(inHouse.grandTotal);
-    const m = DEFAULT_SW_RATE_LIBRARY.supplierMargin!.value;
-    expect(m).toBe(0.18);
-    expect(priceFactors({ OEM_Internal: 1, Tier1_Supplier: 0.88, Startup_OSS: 0.72 }, m).Tier1_Supplier).toBeCloseTo(0.88 / 0.82, 10);
-    expect(DEFAULT_SW_RATE_LIBRARY.supplierMargin!.source).toMatch(/ALTEN.*LTTS.*KPIT.*Tata Elxsi/s);
+    expect(Math.abs(t1.grandTotal / inHouse.grandTotal - 1)).toBeLessThan(0.01);
   });
 });
 
@@ -71,7 +75,7 @@ describe('quote check', () => {
   it('rate check states the employment-cost evidence; it never changes the costing', () => {
     const c = swRateCheck(r);
     expect(c.perHour * 152).toBeCloseTo(c.loadedPerPM, 6);
-    expect(c.contractDayGBP).toBe(600);
+    expect(c.contractDayGBP).toBe(525);
     expect(computeSWProgram(prog()).summary.grandTotal).toBe(r.summary.grandTotal);
   });
 });
@@ -218,7 +222,6 @@ describe('gaps round (Oct 2026): costing structure, burden, evidence, quote', ()
     const q = swQuoteCheck(r, { nreGBP: r.summary.nreTotal * 1.6, quotedPM: r.summary.totalEffortPersonMonths * 1.2 });
     const t1 = computeSWProgram({ ...prog(), devSource: 'Tier1_Supplier' }).summary.nreTotal;
     expect(q.target.nre).toBeCloseTo(t1, 0);
-    expect(q.target.nre).toBeGreaterThan(r.summary.nreTotal);
     const g = q.gapSplit!;
     expect(g.effortGap + g.rateGap + g.other).toBeCloseTo(r.summary.nreTotal * 1.6 - q.target.nre, 0);
     expect(Math.abs(g.other)).toBeLessThan(q.target.nre * 1e-6);   // effort PM is rounded to 0.1 per module
@@ -227,13 +230,21 @@ describe('gaps round (Oct 2026): costing structure, burden, evidence, quote', ()
   it('make v buy: per domain each source re-costed; buying pays only below (1 − margin) of the in-house effort', () => {
     const mb = swMakeBuy(computeSWProgram(prog()));
     expect(mb.breakEvenEffortShare).toBeCloseTo(1 - DEFAULT_SW_RATE_LIBRARY.supplierMargin!.value, 10);
-    for (const row of mb.rows) expect(row.tier1).toBeGreaterThan(row.make);
+    // Each domain's Tier-1 figure is the in-house effort × efficiency ÷ (1 − margin) on the hub's rate.
+    const f = 0.88 / (1 - DEFAULT_SW_RATE_LIBRARY.supplierMargin!.value);
+    for (const row of mb.rows) expect(row.tier1 / row.make).toBeCloseTo(f, 1);
   });
   it('maintenance: development + verification + integration, full for 3 years then the tail, escalated', () => {
-    const w = maintenanceWeights({ programLifeYears: 6 });
+    const w = maintenanceWeights({ programLifeYears: 6, postProductionSupportYears: 0 });
     expect(w).toEqual([1, 1, 1, 0.5, 0.5, 0.5]);
+    // Post-production security support: the tail × the share, for its years after the last build (R155 post-production).
+    const p = maintenanceWeights({ programLifeYears: 6 });
+    expect(p).toHaveLength(6 + SW_POST_EOP_YEARS);
+    expect(p[6]).toBeCloseTo(0.5 * SW_POST_EOP_SHARE, 10);
+    expect(p[6 + SW_POST_EOP_YEARS - 1]).toBeCloseTo(0.5 * SW_POST_EOP_SHARE, 10);
     const e = maintenanceWeights({ programLifeYears: 3, wageEscalationPct: 10 });
     expect(e[2]).toBeCloseTo(1.21, 10);
+    expect(e).toHaveLength(3 + SW_POST_EOP_YEARS);
     const r = computeSWProgram(prog());
     const m = r.modules[0];
     const def = SW_MODULES.find(d => d.id === m.moduleId)!;
@@ -298,7 +309,8 @@ describe('gaps round (Oct 2026): the UI rules the independent review asked for',
     expect(ck).toMatch(/rests on unsourced catalogue figures/);
     expect(ck).toMatch(/id="swk-rail-say" aria-live="polite"/);
     const ui = read('src/ui/panels/sw-should-cost-ui.ts');
-    expect(ui).toMatch(/localStorage\.setItem\(BASELINE_KEY/);
+    // The pinned baseline is a saved project (server for a signed-in user, this browser otherwise), not a browser-only key.
+    expect(ui).toMatch(/projectStore\.save\(\{ id, kind: BASELINE_KIND/);
     expect(ui).toMatch(/data-default="\$\{def\.defaultAsil\}"/);
     expect(ui).toMatch(/class="sw-mod-pick"/);
   });
@@ -312,5 +324,66 @@ describe('independent re-score (Oct 2026): the headline never sits outside its o
     expect(mc.p90).toBeGreaterThanOrEqual(r.summary.grandTotal);
     expect(mc.p10PerVehicle).toBeLessThanOrEqual(r.summary.perVehicle);
     expect(mc.headlinePercentile).toBeGreaterThanOrEqual(10);
+  });
+});
+
+describe('open-items round (14 Oct 2026): sourced defaults, post-production support, reflowing charts', () => {
+  const read = (p: string) => readFileSync(p, 'utf8');
+  it('defaults follow the re-checked sources: 8-year connected service, 54-month development', () => {
+    expect(SW_DEFAULT_SERVICE_YEARS).toBe(8);                   // GM OnStar Basics 8, Tesla 8, Toyota ≤10, Mercedes US 5
+    expect(SW_DEFAULT_DEVELOPMENT_MONTHS).toBe(54);             // Volkswagen's stated cycle (IAA 2023)
+    const basis = read('src/engine/sw-should-cost.ts');
+    expect(basis).toMatch(/OnStar Basics 8 yr/);
+    expect(basis).toMatch(/AWS IoT FleetWise/);                // the only priced cloud anchor, and its closure
+    expect(basis).toMatch(/closed to new customers 30 Apr 2026/);
+  });
+  it('security support runs after the last build, graded unsourced, and moves the total by exactly its stream', () => {
+    const p = prog();
+    const r = computeSWProgram(p);
+    const none = computeSWProgram({ ...p, postProductionSupportYears: 0 });
+    expect(r.summary.horizonYears).toBeGreaterThanOrEqual(p.programLifeYears + SW_POST_EOP_YEARS);
+    const post = r.modules.reduce((a, m) => a + m.yearly.maintenance.slice(p.programLifeYears).reduce((x, v) => x + v, 0), 0);
+    expect(post).toBeGreaterThan(0);
+    expect(r.summary.grandTotal - none.summary.grandTotal).toBeCloseTo(post, 0);
+    const ev = swEvidence(r);
+    const lines = ev.lines.filter(l => l.kind === 'postSupport');
+    expect(lines.length).toBeGreaterThan(0);
+    expect(lines.every(l => l.grade === 'unsourced' && /R155/.test(l.basis))).toBe(true);
+    expect(Object.values(ev.byGrade).reduce((a, b) => a + b, 0)).toBeCloseTo(r.summary.grandTotal, 0);
+    expect(ev.topUnsourced.some(t => t.kind === 'postSupport' && /after the last build/.test(t.label))).toBe(true);
+    // A typed share is the user's figure; maintenance off = no post-production stream either.
+    expect(swEvidence(computeSWProgram({ ...p, postProductionSupportShare: 0.4 })).lines.find(l => l.kind === 'postSupport')!.grade).toBe('entered');
+    const off = computeSWProgram({ ...p, includeMaintenanceCost: false });
+    expect(off.modules.every(m => m.yearly.maintenance.every(v => v === 0))).toBe(true);
+    expect(validateSWInputs({ ...p, postProductionSupportYears: 40 }).join(' ')).toMatch(/after the last build/);
+    expect(r.sensitivity.some(x => /Security support after the last build/.test(x.parameter))).toBe(true);
+  });
+  it('the spend profile and unit economics still reconcile to the total with the post-production years', () => {
+    const r = computeSWProgram(prog());
+    const sp = swSpendProfile(r);
+    expect(sp.years.reduce((a, y) => a + y.total, 0)).toBeCloseTo(r.summary.grandTotal, 0);
+  });
+  it('charts redraw at the card width on a narrow screen; labels move above the bars, nothing is cut', () => {
+    const money = (n: number) => `£${(n / 1e6).toFixed(1)}M`;
+    const items = [{ key: 'a', label: 'Testing (SIL / MIL / HIL)', value: 10, group: 'nre' as const }, { key: 'b', label: 'Licences & royalties', value: 20, group: 'life' as const }];
+    setChartWidth(340);
+    const wf = waterfallChart('wf', items, 30, money);
+    expect(wf).toMatch(/viewBox="0 0 340 /);
+    expect(wf).toContain('Testing (SIL / MIL / HIL)</text>');        // full label on its own line
+    const tor = tornadoChart('t', [{ label: 'Connected-service life', low: 1, base: 2, high: 3 }], money);
+    expect(tor).toMatch(/viewBox="0 0 340 /);
+    expect(tor).toContain('Connected-service life</text>');
+    setChartWidth(null);
+    expect(waterfallChart('wf', items, 30, money)).toMatch(/viewBox="0 0 640 /);
+    // A wide card keeps the desktop drawing (scaled up), never a stretched layout.
+    setChartWidth(1400);
+    expect(spendChart('s', [{ label: 'Dev 1', parts: { e: 1 }, total: 1 }], [['e', 'Engineering']], 0, money)).toMatch(/viewBox="0 0 1000 /);
+    setChartWidth(null);
+    expect(read('src/ui/panels/sw-charts.ts')).not.toMatch(/min-width:520px/);
+  });
+  it('the engineer-rate field shows the book rate as a placeholder, never as a typed value', () => {
+    const ui = read('src/ui/panels/sw-should-cost-ui.ts');
+    expect(ui).toMatch(/id="sw-base-rate"[^>]*value="\$\{inputs\.baseRateGBP \?\? ''\}" placeholder=/);
+    expect(ui).toMatch(/if \(f\.dataset\.typed !== '1'\) f\.value = ''/);
   });
 });

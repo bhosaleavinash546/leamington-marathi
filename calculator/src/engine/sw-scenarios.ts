@@ -63,6 +63,10 @@ export function diffInputs(base: SWProgramInputs, s: SWProgramInputs): string[] 
   field('maintenance', base.includeMaintenanceCost, s.includeMaintenanceCost, (v: boolean) => v ? 'included' : 'excluded');
   field('cloud', base.includeCloudCost, s.includeCloudCost, (v: boolean) => v ? 'included' : 'excluded');
   field('discount rate', base.discountRatePct, s.discountRatePct, (v: number | undefined) => `${v ?? 0} %`);
+  field('connected service', base.connectedServiceYears, s.connectedServiceYears, (v: number | undefined) => v == null ? 'default' : `${v} yr`);
+  field('map subscription', base.subscriptionYears, s.subscriptionYears, (v: number | undefined) => v == null ? 'default' : `${v} yr`);
+  field('support after last build', base.postProductionSupportYears, s.postProductionSupportYears, (v: number | undefined) => v == null ? 'default' : `${v} yr`);
+  field('support share', base.postProductionSupportShare, s.postProductionSupportShare, (v: number | undefined) => v == null ? 'default' : `${Math.round(v * 100)} %`);
 
   const byId = new Map(base.modules.map(m => [m.moduleId, m]));
   const name = (id: string) => SW_MODULES.find(d => d.id === id)?.shortName ?? id;

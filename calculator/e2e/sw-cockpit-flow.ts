@@ -143,7 +143,7 @@ async function main(): Promise<void> {
     await page.click('[data-swk-tab="supplier"]');
     await page.fill('#swk-q-pv', '25'); await page.fill('#swk-q-nre', '90000000'); await page.fill('#swk-q-pm', '5000'); await page.waitForTimeout(400);
     const qText = (await page.textContent('#swk-quote-out')) ?? '';
-    check('quote compares the royalty per vehicle built (not all licensing ÷ vehicles)', /Royalty per vehicle built/.test(qText) && /Should-cost £22\.70/.test(qText), qText.slice(0, 300));
+    check('quote compares the royalty per vehicle built (not all licensing ÷ vehicles)', /Royalty per vehicle built/.test(qText) && /Should-cost £37\.84/.test(qText), qText.slice(0, 300));
     check('quote shows the target and the effort / rate gap split', /Negotiation target/.test(qText) && /Effort gap/.test(qText) && /Rate gap/.test(qText));
     check('make v buy and the source table render', await page.locator('#swk-makebuy').isVisible() && await page.locator('#sw-source-decomp tbody tr').count() === 3);
     const legacy = await page.evaluate(() => ['sw-cat-breakdown', 'sw-cost-composition', 'sw-monte-carlo', 'sw-sensitivity', 'sw-phases', 'sw-summary-cards'].filter(id => document.getElementById(id)));
