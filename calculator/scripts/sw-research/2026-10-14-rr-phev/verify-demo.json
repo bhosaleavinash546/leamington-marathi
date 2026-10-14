@@ -1,0 +1,132 @@
+[
+  {
+    "id": 1,
+    "claim": "L460 Range Rover is built on JLR's MLA-Flex platform",
+    "verdict": "CONFIRMED",
+    "words": "New Range Rover ... on JLR's MLA-Flex platform, available in standard and long-wheelbase (search excerpt of JLR world-premiere release); 'Underneath sits JLR's new MLA-Flex platform, which is made to accommodate pure internal combustion engines, hybridised engines, and fully electric powertrains.' (press)",
+    "url": "https://media.jaguarlandrover.com/en-us/news/2021/10/new-range-rover-world-premiere-breathtaking-modernity-peerless-refinement-and",
+    "url2": "https://www.carkeys.co.uk/news/new-2022-range-rover-unveiled",
+    "date": "2021-10-26",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 2,
+    "claim": "Uses JLR's EVA 2.0 electrical architecture",
+    "verdict": "CONFIRMED",
+    "words": "'Land Rover's latest Electrical Vehicle Architecture (EVA 2.0) is the enabler-in-chief and supports this 21st century connectivity.' Press kit: 'scalable EVA 2.0 toolkit encompasses 69 individual ECUs capable of handling 22,880 network messages.' NB the release elsewhere says 'over 70 modules' can be updated over the air - 69 v 70+ discrepancy within JLR material.",
+    "url": "https://media.landrover.com/introducing-new-range-rover-seamlessly-connected-convenience-and-luxury-every-turn",
+    "url2": "https://cdn.uc.assets.prezly.com/848e758d-da8b-45ce-bc8c-ec5cf06b2905/-/inline/no/Range Rover_22MY_Press kit_Technology.pdf",
+    "date": "2021-10",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 3,
+    "claim": "Pivi Pro, 13.1-inch touchscreen, SOTA updates",
+    "verdict": "CONFIRMED",
+    "words": "'latest-generation Pivi Pro infotainment system that's linked to a massive 13.1-inch touchscreen with haptic feedback' (+13.7-inch instrument display); JLR: 'Software-Over-The-Air (SOTA) updates ensure the New Range Rover will improve as it matures' and 'over 70 modules able to receive updates over-the-air'.",
+    "url": "https://media.landrover.com/introducing-new-range-rover-seamlessly-connected-convenience-and-luxury-every-turn",
+    "url2": "https://www.carkeys.co.uk/news/new-2022-range-rover-unveiled",
+    "date": "2021-10",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 4,
+    "claim": "PHEVs P440e and P550e (also P460e)",
+    "verdict": "CONFIRMED-WITH-CORRECTION",
+    "words": "Launch (MY22): P440e and P510e, 38.2 kWh battery (31.8 kWh usable per InsideEVs); JLR electrified press kit 2021: 'all-electric range of 100 km / 62 miles' (WLTP, pre-homologation); Autocar: UK pricing cited 'up to 70 miles'. MY24 update (17 May 2023): 'The Range Rover P440e and P510 are replaced by the P460e and P550e, respectively ... 460PS in the P460e and 550PS in the P550e'; 'electric range, according to WLTP, has increased from 70 miles to 75 miles'; JLR MY24 press PDF: 38.2kWh, 75 miles WLTP, 50kW DC, 7.2kW AC. US EPA rating ~82 km per a US guide (not JLR). Correction: P440e paired with P510e (not P550e); P460e replaced P440e from MY24 - P460e/P550e are the current pair, not 'some markets'.",
+    "url": "https://www.fleetnews.co.uk/news/manufacturer-news/2023/05/17/range-rover-plug-in-hybrids-updated-with-more-power-and-range",
+    "url2": "https://cdn.uc.assets.prezly.com/9e913361-a360-406f-840b-692341854cba/-/inline/no/3. RR_24MY_ELECTRIFIED_FOR_THE_FUTURE_170523.pdf ; https://insideevs.com/news/543548/new-range-rover-phev-models/ ; https://cdn.uc.assets.prezly.com/6a807e30-581f-44aa-9c07-a6df0a72f1f3/-/inline/no/1-rr22myelectrifiedinfog261021.pdf",
+    "date": "2021-10-26 / 2023-05-17",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 5,
+    "claim": "Dynamic Response Pro = 48-volt electronic active roll control",
+    "verdict": "CONFIRMED",
+    "words": "48-volt electronic active roll control system, first on a Land Rover; '1,400Nm torque capacity ... 900Nm available within 200 milliseconds'; manages body roll by optimising forces on front and rear anti-roll bars.",
+    "url": "https://media.landrover.com/introducing-new-range-rover-serene-capability-assurance-and-composure-and-road",
+    "url2": "https://cdn.uc.assets.prezly.com/6140b94f-009e-4bd2-83bd-a0eb23fde878/-/inline/no/Range Rover_22MY_Press kit_Capability.pdf",
+    "date": "2021-10",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 6,
+    "claim": "All-wheel (rear-axle) steering offered",
+    "verdict": "CONFIRMED",
+    "words": "All-Wheel Steering standard on the Range Rover (per launch release excerpt); rear axle steers up to 7.3 degrees, out of phase at low speed, in phase above ~50 km/h; turning circle under 11 m. Note: described as standard, not merely offered.",
+    "url": "https://media.landrover.com/introducing-new-range-rover-serene-capability-assurance-and-composure-and-road",
+    "url2": "https://listers.co.uk/news/2021/11/new-range-rover-here",
+    "date": "2021-10",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 7,
+    "claim": "Meridian Signature Sound System offered",
+    "verdict": "CONFIRMED",
+    "words": "Meridian Dec 2021: '35 loudspeaker Signature Sound System includes new headrest speakers for the first time'; JLR 2024: 'Range Rover models with the Meridian Signature Sound System. This 1600W system features 35 speakers.' Lower tiers: Meridian 15 speakers, 3D Surround 19.",
+    "url": "https://meridian-audio.com/media/news-events/meridian-audio-brings-best-ever-audio-system-for-new-range-rover-to-mark-10-years-of-partnership/",
+    "url2": "https://media.jaguarlandrover.com/en-us/news/2024/07/jlr-and-meridian-extend-audio-collaboration-electrified-future",
+    "date": "2021-12 / 2024-07",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 8,
+    "claim": "Cabin air purification (PM2.5) offered",
+    "verdict": "CONFIRMED",
+    "words": "'Cabin Air Purification Pro's PM2,5 filtration and nanoe X technology significantly reduce odours, bacteria, pathogens and allergens', includes CO2 management (Land Rover regional Range Rover explore page; current model).",
+    "url": "https://www.landrover.in/range-rover/range-rover/explore.html",
+    "url2": "https://www.landrover.co.za/range-rover/range-rover/explore.html",
+    "date": "current site, accessed 2026-10-14",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 9,
+    "claim": "Head-up display; ClearSight / 3D surround camera; Park Assist",
+    "verdict": "CONFIRMED-WITH-CORRECTION",
+    "words": "HUD: launch coverage 'upgraded head-up display'; Land Rover page: HUD optional. 3D Surround Camera: JLR launch release 'New Manoeuvring Lights ... help drivers using 3D Surround Camera at low speeds'. Park assist: 'Remote Park Assist allows the New Range Rover to manoeuvre into and out of spaces or through gates, while the driver controls from up to three metres away.' ClearSight: Range Rover US driver-assistance page names 'ClearSight Ground View' within the 3D Surround Camera; ClearSight Interior Rear View Mirror found only in UK dealer listings of 2022-23 L460s - no JLR L460 launch text seen. Correction: say HUD optional (trim-dependent); ClearSight mirror is dealer-listed, not JLR-confirmed for L460.",
+    "url": "https://media.landrover.com/introducing-new-range-rover-seamlessly-connected-convenience-and-luxury-every-turn",
+    "url2": "https://rangerover.com/en-us/rr-adas.html ; https://www.yorkshirepost.co.uk/lifestyle/cars/2022-range-rover-revealed-design-specification-technology-and-engine-details-revealed-for-new-luxury-suv-3433177 ; https://lloydmotorgroup.com/UsedCars/Land-Rover/LAND-ROVER-RANGE-ROVER-3-0-D300-HSE-4dr-Auto/116101",
+    "date": "2021-10 / current",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 10,
+    "claim": "Digital key / phone-as-key on L460",
+    "verdict": "NOT CONFIRMED",
+    "words": "No JLR or reputable source found stating a phone-as-key / digital key for the L460 (3 searches). Only SEO spam pages and a 2020 Defender forum post saying no phone-as-key. Do not claim it.",
+    "url": "",
+    "url2": "",
+    "date": "",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 11,
+    "claim": "Voice assistant supplier (Alexa / Cerence)",
+    "verdict": "CONFIRMED-WITH-CORRECTION",
+    "words": "Amazon Alexa: 'Jaguar Land Rover is making Alexa the default voice assistant in all of its current and upcoming vehicles' fitted with Pivi Pro; 'engineering teams from Jaguar Land Rover and Amazon worked in close partnership' (Feb 2022). Cerence: multi-year partnership announced 2 Jan 2025 'to develop the luxury automaker's next-generation in-car experience' - a FUTURE programme; no source says Cerence supplies the current L460 Pivi Pro voice. Correction: name Amazon Alexa for current Pivi Pro; Cerence only for next-gen from 2025.",
+    "url": "https://www.landroverusa.com/our-story/news/amazon-alexa.html",
+    "url2": "https://voicebot.ai/2022/02/02/jaguar-land-rover-integrates-alexa-into-all-vehicles/ ; https://seekingalpha.com/pr/19958135-cerence-ai-signs-long-term-strategic-partnership-to-build-luxury-automaker-s-next-gen-in-car ; https://pymnts.com/?p=2421857",
+    "date": "2022-02-02 / 2025-01-02",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 12,
+    "claim": "Published software development cost of L460 / JLR software spend (e.g. £390m)",
+    "verdict": "NOT CONFIRMED",
+    "words": "No source for '£390 million' or any L460 software cost. What exists: L460 was a 'five-year, seven-million hour development and testing programme' (no software split); JLR 'plans to invest £15 billion over five years' (Reimagine, Apr 2023) covering 'electric, autonomous, AI and digital technologies'; JLR $180m Portland (US) tech hub for connected car / driver aids (Feb 2025). None is a Range Rover software cost.",
+    "url": "https://jaguarlandrover.com/annual-report-2024",
+    "url2": "https://media.jaguarlandrover.com/en-us/news/2025/02/jlr-investing-180m-its-north-american-tech-hub-developing-connected-car-and-driver-aid ; https://www.carlist.my/news/2023-range-rover-l460-launched-in-malaysia-rm2-4-million/93706/amp/",
+    "date": "2024 / 2025-02",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  },
+  {
+    "id": 13,
+    "claim": "Range Rover actual annual volume 2023-2025 from JLR results",
+    "verdict": "NOT CONFIRMED (model-level); brand-level only",
+    "words": "JLR does not publish an L460-only volume in the releases found. FY24 (to 31 Mar 2024): 'wholesale volumes were 401,303 and retail sales were 431,733'; Q4 FY24 brand wholesales 'Range Rover (up 22% to 58,280 units)' - Range Rover BRAND = Range Rover + Sport + Velar + Evoque. FY25: wholesales 400,898; Defender 115,404; 'Range Rover, Range Rover Sport and Defender ... 67.8%' of full-year wholesales. So 200,000/yr for the L460 is a user input, not a JLR figure: the whole Range Rover brand (four models) wholesaled 58,280 in Q4 FY24, about 233k annualised (own arithmetic).",
+    "url": "https://media.jaguarlandrover.com/news/2024/04/jlr-full-year-sales-over-20-cent-year-year-reflecting-improved-production-and",
+    "url2": "https://media.jaguarlandrover.com/news/2025/04/jlr-delivers-net-cash-positive-target-after-strong-fy25-sales",
+    "date": "2024-04 / 2025-04",
+    "note": "Words are as returned in web-search excerpts (WebFetch failed with DNS errors on media.jaguarlandrover.com and the prezly CDN; pages could not be opened in full). Checked 2026-10-14."
+  }
+]

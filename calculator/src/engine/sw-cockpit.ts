@@ -13,7 +13,7 @@
 import {
   SW_MODULES, SW_CLOUD_REFERENCE_FLEET, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_DEFAULT_SERVICE_YEARS,
   buildPhases, swLoadedRate, swOverhead, swEvidenceLines, computeSWProgram,
-  type SWProgramResult, type SWCategory, type SWEvidenceGrade, type SWEvidenceLine, type DevSource,
+  type SWProgramResult, type SWCategory, type SWEvidenceGrade, type SWEvidenceLine, type DevSource, type SWRegion, type SWProgramInputs,
 } from './sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY, resolveRateLibrary } from './sw-rate-library.js';
 import { SW_HUB_RATES, SW_PM_HOURS } from './sw-country-rates.js';
@@ -182,7 +182,7 @@ export function swQuoteCheck(result: SWProgramResult, quote: SWQuote): SWQuoteCh
   const margin = resolveRateLibrary(prog.rateLibrary).supplierMargin?.value ?? DEFAULT_SW_RATE_LIBRARY.supplierMargin?.value ?? 0;
   const out: SWQuoteCheck = {
     byCategory: [], loadedRatePerPM: loaded, lines: [],
-    target: { nre: t1.summary.nreTotal, ratePerPM: t1Rate, basis: `should-cost re-costed as a Tier-1 supplier: its effort factor ÷ (1 − ${Math.round(margin * 100)} % margin)` },
+    target: { nre: t1.summary.nreTotal, ratePerPM: t1Rate, basis: `should-cost re-costed as a Tier-1 supplier: its effort factor ÷ (1 − ${(margin * 100).toFixed(1)} % margin)` },
   };
   const u = swUnitEconomics(result);
   if (quote.nreGBP && quote.nreGBP > 0) {
@@ -219,6 +219,29 @@ export function swQuoteCheck(result: SWProgramResult, quote: SWQuote): SWQuoteCh
 export interface SWMakeBuyRow { category: SWCategory; label: string; make: number; tier1: number; startup: number }
 export interface SWMakeBuy { rows: SWMakeBuyRow[]; breakEvenEffortShare: number; margin: number; basis: string }
 
+// ── Every hub (president review, 14 Oct 2026) ───────────────────────────────────────────────────────────────────────
+
+export interface SWHubRow {
+  hub: SWRegion; label: string; confidence: string; loadedRatePerPM: number;
+  nre: number; lifecycle: number; total: number; perVehicle: number; deltaTotal: number; selected: boolean;
+}
+
+/** The SAME programme re-costed at every hub in the active book (each at its own book rate — a typed rate is this hub's
+ *  figure only, so it never travels). Lifecycle lines that are not labour (cloud, royalties, IP) do not move with the hub. */
+export function swHubComparison(result: SWProgramResult): SWHubRow[] {
+  const prog = result.inputs;
+  const lib = resolveRateLibrary(prog.rateLibrary);
+  const base = result.summary.grandTotal;
+  return (Object.keys(lib.hubRates) as SWRegion[]).map(hub => {
+    const p: SWProgramInputs = { ...prog, region: hub, baseRateGBP: hub === prog.region ? prog.baseRateGBP : undefined };
+    const s = hub === prog.region ? result.summary : computeSWProgram(p, { summaryOnly: true }).summary;
+    return { hub, label: SW_HUB_RATES[hub as keyof typeof SW_HUB_RATES]?.label ?? hub, confidence: SW_HUB_RATES[hub as keyof typeof SW_HUB_RATES]?.confidence ?? '—',
+      loadedRatePerPM: swLoadedRate(p), nre: s.nreTotal, lifecycle: s.grandTotal - s.nreTotal, total: s.grandTotal, perVehicle: s.perVehicle,
+      deltaTotal: s.grandTotal - base, selected: hub === prog.region };
+  }).sort((a, b) => a.total - b.total);
+}
+
+
 /** Engineering (NRE) per domain made in-house v bought from a Tier-1 or a start-up, each the engine re-costed with that
  *  source. A bought source is cheaper only when its effort is at most (1 − margin) × the in-house effort. Lifecycle
  *  (royalties, cloud, maintenance) is the same either way in this model and is left out. */
@@ -235,7 +258,7 @@ export function swMakeBuy(result: SWProgramResult): SWMakeBuy {
     rows: cats.map(c => ({ category: c, label: result.modules.find(m => m.category === c)!.categoryLabel, make: nre(make, c), tier1: nre(t1, c), startup: nre(st, c) })),
     breakEvenEffortShare: (1 - margin) * effIn,
     margin,
-    basis: `Each column re-costs the scope with that development source. A supplier's price = its effort factor ÷ (1 − ${Math.round(margin * 100)} % margin), so buying is cheaper only if the supplier needs ≤ ${Math.round((1 - margin) * effIn * 100)} % of the in-house effort (reuse, a cheaper hub mix).`,
+    basis: `Each column re-costs the scope with that development source. A supplier's price = its effort factor ÷ (1 − ${(margin * 100).toFixed(1)} % margin), so buying is cheaper only if the supplier needs ≤ ${((1 - margin) * effIn * 100).toFixed(1)} % of the in-house effort (reuse, a cheaper hub mix).`,
   };
 }
 

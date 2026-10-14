@@ -92,7 +92,7 @@ describe('#10 uncertainty band and volume sensitivity follow the headline', () =
   it('the volume sensitivity row brackets its own base under any recovery window', () => {
     for (const rec of [undefined, 2]) {
       const r = computeSWProgram(prog(p => { if (rec) p.costRecoveryYears = rec; }));
-      const row = r.sensitivity.find(x => /Production Volume/.test(x.parameter))!;
+      const row = r.sensitivity.find(x => /Production volume/.test(x.parameter))!;
       expect(row.low).toBeLessThan(row.base);
       expect(row.high).toBeGreaterThan(row.base);
     }

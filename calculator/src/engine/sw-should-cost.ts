@@ -1471,7 +1471,13 @@ export const SW_CLOUD_REFERENCE_FLEET = 440_000;
  *  US$0.45 the next 40,000, messages and storage extra (aws.amazon.com/iot-fleetwise/pricing) — i.e. US$5.4–7.2 per
  *  vehicle-year for the data-collection service alone; it closed to new customers on 30 Apr 2026. The catalogue's
  *  ≈ £10.8 per connected vehicle-year (all modules) stays an unsourced estimate. */
-export const SW_CLOUD_BASIS = 'Module cloud £ / yr ÷ reference fleet — an unsourced estimate (≈ £10.8 per connected vehicle-year, all modules). No OEM publishes a back-end cost; the only list price, AWS IoT FleetWise (US$0.60 / 0.45 per vehicle-month, messages and storage extra; closed to new customers 30 Apr 2026), is US$5.4–7.2 per vehicle-year for data collection alone.';
+/** £ per connected vehicle-year the in-scope modules charge (the catalogue's module £ / yr ÷ the reference fleet). */
+export function swCloudPerVehicleYear(prog: Pick<SWProgramInputs, 'modules'>): number {
+  return prog.modules.filter(m => m.enabled).reduce((a, m) => a + (SW_MODULES.find(d => d.id === m.moduleId)?.annualCloudCostGBP ?? 0), 0) / SW_CLOUD_REFERENCE_FLEET;
+}
+/** Plain-English development-source names (reports print these, never the enum). */
+export const SW_DEV_SOURCE_LABEL: Record<DevSource, string> = { OEM_Internal: 'OEM in-house', Tier1_Supplier: 'Tier-1 supplier', Startup_OSS: 'Software start-up / open source' };
+export const SW_CLOUD_BASIS = 'Module cloud £ / yr ÷ reference fleet — an unsourced estimate (≈ £10.8 per connected vehicle-year with every module in scope). No OEM publishes a back-end cost; the only list price, AWS IoT FleetWise (US$0.60 / 0.45 per vehicle-month, messages and storage extra; closed to new customers 30 Apr 2026), is US$5.4–7.2 per vehicle-year for data collection alone.';
 
 /** Cloud cost over the programme, £ (PV when discounted): the sum of `cloudYearly`. */
 export function unitCloudGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct' | 'connectedVehicleShare' | 'subscriptionYears' | 'connectedServiceYears'>): number {
@@ -1496,7 +1502,8 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['Engineering hub', `${book?.label ?? prog.region} — its own salaries, statutory employer on-costs and working hours (no UK multiplier)`],
     ['Hub rate (£ / person-month of 152 h, before overhead)', `mid ${gbp(hub.mid.value)} · senior ${gbp(hub.senior.value)} — ${prog.rateLibrary && hub.mid !== DEFAULT_SW_RATE_LIBRARY.hubRates[prog.region]?.mid ? `company book (${hub.mid.source})` : (book?.build ?? hub.mid.source)}`],
     ['Engineer rate used', `${gbp(r.engineerRate)} — ${r.typed ? 'typed rate (replaces the hub book rate)' : `${Math.round(prog.teamSeniorFraction * 100)} % senior blend of the hub's mid and senior rates`}`],
-    ['Development source', `${prog.devSource} × ${r.devSource[prog.devSource]}`],
+    ['Development source', prog.devSource === 'OEM_Internal' ? 'OEM in-house × 1.000'
+      : `${SW_DEV_SOURCE_LABEL[prog.devSource]} × ${r.devSource[prog.devSource].toFixed(3)} = efficiency ${rateValues(resolveRateLibrary(prog.rateLibrary).devSourceMultipliers)[prog.devSource].toFixed(2)} (unsourced) ÷ (1 − supplier margin ${((resolveRateLibrary(prog.rateLibrary).supplierMargin?.value ?? 0) * 100).toFixed(1)} %)`],
     ['Engineering burden', prog.burden
       ? `× ${swOverhead(prog).toFixed(3)} = employment +${prog.burden.employmentPct} % × company +${prog.burden.companyPct} % × capital +${prog.burden.capitalPct} % (on the hub rate)`
       : `× ${prog.overheadMultiplier} (a single overhead saved with this configuration)`],
@@ -1509,7 +1516,7 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['NRE recovery', `${prog.costRecoveryYears ?? prog.programLifeYears} yr`],
     ['Discount rate', `${prog.discountRatePct ?? 0} %`],
     ['Development duration (tool licences)', `${prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS} months`],
-    ['Cloud', `per connected vehicle-year (module £/yr ÷ ${SW_CLOUD_REFERENCE_FLEET.toLocaleString('en-GB')} reference fleet) × ${Math.round((prog.connectedVehicleShare ?? 1) * 100)} % connected, each vehicle served ${prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS} yr; fixed platform £${Math.round(prog.cloudFixedPerYearGBP ?? 0).toLocaleString('en-GB')} / yr`],
+    ['Cloud', `£${swCloudPerVehicleYear(prog).toFixed(2)} per connected vehicle-year (the in-scope modules' catalogue £ / yr ÷ ${SW_CLOUD_REFERENCE_FLEET.toLocaleString('en-GB')} reference fleet — unsourced estimate) × ${Math.round((prog.connectedVehicleShare ?? 1) * 100)} % connected, each vehicle served ${prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS} yr; fixed platform £${Math.round(prog.cloudFixedPerYearGBP ?? 0).toLocaleString('en-GB')} / yr`],
     ['Map / per-vehicle-year royalties', `${prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS} yr per vehicle`],
     ['Development tools', `£${Math.round(prog.toolSeatGBPPerYear ?? SW_TOOL_SEAT_GBP).toLocaleString('en-GB')} per engineer-seat-year`],
     ['Maintenance profile', `full ${SW_MAINT_FULL_YEARS} yr after SOP, then ${SW_MAINT_TAIL * 100} %; wage escalation ${prog.wageEscalationPct ?? 0} % / yr`],
@@ -1922,7 +1929,7 @@ export function computeSWProgram(
   // Sensitivity analysis
   const sensitivity: SWSensitivityRow[] = [
     {
-      parameter: 'ASIL level (all modules: D vs B)',
+      parameter: 'ASIL level (all modules: B vs D)',
       low:  _recomputeTotal(prog, { asilOverride: 'B' }),
       base: summary.grandTotal,
       high: _recomputeTotal(prog, { asilOverride: 'D' }),
@@ -1957,13 +1964,13 @@ export function computeSWProgram(
         unit: '£M',
       };
     })(),
-    {
-      parameter: 'Programme life (8 vs 14 years)',
-      low:  _recomputeTotal(prog, { lifeOverride: 8 }),
-      base: summary.grandTotal,
-      high: _recomputeTotal(prog, { lifeOverride: 14 }),
-      unit: '£M',
-    },
+    // Programme life and volume move AROUND this programme (president review, 14 Oct 2026: they were fixed at 8 / 14 years
+    // and 150k / 50k a year, so a 6-year, 200k programme showed a "low" case above its own base).
+    (() => {
+      const lo = Math.max(1, Math.round(prog.programLifeYears / 1.5)), hi = Math.round(prog.programLifeYears * 1.5);
+      return { parameter: `Programme life (${lo} vs ${hi} years)`, low: _recomputeTotal(prog, { lifeOverride: lo }), base: summary.grandTotal,
+        high: _recomputeTotal(prog, { lifeOverride: hi }), unit: '£M' };
+    })(),
     {
       parameter: 'Effort catalogue (× 0.5 vs × 2)',
       low:  _recomputeTotal(prog, { effortScale: 0.5 }),
@@ -1999,15 +2006,14 @@ export function computeSWProgram(
       high: _recomputeTotal(prog, { subscriptionYears: 7 }),
       unit: '£M',
     },
-    {
-      // Re-costed at each volume, so £ / vehicle follows the headline's rule (recovery window, platform share). It
-      // divided the total by volume × life, so its bracket could miss its own base (P2 #10).
-      parameter: 'Production Volume (150k vs 50k units/yr, per-vehicle)',
-      low:  _recomputeSummary(prog, { volumeOverride: 150_000 }).perVehicle,
-      base: summary.perVehicle,
-      high: _recomputeSummary(prog, { volumeOverride: 50_000 }).perVehicle,
-      unit: '£/vehicle',
-    },
+    (() => {
+      // Re-costed at each volume, so £ / vehicle follows the headline's rule (recovery window, platform share) (P2 #10);
+      // at 1.5 × and 0.5 × THIS programme's volume (more vehicles carry the NRE → the lower figure).
+      const up = Math.round(prog.annualProductionVolume * 1.5), down = Math.max(1, Math.round(prog.annualProductionVolume * 0.5));
+      const k = (n: number) => n >= 1000 ? `${Math.round(n / 1000).toLocaleString('en-GB')}k` : String(n);
+      return { parameter: `Production volume (${k(up)} vs ${k(down)} a year, per vehicle)`, low: _recomputeSummary(prog, { volumeOverride: up }).perVehicle,
+        base: summary.perVehicle, high: _recomputeSummary(prog, { volumeOverride: down }).perVehicle, unit: '£/vehicle' };
+    })(),
   ];
 
   // ONE list (sw-benchmarks.ts) — every entry is labelled with whether it is verified (none is, Oct 2026).

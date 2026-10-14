@@ -78,7 +78,8 @@ export function swCostingSteps(result: SWProgramResult, rate: StepRate, f: StepF
       modules: result.modules.filter(m => m.category === topCat?.[0]).map(m => m.moduleId) },
     { id: 'lifecycle', title: 'Lifecycle', value: f.money(lifecycle),
       detail: `Maintenance ${f.money(s.totalMaintenance)}, cloud ${f.money(s.totalCloud)}, licences and royalties `
-        + `${f.money(s.totalLicensing)} over ${prog.programLifeYears} years.`,
+        + `${f.money(s.totalLicensing)} — paid over the ${prog.programLifeYears} production years and the service years after `
+        + `the last build (to programme year ${s.horizonYears ?? prog.programLifeYears}).`,
       modules: recurring.length ? recurring : ids },
     { id: 'per-vehicle', title: 'Per vehicle', value: f.money(s.perVehicle),
       detail: `NRE ${f.money(s.nreTotal)} over ${f.number(prog.annualProductionVolume * recovery, 0)} vehicles `

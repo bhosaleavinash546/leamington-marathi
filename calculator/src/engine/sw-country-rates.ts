@@ -45,7 +45,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1856, hoursBasis: "(260 − 28 leave incl. public holidays) × 40 h ÷ 5 — statutory 5.6 weeks (28 days) may include the 8 bank holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
     midPerPMLocal: 6237, seniorPerPMLocal: 6531,
     midPerPMGBP: 6237, seniorPerPMGBP: 6531,
-    build: "GBP 66,875 mid / 70,000 senior gross a year + employer on-cost 13.9% at mid = 76,156 / 79,750; ÷ 1,856 productive h × 152 h = GBP 6,237 / 6,531 per person-month ÷ 1 = £6,237 / £6,531",
+    build: "GBP 66,875 mid / 70,000 senior gross a year + employer on-cost 13.9% at mid = 76,156 / 79,750; ÷ 1,856 productive h × 152 h = GBP 6,237 / 6,531 per person-month",
     evidence: ["JLR Global Digital Development Centre, Manchester (Neo building): software / IT / engineering hub for connected-vehicle technology, working with the Gaydon engineering hub","JLR headquarters and powertrain engineering at Whitley, Coventry; engineering at Gaydon","JLR plans a new UK technical centre to develop next-generation connected-car technologies (S&P Global AutoTechInsight)"],
     mid: [
       { value: 54615, period: "annual", annualFactor: 1, statistic: "median", dataYear: 2024, source: "ONS ASHE 2024 (revised) SOC 2134 median, as republished by paychecktaxcalculator.net", url: "https://paychecktaxcalculator.net/highest-paying-jobs-uk/software-developers", seenIn: "search-snippet" },
@@ -70,7 +70,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1824, hoursBasis: "(260 − 20 leave − 12 public holidays) × 40 h ÷ 5 — 20 days statutory (5-day week) + 12 public holidays (Baden-Württemberg / Bavaria; 10–13 by state) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; most automotive employers give 30 days leave; the book uses the statutory 20",
     midPerPMLocal: 7230, seniorPerPMLocal: 8085,
     midPerPMGBP: 6206, seniorPerPMGBP: 6940,
-    build: "EUR 71,692 mid / 80,955 senior gross a year + employer on-cost 21.0% at mid = 86,758 / 97,016; ÷ 1,824 productive h × 152 h = EUR 7,230 / 8,085 per person-month ÷ 1.165 = £6,206 / £6,940",
+    build: "EUR 71,692 mid / 80,955 senior gross a year + employer on-cost 21.0% at mid = 86,758 / 97,016; ÷ 1,824 productive h × 152 h = EUR 7,230 / 8,085 per person-month ÷ 1.165 EUR per £ = £6,206 / £6,940",
     evidence: ["CARIAD SE (Volkswagen Group software company): 6,958 employees (Revelio Labs, Dec 2025 update); software competence centres in Wolfsburg, Ingolstadt, Stuttgart region, Berlin, Munich","Elektrobit Automotive GmbH (Erlangen): 3,021 employees per Revelio Labs; German sites incl. Erlangen, München, Ulm, Braunschweig, Radolfzell (job listing)","ETAS GmbH (Bosch, Stuttgart; automotive software / AUTOSAR tools): 2,497 employees per Revelio Labs (global, not Stuttgart-only)"],
     mid: [
       { value: 6301, period: "monthly", annualFactor: 12, statistic: "median", dataYear: 2025, source: "Bundesagentur für Arbeit Entgeltatlas — Softwareentwickler/in, Berufe in der Softwareentwicklung, hoch komplexe Tätigkeiten (Experte), Bezugsjahr 2025", url: "https://web.arbeitsagentur.de/entgeltatlas/beruf/15260", seenIn: "search-snippet" },
@@ -94,7 +94,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1776, hoursBasis: "(260 − 25 leave − 13 public holidays) × 40 h ÷ 5 — 25 days leave — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 13 public holidays (reviewer, aggregator)",
     midPerPMLocal: 6420, seniorPerPMLocal: 8026,
     midPerPMGBP: 5510, seniorPerPMGBP: 6889,
-    build: "EUR 62,000 mid / 77,514 senior gross a year + employer on-cost 21.0% at mid = 75,008 / 93,777; ÷ 1,776 productive h × 152 h = EUR 6,420 / 8,026 per person-month ÷ 1.165 = £5,510 / £6,889",
+    build: "EUR 62,000 mid / 77,514 senior gross a year + employer on-cost 21.0% at mid = 75,008 / 93,777; ÷ 1,776 productive h × 152 h = EUR 6,420 / 8,026 per person-month ÷ 1.165 EUR per £ = £5,510 / £6,889",
     evidence: ["TTTech Auto (Vienna HQ; safety software / middleware for ADAS & SDV): 1,100 employees incl. subsidiaries in Europe and Asia (2025 factsheet; 2024 factsheet said 1,200)","AVL List, Graz: current Graz software roles (vehicle simulation software, test-bed automation platform); company-wide 14,072 employees per Revelio Labs","Magna Steyr Engineering Center Graz: complete-vehicle engineering with an electrification focus (Magna careers page) — software share not stated"],
     mid: [
       { value: 62000, period: "annual", annualFactor: 1, statistic: "midpoint of Glassdoor Graz base range 53,000–71,000", dataYear: 2025, source: "Glassdoor — Embedded Software Engineer, Graz (Sep 2025, 10 salaries)", url: "https://www.glassdoor.com/Salaries/graz-austria-embedded-software-engineer-salary-SRCH_IL.0,12_IM1225_KO13,39.htm", seenIn: "search-snippet" },
@@ -116,7 +116,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1792, hoursBasis: "(260 − 25 leave − 11 public holidays) × 40 h ÷ 5 — 25 days leave — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 11 public holidays (reviewer, aggregator)",
     midPerPMLocal: 71097, seniorPerPMLocal: 96580,
     midPerPMGBP: 5382, seniorPerPMGBP: 7311,
-    build: "SEK 637,800 mid / 866,400 senior gross a year + employer on-cost 31.4% at mid = 838,197 / 1,138,623; ÷ 1,792 productive h × 152 h = SEK 71,097 / 96,580 per person-month ÷ 13.21 = £5,382 / £7,311",
+    build: "SEK 637,800 mid / 866,400 senior gross a year + employer on-cost 31.4% at mid = 838,197 / 1,138,623; ÷ 1,792 productive h × 152 h = SEK 71,097 / 96,580 per person-month ÷ 13.21 SEK per £ = £5,382 / £7,311",
     evidence: ["Zenseact (Volvo Cars-owned ADAS / AD software), HQ Lindholmspiren 2, Gothenburg; ~600 employees at formation, offices Gothenburg and Shanghai (Volvo Cars press release)","Zenseact software engineer vacancy (front-lighting feature teams), Gothenburg","Lindholmen Science Park area, Gothenburg: ~400 companies, 19,000+ employees; Volvo Cars, Volvo Group Connected Solutions located there (The Yard brochure)"],
     mid: [
       { value: 52500, period: "monthly", annualFactor: 12, statistic: "median", dataYear: 2024, source: "SCB lönestrukturstatistik 2024 (AM0110), SSYK 2512 Mjukvaru- och systemutvecklare, as republished by Alla Yrken", url: "https://www.allayrken.se/yrke/systemutvecklare/", seenIn: "search-snippet" },
@@ -138,7 +138,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1744, hoursBasis: "(260 − 42 leave incl. public holidays) × 40 h ÷ 5 — cadres on \"forfait jours\": 218 days a year (Code du travail L3121-64, reviewer) × 8 h; 218 working days → 42 days off incl. public holidays",
     midPerPMLocal: 6319, seniorPerPMLocal: 6951,
     midPerPMGBP: 5424, seniorPerPMGBP: 5966,
-    build: "EUR 50,000 mid / 55,000 senior gross a year + employer on-cost 45.0% at mid = 72,500 / 79,750; ÷ 1,744 productive h × 152 h = EUR 6,319 / 6,951 per person-month ÷ 1.165 = £5,424 / £5,966",
+    build: "EUR 50,000 mid / 55,000 senior gross a year + employer on-cost 45.0% at mid = 72,500 / 79,750; ÷ 1,744 productive h × 152 h = EUR 6,319 / 6,951 per person-month ÷ 1.165 EUR per £ = £5,424 / £5,966",
     evidence: ["Renault Ampere (EV + software unit): ~10,000 employees at launch, ~3,500 engineers of whom half in software","SUD Renault union leaflet (May 2023): Software and Systems Engineering Directorate created June 2023 with 1,095 staff, 1,016 at Guyancourt-Aubevoye, transferred to Ampere Software et Systèmes Oct 2023","Ampere Software Technology vacancies at Guyancourt (e.g. FOTA end-to-end specialist)"],
     mid: [
       { value: 50000, period: "annual", annualFactor: 1, statistic: "midpoint of Seyos confirmé Paris 45,000–55,000", dataYear: null, source: "Seyos baromètre — Ingénieur logiciel embarqué, confirmé", url: "https://www.seyos.fr/barometre-salaires/ingenieur-logiciel-embarque/", seenIn: "search-snippet" },
@@ -160,7 +160,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1824, hoursBasis: "(260 − 20 leave − 12 public holidays) × 40 h ÷ 5 — 20 days leave, 12 public holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
     midPerPMLocal: 3289, seniorPerPMLocal: 4949,
     midPerPMGBP: 2824, seniorPerPMGBP: 4248,
-    build: "EUR 30,248 mid / 45,505 senior gross a year + employer on-cost 30.5% at mid = 39,474 / 59,383; ÷ 1,824 productive h × 152 h = EUR 3,289 / 4,949 per person-month ÷ 1.165 = £2,824 / £4,248",
+    build: "EUR 30,248 mid / 45,505 senior gross a year + employer on-cost 30.5% at mid = 39,474 / 59,383; ÷ 1,824 productive h × 152 h = EUR 3,289 / 4,949 per person-month ÷ 1.165 EUR per £ = £2,824 / £4,248",
     evidence: ["Stellantis lists Turin among its software development centres (eight centres in seven countries incl. the 2023 Gliwice hub).","Teoresi Group (engineering services): ~1,100 staff after +86% in five years; Turin its largest hiring site (200 hires in 2022, 250 planned) seeking ADAS / autonomous-driving and cybersecurity engineers; Modena site an automotive hub for e-propulsion, autonomous driving and infotelematics; 15 Italian sites."],
     mid: [
       { value: 30248, period: "annual", annualFactor: 1, statistic: "mean", dataYear: null, source: "PayScale — Early-Career Embedded Software Engineer with C Programming Language skills, Italy", url: "https://www.payscale.com/research/IT/Job=Embedded_Software_Engineer/Salary/00c9e1ea/Early-Career-C-Programming-Language", seenIn: "search-snippet" },
@@ -180,7 +180,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1800, hoursBasis: "(260 − 22 leave − 13 public holidays) × 40 h ÷ 5 — 22 days leave, 13 public holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country (reviewer)",
     midPerPMLocal: 3150, seniorPerPMLocal: 4285,
     midPerPMGBP: 2704, seniorPerPMGBP: 3678,
-    build: "EUR 30,146 mid / 41,000 senior gross a year + employer on-cost 23.8% at mid = 37,306 / 50,738; ÷ 1,800 productive h × 152 h = EUR 3,150 / 4,285 per person-month ÷ 1.165 = £2,704 / £3,678",
+    build: "EUR 30,146 mid / 41,000 senior gross a year + employer on-cost 23.8% at mid = 37,306 / 50,738; ÷ 1,800 productive h × 152 h = EUR 3,150 / 4,285 per person-month ÷ 1.165 EUR per £ = £2,704 / £3,678",
     evidence: ["Bosch Car Multimedia Portugal, Braga: job adverts state the Braga Research & Development Center has more than 350 engineers on car multimedia and sensor solutions; company ~3,600 associates; adverts for software, HW/SW test and test-automation engineers."],
     mid: [
       { value: 23892, period: "annual", annualFactor: 1, statistic: "mean", dataYear: null, source: "PayScale — Early-Career Embedded Software Engineer, Portugal", url: "https://www.payscale.com/research/PT/Job=Embedded_Software_Engineer/Salary/741012e6/Early-Career", seenIn: "search-snippet" },
@@ -200,7 +200,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1808, hoursBasis: "(260 − 20 leave − 14 public holidays) × 40 h ÷ 5 — 20 days leave (26 after 10 years incl. study), 14 public holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
     midPerPMLocal: 16634, seniorPerPMLocal: 25795,
     midPerPMGBP: 3264, seniorPerPMGBP: 5062,
-    build: "PLN 165,600 mid / 256,800 senior gross a year + employer on-cost 19.5% at mid = 197,859 / 306,825; ÷ 1,808 productive h × 152 h = PLN 16,634 / 25,795 per person-month ÷ 5.096 = £3,264 / £5,062",
+    build: "PLN 165,600 mid / 256,800 senior gross a year + employer on-cost 19.5% at mid = 197,859 / 306,825; ÷ 1,808 productive h × 152 h = PLN 16,634 / 25,795 per person-month ÷ 5.096 PLN per £ = £3,264 / £5,062",
     evidence: ["Aptiv Technical Center Kraków described in Aptiv job adverts as a 2,000-strong team; embedded software roles for ADAS / AD, driver-monitoring software and infotainment audio (C/C++). Listings dated 2025.","Stellantis opened a software development hub in Gliwice (Feb 2023) to employ up to 300 people on software development, data analysis and validation; GlobalLogic recruiting for it; the 8th Stellantis software centre."],
     mid: [
       { value: 13800, period: "monthly", annualFactor: 12, statistic: "median", dataYear: 2025, source: "Bulldogjob, Badanie Społeczności IT 2025 (Embedded)", url: "https://bulldogjob.pl/it-report/salaries/embedded", seenIn: "search-snippet" },
@@ -220,7 +220,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1816, hoursBasis: "(260 − 20 leave − 13 public holidays) × 40 h ÷ 5 — 20 days leave, 13 public holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
     midPerPMLocal: 104152, seniorPerPMLocal: 120950,
     midPerPMGBP: 3663, seniorPerPMGBP: 4254,
-    build: "CZK 930,000 mid / 1,080,000 senior gross a year + employer on-cost 33.8% at mid = 1,244,340 / 1,445,040; ÷ 1,816 productive h × 152 h = CZK 104,152 / 120,950 per person-month ÷ 28.43 = £3,663 / £4,254",
+    build: "CZK 930,000 mid / 1,080,000 senior gross a year + employer on-cost 33.8% at mid = 1,244,340 / 1,445,040; ÷ 1,816 productive h × 152 h = CZK 104,152 / 120,950 per person-month ÷ 28.43 CZK per £ = £3,663 / £4,254",
     evidence: ["Valeo Prague R&D centre: ~700 employees, mostly engineers, ADAS / automated-driving development; expansion of 250 engineers planned (S&P Global AutoTechInsight).","Valeo Czech Republic country page: Prague development activity since 2002, extended (2013) to sensors, software and systems for automated driving and parking; >4,800 employees on five Czech sites.","Grafton recruiting an 'Embedded Engineer | AUTOSAR & ASPICE | Prague' (archived advert) — AUTOSAR work is done in Prague."],
     mid: [
       { value: 77500, period: "monthly", annualFactor: 12, statistic: "midpoint of Grafton AUTOSAR advert 65,000–90,000", dataYear: null, source: "Grafton job advert 'Embedded Engineer | AUTOSAR & ASPICE | Prague'", url: "https://www.grafton.cz/en/jobs/embedded-engineer-autosar-aspice-prague", seenIn: "search-snippet" },
@@ -245,7 +245,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1800, hoursBasis: "(260 − 20 leave − 15 public holidays) × 40 h ÷ 5 — 15 public holidays — Wikipedia list of public holidays; 20 days leave not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
     midPerPMLocal: 20659, seniorPerPMLocal: 20659,
     midPerPMGBP: 3359, seniorPerPMGBP: 3359,
-    build: "RON 239,265 mid / 239,265 senior gross a year + employer on-cost 2.3% at mid = 244,648 / 244,648; ÷ 1,800 productive h × 152 h = RON 20,659 / 20,659 per person-month ÷ 6.151 = £3,359 / £3,359",
+    build: "RON 239,265 mid / 239,265 senior gross a year + employer on-cost 2.3% at mid = 244,648 / 244,648; ÷ 1,800 productive h × 152 h = RON 20,659 / 20,659 per person-month ÷ 6.151 RON per £ = £3,359 / £3,359",
     evidence: ["Aumovio (the former Continental automotive business) has four R&D centres in Romania (Brașov, Iași, Sibiu, Timișoara) and two production sites. About 13,000 employees, more than half of them engineers and IT specialists in the R&D centres (undated company profile).","Aumovio is cutting 641 jobs across Iași, Sibiu and Timișoara, including 236 in the Timișoara R&D department (digital and electronics engineering), with most measures in place by end-2026. This is evidence that the activity exists and of a 2025–26 contraction. Attribution between wall-street.ro and economedia.ro is unclear.","Continental worked with over 5,700 engineers and IT specialists in R&D in Romania (2018). In 2022 it employed 17,500 in Romania, over a third of them engineers and computer scientists."],
     mid: [
       { value: 12136, period: "monthly", annualFactor: 19.861754652487654, statistic: "mean NET × 1.6551 (INS 2025 whole-economy gross/net 8,716 / 5,266)", dataYear: 2025, source: "INS monthly earnings release, September 2025 (via economica.net)", url: "https://www.economica.net/?p=887615", seenIn: "search-snippet" },
@@ -267,7 +267,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1824, hoursBasis: "(260 − 20 leave − 12 public holidays) × 40 h ÷ 5 — 20 days leave (ILO table), 11–13 public holidays — Wikipedia",
     midPerPMLocal: 1299500, seniorPerPMLocal: 2090500,
     midPerPMGBP: 3035, seniorPerPMGBP: 4882,
-    build: "HUF 13,800,000 mid / 22,200,000 senior gross a year + employer on-cost 13.0% at mid = 15,594,000 / 25,086,000; ÷ 1,824 productive h × 152 h = HUF 1,299,500 / 2,090,500 per person-month ÷ 428.2 = £3,035 / £4,882",
+    build: "HUF 13,800,000 mid / 22,200,000 senior gross a year + employer on-cost 13.0% at mid = 15,594,000 / 25,086,000; ÷ 1,824 productive h × 152 h = HUF 1,299,500 / 2,090,500 per person-month ÷ 428.2 HUF per £ = £3,035 / £4,882",
     evidence: ["thyssenkrupp Components Technology Hungary operates a steering-software development centre in Budapest with some 500 software engineers on electro-mechanical steering (2018 release; about 400 in 2016).","thyssenkrupp's Budapest site has more than 1,200 colleagues in its E/E development centre for software and hardware (current company page). Szeged works with Budapest and Veszprém on steering electronics and software.","Bosch Budapest Engineering Center: more than 2,400 employees in 24+ departments (2018), Bosch's second-largest European R&D site, taking on self-driving systems and a large share of e-mobility R&D. This is a whole-centre headcount, not software only."],
     mid: [
       { value: 1150000, period: "monthly", annualFactor: 12, statistic: "midpoint of Hays 2024 mid-level developer (gross) 900,000–1,400,000", dataYear: 2024, source: "Hays Salary Guide (via Economx, Aug 2024)", url: "https://www.economx.hu/gazdasag/fejlesztok-berezes-millios-fizetes.795467.html", seenIn: "search-snippet" },
@@ -287,7 +287,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1848, hoursBasis: "(260 − 20 leave − 9 public holidays) × 40 h ÷ 5 — 20 days leave (ILO table), 9 public holidays — Wikipedia",
     midPerPMLocal: 454996, seniorPerPMLocal: 454996,
     midPerPMGBP: 3324, seniorPerPMGBP: 3324,
-    build: "RSD 4,803,985 mid / 4,803,985 senior gross a year + employer on-cost 15.2% at mid = 5,531,788 / 5,531,788; ÷ 1,848 productive h × 152 h = RSD 454,996 / 454,996 per person-month ÷ 136.9 = £3,324 / £3,324",
+    build: "RSD 4,803,985 mid / 4,803,985 senior gross a year + employer on-cost 15.2% at mid = 5,531,788 / 5,531,788; ÷ 1,848 productive h × 152 h = RSD 454,996 / 454,996 per person-month ÷ 136.9 RSD per £ = £3,324 / £3,324",
     evidence: ["Continental planned (and opened) a software R&D centre in Novi Sad (AutoTechInsight report, USD 1.1 million initial investment).","Continental Novi Sad R&D Center job postings (2021–2024): embedded software for vehicle control units, diagnostics, zone control units (x-Domain and Body ZCU), telematics and connectivity.","ZF Serbia (Novi Sad) expanding R&D teams (2022 postings): model-based software development, software integration, software architect and software test for electric traction drives."],
     mid: [
       { value: 288617, period: "monthly", annualFactor: 16.25845936562114, statistic: "mean NET × 1.3549 (RZS Sep 2022 programming gross/net 345,350 / 254,895)", dataYear: 2025, source: "RZS monthly earnings, February 2025 (via biznis.rs)", url: "https://biznis.rs/vesti/srbija/u-februaru-prosecna-neto-zarada-iznosila-103-519-dinara-mesecni-pad-37-odsto/", seenIn: "search-snippet" },
@@ -308,7 +308,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1896, hoursBasis: "(260 − 14 leave − 9 public holidays) × 40 h ÷ 5 — 14 days leave (1–5 years) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 9 fixed public holidays (reviewer) — the religious feasts are not in that count",
     midPerPMLocal: 90523, seniorPerPMLocal: 90523,
     midPerPMGBP: 1396, seniorPerPMGBP: 1396,
-    build: "TRY 1,129,152 mid / 1,129,152 senior employer cost a year (on-cost already inside); ÷ 1,896 productive h × 152 h = TRY 90,523 / 90,523 per person-month ÷ 64.86 = £1,396 / £1,396",
+    build: "TRY 1,129,152 mid / 1,129,152 senior employer cost a year (on-cost already inside); ÷ 1,896 productive h × 152 h = TRY 90,523 / 90,523 per person-month ÷ 64.86 TRY per £ = £1,396 / £1,396",
     evidence: ["Ford Otosan Sancaktepe (Istanbul) R&D centre — launched as Türkiye's largest single-site R&D centre with 1,200 engineers. A later profile gives 1,350 R&D engineers, including an engine software development laboratory supporting Ford global projects. Data from 2015, old.","AVL Araştırma ve Mühendislik (AVL Türkiye) — 2025 senior software developer posting describing intelligent-mobility development and national/international R&D projects in its Istanbul R&D centres. A 2019 press item gave >220 engineers (URL for that figure not identified).","Bosch Türkiye's team developed the 'Rush Hour Assist' driver-assistance function together with Togg."],
     mid: [
       { value: 94096, period: "monthly", annualFactor: 12, statistic: "mean EMPLOYER LABOUR COST per employee, ICT section (TÜİK 2024)", dataYear: 2024, source: "TÜİK İşgücü Maliyeti İstatistikleri 2024 — section J (via alomaliye.com, 25 Dec 2025)", url: "https://www.alomaliye.com/2025/12/25/tuik-2024te-aylik-ortalama-isgucu-maliyeti-45-777-tlye-cikti/", seenIn: "search-snippet" },
@@ -327,7 +327,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1800, hoursBasis: "(260 − 21 leave − 14 public holidays) × 40 h ÷ 5 — 21 days leave and 14 public holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
     midPerPMLocal: 37931, seniorPerPMLocal: 37931,
     midPerPMGBP: 550, seniorPerPMGBP: 550,
-    build: "EGP 403,597 mid / 403,597 senior gross a year + employer on-cost 11.3% at mid = 449,188 / 449,188; ÷ 1,800 productive h × 152 h = EGP 37,931 / 37,931 per person-month ÷ 68.91 = £550 / £550",
+    build: "EGP 403,597 mid / 403,597 senior gross a year + employer on-cost 11.3% at mid = 449,188 / 449,188; ÷ 1,800 productive h × 152 h = EGP 37,931 / 37,931 per person-month ÷ 68.91 EGP per £ = £550 / £550",
     evidence: ["Valeo Cairo: tech hub for automotive software, grown into an innovation hub of more than 2,500 software engineers, contributing roughly half of the Group's global software production (Valeo).","Valeo page dated July 2026: 2,200 Egyptian engineers at Smart Village developing R&D software for automotive. Headcounts conflict across Valeo pages (1,600 in 2018; 2,200; 2,500; 3,000).","Valeo celebrated 20 years in Egypt and launched an AI Development Centre in Cairo (50+ engineers at opening, growing to 100+). The talent pool is described as 3,000 engineers."],
     mid: [
       { value: 197193, period: "annual", annualFactor: 1, statistic: "mean", dataYear: 2026, source: "PayScale — Embedded Software Engineer at Valeo, Egypt", url: "https://www.payscale.com/research/EG/Job=Embedded_Software_Engineer/Salary/6bbe4197/Valeo", seenIn: "search-snippet" },
@@ -347,7 +347,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1856, hoursBasis: "(260 − 25 leave − 3 public holidays) × 40 h ÷ 5 — 25 days leave — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country (state Shops & Establishments law varies); 3 national holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
     midPerPMLocal: 66746, seniorPerPMLocal: 99914,
     midPerPMGBP: 525, seniorPerPMGBP: 785,
-    build: "INR 815,000 mid / 1,220,000 senior employer cost a year (on-cost already inside); ÷ 1,856 productive h × 152 h = INR 66,746 / 99,914 per person-month ÷ 127.2 = £525 / £785",
+    build: "INR 815,000 mid / 1,220,000 senior employer cost a year (on-cost already inside); ÷ 1,856 productive h × 152 h = INR 66,746 / 99,914 per person-month ÷ 127.2 INR per £ = £525 / £785",
     evidence: ["KPIT Technologies (Pune) employs AUTOSAR developers: AmbitionBox lists an 'Autosar Developer' salary page for KPIT built from 26 reported salaries (updated July 2025).","Mercedes-Benz Research and Development India (Bengaluru): Mercedes-Benz announced creation of 1,000 R&D jobs in India; the report states ~9,000 engineers already employed by Mercedes-Benz in India.","Bosch India: India is the Bosch Group's largest development centre outside Germany, ~18,500 R&D associates across Bengaluru and Coimbatore; plan to hire up to 10,000 R&D engineers."],
     mid: [
       { value: 770000, period: "annual", annualFactor: 1, statistic: "midpoint of AmbitionBox KPIT AUTOSAR developer, 2–4 y 450,000–1,090,000", dataYear: 2025, source: "AmbitionBox (job-board aggregate) — KPIT Technologies 'Autosar Developer'", url: "https://www.ambitionbox.com/salaries/kpit-technologies-salaries/autosar-developer", seenIn: "search-snippet" },
@@ -368,7 +368,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1936, hoursBasis: "(260 − 5 leave − 13 public holidays) × 40 h ÷ 5 — 5 days leave (1–10 years) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 13 public holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
     midPerPMLocal: 25115, seniorPerPMLocal: 35528,
     midPerPMGBP: 2828, seniorPerPMGBP: 4001,
-    build: "CNY 254,483 mid / 360,000 senior gross a year + employer on-cost 25.7% at mid = 319,885 / 452,520; ÷ 1,936 productive h × 152 h = CNY 25,115 / 35,528 per person-month ÷ 8.88 = £2,828 / £4,001",
+    build: "CNY 254,483 mid / 360,000 senior gross a year + employer on-cost 25.7% at mid = 319,885 / 452,520; ÷ 1,936 productive h × 152 h = CNY 25,115 / 35,528 per person-month ÷ 8.88 CNY per £ = £2,828 / £4,001",
     evidence: ["Bosch opened a software hub in Shanghai for automated driving / digital cockpit (its third such innovation centre in China), reported at ~540 engineers.","Desay SV (Huizhou) — automotive electronics/software Tier-1: 10,000+ employees worldwide and 4,600+ R&D professionals (company campus-recruitment page)."],
     mid: [
       { value: 238966, period: "annual", annualFactor: 1, statistic: "mean", dataYear: 2024, source: "National Bureau of Statistics, 2024年城镇单位就业人员年平均工资情况 (released 16 May 2025) — industry 'Information transmission, software and information technology services'", url: "https://www.stats.gov.cn/sj/zxfb/202505/t20250516_1959826.html", seenIn: "search-snippet" },
@@ -388,7 +388,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1896, hoursBasis: "(260 − 12 leave − 11 public holidays) × 40 h ÷ 5 — Labour Code 2019: 12 days leave, 11 public holidays (reviewer, lawnet.vn)",
     midPerPMLocal: 36673006, seniorPerPMLocal: 46053114,
     midPerPMGBP: 1068, seniorPerPMGBP: 1341,
-    build: "VND 376,500,000 mid / 472,800,000 senior gross a year + employer on-cost 21.5% at mid = 457,447,500 / 574,452,000; ÷ 1,896 productive h × 152 h = VND 36,673,006 / 46,053,114 per person-month ÷ 34350 = £1,068 / £1,341",
+    build: "VND 376,500,000 mid / 472,800,000 senior gross a year + employer on-cost 21.5% at mid = 457,447,500 / 574,452,000; ÷ 1,896 productive h × 152 h = VND 36,673,006 / 46,053,114 per person-month ÷ 34350 VND per £ = £1,068 / £1,341",
     evidence: ["FPT (FPT Software / FPT Automotive) has expanded its automotive software workforce to more than 5,000 professionals and targets >30% annual growth in automotive software; it runs an AUTOSAR-based (embedded C/C++) digital automotive engineering lab with Hanoi University of Science and Technology.","LG Electronics' Hanoi R&D centre (LGEDV) does software development and verification for in-vehicle infotainment / telematics; LG planned to grow its Vietnam R&D staff from 750 to 1,000.","LG Vehicle Solution Vietnam — LG company page on its Vietnam vehicle-component R&D subsidiary."],
     mid: [
       { value: 28400000, period: "monthly", annualFactor: 12, statistic: "median", dataYear: 2025, source: "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer", url: "https://itviec.com/report/vietnam-it-salary-and-recruitment-market", seenIn: "search-snippet" },
@@ -408,7 +408,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1872, hoursBasis: "(260 − 10 leave − 16 public holidays) × 40 h ÷ 5 — 40-hour week (Labour Standards Act, reviewer); 10 days leave (first year) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 16 public holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
     midPerPMLocal: 526425, seniorPerPMLocal: 526425,
     midPerPMGBP: 2525, seniorPerPMGBP: 2525,
-    build: "JPY 5,658,600 mid / 5,658,600 senior gross a year + employer on-cost 14.6% at mid = 6,483,341 / 6,483,341; ÷ 1,872 productive h × 152 h = JPY 526,425 / 526,425 per person-month ÷ 208.5 = £2,525 / £2,525",
+    build: "JPY 5,658,600 mid / 5,658,600 senior gross a year + employer on-cost 14.6% at mid = 6,483,341 / 6,483,341; ÷ 1,872 productive h × 152 h = JPY 526,425 / 526,425 per person-month ÷ 208.5 JPY per £ = £2,525 / £2,525",
     evidence: ["Toyota set up a Software Development Center and expanded collaboration with Woven by Toyota and Denso (both with software-implementation strengths); Denso's CTO serves as an EVP of the new unit.","Woven by Toyota (Tokyo) develops the Arene vehicle software platform; Arene software roles advertised in Tokyo.","Japanese job posting for software-development-process improvement on in-vehicle safety ECUs (en-ambi, listing 30 Jul – 12 Aug 2026)."],
     mid: [
       { value: 5741200, period: "monthly", annualFactor: 1, statistic: "mean, 12 × monthly contractual earnings ¥386,200 + annual bonus ¥1,106,800", dataYear: 2024, source: "MHLW Basic Survey on Wage Structure 2024 (令和6年賃金構造基本統計調査) — ソフトウェア作成者, きまって支給する現金給与額, as quoted by Benesse 職業情報", url: "https://manabi.benesse.ne.jp/shokugaku/job/list/197/income/", seenIn: "search-snippet" },
@@ -428,7 +428,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1840, hoursBasis: "(260 − 15 leave − 15 public holidays) × 40 h ÷ 5 — 40-hour week (reviewer); 15 days leave after one year — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 15 public holidays not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
     midPerPMLocal: 6046007, seniorPerPMLocal: 6046007,
     midPerPMGBP: 3363, seniorPerPMGBP: 3363,
-    build: "KRW 73,188,504 mid / 73,188,504 senior employer cost a year (on-cost already inside); ÷ 1,840 productive h × 152 h = KRW 6,046,007 / 6,046,007 per person-month ÷ 1798 = £3,363 / £3,363",
+    build: "KRW 73,188,504 mid / 73,188,504 senior employer cost a year (on-cost already inside); ÷ 1,840 productive h × 152 h = KRW 6,046,007 / 6,046,007 per person-month ÷ 1798 KRW per £ = £3,363 / £3,363",
     evidence: ["Hyundai Motor Group's SDV developer conference (with Hyundai AutoEver, 42dot, Kia) — group vehicle-software development in Korea.","42dot — Hyundai Motor Group's software / Advanced Vehicle Platform subsidiary (CEO Song Chang-hyeon); group software centre reporting."],
     mid: [
       { value: 6099042, period: "monthly", annualFactor: 12, statistic: "mean monthly EMPLOYER COST (KOSA: base + allowances + bonus + severance provision + employer 4 insurances)", dataYear: 2024, source: "KOSA (Korea Software Industry Association), 2025년 적용 SW기술자 평균임금 (2024 survey, published 4 Dec 2024) — 시스템SW개발자 (임베디드SW개발자 포함)", url: "https://files-scs.pstatic.net/2024/12/29/Yp9k9cqjwa/2025년_적용_SW기술자_평균임금_공표.pdf", seenIn: "search-snippet" },
@@ -447,7 +447,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 2080, hoursBasis: "(260 − 0 leave − 0 public holidays) × 40 h ÷ 5 — no statutory paid leave or private-sector holidays — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; employers typically give ~10 holidays + ~15 days PTO, which would raise the hourly cost ≈ 11 %",
     midPerPMLocal: 10287, seniorPerPMLocal: 10923,
     midPerPMGBP: 7769, seniorPerPMGBP: 8250,
-    build: "USD 130,760 mid / 138,850 senior gross a year + employer on-cost 7.6% at mid = 140,763 / 149,472; ÷ 2,080 productive h × 152 h = USD 10,287 / 10,923 per person-month ÷ 1.324 = £7,769 / £8,250",
+    build: "USD 130,760 mid / 138,850 senior gross a year + employer on-cost 7.6% at mid = 140,763 / 149,472; ÷ 2,080 productive h × 152 h = USD 10,287 / 10,923 per person-month ÷ 1.324 USD per £ = £7,769 / £8,250",
     evidence: ["GM's global software & services organisation is based at the Global Technical Center, Warren MI: a 2025 WARN notice for its software-org cuts covered ~634 employees at the Warren campus (part of >1,000 cuts) - i.e. a large software headcount there.","GM said it would hire 3,000 more technical workers to develop vehicles and software, most at the Warren Technical Center (article date not shown in result).","GM 'Software Engineer - Early Career' job postings located in Warren, MI."],
     mid: [
       { value: 124780, period: "annual", annualFactor: 1, statistic: "median", dataYear: 2024, source: "BLS OEWS via O*NET OnLine local wages (15-1252)", url: "https://www.onetonline.org/link/localwages/15-1252.00?st=MI", seenIn: "search-snippet" },
@@ -472,7 +472,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 2080, hoursBasis: "(260 − 0 leave − 0 public holidays) × 40 h ÷ 5 — no statutory paid leave — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; typical PTO would raise the hourly cost ≈ 11 %",
     midPerPMLocal: 14434, seniorPerPMLocal: 17122,
     midPerPMGBP: 10902, seniorPerPMGBP: 12932,
-    build: "USD 183,480 mid / 219,670 senior gross a year + employer on-cost 7.7% at mid = 197,516 / 234,294; ÷ 2,080 productive h × 152 h = USD 14,434 / 17,122 per person-month ÷ 1.324 = £10,902 / £12,932",
+    build: "USD 183,480 mid / 219,670 senior gross a year + employer on-cost 7.7% at mid = 197,516 / 234,294; ÷ 2,080 productive h × 152 h = USD 14,434 / 17,122 per person-month ÷ 1.324 USD per £ = £10,902 / £12,932",
     evidence: ["Zoox (Amazon-owned robotaxi developer) posts software engineering roles at its Foster City, CA office, with posted pay e.g. $215k-$237k/yr for one role.","Waymo (autonomous-driving software, ex-Google Self-Driving Car Project 2009) software engineering job listings in Mountain View, CA.","Levels.fyi holds Bay Area software-engineer pay records at Rivian (RIV-3..RIV-7), Tesla (P1..P5), GM and the Rivian and Volkswagen Group Technologies JV - i.e. automotive SW engineers employed in the Bay Area."],
     mid: [
       { value: 213110, period: "annual", annualFactor: 1, statistic: "median (May 2025 per reviewer)", dataYear: null, source: "BLS OEWS via O*NET OnLine local wages (15-1252)", url: "https://www.onetonline.org/link/localwages/15-1252.00?st=CA", seenIn: "search-snippet" },
@@ -496,7 +496,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1928, hoursBasis: "(260 − 10 leave − 9 public holidays) × 40 h ÷ 5 — 10 days leave (Ontario 2 weeks), 9 public holidays — reviewer (Statista) / https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country",
     midPerPMLocal: 7540, seniorPerPMLocal: 8955,
     midPerPMGBP: 4015, seniorPerPMGBP: 4769,
-    build: "CAD 89,842 mid / 107,791 senior gross a year + employer on-cost 6.5% at mid = 95,645 / 113,593; ÷ 1,928 productive h × 152 h = CAD 7,540 / 8,955 per person-month ÷ 1.878 = £4,015 / £4,769",
+    build: "CAD 89,842 mid / 107,791 senior gross a year + employer on-cost 6.5% at mid = 95,645 / 113,593; ÷ 1,928 productive h × 152 h = CAD 7,540 / 8,955 per person-month ÷ 1.878 CAD per £ = £4,015 / £4,769",
     evidence: ["GM Canadian Technical Centre, Markham ON, opened as GM's automotive software development centre (target ~700 software engineers; 300 at launch, building sized for ~1,000).","Globe and Mail: GM ramping up Canadian tech operations - Markham centre with more than 400 engineers and software developers (article date not visible).","BlackBerry QNX (automotive RTOS / vehicle software), Ottawa-Kanata: ~400 engineers in Dec 2016 and an Autonomous Vehicle Innovation Centre planned to hire up to 650 engineers (OLD - 2016)."],
     mid: [
       { value: 56.73, period: "hourly", annualFactor: 2080, statistic: "median hourly × 2,080 h", dataYear: 2024, source: "ESDC Job Bank wages, NOC 21231 Software engineers and designers (source: Statistics Canada Labour Force Survey)", url: "https://www.jobbank.gc.ca/wagereport/occupation/5485", seenIn: "search-snippet" },
@@ -518,7 +518,7 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
     productiveHours: 1928, hoursBasis: "(260 − 12 leave − 7 public holidays) × 40 h ÷ 5 — 12 days leave (first year) — https://en.wikipedia.org/wiki/List_of_minimum_annual_leave_by_country; 7 mandatory rest days not sourced in this research — CostVision reading of the national calendar / labour code, to verify",
     midPerPMLocal: 26052, seniorPerPMLocal: 35431,
     midPerPMGBP: 1093, seniorPerPMGBP: 1486,
-    build: "MXN 300,000 mid / 408,000 senior gross a year + employer on-cost 10.2% at mid = 330,450 / 449,412; ÷ 1,928 productive h × 152 h = MXN 26,052 / 35,431 per person-month ÷ 23.84 = £1,093 / £1,486",
+    build: "MXN 300,000 mid / 408,000 senior gross a year + employer on-cost 10.2% at mid = 330,450 / 449,412; ÷ 1,928 productive h × 152 h = MXN 26,052 / 35,431 per person-month ÷ 23.84 MXN per £ = £1,093 / £1,486",
     evidence: ["Bosch opened a software development & engineering centre in Guadalajara (2014, ~US$5m, 200+ engineering jobs) for automotive ECU hardware/software development and validation (old figure).","Bosch strengthens its software development presence in the Americas (Guadalajara centre).","GlobalLogic (Hitachi) building a dedicated automotive engineering centre in Guadalajara for N.S. International - instrument cluster and head-up-display software (Dec 2024)."],
     mid: [
       { value: 25000, period: "monthly", annualFactor: 12, statistic: "mean", dataYear: 2026, source: "Glassdoor Mexico - Ingeniero de Software Embebido (May 2026)", url: "https://www.glassdoor.com.mx/Sueldos/ingeniero-de-software-embebido-sueldo-SRCH_KO0,30_IP2.htm", seenIn: "search-snippet" },

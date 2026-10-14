@@ -105,7 +105,7 @@ function emit(cfg: Config, built: ReturnType<typeof build>): string {
     productiveHours: ${r0(hours)}, hoursBasis: ${q(`(260 − ${h.hours.leaveDays} leave${h.hours.leaveIncludesHolidays ? ' incl. public holidays' : ` − ${h.hours.publicHolidays} public holidays`}) × ${h.hours.weeklyHours} h ÷ 5 — ${h.hours.source}${h.hours.note ? `; ${h.hours.note}` : ''}`)},
     midPerPMLocal: ${r0(mid.perPMLocal)}, seniorPerPMLocal: ${r0(senior.perPMLocal)},
     midPerPMGBP: ${r0(mid.perPMGBP)}, seniorPerPMGBP: ${r0(senior.perPMGBP)},
-    build: ${q(`${h.currency} ${fmt(mid.salary)} mid / ${fmt(senior.salary)} senior ${h.onCost.inSalary ? 'employer cost a year (on-cost already inside)' : `gross a year + employer on-cost ${onCostPct.toFixed(1)}% at mid = ${fmt(mid.loaded)} / ${fmt(senior.loaded)}`}; ÷ ${fmt(hours)} productive h × ${COCOMO_PM_HOURS} h = ${h.currency} ${fmt(mid.perPMLocal)} / ${fmt(senior.perPMLocal)} per person-month ÷ ${fx} = £${fmt(mid.perPMGBP)} / £${fmt(senior.perPMGBP)}`)},
+    build: ${q(`${h.currency} ${fmt(mid.salary)} mid / ${fmt(senior.salary)} senior ${h.onCost.inSalary ? 'employer cost a year (on-cost already inside)' : `gross a year + employer on-cost ${onCostPct.toFixed(1)}% at mid = ${fmt(mid.loaded)} / ${fmt(senior.loaded)}`}; ÷ ${fmt(hours)} productive h × ${COCOMO_PM_HOURS} h = ${h.currency} ${fmt(mid.perPMLocal)} / ${fmt(senior.perPMLocal)} per person-month${h.currency === 'GBP' ? '' : ` ÷ ${fx} ${h.currency} per £ = £${fmt(mid.perPMGBP)} / £${fmt(senior.perPMGBP)}`}`)},
     evidence: ${JSON.stringify(h.evidence.map(e => e.claim))},
     mid: [
       ${h.mid.map(obs).join(',\n      ')},
