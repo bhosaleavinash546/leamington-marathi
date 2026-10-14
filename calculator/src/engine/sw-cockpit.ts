@@ -11,8 +11,8 @@
  */
 
 import {
-  SW_MODULES, SW_CLOUD_REFERENCE_FLEET, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_DEFAULT_SERVICE_YEARS,
-  buildPhases, swLoadedRate, swOverhead, swEvidenceLines, computeSWProgram,
+  SW_CLOUD_REFERENCE_FLEET, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_DEFAULT_SERVICE_YEARS,
+  buildPhases, swLoadedRate, swOverhead, swEvidenceLines, computeSWProgram, swModuleDefs,
   type SWProgramResult, type SWCategory, type SWEvidenceGrade, type SWEvidenceLine, type DevSource, type SWRegion, type SWProgramInputs,
 } from './sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY, resolveRateLibrary } from './sw-rate-library.js';
@@ -116,8 +116,9 @@ export function swUnitEconomics(result: SWProgramResult): SWUnitEconomics {
   const S = prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS;
   const connected = prog.connectedVehicleShare ?? 1;
   let built = 0, sub = 0, cloud = 0, fixedNominal = 0;
+  const defs = swModuleDefs(prog);
   for (const m of result.modules) {
-    const def = SW_MODULES.find(d => d.id === m.moduleId);
+    const def = defs.get(m.moduleId);
     if (!def) continue;
     built += def.perVehicleRoyaltyGBP ?? 0;
     sub += def.perVehiclePerYearGBP ?? 0;
@@ -218,6 +219,36 @@ export function swQuoteCheck(result: SWProgramResult, quote: SWQuote): SWQuoteCh
 
 export interface SWMakeBuyRow { category: SWCategory; label: string; make: number; tier1: number; startup: number }
 export interface SWMakeBuy { rows: SWMakeBuyRow[]; breakEvenEffortShare: number; margin: number; basis: string }
+
+// ── Calibration priorities and catalogue gaps (improvement round, 14 Oct 2026) ─────────────────────────────────────
+
+/** Vehicle software no catalogue module covers (review judgement): usually supplier ECUs priced in the hardware. Add one
+ *  as "your module" with your own effort to cost it. */
+export const SW_CATALOGUE_GAPS = [
+  'Occupant restraint (airbag) control',
+  'On-board AC charger and DC-DC converter control (the charging module covers DC fast-charge protocols)',
+  'Electric power steering and electric parking brake base software',
+  'Tyre-pressure monitoring',
+  'Seat memory / massage and other comfort ECUs beyond climate and body control',
+  'Trailer functions',
+] as const;
+
+export interface SWCalibrationPriority { moduleId: string; name: string; personMonths: number; amount: number; share: number; cumulative: number }
+
+/** Which modules to measure first: the engineering £ that rests on the unsourced effort catalogue, largest first, with
+ *  each one's share of that £ and the running total — logging the top few covers most of the uncertainty. */
+export function swCalibrationPriorities(result: SWProgramResult): { rows: SWCalibrationPriority[]; total: number } {
+  const lines = swEvidenceLines(result.inputs, result.modules, result.summary).filter(l => l.kind === 'effort' && l.grade === 'unsourced');
+  const total = lines.reduce((a, l) => a + l.amount, 0);
+  let cum = 0;
+  const rows = [...lines].sort((a, b) => b.amount - a.amount).map(l => {
+    const name = l.label.replace(/ — engineering$/, '');
+    const m = result.modules.find(x => x.moduleName === name);
+    cum += l.amount;
+    return { moduleId: m?.moduleId ?? name, name, personMonths: m?.effortPersonMonths ?? 0, amount: l.amount, share: total > 0 ? l.amount / total : 0, cumulative: total > 0 ? cum / total : 0 };
+  });
+  return { rows, total };
+}
 
 // ── Every hub (president review, 14 Oct 2026) ───────────────────────────────────────────────────────────────────────
 

@@ -8,7 +8,7 @@
  */
 
 import {
-  SW_MODULES, cocomoNominalPM, type SWProgramResult, type ASILLevel,
+  swModuleDefs, cocomoNominalPM, type SWProgramResult, type ASILLevel,
 } from './sw-should-cost.js';
 
 export interface SWCostingStep {
@@ -39,8 +39,9 @@ export function swCostingSteps(result: SWProgramResult, rate: StepRate, f: StepF
   const ids = result.modules.map(m => m.moduleId);
   const cats = new Set(result.modules.map(m => m.categoryLabel));
 
+  const defs = swModuleDefs(prog);
   const nominal = on.reduce((a, m) => {
-    const def = SW_MODULES.find(d => d.id === m.moduleId);
+    const def = defs.get(m.moduleId);
     if (!def) return a;
     return a + (m.customPersonMonths ?? (m.sizeKSLOC ? cocomoNominalPM(m.sizeKSLOC) : def.basePersonMonths));
   }, 0);

@@ -178,6 +178,39 @@ export interface SWModuleDef {
    *  (software review P1 #4, Oct 2026). The screen labels these "estimate". */
   estimateBasis?:            string;
   notes:                     string;
+  /** A user-defined module (SWCustomModule) — every effort figure is the user's own. */
+  custom?:                   boolean;
+  /** Lines the user priced with a typed quote (SWQuotes) — each holds the quote's stated source. */
+  quoted?:                   { royalty?: string; subscription?: string; ip?: string; cloud?: string };
+}
+
+/** A supplier quote or a figure the user stands behind: the value and where it came from (shown in every report). */
+export interface SWLineQuote { value: number; source: string }
+export interface SWModuleQuotes { perVehicleBuilt?: SWLineQuote; perVehicleYear?: SWLineQuote; annualIP?: SWLineQuote }
+/**
+ * Typed quotes replace the catalogue's unsourced figures (improvement round, 14 Oct 2026): cloud £ per connected
+ * vehicle-year for the whole back-end (spread over the in-scope modules in proportion to their catalogue cloud), and per
+ * module the royalty per vehicle built, the subscription per vehicle-year and the IP licence £ a year. A quoted line is
+ * graded "entered" with its source; the rest stay as they were.
+ */
+export interface SWQuotes { cloudPerVehicleYear?: SWLineQuote; modules?: Record<string, SWModuleQuotes> }
+/**
+ * A module the catalogue does not have (e.g. airbag control, on-board charger): the user names it, picks its domain and
+ * gives its NOMINAL effort (person-months, fresh code at QM / Medium) — or sizes it in KSLOC on its module input. Its
+ * test / integration / maintenance / calibration fractions are the MEDIAN of the catalogue modules in the same domain
+ * (stated in its basis). Nothing is invented: with no effort it costs nothing.
+ */
+export interface SWCustomModule {
+  id:                  string;          // 'custom-…'
+  name:                string;
+  category:            SWCategory;
+  nominalPersonMonths: number;
+  defaultAsil:         ASILLevel;
+  defaultComplexity:   SWComplexity;
+  defaultCal?:         SWCal;
+  perVehicleRoyaltyGBP?: number;
+  annualIPLicenceGBP?: number;
+  source:              string;          // where the effort figure comes from
 }
 
 export interface SWModuleInput {
@@ -265,6 +298,10 @@ export interface SWProgramInputs {
   postProductionSupportYears?: number;
   /** Share of the production-years tail team kept for that support (0–1). Absent = SW_POST_EOP_SHARE. */
   postProductionSupportShare?: number;
+  /** Typed supplier quotes that replace catalogue figures (SWQuotes). */
+  quotes?:                  SWQuotes;
+  /** User-defined modules for software the catalogue lacks (SWCustomModule); each needs a module input to be in scope. */
+  customModules?:           SWCustomModule[];
   /** Vehicle types that share the organisation's CSMS / SUMS certification (UNECE R155 / R156). This programme carries
    *  1 ÷ that share of it. Absent = 1 (this programme carries all of it). */
   csmsTypesSharing?:        number;
@@ -1471,9 +1508,68 @@ export const SW_CLOUD_REFERENCE_FLEET = 440_000;
  *  US$0.45 the next 40,000, messages and storage extra (aws.amazon.com/iot-fleetwise/pricing) — i.e. US$5.4–7.2 per
  *  vehicle-year for the data-collection service alone; it closed to new customers on 30 Apr 2026. The catalogue's
  *  ≈ £10.8 per connected vehicle-year (all modules) stays an unsourced estimate. */
+// ─── Module definitions: catalogue + the user's own modules + typed quotes (improvement round, 14 Oct 2026) ───────
+
+const median = (xs: number[]) => { const a = [...xs].sort((p, q) => p - q), n = a.length; return n ? (n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2) : 0; };
+
+/** A user-defined module as a full definition: its domain's catalogue medians for the fractions. */
+export function customModuleDef(c: SWCustomModule): SWModuleDef {
+  const peers = SW_MODULES.filter(m => m.category === c.category);
+  const med = (k: 'testingFractionBase' | 'integrationFractionBase' | 'maintenancePctPerYear' | 'calibrationFractionBase') => median(peers.map(m => m[k]));
+  return {
+    id: c.id, name: c.name, shortName: c.name, category: c.category, categoryLabel: peers[0]?.categoryLabel ?? c.category,
+    description: `Your module — ${c.source}`, defaultAsil: c.defaultAsil, defaultComplexity: c.defaultComplexity,
+    basePersonMonths: c.nominalPersonMonths, hasMLContent: false, hasCloudDependency: false,
+    hasCybersecRequirement: (c.defaultCal ?? 'none') !== 'none', defaultCal: c.defaultCal ?? 'none',
+    testingFractionBase: med('testingFractionBase'), integrationFractionBase: med('integrationFractionBase'),
+    maintenancePctPerYear: med('maintenancePctPerYear'), calibrationFractionBase: med('calibrationFractionBase'),
+    annualToolLicenceGBP: 0, annualIPLicenceGBP: c.annualIPLicenceGBP ?? 0, annualCloudCostGBP: 0,
+    perVehicleRoyaltyGBP: c.perVehicleRoyaltyGBP, royaltyBasis: c.perVehicleRoyaltyGBP ? `Your figure — ${c.source}` : undefined,
+    notes: `Your module: effort ${c.nominalPersonMonths} nominal person-months — ${c.source}. Test, integration, maintenance and calibration fractions = the median of the ${peers.length} catalogue modules in its domain.`,
+    custom: true,
+  };
+}
+
+/**
+ * Every module definition the programme can cost, by id: the catalogue, the user's modules, and the typed quotes laid
+ * over them. ONE resolver — the engine, evidence, unit economics and the reports read modules only through it.
+ */
+export function swModuleDefs(prog: Pick<SWProgramInputs, 'modules' | 'quotes' | 'customModules'>): Map<string, SWModuleDef> {
+  const map = new Map<string, SWModuleDef>(SW_MODULES.map(m => [m.id, m]));
+  for (const c of prog.customModules ?? []) map.set(c.id, customModuleDef(c));
+  const q = prog.quotes;
+  if (!q) return map;
+  for (const [id, mq] of Object.entries(q.modules ?? {})) {
+    const d = map.get(id);
+    if (!d || !mq) continue;
+    const quoted = { ...(d.quoted ?? {}) };
+    const nd: SWModuleDef = { ...d };
+    const parts: string[] = [];
+    if (mq.perVehicleBuilt) { nd.perVehicleRoyaltyGBP = mq.perVehicleBuilt.value; quoted.royalty = mq.perVehicleBuilt.source; parts.push(`£${mq.perVehicleBuilt.value} per vehicle built — ${mq.perVehicleBuilt.source}`); }
+    if (mq.perVehicleYear) { nd.perVehiclePerYearGBP = mq.perVehicleYear.value; quoted.subscription = mq.perVehicleYear.source; parts.push(`£${mq.perVehicleYear.value} per vehicle-year — ${mq.perVehicleYear.source}`); }
+    if (mq.annualIP) { nd.annualIPLicenceGBP = mq.annualIP.value; quoted.ip = mq.annualIP.source; }
+    if (parts.length) nd.royaltyBasis = `Your quote: ${parts.join('; ')}`;
+    nd.quoted = quoted;
+    map.set(id, nd);
+  }
+  // Cloud: the quote replaces the catalogue's whole back-end rate, spread over the in-scope modules by their catalogue share.
+  if (q.cloudPerVehicleYear) {
+    const on = prog.modules.filter(m => m.enabled).map(m => map.get(m.moduleId)).filter((d): d is SWModuleDef => !!d);
+    const catTotal = on.reduce((a, d) => a + d.annualCloudCostGBP, 0);
+    const target = q.cloudPerVehicleYear.value * SW_CLOUD_REFERENCE_FLEET;
+    const carriers = catTotal > 0 ? on.filter(d => d.annualCloudCostGBP > 0) : on.slice(0, 1);
+    for (const d of carriers) {
+      const share = catTotal > 0 ? d.annualCloudCostGBP / catTotal : 1;
+      map.set(d.id, { ...map.get(d.id)!, annualCloudCostGBP: target * share, quoted: { ...(map.get(d.id)!.quoted ?? {}), cloud: q.cloudPerVehicleYear.source } });
+    }
+  }
+  return map;
+}
+
 /** £ per connected vehicle-year the in-scope modules charge (the catalogue's module £ / yr ÷ the reference fleet). */
-export function swCloudPerVehicleYear(prog: Pick<SWProgramInputs, 'modules'>): number {
-  return prog.modules.filter(m => m.enabled).reduce((a, m) => a + (SW_MODULES.find(d => d.id === m.moduleId)?.annualCloudCostGBP ?? 0), 0) / SW_CLOUD_REFERENCE_FLEET;
+export function swCloudPerVehicleYear(prog: Pick<SWProgramInputs, 'modules' | 'quotes' | 'customModules'>): number {
+  const defs = swModuleDefs(prog);
+  return prog.modules.filter(m => m.enabled).reduce((a, m) => a + (defs.get(m.moduleId)?.annualCloudCostGBP ?? 0), 0) / SW_CLOUD_REFERENCE_FLEET;
 }
 /** Plain-English development-source names (reports print these, never the enum). */
 export const SW_DEV_SOURCE_LABEL: Record<DevSource, string> = { OEM_Internal: 'OEM in-house', Tier1_Supplier: 'Tier-1 supplier', Startup_OSS: 'Software start-up / open source' };
@@ -1629,12 +1725,14 @@ export function swEvidenceLines(prog: SWProgramInputs, modules: SWModuleCostResu
   const out: SWEvidenceLine[] = [];
   const r = (prog.discountRatePct ?? 0) / 100;
   const calibrated = prog.effortCalibration !== undefined && prog.effortCalibration !== 1;
+  const defs = swModuleDefs(prog);
   for (const m of modules) {
-    const def = SW_MODULES.find(d => d.id === m.moduleId)!;
+    const def = defs.get(m.moduleId)!;
     const effort = m.development.total + m.testing.total + m.integrationCost + m.cybersecCost + m.calibrationCost + m.mlDataCost;
-    const eGrade: SWEvidenceGrade = m.effortBasis === 'custom' ? 'entered' : m.effortBasis === 'size' ? 'estimate' : calibrated ? 'calibrated' : 'unsourced';
+    // A user-defined module's catalogue effort IS the user's figure.
+    const eGrade: SWEvidenceGrade = m.effortBasis === 'custom' || (def.custom && m.effortBasis === 'catalogue') ? 'entered' : m.effortBasis === 'size' ? 'estimate' : calibrated ? 'calibrated' : 'unsourced';
     out.push({ kind: 'effort', label: `${m.moduleName} — engineering`, amount: effort, grade: eGrade, nre: true,
-      basis: m.effortBasis === 'custom' ? 'your person-months' : m.effortBasis === 'size' ? 'COCOMO II on your KSLOC' : calibrated ? 'catalogue × your calibration' : 'module catalogue person-months (unsourced)' });
+      basis: m.effortBasis === 'custom' ? 'your person-months' : m.effortBasis === 'size' ? 'COCOMO II on your KSLOC' : def.custom ? def.notes : calibrated ? 'catalogue × your calibration' : 'module catalogue person-months (unsourced)' });
     out.push({ kind: 'tools', label: `${m.moduleName} — tools`, amount: m.toolchainCost, grade: prog.toolSeatGBPPerYear !== undefined ? 'entered' : 'estimate', nre: true, basis: SW_TOOL_SEAT_BASIS });
     // Production-years sustaining (a rule of thumb, estimate) and the post-production security support after the last
     // build (an unsourced share — the duty is regulatory, its cost is not published).
@@ -1643,10 +1741,16 @@ export function swEvidenceLines(prog: SWProgramInputs, modules: SWModuleCostResu
     out.push({ kind: 'maintenance', label: `${m.moduleName} — maintenance`, amount: m.maintenanceCost - post, grade: 'estimate', nre: false, basis: SW_MAINT_BASIS });
     if (post > 1e-6) out.push({ kind: 'postSupport', label: `${m.moduleName} — security support after the last build`, amount: post, grade: prog.postProductionSupportShare !== undefined ? 'entered' : 'unsourced', nre: false, basis: SW_POST_EOP_BASIS });
     const ip = pvOf(m.yearly.licences, r);
-    out.push({ kind: 'licences', label: `${m.moduleName} — IP licences`, amount: ip, grade: 'unsourced', nre: false, basis: 'module catalogue £ / yr (unsourced)' });
+    const ipYours = !!def.quoted?.ip || !!def.custom;
+    out.push({ kind: 'licences', label: `${m.moduleName} — IP licences`, amount: ip, grade: ipYours ? 'entered' : 'unsourced', nre: false,
+      basis: def.quoted?.ip ? `your quote — ${def.quoted.ip}` : def.custom ? 'your figure' : 'module catalogue £ / yr (unsourced)' });
     const roy = m.licensingCost - ip;
-    if (Math.abs(roy) > 1e-6) out.push({ kind: 'royalties', label: `${m.moduleName} — royalties`, amount: roy, grade: /unsourced/i.test(def.royaltyBasis ?? 'unsourced') ? 'unsourced' : 'sourced', nre: false, basis: def.royaltyBasis ?? '' });
-    if (m.cloudCost) out.push({ kind: 'cloud', label: `${m.moduleName} — cloud`, amount: m.cloudCost, grade: 'unsourced', nre: false, basis: `${SW_CLOUD_BASIS} ${SW_SERVICE_BASIS}` });
+    // A royalty is "yours" when every part of it was typed (a quote, or the user's own module).
+    const unquotedPart = (!!def.perVehicleRoyaltyGBP && !def.quoted?.royalty && !def.custom) || (!!def.perVehiclePerYearGBP && !def.quoted?.subscription);
+    if (Math.abs(roy) > 1e-6) out.push({ kind: 'royalties', label: `${m.moduleName} — royalties`, amount: roy,
+      grade: !unquotedPart ? 'entered' : /unsourced/i.test(def.royaltyBasis ?? 'unsourced') ? 'unsourced' : 'sourced', nre: false, basis: def.royaltyBasis ?? '' });
+    if (m.cloudCost) out.push({ kind: 'cloud', label: `${m.moduleName} — cloud`, amount: m.cloudCost, grade: def.quoted?.cloud ? 'entered' : 'unsourced', nre: false,
+      basis: def.quoted?.cloud ? `Your quote: £${prog.quotes?.cloudPerVehicleYear?.value} per connected vehicle-year — ${def.quoted.cloud} (spread by the catalogue's module shares). ${SW_SERVICE_BASIS}` : `${SW_CLOUD_BASIS} ${SW_SERVICE_BASIS}` });
   }
   if (summary.totalHomologation) out.push({ kind: 'homologation', label: 'Homologation (R155 / R156 / ISO 26262)', amount: summary.totalHomologation, grade: 'estimate', nre: true, basis: SW_HOMOLOGATION_BASIS });
   const fixedCloud = pvOf(summary.cloudFixedYearly, r);
@@ -1801,6 +1905,35 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   const p: string[] = [];
   const lib = resolveRateLibrary(prog.rateLibrary);
   const fin = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+  // The user's own modules and typed quotes (improvement round): a figure must be a number in range AND say where it came from.
+  const known = new Set(SW_MODULES.map(m => m.id));
+  const cats: SWCategory[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+  for (const c of prog.customModules ?? []) {
+    if (!/^custom-[a-z0-9-]{1,60}$/.test(c.id ?? '') || known.has(c.id)) p.push(`your module id "${c.id}" must be "custom-…" (lower-case) and unique`);
+    known.add(c.id);
+    if (!c.name || !c.name.trim() || c.name.length > 80) p.push(`your module "${c.id}" needs a name (1–80 characters)`);
+    if (!cats.includes(c.category)) p.push(`your module "${c.name}" needs a domain A–G`);
+    if (!fin(c.nominalPersonMonths) || c.nominalPersonMonths < 0 || c.nominalPersonMonths > 20_000) p.push(`your module "${c.name}": nominal effort must be 0–20,000 person-months`);
+    if (!(c.defaultAsil in ASIL_DEV_MULT)) p.push(`your module "${c.name}": ASIL must be QM, A, B, C or D`);
+    if (c.perVehicleRoyaltyGBP !== undefined && (!fin(c.perVehicleRoyaltyGBP) || c.perVehicleRoyaltyGBP < 0 || c.perVehicleRoyaltyGBP > 10_000)) p.push(`your module "${c.name}": royalty must be £0–10,000 a vehicle`);
+    if (c.annualIPLicenceGBP !== undefined && (!fin(c.annualIPLicenceGBP) || c.annualIPLicenceGBP < 0 || c.annualIPLicenceGBP > 1e9)) p.push(`your module "${c.name}": IP licence must be £0–1bn a year`);
+    // A just-added module has no figure yet (it costs nothing); once it carries one, it must say where it comes from.
+    const hasFigure = (c.nominalPersonMonths ?? 0) > 0 || (c.perVehicleRoyaltyGBP ?? 0) > 0 || (c.annualIPLicenceGBP ?? 0) > 0;
+    if (hasFigure && (!c.source || c.source.trim().length < 2)) p.push(`your module "${c.name}": say where its effort figure comes from`);
+  }
+  const q = prog.quotes;
+  const chk = (lq: SWLineQuote | undefined, what: string, max: number) => {
+    if (!lq) return;
+    if (!fin(lq.value) || lq.value < 0 || lq.value > max) p.push(`${what} must be £0–${max.toLocaleString('en-GB')}`);
+    if (!lq.source || lq.source.trim().length < 2) p.push(`${what}: say where the quote comes from`);
+  };
+  chk(q?.cloudPerVehicleYear, 'cloud quote (£ per connected vehicle-year)', 1_000);
+  for (const [id, mq] of Object.entries(q?.modules ?? {})) {
+    if (!known.has(id)) p.push(`a quote names module "${id}", which is not in the catalogue or your modules`);
+    chk(mq?.perVehicleBuilt, `${id} royalty quote (£ per vehicle built)`, 10_000);
+    chk(mq?.perVehicleYear, `${id} subscription quote (£ per vehicle-year)`, 10_000);
+    chk(mq?.annualIP, `${id} IP licence quote (£ a year)`, 1e9);
+  }
   if (!(normaliseSWRegion(String(prog.region)) in lib.hubRates)) p.push(`region "${String(prog.region)}" is not one of the rate book's hubs`);
   for (const [k, h] of Object.entries(lib.hubRates)) {
     for (const lvl of ['mid', 'senior'] as const) {
@@ -1834,7 +1967,7 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   if (prog.platformAnnualVolume !== undefined && (!fin(prog.platformAnnualVolume) || prog.platformAnnualVolume < 0 || prog.platformAnnualVolume > 20_000_000)) p.push('platform volume must be 0–20,000,000 vehicles');
   const seen = new Set<string>();
   for (const m of prog.modules) {
-    if (!SW_MODULES.some(d => d.id === m.moduleId)) { p.push(`unknown module "${m.moduleId}"`); continue; }
+    if (!known.has(m.moduleId)) { p.push(`unknown module "${m.moduleId}"`); continue; }
     if (seen.has(m.moduleId)) p.push(`module "${m.moduleId}" appears twice`);
     seen.add(m.moduleId);
     if (!m.enabled) continue;
@@ -1861,10 +1994,8 @@ export function computeSWProgram(
   if (problems.length) throw new SWInputError(problems);
   const rates = resolveRates(prog);
   const enabledModules = prog.modules.filter(m => m.enabled);
-  const modules: SWModuleCostResult[] = enabledModules.map(m => {
-    const def = SW_MODULES.find(d => d.id === m.moduleId)!;
-    return computeModuleCost(def, m, prog, rates);
-  });
+  const defs = swModuleDefs(prog);
+  const modules: SWModuleCostResult[] = enabledModules.map(m => computeModuleCost(defs.get(m.moduleId)!, m, prog, rates));
 
   const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
 

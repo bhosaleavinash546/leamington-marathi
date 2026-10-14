@@ -4,7 +4,7 @@
  * which inputs differ. It never prices anything itself.
  */
 
-import { computeSWProgram, SW_MODULES, type SWProgramInputs, type SWProgramResult, type DevSource, type SWReuse, type SWRegion } from './sw-should-cost.js';
+import { computeSWProgram, swModuleDefs, type SWProgramInputs, type SWProgramResult, type DevSource, type SWReuse, type SWRegion } from './sw-should-cost.js';
 import { swUnitEconomics } from './sw-cockpit.js';
 import { SW_HUB_RATES } from './sw-country-rates.js';
 
@@ -69,7 +69,8 @@ export function diffInputs(base: SWProgramInputs, s: SWProgramInputs): string[] 
   field('support share', base.postProductionSupportShare, s.postProductionSupportShare, (v: number | undefined) => v == null ? 'default' : `${Math.round(v * 100)} %`);
 
   const byId = new Map(base.modules.map(m => [m.moduleId, m]));
-  const name = (id: string) => SW_MODULES.find(d => d.id === id)?.shortName ?? id;
+  const defs = swModuleDefs(s);
+  const name = (id: string) => defs.get(id)?.shortName ?? id;
   const added: string[] = [], removed: string[] = [];
   let asil = 0, comp = 0, reuse = 0, size = 0;
   for (const m of s.modules) {
