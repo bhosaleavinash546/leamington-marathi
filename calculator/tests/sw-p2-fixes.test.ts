@@ -82,7 +82,11 @@ describe('#10 uncertainty band and volume sensitivity follow the headline', () =
   });
   it('with a 2-year recovery window the band\'s £/vehicle brackets the headline (it showed £639 against £2,043)', () => {
     const r = computeSWProgram(prog(p => { p.costRecoveryYears = 2; }));
-    expect(r.monteCarlo.p10PerVehicle).toBeLessThan(r.summary.perVehicle * 1.05);
+    // The band's £ / vehicle follows the headline's recovery rule (the bug: P50 £639 against a £2,043 headline, ×0.31).
+    // Since the gaps round the ranges follow each line's evidence grade and skew upwards, so P10 may sit above the
+    // headline; it must stay of the same order.
+    expect(r.monteCarlo.p10PerVehicle).toBeGreaterThan(r.summary.perVehicle * 0.6);
+    expect(r.monteCarlo.p10PerVehicle).toBeLessThan(r.summary.perVehicle * 1.6);
     expect(r.monteCarlo.p90PerVehicle).toBeGreaterThan(r.summary.perVehicle);
   });
   it('the volume sensitivity row brackets its own base under any recovery window', () => {
@@ -115,7 +119,7 @@ describe('#11 per-vehicle royalties scale with volume', () => {
     expect(def('navigation').perVehiclePerYearGBP).toBe(11.5);
     for (const id of ['ivi_os', 'voice_assistant', 'navigation']) expect(def(id).annualIPLicenceGBP).toBe(0);
     expect(def('ivi_os').royaltyBasis).toMatch(/Unsourced placeholder/);
-    expect(def('navigation').royaltyBasis).toMatch(/Unsourced estimate/);
+    expect(def('navigation').royaltyBasis).toMatch(/unsourced estimate/i);
   });
 
   it('a built-vehicle royalty is volume × life × rate (no discount)', () => {
@@ -124,9 +128,9 @@ describe('#11 per-vehicle royalties scale with volume', () => {
     expect(lic('voice_assistant', 160_000)).toBeCloseTo(2 * lic('voice_assistant', 80_000), 0);
   });
 
-  it('map data is paid on the fleet in service: volume × Σt × rate', () => {
-    // 3 years: fleet 1×, 2×, 3× the annual volume → 6 vehicle-years per annual vehicle
-    expect(lic('navigation', 10_000, 3)).toBeCloseTo(10_000 * 6 * 11.5, 0);
+  it('map data is a subscription: each vehicle pays the subscription years after it is built (gaps round)', () => {
+    // 3 build years × 3 subscription years (default) = 9 vehicle-years per annual vehicle, some after the last build year
+    expect(lic('navigation', 10_000, 3)).toBeCloseTo(10_000 * 3 * 3 * 11.5, 0);
   });
 
   it('a royalty is per vehicle — not apportioned by the platform volume', () => {
@@ -241,7 +245,7 @@ describe('#14 exports state the rate basis; static reports are labelled referenc
     expect(val(rows, /Engineering hub/)).toMatch(/United Kingdom — its own salaries/);
     expect(val(rows, /Hub rate/)).toMatch(/mid £[\d,]+ · senior £[\d,]+ — GBP [\d,]+ mid/);
     expect(val(rows, /Engineer rate used/)).toMatch(/50 % senior blend/);
-    expect(val(rows, /Overhead/)).toMatch(/1\.15/);
+    expect(val(rows, /Engineering burden/)).toMatch(/× 1\.610 = employment \+15 % × company \+40 % × capital \+0 %/);
     expect(val(rows, /Powertrain/)).toBe('PHEV');
     expect(val(rows, /Platform/)).toMatch(/300,000/);
   });

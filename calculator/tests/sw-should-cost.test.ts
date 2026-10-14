@@ -74,20 +74,24 @@ describe('computeSWProgram — accounting invariants', () => {
   const r = computeSWProgram(defaultSWProgramInputs());
   const s = r.summary;
 
-  it('grandTotal equals the sum of module grand totals', () => {
+  // Programme-level lines (homologation, on by default since the gaps round; a fixed cloud platform) sit outside the
+  // modules.
+  const fixedCloud = s.cloudFixedYearly.reduce((a, b) => a + b, 0);
+  it('grandTotal equals the sum of module grand totals + the programme-level lines', () => {
     const sum = r.modules.reduce((a, m) => a + m.grandTotal, 0);
-    expect(s.grandTotal).toBeCloseTo(sum, 0);
+    expect(s.totalHomologation).toBeGreaterThan(0);
+    expect(s.grandTotal).toBeCloseTo(sum + s.totalHomologation + fixedCloud, 0);
   });
 
-  it('nreTotal equals its six components', () => {
+  it('nreTotal equals its components', () => {
     const manual = s.totalDevelopment + s.totalTesting + s.totalIntegration
-                 + s.totalToolchain + s.totalCybersecurity + s.totalCalibration;
+                 + s.totalToolchain + s.totalCybersecurity + s.totalCalibration + s.totalMLData + s.totalHomologation;
     expect(s.nreTotal).toBeCloseTo(manual, 0);
   });
 
-  it('byCategory sums to grandTotal', () => {
+  it('byCategory sums to grandTotal less the programme-level lines', () => {
     const sum = Object.values(s.byCategory).reduce((a, b) => a + b, 0);
-    expect(sum).toBeCloseTo(s.grandTotal, 0);
+    expect(sum).toBeCloseTo(s.grandTotal - s.totalHomologation - fixedCloud, 0);
   });
 
   it('perVehicle = grandTotal / (volume × life)', () => {

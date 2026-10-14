@@ -6,10 +6,10 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { computeSWProgram, defaultSWProgramInputs, swLoadedRate, priceFactors, devSourceComparison } from '../src/engine/sw-should-cost.js';
+import { computeSWProgram, defaultSWProgramInputs, swLoadedRate, priceFactors, devSourceComparison, SW_DEFAULT_BURDEN, SW_DEFAULT_OVERHEAD, SW_BURDEN_BASIS, swOverhead, maintenanceWeights, SW_MODULES, SW_MC_RANGE_BY_GRADE, validateSWInputs } from '../src/engine/sw-should-cost.js';
 import type { SWProgramInputs } from '../src/engine/sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../src/engine/sw-rate-library.js';
-import { swSpendProfile, swUnitEconomics, swQuoteCheck, swRateCheck } from '../src/engine/sw-cockpit.js';
+import { swSpendProfile, swUnitEconomics, swQuoteCheck, swRateCheck, swMakeBuy, swEvidence } from '../src/engine/sw-cockpit.js';
 import { waterfallChart, treemapChart, tornadoChart, distributionChart, spendChart } from '../src/ui/panels/sw-charts.js';
 import { COCKPIT_TABS, tabsHTML } from '../src/ui/panels/sw-cockpit-ui.js';
 import { compareScenarios, diffInputs, devSourceSet, hubSet, reuseSet } from '../src/engine/sw-scenarios.js';
@@ -33,7 +33,8 @@ describe('spend profile and unit economics reconcile to the programme total', ()
 
       const u = swUnitEconomics(r);
       const life = r.inputs.programLifeYears;
-      const rebuilt = u.nre + u.perVehicleBuilt * u.vehiclesBuilt + u.perVehicleYear * u.vehicleYears + u.fixedPerYear * life;
+      const rebuilt = u.nre + u.perVehicleBuilt * u.vehiclesBuilt + u.subscriptionPerYear * u.subscriptionVehicleYears
+        + u.cloudPerYear * u.serviceVehicleYears + u.fixedPerYear * life;
       expect(rebuilt).toBeCloseTo(r.summary.grandTotal, -1);
     });
   }
@@ -187,5 +188,83 @@ describe('one input pane, history and shortcuts (cockpit round 2)', () => {
     const sk = readFileSync('src/ui/panels/sw-vehicle-skeleton.ts', 'utf8');
     expect(sk).not.toMatch(/money\(l\.cost\)|fmt\(l\.cost\)/);
     expect(ui).not.toMatch(/fM\(l\.cost\)/);
+  });
+});
+
+describe('gaps round (Oct 2026): costing structure, burden, evidence, quote', () => {
+  it('burden is three stated layers; the overhead is their product; an old saved overhead is honoured', () => {
+    const d = prog();
+    expect(d.burden).toEqual(SW_DEFAULT_BURDEN);
+    expect(swOverhead(d)).toBeCloseTo(1.15 * 1.40, 10);
+    expect(SW_DEFAULT_OVERHEAD).toBeCloseTo(1.61, 3);
+    const legacy = prog(p => { delete p.burden; p.overheadMultiplier = 1.15; });
+    expect(swOverhead(legacy)).toBe(1.15);
+    // engineering effort £ scales with the burden; lifecycle royalties do not
+    const a = computeSWProgram(legacy).summary, b = computeSWProgram(d).summary;
+    expect(b.totalDevelopment / a.totalDevelopment).toBeCloseTo(1.61 / 1.15, 6);
+    expect(b.totalLicensing).toBeCloseTo(a.totalLicensing, 0);
+    expect(SW_BURDEN_BASIS.employment).toMatch(/Hadzima/);
+  });
+  it('the quote check compares like with like: £ per vehicle built against the royalty in the piece price', () => {
+    const r = computeSWProgram(prog());
+    const u = swUnitEconomics(r);
+    const q = swQuoteCheck(r, { perVehicleGBP: 25, perVehicleYearGBP: 30, fixedPerYearGBP: 5_000_000 });
+    expect(q.perVehicle!.should).toBeCloseTo(u.perVehicleBuilt, 10);
+    expect(q.perVehicleYear!.should).toBeCloseTo(u.perVehicleYear, 10);
+    expect(q.fixedPerYear!.should).toBeCloseTo(u.fixedPerYear, 10);
+  });
+  it('target price = should-cost re-costed as a Tier-1; with the supplier PM the gap splits exactly', () => {
+    const r = computeSWProgram(prog());
+    const q = swQuoteCheck(r, { nreGBP: r.summary.nreTotal * 1.6, quotedPM: r.summary.totalEffortPersonMonths * 1.2 });
+    const t1 = computeSWProgram({ ...prog(), devSource: 'Tier1_Supplier' }).summary.nreTotal;
+    expect(q.target.nre).toBeCloseTo(t1, 0);
+    expect(q.target.nre).toBeGreaterThan(r.summary.nreTotal);
+    const g = q.gapSplit!;
+    expect(g.effortGap + g.rateGap + g.other).toBeCloseTo(r.summary.nreTotal * 1.6 - q.target.nre, 0);
+    expect(Math.abs(g.other)).toBeLessThan(q.target.nre * 1e-6);   // effort PM is rounded to 0.1 per module
+    expect(g.effortGap).toBeGreaterThan(0);
+  });
+  it('make v buy: per domain each source re-costed; buying pays only below (1 − margin) of the in-house effort', () => {
+    const mb = swMakeBuy(computeSWProgram(prog()));
+    expect(mb.breakEvenEffortShare).toBeCloseTo(1 - DEFAULT_SW_RATE_LIBRARY.supplierMargin!.value, 10);
+    for (const row of mb.rows) expect(row.tier1).toBeGreaterThan(row.make);
+  });
+  it('maintenance: development + verification + integration, full for 3 years then the tail, escalated', () => {
+    const w = maintenanceWeights({ programLifeYears: 6 });
+    expect(w).toEqual([1, 1, 1, 0.5, 0.5, 0.5]);
+    const e = maintenanceWeights({ programLifeYears: 3, wageEscalationPct: 10 });
+    expect(e[2]).toBeCloseTo(1.21, 10);
+    const r = computeSWProgram(prog());
+    const m = r.modules[0];
+    const def = SW_MODULES.find(d => d.id === m.moduleId)!;
+    const base = (m.development.total + m.testing.total + m.integrationCost) * def.maintenancePctPerYear / 100;
+    expect(m.maintenanceCost).toBeCloseTo(base * maintenanceWeights(r.inputs).reduce((a, b) => a + b, 0), 2);
+  });
+  it('every £ carries an evidence grade; the lines add to the total; the band widens with unsourced money', () => {
+    const r = computeSWProgram(prog());
+    const ev = swEvidence(r);
+    expect(ev.total).toBeCloseTo(r.summary.grandTotal, 0);
+    expect(ev.unsourcedShare).toBeGreaterThan(0.3);                  // the effort catalogue, map £, cloud £, IP licences
+    expect(ev.topUnsourced[0].kind).toBeDefined();
+    expect(ev.reuse.modulesAtMedium).toBe(ev.reuse.modules);         // the default reuse is stated, not silent
+    expect(ev.reuse.removedNRE).toBeGreaterThan(0);
+    // entering every module's own PM narrows the band
+    const entered = computeSWProgram(prog(p => { p.modules = p.modules.map(m => ({ ...m, customPersonMonths: 50 })); }));
+    const spread = (x: typeof r) => (x.monteCarlo.p90 - x.monteCarlo.p10) / x.summary.grandTotal;
+    expect(spread(entered)).toBeLessThan(spread(r));
+    expect(SW_MC_RANGE_BY_GRADE.unsourced[2]).toBeGreaterThan(SW_MC_RANGE_BY_GRADE.sourced[2]);
+  });
+  it('the spend profile runs into the service tail and still adds to the total', () => {
+    const r = computeSWProgram(prog(p => { p.discountRatePct = 0; }));
+    const sp = swSpendProfile(r);
+    expect(sp.years.some(y => y.phase === 'service')).toBe(true);
+    expect(sp.nominalTotal).toBeCloseTo(r.summary.grandTotal, -1);
+  });
+  it('map subscription years, service years, fixed cloud and seat price are validated inputs', () => {
+    expect(validateSWInputs(prog(p => { p.connectedServiceYears = 0; })).join(' ')).toMatch(/connected-service/);
+    expect(validateSWInputs(prog(p => { p.burden = { employmentPct: -5, companyPct: 40, capitalPct: 0 }; })).join(' ')).toMatch(/burden/);
+    const a = computeSWProgram(prog()).summary.totalCloud;
+    const b = computeSWProgram(prog(p => { p.cloudFixedPerYearGBP = 1_000_000; })).summary.totalCloud;
+    expect(b - a).toBeCloseTo(1_000_000 * computeSWProgram(prog()).summary.horizonYears, 0);
   });
 });

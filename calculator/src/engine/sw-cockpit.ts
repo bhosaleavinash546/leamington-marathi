@@ -11,19 +11,21 @@
  */
 
 import {
-  SW_MODULES, SW_CLOUD_REFERENCE_FLEET, SW_DEFAULT_DEVELOPMENT_MONTHS, buildPhases, swLoadedRate,
-  type SWProgramResult, type SWCategory,
+  SW_MODULES, SW_CLOUD_REFERENCE_FLEET, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_DEFAULT_SERVICE_YEARS,
+  buildPhases, swLoadedRate, swOverhead, swEvidenceLines, computeSWProgram,
+  type SWProgramResult, type SWCategory, type SWEvidenceGrade, type SWEvidenceLine, type DevSource,
 } from './sw-should-cost.js';
+import { DEFAULT_SW_RATE_LIBRARY, resolveRateLibrary } from './sw-rate-library.js';
 import { SW_HUB_RATES, SW_PM_HOURS } from './sw-country-rates.js';
 
 export interface SWSpendYear {
-  label:       string;            // 'Dev 1' … / 'Year 1' …
-  phase:       'development' | 'production';
+  label:       string;            // 'Dev 1' … / 'Year 1' … / 'Service 1' …
+  phase:       'development' | 'production' | 'service';
   engineering: number;            // NRE spread over the development months by phase
   maintenance: number;
   licences:    number;            // annual IP / embedded licences
-  royalties:   number;            // per vehicle built + per vehicle in service
-  cloud:       number;
+  royalties:   number;            // per vehicle built + per-vehicle subscriptions
+  cloud:       number;            // per connected vehicle in service + the fixed platform
   total:       number;
   cumulative:  number;
 }
@@ -35,15 +37,14 @@ export interface SWSpendProfile {
   note:          string;
 }
 
+/** Nominal spend by year: engineering over the development months by phase, then each module's own yearly streams
+ *  (the same arrays the engine discounts into its totals) through the service tail. */
 export function swSpendProfile(result: SWProgramResult): SWSpendProfile {
   const prog = result.inputs;
   const life = prog.programLifeYears;
-  const vol = prog.annualProductionVolume;
   const r = (prog.discountRatePct ?? 0) / 100;
-  const pv = r > 0 ? Array.from({ length: life }, (_, i) => 1 / Math.pow(1 + r, i + 1)).reduce((a, b) => a + b, 0) : life;
   const devMonths = prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS;
 
-  // Development: each phase's NRE spread evenly over its months, gathered into development years.
   const phases = buildPhases(result.summary.nreTotal, devMonths);
   const ends = phases.map(p => Number(p.months.split('–M')[1]));
   const devYears = Math.max(1, Math.ceil(devMonths / 12));
@@ -55,133 +56,224 @@ export function swSpendProfile(result: SWProgramResult): SWSpendProfile {
     start = ends[i] + 1;
   });
 
-  // Production: per module, nominal £ per year from the engine's rules.
-  const prod = Array.from({ length: life }, () => ({ maintenance: 0, licences: 0, royalties: 0, cloud: 0 }));
-  const connected = prog.connectedVehicleShare ?? 1;
+  const H = result.summary.horizonYears;
+  const prod = Array.from({ length: H }, (_, i) => ({ maintenance: 0, licences: 0, royalties: 0, cloud: result.summary.cloudFixedYearly[i] ?? 0 }));
   for (const m of result.modules) {
-    const def = SW_MODULES.find(d => d.id === m.moduleId);
-    if (!def) continue;
-    const built = def.perVehicleRoyaltyGBP ?? 0, perYear = def.perVehiclePerYearGBP ?? 0;
-    let royaltyPV = 0;
-    for (let t = 1; t <= life; t++) royaltyPV += (vol * built + vol * t * perYear) * (r > 0 ? 1 / Math.pow(1 + r, t) : 1);
-    const ipPerYear = (m.licensingCost - royaltyPV) / pv;
-    const maintPerYear = m.maintenanceCost / pv;
-    const cloudPerVehYear = m.cloudCost > 0 ? def.annualCloudCostGBP / SW_CLOUD_REFERENCE_FLEET * connected : 0;
-    for (let t = 1; t <= life; t++) {
-      const y = prod[t - 1];
-      y.maintenance += maintPerYear;
-      y.licences += ipPerYear;
-      y.royalties += vol * built + vol * t * perYear;
-      y.cloud += cloudPerVehYear * vol * t;
+    for (let i = 0; i < H; i++) {
+      prod[i].maintenance += m.yearly.maintenance[i] ?? 0;
+      prod[i].licences += m.yearly.licences[i] ?? 0;
+      prod[i].royalties += m.yearly.royalties[i] ?? 0;
+      prod[i].cloud += m.yearly.cloud[i] ?? 0;
     }
   }
-
   const years: SWSpendYear[] = [];
   let cum = 0;
   dev.forEach((v, i) => { cum += v; years.push({ label: `Dev ${i + 1}`, phase: 'development', engineering: v, maintenance: 0, licences: 0, royalties: 0, cloud: 0, total: v, cumulative: cum }); });
   prod.forEach((y, i) => {
     const total = y.maintenance + y.licences + y.royalties + y.cloud;
+    if (i >= life && total === 0) return;
     cum += total;
-    years.push({ label: `Year ${i + 1}`, phase: 'production', engineering: 0, ...y, total, cumulative: cum });
+    years.push({ label: i < life ? `Year ${i + 1}` : `Service ${i + 1 - life}`, phase: i < life ? 'production' : 'service', engineering: 0, ...y, total, cumulative: cum });
   });
   return {
     years, sopIndex: devYears, nominalTotal: cum,
-    note: `Nominal £ (no discounting) — engineering over ${devMonths} development months by phase share; maintenance and `
-      + `licences flat each production year; royalties and cloud grow with the fleet in service.`
+    note: `Nominal £ (no discounting). Engineering over ${devMonths} development months by phase share; maintenance in full `
+      + `for 3 years after SOP then a tail; royalties per vehicle built and for ${prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS} `
+      + `subscription years; cloud for ${prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS} years per connected vehicle, so service years run past the last build year.`
       + (r > 0 ? ` The headline is discounted at ${prog.discountRatePct} %, so it is lower than this nominal sum.` : ''),
   };
 }
 
-export interface SWQuote {
-  /** The supplier's quoted engineering / NRE for the scope costed, £. */
-  nreGBP?:        number;
-  /** The supplier's quoted per-vehicle licence or royalty, £ per vehicle built. */
-  perVehicleGBP?: number;
-  /** Optional quotes by software domain (category A–G), NRE £. */
-  byCategory?:    Partial<Record<SWCategory, number>>;
-}
-
-export interface SWQuoteRow { key: string; label: string; should: number; quoted: number; gap: number; gapPct: number }
-
-export interface SWQuoteCheck {
-  nre?:               SWQuoteRow;
-  perVehicle?:        SWQuoteRow;
-  byCategory:         SWQuoteRow[];
-  /** £ per person-month the NRE quote implies for the costed engineering effort (tools and homologation taken out). */
-  impliedRatePerPM?:  number;
-  /** The engine's own loaded £ / PM for this hub. */
-  loadedRatePerPM:    number;
-  /** implied ÷ loaded — the supplier's effective mark-up on the should-cost engineering rate. */
-  rateMultiple?:      number;
-  lines:              string[];
-}
-
-const row = (key: string, label: string, should: number, quoted: number): SWQuoteRow =>
-  ({ key, label, should, quoted, gap: quoted - should, gapPct: should > 0 ? (quoted / should - 1) * 100 : 0 });
-
-export function swQuoteCheck(result: SWProgramResult, quote: SWQuote): SWQuoteCheck {
-  const s = result.summary;
-  const loaded = swLoadedRate(result.inputs);
-  const out: SWQuoteCheck = { byCategory: [], loadedRatePerPM: loaded, lines: [] };
-  if (quote.nreGBP && quote.nreGBP > 0) {
-    out.nre = row('nre', 'Engineering (NRE)', s.nreTotal, quote.nreGBP);
-    const engineering = quote.nreGBP - s.totalToolchain - s.totalHomologation;
-    if (s.totalEffortPersonMonths > 0 && engineering > 0) {
-      out.impliedRatePerPM = engineering / s.totalEffortPersonMonths;
-      out.rateMultiple = out.impliedRatePerPM / loaded;
-    }
-  }
-  if (quote.perVehicleGBP && quote.perVehicleGBP > 0) {
-    const vol = result.inputs.annualProductionVolume * result.inputs.programLifeYears;
-    const shouldPerVeh = vol > 0 ? s.totalLicensing / vol : 0;
-    out.perVehicle = row('perVehicle', 'Licences & royalties per vehicle', shouldPerVeh, quote.perVehicleGBP);
-  }
-  for (const [cat, q] of Object.entries(quote.byCategory ?? {}) as [SWCategory, number][]) {
-    if (!(q > 0)) continue;
-    const mods = result.modules.filter(m => m.category === cat);
-    const should = mods.reduce((a, m) => a + m.totalNonRecurring, 0);
-    out.byCategory.push(row(cat, mods[0]?.categoryLabel ?? cat, should, q));
-  }
-  return out;
-}
+// ── Unit economics ──────────────────────────────────────────────────────────────────────────────────────────────────
 
 /**
- * The three figures purchasing compares (costing review #9, Oct 2026): ONE-OFF engineering, the VARIABLE price per
- * vehicle built (royalties in the piece price), and the RECURRING cost per vehicle in service per year (cloud, map data)
- * plus fixed £ a year (licences, maintenance). The programme total is derived from them:
- *   total = NRE + perVehicleBuilt × vehicles built + perVehicleYear × vehicle-years in service + fixedPerYear × years
- * — exact at a 0 % discount rate (tested).
+ * The figures purchasing compares (costing review #9): ONE-OFF engineering, the royalty in each vehicle's piece price,
+ * the RECURRING rates per vehicle in service (map subscription, cloud), and the fixed £ a year (IP licences,
+ * maintenance, cloud platform). The programme total is derived from them — exact at a 0 % discount (tested):
+ *   total = NRE + built × vehicles built + subscription × subscription vehicle-years + cloud × service vehicle-years + fixed × years
  */
 export interface SWUnitEconomics {
-  nre:               number;
-  perVehicleBuilt:   number;
-  perVehicleYear:    number;
-  fixedPerYear:      number;
-  vehiclesBuilt:     number;
-  vehicleYears:      number;
-  total:             number;
+  nre:                   number;
+  perVehicleBuilt:       number;
+  /** Map / per-vehicle-year royalty rate + cloud rate, £ per vehicle in service per year. */
+  perVehicleYear:        number;
+  subscriptionPerYear:   number;
+  cloudPerYear:          number;
+  subscriptionYears:     number;
+  serviceYears:          number;
+  /** Fixed £ a year, averaged over the production years. */
+  fixedPerYear:          number;
+  vehiclesBuilt:         number;
+  subscriptionVehicleYears: number;
+  serviceVehicleYears:   number;
+  total:                 number;
 }
 
 export function swUnitEconomics(result: SWProgramResult): SWUnitEconomics {
   const prog = result.inputs;
   const life = prog.programLifeYears, vol = prog.annualProductionVolume;
-  const r = (prog.discountRatePct ?? 0) / 100;
-  const pv = r > 0 ? Array.from({ length: life }, (_, i) => 1 / Math.pow(1 + r, i + 1)).reduce((a, b) => a + b, 0) : life;
+  const N = prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS;
+  const S = prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS;
   const connected = prog.connectedVehicleShare ?? 1;
-  let built = 0, perYear = 0, fixed = 0;
+  let built = 0, sub = 0, cloud = 0, fixedNominal = 0;
   for (const m of result.modules) {
     const def = SW_MODULES.find(d => d.id === m.moduleId);
     if (!def) continue;
-    const b = def.perVehicleRoyaltyGBP ?? 0, y = def.perVehiclePerYearGBP ?? 0;
-    let royaltyPV = 0;
-    for (let t = 1; t <= life; t++) royaltyPV += (vol * b + vol * t * y) * (r > 0 ? 1 / Math.pow(1 + r, t) : 1);
-    built += b;
-    perYear += y + (m.cloudCost > 0 ? def.annualCloudCostGBP / SW_CLOUD_REFERENCE_FLEET * connected : 0);
-    fixed += (m.licensingCost - royaltyPV) / pv + m.maintenanceCost / pv;
+    built += def.perVehicleRoyaltyGBP ?? 0;
+    sub += def.perVehiclePerYearGBP ?? 0;
+    if (prog.includeCloudCost && def.annualCloudCostGBP) cloud += def.annualCloudCostGBP / SW_CLOUD_REFERENCE_FLEET * connected;
+    fixedNominal += m.yearly.maintenance.reduce((a, b) => a + b, 0) + m.yearly.licences.reduce((a, b) => a + b, 0);
   }
+  fixedNominal += result.summary.cloudFixedYearly.reduce((a, b) => a + b, 0);
   return {
-    nre: result.summary.nreTotal, perVehicleBuilt: built, perVehicleYear: perYear, fixedPerYear: fixed,
-    vehiclesBuilt: vol * life, vehicleYears: vol * life * (life + 1) / 2, total: result.summary.grandTotal,
+    nre: result.summary.nreTotal, perVehicleBuilt: built, perVehicleYear: sub + cloud, subscriptionPerYear: sub, cloudPerYear: cloud,
+    subscriptionYears: N, serviceYears: S, fixedPerYear: fixedNominal / life,
+    vehiclesBuilt: vol * life, subscriptionVehicleYears: vol * life * N, serviceVehicleYears: vol * life * S,
+    total: result.summary.grandTotal,
+  };
+}
+
+// ── Supplier quote check ────────────────────────────────────────────────────────────────────────────────────────────
+
+export interface SWQuote {
+  /** The supplier's quoted engineering / NRE for the scope costed, £. */
+  nreGBP?:             number;
+  /** Quoted royalty per vehicle BUILT (in the piece price), £. */
+  perVehicleGBP?:      number;
+  /** Quoted subscription / service per vehicle per year, £. */
+  perVehicleYearGBP?:  number;
+  /** Quoted fixed £ a year (sustaining, platform). */
+  fixedPerYearGBP?:    number;
+  /** The supplier's own person-months for the NRE, when it states them — splits the gap into rate and effort. */
+  quotedPM?:           number;
+  /** Optional quotes by software domain (category A–G), NRE £. */
+  byCategory?:         Partial<Record<SWCategory, number>>;
+}
+
+export interface SWQuoteRow { key: string; label: string; should: number; quoted: number; gap: number; gapPct: number; unit: 'total' | 'perVehicle' | 'perYear' }
+
+export interface SWQuoteCheck {
+  nre?:               SWQuoteRow;
+  perVehicle?:        SWQuoteRow;
+  perVehicleYear?:    SWQuoteRow;
+  fixedPerYear?:      SWQuoteRow;
+  byCategory:         SWQuoteRow[];
+  /** £ per person-month the NRE quote implies for the costed engineering effort (tools and homologation taken out). */
+  impliedRatePerPM?:  number;
+  /** The engine's own loaded £ / PM for this hub and source. */
+  loadedRatePerPM:    number;
+  rateMultiple?:      number;
+  /** A fair Tier-1 price for this scope: the should-cost re-costed as a Tier-1 supplier (its margin included). */
+  target:             { nre: number; ratePerPM: number; basis: string };
+  /** With the supplier's person-months: quote − target = effort gap + rate gap (+ other). */
+  gapSplit?:          { effortGap: number; rateGap: number; other: number; quotedRatePerPM: number };
+  lines:              string[];
+}
+
+const row = (key: string, label: string, should: number, quoted: number, unit: SWQuoteRow['unit']): SWQuoteRow =>
+  ({ key, label, should, quoted, gap: quoted - should, gapPct: should > 0 ? (quoted / should - 1) * 100 : 0, unit });
+
+export function swQuoteCheck(result: SWProgramResult, quote: SWQuote): SWQuoteCheck {
+  const s = result.summary;
+  const prog = result.inputs;
+  const loaded = swLoadedRate(prog);
+  const t1 = prog.devSource === 'Tier1_Supplier' ? result : computeSWProgram({ ...prog, devSource: 'Tier1_Supplier' }, { summaryOnly: true });
+  const t1Rate = swLoadedRate({ ...prog, devSource: 'Tier1_Supplier' });
+  const margin = resolveRateLibrary(prog.rateLibrary).supplierMargin?.value ?? DEFAULT_SW_RATE_LIBRARY.supplierMargin?.value ?? 0;
+  const out: SWQuoteCheck = {
+    byCategory: [], loadedRatePerPM: loaded, lines: [],
+    target: { nre: t1.summary.nreTotal, ratePerPM: t1Rate, basis: `should-cost re-costed as a Tier-1 supplier: its effort factor ÷ (1 − ${Math.round(margin * 100)} % margin)` },
+  };
+  const u = swUnitEconomics(result);
+  if (quote.nreGBP && quote.nreGBP > 0) {
+    out.nre = row('nre', 'Engineering (NRE)', s.nreTotal, quote.nreGBP, 'total');
+    const other = s.totalToolchain + s.totalHomologation;
+    const engineering = quote.nreGBP - other;
+    if (s.totalEffortPersonMonths > 0 && engineering > 0) {
+      out.impliedRatePerPM = engineering / s.totalEffortPersonMonths;
+      out.rateMultiple = out.impliedRatePerPM / loaded;
+    }
+    if (quote.quotedPM && quote.quotedPM > 0) {
+      const qRate = engineering / quote.quotedPM;
+      const effortGap = (quote.quotedPM - s.totalEffortPersonMonths) * t1Rate;
+      const rateGap = (qRate - t1Rate) * quote.quotedPM;
+      out.gapSplit = { effortGap, rateGap, other: quote.nreGBP - out.target.nre - effortGap - rateGap, quotedRatePerPM: qRate };
+    }
+  }
+  // Like for like (independent review, Oct 2026): a quoted £ per vehicle is the royalty in the piece price — it was
+  // compared with ALL licensing ÷ vehicles, which carried the map annuity and fixed IP and showed a false gap.
+  if (quote.perVehicleGBP && quote.perVehicleGBP > 0) out.perVehicle = row('perVehicle', 'Royalty per vehicle built', u.perVehicleBuilt, quote.perVehicleGBP, 'perVehicle');
+  if (quote.perVehicleYearGBP && quote.perVehicleYearGBP > 0) out.perVehicleYear = row('perVehicleYear', 'Subscription + cloud per vehicle-year', u.perVehicleYear, quote.perVehicleYearGBP, 'perVehicle');
+  if (quote.fixedPerYearGBP && quote.fixedPerYearGBP > 0) out.fixedPerYear = row('fixedPerYear', 'Fixed per year (sustaining, licences, platform)', u.fixedPerYear, quote.fixedPerYearGBP, 'perYear');
+  for (const [cat, q] of Object.entries(quote.byCategory ?? {}) as [SWCategory, number][]) {
+    if (!(q > 0)) continue;
+    const mods = result.modules.filter(m => m.category === cat);
+    const should = mods.reduce((a, m) => a + m.totalNonRecurring, 0);
+    out.byCategory.push(row(cat, mods[0]?.categoryLabel ?? cat, should, q, 'total'));
+  }
+  return out;
+}
+
+// ── Make v buy ──────────────────────────────────────────────────────────────────────────────────────────────────────
+
+export interface SWMakeBuyRow { category: SWCategory; label: string; make: number; tier1: number; startup: number }
+export interface SWMakeBuy { rows: SWMakeBuyRow[]; breakEvenEffortShare: number; margin: number; basis: string }
+
+/** Engineering (NRE) per domain made in-house v bought from a Tier-1 or a start-up, each the engine re-costed with that
+ *  source. A bought source is cheaper only when its effort is at most (1 − margin) × the in-house effort. Lifecycle
+ *  (royalties, cloud, maintenance) is the same either way in this model and is left out. */
+export function swMakeBuy(result: SWProgramResult): SWMakeBuy {
+  const prog = result.inputs;
+  const by = (d: DevSource) => d === prog.devSource ? result : computeSWProgram({ ...prog, devSource: d }, { summaryOnly: true });
+  const make = by('OEM_Internal'), t1 = by('Tier1_Supplier'), st = by('Startup_OSS');
+  const nre = (r: SWProgramResult, c: SWCategory) => r.modules.filter(m => m.category === c).reduce((a, m) => a + m.totalNonRecurring, 0);
+  const cats = [...new Set(result.modules.map(m => m.category))] as SWCategory[];
+  const lib = resolveRateLibrary(prog.rateLibrary);
+  const margin = lib.supplierMargin?.value ?? 0;
+  const effIn = lib.devSourceMultipliers.OEM_Internal.value;
+  return {
+    rows: cats.map(c => ({ category: c, label: result.modules.find(m => m.category === c)!.categoryLabel, make: nre(make, c), tier1: nre(t1, c), startup: nre(st, c) })),
+    breakEvenEffortShare: (1 - margin) * effIn,
+    margin,
+    basis: `Each column re-costs the scope with that development source. A supplier's price = its effort factor ÷ (1 − ${Math.round(margin * 100)} % margin), so buying is cheaper only if the supplier needs ≤ ${Math.round((1 - margin) * effIn * 100)} % of the in-house effort (reuse, a cheaper hub mix).`,
+  };
+}
+
+// ── Evidence ────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+export interface SWEvidence {
+  byGrade:      Record<SWEvidenceGrade, number>;
+  total:        number;
+  unsourcedShare: number;
+  /** The largest unsourced lines, grouped by kind. */
+  topUnsourced: Array<{ kind: string; label: string; amount: number }>;
+  /** Engineering the default reuse removes: NRE at Fresh − NRE as costed, and the modules on the default 'Medium'. */
+  reuse:        { removedNRE: number; modulesAtMedium: number; modules: number };
+  lines:        SWEvidenceLine[];
+}
+
+const KIND_LABEL: Record<string, string> = {
+  effort: 'Engineering effort (module catalogue)', tools: 'Development tools', maintenance: 'Maintenance',
+  licences: 'IP licences (module catalogue)', royalties: 'Royalties', cloud: 'Cloud (per connected vehicle-year)',
+  homologation: 'Homologation', cloudFixed: 'Cloud platform (fixed)',
+};
+
+export function swEvidence(result: SWProgramResult): SWEvidence {
+  const lines = swEvidenceLines(result.inputs, result.modules, result.summary);
+  const byGrade = { entered: 0, calibrated: 0, sourced: 0, estimate: 0, unsourced: 0 } as Record<SWEvidenceGrade, number>;
+  const unsourcedByKind = new Map<string, number>();
+  for (const l of lines) {
+    byGrade[l.grade] += l.amount;
+    if (l.grade === 'unsourced') unsourcedByKind.set(l.kind, (unsourcedByKind.get(l.kind) ?? 0) + l.amount);
+  }
+  const total = Object.values(byGrade).reduce((a, b) => a + b, 0);
+  const fresh = computeSWProgram({ ...result.inputs, modules: result.inputs.modules.map(m => ({ ...m, reuse: 'Fresh' as const })) }, { summaryOnly: true });
+  const on = result.inputs.modules.filter(m => m.enabled);
+  return {
+    byGrade, total, unsourcedShare: total > 0 ? byGrade.unsourced / total : 0,
+    topUnsourced: [...unsourcedByKind.entries()].sort((a, b) => b[1] - a[1]).map(([kind, amount]) => ({ kind, label: KIND_LABEL[kind] ?? kind, amount })),
+    reuse: { removedNRE: fresh.summary.nreTotal - result.summary.nreTotal, modulesAtMedium: on.filter(m => m.reuse === 'Medium').length, modules: on.length },
+    lines,
   };
 }
 
@@ -208,16 +300,22 @@ export const RATE_EVIDENCE = {
 } as const;
 
 export function swRateCheck(result: SWProgramResult): SWRateCheck {
-  const loaded = swLoadedRate(result.inputs);
-  const hub = SW_HUB_RATES[result.inputs.region];
+  const prog = result.inputs;
+  const loaded = swLoadedRate(prog);
+  const hub = SW_HUB_RATES[prog.region];
   const perHour = loaded / SW_PM_HOURS;
-  const mult = hub ? (hub.onCostInSalary ? null : 1 + hub.employerOnCostPctAtMid / 100) : null;
+  const statutory = hub ? (hub.onCostInSalary ? null : 1 + hub.employerOnCostPctAtMid / 100) : null;
+  // Employment cost = the book's statutory on-cost × the employment layer (pension top-up, bonus, benefits).
+  const mult = statutory != null ? statutory * (1 + (prog.burden?.employmentPct ?? 0) / 100) : null;
   const lines: string[] = [];
-  if (mult != null && mult < RATE_EVIDENCE.employment.low) {
-    lines.push(`The hub rate carries statutory employer cost only (×${mult.toFixed(2)} salary); total employment cost is usually ×${RATE_EVIDENCE.employment.low}–${RATE_EVIDENCE.employment.high} (pension, insurance, holiday). Your overhead field must carry the rest.`);
+  if (mult != null && (mult < RATE_EVIDENCE.employment.low || mult > RATE_EVIDENCE.employment.high)) {
+    lines.push(`Employment cost here is ×${mult.toFixed(2)} salary (statutory ×${statutory!.toFixed(2)}${prog.burden ? ` × employment layer +${prog.burden.employmentPct} %` : ''}); the published range is ×${RATE_EVIDENCE.employment.low}–${RATE_EVIDENCE.employment.high}. Adjust the employment layer on Setup.`);
+  } else if (mult != null) {
+    lines.push(`Employment cost ×${mult.toFixed(2)} salary — inside the published ×${RATE_EVIDENCE.employment.low}–${RATE_EVIDENCE.employment.high} (Hadzima, MIT).`);
   }
-  const ukDay = result.inputs.region === 'UK' ? RATE_EVIDENCE.ukContractDay.value : null;
-  if (ukDay) lines.push(`A UK embedded-software contractor costs about £${ukDay} a day (median); this costing's in-house day is £${Math.round(perHour * 8)}.`);
+  lines.push(`Fully loaded: ×${swOverhead(prog).toFixed(2)} on the hub rate${prog.burden ? ` (employment +${prog.burden.employmentPct} %, company +${prog.burden.companyPct} %, capital +${prog.burden.capitalPct} %)` : ' (a single overhead saved with this configuration)'}.`);
+  const ukDay = prog.region === 'UK' ? RATE_EVIDENCE.ukContractDay.value : null;
+  if (ukDay) lines.push(`A UK embedded-software contractor costs about £${ukDay} a day (median, with the contractor's margin); this costing's in-house day is £${Math.round(perHour * 8)}.`);
   return { loadedPerPM: loaded, perHour, perDay: perHour * 8, employmentMultiple: mult, employmentLow: RATE_EVIDENCE.employment.low,
     employmentHigh: RATE_EVIDENCE.employment.high, contractDayGBP: ukDay, lines };
 }

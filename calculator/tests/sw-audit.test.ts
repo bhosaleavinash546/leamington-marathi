@@ -104,16 +104,19 @@ describe('SW — optional levers are default-neutral and behave when enabled', (
     expect(total({ ...b, discountRatePct: 8 })).toBeLessThan(total(b));
   });
 
-  it('ML-data and homologation are off by default and add cost when enabled', () => {
+  it('ML data is off by default; homologation is ON by default (gaps round) and switching it off removes it', () => {
     const b = base();
     const r0 = computeSWProgram(b, { summaryOnly: true }).summary;
     expect(r0.totalMLData).toBe(0);
-    expect(r0.totalHomologation).toBe(0);
+    expect(r0.totalHomologation).toBeGreaterThan(0);
     const rML = computeSWProgram({ ...b, includeMLDataCost: true }, { summaryOnly: true }).summary;
-    const rHo = computeSWProgram({ ...b, includeHomologation: true }, { summaryOnly: true }).summary;
+    const rOff = computeSWProgram({ ...b, includeHomologation: false }, { summaryOnly: true }).summary;
     expect(rML.totalMLData).toBeGreaterThan(0);
-    expect(rHo.totalHomologation).toBeGreaterThan(0);
-    expect(rHo.grandTotal).toBeGreaterThan(r0.grandTotal);
+    expect(rOff.totalHomologation).toBe(0);
+    expect(r0.grandTotal - rOff.grandTotal).toBeCloseTo(r0.totalHomologation, 0);
+    // shared across vehicle types: the organisation CSMS / SUMS part divides
+    const shared = computeSWProgram({ ...b, csmsTypesSharing: 4 }, { summaryOnly: true }).summary;
+    expect(shared.totalHomologation).toBeLessThan(r0.totalHomologation);
   });
 
   it('cost-recovery window raises per-vehicle without touching the total; default neutral', () => {

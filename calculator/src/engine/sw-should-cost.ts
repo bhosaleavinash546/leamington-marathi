@@ -243,6 +243,36 @@ export interface SWProgramInputs {
   developmentMonths?:       number;
   /** Share of the vehicles built that use the cloud back-end (0–1). Absent = 1 (every vehicle connected). */
   connectedVehicleShare?:   number;
+  /** The engineering burden on top of the hub rate (salary + statutory on-cost), in three stated layers (gaps round,
+   *  Oct 2026). When set, the overhead the engine uses is their product and `overheadMultiplier` is only its echo;
+   *  absent (a configuration saved before the layers existed) = that configuration's own `overheadMultiplier`. */
+  burden?:                  SWBurden;
+  /** Years each vehicle pays a per-vehicle-per-year royalty (map data updates). Absent = SW_DEFAULT_SUBSCRIPTION_YEARS. */
+  subscriptionYears?:       number;
+  /** Years each connected vehicle is served by the cloud back-end from the year it is built. Absent =
+   *  SW_DEFAULT_SERVICE_YEARS. It used to stop at programme end (a car built in the last year was served one year). */
+  connectedServiceYears?:   number;
+  /** Fixed cloud platform cost, £ / yr, while any vehicle is served (base back-end, PKI, environments). Absent = 0 —
+   *  no public figure: enter your platform's own. */
+  cloudFixedPerYearGBP?:    number;
+  /** Development tools, £ per engineer-seat per year (CANoe, MATLAB / Simulink, compilers, static analysis, AUTOSAR
+   *  configurators, HIL share). Absent = SW_TOOL_SEAT_GBP. Tools follow the team, not the module count. */
+  toolSeatGBPPerYear?:      number;
+  /** Wage escalation on the sustaining team, % / yr. Absent = 0 (real terms). */
+  wageEscalationPct?:       number;
+  /** Vehicle types that share the organisation's CSMS / SUMS certification (UNECE R155 / R156). This programme carries
+   *  1 ÷ that share of it. Absent = 1 (this programme carries all of it). */
+  csmsTypesSharing?:        number;
+}
+
+/** The engineering burden on the hub rate, % per layer. Total overhead = Π (1 + layer). */
+export interface SWBurden {
+  /** Employment cost beyond statutory on-cost: pension top-up, bonus, health and other benefits. */
+  employmentPct: number;
+  /** Company engineering burden: site, IT, management, training, non-project time. */
+  companyPct:    number;
+  /** Capital and equipment charge per engineer (workstations, labs) when not priced as its own line. */
+  capitalPct:    number;
 }
 
 export interface SWDevBreakdown {
@@ -298,6 +328,10 @@ export interface SWModuleCostResult {
   perVehicle:         number;
   /** Share of this module's cost attributed to the programme: 1, or volume ÷ platform volume for shared software. */
   attributedShare:    number;
+  /** NOMINAL £ per programme year (index 0 = production year 1, through the service tail) for the lifecycle lines —
+   *  the cost above is their present value. The spend profile and unit economics read these, so every view follows
+   *  ONE rule per line. */
+  yearly: { maintenance: number[]; licences: number[]; royalties: number[]; cloud: number[] };
 }
 
 export interface SWSummary {
@@ -319,6 +353,10 @@ export interface SWSummary {
   totalEffortPersonMonths: number;
   perVehicle:         number;
   byCategory:         Record<SWCategory, number>;
+  /** Fixed cloud platform, nominal £ per programme year (index 0 = production year 1). Included in totalCloud (PV). */
+  cloudFixedYearly:   number[];
+  /** Production years + the service tail (map subscriptions, connected service beyond the last build year). */
+  horizonYears:       number;
 }
 
 export interface SWSensitivityRow {
@@ -423,7 +461,7 @@ export function swLibraryBaseRate(prog: Pick<SWProgramInputs, 'rateLibrary' | 'r
 export function swLoadedRate(prog: SWProgramInputs): number {
   const p = { ...prog, region: normaliseSWRegion(String(prog.region)) as SWRegion };
   const r = resolveRates(p);
-  return r.engineerRate * r.devSource[p.devSource] * p.overheadMultiplier;
+  return r.engineerRate * r.devSource[p.devSource] * swOverhead(p);
 }
 
 /** Development-source PRICE factors: in-house = its efficiency; a supplier = efficiency ÷ (1 − margin). */
@@ -670,7 +708,7 @@ export const SW_MODULES: SWModuleDef[] = [
     annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 380_000,
     calibrationFractionBase: 0.02,
     perVehiclePerYearGBP: 11.5,
-    royaltyBasis: 'This module\'s own note: map data £8–15 / vehicle / yr — midpoint £11.50, paid on the fleet in service until programme end. Replaces the flat £200k / yr IP figure. Unsourced estimate.',
+    royaltyBasis: 'This module\'s own note: map data £8–15 / vehicle / yr — midpoint £11.50 (unsourced estimate; neither HERE nor TomTom publishes a per-car price), paid for the subscription years after each vehicle is built (default 3 — OEM map-update terms).',
     notes: 'Map data licence: HERE ~£8-15/vehicle/yr OR TomTom similar. Real-time traffic API cloud cost significant.',
   },
   {
@@ -1102,6 +1140,88 @@ export const SW_MODULES: SWModuleDef[] = [
   },
 ];
 
+// ─── Structure and burden defaults (gaps round, Oct 2026) ─────────────────────────────────────────────────────────
+// Every default below states its basis. Figures read from search results of the cited pages (no page could be opened).
+
+/** Burden layers on the hub rate (salary + statutory employer on-cost). */
+export const SW_DEFAULT_BURDEN: SWBurden = { employmentPct: 15, companyPct: 40, capitalPct: 0 };
+export const SW_BURDEN_BASIS = {
+  employment: 'CostVision estimate: pension top-up, bonus and benefits. With the UK statutory on-cost (13.9 %) it gives ' +
+    'an employment cost of 1.31 × salary, inside the published 1.25–1.4 × (Hadzima, MIT, "How much does an employee cost?").',
+  company: 'CostVision engineering estimate: site, IT, management, training and non-project time. With the employment ' +
+    'layer the UK engineer costs ≈ 1.8 × salary (NN/g: fully loaded "at least 2 ×") and ≈ £66 / h, below the UK ' +
+    'embedded-software contract median of £600 / day ≈ £75 / h (IT Jobs Watch, Jan 2026), which carries a contractor\'s margin.',
+  capital: 'Zero by default: development tools, licences and HIL benches are priced as their own line (tools per seat).',
+} as const;
+export function burdenMultiplier(b: SWBurden): number {
+  return (1 + b.employmentPct / 100) * (1 + b.companyPct / 100) * (1 + b.capitalPct / 100);
+}
+/** The overhead the engine prices engineering at: the burden layers' product, or a saved configuration's own figure. */
+export function swOverhead(prog: Pick<SWProgramInputs, 'burden' | 'overheadMultiplier'>): number {
+  return prog.burden ? burdenMultiplier(prog.burden) : prog.overheadMultiplier;
+}
+
+/** Map updates per vehicle. Nissan, Subaru and Hyundai include 3 years of map updates with a new car, Honda (2021–24)
+ *  3 years; some give 5 or lifetime (Citroën) — search results of OEM pages, Oct 2026. */
+export const SW_DEFAULT_SUBSCRIPTION_YEARS = 3;
+export const SW_SUBSCRIPTION_BASIS = '3 years of map updates per vehicle — Nissan, Subaru, Hyundai, Honda (2021–24) include 3; some brands 5 or lifetime (OEM pages, read from search results).';
+/** Connected-service life per vehicle. Audi offered basic telematics for 10 years; BMW, Mercedes-Benz and PSA for the
+ *  vehicle's lifetime (Berg Insight via search results, 2015–16 — dated). 10 years is the lower of the two. */
+export const SW_DEFAULT_SERVICE_YEARS = 10;
+export const SW_SERVICE_BASIS = 'Each connected vehicle served 10 years from build: Audi offered basic telematics for 10 years, BMW, Mercedes-Benz and PSA for life (Berg Insight, 2015–16, read from search results — dated).';
+/** Tools per engineer-seat-year. No public price (Vector CANoe: quote only; a full suite + interface "> $15k" is an
+ *  anecdote). CostVision estimate = the module catalogue's tool £ at the default programme ÷ its engineer-years. */
+export const SW_TOOL_SEAT_GBP = 39_500;
+export const SW_TOOL_SEAT_BASIS = 'CostVision estimate £39,500 per engineer-seat-year — the module catalogue\'s tool £ at the default programme ÷ its engineer-years; no public seat price (Vector CANoe is quote-only).';
+/** Sustaining-team profile: the module's maintenance % in full for the first years after SOP, then a tail. */
+export const SW_MAINT_FULL_YEARS = 3;
+export const SW_MAINT_TAIL = 0.5;
+export const SW_MAINT_BASIS = 'Module % of development + verification + integration a year: in full for 3 years after SOP, then 50 % — rule of thumb (15–25 % a year, Edana; 21–26 % median years 1–3, 24 DACH SaaS products), not automotive-measured.';
+/** Compliance (UNECE R155 / R156, ISO 26262), on by default. */
+export const SW_HOMOLOGATION = {
+  /** Vehicle-type cybersecurity approval work: S&P Global — R155 on one legacy model "can easily exceed $1M". */
+  typeApprovalGBP: Math.round(1_000_000 / USD_PER_GBP),
+  assessorASILD:   600_000,   // external ISO 26262 functional-safety assessment, ASIL-D content — CostVision estimate
+  assessorOther:   250_000,   // … ASIL-B/C — CostVision estimate
+  csmsGBP:         1_500_000, // organisation CSMS certification (R155) — CostVision estimate
+  sumsGBP:         800_000,   // organisation SUMS certification (R156) — CostVision estimate
+} as const;
+export const SW_HOMOLOGATION_BASIS = 'Type approval ≈ $1M (S&P Global: R155 on one legacy model "can easily exceed $1M"); ISO 26262 assessor £600k (ASIL-D) / £250k; organisation CSMS £1.5M + SUMS £0.8M ÷ vehicle types sharing them — CostVision estimates.';
+
+/** Last programme year that carries cost: production + the longest per-vehicle tail. */
+export function swHorizon(prog: Pick<SWProgramInputs, 'programLifeYears' | 'subscriptionYears' | 'connectedServiceYears'>): number {
+  const n = Math.max(prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS, prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS, 1);
+  return prog.programLifeYears + n - 1;
+}
+const dfAt = (r: number, t: number) => (r > 0 ? 1 / Math.pow(1 + r, t) : 1);
+const pvOf = (xs: number[], r: number) => xs.reduce((a, v, i) => a + v * dfAt(r, i + 1), 0);
+/** Vehicles in service in programme year y (1-based) when each annual cohort is served `years` years from build. */
+function cohortsInService(y: number, life: number, years: number): number {
+  return Math.max(0, Math.min(y, life) - Math.max(1, y - years + 1) + 1);
+}
+/** Maintenance weight per production year: the sustaining profile × wage escalation. */
+export function maintenanceWeights(prog: Pick<SWProgramInputs, 'programLifeYears' | 'wageEscalationPct'>): number[] {
+  const e = (prog.wageEscalationPct ?? 0) / 100;
+  return Array.from({ length: prog.programLifeYears }, (_, i) => (i < SW_MAINT_FULL_YEARS ? 1 : SW_MAINT_TAIL) * Math.pow(1 + e, i));
+}
+/** Royalties per programme year, nominal £: per vehicle built (each build year) + per vehicle per year for the
+ *  subscription years after build. */
+export function royaltyYearly(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'subscriptionYears' | 'connectedServiceYears'>): number[] {
+  const H = swHorizon(prog), life = prog.programLifeYears, vol = prog.annualProductionVolume;
+  const N = prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS;
+  const built = def.perVehicleRoyaltyGBP ?? 0, perYear = def.perVehiclePerYearGBP ?? 0;
+  return Array.from({ length: H }, (_, i) => (i < life ? vol * built : 0) + vol * cohortsInService(i + 1, life, N) * perYear);
+}
+/** Cloud per programme year, nominal £: £ per connected vehicle-year × the connected vehicles in service, each cohort
+ *  served the connected-service years from its build year. */
+export function cloudYearly(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'connectedVehicleShare' | 'subscriptionYears' | 'connectedServiceYears'>): number[] {
+  const H = swHorizon(prog), life = prog.programLifeYears;
+  if (!def.annualCloudCostGBP) return new Array(H).fill(0);
+  const perVehicleYear = def.annualCloudCostGBP / SW_CLOUD_REFERENCE_FLEET * (prog.connectedVehicleShare ?? 1);
+  const S = prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS;
+  return Array.from({ length: H }, (_, i) => perVehicleYear * prog.annualProductionVolume * cohortsInService(i + 1, life, S));
+}
+
 // ─── Cost Calculation Engine ──────────────────────────────────────────────────
 
 // ─── Model-tuning constants (calibrated against the sw-validation back-test) ──
@@ -1126,7 +1246,7 @@ function computeModuleCost(
 ): SWModuleCostResult {
   // The hub's own engineer rate (senior share already blended), × development source × programme overhead. The old
   // 1.20 / 0.75 seniority fudge on a "senior-blended" UK base blended seniority twice (F19); it is gone.
-  const regionRate  = rates.engineerRate * rates.devSource[prog.devSource] * prog.overheadMultiplier;
+  const regionRate  = rates.engineerRate * rates.devSource[prog.devSource] * swOverhead(prog);
 
   const asilDev    = rates.asilDev[input.asil];
   const complexity = rates.complexity[input.complexity];
@@ -1213,15 +1333,24 @@ function computeModuleCost(
   let   pvFactor = years;
   if (r > 0) { pvFactor = 0; for (let t = 1; t <= years; t++) pvFactor += 1 / Math.pow(1 + r, t); }
 
-  // Development tool licences are paid while the software is developed — not over the production life (P3 #17).
+  // Development tools follow the TEAM: engineer-years × £ per seat-year, paid over the development window (gaps round:
+  // they were a per-module annual sum, so India paid 4.4 × its engineers in tools).
   const devYears  = (prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS) / 12;
   const devFactor = r > 0 ? (1 - Math.pow(1 + r, -devYears)) / r : devYears;
-  const toolchain   = def.annualToolLicenceGBP * devFactor;
-  const licensing   = def.annualIPLicenceGBP   * pvFactor;
-  // Cloud is charged per connected vehicle in service and added after the platform share (unitCloudGBP, P3 #17).
+  const engineerYears = (devTotal + testTotal + integration + cybersec + calibration + mlDataCost) / regionRate / 12;
+  const toolchain   = engineerYears * (prog.toolSeatGBPPerYear ?? SW_TOOL_SEAT_GBP) * (devFactor / devYears);
+  const H           = swHorizon(prog);
+  const licYearly   = Array.from({ length: H }, (_, i) => (i < years ? def.annualIPLicenceGBP : 0));
+  const licensing   = pvOf(licYearly, r);
+  // Cloud is charged per connected vehicle in service and added after the platform share (cloudYearly).
   const cloudCost   = 0;
-  const maintenance = prog.includeMaintenanceCost
-    ? devTotal * (def.maintenancePctPerYear / 100) * pvFactor : 0;
+  // Sustaining: the module % of development + verification + integration (every release is re-tested), in full for
+  // the first years after SOP then a tail, escalated at the stated wage index.
+  const maintBase   = (devTotal + testTotal + integration) * (def.maintenancePctPerYear / 100);
+  const maintYearly = Array.from({ length: H }, () => 0);
+  if (prog.includeMaintenanceCost) maintenanceWeights(prog).forEach((w, i) => { maintYearly[i] = maintBase * w; });
+  const maintenance = pvOf(maintYearly, r);
+  void pvFactor;
 
   const totalNRE      = devTotal + testTotal + integration + toolchain + cybersec + calibration + mlDataCost;
   const totalLifecycle = maintenance + cloudCost + licensing;
@@ -1262,18 +1391,22 @@ function computeModuleCost(
     grandTotal,
     perVehicle,
     attributedShare: 1,
+    yearly: { maintenance: maintYearly, licences: licYearly, royalties: new Array(H).fill(0), cloud: new Array(H).fill(0) },
   };
   // Shared software is attributed to this variant in proportion to its share of the platform volume (P1 #5).
   const share = attributedShare(def.id, prog);
   const out = share < 1 ? scaleModuleResult(res, share) : res;
   // Per-unit royalties (P2 #11) and cloud per connected vehicle (P3 #17) — on THIS programme's vehicles, after the
   // platform share (each vehicle pays its own).
-  const royalty = unitRoyaltyGBP(def, prog);
-  const cloud   = prog.includeCloudCost ? unitCloudGBP(def, prog) : 0;
+  const royYearly   = royaltyYearly(def, prog);
+  const cloudYear   = prog.includeCloudCost ? cloudYearly(def, prog) : new Array(H).fill(0);
+  const royalty = pvOf(royYearly, r);
+  const cloud   = pvOf(cloudYear, r);
   if (royalty === 0 && cloud === 0) return out;
   const lifeVeh = prog.annualProductionVolume * prog.programLifeYears;
   return {
     ...out,
+    yearly:         { ...out.yearly, royalties: royYearly, cloud: cloudYear },
     licensingCost:  out.licensingCost + royalty,
     cloudCost:      out.cloudCost + cloud,
     totalLifecycle: out.totalLifecycle + royalty + cloud,
@@ -1300,16 +1433,9 @@ export const SW_DEFAULT_DEVELOPMENT_MONTHS = 90;
  */
 export const SW_CLOUD_REFERENCE_FLEET = 440_000;
 
-/** Cloud cost over the programme, £: (annual £ ÷ reference fleet) per connected vehicle-year, on a fleet that grows by
- *  the annual volume each year until the programme ends (the same rule as map data), NPV when discounted. */
-export function unitCloudGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct' | 'connectedVehicleShare'>): number {
-  if (!def.annualCloudCostGBP) return 0;
-  const perVehicleYear = def.annualCloudCostGBP / SW_CLOUD_REFERENCE_FLEET;
-  const connected = prog.connectedVehicleShare ?? 1;
-  const r = (prog.discountRatePct ?? 0) / 100;
-  let vehicleYears = 0;
-  for (let t = 1; t <= prog.programLifeYears; t++) vehicleYears += prog.annualProductionVolume * t * (r > 0 ? 1 / Math.pow(1 + r, t) : 1);
-  return perVehicleYear * vehicleYears * connected;
+/** Cloud cost over the programme, £ (PV when discounted): the sum of `cloudYearly`. */
+export function unitCloudGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct' | 'connectedVehicleShare' | 'subscriptionYears' | 'connectedServiceYears'>): number {
+  return pvOf(cloudYearly(def, prog), (prog.discountRatePct ?? 0) / 100);
 }
 
 /**
@@ -1323,7 +1449,7 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
   const r = resolveRates(prog);
   const hub = lib.hubRates[prog.region];
   const book = SW_HUB_RATES[prog.region];
-  const loaded = r.engineerRate * r.devSource[prog.devSource] * prog.overheadMultiplier;
+  const loaded = r.engineerRate * r.devSource[prog.devSource] * swOverhead(prog);
   const gbp = (n: number) => `£${Math.round(n).toLocaleString('en-GB')}`;
   return [
     ['Rate book', `${prog.rateLibrary ? 'Company rates' : 'CostVision built-in'} v${lib.version} (reviewed ${lib.lastReviewed})`],
@@ -1331,7 +1457,9 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['Hub rate (£ / person-month of 152 h, before overhead)', `mid ${gbp(hub.mid.value)} · senior ${gbp(hub.senior.value)} — ${prog.rateLibrary && hub.mid !== DEFAULT_SW_RATE_LIBRARY.hubRates[prog.region]?.mid ? `company book (${hub.mid.source})` : (book?.build ?? hub.mid.source)}`],
     ['Engineer rate used', `${gbp(r.engineerRate)} — ${r.typed ? 'typed rate (replaces the hub book rate)' : `${Math.round(prog.teamSeniorFraction * 100)} % senior blend of the hub's mid and senior rates`}`],
     ['Development source', `${prog.devSource} × ${r.devSource[prog.devSource]}`],
-    ['Overhead multiplier', `× ${prog.overheadMultiplier} (facilities / programme overhead on top of the hub rate)`],
+    ['Engineering burden', prog.burden
+      ? `× ${swOverhead(prog).toFixed(3)} = employment +${prog.burden.employmentPct} % × company +${prog.burden.companyPct} % × capital +${prog.burden.capitalPct} % (on the hub rate)`
+      : `× ${prog.overheadMultiplier} (a single overhead saved with this configuration)`],
     ['Loaded rate (£ / person-month)', gbp(loaded)],
     ['Rate confidence', book ? `${book.confidence} — figures read from search results of the cited pages (Oct 2026); see the rate book` : 'company book'],
     ['Powertrain', prog.powertrain ?? 'not set (modules as selected)'],
@@ -1341,7 +1469,11 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['NRE recovery', `${prog.costRecoveryYears ?? prog.programLifeYears} yr`],
     ['Discount rate', `${prog.discountRatePct ?? 0} %`],
     ['Development duration (tool licences)', `${prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS} months`],
-    ['Cloud', `per connected vehicle-year (module £/yr ÷ ${SW_CLOUD_REFERENCE_FLEET.toLocaleString('en-GB')} reference fleet) × ${Math.round((prog.connectedVehicleShare ?? 1) * 100)} % connected`],
+    ['Cloud', `per connected vehicle-year (module £/yr ÷ ${SW_CLOUD_REFERENCE_FLEET.toLocaleString('en-GB')} reference fleet) × ${Math.round((prog.connectedVehicleShare ?? 1) * 100)} % connected, each vehicle served ${prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS} yr; fixed platform £${Math.round(prog.cloudFixedPerYearGBP ?? 0).toLocaleString('en-GB')} / yr`],
+    ['Map / per-vehicle-year royalties', `${prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS} yr per vehicle`],
+    ['Development tools', `£${Math.round(prog.toolSeatGBPPerYear ?? SW_TOOL_SEAT_GBP).toLocaleString('en-GB')} per engineer-seat-year`],
+    ['Maintenance profile', `full ${SW_MAINT_FULL_YEARS} yr after SOP, then ${SW_MAINT_TAIL * 100} %; wage escalation ${prog.wageEscalationPct ?? 0} % / yr`],
+    ['Homologation', (prog.includeHomologation ?? true) ? `on — organisation CSMS / SUMS shared by ${prog.csmsTypesSharing ?? 1} vehicle type(s)` : 'off'],
     ['Nominal effort basis', (() => {
       const on = prog.modules.filter(m => m.enabled);
       const sized = on.filter(m => m.customPersonMonths == null && m.sizeKSLOC).length;
@@ -1401,18 +1533,9 @@ export function calFor(def: SWModuleDef, input: Pick<SWModuleInput, 'cal'>): SWC
   return input.cal ?? def.defaultCal ?? (def.hasCybersecRequirement ? 'CAL2' : 'none');
 }
 
-/** Per-unit royalties over the programme, £ (NPV when a discount rate is set). Built: volume × royalty each year.
- *  In service: the fleet after year t is volume × t, each paying the yearly royalty until the programme ends. */
-export function unitRoyaltyGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct'>): number {
-  const built = def.perVehicleRoyaltyGBP ?? 0, perYear = def.perVehiclePerYearGBP ?? 0;
-  if (!built && !perYear) return 0;
-  const r = (prog.discountRatePct ?? 0) / 100;
-  let total = 0;
-  for (let t = 1; t <= prog.programLifeYears; t++) {
-    const df = r > 0 ? 1 / Math.pow(1 + r, t) : 1;
-    total += (prog.annualProductionVolume * built + prog.annualProductionVolume * t * perYear) * df;
-  }
-  return total;
+/** Per-unit royalties over the programme, £ (PV when discounted): the sum of `royaltyYearly`. */
+export function unitRoyaltyGBP(def: SWModuleDef, prog: Pick<SWProgramInputs, 'annualProductionVolume' | 'programLifeYears' | 'discountRatePct' | 'subscriptionYears' | 'connectedServiceYears'>): number {
+  return pvOf(royaltyYearly(def, prog), (prog.discountRatePct ?? 0) / 100);
 }
 
 /** The module's cost and effort scaled to the share attributed to this programme. */
@@ -1429,7 +1552,52 @@ function scaleModuleResult(r: SWModuleCostResult, k: number): SWModuleCostResult
     totalNonRecurring: r.totalNonRecurring * k, totalLifecycle: r.totalLifecycle * k,
     grandTotal: r.grandTotal * k, perVehicle: r.perVehicle * k,
     attributedShare: k,
+    yearly: { ...r.yearly, maintenance: r.yearly.maintenance.map(v => v * k), licences: r.yearly.licences.map(v => v * k) },
   };
+}
+
+// ─── Evidence grades (gaps round, Oct 2026) ───────────────────────────────────────────────────────────────────────
+
+/** How well a costed line is supported. `entered` = the user's own figure; `calibrated` = scaled to the user's logged
+ *  actuals; `sourced` = a published figure; `estimate` = a labelled engineering estimate or a sourced model on entered
+ *  sizes; `unsourced` = a catalogue figure with no source. */
+export type SWEvidenceGrade = 'entered' | 'calibrated' | 'sourced' | 'estimate' | 'unsourced';
+export interface SWEvidenceLine { kind: string; label: string; amount: number; grade: SWEvidenceGrade; nre: boolean; basis: string }
+
+/** Monte Carlo range [low, mode, high] by grade — from the costing review's proposal (#13): sourced ±15 %, labelled
+ *  estimate × 0.5–2, unsourced catalogue × 0.5–3; entered and calibrated figures narrower. CostVision engineering
+ *  estimates of how far each grade can be out — not measured. */
+export const SW_MC_RANGE_BY_GRADE: Record<SWEvidenceGrade, readonly [number, number, number]> = {
+  entered:    [0.90, 1.00, 1.15],
+  calibrated: [0.80, 1.00, 1.30],
+  sourced:    [0.85, 1.00, 1.15],
+  estimate:   [0.50, 1.00, 2.00],
+  unsourced:  [0.50, 1.00, 3.00],
+};
+
+/** Every costed £ of a programme, line by line, with its evidence grade and basis. Sums to the grand total. */
+export function swEvidenceLines(prog: SWProgramInputs, modules: SWModuleCostResult[], summary: Pick<SWSummary, 'totalHomologation' | 'cloudFixedYearly'>): SWEvidenceLine[] {
+  const out: SWEvidenceLine[] = [];
+  const r = (prog.discountRatePct ?? 0) / 100;
+  const calibrated = prog.effortCalibration !== undefined && prog.effortCalibration !== 1;
+  for (const m of modules) {
+    const def = SW_MODULES.find(d => d.id === m.moduleId)!;
+    const effort = m.development.total + m.testing.total + m.integrationCost + m.cybersecCost + m.calibrationCost + m.mlDataCost;
+    const eGrade: SWEvidenceGrade = m.effortBasis === 'custom' ? 'entered' : m.effortBasis === 'size' ? 'estimate' : calibrated ? 'calibrated' : 'unsourced';
+    out.push({ kind: 'effort', label: `${m.moduleName} — engineering`, amount: effort, grade: eGrade, nre: true,
+      basis: m.effortBasis === 'custom' ? 'your person-months' : m.effortBasis === 'size' ? 'COCOMO II on your KSLOC' : calibrated ? 'catalogue × your calibration' : 'module catalogue person-months (unsourced)' });
+    out.push({ kind: 'tools', label: `${m.moduleName} — tools`, amount: m.toolchainCost, grade: prog.toolSeatGBPPerYear !== undefined ? 'entered' : 'estimate', nre: true, basis: SW_TOOL_SEAT_BASIS });
+    out.push({ kind: 'maintenance', label: `${m.moduleName} — maintenance`, amount: m.maintenanceCost, grade: 'estimate', nre: false, basis: SW_MAINT_BASIS });
+    const ip = pvOf(m.yearly.licences, r);
+    out.push({ kind: 'licences', label: `${m.moduleName} — IP licences`, amount: ip, grade: 'unsourced', nre: false, basis: 'module catalogue £ / yr (unsourced)' });
+    const roy = m.licensingCost - ip;
+    if (Math.abs(roy) > 1e-6) out.push({ kind: 'royalties', label: `${m.moduleName} — royalties`, amount: roy, grade: /unsourced/i.test(def.royaltyBasis ?? 'unsourced') ? 'unsourced' : 'sourced', nre: false, basis: def.royaltyBasis ?? '' });
+    if (m.cloudCost) out.push({ kind: 'cloud', label: `${m.moduleName} — cloud`, amount: m.cloudCost, grade: 'unsourced', nre: false, basis: `module cloud £ / yr ÷ reference fleet (unsourced); ${SW_SERVICE_BASIS}` });
+  }
+  if (summary.totalHomologation) out.push({ kind: 'homologation', label: 'Homologation (R155 / R156 / ISO 26262)', amount: summary.totalHomologation, grade: 'estimate', nre: true, basis: SW_HOMOLOGATION_BASIS });
+  const fixedCloud = pvOf(summary.cloudFixedYearly, r);
+  if (fixedCloud) out.push({ kind: 'cloudFixed', label: 'Cloud platform (fixed)', amount: fixedCloud, grade: 'entered', nre: false, basis: 'your fixed platform £ / yr' });
+  return out;
 }
 
 // ─── Monte Carlo simulation ───────────────────────────────────────────────────
@@ -1448,7 +1616,7 @@ const MC_CORRELATION = 0.55;
 export const SW_MC_SEED = 20260814;
 
 function runMonteCarlo(
-  prog: SWProgramInputs, s: SWSummary, iterations = 1000, seed = SW_MC_SEED,
+  prog: SWProgramInputs, s: SWSummary, lines: SWEvidenceLine[], iterations = 1000, seed = SW_MC_SEED,
 ): SWMonteCarlo {
   // SEEDED. This used raw Math.random(), so the P50/P90 band differed on every
   // run for identical inputs — measured at ~£4M of swing on P50 of a £494M
@@ -1464,27 +1632,17 @@ function runMonteCarlo(
   }
 
   const rho = MC_CORRELATION;
-  // Each bucket's effective multiplier = rho·(shared programme swing) +
-  // (1-rho)·(bucket-specific swing). The shared draw is mapped onto each
-  // bucket's own min/max so correlation widens the tail without distorting
-  // any single bucket's range.
   const lerp = (lo: number, hi: number, t: number) => lo + (hi - lo) * t;
-  // [value, low, mode, high, NRE?]. ML data and homologation were left out — turning them on moved the total and not the
-  // band (software review P2 #10). Their ranges are borrowed, said so: ML data follows development, homologation (fixed
-  // audit fees) follows licensing. All ranges are CostVision engineering estimates.
-  const buckets: Array<[number, number, number, number, boolean]> = [
-    [s.totalDevelopment,   0.70, 1.00, 1.40, true],
-    [s.totalTesting,       0.75, 1.00, 1.35, true],
-    [s.totalIntegration,   0.70, 1.00, 1.40, true],
-    [s.totalToolchain,     0.85, 1.00, 1.25, true],
-    [s.totalCybersecurity, 0.65, 1.00, 1.50, true],
-    [s.totalCalibration,   0.70, 1.00, 1.50, true],
-    [s.totalMLData,        0.70, 1.00, 1.40, true],
-    [s.totalHomologation,  0.80, 1.00, 1.30, true],
-    [s.totalMaintenance,   0.75, 1.00, 1.35, false],
-    [s.totalCloud,         0.50, 1.00, 1.60, false],
-    [s.totalLicensing,     0.80, 1.00, 1.30, false],
-  ];
+  // Each line's range follows its EVIDENCE GRADE (gaps round, costing review #13: one narrow range per bucket gave
+  // ±10 % on a total that rests on an unsourced effort catalogue). Lines of one kind and grade are drawn together.
+  const groups = new Map<string, { val: number; nre: boolean; range: readonly [number, number, number] }>();
+  for (const l of lines) {
+    const key = `${l.kind}|${l.grade}`;
+    const g = groups.get(key) ?? { val: 0, nre: l.nre, range: SW_MC_RANGE_BY_GRADE[l.grade] };
+    g.val += l.amount;
+    groups.set(key, g);
+  }
+  const buckets = [...groups.values()].filter(g => g.val !== 0).map(g => [g.val, g.range[0], g.range[1], g.range[2], g.nre] as [number, number, number, number, boolean]);
 
   // £ / vehicle per trial by the SAME rule as the headline: NRE over the recovery window, lifecycle over the full
   // life. It divided every trial's total by volume × life, so with a 2-year recovery the headline said £2,043 and the
@@ -1610,6 +1768,13 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   if (prog.connectedVehicleShare !== undefined && (!fin(prog.connectedVehicleShare) || prog.connectedVehicleShare < 0 || prog.connectedVehicleShare > 1)) p.push('connected-vehicle share must be 0–1');
   if (prog.scheduleCompression !== undefined && (!fin(prog.scheduleCompression) || prog.scheduleCompression <= 0 || prog.scheduleCompression > 1.5)) p.push('schedule compression must be above 0 and at most 1.5');
   if (prog.costRecoveryYears !== undefined && (!fin(prog.costRecoveryYears) || prog.costRecoveryYears < 1 || prog.costRecoveryYears > 40)) p.push('cost-recovery window must be 1–40 years');
+  if (prog.burden) for (const [k, v] of Object.entries(prog.burden)) if (!fin(v) || v < 0 || v > 300) p.push(`burden ${k} must be 0–300 %`);
+  if (prog.subscriptionYears !== undefined && (!fin(prog.subscriptionYears) || prog.subscriptionYears < 0 || prog.subscriptionYears > 20)) p.push('subscription years must be 0–20');
+  if (prog.connectedServiceYears !== undefined && (!fin(prog.connectedServiceYears) || prog.connectedServiceYears < 1 || prog.connectedServiceYears > 25)) p.push('connected-service years must be 1–25');
+  if (prog.cloudFixedPerYearGBP !== undefined && (!fin(prog.cloudFixedPerYearGBP) || prog.cloudFixedPerYearGBP < 0 || prog.cloudFixedPerYearGBP > 1e9)) p.push('fixed cloud platform must be £0–1bn a year');
+  if (prog.toolSeatGBPPerYear !== undefined && (!fin(prog.toolSeatGBPPerYear) || prog.toolSeatGBPPerYear < 0 || prog.toolSeatGBPPerYear > 1_000_000)) p.push('tools must be £0–1M per seat-year');
+  if (prog.wageEscalationPct !== undefined && (!fin(prog.wageEscalationPct) || prog.wageEscalationPct < -10 || prog.wageEscalationPct > 30)) p.push('wage escalation must be −10–30 % a year');
+  if (prog.csmsTypesSharing !== undefined && (!fin(prog.csmsTypesSharing) || prog.csmsTypesSharing < 1 || prog.csmsTypesSharing > 200)) p.push('vehicle types sharing CSMS / SUMS must be 1–200');
   if (prog.platformAnnualVolume !== undefined && (!fin(prog.platformAnnualVolume) || prog.platformAnnualVolume < 0 || prog.platformAnnualVolume > 20_000_000)) p.push('platform volume must be 0–20,000,000 vehicles');
   const seen = new Set<string>();
   for (const m of prog.modules) {
@@ -1647,20 +1812,26 @@ export function computeSWProgram(
 
   const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
 
-  // Programme-level homologation / compliance (opt-in): UNECE R155 CSMS audit +
-  // R156 SUMS audit + external ISO 26262 functional-safety assessment. Scaled up
-  // when the programme carries ASIL-D content. Default off → 0 (baseline neutral).
+  // Compliance, ON by default (gaps round: it was off, so the default programme carried no R155 / R156 / ISO 26262):
+  // this type's approval work + the functional-safety assessor + its share of the organisation's CSMS / SUMS.
   const hasASILD = modules.some(m => m.asilUsed === 'D');
-  const homologation = prog.includeHomologation
-    ? (1_500_000 /* R155 CSMS */ + 800_000 /* R156 SUMS */ + (hasASILD ? 600_000 : 250_000) /* ISO26262 assessor */)
+  const H0 = SW_HOMOLOGATION;
+  // Nothing in scope → nothing to approve or host.
+  const homologation = (prog.includeHomologation ?? true) && modules.length > 0
+    ? H0.typeApprovalGBP + (hasASILD ? H0.assessorASILD : H0.assessorOther) + (H0.csmsGBP + H0.sumsGBP) / Math.max(1, prog.csmsTypesSharing ?? 1)
     : 0;
+  // Fixed cloud platform while any vehicle is served (entered; 0 when not given).
+  const horizonYears = swHorizon(prog);
+  const rDisc = (prog.discountRatePct ?? 0) / 100;
+  const cloudFixedYearly = Array.from({ length: horizonYears }, () => (prog.includeCloudCost && modules.length > 0 ? (prog.cloudFixedPerYearGBP ?? 0) : 0));
+  const cloudFixed = pvOf(cloudFixedYearly, rDisc);
 
   const summary: SWSummary = {
     totalDevelopment:   sum(modules.map(m => m.development.total)),
     totalTesting:       sum(modules.map(m => m.testing.total)),
     totalIntegration:   sum(modules.map(m => m.integrationCost)),
     totalLicensing:     sum(modules.map(m => m.licensingCost)),
-    totalCloud:         sum(modules.map(m => m.cloudCost)),
+    totalCloud:         sum(modules.map(m => m.cloudCost)) + cloudFixed,
     totalCybersecurity: sum(modules.map(m => m.cybersecCost)),
     totalMaintenance:   sum(modules.map(m => m.maintenanceCost)),
     totalToolchain:     sum(modules.map(m => m.toolchainCost)),
@@ -1668,11 +1839,13 @@ export function computeSWProgram(
     totalMLData:        sum(modules.map(m => m.mlDataCost)),
     totalHomologation:  homologation,
     nreTotal:           0,
-    grandTotal:         sum(modules.map(m => m.grandTotal)) + homologation,
+    grandTotal:         sum(modules.map(m => m.grandTotal)) + homologation + cloudFixed,
     totalPersonMonths:  sum(modules.map(m => m.personMonths)),
     totalEffortPersonMonths: sum(modules.map(m => m.effortPersonMonths)),
     perVehicle:         0,
     byCategory:         {} as Record<SWCategory, number>,
+    cloudFixedYearly,
+    horizonYears,
   };
   summary.nreTotal = summary.totalDevelopment + summary.totalTesting + summary.totalIntegration
                    + summary.totalToolchain + summary.totalCybersecurity + summary.totalCalibration
@@ -1736,10 +1909,38 @@ export function computeSWProgram(
       };
     })(),
     {
-      parameter: 'Program Life (8 vs 14 years)',
+      parameter: 'Programme life (8 vs 14 years)',
       low:  _recomputeTotal(prog, { lifeOverride: 8 }),
       base: summary.grandTotal,
       high: _recomputeTotal(prog, { lifeOverride: 14 }),
+      unit: '£M',
+    },
+    {
+      parameter: 'Effort catalogue (× 0.5 vs × 2)',
+      low:  _recomputeTotal(prog, { effortScale: 0.5 }),
+      base: summary.grandTotal,
+      high: _recomputeTotal(prog, { effortScale: 2 }),
+      unit: '£M',
+    },
+    {
+      parameter: 'Company burden (20 % vs 60 %)',
+      low:  _recomputeTotal(prog, { companyBurdenPct: 20 }),
+      base: summary.grandTotal,
+      high: _recomputeTotal(prog, { companyBurdenPct: 60 }),
+      unit: '£M',
+    },
+    {
+      parameter: 'Connected-service life (5 vs 15 years)',
+      low:  _recomputeTotal(prog, { serviceYears: 5 }),
+      base: summary.grandTotal,
+      high: _recomputeTotal(prog, { serviceYears: 15 }),
+      unit: '£M',
+    },
+    {
+      parameter: 'Map subscription (1 vs 7 years)',
+      low:  _recomputeTotal(prog, { subscriptionYears: 1 }),
+      base: summary.grandTotal,
+      high: _recomputeTotal(prog, { subscriptionYears: 7 }),
       unit: '£M',
     },
     {
@@ -1766,7 +1967,7 @@ export function computeSWProgram(
   const phases = buildPhases(summary.nreTotal, prog.developmentMonths);
 
   // Monte Carlo cost distribution
-  const monteCarlo = runMonteCarlo(prog, summary);
+  const monteCarlo = runMonteCarlo(prog, summary, swEvidenceLines(prog, modules, summary));
 
   return { modules, summary, sensitivity, benchmarks, phases, monteCarlo, inputs: snapshotInputs(prog) };
 }
@@ -1778,6 +1979,10 @@ type SWRecomputeOverrides = {
   regionOverride?:     SWRegion;
   lifeOverride?:       number;
   volumeOverride?:     number;
+  effortScale?:        number;
+  companyBurdenPct?:   number;
+  serviceYears?:       number;
+  subscriptionYears?:  number;
 };
 
 function _recomputeTotal(prog: SWProgramInputs, overrides: SWRecomputeOverrides): number {
@@ -1792,6 +1997,10 @@ function _recomputeSummary(prog: SWProgramInputs, overrides: SWRecomputeOverride
     baseRateGBP:      overrides.regionOverride ? undefined : prog.baseRateGBP,
     programLifeYears: overrides.lifeOverride   ?? prog.programLifeYears,
     annualProductionVolume: overrides.volumeOverride ?? prog.annualProductionVolume,
+    effortCalibration: overrides.effortScale !== undefined ? (prog.effortCalibration ?? 1) * overrides.effortScale : prog.effortCalibration,
+    burden: overrides.companyBurdenPct !== undefined ? { ...(prog.burden ?? SW_DEFAULT_BURDEN), companyPct: overrides.companyBurdenPct } : prog.burden,
+    connectedServiceYears: overrides.serviceYears ?? prog.connectedServiceYears,
+    subscriptionYears: overrides.subscriptionYears ?? prog.subscriptionYears,
     modules: prog.modules.map(m => ({
       ...m,
       asil:       overrides.asilOverride       ?? m.asil,
@@ -1805,13 +2014,12 @@ function _recomputeSummary(prog: SWProgramInputs, overrides: SWRecomputeOverride
 // ─── Default program inputs ───────────────────────────────────────────────────
 
 /**
- * The ONE overhead default: facilities / programme overhead on top of the hub rate. The screen's fallback, its tooltip,
- * every vehicle demo and the report scripts read this (software review P1 #3). Since the Oct 2026 country book the hub
- * rate is salary + STATUTORY employer on-cost only — non-statutory benefits (pension top-ups, health cover, bonus), site
- * and IT cost and non-productive time are not in it. 1.15 is a CostVision assumption, not a sourced figure: put your
- * company's own engineering overhead here.
+ * The ONE overhead default — the product of the three burden layers on the hub rate (SW_DEFAULT_BURDEN: employment
+ * +15 %, company +40 %, capital 0 % → × 1.61; bases in SW_BURDEN_BASIS). The screen, every vehicle demo and the report
+ * scripts read this (software review P1 #3). It replaced an unlabelled 1.15 that put the loaded UK engineer at £48 / h
+ * (gaps round, Oct 2026). The hub rate itself is salary + STATUTORY employer on-cost only.
  */
-export const SW_DEFAULT_OVERHEAD = 1.15;
+export const SW_DEFAULT_OVERHEAD = Math.round(burdenMultiplier(SW_DEFAULT_BURDEN) * 1000) / 1000;
 
 export function defaultSWProgramInputs(): SWProgramInputs {
   return {
@@ -1820,8 +2028,9 @@ export function defaultSWProgramInputs(): SWProgramInputs {
     programLifeYears:        10,
     annualProductionVolume:  80_000,
     teamSeniorFraction:      0.50,
-    // 1.15 = facilities / programme overhead on top of the hub rate (salary + statutory employer on-cost). The
-    // company's own figure belongs here — non-statutory benefits and site costs are not in the book.
+    // The burden on the hub rate (salary + statutory employer on-cost), in three stated layers; overheadMultiplier
+    // echoes their product for older readers.
+    burden:                  { ...SW_DEFAULT_BURDEN },
     overheadMultiplier:      SW_DEFAULT_OVERHEAD,
     includeMaintenanceCost:  true,
     includeCloudCost:        true,
