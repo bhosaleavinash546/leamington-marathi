@@ -327,7 +327,7 @@ export function supplierResultHTML(r: SWProgramResult, quote: SWQuote, money: Mo
   const unitFmt = (u: string) => (u === 'perVehicle' ? (n: number) => swMoney(n, 2) : moneyM);
   const fmtOf = (k: string) => unitFmt(rows.find(x => x.key === k)?.unit ?? 'total');
   return `<div class="swk-qrows">${rows.map(x => { const max = Math.max(x.should, x.quoted) || 1; return `<div class="swk-qrow">
-      <div class="swk-qrow-h"><strong>${esc(x.label)}</strong><span class="swk-gap ${x.gap > 0 ? 'is-bad' : 'is-good'}">${x.gap > 0 ? '+' : '−'}${esc(fmtOf(x.key)(Math.abs(x.gap)))} (${x.gapPct >= 0 ? '+' : ''}${x.gapPct.toFixed(0)} %)</span></div>
+      <div class="swk-qrow-h"><strong>${esc(x.label)}</strong><span class="swk-gap ${x.gapPct > 10 ? 'is-bad' : x.gapPct < -10 ? 'is-good' : ''}" title="Coloured only beyond ±10 %">${x.gap > 0 ? '+' : '−'}${esc(fmtOf(x.key)(Math.abs(x.gap)))} (${x.gapPct >= 0 ? '+' : ''}${x.gapPct.toFixed(0)} %)</span></div>
       <div class="swk-qbar"><span class="swk-qb swk-qb-s" style="width:${(x.should / max * 100).toFixed(1)}%"></span><span class="swk-qlab">Should-cost ${esc(fmtOf(x.key)(x.should))}</span></div>
       <div class="swk-qbar"><span class="swk-qb swk-qb-q" style="width:${(x.quoted / max * 100).toFixed(1)}%"></span><span class="swk-qlab">Quote ${esc(fmtOf(x.key)(x.quoted))}</span></div>
     </div>`; }).join('')}</div>
@@ -501,6 +501,7 @@ export const COCKPIT_CSS = CHART_CSS + `
   .swk-rail-more{display:block;grid-column:1/-1;font:inherit;font-size:.76rem;font-weight:600;padding:8px;border:none;background:var(--sw-surface);color:var(--sw-accent);cursor:pointer}
   .swk-rail:not(.is-open) .swk-fig:not(.swk-hero):not([data-fig="total"]){display:none}
   .swk-rail:not(.is-open) .swk-rail-ev{display:none}
+  .swk-rail:not(.is-open) [data-fig="total"]{grid-column:1/-1}
   .swk-head-r .swk-btn:not(.swk-icon):not(.swk-btn-primary){display:none}
 }
 @media (max-width:600px){.swk-sc-bars{display:flex}#swk-sc-out figure.swc{display:none}}

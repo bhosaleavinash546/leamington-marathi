@@ -95,7 +95,7 @@ export function waterfallChart(id: string, items: WaterfallItem[], total: number
   return `<figure class="swc" data-chart="${esc(id)}">
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}-t"><title id="${id}-t">Programme cost built up from its buckets, ${esc(money(total))} in total</title>
       ${connectors}${bars}${totalBar}</svg>
-    ${legend([[SLOT(0), 'One-off engineering (NRE)'], [SLOT(1), 'Lifecycle (each production year)'], ['var(--swc-ink)', 'Total']])}
+    ${legend([[SLOT(0), 'One-off engineering (NRE)'], [SLOT(1), 'Lifecycle (production and service years)'], ['var(--swc-ink)', 'Total']])}
     ${table('Cost by bucket', ['Bucket', 'Cost', 'Share'], [...rows.map(r => [r.label, money(r.value), `${(total > 0 ? r.value / total * 100 : 0).toFixed(1)} %`]), ['Programme total', money(total), '100 %']])}
   </figure>`;
 }
@@ -245,7 +245,7 @@ export function scenarioChart(id: string, bars: ScenarioBar[], measure: string, 
   }).join('');
   const rule = base ? `<line class="swc-base" x1="${r1(left + sx(base.value))}" x2="${r1(left + sx(base.value))}" y1="${top}" y2="${H - 4}"/>` : '';
   return `<figure class="swc" data-chart="${esc(id)}">
-    <svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}-t"><title id="${id}-t">${esc(measure)} by scenario${base ? `, against the baseline ${esc(base.label)}` : ''}</title>${rows}${rule}</svg>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}-t"><title id="${id}-t">${esc(measure)} by scenario${base ? `, against the baseline ${esc(base.label)}` : ''}</title>${rule}${rows}</svg>
     ${table(`${measure} by scenario`, ['Scenario', measure, 'Against baseline'], bars.map(b => [b.label, money(b.value), b.base ? 'baseline' : base ? `${b.value - base.value >= 0 ? '+' : '−'}${money(Math.abs(b.value - base.value))}` : '']))}
   </figure>`;
 }
@@ -263,7 +263,7 @@ export function distributionChart(id: string, hist: Array<{ lo: number; hi: numb
   const bw = (W - left - right) / hist.length;
   const bars = hist.map((b, i) => {
     const h = sy(b.count);
-    return vbar(left + i * bw + 1, H - bottom - h, bw - 2, h, 'var(--swc-1)', `b${i}`, `${money(b.lo)} – ${money(b.hi)}: ${b.count} of the trials`);
+    return vbar(left + i * bw + 1, H - bottom - h, bw - 2, h, 'var(--sw-accent)', `b${i}`, `${money(b.lo)} – ${money(b.hi)}: ${b.count} of the trials`);
   }).join('');
   const marker = (v: number, label: string, cls: string, dy: number) =>
     `<line class="swc-marker ${cls}" x1="${r1(sx(v))}" x2="${r1(sx(v))}" y1="${top - 4}" y2="${H - bottom}"/>

@@ -37,14 +37,15 @@ const NEXT_STEP: Record<string, string> = {
  *  unsourced lines with the step that would source them, and the default reuse stated with its £. */
 export function evidenceCardHTML(ev: SWEvidence, moneyM: Money): string {
   const parts = GRADE_ORDER.map(g => ({ g, v: ev.byGrade[g] })).filter(p => p.v > 0);
-  const strength: Record<SWEvidenceGrade, number> = { entered: 1, calibrated: 0.85, sourced: 0.7, estimate: 0.45, unsourced: 0.2 };
-  const bar = parts.map(p => `<span class="swk-ev-seg" style="flex:${p.v} 1 0;opacity:${strength[p.g]}" title="${esc(`${GRADE_LABEL[p.g]}: ${moneyM(p.v)}`)}"></span>`).join('');
+  // Neutral-to-warning ramp (independent re-score: the unsourced share was a near-invisible dark green).
+  const fill: Record<SWEvidenceGrade, string> = { entered: 'var(--sw-text-primary)', calibrated: 'var(--sw-text-primary)', sourced: 'var(--sw-text-secondary)', estimate: 'var(--sw-text-muted)', unsourced: 'var(--sw-warn)' };
+  const bar = parts.map(p => `<span class="swk-ev-seg" style="flex:${p.v} 1 0;background:${fill[p.g]}" title="${esc(`${GRADE_LABEL[p.g]}: ${moneyM(p.v)}`)}"></span>`).join('');
   return `<section class="swk-card" id="swk-evidence"><h3 class="swk-h">How well the total is supported</h3>
     <p class="swk-sub"><strong>${moneyM(ev.byGrade.unsourced)} (${pct(ev.unsourcedShare)})</strong> of ${moneyM(ev.total)} rests on unsourced
       catalogue figures. The uncertainty band draws each grade's own range, so the band is wide where the evidence is thin.</p>
     <div class="swk-ev-bar" role="img" aria-label="${esc(parts.map(p => `${GRADE_LABEL[p.g]} ${moneyM(p.v)}`).join(', '))}">${bar}</div>
     <table class="swk-t"><thead><tr><th scope="col">Evidence</th><th scope="col" class="n">£ in the total</th><th scope="col" class="n">Share</th><th scope="col" class="n">Band drawn (low · high)</th></tr></thead>
-      <tbody>${GRADE_ORDER.map(g => `<tr><th scope="row"><i class="swk-ev-key" style="opacity:${strength[g]}" aria-hidden="true"></i>${GRADE_LABEL[g]}</th>
+      <tbody>${GRADE_ORDER.map(g => `<tr><th scope="row"><i class="swk-ev-key" style="background:${fill[g]}" aria-hidden="true"></i>${GRADE_LABEL[g]}</th>
         <td class="n">${moneyM(ev.byGrade[g])}</td><td class="n">${pct(ev.total > 0 ? ev.byGrade[g] / ev.total : 0)}</td>
         <td class="n">× ${SW_MC_RANGE_BY_GRADE[g][0]} · × ${SW_MC_RANGE_BY_GRADE[g][2]}</td></tr>`).join('')}</tbody></table>
     <h4 class="swk-h4">Largest unsourced lines — and what would source them</h4>

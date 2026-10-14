@@ -160,7 +160,10 @@ An independent re-score put the module at **28 → 63 / 100** after rounds 1–2
 | Per vehicle | £249 | £302 |
 
 - Effort is unchanged (4,135 PM).
-- Band: P10 £259M · P50 £339M · P90 £443M, with the headline ≈ P5. The headline adds each line's most likely value, and most of the money rests on unsourced lines whose risk runs upwards, so the screen says to budget at a percentile.
+- Band: P10 £234M · P50 £276M · P90 £329M, with the headline ≈ P16.
+  - The re-score caught a first attempt (unsourced × 0.5–3) that put the £302 / vehicle headline BELOW its own P10.
+  - The grade ranges are now bounded (unsourced 0.6 / 1 / 1.9, estimate 0.7 / 1 / 1.6, sourced 0.85 / 1 / 1.2).
+  - A test keeps the headline between P10 and P90 in five hubs.
 - Demos: L460 £164.9M → £221.6M; BMW X7 £116.1M → £146.5M; Mercedes GLS £135.7M → £173.6M.
 
 **Proof:**
@@ -191,3 +194,24 @@ An independent re-score put the module at **28 → 63 / 100** after rounds 1–2
 - The burden company layer is a labelled estimate.
 - The evidence-grade ranges are CostVision estimates, not measured.
 - Accuracy is unmeasured: no real programme actuals are logged.
+
+**Independent re-score after this round: 28 → 63 → 71 / 100.**
+
+The reviewer's remaining gaps:
+
+| Gap | Status |
+|---|---|
+| Headline outside its own band | Fixed after the re-score (above). |
+| Cloud: rate calibrated to the old fleet rule; 10-year service default rests on dated sources | **Open.** £86M, 36 % of the total. |
+| No sustaining / cyber tail over the service years after the last build year | **Open.** |
+| Make or buy is one factor applied to every domain | **Open.** Needs sourced Tier-1 rates and start-up risk. |
+| 90-month development window against a 23-month longest module | **Open.** |
+| Phone charts scale down instead of reflowing | **Open.** |
+| The book rate looks like a typed value | **Open.** |
+| Baseline is per viewer (localStorage) | **Open.** |
+| Red at +0 % quote gap | Fixed. |
+| Waterfall legend wording | Fixed. |
+| Evidence grades in near-invisible green | Fixed (neutral-to-warning ramp). |
+| Folded phone rail left an empty cell | Fixed. |
+| Histogram not in the accent colour | Fixed. |
+| Baseline rule drawn over the scenario labels | Fixed. |

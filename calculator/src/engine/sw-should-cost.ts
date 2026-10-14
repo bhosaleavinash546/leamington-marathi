@@ -1564,15 +1564,16 @@ function scaleModuleResult(r: SWModuleCostResult, k: number): SWModuleCostResult
 export type SWEvidenceGrade = 'entered' | 'calibrated' | 'sourced' | 'estimate' | 'unsourced';
 export interface SWEvidenceLine { kind: string; label: string; amount: number; grade: SWEvidenceGrade; nre: boolean; basis: string }
 
-/** Monte Carlo range [low, mode, high] by grade — from the costing review's proposal (#13): sourced ±15 %, labelled
- *  estimate × 0.5–2, unsourced catalogue × 0.5–3; entered and calibrated figures narrower. CostVision engineering
- *  estimates of how far each grade can be out — not measured. */
+/** Monte Carlo range [low, mode, high] by grade. Wider where the evidence is thinner and skewed upwards (overruns are
+ *  larger than savings), but bounded so the headline — the sum of each line's most likely value — stays inside its own
+ *  band (independent re-score, Oct 2026: × 0.5–3 on unsourced lines put the £302 headline below its own P10). CostVision
+ *  engineering estimates of how far each grade can be out — not measured. */
 export const SW_MC_RANGE_BY_GRADE: Record<SWEvidenceGrade, readonly [number, number, number]> = {
   entered:    [0.90, 1.00, 1.15],
-  calibrated: [0.80, 1.00, 1.30],
-  sourced:    [0.85, 1.00, 1.15],
-  estimate:   [0.50, 1.00, 2.00],
-  unsourced:  [0.50, 1.00, 3.00],
+  calibrated: [0.85, 1.00, 1.25],
+  sourced:    [0.85, 1.00, 1.20],
+  estimate:   [0.70, 1.00, 1.60],
+  unsourced:  [0.60, 1.00, 1.90],
 };
 
 /** Every costed £ of a programme, line by line, with its evidence grade and basis. Sums to the grand total. */

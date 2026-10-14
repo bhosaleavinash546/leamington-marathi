@@ -1,5 +1,5 @@
 {
- "panelOpenMs": 48,
+ "panelOpenMs": 36,
  "checks": {
   "no guided/advanced toggle": "PASS",
   "domain chip excludes infotainment": "PASS",
@@ -28,9 +28,9 @@
  },
  "axeDialog": [],
  "scenariosSaved": [
-  "Pinned 06:48 baseline £302£241.6M£59.8M£22.70£22.25£443.2M4,135 PM",
-  "Current programme current hub United Kingdom → IndiaUse as baseline£216▼ £86£172.9M▼ £68.7M£21.6M▼ £38.1M£22.70—£22.25—£324.7M▼ £118.5M4,135 PM—",
-  "India hub hub United Kingdom → IndiaLoadUse as baselineDelete£216▼ £86£172.9M▼ £68.7M£21.6M▼ £38.1M£22.70—£22.25—£324.7M▼ £118.5M4,135 PM—"
+  "Pinned 07:01 baseline £302£241.6M£59.8M£22.70£22.25£328.9M4,135 PM",
+  "Current programme current hub United Kingdom → IndiaUse as baseline£216▼ £86£172.9M▼ £68.7M£21.6M▼ £38.1M£22.70—£22.25—£237.0M▼ £91.9M4,135 PM—",
+  "India hub hub United Kingdom → IndiaLoadUse as baselineDelete£216▼ £86£172.9M▼ £68.7M£21.6M▼ £38.1M£22.70—£22.25—£237.0M▼ £91.9M4,135 PM—"
  ],
  "scenarios_source": [
   "in-house (current) baseline",

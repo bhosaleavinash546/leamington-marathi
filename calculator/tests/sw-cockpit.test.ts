@@ -303,3 +303,14 @@ describe('gaps round (Oct 2026): the UI rules the independent review asked for',
     expect(ui).toMatch(/class="sw-mod-pick"/);
   });
 });
+
+describe('independent re-score (Oct 2026): the headline never sits outside its own band', () => {
+  for (const region of ['UK', 'IN', 'DE', 'US-CA', 'CN'] as const) it(`${region}: P10 ≤ headline ≤ P90, total and per vehicle`, () => {
+    const r = computeSWProgram(prog(p => { p.region = region as SWProgramInputs['region']; }));
+    const mc = r.monteCarlo;
+    expect(mc.p10).toBeLessThanOrEqual(r.summary.grandTotal);
+    expect(mc.p90).toBeGreaterThanOrEqual(r.summary.grandTotal);
+    expect(mc.p10PerVehicle).toBeLessThanOrEqual(r.summary.perVehicle);
+    expect(mc.headlinePercentile).toBeGreaterThanOrEqual(10);
+  });
+});
