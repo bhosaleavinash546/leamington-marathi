@@ -19,7 +19,9 @@ import type {
   SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain, SWCal, SWCategory,
 } from '../../engine/sw-should-cost.js';
 import {
-  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion,
+  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion, swLoadedRate, swOverhead,
+  SW_DEFAULT_BURDEN, SW_BURDEN_BASIS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_SUBSCRIPTION_BASIS, SW_DEFAULT_SERVICE_YEARS, SW_SERVICE_BASIS,
+  SW_TOOL_SEAT_GBP, SW_TOOL_SEAT_BASIS, SW_MAINT_BASIS, SW_HOMOLOGATION_BASIS, SW_MC_RANGE_BY_GRADE,
   applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_COCOMO, SW_COCOMO_EXPONENT,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
@@ -31,8 +33,12 @@ import {
   shortcutsDialogHTML, scenariosPanelHTML, scenarioResultHTML, type ScenarioMode,
 } from './sw-cockpit-ui.js';
 import { compareScenarios, devSourceSet, hubSet, reuseSet, type SWScenarioIn } from '../../engine/sw-scenarios.js';
+import {
+  evidenceCardHTML, bandMethodHTML, domainTableHTML, moduleTableHTML, sourceTableHTML, makeBuyHTML, exportCardHTML,
+  benchmarksHTML, insightsHTML, buildInsights, VIEWS_CSS,
+} from './sw-cockpit-views.js';
 import { DOMAIN_SLOT } from './sw-charts.js';
-import { swRateCheck } from '../../engine/sw-cockpit.js';
+import { swRateCheck, swEvidence, swMakeBuy, swQuoteCheck, swUnitEconomics } from '../../engine/sw-cockpit.js';
 import { componentLoad } from './sw-vehicle-skeleton.js';
 import { vehicleComponent } from '../../engine/sw-vehicle-map.js';
 import { SW_HUB_RATES } from '../../engine/sw-country-rates.js';
@@ -203,26 +209,15 @@ function fmtM(n: number): string {
 
 const ASIL_RANK: Record<ASILLevel, number> = { QM: 0, A: 1, B: 2, C: 3, D: 4 };
 
-function asilColor(asil: ASILLevel): string {
-  return { QM: '#64748b', A: '#10b981', B: '#f59e0b', C: '#f97316', D: '#ef4444' }[asil];
-}
-
-function asilBadge(asil: ASILLevel): string {
-  const c = asilColor(asil);
-  return `<span style="background:${c}22;color:${c};border:1px solid ${c}55;border-radius:4px;padding:1px 6px;font-size:0.7rem;font-weight:700">${esc(asil)}</span>`;
-}
-
 // ─── Category metadata ────────────────────────────────────────────────────────
 
-const CAT_META: Record<string, { label: string; icon: string; color: string }> = {
-  A: { label: 'Powertrain & Battery',    icon: '<svg class="ic" aria-hidden="true"><use href="#i-zap"/></svg>', color: '#22c55e' },
-  B: { label: 'ADAS L2/L2+',               icon: '<svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>', color: '#3b82f6' },
-  C: { label: 'Infotainment & UX',          icon: '<svg class="ic" aria-hidden="true"><use href="#i-palette"/></svg>', color: '#8b5cf6' },
-  D: { label: 'Vehicle Domain Controllers', icon: '<svg class="ic" aria-hidden="true"><use href="#i-wrench"/></svg>', color: '#f59e0b' },
-  E: { label: 'Middleware & Platform',      icon: '⚙', color: '#06b6d4' },
-  F: { label: 'Cybersecurity (ISO 21434)',  icon: '<svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>', color: '#ef4444' },
-  G: { label: 'OTA & Cloud Backend',        icon: '<svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>', color: '#a78bfa' },
-};
+/** Domain names are the engine's own (one vocabulary on every screen and export); a domain's colour is its chart slot. */
+const CAT_META: Record<string, { label: string; icon: string; color: string }> = Object.fromEntries(
+  (['A', 'B', 'C', 'D', 'E', 'F', 'G'] as const).map(c => [c, {
+    label: SW_MODULES.find(m => m.category === c)?.categoryLabel ?? c,
+    icon: `<i class="swk-dot" aria-hidden="true" style="background:var(--swc-${(DOMAIN_SLOT[c] ?? 0) + 1})"></i>`,
+    color: `var(--swc-${(DOMAIN_SLOT[c] ?? 0) + 1})`,
+  }]));
 
 // ─── Render panel HTML ────────────────────────────────────────────────────────
 
@@ -236,9 +231,7 @@ function activeSWBook(): { lib: SWRateLibrary; company: boolean } {
 
 function rateLibraryRowsHTML(lib: SWRateLibrary): string {
   // White text on these passes AA (4.5:1): the old #d97706 / #059669 fills gave 3.0 / 3.8 (axe, Oct 2026).
-  const confColor = (c: RateConfidence) => c === 'High' ? '#047857' : c === 'Medium' ? '#b45309' : '#b91c1c';
-  const confBadge = (c: RateConfidence) =>
-    `<span style="font-size:0.62rem;font-weight:700;color:#fff;background:${confColor(c)};border-radius:3px;padding:1px 5px">${c}</span>`;
+  const confBadge = (c: RateConfidence) => `<span class="swk-pill${c === 'Low' ? ' swk-pill-warn' : ''}">${c}</span>`;
   const rows = (title: string, entries: [string, SWRateEntry][]) =>
     `<tr><td colspan="4" style="font-weight:700;color:var(--sw-text-primary);padding-top:8px">${esc(title)}</td></tr>` +
     entries.map(([k, e]) => `<tr>
@@ -257,8 +250,9 @@ function rateLibraryRowsHTML(lib: SWRateLibrary): string {
 }
 
 function rateLibraryBadgeHTML(lib: SWRateLibrary, company: boolean): string {
-  return `<span style="font-size:0.68rem;font-weight:600;color:#fff;background:#2563eb;border-radius:4px;padding:1px 7px">${company ? 'Company rates · ' : 'Built-in · '}v${esc(lib.version)}</span>
-      <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">reviewed ${esc(lib.lastReviewed)} · every rate sourced &amp; overridable</span>`;
+  // Only the hub rates are sourced; the effort factors are mostly unsourced (independent review: the badge said "every rate sourced").
+  return `<span class="swk-pill">${company ? 'Company rates' : 'Built-in'} v${esc(lib.version)}</span>
+      <span style="font-size:0.72rem;font-weight:400;color:var(--sw-text-secondary)">reviewed ${esc(lib.lastReviewed)} · hub rates sourced; effort factors labelled by confidence · every rate overridable</span>`;
 }
 
 /** Re-draw what depends on the active book once it has loaded (it arrives after the panel renders). */
@@ -293,7 +287,7 @@ function renderRateLibraryHTML(): string {
         <tbody id="sw-ratelib-rows">${rateLibraryRowsHTML(lib)}
         </tbody>
       </table>
-      <p style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:8px">Type your own engineer rate in Programme Configuration above to replace the hub's book rate. Confidence reflects how well-anchored each figure is to a published or surveyed source — not all rates are equal; treat <span style="color:#dc2626;font-weight:600">Low</span> figures as directional.</p>
+      <p style="font-size:0.72rem;color:var(--sw-text-secondary);margin-top:8px">Type your own engineer rate on Setup to replace the hub's book rate. Confidence reflects how well-anchored each figure is to a published or surveyed source — not all rates are equal; treat <strong>Low</strong> figures as directional.</p>
     </div>
   </details>`;
 }
@@ -303,7 +297,8 @@ function renderRateLibraryHTML(): string {
 // as truth. See docs/sw-cost-validation.md.
 function renderValidationHTML(): string {
   const rep = runValidation(undefined, undefined, _swInputs.rateLibrary);
-  const vColor = (v: number) => Math.abs(v) <= 15 ? '#059669' : Math.abs(v) <= rep.band ? '#d97706' : '#dc2626';
+  // Variance against UNVERIFIED figures: text ink, the sign and the band mark — no good / bad colour.
+  const vColor = (_v: number) => 'var(--sw-text-primary)';
   const sign = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(0)}%`;
 
   const rows = rep.cases.map(c => `<tr>
@@ -318,7 +313,7 @@ function renderValidationHTML(): string {
   <details class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:0;margin-bottom:14px">
     <summary style="cursor:pointer;padding:12px 18px;font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);display:flex;align-items:center;gap:8px;flex-wrap:wrap;list-style:none">
       <span>Model Validation</span>
-      <span style="font-size:0.68rem;font-weight:700;color:#fff;background:#b45309;border-radius:4px;padding:1px 7px">${rep.verifiedCount}/${rep.caseCount} figures sourced</span>
+      <span class="swk-pill swk-pill-warn">${rep.verifiedCount} of ${rep.caseCount} figures sourced</span>
       <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">Total MAPE ${rep.mapeTotal.toFixed(0)}% vs unverified published figures — not evidence of accuracy</span>
     </summary>
     <div style="padding:0 18px 16px;overflow-x:auto">
@@ -403,13 +398,20 @@ function writeInputsToForm(p: SWProgramInputs): void {
   set('sw-platform-vol', p.platformAnnualVolume);
   set('sw-prog-life', p.programLifeYears);
   set('sw-vol', p.annualProductionVolume);
-  set('sw-overhead', p.overheadMultiplier);
+  const b = p.burden ?? SW_DEFAULT_BURDEN;
+  set('sw-burden-emp', b.employmentPct); set('sw-burden-co', b.companyPct); set('sw-burden-cap', b.capitalPct);
+  const out = document.getElementById('sw-overhead');
+  if (out) out.textContent = `× ${swOverhead(p).toFixed(2)}`;
+  set('sw-sub-years', p.subscriptionYears); set('sw-svc-years', p.connectedServiceYears); set('sw-cloud-fixed', p.cloudFixedPerYearGBP);
+  set('sw-tool-seat', p.toolSeatGBPPerYear); set('sw-wage-esc', p.wageEscalationPct); set('sw-discount', p.discountRatePct);
+  set('sw-csms-types', p.csmsTypesSharing);
   set('sw-effort-cal', p.effortCalibration);
   set('sw-dev-months', p.developmentMonths);
   set('sw-connected', p.connectedVehicleShare != null ? Math.round(p.connectedVehicleShare * 100) : null);
   set('sw-senior-frac', p.teamSeniorFraction);
   tick('sw-inc-maint', p.includeMaintenanceCost);
   tick('sw-inc-cloud', p.includeCloudCost);
+  tick('sw-homolog', p.includeHomologation ?? true);
   const br = document.getElementById('sw-base-rate') as HTMLInputElement | null;
   if (br) {
     if (p.baseRateGBP) { br.value = String(p.baseRateGBP); br.dataset.typed = '1'; }
@@ -428,6 +430,7 @@ function writeInputsToForm(p: SWProgramInputs): void {
     }
     const c = q<HTMLSelectElement>('sw-comp-sel'); if (c) c.value = m.complexity;
     const r = q<HTMLSelectElement>('sw-reuse-sel'); if (r) r.value = m.reuse;
+    for (const el of [a, c, r]) if (el?.dataset.default !== undefined) el.classList.toggle('is-set', el.value !== el.dataset.default);
     const cal = q<HTMLSelectElement>('sw-cal-sel'); if (cal && def) cal.value = calFor(def, m);
     const k = q<HTMLInputElement>('sw-ksloc-input'); if (k) k.value = m.sizeKSLOC != null ? String(m.sizeKSLOC) : '';
     const pm = q<HTMLInputElement>('sw-pm-input'); if (pm) pm.value = m.customPersonMonths != null ? String(m.customPersonMonths) : '';
@@ -531,10 +534,26 @@ function renderScenarios(): void {
   document.querySelectorAll<HTMLButtonElement>('[data-sc-mode]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.scMode === _scMode)));
 }
 
+const BASELINE_KEY = 'cv-sw-baseline';
+function storeBaseline(): void {
+  try {
+    if (!_baseline) { localStorage.removeItem(BASELINE_KEY); return; }
+    const { rateLibrary: _drop, ...inputs } = _baseline.inputs;
+    localStorage.setItem(BASELINE_KEY, JSON.stringify({ name: _baseline.name, inputs }));
+  } catch { /* storage unavailable — the pin lasts for this visit */ }
+}
+function restoreBaseline(): void {
+  try {
+    const raw = localStorage.getItem(BASELINE_KEY);
+    if (raw) { const b = JSON.parse(raw) as { name: string; inputs: SWProgramInputs }; if (b?.name && b.inputs?.modules) _baseline = b; }
+  } catch { /* ignore a bad or blocked store */ }
+}
+
 function pinBaseline(name?: string, inputs?: SWProgramInputs): void {
   try { readConfig(); } catch { /* the engine reports a bad value */ }
   const at = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   _baseline = { name: name ?? `Pinned ${at}`, inputs: cloneInputs(inputs ?? _swInputs) };
+  storeBaseline();
   _scMode = 'saved';
   renderScenarios();
   scMessage(`Baseline set: ${_baseline.name}.`);
@@ -640,9 +659,13 @@ function scopeBarHTML(): string {
   return `<div class="swk-scopebar" role="search">
     <label class="sr-only" for="swk-scope-q">Find a module</label>
     <input id="swk-scope-q" type="search" placeholder="Find a module — e.g. radar, BMS, OTA" data-no-live autocomplete="off">
+    <label class="sr-only" for="swk-scope-dom">Domain</label>
+    <select id="swk-scope-dom" data-no-live><option value="">All domains</option>${ALL_CATS.map(c => `<option value="${c}">${esc(CAT_META[c].label)}</option>`).join('')}</select>
     <label style="display:flex;gap:6px;align-items:center;font-size:.76rem;color:var(--sw-text-body)"><input id="swk-scope-on" type="checkbox" data-no-live> In scope only</label>
     ${opt(['QM', 'A', 'B', 'C', 'D'], 'ASIL', 'swk-bulk-asil')}${opt(['Low', 'Medium', 'High', 'Very High'], 'Complexity', 'swk-bulk-comp')}${opt(['Fresh', 'Light', 'Medium', 'Heavy', 'Platform'], 'Reuse', 'swk-bulk-reuse')}
-    <button type="button" class="swk-btn" id="swk-bulk-apply">Apply to modules shown</button>
+    <button type="button" class="swk-btn" id="swk-bulk-apply">Apply</button>
+    <button type="button" class="swk-link" id="swk-pick-shown">Select shown</button>
+    <button type="button" class="swk-link" id="swk-pick-clear">Clear selection</button>
     <span class="swk-count" id="swk-scope-count" aria-live="polite"></span>
   </div>`;
 }
@@ -652,7 +675,7 @@ function rateCheckHTML(r: SWProgramResult): string {
   const hub = activeSWBook().lib.hubRates[r.inputs.region];
   return `<section class="swk-card"><h3 class="swk-h">The engineering rate in this costing</h3>
     <p class="swk-sub">${esc(hubLabel(r.inputs.region))}: hub rate ${swMoney(hub ? (r.inputs.teamSeniorFraction * hub.senior.value + (1 - r.inputs.teamSeniorFraction) * hub.mid.value) : 0, 0)} / PM
-      × development source × overhead ${r.inputs.overheadMultiplier} = <strong>${swMoney(c.loadedPerPM, 0)} per person-month</strong>
+      × development source price × engineering burden ${swOverhead(r.inputs).toFixed(2)} = <strong>${swMoney(c.loadedPerPM, 0)} per person-month</strong>
       (${swMoney(c.perHour, 0)} an hour · ${swMoney(c.perDay, 0)} a day of 8 h).</p>
     ${c.lines.length ? `<ul class="swk-callouts">${c.lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
   </section>`;
@@ -683,15 +706,16 @@ function renderSWPanelHTML(): string {
       const asilWarn = `<span class="sw-asil-warn" style="${isDowngrade ? '' : 'display:none'}" title="⚠ ASIL set below module default (${def.defaultAsil}). Verify safety case.">⚠</span>`;
       return `
       <tr class="sw-module-row" data-module-id="${def.id}">
+        <td class="sw-mod-check"><input type="checkbox" class="sw-mod-pick" data-id="${def.id}" data-no-live aria-label="Select ${esc(def.shortName)} for a batch edit"></td>
         <td class="sw-mod-check"><input type="checkbox" class="sw-mod-enable" data-id="${def.id}" ${inp.enabled ? 'checked' : ''} aria-label="Include ${esc(def.shortName)}"></td>
         <td class="sw-mod-name">
           <div style="font-weight:600;font-size:0.82rem;color:var(--sw-text-primary)">${esc(def.shortName)}${def.estimateBasis ? ` <span title="${esc('Estimate: ' + def.estimateBasis)}" style="font-size:0.62rem;font-weight:700;color:var(--amber,#b45309);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px">estimate</span>` : ''}${def.royaltyBasis ? ` <span title="${esc('Royalty: ' + def.royaltyBasis)}" style="font-size:0.62rem;font-weight:700;color:var(--sw-text-secondary);border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px">per-vehicle royalty</span>` : ''}</div>
           <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:1px">${esc(def.basePersonMonths)} PM base · ${tags.join(' ')}</div>
         </td>
         <td class="sw-mod-desc" title="${esc(def.description)}" style="font-size:0.72rem;color:var(--sw-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(def.description)}</td>
-        <td><select class="sw-sel sw-asil-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} ASIL">${asilOpts}</select>${asilWarn}</td>
-        <td><select class="sw-sel sw-comp-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} complexity">${compOpts}</select></td>
-        <td><select class="sw-sel sw-reuse-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} reuse">${reuseOpts}</select></td>
+        <td><select class="sw-sel sw-asil-sel${inp.asil !== def.defaultAsil ? ' is-set' : ''}" data-id="${def.id}" data-default="${def.defaultAsil}" aria-label="${esc(def.shortName)} ASIL (default ${def.defaultAsil})">${asilOpts}</select>${asilWarn}</td>
+        <td><select class="sw-sel sw-comp-sel${inp.complexity !== def.defaultComplexity ? ' is-set' : ''}" data-id="${def.id}" data-default="${esc(def.defaultComplexity)}" aria-label="${esc(def.shortName)} complexity (default ${esc(def.defaultComplexity)})">${compOpts}</select></td>
+        <td><select class="sw-sel sw-reuse-sel${inp.reuse !== 'Medium' ? ' is-set' : ''}" data-id="${def.id}" data-default="Medium" aria-label="${esc(def.shortName)} reuse (default Medium)">${reuseOpts}</select></td>
         <td><select class="sw-sel sw-cal-sel" data-id="${def.id}" aria-label="${esc(def.shortName)} cybersecurity assurance level" title="ISO/SAE 21434 CAL — drives the cybersecurity uplift (default from the Annex E example table; your TARA decides)">${calOpts}</select></td>
         <td><input type="number" class="sw-ksloc-input" data-id="${def.id}" placeholder="—" value="${inp.sizeKSLOC ?? ''}" min="0.1" step="0.1" style="width:64px" aria-label="${esc(def.shortName)} size, KSLOC" title="Optional: the module's size in thousand source lines. Its nominal effort then comes from COCOMO II (${esc(SW_COCOMO.A)} × KSLOC^${SW_COCOMO_EXPONENT.toFixed(4)}) instead of the catalogue's ${esc(def.basePersonMonths)} PM."></td>
         <td><input type="number" class="sw-pm-input" data-id="${def.id}" aria-label="${esc(def.shortName)} custom person-months" placeholder="auto" value="${inp.customPersonMonths ?? ''}" min="0" step="1" style="width:60px"></td>
@@ -710,7 +734,8 @@ function renderSWPanelHTML(): string {
         <table class="sw-module-table">
           <thead>
             <tr>
-              <th style="width:24px"></th>
+              <th style="width:24px"><span class="sr-only">Select</span></th>
+              <th style="width:24px"><span class="sr-only">In scope</span></th>
               <th>Module</th>
               <th>Description</th>
               <th style="width:80px">ASIL</th>
@@ -745,8 +770,11 @@ function renderSWPanelHTML(): string {
     <h3 class="swk-h">Start from</h3>
     <p class="swk-sub">A vehicle programme or a quick setting fills the fields below. Change anything afterwards — the figures above follow, and ↶ undoes it.</p>
     <div class="swk-row" style="margin-bottom:8px"><span class="swk-row-l">Vehicle programmes</span>
-      ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
+      ${SW_VEHICLE_DEMOS.slice(0, 5).map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
     </div>
+    <details class="swk-more"><summary>${SW_VEHICLE_DEMOS.length - 5} more drivetrain variants</summary>
+      <div class="swk-row" style="margin:8px 0">${SW_VEHICLE_DEMOS.slice(5).map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}</div>
+    </details>
     <div class="swk-row"><span class="swk-row-l">Quick set</span>
     <button class="sw-preset-btn" data-preset="aggressive" title="Heavy reuse everywhere, developed in China; module ASIL and complexity unchanged">Heavy reuse · China hub</button>
     <button class="sw-preset-btn" data-preset="baseline" title="Medium reuse, UK hub, module defaults">Baseline · UK hub</button>
@@ -775,7 +803,7 @@ function renderSWPanelHTML(): string {
         <select id="sw-region" class="sw-config-sel">${regionOpts}</select><div id="sw-hub-basis" style="font-size:0.66rem;color:var(--text-muted);margin-top:3px">${esc(_swHubBasis)}</div>
       </div>
       <div class="sw-field-group">
-        <label class="sw-label" for="sw-dev-source">Development Source</label>
+        <label class="sw-label" for="sw-dev-source">Development source</label>
         <select id="sw-dev-source" class="sw-config-sel">${sourceOpts}</select>
       </div>
       <div class="sw-field-group">
@@ -790,31 +818,37 @@ function renderSWPanelHTML(): string {
         <input id="sw-platform-vol" type="number" class="sw-config-inp" min="0" step="1000" placeholder="blank = this variant only" value="${inputs.platformAnnualVolume ?? ''}" title="Vehicles per year across every powertrain variant sharing the non-powertrain software. Shared modules are attributed to this variant by its share of that volume.">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label" for="sw-prog-life">Programme Life (years)</label>
+        <label class="sw-label" for="sw-prog-life">Programme life (years)</label>
         <input id="sw-prog-life" type="number" class="sw-config-inp" min="5" max="20" step="1" value="${inputs.programLifeYears}">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label" for="sw-vol">Annual Production Volume</label>
+        <label class="sw-label" for="sw-vol">Annual production volume</label>
         <input id="sw-vol" type="number" class="sw-config-inp" min="1000" max="500000" step="1000" value="${inputs.annualProductionVolume}">
       </div>
-      <div class="sw-field-group">
-        <label class="sw-label" for="sw-overhead">Overhead Multiplier</label>
-        <input id="sw-overhead" type="number" class="sw-config-inp" min="1.0" max="3.0" step="0.05" value="${inputs.overheadMultiplier}">
+      <div class="sw-field-group swk-burden" style="grid-column:1/-1">
+        <span class="sw-label" id="sw-burden-l">Engineering burden on the hub rate (salary + statutory on-cost)</span>
+        <div class="swk-burden-row" role="group" aria-labelledby="sw-burden-l">
+          <label for="sw-burden-emp">Employment +%<input id="sw-burden-emp" type="number" class="sw-config-inp" min="0" max="300" step="1" value="${(inputs.burden ?? SW_DEFAULT_BURDEN).employmentPct}" title="${esc(SW_BURDEN_BASIS.employment)}"></label>
+          <label for="sw-burden-co">Company +%<input id="sw-burden-co" type="number" class="sw-config-inp" min="0" max="300" step="1" value="${(inputs.burden ?? SW_DEFAULT_BURDEN).companyPct}" title="${esc(SW_BURDEN_BASIS.company)}"></label>
+          <label for="sw-burden-cap">Capital +%<input id="sw-burden-cap" type="number" class="sw-config-inp" min="0" max="300" step="1" value="${(inputs.burden ?? SW_DEFAULT_BURDEN).capitalPct}" title="${esc(SW_BURDEN_BASIS.capital)}"></label>
+          <output id="sw-overhead" class="swk-burden-out" for="sw-burden-emp sw-burden-co sw-burden-cap" aria-live="polite">× ${swOverhead(inputs).toFixed(2)}</output>
+        </div>
+        <p class="swk-fieldnote">Employment: pension top-up, bonus, benefits. Company: site, IT, management, training, non-project time. Capital: equipment when not priced separately (tools are their own line). Defaults are labelled estimates — use your own.</p>
       </div>
       <div class="sw-field-group">
-        <label class="sw-label" for="sw-effort-cal">Effort Calibration ×</label>
+        <label class="sw-label" for="sw-effort-cal">Effort calibration (×)</label>
         <input id="sw-effort-cal" type="number" class="sw-config-inp" min="0.2" max="5" step="0.01" placeholder="none" value="${inputs.effortCalibration ?? ''}" title="Your own actual ÷ modelled effort (Calibrate to your actuals, below). Blank = the model as published. Scales the model's effort, not a typed custom PM.">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label" for="sw-dev-months">Development Duration (months)</label>
+        <label class="sw-label" for="sw-dev-months">Development duration (months)</label>
         <input id="sw-dev-months" type="number" class="sw-config-inp" min="6" max="180" step="1" placeholder="${SW_DEFAULT_DEVELOPMENT_MONTHS}" value="${inputs.developmentMonths ?? ''}" title="Feasibility to SOP. Development tool licences are paid over this, and the phase timeline follows it. Blank = ${SW_DEFAULT_DEVELOPMENT_MONTHS} months (the tool's own timeline).">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label" for="sw-connected">Connected Vehicles (%)</label>
+        <label class="sw-label" for="sw-connected">Connected vehicles (%)</label>
         <input id="sw-connected" type="number" class="sw-config-inp" min="0" max="100" step="1" placeholder="100" value="${inputs.connectedVehicleShare != null ? Math.round(inputs.connectedVehicleShare * 100) : ''}" title="Share of vehicles that use the cloud back-end. Cloud is charged per connected vehicle in service. Blank = 100 %.">
       </div>
       <div class="sw-field-group">
-        <label class="sw-label" for="sw-senior-frac">Senior Engineer Fraction</label>
+        <label class="sw-label" for="sw-senior-frac">Senior engineer share (0–1)</label>
         <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Share of senior engineers (0–1): blends the hub's mid-level and senior rates. It changes the rate, not the effort.">
       </div>
       <div class="sw-field-group">
@@ -824,15 +858,37 @@ function renderSWPanelHTML(): string {
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
           <input type="checkbox" id="sw-inc-maint" ${inputs.includeMaintenanceCost ? 'checked' : ''} style="width:14px;height:14px;cursor:pointer">
-          Include Maintenance Cost
+          Include maintenance
         </label>
         <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
           <input type="checkbox" id="sw-inc-cloud" ${inputs.includeCloudCost ? 'checked' : ''} style="width:14px;height:14px;cursor:pointer">
-          Include Cloud/Infra Cost
+          Include cloud
         </label>
       </div>
     </div>
   </div>
+
+  <section class="swk-card">
+    <h3 class="swk-h" style="margin-bottom:10px">Lifecycle &amp; compliance</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+      <div class="sw-field-group"><label class="sw-label" for="sw-sub-years">Map updates per vehicle (years)</label>
+        <input id="sw-sub-years" type="number" class="sw-config-inp" min="0" max="20" step="1" placeholder="${SW_DEFAULT_SUBSCRIPTION_YEARS}" value="${inputs.subscriptionYears ?? ''}" title="${esc(SW_SUBSCRIPTION_BASIS)}"></div>
+      <div class="sw-field-group"><label class="sw-label" for="sw-svc-years">Connected service per vehicle (years)</label>
+        <input id="sw-svc-years" type="number" class="sw-config-inp" min="1" max="25" step="1" placeholder="${SW_DEFAULT_SERVICE_YEARS}" value="${inputs.connectedServiceYears ?? ''}" title="${esc(SW_SERVICE_BASIS)}"></div>
+      <div class="sw-field-group"><label class="sw-label" for="sw-cloud-fixed">Fixed cloud platform (£ / year)</label>
+        <input id="sw-cloud-fixed" type="number" class="sw-config-inp" min="0" step="10000" placeholder="not entered" value="${inputs.cloudFixedPerYearGBP ?? ''}" title="Base back-end, PKI and environments while any vehicle is served. No public figure — enter your platform's own."></div>
+      <div class="sw-field-group"><label class="sw-label" for="sw-tool-seat">Tools (£ per engineer-seat-year)</label>
+        <input id="sw-tool-seat" type="number" class="sw-config-inp" min="0" step="500" placeholder="${SW_TOOL_SEAT_GBP}" value="${inputs.toolSeatGBPPerYear ?? ''}" title="${esc(SW_TOOL_SEAT_BASIS)}"></div>
+      <div class="sw-field-group"><label class="sw-label" for="sw-wage-esc">Wage escalation, sustaining (% / year)</label>
+        <input id="sw-wage-esc" type="number" class="sw-config-inp" min="-10" max="30" step="0.5" placeholder="0" value="${inputs.wageEscalationPct ?? ''}" title="${esc(SW_MAINT_BASIS)}"></div>
+      <div class="sw-field-group"><label class="sw-label" for="sw-discount">Discount rate (% / year, NPV)</label>
+        <input id="sw-discount" type="number" class="sw-config-inp" min="0" max="50" step="0.5" placeholder="0 (nominal)" value="${inputs.discountRatePct ?? ''}" title="Blank or 0 = nominal money. A rate discounts every year's spend to today (the headline becomes an NPV)."></div>
+      <div class="sw-field-group"><label class="sw-label" for="sw-csms-types">Vehicle types sharing CSMS / SUMS</label>
+        <input id="sw-csms-types" type="number" class="sw-config-inp" min="1" max="200" step="1" placeholder="1" value="${inputs.csmsTypesSharing ?? ''}" title="${esc(SW_HOMOLOGATION_BASIS)}"></div>
+      <div class="sw-field-group" style="justify-content:flex-end"><label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body)">
+        <input type="checkbox" id="sw-homolog" ${(inputs.includeHomologation ?? true) ? 'checked' : ''}> Include homologation (R155 / R156 / ISO 26262)</label></div>
+    </div>
+  </section>
 
   <section class="swk-card">
     <div class="swk-row" style="justify-content:space-between"><h3 class="swk-h">Software in scope</h3>
@@ -876,61 +932,40 @@ function renderSWPanelHTML(): string {
   <div id="sw-results">
   <section class="swk-panel" id="swk-p-overview" role="tabpanel" aria-labelledby="swk-t-overview"${_swTab === 'overview' ? '' : ' hidden'}>
     <div id="swk-overview" class="swk-stack"></div>
-    <div class="sw-results-section" id="sw-insights"></div>
+    <div id="sw-insights"></div>
   </section>
   <section class="swk-panel" id="swk-p-vehicle" role="tabpanel" aria-labelledby="swk-t-vehicle"${_swTab === 'vehicle' ? '' : ' hidden'}>
     <div id="sw-studio"></div>
   </section>
   <section class="swk-panel" id="swk-p-risk" role="tabpanel" aria-labelledby="swk-t-risk"${_swTab === 'risk' ? '' : ' hidden'}>
     <div id="swk-risk"></div>
-    <div class="sw-results-section" id="sw-monte-carlo"></div>
-    <div class="sw-results-section" id="sw-sensitivity"></div>
+    <div id="swk-bandmethod"></div>
   </section>
   <section class="swk-panel" id="swk-p-spend" role="tabpanel" aria-labelledby="swk-t-spend"${_swTab === 'spend' ? '' : ' hidden'}>
     <div id="swk-spend" class="swk-stack"></div>
-    <div class="sw-results-section" id="sw-phases"></div>
   </section>
   <section class="swk-panel" id="swk-p-modules" role="tabpanel" aria-labelledby="swk-t-modules"${_swTab === 'modules' ? '' : ' hidden'}>
-    <div class="sw-results-section" id="sw-cat-breakdown"></div>
-    <div class="sw-results-section" id="sw-cost-composition"></div>
-    <div class="sw-results-section" id="sw-module-table"></div>
-    <div class="sw-results-section" id="sw-source-decomp"></div>
+    <div id="swk-domains-t"></div>
+    <div id="sw-module-table"></div>
   </section>
   <section class="swk-panel" id="swk-p-supplier" role="tabpanel" aria-labelledby="swk-t-supplier"${_swTab === 'supplier' ? '' : ' hidden'}>
     ${supplierFormHTML(Object.entries(CAT_META).map(([c, m]) => [c as SWCategory, m.label]))}
+    <div id="swk-makebuy-wrap"></div>
+    <div id="swk-source-wrap"></div>
   </section>
   <section class="swk-panel" id="swk-p-scenarios" role="tabpanel" aria-labelledby="swk-t-scenarios"${_swTab === 'scenarios' ? '' : ' hidden'}>
     ${scenariosPanelHTML()}
   </section>
   <section class="swk-panel" id="swk-p-rates" role="tabpanel" aria-labelledby="swk-t-rates"${_swTab === 'rates' ? '' : ' hidden'}>
     <div id="swk-ratecheck"></div>
+    <div id="swk-evidence-wrap"></div>
     ${renderRateLibraryHTML()}
     <div id="sw-validation-wrap">${renderValidationHTML()}</div>
     ${renderActualsHTML()}
   </section>
   <section class="swk-panel" id="swk-p-report" role="tabpanel" aria-labelledby="swk-t-report"${_swTab === 'report' ? '' : ' hidden'}>
-    <!-- Export -->
-    <div style="text-align:center;margin:20px 0;display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
-      <button id="sw-excel-btn" class="swk-btn">
-        Export Excel (6 sheets)
-      </button>
-      <button id="sw-pdf-btn" class="swk-btn swk-btn-primary">
-        Export PDF Report
-      </button>
-    </div>
-    <!-- AI Analysis (Rec 5) -->
-    <div class="sw-results-section" id="sw-ai-analysis">
-      <div class="sw-section-title"><span></span> AI Analysis</div>
-      <div style="text-align:center;padding:12px 0">
-        <button id="sw-ai-btn" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:0.85rem;font-weight:600;cursor:pointer">
-          Generate AI Narrative Insights
-        </button>
-        <div style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:6px">Uses AI to provide executive summary and cost reduction opportunities</div>
-      </div>
-      <div id="sw-ai-content" style="display:none"></div>
-    </div>
-
-    <div class="sw-results-section" id="sw-benchmarks"></div>
+    ${exportCardHTML()}
+    <div id="sw-benchmarks-wrap"></div>
   </section>
   </div><!-- /sw-results -->
   ${shortcutsDialogHTML()}
@@ -939,6 +974,8 @@ function renderSWPanelHTML(): string {
 <style>
 ${HUB_RATES_CSS}
 ${COCKPIT_CSS}
+${VIEWS_CSS}
+.swk-more{margin:0 0 8px}.swk-more>summary{cursor:pointer;font-size:.76rem;color:var(--sw-text-secondary)}
 body.cv-sw #costing-view > .results-panel, body.cv-sw .cv-sticky-actions { display: none !important; }
 .sw-ratelib-h{font-size:.8rem;font-weight:700;color:var(--sw-text-primary);margin:4px 0 8px}
 /* Rec 9: Dark mode CSS variables */
@@ -1045,6 +1082,12 @@ html:not([data-theme="light"]) {
 .sw-mod-check { width: 24px; }
 .sw-mod-name { min-width: 110px; }
 
+.sw-module-table .sw-asil-sel { min-width: 58px; }
+.sw-module-table .sw-comp-sel { min-width: 104px; }
+.sw-module-table .sw-reuse-sel { min-width: 92px; }
+.sw-module-table .sw-cal-sel { min-width: 74px; }
+/* A setting changed from the module's default is marked by weight + accent border, and its label names the default. */
+.sw-sel.is-set { border-color: var(--sw-accent); font-weight: 650; }
 .sw-sel {
   padding: 4px 6px;
   border: 1px solid var(--sw-border);
@@ -1233,7 +1276,7 @@ function readConfig(): void {
   // A blank or zero life / volume is reported by the engine's validation, not silently replaced (P2 #8).
   const life       = parseInt((get('sw-prog-life') as HTMLInputElement)?.value);
   const vol        = parseInt((get('sw-vol') as HTMLInputElement)?.value);
-  const overhead   = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || SW_DEFAULT_OVERHEAD;
+  const num = (id: string) => { const raw = ((get(id) as HTMLInputElement | null)?.value ?? '').trim(); return raw === '' ? undefined : parseFloat(raw); };
   const seniorFrac = parseFloat((get('sw-senior-frac') as HTMLInputElement)?.value) ?? 0.50;
   const baseRateEl = get('sw-base-rate') as HTMLInputElement | null;
   const maint      = (get('sw-inc-maint') as HTMLInputElement)?.checked ?? true;
@@ -1243,7 +1286,22 @@ function readConfig(): void {
   _swInputs.devSource              = devSrc;
   _swInputs.programLifeYears       = life;
   _swInputs.annualProductionVolume = vol;
-  _swInputs.overheadMultiplier     = Math.max(1, overhead);
+  // The three burden layers; a bad value goes to the engine's validation (never patched here).
+  if (get('sw-burden-emp')) {
+    _swInputs.burden = { employmentPct: num('sw-burden-emp') ?? 0, companyPct: num('sw-burden-co') ?? 0, capitalPct: num('sw-burden-cap') ?? 0 };
+    _swInputs.overheadMultiplier = Math.round(swOverhead(_swInputs) * 1000) / 1000;
+  }
+  _swInputs.subscriptionYears      = num('sw-sub-years');
+  _swInputs.connectedServiceYears  = num('sw-svc-years');
+  _swInputs.cloudFixedPerYearGBP   = num('sw-cloud-fixed');
+  _swInputs.toolSeatGBPPerYear     = num('sw-tool-seat');
+  _swInputs.wageEscalationPct      = num('sw-wage-esc');
+  _swInputs.discountRatePct        = num('sw-discount');
+  _swInputs.csmsTypesSharing       = num('sw-csms-types');
+  const homolog = get('sw-homolog') as HTMLInputElement | null;
+  if (homolog) _swInputs.includeHomologation = homolog.checked;
+  const out = get('sw-overhead');
+  if (out) out.textContent = `× ${swOverhead(_swInputs).toFixed(2)}`;
   _swInputs.teamSeniorFraction     = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
   // Only a TYPED base rate overrides the active (company or built-in) rate book — P1 #2.
   _swInputs.baseRateGBP            = baseRateEl ? baseRateOverride(baseRateEl.value, baseRateEl.dataset.typed === '1') : _swInputs.baseRateGBP;
@@ -1522,38 +1580,7 @@ function applyPreset(preset: string): void {
 // ─── Render results ───────────────────────────────────────────────────────────
 
 function renderResults(result: SWProgramResult, opts: { live?: boolean } = {}): void {
-  const s = result.summary;
   renderCockpit(result, opts);
-
-  // Summary cards. Per-vehicle split follows the engine's rule exactly: NRE over the recovery window's vehicles,
-  // lifecycle over the life's (it divided both by life, so the two parts did not add to the headline).
-  const sch = swSchedule(result);
-  const nreTotal = s.nreTotal;
-  const lifecycleTotal = s.totalMaintenance + s.totalCloud + s.totalLicensing;   // F8: licences / royalties are lifecycle too
-  const recovery = Math.max(1, result.inputs.costRecoveryYears ?? result.inputs.programLifeYears);
-  const nreVehicles = result.inputs.annualProductionVolume * recovery;
-  const lifeVehicles = result.inputs.annualProductionVolume * result.inputs.programLifeYears;
-  const nrePerVeh       = nreVehicles > 0 ? nreTotal / nreVehicles : 0;
-  const lifecyclePerVeh = lifeVehicles > 0 ? lifecycleTotal / lifeVehicles : 0;
-  const cards: { label: string; value: string; sub: string; color: string }[] = [
-    { label: 'Total Programme Cost',    value: fmtM(s.grandTotal),             sub: 'NRE + Lifecycle (all modules)',                color: '#2563eb' },
-    { label: 'Per Vehicle (SW Cost)',   value: `${swMoney(s.perVehicle, 0)}`,     sub: `NRE ${swMoney(nrePerVeh,0)} (${recovery}-yr recovery) + Lifecycle ${swMoney(lifecyclePerVeh,0)} · ${fmt(result.inputs.annualProductionVolume/1000,0)}k/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
-    { label: 'Total NRE',              value: fmtM(nreTotal),                  sub: 'Dev + Test + Integ + Tools + Cyber + Calib',  color: '#7c3aed' },
-    { label: 'Engineering Effort',     value: `${fmt(s.totalEffortPersonMonths, 0)} PM`, sub: `development ${fmt(s.totalPersonMonths, 0)} PM · avg ${fmt(sch.averageTeam,0)} engineers over ${fmt(sch.developmentMonths,0)} months`, color: '#d97706' },
-    { label: 'Lifecycle',              value: fmtM(lifecycleTotal), sub: `maintenance, cloud, licences & royalties · ${fmt(s.grandTotal > 0 ? lifecycleTotal/s.grandTotal*100 : 0,0)}% of total`, color: '#0891b2' },
-    { label: 'Active Modules',         value: `${result.modules.length}`,      sub: `of ${SW_MODULES.length} modules · ${hubLabel(result.inputs.region)} / ${result.inputs.devSource.replace('_',' ')}`, color: '#64748b' },
-  ];
-
-  const cardsHTML = cards.map(c => `
-    <div class="sw-summary-card">
-      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${c.color}"></div>
-      <div class="sw-card-label">${esc(c.label)}</div>
-      <div class="sw-card-value" style="color:${c.color}">${c.value}</div>
-      <div class="sw-card-sub">${esc(c.sub)}</div>
-    </div>`).join('');
-
-  const cardsEl = document.getElementById('sw-summary-cards');
-  if (cardsEl) cardsEl.innerHTML = cardsHTML;
 
   // Costing studio: the seven steps of this costing on the SUV skeleton (sw-costing-pipeline.ts).
   const studioEl = document.getElementById('sw-studio');
@@ -1562,376 +1589,27 @@ function renderResults(result: SWProgramResult, opts: { live?: boolean } = {}): 
     const hub = lib.hubRates[result.inputs.region];
     const r = swRateBasis(result.inputs);
     const used = r.find(([k]) => k === 'Engineer rate used')?.[1] ?? '';
-    const loaded = (result.inputs.baseRateGBP && result.inputs.baseRateGBP > 0 ? result.inputs.baseRateGBP : swLibraryBaseRate(result.inputs))
-      * (lib.devSourceMultipliers[result.inputs.devSource]?.value ?? 1) * result.inputs.overheadMultiplier;
+    // The engine's own loaded rate (source PRICE factor × the burden) — this used the raw effort factor and the old overhead.
+    const loaded = swLoadedRate(result.inputs);
     mountSWStudio(studioEl, {
       result,
       rate: { perPMGBP: loaded, hubLabel: hubLabel(result.inputs.region),
-        build: `${used.replace(/^\u00a3[\d,]+ — /, '')}; mid ${swMoney(hub?.mid.value ?? 0, 0)} / senior ${swMoney(hub?.senior.value ?? 0, 0)} per person-month (salary + statutory on-cost ÷ productive hours × 152 h), × development source ${lib.devSourceMultipliers[result.inputs.devSource]?.value ?? 1} × overhead ${result.inputs.overheadMultiplier}.` },
+        build: `${used.replace(/^\u00a3[\d,]+ — /, '')}; mid ${swMoney(hub?.mid.value ?? 0, 0)} / senior ${swMoney(hub?.senior.value ?? 0, 0)} per person-month (salary + statutory on-cost ÷ productive hours × 152 h), × development source price × ${swOverhead(result.inputs).toFixed(2)} engineering burden.` },
       fmt: { money: n => n >= 1e6 ? fmtM(n) : swMoney(n, 0), number: (n, dp = 0) => fmt(n, dp) },
     });
   }
 
-  // Rec 2: Monte Carlo
-  const mc = result.monteCarlo;
-  const mcEl = document.getElementById('sw-monte-carlo');
-  if (mcEl) {
-    const span = mc.p90 - mc.p10;
-    const pct90vs10 = mc.p10 > 0 ? (mc.p90 / mc.p10 - 1) * 100 : 0;
-    mcEl.innerHTML = `
-      <div class="sw-section-title"><span></span> Monte Carlo Cost Distribution (${mc.iterations.toLocaleString()} iterations)</div>
-      <div class="sw-grid sw-grid-4" style="margin-bottom:16px">
-        ${[
-          { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `${swMoney(mc.p10PerVehicle,0)}/veh`, color: 'var(--sw-text-primary)' },
-          { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `${swMoney(mc.p50PerVehicle,0)}/veh`, color: 'var(--sw-text-primary)' },
-          { label: 'P90 (Pessimistic)', val: fmtM(mc.p90),  pv: `${swMoney(mc.p90PerVehicle,0)}/veh`, color: 'var(--sw-text-primary)' },
-          { label: 'Mean',              val: fmtM(mc.mean), pv: `P90/P10 spread: +${fmt(pct90vs10,0)}%`, color: 'var(--sw-text-primary)' },
-        ].map(c => `
-        <div style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:8px;padding:12px 14px">
-          <div style="font-size:0.7rem;font-weight:600;color:var(--sw-text-muted);margin-bottom:4px">${c.label}</div>
-          <div style="font-size:1.15rem;font-weight:800;color:${c.color}">${c.val}</div>
-          <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:2px">${c.pv}</div>
-        </div>`).join('')}
-      </div>
-      <div style="font-size:0.75rem;color:var(--sw-text-secondary);background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:6px;padding:10px 14px">
-        <strong>Uncertainty model:</strong> Triangular distributions on 11 cost buckets
-        (development −30 / +40 %, testing −25 / +35 %, cybersecurity −35 / +50 %, cloud −50 / +60 %, etc. — CostVision
-        engineering estimates, not sourced) combined with a
-        <strong>55% programme-wide correlation</strong> — schedule slips inflate dev, test and
-        integration together, so the tail reflects real correlated overrun rather than a
-        cancelling independent sum. Range P10→P90: <strong>${fmtM(span)}</strong>.
-      </div>
-      <p id="sw-headline-pct" style="font-size:0.78rem;color:var(--sw-text-body);margin:8px 0 0">
-        The headline total (${fmtM(result.summary.grandTotal)}) sits at about <strong>P${mc.headlinePercentile}</strong> of this band, not at
-        the median: the cost ranges are skewed upwards (overruns are larger than savings). P50 = <strong>${fmtM(mc.p50)}</strong>.
-      </p>`;
-  }
-
-  // Rec 3: Programme Phases
-  // Fills dark enough for the white segment labels (≥ 4.5:1); the budget column uses body text, the swatch carries the colour.
-  const phaseColors = ['#4f46e5','#2563eb','#0e7490','#047857','#b45309'];
-  const phaseEl = document.getElementById('sw-phases');
-  if (phaseEl) {
-    const barSegs = result.phases.map((p, i) => `
-      <div class="sw-phase-seg" style="width:${(p.fraction*100).toFixed(0)}%;background:${phaseColors[i]}" title="${p.name}: ${fmtM(p.nreCost)} (${p.months})">
-        ${p.fraction >= 0.12 ? p.name.split('/')[0] : ''}
-      </div>`).join('');
-
-    const phaseRows = result.phases.map((p, i) => `<tr>
-      <td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${phaseColors[i]};margin-right:6px"></span>${esc(p.name)}</td>
-      <td style="font-size:0.75rem;color:var(--sw-text-muted)">${esc(p.months)}</td>
-      <td class="sw-num">${fmt(p.fraction*100,0)}%</td>
-      <td class="sw-num" style="font-weight:700;color:var(--sw-text-primary)">${fmtM(p.nreCost)}</td>
-    </tr>`).join('');
-
-    phaseEl.innerHTML = `
-      <div class="sw-section-title"><span></span> Programme Milestone Phases (NRE: ${fmtM(nreTotal)})</div>
-      <div class="sw-phase-bar">${barSegs}</div>
-      <table class="sw-data-table" style="margin-top:10px">
-        <thead><tr><th>Phase</th><th>Timeline</th><th class="sw-num">NRE Share</th><th class="sw-num">Budget</th></tr></thead>
-        <tbody>${phaseRows}</tbody>
-      </table>
-      <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:8px">* Phase fractions apply to NRE only. Lifecycle costs (maintenance, cloud, IP licensing) are incurred post-SOP and shown separately in Cost Composition.</p>`;
-  }
-
-  // Category breakdown
-  const catRows = Object.entries(CAT_META).map(([cat, meta]) => {
-    const total = s.byCategory[cat as keyof typeof s.byCategory] ?? 0;
-    const pct   = s.grandTotal > 0 ? (total / s.grandTotal * 100) : 0;
-    const mods  = result.modules.filter(m => m.category === cat);
-    const topMod = mods.length > 0 ? mods.sort((a,b) => b.grandTotal - a.grandTotal)[0] : null;
-    return `
-    <tr>
-      <td><span style="font-size:1rem">${meta.icon}</span> <strong>${esc(meta.label)}</strong></td>
-      <td class="sw-num">${mods.length}</td>
-      <td class="sw-num">${fmtM(total)}</td>
-      <td class="sw-num">${fmt(pct, 1)}%</td>
-      <td>
-        <div class="sw-bar-track"><div class="sw-bar-fill" style="width:${pct.toFixed(1)}%;background:${meta.color}"></div></div>
-      </td>
-      <td style="font-size:0.72rem;color:var(--sw-text-muted)">${topMod ? esc(topMod.moduleName) : '—'}</td>
-    </tr>`;
-  }).join('');
-
-  const catEl = document.getElementById('sw-cat-breakdown');
-  if (catEl) catEl.innerHTML = `
-    <div class="sw-section-title"><span></span> Cost by Software Category</div>
-    <table class="sw-data-table">
-      <thead><tr><th>Category</th><th class="sw-num">Modules</th><th class="sw-num">Total Cost</th><th class="sw-num">Share</th><th style="width:140px">Distribution</th><th>Largest Module</th></tr></thead>
-      <tbody>${catRows}</tbody>
-    </table>`;
-
-  // Cost composition (Rec 7: includes Calibration)
-  const comp: [string, string, number][] = [
-    ['<svg class="ic" aria-hidden="true"><use href="#i-monitor"/></svg>', 'Development (Engineering)', s.totalDevelopment],
-    ['<svg class="ic" aria-hidden="true"><use href="#i-flask"/></svg>', 'Testing & Validation',      s.totalTesting],
-    ['<svg class="ic" aria-hidden="true"><use href="#i-link"/></svg>', 'Integration & V&V',         s.totalIntegration],
-    ['<svg class="ic" aria-hidden="true"><use href="#i-wrench"/></svg>', 'Toolchain (dev tools)',      s.totalToolchain],
-    ['<svg class="ic" aria-hidden="true"><use href="#i-ruler"/></svg>', 'Calibration & Tuning',       s.totalCalibration],
-    ['<svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>', 'Cybersecurity (pentest/TARA)', s.totalCybersecurity],
-    ['<svg class="ic" aria-hidden="true"><use href="#i-wrench"/></svg>', 'Maintenance (lifecycle)',    s.totalMaintenance],
-    ['<svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>', 'Cloud & Infra (lifecycle)',   s.totalCloud],
-    ['<svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg>', 'IP Licensing (lifecycle)',    s.totalLicensing],
-  ];
-  const compRows = comp.map(([icon, label, val]) => {
-    const pct = s.grandTotal > 0 ? val / s.grandTotal * 100 : 0;
-    return `<tr>
-      <td>${icon} ${esc(label)}</td>
-      <td class="sw-num">${fmtM(val)}</td>
-      <td class="sw-num">${fmt(pct, 1)}%</td>
-      <td><div class="sw-bar-track"><div class="sw-bar-fill" style="width:${pct.toFixed(1)}%;background:var(--sw-accent)"></div></div></td>
-    </tr>`;
-  }).join('');
-
-  const compEl = document.getElementById('sw-cost-composition');
-  if (compEl) compEl.innerHTML = `
-    <div class="sw-section-title"><span></span> Cost Composition (10 Dimensions)</div>
-    <table class="sw-data-table">
-      <thead><tr><th>Cost Bucket</th><th class="sw-num">Value</th><th class="sw-num">Share</th><th>Distribution</th></tr></thead>
-      <tbody>${compRows}
-      <tr style="background:var(--sw-surface-alt);font-weight:700">
-        <td>TOTAL PROGRAMME COST</td>
-        <td class="sw-num" style="color:var(--sw-accent)">${fmtM(s.grandTotal)}</td>
-        <td class="sw-num">100%</td>
-        <td></td>
-      </tr>
-      </tbody>
-    </table>`;
-
-  // Module detail table with Rec 8 ASIL validation
-  const sortedMods = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal);
-  const modRows = sortedMods.map((m, i) => {
-    const meta = CAT_META[m.category];
-    const def  = SW_MODULES.find(d => d.id === m.moduleId);
-    const isDowngrade = def && ASIL_RANK[m.asilUsed] < ASIL_RANK[def.defaultAsil];
-    const asilCell = isDowngrade
-      ? `${asilBadge(m.asilUsed)} <span style="color:#d97706;font-size:0.7rem" title="Below default ${def?.defaultAsil ?? ''}">⚠ −${ASIL_RANK[def!.defaultAsil] - ASIL_RANK[m.asilUsed]} lvl</span>`
-      : asilBadge(m.asilUsed);
-    return `<tr class="${i < 5 ? 'sw-highlight' : ''}">
-      <td>${i + 1}</td>
-      <td style="font-weight:600">${esc(m.moduleName)}</td>
-      <td><span style="color:${meta?.color ?? '#64748b'}">${meta?.icon ?? ''}</span> ${esc(meta?.label ?? m.categoryLabel)}</td>
-      <td>${asilCell}</td>
-      <td style="font-size:0.75rem;color:var(--sw-text-muted)">${esc(m.complexityUsed)}</td>
-      <td style="font-size:0.75rem;color:var(--sw-text-muted)">${esc(m.reuseUsed)}</td>
-      <td class="sw-num">${fmt(m.personMonths, 0)}</td>
-      <td class="sw-num">${fmtM(m.development.total)}</td>
-      <td class="sw-num">${fmtM(m.calibrationCost)}</td>
-      <td class="sw-num">${fmtM(m.testing.total)}</td>
-      <td class="sw-num">${fmtM(m.grandTotal)}</td>
-      <td class="sw-num" style="color:#059669;font-weight:600">${swMoney(m.perVehicle, 0)}</td>
-    </tr>`;
-  }).join('');
-
-  // Count ASIL downgrades for header warning
-  const downgradeCount = sortedMods.filter(m => {
-    const def = SW_MODULES.find(d => d.id === m.moduleId);
-    return def && ASIL_RANK[m.asilUsed] < ASIL_RANK[def.defaultAsil];
-  }).length;
-  const downgradeWarning = downgradeCount > 0
-    ? `<div style="background:color-mix(in srgb, var(--warning) 8%, var(--surface));border:1px solid color-mix(in srgb, var(--warning) 35%, transparent);border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:0.78rem;color:color-mix(in srgb, var(--warning) 75%, var(--text-primary))">⚠ <strong>${downgradeCount} module(s)</strong> have ASIL set below their default. Review safety case documentation (ISO 26262 §6.4.5) before sign-off.</div>`
-    : '';
-
-  const modTableEl = document.getElementById('sw-module-table');
-  if (modTableEl) modTableEl.innerHTML = `
-    <div class="sw-section-title"><span></span> Module Cost Detail — All ${result.modules.length} Active Modules</div>
-    ${downgradeWarning}
-    <div style="overflow-x:auto">
-    <table class="sw-data-table">
-      <thead><tr>
-        <th>#</th><th>Module</th><th>Category</th><th>ASIL</th>
-        <th>Complexity</th><th>Reuse</th><th class="sw-num">PM</th>
-        <th class="sw-num">Dev Cost</th><th class="sw-num">Calibration</th>
-        <th class="sw-num">Test Cost</th>
-        <th class="sw-num">Grand Total</th><th class="sw-num">${swCur().sym}/Vehicle</th>
-      </tr></thead>
-      <tbody>${modRows}</tbody>
-    </table>
-    </div>`;
-
-  // Sensitivity analysis
-  const sensRows = result.sensitivity.map(row => {
-    const low  = row.unit === '£M' ? fmtM(row.low) : `${swMoney(row.low, 0)}`;
-    const base = row.unit === '£M' ? fmtM(row.base) : `${swMoney(row.base, 0)}`;
-    const high = row.unit === '£M' ? fmtM(row.high) : `${swMoney(row.high, 0)}`;
-    const span = row.high - row.low;
-    const spanFmt = row.unit === '£M' ? fmtM(span) : `${swMoney(span, 0)}`;
-    return `<tr>
-      <td style="font-weight:600">${esc(row.parameter)}</td>
-      <td class="sw-num" style="color:#059669">${low}</td>
-      <td class="sw-num sw-highlight" style="background:var(--sw-accent-bg) !important">${base}</td>
-      <td class="sw-num" style="color:#ef4444">${high}</td>
-      <td class="sw-num">${spanFmt}</td>
-    </tr>`;
-  }).join('');
-
-  const sensEl = document.getElementById('sw-sensitivity');
-  if (sensEl) sensEl.innerHTML = `
-    <div class="sw-section-title"><span></span> Sensitivity Analysis</div>
-    <table class="sw-data-table">
-      <thead><tr><th>Parameter</th><th class="sw-num">Low Scenario</th><th class="sw-num">Base Case</th><th class="sw-num">High Scenario</th><th class="sw-num">Range</th></tr></thead>
-      <tbody>${sensRows}</tbody>
-    </table>
-    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Low = favourable scenario. High = unfavourable. Production Volume: Low = 150k/yr (cheaper per-vehicle), High = 50k/yr (expensive). Base = this configuration.</p>`;
-
-  // Benchmark comparison
-  const bmRows = result.benchmarks.map(b => {
-    const isThis = b.vehicle === 'This programme';
-    const thisM  = s.grandTotal / 1_000_000;
-    const diff   = (!isThis && b.totalM > 0) ? ((thisM - b.totalM) / b.totalM * 100) : 0;
-    const diffFmt = isThis ? 'Base' : `${diff >= 0 ? '+' : ''}${fmt(diff, 0)}%`;
-    const diffColor = isThis ? 'var(--sw-text-primary)' : diff > 20 ? 'var(--sw-bad)' : diff < -20 ? 'var(--sw-good)' : 'var(--sw-text-body)';
-    const cite = isThis ? '' : ` <span style="cursor:help;color:var(--sw-text-muted);font-size:0.7rem" title="Source: ${esc(b.source)}">ⓘ</span>`;
-    return `<tr ${isThis ? 'style="background:var(--sw-accent-bg);font-weight:700"' : ''}>
-      <td>${esc(b.vehicle)}${cite}</td>
-      <td class="sw-num">${b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal)}</td>
-      <td class="sw-num">${swMoney(b.perVehicle > 0 ? b.perVehicle : s.perVehicle, 0)}</td>
-      <td class="sw-num" style="color:${diffColor};font-weight:600">${diffFmt}</td>
-      <td style="font-size:0.72rem;color:var(--sw-text-muted)">${isThis ? '' : b.verified ? '' : '<strong style="color:var(--amber,#b45309)">Unverified</strong> · '}${esc(b.source)}</td>
-    </tr>`;
-  }).join('');
-
-  const bmEl = document.getElementById('sw-benchmarks');
-  if (bmEl) bmEl.innerHTML = `
-    <div class="sw-section-title"><span></span> Benchmark Comparison — Premium EV Programme SW Investment (unverified)</div>
-    <table class="sw-data-table">
-      <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">${swCur().sym}/Vehicle</th><th class="sw-num">vs This Model</th><th>Source</th></tr></thead>
-      <tbody>${bmRows}</tbody>
-    </table>
-    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Positive = benchmark cheaper than this model. <strong>None of these published figures has a source link</strong> and two could not be traced at all — they are shown for context only; do not quote them. The published per-vehicle figures do not reconcile with the published totals.</p>`;
-
-  // Rec 4: OEM / Tier-1 / Startup decomposition
-  const sourceDecomp: { src: string; label: string; riskNote: string; ipNote: string; warrantyNote: string }[] = [
-    { src: 'OEM_Internal',   label: 'OEM Internal',    riskNote: 'Full visibility & control', ipNote: 'IP owned outright', warrantyNote: 'Full in-house warranty liability' },
-    { src: 'Tier1_Supplier', label: 'Tier 1 Supplier', riskNote: 'Contractual milestone risk', ipNote: 'IP shared / licensed-back', warrantyNote: 'Supplier carries a contractual warranty share' },
-    { src: 'Startup_OSS',   label: 'Startup / OSS',   riskNote: 'High execution risk, talent risk', ipNote: 'OSS licence risk; limited assignment', warrantyNote: 'Warranty indemnity limited; OEM absorbs tail' },
-  ];
-  const currentSrc = result.inputs.devSource;
-  // Each row is the programme RE-COSTED with that source in the active rate book (engine devSourceComparison) —
-  // the table used its own copy of the multipliers and scaled the labour share (P2 #13).
-  const bySource = new Map(devSourceComparison(result.inputs).map(r => [r.devSource as string, r]));
-  const decompRows = sourceDecomp.map(d => {
-    const row = bySource.get(d.src);
-    if (!row) return '';
-    const isCurrent = d.src === currentSrc;
-    return `<tr ${isCurrent ? 'style="background:var(--sw-accent-bg);font-weight:700"' : ''}>
-      <td>${isCurrent ? '⭐ ' : ''}${esc(d.label)}</td>
-      <td class="sw-num" style="color:var(--sw-accent)">${fmtM(row.grandTotal)}</td>
-      <td class="sw-num">×${row.multiplier.toFixed(2)}</td>
-      <td style="font-size:0.75rem;color:var(--sw-text-secondary)">${esc(d.riskNote)}</td>
-      <td style="font-size:0.75rem;color:var(--sw-text-secondary)">${esc(d.ipNote)}</td>
-      <td style="font-size:0.75rem;color:var(--sw-text-secondary)">${esc(d.warrantyNote)}</td>
-    </tr>`;
-  }).join('');
-
-  const decompEl = document.getElementById('sw-source-decomp');
-  if (decompEl) decompEl.innerHTML = `
-    <div class="sw-section-title"><span></span> Development Source Decomposition (OEM / Tier-1 / Startup)</div>
-    <table class="sw-data-table">
-      <thead><tr><th>Dev Source</th><th class="sw-num">Estimated Cost</th><th class="sw-num">Rate Mult.</th><th>Risk Profile</th><th>IP Ownership</th><th>Warranty Exposure</th></tr></thead>
-      <tbody>${decompRows}</tbody>
-    </table>
-    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:8px">* Each row re-costs this programme with that source's rate multiplier from the active rate book. Actual costs also depend on management overhead, ramp-up time, and programme governance.</p>`;
-
-  // Engineering Insights
-  const insightsEl = document.getElementById('sw-insights');
-  if (insightsEl) {
-    const insights: { icon: string; level: 'info' | 'warn' | 'ok'; title: string; body: string }[] = [];
-
-    const sorted = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal);
-    if (sorted.length > 0) {
-      const top = sorted[0];
-      insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg>', level: 'info',
-        title: `Top cost driver: ${top.moduleName}`,
-        body: `At ${fmtM(top.grandTotal)} (${fmt(top.grandTotal/s.grandTotal*100,1)}% of total), ${top.moduleName} is the largest single module. Evaluate build-vs-buy: price a licensed platform against this figure (no saving is assumed here).`,
-      });
-    }
-
-    const asilDReuseHeavy = result.modules.filter(m => m.asilUsed === 'D' && (m.reuseUsed === 'Heavy' || m.reuseUsed === 'Platform'));
-    if (asilDReuseHeavy.length > 0) {
-      insights.push({ icon: '⚠', level: 'warn',
-        title: `ASIL-D with Heavy/Platform reuse — verify safety case`,
-        body: `${asilDReuseHeavy.map(m => m.moduleName).join(', ')} are ASIL-D with ${asilDReuseHeavy[0].reuseUsed} reuse. ISO 26262 requires formal safety case for SEooC elements. Factor in additional safety analysis cost.`,
-      });
-    }
-
-    const lifecycleTotal = s.totalMaintenance + s.totalCloud + s.totalLicensing;
-    const lifecyclePct = s.grandTotal > 0 ? lifecycleTotal / s.grandTotal * 100 : 0;
-    // Name the bucket that actually leads — the text used to say "cloud" whatever the numbers were (P1 #7).
-    const lifeTop = [
-      { name: 'maintenance', value: s.totalMaintenance },
-      { name: 'cloud', value: s.totalCloud },
-      { name: 'IP licensing', value: s.totalLicensing },
-    ].sort((a, b) => b.value - a.value)[0];
-    if (lifecyclePct > 45) {
-      insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg>', level: 'warn',
-        title: `High lifecycle cost (${fmt(lifecyclePct,0)}% of total)`,
-        body: `Lifecycle costs total ${fmtM(lifecycleTotal)} (${fmt(lifecyclePct,0)}%). The largest lifecycle bucket is ${lifeTop.name} at ${fmtM(lifeTop.value)} — review its assumptions first.`,
-      });
-    } else {
-      insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-check-circle"/></svg>', level: 'ok',
-        title: `NRE / lifecycle split: ${fmt(100-lifecyclePct,0)}% NRE`,
-        body: `Development NRE is ${fmt(100-lifecyclePct,0)}% of the total; lifecycle (maintenance, cloud, IP) is ${fmt(lifecyclePct,0)}%.`,
-      });
-    }
-
-    // Peer comparison only against SOURCED figures — none exists yet (sw-benchmarks.ts), so this insight is withheld (P1 #6).
-    const nonThis = result.benchmarks.filter(b => b.vehicle !== 'This programme' && b.verified);
-    const medianBm = [...nonThis].sort((a,b)=>a.totalM-b.totalM)[Math.floor(nonThis.length/2)]?.totalM ?? 0;
-    const thisM = s.grandTotal / 1_000_000;
-    if (medianBm > 0) {
-      const diffPct = (thisM - medianBm) / medianBm * 100;
-      insights.push({ icon: diffPct > 30 ? '<svg class="ic" aria-hidden="true" style="color:#ef4444"><use href="#i-dot"/></svg>' : diffPct > 10 ? '<svg class="ic" aria-hidden="true" style="color:#eab308"><use href="#i-dot"/></svg>' : '<svg class="ic" aria-hidden="true" style="color:var(--green)"><use href="#i-dot"/></svg>', level: diffPct > 30 ? 'warn' : 'ok',
-        title: `Programme cost is ${fmt(Math.abs(diffPct),0)}% ${diffPct >= 0 ? 'above' : 'below'} peer median (${fmtM(medianBm * 1_000_000)})`,
-        body: diffPct > 20 ? `Cost exceeds peer median. Review ASIL assignments and reuse opportunities. The cheapest assessed hub would cost ${fmt(s.grandTotal > 0 ? Math.abs(s.grandTotal - _recomputeTotalForInsight(result)) / s.grandTotal * 100 : 0, 0)}% less than this hub.`
-              : `Programme cost is within normal range vs peers. Monitor cloud costs as fleet scales.`,
-      });
-    }
-
-    const hasCyberMod = result.modules.some(m => m.category === 'F');
-    if (!hasCyberMod) {
-      insights.push({ icon: '<svg class="ic" aria-hidden="true" style="color:#ef4444"><use href="#i-dot"/></svg>', level: 'warn',
-        title: 'No Cybersecurity (ISO 21434) modules enabled',
-        body: 'UN-ECE R155 mandates CSMS for all connected vehicles from July 2024. Category F modules are required for regulatory compliance.',
-      });
-    }
-
-    const hubRow = result.sensitivity.find(r => r.parameter.startsWith('Engineering hub'));
-    if (hubRow && hubRow.low > 0 && hubRow.low < s.grandTotal * 0.97) {
-      const cheapest = hubRow.parameter.replace(/^Engineering hub \((.*) vs .*\)$/, '$1');
-      const saving = s.grandTotal - hubRow.low;
-      insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg>', level: 'info',
-        title: `The same scope in ${cheapest} would cost ${fmtM(hubRow.low)} (−${fmtM(saving)})`,
-        body: `The whole programme re-costed at ${cheapest}'s own book rate. Add your own figure for coordination, knowledge transfer, travel and time-zone risk before comparing.`,
-      });
-    }
-
-    // Average team over the DEVELOPMENT window and the COCOMO II duration of the longest module (code review F7: it
-    // divided development effort by the production life).
-    const sch = swSchedule(result);
-    insights.push({ icon: '<svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>', level: sch.overrunning.length ? 'warn' : 'info',
-      title: `Average team: ${fmt(sch.averageTeam, 0)} engineers over ${fmt(sch.developmentMonths, 0)} months of development`,
-      body: `${fmt(s.totalEffortPersonMonths, 0)} person-months of engineering ÷ ${fmt(sch.developmentMonths, 0)} months. COCOMO II gives the longest module (${sch.longestModule}) ${fmt(sch.longestMonths, 0)} months`
-        + (sch.overrunning.length ? ` — ${sch.overrunning.length} module${sch.overrunning.length === 1 ? '' : 's'} need longer than the development window at nominal staffing (${sch.overrunning.slice(0, 3).join(', ')}${sch.overrunning.length > 3 ? '…' : ''}).` : ', inside the development window.'),
-    });
-
-    const levelColor: Record<string, string> = { info: 'var(--sw-accent)', warn: 'var(--sw-warn,#b45309)', ok: 'var(--sw-good)' };
-    const levelBg:    Record<string, string> = { info: 'var(--sw-accent-bg)', warn: 'var(--sw-surface-alt)', ok: 'var(--sw-surface-alt)' };
-    const levelBorder:Record<string, string> = { info: 'var(--sw-accent-border)', warn: 'var(--sw-border)', ok: 'var(--sw-border)' };
-
-    insightsEl.innerHTML = `
-      <div class="sw-section-title"><span></span> Engineering Insights</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        ${insights.map(ins => `
-        <div style="background:${levelBg[ins.level]};border:1px solid ${levelBorder[ins.level]};border-radius:8px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start">
-          <span style="font-size:1.2rem;flex-shrink:0">${ins.icon}</span>
-          <div>
-            <div style="font-weight:700;font-size:0.82rem;color:${levelColor[ins.level]};margin-bottom:4px">${esc(ins.title)}</div>
-            <div style="font-size:0.78rem;color:var(--sw-text-body);line-height:1.5">${esc(ins.body)}</div>
-          </div>
-        </div>`).join('')}
-      </div>`;
-  }
+  const money = (n: number) => swMoney(n, 0);
+  const put = (id: string, html: string) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  put('swk-bandmethod', bandMethodHTML(result, fmtM));
+  put('swk-domains-t', domainTableHTML(result, fmtM));
+  put('sw-module-table', moduleTableHTML(result, money, fmtM));
+  put('swk-makebuy-wrap', makeBuyHTML(swMakeBuy(result), fmtM));
+  // Each row is the programme RE-COSTED with that source in the active rate book (engine devSourceComparison, P2 #13).
+  put('swk-source-wrap', sourceTableHTML(devSourceComparison(result.inputs), result.inputs.devSource, fmtM));
+  put('swk-evidence-wrap', evidenceCardHTML(swEvidence(result), fmtM));
+  put('sw-benchmarks-wrap', benchmarksHTML(result, money, fmtM));
+  put('sw-insights', insightsHTML(buildInsights(result, fmtM)));
 
   // Results live in their tabs now; nothing scrolls the page (cockpit review: smooth scroll-jumps removed).
   const resultsEl = document.getElementById('sw-results');
@@ -1985,10 +1663,6 @@ function runLive(live: boolean): void {
   }
 }
 
-function _recomputeTotalForInsight(result: SWProgramResult): number {
-  // The cheapest assessed hub, from the sensitivity row (no extra recompute).
-  return result.sensitivity.find(r => r.parameter.startsWith('Engineering hub'))?.low ?? result.summary.grandTotal;
-}
 
 // ─── Rec 5: AI Analysis ───────────────────────────────────────────────────────
 
@@ -2245,8 +1919,66 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ['Evidence of automotive software here', hubBook.evidence.join(' · ')],
   ] : [['Engineering hub', String(inp.region)]];
 
+  // Evidence, unit economics, make or buy and the supplier quote check — the same engine figures the screen shows.
+  const ev = swEvidence(result);
+  const gradeName: Record<string, string> = { entered: 'Your figures', calibrated: 'Calibrated to your actuals', sourced: 'Published source', estimate: 'Labelled estimate', unsourced: 'Unsourced catalogue' };
+  const evidenceData: (string | number)[][] = [
+    ['How well the total is supported — every costed amount with its evidence grade'],
+    ['Grade', `In the total (${swUnitM()})`, 'Share (%)'],
+    ...(['entered', 'calibrated', 'sourced', 'estimate', 'unsourced'] as const).map(g => [gradeName[g], fM(ev.byGrade[g]), f2(ev.total > 0 ? ev.byGrade[g] / ev.total * 100 : 0)]),
+    [],
+    ['Default reuse', `${ev.reuse.modulesAtMedium} of ${ev.reuse.modules} modules at Medium (× 0.60, CostVision default)`, ''],
+    [`Engineering written fresh would add (${swUnitM()})`, fM(ev.reuse.removedNRE), ''],
+    [],
+    ['Line', `Amount (${swUnitM()})`, 'Grade', 'Basis'],
+    ...ev.lines.filter(l => Math.abs(l.amount) > 0.5).sort((a, b) => b.amount - a.amount).map(l => [l.label, fM(l.amount), gradeName[l.grade], l.basis]),
+  ];
+  const ue = swUnitEconomics(result);
+  const unitData: (string | number)[][] = [
+    ['The figures purchasing compares — the total rebuilt from them (exact at a 0 % discount)'],
+    ['Figure', 'Value', 'Unit'],
+    ['Engineering, one-off', fM(ue.nre), swUnitM()],
+    ['Royalty per vehicle built', parseFloat(swConv(ue.perVehicleBuilt).toFixed(2)), `${swCur().sym} / vehicle`],
+    ['Subscription per vehicle-year (map data)', parseFloat(swConv(ue.subscriptionPerYear).toFixed(2)), `${swCur().sym} / vehicle-year`],
+    ['Cloud per connected vehicle-year', parseFloat(swConv(ue.cloudPerYear).toFixed(2)), `${swCur().sym} / vehicle-year`],
+    ['Fixed per year (maintenance, IP licences, platform), average', fM(ue.fixedPerYear), `${swUnitM()} / yr`],
+    ['Vehicles built', ue.vehiclesBuilt, 'vehicles'],
+    ['Subscription vehicle-years', ue.subscriptionVehicleYears, `${ue.subscriptionYears} yr each`],
+    ['Connected-service vehicle-years', ue.serviceVehicleYears, `${ue.serviceYears} yr each`],
+    ['Programme total', fM(ue.total), swUnitM()],
+  ];
+  const mb = swMakeBuy(result);
+  const makeBuyData: (string | number)[][] = [
+    ['Make or buy — engineering (NRE) per domain, each source re-costed'],
+    [mb.basis],
+    ['Domain', `In-house (${swUnitM()})`, `Tier-1 (${swUnitM()})`, `Start-up / OSS (${swUnitM()})`],
+    ...mb.rows.map(r => [r.label, fM(r.make), fM(r.tier1), fM(r.startup)]),
+    [],
+    ['Break-even: a Tier-1 is cheaper only at ≤ this share of the in-house effort', f2(mb.breakEvenEffortShare * 100), '%'],
+  ];
+  const panelEl = document.getElementById('sw-panel');
+  const quote = panelEl ? readQuote(panelEl) : {};
+  const qc = swQuoteCheck(result, quote);
+  const qRows = [qc.nre, qc.perVehicle, qc.perVehicleYear, qc.fixedPerYear, ...qc.byCategory].filter(Boolean) as NonNullable<typeof qc.nre>[];
+  const qv = (r: NonNullable<typeof qc.nre>, n: number) => r.unit === 'perVehicle' ? parseFloat(swConv(n).toFixed(2)) : fM(n);
+  const quoteData: (string | number)[][] = [
+    ['Supplier quote check — should-cost against the quote entered on screen'],
+    ['Line', 'Should-cost', 'Quote', 'Gap', 'Gap (%)', 'Unit'],
+    ...qRows.map(r => [r.label, qv(r, r.should), qv(r, r.quoted), qv(r, r.gap), f2(r.gapPct), r.unit === 'perVehicle' ? `${swCur().sym} / vehicle` : swUnitM()]),
+    [],
+    ['Negotiation target: fair Tier-1 engineering for this scope', fM(qc.target.nre), swUnitM(), qc.target.basis],
+    ['Tier-1 target rate', parseFloat(swConv(qc.target.ratePerPM).toFixed(0)), `${swCur().sym} / person-month`],
+    ...(qc.impliedRatePerPM ? [['Rate per person-month the NRE quote implies', parseFloat(swConv(qc.impliedRatePerPM).toFixed(0)), `${swCur().sym} / person-month`, `× ${f2(qc.rateMultiple ?? 0)} the loaded should-cost rate`]] : []),
+    ...(qc.gapSplit ? [['Effort gap', fM(qc.gapSplit.effortGap), swUnitM()], ['Rate gap', fM(qc.gapSplit.rateGap), swUnitM()]] : []),
+    ...(qRows.length ? [] : [['No quote entered on the Supplier check tab when this workbook was exported.']]),
+  ];
+
   const wb = await buildWorkbook([
     { name: 'Summary',            rows: summaryData, cols: [30, 16, 12] },
+    { name: 'Unit economics',     rows: unitData,    cols: [52, 16, 22] },
+    { name: 'Evidence',           rows: evidenceData, cols: [52, 16, 24, 90] },
+    { name: 'Quote check',        rows: quoteData,   cols: [52, 16, 16, 16, 12, 16] },
+    { name: 'Make or buy',        rows: makeBuyData, cols: [36, 16, 16, 18] },
     { name: 'Category Breakdown', rows: catData,     cols: [10, 30, 10, 16, 12] },
     { name: 'Module Detail',      rows: modData,     cols: [4, 30, 9, 7, 12, 10, 14, ...Array(11).fill(14)] },
     { name: 'Sensitivity & MC',   rows: sensData,    cols: [40, 12, 16, 16, 16, 14] },
@@ -2430,10 +2162,50 @@ function exportSWPDF(result: SWProgramResult): void {
       });
       y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
 
-      // §6 Benchmarks
+      // §6 Evidence — how well the total is supported
+      const evP = swEvidence(result);
+      chk(30);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+      doc.text('6. Evidence behind the total', MG, y); y += 6;
+      autoTable(doc, {
+        startY: y,
+        head: [['Evidence grade', 'In the total', 'Share', 'Band drawn (low · high)']],
+        body: (['entered', 'calibrated', 'sourced', 'estimate', 'unsourced'] as const).map(g => [
+          ({ entered: 'Your figures', calibrated: 'Calibrated to your actuals', sourced: 'Published source', estimate: 'Labelled estimate', unsourced: 'Unsourced catalogue' } as const)[g],
+          fmtM(evP.byGrade[g]), `${(evP.total > 0 ? evP.byGrade[g] / evP.total * 100 : 0).toFixed(0)}%`, `x ${SW_MC_RANGE_BY_GRADE[g][0]} · x ${SW_MC_RANGE_BY_GRADE[g][2]}`]),
+        headStyles: th, bodyStyles: { fontSize: 7, cellPadding: 2.5 }, margin: { left: MG, right: MG },
+      });
+      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(71, 85, 105);
+      const evNote = doc.splitTextToSize(`Reuse: ${evP.reuse.modulesAtMedium} of ${evP.reuse.modules} modules at the default Medium (x 0.60); written fresh, engineering would cost ${fmtM(evP.reuse.removedNRE)} more. Largest unsourced: ${evP.topUnsourced.slice(0, 3).map(t => `${t.label} ${fmtM(t.amount)}`).join('; ')}.`, W - 2 * MG);
+      doc.text(evNote, MG, y); y += evNote.length * 3.6 + 6;
+
+      // §7 Supplier quote check — when a quote was entered on screen
+      const pEl = document.getElementById('sw-panel');
+      const qP = swQuoteCheck(result, pEl ? readQuote(pEl) : {});
+      const qPRows = [qP.nre, qP.perVehicle, qP.perVehicleYear, qP.fixedPerYear, ...qP.byCategory].filter(Boolean) as NonNullable<typeof qP.nre>[];
+      chk(24);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+      doc.text('7. Supplier quote check', MG, y); y += 6;
+      const qf = (r: NonNullable<typeof qP.nre>, n: number) => r.unit === 'perVehicle' ? swMoney(n, 2) : fmtM(n);
+      autoTable(doc, {
+        startY: y,
+        head: [['Line', 'Should-cost', 'Quote', 'Gap']],
+        body: qPRows.length ? qPRows.map(r => [r.label, qf(r, r.should), qf(r, r.quoted), `${r.gap >= 0 ? '+' : '-'}${qf(r, Math.abs(r.gap))} (${r.gapPct >= 0 ? '+' : ''}${r.gapPct.toFixed(0)}%)`])
+          : [['No quote entered on the Supplier check tab', '', '', '']],
+        headStyles: th, bodyStyles: { fontSize: 7, cellPadding: 2.5 }, margin: { left: MG, right: MG },
+      });
+      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(71, 85, 105);
+      const qNote = doc.splitTextToSize(`Negotiation target: a fair Tier-1 price for this scope is ${fmtM(qP.target.nre)} of engineering at ${swMoney(qP.target.ratePerPM, 0)} per person-month (${qP.target.basis}).`
+        + (qP.impliedRatePerPM ? ` The NRE quote implies ${swMoney(qP.impliedRatePerPM, 0)} per person-month, x ${(qP.rateMultiple ?? 0).toFixed(2)} the loaded should-cost rate.` : '')
+        + (qP.gapSplit ? ` Effort gap ${fmtM(qP.gapSplit.effortGap)}; rate gap ${fmtM(qP.gapSplit.rateGap)}.` : ''), W - 2 * MG);
+      doc.text(qNote, MG, y); y += qNote.length * 3.6 + 6;
+
+      // §8 Benchmarks
       chk(8);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('6. Benchmark Comparison', MG, y); y += 6;
+      doc.text('8. Published programme figures (unverified)', MG, y); y += 6;
       autoTable(doc, {
         startY: y,
         head: [['Vehicle / Programme', 'Total SW Cost', `${swCur().sym}/Vehicle`, 'Source']],
@@ -2548,6 +2320,13 @@ function wireCockpit(): void {
   wireScenarios();
   wireKeyboard();
   // Header: undo / redo / shortcuts; Setup: domain chips and "edit modules one by one".
+  panel.querySelector('#swk-rail')?.addEventListener('click', e => {
+    const t = e.target as HTMLElement;
+    const more = t.closest<HTMLButtonElement>('.swk-rail-more');
+    if (more) { const rail = more.closest('.swk-rail')!; const open = !rail.classList.contains('is-open'); rail.classList.toggle('is-open', open); more.setAttribute('aria-expanded', String(open)); more.textContent = open ? 'Fewer figures' : 'All figures'; return; }
+    const go = t.closest<HTMLElement>('[data-swk-go]');
+    if (go) _swSelectTab?.(go.dataset.swkGo as CockpitTab);
+  });
   panel.querySelector('#swk-undo')?.addEventListener('click', undo);
   panel.querySelector('#swk-redo')?.addEventListener('click', redo);
   panel.querySelector('#swk-keys-btn')?.addEventListener('click', openShortcuts);
@@ -2575,12 +2354,14 @@ function wireScopeBar(): void {
   const count = document.getElementById('swk-scope-count');
   const filter = () => {
     const term = (q?.value ?? '').trim().toLowerCase();
+    const dom = (document.getElementById('swk-scope-dom') as HTMLSelectElement | null)?.value ?? '';
     let shown = 0, total = 0;
     document.querySelectorAll<HTMLElement>('#sw-modules-container .sw-module-row').forEach(row => {
       total++;
       const text = row.textContent?.toLowerCase() ?? '';
       const enabled = (row.querySelector('.sw-mod-enable') as HTMLInputElement | null)?.checked ?? false;
-      const hit = (!term || text.includes(term)) && (!onlyOn?.checked || enabled);
+      const inDom = !dom || row.closest<HTMLElement>('.sw-cat-group')?.dataset.cat === dom;
+      const hit = inDom && (!term || text.includes(term)) && (!onlyOn?.checked || enabled);
       row.classList.toggle('swk-hit-none', !hit);
       if (hit) shown++;
     });
@@ -2589,8 +2370,26 @@ function wireScopeBar(): void {
       g.style.display = any ? '' : 'none';
       if (term && any) g.classList.remove('sw-collapsed');
     });
-    if (count) count.textContent = `${shown} of ${total} modules shown`;
+    const picked = document.querySelectorAll('#sw-modules-container .sw-mod-pick:checked').length;
+    const changed = document.querySelectorAll('#sw-modules-container .sw-sel.is-set').length;
+    if (count) count.textContent = `${shown} of ${total} shown · ${picked} selected · ${changed} settings changed from default`;
   };
+  document.getElementById('swk-scope-dom')?.addEventListener('change', filter);
+  const pickAll = (on: boolean, onlyShown: boolean) => {
+    document.querySelectorAll<HTMLElement>('#sw-modules-container .sw-module-row').forEach(row => {
+      if (onlyShown && row.classList.contains('swk-hit-none')) return;
+      const cb = row.querySelector<HTMLInputElement>('.sw-mod-pick'); if (cb) cb.checked = on;
+    });
+    filter();
+  };
+  document.getElementById('swk-pick-shown')?.addEventListener('click', () => pickAll(true, true));
+  document.getElementById('swk-pick-clear')?.addEventListener('click', () => pickAll(false, false));
+  // Mark a setting changed from the module default; keep the counts live.
+  document.getElementById('sw-modules-container')?.addEventListener('change', e => {
+    const t = e.target as HTMLElement;
+    if (t instanceof HTMLSelectElement && t.dataset.default !== undefined) t.classList.toggle('is-set', t.value !== t.dataset.default);
+    if (t.matches('.sw-mod-pick, .sw-sel')) filter();
+  });
   q?.addEventListener('input', filter);
   onlyOn?.addEventListener('change', filter);
   document.getElementById('swk-bulk-apply')?.addEventListener('click', () => {
@@ -2598,13 +2397,21 @@ function wireScopeBar(): void {
     const asil = v('swk-bulk-asil'), comp = v('swk-bulk-comp'), reuse = v('swk-bulk-reuse');
     if (!asil && !comp && !reuse) { if (count) count.textContent = 'Choose an ASIL, complexity or reuse to apply.'; return; }
     let n = 0;
-    document.querySelectorAll<HTMLElement>('#sw-modules-container .sw-module-row:not(.swk-hit-none)').forEach(row => {
-      if (asil) { const s2 = row.querySelector<HTMLSelectElement>('.sw-asil-sel'); if (s2) s2.value = asil; }
-      if (comp) { const s2 = row.querySelector<HTMLSelectElement>('.sw-comp-sel'); if (s2) s2.value = comp; }
-      if (reuse) { const s2 = row.querySelector<HTMLSelectElement>('.sw-reuse-sel'); if (s2) s2.value = reuse; }
+    // The selected modules when any are selected, else every module shown.
+    const picked = document.querySelectorAll('#sw-modules-container .sw-mod-pick:checked').length > 0;
+    const sel = picked ? '#sw-modules-container .sw-module-row:has(.sw-mod-pick:checked)' : '#sw-modules-container .sw-module-row:not(.swk-hit-none)';
+    const setSel = (row: Element, cls: string, v: string) => {
+      const s2 = row.querySelector<HTMLSelectElement>(cls); if (!s2) return;
+      s2.value = v; if (s2.dataset.default !== undefined) s2.classList.toggle('is-set', v !== s2.dataset.default);
+    };
+    document.querySelectorAll<HTMLElement>(sel).forEach(row => {
+      if (asil) setSel(row, '.sw-asil-sel', asil);
+      if (comp) setSel(row, '.sw-comp-sel', comp);
+      if (reuse) setSel(row, '.sw-reuse-sel', reuse);
       n++;
     });
-    if (count) count.textContent = `Applied to ${n} module${n === 1 ? '' : 's'}.`;
+    filter();
+    if (count) count.textContent = `Applied to ${n} ${picked ? 'selected' : 'shown'} module${n === 1 ? '' : 's'} — ↶ undoes it.`;
     scheduleLive();
   });
   filter();
@@ -2854,6 +2661,7 @@ export function applySWCountry(mfg: string): void {
 
 export function initSWPanel(containerEl: HTMLElement): void {
   _swInputs = defaultSWProgramInputs();
+  restoreBaseline();
   // The engineering hub follows the selected manufacturing country (nearest hub, stated).
   setSWCountry((document.getElementById('mfg-region-selector') as HTMLSelectElement | null)?.value ?? 'UK');
   _swResult = null;

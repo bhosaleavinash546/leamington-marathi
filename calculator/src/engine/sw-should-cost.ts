@@ -1873,7 +1873,7 @@ export function computeSWProgram(
   // Sensitivity analysis
   const sensitivity: SWSensitivityRow[] = [
     {
-      parameter: 'ASIL Level (all modules: D vs B)',
+      parameter: 'ASIL level (all modules: D vs B)',
       low:  _recomputeTotal(prog, { asilOverride: 'B' }),
       base: summary.grandTotal,
       high: _recomputeTotal(prog, { asilOverride: 'D' }),
@@ -1887,7 +1887,7 @@ export function computeSWProgram(
       unit: '£M',
     },
     {
-      parameter: 'Reuse Level (Heavy vs Fresh)',
+      parameter: 'Reuse level (Heavy vs Fresh)',
       low:  _recomputeTotal(prog, { reuseOverride: 'Heavy' }),
       base: summary.grandTotal,
       high: _recomputeTotal(prog, { reuseOverride: 'Fresh' }),

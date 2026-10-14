@@ -37,7 +37,7 @@ async function main(): Promise<void> {
     const token = jwt.sign({ userId: 'e2e', email: 'e2e@test', emailVerified: true }, secret, { expiresIn: '1h' });
     browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH || undefined });
     const width = Number(process.env.CV_WIDTH ?? 1440);
-    const page = await (await browser.newContext({ serviceWorkers: 'block', viewport: { width, height: 900 } })).newPage();
+    const page = await (await browser.newContext({ serviceWorkers: 'block', viewport: { width, height: Number(process.env.CV_HEIGHT ?? 900) } })).newPage();
     const errors: string[] = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript('window.__name = (f) => f;');

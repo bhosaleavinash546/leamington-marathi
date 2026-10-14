@@ -242,7 +242,7 @@ function report(v: Meta): { file:string; docFile:string; html:string; gt:number;
   const axMin = Math.floor(Math.min(...lowsM)/50)*50, axMax = Math.ceil(Math.max(...highsM)/50)*50, span = axMax-axMin;
   const baseM = s.grandTotal/1e6;
   const sortedT = [...totRows].sort((a,b)=>(b.high-b.low)-(a.high-a.low));
-  const paramName: Record<string,string> = { 'ASIL Level (all modules: D vs B)':'ASIL rigour|all-B ↔ all-D', 'Complexity (all modules: Medium vs Very High)':'Complexity|Medium ↔ Very High', 'Reuse Level (Heavy vs Fresh)':'Reuse level|Heavy ↔ Fresh', 'Region (India vs USA Silicon Valley)':'Region|India ↔ Silicon Valley', 'Program Life (8 vs 14 years)':`Programme life|${v.life} ↔ 14 years` };
+  const paramName: Record<string,string> = { 'ASIL level (all modules: D vs B)':'ASIL rigour|all-B ↔ all-D', 'Complexity (all modules: Medium vs Very High)':'Complexity|Medium ↔ Very High', 'Reuse level (Heavy vs Fresh)':'Reuse level|Heavy ↔ Fresh', 'Region (India vs USA Silicon Valley)':'Region|India ↔ Silicon Valley', 'Programme life (8 vs 14 years)':`Programme life|${v.life} ↔ 14 years` };
   const torn = sortedT.map(x=>{
     const lm=x.low/1e6, hm=x.high/1e6;
     const l=((lm-axMin)/span*100).toFixed(1), w=((hm-lm)/span*100).toFixed(1), bp=((baseM-axMin)/span*100).toFixed(1);

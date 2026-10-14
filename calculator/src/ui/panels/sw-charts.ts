@@ -240,7 +240,7 @@ export function scenarioChart(id: string, bars: ScenarioBar[], measure: string, 
     const d = base && !b.base ? b.value - base.value : null;
     const dTxt = d == null ? 'baseline' : `${d >= 0 ? '+' : '−'}${money(Math.abs(d))}`;
     return `<text class="swc-lbl${b.base ? ' swc-strong' : ''}" x="${left - 10}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(b.label.length > 28 ? b.label.slice(0, 27) + '…' : b.label)}</text>
-      ${hbar(left, y + 7, sx(b.value), rowH - 14, b.base ? 'var(--swc-ink)' : SLOT(0), b.key, `${b.label}: ${money(b.value)} (${dTxt})`)}
+      ${hbar(left, y + 7, sx(b.value), rowH - 14, b.base ? 'var(--swc-ink)' : 'var(--sw-accent)', b.key, `${b.label}: ${money(b.value)} (${dTxt})`)}
       <text class="swc-val${b.base ? ' swc-strong' : ''}" x="${r1(left + sx(b.value) + 6)}" y="${y + rowH / 2 + 4}">${esc(money(b.value))}${d == null ? '' : ` · ${esc(dTxt)}`}</text>`;
   }).join('');
   const rule = base ? `<line class="swc-base" x1="${r1(left + sx(base.value))}" x2="${r1(left + sx(base.value))}" y1="${top}" y2="${H - 4}"/>` : '';
@@ -302,7 +302,7 @@ export function spendChart(id: string, years: SpendYearView[], kinds: Array<[str
         `${y.label} · ${label}: ${money(y.parts[k])} (year total ${money(y.total)})`, j === live.length - 1);
       base -= h;
       return seg;
-    }).join('') + (i % Math.ceil(n / 12) === 0 || i === sopIndex ? `<text class="swc-axis-t" x="${r1(x + bw / 2)}" y="${H - bottom + 14}" text-anchor="middle">${esc(y.label.replace('Year ', 'Y').replace('Dev ', 'D'))}</text>` : '');
+    }).join('') + (i % Math.ceil(n / 12) === 0 || i === sopIndex || i === n - 1 ? `<text class="swc-axis-t" x="${r1(x + bw / 2)}" y="${H - bottom + 14}" text-anchor="middle">${esc(y.label.replace('Year ', 'Y').replace('Dev ', 'D').replace('Service ', 'S'))}</text>` : '');
   }).join('');
   const xs = left + sopIndex * slot;
   const grid = [0.5, 1].map(f => `<line class="swc-grid" x1="${left}" x2="${W - right}" y1="${r1(H - bottom - sy(maxT * f))}" y2="${r1(H - bottom - sy(maxT * f))}"/>
@@ -321,7 +321,6 @@ export function spendChart(id: string, years: SpendYearView[], kinds: Array<[str
 // ── Interaction & motion ───────────────────────────────────────────────────────────────────────────────────────────
 
 const reduced = (): boolean => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
-const EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';   // power2-out, the app's curve
 const prevGeom = new Map<string, Map<string, string>>();
 
 /** Hover / focus tooltips for every `[data-tip]` mark, and the reveal / morph motion. Call after each render of `root`. */
@@ -356,33 +355,21 @@ export function wireCharts(root: HTMLElement): void {
     for (const m of marks) now.set(m.getAttribute('data-k')!, m.tagName === 'rect'
       ? `${m.getAttribute('x')},${m.getAttribute('y')},${m.getAttribute('width')},${m.getAttribute('height')}` : m.getAttribute('d') ?? '');
     prevGeom.set(id, now);
-    if (reduced() || typeof (fig as HTMLElement).animate !== 'function') return;
-    if (!before) {
-      // First render: each mark grows out of its baseline (clip, not scale), the whole chart inside 150 ms of stagger.
-      const step = Math.min(12, 150 / Math.max(1, marks.length));
-      marks.forEach((m, i) => {
-        const col = m.classList.contains('swc-col');
-        try {
-          m.animate([{ clipPath: col ? 'inset(100% 0 0 0)' : 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }],
-            { duration: 260, delay: i * step, easing: EASE, fill: 'backwards' });
-        } catch { /* no clip-path animation — the chart simply appears */ }
-      });
-      return;
-    }
-    // Live update: every mark that existed before moves from its old shape to the new one.
-    for (const m of marks) {
-      const was = before.get(m.getAttribute('data-k')!);
-      const is = now.get(m.getAttribute('data-k')!);
-      if (!was || was === is) continue;
-      try {
-        if (m.tagName === 'path') m.animate([{ d: `path("${was}")` }, { d: `path("${is}")` }], { duration: 220, easing: EASE });
+    if (reduced()) return;
+    // Motion runs on the app's one system (animations.ts, GSAP), loaded on demand so this module stays importable in Node.
+    void import('../animations.js').then(anim => {
+      if (!before) { anim.swRevealMarks(marks, marks.map(m => m.classList.contains('swc-col'))); return; }
+      for (const m of marks) {
+        const was = before.get(m.getAttribute('data-k')!);
+        const is = now.get(m.getAttribute('data-k')!);
+        if (!was || !is || was === is) continue;
+        if (m.tagName === 'path') anim.swMorphMark(m, { d: was }, { d: is });
         else {
-          const [x, y, w, h] = was.split(',');
-          m.animate([{ x: `${x}px`, y: `${y}px`, width: `${w}px`, height: `${h}px` }, { x: `${m.getAttribute('x')}px`, y: `${m.getAttribute('y')}px`, width: `${m.getAttribute('width')}px`, height: `${m.getAttribute('height')}px` }],
-            { duration: 220, easing: EASE });
+          const [x, y, w, h] = was.split(','), [x2, y2, w2, h2] = is.split(',');
+          anim.swMorphMark(m, { x, y, width: w, height: h }, { x: x2, y: y2, width: w2, height: h2 });
         }
-      } catch { /* a browser without path / geometry animation shows the new state at once */ }
-    }
+      }
+    }).catch(() => { /* no motion — the chart shows its final state */ });
   });
 }
 

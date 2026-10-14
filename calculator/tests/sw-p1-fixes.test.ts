@@ -58,7 +58,7 @@ describe('#7 no invented savings on the software screen', () => {
     for (const s of ['30–50%', '25–35%', '+15%', '~40%', 'is the main driver', 'is healthy', 'Typical for an OEM']) expect(ui, s).not.toContain(s);
   });
   it('the lifecycle insight names the bucket that actually leads', () => {
-    expect(ui).toMatch(/The largest lifecycle bucket is \$\{lifeTop\.name\}/);
+    expect(ui + src('src/ui/panels/sw-cockpit-views.ts')).toMatch(/The largest lifecycle bucket is \$\{lifeTop\.name\}/);
   });
   it('the AI narrative is told not to add numbers and is no longer asked for savings', () => {
     expect(ui).not.toMatch(/with estimated savings/);
@@ -82,9 +82,10 @@ describe('#6 published benchmark figures: one list, labelled unverified, no peer
     expect(computeSWProgram(defaultSWProgramInputs()).benchmarks.filter(b => b.vehicle !== 'This programme').every(b => !b.verified)).toBe(true);
   });
   it('the peer-median insight compares only verified figures, and the table says Unverified', () => {
-    const ui = src('src/ui/panels/sw-should-cost-ui.ts');
-    expect(ui).toMatch(/b\.vehicle !== 'This programme' && b\.verified/);
-    expect(ui).toMatch(/Unverified/);
+    // No peer claim at all while nothing is verified; every published row is labelled unverified (cockpit views).
+    const ui = src('src/ui/panels/sw-should-cost-ui.ts') + src('src/ui/panels/sw-cockpit-views.ts');
+    expect(ui).not.toMatch(/peer median/i);
+    expect(ui).toMatch(/swk-pill-warn">unverified/);
     expect(ui).not.toMatch(/Figures are industry estimates ±20%/);
   });
 });

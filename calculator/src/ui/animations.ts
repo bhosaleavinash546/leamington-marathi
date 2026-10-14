@@ -137,3 +137,31 @@ export function onChatMessageAdded(): void {
   const last = document.getElementById('ai-chat-messages')?.lastElementChild as HTMLElement | null;
   if (last) enter(last, { y: 4, duration: DUR.base });
 }
+
+// ── Software costing cockpit (sw-cockpit-ui.ts, sw-charts.ts) ──────────────────────────────────────────────────────
+// The same curve and durations as every other view (independent review, Oct 2026: the cockpit ran its own WAAPI
+// motion). Every hook returns at once under reduced motion.
+
+/** A tab panel entering: 6 px rise, 200 ms. */
+export function swEnter(el: Element): void {
+  if (reducedMotion()) return;
+  enter(el, { y: 6 });
+}
+/** A figure whose value just changed: a 4 px rise out of a dimmed state, 200 ms. */
+export function swValueChanged(el: Element): void {
+  if (reducedMotion()) return;
+  gsap.fromTo(el, { opacity: 0.35, y: 4 }, { opacity: 1, y: 0, duration: DUR.base, ease: EASE_OUT, clearProps: CLEAR_PROPS, overwrite: 'auto' });
+}
+/** Chart marks on first render: each grows out of its baseline (a clip, never a scale), ≤ 150 ms of stagger in all. */
+export function swRevealMarks(marks: Element[], columns: boolean[]): void {
+  if (reducedMotion() || !marks.length) return;
+  const step = Math.min(0.012, 0.15 / marks.length);
+  marks.forEach((m, i) => gsap.fromTo(m,
+    { clipPath: columns[i] ? 'inset(100% 0% 0% 0%)' : 'inset(0% 100% 0% 0%)' },
+    { clipPath: 'inset(0% 0% 0% 0%)', duration: DUR.page, delay: i * step, ease: EASE_OUT, clearProps: 'clipPath' }));
+}
+/** A chart mark on a live update: from its previous geometry to the new one, 220 ms. */
+export function swMorphMark(el: Element, from: Record<string, string>, to: Record<string, string>): void {
+  if (reducedMotion()) return;
+  gsap.fromTo(el, { attr: from }, { attr: to, duration: 0.22, ease: EASE_OUT, overwrite: 'auto' });
+}

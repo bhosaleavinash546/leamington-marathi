@@ -25,7 +25,8 @@ describe('#19 the headline states where it sits in its own band', () => {
     if (mc.headlinePercentile > 10) expect(r.summary.grandTotal).toBeGreaterThanOrEqual(mc.p10);
   });
   it('screen, PDF and Excel print it', () => {
-    const ui = src('src/ui/panels/sw-should-cost-ui.ts');
+    // The screen's band card moved to the cockpit views (independent review round); the rail, PDF and Excel print it too.
+    const ui = src('src/ui/panels/sw-should-cost-ui.ts') + src('src/ui/panels/sw-cockpit-views.ts') + src('src/ui/panels/sw-cockpit-ui.ts');
     expect(ui).toMatch(/id="sw-headline-pct"/);
     expect(ui.match(/headlinePercentile/g)!.length).toBeGreaterThanOrEqual(3);
   });
@@ -132,7 +133,7 @@ describe('#15 the software results follow the page\'s display currency', () => {
     const aiStart = lines.findIndex(l => /Per Vehicle: £\$\{Math\.round/.test(l)) - 15;
     const offenders = lines.map((l, i) => [i + 1, l] as const).filter(([i, l]) =>
       /£/.test(l) && !/^\s*(\/\/|\*|\/\*\*)/.test(l)                // comments
-      && !/engineer rate £\/PM|engineer rate \(£\/PM|Type your own £ per person-month/.test(l)   // inputs hold £ (money rule)
+      && !/engineer rate £\/PM|engineer rate \(£\/PM|Type your own £ per person-month|for="sw-cloud-fixed">Fixed cloud platform \(£|for="sw-tool-seat">Tools \(£/.test(l)   // inputs hold £ (money rule)
       && !/unit === '£M'|unit\.replace\('£'/.test(l)                  // engine unit key / its conversion
       && !/per £ \(the engine prices in £/.test(l)                       // the Excel's own currency note
       && !(i > aiStart && i < aiStart + 40)                              // AI brief: engine figures in £
@@ -223,14 +224,17 @@ describe('accessibility — the software panel\'s axe findings (57 label, 2 sele
   it('every field label is linked to its control, and module-row controls are named', () => {
     expect(ui).not.toMatch(/<label class="sw-label">/);
     expect(ui).toMatch(/class="sw-mod-enable"[^>]*aria-label="Include \$\{esc\(def\.shortName\)\}"/);
-    for (const c of ['sw-asil-sel', 'sw-comp-sel', 'sw-reuse-sel', 'sw-cal-sel']) expect(ui).toMatch(new RegExp(`class="sw-sel ${c}"[^>]*aria-label=`));
+    for (const c of ['sw-asil-sel', 'sw-comp-sel', 'sw-reuse-sel', 'sw-cal-sel']) expect(ui).toMatch(new RegExp(`class="sw-sel ${c}[^"]*"[^>]*aria-label=`));
     expect(ui).toMatch(/class="sw-pm-input"[^>]*aria-label=/);
     expect(ui).toMatch(/class="sw-ksloc-input"[^>]*aria-label=/);
   });
   it('the colours axe failed are gone: light result colours, light phase fills under white text, gold button text', () => {
     expect(ui).not.toMatch(/mc\.p10PerVehicle,0\)\}\/veh`, color: '#059669'|mc\.p90PerVehicle,0\)\}\/veh`, color: '#ef4444'/);
-    // Money is in text ink (cockpit UX review: no coloured KPI figures); the colour stays off the numbers.
-    expect(ui).toMatch(/mc\.p10PerVehicle,0\)\}\/veh`, color: 'var\(--sw-text-primary\)'/);
+    // The legacy Monte Carlo cards are gone (independent review); the band card prints its figures in text ink.
+    expect(ui).not.toMatch(/label: 'P10 \(Optimistic\)',\s+val:/);
+    const views = src('src/ui/panels/sw-cockpit-views.ts');
+    expect(views).toMatch(/<div><span>P10<\/span><strong>/);
+    expect(views).not.toMatch(/#[0-9a-f]{6}/i);
     expect(ui).not.toMatch(/'#3b82f6','#0891b2','#059669'/);
     expect(ui).not.toMatch(/color:#9C7328|var\(--gold,#B67D1E\)/);
     expect(ui).toMatch(/--sw-good:\s+#047857/);

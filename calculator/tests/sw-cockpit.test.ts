@@ -268,3 +268,38 @@ describe('gaps round (Oct 2026): costing structure, burden, evidence, quote', ()
     expect(b - a).toBeCloseTo(1_000_000 * computeSWProgram(prog()).summary.horizonYears, 0);
   });
 });
+
+describe('gaps round (Oct 2026): the UI rules the independent review asked for', () => {
+  const read = (p: string) => readFileSync(p, 'utf8');
+  const panels = ['src/ui/panels/sw-should-cost-ui.ts', 'src/ui/panels/sw-cockpit-ui.ts', 'src/ui/panels/sw-charts.ts', 'src/ui/panels/sw-cockpit-views.ts'];
+  it('cockpit motion runs on the one system (animations.ts), never a second WAAPI path', () => {
+    for (const p of panels) expect(read(p), p).not.toMatch(/\.animate\(/);
+    const anim = read('src/ui/animations.ts');
+    for (const f of ['swEnter', 'swValueChanged', 'swRevealMarks', 'swMorphMark']) expect(anim).toContain(`export function ${f}`);
+  });
+  it('one vocabulary: domain names come from the engine; colours from the chart slots', () => {
+    const ui = read('src/ui/panels/sw-should-cost-ui.ts');
+    expect(ui).toMatch(/label: SW_MODULES\.find\(m => m\.category === c\)\?\.categoryLabel/);
+    expect(ui).not.toMatch(/'ADAS L2\/L2\+'|'Infotainment & UX'/);
+  });
+  it('the AI card is hidden when AI is unavailable; legacy sections and the purple button are gone', () => {
+    const views = read('src/ui/panels/sw-cockpit-views.ts');
+    expect(views).toMatch(/class="swk-card ai-only" id="sw-ai-analysis"/);
+    const ui = read('src/ui/panels/sw-should-cost-ui.ts');
+    expect(ui).not.toMatch(/linear-gradient\(135deg,#7c3aed|sw-cat-breakdown|sw-cost-composition|id="sw-monte-carlo"/);
+  });
+  it('unverified benchmarks carry no good / bad colour; the rate badge no longer says every rate is sourced', () => {
+    const views = read('src/ui/panels/sw-cockpit-views.ts');
+    expect(views.slice(views.indexOf('export function benchmarksHTML'), views.indexOf('// ── Insights'))).not.toMatch(/sw-good|sw-bad|is-good|is-bad/);
+    expect(read('src/ui/panels/sw-should-cost-ui.ts')).not.toMatch(/every rate sourced &amp;/);
+  });
+  it('the rail states the unsourced share and speaks a change; the baseline survives a reload; edits are marked', () => {
+    const ck = read('src/ui/panels/sw-cockpit-ui.ts');
+    expect(ck).toMatch(/rests on unsourced catalogue figures/);
+    expect(ck).toMatch(/id="swk-rail-say" aria-live="polite"/);
+    const ui = read('src/ui/panels/sw-should-cost-ui.ts');
+    expect(ui).toMatch(/localStorage\.setItem\(BASELINE_KEY/);
+    expect(ui).toMatch(/data-default="\$\{def\.defaultAsil\}"/);
+    expect(ui).toMatch(/class="sw-mod-pick"/);
+  });
+});

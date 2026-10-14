@@ -1,5 +1,5 @@
 {
- "panelOpenMs": 34,
+ "panelOpenMs": 48,
  "checks": {
   "no guided/advanced toggle": "PASS",
   "domain chip excludes infotainment": "PASS",
@@ -13,13 +13,24 @@
   "Load writes the scenario into the form": "PASS",
   "undo after Load restores the previous programme": "PASS",
   "Delete removes the saved scenario": "PASS",
-  "component list carries no money": "PASS"
+  "component list carries no money": "PASS",
+  "company burden 60 % recosts and the output shows the product": "PASS",
+  "undo restores the burden field": "PASS",
+  "the rail states the unsourced share": "PASS",
+  "Rates shows the evidence card": "PASS",
+  "quote compares the royalty per vehicle built (not all licensing ÷ vehicles)": "PASS",
+  "quote shows the target and the effort / rate gap split": "PASS",
+  "make v buy and the source table render": "PASS",
+  "legacy sections are gone": "PASS",
+  "AI card hidden when AI is unavailable": "PASS",
+  "batch applies to the selected rows only and marks them": "PASS",
+  "phone rail folds to 2 figures and opens to 5": "PASS"
  },
  "axeDialog": [],
  "scenariosSaved": [
-  "Pinned 23:27 baseline £249£199.4M£44.0M£22.70£22.25£227.4M4,135 PM",
-  "Current programme current hub United Kingdom → IndiaUse as baseline£189▼ £60£151.2M▼ £48.2M£16.7M▼ £27.2M£22.70—£22.25—£173.6M▼ £53.7M4,135 PM—",
-  "India hub hub United Kingdom → IndiaLoadUse as baselineDelete£189▼ £60£151.2M▼ £48.2M£16.7M▼ £27.2M£22.70—£22.25—£173.6M▼ £53.7M4,135 PM—"
+  "Pinned 06:48 baseline £302£241.6M£59.8M£22.70£22.25£443.2M4,135 PM",
+  "Current programme current hub United Kingdom → IndiaUse as baseline£216▼ £86£172.9M▼ £68.7M£21.6M▼ £38.1M£22.70—£22.25—£324.7M▼ £118.5M4,135 PM—",
+  "India hub hub United Kingdom → IndiaLoadUse as baselineDelete£216▼ £86£172.9M▼ £68.7M£21.6M▼ £38.1M£22.70—£22.25—£324.7M▼ £118.5M4,135 PM—"
  ],
  "scenarios_source": [
   "in-house (current) baseline",
@@ -37,11 +48,11 @@
   "Mexico hub India → MexicoLoadUse as baseline"
  ],
  "scenarios_reuse": [
-  "Fresh reuse reuse changed on 43LoadUse as baseline",
-  "Light reuse reuse changed on 43LoadUse as baseline",
+  "Fresh reuse reuse changed on 43 modulesLoadUse as baseline",
+  "Light reuse reuse changed on 43 modulesLoadUse as baseline",
   "Medium reuse (current) baseline",
-  "Heavy reuse reuse changed on 43LoadUse as baseline",
-  "Platform reuse reuse changed on 43LoadUse as baseline"
+  "Heavy reuse reuse changed on 43 modulesLoadUse as baseline",
+  "Platform reuse reuse changed on 43 modulesLoadUse as baseline"
  ],
  "axeDark": [],
  "axeLight": [],

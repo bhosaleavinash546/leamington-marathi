@@ -128,7 +128,47 @@ async function main(): Promise<void> {
     const metas = await page.$$eval('#sw-studio .swv-li-meta', ms => ms.map(m => m.textContent ?? ''));
     check('component list carries no money', metas.length > 5 && metas.every(m => !/[£€$]/.test(m)), metas.slice(0, 4));
 
-    // 6 · axe on every tab, dark then light.
+    // 6 · Gaps round: burden layers, evidence, like-for-like quote, legacy sections gone, AI gated, batch on selection.
+    await page.click('[data-swk-tab="setup"]');
+    const tB = await rail();
+    await page.fill('#sw-burden-co', '60'); await page.waitForTimeout(600);
+    const burdenOut = await page.textContent('#sw-overhead');
+    check('company burden 60 % recosts and the output shows the product', burdenOut?.trim() === '× 1.84' && await rail() !== tB, { burdenOut, t: await rail() });
+    await page.click('#swk-undo'); await page.waitForTimeout(400);
+    check('undo restores the burden field', await page.inputValue('#sw-burden-co') === '40' && await rail() === tB, await page.inputValue('#sw-burden-co'));
+    const railEv = await page.textContent('#swk-rail-ev');
+    check('the rail states the unsourced share', /rests on unsourced/.test(railEv ?? ''), railEv);
+    await page.click('[data-swk-tab="rates"]'); await page.waitForTimeout(300);
+    check('Rates shows the evidence card', await page.locator('#swk-evidence').isVisible());
+    await page.click('[data-swk-tab="supplier"]');
+    await page.fill('#swk-q-pv', '25'); await page.fill('#swk-q-nre', '90000000'); await page.fill('#swk-q-pm', '5000'); await page.waitForTimeout(400);
+    const qText = (await page.textContent('#swk-quote-out')) ?? '';
+    check('quote compares the royalty per vehicle built (not all licensing ÷ vehicles)', /Royalty per vehicle built/.test(qText) && /Should-cost £22\.70/.test(qText), qText.slice(0, 300));
+    check('quote shows the target and the effort / rate gap split', /Negotiation target/.test(qText) && /Effort gap/.test(qText) && /Rate gap/.test(qText));
+    check('make v buy and the source table render', await page.locator('#swk-makebuy').isVisible() && await page.locator('#sw-source-decomp tbody tr').count() === 3);
+    const legacy = await page.evaluate(() => ['sw-cat-breakdown', 'sw-cost-composition', 'sw-monte-carlo', 'sw-sensitivity', 'sw-phases', 'sw-summary-cards'].filter(id => document.getElementById(id)));
+    check('legacy sections are gone', legacy.length === 0, legacy);
+    await page.click('[data-swk-tab="report"]'); await page.waitForTimeout(300);
+    const aiOff = await page.evaluate(() => document.documentElement.getAttribute('data-ai') === 'off');
+    check('AI card hidden when AI is unavailable', !aiOff || !(await page.locator('#sw-ai-analysis').isVisible()), { aiOff });
+    await page.click('[data-swk-tab="scope"]');
+    await page.check('.sw-mod-pick[data-id="bms_core"]'); await page.check('.sw-mod-pick[data-id="sensor_fusion"]');
+    await page.selectOption('#swk-bulk-reuse', 'Heavy'); await page.click('#swk-bulk-apply'); await page.waitForTimeout(500);
+    const heavy = await page.$$eval('.sw-reuse-sel', ss => ss.filter(s => (s as HTMLSelectElement).value === 'Heavy').length);
+    const countTxt = await page.textContent('#swk-scope-count');
+    check('batch applies to the selected rows only and marks them', heavy === 2 && /2 selected/.test(countTxt ?? '') && await page.locator('.sw-reuse-sel.is-set').count() === 2, { heavy, countTxt });
+    await page.click('#swk-undo'); await page.waitForTimeout(300);
+    // phone: the rail folds to the answer and the total; "All figures" opens it
+    await page.setViewportSize({ width: 400, height: 860 }); await page.waitForTimeout(300);
+    const visFigs = () => page.$$eval('#swk-rail .swk-fig', fs => fs.filter(f => (f as HTMLElement).offsetParent !== null).length);
+    const folded = await visFigs();
+    await page.click('#swk-rail .swk-rail-more'); await page.waitForTimeout(150);
+    const opened = await visFigs();
+    check('phone rail folds to 2 figures and opens to 5', folded === 2 && opened === 5, { folded, opened });
+    await page.locator('#sw-panel').screenshot({ path: join(OUT, '23-phone-setup.png') });
+    await page.setViewportSize({ width: 1440, height: 900 }); await page.waitForTimeout(300);
+
+    // 7 · axe on every tab, dark then light.
     const allTabs = async () => { const f: string[] = []; for (const t of ['setup', 'scope', 'overview', 'vehicle', 'risk', 'spend', 'modules', 'supplier', 'scenarios', 'rates', 'report']) {
       await page.click(`[data-swk-tab="${t}"]`); await page.waitForTimeout(350); for (const v of await axeRun()) f.push(`${t}: ${v}`); } return f; };
     out.axeDark = await allTabs();

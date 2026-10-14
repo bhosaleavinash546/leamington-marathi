@@ -12,7 +12,7 @@
 
 import type { SWProgramResult, SWCategory } from '../../engine/sw-should-cost.js';
 import { swMoney } from './sw-currency.js';
-import { swSpendProfile, swQuoteCheck, swUnitEconomics, type SWQuote } from '../../engine/sw-cockpit.js';
+import { swSpendProfile, swQuoteCheck, swUnitEconomics, swEvidence, type SWQuote } from '../../engine/sw-cockpit.js';
 import { swSchedule } from '../../engine/sw-schedule.js';
 import {
   waterfallChart, treemapChart, tornadoChart, distributionChart, spendChart, scenarioChart, wireCharts, CHART_CSS, type Money,
@@ -22,7 +22,6 @@ import type { SWScenarioRow, SWScenarioFigures } from '../../engine/sw-scenarios
 const esc = (s: unknown): string => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } as Record<string, string>)[c]);
 const reduced = (): boolean => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
-const EASE = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
 // ── Tabs ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -68,9 +67,7 @@ export function wireTabs(root: HTMLElement, onChange?: (t: CockpitTab) => void):
       const on = p.id === `swk-p-${t}`;
       const was = !p.hidden;
       p.hidden = !on;
-      if (on && !was && !reduced() && typeof p.animate === 'function') {
-        p.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 200, easing: EASE });
-      }
+      if (on && !was && !reduced()) void import('../animations.js').then(a => a.swEnter(p)).catch(() => {});
     });
     onChange?.(t);
   };
@@ -163,8 +160,8 @@ function railFigures(r: SWProgramResult, money: Money, moneyM: Money): RailFig[]
     { key: 'pv', label: 'Per vehicle, all-in', value: money(s.perVehicle), raw: s.perVehicle, sub: `P10–P90 ${money(mc.p10PerVehicle)} – ${money(mc.p90PerVehicle)}`, goodWhenDown: true, hero: true },
     { key: 'nre', label: 'Engineering, one-off', value: moneyM(s.nreTotal), raw: s.nreTotal, sub: `${Math.round(s.totalEffortPersonMonths).toLocaleString('en-GB')} PM · ≈ ${Math.round(sch.averageTeam)} engineers × ${Math.round(sch.developmentMonths)} mo`, goodWhenDown: true },
     { key: 'built', label: 'Royalty per vehicle built', value: m2(u.perVehicleBuilt), raw: u.perVehicleBuilt, sub: 'in the piece price', goodWhenDown: true },
-    { key: 'run', label: 'Running per vehicle-year', value: m2(u.perVehicleYear), raw: u.perVehicleYear, sub: `+ ${moneyM(u.fixedPerYear)} a year fixed`, goodWhenDown: true },
-    { key: 'total', label: 'Programme total', value: moneyM(s.grandTotal), raw: s.grandTotal, sub: `headline ≈ P${mc.headlinePercentile} · P90 ${moneyM(mc.p90)}`, goodWhenDown: true },
+    { key: 'run', label: 'Running per vehicle-year', value: m2(u.perVehicleYear), raw: u.perVehicleYear, sub: `map ${u.subscriptionYears} yr · cloud ${u.serviceYears} yr · + ${moneyM(u.fixedPerYear)} / yr fixed`, goodWhenDown: true },
+    { key: 'total', label: 'Programme total', value: moneyM(s.grandTotal), raw: s.grandTotal, sub: `≈ P${mc.headlinePercentile} · P50 ${moneyM(mc.p50)} · P90 ${moneyM(mc.p90)}`, goodWhenDown: true },
   ];
 }
 
@@ -173,8 +170,18 @@ export function railHTML(r: SWProgramResult | null, money: Money, moneyM: Money)
   return railFigures(r, money, moneyM).map(f => `<div class="swk-fig${f.hero ? ' swk-hero' : ''}" data-fig="${f.key}">
       <div class="swk-fig-l">${esc(f.label)}</div>
       <div class="swk-fig-v"><span class="swk-v">${esc(f.value)}</span><span class="swk-delta" aria-hidden="true"></span></div>
-      <div class="swk-fig-s">${esc(f.sub)}</div>
-    </div>`).join('') + `<div class="swk-rail-msg" id="swk-rail-msg" role="alert" hidden></div>`;
+      <div class="swk-fig-s" title="${esc(f.sub)}">${esc(f.sub)}</div>
+    </div>`).join('') + `<div class="swk-rail-ev" id="swk-rail-ev">${railEvidence(r, moneyM)}</div>
+    <button type="button" class="swk-rail-more" aria-expanded="false" aria-controls="swk-rail">All figures</button>
+    <div class="swk-rail-msg" id="swk-rail-msg" role="alert" hidden></div>
+    <div class="sr-only" id="swk-rail-say" aria-live="polite"></div>`;
+}
+
+/** The rail's evidence line: how much of the total rests on unsourced figures (independent review gap 1). */
+function railEvidence(r: SWProgramResult, moneyM: Money): string {
+  const ev = swEvidence(r);
+  return `<span><strong>${moneyM(ev.byGrade.unsourced)} (${Math.round(ev.unsourcedShare * 100)} %)</strong> of the total rests on unsourced catalogue figures.</span>
+    <button type="button" class="swk-link" data-swk-go="rates">See the evidence</button>`;
 }
 
 const lastRaw = new Map<string, number>();
@@ -191,7 +198,7 @@ export function updateRail(rail: HTMLElement, r: SWProgramResult, money: Money, 
     lastRaw.set(f.key, f.raw);
     const changed = v.textContent !== f.value;
     v.textContent = f.value;
-    sub.textContent = f.sub;
+    sub.textContent = f.sub; sub.title = f.sub;
     // A quiet render (currency switch, first paint) is not a change the engineer made: drop any chip still showing,
     // or a £ delta would sit beside a € figure.
     if (opts.quiet) { window.clearTimeout(Number(chip.dataset.t || 0)); chip.className = 'swk-delta'; chip.textContent = ''; continue; }
@@ -205,10 +212,13 @@ export function updateRail(rail: HTMLElement, r: SWProgramResult, money: Money, 
     chip.className = `swk-delta is-on ${good ? 'is-good' : 'is-bad'}`;
     window.clearTimeout(Number(chip.dataset.t || 0));
     chip.dataset.t = String(window.setTimeout(() => { chip.classList.remove('is-on'); chip.textContent = ''; }, 2400));
-    if (!reduced() && typeof v.animate === 'function') {
-      v.animate([{ opacity: 0.35, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 200, easing: EASE });
-    }
+    if (!reduced()) void import('../animations.js').then(a => a.swValueChanged(v)).catch(() => {});
   }
+  const ev = rail.querySelector<HTMLElement>('#swk-rail-ev');
+  if (ev) ev.innerHTML = railEvidence(r, moneyM);
+  // One polite sentence for a screen reader when the answer moves (independent review gap 10).
+  const say = rail.querySelector<HTMLElement>('#swk-rail-say');
+  if (say && !opts.quiet) say.textContent = `Per vehicle ${figs[0].value}, programme total ${figs[4].value}.`;
   const msg = rail.querySelector<HTMLElement>('#swk-rail-msg');
   if (msg) msg.hidden = true;
   rail.classList.remove('is-stale');
@@ -260,7 +270,7 @@ export function riskHTML(r: SWProgramResult, _money: Money, moneyM: Money): stri
     lowLabel: x.parameter.match(/\((.*) vs/)?.[1], highLabel: x.parameter.match(/vs (.*)\)$/)?.[1] }));
   return `<div class="swk-grid2">
     <section class="swk-card"><h3 class="swk-h">What moves the total</h3><p class="swk-sub">Each driver set to its low and high case, everything else held.</p>${tornadoChart('tor', rows, moneyM)}</section>
-    <section class="swk-card"><h3 class="swk-h">How sure the total is</h3><p class="swk-sub">${mc.iterations.toLocaleString('en-GB')} seeded trials over the cost-bucket ranges (CostVision engineering estimates, correlated). The headline is not the median.</p>
+    <section class="swk-card"><h3 class="swk-h">How sure the total is</h3><p class="swk-sub">${mc.iterations.toLocaleString('en-GB')} seeded trials; each line's range follows its evidence grade (correlated). The headline is not the median — see below.</p>
       ${distributionChart('mc', mc.histogram, { p10: mc.p10, p50: mc.p50, p90: mc.p90, headline: r.summary.grandTotal, headlinePct: mc.headlinePercentile }, moneyM)}</section>
   </div>`;
 }
@@ -291,7 +301,10 @@ export function supplierFormHTML(cats: Array<[SWCategory, string]>): string {
     <p class="swk-sub">Enter what the supplier quoted for the scope costed here. The check compares it with this should-cost and works out the £ per person-month the quote implies for the engineering effort.</p>
     <div class="swk-qgrid">
       <label class="swk-q"><span>Quoted engineering / NRE (£)</span><input id="swk-q-nre" type="number" min="0" step="10000" inputmode="decimal" data-no-live></label>
-      <label class="swk-q"><span>Quoted licence / royalty (£ per vehicle)</span><input id="swk-q-pv" type="number" min="0" step="1" inputmode="decimal" data-no-live></label>
+      <label class="swk-q"><span>Quoted royalty (£ per vehicle built)</span><input id="swk-q-pv" type="number" min="0" step="0.01" inputmode="decimal" data-no-live></label>
+      <label class="swk-q"><span>Quoted service (£ per vehicle per year)</span><input id="swk-q-pvy" type="number" min="0" step="0.01" inputmode="decimal" data-no-live></label>
+      <label class="swk-q"><span>Quoted fixed (£ per year)</span><input id="swk-q-fixed" type="number" min="0" step="10000" inputmode="decimal" data-no-live></label>
+      <label class="swk-q"><span>Supplier's person-months (optional)</span><input id="swk-q-pm" type="number" min="0" step="1" inputmode="decimal" data-no-live></label>
     </div>
     <details class="swk-qdom"><summary>Quotes by domain (optional)</summary><div class="swk-qgrid">${cats.map(([c, l]) =>
       `<label class="swk-q"><span>${esc(l)} (£)</span><input class="swk-q-cat" data-cat="${c}" type="number" min="0" step="10000" data-no-live></label>`).join('')}</div></details>
@@ -302,14 +315,17 @@ export function readQuote(root: HTMLElement): SWQuote {
   const num = (id: string) => { const v = parseFloat((root.querySelector<HTMLInputElement>(`#${id}`)?.value ?? '').trim()); return Number.isFinite(v) && v > 0 ? v : undefined; };
   const byCategory: Partial<Record<SWCategory, number>> = {};
   root.querySelectorAll<HTMLInputElement>('.swk-q-cat').forEach(i => { const v = parseFloat(i.value); if (v > 0) byCategory[i.dataset.cat as SWCategory] = v; });
-  return { nreGBP: num('swk-q-nre'), perVehicleGBP: num('swk-q-pv'), byCategory };
+  return { nreGBP: num('swk-q-nre'), perVehicleGBP: num('swk-q-pv'), perVehicleYearGBP: num('swk-q-pvy'), fixedPerYearGBP: num('swk-q-fixed'), quotedPM: num('swk-q-pm'), byCategory };
 }
 
 export function supplierResultHTML(r: SWProgramResult, quote: SWQuote, money: Money, moneyM: Money): string {
   const q = swQuoteCheck(r, quote);
-  const rows = [q.nre, q.perVehicle, ...q.byCategory].filter(Boolean) as NonNullable<typeof q.nre>[];
-  if (!rows.length) return '<p class="swk-empty">No quote entered yet.</p>';
-  const fmtOf = (k: string) => (k === 'perVehicle' ? money : moneyM);
+  const rows = [q.nre, q.perVehicle, q.perVehicleYear, q.fixedPerYear, ...q.byCategory].filter(Boolean) as NonNullable<typeof q.nre>[];
+  const target = `<p class="swk-implied"><strong>Negotiation target:</strong> a fair Tier-1 price for this scope is <strong>${esc(moneyM(q.target.nre))}</strong> of engineering
+      at ${esc(money(q.target.ratePerPM))} per person-month (${esc(q.target.basis)}).</p>`;
+  if (!rows.length) return `<p class="swk-empty">No quote entered yet.</p>${target}`;
+  const unitFmt = (u: string) => (u === 'perVehicle' ? (n: number) => swMoney(n, 2) : moneyM);
+  const fmtOf = (k: string) => unitFmt(rows.find(x => x.key === k)?.unit ?? 'total');
   return `<div class="swk-qrows">${rows.map(x => { const max = Math.max(x.should, x.quoted) || 1; return `<div class="swk-qrow">
       <div class="swk-qrow-h"><strong>${esc(x.label)}</strong><span class="swk-gap ${x.gap > 0 ? 'is-bad' : 'is-good'}">${x.gap > 0 ? '+' : '−'}${esc(fmtOf(x.key)(Math.abs(x.gap)))} (${x.gapPct >= 0 ? '+' : ''}${x.gapPct.toFixed(0)} %)</span></div>
       <div class="swk-qbar"><span class="swk-qb swk-qb-s" style="width:${(x.should / max * 100).toFixed(1)}%"></span><span class="swk-qlab">Should-cost ${esc(fmtOf(x.key)(x.should))}</span></div>
@@ -317,7 +333,13 @@ export function supplierResultHTML(r: SWProgramResult, quote: SWQuote, money: Mo
     </div>`; }).join('')}</div>
     ${q.impliedRatePerPM ? `<p class="swk-implied">The NRE quote, less tool licences and homologation, buys the ${Math.round(r.summary.totalEffortPersonMonths).toLocaleString('en-GB')} person-months costed here at
       <strong>${esc(money(q.impliedRatePerPM))} per person-month</strong> — <strong>×${q.rateMultiple!.toFixed(2)}</strong> the should-cost loaded rate of ${esc(money(q.loadedRatePerPM))}
-      (hub rate × development source × overhead). The difference is the supplier's overhead, margin, risk allowance and any scope or effort difference: ask for its person-month breakdown.</p>` : ''}`;
+      (hub rate × development source × burden). The difference is the supplier's overhead, margin, risk allowance and any scope or effort difference${q.gapSplit ? '' : ': ask for its person-month breakdown'}.</p>` : ''}
+    ${q.gapSplit && q.nre ? `<div class="swk-kv"><div><span>Quote − target</span><strong>${esc(moneyM(q.nre.quoted - q.target.nre))}</strong></div>
+      <div><span>Effort gap</span><strong>${esc(moneyM(q.gapSplit.effortGap))}</strong></div>
+      <div><span>Rate gap</span><strong>${esc(moneyM(q.gapSplit.rateGap))}</strong></div>
+      <div><span>Supplier's £ / PM</span><strong>${esc(money(q.gapSplit.quotedRatePerPM))}</strong></div></div>
+      <p class="swk-note">Effort gap = (supplier PM − should-cost PM) × the Tier-1 target rate; rate gap = (supplier £/PM − target £/PM) × supplier PM. Challenge the larger one first.</p>` : ''}
+    ${target}`;
 }
 
 // ── Scenarios ────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -360,6 +382,11 @@ export function scenarioResultHTML(rows: SWScenarioRow[], money: Money, moneyM: 
   const signed = (k: 'pv' | 'm' | 'p2' | 'pm', d: number) => Math.abs(d) < (k === 'p2' ? 0.005 : 0.5) ? '—' : `${d > 0 ? '▲' : '▼'} ${f(k, Math.abs(d))}`;
   const ok = rows.filter(r => r.figures);
   const chart = scenarioChart('sc', ok.map(r => ({ key: r.id, label: r.name, value: r.figures!.perVehicle, base: !r.delta })), 'Per vehicle, all-in', money);
+  // Phone: the same figures as a list that reflows (the SVG would shrink its text to ~5 px).
+  const maxPv = Math.max(1, ...ok.map(r => r.figures!.perVehicle));
+  const bars = `<ol class="swk-sc-bars" aria-label="Per vehicle by scenario">${ok.map(r => `<li class="${r.delta ? '' : 'is-base'}"><span>${esc(r.name)}${r.delta ? '' : ' (baseline)'}</span>
+    <span class="v">${esc(money(r.figures!.perVehicle))}${r.delta ? ` · ${r.delta.perVehicle >= 0 ? '+' : '−'}${esc(money(Math.abs(r.delta.perVehicle)))}` : ''}</span>
+    <span class="b" style="width:${(r.figures!.perVehicle / maxPv * 100).toFixed(1)}%" aria-hidden="true"></span></li>`).join('')}</ol>`;
   const head = `<tr><th scope="col">Scenario · what differs</th>${FIG_COLS.map(([, l]) => `<th scope="col" class="n">${esc(l)}</th>`).join('')}</tr>`;
   const body = rows.map(r => {
     const isBase = r.figures && !r.delta;
@@ -378,7 +405,7 @@ export function scenarioResultHTML(rows: SWScenarioRow[], money: Money, moneyM: 
     return `<tr class="${isBase ? 'is-base' : ''}"><th scope="row"><span class="swk-sc-name">${esc(r.name)}${isBase ? ' <span class="swk-pill">baseline</span>' : ''}${r.kind === 'current' ? ' <span class="swk-pill swk-pill-q">current</span>' : ''}</span>
       ${diff}${acts ? `<span class="swk-sc-acts">${acts}</span>` : ''}</th>${cells}</tr>`;
   }).join('');
-  return `${chart}
+  return `${chart}${bars}
     <div class="swk-sc-tw" tabindex="0" role="region" aria-label="Scenario comparison table"><table class="swk-sc-t"><caption class="sr-only">Scenarios against the baseline ${esc(opts.baselineName)}; ▲ costs more, ▼ costs less</caption><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
@@ -434,8 +461,9 @@ export const COCKPIT_CSS = CHART_CSS + `
 .swk-g-row{display:grid;grid-template-columns:minmax(0,220px) 1fr auto;gap:10px;align-items:center;font-size:.74rem}
 .swk-g-n{color:var(--sw-text-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .swk-g-track{position:relative;height:10px;background:var(--sw-surface-alt);border-radius:5px}
-.swk-g-bar{position:absolute;inset:0 auto 0 0;background:var(--swc-1);border-radius:5px}
-.swk-g-bar.is-over{background:var(--swc-2)}
+/* Single-series marks take the app's one accent; multi-series charts keep the validated categorical palette. */
+.swk-g-bar{position:absolute;inset:0 auto 0 0;background:var(--sw-accent);border-radius:5px}
+.swk-g-bar.is-over{background:var(--sw-warn)}
 .swk-g-win{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--sw-text-primary)}
 .swk-g-v{color:var(--sw-text-secondary);font-variant-numeric:tabular-nums;white-space:nowrap}
 .swk-qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 14px;margin:8px 0}
@@ -456,6 +484,26 @@ export const COCKPIT_CSS = CHART_CSS + `
 .swk-scopebar .swk-count{font-size:.74rem;color:var(--sw-text-secondary);margin-left:auto}
 .sw-module-row.swk-hit-none{display:none}
 .swk-icon{min-width:32px;padding:6px 9px;font-size:.9rem;line-height:1}
+.swk-rail-ev{grid-column:1/-1;background:var(--sw-surface);padding:6px 14px;font-size:.74rem;color:var(--sw-text-secondary);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.swk-rail-ev strong{color:var(--sw-text-primary)}
+.swk-rail-more{display:none}
+.swk-burden-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.swk-burden-row label{display:flex;flex-direction:column;gap:4px;font-size:.74rem;color:var(--sw-text-secondary);flex:1 1 120px}
+.swk-burden-out{font-size:1rem;font-weight:700;color:var(--sw-text-primary);font-variant-numeric:tabular-nums;padding:6px 4px}
+.swk-fieldnote{font-size:.72rem;color:var(--sw-text-secondary);margin:6px 0 0;max-width:95ch}
+.swk-sc-bars{display:none;list-style:none;margin:6px 0;padding:0;flex-direction:column;gap:8px}
+.swk-sc-bars li{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:.78rem;color:var(--sw-text-body)}
+.swk-sc-bars .b{grid-column:1/-1;height:10px;border-radius:0 4px 4px 0;background:var(--sw-accent)}
+.swk-sc-bars li.is-base .b{background:var(--swc-ink)}
+.swk-sc-bars .v{font-variant-numeric:tabular-nums;color:var(--sw-text-primary)}
+@media (max-width:900px){.swk-tabs{-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent);mask-image:linear-gradient(90deg,#000 80%,transparent);padding-right:24px}}
+@media (max-width:700px){
+  .swk-rail-more{display:block;grid-column:1/-1;font:inherit;font-size:.76rem;font-weight:600;padding:8px;border:none;background:var(--sw-surface);color:var(--sw-accent);cursor:pointer}
+  .swk-rail:not(.is-open) .swk-fig:not(.swk-hero):not([data-fig="total"]){display:none}
+  .swk-rail:not(.is-open) .swk-rail-ev{display:none}
+  .swk-head-r .swk-btn:not(.swk-icon):not(.swk-btn-primary){display:none}
+}
+@media (max-width:600px){.swk-sc-bars{display:flex}#swk-sc-out figure.swc{display:none}}
 .swk-btn:disabled{opacity:.45;cursor:default}
 .swk-btn:disabled:hover{border-color:var(--sw-border)}
 .swk-btn:focus-visible,.swk-seg:focus-visible,.swk-domain:focus-visible,.swk-link:focus-visible{outline:2px solid var(--sw-accent);outline-offset:2px}
