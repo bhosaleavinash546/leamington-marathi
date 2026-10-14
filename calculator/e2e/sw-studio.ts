@@ -55,7 +55,7 @@ async function main(): Promise<void> {
     // Guided and Advanced agree on the same choices (code review F2) — wizard to its cost step, then Advanced.
     out.hubOptions = await page.$$eval('#sw-region option', os => os.length);
     out.hubOptgroups = await page.$$eval('#sw-region optgroup', gs => gs.map(g => g.getAttribute('label')));
-    out.rateField = await page.inputValue('#sw-base-rate');
+    out.rateField = (await page.inputValue('#sw-base-rate')) || await page.getAttribute('#sw-base-rate', 'placeholder'); // blank = the book rate, shown as the placeholder
 
     await show('#sw-powertrain'); await page.selectOption('#sw-powertrain', 'BEV');
     await page.waitForTimeout(300);
@@ -96,7 +96,7 @@ async function main(): Promise<void> {
     const total = () => page.evaluate(() => [document.querySelector('#swk-rail [data-fig="total"]')?.textContent?.replace(/\s+/g, ' ').trim() ?? ''][0]?.slice(0, 60) ?? '');
     out.totalUK = await total();
     await show('#sw-region'); await page.selectOption('#sw-region', 'IN');
-    out.rateFieldIN = await page.inputValue('#sw-base-rate');
+    out.rateFieldIN = (await page.inputValue('#sw-base-rate')) || await page.getAttribute('#sw-base-rate', 'placeholder');
     await show('#sw-calc-btn'); await page.click('#sw-calc-btn');
     await page.waitForTimeout(900);
     out.totalIN = await total();

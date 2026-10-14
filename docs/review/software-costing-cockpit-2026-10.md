@@ -215,3 +215,39 @@ The reviewer's remaining gaps:
 | Folded phone rail left an empty cell | Fixed. |
 | Histogram not in the accent colour | Fixed. |
 | Baseline rule drawn over the scenario labels | Fixed. |
+
+## 7. Open-items round — research and fixes (14 Oct 2026)
+
+The full record is in `docs/review/software-costing-open-items-2026-10-14.md`: sources, verification, before / after.
+Every new default was re-searched by an independent agent before use.
+
+**What the round changed:**
+
+| Gap from §6 | Outcome |
+|---|---|
+| Cloud: 10-year service rests on dated sources | **8 years** — the median of current OEM terms (GM OnStar Basics 8, Tesla 8, Toyota ≤ 10, Mercedes US 5). The £ per vehicle-year stays unsourced; its basis now gives the only list price (AWS IoT FleetWise, US$5.4–7.2 per vehicle-year for data collection, closed to new customers 30 Apr 2026). Cloud £86.0M → £68.8M. |
+| No sustaining / cyber cost after the last build | **Security support after the last build**: 10 years (CARIAD) × 25 % of the tail team. The duty is sourced (UN R155 post-production phase "until the end-of-life of all vehicles under the vehicle type"; R156 lifetime updates); the 25 % is a labelled assumption. It is its own evidence line, graded unsourced, with a sensitivity row and two Setup fields. +£6.6M. |
+| Make or buy is one factor | Margin re-sourced on six ESPs (11.7 %; it was 18 % on four). A Tier-1 is now about break-even with in-house (× 0.997). No sourced in-house v supplier effort ratio or per-hub sell rate was found, so the efficiency factors stay labelled unsourced. |
+| 90-month development window | **54 months** (Volkswagen's stated cycle, IAA 2023). Phases, team size and tool spreading follow it; undiscounted cost does not change. |
+| Phone charts scale down | Charts are redrawn at the card's width; labels go above the bars below 520 px. |
+| Book rate looks typed | The field is blank with a greyed placeholder; a typed value is the override. |
+| Baseline per viewer | Stored as a project (`sw_baseline`) — on the server for a signed-in user. |
+
+**Also sourced or corrected:**
+- Avanci 4G cellular patent licence of US$20 per vehicle on the TCU module.
+- Cerence price per unit US$5.09.
+- UK contractor reference £525 / day (35 rates).
+- Labels for GAS / QNX, map data, Qt and Bluetooth now say what is and is not published.
+
+**Default programme:** £241.6M → **£243.0M**, £302 → **£304** per vehicle, royalty per vehicle built £22.70 → £37.84.
+
+**Proof:**
+- `tests/sw-cockpit.test.ts` adds the open-items block. Tests pinned to the old defaults were updated (sw-p2, sw-p3,
+  sw-vehicle-studio).
+- `e2e/sw-cockpit-flow.ts` passes 24 / 24 with axe []. `e2e/sw-live.ts` and `e2e/sw-studio.ts` pass, with axe [].
+
+**Still unsourced (labelled):**
+- the module effort catalogue (next source: Clark & Madachy's defence productivity tables);
+- the cloud £ per vehicle-year, map data and IP licence £;
+- the supplier efficiency factors;
+- the post-production share.

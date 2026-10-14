@@ -287,7 +287,7 @@ export function spendHTML(r: SWProgramResult, _money: Money, moneyM: Money): str
       <p class="swk-sub">COCOMO II.2000 duration per module (modules developed in parallel). Average team ${Math.round(sch.averageTeam)} engineers over ${Math.round(sch.developmentMonths)} months.
       ${sch.overrunning.length ? `<strong>${sch.overrunning.length} module${sch.overrunning.length === 1 ? '' : 's'} need longer than the development window at nominal staffing.</strong>` : 'Every module fits the development window at nominal staffing.'}</p>
       <div class="swk-gantt" role="list">${sch.rows.slice(0, 12).map(x => `<div class="swk-g-row" role="listitem">
-        <span class="swk-g-n">${esc(x.name)}</span>
+        <span class="swk-g-n" title="${esc(x.name)}">${esc(x.name)}</span>
         <span class="swk-g-track"><span class="swk-g-bar${x.tdevMonths > sch.developmentMonths ? ' is-over' : ''}" style="width:${Math.min(100, x.tdevMonths / Math.max(sch.developmentMonths, sch.longestMonths) * 100).toFixed(1)}%"></span>
           <span class="swk-g-win" style="left:${Math.min(100, sch.developmentMonths / Math.max(sch.developmentMonths, sch.longestMonths) * 100).toFixed(1)}%" aria-hidden="true"></span></span>
         <span class="swk-g-v">${x.tdevMonths.toFixed(0)} mo · ${x.avgStaff.toFixed(1)} FTE</span></div>`).join('')}</div>
@@ -433,7 +433,8 @@ export const COCKPIT_CSS = CHART_CSS + `
 .swk-fig-v{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .swk-v{font-size:1.2rem;font-weight:750;color:var(--sw-text-primary);font-variant-numeric:tabular-nums;white-space:nowrap}
 .swk-hero .swk-v{font-size:1.8rem}
-.swk-fig-s{font-size:.7rem;color:var(--sw-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* The sub-line wraps (up to two lines) — it carries the basis of the figure, so it is never cut off. */
+.swk-fig-s{font-size:.7rem;line-height:1.35;color:var(--sw-text-secondary);overflow-wrap:anywhere}
 .swk-delta{font-size:.7rem;font-weight:700;padding:1px 6px;border-radius:999px;opacity:0;transform:translateY(3px);transition:opacity 180ms cubic-bezier(.22,.61,.36,1),transform 180ms cubic-bezier(.22,.61,.36,1);font-variant-numeric:tabular-nums}
 .swk-delta.is-on{opacity:1;transform:none}
 .swk-delta.is-good{color:var(--sw-good);background:color-mix(in srgb,var(--sw-good) 14%,transparent)}

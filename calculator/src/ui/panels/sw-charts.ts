@@ -25,6 +25,24 @@ export const DOMAIN_SLOT: Record<string, number> = { A: 0, B: 1, C: 2, D: 3, E: 
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
 
+/**
+ * Reflow (phone review, Oct 2026): a chart is drawn at the width of the card that holds it when that card is narrower
+ * than the chart's own drawing width, so its text stays at reading size and its layout (label column, tick count,
+ * marker labels) follows the space — it used to scale the desktop drawing down or scroll it sideways. `null` = the
+ * desktop drawing, scaled to fit. The host sets it before a render (`setChartWidth`) and re-renders on a resize.
+ */
+let chartW: number | null = null;
+export function setChartWidth(px: number | null): void {
+  chartW = px != null && Number.isFinite(px) && px > 0 ? Math.max(280, Math.round(px)) : null;
+}
+export function chartWidth(): number | null { return chartW; }
+/** The drawing width: the card's width when narrower than the chart's own, else the chart's own. */
+const fitW = (def: number): number => (chartW != null && chartW < def ? chartW : def);
+/** Narrow layout below this drawing width (labels above bars, fewer ticks). */
+const NARROW = 520;
+/** Shorten a label to the characters that fit `px` at the chart's label size (≈ 6.4 px a character at 12 px). */
+const fitText = (t: string, px: number): string => { const n = Math.max(4, Math.floor(px / 6.4)); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
+
 /** Rounded data end on the right of a horizontal bar, square at the baseline. */
 function hbar(x: number, y: number, w: number, h: number, fill: string, key: string, tip: string, cls = ''): string {
   const rr = Math.min(4, w / 2, h / 2);
@@ -69,7 +87,8 @@ export interface WaterfallItem { key: string; label: string; value: number; grou
 
 export function waterfallChart(id: string, items: WaterfallItem[], total: number, money: Money): string {
   const rows = items.filter(i => i.value > 0);
-  const W = 640, rowH = 26, gap = 8, left = 168, right = 86, top = 6;
+  // Narrow: each label sits on its own line above its bar (full text, full-width bars) instead of a cramped column.
+  const W = fitW(640), narrow = W < NARROW, lab = narrow ? 16 : 0, rowH = 26 + lab, gap = 8, left = narrow ? 4 : 186, right = narrow ? 64 : 80, top = 6;
   const H = top + (rows.length + 1) * (rowH + gap) + 4;
   const sx = (v: number) => (W - left - right) * v / (total || 1);
   let acc = 0;
@@ -79,17 +98,22 @@ export function waterfallChart(id: string, items: WaterfallItem[], total: number
     acc += it.value;
     const fill = it.group === 'nre' ? SLOT(0) : SLOT(1);
     const pct = total > 0 ? it.value / total * 100 : 0;
-    return `<text class="swc-lbl" x="${left - 10}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(it.label)}</text>
-      ${hbar(x, y + 4, sx(it.value), rowH - 8, fill, it.key, `${it.label}: ${money(it.value)} (${pct.toFixed(1)} % of total)`)}
-      <text class="swc-val" x="${r1(x + sx(it.value) + 6)}" y="${y + rowH / 2 + 4}">${esc(money(it.value))}</text>`;
+    const lbl = narrow
+      ? `<text class="swc-lbl" x="${left}" y="${y + 12}">${esc(it.label)}</text>`
+      : `<text class="swc-lbl" x="${left - 10}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(fitText(it.label, left - 14))}</text>`;
+    return `${lbl}
+      ${hbar(x, y + 4 + lab, sx(it.value), rowH - 8 - lab, fill, it.key, `${it.label}: ${money(it.value)} (${pct.toFixed(1)} % of total)`)}
+      <text class="swc-val" x="${r1(x + sx(it.value) + 6)}" y="${y + lab + (rowH - lab) / 2 + 4}">${esc(money(it.value))}</text>`;
   }).join('');
   const yT = top + rows.length * (rowH + gap);
-  const totalBar = `<text class="swc-lbl swc-strong" x="${left - 10}" y="${yT + rowH / 2 + 4}" text-anchor="end">Programme total</text>
-    ${hbar(left, yT + 4, sx(total), rowH - 8, 'var(--swc-ink)', 'total', `Programme total: ${money(total)}`)}
-    <text class="swc-val swc-strong" x="${r1(left + sx(total) + 6)}" y="${yT + rowH / 2 + 4}">${esc(money(total))}</text>`;
+  const totalBar = `${narrow
+      ? `<text class="swc-lbl swc-strong" x="${left}" y="${yT + 12}">Programme total</text>`
+      : `<text class="swc-lbl swc-strong" x="${left - 10}" y="${yT + rowH / 2 + 4}" text-anchor="end">Programme total</text>`}
+    ${hbar(left, yT + 4 + lab, sx(total), rowH - 8 - lab, 'var(--swc-ink)', 'total', `Programme total: ${money(total)}`)}
+    <text class="swc-val swc-strong" x="${r1(left + sx(total) + 6)}" y="${yT + lab + (rowH - lab) / 2 + 4}">${esc(money(total))}</text>`;
   const connectors = rows.map((_, i) => {
     const xEnd = left + sx(rows.slice(0, i + 1).reduce((a, r) => a + r.value, 0));
-    const y1 = top + i * (rowH + gap) + rowH - 4, y2 = top + (i + 1) * (rowH + gap) + 4;
+    const y1 = top + i * (rowH + gap) + rowH - 4, y2 = top + (i + 1) * (rowH + gap) + 4 + lab;
     return `<line class="swc-conn" x1="${r1(xEnd)}" x2="${r1(xEnd)}" y1="${y1}" y2="${y2}"/>`;
   }).join('');
   return `<figure class="swc" data-chart="${esc(id)}">
@@ -140,7 +164,8 @@ function squarify(values: number[], box: Rect): Rect[] {
 }
 
 export function treemapChart(id: string, nodes: TreeNode[], money: Money): string {
-  const W = 640, H = 340;
+  // On a narrow card the map is drawn taller (closer to square) so its blocks stay big enough to label.
+  const W = fitW(640), H = W < NARROW ? Math.round(W * 1.05) : 340;
   const groups = new Map<string, { label: string; value: number; items: TreeNode[] }>();
   for (const n of nodes.filter(n => n.value > 0)) {
     const g = groups.get(n.group) ?? { label: n.groupLabel, value: 0, items: [] };
@@ -158,7 +183,8 @@ export function treemapChart(id: string, nodes: TreeNode[], money: Money): strin
     const slotN = (DOMAIN_SLOT[gk] ?? gi) % 7;
     const fill = SLOT(slotN);
     const on = `var(--swc-on-${slotN + 1})`;   // white or ink, whichever clears contrast on this fill
-    const headTxt = `${g.label} · ${money(g.value)}`;
+    // Money first: a narrow block cuts the end of its header, and the £ is what the header is for (the legend names it).
+    const headTxt = `${money(g.value)} · ${g.label}`;
     const maxCh = Math.floor((r.w - 10) / 6.2);
     cells.push(`<g class="swc-tm-g">${head ? `<text class="swc-tm-h" x="${r1(r.x + 6)}" y="${r1(r.y + 12)}">${esc(headTxt.length > maxCh ? headTxt.slice(0, Math.max(4, maxCh - 1)) + '…' : headTxt)}</text>` : ''}`);
     items.forEach((it, ii) => {
@@ -188,30 +214,33 @@ export interface TornadoRow { label: string; low: number; base: number; high: nu
 
 export function tornadoChart(id: string, rows: TornadoRow[], money: Money): string {
   const rs = [...rows].sort((a, b) => Math.abs(b.high - b.low) - Math.abs(a.high - a.low));
-  const W = 640, rowH = 34, left = 210, right = 20, top = 22;
+  const W = fitW(640), narrow = W < NARROW, lab = narrow ? 16 : 0, rowH = 34 + lab, left = narrow ? 4 : 210, right = narrow ? 4 : 20, top = 22;
   const H = top + rs.length * rowH + 8;
   const base = rs[0]?.base ?? 0;
   const span = Math.max(1, ...rs.map(r => Math.max(Math.abs(r.low - base), Math.abs(r.high - base))));
   const cx = left + (W - left - right) / 2;
-  const half = (W - left - right) / 2 - 64;
+  const half = Math.max(20, (W - left - right) / 2 - (narrow ? 52 : 64));
   const sx = (d: number) => half * d / span;
   const bars = rs.map((r, i) => {
-    const y = top + i * rowH;
+    const y = top + i * rowH + lab;
     const dl = r.low - base, dh = r.high - base;
     const seg = (d: number, tag: string, slot: number, txt: string) => {
       const x0 = d < 0 ? cx + sx(d) : cx;
       const w = Math.abs(sx(d));
       const path = d < 0
-        ? `<path class="swc-mark" d="M${r1(cx)} ${y + 8}h${r1(-(w - Math.min(4, w)))}a4 4 0 0 0 -4 4v${rowH - 24}a4 4 0 0 0 4 4h${r1(w - Math.min(4, w))}z" fill="${SLOT(slot)}" data-k="${esc(r.label + tag)}" data-tip="${esc(txt)}"/>`
-        : hbar(x0, y + 8, w, rowH - 16, SLOT(slot), r.label + tag, txt);
+        ? `<path class="swc-mark" d="M${r1(cx)} ${y + 8}h${r1(-(w - Math.min(4, w)))}a4 4 0 0 0 -4 4v${rowH - lab - 24}a4 4 0 0 0 4 4h${r1(w - Math.min(4, w))}z" fill="${SLOT(slot)}" data-k="${esc(r.label + tag)}" data-tip="${esc(txt)}"/>`
+        : hbar(x0, y + 8, w, rowH - lab - 16, SLOT(slot), r.label + tag, txt);
       return path;
     };
     const lowTxt = `${r.label} — ${r.lowLabel ?? 'low'}: ${money(r.low)} (${dl >= 0 ? '+' : ''}${money(dl)})`;
     const highTxt = `${r.label} — ${r.highLabel ?? 'high'}: ${money(r.high)} (${dh >= 0 ? '+' : ''}${money(dh)})`;
-    return `<text class="swc-lbl" x="${left - 10}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(r.label)}</text>
+    const yc = y + (rowH - lab) / 2 + 4;
+    return `${narrow
+        ? `<text class="swc-lbl" x="${left}" y="${y - 2}">${esc(r.label)}</text>`
+        : `<text class="swc-lbl" x="${left - 10}" y="${yc}" text-anchor="end">${esc(fitText(r.label, left - 14))}</text>`}
       ${dl !== 0 ? seg(dl, '-lo', 2, lowTxt) : ''}${dh !== 0 ? seg(dh, '-hi', 1, highTxt) : ''}
-      <text class="swc-val" x="${r1(cx + sx(Math.min(dl, dh)) - 6)}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(money(Math.min(r.low, r.high)))}</text>
-      <text class="swc-val" x="${r1(cx + sx(Math.max(dl, dh)) + 6)}" y="${y + rowH / 2 + 4}">${esc(money(Math.max(r.low, r.high)))}</text>`;
+      <text class="swc-val" x="${r1(cx + sx(Math.min(dl, dh)) - 6)}" y="${yc}" text-anchor="end">${esc(money(Math.min(r.low, r.high)))}</text>
+      <text class="swc-val" x="${r1(cx + sx(Math.max(dl, dh)) + 6)}" y="${yc}">${esc(money(Math.max(r.low, r.high)))}</text>`;
   }).join('');
   return `<figure class="swc" data-chart="${esc(id)}">
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}-t"><title id="${id}-t">What moves the programme total from ${esc(money(base))}</title>
@@ -230,7 +259,7 @@ export interface ScenarioBar { key: string; label: string; value: number; base?:
 export function scenarioChart(id: string, bars: ScenarioBar[], measure: string, money: Money): string {
   if (!bars.length) return '';
   // Drawn wide (it spans the card) so a short list does not scale its text up.
-  const W = 1000, rowH = 30, left = 230, right = 170, top = 8;
+  const W = fitW(1000), narrow = W < NARROW, rowH = 30, left = narrow ? Math.round(W * 0.34) : 230, right = narrow ? 118 : 170, top = 8;
   const H = top + bars.length * rowH + 6;
   const max = niceMax(Math.max(...bars.map(b => b.value), 0));
   const sx = (v: number) => (W - left - right) * Math.max(0, v) / max;
@@ -239,9 +268,9 @@ export function scenarioChart(id: string, bars: ScenarioBar[], measure: string, 
     const y = top + i * rowH;
     const d = base && !b.base ? b.value - base.value : null;
     const dTxt = d == null ? 'baseline' : `${d >= 0 ? '+' : '−'}${money(Math.abs(d))}`;
-    return `<text class="swc-lbl${b.base ? ' swc-strong' : ''}" x="${left - 10}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(b.label.length > 28 ? b.label.slice(0, 27) + '…' : b.label)}</text>
+    return `<text class="swc-lbl${b.base ? ' swc-strong' : ''}" x="${left - 10}" y="${y + rowH / 2 + 4}" text-anchor="end">${esc(fitText(b.label, Math.min(left - 14, 28 * 6.4)))}</text>
       ${hbar(left, y + 7, sx(b.value), rowH - 14, b.base ? 'var(--swc-ink)' : 'var(--sw-accent)', b.key, `${b.label}: ${money(b.value)} (${dTxt})`)}
-      <text class="swc-val${b.base ? ' swc-strong' : ''}" x="${r1(left + sx(b.value) + 6)}" y="${y + rowH / 2 + 4}">${esc(money(b.value))}${d == null ? '' : ` · ${esc(dTxt)}`}</text>`;
+      <text class="swc-val${b.base ? ' swc-strong' : ''}" x="${r1(left + sx(b.value) + 6)}" y="${y + rowH / 2 + 4}">${esc(money(b.value))}${d == null || narrow ? '' : ` · ${esc(dTxt)}`}</text>`;
   }).join('');
   const rule = base ? `<line class="swc-base" x1="${r1(left + sx(base.value))}" x2="${r1(left + sx(base.value))}" y1="${top}" y2="${H - 4}"/>` : '';
   return `<figure class="swc" data-chart="${esc(id)}">
@@ -254,7 +283,8 @@ export function scenarioChart(id: string, bars: ScenarioBar[], measure: string, 
 
 export function distributionChart(id: string, hist: Array<{ lo: number; hi: number; count: number }>,
   marks: { p10: number; p50: number; p90: number; headline: number; headlinePct: number }, money: Money): string {
-  const W = 640, H = 220, left = 16, right = 16, top = 30, bottom = 34;
+  // Narrow: the P50 label sits on a second line above P10 / P90 so the three never overlap.
+  const W = fitW(640), narrow = W < NARROW, H = narrow ? 236 : 220, left = 16, right = 16, top = narrow ? 46 : 30, bottom = 34;
   if (!hist.length) return '';
   const lo = hist[0].lo, hi = hist[hist.length - 1].hi;
   const maxC = Math.max(...hist.map(b => b.count));
@@ -272,9 +302,9 @@ export function distributionChart(id: string, hist: Array<{ lo: number; hi: numb
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}-t"><title id="${id}-t">Range of the programme total over the simulation: P10 ${esc(money(marks.p10))}, P50 ${esc(money(marks.p50))}, P90 ${esc(money(marks.p90))}</title>
       <line class="swc-axis" x1="${left}" x2="${W - right}" y1="${H - bottom}" y2="${H - bottom}"/>
       ${bars}
-      ${marker(marks.p10, `P10 ${money(marks.p10)}`, 'swc-mk-p', 0)}${marker(marks.p50, `P50 ${money(marks.p50)}`, 'swc-mk-p', 0)}${marker(marks.p90, `P90 ${money(marks.p90)}`, 'swc-mk-p', 0)}
+      ${marker(marks.p10, `P10 ${money(marks.p10)}`, 'swc-mk-p', 0)}${marker(marks.p50, `P50 ${money(marks.p50)}`, 'swc-mk-p', narrow ? -16 : 0)}${marker(marks.p90, `P90 ${money(marks.p90)}`, 'swc-mk-p', 0)}
       ${marker(marks.headline, `Headline ≈ P${marks.headlinePct}`, 'swc-mk-h', H - top - bottom + 34)}
-      <text class="swc-axis-t" x="${left}" y="${H - 6}">${esc(money(lo))}</text><text class="swc-axis-t" x="${W - right}" y="${H - 6}" text-anchor="end">${esc(money(hi))}</text>
+      <text class="swc-axis-t" x="${left}" y="${narrow ? H - bottom + 13 : H - 6}">${esc(money(lo))}</text><text class="swc-axis-t" x="${W - right}" y="${narrow ? H - bottom + 13 : H - 6}" text-anchor="end">${esc(money(hi))}</text>
     </svg>
     ${table('Simulated programme total', ['Bin', 'Trials'], hist.map(b => [`${money(b.lo)} – ${money(b.hi)}`, String(b.count)]))}
   </figure>`;
@@ -286,7 +316,7 @@ export interface SpendYearView { label: string; parts: Record<string, number>; t
 
 export function spendChart(id: string, years: SpendYearView[], kinds: Array<[string, string]>, sopIndex: number, money: Money): string {
   // Drawn wide (it spans the page) so its text stays at reading size when scaled.
-  const W = 1000, H = 300, left = 8, right = 8, top = 24, bottom = 34;
+  const W = fitW(1000), narrow = W < NARROW, H = narrow ? 240 : 300, left = 8, right = 8, top = 24, bottom = 34;
   const maxT = niceMax(Math.max(...years.map(y => y.total)));
   const n = years.length;
   const slot = (W - left - right) / n;
@@ -302,7 +332,7 @@ export function spendChart(id: string, years: SpendYearView[], kinds: Array<[str
         `${y.label} · ${label}: ${money(y.parts[k])} (year total ${money(y.total)})`, j === live.length - 1);
       base -= h;
       return seg;
-    }).join('') + (i % Math.ceil(n / 12) === 0 || i === sopIndex || i === n - 1 ? `<text class="swc-axis-t" x="${r1(x + bw / 2)}" y="${H - bottom + 14}" text-anchor="middle">${esc(y.label.replace('Year ', 'Y').replace('Dev ', 'D').replace('Service ', 'S'))}</text>` : '');
+    }).join('') + (i % Math.ceil(n / (narrow ? 5 : 12)) === 0 || i === sopIndex || i === n - 1 ? `<text class="swc-axis-t" x="${r1(x + bw / 2)}" y="${H - bottom + 14}" text-anchor="middle">${esc(y.label.replace('Year ', 'Y').replace('Dev ', 'D').replace('Service ', 'S'))}</text>` : '');
   }).join('');
   const xs = left + sopIndex * slot;
   const grid = [0.5, 1].map(f => `<line class="swc-grid" x1="${left}" x2="${W - right}" y1="${r1(H - bottom - sy(maxT * f))}" y2="${r1(H - bottom - sy(maxT * f))}"/>
@@ -312,7 +342,7 @@ export function spendChart(id: string, years: SpendYearView[], kinds: Array<[str
       ${grid}<line class="swc-axis" x1="${left}" x2="${W - right}" y1="${H - bottom}" y2="${H - bottom}"/>${cols}
       <line class="swc-sop" x1="${r1(xs)}" x2="${r1(xs)}" y1="${top - 10}" y2="${H - bottom}"/>
       <text class="swc-mk-t" x="${r1(xs + 4)}" y="${top - 12}">Start of production</text>
-      <text class="swc-axis-t" x="${left}" y="${H - 4}">D = development year · Y = production year</text></svg>
+      <text class="swc-axis-t" x="${left}" y="${H - 4}">${narrow ? 'D dev · Y production · S service' : 'D = development year · Y = production year · S = service year (after the last build)'}</text></svg>
     ${legend(kinds.map(([, l], i) => [SLOT(i), l]))}
     ${table('Nominal spend per year', ['Year', ...kinds.map(k => k[1]), 'Total'], years.map(y => [y.label, ...kinds.map(([k]) => money(y.parts[k] ?? 0)), money(y.total)]))}
   </figure>`;
@@ -413,6 +443,5 @@ html:not([data-theme="light"]) .sw-cockpit{--swc-1:#3987e5;--swc-2:#d95926;--swc
   transition:opacity 150ms cubic-bezier(.22,.61,.36,1),transform 150ms cubic-bezier(.22,.61,.36,1)}
 .swc-tip.is-on{opacity:1;transform:none}
 @media (prefers-reduced-motion: reduce){.swc-tip{transition:none}}
-/* Phone width: a chart keeps reading-size text and scrolls inside its own frame (the page never scrolls sideways). */
-@media (max-width:560px){.swc{overflow-x:auto;-webkit-overflow-scrolling:touch}.swc svg{min-width:520px}.swc .swc-legend,.swc .swc-data{position:sticky;left:0;max-width:calc(100vw - 48px)}}
+/* Phone width: charts are redrawn at the card's width (setChartWidth) — nothing scrolls sideways or shrinks its text. */
 `;

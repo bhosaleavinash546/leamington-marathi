@@ -136,9 +136,11 @@ overhead.
   - UK: auto-enrolment pension is missing.
 - **Hours.** Some public-holiday counts are not sourced and are labelled so: CN, JP, KR, IN, EG, MX, and RO leave.
 - **Supplier sell rate.** The development-source factors (Tier-1 ×0.88, start-up ×0.72) are unsourced EFFORT factors.
-  Since 14 Oct 2026 the price adds a supplier margin: factor ÷ (1 − 18 %), the median of four listed engineering-services
-  firms' margins (`supplierMargin`; `docs/review/software-costing-cockpit-2026-10.md`). A sourced sell rate per hub is
-  still the next research round.
+  Since 14 Oct 2026 the price adds a supplier margin: factor ÷ (1 − margin), the median of six listed engineering-services
+  firms' latest margins — 11.7 % (Bertrandt, EDAG, ALTEN, LTTS, KPIT, Tata Elxsi; `supplierMargin`;
+  `docs/review/software-costing-open-items-2026-10-14.md`). The research found no published sell rate per hub for
+  Germany or India. UK has framework maxima and advert rates only. The UK reference in the rate check is IT Jobs Watch
+  "Embedded Systems", £525 / day (35 rates).
 
 Regenerate after editing the config:
 

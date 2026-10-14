@@ -20,7 +20,7 @@ import type {
 } from '../../engine/sw-should-cost.js';
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion, swLoadedRate, swOverhead,
-  SW_DEFAULT_BURDEN, SW_BURDEN_BASIS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_SUBSCRIPTION_BASIS, SW_DEFAULT_SERVICE_YEARS, SW_SERVICE_BASIS,
+  SW_DEFAULT_BURDEN, SW_BURDEN_BASIS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_SUBSCRIPTION_BASIS, SW_DEFAULT_SERVICE_YEARS, SW_SERVICE_BASIS, SW_POST_EOP_YEARS, SW_POST_EOP_SHARE, SW_POST_EOP_BASIS, SW_DEVELOPMENT_BASIS,
   SW_TOOL_SEAT_GBP, SW_TOOL_SEAT_BASIS, SW_MAINT_BASIS, SW_HOMOLOGATION_BASIS, SW_MC_RANGE_BY_GRADE,
   applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_COCOMO, SW_COCOMO_EXPONENT,
 } from '../../engine/sw-should-cost.js';
@@ -37,7 +37,7 @@ import {
   evidenceCardHTML, bandMethodHTML, domainTableHTML, moduleTableHTML, sourceTableHTML, makeBuyHTML, exportCardHTML,
   benchmarksHTML, insightsHTML, buildInsights, VIEWS_CSS,
 } from './sw-cockpit-views.js';
-import { DOMAIN_SLOT } from './sw-charts.js';
+import { DOMAIN_SLOT, setChartWidth } from './sw-charts.js';
 import { swRateCheck, swEvidence, swMakeBuy, swQuoteCheck, swUnitEconomics } from '../../engine/sw-cockpit.js';
 import { componentLoad } from './sw-vehicle-skeleton.js';
 import { vehicleComponent } from '../../engine/sw-vehicle-map.js';
@@ -405,6 +405,8 @@ function writeInputsToForm(p: SWProgramInputs): void {
   set('sw-sub-years', p.subscriptionYears); set('sw-svc-years', p.connectedServiceYears); set('sw-cloud-fixed', p.cloudFixedPerYearGBP);
   set('sw-tool-seat', p.toolSeatGBPPerYear); set('sw-wage-esc', p.wageEscalationPct); set('sw-discount', p.discountRatePct);
   set('sw-csms-types', p.csmsTypesSharing);
+  set('sw-post-years', p.postProductionSupportYears);
+  set('sw-post-share', p.postProductionSupportShare != null ? Math.round(p.postProductionSupportShare * 100) : null);
   set('sw-effort-cal', p.effortCalibration);
   set('sw-dev-months', p.developmentMonths);
   set('sw-connected', p.connectedVehicleShare != null ? Math.round(p.connectedVehicleShare * 100) : null);
@@ -534,19 +536,38 @@ function renderScenarios(): void {
   document.querySelectorAll<HTMLButtonElement>('[data-sc-mode]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.scMode === _scMode)));
 }
 
-const BASELINE_KEY = 'cv-sw-baseline';
+/** The pinned scenario baseline is a saved project of its own kind: on the server for a signed-in user (it follows
+ *  them to another device), in this browser otherwise — the same store as saved scenarios (project-store.ts). The
+ *  old browser-only key is read once and migrated. */
+const BASELINE_KIND = 'sw_baseline';
+const LEGACY_BASELINE_KEY = 'cv-sw-baseline';
+let _baselineId: string | null = null;
 function storeBaseline(): void {
-  try {
-    if (!_baseline) { localStorage.removeItem(BASELINE_KEY); return; }
-    const { rateLibrary: _drop, ...inputs } = _baseline.inputs;
-    localStorage.setItem(BASELINE_KEY, JSON.stringify({ name: _baseline.name, inputs }));
-  } catch { /* storage unavailable — the pin lasts for this visit */ }
+  const prevId = _baselineId;
+  if (!_baseline) {
+    _baselineId = null;
+    if (prevId) void projectStore.remove(BASELINE_KIND, prevId).catch(() => { /* offline — the pin lasts for this visit */ });
+    return;
+  }
+  const { rateLibrary: _drop, ...inputs } = _baseline.inputs;
+  const id = prevId ?? `swb-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  _baselineId = id;
+  void projectStore.save({ id, kind: BASELINE_KIND, name: _baseline.name, data: inputs }).catch(() => { /* offline */ });
 }
-function restoreBaseline(): void {
+async function restoreBaseline(): Promise<void> {
   try {
-    const raw = localStorage.getItem(BASELINE_KEY);
-    if (raw) { const b = JSON.parse(raw) as { name: string; inputs: SWProgramInputs }; if (b?.name && b.inputs?.modules) _baseline = b; }
-  } catch { /* ignore a bad or blocked store */ }
+    const list = await projectStore.list(BASELINE_KIND);
+    const latest = [...list].sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? ''))[0];
+    const inputs = latest?.data as SWProgramInputs | undefined;
+    if (latest && inputs?.modules) { _baseline = { name: latest.name, inputs }; _baselineId = latest.id; return; }
+    // Migrate a pin from the browser-only key (before Oct 2026).
+    const raw = localStorage.getItem(LEGACY_BASELINE_KEY);
+    if (raw) {
+      const b = JSON.parse(raw) as { name: string; inputs: SWProgramInputs };
+      if (b?.name && b.inputs?.modules) { _baseline = b; storeBaseline(); }
+      localStorage.removeItem(LEGACY_BASELINE_KEY);
+    }
+  } catch { /* store unavailable — no pin restored */ }
 }
 
 function pinBaseline(name?: string, inputs?: SWProgramInputs): void {
@@ -841,7 +862,7 @@ function renderSWPanelHTML(): string {
       </div>
       <div class="sw-field-group">
         <label class="sw-label" for="sw-dev-months">Development duration (months)</label>
-        <input id="sw-dev-months" type="number" class="sw-config-inp" min="6" max="180" step="1" placeholder="${SW_DEFAULT_DEVELOPMENT_MONTHS}" value="${inputs.developmentMonths ?? ''}" title="Feasibility to SOP. Development tool licences are paid over this, and the phase timeline follows it. Blank = ${SW_DEFAULT_DEVELOPMENT_MONTHS} months (the tool's own timeline).">
+        <input id="sw-dev-months" type="number" class="sw-config-inp" min="6" max="180" step="1" placeholder="${SW_DEFAULT_DEVELOPMENT_MONTHS}" value="${inputs.developmentMonths ?? ''}" title="Feasibility to SOP. Development tool licences are paid over this, and the phase timeline follows it. Blank = ${SW_DEFAULT_DEVELOPMENT_MONTHS} months — ${esc(SW_DEVELOPMENT_BASIS)}">
       </div>
       <div class="sw-field-group">
         <label class="sw-label" for="sw-connected">Connected vehicles (%)</label>
@@ -853,7 +874,8 @@ function renderSWPanelHTML(): string {
       </div>
       <div class="sw-field-group">
         <label class="sw-label" for="sw-base-rate">Your engineer rate (£/PM, optional)</label>
-        <input id="sw-base-rate" type="number" class="sw-config-inp" min="100" max="500000" step="50" value="${inputs.baseRateGBP ?? Math.round(swLibraryBaseRate(inputs))}"${inputs.baseRateGBP ? ' data-typed="1"' : ''} title="Shows the hub's own book rate (its mid / senior blend at your senior share). Type your own £ per person-month (152 h, before overhead) to replace it for this hub — it is never scaled by a country factor.">
+        <input id="sw-base-rate" type="number" class="sw-config-inp" min="100" max="500000" step="50" value="${inputs.baseRateGBP ?? ''}" placeholder="${Math.round(swLibraryBaseRate(inputs))}"${inputs.baseRateGBP ? ' data-typed="1"' : ''} aria-describedby="sw-base-rate-hint" title="Blank = the hub's own book rate (its mid / senior blend at your senior share), shown greyed. Type your own £ per person-month (152 h, before overhead) to replace it for this hub — it is never scaled by a country factor. Clear it to go back to the book rate.">
+        <span class="sw-rate-hint" id="sw-base-rate-hint">${inputs.baseRateGBP ? 'Your rate — clear the field to use the book rate' : 'Blank = hub book rate (shown greyed)'}</span>
       </div>
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
@@ -881,6 +903,10 @@ function renderSWPanelHTML(): string {
         <input id="sw-tool-seat" type="number" class="sw-config-inp" min="0" step="500" placeholder="${SW_TOOL_SEAT_GBP}" value="${inputs.toolSeatGBPPerYear ?? ''}" title="${esc(SW_TOOL_SEAT_BASIS)}"></div>
       <div class="sw-field-group"><label class="sw-label" for="sw-wage-esc">Wage escalation, sustaining (% / year)</label>
         <input id="sw-wage-esc" type="number" class="sw-config-inp" min="-10" max="30" step="0.5" placeholder="0" value="${inputs.wageEscalationPct ?? ''}" title="${esc(SW_MAINT_BASIS)}"></div>
+      <div class="sw-field-group"><label class="sw-label" for="sw-post-years">Security support after the last build (years)</label>
+        <input id="sw-post-years" type="number" class="sw-config-inp" min="0" max="30" step="1" placeholder="${SW_POST_EOP_YEARS}" value="${inputs.postProductionSupportYears ?? ''}" title="${esc(SW_POST_EOP_BASIS)} 0 = none."></div>
+      <div class="sw-field-group"><label class="sw-label" for="sw-post-share">… share of the tail team (%)</label>
+        <input id="sw-post-share" type="number" class="sw-config-inp" min="0" max="100" step="5" placeholder="${Math.round(SW_POST_EOP_SHARE * 100)}" value="${inputs.postProductionSupportShare != null ? Math.round(inputs.postProductionSupportShare * 100) : ''}" title="${esc(SW_POST_EOP_BASIS)}"></div>
       <div class="sw-field-group"><label class="sw-label" for="sw-discount">Discount rate (% / year, NPV)</label>
         <input id="sw-discount" type="number" class="sw-config-inp" min="0" max="50" step="0.5" placeholder="0 (nominal)" value="${inputs.discountRatePct ?? ''}" title="Blank or 0 = nominal money. A rate discounts every year's spend to today (the headline becomes an NPV)."></div>
       <div class="sw-field-group"><label class="sw-label" for="sw-csms-types">Vehicle types sharing CSMS / SUMS</label>
@@ -1039,6 +1065,8 @@ html:not([data-theme="light"]) {
   margin-bottom: 5px;
 }
 .sw-field-group { display: flex; flex-direction: column; }
+.sw-config-inp::placeholder { color: var(--sw-text-muted); opacity: 1; font-style: italic; }
+.sw-rate-hint { font-size: 0.7rem; color: var(--sw-text-muted); margin-top: 4px; }
 
 .sw-cat-group { margin-bottom: 10px; border-radius: 8px; border: 1px solid var(--sw-border); overflow: hidden; }
 .sw-cat-header {
@@ -1296,6 +1324,9 @@ function readConfig(): void {
   _swInputs.cloudFixedPerYearGBP   = num('sw-cloud-fixed');
   _swInputs.toolSeatGBPPerYear     = num('sw-tool-seat');
   _swInputs.wageEscalationPct      = num('sw-wage-esc');
+  _swInputs.postProductionSupportYears = num('sw-post-years');
+  const postShare = num('sw-post-share');
+  _swInputs.postProductionSupportShare = postShare === undefined ? undefined : postShare / 100;
   _swInputs.discountRatePct        = num('sw-discount');
   _swInputs.csmsTypesSharing       = num('sw-csms-types');
   const homolog = get('sw-homolog') as HTMLInputElement | null;
@@ -1617,7 +1648,36 @@ function renderResults(result: SWProgramResult, opts: { live?: boolean } = {}): 
 }
 
 /** The cockpit views: rail, context line, overview / risk / spend charts, supplier check and the rate check. */
+/** Charts are drawn at the card's width on a narrow screen (sw-charts.ts setChartWidth): the panel width less the
+ *  card's padding and border. Hidden tab panels have no width, so the panel's is used. */
+function measureChartWidth(): number | null {
+  const panel = document.getElementById('sw-panel');
+  if (!panel || typeof window === 'undefined' || window.innerWidth > 700) return null;
+  return panel.clientWidth - 2 * 17;
+}
+let _chartResize: ResizeObserver | null = null;
+let _chartW: number | null = null;
+function watchChartWidth(): void {
+  const panel = document.getElementById('sw-panel');
+  if (!panel || typeof ResizeObserver === 'undefined') return;
+  _chartResize?.disconnect();
+  let t: ReturnType<typeof setTimeout> | null = null;
+  _chartResize = new ResizeObserver(() => {
+    if (t) clearTimeout(t);
+    t = setTimeout(() => {
+      const w = measureChartWidth();
+      // Redraw only when the drawing width really changed (a scrollbar appearing is not a reflow).
+      if ((w == null) !== (_chartW == null) || (w != null && _chartW != null && Math.abs(w - _chartW) > 16)) {
+        if (_swResult) renderCockpit(_swResult);
+      }
+    }, 180);
+  });
+  _chartResize.observe(panel);
+}
+
 function renderCockpit(result: SWProgramResult, opts: { live?: boolean } = {}): void {
+  _chartW = measureChartWidth();
+  setChartWidth(_chartW);
   const money = (n: number) => swMoney(n, 0);
   const rail = document.getElementById('swk-rail');
   if (rail) updateRail(rail, result, money, fmtM, { quiet: !opts.live });
@@ -2424,7 +2484,11 @@ export function wireSWPanel(): void {
     swPanel.dataset.rateTypedWired = '1';
     swPanel.addEventListener('input', e => {
       const t = e.target as HTMLInputElement;
-      if ((SW_BASE_RATE_FIELDS as readonly string[]).includes(t.id)) t.dataset.typed = '1';
+      // Typing makes the field an override; clearing it goes back to the hub's book rate (shown as the placeholder).
+      if ((SW_BASE_RATE_FIELDS as readonly string[]).includes(t.id)) {
+        if (t.value.trim() === '') delete t.dataset.typed; else t.dataset.typed = '1';
+        refreshRateFields();
+      }
     });
     // A new hub or senior share: the untyped rate field follows the hub's book rate; the hub note clears.
     swPanel.addEventListener('change', e => {
@@ -2611,14 +2675,19 @@ function updateCatCounts(): void {
  */
 let _swHubBasis = '';
 
-/** An untyped engineer-rate field shows the hub's book rate at the current senior share. */
+/** The engineer-rate field: blank with the hub's book rate (at the current senior share) as its greyed placeholder,
+ *  so the book rate never looks like a typed value; a typed value is the override. */
 function refreshRateFields(): void {
+  const v = swLibraryBaseRate(_swInputs);
   for (const id of SW_BASE_RATE_FIELDS) {
     const f = document.getElementById(id) as HTMLInputElement | null;
-    if (f && f.dataset.typed !== '1') {
-      const v = swLibraryBaseRate(_swInputs);
-      f.value = Number.isFinite(v) ? String(Math.round(v)) : '';
-    }
+    if (!f) continue;
+    f.placeholder = Number.isFinite(v) ? String(Math.round(v)) : '';
+    if (f.dataset.typed !== '1') f.value = '';
+    const hint = document.getElementById(`${id}-hint`);
+    if (hint) hint.textContent = f.dataset.typed === '1'
+      ? 'Your rate — clear the field to go back to the hub book rate'
+      : 'Blank = hub book rate (shown greyed)';
   }
 }
 
@@ -2661,12 +2730,13 @@ export function applySWCountry(mfg: string): void {
 
 export function initSWPanel(containerEl: HTMLElement): void {
   _swInputs = defaultSWProgramInputs();
-  restoreBaseline();
+  void restoreBaseline().then(() => { if (_swTab === 'scenarios') renderScenarios(); });
   // The engineering hub follows the selected manufacturing country (nearest hub, stated).
   setSWCountry((document.getElementById('mfg-region-selector') as HTMLSelectElement | null)?.value ?? 'UK');
   _swResult = null;
   containerEl.innerHTML = renderSWPanelHTML();
   wireSWPanel();
+  watchChartWidth();
   // The cockpit opens with the default programme already costed (deterministic, milliseconds).
   runLive(false);
   // Load saved configs asynchronously (server or localStorage), then refresh the
