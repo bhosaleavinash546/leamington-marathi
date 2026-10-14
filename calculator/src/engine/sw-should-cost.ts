@@ -812,7 +812,7 @@ export const SW_MODULES: SWModuleDef[] = [
     annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.04,
     perVehicleRoyaltyGBP: Math.round(5.09 / USD_PER_GBP * 100) / 100,
-    royaltyBasis: 'Cerence average price per unit US$5.09 (TTM to Q2 FY2026; US$5.05 at Q4 FY2025; includes connected services) at the app\'s USD_PER_GBP — Cerence earnings decks filed with the SEC (EX-99), read via search results.',
+    royaltyBasis: `Cerence average price per unit US$5.09 (TTM to Q2 FY2026; US$5.05 at Q4 FY2025; includes connected services) at US$${USD_PER_GBP} per £ (29 Sep 2026) — Cerence earnings decks filed with the SEC (EX-99), read via search results.`,
     notes: 'On-device + cloud voice (Cerence, SoundHound). Cerence PPU $5.09 (TTM Q2 FY26) includes connected services.',
   },
   {
@@ -827,7 +827,7 @@ export const SW_MODULES: SWModuleDef[] = [
     // Cellular standard-essential patents: the Avanci vehicle licence is taken by the CAR MAKER, once per vehicle —
     // 4G US$20 (5G US$32; 3G US$9; eCall only US$3), avanci.com, re-checked 14 Oct 2026.
     perVehicleRoyaltyGBP: Math.round(20 / USD_PER_GBP * 100) / 100,
-    royaltyBasis: 'Avanci 4G vehicle licence (cellular standard-essential patents) US$20 per vehicle, paid once by the car maker — avanci.com published rate (5G US$32, 3G US$9, eCall only US$3), at the app\'s USD_PER_GBP. Set to 0 if your TCU supplier\'s price already carries it.',
+    royaltyBasis: `Avanci 4G vehicle licence (cellular standard-essential patents) US$20 per vehicle, paid once by the car maker — avanci.com published rate (5G US$32, 3G US$9, eCall only US$3), at US$${USD_PER_GBP} per £ (29 Sep 2026). Set to 0 if your TCU supplier's price already carries it.`,
     notes: 'eCall path ASIL-B per EU regulation. 3GPP modem certification adds cost. Avanci cellular SEP licence US$20 (4G) / US$32 (5G) per vehicle.',
   },
   {
@@ -1670,12 +1670,12 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['NRE recovery', `${prog.costRecoveryYears ?? prog.programLifeYears} yr`],
     ['Discount rate', `${prog.discountRatePct ?? 0} %`],
     ['Development duration (tool licences)', `${prog.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS} months`],
-    ['Cloud', `£${swCloudPerVehicleYear(prog).toFixed(2)} per connected vehicle-year (the in-scope modules' catalogue £ / yr ÷ ${SW_CLOUD_REFERENCE_FLEET.toLocaleString('en-GB')} reference fleet — unsourced estimate) × ${Math.round((prog.connectedVehicleShare ?? 1) * 100)} % connected, each vehicle served ${prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS} yr; fixed platform £${Math.round(prog.cloudFixedPerYearGBP ?? 0).toLocaleString('en-GB')} / yr`],
+    ['Cloud', `£${swCloudPerVehicleYear(prog).toFixed(2)} per connected vehicle-year (${prog.quotes?.cloudPerVehicleYear ? `your quote — ${prog.quotes.cloudPerVehicleYear.source}` : `the in-scope modules' catalogue £ / yr ÷ ${SW_CLOUD_REFERENCE_FLEET.toLocaleString('en-GB')} reference fleet — unsourced estimate`}) × ${Math.round((prog.connectedVehicleShare ?? 1) * 100)} % connected, each vehicle served ${prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS} yr; fixed platform £${Math.round(prog.cloudFixedPerYearGBP ?? 0).toLocaleString('en-GB')} / yr`],
     ['Map / per-vehicle-year royalties', `${prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS} yr per vehicle`],
     ['Development tools', `£${Math.round(prog.toolSeatGBPPerYear ?? SW_TOOL_SEAT_GBP).toLocaleString('en-GB')} per engineer-seat-year`],
     ['Maintenance profile', `full ${SW_MAINT_FULL_YEARS} yr after SOP, then ${SW_MAINT_TAIL * 100} %; wage escalation ${prog.wageEscalationPct ?? 0} % / yr`],
     ['Security support after the last build', `${postYears(prog)} yr at ${Math.round((prog.postProductionSupportShare ?? SW_POST_EOP_SHARE) * 100)} % of the tail team — ${SW_POST_EOP_BASIS}`],
-    ['Homologation', (prog.includeHomologation ?? true) ? `on — organisation CSMS / SUMS shared by ${prog.csmsTypesSharing ?? 1} vehicle type(s)` : 'off'],
+    ['Homologation', (prog.includeHomologation ?? true) ? `on — organisation CSMS / SUMS ${(prog.csmsTypesSharing ?? 1) > 1 ? `shared by ${prog.csmsTypesSharing} vehicle types` : 'carried by this vehicle type alone'}` : 'off'],
     ['Nominal effort basis', (() => {
       const on = prog.modules.filter(m => m.enabled);
       const sized = on.filter(m => m.customPersonMonths == null && m.sizeKSLOC).length;

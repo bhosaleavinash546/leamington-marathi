@@ -27,7 +27,10 @@ export const hubLabelOf = (hub: string): string => SW_HUB_RATES[hub as keyof typ
 export function hubRateFor(hub: string): SWReportHubRate | undefined {
   const raw = SW_HUB_RATES[hub as keyof typeof SW_HUB_RATES];
   if (!raw) return undefined;
-  const obs = (o: { value: number; source: string; url: string; statistic?: string }) => [`${raw.currency} ${o.value.toLocaleString('en-GB')}`, `${o.source}${o.statistic ? ` (${o.statistic})` : ''}`, o.url] as const;
+  // A monthly observation is shown with its year (× its annual factor) beside the annual ones (review M19).
+  const obs = (o: { value: number; source: string; url: string; statistic?: string; annualFactor?: number }) => [
+    o.annualFactor && o.annualFactor !== 1 ? `${raw.currency} ${o.value.toLocaleString('en-GB')} × ${o.annualFactor} = ${Math.round(o.value * o.annualFactor).toLocaleString('en-GB')} a year`
+      : `${raw.currency} ${o.value.toLocaleString('en-GB')} a year`, `${o.source}${o.statistic ? ` (${o.statistic})` : ''}`, o.url] as const;
   return {
     build: raw.build, confidence: raw.confidence, median: hubMedianNote(raw) ?? undefined,
     sources: [

@@ -134,7 +134,7 @@ export const SW_MODULE_COMPONENTS: Record<string, string[]> = {
   encryption:          ['gateway', 'tcu', 'central_compute'],
   ids:                 ['gateway', 'tcu', 'central_compute', 'backbone'],
   secure_ota:          ['tcu', 'gateway', 'central_compute', 'cloud'],
-  key_mgmt:            ['gateway', 'tcu', 'uwb_anchors', 'cloud'],
+  key_mgmt:            ['gateway', 'tcu', 'cloud'],   // crypto keys (SecOC, certificates); the UWB anchors serve the digital key
   ota_manager:         ['central_compute', 'tcu', 'gateway'],
   cloud_backend:       ['cloud', 'tcu'],
   data_pipeline:       ['tcu', 'central_compute', 'cloud'],

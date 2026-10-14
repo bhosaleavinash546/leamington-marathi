@@ -63,7 +63,7 @@ describe('report text carries no internals', () => {
   it('the lifecycle step says the service years run past the last build', () => {
     const r = computeSWProgram(inputs());
     const steps = swCostingSteps(r, { perPMGBP: swLoadedRate(r.inputs), hubLabel: 'United Kingdom', build: 'x' }, { money: n => String(Math.round(n)), number: n => String(n) });
-    expect(steps.find(s => s.id === 'lifecycle')!.detail).toMatch(/service years after the last build \(to programme year 16\)/);
+    expect(steps.find(s => s.id === 'lifecycle')!.detail).toMatch(/service years after the last build \(16 years from SOP\)/);
   });
 });
 

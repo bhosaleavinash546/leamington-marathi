@@ -25,6 +25,7 @@ import { SKELETON_W, SKELETON_H, SKELETON_H_NO_LEGEND } from './sw-report-skelet
 import type { RasterImage } from './svg-raster.js';
 import { addCharts, type ChartSpec } from './xlsx-charts.js';
 import { LOGO_PNG_BASE64 } from '../brand/logo-png.js';
+import { localiseGbpText } from './money-text.js';
 
 const C = {
   navy: '16325C', blue: '1D6FB8', violet: '6B3FA0', teal: '0D7D71', green: '2A7F50', amber: '99651A', red: 'B03A2E',
@@ -63,6 +64,8 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
     delta: `+"${sym}"#,##0.0,,"M";-"${sym}"#,##0.0,,"M";"${sym}"0.0M`,
   };
   const images = opt.images ?? new Map<string, RasterImage>();
+  // Money in TEXT follows the report currency (review H6).
+  const T = (t: string) => (fx === 1 && sym === '£') ? t : localiseGbpText(t.replace(/(per £ = )£(\d[\d,.]*)/g, '$1GBP $2'), fx, sym).replace(/£(?= \(no discounting)/g, sym).replace(/£ (?=\/|per |a |an )/g, `${sym} `).replace(/£(?=M\b|k\b)/g, sym);
   const prof = SW_REPORT_PROFILES[md.profile];
   const date = req.generatedAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const meta = [`${req.hubLabel} hub`, `${p.annualProductionVolume.toLocaleString('en-GB')} vehicles / yr × ${p.programLifeYears} yr`,
@@ -123,6 +126,7 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
   const note = (ws: ExcelJSType.Worksheet, row: number, c0: number, c1: number, text: string, o: { size?: number; color?: string; fillHex?: string; italic?: boolean; bold?: boolean } = {}) => {
     if (c1 > c0) ws.mergeCells(row, c0, row, c1);
     const cell = ws.getCell(row, c0);
+    text = T(text);
     cell.value = text; cell.font = font(o.size ?? 9, o.color ?? C.muted, !!o.bold, !!o.italic);
     cell.alignment = { wrapText: true, vertical: 'top', indent: 1 };
     if (o.fillHex) for (let c = c0; c <= c1; c++) ws.getCell(row, c).fill = fill(o.fillHex);
@@ -134,7 +138,7 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
     for (let c = c0; c <= c1; c++) { const cell = ws.getCell(row, c); cell.border = { bottom: hair() }; if (z) cell.fill = fill(C.page); }
   };
   const val = (ws: ExcelJSType.Worksheet, row: number, c: number, v: ExcelJSType.CellValue, numFmt?: string, f: Partial<ExcelJSType.Font> = font(10), align: 'left' | 'right' | 'center' = 'right') => {
-    const cell = ws.getCell(row, c); cell.value = v; if (numFmt) cell.numFmt = numFmt; cell.font = f;
+    const cell = ws.getCell(row, c); cell.value = typeof v === 'string' ? T(v) : v; if (numFmt) cell.numFmt = numFmt; cell.font = f;
     cell.alignment = { vertical: 'middle', horizontal: align, indent: align === 'left' ? 1 : 0, wrapText: align === 'left' };
     return cell;
   };
@@ -169,7 +173,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   const REG = sheet('Module register', C.blue, [40, 26, 6, 11, 9, 8, 9, 13, 13, 13, 13, 13, 13, 14, 13, 13, 13, 14, 14, 9], 'Module register · every module × every cost element (formulas on Module detail)', { freeze: 8, freezeCol: 2 });
   const DET = sheet('Module detail', C.blue, [40, 10, 10, 8, 8, 9, 7, 9, 7, 9, 8, 8, 8, 8, 8, 8, 8, 8, 12, 13, 7, 13, 7, 12, 7, 12, 7, 12, 7, 12, 9, 13, 13, 7, 13, 13, 13, 13, 13, 14, 14, 14, 13],
     'Module detail · the effort chain and every cost line per module, as formulas on Rates', { freeze: 8, freezeCol: 2 });
-  const RATES = sheet('Rates', C.green, [40, 16, 16, 64], 'Rates and programme inputs · change a value here and every total follows');
+  const RATES = sheet('Rates', C.green, [40, 16, 16, 64], 'Rates and programme inputs · the cost chain follows these cells; royalties, cloud, hubs and risk stay at the engine\'s values');
   const UNIT = want.unit ? sheet('Unit economics', C.amber, [44, 16, 18, 18, 40], 'Unit economics · the figures purchasing compares (formulas)') : null;
   const SPEND = want.spend ? sheet('Spend by year', C.amber, [12, 14, 14, 14, 14, 14, 15, 15], 'Spend by year · nominal, development → production → service', { freeze: 8 }) : null;
   const HUBS = want.hubs ? sheet('Hubs', C.green, [30, 12, 14, 14, 14, 15, 13, 15], 'Every engineering hub · the same scope re-costed at each') : null;
@@ -394,7 +398,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   val(G, regTotRow + 1, 2, md.slice.isWhole ? 'Homologation (R155 / R156 / ISO 26262) — programme-level, engine value' : 'Programme-level items stay with the vehicle costing', undefined, font(9.5, C.muted, false, true), 'left');
   val(G, regTotRow + 1, gc['Engineering (NRE)'], X(homo), NF.money, font(10, C.muted, false, true));
   val(G, regTotRow + 1, gc['Total'], F(`${gref('Engineering (NRE)', regTotRow + 1)}`, X(homo)), NF.money);
-  val(G, regTotRow + 2, 2, 'Cloud platform (fixed) — programme-level, your figure', undefined, font(9.5, C.muted, false, true), 'left');
+  val(G, regTotRow + 2, 2, fixedCloud ? 'Cloud platform (fixed) — programme-level, your figure' : 'Cloud platform (fixed) — none entered', undefined, font(9.5, C.muted, false, true), 'left');
   val(G, regTotRow + 2, gc['Cloud'], X(fixedCloud), NF.money, font(10, C.muted, false, true));
   val(G, regTotRow + 2, gc['Lifecycle'], F(gref('Cloud', regTotRow + 2), X(fixedCloud)), NF.money);
   val(G, regTotRow + 2, gc['Total'], F(gref('Lifecycle', regTotRow + 2), X(fixedCloud)), NF.money);
@@ -527,7 +531,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   };
   S.getRow(8).height = 20; S.getRow(9).height = 34; S.getRow(10).height = 28;
   const recC = rate.rec, volR = rate.vol, lifeR = rate.life;
-  tile(2, md.slice.isWhole ? 'Programme total' : 'This report', BT, X(md.slice.total), NF.M, md.slice.isWhole ? `to programme year ${s.horizonYears}` : `${(md.slice.share * 100).toFixed(1)} % of the vehicle`);
+  tile(2, md.slice.isWhole ? 'Programme total' : 'This report', BT, X(md.slice.total), NF.M, md.slice.isWhole ? `over ${s.horizonYears} years from SOP` : `${(md.slice.share * 100).toFixed(1)} % of the vehicle`);
   tile(5, 'Per vehicle', md.slice.isWhole ? `${BNRE}/(${volR}*${recC})+${BLIFE}/(${volR}*${lifeR})` : `${BT}/(${volR}*${lifeR})`, X(md.slice.isWhole ? s.perVehicle : md.slice.total / (p.annualProductionVolume * p.programLifeYears)), NF.money, md.slice.isWhole ? 'NRE over the recovery window + lifecycle over the vehicles built' : 'slice ÷ vehicles built');
   tile(8, 'Engineering (NRE)', BNRE, X(md.slice.nre), NF.M, `${Math.round(md.modules.reduce((a, m) => a + m.result.effortPersonMonths, 0)).toLocaleString('en-GB')} person-months`);
   tile(11, 'Lifecycle', BLIFE, X(md.slice.lifecycle), NF.M, 'maintenance, licences, royalties, cloud');
@@ -553,7 +557,8 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   const dLast = sr;
   if (md.slice.isWhole) for (const it of md.programmeItems) {
     sr++; S.mergeCells(sr, 2, sr, 5); val(S, sr, 2, `${it.label} (programme-level)`, undefined, font(10, C.muted, false, true), 'left');
-    val(S, sr, 9, X(it.amount), NF.M, font(10, C.muted, false, true)); val(S, sr, 10, F(`I${sr}/${BT}`, it.amount / Math.max(1, s.grandTotal)), NF.pct);
+    const itemRef = it.label.startsWith('Cloud') ? `${GN}!$${A(gc['Total'])}$${regTotRow + 2}` : `${GN}!$${A(gc['Total'])}$${regTotRow + 1}`;
+    val(S, sr, 9, F(itemRef, X(it.amount)), NF.M, font(10, C.muted, false, true)); val(S, sr, 10, F(`I${sr}/${BT}`, it.amount / Math.max(1, s.grandTotal)), NF.pct);
   }
   sr++; S.mergeCells(sr, 2, sr, 5); val(S, sr, 2, md.slice.isWhole ? 'Programme total' : 'This report', undefined, font(10, C.navy, true), 'left');
   val(S, sr, 9, F(`SUM(I${dFirst}:I${sr - 1})`, X(md.slice.total)), NF.M); val(S, sr, 10, F(`I${sr}/${BT}`, 1), NF.pct); strong(S, sr, 2, 10);
@@ -582,7 +587,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     md.components.forEach((c, i) => {
       ar++;
       val(W, ar, 2, c.no, '0', font(10, C.navy, true), 'center'); val(W, ar, 3, c.label, undefined, font(10), 'left');
-      val(W, ar, 4, c.highestAsil === 'QM' ? 'QM' : `ASIL ${c.highestAsil}`, undefined, font(10), 'center'); val(W, ar, 5, c.modules.length, '0');
+      val(W, ar, 4, c.offVehicle ? '— (off-vehicle)' : c.highestAsil === 'QM' ? 'QM' : `ASIL ${c.highestAsil}`, undefined, font(10), 'center'); val(W, ar, 5, c.modules.length, '0');
       val(W, ar, 6, c.modules.join(', '), undefined, font(9), 'left'); val(W, ar, 7, c.what, undefined, font(9, C.muted), 'left');
       W.getRow(ar).height = Math.max(18, Math.ceil(c.modules.join(', ').length / 85) * 13 + 4);
       zebra(W, ar, 2, 7, i % 2 === 1);
@@ -604,10 +609,13 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     line('Royalty per vehicle built', u.perVehicleBuilt, NF.money2, `${volR}*${lifeR}`, u.vehiclesBuilt, `C${ur + 1}*D${ur + 1}`, u.perVehicleBuilt * u.vehiclesBuilt, 'engine rate × vehicles built');
     line('Map data per vehicle-year', u.subscriptionPerYear, NF.money2, `${volR}*${lifeR}*${u.subscriptionYears}`, u.subscriptionVehicleYears, `C${ur + 1}*D${ur + 1}`, u.subscriptionPerYear * u.subscriptionVehicleYears, `${u.subscriptionYears} subscription years a vehicle`);
     line('Cloud per connected vehicle-year', u.cloudPerYear, NF.money2, `${volR}*${lifeR}*${u.serviceYears}`, u.serviceVehicleYears, `C${ur + 1}*D${ur + 1}`, u.cloudPerYear * u.serviceVehicleYears, `${u.serviceYears} service years a vehicle`);
-    line('Fixed per production year (average)', u.fixedPerYear, NF.money, lifeR, p.programLifeYears, `C${ur + 1}*D${ur + 1}`, u.fixedPerYear * p.programLifeYears, 'maintenance, IP licences, platform');
+    const fixedProd = u.fixedPerYear - md.postSupportNominal / p.programLifeYears;
+    line('Fixed per production year (average)', fixedProd, NF.money, lifeR, p.programLifeYears, `C${ur + 1}*D${ur + 1}`, fixedProd * p.programLifeYears, 'maintenance, IP licences, platform in the production years');
+    ur++; val(U, ur, 2, 'Security support after the last build', undefined, font(10), 'left'); val(U, ur, 5, X(md.postSupportNominal), NF.money, font(10, C.muted, false, true));
+    val(U, ur, 6, `${p.postProductionSupportYears ?? SW_POST_EOP_YEARS} service years after the last build (engine value)`, undefined, font(9, C.muted), 'left'); zebra(U, ur, 2, 6, false);
     ur++; val(U, ur, 2, 'Programme total (from unit rates)', undefined, font(10, C.navy, true), 'left');
     const recon = u.nre + u.perVehicleBuilt * u.vehiclesBuilt + u.subscriptionPerYear * u.subscriptionVehicleYears + u.cloudPerYear * u.serviceVehicleYears + u.fixedPerYear * p.programLifeYears;
-    val(U, ur, 5, F(`SUM(E${ur - 5}:E${ur - 1})`, X(recon)), NF.money); strong(U, ur, 2, 6);
+    val(U, ur, 5, F(`SUM(E${ur - 6}:E${ur - 1})`, X(recon)), NF.money); strong(U, ur, 2, 6);
     if (!(p.discountRatePct ?? 0) && md.slice.isWhole) check('Unit economics reconcile to the total (0 % discount)', `${q(U.name)}!$E$${ur}`, X(s.grandTotal));
   }
 
@@ -688,7 +696,8 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
       from: { col: 6, row: h0 - 2 }, to: { col: 13, row: h1 + 1 } });
     kr += 2; bar(K, kr, 2, 7, 'One driver at a time, everything else held', 'tornado: change from the base'); kr++;
     header(K, kr, [[2, 'Driver (low vs high case)'], [3, 'Low', true], [4, 'Base', true], [5, 'High', true], [6, 'Low − base', true], [7, 'High − base', true]]);
-    const sens = [...r.sensitivity].sort((a, b) => Math.abs(b.high - b.low) - Math.abs(a.high - a.low));
+    const sens = r.sensitivity.filter(x => x.unit === '£M').sort((a, b) => Math.abs(b.high - b.low) - Math.abs(a.high - a.low));
+    const perVeh = r.sensitivity.filter(x => x.unit !== '£M');
     const t0 = kr + 1;
     sens.forEach((x, i) => {
       kr++; val(K, kr, 2, x.parameter, undefined, font(9.5), 'left');
@@ -702,6 +711,11 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
         { name: 'Low case', catRef: `${KN}!$B$${t0}:$B$${t1}`, cats: sens.map(x => x.parameter), valRef: `${KN}!$F$${t0}:$F$${t1}`, vals: sens.map(x => X(x.low - x.base)), color: NRE },
         { name: 'High case', catRef: `${KN}!$B$${t0}:$B$${t1}`, cats: sens.map(x => x.parameter), valRef: `${KN}!$G$${t0}:$G$${t1}`, vals: sens.map(x => X(x.high - x.base)), color: LIFE },
       ], from: { col: 1, row: t1 + 1 }, to: { col: 8, row: t1 + 26 } });
+    if (perVeh.length) {
+      kr = t1 + 28; bar(K, kr, 2, 7, 'Per vehicle — what volume does to each vehicle\'s share'); kr++;
+      header(K, kr, [[2, 'Driver'], [3, 'Low case', true], [4, 'Base', true], [5, 'High case', true]]);
+      for (const x of perVeh) { kr++; val(K, kr, 2, x.parameter, undefined, font(9.5), 'left'); val(K, kr, 3, X(x.low), NF.money); val(K, kr, 4, X(x.base), NF.money); val(K, kr, 5, X(x.high), NF.money); zebra(K, kr, 2, 5, false); }
+    }
   }
 
   // ── Make or buy ───────────────────────────────────────────────────────────────────────────────────────────────────
@@ -716,15 +730,19 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     if (qRows.length) {
       header(Mw, mr, [[2, 'Line'], [3, 'Should-cost', true], [4, 'Quote', true], [5, 'Gap', true], [6, 'Gap %', true]]);
       for (const x of qRows) { mr++; const nf = x.unit === 'perVehicle' ? NF.money2 : NF.M; val(Mw, mr, 2, x.label, undefined, font(10), 'left'); val(Mw, mr, 3, X(x.should), nf); val(Mw, mr, 4, X(x.quoted), nf); val(Mw, mr, 5, F(`D${mr}-C${mr}`, X(x.gap)), nf); val(Mw, mr, 6, F(`IF(C${mr}=0,0,E${mr}/C${mr})`, x.gapPct / 100), '+0%;-0%'); zebra(Mw, mr, 2, 7, false); }
-    } else note(Mw, mr, 2, 7, 'No supplier quote was entered on the Supplier check tab.', { size: 10 });
-    mr += 2; note(Mw, mr, 2, 7, `Negotiation target: a fair Tier-1 price for this scope is ${sym}${(X(qc.target.nre) / 1e6).toFixed(1)}M of engineering at ${sym}${Math.round(X(qc.target.ratePerPM)).toLocaleString('en-GB')} per person-month (${qc.target.basis}).`, { size: 10, color: C.slate, fillHex: C.blueT });
+    } else note(Mw, mr, 2, 7, 'No total supplier quote was entered on the Supplier check tab.', { size: 10 });
+    const effort = qc.target.nre - s.totalToolchain - s.totalHomologation;
+    const mm = (n: number) => `${sym}${(X(n) / 1e6).toFixed(1)}M`;
+    mr += 2; note(Mw, mr, 2, 7, `Negotiation target for a Tier-1 supplier: engineering effort ${mm(effort)} (${Math.round(s.totalEffortPersonMonths).toLocaleString('en-GB')} person-months at ${sym}${Math.round(X(qc.target.ratePerPM)).toLocaleString('en-GB')} per person-month, ${qc.target.basis}) + development tools ${mm(s.totalToolchain)} = ${mm(effort + s.totalToolchain)}.${s.totalHomologation ? ` Homologation ${mm(s.totalHomologation)} (type approval, CSMS / SUMS) stays with the OEM.` : ''}`, { size: 10, color: C.slate, fillHex: C.blueT });
+    if (!qRows.length) { const lq = md.yourFigures.filter(y => !y.line.startsWith('Your module')).length; if (lq) note(Mw, mr + 1, 2, 7, `No total supplier quote was entered; ${lq} line-item quote${lq === 1 ? ' was' : 's were'} applied in the costing (Assumptions sheet).`, { size: 9.5 }); }
   }
 
   // ── Evidence ──────────────────────────────────────────────────────────────────────────────────────────────────────
   if (EVI) {
     const E = EVI.ws, EN = q(E.name);
-    const inSlice = new Set(md.modules.map(m => m.name));
-    const lines = md.slice.isWhole ? md.evidence.lines : md.evidence.lines.filter(l => inSlice.has(l.label.split(' — ')[0]));
+    const lines = md.evidenceLines;
+    const KIND: Record<string, string> = { effort: 'Engineering effort', tools: 'Development tools', maintenance: 'Maintenance', postSupport: 'Security support after the last build',
+      licences: 'IP licences', royalties: 'Royalties', cloud: 'Cloud', homologation: 'Homologation', cloudFixed: 'Cloud platform (fixed)' };
     const grades = ['entered', 'calibrated', 'sourced', 'estimate', 'unsourced'] as const;
     bar(E, 7, 2, 6, 'By evidence grade', 'SUMIF over the lines below');
     header(E, 8, [[2, 'Grade'], [3, 'Amount', true], [4, 'Share', true], [5, 'Simulated range', true]]);
@@ -747,7 +765,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     header(E, l0 - 1, [[2, 'Line'], [3, 'Kind'], [4, 'Grade'], [5, 'Amount', true], [6, 'Basis']]);
     lines.forEach((l, i) => {
       const rr = l0 + i;
-      val(E, rr, 2, l.label, undefined, font(9.5), 'left'); val(E, rr, 3, l.kind, undefined, font(9, C.muted), 'left');
+      val(E, rr, 2, l.label, undefined, font(9.5), 'left'); val(E, rr, 3, KIND[l.kind] ?? l.kind, undefined, font(9, C.muted), 'left');
       val(E, rr, 4, GRADE_NAME[l.grade], undefined, font(9, GRADE_C[l.grade][0], true), 'left'); val(E, rr, 5, X(l.amount), NF.money);
       val(E, rr, 6, l.basis, undefined, font(8.5, C.muted), 'left'); E.getRow(rr).height = Math.max(16, Math.min(90, Math.ceil(l.basis.length / 100) * 12 + 4));
       zebra(E, rr, 2, 6, i % 2 === 1);
@@ -783,10 +801,12 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     }
     zr += 2; bar(Z, zr, 2, 4, 'Vehicle software the catalogue has no module for (review judgement)'); zr++;
     for (const g of md.gaps) { note(Z, ++zr, 2, 4, `•  ${g}`, { size: 10, color: C.slate }); }
+    for (const g of md.gapsCovered) { note(Z, ++zr, 2, 4, `•  ${g} — covered by your own module, costed in this total`, { size: 10, color: C.teal }); }
     zr += 2; bar(Z, zr, 2, 4, 'Limitations'); zr++;
     for (const t of ['Accuracy has not been measured: no real programme cost has been logged against the model. The Checks sheet proves the arithmetic, not the inputs.',
       'Sourced figures were read from search results of the cited pages and re-checked by an independent search.', 'Vehicle volume and programme life are user inputs.',
-      'The vehicle skeleton is schematic: parts are placed by vehicle zone, not measured from this vehicle.']) note(Z, ++zr, 2, 4, `•  ${t}`, { size: 10, color: C.slate });
+      'The vehicle skeleton is a generic zonal E/E template: parts are placed by vehicle zone, not taken from this vehicle\'s architecture.',
+      ...(md.mlExcluded ? ['ML training data, annotation and retraining are not costed (switched off for this programme).'] : [])]) note(Z, ++zr, 2, 4, `•  ${t}`, { size: 10, color: C.slate });
   }
 
   // ── Cover ─────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -869,5 +889,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
 
 /** A domain's sheet name: "A · Powertrain & Battery" within Excel's 31 characters and allowed characters. */
 export function domainSheetName(d: Pick<SWReportDomain, 'category' | 'label'>): string {
-  return `${d.category} ${d.label}`.replace(/[\\/?*[\]:]/g, ' ').slice(0, 31).trim();
+  const full = `${d.category} ${d.label}`.replace(/[\\/?*[\]:]/g, ' ');
+  if (full.length <= 31) return full.trim();
+  return full.slice(0, 31).replace(/[\s,&]+\S*$/, '').replace(/[\s,&]+$/, '').trim();
 }

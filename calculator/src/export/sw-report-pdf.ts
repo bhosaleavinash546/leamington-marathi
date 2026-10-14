@@ -16,10 +16,11 @@ import { swRateBasis, SW_DEV_SOURCE_LABEL, SW_MC_RANGE_BY_GRADE, SW_CLOUD_BASIS,
 import { SW_REPORT_PROFILES, type SWReportModel, type SWReportModule, type SWReportDomain, type SWReportSectionId } from '../engine/sw-report-model.js';
 import { SKELETON_W, SKELETON_H, SKELETON_H_NO_LEGEND } from './sw-report-skeleton.js';
 import type { RasterImage } from './svg-raster.js';
+import { localiseGbpText } from './money-text.js';
+import { SW_DEV_SOURCE_PHRASE } from '../engine/sw-report-model.js';
 
 export { swAssumptionRows, swYourFigures, swExcludedModules } from '../engine/sw-report-model.js';
 export { SW_CATALOGUE_GAPS } from '../engine/sw-cockpit.js';
-import { SW_CATALOGUE_GAPS } from '../engine/sw-cockpit.js';
 
 type AutoTable = (doc: jsPDF, opts: Record<string, unknown>) => void;
 type RGB = [number, number, number];
@@ -59,6 +60,17 @@ export function hubMedianNote(raw: { currency: string; midAnnualSalary: number; 
  */
 export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWReportModel, images: Map<string, RasterImage> = new Map()): void {
   const md = model, req = md.request, r = md.result, s = r.summary, p = r.inputs, f = req.fmt;
+  // In a non-£ report every £ in TEXT (rule bases, rate sources, notes) is converted at the report's FX (review H6):
+  // the figures were converted, the sentences around them were not.
+  if (req.currency.sym !== '£' || req.currency.perGbp !== 1) {
+    const sym = req.currency.sym, fxr = req.currency.perGbp;
+    const loc = (t: string) => localiseGbpText(String(t).replace(/(per £ = )£(\d[\d,.]*)/g, '$1GBP $2'), fxr, sym).replace(/£(?= \(no discounting)/g, sym).replace(/£ (?=\/|per |a |an )/g, `${sym} `).replace(/£(?=M\b|k\b)/g, sym);
+    const orig = doc.text.bind(doc);
+    (doc as unknown as { text: (...a: unknown[]) => unknown }).text = (t: unknown, ...rest: unknown[]) =>
+      (orig as unknown as (...a: unknown[]) => unknown)(Array.isArray(t) ? t.map(x => loc(String(x))) : loc(String(t)), ...rest);
+    const split = doc.splitTextToSize.bind(doc);
+    (doc as unknown as { splitTextToSize: (t: string, w: number, o?: unknown) => string[] }).splitTextToSize = (t: string, w: number, o?: unknown) => split(loc(String(t)), w, o as never);
+  }
   const M = f.moneyM, money = f.money, num = f.number;
   const share = (x: number, of: number) => `${of > 0 ? (x / of * 100).toFixed(1) : '0.0'} %`;
   const kUnit = `${req.currency.sym}k`;
@@ -198,7 +210,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       ? [['Programme total', M(s.grandTotal), `about P${Math.round(r.monteCarlo.headlinePercentile)} of the simulated range`],
         ['Per vehicle', money(s.perVehicle, 0), `over ${md.headline.vehiclesBuilt.toLocaleString('en-GB')} vehicles built`],
         ['Engineering (NRE)', M(s.nreTotal), `${num(s.totalEffortPersonMonths, 0)} person-months`],
-        ['Lifecycle', M(md.headline.lifecycle), `to programme year ${s.horizonYears}`]] as Array<[string, string, string]>
+        ['Lifecycle', M(md.headline.lifecycle), `over ${s.horizonYears} years from SOP`]] as Array<[string, string, string]>
       : [['This report', M(md.slice.total), `${share(md.slice.total, s.grandTotal)} of the vehicle`],
         ['Engineering (NRE)', M(md.slice.nre), 'modules in this report'],
         ['Lifecycle', M(md.slice.lifecycle), 'modules in this report'],
@@ -208,13 +220,15 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     const h = picture('cover', CW, MG, false);
     y += h + 2;
     font(7.3, 'italic', MUTED);
-    doc.text(`Where the software runs: ${md.components.length} vehicle components carry the software costed here, coloured by the highest ASIL among their modules. Schematic top view, not to scale.`, MG, y + 2, { maxWidth: CW });
+    doc.text(`Where the software runs: ${md.slice.components} vehicle components carry the software costed here, coloured by the highest ASIL among their modules. Schematic top view, not to scale.`, MG, y + 2, { maxWidth: CW });
     y += 12;
     font(10, 'bold', NAVY); doc.text('Read this first', MG, y); y += 5;
     bullets([
       'A deterministic should-cost model: every figure comes from the module catalogue, the hub rate book and stated constants — no AI sets a price. Every total in this report is checked against the level above.',
-      `${share(md.evidence.byGrade.unsourced, md.evidence.total)} of the total rests on unsourced catalogue figures (graded line by line in this report). Accuracy against real programme costs has not been measured.`,
-      req.facts?.length ? 'The vehicle facts behind the scope were checked against the manufacturer\'s and press pages (section 2). Volume and programme life are the user\'s inputs.' : 'Volume, programme life and scope are the user\'s inputs; no vehicle facts were supplied.',
+      `${(md.slice.unsourcedShare * 100).toFixed(1)} % of ${md.slice.isWhole ? 'the total' : 'this report\'s total'} rests on unsourced catalogue figures${md.sections.some(x => x.id === 'modules') ? ' (graded line by line in this report)' : md.sections.some(x => x.id === 'evidence') ? ' (see Evidence and sources)' : ''}. Accuracy against real programme costs has not been measured.`,
+      req.facts?.length && md.sections.some(x => x.id === 'definition') ? `The vehicle facts behind the scope were checked against the manufacturer's and press pages (section ${md.sections.find(x => x.id === 'definition')!.no}). Volume and programme life are the user's inputs.`
+        : req.facts?.length ? 'The vehicle facts behind the scope were checked against the manufacturer\'s and press pages (printed in the Vehicle report). Volume and programme life are the user\'s inputs.'
+        : 'Volume, programme life and scope are the user\'s inputs; no checked vehicle facts were supplied.',
     ], 8.2);
   };
 
@@ -226,7 +240,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
   const summary = () => {
     const sl = md.slice;
     section('summary', undefined, sl.isWhole
-      ? `${req.title}: ${r.modules.length} software modules, ${p.annualProductionVolume.toLocaleString('en-GB')} vehicles a year for ${p.programLifeYears} years, engineered at the ${req.hubLabel} hub by a ${SW_DEV_SOURCE_LABEL[p.devSource].toLowerCase()}.`
+      ? `${req.title}: ${r.modules.length} software modules, ${p.annualProductionVolume.toLocaleString('en-GB')} vehicles a year for ${p.programLifeYears} years, engineered at the ${req.hubLabel} hub ${SW_DEV_SOURCE_PHRASE[p.devSource]}.`
       : `A slice of the ${req.title} vehicle costing: ${md.modules.length} modules. Every module figure is the vehicle costing's; programme-level items stay with the vehicle.`);
     if (sl.isWhole) {
       const u = md.unit, mc = r.monteCarlo, hl = md.headline;
@@ -236,7 +250,8 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
         ['Engineering (NRE)', M(s.nreTotal), `${share(s.nreTotal, s.grandTotal)} — development, verification, integration, cyber, calibration, tools, homologation`],
         ['Lifecycle', M(hl.lifecycle), `${share(hl.lifecycle, s.grandTotal)} — maintenance, licences and royalties, cloud`],
         ['Royalty per vehicle built', money(u.perVehicleBuilt, 2), 'paid on every vehicle, in the piece price'],
-        ['Running cost per vehicle-year', money(u.perVehicleYear, 2), `map data (${u.subscriptionYears} yr) + cloud (${u.serviceYears} yr) per vehicle in service`],
+        ['Running cost per vehicle in service', u.subscriptionYears < u.serviceYears && u.subscriptionPerYear > 0 ? `${money(u.perVehicleYear, 2)} / ${money(u.cloudPerYear, 2)}` : money(u.perVehicleYear, 2),
+          u.subscriptionYears < u.serviceYears && u.subscriptionPerYear > 0 ? `a year: map data + cloud in years 1–${u.subscriptionYears}, then cloud only to year ${u.serviceYears} of each vehicle` : `a year: map data (${u.subscriptionYears} yr) + cloud (${u.serviceYears} yr)`],
         ['Simulated range', `${M(mc.p10)} – ${M(mc.p90)}`, `P10–P90; P50 ${M(mc.p50)}; the headline sits at about P${Math.round(mc.headlinePercentile)}`],
         ...(hl.hubMin && hl.hubMax ? [['Hub range (same scope)', `${M(hl.hubMin.total)} – ${M(hl.hubMax.total)}`, `${hl.hubMin.label} to ${hl.hubMax.label}`] as Cell[]] : []),
       ], { 0: { cellWidth: 46 }, 1: { cellWidth: 34, halign: 'right' } });
@@ -275,7 +290,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       ['Homologation', (p.includeHomologation ?? true) ? 'included' : 'excluded', 'R155 / R156 / ISO 26262'],
       ['Effort calibration', p.effortCalibration && p.effortCalibration !== 1 ? `× ${p.effortCalibration}` : 'none (uncalibrated)', 'your logged actuals'],
     ], { 0: { cellWidth: 52 }, 1: { cellWidth: 56 } });
-    if (req.vehicleDesc) { sub('The vehicle'); para(req.vehicleDesc, 8.5); }
+    if (req.vehicleDesc) { sub(req.facts?.length ? 'The vehicle' : 'The vehicle (demo description — not checked against sources)'); para(req.vehicleDesc, 8.5); }
     if (req.facts?.length) {
       sub('Product facts the scope rests on (each checked on the page given)');
       table(['Fact', 'Checked on'], req.facts.map(([a, b]) => [a, b]), { 0: { cellWidth: 80 }, 1: { cellWidth: 98, fontSize: 6.3, textColor: MUTED } });
@@ -284,11 +299,11 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
 
   // ── 3 Architecture ────────────────────────────────────────────────────────────────────────────────────────────────
   const architecture = () => {
-    section('architecture', undefined, `The vehicle's electrical / electronic architecture as the costing sees it: ${md.components.length} components carry the software in scope. Each is numbered; the table lists what runs on it. A module running on several components counts at each — the picture never splits money by component.`);
+    section('architecture', undefined, `The vehicle's electrical / electronic architecture as the costing sees it: ${md.components.length} components carry the software in scope. Each is numbered; the table lists what runs on it. A module running on several components counts at each — the picture never splits money by component. The picture is a generic zonal E/E template placed by vehicle zone, not this vehicle's own architecture.`);
     figure('architecture', md.profile === 'executive' ? 'Coloured by the highest ASIL among the modules on each component. The full component table is in the Vehicle report.' : 'Coloured by the highest ASIL among the modules on each component. Numbers refer to the table below.');
     if (md.profile === 'executive') return;
     table(['No.', 'Component', 'Highest ASIL', 'Modules running on it', 'What it is'], md.components.map(c => [
-      strong(String(c.no)), c.label, c.highestAsil === 'QM' ? 'QM' : `ASIL ${c.highestAsil}`, `${c.modules.length}: ${c.modules.join(', ')}`, c.what]),
+      strong(String(c.no)), c.label, c.offVehicle ? '— (off-vehicle)' : c.highestAsil === 'QM' ? 'QM' : `ASIL ${c.highestAsil}`, `${c.modules.length}: ${c.modules.join(', ')}`, c.what]),
       { 0: { cellWidth: 9, halign: 'center' }, 1: { cellWidth: 36 }, 2: { cellWidth: 17 }, 3: { cellWidth: 70, fontSize: 6.3 }, 4: { cellWidth: 46, fontSize: 6.3, textColor: MUTED } },
       { bodyStyles: SMALL });
     if (md.profile === 'vehicle') figure('architecture-count', 'The same components coloured by the number of software modules running on each — where integration and verification concentrate.');
@@ -313,7 +328,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     sub('Formulas');
     bullets([
       'Loaded rate = hub rate (mid / senior blend) × development-source price × engineering burden.',
-      'Development person-months = nominal × calibration × reuse × ASIL factor; split requirements 12 %, architecture 14 %, algorithms 22 % × complexity, implementation 37 % × (1 + 0.15 × (complexity − 1)), safety 15 % (reuse floored by ASIL).',
+      'Development person-months = nominal × calibration × reuse × ASIL factor; split requirements 12 %, architecture 14 %, algorithms 22 % × complexity, implementation 37 % × (1 + 0.15 × (complexity − 1)), safety 15 % (reuse floored by ASIL; the model keeps the 15 % safety bucket at QM too — a CostVision model choice).',
       'Verification, integration, cybersecurity (by the ISO/SAE 21434 CAL) and calibration are fractions of development; tools = engineer-years × the seat price.',
       'Maintenance = (development + verification + integration) × the module\'s % a year — in full for 3 years after SOP, then 50 %, then the security-support share after the last build.',
       'Royalties = vehicles × the royalty per vehicle built + vehicle-years × the subscription; cloud = connected vehicle-years × the cloud rate.',
@@ -379,8 +394,8 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       ...mods.map(m => [m.name + (m.custom ? ' (your module)' : ''), m.result.asilUsed, m.result.complexityUsed, m.result.reuseUsed, m.result.calUsed === 'none' ? '—' : m.result.calUsed,
         num(m.result.effortPersonMonths, 0), M(m.result.totalNonRecurring), M(m.result.totalLifecycle), M(m.result.grandTotal), share(m.result.grandTotal, d.total)]),
       [strong('Domain'), '', '', '', '', strong(num(d.effortPM, 0)), strong(M(d.nre)), strong(M(d.lifecycle)), strong(M(d.total)), strong('100.0 %')],
-    ], { 0: { cellWidth: 52 }, 1: { cellWidth: 10 }, 2: { cellWidth: 17 }, 3: { cellWidth: 14 }, 4: { cellWidth: 11 }, 5: { ...R, cellWidth: 11 },
-      6: { ...R, cellWidth: 16 }, 7: { ...R, cellWidth: 16 }, 8: { ...R, cellWidth: 15 }, 9: { ...R, cellWidth: 16 } }, { bodyStyles: SMALL });
+    ], { 0: { cellWidth: 49 }, 1: { cellWidth: 10 }, 2: { cellWidth: 20 }, 3: { cellWidth: 14 }, 4: { cellWidth: 11 }, 5: { ...R, cellWidth: 11 },
+      6: { ...R, cellWidth: 16 }, 7: { ...R, cellWidth: 16 }, 8: { ...R, cellWidth: 15 }, 9: { ...R, cellWidth: 16 } }, { bodyStyles: SMALL, headStyles: { fillColor: NAVY, textColor: WHITE, fontStyle: 'bold', fontSize: 6.8, cellPadding: 1.6 } });
     sub('What drives it', 12);
     const asil = ASILS.filter(a => d.asilMix[a]).map(a => `${d.asilMix[a]} × ${a === 'QM' ? 'QM' : 'ASIL ' + a}`).join(', ');
     const reuse = Object.entries(d.reuseMix).map(([k, v]) => `${v} × ${k}`).join(', ');
@@ -393,16 +408,18 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
   };
   const domains = () => {
     section('domains', undefined, md.slice.isWhole
-      ? `The ${md.domains.length} software domains, largest first in each table. Domain totals are module totals; programme-level items (${md.programmeItems.map(x => x.label.toLowerCase()).join(', ') || 'none'}) sit outside the domains.`
+      ? `The ${md.domains.length} software domains, largest first in each table. Domain totals are module totals; programme-level items (${md.programmeItems.map(x => x.label).join('; ') || 'none'}) sit outside the domains.`
       : 'The domains in this report, each a slice of the vehicle costing.');
     if (md.profile === 'executive') {
-      table(['Domain', 'Modules', 'NRE', 'Lifecycle', 'Total', 'Share'], md.domains.map(d => [d.label, String(d.moduleIds.length), M(d.nre), M(d.lifecycle), M(d.total), share(d.total, s.grandTotal)]),
+      table(['Domain', 'Modules', 'NRE', 'Lifecycle', 'Total', 'Share'], [...md.domains.map(d => [d.label, String(d.moduleIds.length), M(d.nre), M(d.lifecycle), M(d.total), share(d.total, s.grandTotal)]),
+        ...md.programmeItems.map(x => [x.label, '—', x.label.startsWith('Cloud') ? '—' : M(x.amount), x.label.startsWith('Cloud') ? M(x.amount) : '—', M(x.amount), share(x.amount, s.grandTotal)]),
+        [strong('Programme total'), '', strong(M(s.nreTotal)), strong(M(md.headline.lifecycle)), strong(M(s.grandTotal)), strong('100.0 %')]] as Cell[][],
         { 1: { ...R, cellWidth: 16 }, 2: { ...R, cellWidth: 24 }, 3: { ...R, cellWidth: 24 }, 4: { ...R, cellWidth: 24 }, 5: { ...R, cellWidth: 18 } });
       return;
     }
     table(['Domain', 'Modules', 'NRE', 'Lifecycle', 'Total', 'Share of vehicle'], [
       ...md.domains.map(d => [d.label, String(d.moduleIds.length), M(d.nre), M(d.lifecycle), M(d.total), share(d.total, s.grandTotal)]),
-      ...(md.slice.isWhole ? md.programmeItems.map(x => [x.label, '—', M(x.amount), '', M(x.amount), share(x.amount, s.grandTotal)]) : []),
+      ...(md.slice.isWhole ? md.programmeItems.map(x => x.label.startsWith('Cloud') ? [x.label, '—', '—', M(x.amount), M(x.amount), share(x.amount, s.grandTotal)] : [x.label, '—', M(x.amount), '—', M(x.amount), share(x.amount, s.grandTotal)]) : []),
       [strong(md.slice.isWhole ? 'Programme total' : 'This report'), strong(String(md.modules.length)), strong(M(md.slice.nre)), strong(M(md.slice.lifecycle)), strong(M(md.slice.total)), strong(share(md.slice.total, s.grandTotal))],
     ], { 1: { ...R, cellWidth: 16 }, 2: { ...R, cellWidth: 24 }, 3: { ...R, cellWidth: 24 }, 4: { ...R, cellWidth: 24 }, 5: { ...R, cellWidth: 24 } });
     md.domains.forEach((d, i) => domainSpread(d, i));
@@ -495,7 +512,8 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       ['Royalty per vehicle built', money(u.perVehicleBuilt, 2), `${u.vehiclesBuilt.toLocaleString('en-GB')} vehicles`, M(u.perVehicleBuilt * u.vehiclesBuilt)],
       ['Map data per vehicle-year', money(u.subscriptionPerYear, 2), `${u.subscriptionVehicleYears.toLocaleString('en-GB')} vehicle-years (${u.subscriptionYears} yr each)`, M(u.subscriptionPerYear * u.subscriptionVehicleYears)],
       ['Cloud per connected vehicle-year', money(u.cloudPerYear, 2), `${u.serviceVehicleYears.toLocaleString('en-GB')} vehicle-years (${u.serviceYears} yr each)`, M(u.cloudPerYear * u.serviceVehicleYears)],
-      ['Fixed per production year (maintenance, IP licences, platform) — average', M(u.fixedPerYear), `× ${p.programLifeYears} years`, M(u.fixedPerYear * p.programLifeYears)],
+      ['Fixed per production year (maintenance, IP licences, platform) — average', M(u.fixedPerYear - md.postSupportNominal / p.programLifeYears), `× ${p.programLifeYears} years`, M(u.fixedPerYear * p.programLifeYears - md.postSupportNominal)],
+      ...(md.postSupportNominal > 0.5 ? [['Security support after the last build', M(md.postSupportNominal), `${p.postProductionSupportYears ?? 10} service years after the last build`, M(md.postSupportNominal)]] : []),
       [strong('Programme total'), '', '', strong(M(u.total))],
     ], { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 26 }, 2: { cellWidth: 56 }, 3: { ...R, cellWidth: 32 } });
     const by = (kind: string) => md.evidence.lines.filter(l => l.kind === kind && l.amount > 0.5).sort((a, b) => b.amount - a.amount);
@@ -509,7 +527,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     const ip = by('licences');
     if (ip.length) {
       sub('Embedded IP licences (a year per module, over the production years)');
-      table(['Module', 'Programme', 'Module', 'Programme'], two(ip, / — IP licences$/), { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 25 }, 2: { cellWidth: 64 }, 3: { ...R, cellWidth: 25 } }, { bodyStyles: SMALL });
+      table(['Module', 'Programme', 'Module', 'Programme'], two(ip, / — IP licences$/).map(r0 => r0.map((c, i) => (i % 2 === 1 && c ? money(ip.find(l => l.label.replace(/ — IP licences$/, '') === r0[i - 1])!.amount, 0) : c))), { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 25 }, 2: { cellWidth: 64 }, 3: { ...R, cellWidth: 25 } }, { bodyStyles: SMALL });
     }
     const cl = by('cloud');
     if (cl.length) {
@@ -524,7 +542,9 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     section('spend', undefined, md.spend.note);
     const yrs = md.spend.years;
     const keys: Array<['engineering' | 'maintenance' | 'licences' | 'royalties' | 'cloud', string]> = [['engineering', 'Engineering'], ['maintenance', 'Maintenance'], ['licences', 'Licences'], ['royalties', 'Royalties'], ['cloud', 'Cloud']];
-    const max = Math.max(...yrs.map(x => x.total)), chH = 62, x0 = MG + 14, cw = (CW - 14) / yrs.length;
+    const raw = Math.max(...yrs.map(x => x.total)) / 4;
+    const mag = Math.pow(10, Math.floor(Math.log10(raw || 1))), step = [1, 2, 2.5, 5, 10].map(k => k * mag).find(k => k >= raw) ?? raw;
+    const max = step * 4, chH = 62, x0 = MG + 14, cw = (CW - 14) / yrs.length;
     ensure(chH + 22);
     const base = y + chH;
     font(6.6, 'normal', MUTED); doc.setDrawColor(...LINE); doc.setLineWidth(0.2);
@@ -552,7 +572,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
 
   // ── 10 Rates ──────────────────────────────────────────────────────────────────────────────────────────────────────
   const rates = () => {
-    section('rates', `Engineering rate — ${req.hubLabel}`, 'From salary to the loaded £ per person-month every engineering line uses.');
+    section('rates', `Engineering rate — ${req.hubLabel}`, `From salary to the loaded ${req.currency.sym} per person-month every engineering line uses.`);
     const rc = md.rateCheck, c0 = r.modules[0]?.chain;
     if (c0) {
       table(['Step', 'Value', 'How'], [
@@ -596,7 +616,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
   // ── 12 Risk (histogram + tornado) ─────────────────────────────────────────────────────────────────────────────────
   const risk = () => {
     const mc = r.monteCarlo;
-    section('risk', undefined, `${mc.iterations.toLocaleString('en-GB')} seeded trials; each costed line is drawn from a triangular range set by its evidence grade, with a 55 % programme-wide correlation. The headline adds each line's most likely value and sits at about P${Math.round(mc.headlinePercentile)} — not the median.`);
+    section('risk', md.profile === 'executive' ? 'Risk' : undefined, `${mc.iterations.toLocaleString('en-GB')} seeded trials; each costed line is drawn from a triangular range set by its evidence grade, with a 55 % programme-wide correlation. The headline adds each line's most likely value and sits at about P${Math.round(mc.headlinePercentile)} — not the median.`);
     const hist = mc.histogram;
     if (hist.length) {
       const chH = 46, x0 = MG + 4, cw = (CW - 8) / hist.length, maxC = Math.max(...hist.map(b => b.count));
@@ -621,7 +641,9 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     ], { 1: { ...R, cellWidth: 40 }, 2: { ...R, cellWidth: 34 } });
     if (md.profile === 'executive') return;
     sub('What moves the total — one driver at a time, everything else held');
-    const sens = [...r.sensitivity].sort((a, b) => Math.abs(b.high - b.low) - Math.abs(a.high - a.low));
+    // Rows priced per vehicle (production volume) are not programme £M: their own table, outside the tornado.
+    const sens = r.sensitivity.filter(x => x.unit === '£M').sort((a, b) => Math.abs(b.high - b.low) - Math.abs(a.high - a.low));
+    const perVeh = r.sensitivity.filter(x => x.unit !== '£M');
     const labelW = 70, half = (CW - labelW - 4) / 2, cx = MG + labelW + half, rowH = 6;
     const span = Math.max(...sens.map(x => Math.max(Math.abs(x.low - x.base), Math.abs(x.high - x.base)))) || 1;
     ensure(sens.length * rowH + 8);
@@ -639,14 +661,18 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     legend([[BLUE, 'Low case'], [AMBER, 'High case']]);
     table(['Driver (low case vs high case)', 'Low', 'Base', 'High', 'Swing'], sens.map(x => [x.parameter, M(x.low), M(x.base), M(x.high), M(Math.abs(x.high - x.low))]),
       { 0: { cellWidth: 78 }, 1: R, 2: R, 3: R, 4: R }, { bodyStyles: SMALL });
+    if (perVeh.length) {
+      sub('Per vehicle — what volume does to each vehicle\'s share', 12);
+      table(['Driver', 'Low case', 'Base', 'High case'], perVeh.map(x => [x.parameter, money(x.low, 0), money(x.base, 0), money(x.high, 0)]), { 0: { cellWidth: 90 }, 1: R, 2: R, 3: R }, { bodyStyles: SMALL });
+    }
   };
 
   // ── 13 Evidence ───────────────────────────────────────────────────────────────────────────────────────────────────
   const evidence = () => {
-    section('evidence', undefined, 'How well each part of the total is supported, the figures you entered, which modules to calibrate first, and every stated assumption.');
+    const short = md.profile === 'supplier' || md.profile === 'module';
+    section('evidence', undefined, short ? 'How well each part of this report is supported, and the figures you entered.' : 'How well each part of the total is supported, the figures you entered, which modules to calibrate first, and every stated assumption.');
     const ev = md.evidence;
-    const inSlice = new Set(md.modules.map(m => m.name));
-    const evLines = md.slice.isWhole ? ev.lines : ev.lines.filter(l => inSlice.has(l.label.split(' — ')[0]));
+    const evLines = md.evidenceLines;
     const byG = { entered: 0, calibrated: 0, sourced: 0, estimate: 0, unsourced: 0 } as Record<SWEvidenceGrade, number>;
     for (const l of evLines) byG[l.grade] += l.amount;
     const tot = Object.values(byG).reduce((a, b) => a + b, 0);
@@ -664,13 +690,13 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     }
     sub('Your figures — quotes and modules you entered, with their sources');
     if (md.yourFigures.length) table(['Line', 'Value', 'Source'], md.yourFigures.map(x => [x.line, x.value, x.source]), { 0: { cellWidth: 70 }, 1: { cellWidth: 40 }, 2: { cellWidth: 68, fontSize: 6.6 } });
-    else para('None yet. Enter supplier quotes on Setup (Supplier quotes & licence register) and modules the catalogue lacks on Scope (Your modules) — each replaces an unsourced figure.', 8, MUTED);
-    if (md.profile === 'supplier' || md.profile === 'module') return;
+    else para('None yet. Supplier quotes and modules of your own, each with its source, replace unsourced catalogue figures.', 8, MUTED);
+    if (short) return;
     sub('Calibration — which modules to measure first');
-    const cal = md.calibration, rows = md.slice.isWhole ? cal.rows : cal.rows.filter(x => inSlice.has(x.name));
+    const cal = md.calibration, rows = cal.rows;
     para(p.effortCalibration && p.effortCalibration !== 1 ? `This costing is calibrated: effort × ${p.effortCalibration} from your logged actuals.`
-      : `This costing is uncalibrated: ${M(cal.total)} of engineering rests on the catalogue's person-months. Log what the top modules actually took (Rates & method → Calibrate to your actuals).`, 8);
-    table(['Module', 'Person-months', 'Engineering', 'Share', 'Cumulative'], rows.slice(0, 12).map(x => [x.name, num(x.personMonths, 0), M(x.amount), share(x.amount, cal.total), `${(x.cumulative * 100).toFixed(1)} %`]),
+      : `This costing is uncalibrated: ${M(cal.total)} of engineering effort${md.slice.isWhole ? '' : ' in this report'} rests on the catalogue's person-months. Log what the top modules actually took (Calibrate to your actuals, in the tool).`, 8);
+    table(['Module', 'Person-months', 'Engineering effort (excl. tools)', 'Share', 'Cumulative'], rows.slice(0, 12).map(x => [x.name, num(x.personMonths, 0), M(x.amount), share(x.amount, cal.total), `${(x.cumulative * 100).toFixed(1)} %`]),
       { 0: { cellWidth: 72 }, 1: R, 2: R, 3: R, 4: R }, { bodyStyles: SMALL });
     sub('Stated assumptions and their basis');
     table(['Assumption', 'Basis'], md.assumptions, { 0: { cellWidth: 46, fontStyle: 'bold', textColor: NAVY }, 1: { cellWidth: 132, fontSize: 6.6 } }, { bodyStyles: SMALL });
@@ -689,8 +715,14 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
         const ff = (n: number) => (x.unit === 'perVehicle' ? money(n, 2) : M(n));
         return [x.label, ff(x.should), ff(x.quoted), `${x.gap >= 0 ? '+' : '−'}${ff(Math.abs(x.gap))} (${x.gapPct >= 0 ? '+' : ''}${x.gapPct.toFixed(0)} %)`];
       }), { 1: R, 2: R, 3: R });
-    } else para('No supplier quote was entered on the Supplier check tab.', 8.5);
-    para(`Negotiation target: a fair Tier-1 price for this scope is ${M(q.target.nre)} of engineering at ${money(q.target.ratePerPM, 0)} per person-month (${q.target.basis}).`, 8.5);
+    } else {
+      const lineQuotes = md.yourFigures.filter(y => !y.line.startsWith('Your module')).length;
+      para(`No total supplier quote was entered (Supplier check tab)${lineQuotes ? `; ${lineQuotes} line-item quote${lineQuotes === 1 ? ' was' : 's were'} applied in the costing (see Evidence and sources)` : ''}.`, 8.5);
+    }
+    // The target split into what a supplier delivers and what stays with the OEM (review M9).
+    const effort = q.target.nre - s.totalToolchain - s.totalHomologation;
+    para(`Negotiation target for a Tier-1 supplier: engineering effort ${M(effort)} (${num(s.totalEffortPersonMonths, 0)} person-months at ${money(q.target.ratePerPM, 0)} per person-month, ${q.target.basis}) + development tools ${M(s.totalToolchain)} = ${M(effort + s.totalToolchain)}.`
+      + (s.totalHomologation ? ` Homologation ${M(s.totalHomologation)} (type approval, CSMS / SUMS) stays with the OEM.` : ''), 8.5);
   };
 
   // ── 15 Scope ──────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -707,21 +739,22 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     }
     sub('Vehicle software the catalogue has no module for (review judgement)');
     const mine = (p.customModules ?? []).filter(c => p.modules.find(m => m.moduleId === c.id)?.enabled);
-    para(`These functions are normally supplier ECUs whose software is priced in the hardware piece price. They are not in this total unless added as your modules${mine.length ? ` — you added ${mine.map(c => `${c.name} (${c.nominalPersonMonths} nominal PM)`).join(', ')}` : ''}. Confirm against the electrical bill of materials.`, 8, MUTED);
-    bullets([...SW_CATALOGUE_GAPS]);
+    para(`These functions are normally supplier ECUs whose software is priced in the hardware piece price. They are not in this total${mine.length ? ` — except what you added as your own modules, which are costed here: ${mine.map(c => `${c.name} (${c.nominalPersonMonths} nominal PM)`).join(', ')}` : ' unless added as your own modules'}. Confirm against the electrical bill of materials.`, 8, MUTED);
+    bullets([...md.gaps]);
     sub('Limitations');
     bullets([
       'Accuracy has not been measured: no real programme cost has been logged against the model. The checks in this report prove the arithmetic, not the inputs.',
       'Sourced figures (hub salaries, supplier margins, licence prices, OEM service terms) were read from search results of the cited pages and re-checked by an independent search.',
       'Published "programme software cost" figures for other vehicles are not printed: none could be verified.',
       'Vehicle volume and programme life are user inputs.',
-      'The vehicle skeleton is schematic: parts are placed by vehicle zone, not measured from this vehicle.',
+      'The vehicle skeleton is a generic zonal E/E template: parts are placed by vehicle zone, not taken from this vehicle\'s architecture.',
+      ...(md.mlExcluded ? ['ML training data, annotation and retraining are not costed (switched off for this programme); ML modules carry their engineering only.'] : []),
     ]);
   };
 
   // ── 16 Appendix: module × cost element ────────────────────────────────────────────────────────────────────────────
   const appendix = () => {
-    section('appendix', undefined, `Every module (rows) by cost element (columns), in ${kUnit}. Rows add to the module total; columns add to the cost build-up.`);
+    section('appendix', undefined, `Every module (rows) by cost element (columns), in ${kUnit}. Rows add to the module total; with the programme-level items the columns add to the cost build-up and the total.`);
     const cols: Array<[string, (m: SWReportModule) => number]> = [
       ['Dev', m => m.result.development.total], ['Verif.', m => m.result.testing.total], ['Integ.', m => m.result.integrationCost], ['Cyber', m => m.result.cybersecCost],
       ['Calib.', m => m.result.calibrationCost + m.result.mlDataCost], ['Tools', m => m.result.toolchainCost], ['Maint.', m => m.result.maintenanceCost],
@@ -733,6 +766,10 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       for (const m of modsByDomain(d)) body.push([m.name, ...cols.map(([, g]) => K(g(m)))]);
     }
     body.push([strong('All modules'), ...cols.map(([, g]) => strong(K(md.modules.reduce((a, m) => a + g(m), 0))))]);
+    if (md.slice.isWhole) {
+      for (const it of md.programmeItems) body.push([it.label, ...cols.map(([h]) => (h === 'Total' || (h === 'Cloud' && it.label.startsWith('Cloud')) ? K(it.amount) : ''))]);
+      body.push([strong('Programme total'), ...cols.map(([h, g]) => strong(h === 'Total' ? K(s.grandTotal) : h === 'Cloud' ? K(md.modules.reduce((a, m) => a + g(m), 0) + (md.programmeItems.find(x => x.label.startsWith('Cloud'))?.amount ?? 0)) : ''))]);
+    }
     table(['Module', ...cols.map(([h]) => h)], body, { 0: { cellWidth: 48 }, ...Object.fromEntries(cols.map((_, i) => [i + 1, { halign: 'right', cellWidth: 13 }])) },
       { bodyStyles: { ...SMALL, fontSize: 6.1 }, headStyles: { fillColor: NAVY, textColor: WHITE, fontStyle: 'bold', fontSize: 6.4, halign: 'right' } });
     const failed = md.checks.filter(c => !c.ok);

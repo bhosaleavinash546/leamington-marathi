@@ -63,3 +63,32 @@ sheets, LibreOffice 0 formula errors, 122 / 122 checks ✓; senior share 55 % �
 - Accuracy is not measured (no logged programme actuals); the checks prove the arithmetic, not the inputs.
 - The skeleton is schematic: parts by vehicle zone, not measured from the vehicle.
 - In Excel, spend by year, hubs, risk and make-or-buy are the engine's values (each an engine re-run); the cost chain is live.
+
+## Independent review and fixes (14 Oct 2026)
+
+A reviewer who did not build the report read every exported file line by line. It recomputed all 52 L460 modules with the
+engine: NRE, lifecycle and total match the PDF to the pound, and so do the Monte Carlo figures and the spend profile. The
+arithmetic was sound. The findings were in labels, units, slices and currency, and all are fixed and pinned in
+`tests/sw-report-review.test.ts`:
+
+| # | Finding | Fix |
+|---|---|---|
+| H1 | Volume sensitivity (£ per vehicle) printed as £0.0M and plotted on the £M tornado | Own per-vehicle table (PDF and Excel); tornado £M rows only |
+| H2 | A quoted cloud rate was described with the catalogue basis | `swRateBasis` and the assumptions name the quote and its source |
+| H3 | Your own airbag module was also listed as a catalogue gap; "no supplier quote" beside two applied quotes | Covered gaps are listed as covered; line-item quotes are acknowledged |
+| H4 | Focused covers stated vehicle-level facts (unsourced share, components, "section 2") | Slice evidence share and component count; the cross-reference only when that section is printed |
+| H5 | Domain report's calibration share / cumulative were the vehicle's | Recomputed over the slice |
+| H6 | EUR report mixed £ and € in text | Every drawn text through `localiseGbpText`; a stated conversion ("÷ FX per £ = GBP x") is kept as GBP |
+| M7 | "Fixed per production year" included security support paid after the last build | Separate line in PDF and Excel |
+| M8 | Running cost added map and cloud over different periods | "map + cloud in years 1–3, then cloud only" |
+| M9 | Negotiation target included OEM-only homologation | Effort (PM × rate) + tools; homologation stays with the OEM |
+| M10 | Royalty and cloud lines had no arithmetic | Vehicles × rate, vehicle-years × rate, cloud rate from the module £ / yr ÷ the reference fleet |
+| M11 | Module ids and a code constant in the text | Ids replaced by module names; the US$ rate printed with its date |
+| M12 | Key-management mapped to the digital-key UWB anchors; cloud given an ASIL | Mapping corrected; off-vehicle parts carry no ASIL; the picture is labelled a generic zonal template |
+| M13 | Demo descriptions read as checked facts | Labelled "demo description (not checked against sources)" |
+| M14–19 | Grammar, contractor day citation, ML exclusion, Excel claim, "programme year 16", monthly salaries | Fixed; monthly observations show × 12 = a year |
+| Low | Header wrap, appendix totals, chart ticks, £0.0M IP lines, labels, sheet-name truncation, hard-coded cell | Fixed |
+
+After the fixes the live e2e (`e2e/sw-report-live.ts`) passes 40 / 40, and every workbook recalculates in LibreOffice with
+0 formula errors and every check ✓ (vehicle 122, executive 113, domain 44, module 12, supplier 113, hubs 112, BEV EUR 116,
+ICE 104, user programme 124).

@@ -372,7 +372,7 @@ export function swRateCheck(result: SWProgramResult): SWRateCheck {
   }
   lines.push(`Fully loaded: ×${swOverhead(prog).toFixed(2)} on the hub rate${prog.burden ? ` (employment +${prog.burden.employmentPct} %, company +${prog.burden.companyPct} %, capital +${prog.burden.capitalPct} %)` : ' (a single overhead saved with this configuration)'}.`);
   const ukDay = prog.region === 'UK' ? RATE_EVIDENCE.ukContractDay.value : null;
-  if (ukDay) lines.push(`A UK embedded-software contractor costs about £${ukDay} a day (median, with the contractor's margin); this costing's in-house day is £${Math.round(perHour * 8)}.`);
+  if (ukDay) lines.push(`A UK embedded-software contractor costs about £${ukDay} a day (median, with the contractor's margin — ${RATE_EVIDENCE.ukContractDay.source}); this costing's loaded engineer day is £${Math.round(perHour * 8)}.`);
   return { loadedPerPM: loaded, perHour, perDay: perHour * 8, employmentMultiple: mult, employmentLow: RATE_EVIDENCE.employment.low,
     employmentHigh: RATE_EVIDENCE.employment.high, contractDayGBP: ukDay, lines };
 }

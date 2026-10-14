@@ -171,7 +171,8 @@ export function buildReportSkeletonSVG(inp: ReportSkeletonInput): string {
     for (const cid of comps) {
       if (lit.has(mid) && inScope.has(mid)) {
         const e = load.get(cid) ?? { n: 0, asil: 0 };
-        e.n++; e.asil = Math.max(e.asil, ASIL_ORDER.indexOf(asilOf.get(mid) ?? 'QM'));
+        // ISO 26262 levels apply to on-vehicle parts only: the cloud back-end is drawn at the base step.
+        e.n++; if (cid !== 'cloud') e.asil = Math.max(e.asil, ASIL_ORDER.indexOf(asilOf.get(mid) ?? 'QM'));
         load.set(cid, e);
       }
       if (excluded.has(mid)) excl.add(cid);

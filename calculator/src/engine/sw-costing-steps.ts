@@ -58,7 +58,7 @@ export function swCostingSteps(result: SWProgramResult, rate: StepRate, f: StepF
 
   return [
     { id: 'scope', title: 'Scope', value: `${result.modules.length} modules`,
-      detail: `${cats.size} software domains${prog.powertrain ? ` on a ${prog.powertrain} vehicle` : ''}; nominal effort `
+      detail: `${cats.size} software domains${prog.powertrain ? ` on ${prog.powertrain === 'ICE' ? 'an' : 'a'} ${prog.powertrain} vehicle` : ''}; nominal effort `
         + `${f.number(nominal, 0)} person-months (fresh code, QM, medium complexity).`,
       modules: ids },
     { id: 'effort', title: 'Development effort', value: `${f.number(s.totalPersonMonths, 0)} PM`,
@@ -80,7 +80,7 @@ export function swCostingSteps(result: SWProgramResult, rate: StepRate, f: StepF
     { id: 'lifecycle', title: 'Lifecycle', value: f.money(lifecycle),
       detail: `Maintenance ${f.money(s.totalMaintenance)}, cloud ${f.money(s.totalCloud)}, licences and royalties `
         + `${f.money(s.totalLicensing)} — paid over the ${prog.programLifeYears} production years and the service years after `
-        + `the last build (to programme year ${s.horizonYears ?? prog.programLifeYears}).`,
+        + `the last build (${s.horizonYears ?? prog.programLifeYears} years from SOP).`,
       modules: recurring.length ? recurring : ids },
     { id: 'per-vehicle', title: 'Per vehicle', value: f.money(s.perVehicle),
       detail: `NRE ${f.money(s.nreTotal)} over ${f.number(prog.annualProductionVolume * recovery, 0)} vehicles `
