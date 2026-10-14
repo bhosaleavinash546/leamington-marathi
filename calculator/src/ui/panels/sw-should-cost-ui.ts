@@ -21,7 +21,7 @@ import type {
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion, swLoadedRate, swOverhead,
   SW_DEFAULT_BURDEN, SW_BURDEN_BASIS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_SUBSCRIPTION_BASIS, SW_DEFAULT_SERVICE_YEARS, SW_SERVICE_BASIS, SW_POST_EOP_YEARS, SW_POST_EOP_SHARE, SW_POST_EOP_BASIS, SW_DEVELOPMENT_BASIS,
-  SW_TOOL_SEAT_GBP, SW_TOOL_SEAT_BASIS, SW_MAINT_BASIS, SW_HOMOLOGATION_BASIS, SW_MC_RANGE_BY_GRADE,
+  SW_TOOL_SEAT_GBP, SW_TOOL_SEAT_BASIS, SW_MAINT_BASIS, SW_HOMOLOGATION_BASIS,
   applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_COCOMO, SW_COCOMO_EXPONENT,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
@@ -38,7 +38,8 @@ import {
   benchmarksHTML, insightsHTML, buildInsights, VIEWS_CSS,
 } from './sw-cockpit-views.js';
 import { DOMAIN_SLOT, setChartWidth } from './sw-charts.js';
-import { swRateCheck, swEvidence, swMakeBuy, swQuoteCheck, swUnitEconomics } from '../../engine/sw-cockpit.js';
+import { swRateCheck, swEvidence, swMakeBuy, swQuoteCheck, swUnitEconomics, swHubComparison, swSpendProfile } from '../../engine/sw-cockpit.js';
+import { swCostingSteps, type StepRate, type StepFormat } from '../../engine/sw-costing-steps.js';
 import { componentLoad } from './sw-vehicle-skeleton.js';
 import { vehicleComponent } from '../../engine/sw-vehicle-map.js';
 import { SW_HUB_RATES } from '../../engine/sw-country-rates.js';
@@ -1409,23 +1410,38 @@ interface SWVehicleDemo {
   moduleOverrides?: Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'reuse'>>>;
   /** Optional path to a detailed, board-level cost-breakdown report for this programme. */
   reportUrl?: string;
+  /** Product facts the scope rests on, each with the page it was checked on (printed in the PDF report). */
+  facts?: Array<[string, string]>;
 }
 
 
 export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'rr_l460', powertrain: 'PHEV', label: 'Range Rover L460 (PHEV)',
-    desc: 'JLR flagship, EVA2 (MLA) architecture, Pivi Pro infotainment. Heavy Tier-1 outsourcing; PHEV P550e keeps a (smaller) EV powertrain stack. Premium software: Dynamic Response Pro (48V active anti-roll) + rear-axle steer, Meridian 3D audio, park assist + 3D surround, cabin-air purification, digital key, HUD. Published ≈ £390M (core stack).',
+    // President review (14 Oct 2026): every product fact below was re-checked against JLR / Meridian / press pages
+    // (scripts/sw-research/2026-10-14-rr-phev/verify-demo.md). The old text claimed a "published ≈ £390M" software cost
+    // (no source exists), a digital key (not confirmed for the L460) and "heavy Tier-1 outsourcing" (a modelling choice).
+    desc: 'Range Rover (L460, 2022 on): JLR MLA-Flex platform, EVA 2.0 electrical architecture, Pivi Pro infotainment with software-over-the-air updates. PHEV: P460e / P550e, 38.2 kWh battery (MY24 on). Premium software from JLR-listed features: Dynamic Response Pro (48 V active roll control), all-wheel steering, Meridian Signature Sound, Cabin Air Purification Pro, head-up display (option), 3D surround camera and Remote Park Assist. Voice: Amazon Alexa. Digital key is not confirmed for the L460 and is out of scope. Tier-1 development is a modelling assumption, not JLR\'s sourcing.',
     region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: SW_DEFAULT_OVERHEAD, senior: 0.55, reuse: 'Medium',
     reportUrl: 'reports/l460-software-cost-breakdown.html',  // relative to import.meta.env.BASE_URL
-    disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
+    disabledModules: ['digital_key'],  // not confirmed for the L460 (fact check, 14 Oct 2026); PHEV keeps its HV software
     moduleOverrides: {
       bms_core:       { complexity: 'High' },     // PHEV pack smaller than a BEV
       soc_soh_soe:    { complexity: 'High' },
       fast_charge:    { complexity: 'Medium' },   // AC + modest DC
       edu_control:    { complexity: 'High' },
-      premium_audio:  { complexity: 'Very High' }, // Meridian Signature 3D
+      premium_audio:  { complexity: 'Very High' }, // Meridian Signature Sound (35 speakers, Meridian)
     },
+    facts: [
+      ['MLA-Flex platform; EVA 2.0 electrical architecture; Pivi Pro with software-over-the-air updates', 'https://media.landrover.com/introducing-new-range-rover-seamlessly-connected-convenience-and-luxury-every-turn'],
+      ['PHEV P460e / P550e, 38.2 kWh battery, up to 75 miles WLTP (from MY24)', 'https://www.fleetnews.co.uk/news/manufacturer-news/2023/05/17/range-rover-plug-in-hybrids-updated-with-more-power-and-range'],
+      ['Dynamic Response Pro (48 V electronic active roll control); all-wheel steering', 'https://media.landrover.com/introducing-new-range-rover-serene-capability-assurance-and-composure-and-road'],
+      ['Meridian Signature Sound System (35 loudspeakers)', 'https://meridian-audio.com/media/news-events/meridian-audio-brings-best-ever-audio-system-for-new-range-rover-to-mark-10-years-of-partnership/'],
+      ['Cabin Air Purification Pro (PM2.5 filtration)', 'https://www.landrover.in/range-rover/range-rover/explore.html'],
+      ['Head-up display (option), 3D surround camera, Remote Park Assist', 'https://media.landrover.com/introducing-new-range-rover-seamlessly-connected-convenience-and-luxury-every-turn'],
+      ['Amazon Alexa is the Pivi Pro voice assistant', 'https://www.landroverusa.com/our-story/news/amazon-alexa.html'],
+      ['No published software-cost figure for the L460 was found; no model-level volume is published (JLR reports Range Rover family wholesales)', 'https://media.jaguarlandrover.com/news/2024/04/jlr-full-year-sales-over-20-cent-year-year-reflecting-improved-production-and'],
+    ],
   },
   {
     id: 'bmw_x7', powertrain: 'MHEV', label: 'BMW X7 (48V MHEV)',
@@ -1610,24 +1626,23 @@ function applyPreset(preset: string): void {
 
 // ─── Render results ───────────────────────────────────────────────────────────
 
+/** The engineering-rate step as the studio and the PDF report state it (one source for both). */
+function studioRate(result: SWProgramResult): StepRate {
+  const hub = activeSWBook().lib.hubRates[result.inputs.region];
+  const used = swRateBasis(result.inputs).find(([k]) => k === 'Engineer rate used')?.[1] ?? '';
+  // The engine's own loaded rate (source PRICE factor × the burden) — this used the raw effort factor and the old overhead.
+  return { perPMGBP: swLoadedRate(result.inputs), hubLabel: hubLabel(result.inputs.region),
+    build: `${used.replace(/^\u00a3[\d,]+ — /, '')}; mid ${swMoney(hub?.mid.value ?? 0, 0)} / senior ${swMoney(hub?.senior.value ?? 0, 0)} per person-month (salary + statutory on-cost ÷ productive hours × 152 h), × development source price × ${swOverhead(result.inputs).toFixed(2)} engineering burden.` };
+}
+const studioFmt: StepFormat = { money: n => n >= 1e6 ? fmtM(n) : swMoney(n, 0), number: (n, dp = 0) => fmt(n, dp) };
+
 function renderResults(result: SWProgramResult, opts: { live?: boolean } = {}): void {
   renderCockpit(result, opts);
 
   // Costing studio: the seven steps of this costing on the SUV skeleton (sw-costing-pipeline.ts).
   const studioEl = document.getElementById('sw-studio');
   if (studioEl) {
-    const lib = activeSWBook().lib;
-    const hub = lib.hubRates[result.inputs.region];
-    const r = swRateBasis(result.inputs);
-    const used = r.find(([k]) => k === 'Engineer rate used')?.[1] ?? '';
-    // The engine's own loaded rate (source PRICE factor × the burden) — this used the raw effort factor and the old overhead.
-    const loaded = swLoadedRate(result.inputs);
-    mountSWStudio(studioEl, {
-      result,
-      rate: { perPMGBP: loaded, hubLabel: hubLabel(result.inputs.region),
-        build: `${used.replace(/^\u00a3[\d,]+ — /, '')}; mid ${swMoney(hub?.mid.value ?? 0, 0)} / senior ${swMoney(hub?.senior.value ?? 0, 0)} per person-month (salary + statutory on-cost ÷ productive hours × 152 h), × development source price × ${swOverhead(result.inputs).toFixed(2)} engineering burden.` },
-      fmt: { money: n => n >= 1e6 ? fmtM(n) : swMoney(n, 0), number: (n, dp = 0) => fmt(n, dp) },
-    });
+    mountSWStudio(studioEl, { result, rate: studioRate(result), fmt: studioFmt });
   }
 
   const money = (n: number) => swMoney(n, 0);
@@ -1743,7 +1758,7 @@ function generateAIInsights(result: SWProgramResult): void {
 
   const prompt = `You are a senior automotive software engineering cost analyst. Provide a concise executive summary and actionable recommendations for this programme:
 
-PROGRAMME: Premium Luxury SUV Full Software Stack (${result.inputs.programLifeYears}-year programme)
+PROGRAMME: ${programmeTitle()} (${result.inputs.programLifeYears}-year programme)
 Total Programme Cost: ${(s.grandTotal/1e6).toFixed(1)}M GBP
 Per Vehicle: £${Math.round(s.perVehicle)}
 Engineering effort: ${Math.round(s.totalEffortPersonMonths)} PM (development ${Math.round(s.totalPersonMonths)} PM)
@@ -1830,19 +1845,24 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
   // Sheet 1: Summary
   const summaryData = [
     ['CostVision — Automotive SW Should-Cost Report'],
-    ['Programme', 'Premium Luxury SUV Full SW Stack 2024–2026'],
+    ['Programme', programmeTitle()],
     ['Generated', new Date().toLocaleDateString('en-GB')],
     [],
     ['Cost Bucket', `Value (${swUnitM()})`, 'Share (%)'],
     ['Development Engineering', fM(s.totalDevelopment), f2(s.totalDevelopment/s.grandTotal*100)],
     ['Testing & Validation',    fM(s.totalTesting),     f2(s.totalTesting/s.grandTotal*100)],
     ['Integration & V&V',       fM(s.totalIntegration), f2(s.totalIntegration/s.grandTotal*100)],
-    ['Toolchain (dev tools)',   fM(s.totalToolchain),   f2(s.totalToolchain/s.grandTotal*100)],
-    ['Calibration & Tuning',    fM(s.totalCalibration), f2(s.totalCalibration/s.grandTotal*100)],
     ['Cybersecurity',           fM(s.totalCybersecurity), f2(s.totalCybersecurity/s.grandTotal*100)],
-    ['Maintenance (lifecycle)', fM(s.totalMaintenance), f2(s.totalMaintenance/s.grandTotal*100)],
-    ['Cloud & Infra (lifecycle)',fM(s.totalCloud),       f2(s.totalCloud/s.grandTotal*100)],
-    ['IP Licensing (lifecycle)', fM(s.totalLicensing),  f2(s.totalLicensing/s.grandTotal*100)],
+    ['Calibration & Tuning',    fM(s.totalCalibration), f2(s.totalCalibration/s.grandTotal*100)],
+    ['ML data',                 fM(s.totalMLData),      f2(s.totalMLData/s.grandTotal*100)],
+    ['Toolchain (dev tools)',   fM(s.totalToolchain),   f2(s.totalToolchain/s.grandTotal*100)],
+    // Homologation is NRE; it was missing here, so the buckets did not add up to the total (president review, 14 Oct 2026).
+    ['Homologation (R155 / R156 / ISO 26262)', fM(s.totalHomologation), f2(s.totalHomologation/s.grandTotal*100)],
+    ['ENGINEERING (NRE) SUBTOTAL', fM(s.nreTotal),      f2(s.nreTotal/s.grandTotal*100)],
+    ['Maintenance and security support (lifecycle)', fM(s.totalMaintenance), f2(s.totalMaintenance/s.grandTotal*100)],
+    ['Licences and royalties (lifecycle)', fM(s.totalLicensing),  f2(s.totalLicensing/s.grandTotal*100)],
+    ['Cloud (lifecycle)',       fM(s.totalCloud),       f2(s.totalCloud/s.grandTotal*100)],
+    ['LIFECYCLE SUBTOTAL',      fM(s.grandTotal - s.nreTotal), f2((s.grandTotal - s.nreTotal)/s.grandTotal*100)],
     ['TOTAL PROGRAMME COST',    fM(s.grandTotal),        100],
     [],
     ['Per Vehicle (SW)', fV(s.perVehicle), `${swCur().sym}`],
@@ -1907,14 +1927,13 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
   ];
 
   // Sheet 5: Benchmarks
+  // Not a benchmark: none of these figures could be verified (president review, 14 Oct 2026), so they sit apart with no
+  // "vs this model" comparison — the old sheet put a % difference against each one.
   const bmData = [
-    ['Vehicle / Programme', `Total SW Cost (${swUnitM()})`, `${swCur().sym}/Vehicle`, 'vs This Model (%)', 'Source'],
-    ...result.benchmarks.map(b => {
-      const isThis = b.vehicle === 'This programme';
-      const thisM = s.grandTotal / 1_000_000;
-      const diff = (!isThis && b.totalM > 0) ? f2((thisM - b.totalM) / b.totalM * 100) : 'Base';
-      return [b.vehicle, b.totalM > 0 ? fM(b.totalM * 1_000_000) : fM(s.grandTotal), fV(b.perVehicle > 0 ? b.perVehicle : s.perVehicle), diff, (isThis || b.verified ? '' : 'UNVERIFIED — ') + b.source];
-    }),
+    ['Figures named in earlier material — NONE could be verified. Not a benchmark; do not cite or compare.'],
+    ['Vehicle / Programme', `Total SW Cost (${swUnitM()})`, `${swCur().sym}/Vehicle`, 'Status and where it was said to come from'],
+    ...result.benchmarks.filter(b => b.vehicle !== 'This programme').map(b =>
+      [b.vehicle, fM(b.totalM * 1_000_000), fV(b.perVehicle), `${b.verified ? 'verified' : 'UNVERIFIED'} — ${b.source}`]),
   ];
 
   // Sheet 6: Configuration
@@ -2042,7 +2061,7 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     { name: 'Category Breakdown', rows: catData,     cols: [10, 30, 10, 16, 12] },
     { name: 'Module Detail',      rows: modData,     cols: [4, 30, 9, 7, 12, 10, 14, ...Array(11).fill(14)] },
     { name: 'Sensitivity & MC',   rows: sensData,    cols: [40, 12, 16, 16, 16, 14] },
-    { name: 'Benchmarks',         rows: bmData,      cols: [28, 18, 12, 18, 44] },
+    { name: 'Unverified figures', rows: bmData,      cols: [28, 18, 12, 70] },
     { name: 'Configuration',      rows: cfgData,     cols: [28, 40, 10, 8, 12, 10, 12] },
     { name: 'Vehicle map',        rows: vehicleData, cols: [34, 12, 10, 16, 90] },
     { name: 'Schedule',           rows: schedData,   cols: [40, 14, 14, 14] },
@@ -2053,243 +2072,47 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
 
 // ─── PDF Export ───────────────────────────────────────────────────────────────
 
+/** The programme's name in reports: the vehicle demo it came from, else a plain label (never a made-up vehicle). */
+function programmeTitle(): string {
+  return (_swActiveVehicle ? SW_VEHICLE_DEMOS.find(v => v.id === _swActiveVehicle)?.label : undefined) ?? 'Vehicle software programme';
+}
+
 function exportSWPDF(result: SWProgramResult): void {
-  import('jspdf').then(({ jsPDF }) => {
-    Promise.all([import('jspdf-autotable'), import('../../export/pdf.js')]).then(([{ default: autoTable }, { hardenPdfText }]) => {
-      // WinAnsi-safe text: ₹ ₩ ₫ ₺ zł Kč and "≈" printed as mojibake (code review F10); same helper as the main PDF.
-      const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }));
-      const s = result.summary;
-      const W = 210, MG = 14;
-      const nreTotal = s.nreTotal;
-
-      doc.setFillColor(15, 23, 42);
-      doc.rect(0, 0, W, 68, 'F');
-      doc.setFillColor(37, 99, 235);
-      doc.rect(0, 0, 4, 68, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(20);
-      doc.text('Automotive Software Should-Cost', 14, 28);
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(148, 163, 184);
-      doc.text('Premium Luxury SUV — Full Software Stack (2024–2026)', 14, 38);
-      doc.setFontSize(9);
-      doc.text(`Engineering hub: ${hubLabel(result.inputs.region)}  ·  Source: ${result.inputs.devSource}  ·  Life: ${result.inputs.programLifeYears}yr  ·  Volume: ${(result.inputs.annualProductionVolume / 1000).toFixed(0)}k/yr`, 14, 46);
-      doc.text(`Generated: ${new Date().toLocaleDateString('en-GB')}  ·  CostVision`, 14, 52);
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(22);
-      doc.text(fmtM(s.grandTotal), W - MG, 30, { align: 'right' });
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(148, 163, 184);
-      doc.text('Total Programme Cost', W - MG, 38, { align: 'right' });
-      doc.text(`${swMoney(s.perVehicle, 0)} / vehicle`, W - MG, 45, { align: 'right' });
-
-      let y = 76;
-      const chk = (need: number) => { if (y + need > 270) { doc.addPage(); y = 18; } };
-      const th = { fillColor: [15, 23, 42] as [number, number, number], textColor: [255,255,255] as [number,number,number], fontStyle: 'bold' as const, fontSize: 7 };
-
-      // §1 Summary
-      chk(8);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('1. Programme Cost Summary', MG, y); y += 6;
-      autoTable(doc, {
-        startY: y,
-        head: [['Cost Bucket', `Value (${swUnitM()})`, 'Share (%)']],
-        body: [
-          ['Development Engineering', fmtM(s.totalDevelopment), fmt(s.totalDevelopment/s.grandTotal*100,1)+'%'],
-          ['Testing & Validation',    fmtM(s.totalTesting),     fmt(s.totalTesting/s.grandTotal*100,1)+'%'],
-          ['Integration & V&V',       fmtM(s.totalIntegration), fmt(s.totalIntegration/s.grandTotal*100,1)+'%'],
-          ['Toolchain (dev tools)',   fmtM(s.totalToolchain),   fmt(s.totalToolchain/s.grandTotal*100,1)+'%'],
-          ['Calibration & Tuning',    fmtM(s.totalCalibration), fmt(s.totalCalibration/s.grandTotal*100,1)+'%'],
-          ['Cybersecurity',           fmtM(s.totalCybersecurity), fmt(s.totalCybersecurity/s.grandTotal*100,1)+'%'],
-          ['Maintenance (lifecycle)', fmtM(s.totalMaintenance), fmt(s.totalMaintenance/s.grandTotal*100,1)+'%'],
-          ['Cloud & Infra',           fmtM(s.totalCloud),       fmt(s.totalCloud/s.grandTotal*100,1)+'%'],
-          ['IP Licensing',            fmtM(s.totalLicensing),   fmt(s.totalLicensing/s.grandTotal*100,1)+'%'],
-          ['NRE Subtotal',            fmtM(nreTotal),           fmt(nreTotal/s.grandTotal*100,1)+'%'],
-          ['TOTAL', fmtM(s.grandTotal), '100%'],
-        ],
-        headStyles: th,
-        columnStyles: { 0: { cellWidth: 100 }, 1: { cellWidth: 44, halign: 'right' }, 2: { cellWidth: 38, halign: 'right' } },
-        bodyStyles: { fontSize: 7, cellPadding: 2.5 },
-        alternateRowStyles: { fillColor: [248, 250, 252] },
-        margin: { left: MG, right: MG },
+  // The detailed report (president review, 14 Oct 2026): src/export/sw-report-pdf.ts. Everything it prints is read off
+  // this result or the engine re-run for another hub — the screen and the report cannot disagree.
+  Promise.all([import('jspdf'), import('jspdf-autotable'), import('../../export/pdf.js'), import('../../export/sw-report-pdf.js')])
+    .then(([{ jsPDF }, { default: autoTable }, { hardenPdfText }, { buildSWReportPdf, hubMedianNote }]) => {
+      const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true }));
+      const demo = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(v => v.id === _swActiveVehicle) : undefined;
+      const region = result.inputs.region;
+      const raw = SW_HUB_RATES[region as keyof typeof SW_HUB_RATES];
+      // Every manufacturing country on the page's picker → the hub its software is costed at (and why).
+      const countries = Array.from(document.querySelectorAll<HTMLOptionElement>('#mfg-region-selector option')).filter(o => o.value).map(o => {
+        const h = swRegionFor(o.value);
+        return { code: o.value, label: o.textContent?.trim() ?? o.value, hub: h.region, hubLabel: hubLabel(h.region), basis: h.basis ?? '' };
       });
-      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
-      // Rate basis — what the figures were priced on, so the report can be reproduced (P2 #14).
-      chk(40);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('Rate basis', MG, y); y += 4;
-      autoTable(doc, {
-        startY: y,
-        body: swRateBasis(result.inputs),
-        columnStyles: { 0: { cellWidth: 70, fontStyle: 'bold' }, 1: { cellWidth: 112 } },
-        bodyStyles: { fontSize: 7, cellPadding: 1.8 },
-        margin: { left: MG, right: MG },
+      const panel = document.getElementById('sw-panel');
+      const obs = (o: { value: number; source: string; url: string; statistic?: string }) => [`${raw?.currency ?? ''} ${o.value.toLocaleString('en-GB')}`, `${o.source}${o.statistic ? ` (${o.statistic})` : ''}`, o.url] as [string, string, string];
+      buildSWReportPdf(doc as never, autoTable as never, {
+        result,
+        title: programmeTitle(),
+        vehicleDesc: demo?.desc, facts: demo?.facts,
+        hubLabel: hubLabel(region),
+        steps: swCostingSteps(result, studioRate(result), studioFmt),
+        hubs: swHubComparison(result),
+        countries,
+        evidence: swEvidence(result), unit: swUnitEconomics(result), spend: swSpendProfile(result), makeBuy: swMakeBuy(result),
+        quote: swQuoteCheck(result, panel ? readQuote(panel) : {}),
+        hubRate: raw ? { build: raw.build, confidence: raw.confidence, median: hubMedianNote(raw) ?? undefined, sources: [...raw.mid.map(o => ['Mid: ' + obs(o)[0], obs(o)[1], obs(o)[2]] as [string, string, string]),
+          ...raw.senior.map(o => ['Senior: ' + obs(o)[0], obs(o)[1], obs(o)[2]] as [string, string, string]),
+          ['Employer on-cost', raw.onCostBasis, raw.onCostUrl ?? ''], ['Working hours', raw.hoursBasis, '']] } : undefined,
+        loadedRate: swLoadedRate(result.inputs), money: (n, dp = 0) => swMoney(n, dp), moneyM: fmtM, unitM: swUnitM(), sym: swCur().sym,
+        generatedAt: new Date(),
+        bookVersion: swRateBasis(result.inputs).find(([k]) => k === 'Rate book')?.[1] ?? '',
       });
-      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
-
-      // §2 Monte Carlo
-      chk(8);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('2. Monte Carlo Cost Distribution', MG, y); y += 6;
-      const mc = result.monteCarlo;
-      autoTable(doc, {
-        startY: y,
-        head: [['Percentile', `Total Cost (${swUnitM()})`, `${swCur().sym}/Vehicle`]],
-        body: [
-          ['P10 (Optimistic)', fmtM(mc.p10), `${swMoney(mc.p10PerVehicle,0)}`],
-          ['P50 (Median)',     fmtM(mc.p50), `${swMoney(mc.p50PerVehicle,0)}`],
-          ['P90 (Pessimistic)',fmtM(mc.p90), `${swMoney(mc.p90PerVehicle,0)}`],
-          ['Mean',             fmtM(mc.mean), ''],
-          [`Headline (≈ P${mc.headlinePercentile})`, fmtM(s.grandTotal), `${swMoney(s.perVehicle,0)}`],
-        ],
-        headStyles: th,
-        columnStyles: { 0: { cellWidth: 60 }, 1: { cellWidth: 62, halign: 'right' }, 2: { cellWidth: 60, halign: 'right' } },
-        bodyStyles: { fontSize: 7, cellPadding: 2.5 },
-        alternateRowStyles: { fillColor: [248, 250, 252] },
-        margin: { left: MG, right: MG },
-      });
-      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
-
-      // §3 Category breakdown
-      chk(8);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('3. Cost by Software Category', MG, y); y += 6;
-      autoTable(doc, {
-        startY: y,
-        head: [['Category', 'Modules', `Grand Total (${swUnitM()})`, 'Share (%)']],
-        body: Object.entries(CAT_META).map(([cat, m]) => {
-          const t = s.byCategory[cat as keyof typeof s.byCategory] ?? 0;
-          return [m.label, String(result.modules.filter(x => x.category === cat).length), fmtM(t), fmt(t/s.grandTotal*100,1)+'%'];
-        }),
-        headStyles: th,
-        columnStyles: { 0: { cellWidth: 80 }, 1: { cellWidth: 18, halign: 'right' }, 2: { cellWidth: 48, halign: 'right' }, 3: { cellWidth: 36, halign: 'right' } },
-        bodyStyles: { fontSize: 7, cellPadding: 2.5 },
-        alternateRowStyles: { fillColor: [248, 250, 252] },
-        margin: { left: MG, right: MG },
-      });
-      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
-
-      // §4 Module detail
-      chk(8);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('4. Module Cost Detail (Top 20 by Cost)', MG, y); y += 6;
-      const topMods = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).slice(0, 20);
-      autoTable(doc, {
-        startY: y,
-        head: [['Module', 'Cat', 'ASIL', 'PM', `Dev (${swUnitM()})`, `Calib (${swUnitM()})`, `Test (${swUnitM()})`, `Total (${swUnitM()})`, `${swCur().sym}/Veh`]],
-        body: topMods.map(m => [
-          m.moduleName.length > 26 ? m.moduleName.slice(0, 24)+'…' : m.moduleName,
-          m.category, m.asilUsed, fmt(m.personMonths, 0),
-          fmtM(m.development.total), fmtM(m.calibrationCost),
-          fmtM(m.testing.total), fmtM(m.grandTotal), `${swMoney(m.perVehicle, 0)}`,
-        ]),
-        headStyles: th,
-        columnStyles: {
-          0: { cellWidth: 56 }, 1: { cellWidth: 8, halign: 'center' }, 2: { cellWidth: 10, halign: 'center' },
-          3: { cellWidth: 12, halign: 'right' }, 4: { cellWidth: 18, halign: 'right' },
-          5: { cellWidth: 18, halign: 'right' }, 6: { cellWidth: 18, halign: 'right' },
-          7: { cellWidth: 20, halign: 'right' }, 8: { cellWidth: 22, halign: 'right' },
-        },
-        bodyStyles: { fontSize: 6.5, cellPadding: 2 },
-        alternateRowStyles: { fillColor: [248, 250, 252] },
-        margin: { left: MG, right: MG },
-      });
-      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
-
-      // §5 Sensitivity
-      chk(8);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('5. Sensitivity Analysis', MG, y); y += 6;
-      autoTable(doc, {
-        startY: y,
-        head: [['Parameter', 'Low', 'Base', 'High', 'Range']],
-        body: result.sensitivity.map(r => {
-          const f = (n: number) => r.unit === '£M' ? fmtM(n) : `${swMoney(n, 0)}`;
-          return [r.parameter, f(r.low), f(r.base), f(r.high), f(r.high - r.low)];
-        }),
-        headStyles: th,
-        columnStyles: {
-          0: { cellWidth: 76 }, 1: { cellWidth: 24, halign: 'right' }, 2: { cellWidth: 24, halign: 'right' },
-          3: { cellWidth: 26, halign: 'right' }, 4: { cellWidth: 32, halign: 'right' },
-        },
-        bodyStyles: { fontSize: 7, cellPadding: 2.5 },
-        alternateRowStyles: { fillColor: [248, 250, 252] },
-        margin: { left: MG, right: MG },
-      });
-      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
-
-      // §6 Evidence — how well the total is supported
-      const evP = swEvidence(result);
-      chk(30);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('6. Evidence behind the total', MG, y); y += 6;
-      autoTable(doc, {
-        startY: y,
-        head: [['Evidence grade', 'In the total', 'Share', 'Band drawn (low · high)']],
-        body: (['entered', 'calibrated', 'sourced', 'estimate', 'unsourced'] as const).map(g => [
-          ({ entered: 'Your figures', calibrated: 'Calibrated to your actuals', sourced: 'Published source', estimate: 'Labelled estimate', unsourced: 'Unsourced catalogue' } as const)[g],
-          fmtM(evP.byGrade[g]), `${(evP.total > 0 ? evP.byGrade[g] / evP.total * 100 : 0).toFixed(0)}%`, `x ${SW_MC_RANGE_BY_GRADE[g][0]} · x ${SW_MC_RANGE_BY_GRADE[g][2]}`]),
-        headStyles: th, bodyStyles: { fontSize: 7, cellPadding: 2.5 }, margin: { left: MG, right: MG },
-      });
-      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(71, 85, 105);
-      const evNote = doc.splitTextToSize(`Reuse: ${evP.reuse.modulesAtMedium} of ${evP.reuse.modules} modules at the default Medium (x 0.60); written fresh, engineering would cost ${fmtM(evP.reuse.removedNRE)} more. Largest unsourced: ${evP.topUnsourced.slice(0, 3).map(t => `${t.label} ${fmtM(t.amount)}`).join('; ')}.`, W - 2 * MG);
-      doc.text(evNote, MG, y); y += evNote.length * 3.6 + 6;
-
-      // §7 Supplier quote check — when a quote was entered on screen
-      const pEl = document.getElementById('sw-panel');
-      const qP = swQuoteCheck(result, pEl ? readQuote(pEl) : {});
-      const qPRows = [qP.nre, qP.perVehicle, qP.perVehicleYear, qP.fixedPerYear, ...qP.byCategory].filter(Boolean) as NonNullable<typeof qP.nre>[];
-      chk(24);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('7. Supplier quote check', MG, y); y += 6;
-      const qf = (r: NonNullable<typeof qP.nre>, n: number) => r.unit === 'perVehicle' ? swMoney(n, 2) : fmtM(n);
-      autoTable(doc, {
-        startY: y,
-        head: [['Line', 'Should-cost', 'Quote', 'Gap']],
-        body: qPRows.length ? qPRows.map(r => [r.label, qf(r, r.should), qf(r, r.quoted), `${r.gap >= 0 ? '+' : '-'}${qf(r, Math.abs(r.gap))} (${r.gapPct >= 0 ? '+' : ''}${r.gapPct.toFixed(0)}%)`])
-          : [['No quote entered on the Supplier check tab', '', '', '']],
-        headStyles: th, bodyStyles: { fontSize: 7, cellPadding: 2.5 }, margin: { left: MG, right: MG },
-      });
-      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(71, 85, 105);
-      const qNote = doc.splitTextToSize(`Negotiation target: a fair Tier-1 price for this scope is ${fmtM(qP.target.nre)} of engineering at ${swMoney(qP.target.ratePerPM, 0)} per person-month (${qP.target.basis}).`
-        + (qP.impliedRatePerPM ? ` The NRE quote implies ${swMoney(qP.impliedRatePerPM, 0)} per person-month, x ${(qP.rateMultiple ?? 0).toFixed(2)} the loaded should-cost rate.` : '')
-        + (qP.gapSplit ? ` Effort gap ${fmtM(qP.gapSplit.effortGap)}; rate gap ${fmtM(qP.gapSplit.rateGap)}.` : ''), W - 2 * MG);
-      doc.text(qNote, MG, y); y += qNote.length * 3.6 + 6;
-
-      // §8 Benchmarks
-      chk(8);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('8. Published programme figures (unverified)', MG, y); y += 6;
-      autoTable(doc, {
-        startY: y,
-        head: [['Vehicle / Programme', 'Total SW Cost', `${swCur().sym}/Vehicle`, 'Source']],
-        body: result.benchmarks.map(b => [
-          b.vehicle, b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal),
-          `${swMoney(b.perVehicle > 0 ? b.perVehicle : s.perVehicle, 0)}`, (b.vehicle === 'This programme' || b.verified ? '' : 'UNVERIFIED — ') + b.source,
-        ]),
-        headStyles: th,
-        columnStyles: { 0: { cellWidth: 56 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: { cellWidth: 74 } },
-        bodyStyles: { fontSize: 6.5, cellPadding: 2.5 },
-        alternateRowStyles: { fillColor: [248, 250, 252] },
-        margin: { left: MG, right: MG },
-      });
-
-      const totalPages = (doc as unknown as { internal: { pages: unknown[] } }).internal.pages.length - 1;
-      for (let p = 1; p <= totalPages; p++) {
-        doc.setPage(p);
-        doc.setFontSize(7); doc.setTextColor(148, 163, 184);
-        doc.text(`CostVision — Automotive Software Should-Cost  |  Confidential  |  Page ${p} of ${totalPages}`, W / 2, 290, { align: 'center' });
-      }
-
-      doc.save(exportFilename('sw-should-cost', null, 'pdf'));
+      const slug = (demo?.label ?? 'sw-should-cost').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      doc.save(exportFilename(`${slug}-${String(region).toLowerCase()}`, null, 'pdf'));
     });
-  });
 }
 
 // ─── Saved Configs ────────────────────────────────────────────────────────────
