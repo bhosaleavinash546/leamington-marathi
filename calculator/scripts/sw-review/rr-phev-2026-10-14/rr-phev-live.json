@@ -1,0 +1,530 @@
+{
+ "volume": 200000,
+ "life": 6,
+ "ranAt": "2026-10-14T11:01:18.306Z",
+ "demoTitle": "Range Rover (L460, 2022 on): JLR MLA-Flex platform, EVA 2.0 electrical architecture, Pivi Pro infotainment with software-over-the-air updates. PHEV: P460e / P550e, 38.2 kWh battery (MY24 on). Premium software from JLR-listed features: Dynamic Response Pro (48 V active roll control), all-wheel steering, Meridian Signature Sound, Cabin Air Purification Pro, head-up display (option), 3D surround camera and Remote Park Assist. Voice: Amazon Alexa. Digital key is not confirmed for the L460 and is out of scope. Tier-1 development is a modelling assumption, not JLR's sourcing.",
+ "inputsOnScreen": {
+  "sw-region": "UK",
+  "sw-dev-source": "Tier1_Supplier",
+  "sw-powertrain": "PHEV",
+  "sw-platform-vol": "(blank; placeholder blank = this variant only)",
+  "sw-prog-life": "6",
+  "sw-vol": "200000",
+  "sw-burden-emp": "15",
+  "sw-burden-co": "40",
+  "sw-burden-cap": "0",
+  "sw-effort-cal": "(blank; placeholder none)",
+  "sw-dev-months": "(blank; placeholder 54)",
+  "sw-connected": "(blank; placeholder 100)",
+  "sw-senior-frac": "0.55",
+  "sw-base-rate": "(blank; placeholder 6399)",
+  "sw-inc-maint": true,
+  "sw-inc-cloud": true,
+  "sw-sub-years": "(blank; placeholder 3)",
+  "sw-svc-years": "(blank; placeholder 8)",
+  "sw-cloud-fixed": "(blank; placeholder not entered)",
+  "sw-tool-seat": "(blank; placeholder 39500)",
+  "sw-wage-esc": "(blank; placeholder 0)",
+  "sw-post-years": "(blank; placeholder 10)",
+  "sw-post-share": "(blank; placeholder 25)",
+  "sw-discount": "(blank; placeholder 0 (nominal))",
+  "sw-csms-types": "(blank; placeholder 1)",
+  "sw-homolog": true
+ },
+ "railUK": {
+  "perVehicle": "£253",
+  "nre": "£68.8M",
+  "royalty": "£37.84",
+  "running": "£22.25",
+  "total": "£303.3M",
+  "railText": "Per vehicle, all-in £253▼ £110 P10–P90 £243 – £340 Engineering, one-off £68.8M 4,806 PM · ≈ 89 engineers × 54 mo Royalty per vehicle built £37.84 in the piece price Running per vehicle-year £22.25 map 3 yr · cloud 8 yr · + £7.4M / yr fixed Programme total £303.3M▲ £85.6M ≈ P16 · P50 £344.6M · P90 £408.2M £234.6M (77 %) of the total rests on unsourced catalogue figures. See the evidence All figures Per vehicle £253, programme total £303.3M.",
+  "context": "PHEV · United Kingdom hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules"
+ },
+ "steps": [
+  "1 Scope 52 modules",
+  "2 Development effort 2,779 PM",
+  "3 Verification & integration +2,027 PM",
+  "4 Engineering rate £10,267 / PM",
+  "5 Engineering cost (NRE) £68.8M",
+  "6 Lifecycle £234.5M",
+  "7 Per vehicle £253"
+ ],
+ "stepDetail": [
+  "1. Scope — 52 modules. 7 software domains on a PHEV vehicle; nominal effort 2,472 person-months (fresh code, QM, medium complexity).",
+  "2. Development effort — 2,779 PM. Reuse, complexity and the ISO 26262 ASIL uplift applied to each module: 2,472 → 2,779 PM. 18 modules at ASIL C/D (lit).",
+  "3. Verification & integration — +2,027 PM. SIL / MIL / HIL testing, integration, ISO/SAE 21434 cybersecurity and calibration: 4,806 PM of engineering in all. 20 modules at CAL3/4 (lit).",
+  "4. Engineering rate — £10,267 / PM. United Kingdom: 55 % senior blend of the hub's mid and senior rates; mid £6,237 / senior £6,531 per person-month (salary + statutory on-cost ÷ productive hours × 152 h), × development source price × 1.61 engineering burden.",
+  "5. Engineering cost (NRE) — £68.8M. Effort × rate = £49.3M; tools £15.8M, homologation £3.7M. Largest domain: Infotainment, Connectivity & UX £115.7M (all costs).",
+  "6. Lifecycle — £234.5M. Maintenance £33.9M, cloud £103.2M, licences and royalties £97.4M — paid over the 6 production years and the service years after the last build (to programme year 16).",
+  "7. Per vehicle — £253. NRE £68.8M over 1,200,000 vehicles (6-year recovery) + lifecycle over 1,200,000 vehicles. Programme total £303.3M."
+ ],
+ "excelSheets": [
+  "Summary",
+  "Unit economics",
+  "Evidence",
+  "Quote check",
+  "Make or buy",
+  "Category Breakdown",
+  "Module Detail",
+  "Sensitivity & MC",
+  "Unverified figures",
+  "Configuration",
+  "Vehicle map",
+  "Schedule",
+  "Hub rate"
+ ],
+ "excelModuleRows": 54,
+ "perHub": [
+  {
+   "hub": "UK",
+   "label": "United Kingdom — Coventry / Gaydon, Warwick · £6,399/PM",
+   "perVehicle": "£253",
+   "nre": "£68.8M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£303.3M",
+   "context": "PHEV · United Kingdom hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-UK.pdf"
+  },
+  {
+   "hub": "DE",
+   "label": "Germany — Stuttgart, Munich · £6,610/PM",
+   "perVehicle": "£255",
+   "nre": "£70.4M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£306.1M",
+   "context": "PHEV · Germany hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-DE.pdf"
+  },
+  {
+   "hub": "AT",
+   "label": "Austria — Graz, Vienna · £6,268/PM",
+   "perVehicle": "£251",
+   "nre": "£67.8M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£301.6M",
+   "context": "PHEV · Austria hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-AT.pdf"
+  },
+  {
+   "hub": "SE",
+   "label": "Sweden — Gothenburg, Lund · £6,443/PM",
+   "perVehicle": "£253",
+   "nre": "£69.2M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£303.9M",
+   "context": "PHEV · Sweden hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-SE.pdf"
+  },
+  {
+   "hub": "FR",
+   "label": "France — Guyancourt, Paris / Île-de-France · £5,722/PM",
+   "perVehicle": "£245",
+   "nre": "£63.6M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£294.5M",
+   "context": "PHEV · France hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-FR.pdf"
+  },
+  {
+   "hub": "IT",
+   "label": "Italy — Turin, Modena · £3,607/PM",
+   "perVehicle": "£223",
+   "nre": "£47.3M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£267.0M",
+   "context": "PHEV · Italy hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-IT.pdf"
+  },
+  {
+   "hub": "PT",
+   "label": "Portugal — Braga, Porto · £3,240/PM",
+   "perVehicle": "£219",
+   "nre": "£44.5M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£262.2M",
+   "context": "PHEV · Portugal hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-PT.pdf"
+  },
+  {
+   "hub": "PL",
+   "label": "Poland — Kraków, Gliwice · £4,253/PM",
+   "perVehicle": "£230",
+   "nre": "£52.3M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£275.4M",
+   "context": "PHEV · Poland hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-PL.pdf"
+  },
+  {
+   "hub": "CZ",
+   "label": "Czechia — Prague, Brno · £3,988/PM",
+   "perVehicle": "£227",
+   "nre": "£50.2M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£272.0M",
+   "context": "PHEV · Czechia hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-CZ.pdf"
+  },
+  {
+   "hub": "RO",
+   "label": "Romania — Timișoara, Iași · £3,359/PM",
+   "perVehicle": "£220",
+   "nre": "£45.4M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£263.8M",
+   "context": "PHEV · Romania hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-RO.pdf"
+  },
+  {
+   "hub": "HU",
+   "label": "Hungary — Budapest, Veszprém · £4,051/PM",
+   "perVehicle": "£227",
+   "nre": "£50.7M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£272.8M",
+   "context": "PHEV · Hungary hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-HU.pdf"
+  },
+  {
+   "hub": "RS",
+   "label": "Serbia — Novi Sad, Belgrade · £3,324/PM",
+   "perVehicle": "£219",
+   "nre": "£45.1M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£263.3M",
+   "context": "PHEV · Serbia hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-RS.pdf"
+  },
+  {
+   "hub": "US-MI",
+   "label": "USA — Michigan — Detroit-Warren-Dearborn, Ann Arbor · £8,034/PM",
+   "perVehicle": "£270",
+   "nre": "£81.4M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£324.6M",
+   "context": "PHEV · USA — Michigan hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-US-MI.pdf"
+  },
+  {
+   "hub": "US-CA",
+   "label": "USA — California — San Jose / Sunnyvale, San Francisco / Palo Alto · £12,019/PM",
+   "perVehicle": "£314",
+   "nre": "£112.2M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£376.4M",
+   "context": "PHEV · USA — California hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-US-CA.pdf"
+  },
+  {
+   "hub": "CA",
+   "label": "Canada (Ontario) — Toronto / Markham, Ottawa-Kanata · £4,430/PM",
+   "perVehicle": "£231",
+   "nre": "£53.6M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£277.7M",
+   "context": "PHEV · Canada (Ontario) hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-CA.pdf"
+  },
+  {
+   "hub": "MX",
+   "label": "Mexico — Guadalajara, Querétaro · £1,309/PM",
+   "perVehicle": "£198",
+   "nre": "£29.6M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£237.1M",
+   "context": "PHEV · Mexico hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-MX.pdf"
+  },
+  {
+   "hub": "IN",
+   "label": "India — Bengaluru, Pune · £668/PM",
+   "perVehicle": "£191",
+   "nre": "£24.6M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£228.8M",
+   "context": "PHEV · India hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-IN.pdf"
+  },
+  {
+   "hub": "CN",
+   "label": "China — Shanghai, Shenzhen · £3,473/PM",
+   "perVehicle": "£221",
+   "nre": "£46.3M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£265.3M",
+   "context": "PHEV · China hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-CN.pdf"
+  },
+  {
+   "hub": "VN",
+   "label": "Vietnam — Hanoi, Ho Chi Minh City · £1,218/PM",
+   "perVehicle": "£197",
+   "nre": "£28.9M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£236.0M",
+   "context": "PHEV · Vietnam hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-VN.pdf"
+  },
+  {
+   "hub": "JP",
+   "label": "Japan — Tokyo, Nagoya / Aichi (Kariya, Toyota City) · £2,525/PM",
+   "perVehicle": "£211",
+   "nre": "£38.9M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£252.9M",
+   "context": "PHEV · Japan hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-JP.pdf"
+  },
+  {
+   "hub": "KR",
+   "label": "South Korea — Seoul, Pangyo / Seongnam · £3,363/PM",
+   "perVehicle": "£220",
+   "nre": "£45.4M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£263.8M",
+   "context": "PHEV · South Korea hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-KR.pdf"
+  },
+  {
+   "hub": "TR",
+   "label": "Türkiye — Istanbul, Bursa · £1,396/PM",
+   "perVehicle": "£199",
+   "nre": "£30.2M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£238.3M",
+   "context": "PHEV · Türkiye hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-TR.pdf"
+  },
+  {
+   "hub": "EG",
+   "label": "Egypt — Cairo (Smart Village / New Cairo) · £550/PM",
+   "perVehicle": "£189",
+   "nre": "£23.7M",
+   "royalty": "£37.84",
+   "running": "£22.25",
+   "total": "£227.3M",
+   "context": "PHEV · Egypt hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-EG.pdf"
+  }
+ ],
+ "perCountry": [
+  {
+   "country": "UK",
+   "hub": "UK",
+   "basis": ""
+  },
+  {
+   "country": "AT",
+   "hub": "AT",
+   "basis": ""
+  },
+  {
+   "country": "BE",
+   "hub": "DE",
+   "basis": "BE: Western Europe — Germany is the nearest assessed hub"
+  },
+  {
+   "country": "BG",
+   "hub": "RO",
+   "basis": "BG: South-East Europe — Romania is the nearest assessed hub"
+  },
+  {
+   "country": "CZ",
+   "hub": "CZ",
+   "basis": ""
+  },
+  {
+   "country": "FR",
+   "hub": "FR",
+   "basis": ""
+  },
+  {
+   "country": "DE",
+   "hub": "DE",
+   "basis": ""
+  },
+  {
+   "country": "HU",
+   "hub": "HU",
+   "basis": ""
+  },
+  {
+   "country": "IT",
+   "hub": "IT",
+   "basis": ""
+  },
+  {
+   "country": "LT",
+   "hub": "PL",
+   "basis": "LT: Baltic — Poland is the nearest assessed hub"
+  },
+  {
+   "country": "NL",
+   "hub": "DE",
+   "basis": "NL: Western Europe — Germany is the nearest assessed hub"
+  },
+  {
+   "country": "PL",
+   "hub": "PL",
+   "basis": ""
+  },
+  {
+   "country": "PT",
+   "hub": "PT",
+   "basis": ""
+  },
+  {
+   "country": "RO",
+   "hub": "RO",
+   "basis": ""
+  },
+  {
+   "country": "RS",
+   "hub": "RS",
+   "basis": ""
+  },
+  {
+   "country": "SK",
+   "hub": "CZ",
+   "basis": "SK: Central Europe — Czechia is the nearest assessed hub"
+  },
+  {
+   "country": "SI",
+   "hub": "AT",
+   "basis": "SI: Central Europe — Austria is the nearest assessed hub"
+  },
+  {
+   "country": "ES",
+   "hub": "PT",
+   "basis": "ES: Iberia — the research found no Spanish embedded-automotive salary data; Portugal (Bosch Braga) is the assessed Iberian hub"
+  },
+  {
+   "country": "SE",
+   "hub": "SE",
+   "basis": ""
+  },
+  {
+   "country": "TR",
+   "hub": "TR",
+   "basis": ""
+  },
+  {
+   "country": "BR",
+   "hub": "MX",
+   "basis": "BR: Latin America — Mexico (Guadalajara) is the assessed hub"
+  },
+  {
+   "country": "CA",
+   "hub": "CA",
+   "basis": ""
+  },
+  {
+   "country": "MX",
+   "hub": "MX",
+   "basis": ""
+  },
+  {
+   "country": "US",
+   "hub": "US-MI",
+   "basis": "US: United States — Michigan (Detroit / Ann Arbor OEM software centres); choose California for Bay Area teams"
+  },
+  {
+   "country": "CN",
+   "hub": "CN",
+   "basis": ""
+  },
+  {
+   "country": "IN",
+   "hub": "IN",
+   "basis": ""
+  },
+  {
+   "country": "ID",
+   "hub": "VN",
+   "basis": "ID: South-East Asia — Vietnam is the assessed hub"
+  },
+  {
+   "country": "JP",
+   "hub": "JP",
+   "basis": ""
+  },
+  {
+   "country": "MY",
+   "hub": "VN",
+   "basis": "MY: South-East Asia — Vietnam is the assessed hub"
+  },
+  {
+   "country": "PH",
+   "hub": "VN",
+   "basis": "PH: South-East Asia — Vietnam is the assessed hub"
+  },
+  {
+   "country": "SG",
+   "hub": "JP",
+   "basis": "SG: high-cost Asian engineering — Japan is the nearest assessed hub"
+  },
+  {
+   "country": "KR",
+   "hub": "KR",
+   "basis": ""
+  },
+  {
+   "country": "TW",
+   "hub": "CN",
+   "basis": "TW: Greater China — China is the assessed hub"
+  },
+  {
+   "country": "TH",
+   "hub": "VN",
+   "basis": "TH: South-East Asia — Vietnam is the assessed hub"
+  },
+  {
+   "country": "VN",
+   "hub": "VN",
+   "basis": ""
+  },
+  {
+   "country": "EG",
+   "hub": "EG",
+   "basis": ""
+  },
+  {
+   "country": "MA",
+   "hub": "EG",
+   "basis": "MA: North Africa — Egypt (Valeo Cairo) is the assessed North-African hub"
+  },
+  {
+   "country": "ZA",
+   "hub": "IN",
+   "basis": "ZA: no assessed African hub south of Egypt — India, the largest offshore automotive software base"
+  },
+  {
+   "country": "TN",
+   "hub": "EG",
+   "basis": "TN: North Africa — Egypt (Valeo Cairo) is the assessed North-African hub"
+  }
+ ],
+ "pageErrors": []
+}

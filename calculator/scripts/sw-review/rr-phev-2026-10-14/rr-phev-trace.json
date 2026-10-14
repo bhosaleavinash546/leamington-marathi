@@ -1,0 +1,445 @@
+{
+ "volume": 200000,
+ "life": 6,
+ "results": [
+  {
+   "region": "UK",
+   "total": 303329694.476086,
+   "nre": 68815709.42967242,
+   "lifecycle": 234513985.0464136,
+   "perVehicle": 252.77474539673835,
+   "rate": 10266.906183465459,
+   "fails": []
+  },
+  {
+   "region": "DE",
+   "total": 306073946.7452204,
+   "nre": 70442754.00899586,
+   "lifecycle": 235631192.7362246,
+   "perVehicle": 255.0616222876837,
+   "rate": 10605.46201585504,
+   "fails": []
+  },
+  {
+   "region": "AT",
+   "total": 301635671.45212984,
+   "nre": 67811337.12418957,
+   "lifecycle": 233824334.3279403,
+   "perVehicle": 251.36305954344152,
+   "rate": 10057.916149490373,
+   "fails": []
+  },
+  {
+   "region": "SE",
+   "total": 303905207.09650874,
+   "nre": 69156926.1246253,
+   "lifecycle": 234748280.97188348,
+   "perVehicle": 253.25433924709063,
+   "rate": 10337.90663646659,
+   "fails": []
+  },
+  {
+   "region": "FR",
+   "total": 294529878.9059613,
+   "nre": 63598371.21938689,
+   "lifecycle": 230931507.6865744,
+   "perVehicle": 245.44156575496774,
+   "rate": 9181.281177802945,
+   "fails": []
+  },
+  {
+   "region": "IT",
+   "total": 267023627.13348576,
+   "nre": 47290140.97857568,
+   "lifecycle": 219733486.1549101,
+   "perVehicle": 222.5196892779048,
+   "rate": 5787.860656851642,
+   "fails": []
+  },
+  {
+   "region": "PT",
+   "total": 262243946.04861897,
+   "nre": 44456307.41032274,
+   "lifecycle": 217787638.63829625,
+   "perVehicle": 218.5366217071825,
+   "rate": 5198.1958776896945,
+   "fails": []
+  },
+  {
+   "region": "PL",
+   "total": 275421559.314434,
+   "nre": 52269205.83577544,
+   "lifecycle": 223152353.47865856,
+   "perVehicle": 229.51796609536166,
+   "rate": 6823.905685164213,
+   "fails": []
+  },
+  {
+   "region": "CZ",
+   "total": 271976937.4495988,
+   "nre": 50226917.88869575,
+   "lifecycle": 221750019.560903,
+   "perVehicle": 226.64744787466566,
+   "rate": 6398.9459116647795,
+   "fails": []
+  },
+  {
+   "region": "RO",
+   "total": 263795554.08514854,
+   "nre": 45376243.04213926,
+   "lifecycle": 218419311.04300928,
+   "perVehicle": 219.82962840429045,
+   "rate": 5389.61630804077,
+   "fails": []
+  },
+  {
+   "region": "HU",
+   "total": 272793710.16287667,
+   "nre": 50711175.70661761,
+   "lifecycle": 222082534.45625904,
+   "perVehicle": 227.3280918023972,
+   "rate": 6499.710396375992,
+   "fails": []
+  },
+  {
+   "region": "RS",
+   "total": 263340346.36278027,
+   "nre": 45106354.13087708,
+   "lifecycle": 218233992.2319032,
+   "perVehicle": 219.45028863565022,
+   "rate": 5333.457757644394,
+   "fails": []
+  },
+  {
+   "region": "TR",
+   "total": 238264903.82775134,
+   "nre": 30239330.676205948,
+   "lifecycle": 208025573.1515454,
+   "perVehicle": 198.5540865231261,
+   "rate": 2239.9238958097394,
+   "fails": []
+  },
+  {
+   "region": "EG",
+   "total": 227261882.88136417,
+   "nre": 23715730.135411453,
+   "lifecycle": 203546152.74595273,
+   "perVehicle": 189.3849024011368,
+   "rate": 882.4915062287656,
+   "fails": []
+  },
+  {
+   "region": "IN",
+   "total": 228796583.20249146,
+   "nre": 24625641.321952533,
+   "lifecycle": 204170941.88053894,
+   "perVehicle": 190.66381933540956,
+   "rate": 1071.8260475651189,
+   "fails": []
+  },
+  {
+   "region": "CN",
+   "total": 265280181.55681533,
+   "nre": 46256466.44844151,
+   "lifecycle": 219023715.10837382,
+   "perVehicle": 221.06681796401278,
+   "rate": 5572.773408833522,
+   "fails": []
+  },
+  {
+   "region": "VN",
+   "total": 235951798.30137432,
+   "nre": 28867909.45140654,
+   "lifecycle": 207083888.84996778,
+   "perVehicle": 196.62649858447858,
+   "rate": 1954.5582332955832,
+   "fails": []
+  },
+  {
+   "region": "JP",
+   "total": 252948604.35785902,
+   "nre": 38945175.84234895,
+   "lifecycle": 214003428.51551008,
+   "perVehicle": 210.79050363154917,
+   "rate": 4051.4382785956964,
+   "fails": []
+  },
+  {
+   "region": "KR",
+   "total": 263847577.82484782,
+   "nre": 45407087.489140674,
+   "lifecycle": 218440490.33570713,
+   "perVehicle": 219.8729815207065,
+   "rate": 5396.03442808607,
+   "fails": []
+  },
+  {
+   "region": "US-MI",
+   "total": 324592447.18790764,
+   "nre": 81422220.474729,
+   "lifecycle": 243170226.71317863,
+   "perVehicle": 270.49370598992306,
+   "rate": 12890.07207248018,
+   "fails": []
+  },
+  {
+   "region": "US-CA",
+   "total": 376420447.5665195,
+   "nre": 112150615.2442787,
+   "lifecycle": 264269832.32224083,
+   "perVehicle": 313.6837063054329,
+   "rate": 19284.043941109852,
+   "fails": []
+  },
+  {
+   "region": "CA",
+   "total": 277721008.60914,
+   "nre": 53632530.393236995,
+   "lifecycle": 224088478.21590298,
+   "perVehicle": 231.43417384095,
+   "rate": 7107.586591166478,
+   "fails": []
+  },
+  {
+   "region": "MX",
+   "total": 237135338.3795318,
+   "nre": 29569620.620688215,
+   "lifecycle": 207565717.7588436,
+   "perVehicle": 197.61278198294318,
+   "rate": 2100.570464326161,
+   "fails": []
+  }
+ ],
+ "liveCheck": [
+  {
+   "hub": "UK",
+   "screenTotal": "£303.3M",
+   "handTotal": "£303.3M",
+   "screenNRE": "£68.8M",
+   "handNRE": "£68.8M",
+   "screenPV": "£253",
+   "handPV": "£253",
+   "ok": true
+  },
+  {
+   "hub": "DE",
+   "screenTotal": "£306.1M",
+   "handTotal": "£306.1M",
+   "screenNRE": "£70.4M",
+   "handNRE": "£70.4M",
+   "screenPV": "£255",
+   "handPV": "£255",
+   "ok": true
+  },
+  {
+   "hub": "AT",
+   "screenTotal": "£301.6M",
+   "handTotal": "£301.6M",
+   "screenNRE": "£67.8M",
+   "handNRE": "£67.8M",
+   "screenPV": "£251",
+   "handPV": "£251",
+   "ok": true
+  },
+  {
+   "hub": "SE",
+   "screenTotal": "£303.9M",
+   "handTotal": "£303.9M",
+   "screenNRE": "£69.2M",
+   "handNRE": "£69.2M",
+   "screenPV": "£253",
+   "handPV": "£253",
+   "ok": true
+  },
+  {
+   "hub": "FR",
+   "screenTotal": "£294.5M",
+   "handTotal": "£294.5M",
+   "screenNRE": "£63.6M",
+   "handNRE": "£63.6M",
+   "screenPV": "£245",
+   "handPV": "£245",
+   "ok": true
+  },
+  {
+   "hub": "IT",
+   "screenTotal": "£267.0M",
+   "handTotal": "£267.0M",
+   "screenNRE": "£47.3M",
+   "handNRE": "£47.3M",
+   "screenPV": "£223",
+   "handPV": "£223",
+   "ok": true
+  },
+  {
+   "hub": "PT",
+   "screenTotal": "£262.2M",
+   "handTotal": "£262.2M",
+   "screenNRE": "£44.5M",
+   "handNRE": "£44.5M",
+   "screenPV": "£219",
+   "handPV": "£219",
+   "ok": true
+  },
+  {
+   "hub": "PL",
+   "screenTotal": "£275.4M",
+   "handTotal": "£275.4M",
+   "screenNRE": "£52.3M",
+   "handNRE": "£52.3M",
+   "screenPV": "£230",
+   "handPV": "£230",
+   "ok": true
+  },
+  {
+   "hub": "CZ",
+   "screenTotal": "£272.0M",
+   "handTotal": "£272.0M",
+   "screenNRE": "£50.2M",
+   "handNRE": "£50.2M",
+   "screenPV": "£227",
+   "handPV": "£227",
+   "ok": true
+  },
+  {
+   "hub": "RO",
+   "screenTotal": "£263.8M",
+   "handTotal": "£263.8M",
+   "screenNRE": "£45.4M",
+   "handNRE": "£45.4M",
+   "screenPV": "£220",
+   "handPV": "£220",
+   "ok": true
+  },
+  {
+   "hub": "HU",
+   "screenTotal": "£272.8M",
+   "handTotal": "£272.8M",
+   "screenNRE": "£50.7M",
+   "handNRE": "£50.7M",
+   "screenPV": "£227",
+   "handPV": "£227",
+   "ok": true
+  },
+  {
+   "hub": "RS",
+   "screenTotal": "£263.3M",
+   "handTotal": "£263.3M",
+   "screenNRE": "£45.1M",
+   "handNRE": "£45.1M",
+   "screenPV": "£219",
+   "handPV": "£219",
+   "ok": true
+  },
+  {
+   "hub": "US-MI",
+   "screenTotal": "£324.6M",
+   "handTotal": "£324.6M",
+   "screenNRE": "£81.4M",
+   "handNRE": "£81.4M",
+   "screenPV": "£270",
+   "handPV": "£270",
+   "ok": true
+  },
+  {
+   "hub": "US-CA",
+   "screenTotal": "£376.4M",
+   "handTotal": "£376.4M",
+   "screenNRE": "£112.2M",
+   "handNRE": "£112.2M",
+   "screenPV": "£314",
+   "handPV": "£314",
+   "ok": true
+  },
+  {
+   "hub": "CA",
+   "screenTotal": "£277.7M",
+   "handTotal": "£277.7M",
+   "screenNRE": "£53.6M",
+   "handNRE": "£53.6M",
+   "screenPV": "£231",
+   "handPV": "£231",
+   "ok": true
+  },
+  {
+   "hub": "MX",
+   "screenTotal": "£237.1M",
+   "handTotal": "£237.1M",
+   "screenNRE": "£29.6M",
+   "handNRE": "£29.6M",
+   "screenPV": "£198",
+   "handPV": "£198",
+   "ok": true
+  },
+  {
+   "hub": "IN",
+   "screenTotal": "£228.8M",
+   "handTotal": "£228.8M",
+   "screenNRE": "£24.6M",
+   "handNRE": "£24.6M",
+   "screenPV": "£191",
+   "handPV": "£191",
+   "ok": true
+  },
+  {
+   "hub": "CN",
+   "screenTotal": "£265.3M",
+   "handTotal": "£265.3M",
+   "screenNRE": "£46.3M",
+   "handNRE": "£46.3M",
+   "screenPV": "£221",
+   "handPV": "£221",
+   "ok": true
+  },
+  {
+   "hub": "VN",
+   "screenTotal": "£236.0M",
+   "handTotal": "£236.0M",
+   "screenNRE": "£28.9M",
+   "handNRE": "£28.9M",
+   "screenPV": "£197",
+   "handPV": "£197",
+   "ok": true
+  },
+  {
+   "hub": "JP",
+   "screenTotal": "£252.9M",
+   "handTotal": "£252.9M",
+   "screenNRE": "£38.9M",
+   "handNRE": "£38.9M",
+   "screenPV": "£211",
+   "handPV": "£211",
+   "ok": true
+  },
+  {
+   "hub": "KR",
+   "screenTotal": "£263.8M",
+   "handTotal": "£263.8M",
+   "screenNRE": "£45.4M",
+   "handNRE": "£45.4M",
+   "screenPV": "£220",
+   "handPV": "£220",
+   "ok": true
+  },
+  {
+   "hub": "TR",
+   "screenTotal": "£238.3M",
+   "handTotal": "£238.3M",
+   "screenNRE": "£30.2M",
+   "handNRE": "£30.2M",
+   "screenPV": "£199",
+   "handPV": "£199",
+   "ok": true
+  },
+  {
+   "hub": "EG",
+   "screenTotal": "£227.3M",
+   "handTotal": "£227.3M",
+   "screenNRE": "£23.7M",
+   "handNRE": "£23.7M",
+   "screenPV": "£189",
+   "handPV": "£189",
+   "ok": true
+  }
+ ]
+}
