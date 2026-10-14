@@ -19,7 +19,7 @@ import type {
   SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain, SWCal, SWCategory,
 } from '../../engine/sw-should-cost.js';
 import {
-  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion, swLoadedRate, swOverhead,
+  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swModuleDefs, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion, swLoadedRate, swOverhead,
   SW_DEFAULT_BURDEN, SW_BURDEN_BASIS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_SUBSCRIPTION_BASIS, SW_DEFAULT_SERVICE_YEARS, SW_SERVICE_BASIS, SW_POST_EOP_YEARS, SW_POST_EOP_SHARE, SW_POST_EOP_BASIS, SW_DEVELOPMENT_BASIS,
   SW_TOOL_SEAT_GBP, SW_TOOL_SEAT_BASIS, SW_MAINT_BASIS, SW_HOMOLOGATION_BASIS,
   applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_COCOMO, SW_COCOMO_EXPONENT,
@@ -38,7 +38,7 @@ import {
   benchmarksHTML, insightsHTML, buildInsights, VIEWS_CSS,
 } from './sw-cockpit-views.js';
 import { DOMAIN_SLOT, setChartWidth } from './sw-charts.js';
-import { swRateCheck, swEvidence, swMakeBuy, swQuoteCheck, swUnitEconomics, swHubComparison, swSpendProfile } from '../../engine/sw-cockpit.js';
+import { swRateCheck, swEvidence, swMakeBuy, swQuoteCheck, swUnitEconomics, swHubComparison, swSpendProfile, swCalibrationPriorities, SW_CATALOGUE_GAPS } from '../../engine/sw-cockpit.js';
 import { swCostingSteps, type StepRate, type StepFormat } from '../../engine/sw-costing-steps.js';
 import { componentLoad } from './sw-vehicle-skeleton.js';
 import { vehicleComponent } from '../../engine/sw-vehicle-map.js';
@@ -51,6 +51,7 @@ import type { SWRateEntry, RateConfidence, SWRateLibrary } from '../../engine/sw
 import { runValidation } from '../../engine/sw-validation.js';
 import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
 import { projectStore } from '../project-store.js';
+import { quotesCardHTML, wireQuotesCard, customModulesCardHTML, wireCustomModulesCard, QUOTES_CSS, type QuotesHost } from './sw-quotes-ui.js';
 import { exportFilename } from '../../export/filename.js';
 
 // Saved configs are stored as projects of this kind — server-backed when the
@@ -439,6 +440,8 @@ function writeInputsToForm(p: SWProgramInputs): void {
     const pm = q<HTMLInputElement>('sw-pm-input'); if (pm) pm.value = m.customPersonMonths != null ? String(m.customPersonMonths) : '';
   }
   updateCatCounts();
+  // Quotes and your modules live in the inputs, not in catalogue rows — redraw their cards from the programme.
+  if (p === _swInputs) mountQuoteCards();
 }
 
 // ─── History: undo / redo over costed states ───────────────────────────────────────────────────────────────────────
@@ -917,6 +920,8 @@ function renderSWPanelHTML(): string {
     </div>
   </section>
 
+  <section class="swk-card" id="sw-quotes-card"></section>
+
   <section class="swk-card">
     <div class="swk-row" style="justify-content:space-between"><h3 class="swk-h">Software in scope</h3>
       <button type="button" class="swk-link" data-goto="scope">Edit modules one by one</button></div>
@@ -954,6 +959,7 @@ function renderSWPanelHTML(): string {
   </div>
 
   <div id="sw-modules-container">${moduleRowsHTML}</div>
+  <section class="swk-card" id="sw-custom-card" style="margin-top:14px"></section>
   </section>
 
   <div id="sw-results">
@@ -1002,6 +1008,7 @@ function renderSWPanelHTML(): string {
 ${HUB_RATES_CSS}
 ${COCKPIT_CSS}
 ${VIEWS_CSS}
+${QUOTES_CSS}
 .swk-more{margin:0 0 8px}.swk-more>summary{cursor:pointer;font-size:.76rem;color:var(--sw-text-secondary)}
 body.cv-sw #costing-view > .results-panel, body.cv-sw .cv-sticky-actions { display: none !important; }
 .sw-ratelib-h{font-size:.8rem;font-weight:700;color:var(--sw-text-primary);margin:4px 0 8px}
@@ -1593,6 +1600,7 @@ function applyVehicleDemo(id: string): void {
   if (panel?.parentElement) {
     panel.parentElement.innerHTML = renderSWPanelHTML();
     wireSWPanel();
+    mountQuoteCards();
   }
   // Auto-run so the demo shows a full result immediately.
   document.getElementById('sw-calc-btn')?.dispatchEvent(new MouseEvent('click'));
@@ -1952,7 +1960,7 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ['MODULE CONFIGURATION'],
     ['Module ID', 'Module Name', 'Enabled', 'ASIL', 'Complexity', 'Reuse', 'Custom PM'],
     ...inp.modules.map(m => {
-      const def = SW_MODULES.find(d => d.id === m.moduleId);
+      const def = swModuleDefs(inp).get(m.moduleId);
       return [m.moduleId, def?.name ?? m.moduleId, m.enabled ? 'Yes' : 'No', m.asil, m.complexity, m.reuse, m.customPersonMonths ?? 'auto'];
     }),
   ];
@@ -2052,6 +2060,31 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     ...(qRows.length ? [] : [['No quote entered on the Supplier check tab when this workbook was exported.']]),
   ];
 
+  // Parity with the PDF report (improvement round, 14 Oct 2026): every hub, every country, the assumptions register,
+  // your figures with sources, calibration priorities and the scope exclusions — the same builders the PDF prints.
+  const { swAssumptionRows, swYourFigures, swExcludedModules } = await import('../../export/sw-report-pdf.js');
+  const hubs = swHubComparison(result);
+  const hubTotals = new Map(hubs.map(h => [h.hub as string, h.total]));
+  const hubSheet = [
+    [`The same ${result.modules.length}-module scope re-costed at every hub in the rate book (each at its own book rate); ${swUnitM()}`],
+    ['Hub', 'Rate confidence', `Loaded ${swCur().sym} / PM`, 'NRE', 'Lifecycle', 'Total', `${swCur().sym} / vehicle`, 'v this costing', 'This costing'],
+    ...hubs.map(h => [h.label, h.confidence, fV(h.loadedRatePerPM), fM(h.nre), fM(h.lifecycle), fM(h.total), fV(h.perVehicle), fM(h.deltaTotal), h.selected ? 'yes' : '']),
+  ];
+  const countrySheet = [
+    ['Every manufacturing country and the software hub it is costed at'],
+    ['Country', 'Software hub', `Programme total at that hub (${swUnitM()})`, 'Why this hub'],
+    ...countryHubList().map(c => [c.label, c.hubLabel, fM(hubTotals.get(c.hub) ?? 0), c.basis || 'its own assessed hub']),
+  ];
+  const assumptionSheet = [['Assumption', 'Basis'], ...swAssumptionRows(swMakeBuy(result).basis)];
+  const yours = swYourFigures(result);
+  const yoursSheet = [['Figures you entered — they replace catalogue figures and are graded "your figures"'], ['Line', 'Value as entered (inputs are in GBP)', 'Source'],
+    ...(yours.length ? yours.map(x => [x.line, x.value, x.source]) : [['none entered yet', '', '']])];
+  const cal = swCalibrationPriorities(result);
+  const calSheet = [[result.inputs.effortCalibration && result.inputs.effortCalibration !== 1 ? `Calibrated: effort × ${result.inputs.effortCalibration} from your actuals` : 'Uncalibrated — log what these modules actually took, largest first'],
+    ['Module', 'Person-months', `Engineering (${swUnitM()})`, 'Share (%)', 'Cumulative (%)'],
+    ...cal.rows.map(x => [x.name, f2(x.personMonths), fM(x.amount), f2(x.share * 100), f2(x.cumulative * 100)])];
+  const exclSheet = [['Catalogue modules not in this programme'], ['Module', 'Domain', 'Why not'], ...swExcludedModules(result), [],
+    ['Vehicle software the catalogue has no module for (review judgement) — not in the total unless added as your module'], ...SW_CATALOGUE_GAPS.map(g => [g])];
   const wb = await buildWorkbook([
     { name: 'Summary',            rows: summaryData, cols: [30, 16, 12] },
     { name: 'Unit economics',     rows: unitData,    cols: [52, 16, 22] },
@@ -2066,11 +2099,25 @@ async function exportSWExcel(result: SWProgramResult): Promise<void> {
     { name: 'Vehicle map',        rows: vehicleData, cols: [34, 12, 10, 16, 90] },
     { name: 'Schedule',           rows: schedData,   cols: [40, 14, 14, 14] },
     { name: 'Hub rate',           rows: hubData,     cols: [34, 90] },
+    { name: 'Every hub',          rows: hubSheet,    cols: [34, 14, 14, 12, 12, 12, 12, 12, 10] },
+    { name: 'Countries',          rows: countrySheet, cols: [28, 28, 18, 80] },
+    { name: 'Assumptions',        rows: assumptionSheet, cols: [40, 120] },
+    { name: 'Your figures',       rows: yoursSheet,  cols: [50, 24, 70] },
+    { name: 'Calibration',        rows: calSheet,    cols: [44, 14, 16, 12, 14] },
+    { name: 'Exclusions',         rows: exclSheet,   cols: [50, 34, 60] },
   ]);
   await downloadWorkbook(wb, exportFilename('sw-should-cost', null, 'xlsx'));
 }
 
 // ─── PDF Export ───────────────────────────────────────────────────────────────
+
+/** Every manufacturing country on the page's picker → the hub its software is costed at (and why). PDF and Excel. */
+function countryHubList(): Array<{ code: string; label: string; hub: string; hubLabel: string; basis: string }> {
+  return Array.from(document.querySelectorAll<HTMLOptionElement>('#mfg-region-selector option')).filter(o => o.value).map(o => {
+    const h = swRegionFor(o.value);
+    return { code: o.value, label: o.textContent?.trim() ?? o.value, hub: h.region, hubLabel: hubLabel(h.region), basis: h.basis ?? '' };
+  }).sort((a, b) => a.label.localeCompare(b.label));
+}
 
 /** The programme's name in reports: the vehicle demo it came from, else a plain label (never a made-up vehicle). */
 function programmeTitle(): string {
@@ -2086,11 +2133,7 @@ function exportSWPDF(result: SWProgramResult): void {
       const demo = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(v => v.id === _swActiveVehicle) : undefined;
       const region = result.inputs.region;
       const raw = SW_HUB_RATES[region as keyof typeof SW_HUB_RATES];
-      // Every manufacturing country on the page's picker → the hub its software is costed at (and why).
-      const countries = Array.from(document.querySelectorAll<HTMLOptionElement>('#mfg-region-selector option')).filter(o => o.value).map(o => {
-        const h = swRegionFor(o.value);
-        return { code: o.value, label: o.textContent?.trim() ?? o.value, hub: h.region, hubLabel: hubLabel(h.region), basis: h.basis ?? '' };
-      });
+      const countries = countryHubList();
       const panel = document.getElementById('sw-panel');
       const obs = (o: { value: number; source: string; url: string; statistic?: string }) => [`${raw?.currency ?? ''} ${o.value.toLocaleString('en-GB')}`, `${o.source}${o.statistic ? ` (${o.statistic})` : ''}`, o.url] as [string, string, string];
       buildSWReportPdf(doc as never, autoTable as never, {
@@ -2348,7 +2391,7 @@ export function wireSWPanel(): void {
         _swInputs.effortCalibration = factor;
         const f = document.getElementById('sw-effort-cal') as HTMLInputElement | null;
         if (f) f.value = String(factor);
-      });
+      }, () => { try { readConfig(); } catch { /* the engine reports a bad value */ } return _swInputs; });
     } catch (err) { console.warn('[sw] calibration card not wired:', err); }
   });
 
@@ -2384,7 +2427,9 @@ export function wireSWPanel(): void {
   }
 
   // Preset buttons (excluding the vehicle demos, which have their own handler)
-  document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn:not(.sw-vehicle-btn):not(#sw-study-btn):not(#sw-bench-btn):not(#sw-deepdive-btn):not(#sw-allmodels-btn)').forEach(btn => {
+  // Only the four preset buttons ([data-preset]) — the class is shared by other buttons (the actuals card's Add and
+  // template), and clicking those used to run this handler: it retired the vehicle demo and dropped its name from the reports.
+  document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn[data-preset]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(b => b.classList.remove('sw-preset-active'));
       btn.classList.add('sw-preset-active');
@@ -2551,6 +2596,18 @@ export function applySWCountry(mfg: string): void {
   refreshRateFields();
 }
 
+/** The quotes / licence-register card (Setup) and the your-modules card (Scope) — src/ui/panels/sw-quotes-ui.ts. */
+const quotesHost: QuotesHost = {
+  get: () => _swInputs,
+  set: patch => { Object.assign(_swInputs, patch); for (const k of Object.keys(patch) as Array<keyof SWProgramInputs>) if (patch[k] === undefined) delete _swInputs[k]; scheduleLive(); },
+};
+function mountQuoteCards(): void {
+  const q = document.getElementById('sw-quotes-card');
+  if (q) { q.innerHTML = quotesCardHTML(_swInputs); wireQuotesCard(q, quotesHost); }
+  const c = document.getElementById('sw-custom-card');
+  if (c) { c.innerHTML = customModulesCardHTML(_swInputs); wireCustomModulesCard(c, quotesHost); }
+}
+
 export function initSWPanel(containerEl: HTMLElement): void {
   _swInputs = defaultSWProgramInputs();
   void restoreBaseline().then(() => { if (_swTab === 'scenarios') renderScenarios(); });
@@ -2559,6 +2616,7 @@ export function initSWPanel(containerEl: HTMLElement): void {
   _swResult = null;
   containerEl.innerHTML = renderSWPanelHTML();
   wireSWPanel();
+  mountQuoteCards();
   watchChartWidth();
   // The cockpit opens with the default programme already costed (deterministic, milliseconds).
   runLive(false);

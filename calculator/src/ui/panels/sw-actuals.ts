@@ -3,7 +3,9 @@
  * (sw-calibration.ts); this module only collects the logged modules, keeps them in this browser, and prints the fit.
  * The factor is applied only when the user presses "Use this factor" — it goes into the Effort Calibration field.
  */
-import { calibrateSWEffort, modelledEffortPM } from '../../engine/sw-calibration.js';
+import { calibrateSWEffort, modelledEffortPM, actualsTemplateCsv, parseActualsCsv } from '../../engine/sw-calibration.js';
+import type { SWProgramInputs } from '../../engine/sw-should-cost.js';
+import { projectStore } from '../project-store.js';
 import type { SWEffortActual } from '../../engine/sw-calibration.js';
 import { SW_MODULES } from '../../engine/sw-should-cost.js';
 import type { ASILLevel, SWComplexity, SWReuse } from '../../engine/sw-should-cost.js';
@@ -19,8 +21,24 @@ export function loadActuals(): SWEffortActual[] {
     return Array.isArray(v) ? v as SWEffortActual[] : [];
   } catch { return []; }
 }
+/** Logged actuals are a project of their own (improvement round, 14 Oct 2026): on the server for a signed-in user, so
+ *  the team's history follows them; this browser keeps a copy. */
+const ACTUALS_KIND = 'sw_actuals';
+let _serverId: string | null = null;
 function saveActuals(a: SWEffortActual[]): void {
   try { localStorage.setItem(KEY, JSON.stringify(a)); } catch { /* private window / blocked storage — kept for this view only */ }
+  const id = _serverId ?? `swact-${Date.now().toString(36)}`;
+  _serverId = id;
+  void projectStore.save({ id, kind: ACTUALS_KIND, name: 'Software effort actuals', data: a }).catch(() => { /* offline */ });
+}
+async function loadServerActuals(): Promise<SWEffortActual[] | null> {
+  try {
+    const list = await projectStore.list(ACTUALS_KIND);
+    const latest = [...list].sort((x, y) => (y.updatedAt ?? '').localeCompare(x.updatedAt ?? ''))[0];
+    if (!latest) return null;
+    _serverId = latest.id;
+    return Array.isArray(latest.data) ? latest.data as SWEffortActual[] : null;
+  } catch { return null; }
 }
 
 const opts = (vals: readonly string[], sel?: string) => vals.map(v => `<option value="${esc(v)}"${v === sel ? ' selected' : ''}>${esc(v)}</option>`).join('');
@@ -46,6 +64,12 @@ export function renderActualsHTML(): string {
         <label class="sw-label" style="display:flex;flex-direction:column;gap:3px">Project<input id="swa-project" type="text" class="sw-config-inp" style="width:140px" placeholder="optional"></label>
         <button type="button" id="swa-add" class="sw-preset-btn">Add</button>
       </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px">
+        <button type="button" id="swa-template" class="sw-preset-btn">Download template (modules in scope)</button>
+        <label for="swa-import" class="sw-preset-btn" style="cursor:pointer">Import filled template</label>
+        <input id="swa-import" type="file" accept=".csv,text/csv" class="sr-only">
+        <span style="font-size:0.72rem;color:var(--sw-text-muted)">One row per module at this programme's settings — fill in the actual person-months your team spent; blank rows are skipped.</span>
+      </div>
       <div id="swa-msg" role="status" style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:6px"></div>
       <div id="swa-table" style="overflow-x:auto;margin-top:10px"></div>
       <div id="swa-result" style="margin-top:10px;font-size:0.78rem;color:var(--sw-text-primary)"></div>
@@ -54,7 +78,7 @@ export function renderActualsHTML(): string {
 }
 
 /** Wire the card. `onApply` receives the fitted factor (rounded to 3 dp) when the user chooses to use it. */
-export function wireActuals(onApply: (factor: number) => void): void {
+export function wireActuals(onApply: (factor: number) => void, programme?: () => SWProgramInputs): void {
   const g = <T extends HTMLElement>(id: string) => document.getElementById(id) as T | null;
   // A stored row the engine refuses (a size outside 0.1–10,000 KSLOC, an unknown ASIL …) used to throw here on every
   // load and stop the whole panel wiring (code review F1). Such rows are dropped, and the screen says so.
@@ -124,5 +148,25 @@ export function wireActuals(onApply: (factor: number) => void): void {
     draw();
   });
   draw();
+  // A signed-in user's logged actuals come from their account (the browser copy is used when there is none).
+  void loadServerActuals().then(server => {
+    if (server && server.length && JSON.stringify(server) !== JSON.stringify(actuals)) { actuals = server.filter(a => !SW_MODULES.some(m => m.id === a.moduleId) || valid(a)); try { localStorage.setItem(KEY, JSON.stringify(actuals)); } catch { /* blocked */ } draw(); }
+  });
+  g('swa-template')?.addEventListener('click', () => {
+    const p = programme?.();
+    if (!p) return;
+    const url = URL.createObjectURL(new Blob([actualsTemplateCsv(p)], { type: 'text/csv' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'software-effort-actuals-template.csv'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+  g<HTMLInputElement>('swa-import')?.addEventListener('change', async e => {
+    const f = (e.target as HTMLInputElement).files?.[0];
+    const msg = g('swa-msg');
+    if (!f) return;
+    const { actuals: got, notFilled, problems } = parseActualsCsv(await f.text());
+    if (got.length) { actuals = [...actuals, ...got]; saveActuals(actuals); draw(); }
+    if (msg) msg.textContent = `Imported ${got.length} module${got.length === 1 ? '' : 's'}${notFilled ? `; ${notFilled} row${notFilled === 1 ? '' : 's'} not filled in` : ''}${problems.length ? `; ${problems.length} problem${problems.length === 1 ? '' : 's'}: ${problems.slice(0, 3).join(' ')}` : ''}.`;
+    (e.target as HTMLInputElement).value = '';
+  });
   if (dropped) { const msg = g('swa-msg'); if (msg) msg.textContent = `${dropped} logged row${dropped === 1 ? '' : 's'} the model cannot cost (size outside 0.1–10,000 KSLOC or an unknown setting) ${dropped === 1 ? 'was' : 'were'} removed.`; }
 }

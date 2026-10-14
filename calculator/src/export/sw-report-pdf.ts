@@ -20,6 +20,7 @@ import {
   SW_MAINT_BASIS, SW_POST_EOP_BASIS, SW_HOMOLOGATION_BASIS, SW_CLOUD_BASIS, SW_DEVELOPMENT_BASIS, SW_MODULES, swHorizon,
 } from '../engine/sw-should-cost.js';
 import type { SWHubRow, SWQuoteCheck, SWMakeBuy, SWEvidence, SWUnitEconomics, SWSpendProfile } from '../engine/sw-cockpit.js';
+import { swCalibrationPriorities } from '../engine/sw-cockpit.js';
 import type { SWCostingStep } from '../engine/sw-costing-steps.js';
 
 type AutoTable = (doc: jsPDF, opts: Record<string, unknown>) => void;
@@ -61,14 +62,8 @@ const BAND: RGB = [15, 23, 42], ALT: RGB = [248, 250, 252];
 const NRE_C: RGB = [42, 120, 214], LIFE_C: RGB = [235, 104, 52];
 const W = 210, H = 297, MG = 16, TOP = 22, BOTTOM = 277;
 
-export const SW_CATALOGUE_GAPS = [
-  'Occupant restraint (airbag) control',
-  'On-board AC charger and DC-DC converter control (the charging module covers DC fast-charge protocols)',
-  'Electric power steering and electric parking brake base software',
-  'Tyre-pressure monitoring',
-  'Seat memory / massage and other comfort ECUs beyond climate and body control',
-  'Trailer functions',
-];
+export { SW_CATALOGUE_GAPS } from '../engine/sw-cockpit.js';
+import { SW_CATALOGUE_GAPS } from '../engine/sw-cockpit.js';
 
 export function buildSWReportPdf(doc: jsPDF, autoTable: AutoTable, d: SWReportInput): void {
   const r = d.result, s = r.summary, p = r.inputs;
@@ -391,16 +386,19 @@ export function buildSWReportPdf(doc: jsPDF, autoTable: AutoTable, d: SWReportIn
     { 1: { ...R, cellWidth: 30 }, 2: { ...R, cellWidth: 20 } });
   sub('Largest unsourced amounts — replace these first');
   table(['What', 'In the total'], ev.topUnsourced.slice(0, 8).map(t => [t.label, M(t.amount)]), { 1: { ...R, cellWidth: 36 } });
+  sub('Your figures — quotes and modules you entered, with their sources');
+  const yours = swYourFigures(r);
+  if (yours.length) table(['Line', 'Value', 'Source'], yours.map(x => [x.line, x.value, x.source]), { 0: { cellWidth: 70 }, 1: { cellWidth: 40 }, 2: { cellWidth: 68, fontSize: 6.8 } });
+  else para('None yet. Enter supplier quotes on Setup (Supplier quotes & licence register) and modules the catalogue lacks on Scope (Your modules) — each replaces an unsourced figure.', 8.5, MUTED);
+  sub('Calibration — which modules to measure first');
+  const cal = swCalibrationPriorities(r);
+  para(p.effortCalibration && p.effortCalibration !== 1
+    ? `This costing is calibrated: effort × ${p.effortCalibration} from your logged actuals.`
+    : `This costing is uncalibrated. ${M(cal.total)} of engineering rests on the catalogue's person-months. Log what these modules actually took (download the template on Rates & method → Calibrate to your actuals); the top ${Math.min(5, cal.rows.length)} cover ${pct(cal.rows[Math.min(5, cal.rows.length) - 1]?.cumulative * cal.total || 0, cal.total)} of it.`, 8.5);
+  table(['Module', 'Person-months', 'Engineering £', 'Share', 'Cumulative'], cal.rows.slice(0, 12).map(x => [x.name, num(x.personMonths), M(x.amount), pct(x.amount, cal.total), pct(x.cumulative * cal.total, cal.total)]),
+    { 0: { cellWidth: 72 }, 1: { ...R }, 2: { ...R }, 3: { ...R }, 4: { ...R } });
   sub('Stated assumptions and their basis');
-  table(['Assumption', 'Basis'], [
-    ['Connected service per vehicle', SW_SERVICE_BASIS], ['Map-data subscription', SW_SUBSCRIPTION_BASIS], ['Cloud £ per connected vehicle-year', SW_CLOUD_BASIS],
-    ['Development window', SW_DEVELOPMENT_BASIS], ['Development tools', SW_TOOL_SEAT_BASIS], ['Maintenance profile', SW_MAINT_BASIS],
-    ['Security support after the last build', SW_POST_EOP_BASIS], ['Homologation', SW_HOMOLOGATION_BASIS],
-    ['Supplier margin (bought development)', d.makeBuy.basis],
-    ['Effort catalogue (person-months per module)', 'CostVision catalogue — no published automotive productivity source was found (the defence data in Clark & Madachy\'s cost-estimation manual is the next source to read). Calibrate on your own actuals or size modules in KSLOC.'],
-    ['Reuse, complexity factors', 'CostVision catalogue factors — no published source.'],
-    ['ASIL factor', 'Solcept engineering blog (× 1.4 to ASIL-B, × 1.3 B → D); A and C interpolated — Low confidence.'],
-  ], { 0: { cellWidth: 46, fontStyle: 'bold', textColor: INK }, 1: { cellWidth: 132, fontSize: 6.8 } });
+  table(['Assumption', 'Basis'], swAssumptionRows(d.makeBuy.basis), { 0: { cellWidth: 46, fontStyle: 'bold', textColor: INK }, 1: { cellWidth: 132, fontSize: 6.8 } });
   sub('Rate basis — what these figures were priced on');
   table(['Item', 'Value'], swRateBasis(p), { 0: { cellWidth: 50, fontStyle: 'bold', textColor: INK }, 1: { cellWidth: 128, fontSize: 6.8 } }, { showHead: 'never' });
 
@@ -425,12 +423,12 @@ export function buildSWReportPdf(doc: jsPDF, autoTable: AutoTable, d: SWReportIn
   const inScope = new Set(r.modules.map(m => m.moduleId));
   const out = SW_MODULES.filter(m => !inScope.has(m.id));
   sub('Catalogue modules not in this programme');
-  table(['Module', 'Domain', 'Why not'], out.map(m => [m.name, m.categoryLabel,
-    m.id === 'digital_key' ? 'not confirmed for this vehicle — excluded rather than assumed' : m.id === 'mhev_48v' ? 'a 48 V mild-hybrid starter-generator; not this drivetrain' : 'switched off for this programme']),
-    { 0: { cellWidth: 70 }, 1: { cellWidth: 50 } });
+  table(['Module', 'Domain', 'Why not'], swExcludedModules(r), { 0: { cellWidth: 70 }, 1: { cellWidth: 50 } });
+  void out;
   sub('Vehicle software the catalogue has no module for (review judgement)');
-  para('These functions are normally supplier ECUs whose software is priced in the hardware piece price. They are not in this total; confirm against the electrical bill of materials.', 8, MUTED);
-  bullets(SW_CATALOGUE_GAPS);
+  const mine = (p.customModules ?? []).filter(c => p.modules.find(m => m.moduleId === c.id)?.enabled);
+  para(`These functions are normally supplier ECUs whose software is priced in the hardware piece price. They are not in this total unless you added them as your modules${mine.length ? ` — you added ${mine.map(c => `${c.name} (${c.nominalPersonMonths} nominal PM)`).join(', ')}` : ''}. Confirm against the electrical bill of materials.`, 8, MUTED);
+  bullets([...SW_CATALOGUE_GAPS]);
   sub('Limitations');
   bullets([
     'Accuracy has not been measured: no real programme cost has been logged against the model. The reconciliation in section 3 proves the arithmetic, not the inputs.',
@@ -490,4 +488,45 @@ export function hubMedianNote(raw: { currency: string; midAnnualSalary: number; 
   const seniorOk = seniors.length && Math.abs(s - raw.seniorAnnualSalary) <= 1;
   return `The book takes the median of the observations below: mid = median of ${mids.length} (${mids.map(f).join(', ')}) = ${raw.currency} ${f(m)}`
     + (seniorOk ? `; senior = median of ${seniors.length} (${seniors.map(f).join(', ')}) = ${raw.currency} ${f(s)}.` : `; senior ${raw.currency} ${f(raw.seniorAnnualSalary)} as stated in the book.`);
+}
+
+// ── Row builders shared by the PDF and the Excel workbook (improvement round, 14 Oct 2026) ──────────────────────────
+
+/** Every stated assumption and its basis. */
+export function swAssumptionRows(makeBuyBasis: string): Array<[string, string]> {
+  return [
+    ['Connected service per vehicle', SW_SERVICE_BASIS], ['Map-data subscription', SW_SUBSCRIPTION_BASIS], ['Cloud £ per connected vehicle-year', SW_CLOUD_BASIS],
+    ['Development window', SW_DEVELOPMENT_BASIS], ['Development tools', SW_TOOL_SEAT_BASIS], ['Maintenance profile', SW_MAINT_BASIS],
+    ['Security support after the last build', SW_POST_EOP_BASIS], ['Homologation', SW_HOMOLOGATION_BASIS],
+    ['Supplier margin (bought development)', makeBuyBasis],
+    ['Effort catalogue (person-months per module)', 'CostVision catalogue — no published automotive productivity source was found (the defence data in Clark & Madachy\'s cost-estimation manual is the next source to read). Calibrate on your own actuals or size modules in KSLOC.'],
+    ['Reuse, complexity factors', 'CostVision catalogue factors — no published source.'],
+    ['ASIL factor', 'Solcept engineering blog (× 1.4 to ASIL-B, × 1.3 B → D); A and C interpolated — Low confidence.'],
+  ];
+}
+
+/** Every figure the user stands behind in this costing: typed quotes and their own modules, each with its source. */
+export function swYourFigures(r: SWProgramResult): Array<{ line: string; value: string; source: string }> {
+  const p = r.inputs, q = p.quotes, out: Array<{ line: string; value: string; source: string }> = [];
+  const name = (id: string) => r.modules.find(m => m.moduleId === id)?.moduleName ?? SW_MODULES.find(m => m.id === id)?.name ?? id;
+  const gbp = (n: number, dp = 2) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+  if (q?.cloudPerVehicleYear) out.push({ line: 'Cloud back-end, per connected vehicle-year', value: gbp(q.cloudPerVehicleYear.value), source: q.cloudPerVehicleYear.source });
+  for (const [id, mq] of Object.entries(q?.modules ?? {})) {
+    if (mq.perVehicleBuilt) out.push({ line: `${name(id)} — royalty per vehicle built`, value: gbp(mq.perVehicleBuilt.value), source: mq.perVehicleBuilt.source });
+    if (mq.perVehicleYear) out.push({ line: `${name(id)} — royalty per vehicle-year`, value: gbp(mq.perVehicleYear.value), source: mq.perVehicleYear.source });
+    if (mq.annualIP) out.push({ line: `${name(id)} — IP licence a year`, value: gbp(mq.annualIP.value, 0), source: mq.annualIP.source });
+  }
+  for (const c of p.customModules ?? []) {
+    const on = p.modules.find(m => m.moduleId === c.id)?.enabled;
+    out.push({ line: `Your module: ${c.name}${on ? '' : ' (not in scope)'}`, value: `${c.nominalPersonMonths.toLocaleString('en-GB')} nominal PM${c.perVehicleRoyaltyGBP ? ` + ${gbp(c.perVehicleRoyaltyGBP)} / vehicle` : ''}`, source: c.source || '—' });
+  }
+  for (const m of p.modules) if (m.enabled && m.customPersonMonths != null) out.push({ line: `${name(m.moduleId)} — effort`, value: `${m.customPersonMonths.toLocaleString('en-GB')} PM (typed)`, source: 'typed on the Scope tab' });
+  return out;
+}
+
+/** Catalogue modules not in this programme, with the reason. */
+export function swExcludedModules(r: SWProgramResult): Array<[string, string, string]> {
+  const inScope = new Set(r.modules.map(m => m.moduleId));
+  return SW_MODULES.filter(m => !inScope.has(m.id)).map(m => [m.name, m.categoryLabel,
+    m.id === 'digital_key' ? 'not confirmed for this vehicle — excluded rather than assumed' : m.id === 'mhev_48v' ? 'a 48 V mild-hybrid starter-generator; not this drivetrain' : 'switched off for this programme']);
 }
