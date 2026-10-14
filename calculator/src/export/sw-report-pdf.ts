@@ -285,7 +285,8 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
   // ── 3 Architecture ────────────────────────────────────────────────────────────────────────────────────────────────
   const architecture = () => {
     section('architecture', undefined, `The vehicle's electrical / electronic architecture as the costing sees it: ${md.components.length} components carry the software in scope. Each is numbered; the table lists what runs on it. A module running on several components counts at each — the picture never splits money by component.`);
-    figure('architecture', 'Coloured by the highest ASIL among the modules on each component. Numbers refer to the table below.');
+    figure('architecture', md.profile === 'executive' ? 'Coloured by the highest ASIL among the modules on each component. The full component table is in the Vehicle report.' : 'Coloured by the highest ASIL among the modules on each component. Numbers refer to the table below.');
+    if (md.profile === 'executive') return;
     table(['No.', 'Component', 'Highest ASIL', 'Modules running on it', 'What it is'], md.components.map(c => [
       strong(String(c.no)), c.label, c.highestAsil === 'QM' ? 'QM' : `ASIL ${c.highestAsil}`, `${c.modules.length}: ${c.modules.join(', ')}`, c.what]),
       { 0: { cellWidth: 9, halign: 'center' }, 1: { cellWidth: 36 }, 2: { cellWidth: 17 }, 3: { cellWidth: 70, fontSize: 6.3 }, 4: { cellWidth: 46, fontSize: 6.3, textColor: MUTED } },
@@ -583,7 +584,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       h.selected ? strong(h.label) : h.label, h.confidence, money(h.loadedRatePerPM, 0), M(h.nre), M(h.lifecycle), h.selected ? strong(M(h.total)) : M(h.total), money(h.perVehicle, 0),
       h.selected ? '—' : `${h.deltaTotal >= 0 ? '+' : '−'}${M(Math.abs(h.deltaTotal))}`]),
       { 0: { cellWidth: 40 }, 1: { cellWidth: 18 }, 2: { ...R, cellWidth: 20 }, 3: { ...R, cellWidth: 19 }, 4: { ...R, cellWidth: 19 }, 5: { ...R, cellWidth: 19 }, 6: { ...R, cellWidth: 18 }, 7: { ...R, cellWidth: 25 } }, { bodyStyles: SMALL });
-    if (md.countries.length) {
+    if (md.countries.length && md.profile !== 'executive') {
       sub(`Every manufacturing country and its software hub (${md.countries.length})`);
       para('Software is costed where it is engineered. A country with its own assessed hub uses it; any other uses the nearest assessed hub, for the reason given.', 7.8, MUTED);
       const hubTotal = new Map(md.hubs.map(h => [h.hub as string, h.total]));
