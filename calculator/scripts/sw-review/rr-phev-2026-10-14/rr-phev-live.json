@@ -1,7 +1,7 @@
 {
  "volume": 200000,
  "life": 6,
- "ranAt": "2026-10-14T11:01:18.306Z",
+ "ranAt": "2026-10-14T11:26:24.771Z",
  "demoTitle": "Range Rover (L460, 2022 on): JLR MLA-Flex platform, EVA 2.0 electrical architecture, Pivi Pro infotainment with software-over-the-air updates. PHEV: P460e / P550e, 38.2 kWh battery (MY24 on). Premium software from JLR-listed features: Dynamic Response Pro (48 V active roll control), all-wheel steering, Meridian Signature Sound, Cabin Air Purification Pro, head-up display (option), 3D surround camera and Remote Park Assist. Voice: Amazon Alexa. Digital key is not confirmed for the L460 and is out of scope. Tier-1 development is a modelling assumption, not JLR's sourcing.",
  "inputsOnScreen": {
   "sw-region": "UK",
@@ -71,7 +71,13 @@
   "Configuration",
   "Vehicle map",
   "Schedule",
-  "Hub rate"
+  "Hub rate",
+  "Every hub",
+  "Countries",
+  "Assumptions",
+  "Your figures",
+  "Calibration",
+  "Exclusions"
  ],
  "excelModuleRows": 54,
  "perHub": [
@@ -84,7 +90,7 @@
    "running": "£22.25",
    "total": "£303.3M",
    "context": "PHEV · United Kingdom hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-UK.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-UK.pdf"
   },
   {
    "hub": "DE",
@@ -95,7 +101,7 @@
    "running": "£22.25",
    "total": "£306.1M",
    "context": "PHEV · Germany hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-DE.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-DE.pdf"
   },
   {
    "hub": "AT",
@@ -106,7 +112,7 @@
    "running": "£22.25",
    "total": "£301.6M",
    "context": "PHEV · Austria hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-AT.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-AT.pdf"
   },
   {
    "hub": "SE",
@@ -117,7 +123,7 @@
    "running": "£22.25",
    "total": "£303.9M",
    "context": "PHEV · Sweden hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-SE.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-SE.pdf"
   },
   {
    "hub": "FR",
@@ -128,7 +134,7 @@
    "running": "£22.25",
    "total": "£294.5M",
    "context": "PHEV · France hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-FR.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-FR.pdf"
   },
   {
    "hub": "IT",
@@ -139,7 +145,7 @@
    "running": "£22.25",
    "total": "£267.0M",
    "context": "PHEV · Italy hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-IT.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-IT.pdf"
   },
   {
    "hub": "PT",
@@ -150,7 +156,7 @@
    "running": "£22.25",
    "total": "£262.2M",
    "context": "PHEV · Portugal hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-PT.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-PT.pdf"
   },
   {
    "hub": "PL",
@@ -161,7 +167,7 @@
    "running": "£22.25",
    "total": "£275.4M",
    "context": "PHEV · Poland hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-PL.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-PL.pdf"
   },
   {
    "hub": "CZ",
@@ -172,7 +178,7 @@
    "running": "£22.25",
    "total": "£272.0M",
    "context": "PHEV · Czechia hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-CZ.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-CZ.pdf"
   },
   {
    "hub": "RO",
@@ -183,7 +189,7 @@
    "running": "£22.25",
    "total": "£263.8M",
    "context": "PHEV · Romania hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-RO.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-RO.pdf"
   },
   {
    "hub": "HU",
@@ -194,7 +200,7 @@
    "running": "£22.25",
    "total": "£272.8M",
    "context": "PHEV · Hungary hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-HU.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-HU.pdf"
   },
   {
    "hub": "RS",
@@ -205,7 +211,7 @@
    "running": "£22.25",
    "total": "£263.3M",
    "context": "PHEV · Serbia hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-RS.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-RS.pdf"
   },
   {
    "hub": "US-MI",
@@ -216,7 +222,7 @@
    "running": "£22.25",
    "total": "£324.6M",
    "context": "PHEV · USA — Michigan hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-US-MI.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-US-MI.pdf"
   },
   {
    "hub": "US-CA",
@@ -227,7 +233,7 @@
    "running": "£22.25",
    "total": "£376.4M",
    "context": "PHEV · USA — California hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-US-CA.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-US-CA.pdf"
   },
   {
    "hub": "CA",
@@ -238,7 +244,7 @@
    "running": "£22.25",
    "total": "£277.7M",
    "context": "PHEV · Canada (Ontario) hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-CA.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-CA.pdf"
   },
   {
    "hub": "MX",
@@ -249,7 +255,7 @@
    "running": "£22.25",
    "total": "£237.1M",
    "context": "PHEV · Mexico hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-MX.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-MX.pdf"
   },
   {
    "hub": "IN",
@@ -260,7 +266,7 @@
    "running": "£22.25",
    "total": "£228.8M",
    "context": "PHEV · India hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-IN.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-IN.pdf"
   },
   {
    "hub": "CN",
@@ -271,7 +277,7 @@
    "running": "£22.25",
    "total": "£265.3M",
    "context": "PHEV · China hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-CN.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-CN.pdf"
   },
   {
    "hub": "VN",
@@ -282,7 +288,7 @@
    "running": "£22.25",
    "total": "£236.0M",
    "context": "PHEV · Vietnam hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-VN.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-VN.pdf"
   },
   {
    "hub": "JP",
@@ -293,7 +299,7 @@
    "running": "£22.25",
    "total": "£252.9M",
    "context": "PHEV · Japan hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-JP.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-JP.pdf"
   },
   {
    "hub": "KR",
@@ -304,7 +310,7 @@
    "running": "£22.25",
    "total": "£263.8M",
    "context": "PHEV · South Korea hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-KR.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-KR.pdf"
   },
   {
    "hub": "TR",
@@ -315,7 +321,7 @@
    "running": "£22.25",
    "total": "£238.3M",
    "context": "PHEV · Türkiye hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-TR.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-TR.pdf"
   },
   {
    "hub": "EG",
@@ -326,7 +332,7 @@
    "running": "£22.25",
    "total": "£227.3M",
    "context": "PHEV · Egypt hub · Tier-1 supplier · 200,000 vehicles a year × 6 years · 52 modules",
-   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final2/pdf/rr-phev-EG.pdf"
+   "pdf": "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/rr-final3/pdf/rr-phev-EG.pdf"
   }
  ],
  "perCountry": [

@@ -155,10 +155,26 @@ hub moves only engineering and its maintenance. About £200M of cloud, royalties
   - seat ECUs;
   - trailer functions.
 
-## 6. Improvement opportunities (not done in this round)
+## 6. Improvement opportunities — built (14 Oct 2026, same day)
 
-1. **Calibrate the effort catalogue to actuals.** One finished programme's person-months per module would firm up 16 % of the total. The trace shows exactly which lines it moves.
-2. **Replace the cloud and map-data estimates with supplier quotes** (£144.6M, 48 % of the total).
-3. **A licence register per vehicle** (OS, maps, voice, codecs, cellular) entered once and reused across programmes.
-4. **Excel parity with the PDF:** the Excel workbook still lacks the all-hub sheet and the country map.
-5. **Catalogue modules for the gaps listed in §5**, when there is a source for their effort.
+| # | Opportunity | Built | Where |
+|---|---|---|---|
+| 1 | Calibrate the effort catalogue | **Template + import.** The Rates tab offers a CSV of the modules in scope at this programme's settings (actual-effort column blank). The team fills it in and imports it. Bad rows are named by line and never guessed. Actuals are stored with the user's account (server) and in the browser. **What to measure first:** PDF §10 and the Excel "Calibration" sheet rank the modules by the engineering £ resting on the catalogue, with share and running total. For this programme, the top 5 cover 25 %. | `sw-calibration.ts` (`actualsTemplateCsv`, `parseActualsCsv`), `sw-actuals.ts`, `swCalibrationPriorities` |
+| 2 | Replace cloud and map-data estimates with quotes | **Supplier quotes card (Setup).** Covers the cloud £ per connected vehicle-year, each royalty (per vehicle built / per vehicle-year) and each IP licence. A quote replaces the catalogue figure, is graded "your figure" and prints its source. The engine refuses a quote without a source. | `SWQuotes`, `swModuleDefs`, `sw-quotes-ui.ts` |
+| 3 | Licence register | **Saved register.** The quotes are saved as a named register (project kind `sw_licence_register`, on the user's account) and applied to any programme. Modules the programme lacks are dropped. | `sw-quotes-ui.ts` |
+| 4 | Excel parity with the PDF | **Six new sheets:** Every hub, Countries, Assumptions, Your figures, Calibration, Exclusions. They use the same row builders as the PDF. | `sw-report-pdf.ts` (`swAssumptionRows`, `swYourFigures`, `swExcludedModules`) |
+| 5 | Modules for the catalogue gaps | **"Your modules" (Scope).** Name, domain, nominal effort and source. Testing, integration, maintenance and calibration take the median of the catalogue modules in the same domain. With no effort the module costs nothing, so nothing is assumed. The six gaps are offered as suggestions. | `SWCustomModule`, `customModuleDef` |
+
+**Also fixed.** The preset buttons' click handler matched every `.sw-preset-btn`, including the actuals card's Add and template buttons. Clicking either retired the vehicle demo, and its name vanished from the reports. The handler now takes only `[data-preset]`.
+
+**Proof:**
+- `tests/sw-improvements.test.ts`: 11 tests.
+- `e2e/sw-improvements-live.ts`: 14 / 14 checks, axe [] on Setup, Scope and Rates. It checks:
+  - the quoted total and the total with your module equal the engine's;
+  - a quote without a source is refused;
+  - the register round-trips;
+  - the template round-trips;
+  - the Excel has the new sheets, with sources.
+- Full suite: 3,901 passed.
+- `sw-cockpit-flow`, `sw-live` and `sw-studio` pass.
+- The 23 hub reports were re-exported live, and the trace still matches at every hub.
