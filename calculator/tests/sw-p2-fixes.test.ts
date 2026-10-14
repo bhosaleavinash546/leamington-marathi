@@ -269,9 +269,10 @@ describe('#14 exports state the rate basis; static reports are labelled referenc
   });
 
   it('both exports print it; Excel lists the CAL', () => {
-    const ui = src('src/ui/panels/sw-should-cost-ui.ts');
-    expect(ui.match(/swRateBasis\(/g)!.length).toBeGreaterThanOrEqual(2);
-    expect(ui).toMatch(/'CAL \(ISO\/SAE 21434\)'/);
+    // The 360 report (Oct 2026): both exports draw one model; each renderer prints the rate basis, the workbook a CAL column.
+    expect(src('src/export/sw-report-pdf.ts')).toMatch(/swRateBasis\(p\)/);
+    expect(src('src/export/sw-report-xlsx.ts')).toMatch(/swRateBasis\(p\)/);
+    expect(src('src/export/sw-report-xlsx.ts')).toMatch(/\['CAL', false\]/);
   });
 
   it('every static report carries the reference-example banner, and the generators add it', () => {

@@ -2,7 +2,7 @@
  * Render the 360 software report headless — the same model, renderers and skeleton pictures as the screen's export
  * (pictures rasterised by headless Chromium through src/export/svg-raster.ts).
  *   npx tsx scripts/sw-report/report-sample.ts <outdir> [demo=rr_l460] [profile=vehicle] [hub=UK] [body=suv] [volume=200000] [life=6]
- *   profile domain → domains B,C;  module → bms_core, navigation.  Writes <slug>.pdf (and .xlsx once the workbook exists).
+ *   profile domain → domains B,C;  module → bms_core, navigation.  Writes <slug>.pdf and <slug>.xlsx.
  * Check a change: render, then look at every page (PyMuPDF) and read the text.
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -16,6 +16,7 @@ import { buildSWReportRequest, hubLabelOf } from '../../src/export/sw-report-req
 import { reportImageSpecs } from '../../src/export/sw-report-skeleton.js';
 import { rasteriseSvg, type RasterImage } from '../../src/export/svg-raster.js';
 import { renderSWReportPdf } from '../../src/export/sw-report-pdf.js';
+import { buildSWReportWorkbook } from '../../src/export/sw-report-xlsx.js';
 import { hardenPdfText } from '../../src/export/pdf.js';
 import { REGIONAL_DATA } from '../../src/engine/regional-rates.js';
 import { SW_VEHICLE_DEMOS, buildVehicleInputs } from '../../src/ui/panels/sw-should-cost-ui.js';
@@ -48,4 +49,7 @@ const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', forma
 renderSWReportPdf(doc, autoTable as never, model, images);
 const pdf = Buffer.from(doc.output('arraybuffer'));
 writeFileSync(join(out, `${slug}.pdf`), pdf);
+const xlsx = await buildSWReportWorkbook(model, { images });
+writeFileSync(join(out, `${slug}.xlsx`), xlsx);
+console.log(`${slug}.xlsx: ${(xlsx.length / 1024).toFixed(0)} KB`);
 console.log(`${slug}.pdf: ${(doc as unknown as { internal: { getNumberOfPages(): number } }).internal.getNumberOfPages()} pages, ${(pdf.length / 1024).toFixed(0)} KB, ${images.size} pictures, ${model.checks.length} checks (${failed.length} failed)`);

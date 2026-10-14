@@ -19,14 +19,14 @@ import type {
   SWProgramInputs, SWProgramResult, SWModuleInput, SWPowertrain, SWCal, SWCategory,
 } from '../../engine/sw-should-cost.js';
 import {
-  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swModuleDefs, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion, swLoadedRate, swOverhead,
+  computeSWProgram, defaultSWProgramInputs, SW_MODULES, swRegionFor, SW_DEFAULT_OVERHEAD, swLibraryBaseRate, normaliseSWRegion, swLoadedRate, swOverhead,
   SW_DEFAULT_BURDEN, SW_BURDEN_BASIS, SW_DEFAULT_SUBSCRIPTION_YEARS, SW_SUBSCRIPTION_BASIS, SW_DEFAULT_SERVICE_YEARS, SW_SERVICE_BASIS, SW_POST_EOP_YEARS, SW_POST_EOP_SHARE, SW_POST_EOP_BASIS, SW_DEVELOPMENT_BASIS,
   SW_TOOL_SEAT_GBP, SW_TOOL_SEAT_BASIS, SW_MAINT_BASIS, SW_HOMOLOGATION_BASIS,
   applyPowertrainScope, SW_POWERTRAIN_SCOPE, SW_POWERTRAIN_MODULE_IDS, calFor, SW_CALS, devSourceComparison, swRateBasis, SW_DEFAULT_DEVELOPMENT_MONTHS, SW_COCOMO, SW_COCOMO_EXPONENT,
 } from '../../engine/sw-should-cost.js';
 import { baseRateOverride, SW_BASE_RATE_FIELDS } from './sw-rate-field.js';
 import { hubOptionsHTML, hubRatesTableHTML, hubLabel, HUB_RATES_CSS } from './sw-hub-rates.js';
-import { mountSWStudio, skeletonStateFor } from './sw-costing-pipeline.js';
+import { mountSWStudio } from './sw-costing-pipeline.js';
 import {
   headHTML, railHTML, tabsHTML, wireTabs, updateRail, railError, contextLine, overviewHTML, riskHTML, spendHTML,
   supplierFormHTML, readQuote, supplierResultHTML, wireCharts, COCKPIT_CSS, type CockpitTab,
@@ -38,18 +38,13 @@ import {
   benchmarksHTML, insightsHTML, buildInsights, VIEWS_CSS,
 } from './sw-cockpit-views.js';
 import { DOMAIN_SLOT, setChartWidth } from './sw-charts.js';
-import { swRateCheck, swEvidence, swMakeBuy, swQuoteCheck, swUnitEconomics, swHubComparison, swCalibrationPriorities, SW_CATALOGUE_GAPS } from '../../engine/sw-cockpit.js';
+import { swRateCheck, swEvidence, swMakeBuy } from '../../engine/sw-cockpit.js';
 import type { StepRate, StepFormat } from '../../engine/sw-costing-steps.js';
-import { componentLoad } from './sw-vehicle-skeleton.js';
-import { vehicleComponent } from '../../engine/sw-vehicle-map.js';
-import { SW_HUB_RATES } from '../../engine/sw-country-rates.js';
-import { swSchedule } from '../../engine/sw-schedule.js';
 import { resolveRateLibrary } from '../../engine/sw-rate-library.js';
 import { renderActualsHTML, wireActuals } from './sw-actuals.js';
-import { swMoney, swMoneyM, swConv, swCur, swUnitM, setSWCurrency } from './sw-currency.js';
+import { swMoney, swMoneyM, swCur, setSWCurrency } from './sw-currency.js';
 import type { SWRateEntry, RateConfidence, SWRateLibrary } from '../../engine/sw-rate-library.js';
 import { runValidation } from '../../engine/sw-validation.js';
-import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
 import { projectStore } from '../project-store.js';
 import { quotesCardHTML, wireQuotesCard, customModulesCardHTML, wireCustomModulesCard, QUOTES_CSS, type QuotesHost } from './sw-quotes-ui.js';
 import { exportFilename } from '../../export/filename.js';
@@ -1846,271 +1841,20 @@ Keep response concise and actionable (under 250 words).`;
 // ─── Rec 6: Excel Export ──────────────────────────────────────────────────────
 
 async function exportSWExcel(result: SWProgramResult): Promise<void> {
-  const s  = result.summary;
-  const inp = result.inputs;
-
-  // Money in the page's display currency (P3 #15): fM for millions, fV for £ / vehicle; f2 stays for %, PM, counts.
-  const fM = (n: number) => parseFloat((swConv(n)/1_000_000).toFixed(3));
-  const f2 = (n: number) => parseFloat(n.toFixed(2));
-  const fV = (n: number) => parseFloat(swConv(n).toFixed(2));
-
-  // Sheet 1: Summary
-  const summaryData = [
-    ['CostVision — Automotive SW Should-Cost Report'],
-    ['Programme', programmeTitle()],
-    ['Generated', new Date().toLocaleDateString('en-GB')],
-    [],
-    ['Cost Bucket', `Value (${swUnitM()})`, 'Share (%)'],
-    ['Development Engineering', fM(s.totalDevelopment), f2(s.totalDevelopment/s.grandTotal*100)],
-    ['Testing & Validation',    fM(s.totalTesting),     f2(s.totalTesting/s.grandTotal*100)],
-    ['Integration & V&V',       fM(s.totalIntegration), f2(s.totalIntegration/s.grandTotal*100)],
-    ['Cybersecurity',           fM(s.totalCybersecurity), f2(s.totalCybersecurity/s.grandTotal*100)],
-    ['Calibration & Tuning',    fM(s.totalCalibration), f2(s.totalCalibration/s.grandTotal*100)],
-    ['ML data',                 fM(s.totalMLData),      f2(s.totalMLData/s.grandTotal*100)],
-    ['Toolchain (dev tools)',   fM(s.totalToolchain),   f2(s.totalToolchain/s.grandTotal*100)],
-    // Homologation is NRE; it was missing here, so the buckets did not add up to the total (president review, 14 Oct 2026).
-    ['Homologation (R155 / R156 / ISO 26262)', fM(s.totalHomologation), f2(s.totalHomologation/s.grandTotal*100)],
-    ['ENGINEERING (NRE) SUBTOTAL', fM(s.nreTotal),      f2(s.nreTotal/s.grandTotal*100)],
-    ['Maintenance and security support (lifecycle)', fM(s.totalMaintenance), f2(s.totalMaintenance/s.grandTotal*100)],
-    ['Licences and royalties (lifecycle)', fM(s.totalLicensing),  f2(s.totalLicensing/s.grandTotal*100)],
-    ['Cloud (lifecycle)',       fM(s.totalCloud),       f2(s.totalCloud/s.grandTotal*100)],
-    ['LIFECYCLE SUBTOTAL',      fM(s.grandTotal - s.nreTotal), f2((s.grandTotal - s.nreTotal)/s.grandTotal*100)],
-    ['TOTAL PROGRAMME COST',    fM(s.grandTotal),        100],
-    [],
-    ['Per Vehicle (SW)', fV(s.perVehicle), `${swCur().sym}`],
-    ['Currency', `${swCur().code} at ${swCur().perGbp.toFixed(4)} per £ (the engine prices in £; inputs below are £)`],
-    ['Engineering Effort (all costed effort)', f2(s.totalEffortPersonMonths), 'PM'],
-    ['Development Person-Months (costed)', f2(s.totalPersonMonths), 'PM'],
-    ['Active Modules', result.modules.length, ''],
-    [],
-    ['RATE BASIS — what these figures were priced on'],
-    ...swRateBasis(inp).map(([k, v]) => [k, v]),
-  ];
-
-  // Sheet 2: Category Breakdown
-  const catData = [
-    ['Category', 'Category Label', 'Modules', `Total Cost (${swUnitM()})`, 'Share (%)'],
-    ...Object.entries(CAT_META).map(([cat, meta]) => {
-      const t = s.byCategory[cat as keyof typeof s.byCategory] ?? 0;
-      const mods = result.modules.filter(m => m.category === cat);
-      return [cat, meta.label, mods.length, fM(t), f2(t/s.grandTotal*100)];
-    }),
-  ];
-
-  // Sheet 3: Module Detail
-  const modData = [
-    ['#', 'Module', 'Category', 'ASIL', 'Complexity', 'Reuse', 'CAL (ISO/SAE 21434)', 'Effort basis', 'Person-Months',
-     `Dev Cost (${swUnitM()})`, `Test Cost (${swUnitM()})`, `Calibration (${swUnitM()})`, `Integration (${swUnitM()})`,
-     `Toolchain (${swUnitM()})`, `IP Licence (${swUnitM()})`, `Cybersec (${swUnitM()})`, `Cloud (${swUnitM()})`, `Maintenance (${swUnitM()})`,
-     `Grand Total (${swUnitM()})`, `${swCur().sym}/Vehicle`],
-    ...[...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).map((m, i) => [
-      i+1, m.moduleName, m.category, m.asilUsed, m.complexityUsed, m.reuseUsed, m.calUsed,
-      m.effortBasis === 'size' ? `COCOMO II size (${inp.modules.find(x => x.moduleId === m.moduleId)?.sizeKSLOC} KSLOC)` : m.effortBasis,
-      f2(m.personMonths), fM(m.development.total), fM(m.testing.total),
-      fM(m.calibrationCost), fM(m.integrationCost), fM(m.toolchainCost),
-      fM(m.licensingCost), fM(m.cybersecCost), fM(m.cloudCost), fM(m.maintenanceCost),
-      fM(m.grandTotal), fV(m.perVehicle),
-    ]),
-  ];
-
-  // Sheet 4: Sensitivity + Monte Carlo
-  const mc = result.monteCarlo;
-  const sensData: unknown[][] = [
-    ['SENSITIVITY ANALYSIS'],
-    ['Parameter', 'Unit', 'Low Scenario', 'Base Case', 'High Scenario', 'Range'],
-    ...result.sensitivity.map(r => {
-      // £M rows store absolute pounds; convert to £M. Per-vehicle rows stay raw.
-      const v = (n: number) => r.unit === '£M' ? fM(n) : fV(n);
-      return [r.parameter, r.unit.replace('£', swCur().sym), v(r.low), v(r.base), v(r.high), v(r.high - r.low)];
-    }),
-    [],
-    ['MONTE CARLO DISTRIBUTION', `${mc.iterations} iterations`],
-    ['Percentile', `Total Cost (${swUnitM()})`, `${swCur().sym}/Vehicle`],
-    ['P10 (Optimistic)', fM(mc.p10), fV(mc.p10PerVehicle)],
-    ['P50 (Median)',     fM(mc.p50), fV(mc.p50PerVehicle)],
-    ['P90 (Pessimistic)',fM(mc.p90), fV(mc.p90PerVehicle)],
-    ['Mean',             fM(mc.mean), ''],
-    ['P90-P10 Spread',   fM(mc.p90 - mc.p10), ''],
-    [`Headline (≈ P${mc.headlinePercentile} of this band)`, fM(s.grandTotal), fV(s.perVehicle)],
-    [],
-    ['PROGRAMME PHASES (NRE)'],
-    ['Phase', 'Timeline', 'NRE Share (%)', `NRE Budget (${swUnitM()})`],
-    ...result.phases.map(p => [p.name, p.months, f2(p.fraction*100), fM(p.nreCost)]),
-  ];
-
-  // Sheet 5: Benchmarks
-  // Not a benchmark: none of these figures could be verified (president review, 14 Oct 2026), so they sit apart with no
-  // "vs this model" comparison — the old sheet put a % difference against each one.
-  const bmData = [
-    ['Figures named in earlier material — NONE could be verified. Not a benchmark; do not cite or compare.'],
-    ['Vehicle / Programme', `Total SW Cost (${swUnitM()})`, `${swCur().sym}/Vehicle`, 'Status and where it was said to come from'],
-    ...result.benchmarks.filter(b => b.vehicle !== 'This programme').map(b =>
-      [b.vehicle, fM(b.totalM * 1_000_000), fV(b.perVehicle), `${b.verified ? 'verified' : 'UNVERIFIED'} — ${b.source}`]),
-  ];
-
-  // Sheet 6: Configuration
-  const cfgData = [
-    ['PROGRAMME CONFIGURATION'],
-    ['Parameter', 'Value'],
-    ['Engineering hub', hubLabel(inp.region)],
-    ['Dev Source', inp.devSource],
-    ['Programme Life (years)', inp.programLifeYears],
-    ['Annual Production Volume', inp.annualProductionVolume],
-    ['Team Senior Fraction', inp.teamSeniorFraction],
-    ['Overhead Multiplier', inp.overheadMultiplier],
-    ['Include Maintenance', inp.includeMaintenanceCost ? 'Yes' : 'No'],
-    ['Include Cloud', inp.includeCloudCost ? 'Yes' : 'No'],
-    [],
-    ['MODULE CONFIGURATION'],
-    ['Module ID', 'Module Name', 'Enabled', 'ASIL', 'Complexity', 'Reuse', 'Custom PM'],
-    ...inp.modules.map(m => {
-      const def = swModuleDefs(inp).get(m.moduleId);
-      return [m.moduleId, def?.name ?? m.moduleId, m.enabled ? 'Yes' : 'No', m.asil, m.complexity, m.reuse, m.customPersonMonths ?? 'auto'];
-    }),
-  ];
-
-  // Where the software runs (the studio's SUV map), the COCOMO schedule and the hub's own rate build-up — the same
-  // engine figures the screen shows; a module on several components counts at each (stated in the sheet).
-  const vLoad = componentLoad(skeletonStateFor(result));
-  const vehicleData: (string | number)[][] = [
-    ['Where this software runs — components and the modules on them. No money total per component: a module on several components would count at each.'],
-    ['Component', 'Kind', 'Modules', 'Highest ASIL', `Most costly module (${swCur().code} M)`, 'Modules'],
-    ...[...vLoad.entries()].filter(([id]) => id !== 'backbone').sort((a, b) => b[1].modules.length - a[1].modules.length || b[1].top - a[1].top).map(([id, l]) => {
-      const c = vehicleComponent(id)!;
-      return [c.label, c.kind, l.modules.length, ['QM', 'A', 'B', 'C', 'D'][l.asil], fM(l.top), l.modules.map(m => m.name).join('; ')];
-    }),
-  ];
-  const sch = swSchedule(result);
-  const schedData: (string | number)[][] = [
-    ['Schedule — COCOMO II.2000 TDEV per module (modules in parallel; CostVision assumption)'],
-    ['Basis', sch.basis],
-    ['Development window (months)', f2(sch.developmentMonths)],
-    ['Average engineering team (effort ÷ window)', f2(sch.averageTeam)],
-    ['Longest module (months)', f2(sch.longestMonths)],
-    [],
-    ['Module', 'Effort (PM)', 'COCOMO duration (months)', 'Average staff'],
-    ...sch.rows.map(r => [r.name, f2(r.effortPM), f2(r.tdevMonths), f2(r.avgStaff)]),
-  ];
-  const hubBook = SW_HUB_RATES[inp.region];
-  const hubData: (string | number)[][] = hubBook ? [
-    ['Engineering hub — its own rate (no UK multiplier)'],
-    ['Hub', hubBook.label],
-    ['Cities', hubBook.cities.join(', ')],
-    ['Build-up', hubBook.build],
-    ['Senior basis', hubBook.seniorBasis],
-    ['Employer on-cost', hubBook.onCostBasis],
-    ['Productive hours', hubBook.hoursBasis],
-    ['Confidence', hubBook.confidence],
-    ['Notes', hubBook.notes],
-    [],
-    ['Salary figures (mid)', 'Source · statistic · year · URL'],
-    ...hubBook.mid.map(o => [`${hubBook.currency} ${o.value.toLocaleString('en-GB')} ${o.period} × ${o.annualFactor}`, `${o.source} · ${o.statistic} · ${o.dataYear ?? 'year n/s'} · ${o.url}`]),
-    ['Salary figures (senior)', ''],
-    ...hubBook.senior.map(o => [`${hubBook.currency} ${o.value.toLocaleString('en-GB')} ${o.period} × ${o.annualFactor}`, `${o.source} · ${o.statistic} · ${o.dataYear ?? 'year n/s'} · ${o.url}`]),
-    ['Evidence of automotive software here', hubBook.evidence.join(' · ')],
-  ] : [['Engineering hub', String(inp.region)]];
-
-  // Evidence, unit economics, make or buy and the supplier quote check — the same engine figures the screen shows.
-  const ev = swEvidence(result);
-  const gradeName: Record<string, string> = { entered: 'Your figures', calibrated: 'Calibrated to your actuals', sourced: 'Published source', estimate: 'Labelled estimate', unsourced: 'Unsourced catalogue' };
-  const evidenceData: (string | number)[][] = [
-    ['How well the total is supported — every costed amount with its evidence grade'],
-    ['Grade', `In the total (${swUnitM()})`, 'Share (%)'],
-    ...(['entered', 'calibrated', 'sourced', 'estimate', 'unsourced'] as const).map(g => [gradeName[g], fM(ev.byGrade[g]), f2(ev.total > 0 ? ev.byGrade[g] / ev.total * 100 : 0)]),
-    [],
-    ['Default reuse', `${ev.reuse.modulesAtMedium} of ${ev.reuse.modules} modules at Medium (× 0.60, CostVision default)`, ''],
-    [`Engineering written fresh would add (${swUnitM()})`, fM(ev.reuse.removedNRE), ''],
-    [],
-    ['Line', `Amount (${swUnitM()})`, 'Grade', 'Basis'],
-    ...ev.lines.filter(l => Math.abs(l.amount) > 0.5).sort((a, b) => b.amount - a.amount).map(l => [l.label, fM(l.amount), gradeName[l.grade], l.basis]),
-  ];
-  const ue = swUnitEconomics(result);
-  const unitData: (string | number)[][] = [
-    ['The figures purchasing compares — the total rebuilt from them (exact at a 0 % discount)'],
-    ['Figure', 'Value', 'Unit'],
-    ['Engineering, one-off', fM(ue.nre), swUnitM()],
-    ['Royalty per vehicle built', parseFloat(swConv(ue.perVehicleBuilt).toFixed(2)), `${swCur().sym} / vehicle`],
-    ['Subscription per vehicle-year (map data)', parseFloat(swConv(ue.subscriptionPerYear).toFixed(2)), `${swCur().sym} / vehicle-year`],
-    ['Cloud per connected vehicle-year', parseFloat(swConv(ue.cloudPerYear).toFixed(2)), `${swCur().sym} / vehicle-year`],
-    ['Fixed per year (maintenance, IP licences, platform), average', fM(ue.fixedPerYear), `${swUnitM()} / yr`],
-    ['Vehicles built', ue.vehiclesBuilt, 'vehicles'],
-    ['Subscription vehicle-years', ue.subscriptionVehicleYears, `${ue.subscriptionYears} yr each`],
-    ['Connected-service vehicle-years', ue.serviceVehicleYears, `${ue.serviceYears} yr each`],
-    ['Programme total', fM(ue.total), swUnitM()],
-  ];
-  const mb = swMakeBuy(result);
-  const makeBuyData: (string | number)[][] = [
-    ['Make or buy — engineering (NRE) per domain, each source re-costed'],
-    [mb.basis],
-    ['Domain', `In-house (${swUnitM()})`, `Tier-1 (${swUnitM()})`, `Start-up / OSS (${swUnitM()})`],
-    ...mb.rows.map(r => [r.label, fM(r.make), fM(r.tier1), fM(r.startup)]),
-    [],
-    ['Break-even: a Tier-1 is cheaper only at ≤ this share of the in-house effort', f2(mb.breakEvenEffortShare * 100), '%'],
-  ];
-  const panelEl = document.getElementById('sw-panel');
-  const quote = panelEl ? readQuote(panelEl) : {};
-  const qc = swQuoteCheck(result, quote);
-  const qRows = [qc.nre, qc.perVehicle, qc.perVehicleYear, qc.fixedPerYear, ...qc.byCategory].filter(Boolean) as NonNullable<typeof qc.nre>[];
-  const qv = (r: NonNullable<typeof qc.nre>, n: number) => r.unit === 'perVehicle' ? parseFloat(swConv(n).toFixed(2)) : fM(n);
-  const quoteData: (string | number)[][] = [
-    ['Supplier quote check — should-cost against the quote entered on screen'],
-    ['Line', 'Should-cost', 'Quote', 'Gap', 'Gap (%)', 'Unit'],
-    ...qRows.map(r => [r.label, qv(r, r.should), qv(r, r.quoted), qv(r, r.gap), f2(r.gapPct), r.unit === 'perVehicle' ? `${swCur().sym} / vehicle` : swUnitM()]),
-    [],
-    ['Negotiation target: fair Tier-1 engineering for this scope', fM(qc.target.nre), swUnitM(), qc.target.basis],
-    ['Tier-1 target rate', parseFloat(swConv(qc.target.ratePerPM).toFixed(0)), `${swCur().sym} / person-month`],
-    ...(qc.impliedRatePerPM ? [['Rate per person-month the NRE quote implies', parseFloat(swConv(qc.impliedRatePerPM).toFixed(0)), `${swCur().sym} / person-month`, `× ${f2(qc.rateMultiple ?? 0)} the loaded should-cost rate`]] : []),
-    ...(qc.gapSplit ? [['Effort gap', fM(qc.gapSplit.effortGap), swUnitM()], ['Rate gap', fM(qc.gapSplit.rateGap), swUnitM()]] : []),
-    ...(qRows.length ? [] : [['No quote entered on the Supplier check tab when this workbook was exported.']]),
-  ];
-
-  // Parity with the PDF report (improvement round, 14 Oct 2026): every hub, every country, the assumptions register,
-  // your figures with sources, calibration priorities and the scope exclusions — the same builders the PDF prints.
-  const { swAssumptionRows, swYourFigures, swExcludedModules } = await import('../../export/sw-report-pdf.js');
-  const hubs = swHubComparison(result);
-  const hubTotals = new Map(hubs.map(h => [h.hub as string, h.total]));
-  const hubSheet = [
-    [`The same ${result.modules.length}-module scope re-costed at every hub in the rate book (each at its own book rate); ${swUnitM()}`],
-    ['Hub', 'Rate confidence', `Loaded ${swCur().sym} / PM`, 'NRE', 'Lifecycle', 'Total', `${swCur().sym} / vehicle`, 'v this costing', 'This costing'],
-    ...hubs.map(h => [h.label, h.confidence, fV(h.loadedRatePerPM), fM(h.nre), fM(h.lifecycle), fM(h.total), fV(h.perVehicle), fM(h.deltaTotal), h.selected ? 'yes' : '']),
-  ];
-  const countrySheet = [
-    ['Every manufacturing country and the software hub it is costed at'],
-    ['Country', 'Software hub', `Programme total at that hub (${swUnitM()})`, 'Why this hub'],
-    ...countryHubList().map(c => [c.label, c.hubLabel, fM(hubTotals.get(c.hub) ?? 0), c.basis || 'its own assessed hub']),
-  ];
-  const assumptionSheet = [['Assumption', 'Basis'], ...swAssumptionRows(swMakeBuy(result).basis)];
-  const yours = swYourFigures(result);
-  const yoursSheet = [['Figures you entered — they replace catalogue figures and are graded "your figures"'], ['Line', 'Value as entered (inputs are in GBP)', 'Source'],
-    ...(yours.length ? yours.map(x => [x.line, x.value, x.source]) : [['none entered yet', '', '']])];
-  const cal = swCalibrationPriorities(result);
-  const calSheet = [[result.inputs.effortCalibration && result.inputs.effortCalibration !== 1 ? `Calibrated: effort × ${result.inputs.effortCalibration} from your actuals` : 'Uncalibrated — log what these modules actually took, largest first'],
-    ['Module', 'Person-months', `Engineering (${swUnitM()})`, 'Share (%)', 'Cumulative (%)'],
-    ...cal.rows.map(x => [x.name, f2(x.personMonths), fM(x.amount), f2(x.share * 100), f2(x.cumulative * 100)])];
-  const exclSheet = [['Catalogue modules not in this programme'], ['Module', 'Domain', 'Why not'], ...swExcludedModules(result), [],
-    ['Vehicle software the catalogue has no module for (review judgement) — not in the total unless added as your module'], ...SW_CATALOGUE_GAPS.map(g => [g])];
-  const wb = await buildWorkbook([
-    { name: 'Summary',            rows: summaryData, cols: [30, 16, 12] },
-    { name: 'Unit economics',     rows: unitData,    cols: [52, 16, 22] },
-    { name: 'Evidence',           rows: evidenceData, cols: [52, 16, 24, 90] },
-    { name: 'Quote check',        rows: quoteData,   cols: [52, 16, 16, 16, 12, 16] },
-    { name: 'Make or buy',        rows: makeBuyData, cols: [36, 16, 16, 18] },
-    { name: 'Category Breakdown', rows: catData,     cols: [10, 30, 10, 16, 12] },
-    { name: 'Module Detail',      rows: modData,     cols: [4, 30, 9, 7, 12, 10, 14, ...Array(11).fill(14)] },
-    { name: 'Sensitivity & MC',   rows: sensData,    cols: [40, 12, 16, 16, 16, 14] },
-    { name: 'Unverified figures', rows: bmData,      cols: [28, 18, 12, 70] },
-    { name: 'Configuration',      rows: cfgData,     cols: [28, 40, 10, 8, 12, 10, 12] },
-    { name: 'Vehicle map',        rows: vehicleData, cols: [34, 12, 10, 16, 90] },
-    { name: 'Schedule',           rows: schedData,   cols: [40, 14, 14, 14] },
-    { name: 'Hub rate',           rows: hubData,     cols: [34, 90] },
-    { name: 'Every hub',          rows: hubSheet,    cols: [34, 14, 14, 12, 12, 12, 12, 12, 10] },
-    { name: 'Countries',          rows: countrySheet, cols: [28, 28, 18, 80] },
-    { name: 'Assumptions',        rows: assumptionSheet, cols: [40, 120] },
-    { name: 'Your figures',       rows: yoursSheet,  cols: [50, 24, 70] },
-    { name: 'Calibration',        rows: calSheet,    cols: [44, 14, 16, 12, 14] },
-    { name: 'Exclusions',         rows: exclSheet,   cols: [50, 34, 60] },
-  ]);
-  await downloadWorkbook(wb, exportFilename('sw-should-cost', null, 'xlsx'));
+  // The 360 workbook (src/export/sw-report-xlsx.ts): the same report model as the PDF, totals as live formulas from the
+  // Rates sheet through every module to the summary, a Checks sheet against the engine, native charts, the skeletons.
+  const options = readReportOptions(document.getElementById('sw-rep'));
+  const problem = reportOptionProblem(options);
+  if (problem) { showSWError(problem); return; }
+  await withReportBusy('Excel workbook', async () => {
+    const [{ buildSWReportWorkbook }, { model, images }] = await Promise.all([import('../../export/sw-report-xlsx.js'), prepareReport(result, options, reportContext(result))]);
+    const bytes = await buildSWReportWorkbook(model, { images });
+    const blob = new Blob([bytes as BlobPart], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = exportFilename(reportSlug(result, options.profile), null, 'xlsx');
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30_000);
+  });
 }
 
 // ─── PDF Export ───────────────────────────────────────────────────────────────

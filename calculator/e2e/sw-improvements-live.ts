@@ -133,12 +133,13 @@ async function main(): Promise<void> {
     const [xl] = await Promise.all([page.waitForEvent('download'), show('#sw-excel-btn').then(() => page.click('#sw-excel-btn'))]);
     const xlPath = join(OUT, 'rr-phev-with-quotes.xlsx'); await xl.saveAs(xlPath);
     const wb = XLSX.read(readFileSync(xlPath));
-    check('Excel has the parity sheets', ['Every hub', 'Countries', 'Assumptions', 'Your figures', 'Calibration', 'Exclusions'].every(n => wb.SheetNames.includes(n)), wb.SheetNames);
-    const yours = XLSX.utils.sheet_to_json<string[]>(wb.Sheets['Your figures'], { header: 1 }).map(r => r.join(' | '));
-    check('Excel "Your figures" lists the quotes with their sources', yours.some(r => /AWS proposal 2026-09/.test(r)) && yours.some(r => /TCU supplier quote Q3 2026/.test(r)), yours.slice(0, 6));
-    const hubs = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets['Every hub'], { header: 1 });
-    const hubRows = hubs.filter(r => typeof r[5] === 'number').length;   // data rows (the workbook adds a title row)
-    check('Excel "Every hub" has 23 hubs', hubRows === 23, hubRows);
+    // The 360 workbook (sw-report-xlsx.ts): your figures and calibration are on Assumptions; exclusions on Scope.
+    check('Excel has the parity sheets', ['Hubs', 'Countries', 'Assumptions', 'Scope', 'Evidence', 'Checks'].every(n => wb.SheetNames.includes(n)), wb.SheetNames);
+    const yours = XLSX.utils.sheet_to_json<string[]>(wb.Sheets['Assumptions'], { header: 1 }).map(r => r.join(' | '));
+    check('Excel lists the quotes with their sources', yours.some(r => /AWS proposal 2026-09/.test(r)) && yours.some(r => /TCU supplier quote Q3 2026/.test(r)), yours.filter(r => /quote|proposal/i.test(r)).slice(0, 6));
+    const hubs = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets['Hubs'], { header: 1 });
+    const hubRows = hubs.filter(r => typeof r[5] === 'number').length;   // data rows (title rows are text)
+    check('Excel "Hubs" has 23 hubs', hubRows === 23, hubRows);
     out.pdf = pdfPath;
 
     // 6. axe

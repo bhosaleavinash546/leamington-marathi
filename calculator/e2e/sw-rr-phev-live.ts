@@ -93,8 +93,8 @@ async function main(): Promise<void> {
     const xlPath = join(OUT, 'rr-phev-UK.xlsx'); await xl.saveAs(xlPath);
     const wb = XLSX.read(readFileSync(xlPath));
     out.excelSheets = wb.SheetNames;
-    const md = wb.Sheets['Module Detail'] ? XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets['Module Detail'], { header: 1 }) : [];
-    out.excelModuleRows = md.length - 1;
+    const md = wb.Sheets['Module detail'] ? XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets['Module detail'], { header: 1 }) : [];
+    out.excelModuleRows = md.filter(r => typeof r[4] === 'number').length;   // one row per module (nominal PM is numeric)
 
     // 2. Every hub on the picker: cost, then the PDF.
     const hubs = await page.$$eval('#sw-region option', os => os.map(o => ({ value: (o as HTMLOptionElement).value, label: o.textContent?.trim() ?? '' })));

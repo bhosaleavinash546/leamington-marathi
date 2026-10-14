@@ -136,8 +136,9 @@ async function main(): Promise<void> {
     const xlsxPath = join(OUT, 'sw-p2.xlsx');
     await dl.saveAs(xlsxPath);
     const wb = XLSX.readFile(xlsxPath);
-    const sum = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
-    out.p2_excelRateBasis = sum.split('\n').filter(l => /RATE BASIS|Rate book|Base rate|Overhead|Effort calibration|Powertrain/.test(l));
+    // The 360 workbook: the rate basis is on the Rates sheet (with the live rate chain).
+    const sum = XLSX.utils.sheet_to_csv(wb.Sheets['Rates']);
+    out.p2_excelRateBasis = sum.split('\n').filter(l => /Rate basis|Rate book|Engineer rate used|burden|Effort calibration|Powertrain/i.test(l));
     out.p2_referenceBanner = /data-cv-reference-example/.test(await (await fetch(`${base}/calculator/reports/l460-deepdive.html`)).text());
     // ── P3 fixes ──
     out.p3_headlinePct = await page.evaluate(() => document.getElementById('sw-headline-pct')?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 160) ?? '');
@@ -149,7 +150,8 @@ async function main(): Promise<void> {
     const [dl3] = await Promise.all([page.waitForEvent('download'), show('#sw-excel-btn').then(() => page.click('#sw-excel-btn'))]);
     const x3 = join(OUT, 'sw-p3-eur.xlsx'); await dl3.saveAs(x3);
     const w3 = XLSX.readFile(x3);
-    out.p3_excelEUR = XLSX.utils.sheet_to_csv(w3.Sheets[w3.SheetNames[0]]).split('\n').filter(l => /Cost Bucket|TOTAL PROGRAMME|Per Vehicle|^Currency/.test(l));
+    out.p3_excelEUR = [...XLSX.utils.sheet_to_csv(w3.Sheets['Cost build-up']).split('\n').filter(l => /Programme total|Engineering \(NRE\)/.test(l)),
+      ...XLSX.utils.sheet_to_csv(w3.Sheets['Contents']).split('\n').filter(l => /Currency/.test(l))];
     await page.selectOption('#currency-selector', 'GBP');
     await page.waitForTimeout(600);
     out.p3_totalGBP = await headline();
