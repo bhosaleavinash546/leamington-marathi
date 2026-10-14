@@ -129,3 +129,65 @@ UX: the build list's remaining items were built in round 2 (§5).
 
 **Still open (UX):** scenarios live for the session plus the saved list. A pinned baseline is not stored between visits,
 and there is no scenario chart beyond per-vehicle.
+
+## 6. Gaps round — the independent review's ten gaps (14 Oct 2026)
+
+An independent re-score put the module at **28 → 63 / 100** after rounds 1–2. It named ten gaps. All ten were worked
+(commits c28f7d0 engine, 4761743 UI).
+
+| # | Gap | What changed |
+|---|---|---|
+| 1 | Headline rests on unsourced inputs | Every £ carries an evidence grade (`swEvidenceLines`: your figures, calibrated, published source, labelled estimate, unsourced catalogue). The Monte Carlo draws each grade's own range (`SW_MC_RANGE_BY_GRADE`; costing review #13: sourced ±15 %, estimate × 0.5–2, unsourced × 0.5–3). The rail states "£187M (78 %) rests on unsourced catalogue figures". An evidence card lists the largest unsourced lines and what would source them. The default reuse is stated with its £ (Medium on 43/43 modules; fresh would add £37.4M). |
+| 2 | Quote-check basis bug | A quoted £ per vehicle is compared with the royalty per vehicle **built** (£22.70); it was all licensing ÷ vehicles (£106, a false −43 % gap). It also checks per vehicle-year and fixed per year, and gives a Tier-1 negotiation target. With the supplier's PM the gap splits exactly into effort and rate. |
+| 3 | Legacy sections | Modules, Risk, Report and Rates are rebuilt as cockpit views (`sw-cockpit-views.ts`). The old MC cards, sensitivity, phase, category and composition tables are gone. The AI card is `.ai-only` (hidden without a key). |
+| 4 | Loaded rate too low | The single 1.15 overhead is replaced by three stated layers on the hub rate (`SW_DEFAULT_BURDEN`):<br>• employment +15 % — UK 1.31 × salary, inside Hadzima's 1.25–1.4 ×;<br>• company +40 % — labelled estimate; UK ≈ 1.8 × salary;<br>• capital 0 %.<br>Loaded UK rate: £48 → £68 / h, still below the £75 / h contractor median, which carries a contractor's margin. A saved configuration keeps its own overhead. |
+| 5 | Structure | **Map data:** a 3-year subscription per vehicle (Nissan, Subaru, Hyundai and Honda include 3 years).<br>**Cloud:** each connected vehicle is served 10 years from build (Audi 10 yr; BMW, Mercedes and PSA lifetime — Berg Insight, dated). The tail runs past the last build year, and there is a fixed-platform input.<br>**Tools:** per engineer-seat-year (£39.5k, calibrated to the catalogue at the default; no public seat price).<br>**Maintenance:** on development + verification + integration, full for 3 years then 50 %, with optional wage escalation.<br>**Homologation:** on by default (type approval ≈ $1M per S&P; assessor; organisation CSMS / SUMS ÷ the vehicle types sharing it).<br>One yearly stream per line feeds the module PV, the spend profile and the unit economics. |
+| 6 | Negotiation thin | Make or buy per domain (break-even: a Tier-1 pays only at ≤ 82 % of in-house effort). Discount rate (NPV) and wage escalation inputs. Excel gets Unit economics, Evidence, Quote check and Make or buy sheets; the PDF gets §6 Evidence and §7 Quote check. |
+| 7 | Scope editing | A setting changed from the module default is marked, and its label names the default. Rows can be selected for a batch edit, and there is a domain filter. Selects are wider. |
+| 8 | Mobile | Below 700 px the rail folds to the answer and the total ("All figures" opens it) and the secondary header buttons hide. Tabs fade at the edge. Scenarios reflow as a list. |
+| 9 | Consistency | One vocabulary: the engine's domain names on every screen. Single-series marks use the accent. Drivers are in sentence case. The spend axis labels the last year. Motion moved to `animations.ts` (GSAP, loaded on demand). |
+| 10 | Trust | The badge says "hub rates sourced; effort factors labelled by confidence". Unverified benchmark gaps are shown in text ink. The pinned baseline survives a reload (per viewer). One polite sentence is read out when the answer moves. |
+
+**Money (default programme, `scripts/sw-review/baseline.ts`):**
+
+| | Before | After |
+|---|---|---|
+| Total | £199.4M | £241.6M |
+| Engineering (NRE) | £44.0M | £59.8M |
+| Cloud | £47.3M | £86.0M |
+| Licences | £84.8M | £61.8M |
+| Maintenance | £23.3M | £34.0M |
+| Per vehicle | £249 | £302 |
+
+- Effort is unchanged (4,135 PM).
+- Band: P10 £259M · P50 £339M · P90 £443M, with the headline ≈ P5. The headline adds each line's most likely value, and most of the money rests on unsourced lines whose risk runs upwards, so the screen says to budget at a percentile.
+- Demos: L460 £164.9M → £221.6M; BMW X7 £116.1M → £146.5M; Mercedes GLS £135.7M → £173.6M.
+
+**Proof:**
+- `tests/sw-cockpit.test.ts` (+14) covers:
+  - the burden layers;
+  - like-for-like quote rows;
+  - the exact gap split;
+  - make or buy;
+  - the maintenance profile;
+  - evidence lines summing to the total;
+  - the band narrowing with entered PM;
+  - the spend tail reconciling;
+  - validation;
+  - motion on one system;
+  - one vocabulary;
+  - AI gating;
+  - neutral benchmarks;
+  - the rail evidence and announcement;
+  - the stored baseline;
+  - scope markers.
+- Tests updated to the new rules: sw-p2, sw-p3, sw-should-cost and sw-audit.
+- Full suite: 3,862 pass.
+- `e2e/sw-cockpit-flow.ts` 24 / 24 PASS, axe [] on 11 tabs + the dialog in dark and light. `e2e/sw-live.ts` and `e2e/sw-studio.ts` pass.
+
+**Still open (stated):**
+- The effort catalogue is unsourced. It is the largest lever: calibrate it, or size modules in KSLOC.
+- Map £ / yr, cloud £ / vehicle-year and IP licences are unsourced; enter supplier quotes.
+- The burden company layer is a labelled estimate.
+- The evidence-grade ranges are CostVision estimates, not measured.
+- Accuracy is unmeasured: no real programme actuals are logged.

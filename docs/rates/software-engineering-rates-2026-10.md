@@ -44,7 +44,7 @@ senior salary = median of its senior / upper-quartile figures (or the mid, said 
 
 **What sits on top in the engine (unchanged):**
 - the development-source factor;
-- the programme **overhead** (default 1.15, a CostVision assumption).
+- the programme **burden** (three stated layers since 14 Oct 2026 — employment +15 %, company +40 %, capital 0 %; × 1.61).
 
 The hub rate is salary plus STATUTORY on-cost only. These are not in it, so put your company's own overhead in that
 field:
