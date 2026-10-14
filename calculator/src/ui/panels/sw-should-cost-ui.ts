@@ -38,8 +38,8 @@ import {
   benchmarksHTML, insightsHTML, buildInsights, VIEWS_CSS,
 } from './sw-cockpit-views.js';
 import { DOMAIN_SLOT, setChartWidth } from './sw-charts.js';
-import { swRateCheck, swEvidence, swMakeBuy, swQuoteCheck, swUnitEconomics, swHubComparison, swSpendProfile, swCalibrationPriorities, SW_CATALOGUE_GAPS } from '../../engine/sw-cockpit.js';
-import { swCostingSteps, type StepRate, type StepFormat } from '../../engine/sw-costing-steps.js';
+import { swRateCheck, swEvidence, swMakeBuy, swQuoteCheck, swUnitEconomics, swHubComparison, swCalibrationPriorities, SW_CATALOGUE_GAPS } from '../../engine/sw-cockpit.js';
+import type { StepRate, StepFormat } from '../../engine/sw-costing-steps.js';
 import { componentLoad } from './sw-vehicle-skeleton.js';
 import { vehicleComponent } from '../../engine/sw-vehicle-map.js';
 import { SW_HUB_RATES } from '../../engine/sw-country-rates.js';
@@ -53,6 +53,7 @@ import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
 import { projectStore } from '../project-store.js';
 import { quotesCardHTML, wireQuotesCard, customModulesCardHTML, wireCustomModulesCard, QUOTES_CSS, type QuotesHost } from './sw-quotes-ui.js';
 import { exportFilename } from '../../export/filename.js';
+import { readReportOptions, reportOptionProblem, prepareReport, fillReportScope, wireReportOptions, REPORT_OPTIONS_CSS, type ReportContext } from './sw-report-export.js';
 
 // Saved configs are stored as projects of this kind — server-backed when the
 // user is logged in, localStorage when not.
@@ -1009,6 +1010,7 @@ ${HUB_RATES_CSS}
 ${COCKPIT_CSS}
 ${VIEWS_CSS}
 ${QUOTES_CSS}
+${REPORT_OPTIONS_CSS}
 .swk-more{margin:0 0 8px}.swk-more>summary{cursor:pointer;font-size:.76rem;color:var(--sw-text-secondary)}
 body.cv-sw #costing-view > .results-panel, body.cv-sw .cv-sticky-actions { display: none !important; }
 .sw-ratelib-h{font-size:.8rem;font-weight:700;color:var(--sw-text-primary);margin:4px 0 8px}
@@ -1658,6 +1660,8 @@ function renderResults(result: SWProgramResult, opts: { live?: boolean } = {}): 
   put('swk-bandmethod', bandMethodHTML(result, fmtM));
   put('swk-domains-t', domainTableHTML(result, fmtM));
   put('sw-module-table', moduleTableHTML(result, money, fmtM));
+  const rep = document.getElementById('sw-rep');
+  if (rep) fillReportScope(rep, result);
   put('swk-makebuy-wrap', makeBuyHTML(swMakeBuy(result), fmtM));
   // Each row is the programme RE-COSTED with that source in the active rate book (engine devSourceComparison, P2 #13).
   put('swk-source-wrap', sourceTableHTML(devSourceComparison(result.inputs), result.inputs.devSource, fmtM));
@@ -2124,38 +2128,51 @@ function programmeTitle(): string {
   return (_swActiveVehicle ? SW_VEHICLE_DEMOS.find(v => v.id === _swActiveVehicle)?.label : undefined) ?? 'Vehicle software programme';
 }
 
+/** What only the screen knows, for every report (PDF and Excel): the title, the checked vehicle text, the page's
+ *  countries, the supplier quote, the page currency and the studio's rate line. */
+function reportContext(result: SWProgramResult): ReportContext {
+  const demo = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(v => v.id === _swActiveVehicle) : undefined;
+  const panel = document.getElementById('sw-panel');
+  const cur = swCur();
+  return {
+    title: programmeTitle(), vehicleDesc: demo?.desc, facts: demo?.facts, countries: countryHubList(),
+    quote: panel ? readQuote(panel) : {}, currency: { code: cur.code, sym: cur.sym, perGbp: cur.perGbp },
+    fmt: { money: (n, dp = 0) => swMoney(n, dp), moneyM: fmtM, number: (n, dp = 0) => fmt(n, dp) },
+    stepRate: studioRate(result),
+  };
+}
+
+function reportSlug(result: SWProgramResult, profile: string): string {
+  const demo = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(v => v.id === _swActiveVehicle) : undefined;
+  const base = (demo?.label ?? 'sw-should-cost').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return `${base}-${profile === 'vehicle' ? '' : profile + '-'}${String(result.inputs.region).toLowerCase()}`;
+}
+
+/** Busy state on both export buttons while a report is built (rasterising the skeletons takes a moment). */
+async function withReportBusy(label: string, run: () => Promise<void>): Promise<void> {
+  const btns = ['sw-pdf-btn', 'sw-excel-btn'].map(id => document.getElementById(id) as HTMLButtonElement | null);
+  const status = document.getElementById('sw-rep-status');
+  btns.forEach(b => { if (b) { b.disabled = true; b.setAttribute('aria-busy', 'true'); } });
+  if (status) status.textContent = `Building the ${label}…`;
+  try { await run(); if (status) status.textContent = `${label[0].toUpperCase()}${label.slice(1)} downloaded.`; }
+  catch (e) { if (status) status.textContent = `The ${label} could not be built: ${(e as Error).message}`; throw e; }
+  finally { btns.forEach(b => { if (b) { b.disabled = false; b.removeAttribute('aria-busy'); } }); }
+}
+
 function exportSWPDF(result: SWProgramResult): void {
-  // The detailed report (president review, 14 Oct 2026): src/export/sw-report-pdf.ts. Everything it prints is read off
-  // this result or the engine re-run for another hub — the screen and the report cannot disagree.
-  Promise.all([import('jspdf'), import('jspdf-autotable'), import('../../export/pdf.js'), import('../../export/sw-report-pdf.js')])
-    .then(([{ jsPDF }, { default: autoTable }, { hardenPdfText }, { buildSWReportPdf, hubMedianNote }]) => {
-      const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true }));
-      const demo = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(v => v.id === _swActiveVehicle) : undefined;
-      const region = result.inputs.region;
-      const raw = SW_HUB_RATES[region as keyof typeof SW_HUB_RATES];
-      const countries = countryHubList();
-      const panel = document.getElementById('sw-panel');
-      const obs = (o: { value: number; source: string; url: string; statistic?: string }) => [`${raw?.currency ?? ''} ${o.value.toLocaleString('en-GB')}`, `${o.source}${o.statistic ? ` (${o.statistic})` : ''}`, o.url] as [string, string, string];
-      buildSWReportPdf(doc as never, autoTable as never, {
-        result,
-        title: programmeTitle(),
-        vehicleDesc: demo?.desc, facts: demo?.facts,
-        hubLabel: hubLabel(region),
-        steps: swCostingSteps(result, studioRate(result), studioFmt),
-        hubs: swHubComparison(result),
-        countries,
-        evidence: swEvidence(result), unit: swUnitEconomics(result), spend: swSpendProfile(result), makeBuy: swMakeBuy(result),
-        quote: swQuoteCheck(result, panel ? readQuote(panel) : {}),
-        hubRate: raw ? { build: raw.build, confidence: raw.confidence, median: hubMedianNote(raw) ?? undefined, sources: [...raw.mid.map(o => ['Mid: ' + obs(o)[0], obs(o)[1], obs(o)[2]] as [string, string, string]),
-          ...raw.senior.map(o => ['Senior: ' + obs(o)[0], obs(o)[1], obs(o)[2]] as [string, string, string]),
-          ['Employer on-cost', raw.onCostBasis, raw.onCostUrl ?? ''], ['Working hours', raw.hoursBasis, '']] } : undefined,
-        loadedRate: swLoadedRate(result.inputs), money: (n, dp = 0) => swMoney(n, dp), moneyM: fmtM, unitM: swUnitM(), sym: swCur().sym,
-        generatedAt: new Date(),
-        bookVersion: swRateBasis(result.inputs).find(([k]) => k === 'Rate book')?.[1] ?? '',
-      });
-      const slug = (demo?.label ?? 'sw-should-cost').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      doc.save(exportFilename(`${slug}-${String(region).toLowerCase()}`, null, 'pdf'));
-    });
+  // The 360 report (plan docs/plans/sw-report-360-plan-2026-10-14.md): one model (src/engine/sw-report-model.ts) drawn by
+  // src/export/sw-report-pdf.ts — every figure is the result's or the engine re-run; the screen and the report cannot disagree.
+  const options = readReportOptions(document.getElementById('sw-rep'));
+  const problem = reportOptionProblem(options);
+  if (problem) { showSWError(problem); return; }
+  void withReportBusy('PDF report', async () => {
+    const [{ jsPDF }, { default: autoTable }, { hardenPdfText }, { renderSWReportPdf }, { model, images }] = await Promise.all([
+      import('jspdf'), import('jspdf-autotable'), import('../../export/pdf.js'), import('../../export/sw-report-pdf.js'),
+      prepareReport(result, options, reportContext(result))]);
+    const doc = hardenPdfText(new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true }));
+    renderSWReportPdf(doc as never, autoTable as never, model, images);
+    doc.save(exportFilename(reportSlug(result, options.profile), null, 'pdf'));
+  });
 }
 
 // ─── Saved Configs ────────────────────────────────────────────────────────────
@@ -2512,7 +2529,9 @@ export function wireSWPanel(): void {
     else showSWError('Run the calculation first before exporting.');
   });
 
-  // PDF export
+  // PDF export (report options: type, scope, body, metadata)
+  const repEl = document.getElementById('sw-rep');
+  if (repEl) wireReportOptions(repEl);
   document.getElementById('sw-pdf-btn')?.addEventListener('click', () => {
     if (_swResult) exportSWPDF(_swResult);
     else showSWError('Run the calculation first before exporting the PDF report.');

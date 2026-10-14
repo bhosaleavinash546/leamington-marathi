@@ -374,6 +374,52 @@ export interface SWModuleCostResult {
    *  the cost above is their present value. The spend profile and unit economics read these, so every view follows
    *  ONE rule per line. */
   yearly: { maintenance: number[]; licences: number[]; royalties: number[]; cloud: number[] };
+  /** The arithmetic behind the module, as computeModuleCost ran it — every factor, so a report can print the chain and a
+   *  workbook can rebuild each £ as a formula on visible inputs (360 report, Oct 2026). All £ figures in this result =
+   *  the chain's figure × `share`. */
+  chain: SWModuleChain;
+}
+
+/** Development split of the costed effort (requirements / architecture / algorithms / implementation / safety). */
+export const SW_DEV_SPLIT = { requirements: 0.12, architecture: 0.14, algorithmDev: 0.22, implementation: 0.37, safetyCompliance: 0.15 } as const;
+
+export interface SWModuleChain {
+  /** Nominal person-months (catalogue / COCOMO size / the user's own PM) before calibration and reuse. */
+  nominalPM:      number;
+  effortCal:      number;   // effort calibration applied (1 for a typed PM)
+  reuseFactor:    number;
+  effectivePM:    number;   // nominal × calibration × reuse
+  asilDev:        number;
+  devPM:          number;   // effective × ASIL
+  complexity:     number;   // on the algorithm bucket in full
+  implComplexity: number;   // 1 + (complexity − 1) × 0.15, on implementation
+  safetyScale:    number;   // safety reuse floor ÷ reuse
+  /** Person-months per development bucket, before the schedule penalty. */
+  bucketPM:       { requirements: number; architecture: number; algorithmDev: number; implementation: number; safetyCompliance: number };
+  /** Hub engineer rate £ / PM (the mid / senior blend, or the typed rate). */
+  engineerRate:   number;
+  devSourceMult:  number;
+  overhead:       number;
+  /** engineerRate × devSource × overhead. */
+  loadedRate:     number;
+  schedPenalty:   number;
+  /** loadedRate × schedule penalty — £ per costed development PM. */
+  effortRate:     number;
+  testFrac:       number;   // testing £ ÷ development £
+  testSplit:      { sil: number; mil: number; hil: number; regression: number; penTest: number; scenarios: number };
+  integrationFrac: number;
+  cyberPct:       number;
+  calibrationFrac: number;
+  mlFrac:         number;
+  /** Engineer-years paid for (NRE effort £ ÷ loaded rate ÷ 12) and the tool seat price applied. */
+  engineerYears:  number;
+  toolSeatGBP:    number;
+  /** Discount factor on tools over the development window (1 at 0 %). */
+  toolDiscount:   number;
+  maintPct:       number;   // % of (dev + test + integration) a year
+  maintBase:      number;   // £ a year at weight 1, before the platform share
+  /** Platform share applied to the shared-software £ (royalties and cloud are per vehicle, never shared). */
+  share:          number;
 }
 
 export interface SWSummary {
@@ -1341,11 +1387,11 @@ function computeModuleCost(
   // weighted share on implementation (SW2). Safety bucket carries the reuse floor.
   const devPM    = effectivePM * asilDev;
   const implComplexity = 1 + (complexity - 1) * IMPL_COMPLEXITY_WEIGHT;
-  const reqsPM   = devPM * 0.12;
-  const archPM   = devPM * 0.14;
-  const algoPM   = devPM * 0.22 * complexity;
-  const implPM   = devPM * 0.37 * implComplexity;
-  const safetyPM = devPM * 0.15 * safetyScale;
+  const reqsPM   = devPM * SW_DEV_SPLIT.requirements;
+  const archPM   = devPM * SW_DEV_SPLIT.architecture;
+  const algoPM   = devPM * SW_DEV_SPLIT.algorithmDev * complexity;
+  const implPM   = devPM * SW_DEV_SPLIT.implementation * implComplexity;
+  const safetyPM = devPM * SW_DEV_SPLIT.safetyCompliance * safetyScale;
 
   const effortRate = regionRate * schedPenalty;
   const reqs   = reqsPM   * effortRate;
@@ -1459,6 +1505,18 @@ function computeModuleCost(
     perVehicle,
     attributedShare: 1,
     yearly: { maintenance: maintYearly, licences: licYearly, royalties: new Array(H).fill(0), cloud: new Array(H).fill(0) },
+    chain: {
+      nominalPM: input.customPersonMonths ?? nominalPM, effortCal, reuseFactor: reuse, effectivePM, asilDev, devPM,
+      complexity, implComplexity, safetyScale,
+      bucketPM: { requirements: reqsPM, architecture: archPM, algorithmDev: algoPM, implementation: implPM, safetyCompliance: safetyPM },
+      engineerRate: rates.engineerRate, devSourceMult: rates.devSource[prog.devSource], overhead: swOverhead(prog), loadedRate: regionRate,
+      schedPenalty, effortRate, testFrac,
+      testSplit: { sil: silFrac, mil: milFrac, hil: hilFrac, regression: regFrac, penTest: penFrac, scenarios: scenFrac },
+      integrationFrac: def.integrationFractionBase, cyberPct: cybersecPct, calibrationFrac: def.calibrationFractionBase,
+      mlFrac: (prog.includeMLDataCost && def.hasMLContent) ? ML_DATA_FRACTION : 0,
+      engineerYears, toolSeatGBP: prog.toolSeatGBPPerYear ?? SW_TOOL_SEAT_GBP, toolDiscount: devFactor / devYears,
+      maintPct: def.maintenancePctPerYear, maintBase, share: 1,
+    },
   };
   // Shared software is attributed to this variant in proportion to its share of the platform volume (P1 #5).
   const share = attributedShare(def.id, prog);
@@ -1696,6 +1754,7 @@ function scaleModuleResult(r: SWModuleCostResult, k: number): SWModuleCostResult
     totalNonRecurring: r.totalNonRecurring * k, totalLifecycle: r.totalLifecycle * k,
     grandTotal: r.grandTotal * k, perVehicle: r.perVehicle * k,
     attributedShare: k,
+    chain: { ...r.chain, share: k },
     yearly: { ...r.yearly, maintenance: r.yearly.maintenance.map(v => v * k), licences: r.yearly.licences.map(v => v * k) },
   };
 }

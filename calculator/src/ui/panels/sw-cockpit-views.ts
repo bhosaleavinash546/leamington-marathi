@@ -13,6 +13,7 @@ import type { SWEvidence, SWMakeBuy } from '../../engine/sw-cockpit.js';
 import type { SWDevSourceRow } from '../../engine/sw-should-cost.js';
 import { DOMAIN_SLOT, type Money } from './sw-charts.js';
 import { swSchedule } from '../../engine/sw-schedule.js';
+import { reportOptionsHTML } from './sw-report-export.js';
 
 const esc = (s: unknown): string => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } as Record<string, string>)[c]);
@@ -151,8 +152,9 @@ export function makeBuyHTML(mb: SWMakeBuy, moneyM: Money): string {
 // ── Report tab ───────────────────────────────────────────────────────────────────────────────────────────────────────
 
 export function exportCardHTML(): string {
-  return `<section class="swk-card"><h3 class="swk-h">Export</h3>
-    <p class="swk-sub">Both exports carry the same figures as this screen, in the page's currency, with the rate basis, the evidence grades and — when you entered one — the supplier quote check.</p>
+  return `<section class="swk-card" id="sw-export-card"><h3 class="swk-h">Export a report</h3>
+    <p class="swk-sub">PDF and Excel are drawn from one report model, so they carry the same figures as this screen, in the page's currency: the vehicle skeleton, every domain and module line by line, the rate basis, the evidence grades, the checks and — when you entered one — the supplier quote check. The header's PDF and Excel buttons use these options.</p>
+    ${reportOptionsHTML()}
     <div class="swk-row">
       <button id="sw-excel-btn" class="swk-btn">Excel workbook</button>
       <button id="sw-pdf-btn" class="swk-btn swk-btn-primary">PDF report</button>
