@@ -1316,13 +1316,13 @@ html[data-theme="light"] .brand-version{
         <div class="about-section avis" id="about-howto">
           <div class="about-hero">
             <h2>360° Automotive Speaker Should-Cost Engine — User Guide</h2>
-            <p>This tool models the complete factory-gate cost of an automotive speaker system manufactured in China (Ex-Works). It covers direct materials, direct labour, machine overhead, tooling amortisation, G&amp;A, warranty, and system integration costs — calibrated to June 2026 SHFE/SMM commodity prices. Use it to benchmark supplier quotes, build business cases, and explore cost-reduction trade-offs.</p>
+            <p>SonoCost builds the cost of an automotive speaker or complete music system from the bottom up, the way a supplier’s own cost engineer would: every gram of material, every minute of factory labour and machine time, then overheads, tooling, freight, duty and margin. You describe the system on the left; the tool prices it live on the right — for any of 22 manufacturing countries, using that country’s actual labour and energy rates (never a “multiplier”). Every number can be opened with its Σ trace to see the arithmetic behind it. If you have never done costing before, start with the guide below — it takes about 15 minutes to go from zero to a defendable number.</p>
             <div class="about-badges">
-              <span class="about-badge badge-blue">EXW China Pricing</span>
-              <span class="about-badge badge-green">SHFE / SMM Jun 2026</span>
+              <span class="about-badge badge-blue">22 Country Rate Cards</span>
+              <span class="about-badge badge-green">SMM / SHFE Oct 2026</span>
               <span class="about-badge badge-amber">Automotive Tier-1/2</span>
-              <span class="about-badge badge-purple">AI-Augmented Insights</span>
-              <span class="about-badge badge-cyan">14-Step Process Model</span>
+              <span class="about-badge badge-purple">Live Σ Calculation Trace</span>
+              <span class="about-badge badge-cyan">Benchmark-Validated</span>
             </div>
           </div>
 
@@ -1353,156 +1353,178 @@ html[data-theme="light"] .brand-version{
             </div>
           </div>
 
-          <!-- Step-by-step -->
-          <div style="font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;display:flex;align-items:center;gap:8px">Step-by-Step Instructions<span style="flex:1;height:1px;background:linear-gradient(to right,rgba(34,211,238,0.3),transparent);display:block"></span></div>
+          <!-- ── The screen in 60 seconds ── -->
+          <div style="font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;display:flex;align-items:center;gap:8px">The Screen in 60 Seconds<span style="flex:1;height:1px;background:linear-gradient(to right,rgba(34,211,238,0.3),transparent);display:block"></span></div>
+          <div style="background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:18px 22px;margin-bottom:22px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11.5px;color:var(--t2)">
+              <div>⬅ <strong>Left panel — your inputs.</strong> Everything you decide lives here: system type, country, volume, materials, technology features, margin. Change anything and the whole tool re-prices instantly.</div>
+              <div>⬆ <strong>Five big tiles — your answer.</strong> Delivered Total (the headline), speaker count, DM% (material share), CO₂, and margin. These always show the current configuration.</div>
+              <div>🗂 <strong>Tab bar — the evidence.</strong> System Overview, Full BOM, Sustainability, Benchmarking, Process &amp; DFMA, Physics, AI Insights, Compare, Data &amp; Sources. Each tab answers one question about the same result.</div>
+              <div>🔊 <strong>Driver Anatomy + SUV map.</strong> Pick a speaker type to see what it physically is (2D / rotating 3D / Exploded). The SUV skeleton shows where every speaker sits for the chosen system, with music-wave animation.</div>
+              <div>📡 <strong>Trends / 📘 About (top right).</strong> Live commodity prices and news; this guide, the technical reference and material-grade library.</div>
+              <div>💱 <strong>Currency selector (top right).</strong> Show every number in USD, GBP, EUR, CNY, INR or JPY. The engine always computes in USD; this only changes the display.</div>
+            </div>
+          </div>
+
+          <!-- ── First costing ── -->
+          <div style="font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;display:flex;align-items:center;gap:8px">Your First Costing — 8 Steps, ~5 Minutes<span style="flex:1;height:1px;background:linear-gradient(to right,rgba(34,211,238,0.3),transparent);display:block"></span></div>
           <div class="steps-grid">
             <div class="step-card">
               <div class="step-num">1</div>
               <div class="step-body">
-                <h4>Select Manufacturing Country</h4>
-                <p>Choose where the system will be manufactured. Every country carries an <strong>actual rate card</strong> — fully burdened operator/technician/QC labour, local industrial electricity, and machine-hour rates (China: published job-shop quotes; elsewhere: derived from China's cost decomposition × that country's actual energy and labour). There is no "Western rate × multiplier" anywhere in the engine. The complete live rate card with every source is in the <strong>Data &amp; Sources</strong> tab.</p>
-                <div class="step-tip">💡 China Coastal (Shanghai/Guangzhou) carries a 12% machine multiplier and ¥6.5/hr effective labour vs China Inland's 9% and ¥4.5/hr. Choose based on your actual supplier location.</div>
+                <h4>Open the tool and sign in</h4>
+                <p>Open <code>speaker-cost-engine.html</code> (or the Start link). Sign in on the login page — any name and email works; it personalises the session. You land on the <strong>System Overview</strong> with a Standard 6-speaker system in China already priced.</p>
+                <div class="step-tip">💡 With all defaults untouched you should see <strong>$42.02</strong> on the Delivered Total tile. If you see that number, everything is working.</div>
               </div>
             </div>
             <div class="step-card">
               <div class="step-num">2</div>
               <div class="step-body">
-                <h4>Set Annual Production Volume</h4>
-                <p>Volume directly affects <strong>tooling amortisation per unit</strong>. A Full-Range basket tool costing $50,000 amortises to $0.23/unit at 213,000 annual pieces, but $5.00/unit at 10,000. Set volume to your platform programme's target annual build rate.</p>
-                <div class="step-tip">💡 Presets (50k, 100k, 213k, 500k, 1M) cover typical automotive tiers. Premium platforms typically run 100k–250k/year. Volume above 500k triggers shared-die economics not currently modelled.</div>
+                <h4>Pick the system type</h4>
+                <p>Top of the left panel: <strong>System Type</strong>. This is the biggest cost decision — it sets how many speakers, whether there is an external amplifier, DSP, A2B digital bus, and (for 4D) seat shakers. The five tiers are explained in the next section.</p>
+                <div class="step-tip">💡 Watch the SUV map when you change tier — speaker dots appear at their real car positions, and the tile ladder runs $42 → $118 → $171 → $269 → $320.</div>
               </div>
             </div>
             <div class="step-card">
               <div class="step-num">3</div>
               <div class="step-body">
-                <h4>Select System Tier</h4>
-                <p>Choose the OEM system architecture: <strong>Standard</strong> (6 spk passive), <strong>Enhanced</strong> (8 spk + amp + DSP), <strong>Premium</strong> (13 spk flagship), <strong>Immersive 3D</strong> (20 spk spatial audio), or <strong>Immersive 4D</strong> (24 spk + haptic seat actuators). Each pre-configures the driver count, placement, amplifier, DSP, and wiring harness.</p>
-                <div class="step-warn">⚠ The system architecture determines which driver types are included. You can customise individual driver materials but not add/remove driver positions in this version.</div>
+                <h4>Pick where it will be built</h4>
+                <p><strong>Manufacturing Country</strong> — 22 real choices, each labelled with who actually builds there (e.g. <em>Vietnam — Foster/Bac Ninh</em>, <em>Brazil — Harman/JBL Selenium</em>). Picking a country swaps in that country's actual labour rates, electricity price and machine-hour costs — it is not a percentage uplift.</p>
+                <div class="step-warn">⚠ Cost a system where it will really be built, not where your company is. A Premium system is $171 built in China and $294 built in Germany — same parts, different factory economics.</div>
               </div>
             </div>
             <div class="step-card">
               <div class="step-num">4</div>
               <div class="step-body">
-                <h4>Configure Magnet Type</h4>
-                <p>The magnet is typically the <strong>single largest cost item</strong> (30–45% of BOM). Options: <strong>NdFeB Sintered</strong> ($62/kg — highest performance, largest cost), <strong>Ferrite</strong> ($1.30/kg — lowest cost, heavier, lower flux), <strong>SmCo</strong> ($95/kg — ultra high-temp, aerospace), <strong>Bonded NdFeB</strong> ($30/kg — complex shapes), <strong>Recycled NdFeB</strong> ($55/kg — sustainability use case).</p>
-                <div class="step-tip">💡 NdFeB is standard for all premium automotive. Ferrite is acceptable only for rear-fill speakers where packaging weight and cost matter more than performance.</div>
+                <h4>Set the annual volume</h4>
+                <p>The <strong>Annual Volume</strong> slider (1k–500k vehicles/year) mainly changes how tooling cost is spread: one tool set per speaker type, amortised over 4 years of production. Low volume = each unit carries more tooling.</p>
+                <div class="step-tip">💡 Get this from the vehicle programme team. 50k is a typical single-model volume; 150–250k a shared platform.</div>
               </div>
             </div>
             <div class="step-card">
               <div class="step-num">5</div>
               <div class="step-body">
-                <h4>Select Basket / Frame Material</h4>
-                <p><strong>Die-cast aluminium</strong> ($3.50/kg) is the premium choice — light, rigid, excellent heat dissipation from voice coil via the basket structure. <strong>Stamped steel</strong> ($0.62/kg) is cost-optimised for non-critical positions. <strong>Injection PP</strong> ($1.45/kg) suits door-mounted speakers with vibration isolation requirements.</p>
-                <div class="step-tip">💡 For flagship (Premium / Immersive) systems, die-cast Al is expected by most OEMs. Using stamped steel in a premium quotation will be challenged in design review.</div>
+                <h4>Review the material choices (defaults are correct)</h4>
+                <p>Magnet, cone, surround, frame, voice-coil wire, former, impedance. <strong>The defaults are the automotive mainstream</strong> (NdFeB N38H magnet, PP cone, rubber surround, die-cast Al frame, OFC copper wire, Kapton former, 4 Ω) — leave them unless you are modelling a specific design. Each dropdown is explained in the Material Grades section of this About page.</p>
+                <div class="step-tip">💡 Every choice re-prices instantly, so the fastest way to learn is to flip one and watch DM% and the BOM tab move.</div>
               </div>
             </div>
             <div class="step-card">
               <div class="step-num">6</div>
               <div class="step-body">
-                <h4>Select Voice Coil Wire Material</h4>
-                <p>Wire material sets resistance, weight, and thermal budget. <strong>OFC Copper</strong> ($16/kg) — lowest DCR, best power handling, premium. <strong>CCA (Copper-Clad Aluminium)</strong> ($8/kg) — 10% Cu shell on 90% Al core; lighter and cheaper at marginal conductivity penalty. <strong>CCAW</strong> ($7/kg) — self-bonding CCA used in fine-gauge coils. <strong>Flat Copper</strong> ($17/kg) — edge-wound coils for maximum fill factor in high-power subwoofers.</p>
+                <h4>Tick technology features (if the spec has them)</h4>
+                <p>ANC, DSP, sound zones, voice pickup, 4D haptics, A2B bus, GaN amp, neural DSP, OTA calibration, head tracking and more — each adds its real component cost to the system. Leave all unticked for a base costing.</p>
               </div>
             </div>
             <div class="step-card">
               <div class="step-num">7</div>
               <div class="step-body">
-                <h4>Choose Cone Material</h4>
-                <p>Cone material determines frequency response character, mass, and stiffness. <strong>Paper</strong> ($0.75/kg) — best internal damping, lightest, OEM standard. <strong>PP</strong> ($1.38/kg) — moisture-resistant, consistent, suitable for door locations. <strong>Composite CF/GF</strong> ($3.20/kg) — high stiffness for extended HF. <strong>Carbon Fibre</strong> ($34/kg) — ultra-premium, used in flagship tweets. <strong>Kevlar</strong> ($22/kg) — unique damping character, Dynaudio/Focal signature.</p>
+                <h4>Set the commercial lens</h4>
+                <p><strong>Freight</strong> (Domestic / Regional / International), <strong>Import Duty</strong> and <strong>Margin</strong> decide what question you are answering. Defaults (Regional, 5% duty, 8% margin) answer <em>"what should we pay a Tier-1, delivered?"</em></p>
+                <div class="step-warn">⚠ Comparing against a supplier's factory-gate (EXW) quote? Set margin 0%, duty 0% and read the <strong>Works Cost</strong> line in the cost build-up, not the Delivered Total.</div>
               </div>
             </div>
             <div class="step-card">
               <div class="step-num">8</div>
               <div class="step-body">
-                <h4>Choose Surround Material</h4>
-                <p>The surround sets Xmax, Qms, and long-term reliability. <strong>Rubber (NBR)</strong> ($1.85/kg) — durable, UV-stable, used in door woofers. <strong>PU Foam</strong> ($0.90/kg) — low mass, good Qts control; ageing is the key risk in high-humidity environments. <strong>Cloth</strong> ($2.50/kg) — used in tweeters and some mid-ranges. <strong>Santoprene</strong> ($4.00/kg) — thermoplastic elastomer, consistent moulding, excellent -40°C performance.</p>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">9</div>
-              <div class="step-body">
-                <h4>Select Voice Coil Former</h4>
-                <p>The former sets thermal management and HF extension. <strong>Aluminium former</strong> ($3.70/kg) — conducts heat from coil to gap; preferred for power-handling. <strong>Kapton (Polyimide)</strong> ($9.50/kg) — ultra-thin wall, light, extends HF. <strong>Nomex</strong> ($18/kg) — Aramid paper, high-temp subwoofer use. <strong>Paper former</strong> ($0.90/kg) — lowest mass, suitable for low-power applications.</p>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">10</div>
-              <div class="step-body">
-                <h4>Add Technology Features</h4>
-                <p>Optional system-level features add cost as fixed amounts to the system total. Each feature has been costed at China EXW: <strong>ANC</strong> (+$14) adds microphone array and DSP algorithm licence cost. <strong>4D Haptics</strong> (+$48) adds seat actuator controllers. <strong>Neural DSP</strong> (+$45) adds AI-audio processor cost. Multiple features can be combined.</p>
-                <div class="step-tip">💡 Technology features are modelled as add-on system costs. They do not currently affect individual speaker-level BOM — future versions will integrate microphone cost into the per-speaker BOM.</div>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">11</div>
-              <div class="step-body">
-                <h4>Set Commercial Parameters</h4>
-                <p><strong>Target Margin %</strong> — applied to total landed cost. Set to 0% for pure EXW should-cost (no margin). Set to 15–25% for Tier-1 supplier sell price estimate. <strong>Freight Mode</strong> — Domestic (within China, $0.28/unit base), Regional (Asia, $0.80), International ($2.50). <strong>Import Duty</strong> — enter duty rate for destination country. UK: 3.5–6.5% on speakers; EU: 4.2–6.5%. Set 0% for EXW baseline.</p>
-                <div class="step-warn">⚠ Setting margin &gt; 0% converts EXW cost to Tier-1 sell price. Keep at 0% when benchmarking pure factory-gate should-cost against supplier quotes.</div>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">12</div>
-              <div class="step-body">
-                <h4>Click Calculate</h4>
-                <p>The engine runs all 14 manufacturing process steps across each driver type, scales by size, applies country multipliers, amortises tooling, adds system-level costs, then sums to a total. Calculation is instantaneous (all in-browser, no server call). Results populate across 9 tabs simultaneously.</p>
-                <div class="step-tip">💡 You can use Quick Preset buttons (Standard / Enhanced / Premium) to load pre-configured scenarios instantly, then tweak individual parameters.</div>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">13</div>
-              <div class="step-body">
-                <h4>Reading the System Overview Tab</h4>
-                <p>The overview shows: <strong>top 5 metric KPIs</strong> (EXW total, speaker count, DM%, CO₂, margin), a <strong>per-driver breakdown table</strong> (DM, Labour, Mach, Unit works, Total), a <strong>cost waterfall bar chart</strong>, and <strong>system-level add-ons</strong> (amp, DSP, wiring, connectors). The waterfall shows how each cost layer builds to the total.</p>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">14</div>
-              <div class="step-body">
-                <h4>Analysing the Full BOM</h4>
-                <p>The BOM tab shows every material line item per driver type: material key, mass in grams, cost per driver, cost per system (qty × unit). RoHS / REACH / VOC compliance flags are shown per material. Useful for: confirming commodity exposure, identifying highest-cost materials, flagging compliance risks early.</p>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">15</div>
-              <div class="step-body">
-                <h4>Benchmarking Tab</h4>
-                <p>Compares your system's EXW China cost against 10 reference systems (Bose, Harman Kardon, B&amp;O, Burmester, etc.). Reference <code>est_cost</code> values are EXW China factory-gate estimates derived from public teardown data and analyst sources — calibrated Jun 2026. The delta column shows your cost advantage or premium vs each benchmark.</p>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">16</div>
-              <div class="step-body">
-                <h4>Scenario Compare</h4>
-                <p>Save current result as Scenario A, reconfigure inputs, run again, then save as Scenario B. The Compare tab produces a side-by-side delta table across all cost lines (DM, Labour, Machine, FOH, G&amp;A, Tooling, Warranty, Amp, DSP, Wiring) plus a visual bar chart. Ideal for presenting NdFeB-vs-Ferrite trade-offs or Premium-vs-Enhanced system business cases.</p>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">17</div>
-              <div class="step-body">
-                <h4>AI Insights Tab</h4>
-                <p>Triggers a call to the Claude AI model. The AI receives your full cost result and generates: executive summary, top 3 cost drivers, material substitution opportunities, process efficiency recommendations, and market context from current automotive audio trends. Requires an Anthropic API key (configured via the API Key button in the header).</p>
-                <div class="step-tip">💡 AI insights are regenerated each time you run a new calculation with different inputs. The stream is abortable — clicking Calculate again cancels any in-progress generation.</div>
-              </div>
-            </div>
-            <div class="step-card">
-              <div class="step-num">18</div>
-              <div class="step-body">
-                <h4>Export to PowerPoint</h4>
-                <p>The Export PPT button (header) generates a boardroom-quality slide deck: cover slide, executive summary KPIs, per-driver BOM table, cost waterfall, benchmarking table, sustainability score, and process routing. Uses PptxGenJS — all in-browser, no server dependency. Download is automatic on click.</p>
+                <h4>Calculate and read the answer</h4>
+                <p>Press <strong>▶ Calculate Full Should-Cost</strong> (the tool also re-prices live as you change inputs). Read the five tiles, then scroll the Overview: per-speaker table, cost build-up from works cost to delivered total, and system electronics lines (amp, wiring, connectors).</p>
+                <div class="step-tip">💡 A result you can't explain isn't a result. Click <strong>Σ trace</strong> next to any driver before you present the number — step 2 of the next section shows what you'll see.</div>
               </div>
             </div>
           </div>
 
-          <!-- Tips box -->
-          <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:18px 22px;margin-top:4px">
-            <div style="font-size:12px;font-weight:700;color:var(--green2);margin-bottom:10px;letter-spacing:.3px">PRO TIPS FOR ACCURATE SHOULD-COSTING</div>
+          <!-- ── The five system tiers ── -->
+          <div style="font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;margin:22px 0 14px;display:flex;align-items:center;gap:8px">The Five System Tiers — What You Are Actually Buying<span style="flex:1;height:1px;background:linear-gradient(to right,rgba(34,211,238,0.3),transparent);display:block"></span></div>
+          <div style="background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:6px 0;margin-bottom:10px;overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:11.5px">
+              <thead><tr style="color:var(--t3);text-transform:uppercase;font-size:10px;letter-spacing:.5px">
+                <th style="text-align:left;padding:8px 14px">Tier</th><th style="text-align:left;padding:8px 10px">What it is</th><th style="text-align:left;padding:8px 10px">Electronics</th><th style="text-align:right;padding:8px 14px">Delivered, China, defaults</th>
+              </tr></thead>
+              <tbody style="color:var(--t2)">
+                <tr style="border-top:1px solid var(--bd)"><td style="padding:8px 14px"><strong style="color:var(--t1)">Standard</strong> (6 spk)</td><td style="padding:8px 10px">2 front + 2 rear coaxials, 2 dash tweeters — the base-car radio sound</td><td style="padding:8px 10px">Head-unit amplified — no external amp</td><td style="padding:8px 14px;text-align:right;color:var(--green2);font-weight:700">$42.02</td></tr>
+                <tr style="border-top:1px solid var(--bd)"><td style="padding:8px 14px"><strong style="color:var(--t1)">Enhanced</strong> (8 spk)</td><td style="padding:8px 10px">Separates up front, centre speaker, boot subwoofer</td><td style="padding:8px 10px">4-ch Class-D amp + DSP ($39 of the total)</td><td style="padding:8px 14px;text-align:right;color:var(--green2);font-weight:700">$118.50</td></tr>
+                <tr style="border-top:1px solid var(--bd)"><td style="padding:8px 14px"><strong style="color:var(--t1)">Premium</strong> (12 spk)</td><td style="padding:8px 10px">Branded-audio territory (Harman Kardon class): 3-way front stage, centre, sub</td><td style="padding:8px 10px">8-ch amp + DSP ($61)</td><td style="padding:8px 14px;text-align:right;color:var(--green2);font-weight:700">$171.10</td></tr>
+                <tr style="border-top:1px solid var(--bd)"><td style="padding:8px 14px"><strong style="color:var(--t1)">Immersive 3D</strong> (22 spk)</td><td style="padding:8px 10px">Adds height: A-pillar + roof speakers, headrest tweeters — Atmos-style overhead sound</td><td style="padding:8px 10px">16-ch amp, DSP + <strong>A2B digital bus</strong> (saves ~45% cable)</td><td style="padding:8px 14px;text-align:right;color:var(--green2);font-weight:700">$269.47</td></tr>
+                <tr style="border-top:1px solid var(--bd)"><td style="padding:8px 14px"><strong style="color:var(--t1)">Immersive 4D</strong> (26 spk)</td><td style="padding:8px 10px">3D plus <strong>4 seat actuators</strong> (exciters that shake the seat with the bass — the "4th dimension" you feel)</td><td style="padding:8px 10px">18-ch amp, DSP, A2B ($115)</td><td style="padding:8px 14px;text-align:right;color:var(--green2);font-weight:700">$319.78</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:11px;color:var(--t3);margin-bottom:22px">Totals above are the live engine at all-default settings (China, 50k/yr, Luxury class, Regional freight, 5% duty, 8% margin) — your screen will match them exactly. Where the cost jumps come from: Standard→Enhanced adds the amplifier and subwoofer; Premium→3D nearly doubles electronics (16-ch amp + A2B) and adds 10 speakers; 3D→4D adds four $3.04 actuators plus two more channels.</p>
+
+          <!-- ── Costing one speaker ── -->
+          <div style="font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;display:flex;align-items:center;gap:8px">Costing a Single Speaker (Any Type)<span style="flex:1;height:1px;background:linear-gradient(to right,rgba(34,211,238,0.3),transparent);display:block"></span></div>
+          <div class="steps-grid">
+            <div class="step-card">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <h4>Find it in the per-speaker table</h4>
+                <p>Every system is built from individual drivers, each priced separately in the Overview table: e.g. in the Standard system, the 165 mm coaxial front woofer is <strong>$5.72/unit</strong>, the 25 mm dash tweeter <strong>$2.37/unit</strong>, complete works cost. Pick the system tier that contains the speaker type you need — a subwoofer lives in Enhanced and up, seat actuators only in Immersive 4D.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <h4>Open its Σ trace — the whole calculation, live</h4>
+                <p>Click <strong>Σ trace</strong> on the row. You get the full arithmetic: every BOM line as <em>grams × $/kg × scrap</em> (the coax magnet reads <code>28.00g × $38.00/kg × 1.02 scrap = $1.085</code>), every process step as <em>minutes × machine rate + crew × labour rate</em>, then overheads, tooling and the roll-up. This is the page to screenshot into a supplier negotiation.</p>
+                <div class="step-tip">💡 Press <kbd>Esc</kbd> to close. Amp costs have their own trace on the electronics line.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <h4>See what you are pricing</h4>
+                <p>In <strong>Driver Anatomy</strong>, click the speaker-type chip (Full-Range, Mid-Range, Tweeter, Subwoofer, Coaxial, Actuator) and flip <strong>2D → 3D → Exploded</strong>. The exploded 3D labels every sub-assembly — gasket, surround, cone, basket, spider, voice coil, motor stack — which are exactly the BOM groups in the Σ trace. New grads: spend five minutes here; the cost model makes sense once you can see the part.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <h4>Tune its materials and re-read</h4>
+                <p>Material dropdowns apply to the drivers in the system — upgrade the cone to Kevlar or the magnet to N52 and watch the per-unit cost and the Physics tab (sensitivity, Fs, SPL) respond. The Physics tab warns you if a combination is acoustically incoherent.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Prove it ── -->
+          <div style="font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;margin:22px 0 14px;display:flex;align-items:center;gap:8px">Before You Present: Prove the Number<span style="flex:1;height:1px;background:linear-gradient(to right,rgba(34,211,238,0.3),transparent);display:block"></span></div>
+          <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:18px 22px;margin-bottom:22px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11.5px;color:var(--t2)">
+              <div>✦ <strong>Benchmarking tab</strong> — your works cost against 10 real systems (Bose, Harman Kardon, B&amp;O, Burmester, CN-EV 4D…). A Standard system beating 10/10 is expected; a 4D system beats ~4/10 because the benchmarks include budget systems. You want to land <em>inside the corridor</em> of comparable tiers, not win every row.</div>
+              <div>✦ <strong>Σ trace</strong> — open it for the most expensive driver and the amp. If you can read each line aloud and it makes sense, the number is defendable.</div>
+              <div>✦ <strong>Data &amp; Sources tab</strong> — every rate the engine used right now, with source, date and a HIGH/MED/LOW confidence badge. Items marked EST are engineering estimates, labelled as such — nothing in this tool pretends to be sourced data unless it is.</div>
+              <div>✦ <strong>Sanity rule</strong> — a Chinese ODM's customer price ÷ 1.11 ≈ factory cost (GGEC reports ~11% gross margin). If a quote is far above your should-cost + reasonable margin, you have found your negotiation.</div>
+              <div>✦ <strong>Compare tab</strong> — save your baseline as Scenario A, change one thing (country, magnet, tier), save as B. The delta table shows exactly which cost lines moved and by how much. This is the strongest slide you can make.</div>
+              <div>✦ <strong>Export</strong> — PDF / PPT buttons (top right) generate the deck: KPIs, BOM, waterfall, benchmarks. Switch currency first if the audience thinks in €, ₹ or ¥.</div>
+            </div>
+          </div>
+
+          <!-- ── Glossary ── -->
+          <div style="font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;display:flex;align-items:center;gap:8px">Plain-Language Glossary<span style="flex:1;height:1px;background:linear-gradient(to right,rgba(34,211,238,0.3),transparent);display:block"></span></div>
+          <div style="background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:16px 22px;margin-bottom:22px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 24px;font-size:11.5px;color:var(--t2)">
+              <div><strong>Works cost (EXW)</strong> — everything it costs to make it and hand it over at the factory gate. No freight, duty or profit.</div>
+              <div><strong>Delivered total</strong> — works cost + freight + duty + supplier margin: what the car maker actually pays.</div>
+              <div><strong>DM (Direct Material)</strong> — the purchased materials and parts. DM% = material share of total; high DM% (Standard ≈ 32%) means a materials-driven product, low (Premium ≈ 16%) means electronics and conversion dominate.</div>
+              <div><strong>Conversion</strong> — direct labour + machine time: the cost of turning materials into product.</div>
+              <div><strong>FOH / G&amp;A</strong> — factory overhead (supervision, maintenance, space) and general &amp; administration, loaded as percentages per Tier-1 convention.</div>
+              <div><strong>Tooling amortisation</strong> — moulds, dies and fixtures bought up front, spread over 4 years of volume.</div>
+              <div><strong>Driver</strong> — one speaker unit. <strong>Coaxial</strong> — woofer with a tweeter mounted in its centre (2-in-1). <strong>Exciter / actuator</strong> — a speaker with no cone that shakes the surface it is bolted to (here: the seat).</div>
+              <div><strong>DSP</strong> — digital sound processor (tuning chip). <strong>A2B</strong> — a 2-wire digital audio bus that replaces big analog cable bundles. <strong>ANC</strong> — active noise cancellation.</div>
+              <div><strong>NdFeB (N38H…)</strong> — neodymium magnet grades; higher number = stronger = dearer. N38H is the automotive workhorse. <strong>Ferrite</strong> — the cheap, heavy alternative.</div>
+              <div><strong>Scrap</strong> — material lost in production, costed as a small multiplier (×1.02 = 2% loss).</div>
+            </div>
+          </div>
+
+          <!-- ── Common mistakes ── -->
+          <div style="background:rgba(255,92,92,0.06);border:1px solid rgba(255,92,92,0.22);border-radius:12px;padding:18px 22px;margin-top:4px">
+            <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:10px;letter-spacing:.3px">FIVE MISTAKES EVERY NEW GRAD MAKES ONCE</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-              <div style="font-size:11.5px;color:var(--t2)">✦ Always set <strong>Margin = 0%</strong> and <strong>Duty = 0%</strong> when comparing to a pure factory-gate supplier quote</div>
-              <div style="font-size:11.5px;color:var(--t2)">✦ Use <strong>China (Coastal)</strong> for Guangzhou/Shenzhen suppliers — slightly higher labour rate than generic China</div>
-              <div style="font-size:11.5px;color:var(--t2)">✦ NdFeB price is highly volatile — check SHFE NdPr price weekly and recalibrate if &gt;5% movement</div>
-              <div style="font-size:11.5px;color:var(--t2)">✦ <strong>Tooling amortisation</strong> is the largest variable at low volume — always validate annual build rate with programme team</div>
-              <div style="font-size:11.5px;color:var(--t2)">✦ <strong>Save Scenario A</strong> before changing any input so you can always compare back to your baseline</div>
-              <div style="font-size:11.5px;color:var(--t2)">✦ The Physics tab validates your material selections are acoustically coherent — check it before sending to suppliers</div>
+              <div style="font-size:11.5px;color:var(--t2)">1️⃣ Comparing the <strong>Delivered Total</strong> against an <strong>EXW quote</strong>. Different questions — set margin and duty to 0% and use Works Cost for factory-gate comparisons.</div>
+              <div style="font-size:11.5px;color:var(--t2)">2️⃣ Costing in the wrong country. The question is where the <em>supplier's plant</em> is, not where your office is.</div>
+              <div style="font-size:11.5px;color:var(--t2)">3️⃣ Gold-plating materials "to be safe". Kevlar cones and N52 magnets belong in flagship systems only; the defaults are what real teardowns show.</div>
+              <div style="font-size:11.5px;color:var(--t2)">4️⃣ Ignoring volume. At 10k/yr tooling can dominate a driver's cost; at 250k it nearly vanishes. Always confirm the programme volume.</div>
+              <div style="font-size:11.5px;color:var(--t2)">5️⃣ Presenting a number without opening its Σ trace. The first question will be "how did you get this?" — the trace <em>is</em> the answer.</div>
             </div>
           </div>
         </div>
@@ -1902,11 +1924,11 @@ scrap    per step = (machCost + labCost) × scrap_rate</div>
     <!-- Brand column -->
     <div class="footer-brand">
       <div class="footer-brand-name">360° Speaker Should-Cost Engine</div>
-      <div class="footer-brand-tagline">Factory-gate cost intelligence for automotive audio systems. Calibrated to live SHFE/SMM commodity data, authentic Chinese manufacturing economics, and 19-step teardown-grade process engineering.</div>
+      <div class="footer-brand-tagline">Bottom-up cost intelligence for automotive audio systems. Calibrated to live SHFE/SMM commodity data, actual labour &amp; energy rate cards for 22 manufacturing countries, and teardown-grade process engineering.</div>
       <div class="footer-brand-badges">
         <span class="footer-pill">v3.0</span>
-        <span class="footer-pill">EXW China</span>
-        <span class="footer-pill">SHFE Jun 2026</span>
+        <span class="footer-pill">22 Countries</span>
+        <span class="footer-pill">SMM/SHFE Oct 2026</span>
         <span class="footer-pill">Tier-1/2 Model</span>
       </div>
     </div>
@@ -1930,7 +1952,7 @@ scrap    per step = (machCost + labCost) × scrap_rate</div>
         <li><button onclick="showTab('about');setTimeout(function(){showAbout('howto',document.querySelectorAll('.about-nav-btn')[0])},50)"><span class="fl-icon">▶</span>How to Use</button></li>
         <li><button onclick="showTab('about');setTimeout(function(){showAbout('techref',document.querySelectorAll('.about-nav-btn')[1])},50)"><span class="fl-icon">⚙</span>Technical Reference</button></li>
         <li><button onclick="showTab('about');setTimeout(function(){showAbout('grades',document.querySelectorAll('.about-nav-btn')[2])},50)"><span class="fl-icon">🔬</span>Material Grades Guide</button></li>
-        <li><button onclick="showTab('process')"><span class="fl-icon">🏭</span>14-Step Process Model</button></li>
+        <li><button onclick="showTab('process')"><span class="fl-icon">🏭</span>19-Step Process Model</button></li>
         <li><button onclick="showTab('sustain')"><span class="fl-icon">🌱</span>Sustainability &amp; CO₂</button></li>
       </ul>
     </div>
@@ -1969,7 +1991,7 @@ scrap    per step = (machCost + labCost) × scrap_rate</div>
     </div>
     <div class="footer-meta">
       <span class="footer-meta-item"><span class="dot"></span>Engine v3.0 · rates Oct-2026</span>
-      <span class="footer-meta-item"><span class="dot"></span>Data: Jun 2026</span>
+      <span class="footer-meta-item"><span class="dot"></span>Data: Oct 2026</span>
       <span class="footer-meta-item"><span class="dot"></span>FX: ¥7.25/USD · £0.787/USD</span>
       <span class="footer-meta-item"><span class="dot"></span>19 process steps · 45+ materials</span>
     </div>
