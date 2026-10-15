@@ -548,6 +548,7 @@ tr:last-child td{border-bottom:none}
 .effort-med{background:rgba(245,158,11,0.14);color:var(--amber);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
 .effort-high{background:rgba(239,68,68,0.14);color:var(--red);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
 canvas{max-height:260px}
+#anatBody canvas{max-height:none;max-width:none}
 
 /* ════════════════════════════════════════════════════════════════
    AI INSIGHTS
@@ -1069,18 +1070,23 @@ html[data-theme="light"] .brand-version{
             <option value="China (Inland)">China — Inland</option>
             <option value="Vietnam">Vietnam (Foster speaker hub)</option>
             <option value="India">India (Harman Pune)</option>
-            <option value="Thailand">Thailand (Tohoku Pioneer)</option>
+            <option value="Thailand">Thailand (SVI, ex-Pioneer)</option>
             <option value="Malaysia">Malaysia</option>
             <option value="Indonesia">Indonesia (JVCKenwood)</option>
             <option value="Mexico">Mexico (Harman Juárez)</option>
-            <option value="Hungary">Hungary (Harman Pécs)</option>
+            <option value="Hungary">Hungary (Faital)</option>
             <option value="Czechia">Czechia (Panasonic A/V)</option>
             <option value="Eastern Europe">Eastern Europe (RO/PL)</option>
             <option value="Germany">Germany</option>
             <option value="UK">UK</option>
             <option value="USA">USA</option>
             <option value="Japan">Japan (Pioneer Tendo)</option>
-            <option value="South Korea">South Korea (Daeheung)</option>
+            <option value="South Korea">South Korea (ESTec)</option>
+            <option value="Italy">Italy (ASK · Faital)</option>
+            <option value="Belgium">Belgium (PSS / AAC)</option>
+            <option value="Denmark">Denmark (Dynaudio→VW)</option>
+            <option value="Poland">Poland (ASK)</option>
+            <option value="Brazil">Brazil (Harman/JBL Selenium)</option>
           </select>
         </div>
         <div class="form-row">
@@ -2196,6 +2202,8 @@ var SRC={
   eia:{s:'US EIA industrial average',d:'2025',c:'high'},
   jp_wage:{s:'JP operator wage + SI ~16% (FX-depressed)',d:'2025',c:'low'},
   moel:{s:'Korea MOEL mfg wage, operator-adjusted',d:'2025',c:'med'},
+  caged:{s:'Brazil Novo CAGED operator wage + 85% social burden',d:'2025-26',c:'med'},
+  uplift:{s:'Duty evidence (BCD/ACFTA/IMMEX/TARIC) + freight estimate',d:'2026-10',c:'low'},
   usim:{s:'US published IM rates $30-150/hr tiered — validates derivation',d:'2025',c:'med'},
   est:{s:'Engineering estimate (no published source found)',d:'2026-10',c:'low'}
 };
@@ -2243,7 +2251,24 @@ var RATECARDS={
   'UK':              {labour:{op:20.0,tech:30.0,qc:22.0},elec:0.340, src:{lab:'ons',elec:'gpp'}},
   'USA':             {labour:{op:42.6,tech:54.0,qc:44.0},elec:0.086, src:{lab:'bls',elec:'eia'}},
   'Japan':           {labour:{op:14.0,tech:20.0,qc:15.0},elec:0.190, src:{lab:'jp_wage',elec:'gpp'}},
-  'South Korea':     {labour:{op:16.0,tech:23.0,qc:17.5},elec:0.118, src:{lab:'moel',elec:'gpp'}}
+  'South Korea':     {labour:{op:16.0,tech:23.0,qc:17.5},elec:0.118, src:{lab:'moel',elec:'gpp'}},
+  'Italy':           {labour:{op:31.2,tech:38.0,qc:33.0},elec:0.261, src:{lab:'eurostat',elec:'eurostat'}},
+  'Belgium':         {labour:{op:48.0,tech:56.0,qc:50.0},elec:0.217, src:{lab:'eurostat',elec:'eurostat'}},
+  'Denmark':         {labour:{op:49.1,tech:57.0,qc:51.0},elec:0.138, src:{lab:'eurostat',elec:'eurostat'}},
+  'Poland':          {labour:{op:15.0,tech:21.0,qc:16.5},elec:0.271, src:{lab:'eurostat',elec:'eurostat'}},
+  'Brazil':          {labour:{op:4.0, tech:7.5, qc:4.6}, elec:0.120, src:{lab:'caged',elec:'gpp'}}
+};
+// Imported-material uplift (duty + freight) on China-centric parts (magnets,
+// VC wire, former films, ferrofluid). Per-material, not flat — see Data tab.
+// India ~7.5% BCD + freight (no domestic NdFeB until REPM ramps ~2027);
+// EU ~2.7% duty + long-haul; ACFTA countries freight-only; MX via IMMEX.
+var MAT_IMPORT_UPLIFT={
+  'China':0,'China (Coastal)':0,'China (Inland)':0,
+  'Vietnam':0.02,'Thailand':0.02,'Malaysia':0.025,'Indonesia':0.025,
+  'India':0.10,'Mexico':0.035,
+  'Hungary':0.05,'Czechia':0.05,'Eastern Europe':0.05,'Poland':0.05,
+  'Germany':0.05,'Italy':0.05,'Belgium':0.05,'Denmark':0.05,'UK':0.055,
+  'USA':0.04,'Japan':0.03,'South Korea':0.03,'Brazil':0.10
 };
 
 // Actual machine rate for any country, with provenance.
@@ -2277,7 +2302,12 @@ var COUNTRIES={
   'UK':              {cur:'GBP',sym:'£',  usd:1.33,  logI:1.15},
   'USA':             {cur:'USD',sym:'$',  usd:1.00,  logI:1.10},
   'Japan':           {cur:'JPY',sym:'¥',  usd:0.00633,logI:1.02},
-  'South Korea':     {cur:'KRW',sym:'₩',  usd:0.000745,logI:1.02}
+  'South Korea':     {cur:'KRW',sym:'₩',  usd:0.000745,logI:1.02},
+  'Italy':           {cur:'EUR',sym:'€',  usd:1.116, logI:1.10},
+  'Belgium':         {cur:'EUR',sym:'€',  usd:1.116, logI:1.08},
+  'Denmark':         {cur:'EUR',sym:'€',  usd:1.116, logI:1.10},
+  'Poland':          {cur:'PLN',sym:'zł', usd:0.256, logI:1.06},
+  'Brazil':          {cur:'BRL',sym:'R$', usd:0.198, logI:1.05}
 };
 
 // Teardown-grade routing on ACTUAL machine classes.
@@ -2603,11 +2633,13 @@ function computeBOM(inp,sizeScale){
 
   var magG     = magSpec.gFn(p) * pwrScale;
   var _ro      = _rateOverrides || {};
-  var magRate  = (_ro.mag  !== undefined) ? _ro.mag  : magSpec.m.usd;
+  // China-centric imported parts carry duty+freight uplift outside China
+  var impUp    = 1 + (MAT_IMPORT_UPLIFT[inp.country]||0);
+  var magRate  = ((_ro.mag  !== undefined) ? _ro.mag  : magSpec.m.usd) * impUp;
   var magCO2   = magSpec.m.co2;
   var vcG      = p.vc_g*vcScale*(1+Math.max(0,inp.power-50)*0.0012);
   var fmrG     = fmrSpec.gFn(p);
-  var fmrRate  = (_ro.fmr  !== undefined) ? _ro.fmr  : fmrSpec.m.usd;
+  var fmrRate  = ((_ro.fmr  !== undefined) ? _ro.fmr  : fmrSpec.m.usd) * (['kapton','nomex','ti_former'].indexOf(fmrSpec.key)>=0 ? impUp : 1);
   var fmrCO2   = fmrSpec.m.co2;
   var coneRate = (_ro.cone !== undefined) ? _ro.cone : coneSpec.m.usd;
   var coneCO2  = coneSpec.m.co2;
@@ -2617,7 +2649,7 @@ function computeBOM(inp,sizeScale){
   var baskG    = baskSpec.gFn(p);
   var baskRate = (_ro.bask !== undefined) ? _ro.bask : baskSpec.m.usd;
   var baskCO2  = baskSpec.m.co2;
-  var wireRate = (_ro.wire !== undefined) ? _ro.wire : wireSpec.m.usd;
+  var wireRate = ((_ro.wire !== undefined) ? _ro.wire : wireSpec.m.usd) * impUp;
   var wireCO2  = wireSpec.m.co2;
 
   var row=function(name,spec,cat,wt,rate,co2Rate,scr,flat,matKey){
@@ -2651,7 +2683,24 @@ function computeBOM(inp,sizeScale){
     row('Packaging Set','Carton + foam tray','Misc',0,0,0,0.00,p.pkg_usd)
   ];
   // Ferrofluid — near-universal in automotive dome tweeters (0.15g dose)
-  if(p.ferro){items.push(row('Ferrofluid','Gap damping/cooling fluid','Motor',0.15,MRATE.ferrofluid.usd,MRATE.ferrofluid.co2,0.02,0,'ferrofluid'));}
+  if(p.ferro){items.push(row('Ferrofluid','Ferrotec-type gap fluid','Motor',0.15,MRATE.ferrofluid.usd*impUp,MRATE.ferrofluid.co2,0.02,0,'ferrofluid'));}
+  // Teardown gap-audit additions (estimate basis, see Data & Sources):
+  var isDome = p.dcap_g<=0 && p.cone_g>0 && inp.type==='Tweeter';
+  if(inp.type==='Tweeter'){
+    items.push(row('Rear Chamber (damped cup)','Moulded cup + felt fill','Suspension',0,0,0,0,0.10));
+    items.push(row('Pole Damping Felt','Dense felt disc','Motor',0,0,0,0,0.015));
+  } else if(inp.type!=='Actuator'){
+    items.push(row('Pole Vent Dust Screen','Mesh disc + retainer','Motor',0,0,0,0,0.03));
+  }
+  if(inp.type==='Coaxial'){
+    items.push(row('Coax Tweeter Bridge/Post','Moulded post + hardware','Frame',0,0,0,0,0.12));
+  }
+  if(inp.type==='Subwoofer'){
+    items.push(row('Spider Spacer Ring','Pressed-paper ring (dual spider)','Suspension',0,0,0,0,0.03));
+  }
+  if(inp.type==='Mid-Range'){
+    items.push(row('Driver Mesh Grille','Perforated steel, press-fit','Frame',0,0,0,0,0.06));
+  }
   // Al shorting (Faraday) ring — standard on neo motors ≥100mm for distortion control
   var isNeo = magSpec.key && magSpec.key.indexOf('neo') === 0;
   if(isNeo && p.ring_g > 0){items.push(row('Shorting Ring (Faraday)','Al ring on pole','Motor',p.ring_g,MRATE.al_former.usd,MRATE.al_former.co2,0.02,0,'al_former'));}
@@ -3117,39 +3166,128 @@ function carMapSVG(systemKey){
 }
 
 // ═══════════════ 3D DRIVER VIEW (three.js inlined, offline-first) ═══════════
-var MAT_PROPS={'Aluminium Foil':{metal:0.9,rough:0.32},'Titanium':{metal:0.85,rough:0.4},
-  'Carbon Fibre':{metal:0.3,rough:0.45},'Kevlar':{metal:0.05,rough:0.6},'Paper':{metal:0,rough:0.85},
-  'Die-Cast Al':{metal:0.8,rough:0.42},'Stamped Steel':{metal:0.75,rough:0.5},'Die-Cast Zinc':{metal:0.8,rough:0.45},
-  'Magnesium Die-Cast':{metal:0.82,rough:0.4},'Silicone':{metal:0,rough:0.35}};
+// HD pass: ACES tone mapping, PMREM environment, soft shadows, procedural
+// textures (wound coil, aramid/CF weave, paper grain), half-roll surround,
+// tinsel leads, gasket screws, and projected part labels in exploded view.
+var MAT_PROPS={'Aluminium Foil':{metal:0.92,rough:0.28},'Titanium':{metal:0.88,rough:0.36},
+  'Carbon Fibre':{metal:0.35,rough:0.42},'Kevlar':{metal:0.05,rough:0.55},'Paper':{metal:0,rough:0.88},
+  'Wool-Blend Paper':{metal:0,rough:0.9},'Treated Paper':{metal:0,rough:0.82},
+  'Die-Cast Al':{metal:0.85,rough:0.38},'Stamped Steel':{metal:0.78,rough:0.46},'Die-Cast Zinc':{metal:0.82,rough:0.42},
+  'Magnesium Die-Cast':{metal:0.85,rough:0.36},'Silicone':{metal:0,rough:0.32}};
+var _texCache={};
+function _canvasTex(key,draw,w,h){
+  if(_texCache[key]) return _texCache[key];
+  var c=document.createElement('canvas'); c.width=w||256; c.height=h||256;
+  draw(c.getContext('2d'),c.width,c.height);
+  var t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  t.colorSpace=THREE.SRGBColorSpace;
+  _texCache[key]=t; return t;
+}
+function _weaveTex(col1,col2,key){
+  return _canvasTex(key,function(g,w,h){
+    g.fillStyle=col1; g.fillRect(0,0,w,h);
+    var n=8, cw=w/n;
+    for(var i=0;i<n;i++)for(var j=0;j<n;j++){
+      g.fillStyle=((i+j)%2===0)?col2:col1;
+      g.fillRect(i*cw,j*cw,cw,cw);
+      g.fillStyle='rgba(0,0,0,0.25)';
+      if((i+j)%2===0) g.fillRect(i*cw,j*cw,cw,cw*0.18);
+      else g.fillRect(i*cw,j*cw,cw*0.18,cw);
+    }
+  },128,128);
+}
+function _coilTex(){
+  return _canvasTex('coil',function(g,w,h){
+    g.fillStyle='#8a4f1d'; g.fillRect(0,0,w,h);
+    for(var y=0;y<h;y+=4){
+      var grd=g.createLinearGradient(0,y,0,y+4);
+      grd.addColorStop(0,'#6d3c13'); grd.addColorStop(0.45,'#d98e42'); grd.addColorStop(0.55,'#e8a45c'); grd.addColorStop(1,'#6d3c13');
+      g.fillStyle=grd; g.fillRect(0,y,w,4);
+    }
+  },64,256);
+}
+function _paperTex(){
+  return _canvasTex('paper',function(g,w,h){
+    g.fillStyle='#808080'; g.fillRect(0,0,w,h);
+    for(var i=0;i<2600;i++){
+      g.fillStyle='rgba('+(110+Math.random()*50|0)+','+(110+Math.random()*50|0)+','+(110+Math.random()*50|0)+',0.35)';
+      g.fillRect(Math.random()*w,Math.random()*h,1.6,1.6);
+    }
+  },128,128);
+}
 function _matFor(name, fallback){
   var col=(CONE_FILL[name]||SURR_FILL[name]||FRAME_FILL[name]||fallback||'#3b4a5c');
-  var pr=MAT_PROPS[name]||{metal:0.08,rough:0.72};
-  return new THREE.MeshStandardMaterial({color:new THREE.Color(col),metalness:pr.metal,roughness:pr.rough});
+  var pr=MAT_PROPS[name]||{metal:0.08,rough:0.7};
+  var m=new THREE.MeshPhysicalMaterial({color:new THREE.Color(col),metalness:pr.metal,roughness:pr.rough});
+  if(name==='Kevlar'){ m.map=_weaveTex('#8f741f','#d9b434','kev'); m.bumpMap=m.map; m.bumpScale=0.015; m.map.repeat.set(10,10); m.color.set('#caa42e'); }
+  if(name==='Carbon Fibre'||name==='Composite'){ m.map=_weaveTex('#15181d','#2e343c','cf'); m.bumpMap=m.map; m.bumpScale=0.012; m.map.repeat.set(12,12); m.color.set('#262b32'); }
+  if(name==='Glass-Fiber PP'){ m.map=_weaveTex('#3f4c45','#55655b','gf'); m.map.repeat.set(14,14); m.color.set('#4c5a52'); }
+  if(name==='Paper'||name==='Wool-Blend Paper'||name==='Treated Paper'){ m.bumpMap=_paperTex(); m.bumpScale=0.01; }
+  if(name==='Polypropylene'||name==='Mica-Filled PP'){ m.clearcoat=0.35; m.clearcoatRoughness=0.45; }
+  return m;
 }
 function initDriver3D(container, cfg){
   var W=container.clientWidth||600, H=container.clientHeight||380;
   var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  // position styles BEFORE setSize — setSize manages style width/height and
+  // a later cssText wipe would make the canvas lay out at buffer size (dpr x)
+  renderer.domElement.style.position='absolute';
+  renderer.domElement.style.left='0';
+  renderer.domElement.style.top='0';
+  renderer.domElement.style.borderRadius='10px';
   renderer.setSize(W,H);
-  renderer.domElement.style.cssText='position:absolute;inset:0;border-radius:10px';
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.12;
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
   var hoverEl=document.createElement('div');
-  hoverEl.style.cssText='position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--t2);pointer-events:none;font-weight:600';
+  hoverEl.style.cssText='position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--t2);pointer-events:none;font-weight:600;z-index:3';
   container.appendChild(hoverEl);
+  var labelLayer=document.createElement('div');
+  labelLayer.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2';
+  container.appendChild(labelLayer);
   var scene=new THREE.Scene();
-  var camera=new THREE.PerspectiveCamera(38,W/H,0.1,100);
+  var camera=new THREE.PerspectiveCamera(36,W/H,0.1,100);
   camera.position.set(0,0.95,3.5);
   camera.lookAt(0,-0.05,0);
-  scene.add(new THREE.HemisphereLight(0xaac8e8,0x0c1420,1.15));
-  var key=new THREE.DirectionalLight(0xffffff,1.4); key.position.set(2.4,3.2,2.2); scene.add(key);
-  var rim=new THREE.DirectionalLight(0x7fd4ff,0.45); rim.position.set(-2.5,1.2,-2.2); scene.add(rim);
+  // ── studio environment via PMREM (procedural softboxes) ──
+  try{
+    var pm=new THREE.PMREMGenerator(renderer);
+    var env=new THREE.Scene(); env.background=new THREE.Color(0x070b10);
+    function panel(wd,ht,x,y,z,c,i){
+      var mt=new THREE.MeshBasicMaterial({color:new THREE.Color(c).multiplyScalar(i)});
+      var mh=new THREE.Mesh(new THREE.PlaneGeometry(wd,ht),mt);
+      mh.position.set(x,y,z); mh.lookAt(0,0,0); env.add(mh);
+    }
+    panel(7,3.5,0,6,1,0xffffff,4.2);
+    panel(3,5,-6.5,2,2.5,0x9fc4ff,1.9);
+    panel(3,5,6.5,1.2,-2,0xffd9b0,1.5);
+    panel(9,3,0,-5,0,0x27313c,0.9);
+    scene.environment=pm.fromScene(env,0.045).texture;
+    pm.dispose();
+  }catch(e){}
+  scene.add(new THREE.HemisphereLight(0x9fc0e0,0x0a0f16,0.5));
+  var key=new THREE.DirectionalLight(0xffffff,1.25); key.position.set(2.6,3.6,2.4);
+  key.castShadow=true; key.shadow.mapSize.set(1024,1024);
+  key.shadow.camera.left=-2.2; key.shadow.camera.right=2.2; key.shadow.camera.top=2.2; key.shadow.camera.bottom=-2.2;
+  key.shadow.radius=4; key.shadow.bias=-0.0008;
+  scene.add(key);
+  var rim=new THREE.DirectionalLight(0x7fd4ff,0.3); rim.position.set(-2.5,1.2,-2.2); scene.add(rim);
+  // soft ground catcher
+  var ground=new THREE.Mesh(new THREE.PlaneGeometry(14,14),new THREE.ShadowMaterial({opacity:0.32}));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-1.45; ground.receiveShadow=true; scene.add(ground);
   var root=new THREE.Group(); scene.add(root);
   root.rotation.x=0.62;
-  var model=null, groups={}, exploded=false, exT=0, disposed=false;
-  function tag(mesh,name){ mesh.userData.part=name; return mesh; }
-  function lathe(pts,segs,mat){ return new THREE.Mesh(new THREE.LatheGeometry(pts.map(function(pt){return new THREE.Vector2(pt[0],pt[1]);}),segs||64),mat); }
+  var model=null, groups={}, labelAnchors=[], labelDivs={}, exploded=false, exT=0, disposed=false;
+  function tag(mesh,name){ mesh.userData.part=name; mesh.castShadow=true; return mesh; }
+  function lathe(pts,segs,mat){ return new THREE.Mesh(new THREE.LatheGeometry(pts.map(function(pt){return new THREE.Vector2(pt[0],pt[1]);}),segs||96),mat); }
+  function ring(r,tube,mat,rs,ts){ var m=new THREE.Mesh(new THREE.TorusGeometry(r,tube,ts||18,rs||96),mat); m.rotation.x=Math.PI/2; return m; }
   function build(cfg){
-    if(model){ root.remove(model); model.traverse(function(o){ if(o.geometry)o.geometry.dispose(); if(o.material&&o.material.dispose)o.material.dispose(); }); }
+    if(model){ root.remove(model); model.traverse(function(o){ if(o.geometry)o.geometry.dispose(); }); }
+    labelLayer.innerHTML=''; labelDivs={}; labelAnchors=[];
     model=new THREE.Group(); groups={};
     var isNeo=(cfg.magnet||'').indexOf('Neo')===0||(cfg.magnet||'').indexOf('NdFeB')===0;
     var t=cfg.type||'Full-Range';
@@ -3163,22 +3301,24 @@ function initDriver3D(container, cfg){
     var coneMat=_matFor(cfg.cone); coneMat.side=THREE.DoubleSide;
     var surrMat=_matFor(cfg.surround);
     var frameMat=_matFor(cfg.frame,'#5c6b7d');
-    var magMat=new THREE.MeshStandardMaterial({color:isNeo?0x3a4e78:0x565f69,metalness:0.55,roughness:0.5});
-    var steelMat=new THREE.MeshStandardMaterial({color:0x5a6673,metalness:0.8,roughness:0.42});
-    var cuMat=new THREE.MeshStandardMaterial({color:0xb87333,metalness:0.75,roughness:0.38,side:THREE.DoubleSide});
-    function G(key){ var g=new THREE.Group(); groups[key]=g; model.add(g); return g; }
+    var magMat=new THREE.MeshPhysicalMaterial({color:isNeo?0x41557f:0x59626c,metalness:0.6,roughness:0.42});
+    var steelMat=new THREE.MeshPhysicalMaterial({color:0x66727f,metalness:0.85,roughness:0.34});
+    var darkMat=new THREE.MeshPhysicalMaterial({color:0x14191f,metalness:0.2,roughness:0.6});
+    var coilMat=new THREE.MeshPhysicalMaterial({map:_coilTex(),color:0xffffff,metalness:0.65,roughness:0.35,side:THREE.DoubleSide});
+    coilMat.map.repeat.set(6,1);
+    function G(key,label){ var g=new THREE.Group(); groups[key]=g; model.add(g); if(label)labelAnchors.push({key:key,label:label}); return g; }
     if(P.exciter){
-      var g1=G('motor');
+      var g1=G('motor','Motor + moving mass');
       var plate=tag(new THREE.Mesh(new THREE.BoxGeometry(1.5,0.08,1.5),frameMat),'Mounting plate'); plate.geometry.translate(0,-0.2,0); g1.add(plate);
-      var mag=tag(new THREE.Mesh(new THREE.CylinderGeometry(isNeo?0.34:0.55,isNeo?0.34:0.55,0.3,48),magMat),(isNeo?'NdFeB':'Ferrite')+' motor + moving mass'); g1.add(mag);
-      var g2=G('springs');
+      var mag=tag(new THREE.Mesh(new THREE.CylinderGeometry(isNeo?0.34:0.55,isNeo?0.34:0.55,0.3,72),magMat),(isNeo?'NdFeB':'Ferrite')+' motor + moving mass'); g1.add(mag);
+      var g2=G('springs','Spring suspension');
       for(var i=0;i<3;i++){
         var a=i*2*Math.PI/3; var pts=[];
         for(var k=0;k<=40;k++){ var tt=k/40; pts.push(new THREE.Vector3(Math.cos(a)*(0.42+0.28*tt), -0.14+0.06*Math.sin(tt*Math.PI*4), Math.sin(a)*(0.42+0.28*tt))); }
-        g2.add(tag(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),40,0.022,8),steelMat),'Spring arm'));
+        g2.add(tag(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),48,0.022,10),steelMat),'Spring arm'));
       }
-      var g3=G('coil');
-      g3.add(tag(new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.2,40,1,true),cuMat),'Voice coil'));
+      var g3=G('coil','Voice coil');
+      g3.add(tag(new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.2,48,1,true),coilMat),'Voice coil'));
       g3.position.y=0.16;
       root.add(model); return;
     }
@@ -3186,62 +3326,100 @@ function initDriver3D(container, cfg){
     var magR=isNeo?mouthR*0.3:mouthR*0.62;
     var magH=isNeo?0.16:0.26;
     var y0=-depth-0.12;
-    var gm=G('motor');
-    var bp=tag(new THREE.Mesh(new THREE.CylinderGeometry(magR+0.07,magR+0.07,0.07,56),steelMat),'Back plate / yoke'); bp.position.y=y0-magH/2-0.035; gm.add(bp);
-    var mg=tag(new THREE.Mesh(new THREE.CylinderGeometry(magR,magR,magH,56),magMat),(isNeo?('NdFeB magnet — '+(cfg.magnet||'')):'Ferrite ring magnet')); mg.position.y=y0; gm.add(mg);
-    var tp=tag(new THREE.Mesh(new THREE.CylinderGeometry(magR+0.03,magR+0.03,0.055,56),steelMat),'Top plate (T-yoke)'); tp.position.y=y0+magH/2+0.027; gm.add(tp);
-    var pole=tag(new THREE.Mesh(new THREE.CylinderGeometry(neckR*0.66,neckR*0.66,magH+0.2,40),steelMat),'Pole piece'); pole.position.y=y0+0.05; gm.add(pole);
-    var gc=G('coil');
-    var former=tag(new THREE.Mesh(new THREE.CylinderGeometry(neckR*0.86,neckR*0.86,0.3,48,1,true),new THREE.MeshStandardMaterial({color:0xc9ad72,metalness:0.1,roughness:0.6,side:THREE.DoubleSide})),'Coil former'); former.position.y=y0+magH/2+0.1; gc.add(former);
-    var coil=tag(new THREE.Mesh(new THREE.CylinderGeometry(neckR*0.9,neckR*0.9,0.14,48,1,true),cuMat),'Voice coil winding'); coil.position.y=y0+magH/2+0.02; gc.add(coil);
+    // ── motor stack ──
+    var gm=G('motor','Motor stack');
+    var bp=tag(new THREE.Mesh(new THREE.CylinderGeometry(magR+0.07,magR+0.07,0.07,72),steelMat),'Back plate / yoke'); bp.position.y=y0-magH/2-0.035; gm.add(bp);
+    var bevel=tag(ring(magR+0.07,0.018,steelMat,72,10),'Back plate / yoke'); bevel.position.y=y0-magH/2; gm.add(bevel);
+    var vent=tag(new THREE.Mesh(new THREE.CylinderGeometry(neckR*0.3,neckR*0.3,0.075,32),darkMat),'Pole vent'); vent.position.y=y0-magH/2-0.035; gm.add(vent);
+    var mg=tag(new THREE.Mesh(new THREE.CylinderGeometry(magR,magR,magH,72),magMat),(isNeo?('NdFeB magnet — '+(cfg.magnet||'')):'Ferrite ring magnet')); mg.position.y=y0; gm.add(mg);
+    var tp=tag(new THREE.Mesh(new THREE.CylinderGeometry(magR+0.03,magR+0.03,0.055,72),steelMat),'Top plate (T-yoke)'); tp.position.y=y0+magH/2+0.027; gm.add(tp);
+    var tbev=tag(ring(magR+0.03,0.015,steelMat,72,10),'Top plate (T-yoke)'); tbev.position.y=y0+magH/2+0.055; gm.add(tbev);
+    var pole=tag(new THREE.Mesh(new THREE.CylinderGeometry(neckR*0.66,neckR*0.66,magH+0.2,48),steelMat),'Pole piece'); pole.position.y=y0+0.05; gm.add(pole);
+    // ── voice coil ──
+    var gc=G('coil','Voice coil + former');
+    var former=tag(new THREE.Mesh(new THREE.CylinderGeometry(neckR*0.86,neckR*0.86,0.3,64,1,true),new THREE.MeshPhysicalMaterial({color:0xc9ad72,metalness:0.1,roughness:0.55,side:THREE.DoubleSide})),'Coil former'); former.position.y=y0+magH/2+0.1; gc.add(former);
+    var coil=tag(new THREE.Mesh(new THREE.CylinderGeometry(neckR*0.9,neckR*0.9,0.14,64,1,true),coilMat),'Voice coil winding'); coil.position.y=y0+magH/2+0.02; gc.add(coil);
+    // ── spider ──
     if(!P.dome){
-      var gs=G('spider');
+      var gs=G('spider','Spider / damper');
       var spts=[]; var sr0=neckR*0.9, sr1=neckR*1.95;
-      for(var k2=0;k2<=24;k2++){ var tt2=k2/24; spts.push([sr0+(sr1-sr0)*tt2, 0.03*Math.sin(tt2*Math.PI*5)]); }
-      var spider=tag(lathe(spts,64,new THREE.MeshStandardMaterial({color:0xd1b06a,metalness:0,roughness:0.8,side:THREE.DoubleSide})),'Spider / damper');
+      for(var k2=0;k2<=30;k2++){ var tt2=k2/30; spts.push([sr0+(sr1-sr0)*tt2, 0.03*Math.sin(tt2*Math.PI*6)]); }
+      var spider=tag(lathe(spts,96,new THREE.MeshPhysicalMaterial({color:0xd1b06a,metalness:0,roughness:0.78,side:THREE.DoubleSide,bumpMap:_paperTex(),bumpScale:0.006})),'Spider / damper');
       spider.position.y=y0+magH/2+0.03; gs.add(spider);
     }
-    var gb=G('basket');
-    var topRing=tag(new THREE.Mesh(new THREE.TorusGeometry(mouthR+0.1,0.045,14,72),frameMat),(cfg.frame||'')+' basket'); topRing.rotation.x=Math.PI/2; topRing.position.y=0.02; gb.add(topRing);
-    var botRing=tag(new THREE.Mesh(new THREE.TorusGeometry(magR+0.12,0.035,12,56),frameMat),(cfg.frame||'')+' basket'); botRing.rotation.x=Math.PI/2; botRing.position.y=y0+magH/2+0.12; gb.add(botRing);
+    // ── basket ──
+    var gb=G('basket','Basket / frame');
+    var topRing=tag(ring(mouthR+0.1,0.045,frameMat),(cfg.frame||'')+' basket'); topRing.position.y=0.02; gb.add(topRing);
+    var midRing=tag(ring(mouthR*0.62+magR*0.38,0.028,frameMat,80,12),(cfg.frame||'')+' basket'); midRing.position.y=y0*0.45; gb.add(midRing);
+    var botRing=tag(ring(magR+0.12,0.035,frameMat,72,12),(cfg.frame||'')+' basket'); botRing.position.y=y0+magH/2+0.12; gb.add(botRing);
     var nStruts=P.beef?8:6;
     for(var si=0;si<nStruts;si++){
       var sa=si*2*Math.PI/nStruts;
       var x1=Math.cos(sa)*(magR+0.12), z1=Math.sin(sa)*(magR+0.12), yb=y0+magH/2+0.12;
       var x2=Math.cos(sa)*(mouthR+0.08), z2=Math.sin(sa)*(mouthR+0.08), yt=0.02;
       var dir=new THREE.Vector3(x2-x1,yt-yb,z2-z1); var len=dir.length();
-      var strut=tag(new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.05,len,10),frameMat),(cfg.frame||'')+' basket strut');
+      var geo=new THREE.CylinderGeometry(0.032,0.055,len,12); geo.scale(1.7,1,0.75);
+      var strut=tag(new THREE.Mesh(geo,frameMat),(cfg.frame||'')+' basket strut');
       strut.position.set((x1+x2)/2,(yb+yt)/2,(z1+z2)/2);
       strut.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.normalize());
       gb.add(strut);
     }
-    var term=tag(new THREE.Mesh(new THREE.BoxGeometry(0.16,0.1,0.07),new THREE.MeshStandardMaterial({color:0x101820,roughness:0.6})),'Terminal cups');
+    var term=tag(new THREE.Mesh(new THREE.BoxGeometry(0.17,0.1,0.08),darkMat),'Terminal cups');
     term.position.set(magR+0.26,y0+magH/2+0.02,0); gb.add(term);
-    if(P.dome){
-      var gd=G('cone');
-      var fp=tag(new THREE.Mesh(new THREE.CylinderGeometry(mouthR,mouthR,0.07,64),frameMat),'Faceplate'); fp.position.y=-0.02; gd.add(fp);
-      var dome=tag(new THREE.Mesh(new THREE.SphereGeometry(neckR*1.5,48,24,0,Math.PI*2,0,Math.PI/2.4),coneMat),(cfg.cone||'')+' dome diaphragm'); gd.add(dome);
-      var gsur=G('surround');
-      var sring=tag(new THREE.Mesh(new THREE.TorusGeometry(neckR*1.62,0.035,12,56),surrMat),'Ferrofluid-damped surround'); sring.rotation.x=Math.PI/2; sring.position.y=0.03; gsur.add(sring);
-    } else {
-      var gcone=G('cone');
-      var cpts=[];
-      for(var k3=0;k3<=20;k3++){ var tt3=k3/20; var rr=neckR+(mouthR*0.93-neckR)*tt3; var yy=-depth*(1-tt3)-0.02 + 0.07*Math.sin(tt3*Math.PI*0.5)*depth; cpts.push([rr,yy]); }
-      gcone.add(tag(lathe(cpts,72,coneMat),(cfg.cone||'')+' cone'));
-      if(P.coax){
-        var post=tag(new THREE.Mesh(new THREE.CylinderGeometry(neckR*0.5,neckR*0.5,depth*0.8,24),steelMat),'Tweeter post'); post.position.y=-depth*0.5; gcone.add(post);
-        var cdome=tag(new THREE.Mesh(new THREE.SphereGeometry(neckR*0.85,32,16,0,Math.PI*2,0,Math.PI/2.3),new THREE.MeshStandardMaterial({color:0xd6dee8,metalness:0.6,roughness:0.3})),'Coaxial tweeter'); cdome.position.y=-depth*0.08; gcone.add(cdome);
-      } else {
-        var cap=tag(new THREE.Mesh(new THREE.SphereGeometry(neckR*1.35,40,20,0,Math.PI*2,0,Math.PI/2.6),coneMat.clone()),'Dust cap');
-        cap.position.y=-depth-0.02+0.10; cap.scale.y=0.72; gcone.add(cap);
+    var fas1=tag(new THREE.Mesh(new THREE.BoxGeometry(0.02,0.05,0.015),steelMat),'Faston terminals'); fas1.position.set(magR+0.33,y0+magH/2+0.05,0.02); gb.add(fas1);
+    var fas2=fas1.clone(); fas2.position.z=-0.02; gb.add(tag(fas2,'Faston terminals'));
+    if(!P.dome){
+      // tinsel leads: two curved tubes terminal → cone neck
+      var tinselMat=new THREE.MeshPhysicalMaterial({color:0x2a2420,metalness:0.3,roughness:0.7});
+      for(var ti=0;ti<2;ti++){
+        var zoff=ti?0.05:-0.05;
+        var crv=new THREE.CatmullRomCurve3([
+          new THREE.Vector3(magR+0.3,y0+magH/2+0.08,zoff),
+          new THREE.Vector3(magR*0.75,y0+magH/2+0.34,zoff*2.2),
+          new THREE.Vector3(neckR*1.3,-depth*0.78,zoff*1.4)]);
+        gb.add(tag(new THREE.Mesh(new THREE.TubeGeometry(crv,32,0.014,8),tinselMat),'Tinsel leads'));
       }
-      var gsur2=G('surround');
-      var tube=P.beef?0.085:0.062;
-      var sur=tag(new THREE.Mesh(new THREE.TorusGeometry(mouthR*0.965,tube,16,80),surrMat),(cfg.surround||'')+' surround');
-      sur.rotation.x=Math.PI/2; sur.position.y=-0.01; gsur2.add(sur);
-      var ggsk=G('gasket');
-      var gsk=tag(new THREE.Mesh(new THREE.TorusGeometry(mouthR+0.1,0.055,10,72),new THREE.MeshStandardMaterial({color:0x2a3542,roughness:0.7})),'Mounting gasket');
-      gsk.rotation.x=Math.PI/2; gsk.scale.set(1,1,0.45); gsk.position.y=0.075; ggsk.add(gsk);
+    }
+    // ── cone / dome ──
+    if(P.dome){
+      var gd=G('cone','Dome diaphragm');
+      var fp=tag(new THREE.Mesh(new THREE.CylinderGeometry(mouthR,mouthR*0.96,0.07,96),frameMat),'Faceplate'); fp.position.y=-0.02; gd.add(fp);
+      var fbev=tag(ring(mouthR,0.02,frameMat),'Faceplate'); fbev.position.y=0.015; gd.add(fbev);
+      var dome=tag(new THREE.Mesh(new THREE.SphereGeometry(neckR*1.5,64,32,0,Math.PI*2,0,Math.PI/2.4),coneMat),(cfg.cone||'')+' dome diaphragm'); gd.add(dome);
+      var gsur=G('surround','Surround');
+      var sring=tag(ring(neckR*1.62,0.035,surrMat,72,14),'Ferrofluid-damped surround'); sring.position.y=0.03; gsur.add(sring);
+    } else {
+      var gcone=G('cone','Cone + dust cap');
+      var cpts=[];
+      for(var k3=0;k3<=24;k3++){ var tt3=k3/24; var rr=neckR+(mouthR*0.93-neckR)*tt3; var yy=-depth*(1-tt3)-0.02 + 0.07*Math.sin(tt3*Math.PI*0.5)*depth; cpts.push([rr,yy]); }
+      gcone.add(tag(lathe(cpts,96,coneMat),(cfg.cone||'')+' cone'));
+      if(P.coax){
+        var post=tag(new THREE.Mesh(new THREE.CylinderGeometry(neckR*0.5,neckR*0.5,depth*0.8,32),steelMat),'Tweeter post'); post.position.y=-depth*0.5; gcone.add(post);
+        var cdome=tag(new THREE.Mesh(new THREE.SphereGeometry(neckR*0.85,48,24,0,Math.PI*2,0,Math.PI/2.3),new THREE.MeshPhysicalMaterial({color:0xd6dee8,metalness:0.7,roughness:0.22})),'Coaxial tweeter'); cdome.position.y=-depth*0.08; gcone.add(cdome);
+      } else {
+        var cap=tag(new THREE.Mesh(new THREE.SphereGeometry(neckR*1.35,56,28,0,Math.PI*2,0,Math.PI/2.6),coneMat.clone()),'Dust cap');
+        cap.position.y=-depth-0.02+0.10; cap.scale.y=0.72; gcone.add(cap);
+        var seam=tag(ring(neckR*1.32,0.012,darkMat,56,8),'Dust cap seam'); seam.position.y=-depth+0.085; gcone.add(seam);
+      }
+      var gsur2=G('surround','Surround (half-roll)');
+      // half-roll surround: lathe arc from cone rim to gasket flat
+      var rr2=P.beef?0.1:0.07;
+      var surPts=[];
+      surPts.push([mouthR*0.93-0.02,-0.025]);
+      for(var ai=0;ai<=20;ai++){ var aa=Math.PI-(ai/20)*Math.PI; surPts.push([mouthR*0.965+rr2*Math.cos(aa), -0.015+rr2*Math.sin(aa)*0.95]); }
+      surPts.push([mouthR+0.06,-0.02]);
+      var sur=tag(lathe(surPts,96,surrMat),(cfg.surround||'')+' surround'); sur.material.side=THREE.DoubleSide; gsur2.add(sur);
+      if(P.beef){
+        var stitch=tag(ring(mouthR*0.965,0.012,darkMat,96,8),'Surround stitch'); stitch.position.y=rr2*0.92-0.015; stitch.scale.set(1,1,0.6); gsur2.add(stitch);
+      }
+      var ggsk=G('gasket','Gasket + screws');
+      var gsk=tag(ring(mouthR+0.1,0.055,new THREE.MeshPhysicalMaterial({color:0x2a3542,roughness:0.65,metalness:0.05}),96,12),'Mounting gasket');
+      gsk.scale.set(1,1,0.45); gsk.position.y=0.075; ggsk.add(gsk);
+      for(var sc2=0;sc2<4;sc2++){
+        var sa2=Math.PI/4+sc2*Math.PI/2;
+        var scr=tag(new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.03,6),steelMat),'Mounting screw');
+        scr.position.set(Math.cos(sa2)*(mouthR+0.1),0.1,Math.sin(sa2)*(mouthR+0.1)); ggsk.add(scr);
+      }
     }
     root.add(model);
   }
@@ -3254,7 +3432,7 @@ function initDriver3D(container, cfg){
     if(dragging){ root.rotation.y+=(e.clientX-px)*0.008; root.rotation.x+=(e.clientY-py)*0.006;
       root.rotation.x=Math.max(0.1,Math.min(1.5,root.rotation.x)); px=e.clientX; py=e.clientY; }
   });
-  container.addEventListener('wheel',function(e){ e.preventDefault(); camera.position.z=Math.max(2.2,Math.min(6,camera.position.z+e.deltaY*0.002)); },{passive:false});
+  container.addEventListener('wheel',function(e){ e.preventDefault(); camera.position.z=Math.max(2.2,Math.min(6.5,camera.position.z+e.deltaY*0.002)); },{passive:false});
   var ray=new THREE.Raycaster(), mouse=new THREE.Vector2();
   container.addEventListener('pointermove',function(e){
     var r=container.getBoundingClientRect();
@@ -3263,20 +3441,45 @@ function initDriver3D(container, cfg){
     var hits=model?ray.intersectObjects(model.children,true):[];
     hoverEl.textContent=hits.length?('▸ '+hits[0].object.userData.part):'';
   });
+  var _v=new THREE.Vector3();
+  function updateLabels(ease){
+    labelAnchors.forEach(function(a){
+      var g=groups[a.key]; if(!g) return;
+      var d=labelDivs[a.key];
+      if(!d){
+        d=document.createElement('div');
+        d.style.cssText='position:absolute;transform:translate(-50%,-50%);font-size:10px;font-weight:700;color:#cfe0f0;background:rgba(10,16,24,0.78);border:1px solid rgba(90,120,150,0.5);border-radius:7px;padding:2px 8px;white-space:nowrap;transition:opacity .25s';
+        d.textContent=a.label; labelLayer.appendChild(d); labelDivs[a.key]=d;
+      }
+      d.style.opacity=ease>0.6?String((ease-0.6)/0.4):'0';
+      if(ease<=0.6) return;
+      g.getWorldPosition(_v);
+      _v.project(camera);
+      d.style.left=((_v.x*0.5+0.5)*container.clientWidth+110)+'px';
+      d.style.top=((-_v.y*0.5+0.5)*container.clientHeight)+'px';
+    });
+  }
+  var _szW=W;
   function animate(){
     if(disposed) return;
     requestAnimationFrame(animate);
+    var cw=container.clientWidth;
+    if(cw && Math.abs(cw-_szW)>4){
+      _szW=cw; var chh=container.clientHeight||380;
+      renderer.setSize(cw,chh); camera.aspect=cw/chh; camera.updateProjectionMatrix();
+    }
     if(autoSpin) root.rotation.y+=0.004;
-    exT+=(exploded?1:-1)*0.06; exT=Math.max(0,Math.min(1,exT));
+    exT+=(exploded?1:-1)*0.055; exT=Math.max(0,Math.min(1,exT));
     var ease=exT*exT*(3-2*exT);
     Object.keys(groups).forEach(function(k){ groups[k].position.y=(EXP[k]||0)*ease; });
     if(!dragging){ root.rotation.x += ((0.62-0.25*ease)-root.rotation.x)*0.08; }
-    camera.position.z += ((3.5+1.3*ease)-camera.position.z)*0.08;
+    camera.position.z += ((3.5+1.5*ease)-camera.position.z)*0.08;
+    updateLabels(ease);
     renderer.render(scene,camera);
   }
   build(cfg); animate();
   return { update:function(c){build(c);}, toggleExploded:function(){exploded=!exploded;},
-           dispose:function(){disposed=true;try{renderer.dispose();container.removeChild(renderer.domElement);container.removeChild(hoverEl);}catch(e){}} };
+           dispose:function(){disposed=true;try{renderer.dispose();container.removeChild(renderer.domElement);container.removeChild(hoverEl);container.removeChild(labelLayer);}catch(e){}} };
 }
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -5290,6 +5493,52 @@ function buildTrendsHTML(liveArticles, commodities) {
   }
 }
 
+// ─── Global industry map (Oct-2026 agent research, each row verified) ─────────
+var INDUSTRY={
+  makers:[
+    {co:'Harman (Samsung)',where:'Juárez MX ×4 · Querétaro · Chakan-Pune IN · Manaus/Nova Santa Rita BR',what:'Systems + speakers (JBL, HK, Mark Levinson, B&O auto, B&W auto, AKG)',c:'high'},
+    {co:'Bose → Luxshare',where:'Tijuana MX (sold Feb-2025, supplies Bose OEM base)',what:'Transducers + amplifiers; Bose now asset-light; owns McIntosh/Sonus faber',c:'high'},
+    {co:'AAC Technologies + PSS',where:'Dendermonde BE (HQ) + CN/Asia/EU/NA sites',what:'~110M speakers/yr; auto acoustics ¥4.12bn 2025 (+16%); Xiaomi/XPeng/Li Auto',c:'high'},
+    {co:'Foster Electric',where:'Vietnam ×5 (Bac Ninh…) + CN + ID/KR',what:'One of world\u2019s largest speaker ODMs; ¥122bn FY24; DMEGC magnet JV',c:'med-high'},
+    {co:'ASK Industries (JVCKenwood)',where:'Monte San Vito/Reggio Emilia IT · Wilkowice PL · Hermosillo MX · Tunisia',what:'Speakers, subwoofer boxes, amps, antennas; Audi/BMW/Geely',c:'high'},
+    {co:'Faital',where:'Chieve (Milan) IT · Salgótarján HU · Spain',what:'Leading EU OEM automotive speaker maker; Alps Alpine partner',c:'med-high'},
+    {co:'Panasonic Automotive',where:'Pardubice CZ (~1.8M car A/V units/yr)',what:'Head units + Klipsch premium (Infiniti QX80 24-spk, Armada)',c:'high'},
+    {co:'Alps Alpine',where:'Fukushima JP + global',what:'Amps (BMW X3 booster confirmed by teardown), Alpine F#1 Status flagship',c:'med-high'},
+    {co:'Pioneer / Tohoku Pioneer',where:'Tendo JP (since 1966) · VN · MX — Thailand plant sold to SVI 2021',what:'Car speakers; Toyota display audio',c:'high'},
+    {co:'JVCKenwood Indonesia',where:'West Java ID',what:'~2.5M car-audio sets/yr, IATF16949',c:'high'},
+    {co:'ESTec',where:'Yangsan KR · Thuan An/Phu Tho VN',what:'Automotive speakers — Hyundai, Kia, Harman',c:'med'},
+    {co:'Dynaudio (Goertek)',where:'Skanderborg DK',what:'~40k speakers/week for VW shipped from Denmark',c:'med-high'},
+    {co:'Harman do Brasil (ex-Selenium)',where:'Nova Santa Rita + Manaus BR',what:'JBL speakers + auto systems for Toyota/VW South America',c:'high'},
+    {co:'Burmester',where:'Berlin DE',what:'Low-volume ultra-premium (Mercedes, Porsche)',c:'med'}
+  ],
+  pairings:[
+    {b:'Bang & Olufsen (Harman)',o:'Audi · Ford Expedition 22-spk \u201926',c:'high'},
+    {b:'Burmester',o:'Mercedes EQS 31-spk 4D · Porsche (+Atmos 2025)',c:'high'},
+    {b:'Meridian',o:'JLR next-gen EVs (extended) · Kia EV9 14-spk',c:'high'},
+    {b:'Mark Levinson (Harman)',o:'Lexus',c:'high'},
+    {b:'Naim',o:'Bentley (Naim for Mulliner)',c:'high'},
+    {b:'McIntosh (Bose)',o:'Jeep Grand Wagoneer 23-spk/1,375W',c:'high'},
+    {b:'Klipsch (Panasonic)',o:'Infiniti QX80 24-spk \u201925 · Nissan Armada 12-spk',c:'high'},
+    {b:'Sonus faber (Bose)',o:'Maserati MC20/GranTurismo · Lamborghini Revuelto',c:'high'},
+    {b:'Bowers & Wilkins (Harman)',o:'BMW 7-series 36-spk Diamond · Volvo EX90 25-spk',c:'med-high'},
+    {b:'AKG (Harman)',o:'Cadillac — Atmos across 2026 EV lineup',c:'high'},
+    {b:'Dolby Atmos',o:'35+ brands / 150+ models by CES-2026',c:'high'},
+    {b:'Sony 360',o:'AFEELA 1 — 28 in-house Sony drivers',c:'high'}
+  ],
+  suppliers:[
+    {co:'JL MAG · ZhongKeSanHuan · Yunsheng',role:'Sintered NdFeB (China ~90% of world output)',c:'high'},
+    {co:'Proterial (ex-Hitachi Metals)',role:'NEOMAX NdFeB; $225M India plant announced (1,200t/yr)',c:'high'},
+    {co:'VAC (Germany/US)',role:'Western NdFeB (Sumter SC 2,000t); GM supply deal',c:'high'},
+    {co:'Elektrisola',role:'Fine magnet/VC wire — 14 plants, 7 countries (DE/IT/CH/MY/CN/US/MX)',c:'high'},
+    {co:'Essex Solutions (ex-Superior Essex/Furukawa)',role:'Magnet wire — US/MX/JP/MY/IT',c:'high'},
+    {co:'Dr. Kurt Müller (Krefeld)',role:'Cones/domes/spiders to 200+ speaker makers (since 1922)',c:'high'},
+    {co:'Ferrotec',role:'Audio ferrofluid — de-facto sole industry source',c:'high'},
+    {co:'TE Connectivity',role:'FASTON terminals — the speaker terminal standard',c:'high'},
+    {co:'Henkel Loctite · 3M · Master Bond',role:'Speaker adhesives (≥7 bond joints per driver)',c:'med-high'},
+    {co:'Niron Magnetics',role:'Iron-nitride rare-earth-free magnets — first audio use 2025 (watch-list)',c:'high'}
+  ]
+};
+
 // ─── Data & Sources tab — the live rate card and every source behind it ──────
 function _confBadge(c){
   var col=c==='high'?'var(--green2)':c==='med'||c==='medium'?'var(--amber)':'var(--red)';
@@ -5340,6 +5589,27 @@ function renderDataSources(r){
   html+='Amplifier/DSP is a component-level parametric model ('+_srcCell('derived').replace('Derived from China decomposition x local energy & labour','Digi-Key/Mouser/LCSC/TI/ADI + Atlas PCB 2026 + JLCPCB')+'): TAS6424-class $4/IC OEM, ADAU1452/1467 DSP, AD2428 A2B nodes, PSU 2.50+0.012×W, PCB $2.20/dm², SMT $0.004/placement.<br>';
   html+='<strong style="color:var(--t1)">Validation anchors:</strong> GGEC (China speaker ODM) gross margin 10.95% FY2025 → should-cost ≈ customer price ÷ 1.11; Tonly GM 11.4–13.5%; China 6.5&quot; coaxial EXW $3.6/pair–$6/pc (live listings); US IM rates $30–150/hr published; stripped 4-ch amp model $26 vs Nissan Kicks budget Bose amp (TechInsights, qualitative).<br>';
   html+='<strong style="color:var(--t1)">Honest limits:</strong> items marked EST have no published source — they are engineering estimates with stated derivations, not data. Supplier RFQs will beat this model; its job is to be directionally right and fully auditable.</div>';
+
+  html+='<div class="section-title" style="margin-top:18px">Global Industry Map — who actually makes automotive audio</div>';
+  html+='<div class="bom-table"><table><thead><tr><th>Manufacturer</th><th>Plants</th><th>What</th><th></th></tr></thead><tbody>';
+  INDUSTRY.makers.forEach(function(m){
+    html+='<tr><td><strong>'+m.co+'</strong></td><td style="font-size:10px;color:var(--t2)">'+m.where+'</td><td style="font-size:10px;color:var(--t2)">'+m.what+'</td><td>'+_confBadge(m.c)+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  html+='<div class="section-title" style="font-size:12px;margin-top:14px">Premium Brand \u2194 OEM Pairings (2025-26)</div>';
+  html+='<div class="bom-table"><table><tbody>';
+  INDUSTRY.pairings.forEach(function(x){
+    html+='<tr><td style="width:220px"><strong>'+x.b+'</strong></td><td style="font-size:10.5px;color:var(--t2)">'+x.o+'</td><td>'+_confBadge(x.c)+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  html+='<div class="section-title" style="font-size:12px;margin-top:14px">Key Component Suppliers</div>';
+  html+='<div class="bom-table"><table><tbody>';
+  INDUSTRY.suppliers.forEach(function(x){
+    html+='<tr><td style="width:280px"><strong>'+x.co+'</strong></td><td style="font-size:10.5px;color:var(--t2)">'+x.role+'</td><td>'+_confBadge(x.c)+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  var up=MAT_IMPORT_UPLIFT[ck]||0;
+  html+='<p style="font-size:10px;color:var(--t3);margin-top:10px">Imported-material uplift applied in '+esc(ck)+': <strong style="color:var(--t1)">'+(up*100).toFixed(1)+'%</strong> on magnets, VC wire, polyimide/aramid formers and ferrofluid (duty + freight on China-centric parts; '+_srcCell('uplift')+'). Steel, paper, PP, rubber and packaging are sourced locally everywhere \u2014 no uplift.</p>';
 
   var cont=document.getElementById('dataContent');
   if(cont) cont.innerHTML=html;
