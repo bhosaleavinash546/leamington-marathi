@@ -1316,7 +1316,7 @@ html[data-theme="light"] .brand-version{
         <div class="about-section avis" id="about-howto">
           <div class="about-hero">
             <h2>360° Automotive Speaker Should-Cost Engine — User Guide</h2>
-            <p>SonoCost builds the cost of an automotive speaker or complete music system from the bottom up, the way a supplier’s own cost engineer would: every gram of material, every minute of factory labour and machine time, then overheads, tooling, freight, duty and margin. You describe the system on the left; the tool prices it live on the right — for any of 22 manufacturing countries, using that country’s actual labour and energy rates (never a “multiplier”). Every number can be opened with its Σ trace to see the arithmetic behind it. If you have never done costing before, start with the guide below — it takes about 15 minutes to go from zero to a defendable number.</p>
+            <p>SonoCost builds the cost of an automotive speaker or complete music system from the bottom up, the way a supplier’s own cost engineer would: every gram of material, every minute of factory labour and machine time, then overheads, tooling, freight, duty and margin. You describe the system on the left; the tool prices it live on the right — for any of 22 manufacturing countries, each with its own rate card (labour, electricity, machine rates) carrying a source, date and confidence badge — no blanket “country multipliers”. Every number can be opened with its Σ trace to see the arithmetic behind it. If you have never done costing before, start with the guide below — it takes about 20 minutes to go from zero to a defendable number.</p>
             <div class="about-badges">
               <span class="about-badge badge-blue">22 Country Rate Cards</span>
               <span class="about-badge badge-green">SMM / SHFE Oct 2026</span>
@@ -1420,7 +1420,7 @@ html[data-theme="light"] .brand-version{
               <div class="step-num">7</div>
               <div class="step-body">
                 <h4>Set the commercial lens</h4>
-                <p><strong>Freight</strong> (Domestic / Regional / International), <strong>Import Duty</strong> and <strong>Margin</strong> decide what question you are answering. Defaults (Regional, 5% duty, 8% margin) answer <em>"what should we pay a Tier-1, delivered?"</em></p>
+                <p><strong>Freight</strong> (Domestic / Regional / International), <strong>Import Duty</strong> and <strong>Margin</strong> decide what question you are answering. Defaults (Regional, 5% duty, 8% margin) answer <em>"what should we pay a Tier-1, delivered?"</em> Note: the margin slider applies to <strong>works cost</strong>; a supplier's "X% margin on sales" ≈ X⁄(100−X) here (8% on sales ≈ 8.7%).</p>
                 <div class="step-warn">⚠ Comparing against a supplier's factory-gate (EXW) quote? Set margin 0%, duty 0% and read the <strong>Works Cost</strong> line in the cost build-up, not the Delivered Total.</div>
               </div>
             </div>
@@ -1493,8 +1493,8 @@ html[data-theme="light"] .brand-version{
               <div>✦ <strong>Benchmarking tab</strong> — your works cost against 10 real systems (Bose, Harman Kardon, B&amp;O, Burmester, CN-EV 4D…). A Standard system beating 10/10 is expected; a 4D system beats ~4/10 because the benchmarks include budget systems. You want to land <em>inside the corridor</em> of comparable tiers, not win every row.</div>
               <div>✦ <strong>Σ trace</strong> — open it for the most expensive driver and the amp. If you can read each line aloud and it makes sense, the number is defendable.</div>
               <div>✦ <strong>Data &amp; Sources tab</strong> — every rate the engine used right now, with source, date and a HIGH/MED/LOW confidence badge. Items marked EST are engineering estimates, labelled as such — nothing in this tool pretends to be sourced data unless it is.</div>
-              <div>✦ <strong>Sanity rule</strong> — a Chinese ODM's customer price ÷ 1.11 ≈ factory cost (GGEC reports ~11% gross margin). If a quote is far above your should-cost + reasonable margin, you have found your negotiation.</div>
-              <div>✦ <strong>Compare tab</strong> — save your baseline as Scenario A, change one thing (country, magnet, tier), save as B. The delta table shows the nine major cost lines (DM, labour, machine, FOH, G&amp;A, tooling, amp, wiring, total) plus what configuration changed. This is the strongest slide you can make.</div>
+              <div>✦ <strong>Sanity rule</strong> — a Chinese ODM's customer price × 0.89 ≈ factory cost (GGEC reports ~11% gross margin — margin on <em>price</em>, so multiply by 1−0.11). If a quote is far above your should-cost + reasonable margin, you have found your negotiation.</div>
+              <div>✦ <strong>Compare tab</strong> — save your baseline as Scenario A, change one thing (country, magnet, tier), save as B. The delta table shows the summary lines (system total, direct material, direct labour, overhead, tooling amortisation, target margin, DM%, CO&#8322;, speaker count) plus a diff of what configuration changed. This is the strongest slide you can make.</div>
               <div>✦ <strong>Export</strong> — PDF / PPT buttons (top right) generate the deck: KPIs, BOM, waterfall, benchmarks. Switch currency first if the audience thinks in €, ₹ or ¥.</div>
             </div>
           </div>
@@ -1617,7 +1617,7 @@ scrap    per step = (machCost + labCost) × scrap_rate</div>
             <div class="ref-card">
               <h4>Why the multiplier approach was removed</h4>
               <p>Earlier versions scaled a Western machine rate by a country multiplier. Real cost engineering doesn't accept that: a 250-ton moulding cell in Dongguan has an <strong>actual, knowable all-in rate</strong> (≈¥150–200/hr published) that no scaling factor reproduces reliably. The engine now carries, per country: fully burdened labour by skill tier, actual industrial electricity, and machine rates that are published where they exist and transparently derived where they don't — each value labelled with its source, date and confidence in the <strong>Data &amp; Sources</strong> tab.</p>
-              <div class="step-warn" style="margin-top:10px">Validation anchor: GGEC (002045.SZ), one of China's largest speaker ODMs, runs a 10.95% gross margin (FY2025) — a competitive should-cost lands ≈ customer price ÷ 1.11. Tonly (Harman's ODM) runs 11.4–13.5%.</div>
+              <div class="step-warn" style="margin-top:10px">Validation anchor: GGEC (002045.SZ), one of China's largest speaker ODMs, runs a 10.95% gross margin on sales (FY2025) — a competitive should-cost lands ≈ customer price × 0.89. Tonly (Harman's ODM) runs 11.4–13.5%.</div>
             </div>
           </div>
 
@@ -4081,7 +4081,7 @@ function renderBenchmarking(r) {
   var pct = (cheaper / BENCHMARKS.length * 100).toFixed(0);
   html += '<div class="card" style="padding:1rem;margin-top:1rem;border-color:var(--blue)">';
   html += '<p>Your system works cost (EXW ' + esc(r.inp.country) + ') <strong style="color:var(--blue2)">' + fGBP(r.totalWorks) + '</strong>, delivered total incl. margin <strong style="color:var(--gold)">' + fGBP(r.total) + '</strong> ';
-  html += 'beats <strong style="color:var(--green2)">' + cheaper + ' of ' + BENCHMARKS.length + '</strong> benchmarks (' + pct + '% cost advantage).</p>';
+  html += 'beats <strong style="color:var(--green2)">' + cheaper + ' of ' + BENCHMARKS.length + '</strong> benchmarks (' + pct + '% of the field).</p>';
   html += '<p style="font-size:10px;color:var(--t3);margin-top:6px;font-style:italic">⚠ Benchmark est_cost figures are EXW China factory-gate estimates derived from public teardown reports, SMM/SHFE commodity data, and analyst data (Jun 2026). Not supplier-verified. Use for directional reference only.</p>';
   html += '</div>';
 
@@ -5684,7 +5684,7 @@ function renderDataSources(r){
   html+='<div class="section-title" style="font-size:12px;margin-top:16px">Electronics Model & Validation Anchors</div>';
   html+='<div class="card" style="padding:12px;font-size:11px;color:var(--t2);line-height:1.7">';
   html+='Amplifier/DSP is a component-level parametric model ('+_srcCell('derived').replace('Derived from China decomposition x local energy & labour','Digi-Key/Mouser/LCSC/TI/ADI + Atlas PCB 2026 + JLCPCB')+'): TAS6424-class $4/IC OEM, ADAU1452/1467 DSP, AD2428 A2B nodes, PSU 2.50+0.012×W, PCB $2.20/dm², SMT $0.004/placement.<br>';
-  html+='<strong style="color:var(--t1)">Validation anchors:</strong> GGEC (China speaker ODM) gross margin 10.95% FY2025 → should-cost ≈ customer price ÷ 1.11; Tonly GM 11.4–13.5%; China 6.5&quot; coaxial EXW $3.6/pair–$6/pc (live listings); US IM rates $30–150/hr published; stripped 4-ch amp model $26 vs Nissan Kicks budget Bose amp (TechInsights, qualitative).<br>';
+  html+='<strong style="color:var(--t1)">Validation anchors:</strong> GGEC (China speaker ODM) gross margin 10.95% of sales FY2025 → should-cost ≈ customer price × 0.89; Tonly GM 11.4–13.5%; China 6.5&quot; coaxial EXW $3.6/pair–$6/pc (live listings); US IM rates $30–150/hr published; stripped 4-ch amp model $26 vs Nissan Kicks budget Bose amp (TechInsights, qualitative).<br>';
   html+='<strong style="color:var(--t1)">Honest limits:</strong> items marked EST have no published source — they are engineering estimates with stated derivations, not data. Supplier RFQs will beat this model; its job is to be directionally right and fully auditable.</div>';
 
   html+='<div class="section-title" style="margin-top:18px">Global Industry Map — who actually makes automotive audio</div>';
