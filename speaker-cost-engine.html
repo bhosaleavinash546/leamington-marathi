@@ -907,6 +907,23 @@ html[data-theme="light"] .brand-version{
 .footer-status{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green2);font-weight:600}
 .footer-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green2);animation:pulse 2s infinite}
 
+/* ── Live visuals (anatomy + car map) ── */
+.viz-row{display:grid;grid-template-columns:1.55fr 1fr;gap:12px;margin-bottom:16px}
+.viz-card{background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.viz-hdr{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:2px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.viz-sub{font-size:10px;color:var(--t3);margin-bottom:8px}
+.viz-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.viz-chip{padding:3px 10px;font-size:10px;font-weight:600;border-radius:14px;background:transparent;border:1px solid var(--bd);color:var(--t3);cursor:pointer;transition:all .18s}
+.viz-chip:hover{border-color:var(--blue);color:var(--blue2)}
+.viz-chip.on{background:var(--chip-bg);border-color:var(--blue);color:var(--blue2)}
+.viz-legend{display:flex;gap:14px;justify-content:center;font-size:10px;color:var(--t3);margin-top:6px}
+.viz-legend span{display:inline-flex;align-items:center;gap:5px}
+.viz-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+@keyframes conePump{0%,100%{transform:scale(1)}50%{transform:scale(0.985)}}
+.pump{animation:conePump 0.5s ease-in-out infinite;transform-origin:center}
+@media(prefers-reduced-motion:reduce){.pump{animation:none}}
+@media(max-width:1100px){.viz-row{grid-template-columns:1fr}}
+
 /* ── Responsive: stack layout on tablets/phones ── */
 @media(max-width:900px){
   .layout{flex-direction:column;overflow:visible}
@@ -985,6 +1002,9 @@ html[data-theme="light"] .brand-version{
       <div style="width:1px;height:20px;background:var(--bd);margin:0 2px"></div>
       <button onclick="exportPDF()">&#128438; Export PDF</button>
       <button onclick="exportPPT()">&#128202; Export PPT</button>
+      <select id="curSel" onchange="setDisplayCurrency(this.value)" title="Display currency" aria-label="Display currency" style="padding:5px 7px;font-size:11px;font-weight:700;background:var(--surface2);border:1px solid var(--bd);border-radius:8px;color:var(--t2);cursor:pointer">
+        <option>USD</option><option>GBP</option><option>EUR</option><option>CNY</option><option>INR</option><option>JPY</option>
+      </select>
       <button class="theme-toggle" id="settingsBtn" onclick="openSettings()" title="API Settings — add Claude key for real AI insights" aria-label="Settings">
         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -1044,18 +1064,23 @@ html[data-theme="light"] .brand-version{
         <div class="form-row">
           <label for="country">Manufacturing Country</label>
           <select id="country">
-            <option value="UK">UK (GBP)</option>
-            <option value="Germany">Germany (EUR)</option>
-            <option value="USA">USA (USD)</option>
-            <option value="Eastern Europe">Eastern Europe (EUR)</option>
-            <option value="China" selected>China (CNY)</option>
-            <option value="China (Coastal)">China — Coastal (CNY)</option>
-            <option value="China (Inland)">China — Inland (CNY)</option>
-            <option value="India">India (INR)</option>
-            <option value="Mexico">Mexico (MXN)</option>
-            <option value="Thailand">Thailand (THB)</option>
-            <option value="Vietnam">Vietnam (VND)</option>
-            <option value="SE Asia (other)">SE Asia — Other</option>
+            <option value="China" selected>China — national avg</option>
+            <option value="China (Coastal)">China — Coastal (Guangdong)</option>
+            <option value="China (Inland)">China — Inland</option>
+            <option value="Vietnam">Vietnam (Foster speaker hub)</option>
+            <option value="India">India (Harman Pune)</option>
+            <option value="Thailand">Thailand (Tohoku Pioneer)</option>
+            <option value="Malaysia">Malaysia</option>
+            <option value="Indonesia">Indonesia (JVCKenwood)</option>
+            <option value="Mexico">Mexico (Harman Juárez)</option>
+            <option value="Hungary">Hungary (Harman Pécs)</option>
+            <option value="Czechia">Czechia (Panasonic A/V)</option>
+            <option value="Eastern Europe">Eastern Europe (RO/PL)</option>
+            <option value="Germany">Germany</option>
+            <option value="UK">UK</option>
+            <option value="USA">USA</option>
+            <option value="Japan">Japan (Pioneer Tendo)</option>
+            <option value="South Korea">South Korea (Daeheung)</option>
           </select>
         </div>
         <div class="form-row">
@@ -1079,11 +1104,12 @@ html[data-theme="light"] .brand-version{
         <div class="form-row">
           <label for="magnetType">Magnet</label>
           <select id="magnetType">
-            <option value="Neodymium">Neodymium (NdFeB N42)</option>
-            <option value="Neodymium N35">Neodymium N35 (entry)</option>
-            <option value="Neodymium N48">Neodymium N48 (high energy)</option>
-            <option value="Neodymium N52">Neodymium N52 (max energy)</option>
-            <option value="NdFeB N42SH">NdFeB N42SH (150°C automotive)</option>
+            <option value="Neodymium">NdFeB N38H (automotive standard)</option>
+            <option value="Neodymium N35">NdFeB N35H (entry)</option>
+            <option value="Neodymium N42">NdFeB N42</option>
+            <option value="Neodymium N48">NdFeB N48 (high energy)</option>
+            <option value="Neodymium N52">NdFeB N52 (max energy)</option>
+            <option value="NdFeB N42SH">NdFeB N42SH (150°C deck/roof)</option>
             <option value="Ferrite">Ferrite (Ceramic Y30)</option>
             <option value="Ferrite Y35">Ferrite Y35 (high energy)</option>
             <option value="Alnico">Alnico (Al-Ni-Co)</option>
@@ -1212,13 +1238,13 @@ html[data-theme="light"] .brand-version{
           ⚙ Contracted Rates Override <span style="font-weight:400;color:var(--t3);font-size:10px;text-transform:none;margin-left:4px">(optional — overrides library defaults)</span>
         </summary>
         <div style="padding:10px 12px">
-          <p style="font-size:10px;color:var(--t3);margin-bottom:10px">Enter your negotiated £/kg rates. Leave blank to use built-in estimates.</p>
-          <div class="form-row"><label style="font-size:11px">Magnet (£/kg)</label><input type="number" id="ro_mag" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
-          <div class="form-row"><label style="font-size:11px">Cone (£/kg)</label><input type="number" id="ro_cone" placeholder="library default" min="0" step="0.1" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
-          <div class="form-row"><label style="font-size:11px">Surround (£/kg)</label><input type="number" id="ro_surr" placeholder="library default" min="0" step="0.1" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
-          <div class="form-row"><label style="font-size:11px">Frame/Basket (£/kg)</label><input type="number" id="ro_bask" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
-          <div class="form-row"><label style="font-size:11px">VC Wire (£/kg)</label><input type="number" id="ro_wire" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
-          <div class="form-row"><label style="font-size:11px">VC Former (£/kg)</label><input type="number" id="ro_fmr" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <p style="font-size:10px;color:var(--t3);margin-bottom:10px">Enter your negotiated USD/kg rates. Leave blank to use built-in estimates.</p>
+          <div class="form-row"><label style="font-size:11px">Magnet ($/kg)</label><input type="number" id="ro_mag" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">Cone ($/kg)</label><input type="number" id="ro_cone" placeholder="library default" min="0" step="0.1" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">Surround ($/kg)</label><input type="number" id="ro_surr" placeholder="library default" min="0" step="0.1" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">Frame/Basket ($/kg)</label><input type="number" id="ro_bask" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">VC Wire ($/kg)</label><input type="number" id="ro_wire" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">VC Former ($/kg)</label><input type="number" id="ro_fmr" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
           <button class="preset-btn" onclick="_rateOverrides={};['ro_mag','ro_cone','ro_surr','ro_bask','ro_wire','ro_fmr'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});scheduleCalc()" style="margin-top:4px;font-size:10px">✕ Clear All Overrides</button>
         </div>
       </details>
@@ -1237,7 +1263,7 @@ html[data-theme="light"] .brand-version{
     <div class="metric-cell" id="m-spkcount"><div class="val" id="mv-spkcount">--</div><div class="lbl">Speaker Count</div></div>
     <div class="metric-cell" id="m-dm"><div class="val" id="mv-dm">--</div><div class="lbl">DM %</div></div>
     <div class="metric-cell" id="m-co2"><div class="val" id="mv-co2">--</div><div class="lbl">CO₂ (kg)</div></div>
-    <div class="metric-cell" id="m-margin"><div class="val" id="mv-margin">--</div><div class="lbl">Margin (£)</div></div>
+    <div class="metric-cell" id="m-margin"><div class="val" id="mv-margin">--</div><div class="lbl" id="mv-margin-lbl">Margin</div></div>
   </div>
   <div>
     <div class="tabs-wrapper">
@@ -1250,10 +1276,11 @@ html[data-theme="light"] .brand-version{
         <button class="tab-btn" data-tab="physics" onclick="showTab('physics')">⚡ Physics</button>
         <button class="tab-btn" data-tab="ai" onclick="showTab('ai')">&#129302; AI Insights</button>
         <button class="tab-btn" data-tab="compare" onclick="showTab('compare')">⚖ Compare</button>
+        <button class="tab-btn" data-tab="data" onclick="showTab('data')">🗄 Data &amp; Sources</button>
       </div>
     </div>
     <div class="tab-content">
-      <div class="tab-panel active" id="panel-overview"><div id="overviewContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Configure inputs and click <strong style="color:var(--blue2)">Calculate</strong> to see results.</p></div></div>
+      <div class="tab-panel active" id="panel-overview"><div id="vizPanels"></div><div id="overviewContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Configure inputs and click <strong style="color:var(--blue2)">Calculate</strong> to see results.</p></div></div>
       <div class="tab-panel" id="panel-bom"><div id="bomContent"></div></div>
       <div class="tab-panel" id="panel-sustain"><div id="sustainContent"></div></div>
       <div class="tab-panel" id="panel-bench"><div id="benchContent"></div></div>
@@ -1261,6 +1288,7 @@ html[data-theme="light"] .brand-version{
       <div class="tab-panel" id="panel-physics"><div id="physicsContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to estimate acoustic parameters.</p></div></div>
       <div class="tab-panel" id="panel-ai"><div id="aiContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to generate AI insights.</p></div></div>
       <div class="tab-panel" id="panel-trends"><div id="trendsContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Click the tab to load live premium automotive audio trends.</p></div></div>
+      <div class="tab-panel" id="panel-data"><div id="dataContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to inspect the live rate card and every source behind it.</p></div></div>
       <div class="tab-panel" id="panel-compare"><div id="compareContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation, then save as Scenario A or B to compare configurations.</p></div></div>
       <div class="tab-panel" id="panel-about">
         <!-- ── About sub-navigation ── -->
@@ -1495,7 +1523,7 @@ totalPerUnit = works + sysItems
 
 systemTotal = Σ(totalPerUnit × qty) + amp + DSP + wiring + connectors
               + features + outboundFreight + importDuty + margin</div>
-              <p style="margin-top:8px">All computation is in <strong>USD</strong>. Final display converts to <strong>GBP</strong> at rate £1 = $1.27 (FX_GBP = 1/1.27).</p>
+              <p style="margin-top:8px">All computation is in <strong>USD</strong> (industry convention for China-EXW should-cost). The header currency selector converts the display to GBP/EUR/CNY/INR/JPY at Oct-2026 market FX.</p>
             </div>
           </div>
 
@@ -2009,9 +2037,19 @@ scrapCost per step = (labCost + machCost) × step.scrap_rate</div>
 var f2=function(n){return(Math.abs(n)<0.001?'0.00':n.toFixed(2));};
 var f3=function(n){return(Math.abs(n)<0.0001?'0.000':n.toFixed(3));};
 var fmtVol=function(v){return v>=1000?(v/1000).toFixed(v%1000===0?0:1)+'k':v.toString();};
-var FX_GBP=1/1.33; // 1 USD → GBP (GBP/USD 1.334, ECB-derived Jul-2026; matches COUNTRIES.UK)
-var fGBP=function(v){return'£'+(v*FX_GBP).toFixed(2);};
-var f3GBP=function(v){return'£'+(v*FX_GBP).toFixed(3);};
+// ── Display currency (model computes in USD; ECB/market FX Oct-2026) ──
+var DISP_FX ={USD:1, GBP:0.752, EUR:0.894, CNY:6.71, INR:94.95, JPY:158};
+var DISP_SYM={USD:'$', GBP:'£', EUR:'€', CNY:'¥', INR:'₹', JPY:'¥'};
+var _dispCur = localStorage.getItem('sce-currency') || 'USD';
+function curSym(){return DISP_SYM[_dispCur]||'$';}
+function curFx(){return DISP_FX[_dispCur]||1;}
+var FX_GBP=1/1.33; // legacy GBP factor (About doc reference)
+var fGBP=function(v){var d=_dispCur==='JPY'||_dispCur==='INR'?0:2;return curSym()+(v*curFx()).toFixed(d);};
+var f3GBP=function(v){var d=_dispCur==='JPY'||_dispCur==='INR'?1:3;return curSym()+(v*curFx()).toFixed(d);};
+function setDisplayCurrency(c){
+  _dispCur=c; try{localStorage.setItem('sce-currency',c);}catch(e){}
+  if(typeof calculate==='function') calculate();
+}
 var setEl=function(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;};
 var esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
 
@@ -2020,16 +2058,19 @@ var esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').
 // indices (PP/PA66), domestic adhesive/chemical suppliers. Exchange: 7.25 CNY/USD.
 var MRATE={
   // ── Magnet materials ─────────────────────────────────────────────
-  // NdFeB: NdPr metal ¥1,025,000/T (Jul 2026, SMM); NdPr ~30% of magnet weight;
-  // finished sintered NdFeB N42 ≈ ¥420-450/kg ($62/kg); grade ladder below.
-  // Bought as finished ground+coated magnets — slicing yield already in $/kg.
-  neo:         {usd:62.0, co2:45.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false}, // Sintered NdFeB N42 SMM-derived
-  neo_n35:     {usd:54.0, co2:42.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false}, // N35 entry grade
-  neo_n48:     {usd:75.0, co2:48.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false}, // N48 high energy
-  neo_n52:     {usd:88.0, co2:52.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false}, // N52 max energy
-  neo_sh:      {usd:80.0, co2:50.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false}, // N42SH 150°C Dy-doped — automotive door/deck duty
-  ferrite:     {usd:2.20, co2:3.8, rcl_pct:15,bio_pct:0, rohs:true, reach:true, voc:false}, // Y30 ferrite China domestic ($2-5/kg market 2026)
-  ferrite_y35: {usd:2.80, co2:4.0, rcl_pct:15,bio_pct:0, rohs:true, reach:true, voc:false}, // Y35 higher-energy ferrite
+  // NdFeB Oct-2026 basis: NdPr oxide ~¥738k/t (SMM Sep-26, peak ¥850k Feb-26);
+  // SMM sintered blanks Dec-25: N35 $25.4 / N38 $26.0 / N45 $27.9 per kg —
+  // finished small speaker magnets (machined + coated + risen NdPr) carry
+  // ~1.3-1.5x over blanks. Speaker practice = N35H/N38H 120°C class (patent
+  // lit + supplier catalogs), essentially Dy-free. Bought finished.
+  neo:         {usd:38.0, co2:45.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false, src:'smm'}, // N38H — automotive standard grade
+  neo_n35:     {usd:34.0, co2:42.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false, src:'smm'}, // N35 entry
+  neo_n42:     {usd:42.0, co2:46.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false, src:'smm'}, // N42
+  neo_n48:     {usd:50.0, co2:48.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false, src:'smm'}, // N48 high energy
+  neo_n52:     {usd:58.0, co2:52.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false, src:'smm'}, // N52 max energy
+  neo_sh:      {usd:52.0, co2:50.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false, src:'smm'}, // N42SH 150°C GBD — deck/roof duty
+  ferrite:     {usd:2.20, co2:3.8, rcl_pct:15,bio_pct:0, rohs:true, reach:true, voc:false, src:'smm'}, // Y30; +20-35% since Q2-25 (SrCO3 spike)
+  ferrite_y35: {usd:2.80, co2:4.0, rcl_pct:15,bio_pct:0, rohs:true, reach:true, voc:false, src:'smm'}, // Y35 higher-energy
   // Motor plates: low-carbon steel 1008/1010 (NOT CRGO — grain-oriented steel is
   // a transformer material; speaker motors carry DC flux). ¥4,800/MT + stamping.
   crgo:        {usd:0.70, co2:2.1, rcl_pct:30,bio_pct:0, rohs:true, reach:true, voc:false}, // Low-carbon 1008/1010, Zn-plated
@@ -2176,61 +2217,200 @@ var PROF={
   }
 };
 
-// labHr = fully burdened direct-labour $/hr (wage + social + fringe + supervision),
-// 2026 basis: Eurostat/Destatis (EU), BLS ECEC (US), Tetakawi (MX), GlobalChinaSource (CN).
-// machM = machine-hour multiplier vs Western baseline. Equipment is globally priced —
-// LCC savings come from energy/building/indirect labour only, so the realistic
-// spread is ~0.38-0.65, not 10x. logI = outbound logistics index.
-var COUNTRIES={
-  UK:              {cur:'GBP',sym:'£',  usd:1.33,    labHr:34.0, machM:1.18, logI:1.15},
-  Germany:         {cur:'EUR',sym:'€',  usd:1.14,    labHr:46.0, machM:1.22, logI:1.12},
-  USA:             {cur:'USD',sym:'$',  usd:1.00,    labHr:40.0, machM:1.25, logI:1.10},
-  'Eastern Europe':{cur:'EUR',sym:'€',  usd:1.14,    labHr:13.0, machM:0.75, logI:1.05}, // Romania €13.6/hr Eurostat 2025
-  China:           {cur:'CNY',sym:'¥',  usd:0.147,   labHr:6.5,  machM:0.50, logI:0.85}, // national avg burdened $6.5-7.0/hr 2025
-  'China (Coastal)':{cur:'CNY',sym:'¥', usd:0.147,   labHr:8.5,  machM:0.55, logI:0.83}, // Shenzhen/Shanghai $8.5-12/hr
-  'China (Inland)': {cur:'CNY',sym:'¥', usd:0.147,   labHr:5.0,  machM:0.45, logI:0.88}, // inland export hubs
-  India:           {cur:'INR',sym:'₹',  usd:0.012,   labHr:3.0,  machM:0.42, logI:0.88},
-  Mexico:          {cur:'MXN',sym:'MX$',usd:0.052,   labHr:6.0,  machM:0.60, logI:0.92}, // entry operator $5.3-5.6 burdened
-  Thailand:        {cur:'THB',sym:'฿',  usd:0.028,   labHr:4.5,  machM:0.45, logI:0.89},
-  Vietnam:         {cur:'VND',sym:'₫',  usd:0.000039,labHr:3.0,  machM:0.38, logI:0.87},
-  'SE Asia (other)':{cur:'USD',sym:'$', usd:1.00,    labHr:3.2,  machM:0.42, logI:0.88}
+// ═════════════════ ACTUAL COUNTRY RATE CARDS ═════════════════════════════════
+// No more "Western rate x multiplier". Each country carries ACTUAL rates:
+//  - labour: fully burdened direct labour USD/hr by skill tier (local sources)
+//  - elec:   industrial electricity USD/kWh (local tariffs)
+//  - machine rates: China = PUBLISHED job-shop rates (Ecomolding/StyleCNC/JLCPCB,
+//    operator stripped out to avoid double count). Other countries = DERIVED from
+//    China's actual rate decomposition (capital 45% / energy 25% / indirect 30%
+//    — capital equipment is globally priced) scaled by that country's ACTUAL
+//    electricity and labour. Every value is labelled published vs derived in SRC.
+var SRC={
+  ecomold:{s:'Ecomolding Shenzhen molder price guide',d:'2019-06 (rates flat since)',c:'med'},
+  stylecnc:{s:'StyleCNC China machining rates',d:'2026-07',c:'high'},
+  jlcpcb:{s:'JLCPCB published assembly price list',d:'2026-09',c:'high'},
+  cn_derived:{s:'Capex+energy+labour build-up (agent research)',d:'2026-10',c:'low'},
+  cn_jobs:{s:'jobui.com Dongguan postings + HROne burden guide',d:'2025-12',c:'med'},
+  wageind:{s:'WageIndicator CN provincial minimum wages',d:'2025-12',c:'med'},
+  intratec:{s:'Intratec / China Briefing industrial electricity',d:'2025-03',c:'med'},
+  eurostat:{s:'Eurostat labour cost levels',d:'2025',c:'high'},
+  bls:{s:'US BLS Employer Costs for Employee Compensation',d:'2025-12',c:'high'},
+  tetakawi:{s:'Tetakawi / Prodensa Mexico wage benchmarks',d:'2025-26',c:'high'},
+  jetro:{s:'JETRO Asia investment cost survey',d:'2024-25',c:'med'},
+  gpp:{s:'GlobalPetrolPrices business electricity',d:'2025',c:'med'},
+  derived:{s:'Derived from China decomposition x local energy & labour',d:'2026-10',c:'med'},
+  smm:{s:'Shanghai Metals Market (SMM)',d:'2026-09',c:'med'},
+  ggec:{s:'GGEC 002045.SZ FY2025 filings (speaker ODM GM 10.95%)',d:'2026-04',c:'high'},
+  gso:{s:'Vietnam GSO avg mfg wage + SI 23.5% (Vietnam Briefing)',d:'2025-Q1',c:'med'},
+  evn:{s:'EVN Decision 599/1279 industrial tariff',d:'2025-05',c:'high'},
+  in_jobs:{s:'Indeed/Chennai-Manesar operator postings + EPF/ESI 29%',d:'2025',c:'med'},
+  ceew:{s:'India state HT tariffs (CEEW/voltflow)',d:'2025',c:'med'},
+  th_wage:{s:'Thai Wage Committee THB400/day + SS',d:'2025-07',c:'med'},
+  pea:{s:'PEA/MEA TOU + Ft (capsolar factory index)',d:'2025-26',c:'med'},
+  my_jobs:{s:'JobStreet/Indeed MY operator + EPF 13%',d:'2025',c:'med'},
+  tnb:{s:'TNB RP4 MV tariff (all-in derived)',d:'2025-07',c:'med'},
+  id_ump:{s:'Jakarta UMP 2025 + BPJS 10.24% + THR',d:'2025',c:'med'},
+  pln:{s:'PLN I-3 industrial tariff',d:'2025-Q4',c:'high'},
+  ons:{s:'UK NLW + NIC/pension build-up (operator level)',d:'2025-26',c:'low'},
+  eia:{s:'US EIA industrial average',d:'2025',c:'high'},
+  jp_wage:{s:'JP operator wage + SI ~16% (FX-depressed)',d:'2025',c:'low'},
+  moel:{s:'Korea MOEL mfg wage, operator-adjusted',d:'2025',c:'med'},
+  usim:{s:'US published IM rates $30-150/hr tiered — validates derivation',d:'2025',c:'med'},
+  est:{s:'Engineering estimate (no published source found)',d:'2026-10',c:'low'}
 };
 
-// Teardown-grade routing. sizeInv:true = cycle time nearly size-invariant
-// (assembly/test stations don't slow down proportionally to cone diameter).
-// tweeterSkip:true = station absent on dome tweeters (no spider / dust cap / big cone).
-var STEPS=[
-  {id:'plate_form',name:'Plate Stamping &amp; Pole Forming',station:'Progressive Press',machRate:55.0,baseMin:0.15,labFrac:0.10,scrap:0.02},
-  {id:'plating',   name:'Plate Zinc Plating',         station:'Plating Line (purchased op)',machRate:20.0,baseMin:0.10,labFrac:0.05,scrap:0.01},
-  {id:'vc_wind',   name:'VC Winding',                 station:'VC Winder',        machRate:36.5,baseMin:0.80,labFrac:0.18,scrap:0.03,sizeInv:true},
-  {id:'vc_cure',   name:'VC Varnish Cure',            station:'Cure Oven',        machRate:4.5, baseMin:0.10,labFrac:0.05,scrap:0.00,sizeInv:true},
-  {id:'spider',    name:'Spider Forming',             station:'Hydraulic Press',  machRate:28.0,baseMin:0.50,labFrac:0.30,scrap:0.04,tweeterSkip:true},
-  {id:'cone',      name:'Cone / Diaphragm Forming',   station:'Moulding Press',   machRate:30.0,baseMin:0.80,labFrac:0.18,scrap:0.05},
-  {id:'dcap',      name:'Dust Cap Forming',           station:'Mini Press',       machRate:20.0,baseMin:0.25,labFrac:0.20,scrap:0.04,tweeterSkip:true},
-  {id:'mag_bond',  name:'Magnet Bonding &amp; Gap Set',station:'Bond Fixture + Gauge',machRate:9.0, baseMin:0.40,labFrac:0.45,scrap:0.02,sizeInv:true},
-  {id:'motor',     name:'Motor Stack Assembly',       station:'Semi-Auto Assy',   machRate:28.0,baseMin:0.70,labFrac:0.38,scrap:0.02,sizeInv:true},
-  {id:'magnetise', name:'Magnetisation &amp; Flux Check',station:'Magnetiser + Gaussmeter',machRate:35.0,baseMin:0.25,labFrac:0.08,scrap:0.01,sizeInv:true},
-  {id:'basket',    name:'Basket Mfg + Surface Treat', station:'(frame-dependent)', machRate:52.5,baseMin:0.80,labFrac:0.22,scrap:0.03},
-  {id:'sub_assy',  name:'Sub-Assembly (glue dispense)',station:'Assy Jig',        machRate:7.0, baseMin:1.70,labFrac:0.70,scrap:0.02,sizeInv:true},
-  {id:'terminal',  name:'Terminal Insertion &amp; Crimp',station:'Crimp Station', machRate:5.0, baseMin:0.20,labFrac:0.60,scrap:0.01,sizeInv:true},
-  {id:'ferro',     name:'Ferrofluid Dosing',          station:'Dosing Station',   machRate:10.0,baseMin:0.08,labFrac:0.30,scrap:0.01,tweeterOnly:true,sizeInv:true},
-  {id:'final',     name:'Final Assembly',             station:'Final Line',        machRate:6.0, baseMin:1.40,labFrac:0.80,scrap:0.01,sizeInv:true},
-  {id:'adhesive_cure',name:'Full Adhesive Cure',      station:'Batch Oven',       machRate:4.5, baseMin:0.10,labFrac:0.04,scrap:0.00,sizeInv:true},
-  {id:'burn_in',   name:'Burn-In (5% sample audit)',  station:'Burn-In Fixture',  machRate:8.0, baseMin:0.05,labFrac:0.08,scrap:0.00,sizeInv:true},
-  {id:'test',      name:'EOL Test (rub&amp;buzz · Fs · THD · polarity · DCR)',station:'Inline Klippel/SoundCheck',machRate:45.0,baseMin:0.20,labFrac:0.30,scrap:0.00,sizeInv:true},
-  {id:'pack',      name:'Packing &amp; Labelling',    station:'Pack Line',         machRate:5.0, baseMin:0.60,labFrac:0.88,scrap:0.00,sizeInv:true}
-];
-// Basket station parameters by frame material — a stamped-steel basket takes a
-// 0.08min progressive-die hit, not a 2.5min die-cast cycle.
-var BASKET_PROC={
-  'Die-Cast Al':      {machRate:60.0,baseMin:0.80},
-  'Stamped Steel':    {machRate:55.0,baseMin:0.08},
-  'Injected PP':      {machRate:32.0,baseMin:0.65},
-  'Die-Cast Zinc':    {machRate:58.0,baseMin:0.85},
-  'PA66 Nylon':       {machRate:34.0,baseMin:0.70},
-  'CF Composite':     {machRate:40.0,baseMin:3.00},
-  'Magnesium Die-Cast':{machRate:65.0,baseMin:0.90}
+// Published China machine-cell rates, USD/hr, EXCLUDING the direct operator
+// (quoted Chinese all-in rates include one operator @ ~$4.6/hr — stripped here).
+// FX 6.71 CNY/USD (Sep-2026).
+var CN_MACHINE_PUB={
+  im90:    {usd:3.6,  src:'ecomold'},   // ¥55 all-in − op share
+  im250:   {usd:21.5, src:'ecomold'},   // ¥175 all-in − ¥31 op = ¥144
+  im500:   {usd:44.6, src:'ecomold'},   // ¥330 − op (derived tier)
+  dc280:   {usd:14.8, src:'cn_derived'},// ¥130 − op
+  dc800:   {usd:40.1, src:'cn_derived'},
+  stamp60: {usd:4.3,  src:'cn_derived'},// press shared ops
+  stamp200:{usd:11.9, src:'cn_derived'},
+  cnc3ax:  {usd:25.4, src:'stylecnc'},  // $30 all-in − op
+  winder:  {usd:1.3,  src:'cn_derived'},// ¥16/spindle − shared op share — winding cost is labour
+  press_s: {usd:3.2,  src:'cn_derived'},// small forming press (cone/dome/dustcap)
+  usweld:  {usd:1.1,  src:'cn_derived'},// ¥35 − dedicated op ⇒ machine nearly free
+  oven:    {usd:2.6,  src:'cn_derived'},// ¥20 batch oven − allocation
+  magnet:  {usd:3.8,  src:'est'},       // magnetiser + gaussmeter cell
+  klippel: {usd:7.5,  src:'est'},       // inline EOL analyzer ($60k capex, 4k hr/yr)
+  bench:   {usd:0.8,  src:'cn_derived'},// jig/bench — capex negligible
+  plating: {usd:3.0,  src:'est'}        // purchased-op allocation basis
 };
+// China decomposition for deriving other countries (capital globally priced):
+var MACH_SPLIT={cap:0.45, energy:0.25, indirect:0.30};
+
+// countryKey → rate card. labour = {op, tech, qc} USD/hr fully burdened.
+// elec = USD/kWh industrial. Updated with Oct-2026 agent research.
+var RATECARDS={
+  'China':           {labour:{op:4.3, tech:7.0, qc:4.6}, elec:0.096, src:{lab:'cn_jobs',elec:'intratec'}},
+  'China (Coastal)': {labour:{op:4.6, tech:7.5, qc:4.9}, elec:0.089, src:{lab:'cn_jobs',elec:'intratec'}},
+  'China (Inland)':  {labour:{op:3.6, tech:6.0, qc:3.9}, elec:0.095, src:{lab:'wageind',elec:'intratec'}},
+  'Vietnam':         {labour:{op:1.9, tech:3.6, qc:2.2}, elec:0.084, src:{lab:'gso',elec:'evn'}},
+  'India':           {labour:{op:1.1, tech:2.4, qc:1.4}, elec:0.085, src:{lab:'in_jobs',elec:'ceew'}},
+  'Thailand':        {labour:{op:1.9, tech:3.8, qc:2.3}, elec:0.120, src:{lab:'th_wage',elec:'pea'}},
+  'Malaysia':        {labour:{op:2.7, tech:5.0, qc:3.1}, elec:0.110, src:{lab:'my_jobs',elec:'tnb'}},
+  'Indonesia':       {labour:{op:2.1, tech:4.0, qc:2.4}, elec:0.062, src:{lab:'id_ump',elec:'pln'}},
+  'Mexico':          {labour:{op:5.5, tech:12.9,qc:6.5}, elec:0.117, src:{lab:'tetakawi',elec:'tetakawi'}},
+  'Hungary':         {labour:{op:14.0,tech:19.5,qc:15.0},elec:0.230, src:{lab:'eurostat',elec:'eurostat'}},
+  'Czechia':         {labour:{op:17.0,tech:23.0,qc:18.0},elec:0.220, src:{lab:'eurostat',elec:'eurostat'}},
+  'Eastern Europe':  {labour:{op:11.5,tech:17.0,qc:12.5},elec:0.190, src:{lab:'eurostat',elec:'eurostat'}},
+  'Germany':         {labour:{op:45.0,tech:56.0,qc:47.0},elec:0.226, src:{lab:'eurostat',elec:'eurostat'}},
+  'UK':              {labour:{op:20.0,tech:30.0,qc:22.0},elec:0.340, src:{lab:'ons',elec:'gpp'}},
+  'USA':             {labour:{op:42.6,tech:54.0,qc:44.0},elec:0.086, src:{lab:'bls',elec:'eia'}},
+  'Japan':           {labour:{op:14.0,tech:20.0,qc:15.0},elec:0.190, src:{lab:'jp_wage',elec:'gpp'}},
+  'South Korea':     {labour:{op:16.0,tech:23.0,qc:17.5},elec:0.118, src:{lab:'moel',elec:'gpp'}}
+};
+
+// Actual machine rate for any country, with provenance.
+function machineRate(cls, countryKey){
+  var pub=CN_MACHINE_PUB[cls];
+  if(!pub) return {usd:0, basis:'missing', src:'est'};
+  var isCN = countryKey && countryKey.indexOf('China')===0;
+  if(isCN) return {usd:pub.usd, basis:'published (China)', src:pub.src};
+  var cn=RATECARDS['China (Coastal)'], rc=RATECARDS[countryKey]||cn;
+  var f = MACH_SPLIT.cap
+        + MACH_SPLIT.energy  * (rc.elec       / cn.elec)
+        + MACH_SPLIT.indirect* (rc.labour.tech/ cn.labour.tech);
+  return {usd:pub.usd*f, basis:'derived from China decomposition x local energy/labour', src:'derived'};
+}
+
+// Display metadata + outbound logistics index (kept from v2; display only)
+var COUNTRIES={
+  'China':           {cur:'CNY',sym:'¥',  usd:0.149, logI:0.85},
+  'China (Coastal)': {cur:'CNY',sym:'¥',  usd:0.149, logI:0.83},
+  'China (Inland)':  {cur:'CNY',sym:'¥',  usd:0.149, logI:0.88},
+  'Vietnam':         {cur:'VND',sym:'₫',  usd:0.0000385,logI:0.87},
+  'India':           {cur:'INR',sym:'₹',  usd:0.0105,logI:0.88},
+  'Thailand':        {cur:'THB',sym:'฿',  usd:0.0298,logI:0.89},
+  'Malaysia':        {cur:'MYR',sym:'RM', usd:0.245, logI:0.88},
+  'Indonesia':       {cur:'IDR',sym:'Rp', usd:0.0000558,logI:0.89},
+  'Mexico':          {cur:'MXN',sym:'MX$',usd:0.0541,logI:0.92},
+  'Hungary':         {cur:'HUF',sym:'Ft', usd:0.00307,logI:1.06},
+  'Czechia':         {cur:'CZK',sym:'Kč', usd:0.0459,logI:1.06},
+  'Eastern Europe':  {cur:'EUR',sym:'€',  usd:1.119, logI:1.05},
+  'Germany':         {cur:'EUR',sym:'€',  usd:1.119, logI:1.12},
+  'UK':              {cur:'GBP',sym:'£',  usd:1.33,  logI:1.15},
+  'USA':             {cur:'USD',sym:'$',  usd:1.00,  logI:1.10},
+  'Japan':           {cur:'JPY',sym:'¥',  usd:0.00633,logI:1.02},
+  'South Korea':     {cur:'KRW',sym:'₩',  usd:0.000745,logI:1.02}
+};
+
+// Teardown-grade routing on ACTUAL machine classes.
+// mc: machine class (see CN_MACHINE_PUB / machineRate) — machine cost = min/60 x rate(country)
+// crew: operator-fraction manning the station (1 op tending 3 winders ⇒ 0.33)
+// skill: labour tier used for the crew ('op' | 'tech' | 'qc')
+// sizeInv: cycle nearly size-invariant | tweeterSkip/tweeterOnly: anatomy gating
+var STEPS=[
+  {id:'plate_form',name:'Plate Stamping &amp; Pole Forming',mc:'stamp200',baseMin:0.15,crew:0.15,skill:'op', scrap:0.02},
+  {id:'plating',   name:'Plate Zinc Plating',         mc:'plating', baseMin:0.10,crew:0.05,skill:'op', scrap:0.01},
+  {id:'vc_wind',   name:'VC Winding',                 mc:'winder',  baseMin:0.80,crew:0.33,skill:'op', scrap:0.03,sizeInv:true},
+  {id:'vc_cure',   name:'VC Varnish Cure',            mc:'oven',    baseMin:0.10,crew:0.03,skill:'op', scrap:0.00,sizeInv:true},
+  {id:'spider',    name:'Spider Forming',             mc:'press_s', baseMin:0.50,crew:0.50,skill:'op', scrap:0.04,tweeterSkip:true},
+  {id:'cone',      name:'Cone / Diaphragm Forming',   mc:'press_s', baseMin:0.80,crew:0.40,skill:'op', scrap:0.05},
+  {id:'dcap',      name:'Dust Cap Forming',           mc:'press_s', baseMin:0.25,crew:0.40,skill:'op', scrap:0.04,tweeterSkip:true},
+  {id:'mag_bond',  name:'Magnet Bonding &amp; Gap Set',mc:'bench',   baseMin:0.40,crew:0.80,skill:'op', scrap:0.02,sizeInv:true},
+  {id:'motor',     name:'Motor Stack Assembly',       mc:'bench',   baseMin:0.70,crew:0.80,skill:'op', scrap:0.02,sizeInv:true},
+  {id:'magnetise', name:'Magnetisation &amp; Flux Check',mc:'magnet',baseMin:0.25,crew:0.25,skill:'op', scrap:0.01,sizeInv:true},
+  {id:'basket',    name:'Basket Mfg + Surface Treat', mc:'dc280',   baseMin:0.80,crew:0.30,skill:'op', scrap:0.03},
+  {id:'sub_assy',  name:'Sub-Assembly (glue dispense)',mc:'bench',  baseMin:1.70,crew:1.00,skill:'op', scrap:0.02,sizeInv:true},
+  {id:'terminal',  name:'Terminal Insertion &amp; Crimp',mc:'bench', baseMin:0.20,crew:0.90,skill:'op', scrap:0.01,sizeInv:true},
+  {id:'ferro',     name:'Ferrofluid Dosing',          mc:'bench',   baseMin:0.08,crew:0.50,skill:'op', scrap:0.01,tweeterOnly:true,sizeInv:true},
+  {id:'final',     name:'Final Assembly',             mc:'bench',   baseMin:1.40,crew:1.00,skill:'op', scrap:0.01,sizeInv:true},
+  {id:'adhesive_cure',name:'Full Adhesive Cure',      mc:'oven',    baseMin:0.10,crew:0.03,skill:'op', scrap:0.00,sizeInv:true},
+  {id:'burn_in',   name:'Burn-In (5% sample audit)',  mc:'bench',   baseMin:0.05,crew:0.20,skill:'qc', scrap:0.00,sizeInv:true},
+  {id:'test',      name:'EOL Test (rub&amp;buzz · Fs · THD · polarity · DCR)',mc:'klippel',baseMin:0.20,crew:0.50,skill:'qc',scrap:0.00,sizeInv:true},
+  {id:'pack',      name:'Packing &amp; Labelling',    mc:'bench',   baseMin:0.60,crew:1.00,skill:'op', scrap:0.00,sizeInv:true}
+];
+// Basket station by frame material — machine class + cycle
+var BASKET_PROC={
+  'Die-Cast Al':      {mc:'dc280',   baseMin:0.80,crew:0.30},
+  'Stamped Steel':    {mc:'stamp200',baseMin:0.08,crew:0.15},
+  'Injected PP':      {mc:'im250',   baseMin:0.65,crew:0.25},
+  'Die-Cast Zinc':    {mc:'dc280',   baseMin:0.85,crew:0.30},
+  'PA66 Nylon':       {mc:'im250',   baseMin:0.70,crew:0.25},
+  'CF Composite':     {mc:'bench',   baseMin:3.00,crew:1.00},
+  'Magnesium Die-Cast':{mc:'dc800',  baseMin:0.90,crew:0.30}
+};
+
+// ═══ PARAMETRIC AMPLIFIER/DSP MODEL (component-level, Oct-2026 research) ═════
+// Replaces flat "amp = $22" prices. China EXW base; OEM prices = 0.5 x distributor
+// 1k tiers (AD2428 reel-vs-single spread supports this). Research anchors:
+// TAS6424-Q1 $7.66@1k, ADAU1452 $9.22, ADAU1467 $13.08 (ADI list), AD2428 $5.04@250,
+// PCB 6L $2.20/dm2 China, SMT $0.004/placement, die-cast housing $4/kg finished.
+// Cross-checks: stripped 4ch = $26 (legacy flat $22 described only this);
+// 16ch flagship $110 vs Bronco B&O amp bracket $80-150. Silicon 35-42% of total.
+var AMP_MODEL_SRC={s:'Digi-Key/Mouser/LCSC/TI/ADI + Atlas PCB 2026 + JLCPCB (agent research)',d:'2026-10',c:'med'};
+function computeAmpCost(ch, wTotal, hasDsp, hasA2b, countryKey){
+  var perIC   = (wTotal/ch) > 30 ? 6.00 : 4.00;          // TAS6584-class HV vs TAS6424-class
+  var ampICs  = Math.ceil(ch/4) * perIC;
+  var dsp     = !hasDsp ? 0 : (ch >= 12 ? 8.50 : 6.00);  // ADAU1467 vs ADAU1452 + support
+  var mcu     = 2.00;                                     // S32K1-class CAN/diag — always
+  var a2b     = hasA2b ? (ch <= 8 ? 1 : 2) * 3.50 : 0;   // AD2428 nodes + bus discretes
+  var psu     = 2.50 + 0.012 * wTotal;
+  var filt    = 0.45 * ch;                                // LC output filter per channel
+  var pcbDm2  = 0.8 + 0.10*ch + 0.002*wTotal;
+  var pcb     = pcbDm2 * 2.20;                            // 6-layer automotive FR4, China
+  var pass    = 1.50 + 0.15*ch + 0.003*wTotal;
+  var conn    = 1.20 + (ch>=8?0.80:0) + (ch>=16?0.80:0);
+  var housKg  = 0.35 + 0.0012*wTotal;
+  var hous    = 4.00*housKg + 0.60;
+  var placements = 180 + 25*ch;
+  // Assembly & housing scale with the manufacturing country's actual labour;
+  // silicon/passives are globally priced.
+  var rcCN=RATECARDS['China (Coastal)'], rc=RATECARDS[countryKey]||rcCN;
+  var labF = 0.4 + 0.6*(rc.labour.op/rcCN.labour.op);
+  var assy = (0.004*placements + 0.90 + 0.15 + 0.80) * labF;
+  var housAdj = hous * (0.75 + 0.25*labF);
+  var subtotal = ampICs + dsp + mcu + a2b + psu + filt + pcb + pass + conn + housAdj + assy;
+  var total = subtotal * 1.12;                            // factory OH + scrap at EXW
+  return {total:total, parts:{ampICs:ampICs,dsp:dsp,mcu:mcu,a2b:a2b,psu:psu,filt:filt,pcb:pcb,pass:pass,conn:conn,hous:housAdj,assy:assy},
+          ch:ch, w:wTotal, hasDsp:hasDsp, hasA2b:hasA2b};
+}
 
 var SYSTEMS={
   'Standard':{
@@ -2252,8 +2432,8 @@ var SYSTEMS={
       {role:'Centre Speaker',  type:'Mid-Range', sizeMM:80, qty:1,loc:'Dashboard', powerW:30},
       {role:'Subwoofer',       type:'Subwoofer', sizeMM:250,qty:1,loc:'Boot',      powerW:150}
     ],
-    amp:{type:'4-Channel Class D',channels:4,power_W:240,costUSD:22},
-    dsp:{type:'8-Channel DSP',costUSD:14},
+    amp:{type:'4-ch Class-D + DSP (TAS6424-class, ADAU1452)',channels:4,power_W:240,dsp:true,a2b:false},
+    dsp:null,
     wiring:{harness_m:14,spk_cable_m:20,harnessCost:7.50,cableCost_m:0.20},connectors:20
   },
   'Premium':{
@@ -2267,8 +2447,8 @@ var SYSTEMS={
       {role:'Centre Speaker',  type:'Mid-Range', sizeMM:100,qty:1,loc:'Dashboard',  powerW:35},
       {role:'Subwoofer',       type:'Subwoofer', sizeMM:300,qty:1,loc:'Boot',       powerW:200}
     ],
-    amp:{type:'7-Channel Class D',channels:7,power_W:525,costUSD:38},
-    dsp:{type:'12-Channel DSP',costUSD:22},
+    amp:{type:'8-ch Class-D + DSP (HV ICs, ADAU1452)',channels:8,power_W:600,dsp:true,a2b:false},
+    dsp:null,
     wiring:{harness_m:20,spk_cable_m:32,harnessCost:10.00,cableCost_m:0.22},connectors:30
   },
   'Immersive 3D':{
@@ -2285,8 +2465,8 @@ var SYSTEMS={
       {role:'Roof Height',      type:'Mid-Range', sizeMM:80, qty:4,loc:'Roof',        powerW:20},
       {role:'Headrest Tweeter', type:'Tweeter',   sizeMM:50, qty:4,loc:'Headrest',    powerW:10}
     ],
-    amp:{type:'14-Channel Class D',channels:14,power_W:840,costUSD:72},
-    dsp:{type:'20-Channel DSP + Processor',costUSD:42},
+    amp:{type:'14-ch Class-D + DSP (ADAU1467) + A2B',channels:14,power_W:840,dsp:true,a2b:true},
+    dsp:null,
     wiring:{harness_m:35,spk_cable_m:60,harnessCost:18.00,cableCost_m:0.22},connectors:55
   },
   'Immersive 4D':{
@@ -2304,8 +2484,8 @@ var SYSTEMS={
       {role:'Headrest Tweeter', type:'Tweeter',   sizeMM:50, qty:4,loc:'Headrest',    powerW:10},
       {role:'Seat Actuator',    type:'Actuator',  sizeMM:100,qty:4,loc:'Seat',        powerW:30}
     ],
-    amp:{type:'16-Channel Class D + Haptic Amp',channels:16,power_W:960,costUSD:95},
-    dsp:{type:'24-Channel DSP + Processor + Haptic',costUSD:85},
+    amp:{type:'16-ch Class-D + haptic ch + DSP (ADAU1467) + A2B',channels:18,power_W:1080,dsp:true,a2b:true},
+    dsp:null,
     wiring:{harness_m:48,spk_cable_m:80,harnessCost:24.00,cableCost_m:0.22},connectors:72
   }
 };
@@ -2325,23 +2505,27 @@ var SPK_SYS={
   Actuator:   {hsg:0.40,grille:0,   brkt:0,   conn:0.15}   // seat-frame bracket
 };
 
+// Feature adders built from researched component costs (AEC-Q MEMS mic $1.2-1.6
+// @1k; AD2428 A2B node $3-6; RNC accelerometer = engineering estimate, no
+// published price). DSP silicon itself lives in the amp model — features here
+// only add what the base system lacks (sensors, licenses, tuning, extra HW).
 var TECH_FEATURES={
-  'ANC':           {label:'Active Noise Cancellation',  cost:14.0},
-  'DSP Integration':{label:'DSP Integration',           cost:9.0},
-  'Waterproofing': {label:'Waterproofing (IPX5)',        cost:5.5},
-  'Sound Zones':   {label:'Sound Zone Control',          cost:22.0},
-  'Beamforming':   {label:'Beamforming Array',           cost:35.0},
-  'Wireless':      {label:'Wireless Module',             cost:14.5},
-  '3D Audio':      {label:'3D / Spatial Audio',          cost:28.0},
-  '4D Haptics':    {label:'4D Haptic Feedback',          cost:48.0},
-  'Voice Pickup':  {label:'Voice Pickup Array',          cost:18.0},
-  'Apple CA':      {label:'Apple CarPlay Audio',         cost:6.0},
-  'GaN Amp':       {label:'GaN Amplifier (Class D+)',    cost:22.0},
-  'Neural DSP':    {label:'Neural DSP (AI Audio)',       cost:45.0},
-  'RNC':           {label:'Road Noise Cancellation',     cost:18.5},
-  'OTA Calibration':{label:'OTA Audio Calibration',     cost:8.0},
-  'A2B Bus':       {label:'A2B Automotive Audio Bus',    cost:12.0},
-  'Head Tracking': {label:'Spatial Head Tracking',       cost:25.0}
+  'ANC':           {label:'Engine-Order ANC (4 mics + tuning)',    cost:11.0, src:'est'},   // 4x$1.4 mic + harness + license amort
+  'DSP Integration':{label:'Brand DSP Tuning License',             cost:6.0,  src:'est'},   // silicon already in amp — this is tuning/cal
+  'Waterproofing': {label:'Waterproofing (IPX5 door drivers)',      cost:5.5,  src:'est'},
+  'Sound Zones':   {label:'Personal Sound Zones (tuning + filters)',cost:14.0, src:'est'},
+  'Beamforming':   {label:'Beamforming Array (extra drivers+DSP)',  cost:28.0, src:'est'},
+  'Wireless':      {label:'Wireless/BT Module (AEC-Q)',             cost:9.5,  src:'est'},
+  '3D Audio':      {label:'3D / Spatial Rendering License',         cost:18.0, src:'est'},  // Atmos/360RA license + height tuning
+  '4D Haptics':    {label:'4D Haptic Drive (amp ch + tuning)',      cost:22.0, src:'est'},  // actuator HW costed in drivers
+  'Voice Pickup':  {label:'Voice Pickup Array (2 extra mics + beam)',cost:7.0, src:'est'},
+  'Apple CA':      {label:'CarPlay Audio Certification',            cost:4.0,  src:'est'},
+  'GaN Amp':       {label:'GaN Output Stage (not yet OEM practice)',cost:18.0, src:'est'},  // flagged emerging — no AEC-Q GaN audio IC exists
+  'Neural DSP':    {label:'Neural/AI Audio (SoC upgrade share)',    cost:24.0, src:'est'},
+  'RNC':           {label:'Road-Noise Cancel (4 accels + 2 mics)',  cost:21.0, src:'est'},  // accel $ = estimate; no published price
+  'OTA Calibration':{label:'OTA Audio Calibration (SW infra amort)',cost:6.0,  src:'est'},
+  'A2B Bus':       {label:'A2B Retrofit on analog system',          cost:9.0,  src:'est'},  // 2 nodes + cable delta; 3D/4D already A2B
+  'Head Tracking': {label:'Spatial Head Tracking (IR cam share)',   cost:20.0, src:'est'}
 };
 
 // est_cost = EXW China factory-gate USD (not OEM sell price)
@@ -2409,11 +2593,12 @@ function computeBOM(inp,sizeScale){
   // key: MRATE key, kept on each BOM row so downstream consumers (sustainability
   // tab) can identify the material even when a contracted rate override is active.
   var MAG_MAT={
-    'Neodymium':     {m:MRATE.neo,     key:'neo',     gFn:function(p){return p.magG_neo;},     spec:'Nd-Fe-B N42'},
-    'Neodymium N35': {m:MRATE.neo_n35, key:'neo_n35', gFn:function(p){return p.magG_neo*1.14;},spec:'Nd-Fe-B N35'},
-    'Neodymium N48': {m:MRATE.neo_n48, key:'neo_n48', gFn:function(p){return p.magG_neo*0.92;},spec:'Nd-Fe-B N48'},
-    'Neodymium N52': {m:MRATE.neo_n52, key:'neo_n52', gFn:function(p){return p.magG_neo*0.85;},spec:'Nd-Fe-B N52'},
-    'NdFeB N42SH':   {m:MRATE.neo_sh,  key:'neo_sh',  gFn:function(p){return p.magG_neo;},     spec:'N42SH 150°C Dy-doped'},
+    'Neodymium':     {m:MRATE.neo,     key:'neo',     gFn:function(p){return p.magG_neo;},     spec:'NdFeB N38H (automotive std)'},
+    'Neodymium N35': {m:MRATE.neo_n35, key:'neo_n35', gFn:function(p){return p.magG_neo*1.06;},spec:'NdFeB N35H'},
+    'Neodymium N42': {m:MRATE.neo_n42, key:'neo_n42', gFn:function(p){return p.magG_neo*0.95;},spec:'NdFeB N42'},
+    'Neodymium N48': {m:MRATE.neo_n48, key:'neo_n48', gFn:function(p){return p.magG_neo*0.88;},spec:'NdFeB N48'},
+    'Neodymium N52': {m:MRATE.neo_n52, key:'neo_n52', gFn:function(p){return p.magG_neo*0.82;},spec:'NdFeB N52'},
+    'NdFeB N42SH':   {m:MRATE.neo_sh,  key:'neo_sh',  gFn:function(p){return p.magG_neo*0.95;},spec:'N42SH 150°C GBD'},
     'Ferrite':       {m:MRATE.ferrite, key:'ferrite', gFn:function(p){return p.magG_fer;},     spec:'Ferrite Y30'},
     'Ferrite Y35':   {m:MRATE.ferrite_y35,key:'ferrite_y35',gFn:function(p){return p.magG_fer*0.88;},spec:'Ferrite Y35'},
     'Alnico':        {m:MRATE.alnico,  key:'alnico',  gFn:function(p){return p.magG_fer*0.60;},spec:'Al-Ni-Co 5'},
@@ -2542,40 +2727,48 @@ function computeBOM(inp,sizeScale){
 }
 
 // sizeRatio = driver.sizeMM / REF_MM[type]. Forming steps scale with size^1.3
-// (material/tonnage-driven); assembly/test steps are nearly size-invariant
-// (^0.3) — a 200mm woofer doesn't take 1.5x longer to glue than a 165mm one.
-function computeProcess(inp,country,sizeRatio){
+// (material/tonnage-driven); assembly/test steps are nearly size-invariant (^0.3).
+// Costs computed from the country's ACTUAL rate card:
+//   machine $ = minutes/60 x machineRate(class, country)
+//   labour $  = minutes/60 x crew x labourRate(skill tier, country)
+function computeProcess(inp,countryKey,sizeRatio){
   if(sizeRatio===undefined)sizeRatio=1.0;
   var p=PROF[inp.type];
   var cyc=p.cyc;
-  var labUSD=country.labHr;
-  var machM=country.machM;
+  var rc=RATECARDS[countryKey]||RATECARDS['China'];
   var pwrF=1+Math.max(0,inp.power-50)*0.0008;
   var formScale=Math.pow(sizeRatio,1.3);
   var assyScale=Math.pow(sizeRatio,0.3);
   var rows=[];
-  STEPS.forEach(function(s){
-    // Anatomy gating: skip stations for parts this driver doesn't have
-    if(s.id==='spider' && p.spider_g<=0) return;
-    if(s.id==='cone'   && p.cone_g<=0)   return;
-    if(s.id==='dcap'   && p.dcap_g<=0)   return;
-    if(s.tweeterOnly && !p.ferro)        return;
-    var machRate=s.machRate, baseMin=s.baseMin, station=s.station;
-    if(s.id==='basket'){
+  STEPS.forEach(function(st){
+    if(st.id==='spider' && p.spider_g<=0) return;
+    if(st.id==='cone'   && p.cone_g<=0)   return;
+    if(st.id==='dcap'   && p.dcap_g<=0)   return;
+    if(st.tweeterOnly && !p.ferro)        return;
+    var mc=st.mc, baseMin=st.baseMin, crew=st.crew;
+    if(st.id==='basket'){
       var bp=BASKET_PROC[inp.frame]||BASKET_PROC['Die-Cast Al'];
-      machRate=bp.machRate; baseMin=bp.baseMin;
-      station=inp.frame+' cell';
+      mc=bp.mc; baseMin=bp.baseMin; crew=bp.crew;
     }
-    var scale=s.sizeInv?assyScale:formScale;
-    var minThis=baseMin*cyc*scale*(s.id==='test'||s.id==='motor'?pwrF:1);
+    var mr=machineRate(mc,countryKey);
+    var labRate=rc.labour[st.skill]||rc.labour.op;
+    var scale=st.sizeInv?assyScale:formScale;
+    var minThis=baseMin*cyc*scale*(st.id==='test'||st.id==='motor'?pwrF:1);
     var hrs=minThis/60;
-    var mach=hrs*machRate*machM;
-    var lab=hrs*labUSD*s.labFrac;
-    var scrapCost=(mach+lab)*s.scrap;
-    rows.push(Object.assign({},s,{station:station,cycMin:minThis,machCost:mach,labCost:lab,scrapCost:scrapCost,total:mach+lab+scrapCost}));
+    var mach=hrs*mr.usd;
+    var lab=hrs*labRate*crew;
+    var scrapCost=(mach+lab)*st.scrap;
+    rows.push(Object.assign({},st,{mc:mc,station:MACHINE_CLASS_LABEL(mc),machRateUsd:mr.usd,machBasis:mr.basis,machSrc:mr.src,
+      labRateUsd:labRate,crew:crew,cycMin:minThis,machCost:mach,labCost:lab,scrapCost:scrapCost,total:mach+lab+scrapCost}));
   });
   return rows;
 }
+var _MC_LABELS={im90:'Injection mould 90T',im250:'Injection mould 250T',im500:'Injection mould 500T',
+  dc280:'Die-cast cell 280T',dc800:'Die-cast cell 800T',stamp60:'Progressive press 60T',
+  stamp200:'Progressive press 200T',cnc3ax:'CNC 3-axis VMC',winder:'VC winder (auto)',
+  press_s:'Forming press (small)',usweld:'Ultrasonic welder',oven:'Batch cure oven',
+  magnet:'Magnetiser + gaussmeter',klippel:'Inline Klippel/SoundCheck',bench:'Assy bench / jig',plating:'Plating line (purchased op)'};
+function MACHINE_CLASS_LABEL(mc){return _MC_LABELS[mc]||mc;}
 
 // typeQty = total units of this driver TYPE across the whole system per vehicle.
 // One tool set per unique part type — front/rear identical tweeters share tooling;
@@ -2721,7 +2914,7 @@ function computeSpkPerUnit(driver,inp,country,typeQty){
   var sizeScale=Math.pow(sizeRatio,1.3);
   var scaledInp=Object.assign({},inp,{type:driver.type,power:driver.powerW,vcDia:25*Math.pow(sizeScale,0.6)});
   var bom=computeBOM(scaledInp,sizeScale);
-  var proc=computeProcess(scaledInp,country,sizeRatio);   // rows already size-scaled
+  var proc=computeProcess(scaledInp,inp.country,sizeRatio);   // rows already size-scaled; rates from RATECARDS[inp.country]
   var tool=computeTooling(driver.type,inp.annualVol,typeQty||driver.qty);
   var DM=bom.reduce(function(s,r){return s+r.cost;},0);
   var DLab=proc.reduce(function(s,r){return s+r.labCost;},0);
@@ -2732,7 +2925,7 @@ function computeSpkPerUnit(driver,inp,country,typeQty){
   // small material-handling adder on DM (~3%) — NOT a flat % of prime.
   var foh=(DLab+DMach)*0.35 + DM*0.03;
   var mfgCost=prime+foh;
-  var lowCC=['China','China (Coastal)','China (Inland)','Vietnam','India','Thailand','Mexico','SE Asia (other)'];
+  var lowCC=['China','China (Coastal)','China (Inland)','Vietnam','India','Thailand','Malaysia','Indonesia','Mexico'];
   var isLowCC=lowCC.indexOf(inp.country)>=0;
   var ga=mfgCost*(isLowCC?0.05:0.07);  // China Tier-1/2 G&A 5%; Western 7%
   var toolAmort=tool.perUnit;
@@ -2766,11 +2959,17 @@ function computeSystemCost(inp){
   var totalDM=spkResults.reduce(function(s,r){return s+r.DM*r.driver.qty;},0);
   var totalDLab=spkResults.reduce(function(s,r){return s+r.DLab*r.driver.qty;},0);
   var totalDMach=spkResults.reduce(function(s,r){return s+r.DMach*r.driver.qty;},0);
-  var sysAmpCost=system.amp?system.amp.costUSD:0;   // EXW China price direct; no machM on purchased electronics
-  var sysDspCost=system.dsp?system.dsp.costUSD:0;   // same
+  // Amplifier/DSP: component-level parametric model (no flat purchased prices)
+  var ampCalc=system.amp?computeAmpCost(system.amp.channels,system.amp.power_W,system.amp.dsp!==false,!!system.amp.a2b,inp.country):null;
+  var sysAmpCost=ampCalc?ampCalc.total:0;
+  var sysDspCost=0;  // DSP integrated in the amp module (separate boxes overstate $5-15)
   var vehF=VEH_WIRE[inp.vehicleClass]||1.0;
-  var sysWireCost=(system.wiring.harnessCost+system.wiring.spk_cable_m*system.wiring.cableCost_m)*vehF;
-  var sysConnCost=system.connectors*0.22;  // $0.22/connector China EXW (was $0.45 Western)
+  var isA2B=!!(system.amp&&system.amp.a2b);
+  // A2B daisy-chain UTP replaces analog home-runs: ~45% cable + 30% connector saving,
+  // plus one head-unit A2B node (amp-side nodes already in computeAmpCost)
+  var sysWireCost=(system.wiring.harnessCost+system.wiring.spk_cable_m*system.wiring.cableCost_m*(isA2B?0.55:1))*vehF
+                 +(isA2B?3.50:0);
+  var sysConnCost=system.connectors*0.22*(isA2B?0.70:1);  // $0.22/connector China EXW
   var featCost=inp.features.reduce(function(s,f){return s+((TECH_FEATURES[f]&&TECH_FEATURES[f].cost)||0);},0);
   // Bought-in electronics carry handling + G&A + warranty burden (~6%) —
   // the Tier-1 integrator warrants what it resells.
@@ -2801,9 +3000,180 @@ function computeSystemCost(inp){
   return {spkResults:spkResults,totalSpkCount:totalSpkCount,totalSpkWorks:totalSpkWorks,totalSpkCO2:totalSpkCO2,
     totalDM:totalDM,totalDLab:totalDLab,totalDMach:totalDMach,totalPrime:totalPrime,totalFOH:totalFOH,totalMfg:totalMfg,
     totalGA:totalGA,totalTool:totalTool,totalWarr:totalWarr,totalICC:totalICC,totalEDD:totalEDD,totalInb:totalInb,
-    sysAmpCost:sysAmpCost,sysDspCost:sysDspCost,sysWireCost:sysWireCost,sysConnCost:sysConnCost,elecHandling:elecHandling,sysTotalExtra:sysTotalExtra,
+    sysAmpCost:sysAmpCost,sysDspCost:sysDspCost,ampCalc:ampCalc,isA2B:isA2B,sysWireCost:sysWireCost,sysConnCost:sysConnCost,elecHandling:elecHandling,sysTotalExtra:sysTotalExtra,
     totalWorks:totalWorks,featCost:featCost,outFrt:outFrt,dutyRate:dutyRate,duty:duty,landed:landed,margin:margin,total:total,
     system:system,country:country,inp:inp};
+}
+
+// ═══════════════ LIVE VISUALS: driver anatomy + vehicle audio map ═══════════
+var CONE_FILL={'Polypropylene':'#3b4a5c','Mica-Filled PP':'#46525f','Glass-Fiber PP':'#4c5a52',
+  'Paper':'#b8a27a','Wool-Blend Paper':'#a99571','Treated Paper':'#9a8a6a','Kevlar':'#c8a52e',
+  'Carbon Fibre':'#23272e','Composite':'#394a55','Aluminium Foil':'#9fb2c4','Titanium':'#8e97a8'};
+var SURR_FILL={'Rubber':'#1d262f','Foam':'#5a5244','Cloth':'#4a4458','TPU (Injection)':'#35424e',
+  'Butyl Rubber':'#242c33','Santoprene':'#30414c','Silicone':'#cfd6de','Impregnated Cloth':'#45405a'};
+var FRAME_FILL={'Die-Cast Al':'#5c6b7d','Stamped Steel':'#49525e','Injected PP':'#2a3542',
+  'Die-Cast Zinc':'#616c79','PA66 Nylon':'#333f4d','CF Composite':'#22262c','Magnesium Die-Cast':'#68788c'};
+function shade(hex,pct){
+  var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  r=Math.min(255,Math.max(0,Math.round(r+(pct>0?(255-r):r)*pct)));
+  g=Math.min(255,Math.max(0,Math.round(g+(pct>0?(255-g):g)*pct)));
+  b=Math.min(255,Math.max(0,Math.round(b+(pct>0?(255-b):b)*pct)));
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+var _gid=0;
+function anatomySVG(cfg){
+  var isNeo=(cfg.magnet||'').indexOf('Neo')===0||(cfg.magnet||'').indexOf('NdFeB')===0;
+  var t=cfg.type||'Full-Range';
+  var P={
+    'Tweeter':   {R:78, surrF:0.10,capF:0.72,dome:true},
+    'Mid-Range': {R:108,surrF:0.16,capF:0.30},
+    'Full-Range':{R:128,surrF:0.17,capF:0.27},
+    'Coaxial':   {R:128,surrF:0.17,capF:0.26,coax:true},
+    'Component': {R:128,surrF:0.17,capF:0.27},
+    'Subwoofer': {R:148,surrF:0.24,capF:0.30,beef:true},
+    'Actuator':  {R:96, exciter:true}
+  }[t]||{};
+  var W=640,H=400,cx=252,cy=190;
+  var coneC=CONE_FILL[cfg.cone]||'#3b4a5c';
+  var surrC=SURR_FILL[cfg.surround]||'#1d262f';
+  var frameC=FRAME_FILL[cfg.frame]||'#5c6b7d';
+  var magC=isNeo?'#364460':'#59636d';
+  var gid='g'+(_gid++);
+  var defs='<defs>'
+    +'<radialGradient id="'+gid+'cone"><stop offset="0" stop-color="'+shade(coneC,-0.38)+'"/><stop offset="0.55" stop-color="'+coneC+'"/><stop offset="1" stop-color="'+shade(coneC,0.22)+'"/></radialGradient>'
+    +'<radialGradient id="'+gid+'cap"><stop offset="0" stop-color="'+shade(coneC,0.42)+'"/><stop offset="0.65" stop-color="'+shade(coneC,0.1)+'"/><stop offset="1" stop-color="'+shade(coneC,-0.25)+'"/></radialGradient>'
+    +'<linearGradient id="'+gid+'ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+shade(frameC,0.3)+'"/><stop offset="1" stop-color="'+shade(frameC,-0.32)+'"/></linearGradient>'
+    +'<linearGradient id="'+gid+'surr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+shade(surrC,0.18)+'"/><stop offset="1" stop-color="'+shade(surrC,-0.3)+'"/></linearGradient>'
+    +'<linearGradient id="'+gid+'mag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+shade(magC,0.25)+'"/><stop offset="1" stop-color="'+shade(magC,-0.35)+'"/></linearGradient>'
+    +'<radialGradient id="'+gid+'shadow"><stop offset="0.6" stop-color="rgba(0,0,0,0.55)"/><stop offset="1" stop-color="rgba(0,0,0,0)"/></radialGradient>'
+    +'</defs>';
+  var s='', labels=[];
+  var R=P.R;
+  if(P.exciter){
+    s+='<ellipse cx="'+(cx+14)+'" cy="'+(cy+20)+'" rx="'+(R+26)+'" ry="'+(R*0.5)+'" fill="url(#'+gid+'shadow)"/>';
+    s+='<rect x="'+(cx-R)+'" y="'+(cy-R)+'" width="'+(2*R)+'" height="'+(2*R)+'" rx="26" fill="url(#'+gid+'ring)" stroke="'+shade(frameC,-0.35)+'" stroke-width="2"/>';
+    for(var a=0;a<4;a++){var ang=Math.PI/4+a*Math.PI/2, sx=cx+Math.cos(ang)*R*0.78, sy=cy+Math.sin(ang)*R*0.78;
+      s+='<circle cx="'+sx+'" cy="'+sy+'" r="7" fill="#111a24" stroke="#3a4a5c"/>';}
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*0.52)+'" fill="url(#'+gid+'mag)" stroke="'+(isNeo?'#6f9be0':'#8a96a2')+'" stroke-width="2"/>';
+    for(var a2=0;a2<3;a2++){var an=-Math.PI/2+a2*2*Math.PI/3;
+      s+='<path d="M'+(cx+Math.cos(an)*R*0.52)+' '+(cy+Math.sin(an)*R*0.52)+' L'+(cx+Math.cos(an)*R*0.92)+' '+(cy+Math.sin(an)*R*0.92)+'" stroke="#8ea2b8" stroke-width="7" stroke-linecap="round"/>';}
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*0.2)+'" fill="#1a2430" stroke="#3a4a5c" stroke-width="2"/>';
+    labels.push({r:R*0.52,ang:-40,txt:(isNeo?'NdFeB motor + mass':'Ferrite motor + mass')});
+    labels.push({r:R*0.95,ang:195,txt:'Spring arms'});
+    labels.push({r:R,ang:30,txt:'Mounting plate'});
+  } else {
+    var magR = isNeo? R*0.46 : R*0.86;
+    var magDrop = isNeo? 10 : 26;
+    s+='<ellipse cx="'+(cx+16)+'" cy="'+(cy+26)+'" rx="'+(R+30)+'" ry="'+(R*0.52)+'" fill="url(#'+gid+'shadow)"/>';
+    s+='<path d="M'+(cx-magR)+' '+(cy+R*0.35)+' A'+magR+' '+magR+' 0 0 0 '+(cx+magR)+' '+(cy+R*0.35)+' L'+(cx+magR)+' '+(cy+R+16+magDrop)+' A'+magR+' '+(magR*0.5)+' 0 0 1 '+(cx-magR)+' '+(cy+R+16+magDrop)+' Z" fill="url(#'+gid+'mag)" stroke="'+(isNeo?'#6f9be0':'#8a96a2')+'" stroke-width="1.6"/>';
+    labels.push({x:cx, y:cy+R+12+magDrop, txt:(isNeo?'NdFeB motor (compact)':'Ferrite motor (large)'), fixed:true, below:true});
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R+16)+'" fill="url(#'+gid+'ring)" stroke="'+shade(frameC,-0.38)+'" stroke-width="2"/>';
+    for(var k=0;k<4;k++){var an2=Math.PI/4+k*Math.PI/2;
+      s+='<circle cx="'+(cx+Math.cos(an2)*(R+8))+'" cy="'+(cy+Math.sin(an2)*(R+8))+'" r="5.5" fill="#0d1520" stroke="#3a4a5c" stroke-width="1.5"/>';}
+    var surrW=R*P.surrF*2;
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R-surrW/2)+'" fill="none" stroke="url(#'+gid+'surr)" stroke-width="'+surrW+'"/>';
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R-surrW*0.14)+'" fill="none" stroke="'+shade(surrC,0.25)+'" stroke-width="1.5" opacity="0.7"/>';
+    if(P.beef){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R-surrW/2)+'" fill="none" stroke="'+shade(surrC,-0.4)+'" stroke-width="2" stroke-dasharray="7 7" opacity="0.8"/>'; }
+    var coneR=R-surrW;
+    if(P.dome){
+      s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+coneR+'" fill="url(#'+gid+'ring)" opacity="0.9"/>';
+      s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*P.capF)+'" fill="url(#'+gid+'cap)" stroke="'+shade(coneC,-0.3)+'" stroke-width="1.4"/>';
+      s+='<ellipse cx="'+(cx-R*P.capF*0.3)+'" cy="'+(cy-R*P.capF*0.34)+'" rx="'+(R*P.capF*0.42)+'" ry="'+(R*P.capF*0.26)+'" fill="rgba(255,255,255,0.18)"/>';
+      labels.push({r:R*P.capF,ang:-35,txt:cfg.cone+' dome'});
+      labels.push({r:R-surrW/2,ang:150,txt:'Ferrofluid-damped surround'});
+      labels.push({r:R+16,ang:22,txt:'Faceplate'});
+    } else {
+      s+='<g class="pump"><circle cx="'+cx+'" cy="'+cy+'" r="'+coneR+'" fill="url(#'+gid+'cone)" stroke="'+shade(coneC,-0.35)+'" stroke-width="1.5"/>';
+      for(var rb=0;rb<8;rb++){var ra=rb*Math.PI/4+0.4;
+        s+='<line x1="'+(cx+Math.cos(ra)*R*P.capF*1.1)+'" y1="'+(cy+Math.sin(ra)*R*P.capF*1.1)+'" x2="'+(cx+Math.cos(ra)*coneR*0.97)+'" y2="'+(cy+Math.sin(ra)*coneR*0.97)+'" stroke="'+shade(coneC,-0.18)+'" stroke-width="1" opacity="0.5"/>';}
+      if(P.coax){
+        s+='<rect x="'+(cx-4)+'" y="'+(cy-coneR)+'" width="8" height="'+coneR+'" rx="3" fill="'+shade(frameC,-0.1)+'" opacity="0.9"/>';
+        s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*P.capF)+'" fill="url(#'+gid+'ring)" stroke="'+shade(frameC,-0.3)+'" stroke-width="1.5"/>';
+        s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*P.capF*0.62)+'" fill="url(#'+gid+'cap)"/>';
+        s+='<ellipse cx="'+(cx-R*P.capF*0.2)+'" cy="'+(cy-R*P.capF*0.22)+'" rx="'+(R*P.capF*0.26)+'" ry="'+(R*P.capF*0.16)+'" fill="rgba(255,255,255,0.2)"/>';
+        labels.push({r:R*P.capF,ang:-42,txt:'Coaxial tweeter'});
+      } else {
+        s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*P.capF)+'" fill="url(#'+gid+'cap)" stroke="'+shade(coneC,-0.28)+'" stroke-width="1.2"/>';
+        s+='<ellipse cx="'+(cx-R*P.capF*0.28)+'" cy="'+(cy-R*P.capF*0.3)+'" rx="'+(R*P.capF*0.4)+'" ry="'+(R*P.capF*0.24)+'" fill="rgba(255,255,255,0.16)"/>';
+        labels.push({r:R*P.capF,ang:-42,txt:'Dust cap'});
+      }
+      s+='</g>';
+      labels.push({r:(coneR+R*P.capF)/2,ang:208,txt:cfg.cone+' cone'});
+      labels.push({r:R-surrW/2,ang:142,txt:cfg.surround+' surround'});
+      labels.push({r:R+16,ang:20,txt:cfg.frame+' frame'});
+    }
+  }
+  var wx=cx+R+56;
+  for(var i=0;i<3;i++){
+    s+='<path d="M'+(wx+i*18)+' '+(cy-30-i*13)+' q'+(18+i*7)+' '+(30+i*13)+' 0 '+(60+i*26)+'" fill="none" stroke="var(--green2,#00E676)" stroke-width="2.4" opacity="'+(0.6-i*0.16)+'" stroke-linecap="round"><animate attributeName="opacity" values="'+(0.6-i*0.16)+';0.07;'+(0.6-i*0.16)+'" dur="1.5s" begin="'+(i*0.28)+'s" repeatCount="indefinite"/></path>';
+  }
+  var lab='';
+  var sideIdx={left:0,right:0};
+  labels.forEach(function(L){
+    var px,py;
+    if(L.fixed){ px=L.x; py=L.y; }
+    else { var a=(L.ang||0)*Math.PI/180; px=cx+Math.cos(a)*L.r; py=cy+Math.sin(a)*L.r; }
+    lab+='<circle cx="'+px+'" cy="'+py+'" r="2.6" fill="#9fb2c6"/>';
+    if(L.below){
+      lab+='<text x="'+px+'" y="'+(py+20)+'" fill="#aebfd2" font-size="11" text-anchor="middle" font-weight="600">'+esc(L.txt)+'</text>';
+      return;
+    }
+    var right = px>=cx;
+    var tx = right? W-8 : 8;
+    var ty = 30 + (right? sideIdx.right++ : sideIdx.left++)*26;
+    lab+='<path d="M'+px+' '+py+' L'+(right?tx-66:tx+66)+' '+ty+' L'+(right?tx-6:tx+6)+' '+ty+'" fill="none" stroke="#44566c" stroke-width="1" stroke-dasharray="3 2"/>';
+    lab+='<text x="'+tx+'" y="'+(ty-5)+'" fill="#aebfd2" font-size="11" text-anchor="'+(right?'end':'start')+'" font-weight="600">'+esc(L.txt)+'</text>';
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%">'+defs+s+lab+'</svg>';
+}
+
+// ── Vehicle audio map (SUV top view) ──
+var CAR_POS={
+  dash_c:{x:180,y:118},dash_l:{x:120,y:112},dash_r:{x:240,y:112},
+  apil_l:{x:92,y:142},apil_r:{x:268,y:142},
+  fdoor_l:{x:76,y:210},fdoor_r:{x:284,y:210},fmid_l:{x:84,y:178},fmid_r:{x:276,y:178},
+  rdoor_l:{x:76,y:318},rdoor_r:{x:284,y:318},rtw_l:{x:84,y:286},rtw_r:{x:276,y:286},
+  roof_f_l:{x:138,y:236},roof_f_r:{x:222,y:236},roof_r_l:{x:138,y:330},roof_r_r:{x:222,y:330},
+  hr_fl:{x:142,y:262},hr_fr:{x:218,y:262},hr_rl:{x:142,y:356},hr_rr:{x:218,y:356},
+  seat_fl:{x:142,y:284},seat_fr:{x:218,y:284},seat_rl:{x:142,y:378},seat_rr:{x:218,y:378},
+  sub:{x:180,y:470}
+};
+var CAR_SYS={
+  'Standard':    {spk:['fdoor_l','fdoor_r','rdoor_l','rdoor_r','dash_l','dash_r'],sub:[],act:[]},
+  'Enhanced':    {spk:['fdoor_l','fdoor_r','apil_l','apil_r','rdoor_l','rdoor_r','dash_c'],sub:['sub'],act:[]},
+  'Premium':     {spk:['fdoor_l','fdoor_r','fmid_l','fmid_r','apil_l','apil_r','rdoor_l','rdoor_r','rtw_l','rtw_r','dash_c'],sub:['sub'],act:[]},
+  'Immersive 3D':{spk:['fdoor_l','fdoor_r','fmid_l','fmid_r','apil_l','apil_r','rdoor_l','rdoor_r','rtw_l','rtw_r','dash_c','roof_f_l','roof_f_r','roof_r_l','roof_r_r','hr_fl','hr_fr','hr_rl','hr_rr'],sub:['sub'],act:[]},
+  'Immersive 4D':{spk:['fdoor_l','fdoor_r','fmid_l','fmid_r','apil_l','apil_r','rdoor_l','rdoor_r','rtw_l','rtw_r','dash_c','roof_f_l','roof_f_r','roof_r_l','roof_r_r','hr_fl','hr_fr','hr_rl','hr_rr'],sub:['sub'],act:['seat_fl','seat_fr','seat_rl','seat_rr']}
+};
+function carBodySVG(){
+  var s='';
+  s+='<path d="M96 70 Q180 46 264 70 Q300 86 304 150 L306 420 Q306 486 282 506 Q180 528 78 506 Q54 486 54 420 L56 150 Q60 86 96 70 Z" fill="rgba(20,30,44,0.55)" stroke="#2c3e54" stroke-width="2.5"/>';
+  s+='<path d="M94 150 Q180 128 266 150 L252 196 Q180 180 108 196 Z" fill="rgba(60,84,110,0.35)" stroke="#33465c" stroke-width="1.5"/>';
+  s+='<path d="M100 462 Q180 482 260 462 L252 428 Q180 444 108 428 Z" fill="rgba(60,84,110,0.3)" stroke="#33465c" stroke-width="1.5"/>';
+  s+='<line x1="108" y1="206" x2="108" y2="422" stroke="#2c3e54" stroke-width="2"/>';
+  s+='<line x1="252" y1="206" x2="252" y2="422" stroke="#2c3e54" stroke-width="2"/>';
+  s+='<rect x="124" y="246" width="36" height="52" rx="9" fill="rgba(44,62,84,0.5)" stroke="#33465c"/>';
+  s+='<rect x="200" y="246" width="36" height="52" rx="9" fill="rgba(44,62,84,0.5)" stroke="#33465c"/>';
+  s+='<rect x="124" y="340" width="112" height="52" rx="10" fill="rgba(44,62,84,0.45)" stroke="#33465c"/>';
+  [[70,120],[290,120],[70,430],[290,430]].forEach(function(xy){
+    s+='<rect x="'+(xy[0]-10)+'" y="'+(xy[1]-26)+'" width="20" height="52" rx="9" fill="#101820" stroke="#2c3e54"/>';});
+  s+='<text x="180" y="36" fill="#55657a" font-size="12" text-anchor="middle" letter-spacing="3">FRONT</text>';
+  return s;
+}
+function carDot(pt,color,r,delay,big){
+  var out='<g><circle cx="'+pt.x+'" cy="'+pt.y+'" r="'+r+'" fill="'+color+'" stroke="#06110c" stroke-width="1.5"/>';
+  out+='<circle cx="'+pt.x+'" cy="'+pt.y+'" r="4" fill="none" stroke="'+color+'" stroke-width="1.6" opacity="0.8">'
+    +'<animate attributeName="r" values="'+r+';'+(r+(big?26:16))+'" dur="1.8s" begin="'+delay+'s" repeatCount="indefinite"/>'
+    +'<animate attributeName="opacity" values="0.8;0" dur="1.8s" begin="'+delay+'s" repeatCount="indefinite"/></circle></g>';
+  return out;
+}
+function carMapSVG(systemKey){
+  var sys=CAR_SYS[systemKey]||CAR_SYS['Standard'];
+  var s=carBodySVG(), i=0;
+  sys.spk.forEach(function(k){ s+=carDot(CAR_POS[k],'#00E676',5.5,(i++%6)*0.22,false); });
+  sys.sub.forEach(function(k){ s+=carDot(CAR_POS[k],'#f59e0b',9,(i++%6)*0.22,true); });
+  sys.act.forEach(function(k){ s+=carDot(CAR_POS[k],'#a78bfa',6,(i++%6)*0.22,false); });
+  return '<svg viewBox="0 0 360 548" width="100%" style="max-width:300px;display:block;margin:0 auto">'+s+'</svg>';
 }
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -2821,7 +3191,7 @@ function readContractedRates() {
     var el = document.getElementById(f.id);
     if (el && el.value.trim() !== '') {
       var v = parseFloat(el.value);
-      if (!isNaN(v) && v > 0) ro[f.key] = v / FX_GBP; // convert £ input → internal USD
+      if (!isNaN(v) && v > 0) ro[f.key] = v; // entered directly in USD/kg (model currency)
     }
   });
   return ro;
@@ -2926,6 +3296,7 @@ function showTab(id) {
     if (id === 'physics')  { renderPhysicsTab(_lastResult); animateTabContent('panel-physics'); }
     if (id === 'ai')       { renderAIInsights(_lastResult); }
     if (id === 'compare')  { renderScenarioCompare();       animateTabContent('panel-compare'); }
+    if (id === 'data')     { renderDataSources(_lastResult); animateTabContent('panel-data'); }
   }
 }
 
@@ -2962,13 +3333,13 @@ function renderMetrics(r) {
 
   var dmPct = r.total > 0 ? (r.totalDM / r.total * 100) : 0;
   var lbl = document.getElementById('mv-total-lbl');
-  if (lbl) lbl.textContent = 'EXW ' + r.inp.country + ' Total (GBP)';
+  if (lbl) lbl.textContent = 'EXW ' + r.inp.country + ' Total (' + _dispCur + ')';
 
-  countUp(document.querySelector('#m-total .val'),    r.total*FX_GBP,    '£', '', 2, 900);
+  countUp(document.querySelector('#m-total .val'),    r.total*curFx(),   curSym(), '', 2, 900);
   countUp(document.querySelector('#m-spkcount .val'), r.totalSpkCount,   '',  ' spk', 0, 700);
   countUp(document.querySelector('#m-dm .val'),       dmPct,             '',  '%', 1, 750);
   countUp(document.querySelector('#m-co2 .val'),      r.totalSpkCO2,     '',  ' kg', 2, 850);
-  countUp(document.querySelector('#m-margin .val'),   r.margin * FX_GBP, '£', '', 2, 700);
+  countUp(document.querySelector('#m-margin .val'),   r.margin*curFx(),  curSym(), '', 2, 700);
 
   // Cell entrance plays once — recalcs only animate the numbers, not the cards
   if (_metricsShown) return;
@@ -2994,16 +3365,41 @@ function renderMetrics(r) {
 }
 
 // ─── renderOverview ───────────────────────────────────────────────────────────
+var _anatType = null;
+function renderVizPanels(r) {
+  var types = [];
+  r.spkResults.forEach(function(sr){ if(types.indexOf(sr.driver.type)<0) types.push(sr.driver.type); });
+  if (!_anatType || types.indexOf(_anatType)<0) _anatType = types[0];
+  var sr0 = r.spkResults.filter(function(x){return x.driver.type===_anatType;})[0];
+  var chips = types.map(function(t){
+    return '<button class="viz-chip'+(t===_anatType?' on':'')+'" onclick="_anatType=\''+t+'\';renderVizPanels(_lastResult)">'+esc(t)+'</button>';
+  }).join('');
+  var html = '<div class="viz-row">';
+  html += '<div class="viz-card"><div class="viz-hdr">Driver Anatomy<span style="font-weight:500;color:var(--t3);font-size:10px">live from your material selections</span></div>';
+  html += '<div class="viz-chips">'+chips+'</div>';
+  html += '<div id="anatomyViz">'+anatomySVG({type:_anatType,magnet:r.inp.magnet,cone:r.inp.cone,surround:r.inp.surround,frame:r.inp.frame})+'</div>';
+  html += '<div class="viz-legend"><span>'+esc(_anatType)+' · '+(sr0?sr0.driver.sizeMM+'mm · '+fGBP(sr0.totalPerUnit)+'/unit':'')+'</span></div></div>';
+  var sys=CAR_SYS[r.inp.system]||{spk:[],sub:[],act:[]};
+  var n=sys.spk.length+sys.sub.length+sys.act.length;
+  html += '<div class="viz-card"><div class="viz-hdr">Vehicle Audio Map<span style="font-weight:500;color:var(--t3);font-size:10px">'+esc(r.system.label)+'</span></div>';
+  html += '<div id="carViz">'+carMapSVG(r.inp.system)+'</div>';
+  html += '<div class="viz-legend"><span><i style="background:#00E676"></i>Speakers</span><span><i style="background:#f59e0b"></i>Subwoofer</span>'+(sys.act.length?'<span><i style="background:#a78bfa"></i>Seat actuators</span>':'')+'<span>'+n+' positions</span></div></div>';
+  html += '</div>';
+  var cont=document.getElementById('vizPanels');
+  if(cont) cont.innerHTML=html;
+}
+
 function renderOverview(r) {
+  renderVizPanels(r);
   var html = '<div class="section-title">System Drivers</div>';
   html += '<div class="bom-table"><table><thead><tr>';
   html += '<th>Role</th><th>Type</th><th>Size</th><th>Qty</th><th>Unit Cost</th><th>Extended</th><th>CO₂</th>';
   html += '</tr></thead><tbody>';
 
-  r.spkResults.forEach(function(sr) {
+  r.spkResults.forEach(function(sr, _i) {
     var d = sr.driver;
     html += '<tr>';
-    html += '<td>' + esc(d.role) + '</td>';
+    html += '<td>' + esc(d.role) + ' <button onclick="openTrace('+_i+')" title="Show the live arithmetic behind this driver" style="background:none;border:1px solid var(--bd);border-radius:6px;color:var(--t3);font-size:9px;padding:1px 6px;cursor:pointer;margin-left:4px">Σ trace</button></td>';
     html += '<td><span class="badge" style="background:rgba(59,130,246,0.18);color:var(--blue2)">' + esc(d.type) + '</span></td>';
     html += '<td>' + d.sizeMM + ' mm</td>';
     html += '<td>' + d.qty + '</td>';
@@ -3014,12 +3410,12 @@ function renderOverview(r) {
   });
 
   var extraRows = [];
-  if (r.sysAmpCost > 0)  extraRows.push({label:'Amplifier Module',   val: r.sysAmpCost});
+  if (r.sysAmpCost > 0)  extraRows.push({label:'Amplifier + DSP Module ('+(r.ampCalc?r.ampCalc.ch+'ch/'+r.ampCalc.w+'W'+(r.ampCalc.hasA2b?' · A2B':''):'')+') <button onclick="openAmpTrace()" style="background:none;border:1px solid var(--bd);border-radius:6px;color:var(--t3);font-size:9px;padding:1px 6px;cursor:pointer;margin-left:4px">Σ trace</button>', val: r.sysAmpCost});
   if (r.sysDspCost > 0)  extraRows.push({label:'DSP Module',          val: r.sysDspCost});
   if (r.sysWireCost > 0) extraRows.push({label:'Wiring Harness',      val: r.sysWireCost});
   if (r.sysConnCost > 0) extraRows.push({label:'Connectors',          val: r.sysConnCost});
   extraRows.forEach(function(row) {
-    html += '<tr style="opacity:0.75"><td colspan="4" style="color:var(--t2)">' + esc(row.label) + '</td>';
+    html += '<tr style="opacity:0.75"><td colspan="4" style="color:var(--t2)">' + row.label + '</td>';
     html += '<td>' + fGBP(row.val) + '</td><td>' + fGBP(row.val) + '</td><td>—</td></tr>';
   });
 
@@ -3274,43 +3670,40 @@ function renderBenchmarking(r) {
 // ─── renderProcess ────────────────────────────────────────────────────────────
 function renderProcess(r) {
   var country = r.country;
-  var html = '<div class="section-title">Manufacturing Process Routing \u2014 ' + esc(r.spkResults[0].driver.role) + ' (' + esc(r.spkResults[0].driver.type) + ' ' + r.spkResults[0].driver.sizeMM + 'mm)</div>';
+  var sr0 = r.spkResults[0];
+  var html = '<div class="section-title">Manufacturing Process Routing \u2014 ' + esc(sr0.driver.role) + ' (' + esc(sr0.driver.type) + ' ' + sr0.driver.sizeMM + 'mm) \u00b7 ' + esc(r.inp.country) + ' actual rates</div>';
   html += '<div class="bom-table"><table><thead><tr>';
-  html += '<th>Step</th><th>Process</th><th>Base (min)</th><th>Lab£/hr</th><th>Lab Cost</th><th>Mach Cost</th>';
+  html += '<th>Step</th><th>Machine / Station</th><th>Cycle (min)</th><th>Machine $/hr</th><th>Crew \u00d7 Lab $/hr</th><th>Cost</th>';
   html += '</tr></thead><tbody>';
-
-  if (r.spkResults && r.spkResults[0] && r.spkResults[0].proc) {
-    r.spkResults[0].proc.forEach(function(s) {
-      html += '<tr>';
-      html += '<td><span class="badge" style="background:rgba(139,92,246,0.18);color:var(--purple2)">' + esc(s.id || s.step || '') + '</span></td>';
-      html += '<td>' + esc(s.name) + '</td>';
-      html += '<td>' + f2(s.cycMin) + '</td>';
-      html += '<td>' + fGBP(country.labHr) + '</td>';
-      html += '<td>' + f3GBP(s.labCost) + '</td>';
-      html += '<td>' + f3GBP(s.machCost) + '</td>';
-      html += '</tr>';
-    });
-  }
-
-  html += '</tbody></table></div>';
-
-  html += '<div class="section-title" style="margin-top:1.5rem">Country Labour Rate Comparison</div>';
-  html += '<div class="scards">';
-  Object.keys(COUNTRIES).forEach(function(c) {
-    var cc = COUNTRIES[c];
-    var selected = c === r.inp.country;
-    html += '<div class="scard" style="' + (selected ? 'border-color:var(--blue);box-shadow:0 0 12px rgba(0,230,118,0.28)' : '') + '">';
-    html += '<div class="scard-val" style="color:var(--cyan)">' + fGBP(cc.labHr) + '/hr</div>';
-    html += '<div class="scard-lbl">' + esc(c) + (selected ? ' ✓' : '') + '</div>';
-    html += '</div>';
+  var totMin=0;
+  sr0.proc.forEach(function(st) {
+    totMin += st.cycMin;
+    html += '<tr>';
+    html += '<td>' + st.name + '</td>';
+    html += '<td style="font-size:10px;color:var(--t2)">' + esc(st.station) + (st.machBasis && st.machBasis.indexOf('derived')===0 ? ' <span style="color:var(--amber);font-size:8.5px" title="'+esc(st.machBasis)+'">derived</span>' : ' <span style="color:var(--green2);font-size:8.5px" title="'+esc(st.machBasis||'')+'">published</span>') + '</td>';
+    html += '<td>' + st.cycMin.toFixed(2) + '</td>';
+    html += '<td>$' + st.machRateUsd.toFixed(1) + '</td>';
+    html += '<td>' + st.crew + ' \u00d7 $' + st.labRateUsd.toFixed(1) + '</td>';
+    html += '<td><strong>' + fGBP(st.total) + '</strong></td>';
+    html += '</tr>';
   });
-  html += '</div>';
+  html += '</tbody><tfoot><tr><td><strong>Total</strong></td><td></td><td><strong>' + totMin.toFixed(1) + ' min</strong></td><td></td><td></td><td><strong style="color:var(--blue2)">' + fGBP(sr0.DLab + sr0.DMach) + '</strong></td></tr></tfoot></table></div>';
+  html += '<p style="font-size:10px;color:var(--t3);margin-top:8px">Machine rates exclude the direct operator (shown separately as crew \u00d7 labour). China rates are published job-shop quotes; other countries derive from China\u2019s cost split \u00d7 local energy and labour \u2014 see the Data &amp; Sources tab for every source.</p>';
+
+  html += '<div class="section-title" style="margin-top:1.5rem">DFMA Recommendations</div>';
+  html += '<div class="bom-table"><table><thead><tr><th>Area</th><th>Recommendation</th><th>Saving</th><th>Effort</th></tr></thead><tbody>';
+  (DFMA_TIPS[r.inp.system] || []).forEach(function(tip) {
+    var sv = typeof tip.saving === 'string' ? parseFloat(String(tip.saving).replace(/[^0-9.]/g,''))||0 : (tip.saving||0);
+    html += '<tr><td><strong>' + esc(tip.area) + '</strong></td><td>' + esc(tip.tip) + '</td>';
+    html += '<td style="color:var(--green2);font-weight:700">\u2212' + fGBP(sv) + '</td>';
+    html += '<td>' + esc(tip.effort) + '</td></tr>';
+  });
+  html += '</tbody></table></div>';
 
   var cont = document.getElementById('processContent');
   if (cont) cont.innerHTML = html;
 }
 
-// ─── renderSensitivity (bottom-grid canvas) ───────────────────────────────────
 function _chartTickColor() {
   return document.documentElement.getAttribute('data-theme') === 'light' ? '#64748b' : '#94a3b8';
 }
@@ -3325,8 +3718,8 @@ function renderSensitivity(r) {
   var costs = vols.map(function(v) {
     try {
       var inp2 = Object.assign({}, r.inp, {annualVol: Math.round(v)});
-      return computeSystemCost(inp2).total * FX_GBP;
-    } catch(e) { return baseCost * FX_GBP; }
+      return computeSystemCost(inp2).total * curFx();
+    } catch(e) { return baseCost * curFx(); }
   });
 
   var ctx = document.getElementById('senChart');
@@ -3338,7 +3731,7 @@ function renderSensitivity(r) {
     data: {
       labels: ['50% Vol', '75% Vol', 'Base', '125% Vol', '150% Vol'],
       datasets: [{
-        label: 'System Cost (£)',
+        label: 'System Cost ('+curSym()+')',
         data: costs,
         backgroundColor: ['rgba(239,68,68,0.7)','rgba(245,158,11,0.7)','rgba(59,130,246,0.85)','rgba(34,211,238,0.7)','rgba(16,185,129,0.7)'],
         borderColor: ['#ef4444','#f59e0b','#3b82f6','#22d3ee','#10b981'],
@@ -3351,7 +3744,7 @@ function renderSensitivity(r) {
       plugins: {legend:{labels:{color:_chartTickColor()}}},
       scales: {
         x:{ticks:{color:_chartTickColor()},grid:{color:_chartGridColor()}},
-        y:{ticks:{color:_chartTickColor(),callback:function(v){return '£'+v.toFixed(2);}},grid:{color:_chartGridColor()}}
+        y:{ticks:{color:_chartTickColor(),callback:function(v){return curSym()+v.toFixed(0);}},grid:{color:_chartGridColor()}}
       }
     }
   });
@@ -3374,7 +3767,7 @@ function renderRecommendations(r) {
     html += '<li style="margin-bottom:0.6rem">';
     html += '<strong style="color:var(--t1)">' + esc(tip.area || '') + ':</strong> ';
     html += '<span style="color:var(--t2)">' + esc(tip.tip || '') + '</span> ';
-    html += '<span style="color:var(--green2);font-weight:600">(-£' + f2(saving * FX_GBP) + ')</span>';
+    html += '<span style="color:var(--green2);font-weight:600">(-' + fGBP(saving) + ')</span>';
     html += '</li>';
   });
   cont.innerHTML = html;
@@ -3386,7 +3779,7 @@ function renderPhysicsTab(r) {
 
   if (Object.keys(_rateOverrides).length > 0) {
     var overrideList = Object.keys(_rateOverrides).map(function(k){
-      return k + ': £' + (_rateOverrides[k] * FX_GBP).toFixed(2) + '/kg';
+      return k + ': $' + _rateOverrides[k].toFixed(2) + '/kg';
     }).join(' | ');
     html += '<div class="card" style="padding:10px 14px;margin-bottom:16px;background:rgba(0,230,118,0.07);border-color:var(--blue)">';
     html += '<strong style="font-size:11px;color:var(--blue2)">⚙ Contracted Rate Overrides Active:</strong> ';
@@ -3592,16 +3985,16 @@ function triggerClaudeInsights(r) {
     '- Freight mode: ' + esc(r.inp.freightMode) + ' | Duty rate: ' + ((r.inp.dutyRate||0)*100).toFixed(1) + '%\n' +
     '- ' + overrides + '\n\n' +
     '## COST BREAKDOWN\n' +
-    '- Total system cost: £' + (r.total*FX_GBP).toFixed(2) + '\n' +
-    '- Direct materials (DM): £' + (r.totalDM*FX_GBP).toFixed(2) + ' (' + (r.total > 0 ? (r.totalDM/r.total*100) : 0).toFixed(1) + '% of total)\n' +
-    '- Direct labour: £' + (r.totalDLab*FX_GBP).toFixed(2) + '\n' +
-    '- Machine costs: £' + (r.totalDMach*FX_GBP).toFixed(2) + '\n' +
-    '- Factory OH (12%): £' + (r.totalFOH*FX_GBP).toFixed(2) + '\n' +
-    '- G&A (7%): £' + (r.totalGA*FX_GBP).toFixed(2) + '\n' +
-    '- Tooling amortisation: £' + (r.totalTool*FX_GBP).toFixed(2) + '\n' +
-    '- Warranty provision: £' + (r.totalWarr*FX_GBP).toFixed(2) + '\n' +
-    '- Inbound freight: £' + (r.totalInb*FX_GBP).toFixed(2) + '\n' +
-    '- Target margin: £' + (r.margin*FX_GBP).toFixed(2) + ' (' + (r.inp.margin*100).toFixed(0) + '%)\n\n' +
+    '- Total system cost: $' + r.total.toFixed(2) + '\n' +
+    '- Direct materials (DM): $' + r.totalDM.toFixed(2) + ' (' + (r.total > 0 ? (r.totalDM/r.total*100) : 0).toFixed(1) + '% of total)\n' +
+    '- Direct labour: $' + r.totalDLab.toFixed(2) + '\n' +
+    '- Machine costs: $' + r.totalDMach.toFixed(2) + '\n' +
+    '- Factory OH: $' + r.totalFOH.toFixed(2) + '\n' +
+    '- G&A (7%): $' + r.totalGA.toFixed(2) + '\n' +
+    '- Tooling amortisation: $' + r.totalTool.toFixed(2) + '\n' +
+    '- Warranty provision: $' + r.totalWarr.toFixed(2) + '\n' +
+    '- Inbound freight: $' + r.totalInb.toFixed(2) + '\n' +
+    '- Target margin: $' + r.margin.toFixed(2) + ' (' + (r.inp.margin*100).toFixed(0) + '%)\n\n' +
     (ph ? ('## ACOUSTIC ESTIMATES (first driver)\n' +
     '- Resonance fs ≈ ' + ph.fs.toFixed(0) + ' Hz | Qts ≈ ' + ph.Qts.toFixed(2) + ' | Sensitivity ≈ ' + ph.sensitiv.toFixed(1) + ' dB\n' +
     '- BL ≈ ' + ph.BL.toFixed(1) + ' T·m | Motor factor BL²/Re ≈ ' + ph.BL2Re.toFixed(1) + '\n' +
@@ -3843,6 +4236,7 @@ function calculate() {
     if (activeId === 'process')  { renderProcess(r);        animateTabContent('panel-process'); }
     if (activeId === 'physics')  { renderPhysicsTab(r);     animateTabContent('panel-physics'); }
     if (activeId === 'ai')       { renderAIInsights(r); }
+    if (activeId === 'data')     { renderDataSources(r); }
     animateCalcComplete();
 
   } catch(e) {
@@ -3915,11 +4309,11 @@ function exportPPT() {
     s2.addShape(pptx.ShapeType.line, {x:0.3,y:1.22,w:12.7,h:0, line:{color:'1d2e50',width:1}});
 
     var kpis = [
-      {lbl:'EXW Total (GBP)', val:'£'+(r.total*FX_GBP).toFixed(2), color:C.neon},
+      {lbl:'EXW Total ('+_dispCur+')', val:fGBP(r.total), color:C.neon},
       {lbl:'Speaker Count',   val:r.totalSpkCount+' spk',           color:C.t1},
       {lbl:'Direct Material', val:dmPct+'%',                         color:C.t1},
       {lbl:'CO₂ Footprint',   val:r.totalSpkCO2.toFixed(2)+' kg',   color:C.t1},
-      {lbl:'Margin',          val:'£'+(r.margin*FX_GBP).toFixed(2), color:C.t1}
+      {lbl:'Margin',          val:fGBP(r.margin), color:C.t1}
     ];
     kpis.forEach(function(k,i){
       var x = 0.3 + i*2.6;
@@ -3951,8 +4345,8 @@ function exportPPT() {
           {text:d.role,options:{color:C.t1,fontFace:'Segoe UI'}},
           {text:d.type,options:{color:C.t1,fontFace:'Segoe UI'}},
           {text:String(d.qty),options:{color:C.t1,align:'center',fontFace:'Segoe UI'}},
-          {text:'£'+(sr.totalPerUnit*FX_GBP).toFixed(2),options:{color:C.t1,align:'right',fontFace:'Segoe UI'}},
-          {text:'£'+(sr.totalPerUnit*d.qty*FX_GBP).toFixed(2),options:{color:C.neon,bold:true,align:'right',fontFace:'Segoe UI'}},
+          {text:fGBP(sr.totalPerUnit),options:{color:C.t1,align:'right',fontFace:'Segoe UI'}},
+          {text:fGBP(sr.totalPerUnit*d.qty),options:{color:C.neon,bold:true,align:'right',fontFace:'Segoe UI'}},
           {text:(sr.co2PerUnit*d.qty).toFixed(2),options:{color:C.t1,align:'right',fontFace:'Segoe UI'}}
         ]);
       });
@@ -3961,7 +4355,7 @@ function exportPPT() {
         {text:'',options:{fill:{color:'0a1a0f'}}},
         {text:String(r.totalSpkCount),options:{bold:true,color:C.neon,align:'center',fill:{color:'0a1a0f'},fontFace:'Segoe UI'}},
         {text:'',options:{fill:{color:'0a1a0f'}}},
-        {text:'£'+(r.totalWorks*FX_GBP).toFixed(2),options:{bold:true,color:C.neon,align:'right',fill:{color:'0a1a0f'},fontFace:'Segoe UI'}},
+        {text:fGBP(r.totalWorks),options:{bold:true,color:C.neon,align:'right',fill:{color:'0a1a0f'},fontFace:'Segoe UI'}},
         {text:r.totalSpkCO2.toFixed(2),options:{bold:true,color:C.neon,align:'right',fill:{color:'0a1a0f'},fontFace:'Segoe UI'}}
       ]);
       s3.addTable(rows, {
@@ -3981,11 +4375,11 @@ function exportPPT() {
     s4.addText('Cost Driver Breakdown', {x:0.3,y:0.22,w:12,h:0.55, fontSize:24, bold:true, color:C.t1, fontFace:'Segoe UI'});
     s4.addShape(pptx.ShapeType.line, {x:0.3,y:0.9,w:12.7,h:0, line:{color:'1d2e50',width:1}});
 
-    var totGBP = r.total * FX_GBP;
+    var totGBP = r.total * curFx();
     var dmGBP  = r.totalDM * FX_GBP;
-    var mfgGBP = r.totalMfg * FX_GBP;
-    var sysGBP = r.sysTotalExtra * FX_GBP;
-    var mrgGBP = r.margin * FX_GBP;
+    var mfgGBP = r.totalMfg * curFx();
+    var sysGBP = r.sysTotalExtra * curFx();
+    var mrgGBP = r.margin * curFx();
     var breakdown = [
       {lbl:'Direct Material',   val:dmGBP,  pct:totGBP>0?dmGBP/totGBP*100:0, color:'3b82f6'},
       {lbl:'Mfg / Overhead',    val:mfgGBP, pct:totGBP>0?mfgGBP/totGBP*100:0, color:C.cyan},
@@ -4760,6 +5154,143 @@ function buildTrendsHTML(liveArticles, commodities) {
   }
 }
 
+// ─── Data & Sources tab — the live rate card and every source behind it ──────
+function _confBadge(c){
+  var col=c==='high'?'var(--green2)':c==='med'||c==='medium'?'var(--amber)':'var(--red)';
+  return '<span style="font-size:9px;font-weight:700;color:'+col+';border:1px solid '+col+'33;border-radius:8px;padding:1px 7px;text-transform:uppercase">'+c+'</span>';
+}
+function _srcCell(key){
+  var sc=SRC[key]||SRC.est;
+  return esc(sc.s)+' <span style="color:var(--t3)">· '+esc(sc.d)+'</span> '+_confBadge(sc.c);
+}
+function renderDataSources(r){
+  var ck=r.inp.country, rc=RATECARDS[ck]||RATECARDS['China'];
+  var html='<div class="section-title">Live Rate Card — '+esc(ck)+'</div>';
+  html+='<p style="font-size:10.5px;color:var(--t3);margin-bottom:10px">Every number the engine is using right now, with its source, date and confidence. Nothing in this tool is presented as sourced data unless it is — engineering estimates are labelled as such.</p>';
+
+  html+='<div class="section-title" style="font-size:12px;margin-top:14px">Direct Labour (fully burdened USD/hr)</div>';
+  html+='<div class="bom-table"><table><thead><tr><th>Tier</th><th>Rate</th><th>Source</th></tr></thead><tbody>';
+  [['Line operator',rc.labour.op],['Skilled technician',rc.labour.tech],['QC inspector',rc.labour.qc]].forEach(function(x){
+    html+='<tr><td>'+x[0]+'</td><td><strong>$'+x[1].toFixed(2)+'/hr</strong></td><td style="font-size:10px">'+_srcCell(rc.src.lab)+'</td></tr>';
+  });
+  html+='<tr><td>Industrial electricity</td><td><strong>$'+rc.elec.toFixed(3)+'/kWh</strong></td><td style="font-size:10px">'+_srcCell(rc.src.elec)+'</td></tr>';
+  html+='</tbody></table></div>';
+
+  html+='<div class="section-title" style="font-size:12px;margin-top:16px">Machine-Hour Rates (excl. direct operator)</div>';
+  html+='<div class="bom-table"><table><thead><tr><th>Machine class</th><th>Rate</th><th>Basis</th><th>Source</th></tr></thead><tbody>';
+  Object.keys(CN_MACHINE_PUB).forEach(function(mc){
+    var mr=machineRate(mc,ck);
+    var srcKey = mr.src==='derived' ? 'derived' : CN_MACHINE_PUB[mc].src;
+    html+='<tr><td>'+esc(MACHINE_CLASS_LABEL(mc))+'</td><td><strong>$'+mr.usd.toFixed(2)+'/hr</strong></td>'
+        +'<td style="font-size:10px;color:var(--t2)">'+esc(mr.basis)+'</td>'
+        +'<td style="font-size:10px">'+_srcCell(srcKey)+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  if((ck||'').indexOf('China')!==0){
+    html+='<p style="font-size:10px;color:var(--t3);margin-top:6px">Derivation: rate = China published rate × (45% capital — equipment is globally priced — + 25% × local/China electricity + 30% × local/China indirect labour). Validated against published US injection-molding rates ($30–150/hr tiered): formula predicts $61/hr for a 250T press vs the published $50–90 mid-tonnage band.</p>';
+  }
+
+  html+='<div class="section-title" style="font-size:12px;margin-top:16px">Material Rates (USD/kg, China factory-gate)</div>';
+  html+='<div class="bom-table"><table><thead><tr><th>Material</th><th>$/kg</th><th>Source</th></tr></thead><tbody>';
+  var shown=0;
+  Object.keys(MRATE).forEach(function(k){
+    var m=MRATE[k]; if(shown++>60)return;
+    html+='<tr><td style="font-family:monospace;font-size:10px">'+k+'</td><td><strong>$'+m.usd.toFixed(2)+'</strong></td><td style="font-size:10px">'+_srcCell(m.src||'est')+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+
+  html+='<div class="section-title" style="font-size:12px;margin-top:16px">Electronics Model & Validation Anchors</div>';
+  html+='<div class="card" style="padding:12px;font-size:11px;color:var(--t2);line-height:1.7">';
+  html+='Amplifier/DSP is a component-level parametric model ('+_srcCell('derived').replace('Derived from China decomposition x local energy & labour','Digi-Key/Mouser/LCSC/TI/ADI + Atlas PCB 2026 + JLCPCB')+'): TAS6424-class $4/IC OEM, ADAU1452/1467 DSP, AD2428 A2B nodes, PSU 2.50+0.012×W, PCB $2.20/dm², SMT $0.004/placement.<br>';
+  html+='<strong style="color:var(--t1)">Validation anchors:</strong> GGEC (China speaker ODM) gross margin 10.95% FY2025 → should-cost ≈ customer price ÷ 1.11; Tonly GM 11.4–13.5%; China 6.5&quot; coaxial EXW $3.6/pair–$6/pc (live listings); US IM rates $30–150/hr published; stripped 4-ch amp model $26 vs Nissan Kicks budget Bose amp (TechInsights, qualitative).<br>';
+  html+='<strong style="color:var(--t1)">Honest limits:</strong> items marked EST have no published source — they are engineering estimates with stated derivations, not data. Supplier RFQs will beat this model; its job is to be directionally right and fully auditable.</div>';
+
+  var cont=document.getElementById('dataContent');
+  if(cont) cont.innerHTML=html;
+}
+
+// ─── Calculation Trace — the live arithmetic behind any driver ────────────────
+function openTrace(idx){
+  var r=_lastResult; if(!r)return;
+  var sr=r.spkResults[idx]; if(!sr)return;
+  var d=sr.driver;
+  var h='<div style="font-size:14px;font-weight:800;color:var(--t1);margin-bottom:2px">Calculation Trace — '+esc(d.role)+'</div>';
+  h+='<div style="font-size:10px;color:var(--t3);margin-bottom:12px">'+esc(d.type)+' '+d.sizeMM+'mm · every number below is the live arithmetic, not a stored figure</div>';
+
+  h+='<div style="font-size:11px;font-weight:700;color:var(--blue2);margin:8px 0 4px">1 · Bill of Materials</div>';
+  h+='<table style="width:100%;font-size:10.5px;border-collapse:collapse">';
+  sr.bom.forEach(function(b){
+    var calc = b.wt>0
+      ? f2(b.wt)+'g × $'+b.rate.toFixed(2)+'/kg × '+(1+b.scr).toFixed(2)+' scrap'+(b.flatAdd?' + $'+b.flatAdd.toFixed(2)+' flat':'')
+      : 'flat purchased price';
+    h+='<tr style="border-bottom:1px solid var(--bd)"><td style="padding:3px 6px;color:var(--t2)">'+esc(b.name)+'</td>'
+      +'<td style="padding:3px 6px;color:var(--t3);font-family:monospace">'+calc+'</td>'
+      +'<td style="padding:3px 6px;text-align:right;font-weight:700;color:var(--t1)">$'+b.cost.toFixed(3)+'</td></tr>';
+  });
+  h+='<tr><td colspan="2" style="padding:4px 6px;font-weight:700;color:var(--t1)">Direct Material (DM)</td><td style="padding:4px 6px;text-align:right;font-weight:800;color:var(--blue2)">$'+sr.DM.toFixed(2)+'</td></tr></table>';
+
+  h+='<div style="font-size:11px;font-weight:700;color:var(--blue2);margin:12px 0 4px">2 · Process Routing ('+esc(r.inp.country)+' actual rates)</div>';
+  h+='<table style="width:100%;font-size:10.5px;border-collapse:collapse">';
+  sr.proc.forEach(function(st){
+    h+='<tr style="border-bottom:1px solid var(--bd)"><td style="padding:3px 6px;color:var(--t2)">'+st.name+'</td>'
+      +'<td style="padding:3px 6px;color:var(--t3);font-family:monospace">'+st.cycMin.toFixed(2)+'min × ($'+st.machRateUsd.toFixed(1)+'/hr mach + '+st.crew+'×$'+st.labRateUsd.toFixed(1)+'/hr lab)</td>'
+      +'<td style="padding:3px 6px;text-align:right;font-weight:700;color:var(--t1)">$'+st.total.toFixed(3)+'</td></tr>';
+  });
+  h+='<tr><td colspan="2" style="padding:4px 6px;font-weight:700;color:var(--t1)">Conversion (DL $'+sr.DLab.toFixed(2)+' + Machine $'+sr.DMach.toFixed(2)+')</td><td style="padding:4px 6px;text-align:right;font-weight:800;color:var(--blue2)">$'+(sr.DLab+sr.DMach).toFixed(2)+'</td></tr></table>';
+
+  h+='<div style="font-size:11px;font-weight:700;color:var(--blue2);margin:12px 0 4px">3 · Build-up to Works Cost</div>';
+  h+='<table style="width:100%;font-size:10.5px;border-collapse:collapse">';
+  [['Prime (DM + conversion)','',sr.prime],
+   ['Factory OH','35% × conversion + 3% × DM',sr.foh],
+   ['G&A','5–7% × mfg',sr.ga],
+   ['Tooling amortisation','tool set ÷ (vol × qty × 4yr)',sr.toolAmort],
+   ['Warranty','0.8% × mfg',sr.warranty],
+   ['ICC / payment terms','1.2% × mfg',sr.icc],
+   ['ED&D recovery','2% × mfg',sr.edd],
+   ['Inbound logistics','2–3% × DM',sr.inbound],
+   ['Integration parts','bracket/pod/enclosure',sr.sysItems]].forEach(function(x){
+    h+='<tr style="border-bottom:1px solid var(--bd)"><td style="padding:3px 6px;color:var(--t2)">'+x[0]+'</td><td style="padding:3px 6px;color:var(--t3);font-family:monospace">'+x[1]+'</td><td style="padding:3px 6px;text-align:right;font-weight:700;color:var(--t1)">$'+x[2].toFixed(3)+'</td></tr>';
+  });
+  h+='<tr><td colspan="2" style="padding:5px 6px;font-weight:800;color:var(--t1)">Per-unit total (EXW '+esc(r.inp.country)+')</td><td style="padding:5px 6px;text-align:right;font-weight:800;color:var(--green2);font-size:13px">$'+sr.totalPerUnit.toFixed(2)+'</td></tr></table>';
+  _showTraceModal(h);
+}
+function openAmpTrace(){
+  var r=_lastResult; if(!r||!r.ampCalc)return;
+  var a=r.ampCalc;
+  var h='<div style="font-size:14px;font-weight:800;color:var(--t1);margin-bottom:2px">Calculation Trace — Amplifier/DSP Module</div>';
+  h+='<div style="font-size:10px;color:var(--t3);margin-bottom:12px">'+a.ch+' channels · '+a.w+'W · DSP '+(a.hasDsp?'integrated':'none')+' · A2B '+(a.hasA2b?'yes':'no')+' — component-level parametric model (Oct-2026 distributor pricing, OEM = 0.5× dist-1k)</div>';
+  h+='<table style="width:100%;font-size:10.5px;border-collapse:collapse">';
+  [['Class-D amp ICs','ceil('+a.ch+'/4) × $'+((a.w/a.ch)>30?'6.00 (HV TAS6584-class)':'4.00 (TAS6424-class)'),a.parts.ampICs],
+   ['Audio DSP + support',a.ch>=12?'ADAU1467-class':'ADAU1452-class',a.parts.dsp],
+   ['CAN/diag MCU','S32K1-class',a.parts.mcu],
+   ['A2B transceivers','AD2428 × nodes',a.parts.a2b],
+   ['Power supply','$2.50 + 0.012 × '+a.w+'W',a.parts.psu],
+   ['Output LC filters','$0.45 × '+a.ch+'ch',a.parts.filt],
+   ['PCB 6L automotive','(0.8 + 0.1×ch + 0.002×W) dm² × $2.20',a.parts.pcb],
+   ['Passives / EMC','',a.parts.pass],
+   ['Connectors','',a.parts.conn],
+   ['Die-cast housing + heatsink','$4/kg finished',a.parts.hous],
+   ['SMT + test + coating + pack','$0.004/placement + test',a.parts.assy]].forEach(function(x){
+    h+='<tr style="border-bottom:1px solid var(--bd)"><td style="padding:3px 6px;color:var(--t2)">'+x[0]+'</td><td style="padding:3px 6px;color:var(--t3);font-family:monospace">'+x[1]+'</td><td style="padding:3px 6px;text-align:right;font-weight:700;color:var(--t1)">$'+x[2].toFixed(2)+'</td></tr>';
+  });
+  h+='<tr><td colspan="2" style="padding:5px 6px;font-weight:800;color:var(--t1)">× 1.12 factory OH/scrap → EXW total</td><td style="padding:5px 6px;text-align:right;font-weight:800;color:var(--green2);font-size:13px">$'+a.total.toFixed(2)+'</td></tr></table>';
+  _showTraceModal(h);
+}
+function _showTraceModal(innerHtml){
+  var m=document.getElementById('traceModal');
+  if(!m){
+    m=document.createElement('div');
+    m.id='traceModal';
+    m.style.cssText='display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.72);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:20px';
+    m.innerHTML='<div id="traceModalCard" role="dialog" aria-modal="true" style="background:var(--surface3);border:1px solid var(--bd);border-radius:14px;max-width:760px;width:100%;max-height:86vh;overflow-y:auto;padding:20px 22px;position:relative"><button onclick="closeTrace()" aria-label="Close" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--t3);font-size:18px;cursor:pointer">✕</button><div id="traceModalBody"></div></div>';
+    m.addEventListener('click',function(e){if(e.target===m)closeTrace();});
+    document.body.appendChild(m);
+  }
+  document.getElementById('traceModalBody').innerHTML=innerHtml;
+  m.style.display='flex';
+}
+function closeTrace(){var m=document.getElementById('traceModal');if(m)m.style.display='none';}
+
 // ─── Settings ─────────────────────────────────────────────────────────────────
 function openSettings() {
   var modal = document.getElementById('settingsModal');
@@ -4886,6 +5417,10 @@ function sceLogout() {
   window.location.replace('login.html');
 }
 
+(function initCurrencySel(){
+  var el=document.getElementById('curSel');
+  if(el) el.value=_dispCur;
+})();
 (function initHeaderUser() {
   try {
     var s = JSON.parse(localStorage.getItem('sce_session'));
