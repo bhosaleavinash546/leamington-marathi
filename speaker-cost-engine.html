@@ -991,10 +991,10 @@ html[data-theme="light"] .brand-version{
   </div>
   <div style="display:flex;align-items:center;gap:12px">
     <div class="hchips">
-      <span class="chip">v2.1</span>
-      <span class="chip">19 Steps</span>
-      <span class="chip">40+ Materials</span>
-      <span class="chip">16 Features</span>
+      <span class="chip">v3.0</span>
+      <span class="chip">17 Countries</span>
+      <span class="chip">Actual Rate Cards</span>
+      <span class="chip">45+ Materials</span>
     </div>
     <div class="hbtns">
       <button class="corner-tab-btn" data-tab="trends" onclick="showTab('trends')" title="Live commodity prices &amp; automotive audio news">📡 Trends</button>
@@ -1002,7 +1002,7 @@ html[data-theme="light"] .brand-version{
       <div style="width:1px;height:20px;background:var(--bd);margin:0 2px"></div>
       <button onclick="exportPDF()">&#128438; Export PDF</button>
       <button onclick="exportPPT()">&#128202; Export PPT</button>
-      <select id="curSel" onchange="setDisplayCurrency(this.value)" title="Display currency" aria-label="Display currency" style="padding:5px 7px;font-size:11px;font-weight:700;background:var(--surface2);border:1px solid var(--bd);border-radius:8px;color:var(--t2);cursor:pointer">
+      <select id="curSel" onchange="setDisplayCurrency(this.value)" title="Display currency" aria-label="Display currency" style="padding:5px 7px;font-size:11px;font-weight:700;background:var(--surface2);border:1px solid var(--bd);border-radius:8px;color:var(--t2);cursor:pointer;width:70px">
         <option>USD</option><option>GBP</option><option>EUR</option><option>CNY</option><option>INR</option><option>JPY</option>
       </select>
       <button class="theme-toggle" id="settingsBtn" onclick="openSettings()" title="API Settings — add Claude key for real AI insights" aria-label="Settings">
@@ -1348,7 +1348,7 @@ html[data-theme="light"] .brand-version{
               <div class="step-num">1</div>
               <div class="step-body">
                 <h4>Select Manufacturing Country</h4>
-                <p>Choose where the system will be manufactured. <strong>China</strong> (default) applies EXW China factory-gate economics — Guangdong labour rates (¥2,500/month minimum wage basis), domestic SHFE/SMM commodity pricing, and Chinese machine hour costs at ~50% of Western European reference rates (equipment is globally priced; savings come from energy, building and indirect labour).</p>
+                <p>Choose where the system will be manufactured. Every country carries an <strong>actual rate card</strong> — fully burdened operator/technician/QC labour, local industrial electricity, and machine-hour rates (China: published job-shop quotes; elsewhere: derived from China's cost decomposition × that country's actual energy and labour). There is no "Western rate × multiplier" anywhere in the engine. The complete live rate card with every source is in the <strong>Data &amp; Sources</strong> tab.</p>
                 <div class="step-tip">💡 China Coastal (Shanghai/Guangzhou) carries a 12% machine multiplier and ¥6.5/hr effective labour vs China Inland's 9% and ¥4.5/hr. Choose based on your actual supplier location.</div>
               </div>
             </div>
@@ -1507,17 +1507,17 @@ html[data-theme="light"] .brand-version{
               <h4>How Total Cost is Computed</h4>
               <p>The engine computes cost bottom-up for each driver type, then sums with system-level additions and commercial adjustments:</p>
               <div class="formula-box">
-DM          = Σ (material_mass_kg × material_rate_USD/kg)   [per driver]
-DLab        = Σ (step.baseMin × step.labFrac × labHr/60)    [per step]
-DMach       = Σ (step.baseMin × (1−step.labFrac) × step.machRate × machM / 60)
+DM          = Σ (mass_kg × rate_USD/kg × (1 + scrap))        [per driver]
+DLab        = Σ (step.min / 60 × crew × labourRate(tier))     [actual country rates]
+DMach       = Σ (step.min / 60 × machineRate(class, country)) [published or derived]
 prime       = DM + DLab + DMach
-FOH (12%)   = prime × 0.12
+FOH         = 35% × conversion + 3% × DM                      [burden on conversion]
 mfgCost     = prime + FOH
-G&amp;A (5%)    = mfgCost × 0.05     [China rate; Western = 7%]
-toolAmort   = PROF.tool_total / annualVolume
-warranty    = mfgCost × 0.015
-inbound     = DM × 0.02            [China domestic sourcing]
-works       = mfgCost + G&amp;A + toolAmort + warranty + inbound
+G&amp;A         = mfgCost × 5–7%
+toolAmort   = tool_set ÷ (annualVol × typeQty × 4yr)          [per unique driver type]
+warranty    = mfgCost × 0.8%     ICC = 1.2%     ED&amp;D = 2%
+inbound     = DM × 2–3%
+works       = mfgCost + G&amp;A + toolAmort + warranty + ICC + ED&amp;D + inbound
 sysItems    = SPK_SYS costs (housing + grille + bracket + connector)
 totalPerUnit = works + sysItems
 
@@ -1564,96 +1564,26 @@ systemTotal = Σ(totalPerUnit × qty) + amp + DSP + wiring + connectors
 
           <!-- Manufacturing process -->
           <div class="ref-section">
-            <h3>14-Step Manufacturing Process Model (STEPS)</h3>
+            <h3>19-Step Manufacturing Routing on Actual Machine Classes</h3>
             <div class="ref-card">
               <h4>How Process Costs Are Computed</h4>
-              <p>Each of 19 process steps is defined by a <strong>machine rate</strong> (USD/hr, Western European reference), a <strong>base cycle time</strong> (minutes), and a <strong>labour fraction</strong> (what percentage of the step time is direct labour vs machine-paced). The country's <code>machM</code> multiplier scales the machine rate to local capital cost basis.</p>
+              <p>Each of the 19 stations references a real <strong>machine class</strong> (injection mould 250T, die-cast cell 280T, progressive press, VC winder, inline Klippel bench…), a <strong>cycle time</strong>, a <strong>crew fraction</strong> (operators manning the station) and a <strong>labour tier</strong> (operator / technician / QC).</p>
               <div class="formula-box">
-labCost  per step = baseMin × labFrac × (country.labHr / 60)
-machCost per step = baseMin × (1 − labFrac) × (step.machRate × country.machM / 60)
-scrapCost per step = (labCost + machCost) × step.scrap_rate</div>
-              <p style="margin-top:8px">A <strong>size scale factor</strong> <code>Math.pow(sizeMM / refMM, 1.3)</code> scales all process costs proportionally to driver diameter. A 300mm subwoofer takes ~3.5× the process time of a 165mm full-range.</p>
-            </div>
-            <div class="ref-table-wrap">
-              <table class="ref-table">
-                <thead><tr><th>Step</th><th>Station</th><th>Machine Rate (W.Eur $)</th><th>Cycle Base (min)</th><th>Lab Fraction</th><th>Significance</th></tr></thead>
-                <tbody>
-                  <tr><td>VC Winding</td><td>CNC VC Winder</td><td>$36.5/hr</td><td>0.80 min</td><td>18%</td><td>Most precision-critical step; winding tension sets DCR tolerance. Scrap 3%.</td></tr>
-                  <tr><td>VC Varnish Cure</td><td>Cure Oven</td><td>$4.5/hr</td><td>0.10 min</td><td>5%</td><td>Batch process; very low cost. Impregnates coil winding for rigidity.</td></tr>
-                  <tr><td>Spider Forming</td><td>Hydraulic Press</td><td>$28.0/hr</td><td>0.50 min</td><td>30%</td><td>Thermoform spider fabric under heat and pressure to corrugation profile. Scrap 4%.</td></tr>
-                  <tr><td>Cone Forming</td><td>Moulding Press</td><td>$30.0/hr</td><td>0.80 min</td><td>18%</td><td>Paper wet-lay or PP injection/stamping. Longest single-step cycle for large drivers. Scrap 5%.</td></tr>
-                  <tr><td>Dust Cap Forming</td><td>Mini Press</td><td>$20.0/hr</td><td>0.25 min</td><td>20%</td><td>Small-press operation. Cap material matches or complements cone for acoustic continuity.</td></tr>
-                  <tr><td>Motor Stack Assembly</td><td>Semi-Auto Assy Jig</td><td>$42.5/hr</td><td>1.00 min</td><td>38%</td><td>Magnet-to-backplate bonding, pole piece assembly, top plate fitting. Labour-intensive.</td></tr>
-                  <tr><td>Magnetisation</td><td>Magnetiser</td><td>$35.0/hr</td><td>0.25 min</td><td>8%</td><td>Impulse magnetisation. Fast cycle, machine-dominated. Handles strong magnets post-assembly.</td></tr>
-                  <tr><td>Basket Mfg + Surface</td><td>Die Caster / Press</td><td>$52.5/hr</td><td>2.50 min</td><td>22%</td><td>Highest machine rate step. Die-casting is capital-intensive. Surface treatment (powder coat / phosphating) adds cycle time.</td></tr>
-                  <tr><td>Sub-Assembly</td><td>Assembly Jig</td><td>$22.0/hr</td><td>2.50 min</td><td>70%</td><td>Cementing VC former into spider, spider into basket. High labour fraction — skilled manual work to achieve centring accuracy.</td></tr>
-                  <tr><td>Final Assembly</td><td>Final Line</td><td>$18.0/hr</td><td>2.00 min</td><td>80%</td><td>Surround bonding, cone-to-VC cementing, dust cap fitting, tinsel lead routing. Most labour-intensive step in the process.</td></tr>
-                  <tr><td>Full Adhesive Cure</td><td>Batch Oven</td><td>$4.5/hr</td><td>0.10 min</td><td>4%</td><td>Batch thermal cure for all adhesive joints. Very low active labour fraction.</td></tr>
-                  <tr><td>Burn-In / Break-In</td><td>Burn-In Fixture</td><td>$8.0/hr</td><td>0.50 min</td><td>8%</td><td>Electrical excitation at rated power to stress-relieve surround and spider. Reduces post-delivery failures.</td></tr>
-                  <tr><td>Acoustic Test &amp; QC</td><td>Anechoic Bench</td><td>$32.5/hr</td><td>1.00 min</td><td>38%</td><td>Impedance sweep + SPL check vs golden limit. Every unit tested. Machine-automated reading but operator oversight.</td></tr>
-                  <tr><td>Packing &amp; Labelling</td><td>Pack Line</td><td>$15.0/hr</td><td>0.80 min</td><td>88%</td><td>Highest labour fraction — almost entirely manual. Foam-in-box, label, barcode scan, carton seal.</td></tr>
-                </tbody>
-              </table>
+machCost per step = cycle_min / 60 × machineRate(machineClass, country)
+labCost  per step = cycle_min / 60 × crew × labourRate(tier, country)
+scrap    per step = (machCost + labCost) × scrap_rate</div>
+              <p style="margin-top:8px">China machine rates are <strong>published job-shop quotes</strong> (Ecomolding, StyleCNC, JLCPCB — operator stripped out to avoid double-counting). Other countries derive from China's cost split (45% capital — equipment is globally priced — + 25% energy + 30% indirect labour) × that country's actual electricity and labour; the derivation reproduces published US injection-moulding rates. Forming steps scale with driver size^1.3; assembly/test steps are nearly size-invariant.</p>
+              <p style="margin-top:8px">The <strong>live per-station table with rates, basis and sources</strong> for the selected country is in the Process &amp; DFMA tab and the Data &amp; Sources tab — the engine and its documentation can never disagree, because the table IS the engine's data.</p>
             </div>
           </div>
 
-          <!-- Country multipliers -->
+          <!-- Country rate cards -->
           <div class="ref-section">
-            <h3>Country Labour &amp; Machine Rate Multipliers</h3>
+            <h3>Actual Country Rate Cards (No Multipliers)</h3>
             <div class="ref-card">
-              <h4>Why China machM = 0.11 (Not 0.78)</h4>
-              <p>A common error in speaker cost modelling is applying a machine rate that reflects the same Western capital cost basis. In reality, Chinese speaker factories achieve machine hour costs of <strong>10–12% of Western European reference rates</strong> due to:</p>
-              <ul style="margin-top:8px">
-                <li><strong>Lower capex amortisation</strong> — plant investment amortised at Chinese land/construction cost (¥3,000–5,000/m²) vs Western (€15,000–25,000/m²)</li>
-                <li><strong>Lower energy cost</strong> — industrial electricity ¥0.65–0.85/kWh China vs €0.18–0.28/kWh Germany</li>
-                <li><strong>Lower maintenance labour</strong> — maintenance technicians at ¥8,000–12,000/month vs €3,500–5,500/month Western Europe</li>
-                <li><strong>Equipment procurement advantage</strong> — Chinese-made tooling/presses at 30–50% of European equivalent cost</li>
-              </ul>
-              <div class="step-warn" style="margin-top:10px">⚠ Using machM = 0.78 (as many tools default to) inflates machine cost by 7× vs reality, causing total system cost to be estimated 2.5–3.5× too high for China manufacturing.</div>
-            </div>
-            <div class="ref-table-wrap">
-              <table class="ref-table">
-                <thead><tr><th>Country</th><th>Effective Lab Rate</th><th>Machine Multiplier</th><th>Logic Basis</th></tr></thead>
-                <tbody>
-                  <tr><td>UK</td><td>$22.0/hr</td><td>1.18×</td><td>UK NLW £11.44/hr base; total employer cost incl. NI, pension, benefits ≈ $22</td></tr>
-                  <tr><td>Germany</td><td>$24.0/hr</td><td>1.22×</td><td>IG Metall Tier-1 automotive wage agreement; Bavarian plants</td></tr>
-                  <tr><td>USA</td><td>$26.0/hr</td><td>1.25×</td><td>UAW-adjacent Tier-1 rates; Michigan / Ohio assembly regions</td></tr>
-                  <tr><td>Eastern Europe</td><td>$9.5/hr</td><td>0.90×</td><td>Poland / Czechia / Romania; EU energy, lower land cost</td></tr>
-                  <tr><td>China (Standard)</td><td>$5.8/hr</td><td>0.11×</td><td>Guangdong ¥2,500/mo min wage; total cost ~¥42/hr = $5.8; machine at 11% of W.Eur</td></tr>
-                  <tr><td>China (Coastal)</td><td>$6.5/hr</td><td>0.12×</td><td>Shanghai / Shenzhen premium; ¥3,000+/mo minimum</td></tr>
-                  <tr><td>China (Inland)</td><td>$4.5/hr</td><td>0.09×</td><td>Henan / Sichuan; ¥2,200/mo minimum; lower land cost</td></tr>
-                  <tr><td>India</td><td>$4.0/hr</td><td>0.72×</td><td>Maharashtra / Tamil Nadu Tier-2 automotive; higher machine cost relative to labour</td></tr>
-                  <tr><td>Vietnam</td><td>$3.0/hr</td><td>0.70×</td><td>Ho Chi Minh / Hanoi; rapid FDI-driven electronics manufacturing base</td></tr>
-                  <tr><td>Mexico</td><td>$7.0/hr</td><td>0.80×</td><td>Monterrey / Juárez maquiladora region; USD-denominated supplier contracts</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Overhead -->
-          <div class="ref-section">
-            <h3>Overhead Structure &amp; Cost Additions</h3>
-            <div class="ref-card">
-              <h4>Factory Overhead (FOH) — 12% of Prime Cost</h4>
-              <p>Applied to <code>prime = DM + DLab + DMach</code>. Covers: facility depreciation, indirect labour (supervisors, quality engineers, maintenance), utilities, production consumables (cutting oils, cleaning agents, packaging materials for WIP), and quality system costs (ISO/IATF 16949 audit overhead). The 12% rate is typical for Chinese Tier-1/2 automotive speaker factories at volume.</p>
-            </div>
-            <div class="ref-card">
-              <h4>G&amp;A (General &amp; Administrative) — 5% of mfgCost (China)</h4>
-              <p>Covers head office, finance, HR, legal, IT, and sales overhead allocated to the manufacturing cost. Chinese speaker manufacturers operating at Tier-2 level typically run 4–6% G&amp;A on manufactured goods. Western equivalents run 6–9%. The tool uses 5% for all China variants and 7% for Western countries.</p>
-            </div>
-            <div class="ref-card">
-              <h4>Tooling Amortisation</h4>
-              <p>Each driver type carries a set of dedicated hard tooling (basket die, VC winding fixture, cone mould, spider press, assembly jig, NRE/DFM engineering). Tooling cost is divided by annual volume to give a <code>$/unit</code> charge:</p>
-              <div class="formula-box">toolAmort = (basket + vc + cone + spider + fixture + nre) / annualVolume</div>
-              <p>Example — Full-Range at 213,000/year: $50,000+$9,000+$15,000+$9,000+$5,000+$28,000 = $116,000 ÷ 213,000 = <strong>$0.545/unit</strong>. At 10,000/year the same tooling costs <strong>$11.60/unit</strong> — a 21× difference that makes low-volume programmes uneconomical without amortisation negotiation.</p>
-            </div>
-            <div class="ref-card">
-              <h4>Warranty — 1.5% of mfgCost</h4>
-              <p>Automotive Tier-1/2 standard warranty provision. Covers: field returns, rework cost, replacement logistics, and goodwill. 1.5% is industry-standard for passive speaker assemblies with no electronics. Active systems (with DSP/amp) carry higher warranty provisions (2.5–4%) which are embedded in the purchased component cost.</p>
-            </div>
-            <div class="ref-card">
-              <h4>Inbound Logistics — 2% of DM (China)</h4>
-              <p>Cost of moving raw materials from Chinese domestic suppliers to the speaker factory. China domestic freight is very efficient: magnets from Baotou/Ganzhou, copper wire from Guangdong wire mills, PP from Daqing/Guangzhou petrochemical plants. 2% of DM is appropriate for domestic China sourcing. Western countries use 3% (longer supply chains, higher freight rates).</p>
+              <h4>Why the multiplier approach was removed</h4>
+              <p>Earlier versions scaled a Western machine rate by a country multiplier. Real cost engineering doesn't accept that: a 250-ton moulding cell in Dongguan has an <strong>actual, knowable all-in rate</strong> (≈¥150–200/hr published) that no scaling factor reproduces reliably. The engine now carries, per country: fully burdened labour by skill tier, actual industrial electricity, and machine rates that are published where they exist and transparently derived where they don't — each value labelled with its source, date and confidence in the <strong>Data &amp; Sources</strong> tab.</p>
+              <div class="step-warn" style="margin-top:10px">Validation anchor: GGEC (002045.SZ), one of China's largest speaker ODMs, runs a 10.95% gross margin (FY2025) — a competitive should-cost lands ≈ customer price ÷ 1.11. Tonly (Harman's ODM) runs 11.4–13.5%.</div>
             </div>
           </div>
 
@@ -1663,11 +1593,11 @@ scrapCost per step = (labCost + machCost) × step.scrap_rate</div>
             <div class="ref-card">
               <p>After per-driver costs are summed, the following system-level costs are added:</p>
               <ul style="margin-top:8px">
-                <li><strong>Amplifier</strong> — direct China EXW price (no machM multiplier). A 7-channel Class D automotive amp with integrated protection = $38 at volume from Chinese OEM amp manufacturers (e.g. Hypex-equivalent domestic brands).</li>
-                <li><strong>DSP</strong> — similarly direct EXW. 12-channel automotive DSP with EQ/crossover processing = $22 from domestic suppliers. Premium neural-DSP with AI audio = add $45 separately via Technology Features.</li>
+                <li><strong>Amplifier + DSP module</strong> — component-level parametric model: Class-D ICs (TAS6424/6584-class), audio DSP (ADAU1452/1467-class), CAN MCU, A2B transceivers, PSU, LC filters, 6-layer automotive PCB, SMT at $0.004/placement, die-cast housing — each at Oct-2026 OEM pricing (0.5× distributor-1k). Click <em>Σ trace</em> on the amplifier row to see the full arithmetic.</li>
+                <li><strong>DSP</strong> — integrated in the amplifier module (separate DSP boxes double-count the enclosure, PSU and PCB). A2B-equipped systems (Immersive 3D/4D) also save ~45% of speaker cable and ~30% of connectors vs analog home-runs.</li>
                 <li><strong>Wiring harness</strong> — total harness (speaker cables + main harness) at $10 for 20m + $0.22/m cable × 32m = $17.04 for Premium system.</li>
                 <li><strong>Connectors</strong> — $0.22/connector China EXW for automotive-grade (USCAR-2 / ISO 20696 equivalent) multi-pin speaker connectors at volume.</li>
-                <li><strong>Housing / Bracket / Grille per driver</strong> — SPK_SYS lookup scaled by driver size. Full-Range: housing $1.65, grille $0.55, bracket $0.65, connector $0.28 = $3.13 total per driver position.</li>
+                <li><strong>Integration parts per driver</strong> — door woofers/coax carry only an adapter bracket + connector (the basket IS the frame; the grille belongs to the door trim); tweeters get a small pod; boot subwoofers carry a real enclosure + grille.</li>
               </ul>
             </div>
           </div>
@@ -2311,7 +2241,7 @@ function machineRate(cls, countryKey){
   var pub=CN_MACHINE_PUB[cls];
   if(!pub) return {usd:0, basis:'missing', src:'est'};
   var isCN = countryKey && countryKey.indexOf('China')===0;
-  if(isCN) return {usd:pub.usd, basis:'published (China)', src:pub.src};
+  if(isCN) return {usd:pub.usd, basis:(pub.src==='est'||pub.src==='cn_derived')?'built up from capex+energy+labour (China)':'published (China)', src:pub.src};
   var cn=RATECARDS['China (Coastal)'], rc=RATECARDS[countryKey]||cn;
   var f = MACH_SPLIT.cap
         + MACH_SPLIT.energy  * (rc.elec       / cn.elec)
@@ -2832,7 +2762,7 @@ function computePhysics(driver, inp, sr) {
   var lWire = Math.sqrt(Math.max(vcG,0.1) * 1e-3 * Re / (wp.rhoM * wp.rhoE));  // m, total winding
 
   // Gap flux density by magnet family (well-designed motor)
-  var BGAP = {'Neodymium':1.05,'Neodymium N35':1.00,'Neodymium N48':1.08,'Neodymium N52':1.10,
+  var BGAP = {'Neodymium':1.05,'Neodymium N35':1.00,'Neodymium N42':1.06,'Neodymium N48':1.08,'Neodymium N52':1.10,
               'NdFeB N42SH':1.05,'SmCo':0.95,'Alnico':0.85,'Ferrite':0.85,'Ferrite Y35':0.90,
               'Bonded NdFeB':0.62,'Recycled NdFeB':1.00};
   var B = BGAP[inp.magnet] || 0.85;
@@ -3383,7 +3313,7 @@ function renderVizPanels(r) {
   var n=sys.spk.length+sys.sub.length+sys.act.length;
   html += '<div class="viz-card"><div class="viz-hdr">Vehicle Audio Map<span style="font-weight:500;color:var(--t3);font-size:10px">'+esc(r.system.label)+'</span></div>';
   html += '<div id="carViz">'+carMapSVG(r.inp.system)+'</div>';
-  html += '<div class="viz-legend"><span><i style="background:#00E676"></i>Speakers</span><span><i style="background:#f59e0b"></i>Subwoofer</span>'+(sys.act.length?'<span><i style="background:#a78bfa"></i>Seat actuators</span>':'')+'<span>'+n+' positions</span></div></div>';
+  html += '<div class="viz-legend"><span><i style="background:#00E676"></i>Speakers</span>'+(sys.sub.length?'<span><i style="background:#f59e0b"></i>Subwoofer</span>':'')+(sys.act.length?'<span><i style="background:#a78bfa"></i>Seat actuators</span>':'')+'<span>'+n+' mounting positions · '+r.totalSpkCount+' drivers</span></div></div>';
   html += '</div>';
   var cont=document.getElementById('vizPanels');
   if(cont) cont.innerHTML=html;
@@ -3680,7 +3610,7 @@ function renderProcess(r) {
     totMin += st.cycMin;
     html += '<tr>';
     html += '<td>' + st.name + '</td>';
-    html += '<td style="font-size:10px;color:var(--t2)">' + esc(st.station) + (st.machBasis && st.machBasis.indexOf('derived')===0 ? ' <span style="color:var(--amber);font-size:8.5px" title="'+esc(st.machBasis)+'">derived</span>' : ' <span style="color:var(--green2);font-size:8.5px" title="'+esc(st.machBasis||'')+'">published</span>') + '</td>';
+    html += '<td style="font-size:10px;color:var(--t2)">' + esc(st.station) + (st.machBasis && st.machBasis.indexOf('published')===0 ? ' <span style="color:var(--green2);font-size:8.5px" title="'+esc(st.machBasis)+'">published</span>' : ' <span style="color:var(--amber);font-size:8.5px" title="'+esc(st.machBasis||'')+'">derived</span>') + '</td>';
     html += '<td>' + st.cycMin.toFixed(2) + '</td>';
     html += '<td>$' + st.machRateUsd.toFixed(1) + '</td>';
     html += '<td>' + st.crew + ' \u00d7 $' + st.labRateUsd.toFixed(1) + '</td>';
