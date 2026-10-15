@@ -16,7 +16,9 @@ SonoCost builds cost **bottom-up**, the way a supplier's own cost engineer would
 
 ## 2. Open the tool and sign in
 
-Open `speaker-cost-engine.html` in any browser (or use the Start link in the repo). Enter any name and email on the login page — it just personalises your session.
+Open `speaker-cost-engine.html` in any browser, or click the **▶ START SONOCOST** button in [`SONOCOST.md`](SONOCOST.md).
+
+The login page has two tabs. First time: switch to the **Sign Up** tab and create an account — name, any email, and a password of at least 6 characters (it stays in your own browser; still, don't reuse a real password). After that, the **Sign In** tab (email + password) gets you back in.
 
 ![Login page](docs/guide/01-login.png)
 
@@ -42,7 +44,7 @@ You land on the **System Overview** with a Standard 6-speaker system in China al
 
 1. **Sign in** (above). You start from a working baseline: Standard, China, 50k vehicles/year.
 2. **Pick the System Type** (top of left panel). This is the biggest cost decision — it sets speaker count, amplifier, DSP, A2B bus, and (for 4D) seat actuators. The five tiers are explained in the next section.
-3. **Pick the Manufacturing Country.** 22 real choices, each labelled with who actually builds there (*Vietnam — Foster/Bac Ninh*, *Brazil — Harman/JBL Selenium*…). Picking a country swaps in that country's actual labour rates, electricity price and machine-hour costs. **Cost the system where it will really be built, not where your office is** — the same Premium system is **$171 built in China and $294 built in Germany**.
+3. **Pick the Manufacturing Country.** 22 real choices, each labelled with who actually builds there (*Vietnam (Foster speaker hub)*, *Brazil (Harman/JBL Selenium)*…). Picking a country swaps in that country's actual labour rates, electricity price and machine-hour costs. China comes in three flavours — *national avg* (the default used throughout this guide), *Coastal (Guangdong)* and *Inland* — with slightly different labour rates, so note which one you picked. **Cost the system where it will really be built, not where your office is** — the same Premium system is **$171 built in China and $294 built in Germany**.
 4. **Set the Annual Volume** slider (1k–500k vehicles/year). Volume mainly changes how tooling (moulds, dies, fixtures) is spread: one tool set per speaker type, amortised over 4 years. Low volume = each unit carries more tooling. Get the number from the vehicle programme team; 50k is a typical single model, 150–250k a shared platform.
 5. **Review the material choices — the defaults are correct.** NdFeB N38H magnet, PP cone, rubber surround, die-cast aluminium frame, OFC copper wire, Kapton former, 4 Ω: that is the automotive mainstream, straight from teardowns. Only change them to model a specific design. Every change re-prices instantly, so the fastest way to learn is to flip one and watch the BOM move.
 6. **Tick technology features** only if the spec has them: ANC, DSP, sound zones, 4D haptics, A2B bus, GaN amp, neural DSP, OTA calibration, head tracking… each adds its real component cost. Leave all unticked for a base costing.
@@ -60,10 +62,10 @@ All totals below are the live engine at all-default settings (China, 50k/yr, Lux
 | **Standard** (6 spk) | 2 front + 2 rear coaxials, 2 dash tweeters — base-car radio sound | Head-unit amplified, **no external amp** | **$42.02** |
 | **Enhanced** (8 spk) | Separates up front, centre speaker, 250 mm boot subwoofer | 4-ch Class-D amp + DSP ($39 of the total) | **$118.50** |
 | **Premium** (12 spk) | Branded-audio territory (Harman Kardon class): 3-way front stage, centre, sub | 8-ch amp + DSP ($61) | **$171.10** |
-| **Immersive 3D** (22 spk) | Adds **height**: A-pillar + roof speakers, headrest tweeters — Atmos-style overhead sound | 16-ch amp + DSP + **A2B digital bus** (saves ~45% cable) | **$269.47** |
-| **Immersive 4D** (26 spk) | 3D plus **4 seat actuators** — exciters that shake the seat with the bass. That is the "4th dimension": you *feel* it | 18-ch amp, DSP, A2B ($115) | **$319.78** |
+| **Immersive 3D** (22 spk) | Adds **height**: A-pillar + roof speakers, headrest tweeters — Atmos-style overhead sound | 14-ch/840W amp + DSP + **A2B digital bus** (saves ~45% cable) | **$269.47** |
+| **Immersive 4D** (26 spk) | 3D plus **4 seat actuators** — exciters that shake the seat with the bass. That is the "4th dimension": you *feel* it | 18-ch/1080W amp, DSP, A2B ($115) | **$319.78** |
 
-Where the jumps come from: Standard→Enhanced adds the amplifier and subwoofer. Premium→3D nearly doubles the electronics (16-ch amp + A2B) and adds 10 speakers. 3D→4D adds four $3.04 actuators and two more amp channels.
+Where the jumps come from: Standard→Enhanced adds the amplifier and subwoofer. Premium→3D nearly doubles the electronics (14-ch amp + A2B) and adds 10 speakers. 3D→4D adds four $3.04 actuators and four more amp channels (14 → 18).
 
 ![Immersive 4D — 26 speakers on the vehicle map, including seat actuators](docs/guide/07-immersive4d.png)
 
@@ -97,7 +99,7 @@ This is the page to screenshot into a supplier negotiation. Press `Esc` to close
 
 ### See what you are pricing
 
-In **Driver Anatomy**, click a speaker-type chip (Full-Range, Mid-Range, Tweeter, Subwoofer, Coaxial, Actuator) and flip **2D → 3D → Exploded**. The exploded 3D labels every sub-assembly — gasket, surround, cone, basket, spider, voice coil, motor stack — which are exactly the BOM groups you just saw in the Σ trace. New grads: spend five minutes here. The cost model makes sense once you can see the part.
+In **Driver Anatomy**, click a speaker-type chip. The chips track the current system — Standard shows only *Coaxial* and *Tweeter*; switch to Immersive 4D to see *Full-Range, Mid-Range, Tweeter, Subwoofer, Actuator*. Then click **3D**, and the **⇱ Exploded** button that appears next to it (Exploded only shows in 3D mode). The exploded view labels every sub-assembly — gasket, surround, cone, basket, spider, voice coil, motor stack — which are exactly the BOM groups you just saw in the Σ trace. New grads: spend five minutes here. The cost model makes sense once you can see the part.
 
 ![Exploded 3D anatomy with part labels](docs/guide/06-anatomy-exploded.png)
 
@@ -114,7 +116,7 @@ In **Driver Anatomy**, click a speaker-type chip (Full-Range, Mid-Range, Tweeter
 | **Sustainability** | CO₂ per material and system, recycled/bio content, compliance flags. |
 | **Benchmarking** | Your cost vs 10 real systems (Bose, Harman Kardon, B&O, Burmester, CN-EV 4D…). |
 | **AI Insights** | Rule-based cost position, risks and levers; add a Claude API key for narrative analysis. |
-| **Compare** | A vs B scenario delta across every cost line. |
+| **Compare** | A vs B scenario delta: the nine major cost lines (DM, labour, machine, FOH, G&A, tooling, amp, wiring, total) plus what configuration changed. |
 | **Data & Sources** | Every rate the engine is using *right now*, with source, date and confidence badge. |
 
 ![Full BOM tab](docs/guide/09-bom-tab.png)
@@ -125,7 +127,7 @@ In **Driver Anatomy**, click a speaker-type chip (Full-Range, Mid-Range, Tweeter
 
 *Goal: should-cost for a Standard 6-speaker system, built in China, 50k/year, delivered.*
 
-1. Leave every default. Read the tiles: **Delivered Total $42.02**, 6 spk, DM 31.8%, CO₂ 8.6 kg, margin $2.76.
+1. Leave every default. Read the tiles: **Delivered Total $42.02**, 6 spk, DM 31.8%, CO₂ 8.62 kg, margin $2.76.
 2. Scroll the cost build-up: **works cost $34.53** (the factory-gate cost), + freight $2.86 + duty $1.87 + margin $2.76 = $42.02. Note there is **no amplifier line** — Standard is head-unit amplified; wiring ($7.36) and connectors ($1.32) carry the system cost.
 3. Open the Σ trace of the Front Woofer and skim it once — DM $3.10, then process, overheads, tooling.
 4. Benchmarking tab: a Standard system beats 10/10 benchmarks — expected, since the benchmarks are branded systems.
@@ -138,7 +140,7 @@ In **Driver Anatomy**, click a speaker-type chip (Full-Range, Mid-Range, Tweeter
 
 1. Set System Type = Premium, country = China. Click **💾 Save as A** (bottom of the left panel).
 2. Change country to **Germany**. Total jumps **$171.10 → $293.59** (+72%). The front mid-woofer alone goes $4.50 → $12.13/unit.
-3. Click **💾 Save as B**. The Compare tab opens with a line-by-line delta: materials barely move (commodities are global — only a small import uplift), while **labour, machine rates and overheads** carry almost the entire gap.
+3. Click **💾 Save as B**. The Compare tab opens with the delta across the major cost lines: materials barely move (+$0.75 — commodities are global), while **direct labour (+$40.18) and overheads (+$16.83)** carry the gap. (The listed lines are the big movers, not an exhaustive sum — freight, duty and margin also scale into the +$122.49 total.)
 4. Export PPT — the deck now contains your A/B case.
 
 ![Compare tab — Premium China (A) vs Premium Germany (B)](docs/guide/11-compare-ab.png)

@@ -1,6 +1,6 @@
 # 🔊 SonoCost — Automotive Speaker Should-Cost Engine
 
-Factory-gate cost intelligence for automotive audio systems. Teardown-grade BOM + 19-step process routing, 12 manufacturing countries, live commodity trends, Thiele-Small physics validation, PDF/PPT export.
+Bottom-up cost intelligence for automotive audio systems. Teardown-grade BOM + 19-step process routing, 22 manufacturing countries with actual rate cards, live commodity trends, Thiele-Small physics validation, interactive 3D driver anatomy, PDF/PPT export. **New users: start with [SONOCOST-GUIDE.md](SONOCOST-GUIDE.md) — the illustrated step-by-step guide.**
 
 <br>
 
@@ -21,7 +21,7 @@ No install, no server — it opens right in your browser. Sign up once (account 
 | | |
 |---|---|
 | 💰 **Should-cost engine** | 45+ materials with grades (NdFeB N35–N52/SH, Y30/Y35 ferrite, mica-PP…), 19 process stations, country-specific labour/machine rates, tooling amortisation, Tier-1 cost structure (FOH, G&A, ED&D, ICC, warranty) |
-| 🌍 **12 countries** | China (coastal/inland), Vietnam, India, Thailand, Mexico, Eastern Europe, UK, Germany, USA — burdened 2026 labour rates |
+| 🌍 **22 countries** | China (national/coastal/inland), Vietnam, India, Thailand, Malaysia, Indonesia, Mexico, Hungary, Czechia, Eastern Europe, Germany, UK, USA, Japan, South Korea, Italy, Belgium, Denmark, Poland, Brazil — actual burdened labour &amp; energy rate cards |
 | 🔬 **Physics validation** | Thiele-Small estimates (fs, Qts, BL, sensitivity) derived from the actual BOM — flags acoustically inconsistent configs |
 | 📡 **Live trends** | SHFE/COMEX commodity tickers + curated automotive audio industry news |
 | 📊 **Benchmarking** | Your system vs 10 branded reference systems (Bose → Burmester) |
