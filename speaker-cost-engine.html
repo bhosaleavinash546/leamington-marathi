@@ -1517,7 +1517,7 @@ DM          = Σ (mass_kg × rate_USD/kg × (1 + scrap))        [per driver]
 DLab        = Σ (step.min / 60 × crew × labourRate(tier))     [actual country rates]
 DMach       = Σ (step.min / 60 × machineRate(class, country)) [published or derived]
 prime       = DM + DLab + DMach
-FOH         = 35% × conversion + 3% × DM                      [burden on conversion]
+FOH         = 35% × (DLab + 70%×DMach) + 3% × DM              [machine rates already embed ~30% indirect — not burdened twice]
 mfgCost     = prime + FOH
 G&amp;A         = mfgCost × 5–7%
 toolAmort   = tool_set ÷ (annualVol × typeQty × 4yr)          [per unique driver type]
@@ -1602,7 +1602,7 @@ scrap    per step = (machCost + labCost) × scrap_rate</div>
                 <li><strong>Amplifier + DSP module</strong> — component-level parametric model: Class-D ICs (TAS6424/6584-class), audio DSP (ADAU1452/1467-class), CAN MCU, A2B transceivers, PSU, LC filters, 6-layer automotive PCB, SMT at $0.004/placement, die-cast housing — each at Oct-2026 OEM pricing (0.5× distributor-1k). Click <em>Σ trace</em> on the amplifier row to see the full arithmetic.</li>
                 <li><strong>DSP</strong> — integrated in the amplifier module (separate DSP boxes double-count the enclosure, PSU and PCB). A2B-equipped systems (Immersive 3D/4D) also save ~45% of speaker cable and ~30% of connectors vs analog home-runs.</li>
                 <li><strong>Wiring harness</strong> — total harness (speaker cables + main harness) at $10 for 20m + $0.22/m cable × 32m = $17.04 for Premium system.</li>
-                <li><strong>Connectors</strong> — $0.22/connector China EXW for automotive-grade (USCAR-2 / ISO 20696 equivalent) multi-pin speaker connectors at volume.</li>
+                <li><strong>Connectors</strong> — $0.22/connector China EXW for automotive-grade (USCAR-2 / ISO 20696 equivalent) multi-pin connectors at volume. Each driver already carries its speaker-side connector in its integration parts, so the system line counts only the remaining harness/amp/head-unit side (system count minus one per speaker).</li>
                 <li><strong>Integration parts per driver</strong> — door woofers/coax carry only an adapter bracket + connector (the basket IS the frame; the grille belongs to the door trim); tweeters get a small pod; boot subwoofers carry a real enclosure + grille.</li>
               </ul>
             </div>
@@ -2402,7 +2402,7 @@ var SYSTEMS={
       {role:'Centre Speaker',  type:'Mid-Range', sizeMM:80, qty:1,loc:'Dashboard', powerW:30},
       {role:'Subwoofer',       type:'Subwoofer', sizeMM:250,qty:1,loc:'Boot',      powerW:150}
     ],
-    amp:{type:'4-ch Class-D + DSP (TAS6424-class, ADAU1452)',channels:4,power_W:240,dsp:true,a2b:false},
+    amp:{type:'4-ch Class-D + DSP (TAS6584-class HV, ADAU1452)',channels:4,power_W:240,dsp:true,a2b:false},
     dsp:null,
     wiring:{harness_m:14,spk_cable_m:20,harnessCost:7.50,cableCost_m:0.20},connectors:20
   },
@@ -2627,7 +2627,12 @@ function computeBOM(inp,sizeScale){
   var magSpec  = MAG_MAT[inp.magnet]   || MAG_MAT['Neodymium'];
   var coneSpec = CONE_MAT[inp.cone]    || CONE_MAT['Polypropylene'];
   var surrSpec = SURR_MAT[inp.surround]|| SURR_MAT['Rubber'];
-  var baskSpec = FRAME_MAT[inp.frame]  || FRAME_MAT['Die-Cast Al'];
+  // Actuator/exciter has no basket — its structure is a stamped spring plate +
+  // moving mass (bask_st/bask_pp only; bask_dc=0). The cosmetic frame-material
+  // choice must not zero its structure mass while die-cast machine time is
+  // still charged, so force the stamped-steel path for both BOM and process.
+  var baskSpec = (inp.type==='Actuator') ? FRAME_MAT['Stamped Steel']
+               : (FRAME_MAT[inp.frame]  || FRAME_MAT['Die-Cast Al']);
   var wireSpec = WIRE_MAT[inp.vcWire]  || WIRE_MAT['Copper'];
   var fmrSpec  = FRMR_MAT[inp.vcFormer]|| FRMR_MAT['Kapton'];
 
@@ -2698,9 +2703,6 @@ function computeBOM(inp,sizeScale){
   if(inp.type==='Subwoofer'){
     items.push(row('Spider Spacer Ring','Pressed-paper ring (dual spider)','Suspension',0,0,0,0,0.03));
   }
-  if(inp.type==='Mid-Range'){
-    items.push(row('Driver Mesh Grille','Perforated steel, press-fit','Frame',0,0,0,0,0.06));
-  }
   // Al shorting (Faraday) ring — standard on neo motors ≥100mm for distortion control
   var isNeo = magSpec.key && magSpec.key.indexOf('neo') === 0;
   if(isNeo && p.ring_g > 0){items.push(row('Shorting Ring (Faraday)','Al ring on pole','Motor',p.ring_g,MRATE.al_former.usd,MRATE.al_former.co2,0.02,0,'al_former'));}
@@ -2736,7 +2738,9 @@ function computeProcess(inp,countryKey,sizeRatio){
     if(st.tweeterOnly && !p.ferro)        return;
     var mc=st.mc, baseMin=st.baseMin, crew=st.crew;
     if(st.id==='basket'){
-      var bp=BASKET_PROC[inp.frame]||BASKET_PROC['Die-Cast Al'];
+      // Actuator: stamped spring plate, never die-cast (see computeBOM baskSpec)
+      var frameSel=(inp.type==='Actuator')?'Stamped Steel':inp.frame;
+      var bp=BASKET_PROC[frameSel]||BASKET_PROC['Die-Cast Al'];
       mc=bp.mc; baseMin=bp.baseMin; crew=bp.crew;
     }
     var mr=machineRate(mc,countryKey);
@@ -2795,10 +2799,13 @@ function computePhysics(driver, inp, sr) {
   var surrItem = findBOM('Surround');
   var dcapItem = findBOM('Dust Cap');
 
-  var coneG = coneItem ? coneItem.wt : 11 * Math.pow(sizeMM/165, 1.8);
+  // An actuator/exciter genuinely has no cone or surround — never invent one
+  // for it; its moving mass is the coil + former (+ air load).
+  var isAct = driver.type==='Actuator';
+  var coneG = coneItem ? coneItem.wt : (isAct ? 0 : 11 * Math.pow(sizeMM/165, 1.8));
   var vcG   = vcItem   ? vcItem.wt   :  6 * Math.pow(sizeMM/165, 1.4);
   var fmrG  = fmrItem  ? fmrItem.wt  :  1.5 * Math.pow(sizeMM/165, 1.0);
-  var surrG = surrItem ? surrItem.wt * 0.5 : 3 * Math.pow(sizeMM/165, 1.5); // ~half the surround moves
+  var surrG = surrItem ? surrItem.wt * 0.5 : (isAct ? 0 : 3 * Math.pow(sizeMM/165, 1.5)); // ~half the surround moves
   var dcapG = dcapItem ? dcapItem.wt : 0;
 
   var Mmd  = (coneG + vcG + fmrG + surrG + dcapG) * 1e-3;  // kg — mechanical moving mass
@@ -2912,7 +2919,10 @@ function computeSpkPerUnit(driver,inp,country,typeQty){
   // Overhead loads per Tier-1 should-cost convention: machine rates already carry
   // depreciation/energy/space, so factory OH burdens conversion (~35%) plus a
   // small material-handling adder on DM (~3%) — NOT a flat % of prime.
-  var foh=(DLab+DMach)*0.35 + DM*0.03;
+  // The published/derived machine rates also embed ~30% plant indirect
+  // (MACH_SPLIT.indirect), so that slice of DMach is excluded here rather
+  // than burdened twice.
+  var foh=(DLab+DMach*(1-MACH_SPLIT.indirect))*0.35 + DM*0.03;
   var mfgCost=prime+foh;
   var lowCC=['China','China (Coastal)','China (Inland)','Vietnam','India','Thailand','Malaysia','Indonesia','Mexico'];
   var isLowCC=lowCC.indexOf(inp.country)>=0;
@@ -2936,8 +2946,19 @@ function computeSpkPerUnit(driver,inp,country,typeQty){
 var VEH_WIRE={'Compact':0.85,'Midsize':1.00,'Luxury':1.15,'Premium SUV':1.28,'Flagship EV':1.22};
 
 function computeSystemCost(inp){
-  var system=SYSTEMS[inp.system];
-  var country=COUNTRIES[inp.country];
+  // Input sanitation — degrade gracefully instead of throwing/NaN on a stale
+  // selector value. Unknown system/country fall back to defaults; margin and
+  // features are normalised; annualVol is floored at 1k (the UI slider min —
+  // below that, 4-yr tooling amortisation produces nonsense per-unit numbers).
+  var system=SYSTEMS[inp.system]||SYSTEMS['Standard'];
+  var country=COUNTRIES[inp.country]||COUNTRIES['China'];
+  if(!(inp.margin>=0)||!Array.isArray(inp.features)||!(inp.annualVol>=1000)){
+    inp=Object.assign({},inp,{
+      margin:(inp.margin>=0)?inp.margin:0.08,
+      features:Array.isArray(inp.features)?inp.features:[],
+      annualVol:(inp.annualVol>=1000)?inp.annualVol:Math.max(1000,inp.annualVol>0?1000:50000)
+    });
+  }
   // One tool set per unique driver TYPE — front/rear identical types share tooling
   var typeQty={};
   system.drivers.forEach(function(d){typeQty[d.type]=(typeQty[d.type]||0)+d.qty;});
@@ -2958,7 +2979,10 @@ function computeSystemCost(inp){
   // plus one head-unit A2B node (amp-side nodes already in computeAmpCost)
   var sysWireCost=(system.wiring.harnessCost+system.wiring.spk_cable_m*system.wiring.cableCost_m*(isA2B?0.55:1))*vehF
                  +(isA2B?3.50:0);
-  var sysConnCost=system.connectors*0.22*(isA2B?0.70:1);  // $0.22/connector China EXW
+  // Each driver already carries its own speaker-side connector in sysItems
+  // (SPK_SYS[type].conn), so the system count is net of one per speaker —
+  // what remains is the harness/amp/head-unit side.
+  var sysConnCost=Math.max(0,system.connectors-totalSpkCount)*0.22*(isA2B?0.70:1);  // $0.22/connector China EXW
   var featCost=inp.features.reduce(function(s,f){return s+((TECH_FEATURES[f]&&TECH_FEATURES[f].cost)||0);},0);
   // Bought-in electronics carry handling + G&A + warranty burden (~6%) —
   // the Tier-1 integrator warrants what it resells.
