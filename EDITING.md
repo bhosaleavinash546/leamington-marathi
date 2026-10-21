@@ -24,7 +24,7 @@ folder. You almost never need to touch `style.css` or `script.js`.
 | What | Search for this in `index.html` |
 |------|--------------------------------|
 | "What's New" ticker announcements | `ticker-items` — each `<li>` is one rotating headline; add/remove/reorder freely. Add `data-until="YYYY-MM-DD"` to a headline with a deadline and it disappears by itself the day after |
-| Next-event chip in the hero | `hero-next` — update the text, `data-event-date` (drives the countdown) AND `data-until` (the chip hides itself the day after) |
+| Next-event spotlight card on the landing page | `hero-spot` — update the words, flyer, link, `data-event-date` (drives the day counter) AND `data-until` (the card hides itself the day after). The older small chip style `hero-next` still works if you prefer it |
 | Event tickets on sale | `timeline-card` — there is a ready-made `ticket-link` snippet in a comment on the Shivrajyotsav card; it turns into "See the photos →" automatically after the event |
 | Event details / participant counts | `timeline-card` |
 | Featured event block (big card at the top of Events, with flyer, programme, stalls and videos) | `event-feature` — the whole block has a `data-until` date and hides itself the day after the event. For the next big event, copy it, change the words, flyer, videos and dates |
@@ -59,7 +59,7 @@ Dates carry on moving after the site is published. Anything marked `data-until` 
 itself, but a person still needs to add what comes next. After each big event, and at
 least every quarter, run through this list:
 
-1. **Hero chip** (`hero-next`) — point it at the next event with its date.
+1. **Landing page spotlight** (`hero-spot`) — point it at the next event with its date.
 2. **Ticker** (`ticker-items`) — remove anything that has happened, add what's coming.
 3. **Events timeline** — tickets link for the next event (snippet in the Shivrajyotsav card).
 4. **Gallery & flyers** — add the latest event's best photos and poster.

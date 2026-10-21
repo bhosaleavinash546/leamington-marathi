@@ -418,6 +418,127 @@ html:not(.js) #ticker-items li:first-child { display: block; opacity: 1; }
 .hero-next:hover { transform: translateY(-2px); }
 .hero-next .countdown { color: var(--saffron-text); }
 
+/* Next-event spotlight: a maroon card under the hero buttons with the flyer,
+   the key facts and a big day counter. Hides itself after the event (data-until). */
+.hero-spot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: min(100%, 820px);
+  margin: 34px auto 0;
+  padding: 16px 22px 16px 16px;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(244, 164, 18, 0.28), transparent 45%),
+    linear-gradient(135deg, #5a0f1c, #3d0a14);
+  color: #fff6e6;
+  text-align: left;
+  text-decoration: none;
+  box-shadow: 0 20px 48px rgba(74, 19, 11, 0.28);
+  border: 1px solid rgba(244, 164, 18, 0.45);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+.hero-spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.10) 50%, transparent 60%);
+  transform: translateX(-120%);
+  animation: spot-sheen 5s ease-in-out 2s infinite;
+  pointer-events: none;
+}
+@keyframes spot-sheen {
+  0%, 60% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+.hero-spot:hover { transform: translateY(-4px); box-shadow: 0 26px 56px rgba(74, 19, 11, 0.34); }
+.js .hero-spot { opacity: 0; animation: fade-up 0.9s ease 0.8s forwards; }
+.hero-spot-flyer {
+  flex-shrink: 0;
+  width: 104px;
+  height: 130px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 10px;
+  border: 2px solid rgba(244, 164, 18, 0.7);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+.hero-spot-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+.hero-spot-kicker {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.hero-spot-kicker .marathi { text-transform: none; letter-spacing: 0; color: #ffe9b3; }
+.hero-spot-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #fff;
+}
+.hero-spot-title .marathi { font-family: var(--font-display); color: var(--gold); }
+.hero-spot-en { display: block; font-size: 1rem; font-weight: 600; color: #ffe9b3; }
+.hero-spot-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #fff3dc;
+}
+.hero-spot-cta {
+  margin-top: 4px;
+  font-weight: 800;
+  color: var(--gold);
+  font-size: 0.95rem;
+}
+.hero-spot-arrow { display: inline-block; transition: transform 0.2s ease; }
+.hero-spot:hover .hero-spot-arrow { transform: translateX(5px); }
+.hero-spot-count {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px dashed rgba(244, 164, 18, 0.7);
+  text-align: center;
+}
+.hero-spot-num {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--gold);
+}
+.hero-spot-days { font-size: 0.78rem; font-weight: 700; color: #ffe9b3; margin-top: 4px; }
+@media (max-width: 640px) {
+  /* Tighter hero on phones so the spotlight card shows on the first screen */
+  .hero { padding: 48px 18px 56px; }
+  .hero-emblem { width: 96px; margin-bottom: 8px; }
+  .hero-sub { font-size: 1rem; margin-bottom: 20px; }
+  .hero-actions { gap: 10px; }
+  .hero-actions .btn { padding: 10px 16px; font-size: 0.92rem; }
+  .hero-spot { flex-wrap: wrap; padding: 16px; gap: 14px; margin-top: 22px; }
+  .hero-spot-flyer { width: 78px; height: 98px; }
+  .hero-spot-body { flex-basis: calc(100% - 92px); }
+  .hero-spot-title { font-size: 1.3rem; }
+  .hero-spot-count {
+    flex-direction: row;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+  }
+  .hero-spot-num { font-size: 1.6rem; }
+  .hero-spot-days { margin-top: 0; }
+}
+
 .hero-stats {
   display: flex;
   justify-content: center;

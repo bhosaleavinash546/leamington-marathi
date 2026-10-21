@@ -413,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Countdown to the next event (date lives on the hero chip's data-event-date)
+  // Countdown to the next event (date lives on the hero spotlight's or chip's data-event-date)
   const nextChip = document.querySelector('.hero-next');
   if (nextChip && nextChip.dataset.eventDate) {
     const days = Math.ceil((new Date(nextChip.dataset.eventDate) - Date.now()) / 86400000);
@@ -422,6 +422,18 @@ document.addEventListener('DOMContentLoaded', () => {
       span.className = 'countdown';
       span.textContent = ` · ${days} ${days === 1 ? 'day' : 'days'} to go!`;
       nextChip.appendChild(span);
+    }
+  }
+  const spot = document.querySelector('.hero-spot[data-event-date]');
+  if (spot) {
+    const eventDay = new Date(`${spot.dataset.eventDate}T00:00:00`);
+    const days = Math.round((eventDay - todayStart) / 86400000);
+    const num = spot.querySelector('.hero-spot-num');
+    const label = spot.querySelector('.hero-spot-days');
+    if (num && label) {
+      if (days <= 0) { num.textContent = '🎉'; label.textContent = 'आज! Today'; }
+      else if (days === 1) { num.textContent = '1'; label.textContent = 'day to go, उद्या!'; }
+      else { num.textContent = String(days); label.textContent = 'days to go'; }
     }
   }
 

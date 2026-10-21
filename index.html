@@ -130,11 +130,27 @@
         <a href="#contact" class="btn btn-primary">Join Our Community</a>
         <a href="#sponsor" class="btn btn-outline">Become a Sponsor</a>
       </div>
-      <!-- Next-event chip. data-event-date drives the "N days to go" countdown (script.js);
-           data-until hides the chip automatically the day after that date, so it can never
-           advertise a past event. After the Bhet, point it at the next event (Haldi Kunku). -->
-      <a href="#diwali-bhet-2026" class="hero-next" data-event-date="2026-10-31" data-until="2026-10-31">🪔 Diwali Bhet 2026 <span class="marathi" lang="mr">दिवाळी भेट</span>: Sat 31 October, North Leamington School</a>
     </div>
+
+    <!-- Next-event spotlight on the landing page. data-event-date drives the "N days to go"
+         countdown (script.js); data-until hides the whole card the day after the event, so
+         it can never advertise a past one. For the next event, change the words, the flyer,
+         the links and both dates. The small .hero-next chip style is still in style.css if
+         you ever want a quieter version. -->
+    <a href="#diwali-bhet-2026" class="hero-spot" data-event-date="2026-10-31" data-until="2026-10-31" aria-label="Diwali Bhet 2026, Saturday 31 October, North Leamington School. Tickets £5, under 12 free. See the full details">
+      <img src="images/flyers/diwali-bhet-2026.jpg" alt="" class="hero-spot-flyer" width="960" height="1200">
+      <span class="hero-spot-body">
+        <span class="hero-spot-kicker">🪔 Next event <span class="marathi" lang="mr">| आपला पुढचा कार्यक्रम</span></span>
+        <span class="hero-spot-title"><span class="marathi" lang="mr">दिवाळी भेट २०२६</span> <span class="hero-spot-en">Diwali Bhet with live Sugam Sangeet</span></span>
+        <span class="hero-spot-meta">
+          <span>📅 Sat 31 October, 10 am to 3 pm</span>
+          <span>📍 North Leamington School, CV32 6RD</span>
+          <span>🎟 £5, under 12 free</span>
+        </span>
+        <span class="hero-spot-cta">See details and book <span class="hero-spot-arrow">→</span></span>
+      </span>
+      <span class="hero-spot-count" aria-live="off"><span class="hero-spot-num">·</span><span class="hero-spot-days">days to go</span></span>
+    </a>
     <div class="hero-stats reveal">
       <div class="stat">
         <span class="stat-number" data-count="400">400</span><span class="stat-plus">+</span>
