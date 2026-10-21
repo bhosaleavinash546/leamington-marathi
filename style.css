@@ -2338,3 +2338,8 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
 @media (max-width: 440px) {
   .logo { display: none; } /* emblem only on narrow phones */
 }
+
+/* लेमिंग्टन: the name is tagged lang="hi" because Yatra One's Marathi rules draw
+   ग्ट with a visible halant (ग्‌ट). Under the Hindi rules the same font joins it
+   with a half ग, which is the spelling we want. Only the shaping changes. */
+.name-join { font: inherit; }
