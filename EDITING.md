@@ -27,6 +27,7 @@ folder. You almost never need to touch `style.css` or `script.js`.
 | Next-event chip in the hero | `hero-next` — update the text, `data-event-date` (drives the countdown) AND `data-until` (the chip hides itself the day after) |
 | Event tickets on sale | `timeline-card` — there is a ready-made `ticket-link` snippet in a comment on the Shivrajyotsav card; it turns into "See the photos →" automatically after the event |
 | Event details / participant counts | `timeline-card` |
+| Featured event block (big card at the top of Events, with flyer, programme, stalls and videos) | `event-feature` — the whole block has a `data-until` date and hides itself the day after the event. For the next big event, copy it, change the words, flyer, videos and dates |
 | Stats (400+ families etc.) | `data-count` — change both the attribute and the visible number |
 | Testimonial quotes | `testimonial` — replace the sample quotes with real ones |
 | Sponsor logos | `supporter-slot` — swap a placeholder for `<img src="images/sponsor-name.png" alt="Sponsor Name">` |
