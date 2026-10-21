@@ -1,6 +1,6 @@
 # Leamington Marathi — Official Website
 
-**लेमिंगटन मराठी | "वारसा मराठी संस्कृतीचा"**
+**लेमिंग्टन मराठी | "वारसा मराठी संस्कृतीचा"**
 
 The website of Leamington Marathi, a volunteer-run, non-profit community group of 400+
 Marathi families in Leamington Spa & Warwick, UK.
