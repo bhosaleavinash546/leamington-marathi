@@ -282,7 +282,7 @@ export function swMakeBuy(result: SWProgramResult): SWMakeBuy {
     rows: cats.map(c => ({ category: c, label: result.modules.find(m => m.category === c)!.categoryLabel, make: nre(make, c), tier1: nre(t1, c), startup: nre(st, c) })),
     breakEvenEffortShare: (1 - margin) * effIn,
     margin,
-    basis: `Each column re-costs the scope with that development source. A supplier's price = its effort factor ÷ (1 − ${(margin * 100).toFixed(1)} % margin), so buying is cheaper only if the supplier needs ≤ ${((1 - margin) * effIn * 100).toFixed(1)} % of the in-house effort (reuse, a cheaper hub mix).`,
+    basis: `A supplier's price = its effort factor ÷ (1 − ${(margin * 100).toFixed(1)} % margin), so buying is cheaper only if the supplier needs ≤ ${((1 - margin) * effIn * 100).toFixed(1)} % of the in-house effort (reuse, a cheaper hub mix).`,
   };
 }
 
@@ -342,11 +342,11 @@ export interface SWRateCheck {
 }
 
 export const RATE_EVIDENCE = {
-  employment: { low: 1.25, high: 1.4, source: 'Hadzima, "How much does an employee cost?", MIT — employment cost 1.25–1.4 × salary (search result)' },
+  employment: { low: 1.25, high: 1.4, source: 'Hadzima, "How much does an employee cost?", MIT — employment cost 1.25–1.4 × salary' },
   // IT Jobs Watch: "Embedded Systems" UK contracts, median £525 / day over the 6 months to 3 Oct 2026 (35 rates) —
   // the larger, newer sample; the "embedded software engineer" title page shows £600 on 6 rates to Jan 2026 and £500 on
   // 11 to May 2025 (open-items round, re-checked 14 Oct 2026, search results).
-  ukContractDay: { value: 525, source: 'IT Jobs Watch, UK "Embedded Systems" contract median £525 / day, 6 months to 3 Oct 2026, 35 rates (search result)' },
+  ukContractDay: { value: 525, source: 'IT Jobs Watch, UK "Embedded Systems" contract median £525 / day, 6 months to 3 Oct 2026, 35 rates' },
 } as const;
 
 export function swRateCheck(result: SWProgramResult): SWRateCheck {

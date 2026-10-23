@@ -118,3 +118,23 @@ Two code-review passes over the review-fix commit found 14 distinct issues; all 
 Also: `hubMedianNote` moved to `sw-report-request.ts` so the screen's static import chain never pulls jsPDF into the
 main bundle (checked: the main chunk carries no jsPDF and is 2.74 MB, from 2.80 MB). Re-proved: 3,940 tests; LibreOffice
 recalculation of every workbook 0 errors, all checks ✓; live e2e 40 / 40.
+
+## Final independent review (23 Oct 2026)
+
+A fresh reviewer read all nine exported reports and the four recalculated workbooks. Confirmed correct: all module
+arithmetic, £303.3M and £253 a vehicle, unit economics, spend by year, risk, hubs, the appendix, 0 formula errors and every
+check ✓, no garbage text, every contents page number. The findings were in currency text, slices, labelling and evidence
+grading; all are fixed and pinned in `tests/sw-report-review.test.ts` ("final review fixes").
+
+| # | Severity | Finding | Fix |
+|---|---|---|---|
+| H1 | High | EUR hub build-up printed "÷ 1.165 EUR per £ = GBP 6,206 / €8,085" | `localiseReportText` keeps the whole stated conversion in GBP ("GBP 6,206 / 6,940") |
+| H2 | High | Domain report §2 listed all 38 vehicle components (cover said 17) | `md.sliceComponents`: only the components the slice's modules run on, each with only those modules (PDF and Excel) |
+| H3 | High | Your module labelled "module catalogue" effort; effort-basis count missed it; airbag at QM by default | "your figure — <source>; nominal development effort … other engineering lines added on top"; `effortBasisCounts` counts your modules; `SWCustomModule.asilSet` — the card starts at "QM — not set" and reports print "QM (default — not set for your module)" |
+| H4 | High | Voice royalty (Cerence average) graded "Published source"; vehicle facts said "checked on the page" | Basis starts "Proxy —" and is graded a labelled estimate; facts "confirmed from search excerpts of the page given" |
+| M1 | Medium | "Calibrate the top modules first" when most unsourced money is cloud and royalties | The finding splits unsourced money (cloud / royalties / licences v engineering effort) and advises from the larger |
+| M2 | Medium | EUR royalty rate × volume did not reproduce the amount | Rates print to 4 places in a non-£ report |
+| M3 | Medium | Appendix programme row mostly blank; homologation in no column | Homologation column; the programme row fills every column |
+| M4 | Medium | Excel royalties and cloud (63 % of the money) were pasted engine values | Rate × volume formulas: vehicles built, subscription and connected vehicle-years on Rates; PV factor 1 at 0 % discount; a check per module |
+| M5 | Medium | Module detail printed 44 columns on one A4 page | 3 pages wide, column B repeated |
+| Low | Low | NRE step named the largest domain by all costs; "largest first" over catalogue order; §14 repeated itself; €1 rate mismatch; source 0.997; £ wording in EUR (checks, "1p", tool £); mixed units in §8; histogram axes; cover ASIL key; "search result" phrases; Excel naming / stray "formulas"; reuse row; Turkey / Türkiye; your module "Runs on —"; component 33 "rear e-axle"; "every line to the last bit"; module report §3 whole-vehicle rows | Fixed: largest ENGINEERING domain; catalogue-order wording; one break-even sentence; `md.rateBasis` (exact report-currency rates, sliced rows); 4-place factors; currency-neutral wording; one unit per table; round axes + trials axis; colour key under the cover map; phrases removed (the Limitations state how sources were read); names aligned; `md.reuseBasis` (every level used + the safety floor); a country with its own hub takes the hub's name; "not placed on the vehicle map (your module)"; "Electric drive unit"; profile text |

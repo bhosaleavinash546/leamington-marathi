@@ -9,7 +9,8 @@
  *        verification, integration, cyber, calibration, ML as fractions of development; tools = engineer-years × seat;
  *        maintenance = base × Σ weight × discount; IP = £/yr × Σ discount over the production years)
  *     → Module register (every module × every cost element) → domain sheets → Cost build-up → Summary.
- * Royalties, cloud, homologation and the fixed cloud platform enter as the engine's values (labelled). Every formula
+ * Royalties and cloud are rate × volume on Rates (vehicles, subscription and connected vehicle-years); homologation and the
+ * fixed cloud platform enter as the engine's values (labelled). Every formula
  * carries the engine's figure as its cached result, so the file reads correctly before recalculation; the Checks sheet
  * recomputes each total against the engine's value and shows ✓ / ✗ (LibreOffice recalculation: 0 errors, all ✓).
  *
@@ -18,9 +19,10 @@
  */
 import type ExcelJSType from 'exceljs';
 import { resolveRateLibrary } from '../engine/sw-rate-library.js';
-import { swRateBasis, SW_DEV_SOURCE_LABEL, SW_MC_RANGE_BY_GRADE, SW_MAINT_FULL_YEARS, SW_MAINT_TAIL, SW_POST_EOP_SHARE,
+import { SW_DEV_SOURCE_LABEL, SW_MC_RANGE_BY_GRADE, SW_MAINT_FULL_YEARS, SW_MAINT_TAIL, SW_POST_EOP_SHARE,
   SW_DEFAULT_DEVELOPMENT_MONTHS, SW_TOOL_SEAT_GBP, SW_DEV_SPLIT, type SWEvidenceGrade } from '../engine/sw-should-cost.js';
 import { SW_REPORT_PROFILES, type SWReportModel, type SWReportDomain } from '../engine/sw-report-model.js';
+import { SW_DEFAULT_SUBSCRIPTION_YEARS, SW_DEFAULT_SERVICE_YEARS } from '../engine/sw-should-cost.js';
 import { SKELETON_W, SKELETON_H, SKELETON_H_NO_LEGEND } from './sw-report-skeleton.js';
 import type { RasterImage } from './svg-raster.js';
 import { addCharts, type ChartSpec } from './xlsx-charts.js';
@@ -79,11 +81,11 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
   const charts: ChartSpec[] = [];
   const sheets: Array<{ ws: ExcelJSType.Worksheet; last: number; title: string }> = [];
 
-  const sheet = (name: string, tab: string, widths: number[], subtitle: string, opts: { landscape?: boolean; freeze?: number; freezeCol?: number } = {}) => {
+  const sheet = (name: string, tab: string, widths: number[], subtitle: string, opts: { landscape?: boolean; freeze?: number; freezeCol?: number; pagesWide?: number } = {}) => {
     const ws = wb.addWorksheet(name, {
       properties: { tabColor: { argb: argb(tab) }, defaultRowHeight: 18 },
       views: [opts.freeze ? { state: 'frozen', ySplit: opts.freeze, xSplit: opts.freezeCol ?? 0, showGridLines: false, zoomScale: 100 } : { showGridLines: false, zoomScale: 100 }],
-      pageSetup: { paperSize: 9, orientation: opts.landscape === false ? 'portrait' : 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0,
+      pageSetup: { paperSize: 9, orientation: opts.landscape === false ? 'portrait' : 'landscape', fitToPage: true, fitToWidth: opts.pagesWide ?? 1, fitToHeight: 0,
         horizontalCentered: true, margins: { left: 0.4, right: 0.4, top: 0.55, bottom: 0.55, header: 0.25, footer: 0.25 } },
       headerFooter: { oddFooter: `&L&8CostVision · software should-cost${req.meta?.confidentiality ? ` · ${req.meta.confidentiality.replace(/&/g, '&&')}` : ''}&C&8&A&R&8Page &P of &N` },
     });
@@ -100,6 +102,8 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
     put(2, req.title, font(18, C.navy, true)); put(3, subtitle, font(11, C.slate)); put(4, meta, font(9, C.muted));
     for (let c = 1; c <= last + 1; c++) ws.getCell(5, c).fill = fill(C.navy);
     ws.pageSetup.printTitlesRow = '1:5';
+    // A sheet printed several pages wide repeats its name column on each (final review M5: 44 columns on one A4 page).
+    if (opts.pagesWide && opts.pagesWide > 1) ws.pageSetup.printTitlesColumn = 'B:B';
     sheets.push({ ws, last, title: subtitle });
     return { ws, last };
   };
@@ -171,9 +175,9 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   const BUILD = sheet('Cost build-up', C.blue, [34, 16, 16, 16, 10, 50], 'Cost build-up · cost elements → engineering → lifecycle → total (live formulas)');
   const DOM = want.domains ? md.domains.map(d => ({ d, ...sheet(domainSheetName(d), C.violet, [40, 7, 11, 9, 8, 9, 14, 14, 14, 10], `${d.label} · domain`, { freeze: 0 }) })) : [];
   const REG = sheet('Module register', C.blue, [40, 26, 6, 11, 9, 8, 9, 13, 13, 13, 13, 13, 13, 14, 13, 13, 13, 14, 14, 9], 'Module register · every module × every cost element (formulas on Module detail)', { freeze: 8, freezeCol: 2 });
-  const DET = sheet('Module detail', C.blue, [40, 10, 10, 8, 8, 9, 7, 9, 7, 9, 8, 8, 8, 8, 8, 8, 8, 8, 12, 13, 7, 13, 7, 12, 7, 12, 7, 12, 7, 12, 9, 13, 13, 7, 13, 13, 13, 13, 13, 14, 14, 14, 13],
-    'Module detail · the effort chain and every cost line per module, as formulas on Rates', { freeze: 8, freezeCol: 2 });
-  const RATES = sheet('Rates', C.green, [40, 16, 16, 64], 'Rates and programme inputs · the cost chain follows these cells; royalties, cloud, hubs and risk stay at the engine\'s values');
+  const DET = sheet('Module detail', C.blue, [40, 10, 10, 8, 8, 9, 7, 9, 7, 9, 8, 8, 8, 8, 8, 8, 8, 8, 12, 13, 7, 13, 7, 12, 7, 12, 7, 12, 7, 12, 9, 13, 13, 7, 13, 13, 13, 13, 11, 11, 9, 13, 11, 9, 13, 14, 14, 13],
+    'Module detail · the effort chain and every cost line per module, as formulas on Rates', { freeze: 8, freezeCol: 2, pagesWide: 3 });
+  const RATES = sheet('Rates', C.green, [40, 16, 16, 64], 'Rates and programme inputs · the cost chain follows these cells; hubs and risk stay at the engine\'s values');
   const UNIT = want.unit ? sheet('Unit economics', C.amber, [44, 16, 18, 18, 40], 'Unit economics · the figures purchasing compares (formulas)') : null;
   const SPEND = want.spend ? sheet('Spend by year', C.amber, [12, 14, 14, 14, 14, 14, 15, 15], 'Spend by year · nominal, development → production → service', { freeze: 8 }) : null;
   const HUBS = want.hubs ? sheet('Hubs', C.green, [30, 12, 14, 14, 14, 15, 13, 15], 'Every engineering hub · the same scope re-costed at each') : null;
@@ -232,6 +236,12 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   input('maintOn', 'Maintenance included (1 / 0)', p.includeMaintenanceCost ? 1 : 0, '0', 'programme switch');
   input('seat', 'Development tools, per engineer-seat-year', X(p.toolSeatGBPPerYear ?? SW_TOOL_SEAT_GBP), NF.money, 'CostVision estimate unless typed');
   const devmC = input('devm', 'Development window, months', p.developmentMonths ?? SW_DEFAULT_DEVELOPMENT_MONTHS, '0', 'tools are paid over it');
+  const builtC = input('built', 'Vehicles built', F(`${rate.vol}*${lifeC}`, p.annualProductionVolume * p.programLifeYears), NF.count, '= annual volume × production life', false);
+  const subC = input('subYears', 'Map / subscription years per vehicle', p.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS, '0', 'per-vehicle-year royalties run this long');
+  const svcC = input('svcYears', 'Connected-service years per vehicle', p.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS, '0', 'cloud is paid this long');
+  const connC = input('conn', 'Connected share of vehicles', p.connectedVehicleShare ?? 1, NF.pct, 'programme input');
+  input('subVY', 'Subscription vehicle-years', F(`${builtC}*${subC}`, p.annualProductionVolume * p.programLifeYears * (p.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS)), NF.count, '= vehicles built × subscription years', false);
+  input('connVY', 'Connected vehicle-years', F(`${builtC}*${svcC}*${connC}`, p.annualProductionVolume * p.programLifeYears * (p.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS) * (p.connectedVehicleShare ?? 1)), NF.count, '= vehicles built × service years × connected share', false);
   input('toolDisc', 'Tool discount factor', F(`IF(${discC}=0,1,(1-(1+${discC}/100)^(-${devmC}/12))/(${discC}/100)/(${devmC}/12))`, c0?.toolDiscount ?? 1), NF.f4, '= annuity factor ÷ years (1 at 0 %)', false);
   row++;
   bar(R, ++row, 2, 5, 'Maintenance profile and discounting');
@@ -281,14 +291,14 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     }
   }
   row++; bar(R, ++row, 2, 5, 'Rate basis — what these figures were priced on');
-  for (const [k, vv] of swRateBasis(p)) { row++; val(R, row, 2, k, undefined, font(9.5, C.navy, true), 'left'); R.mergeCells(row, 3, row, 5); val(R, row, 3, vv, undefined, font(9), 'left'); R.getRow(row).height = Math.max(18, Math.ceil(vv.length / 110) * 13 + 4); zebra(R, row, 2, 5, false); }
+  for (const [k, vv] of md.rateBasis) { row++; val(R, row, 2, k, undefined, font(9.5, C.navy, true), 'left'); R.mergeCells(row, 3, row, 5); val(R, row, 3, vv, undefined, font(9), 'left'); R.getRow(row).height = Math.max(18, Math.ceil(vv.length / 110) * 13 + 4); zebra(R, row, 2, 5, false); }
 
   // ── Module detail ─────────────────────────────────────────────────────────────────────────────────────────────────
   const D = DET.ws, DN = q(D.name);
   const dcols = ['Module', 'Domain', 'Effort basis', 'Nominal PM', 'Calib.', 'Reuse', 'Effective PM', 'ASIL ×', 'Dev PM', 'Complexity', 'Impl. ×', 'Safety ×', 'Share',
     'Req. PM', 'Arch. PM', 'Algo. PM', 'Impl. PM', 'Safety PM', 'Effort rate', 'Development', 'Verif. %', 'Verification', 'Integ. %', 'Integration', 'Cyber %', 'Cybersecurity',
     'Calib. %', 'Calibration', 'ML %', 'ML data', 'Eng.-years', 'Tools', 'Engineering (NRE)', 'Maint. %/yr', 'Maint. base / yr', 'Maintenance', 'IP / yr', 'IP licences',
-    'Royalties (engine)', 'Cloud (engine)', 'Lifecycle', 'Module total', 'Engine total'];
+    'Royalty / vehicle', 'Royalty / veh.-yr', 'Royalty PV ×', 'Royalties', 'Cloud / conn. veh.-yr', 'Cloud PV ×', 'Cloud', 'Lifecycle', 'Module total', 'Engine total'];
   bar(D, 7, 2, dcols.length + 1, 'Every module: inputs (blue), formulas (black), engine values (grey italic)', `effort rate = Rates loaded × schedule`);
   header(D, 8, dcols.map((h, i) => [i + 2, h, i >= 3] as [number, string, boolean]));
   const col: Record<string, number> = {};
@@ -335,17 +345,25 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     const ipPV = m.evidence.filter(e => e.kind === 'licences').reduce((a, e) => a + e.amount, 0);
     inp('IP / yr', X(ipYear), NF.money);
     fm('IP licences', `${ref('IP / yr', rr)}*${rate.licPV}*${ref('Share', rr)}`, X(ipPV), NF.money);
-    eng('Royalties (engine)', X(x.licensingCost - ipPV), NF.money);
-    eng('Cloud (engine)', X(x.cloudCost), NF.money);
-    fm('Lifecycle', `${ref('Maintenance', rr)}+${ref('IP licences', rr)}+${ref('Royalties (engine)', rr)}+${ref('Cloud (engine)', rr)}`, X(x.totalLifecycle), NF.money);
+    // Royalties and cloud as rate × volume on Rates (final review M4: they were pasted engine values, 63 % of the money).
+    const vr = m.volumeRule;
+    inp('Royalty / vehicle', X(vr.perVehicle), NF.f4); inp('Royalty / veh.-yr', X(vr.perVehicleYear), NF.f4); inp('Royalty PV ×', vr.royaltyPV, NF.f4);
+    inp('Cloud / conn. veh.-yr', X(vr.perConnectedYear), NF.f4); inp('Cloud PV ×', vr.cloudPV, NF.f4);
+    if (vr.reproduces) {
+      fm('Royalties', `(${rate.built}*${ref('Royalty / vehicle', rr)}+${rate.subVY}*${ref('Royalty / veh.-yr', rr)})*${ref('Royalty PV ×', rr)}`, X(vr.royalties), NF.money);
+      fm('Cloud', `${rate.connVY}*${ref('Cloud / conn. veh.-yr', rr)}*${ref('Cloud PV ×', rr)}`, X(vr.cloud), NF.money);
+    } else { eng('Royalties', X(vr.royalties), NF.money); eng('Cloud', X(vr.cloud), NF.money); }
+    fm('Lifecycle', `${ref('Maintenance', rr)}+${ref('IP licences', rr)}+${ref('Royalties', rr)}+${ref('Cloud', rr)}`, X(x.totalLifecycle), NF.money);
     fm('Module total', `${ref('Engineering (NRE)', rr)}+${ref('Lifecycle', rr)}`, X(x.grandTotal), NF.money).font = font(10, C.navy, true);
     eng('Engine total', X(x.grandTotal), NF.money);
     zebra(D, rr, 2, dcols.length + 1, i % 2 === 1);
-    check(`${m.name}: development £ (effort chain × rate)`, `${DN}!${ref('Development', rr)}`, X(x.development.total));
+    check(`${m.name}: development cost (effort chain × rate)`, `${DN}!${ref('Development', rr)}`, X(x.development.total));
+    if (vr.royalties) check(`${m.name}: royalties (rate × volume)`, `${DN}!${ref('Royalties', rr)}`, X(vr.royalties));
+    if (vr.cloud) check(`${m.name}: cloud (rate × connected vehicle-years)`, `${DN}!${ref('Cloud', rr)}`, X(vr.cloud));
     check(`${m.name}: module total`, `${DN}!${ref('Module total', rr)}`, X(x.grandTotal));
   });
   const detLast = 9 + ordered.length - 1;
-  note(D, detLast + 2, 2, 20, 'Blue cells are the engine\'s inputs for each module (catalogue nominal effort, reuse, ASIL and complexity factors, fractions, IP £ a year); black cells are formulas on them and on the Rates sheet; grey italic cells are the engine\'s own values (royalties per vehicle and cloud per connected vehicle-year, whose volume rules are on Unit economics). Engine total is printed beside the formula total so a reviewer sees both.', { size: 9 });
+  note(D, detLast + 2, 2, 20, 'Blue cells are the engine\'s inputs for each module (catalogue nominal effort, reuse, ASIL and complexity factors, fractions, IP a year, royalty and cloud rates); black cells are formulas on them and on the Rates sheet; grey italic is the engine\'s own total. Royalties and cloud are rate × volume: the vehicles, subscription and connected vehicle-years are on Rates; a PV factor is 1 at 0 % discount (the engine\'s present value ÷ the nominal product otherwise). Engine total is printed beside the formula total so a reviewer sees both.', { size: 9 });
 
   // ── Module register ───────────────────────────────────────────────────────────────────────────────────────────────
   const G = REG.ws, GN = q(G.name);
@@ -375,8 +393,8 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     link('Tools', `${DN}!${ref('Tools', dr)}`, x.toolchainCost);
     link('Engineering (NRE)', `SUM(${gref('Development', rr)}:${gref('Tools', rr)})`, x.totalNonRecurring);
     link('Maintenance', `${DN}!${ref('Maintenance', dr)}`, x.maintenanceCost);
-    link('Licences + royalties', `${DN}!${ref('IP licences', dr)}+${DN}!${ref('Royalties (engine)', dr)}`, x.licensingCost);
-    link('Cloud', `${DN}!${ref('Cloud (engine)', dr)}`, x.cloudCost);
+    link('Licences + royalties', `${DN}!${ref('IP licences', dr)}+${DN}!${ref('Royalties', dr)}`, x.licensingCost);
+    link('Cloud', `${DN}!${ref('Cloud', dr)}`, x.cloudCost);
     link('Lifecycle', `SUM(${gref('Maintenance', rr)}:${gref('Cloud', rr)})`, x.totalLifecycle);
     link('Total', `${gref('Engineering (NRE)', rr)}+${gref('Lifecycle', rr)}`, x.grandTotal).font = font(10, C.navy, true);
     val(G, rr, gc['Share'], F(`${gref('Total', rr)}/$${A(gc['Total'])}$${regTotRow + 3}`, x.grandTotal / Math.max(1, s.grandTotal)), NF.pct);
@@ -423,7 +441,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     ['Verification', tot('Verification'), s.totalTesting, 'SIL / MIL / HIL / regression / pen test / scenarios', 'nre'],
     ['Integration', tot('Integration'), s.totalIntegration, 'fraction of development', 'nre'],
     ['Cybersecurity', tot('Cybersecurity'), s.totalCybersecurity, 'by ISO/SAE 21434 CAL', 'nre'],
-    ['Calibration and ML data', tot('Calibration + ML'), s.totalCalibration + s.totalMLData, 'fractions of development', 'nre'],
+    [s.totalMLData > 0 ? 'Calibration and ML data' : 'Calibration', tot('Calibration + ML'), s.totalCalibration + s.totalMLData, 'fractions of development', 'nre'],
     ['Development tools', tot('Tools'), s.totalToolchain, 'engineer-years × seat', 'nre'],
     ['Homologation', `${GN}!$${A(gc['Engineering (NRE)'])}$${regTotRow + 1}`, homo, 'programme-level (engine value)', 'nre'],
   ];
@@ -540,7 +558,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   bar(S, sr, 2, 13, 'What the figures say'); sr++;
   for (const t of md.findings) { note(S, sr, 2, 13, `•  ${t}`, { size: 10, color: C.slate }); sr++; }
   sr++;
-  bar(S, sr, 2, 13, md.slice.isWhole ? 'By software domain' : 'Domains in this report', 'formulas'); sr++;
+  bar(S, sr, 2, 13, md.slice.isWhole ? 'By software domain' : 'Domains in this report'); sr++;
   header(S, sr, [[2, 'Domain'], [6, 'Modules', true], [7, 'Engineering', true], [8, 'Lifecycle', true], [9, 'Total', true], [10, 'Share', true]]);
   S.mergeCells(sr, 2, sr, 5);
   const dFirst = sr + 1;
@@ -580,11 +598,13 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   // ── Architecture ──────────────────────────────────────────────────────────────────────────────────────────────────
   if (ARCH) {
     const W = ARCH.ws; let ar = 7;
-    bar(W, ar, 2, 7, 'Where the software runs', `${md.components.length} components carry software in scope`); ar++;
+    // A slice lists only the components its own modules run on, each with only those modules (final review H2).
+    const comps = md.slice.isWhole ? md.components : md.sliceComponents;
+    bar(W, ar, 2, 7, 'Where the software runs', md.slice.isWhole ? `${comps.length} components carry software in scope` : `${comps.length} components carry this report's modules (vehicle numbering)`); ar++;
     ar += picture(W, 'architecture', 2, ar + 1, 900) + 1;
     note(W, ar, 2, 7, 'Coloured by the highest ASIL among the modules on each component. A module that runs on several components counts at each — money is never split by component. Schematic top view, not to scale.', { italic: true }); ar += 2;
     header(W, ar, [[2, 'No.'], [3, 'Component'], [4, 'Highest ASIL'], [5, 'Modules'], [6, 'Modules running on it'], [7, 'What it is']]);
-    md.components.forEach((c, i) => {
+    comps.forEach((c, i) => {
       ar++;
       val(W, ar, 2, c.no, '0', font(10, C.navy, true), 'center'); val(W, ar, 3, c.label, undefined, font(10), 'left');
       val(W, ar, 4, c.offVehicle ? '— (off-vehicle)' : c.highestAsil === 'QM' ? 'QM' : `ASIL ${c.highestAsil}`, undefined, font(10), 'center'); val(W, ar, 5, c.modules.length, '0');
@@ -834,7 +854,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     tl(8, 'Engineering (NRE)', BNRE, X(md.slice.nre), NF.M);
     tl(11, 'Lifecycle', BLIFE, X(md.slice.lifecycle), NF.M);
     const used = picture(V, 'cover', 2, 16, 960, false);
-    note(V, 16 + used + 1, 2, 13, `Where the software runs: ${md.slice.components} vehicle components carry the software costed here, coloured by the highest ASIL among their modules. Schematic top view, not to scale.`, { italic: true });
+    note(V, 16 + used + 1, 2, 13, `Where the software runs: ${md.slice.components} vehicle components carry the software costed here, coloured by the highest ASIL among their modules — lightest QM, then ASIL A, B, C, darkest ASIL D; white parts carry no software in this report. Schematic top view, not to scale.`, { italic: true });
     note(V, 16 + used + 3, 2, 13, 'A deterministic should-cost model: every figure comes from the module catalogue, the hub rate book and stated constants — no AI sets a price. Totals in this workbook are formulas; the Checks sheet compares each with the engine. Accuracy against real programme costs has not been measured.', { size: 10, color: C.slate, fillHex: C.amberT });
   }
 
@@ -857,7 +877,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     val(K, sumRow, 2, 'Checks passing', undefined, font(11, C.navy, true), 'left');
     val(K, sumRow, 5, F(`COUNTIF(F9:F${cl},"✓")&" of "&COUNTA(F9:F${cl})`, `${checks.length} of ${checks.length}`), undefined, font(11, C.navy, true), 'right');
     strong(K, sumRow, 2, 6);
-    note(K, sumRow + 2, 2, 6, `The report model also ran ${md.checks.length} reconciliation checks before export (module buckets, the effort chain × rate, evidence lines, domains, the build-up): ${md.checks.filter(c => !c.ok).length ? md.checks.filter(c => !c.ok).length + ' FAILED' : 'all agree to within 1p'}. Engine figures are in the report currency (× ${fx} per £).`, { size: 9.5, color: C.slate });
+    note(K, sumRow + 2, 2, 6, `The report model also ran ${md.checks.length} reconciliation checks before export (module buckets, the effort chain × rate, evidence lines, domains, the build-up): ${md.checks.filter(c => !c.ok).length ? md.checks.filter(c => !c.ok).length + ' FAILED' : `all agree to within ${req.currency.code === 'GBP' ? '1p' : `0.01 ${req.currency.code}`}`}. Engine figures are in the report currency (× ${fx} per £).`, { size: 9.5, color: C.slate });
     void KN;
   }
 

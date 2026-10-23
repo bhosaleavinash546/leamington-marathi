@@ -74,7 +74,7 @@ export const SW_VEHICLE_COMPONENTS: SWVehicleComponent[] = [
   { id: 'cell_monitors', label: 'Cell monitoring units', kind: 'sensor', points: [[340, 160], [340, 310], [470, 160], [470, 310], [600, 160], [600, 310]], powertrains: HV, what: 'Cell voltage / temperature front-ends on each module.' },
   { id: 'charge_port',   label: 'Charge port + on-board charger', kind: 'energy', points: [[105, 98]], powertrains: HV, what: 'CCS inlet, charge controller and on-board charger.' },
   { id: 'front_edu',     label: 'Front drive unit (inverter + motor)', kind: 'actuator', points: [[818, 270]], powertrains: ['BEV'], what: 'Front e-axle: inverter, motor and reduction gear.' },
-  { id: 'rear_edu',      label: 'Rear drive unit (inverter + motor)', kind: 'actuator', points: [[230, 235]], powertrains: HV, what: 'Rear e-axle: inverter, motor and reduction gear.' },
+  { id: 'rear_edu',      label: 'Electric drive unit (inverter + motor)', kind: 'actuator', points: [[230, 235]], powertrains: HV, what: 'Electric drive: inverter, motor and reduction gear (drawn at the rear axle; on a hybrid the motor may sit in the gearbox).' },
   { id: 'engine',        label: 'Engine + engine ECU', kind: 'actuator', points: [[835, 200]], powertrains: ICE_FAMILY, what: 'Combustion engine and its control unit.' },
   { id: 'transmission',  label: 'Transmission + TCU', kind: 'actuator', points: [[765, 200]], powertrains: ICE_FAMILY, what: 'Gearbox and transmission control unit.' },
   { id: 'aftertreatment', label: 'Exhaust after-treatment', kind: 'actuator', points: [[620, 372], [330, 372]], powertrains: ICE_FAMILY, what: 'Catalyst / particulate filter / SCR and NOx sensors along the exhaust.' },

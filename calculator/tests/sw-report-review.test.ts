@@ -179,3 +179,108 @@ describe('code review fixes', () => {
     expect(m.programmeItems.map(x => x.kind).sort()).toEqual(['cloudFixed', 'homologation']);
   });
 });
+
+// ── Final independent review, 23 Oct 2026 (docs/review/sw-report-360-build-2026-10-14.md §Final review) ─────────────
+import { effortBasisCounts } from '../src/engine/sw-should-cost.js';
+import { readFileSync } from 'node:fs';
+const src = (f: string) => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8');
+
+const EUR = { code: 'EUR', sym: '€', perGbp: 1.165 };
+const asilDefault = (asilSet?: boolean): SWProgramInputs => {
+  const p = prog('rr_l460');
+  const c: SWCustomModule = { id: 'custom-airbag', name: 'Occupant restraint (airbag) control', category: 'D', nominalPersonMonths: 120, defaultAsil: 'QM',
+    defaultComplexity: 'Medium', source: 'Our 2024 restraint ECU programme', ...(asilSet ? { asilSet } : {}) };
+  return { ...p, customModules: [c], modules: [...p.modules, { moduleId: c.id, enabled: true, asil: 'QM', complexity: 'Medium', reuse: 'Fresh', customPersonMonths: null }] };
+};
+const cellsOf = async (bytes: Uint8Array, name: string) => {
+  const wb = new ExcelJS.Workbook(); await wb.xlsx.load(Buffer.from(bytes) as never);
+  return wb.getWorksheet(name)!;
+};
+
+describe('final review fixes', () => {
+  const v = report(prog('rr_l460'));
+  it('H1: a stated conversion keeps BOTH figures in GBP — never "GBP x / €y"', () => {
+    expect(localiseReportText('÷ 1.165 EUR per £ = £6,206 / £6,940', 1.165, '€')).toBe('÷ 1.165 EUR per £ = GBP 6,206 / 6,940');
+    const e = report(prog('porsche_cayenne'), 'vehicle', {}, EUR);
+    expect(e.text).not.toMatch(/GBP [\d,]+ \/ €/);
+  });
+  it('H2: a domain report lists only the components its own modules run on, each with only those modules', () => {
+    const d = report(prog('rr_l460'), 'domain', { domains: ['B'] });
+    const m = d.model;
+    expect(m.sliceComponents.length).toBe(m.slice.components);
+    expect(m.sliceComponents.length).toBeLessThan(m.components.length);
+    expect(m.sliceComponents.every(c => c.moduleIds.length && c.moduleIds.every(id => m.scopeIds.includes(id)))).toBe(true);
+    expect(d.text).toMatch(new RegExp(`${m.slice.components} components carry its ${m.modules.length} modules`));
+    const outside = m.result.modules.filter(x => !m.scopeIds.includes(x.moduleId)).map(x => x.moduleName);
+    expect(m.sliceComponents.flatMap(c => c.modules).some(n => outside.includes(n))).toBe(false);
+  });
+  it('H3: your module is labelled your figure, counted as yours, and an unchosen ASIL is flagged', () => {
+    const q = report(quoted());
+    const own = q.model.modules.find(x => x.id === 'custom-airbag')!;
+    expect(own.lines[0].expr).toMatch(/^your figure — Our 2024 restraint ECU programme; nominal development effort/);
+    expect(q.model.rateBasis.find(([k]) => k === 'Nominal effort basis')![1]).toMatch(/· 1 your person-months/);
+    expect(effortBasisCounts(quoted()).yours).toBe(1);
+    expect(own.asilNotSet).toBe(false);                                 // ASIL-D was chosen
+    const notSet = report(asilDefault());
+    expect(notSet.model.modules.find(x => x.id === 'custom-airbag')!.asilNotSet).toBe(true);
+    expect(notSet.text).toMatch(/QM \(default — not set for your module\)/);
+    expect(report(asilDefault(true)).model.modules.find(x => x.id === 'custom-airbag')!.asilNotSet).toBe(false);
+    expect(notSet.text).toMatch(/not placed on the vehicle map \(your module\)/);
+  });
+  it('H4: the voice royalty is a labelled proxy (estimate), and vehicle facts say how they were confirmed', () => {
+    const voice = v.model.evidenceLines.find(l => l.kind === 'royalties' && /Cerence/.test(l.basis))!;
+    expect(voice.grade).toBe('estimate');
+    expect(voice.basis).toMatch(/^Proxy — /);
+    expect(voice.basis).not.toMatch(/search result/);
+    const pdf = src('src/export/sw-report-pdf.ts');
+    expect(pdf).not.toMatch(/checked against the manufacturer|each checked on the page/);
+    expect(pdf).toMatch(/confirmed from search excerpts/);
+  });
+  it('M1: the advice follows where the unsourced money is (cloud and royalties first here)', () => {
+    expect(v.model.findings.join(' ')).toMatch(/replace the cloud and royalty figures with supplier quotes first, then calibrate the top modules/);
+    expect(v.model.findings.join(' ')).not.toMatch(/calibrate the top modules first\./);
+  });
+  it('M2: in EUR the royalty rate prints to 4 places so rate × volume gives the amount', () => {
+    const e = report(prog('porsche_cayenne'), 'vehicle', {}, EUR);
+    const lines = e.model.modules.flatMap(x => x.lines).filter(l => l.label === 'Royalties' && /vehicles × €/.test(l.expr) && !/\+/.test(l.expr));
+    expect(lines.length).toBeGreaterThan(0);
+    for (const l of lines) {
+      const [, n, r] = l.expr.match(/^([\d,]+) vehicles × €([\d.]+)/)!;
+      expect(r).toMatch(/\.\d{4}$/);
+      expect(Math.abs(Number(n.replace(/,/g, '')) * Number(r) - l.value * EUR.perGbp)).toBeLessThan(Number(n.replace(/,/g, '')) * 0.00005 + 0.01);
+    }
+  });
+  it('M3: the appendix carries a Homologation column and a full programme row', () => {
+    expect(v.text).toMatch(/Homol\./);
+    expect(src('src/export/sw-report-pdf.ts')).toMatch(/strong\('Programme total'\), \.\.\.cols\.map\(\(\[h, g\]\) => strong\(K\(colSum/);
+  });
+  it('M4 / M5: royalties and cloud are rate × volume formulas; Module detail prints 3 pages wide with the name column repeated', async () => {
+    const ws = await cellsOf(await buildSWReportWorkbook(v.model), 'Module detail');
+    const head = ws.getRow(8); let roy = 0, cloud = 0;
+    head.eachCell((c, i) => { if (c.value === 'Royalties') roy = i; if (c.value === 'Cloud') cloud = i; });
+    expect(roy).toBeGreaterThan(0); expect(cloud).toBeGreaterThan(0);
+    const anyRoy = Array.from({ length: v.model.modules.length }, (_, i) => ws.getCell(9 + i, roy).value).find(x => typeof x === 'object' && x && 'formula' in x && (x as ExcelJS.CellFormulaValue).result as number > 0);
+    expect((anyRoy as ExcelJS.CellFormulaValue).formula).toMatch(/Rates'!\$C\$\d+\*/);
+    expect((ws.getCell(9, cloud).value as ExcelJS.CellFormulaValue).formula).toMatch(/Rates'!\$C\$\d+\*/);
+    expect(ws.pageSetup.fitToWidth).toBe(3);
+    expect(ws.pageSetup.printTitlesColumn).toBe('B:B');
+  });
+  it('Low: steps, rate factors, countries, currency wording, make-or-buy text', async () => {
+    const steps = swCostingSteps(v.model.result, { perPMGBP: 1, hubLabel: 'x', build: 'x' }, { money: n => String(Math.round(n)), number: n => String(n) });
+    expect(steps.find(st => st.id === 'nre')!.detail).toMatch(/Largest engineering domain: /);
+    expect(v.model.modules[0].lines.find(l => l.label === 'Engineering rate')!.expr).toMatch(/source 0\.9966 × burden 1\.610/);
+    const md2 = buildSWReportModel(v.model.result, { ...v.model.request, countries: [{ code: 'TR', label: 'Turkey', hub: 'TR', hubLabel: 'Türkiye', basis: '' }, { code: 'MA', label: 'Morocco', hub: 'ES', hubLabel: 'Spain', basis: 'nearest' }] });
+    expect(md2.countries.map(c => c.label)).toEqual(['Türkiye', 'Morocco']);
+    const e = report(prog('porsche_cayenne'), 'vehicle', {}, EUR);
+    expect(e.text).toMatch(/within 0\.01 EUR/);
+    expect(e.text).not.toMatch(/within 1p/);
+    const chk = await sheetText(await buildSWReportWorkbook(e.model), 'Checks');
+    expect(chk).not.toMatch(/development £|within 1p/);
+    expect(v.model.makeBuy.basis).not.toMatch(/^Each column/);
+    expect(v.model.definition.length).toBeGreaterThan(0);
+    expect(v.model.reuseBasis).toMatch(/at least 0\.40 \/ 0\.50 \/ 0\.60/);
+    expect(v.text).not.toMatch(/every line to the last bit|largest first in each table|\(search result\)|read via search results|per search summary/);
+    const exe = report(prog('rr_l460'), 'module', { moduleIds: ['bms_core', 'navigation'] });
+    expect(exe.model.rateBasis.some(([k]) => k === 'Homologation')).toBe(false);
+  });
+});

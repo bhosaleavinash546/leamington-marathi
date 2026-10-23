@@ -218,6 +218,8 @@ export interface SWCustomModule {
   /** The catalogue gap this module covers (an id of SW_CATALOGUE_GAP_DEFS), set by the user. Reports list a gap as covered
    *  only when it is linked here or the module's name IS the gap's name — never by a partial name match. */
   coversGap?:          string;
+  /** True once the user chose the ASIL (QM included). Unset with QM = the card's default, flagged "not set" in reports. */
+  asilSet?:            boolean;
 }
 
 /** Vehicle software no catalogue module covers (review judgement): usually supplier ECUs priced in the hardware. `head` is
@@ -232,6 +234,15 @@ export const SW_CATALOGUE_GAP_DEFS = [
 ] as const;
 const gapKey = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 /** The gap ids your in-scope modules (with an effort figure) cover: an explicit link, or a module named exactly as the gap. */
+/** How each in-scope module's nominal effort was set: the catalogue, a COCOMO II size, or your own person-months (a typed
+ *  figure, or your own module — final review H3: your modules were counted as catalogue). `ids` limits it to a slice. */
+export function effortBasisCounts(prog: Pick<SWProgramInputs, 'modules' | 'customModules'>, ids?: ReadonlySet<string>): { catalogue: number; sized: number; yours: number } {
+  const own = new Set((prog.customModules ?? []).map(c => c.id));
+  const on = prog.modules.filter(m => m.enabled && (!ids || ids.has(m.moduleId)));
+  const yours = on.filter(m => m.customPersonMonths != null || own.has(m.moduleId)).length;
+  const sized = on.filter(m => m.customPersonMonths == null && !own.has(m.moduleId) && m.sizeKSLOC).length;
+  return { catalogue: on.length - yours - sized, sized, yours };
+}
 export function coveredGaps(prog: Pick<SWProgramInputs, 'customModules' | 'modules'>): string[] {
   const on = (prog.customModules ?? []).filter(c => c.nominalPersonMonths > 0 && prog.modules.some(m => m.moduleId === c.id && m.enabled));
   return SW_CATALOGUE_GAP_DEFS.filter(g => on.some(c => c.coversGap === g.id || (gapKey(c.name) !== '' && gapKey(c.name) === gapKey(g.head)))).map(g => g.id);
@@ -836,7 +847,9 @@ export const SW_MODULES: SWModuleDef[] = [
     annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 0, annualCloudCostGBP: 0,
     calibrationFractionBase: 0.04,
     perVehicleRoyaltyGBP: Math.round(5.09 / USD_PER_GBP * 100) / 100,
-    royaltyBasis: `Cerence average price per unit US$5.09 (TTM to Q2 FY2026; US$5.05 at Q4 FY2025; includes connected services) at US$${USD_PER_GBP} per £ (29 Sep 2026) — Cerence earnings decks filed with the SEC (EX-99), read via search results.`,
+    // A PROXY (final review H4): Cerence's average across its contracts, not this vehicle's voice supplier's fee — graded a
+    // labelled estimate (the word "Proxy" in the basis sets the grade in swEvidenceLines).
+    royaltyBasis: `Proxy — Cerence average price per unit US$5.09 (TTM to Q2 FY2026; US$5.05 at Q4 FY2025; includes connected services) at US$${USD_PER_GBP} per £ (29 Sep 2026), from Cerence earnings decks filed with the SEC (EX-99). The fee this vehicle's own voice supplier charges is not published.`,
     notes: 'On-device + cloud voice (Cerence, SoundHound). Cerence PPU $5.09 (TTM Q2 FY26) includes connected services.',
   },
   {
@@ -1280,7 +1293,7 @@ export function swOverhead(prog: Pick<SWProgramInputs, 'burden' | 'overheadMulti
 /** Map updates per vehicle. Nissan, Subaru and Hyundai include 3 years of map updates with a new car, Honda (2021–24)
  *  3 years; some give 5 or lifetime (Citroën) — search results of OEM pages, Oct 2026. */
 export const SW_DEFAULT_SUBSCRIPTION_YEARS = 3;
-export const SW_SUBSCRIPTION_BASIS = '3 years of map updates per vehicle — Nissan, Subaru, Hyundai, Honda (2021–24) include 3; some brands 5 or lifetime (OEM pages, read from search results).';
+export const SW_SUBSCRIPTION_BASIS = '3 years of map updates per vehicle — Nissan, Subaru, Hyundai, Honda (2021–24) include 3; some brands 5 or lifetime (OEM pages).';
 /** Connected-service life per vehicle — current OEM terms (re-checked 14 Oct 2026): GM OnStar Basics 8 years on model
  *  year 2025+ (onstar.com, GM release Feb 2024); Tesla Standard Connectivity 8 years for cars ordered after 20 Jul 2022
  *  (tesla.com); Toyota Safety / Service Connect up to 10 years (4G-dependent, 2022); Mercedes-Benz mbrace Connect 5 years
@@ -1289,9 +1302,9 @@ export const SW_SUBSCRIPTION_BASIS = '3 years of map updates per vehicle — Nis
 export const SW_DEFAULT_SERVICE_YEARS = 8;
 export const SW_SERVICE_BASIS = 'Each connected vehicle served 8 years from build — the median of current OEM terms: GM OnStar Basics 8 yr (MY2025+), Tesla Standard Connectivity 8 yr (ordered after 20 Jul 2022), Toyota up to 10 yr, Mercedes-Benz mbrace Connect 5 yr (US); OEM pages, re-checked 14 Oct 2026. A 2G / 3G / 4G shutdown can end it sooner.';
 /** Tools per engineer-seat-year. No public price (Vector CANoe: quote only; a full suite + interface "> $15k" is an
- *  anecdote). CostVision estimate = the module catalogue's tool £ at the default programme ÷ its engineer-years. */
+ *  anecdote). CostVision estimate = the module catalogue's tool cost at the default programme ÷ its engineer-years. */
 export const SW_TOOL_SEAT_GBP = 39_500;
-export const SW_TOOL_SEAT_BASIS = 'CostVision estimate £39,500 per engineer-seat-year — the module catalogue\'s tool £ at the default programme ÷ its engineer-years; no public seat price (Vector CANoe is quote-only).';
+export const SW_TOOL_SEAT_BASIS = 'CostVision estimate £39,500 per engineer-seat-year — the module catalogue\'s tool cost at the default programme ÷ its engineer-years; no public seat price (Vector CANoe is quote-only).';
 /** Sustaining-team profile: the module's maintenance % in full for the first years after SOP, then a tail. */
 export const SW_MAINT_FULL_YEARS = 3;
 export const SW_MAINT_TAIL = 0.5;
@@ -1369,7 +1382,7 @@ const IMPL_COMPLEXITY_WEIGHT = 0.15;
 /** Safety/verification effort resists reuse: the reuse factor applied to the
  *  safety bucket cannot fall below this floor by ASIL (SW3) — reused ASIL-C/D
  *  code still needs re-verification/qualification. QM/A unaffected. */
-const SAFETY_REUSE_FLOOR: Record<ASILLevel, number> = { QM: 0, A: 0, B: 0.40, C: 0.50, D: 0.60 };
+export const SW_SAFETY_REUSE_FLOOR: Record<ASILLevel, number> = { QM: 0, A: 0, B: 0.40, C: 0.50, D: 0.60 };
 /** ML dataset acquisition/annotation/retraining as a fraction of dev, per ML
  *  module, over the programme (only when includeMLDataCost). */
 const ML_DATA_FRACTION = 0.15;
@@ -1396,7 +1409,7 @@ function computeModuleCost(
   // SW3: safety bucket resists reuse — floor the reuse it sees, then scale the
   // 0.15 safety slice up relative to the dev reuse (neutral when reuse ≥ floor,
   // e.g. Medium reuse 0.60 at ASIL-D floor 0.60 → scale 1.0).
-  const safetyReuse   = Math.max(reuse, SAFETY_REUSE_FLOOR[input.asil]);
+  const safetyReuse   = Math.max(reuse, SW_SAFETY_REUSE_FLOOR[input.asil]);
   const safetyScale   = reuse > 0 ? safetyReuse / reuse : 1;
 
   // SW-schedule: compressing the timeline below nominal inflates effort.
@@ -1702,10 +1715,8 @@ export function swRateBasis(prog: SWProgramInputs): Array<[string, string]> {
     ['Security support after the last build', `${postYears(prog)} yr at ${Math.round((prog.postProductionSupportShare ?? SW_POST_EOP_SHARE) * 100)} % of the tail team — ${SW_POST_EOP_BASIS}`],
     ['Homologation', (prog.includeHomologation ?? true) ? `on — organisation CSMS / SUMS ${(prog.csmsTypesSharing ?? 1) > 1 ? `shared by ${prog.csmsTypesSharing} vehicle types` : 'carried by this vehicle type alone'}` : 'off'],
     ['Nominal effort basis', (() => {
-      const on = prog.modules.filter(m => m.enabled);
-      const sized = on.filter(m => m.customPersonMonths == null && m.sizeKSLOC).length;
-      const custom = on.filter(m => m.customPersonMonths != null).length;
-      return `${on.length - sized - custom} catalogue · ${sized} COCOMO II size (${SW_COCOMO.A} × KSLOC^${SW_COCOMO_EXPONENT.toFixed(4)}) · ${custom} custom PM`;
+      const { catalogue, sized, yours } = effortBasisCounts(prog);
+      return `${catalogue} catalogue · ${sized} COCOMO II size (${SW_COCOMO.A} × KSLOC^${SW_COCOMO_EXPONENT.toFixed(4)}) · ${yours} your person-months (typed, or your own modules)`;
     })()],
     ['Effort calibration', prog.effortCalibration && prog.effortCalibration !== 1
       ? `× ${prog.effortCalibration} (fitted to your logged actuals)` : 'none (model as published)'],
@@ -1834,7 +1845,7 @@ export function swEvidenceLines(prog: SWProgramInputs, modules: SWModuleCostResu
     // A royalty is "yours" when every part of it was typed (a quote, or the user's own module).
     const unquotedPart = (!!def.perVehicleRoyaltyGBP && !def.quoted?.royalty && !def.custom) || (!!def.perVehiclePerYearGBP && !def.quoted?.subscription);
     if (Math.abs(roy) > 1e-6) out.push({ moduleId: m.moduleId, kind: 'royalties', label: `${m.moduleName} — royalties`, amount: roy,
-      grade: !unquotedPart ? 'entered' : /unsourced/i.test(def.royaltyBasis ?? 'unsourced') ? 'unsourced' : 'sourced', nre: false, basis: def.royaltyBasis ?? '' });
+      grade: !unquotedPart ? 'entered' : /unsourced/i.test(def.royaltyBasis ?? 'unsourced') ? 'unsourced' : /^proxy\b/i.test(def.royaltyBasis ?? '') ? 'estimate' : 'sourced', nre: false, basis: def.royaltyBasis ?? '' });
     if (m.cloudCost) out.push({ moduleId: m.moduleId, kind: 'cloud', label: `${m.moduleName} — cloud`, amount: m.cloudCost, grade: def.quoted?.cloud ? 'entered' : 'unsourced', nre: false,
       basis: def.quoted?.cloud ? `Your quote: £${prog.quotes?.cloudPerVehicleYear?.value} per connected vehicle-year — ${def.quoted.cloud} (spread by the catalogue's module shares). ${SW_SERVICE_BASIS}` : `${SW_CLOUD_BASIS} ${SW_SERVICE_BASIS}` });
   }

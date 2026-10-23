@@ -53,7 +53,11 @@ export function swCostingSteps(result: SWProgramResult, rate: StepRate, f: StepF
   const lifecycle = s.totalMaintenance + s.totalCloud + s.totalLicensing;
   const recurring = result.modules.filter(m => m.cloudCost + m.licensingCost > 0).map(m => m.moduleId);
   const recovery = Math.max(1, prog.costRecoveryYears ?? prog.programLifeYears);
-  const topCat = Object.entries(s.byCategory).sort((a, b) => b[1] - a[1])[0];
+  // The engineering step names the largest ENGINEERING domain (final review: it named the largest by all costs, which
+  // the cloud and royalties of infotainment decide).
+  const nreBy: Record<string, number> = {};
+  for (const m of result.modules) nreBy[m.category] = (nreBy[m.category] ?? 0) + m.totalNonRecurring;
+  const topCat = Object.entries(nreBy).sort((a, b) => b[1] - a[1])[0];
   const topCatLabel = result.modules.find(m => m.category === topCat?.[0])?.categoryLabel ?? '';
 
   return [
@@ -74,8 +78,8 @@ export function swCostingSteps(result: SWProgramResult, rate: StepRate, f: StepF
       modules: ids },
     { id: 'nre', title: 'Engineering cost (NRE)', value: f.money(s.nreTotal),
       detail: `Effort × rate = ${f.money(engineering)}; tools ${f.money(s.totalToolchain)}`
-        + `${s.totalHomologation ? `, homologation ${f.money(s.totalHomologation)}` : ''}. Largest domain: ${topCatLabel} `
-        + `${topCat ? f.money(topCat[1]) : ''} (all costs).`,
+        + `${s.totalHomologation ? `, homologation ${f.money(s.totalHomologation)}` : ''}. Largest engineering domain: ${topCatLabel} `
+        + `${topCat ? f.money(topCat[1]) : ''}.`,
       modules: result.modules.filter(m => m.category === topCat?.[0]).map(m => m.moduleId) },
     { id: 'lifecycle', title: 'Lifecycle', value: f.money(lifecycle),
       detail: `Maintenance ${f.money(s.totalMaintenance)}, cloud ${f.money(s.totalCloud)}, licences and royalties `

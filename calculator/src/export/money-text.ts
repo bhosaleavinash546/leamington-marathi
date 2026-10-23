@@ -55,7 +55,9 @@ export function localiseRuleValue(label: string, value: string, fx: number, sym:
  */
 export function localiseReportText(text: string, fx: number, sym: string): string {
   if (!text || fx === 1 && sym === '£') return text;
-  return localiseGbpText(text.replace(/(per £ = )£(\d[\d,.]*)/g, '$1GBP $2'), fx, sym)
+  // A stated conversion ("÷ 1.165 EUR per £ = £6,206 / £6,940") stays in GBP as a whole — both figures (review: the
+  // second was converted, printing "GBP 6,206 / €8,085").
+  return localiseGbpText(text.replace(/(per £ = )£(\d[\d,.]*)(?: \/ £(\d[\d,.]*))?/g, (_m, a: string, x: string, y?: string) => `${a}GBP ${x}${y ? ` / ${y}` : ''}`), fx, sym)
     .replace(/£(?= \(no discounting)/g, sym)
     .replace(/£ (?=\/|per |a |an )/g, `${sym} `)
     .replace(/£(?=M\b|k\b)/g, sym);

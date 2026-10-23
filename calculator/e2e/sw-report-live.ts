@@ -140,6 +140,7 @@ async function main(): Promise<void> {
     await exportBoth('l460-user-quotes-own-module', user);
     const ut = pdfText(join(OUT, 'l460-user-quotes-own-module.pdf'));
     check('user report: your module appears with its source', ut.includes('Occupant restraint (airbag) control') && ut.includes('Our 2024 restraint ECU programme'), '');
+    check('user report: your module\'s unchosen ASIL is flagged, its effort labelled yours', ut.includes('not set for your module') && ut.includes('your figure — Our 2024 restraint ECU programme'), '');
     check('user report: the quotes appear with their sources', ut.includes('AWS proposal 2026-09') && ut.includes('TCU supplier quote Q3 2026'), '');
 
     // 5. axe on the Report tab with the options open.

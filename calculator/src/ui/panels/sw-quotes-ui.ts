@@ -142,6 +142,9 @@ export function wireQuotesCard(root: HTMLElement, host: QuotesHost): void {
 
 const opt = (vals: readonly string[], sel: string) => vals.map(v => `<option value="${esc(v)}"${v === sel ? ' selected' : ''}>${esc(v)}</option>`).join('');
 
+/** The user chose this module's ASIL (QM included); an unchosen one is costed at QM and reported "not set". */
+const asilChosen = (c: SWCustomModule) => !!c.asilSet || c.defaultAsil !== 'QM';
+
 export function customModulesCardHTML(p: SWProgramInputs): string {
   const cm = p.customModules ?? [];
   const inp = (id: string) => p.modules.find(m => m.moduleId === id);
@@ -153,7 +156,7 @@ export function customModulesCardHTML(p: SWProgramInputs): string {
       ${f('name', 'name', `<input id="swc-${i}-name" class="sw-config-inp swc-name" type="text" value="${esc(c.name)}">`)}
       ${f('cat', 'domain', `<select id="swc-${i}-cat" class="sw-config-sel swc-cat">${CATS.map(([v, l]) => `<option value="${v}"${v === c.category ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`)}
       ${f('pm', 'nominal person-months', `<input id="swc-${i}-pm" class="sw-config-inp swc-pm" type="number" min="0" step="1" value="${c.nominalPersonMonths}">`)}
-      ${f('asil', 'ASIL', `<select id="swc-${i}-asil" class="sw-config-sel swc-asil">${opt(['QM', 'A', 'B', 'C', 'D'], m?.asil ?? c.defaultAsil)}</select>`)}
+      ${f('asil', 'ASIL', `<select id="swc-${i}-asil" class="sw-config-sel swc-asil"><option value=""${asilChosen(c) ? '' : ' selected'}>QM — not set</option>${opt(['QM', 'A', 'B', 'C', 'D'], asilChosen(c) ? (m?.asil ?? c.defaultAsil) : '')}</select>`)}
       ${f('cx', 'complexity', `<select id="swc-${i}-cx" class="sw-config-sel swc-cx">${opt(['Low', 'Medium', 'High', 'Very High'], m?.complexity ?? c.defaultComplexity)}</select>`)}
       ${f('reuse', 'reuse', `<select id="swc-${i}-reuse" class="sw-config-sel swc-reuse">${opt(['Fresh', 'Light', 'Medium', 'Heavy', 'Platform'], m?.reuse ?? 'Fresh')}</select>`)}
       ${f('cal', 'cybersecurity CAL', `<select id="swc-${i}-cal" class="sw-config-sel swc-cal">${opt(['none', 'CAL1', 'CAL2', 'CAL3', 'CAL4'], m?.cal ?? c.defaultCal ?? 'none')}</select>`)}
@@ -184,13 +187,14 @@ function readCustom(root: HTMLElement, p: SWProgramInputs): Pick<SWProgramInputs
     const id = tr.dataset.cRow!, v = <T extends HTMLInputElement | HTMLSelectElement>(c: string) => tr.querySelector<T>(`.${c}`)!;
     const prev = p.customModules?.find(c => c.id === id);
     const roy = num(v<HTMLInputElement>('swc-roy').value);
+    const asilV = v<HTMLSelectElement>('swc-asil').value, asil = (asilV || 'QM') as ASILLevel;
     custom.push({ id, name: v<HTMLInputElement>('swc-name').value.trim(), category: v<HTMLSelectElement>('swc-cat').value as SWCategory,
-      nominalPersonMonths: num(v<HTMLInputElement>('swc-pm').value) ?? 0, defaultAsil: v<HTMLSelectElement>('swc-asil').value as ASILLevel,
+      nominalPersonMonths: num(v<HTMLInputElement>('swc-pm').value) ?? 0, defaultAsil: asil, ...(asilV ? { asilSet: true } : {}),
       defaultComplexity: v<HTMLSelectElement>('swc-cx').value as SWComplexity, defaultCal: v<HTMLSelectElement>('swc-cal').value as SWCal,
       ...(roy !== undefined ? { perVehicleRoyaltyGBP: roy } : {}), ...(prev?.annualIPLicenceGBP !== undefined ? { annualIPLicenceGBP: prev.annualIPLicenceGBP } : {}),
       source: v<HTMLInputElement>('swc-src').value.trim(),
       ...(v<HTMLSelectElement>('swc-gap')?.value ? { coversGap: v<HTMLSelectElement>('swc-gap').value } : {}) });
-    modules = [...modules, { moduleId: id, enabled: v<HTMLInputElement>('swc-on').checked, asil: v<HTMLSelectElement>('swc-asil').value as ASILLevel,
+    modules = [...modules, { moduleId: id, enabled: v<HTMLInputElement>('swc-on').checked, asil,
       complexity: v<HTMLSelectElement>('swc-cx').value as SWComplexity, reuse: v<HTMLSelectElement>('swc-reuse').value as SWReuse,
       cal: v<HTMLSelectElement>('swc-cal').value as SWCal, customPersonMonths: null }];
   });

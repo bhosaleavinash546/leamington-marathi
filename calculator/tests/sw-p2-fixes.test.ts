@@ -269,9 +269,11 @@ describe('#14 exports state the rate basis; static reports are labelled referenc
   });
 
   it('both exports print it; Excel lists the CAL', () => {
-    // The 360 report (Oct 2026): both exports draw one model; each renderer prints the rate basis, the workbook a CAL column.
-    expect(src('src/export/sw-report-pdf.ts')).toMatch(/swRateBasis\(p\)/);
-    expect(src('src/export/sw-report-xlsx.ts')).toMatch(/swRateBasis\(p\)/);
+    // The 360 report (Oct 2026): both exports draw one model; the model builds the rate basis from swRateBasis (exact
+    // figures in the report currency, sliced for a focused report) and each renderer prints it; the workbook a CAL column.
+    expect(src('src/engine/sw-report-model.ts')).toMatch(/swRateBasis\(prog\)/);
+    expect(src('src/export/sw-report-pdf.ts')).toMatch(/md\.rateBasis/);
+    expect(src('src/export/sw-report-xlsx.ts')).toMatch(/md\.rateBasis/);
     expect(src('src/export/sw-report-xlsx.ts')).toMatch(/\['CAL', false\]/);
   });
 

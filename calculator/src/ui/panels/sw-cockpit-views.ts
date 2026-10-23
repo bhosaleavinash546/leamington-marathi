@@ -140,7 +140,7 @@ export function sourceTableHTML(rows: SWDevSourceRow[], current: string, moneyM:
 
 export function makeBuyHTML(mb: SWMakeBuy, moneyM: Money): string {
   return `<section class="swk-card" id="swk-makebuy"><h3 class="swk-h">Make or buy, by domain</h3>
-    <p class="swk-sub">${esc(mb.basis)} Lifecycle costs (royalties, cloud, maintenance) are the same whoever writes the code in this model and are left out.</p>
+    <p class="swk-sub">Each column re-costs the scope with that development source. ${esc(mb.basis)} Lifecycle costs (royalties, cloud, maintenance) are the same whoever writes the code in this model and are left out.</p>
     <div class="swk-tw"><table class="swk-t"><thead><tr><th scope="col">Domain</th><th scope="col" class="n">In-house</th><th scope="col" class="n">Tier-1</th>
       <th scope="col" class="n">Start-up / OSS</th><th scope="col" class="n">Tier-1 premium</th></tr></thead>
       <tbody>${mb.rows.sort((a, b) => b.make - a.make).map(x => `<tr><th scope="row">${dot(x.category)}${esc(x.label)}</th><td class="n">${moneyM(x.make)}</td>

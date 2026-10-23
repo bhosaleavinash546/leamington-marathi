@@ -20,8 +20,9 @@ import {
   SW_POST_EOP_BASIS, SW_HOMOLOGATION_BASIS, SW_DEV_SOURCE_LABEL, SW_CLOUD_REFERENCE_FLEET, swModuleDefs, maintenanceWeights,
   type SWProgramResult, type SWModuleCostResult, type SWCategory, type ASILLevel, type SWEvidenceLine, type SWEvidenceGrade,
   type SWPowertrain, type SWModuleDef, type DevSource,
-  SW_CATALOGUE_GAP_DEFS, coveredGaps, postYears, withDrivetrainArticle,
+  SW_CATALOGUE_GAP_DEFS, coveredGaps, postYears, withDrivetrainArticle, effortBasisCounts, SW_SAFETY_REUSE_FLOOR, swRateBasis,
 } from './sw-should-cost.js';
+import { resolveRateLibrary } from './sw-rate-library.js';
 import {
   swSpendProfile, swUnitEconomics, swQuoteCheck, swMakeBuy, swEvidence, swHubComparison, swCalibrationPriorities, swRateCheck,
   SW_CATALOGUE_GAPS,
@@ -43,7 +44,7 @@ export const SW_REPORT_PROFILES: Record<SWReportProfile, { label: string; reader
   vehicle:   { label: 'Vehicle (full 360°)', reader: 'Programme director, finance', what: 'Every domain and every module, from the vehicle down to each costed line and its rate.' },
   executive: { label: 'Executive summary', reader: 'President / board', what: 'Headline, domains, the largest drivers, the range and the hubs.' },
   domain:    { label: 'Domain', reader: 'Domain chief engineer', what: 'The chosen domains in full, as a slice of the vehicle costing.' },
-  module:    { label: 'Module', reader: 'Module owner, purchasing', what: 'The chosen modules, every line to the last bit.' },
+  module:    { label: 'Module', reader: 'Module owner, purchasing', what: 'The chosen modules, each costed line with its arithmetic.' },
   supplier:  { label: 'Supplier / negotiation', reader: 'Purchasing', what: 'Quote check, make or buy, the rate a quote implies and the hubs.' },
   hubs:      { label: 'Hub & country', reader: 'Sourcing / footprint', what: 'Every hub re-costed, every country mapped to its hub, the rate build-ups.' },
 };
@@ -150,6 +151,8 @@ export interface SWReportModule {
   description: string;
   notes:       string;
   custom:      boolean;
+  /** Your module costed at QM because the ASIL was never chosen (the card's default) — printed "not set". */
+  asilNotSet:  boolean;
   /** Labels of the lines priced with the user's quotes. */
   quoted:      string[];
   estimateBasis?: string;
@@ -161,6 +164,12 @@ export interface SWReportModule {
   evidence:    SWEvidenceLine[];
   /** Nominal £ by programme year (maintenance + licences + royalties + cloud). */
   yearlyTotal: number[];
+  /** The volume rules behind royalties and cloud, so a workbook can rebuild them as rate × volume (final review M4):
+   *  royalties = (vehicles × per vehicle + subscription vehicle-years × per vehicle-year) × royaltyPV; cloud = connected
+   *  vehicle-years × per connected vehicle-year × cloudPV. A PV factor is 1 at 0 % discount (the engine's present value ÷
+   *  the nominal product otherwise). `royalties` / `cloud` are the engine's amounts the rule reproduces. */
+  volumeRule:  { perVehicle: number; perVehicleYear: number; perConnectedYear: number; royaltyPV: number; cloudPV: number;
+    royalties: number; cloud: number; reproduces: boolean };
 }
 
 export interface SWReportDomain {
@@ -239,6 +248,16 @@ export interface SWReportModel {
   findings:    string[];
   definition:  Array<[string, string]>;
   components:  SWReportComponent[];
+  /** The components carrying THIS report's modules (vehicle numbering kept), each listing only the report's modules and
+   *  their highest ASIL — a slice's architecture section prints these, not the whole vehicle's (final review H2). */
+  sliceComponents: SWReportComponent[];
+  /** The reuse levels used, each with its factor, and the functional-safety floor (one sentence). */
+  reuseBasis:  string;
+  /** What the figures were priced on (swRateBasis), with the rates as exact report-currency figures (a £ figure rounded
+   *  and then converted was €1 off the module lines), and — in a slice — only the rows its modules use. */
+  rateBasis:   Array<[string, string]>;
+  /** Nominal-effort basis of the modules in THIS report (catalogue / COCOMO size / your person-months). */
+  effortBasis: { catalogue: number; sized: number; yours: number };
   steps:       SWCostingStep[];
   buildUp:     { nre: Array<[string, number]>; lifecycle: Array<[string, number]> };
   domains:     SWReportDomain[];
@@ -345,18 +364,24 @@ function componentsFor(result: SWProgramResult): SWReportComponent[] {
   return out;
 }
 
-function moduleLines(m: SWModuleCostResult, ev: SWEvidenceLine[], f: SWReportFormat, prog: SWProgramResult['inputs'], def: SWModuleDef | undefined): SWReportLine[] {
+function moduleLines(m: SWModuleCostResult, ev: SWEvidenceLine[], f: SWReportFormat, prog: SWProgramResult['inputs'], def: SWModuleDef | undefined, rateDp: number, asilNotSet: boolean): SWReportLine[] {
   const c = m.chain, k = c.share, L: SWReportLine[] = [];
   const pm = (n: number) => `${f.number(n, 1)} PM`;
   const rate = `${f.money(c.effortRate)} / PM`;
   const sh = k < 1 ? ` × platform share ${f.number(k, 3)}` : '';
-  const basis = m.effortBasis === 'custom' ? 'your person-months' : m.effortBasis === 'size' ? 'COCOMO II.2000 on your KSLOC' : 'module catalogue, fresh code at QM / Medium';
+  // Your module's figure is YOUR development effort; the other engineering lines are added on top (final review H3: it was
+  // labelled "module catalogue").
+  const basis = m.effortBasis === 'custom' ? 'your person-months (typed)' : m.effortBasis === 'size' ? 'COCOMO II.2000 on your KSLOC'
+    : def?.custom ? `your figure — ${prog.customModules?.find(c => c.id === m.moduleId)?.source || 'no source given'}; nominal development effort (fresh code at QM / Medium) — ASIL, complexity and reuse apply to it, and verification, integration and the other engineering lines are added on top`
+    : 'module catalogue, fresh code at QM / Medium';
+  // A factor that needs 4 places to multiply out as printed (0.9966, not 0.997).
+  const fac = (n: number) => f.number(n, Math.abs(n * 1000 - Math.round(n * 1000)) < 1e-9 ? 3 : 4);
   L.push({ group: 'effort', label: 'Nominal effort', expr: basis, value: c.nominalPM, unit: 'PM' });
   if (c.effortCal !== 1) L.push({ group: 'effort', label: 'Effort calibration (your actuals)', expr: `× ${f.number(c.effortCal, 3)}`, value: c.effortCal, unit: 'factor' });
   L.push({ group: 'effort', label: `Reuse (${m.reuseUsed})`, expr: `× ${f.number(c.reuseFactor, 2)} → ${pm(c.effectivePM)}`, value: c.effectivePM, unit: 'PM' });
-  L.push({ group: 'effort', label: `ASIL ${m.asilUsed} development factor`, expr: `× ${f.number(c.asilDev, 2)} → ${pm(c.devPM)}`, value: c.devPM, unit: 'PM' });
-  L.push({ group: 'effort', label: 'Engineering rate', expr: `hub ${f.money(c.engineerRate)} × source ${f.number(c.devSourceMult, 3)} × burden ${f.number(c.overhead, 3)}`
-    + (c.schedPenalty !== 1 ? ` × schedule ${f.number(c.schedPenalty, 3)}` : '') + ` = ${rate}`, value: c.effortRate, unit: 'money' });
+  L.push({ group: 'effort', label: `ASIL ${m.asilUsed}${asilNotSet ? ' (default — not set for your module)' : ''} development factor`, expr: `× ${f.number(c.asilDev, 2)} → ${pm(c.devPM)}`, value: c.devPM, unit: 'PM' });
+  L.push({ group: 'effort', label: 'Engineering rate', expr: `hub ${f.money(c.engineerRate)} × source ${fac(c.devSourceMult)} × burden ${fac(c.overhead)}`
+    + (c.schedPenalty !== 1 ? ` × schedule ${fac(c.schedPenalty)}` : '') + ` = ${rate}`, value: c.effortRate, unit: 'money' });
   const b = c.bucketPM;
   const devRow = (label: string, key: keyof typeof b, extra: string, value: number) =>
     L.push({ group: 'development', label, expr: `${pm(c.devPM)} × ${pct(SW_DEV_SPLIT[key])}${extra} = ${pm(b[key] * c.schedPenalty)} × ${rate}${sh}`, value, unit: 'money' });
@@ -400,8 +425,9 @@ function moduleLines(m: SWModuleCostResult, ev: SWEvidenceLine[], f: SWReportFor
   const N = prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS, S = prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS;
   const pv = (prog.discountRatePct ?? 0) ? ` (present value at ${prog.discountRatePct} %)` : '';
   if (Math.abs(roy) > 1e-6) {
-    const parts = [def?.perVehicleRoyaltyGBP ? `${f.number(built, 0)} vehicles × ${f.money(def.perVehicleRoyaltyGBP, 2)}` : '',
-      def?.perVehiclePerYearGBP ? `${f.number(built * N, 0)} vehicle-years (${N} a vehicle) × ${f.money(def.perVehiclePerYearGBP, 2)}` : ''].filter(Boolean);
+    // In another currency the rate prints to 4 places so rate × volume gives the amount (final review M2).
+    const parts = [def?.perVehicleRoyaltyGBP ? `${f.number(built, 0)} vehicles × ${f.money(def.perVehicleRoyaltyGBP, rateDp)}` : '',
+      def?.perVehiclePerYearGBP ? `${f.number(built * N, 0)} vehicle-years (${N} a vehicle) × ${f.money(def.perVehiclePerYearGBP, rateDp)}` : ''].filter(Boolean);
     L.push({ group: 'lifecycle', label: 'Royalties', expr: (parts.join(' + ') || 'per vehicle built and per vehicle-year') + pv, value: roy, unit: 'money', grade: grade('royalties'), basis: basisOf('royalties') });
   }
   if (m.cloudCost) {
@@ -451,8 +477,49 @@ export function buildSWReportModel(result: SWProgramResult, req: SWReportRequest
   const mc = result.monteCarlo;
   const components = componentsFor(result);
   const compNo = new Map(components.map(c => [c.id, c.no]));
+  const sliceComponents: SWReportComponent[] = components.flatMap(c => {
+    const ids = c.moduleIds.filter(id => inSlice.has(id));
+    if (!ids.length) return [];
+    const ms = result.modules.filter(m => ids.includes(m.moduleId));
+    const highestAsil = c.offVehicle ? 'QM' : ms.reduce<ASILLevel>((a, m) => (asilRank(m.asilUsed) > asilRank(a) ? m.asilUsed : a), 'QM');
+    return [{ ...c, moduleIds: ids, modules: ms.map(m => m.moduleName), highestAsil }];
+  });
+  const reuseLib = resolveRateLibrary(prog.rateLibrary).reuseFactors;
+  const reuseUsed = (['Fresh', 'Light', 'Medium', 'Heavy', 'Platform'] as const).filter(k => sliceMods.some(m => m.reuseUsed === k));
+  const fl = SW_SAFETY_REUSE_FLOOR;
+  // Rate basis: exact figures in the report currency; a slice keeps only the rows its modules are priced on.
+  const c0 = result.modules[0]?.chain;
+  const hubBook = resolveRateLibrary(prog.rateLibrary).hubRates[prog.region];
+  const fac4 = (n: number) => f.number(n, Math.abs(n * 1000 - Math.round(n * 1000)) < 1e-9 ? 3 : 4);
+  const eb = effortBasisCounts(prog, inSlice);
+  const sliceHasCloud = sliceMods.some(m => m.cloudCost > 0), sliceHasRoyalty = sliceMods.some(m => m.yearly.royalties.some(v => v > 0));
+  const rateBasis: Array<[string, string]> = swRateBasis(prog).flatMap(([k, v]): Array<[string, string]> => {
+    if (!isWhole && (k === 'Homologation' || k === 'Powertrain' || (k === 'Cloud' && !sliceHasCloud) || (k.startsWith('Map / per-vehicle-year') && !sliceHasRoyalty))) return [];
+    if (k.startsWith('Loaded rate') && c0) return [['Loaded rate (per person-month)', f.money(c0.loadedRate, 0)]];
+    if (k === 'Engineer rate used' && c0) return [[k, v.replace(/^£[\d,]+/, f.money(c0.engineerRate, 0))]];
+    if (k.startsWith('Hub rate') && hubBook) return [[k, v.replace(/^mid £[\d,]+ · senior £[\d,]+/, `mid ${f.money(hubBook.mid.value, 0)} · senior ${f.money(hubBook.senior.value, 0)}`)]];
+    if (k === 'Development source' && c0) return [[k, v.replace(/× [\d.]+ =/, `× ${fac4(c0.devSourceMult)} =`)]];
+    if (k === 'Nominal effort basis') return [[k, `${eb.catalogue} catalogue · ${eb.sized} COCOMO II size · ${eb.yours} your person-months (typed, or your own modules)${isWhole ? '' : ' — the modules in this report'}`]];
+    return [[k, v]];
+  });
+  const reuseBasis = `${reuseUsed.map(k => `${k} × ${f.number(reuseLib[k].value, 2)}`).join(', ')} (CostVision factors, unsourced). The functional-safety share resists reuse: `
+    + `at ASIL B / C / D it sees a reuse factor of at least ${f.number(fl.B, 2)} / ${f.number(fl.C, 2)} / ${f.number(fl.D, 2)}, so its "safety-reuse" factor on the module sheet = that floor ÷ the reuse factor.`;
   const numbersFor = (ids: string[]) => [...new Set(ids.flatMap(id => SW_MODULE_COMPONENTS[id] ?? []))]
     .map(cid => compNo.get(cid)).filter((n): n is number => n != null).sort((a, b) => a - b);
+
+  const builtV = prog.annualProductionVolume * prog.programLifeYears;
+  const subYears = prog.subscriptionYears ?? SW_DEFAULT_SUBSCRIPTION_YEARS, svcYears = prog.connectedServiceYears ?? SW_DEFAULT_SERVICE_YEARS;
+  const connShare = prog.connectedVehicleShare ?? 1;
+  const volumeRuleOf = (m: SWModuleCostResult, def: SWModuleDef | undefined, ev: SWEvidenceLine[]): SWReportModule['volumeRule'] => {
+    const ip = ev.filter(e => e.kind === 'licences').reduce((a, e) => a + e.amount, 0);
+    const royalties = m.licensingCost - ip, cloud = m.cloudCost;
+    const perVehicle = def?.perVehicleRoyaltyGBP ?? 0, perVehicleYear = def?.perVehiclePerYearGBP ?? 0;
+    const perConnectedYear = def?.annualCloudCostGBP ? def.annualCloudCostGBP / SW_CLOUD_REFERENCE_FLEET : 0;
+    const royNom = builtV * perVehicle + builtV * subYears * perVehicleYear, cloudNom = builtV * svcYears * connShare * perConnectedYear;
+    const pv = (amt: number, nom: number) => (nom > 0 ? (Math.abs(amt / nom - 1) < 1e-12 ? 1 : amt / nom) : 1);
+    const reproduces = (Math.abs(royalties) < 0.005 || royNom > 0) && (Math.abs(cloud) < 0.005 || cloudNom > 0);
+    return { perVehicle, perVehicleYear, perConnectedYear, royaltyPV: pv(royalties, royNom), cloudPV: pv(cloud, cloudNom), royalties, cloud, reproduces };
+  };
 
   // Modules. Module ids inside catalogue texts ("vehicle_motion (…)") are printed as module names.
   const names = new Map([...defs.values()].map(d => [d.id, d.name]));
@@ -462,13 +529,16 @@ export function buildSWReportModel(result: SWProgramResult, req: SWReportRequest
     const ev = evidence.lines.filter(l => l.moduleId === m.moduleId).map(l => ({ ...l, basis: nm(l.basis) ?? '' }));
     const quoted = Object.entries(def?.quoted ?? {}).filter(([, v]) => !!v).map(([k]) => k);
     const H = s.horizonYears;
+    const own = prog.customModules?.find(c => c.id === m.moduleId);
+    const asilNotSet = !!own && !own.asilSet && m.asilUsed === 'QM';
     return {
       id: m.moduleId, name: m.moduleName, category: m.category, categoryLabel: m.categoryLabel,
-      description: nm(def?.description) ?? '', notes: nm(def?.notes) ?? '', custom: !!def?.custom, quoted,
+      description: nm(def?.description) ?? '', notes: nm(def?.notes) ?? '', custom: !!def?.custom, asilNotSet, quoted,
       estimateBasis: nm(def?.estimateBasis), royaltyBasis: nm(def?.royaltyBasis),
       result: m, share: s.grandTotal > 0 ? m.grandTotal / s.grandTotal : 0, components: numbersFor([m.moduleId]),
-      lines: moduleLines(m, ev, f, prog, def), evidence: ev,
+      lines: moduleLines(m, ev, f, prog, def, (req.currency?.perGbp ?? 1) !== 1 ? 4 : 2, asilNotSet), evidence: ev,
       yearlyTotal: Array.from({ length: H }, (_, i) => (m.yearly.maintenance[i] ?? 0) + (m.yearly.licences[i] ?? 0) + (m.yearly.royalties[i] ?? 0) + (m.yearly.cloud[i] ?? 0)),
+      volumeRule: volumeRuleOf(m, def, ev),
     };
   });
 
@@ -540,7 +610,15 @@ export function buildSWReportModel(result: SWProgramResult, req: SWReportRequest
     findings.push(`Engineering (NRE) ${f.moneyM(nre)} (${pct(nre / s.grandTotal)}); lifecycle ${f.moneyM(lifecycle)} (${pct(lifecycle / s.grandTotal)}) — maintenance, licences, royalties and cloud over the ${s.horizonYears} years from SOP.`);
     if (topDomain) findings.push(`${topDomain.label} is the largest domain at ${f.moneyM(topDomain.total)} (${pct(topDomain.share)}); the three largest modules — ${top3.map(m => m.moduleName).join(', ')} — are ${pct(top3Share)} of the total.`);
     findings.push(`Risk: P10 ${f.moneyM(mc.p10)} / P50 ${f.moneyM(mc.p50)} / P90 ${f.moneyM(mc.p90)}; the headline sits at P${Math.round(mc.headlinePercentile)} of its own band (ranges are skewed upwards by evidence grade).`);
-    if (sortedHubs.length > 1) findings.push(`Hub choice: ${sortedHubs[0].label} ${f.moneyM(sortedHubs[0].total)} to ${sortedHubs[sortedHubs.length - 1].label} ${f.moneyM(sortedHubs[sortedHubs.length - 1].total)}; this costing is at ${req.hubLabel}. ${pct(evidence.unsourcedShare)} of the total rests on unsourced catalogue figures — calibrate the top modules first.`);
+    if (sortedHubs.length > 1) findings.push(`Hub choice: ${sortedHubs[0].label} ${f.moneyM(sortedHubs[0].total)} to ${sortedHubs[sortedHubs.length - 1].label} ${f.moneyM(sortedHubs[sortedHubs.length - 1].total)}; this costing is at ${req.hubLabel}.`);
+    // What to replace first follows WHERE the unsourced money is (final review M1: "calibrate the modules" was advised when
+    // most of it was cloud and royalties, which calibration cannot touch).
+    const uns = evidence.lines.filter(l => l.grade === 'unsourced');
+    const unsLife = sum(uns.filter(l => ['cloud', 'cloudFixed', 'royalties', 'licences'].includes(l.kind)).map(l => l.amount));
+    const unsEffort = sum(uns.filter(l => l.kind === 'effort').map(l => l.amount));
+    if (uns.length) findings.push(`${pct(evidence.unsourcedShare)} of the total rests on unsourced figures: cloud, royalties and licences ${f.moneyM(unsLife)}, engineering effort ${f.moneyM(unsEffort)}`
+      + `${unsLife + unsEffort < sum(uns.map(l => l.amount)) - 0.5 ? `, other ${f.moneyM(sum(uns.map(l => l.amount)) - unsLife - unsEffort)}` : ''} — `
+      + (unsLife >= unsEffort ? 'replace the cloud and royalty figures with supplier quotes first, then calibrate the top modules on your actuals.' : 'calibrate the top modules on your actuals first, then quote the cloud and royalties.'));
   } else {
     findings.push(`This report covers ${sliceMods.length} of the ${result.modules.length} modules in the vehicle costing: ${f.moneyM(sliceTotal)} (${pct(sliceTotal / s.grandTotal, 1)} of the vehicle's ${f.moneyM(s.grandTotal)}).`);
     findings.push(`Engineering (NRE) ${f.moneyM(sliceNre)}; lifecycle ${f.moneyM(sliceTotal - sliceNre)}. Module figures are the vehicle costing's — this is a slice, not a separate costing.`);
@@ -624,8 +702,10 @@ export function buildSWReportModel(result: SWProgramResult, req: SWReportRequest
       p10: mc.p10, p50: mc.p50, p90: mc.p90, headlinePercentile: mc.headlinePercentile,
       hubMin: sortedHubs[0], hubMax: sortedHubs[sortedHubs.length - 1], unsourcedShare: evidence.unsourcedShare, vehiclesBuilt: unit.vehiclesBuilt,
     },
-    programmeItems, findings, definition, components, steps, buildUp, domains, modules, unit, spend, hubs,
-    countries: req.countries ?? [], rateCheck: swRateCheck(result), evidence, calibration, makeBuy,
+    programmeItems, findings, definition, components, sliceComponents, reuseBasis, effortBasis: eb, rateBasis,
+    steps, buildUp, domains, modules, unit, spend, hubs,
+    // A country with its own hub is printed under the hub's name (one name each: "Türkiye", not "Turkey" → "Türkiye").
+    countries: (req.countries ?? []).map(c => (c.hub === c.code && c.hubLabel ? { ...c, label: c.hubLabel } : c)), rateCheck: swRateCheck(result), evidence, calibration, makeBuy,
     quote, assumptions: swAssumptionRows(makeBuy.basis, prog), yourFigures: swYourFigures(result),
     excluded: swExcludedModules(result), gaps: SW_CATALOGUE_GAPS.filter(g => !gapsCovered.includes(g)), skeletons, checks,
   };

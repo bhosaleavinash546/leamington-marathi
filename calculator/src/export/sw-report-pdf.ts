@@ -12,9 +12,9 @@
  * colour-vision deficiency, every series also named in text.
  */
 import type { jsPDF } from 'jspdf';
-import { swRateBasis, SW_DEV_SOURCE_LABEL, SW_MC_RANGE_BY_GRADE, SW_CLOUD_BASIS, SW_SERVICE_BASIS, type SWEvidenceGrade } from '../engine/sw-should-cost.js';
+import { SW_DEV_SOURCE_LABEL, SW_MC_RANGE_BY_GRADE, SW_CLOUD_BASIS, SW_SERVICE_BASIS, type SWEvidenceGrade } from '../engine/sw-should-cost.js';
 import { SW_REPORT_PROFILES, type SWReportModel, type SWReportModule, type SWReportDomain, type SWReportSectionId } from '../engine/sw-report-model.js';
-import { SKELETON_W, SKELETON_H, SKELETON_H_NO_LEGEND } from './sw-report-skeleton.js';
+import { SKELETON_W, SKELETON_H, SKELETON_H_NO_LEGEND, SKELETON_ASIL_RAMP } from './sw-report-skeleton.js';
 import type { RasterImage } from './svg-raster.js';
 import { localiseReportText } from './money-text.js';
 import { hardenPdfText } from './pdf.js';
@@ -200,7 +200,16 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     tiles(t, true, 80);
     y = 118;
     const h = picture('cover', CW, MG, false);
-    y += h + 2;
+    y += h + 3;
+    // The colour key (final review: the cover map had none).
+    const hex = (c: string): RGB => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
+    font(7.4, 'bold', MUTED); doc.text('Highest ASIL on the part:', MG, y); let lx = MG + doc.getTextWidth('Highest ASIL on the part:') + 3;
+    for (const a of ASILS) {
+      doc.setFillColor(...hex(SKELETON_ASIL_RAMP[a])); doc.setDrawColor(...SLATE); doc.setLineWidth(0.15); doc.rect(lx, y - 2.5, 4, 3, 'FD');
+      const l = a === 'QM' ? 'QM' : `ASIL ${a}`; font(7.4, 'normal', MUTED); doc.text(l, lx + 5.2, y); lx += 5.2 + doc.getTextWidth(l) + 5;
+    }
+    doc.setFillColor(...WHITE); doc.setDrawColor(...LINE); doc.rect(lx, y - 2.5, 4, 3, 'FD'); font(7.4, 'normal', MUTED); doc.text('no software in this report', lx + 5.2, y);
+    y += 3;
     font(7.3, 'italic', MUTED);
     doc.text(`Where the software runs: ${md.slice.components} vehicle components carry the software costed here, coloured by the highest ASIL among their modules. Schematic top view, not to scale.`, MG, y + 2, { maxWidth: CW });
     y += 12;
@@ -208,8 +217,8 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     bullets([
       'A deterministic should-cost model: every figure comes from the module catalogue, the hub rate book and stated constants — no AI sets a price. Every total in this report is checked against the level above.',
       `${(md.slice.unsourcedShare * 100).toFixed(1)} % of ${md.slice.isWhole ? 'the total' : 'this report\'s total'} rests on unsourced catalogue figures${md.sections.some(x => x.id === 'modules') ? ' (graded line by line in this report)' : md.sections.some(x => x.id === 'evidence') ? ' (see Evidence and sources)' : ''}. Accuracy against real programme costs has not been measured.`,
-      req.facts?.length && md.sections.some(x => x.id === 'definition') ? `The vehicle facts behind the scope were checked against the manufacturer's and press pages (section ${md.sections.find(x => x.id === 'definition')!.no}). Volume and programme life are the user's inputs.`
-        : req.facts?.length ? 'The vehicle facts behind the scope were checked against the manufacturer\'s and press pages (printed in the Vehicle report). Volume and programme life are the user\'s inputs.'
+      req.facts?.length && md.sections.some(x => x.id === 'definition') ? `The vehicle facts behind the scope were confirmed from search excerpts of the manufacturer's and press pages (section ${md.sections.find(x => x.id === 'definition')!.no}). Volume and programme life are the user's inputs.`
+        : req.facts?.length ? 'The vehicle facts behind the scope were confirmed from search excerpts of the manufacturer\'s and press pages (printed in the Vehicle report). Volume and programme life are the user\'s inputs.'
         : 'Volume, programme life and scope are the user\'s inputs; no checked vehicle facts were supplied.',
     ], 8.2);
   };
@@ -267,24 +276,28 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     table(['Input', 'Value', 'Basis'], [
       ['Senior engineer share', `${Math.round(p.teamSeniorFraction * 100)} %`, 'blends the hub\'s mid and senior rates'],
       ['Engineering burden', p.burden ? `employment +${p.burden.employmentPct} %, company +${p.burden.companyPct} %, capital +${p.burden.capitalPct} %` : `× ${p.overheadMultiplier}`, 'section on rates'],
-      ['Reuse', [...new Set(p.modules.filter(m => m.enabled).map(m => m.reuse))].join(', '), 'per module; Medium = × 0.60 (unsourced)'],
+      ['Reuse', [...new Set(r.modules.map(m => m.reuseUsed))].join(', '), md.reuseBasis],
       ['Security support after the last build', `${md.postSupportYears} years`, 'UN R155 post-production duty; share assumed'],
       ['Homologation', (p.includeHomologation ?? true) ? 'included' : 'excluded', 'R155 / R156 / ISO 26262'],
       ['Effort calibration', p.effortCalibration && p.effortCalibration !== 1 ? `× ${p.effortCalibration}` : 'none (uncalibrated)', 'your logged actuals'],
     ], { 0: { cellWidth: 52 }, 1: { cellWidth: 56 } });
     if (req.vehicleDesc) { sub(req.facts?.length ? 'The vehicle' : 'The vehicle (demo description — not checked against sources)'); para(req.vehicleDesc, 8.5); }
     if (req.facts?.length) {
-      sub('Product facts the scope rests on (each checked on the page given)');
-      table(['Fact', 'Checked on'], req.facts.map(([a, b]) => [a, b]), { 0: { cellWidth: 80 }, 1: { cellWidth: 98, fontSize: 6.3, textColor: MUTED } });
+      sub('Product facts the scope rests on (each confirmed from a search excerpt of the page given)');
+      table(['Fact', 'Page'], req.facts.map(([a, b]) => [a, b]), { 0: { cellWidth: 80 }, 1: { cellWidth: 98, fontSize: 6.3, textColor: MUTED } });
     }
   };
 
   // ── 3 Architecture ────────────────────────────────────────────────────────────────────────────────────────────────
   const architecture = () => {
-    section('architecture', undefined, `The vehicle's electrical / electronic architecture as the costing sees it: ${md.components.length} components carry the software in scope. Each is numbered; the table lists what runs on it. A module running on several components counts at each — the picture never splits money by component. The picture is a generic zonal E/E template placed by vehicle zone, not this vehicle's own architecture.`);
+    // A slice lists only the components its own modules run on (final review H2), numbered as in the vehicle report.
+    const comps = md.slice.isWhole ? md.components : md.sliceComponents;
+    section('architecture', undefined, md.slice.isWhole
+      ? `The vehicle's electrical / electronic architecture as the costing sees it: ${comps.length} components carry the software in scope. Each is numbered; the table lists what runs on it. A module running on several components counts at each — the picture never splits money by component. The picture is a generic zonal E/E template placed by vehicle zone, not this vehicle's own architecture.`
+      : `Where the software in this report runs: ${comps.length} components carry its ${md.modules.length} modules (numbered as in the Vehicle report; each row lists only this report's modules). A module running on several components counts at each — the picture never splits money by component. The picture is a generic zonal E/E template placed by vehicle zone, not this vehicle's own architecture.`);
     figure('architecture', md.profile === 'executive' ? 'Coloured by the highest ASIL among the modules on each component. The full component table is in the Vehicle report.' : 'Coloured by the highest ASIL among the modules on each component. Numbers refer to the table below.');
     if (md.profile === 'executive') return;
-    table(['No.', 'Component', 'Highest ASIL', 'Modules running on it', 'What it is'], md.components.map(c => [
+    table(['No.', 'Component', 'Highest ASIL', md.slice.isWhole ? 'Modules running on it' : 'Modules in this report running on it', 'What it is'], comps.map(c => [
       strong(String(c.no)), c.label, c.offVehicle ? '— (off-vehicle)' : c.highestAsil === 'QM' ? 'QM' : `ASIL ${c.highestAsil}`, `${c.modules.length}: ${c.modules.join(', ')}`, c.what]),
       { 0: { cellWidth: 9, halign: 'center' }, 1: { cellWidth: 36 }, 2: { cellWidth: 17 }, 3: { cellWidth: 70, fontSize: 6.3 }, 4: { cellWidth: 46, fontSize: 6.3, textColor: MUTED } },
       { bodyStyles: SMALL });
@@ -390,7 +403,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
   };
   const domains = () => {
     section('domains', undefined, md.slice.isWhole
-      ? `The ${md.domains.length} software domains, largest first in each table. Domain totals are module totals; programme-level items (${md.programmeItems.map(x => x.label).join('; ') || 'none'}) sit outside the domains.`
+      ? `The ${md.domains.length} software domains in catalogue order, the modules within each largest first. Domain totals are module totals; programme-level items (${md.programmeItems.map(x => x.label).join('; ') || 'none'}) sit outside the domains.`
       : 'The domains in this report, each a slice of the vehicle costing.');
     if (md.profile === 'executive') {
       table(['Domain', 'Modules', 'NRE', 'Lifecycle', 'Total', 'Share'], [...md.domains.map(d => [d.label, String(d.moduleIds.length), M(d.nre), M(d.lifecycle), M(d.total), share(d.total, s.grandTotal)]),
@@ -422,10 +435,10 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     picture(`module-${m.id}`, pw, MG, false);
     const fx = MG + pw + 5, fw = CW - pw - 5;
     const facts: Array<[string, string]> = [
-      ['Domain', m.categoryLabel], ['ASIL · complexity · reuse', `${x.asilUsed === 'QM' ? 'QM' : 'ASIL ' + x.asilUsed} · ${x.complexityUsed} · ${x.reuseUsed}`],
+      ['Domain', m.categoryLabel], ['ASIL · complexity · reuse', `${x.asilUsed === 'QM' ? 'QM' : 'ASIL ' + x.asilUsed}${m.asilNotSet ? ' (default — not set for your module)' : ''} · ${x.complexityUsed} · ${x.reuseUsed}`],
       ['Cyber (ISO/SAE 21434)', x.calUsed === 'none' ? 'no CAL' : x.calUsed], ['Effort', `${num(x.personMonths, 1)} PM development · ${num(x.effortPersonMonths, 1)} PM all engineering`],
       ['Engineering · lifecycle', `${M(x.totalNonRecurring)} · ${M(x.totalLifecycle)}`], ['Share of vehicle', share(x.grandTotal, s.grandTotal) + (c.share < 1 ? ` (platform share ${num(c.share, 3)})` : '')],
-      ['Runs on', m.components.length ? m.components.join(', ') : '—'],
+      ['Runs on', m.components.length ? compNames(m.components) : m.custom ? 'not placed on the vehicle map (your module)' : '—'],
     ];
     let fy = y0 + 2.5;
     for (const [k, v] of facts) {
@@ -508,15 +521,19 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       table(['Module', 'Programme', 'Evidence', 'Basis'], roy.map(l => [nameOf(l), M(l.amount), gradeCell(l.grade), l.basis]),
         { 0: { cellWidth: 40 }, 1: { ...R, cellWidth: 20 }, 2: { cellWidth: 22 }, 3: { cellWidth: 96, fontSize: 6.3 } }, { bodyStyles: SMALL });
     }
-    // Two modules a row; small amounts print in full (an IP licence of £48k is not "£0.0M").
-    const amt = (n: number) => (Math.abs(n) >= 1e6 ? M(n) : money(n, 0));
+    // Two modules a row, ONE unit per table (final review: £26.2M beside £981,818): £M to 2 places when any amount
+    // reaches £1M, else in full (an IP licence of £48k is not "£0.0M").
+    let amt = (n: number) => money(n, 0);
+    const unitFor = (ls: typeof roy) => { amt = ls.some(l => Math.abs(l.amount) >= 1e6) ? (n: number) => `${money(n / 1e6, 2)}M` : (n: number) => money(n, 0); };
     const two = (ls: typeof roy) => Array.from({ length: Math.ceil(ls.length / 2) }, (_, i) => [nameOf(ls[2 * i]), amt(ls[2 * i].amount), ls[2 * i + 1] ? nameOf(ls[2 * i + 1]) : '', ls[2 * i + 1] ? amt(ls[2 * i + 1].amount) : '']);
     const ip = by('licences');
+    unitFor(ip);
     if (ip.length) {
       sub('Embedded IP licences (a year per module, over the production years)');
       table(['Module', 'Programme', 'Module', 'Programme'], two(ip), { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 25 }, 2: { cellWidth: 64 }, 3: { ...R, cellWidth: 25 } }, { bodyStyles: SMALL });
     }
     const cl = by('cloud');
+    unitFor(cl);
     if (cl.length) {
       sub('Cloud per module');
       table(['Module', 'Programme', 'Module', 'Programme'], two(cl), { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 25 }, 2: { cellWidth: 64 }, 3: { ...R, cellWidth: 25 } }, { bodyStyles: SMALL });
@@ -570,7 +587,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     if (c0) {
       table(['Step', 'Value', 'How'], [
         ['Hub rate (mid / senior blend)', money(c0.engineerRate, 0) + ' / PM', p.baseRateGBP ? 'your typed rate for this hub' : `${Math.round(p.teamSeniorFraction * 100)} % senior; book ${req.bookVersion}`],
-        ['× development-source price', `× ${num(c0.devSourceMult, 3)}`, SW_DEV_SOURCE_LABEL[p.devSource] + (p.devSource === 'OEM_Internal' ? '' : ' — efficiency ÷ (1 − supplier margin)')],
+        ['× development-source price', `× ${num(c0.devSourceMult, Math.abs(c0.devSourceMult * 1000 - Math.round(c0.devSourceMult * 1000)) < 1e-9 ? 3 : 4)}`, SW_DEV_SOURCE_LABEL[p.devSource] + (p.devSource === 'OEM_Internal' ? '' : ' — efficiency ÷ (1 − supplier margin)')],
         ['× engineering burden', `× ${num(c0.overhead, 3)}`, p.burden ? `employment +${p.burden.employmentPct} %, company +${p.burden.companyPct} %, capital +${p.burden.capitalPct} %` : 'single overhead saved with this configuration'],
         [strong('Loaded rate'), strong(money(c0.loadedRate, 0) + ' / PM'), `${money(rc.perHour, 2)} an hour · ${money(rc.perDay, 0)} a day (152 h a month)`],
       ], { 0: { cellWidth: 52 }, 1: { ...R, cellWidth: 32 } });
@@ -584,8 +601,8 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       table(['Figure', 'Source', 'Page'], req.hubRate.sources.map(([a, b, c]) => [a, b, c]),
         { 0: { cellWidth: 28 }, 1: { cellWidth: 82 }, 2: { cellWidth: 68, fontSize: 6, textColor: MUTED } }, { bodyStyles: SMALL });
     }
-    sub('Rate basis — what these figures were priced on');
-    table(null, swRateBasis(p), { 0: { cellWidth: 50, fontStyle: 'bold', textColor: NAVY }, 1: { cellWidth: 128, fontSize: 6.6 } });
+    sub(md.slice.isWhole ? 'Rate basis — what these figures were priced on' : 'Rate basis — what the modules in this report were priced on');
+    table(null, md.rateBasis, { 0: { cellWidth: 50, fontStyle: 'bold', textColor: NAVY }, 1: { cellWidth: 128, fontSize: 6.6 } });
   };
 
   // ── 11 Hubs & countries ───────────────────────────────────────────────────────────────────────────────────────────
@@ -612,21 +629,31 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     section('risk', md.profile === 'executive' ? 'Risk' : undefined, `${mc.iterations.toLocaleString('en-GB')} seeded trials; each costed line is drawn from a triangular range set by its evidence grade, with a 55 % programme-wide correlation. The headline adds each line's most likely value and sits at about P${Math.round(mc.headlinePercentile)} — not the median.`);
     const hist = mc.histogram;
     if (hist.length) {
-      const chH = 46, x0 = MG + 4, cw = (CW - 8) / hist.length, maxC = Math.max(...hist.map(b => b.count));
-      ensure(chH + 34);
+      // Axes (final review: only two non-round end labels and no y-axis): trials on the left at round steps, the
+      // programme total below at round steps in the report currency.
+      const plotW = CW - 16, x0 = MG + 12, chH = 46, cw = plotW / hist.length, maxC = Math.max(...hist.map(b => b.count));
+      const yStep = [1, 2, 5].flatMap(k => [k, k * 10, k * 100, k * 1000]).sort((a, b) => a - b).find(k => k * 4 >= maxC) ?? maxC;
+      const yMax = Math.ceil(maxC / yStep) * yStep;
+      ensure(chH + 38);
       const labTop = y; y += 14;
       const base = y + chH, lo = hist[0].lo, hi = hist[hist.length - 1].hi;
-      const X = (v: number) => x0 + (CW - 8) * (v - lo) / (hi - lo);
-      hist.forEach((b, i) => { const h = chH * b.count / maxC; doc.setFillColor(...BLUE); doc.rect(x0 + i * cw + 0.3, base - h, cw - 0.6, h, 'F'); });
-      doc.setDrawColor(...LINE); doc.line(x0, base, x0 + CW - 8, base);
+      const X = (v: number) => x0 + plotW * (v - lo) / (hi - lo);
+      doc.setDrawColor(...LINE); doc.setLineWidth(0.2); font(6.2, 'normal', MUTED);
+      for (let c = 0; c <= yMax; c += yStep) { const gy = base - chH * c / yMax; doc.line(x0, gy, x0 + plotW, gy); doc.text(c.toLocaleString('en-GB'), x0 - 1.5, gy + 1, { align: 'right' }); }
+      doc.text('trials', MG, base - chH - 2.5);
+      hist.forEach((b, i) => { const h = chH * b.count / yMax; doc.setFillColor(...BLUE); doc.rect(x0 + i * cw + 0.3, base - h, cw - 0.6, h, 'F'); });
+      doc.setDrawColor(...SLATE); doc.line(x0, base, x0 + plotW, base);
+      const fxr = req.currency.perGbp || 1, rawStep = (hi - lo) * fxr / 6, mag = Math.pow(10, Math.floor(Math.log10(rawStep || 1)));
+      const xStep = ([1, 2, 2.5, 5, 10].map(k => k * mag).find(k => k >= rawStep) ?? rawStep) / fxr;
+      font(6.2, 'normal', MUTED);
+      for (let v = Math.ceil(lo / xStep) * xStep; v <= hi + 1e-6; v += xStep) { const xv = X(v); doc.line(xv, base, xv, base + 1); doc.text(M(v), xv, base + 3.8, { align: 'center' }); }
       const mark = (v: number, label: string, c: RGB, row: number) => {
         const xv = X(v), ly = labTop + 1 + row * 3.3; doc.setDrawColor(...c); doc.setLineWidth(0.5); doc.line(xv, ly + 0.8, xv, base);
         font(6.6, 'bold', c); doc.text(`${label} ${M(v)}`, xv + 0.8, ly);
       };
       mark(mc.p10, 'P10', SLATE, 0); mark(mc.p50, 'P50', NAVY, 1); mark(mc.p90, 'P90', SLATE, 2); mark(s.grandTotal, 'Headline', AMBER, 3);
-      font(6.4, 'normal', MUTED); doc.text(M(lo), x0, base + 3.5); doc.text(M(hi), x0 + CW - 8, base + 3.5, { align: 'right' });
       y = base + 8;
-      para('Bars: the number of trials whose programme total falls in each band.', 7, MUTED);
+      para('Bars: the number of trials whose programme total falls in each band; horizontal axis the programme total.', 7, MUTED);
     }
     table(['Measure', 'Programme total', 'Per vehicle'], [
       ['P10', M(mc.p10), money(mc.p10PerVehicle, 0)], [strong('P50 (median)'), strong(M(mc.p50)), strong(money(mc.p50PerVehicle, 0))], ['P90', M(mc.p90), money(mc.p90PerVehicle, 0)],
@@ -698,8 +725,9 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
   // ── 14 Make or buy ────────────────────────────────────────────────────────────────────────────────────────────────
   const makebuy = () => {
     section('makebuy', undefined, `Each domain's engineering re-costed with each development source at this hub. ${md.makeBuy.basis}`);
+    // (The break-even sentence is in the basis above; the paragraph under the table adds only what to do about it.)
     table(['Domain', 'OEM in-house', 'Tier-1 supplier', 'Start-up'], md.makeBuy.rows.map(x => [x.label, M(x.make), M(x.tier1), M(x.startup)]), { 1: R, 2: R, 3: R });
-    para(`A bought source pays only when its effort is below ${(md.makeBuy.breakEvenEffortShare * 100).toFixed(1)} % of the in-house effort. The efficiency factors behind it are unsourced — set your supplier's own.`, 8, MUTED);
+    para('The efficiency factors behind these columns are unsourced — set your supplier\'s own.', 8, MUTED);
     const q = md.quote;
     const qRows = [q.nre, q.perVehicle, q.perVehicleYear, q.fixedPerYear, ...q.byCategory].filter(Boolean) as NonNullable<typeof q.nre>[];
     sub('Supplier quote check');
@@ -747,25 +775,31 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
   // ── 16 Appendix: module × cost element ────────────────────────────────────────────────────────────────────────────
   const appendix = () => {
     section('appendix', undefined, `Every module (rows) by cost element (columns), in ${kUnit}. Rows add to the module total; with the programme-level items the columns add to the cost build-up and the total.`);
+    // A Homologation column when the report carries it, so the programme row fills EVERY column and each column adds to
+    // its cost-build-up line (final review M3: the row was mostly blank and homologation sat in no column).
+    const homolog = md.slice.isWhole ? md.programmeItems.find(x => x.kind === 'homologation') : undefined;
     const cols: Array<[string, (m: SWReportModule) => number]> = [
       ['Dev', m => m.result.development.total], ['Verif.', m => m.result.testing.total], ['Integ.', m => m.result.integrationCost], ['Cyber', m => m.result.cybersecCost],
-      ['Calib.', m => m.result.calibrationCost + m.result.mlDataCost], ['Tools', m => m.result.toolchainCost], ['Maint.', m => m.result.maintenanceCost],
-      ['Lic. + roy.', m => m.result.licensingCost], ['Cloud', m => m.result.cloudCost], ['Total', m => m.result.grandTotal],
+      ['Calib.', m => m.result.calibrationCost + m.result.mlDataCost], ['Tools', m => m.result.toolchainCost], ...(homolog ? [['Homol.', () => 0] as [string, (m: SWReportModule) => number]] : []),
+      ['Maint.', m => m.result.maintenanceCost], ['Lic. + roy.', m => m.result.licensingCost], ['Cloud', m => m.result.cloudCost], ['Total', m => m.result.grandTotal],
     ];
     const body: Cell[][] = [];
     for (const d of md.domains) {
       body.push(band(d.label, cols.length + 1));
-      for (const m of modsByDomain(d)) body.push([m.name, ...cols.map(([, g]) => K(g(m)))]);
+      for (const m of modsByDomain(d)) body.push([m.name, ...cols.map(([h, g]) => (h === 'Homol.' ? '—' : K(g(m))))]);
     }
-    body.push([strong('All modules'), ...cols.map(([, g]) => strong(K(md.modules.reduce((a, m) => a + g(m), 0))))]);
+    const colSum = (h: string, g: (m: SWReportModule) => number) => (h === 'Homol.' ? 0 : md.modules.reduce((a, m) => a + g(m), 0));
+    body.push([strong('All modules'), ...cols.map(([h, g]) => strong(h === 'Homol.' ? '—' : K(colSum(h, g))))]);
     if (md.slice.isWhole) {
-      for (const it of md.programmeItems) body.push([it.label, ...cols.map(([h]) => (h === 'Total' || (h === 'Cloud' && it.kind === 'cloudFixed') ? K(it.amount) : ''))]);
-      body.push([strong('Programme total'), ...cols.map(([h, g]) => strong(h === 'Total' ? K(s.grandTotal) : h === 'Cloud' ? K(md.modules.reduce((a, m) => a + g(m), 0) + (md.programmeItems.find(x => x.kind === 'cloudFixed')?.amount ?? 0)) : ''))]);
+      const itemCol = (kind: string) => (kind === 'homologation' ? 'Homol.' : 'Cloud');
+      for (const it of md.programmeItems) body.push([it.label, ...cols.map(([h]) => (h === 'Total' || h === itemCol(it.kind) ? K(it.amount) : ''))]);
+      body.push([strong('Programme total'), ...cols.map(([h, g]) => strong(K(colSum(h, g) + md.programmeItems.filter(it => h === 'Total' || itemCol(it.kind) === h).reduce((a, it) => a + it.amount, 0))))]);
     }
-    table(['Module', ...cols.map(([h]) => h)], body, { 0: { cellWidth: 48 }, ...Object.fromEntries(cols.map((_, i) => [i + 1, { halign: 'right', cellWidth: 13 }])) },
+    const cw0 = cols.length > 10 ? 46 : 48, cwN = (CW - cw0) / cols.length;
+    table(['Module', ...cols.map(([h]) => h)], body, { 0: { cellWidth: cw0 }, ...Object.fromEntries(cols.map((_, i) => [i + 1, { halign: 'right', cellWidth: cwN }])) },
       { bodyStyles: { ...SMALL, fontSize: 6.1 }, headStyles: { fillColor: NAVY, textColor: WHITE, fontStyle: 'bold', fontSize: 6.4, halign: 'right' } });
     const failed = md.checks.filter(c => !c.ok);
-    para(`Reconciliation: ${md.checks.length} checks run on this report's figures (module buckets, the effort chain × rate, evidence lines, domains, the build-up${p.discountRatePct ? '' : ', spend by year'}) — ${failed.length ? `${failed.length} FAILED: ${failed.map(c => c.label).join('; ')}` : 'all agree to within 1p'}.`, 7.6, failed.length ? RED : MUTED);
+    para(`Reconciliation: ${md.checks.length} checks run on this report's figures (module buckets, the effort chain × rate, evidence lines, domains, the build-up${p.discountRatePct ? '' : ', spend by year'}) — ${failed.length ? `${failed.length} FAILED: ${failed.map(c => c.label).join('; ')}` : `all agree to within ${req.currency.code === 'GBP' ? '1p' : `0.01 ${req.currency.code}`}`}.`, 7.6, failed.length ? RED : MUTED);
   };
 
   // ── Assemble ──────────────────────────────────────────────────────────────────────────────────────────────────────
