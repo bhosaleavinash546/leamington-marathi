@@ -16,7 +16,8 @@ import { swRateBasis, SW_DEV_SOURCE_LABEL, SW_MC_RANGE_BY_GRADE, SW_CLOUD_BASIS,
 import { SW_REPORT_PROFILES, type SWReportModel, type SWReportModule, type SWReportDomain, type SWReportSectionId } from '../engine/sw-report-model.js';
 import { SKELETON_W, SKELETON_H, SKELETON_H_NO_LEGEND } from './sw-report-skeleton.js';
 import type { RasterImage } from './svg-raster.js';
-import { localiseGbpText } from './money-text.js';
+import { localiseReportText } from './money-text.js';
+import { hardenPdfText } from './pdf.js';
 import { SW_DEV_SOURCE_PHRASE } from '../engine/sw-report-model.js';
 
 export { swAssumptionRows, swYourFigures, swExcludedModules } from '../engine/sw-report-model.js';
@@ -41,36 +42,17 @@ const GRADE_SHORT: Record<string, string> = { entered: 'Yours', calibrated: 'Cal
 const GRADE_NAME: Record<string, string> = { entered: 'Your figure', calibrated: 'Calibrated', sourced: 'Published source', estimate: 'Labelled estimate', unsourced: 'Unsourced catalogue' };
 export const gradeName = (g: string): string => GRADE_NAME[g] ?? g;
 
-/** How the book's mid / senior salary follows from the listed observations: their median (each × its annual factor).
- *  Returns null when the median does not reproduce the book (the note would then be wrong — it is left out). */
-export function hubMedianNote(raw: { currency: string; midAnnualSalary: number; seniorAnnualSalary: number;
-  mid: Array<{ value: number; annualFactor: number }>; senior: Array<{ value: number; annualFactor: number }> }): string | null {
-  const med = (xs: number[]) => { const a = [...xs].sort((p, q) => p - q), n = a.length; return n ? (n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2) : NaN; };
-  const mids = raw.mid.map(o => o.value * o.annualFactor), seniors = raw.senior.map(o => o.value * o.annualFactor);
-  const m = med(mids), s = seniors.length ? med(seniors) : NaN;
-  const f = (n: number) => Math.round(n).toLocaleString('en-GB');
-  if (Math.abs(m - raw.midAnnualSalary) > 1) return null;
-  const seniorOk = seniors.length && Math.abs(s - raw.seniorAnnualSalary) <= 1;
-  return `The book takes the median of the observations below: mid = median of ${mids.length} (${mids.map(f).join(', ')}) = ${raw.currency} ${f(m)}`
-    + (seniorOk ? `; senior = median of ${seniors.length} (${seniors.map(f).join(', ')}) = ${raw.currency} ${f(s)}.` : `; senior ${raw.currency} ${f(raw.seniorAnnualSalary)} as stated in the book.`);
-}
+export { hubMedianNote } from './sw-report-request.js';
 
 /**
  * Draw the report. `images` holds the skeleton PNGs by key (reportImageSpecs); any missing one prints a placeholder.
  */
 export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWReportModel, images: Map<string, RasterImage> = new Map()): void {
   const md = model, req = md.request, r = md.result, s = r.summary, p = r.inputs, f = req.fmt;
-  // In a non-£ report every £ in TEXT (rule bases, rate sources, notes) is converted at the report's FX (review H6):
-  // the figures were converted, the sentences around them were not.
-  if (req.currency.sym !== '£' || req.currency.perGbp !== 1) {
-    const sym = req.currency.sym, fxr = req.currency.perGbp;
-    const loc = (t: string) => localiseGbpText(String(t).replace(/(per £ = )£(\d[\d,.]*)/g, '$1GBP $2'), fxr, sym).replace(/£(?= \(no discounting)/g, sym).replace(/£ (?=\/|per |a |an )/g, `${sym} `).replace(/£(?=M\b|k\b)/g, sym);
-    const orig = doc.text.bind(doc);
-    (doc as unknown as { text: (...a: unknown[]) => unknown }).text = (t: unknown, ...rest: unknown[]) =>
-      (orig as unknown as (...a: unknown[]) => unknown)(Array.isArray(t) ? t.map(x => loc(String(x))) : loc(String(t)), ...rest);
-    const split = doc.splitTextToSize.bind(doc);
-    (doc as unknown as { splitTextToSize: (t: string, w: number, o?: unknown) => string[] }).splitTextToSize = (t: string, w: number, o?: unknown) => split(loc(String(t)), w, o as never);
-  }
+  // In a non-£ report every £ in TEXT (rule bases, rate sources, notes) is converted at the report's FX (review H6), through
+  // hardenPdfText so drawing, wrapping AND width measurement all see the same converted text (autoTable sizes columns with
+  // getTextWidth). The doc is the report's own: the patch stays on it.
+  if (req.currency.sym !== '£' || req.currency.perGbp !== 1) hardenPdfText(doc, { fx: req.currency.perGbp, sym: req.currency.sym, localise: localiseReportText });
   const M = f.moneyM, money = f.money, num = f.number;
   const share = (x: number, of: number) => `${of > 0 ? (x / of * 100).toFixed(1) : '0.0'} %`;
   const kUnit = `${req.currency.sym}k`;
@@ -286,7 +268,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       ['Senior engineer share', `${Math.round(p.teamSeniorFraction * 100)} %`, 'blends the hub\'s mid and senior rates'],
       ['Engineering burden', p.burden ? `employment +${p.burden.employmentPct} %, company +${p.burden.companyPct} %, capital +${p.burden.capitalPct} %` : `× ${p.overheadMultiplier}`, 'section on rates'],
       ['Reuse', [...new Set(p.modules.filter(m => m.enabled).map(m => m.reuse))].join(', '), 'per module; Medium = × 0.60 (unsourced)'],
-      ['Security support after the last build', `${p.postProductionSupportYears ?? 10} years`, 'UN R155 post-production duty; share assumed'],
+      ['Security support after the last build', `${md.postSupportYears} years`, 'UN R155 post-production duty; share assumed'],
       ['Homologation', (p.includeHomologation ?? true) ? 'included' : 'excluded', 'R155 / R156 / ISO 26262'],
       ['Effort calibration', p.effortCalibration && p.effortCalibration !== 1 ? `× ${p.effortCalibration}` : 'none (uncalibrated)', 'your logged actuals'],
     ], { 0: { cellWidth: 52 }, 1: { cellWidth: 56 } });
@@ -412,14 +394,14 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       : 'The domains in this report, each a slice of the vehicle costing.');
     if (md.profile === 'executive') {
       table(['Domain', 'Modules', 'NRE', 'Lifecycle', 'Total', 'Share'], [...md.domains.map(d => [d.label, String(d.moduleIds.length), M(d.nre), M(d.lifecycle), M(d.total), share(d.total, s.grandTotal)]),
-        ...md.programmeItems.map(x => [x.label, '—', x.label.startsWith('Cloud') ? '—' : M(x.amount), x.label.startsWith('Cloud') ? M(x.amount) : '—', M(x.amount), share(x.amount, s.grandTotal)]),
+        ...md.programmeItems.map(x => [x.label, '—', x.kind === 'cloudFixed' ? '—' : M(x.amount), x.kind === 'cloudFixed' ? M(x.amount) : '—', M(x.amount), share(x.amount, s.grandTotal)]),
         [strong('Programme total'), '', strong(M(s.nreTotal)), strong(M(md.headline.lifecycle)), strong(M(s.grandTotal)), strong('100.0 %')]] as Cell[][],
         { 1: { ...R, cellWidth: 16 }, 2: { ...R, cellWidth: 24 }, 3: { ...R, cellWidth: 24 }, 4: { ...R, cellWidth: 24 }, 5: { ...R, cellWidth: 18 } });
       return;
     }
     table(['Domain', 'Modules', 'NRE', 'Lifecycle', 'Total', 'Share of vehicle'], [
       ...md.domains.map(d => [d.label, String(d.moduleIds.length), M(d.nre), M(d.lifecycle), M(d.total), share(d.total, s.grandTotal)]),
-      ...(md.slice.isWhole ? md.programmeItems.map(x => x.label.startsWith('Cloud') ? [x.label, '—', '—', M(x.amount), M(x.amount), share(x.amount, s.grandTotal)] : [x.label, '—', M(x.amount), '—', M(x.amount), share(x.amount, s.grandTotal)]) : []),
+      ...(md.slice.isWhole ? md.programmeItems.map(x => x.kind === 'cloudFixed' ? [x.label, '—', '—', M(x.amount), M(x.amount), share(x.amount, s.grandTotal)] : [x.label, '—', M(x.amount), '—', M(x.amount), share(x.amount, s.grandTotal)]) : []),
       [strong(md.slice.isWhole ? 'Programme total' : 'This report'), strong(String(md.modules.length)), strong(M(md.slice.nre)), strong(M(md.slice.lifecycle)), strong(M(md.slice.total)), strong(share(md.slice.total, s.grandTotal))],
     ], { 1: { ...R, cellWidth: 16 }, 2: { ...R, cellWidth: 24 }, 3: { ...R, cellWidth: 24 }, 4: { ...R, cellWidth: 24 }, 5: { ...R, cellWidth: 24 } });
     md.domains.forEach((d, i) => domainSpread(d, i));
@@ -512,27 +494,32 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
       ['Royalty per vehicle built', money(u.perVehicleBuilt, 2), `${u.vehiclesBuilt.toLocaleString('en-GB')} vehicles`, M(u.perVehicleBuilt * u.vehiclesBuilt)],
       ['Map data per vehicle-year', money(u.subscriptionPerYear, 2), `${u.subscriptionVehicleYears.toLocaleString('en-GB')} vehicle-years (${u.subscriptionYears} yr each)`, M(u.subscriptionPerYear * u.subscriptionVehicleYears)],
       ['Cloud per connected vehicle-year', money(u.cloudPerYear, 2), `${u.serviceVehicleYears.toLocaleString('en-GB')} vehicle-years (${u.serviceYears} yr each)`, M(u.cloudPerYear * u.serviceVehicleYears)],
-      ['Fixed per production year (maintenance, IP licences, platform) — average', M(u.fixedPerYear - md.postSupportNominal / p.programLifeYears), `× ${p.programLifeYears} years`, M(u.fixedPerYear * p.programLifeYears - md.postSupportNominal)],
-      ...(md.postSupportNominal > 0.5 ? [['Security support after the last build', M(md.postSupportNominal), `${p.postProductionSupportYears ?? 10} service years after the last build`, M(md.postSupportNominal)]] : []),
+      // The fixed £ split at the last build (review): what falls in the production years, and what is paid after it.
+      ['Fixed per production year (maintenance, IP licences, platform) — average', M(md.fixedSplit.production / p.programLifeYears), `× ${p.programLifeYears} years`, M(md.fixedSplit.production)],
+      ...(md.fixedSplit.afterLastBuild > 0.5 ? [[`After the last build: ${[md.fixedSplit.postSupport > 0.5 ? `security support (${md.postSupportYears} years)` : '', md.fixedSplit.platformAfter > 0.5 ? 'cloud platform while vehicles are served' : ''].filter(Boolean).join(' + ')}`,
+        M(md.fixedSplit.afterLastBuild), 'service years after the last build', M(md.fixedSplit.afterLastBuild)]] : []),
       [strong('Programme total'), '', '', strong(M(u.total))],
     ], { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 26 }, 2: { cellWidth: 56 }, 3: { ...R, cellWidth: 32 } });
-    const by = (kind: string) => md.evidence.lines.filter(l => l.kind === kind && l.amount > 0.5).sort((a, b) => b.amount - a.amount);
+    const nameOf = (l: { moduleId?: string; label: string }) => r.modules.find(m => m.moduleId === l.moduleId)?.moduleName ?? l.label;
+    const by = (kind: string) => md.evidenceLines.filter(l => l.kind === kind && l.amount > 0.5).sort((a, b) => b.amount - a.amount);
     const roy = by('royalties');
     if (roy.length) {
       sub('Royalties — each priced on its own basis');
-      table(['Module', 'Programme', 'Evidence', 'Basis'], roy.map(l => [l.label.replace(/ — royalties$/, ''), M(l.amount), gradeCell(l.grade), l.basis]),
+      table(['Module', 'Programme', 'Evidence', 'Basis'], roy.map(l => [nameOf(l), M(l.amount), gradeCell(l.grade), l.basis]),
         { 0: { cellWidth: 40 }, 1: { ...R, cellWidth: 20 }, 2: { cellWidth: 22 }, 3: { cellWidth: 96, fontSize: 6.3 } }, { bodyStyles: SMALL });
     }
-    const two = (ls: typeof roy, re: RegExp) => Array.from({ length: Math.ceil(ls.length / 2) }, (_, i) => [ls[2 * i].label.replace(re, ''), M(ls[2 * i].amount), ls[2 * i + 1]?.label.replace(re, '') ?? '', ls[2 * i + 1] ? M(ls[2 * i + 1].amount) : '']);
+    // Two modules a row; small amounts print in full (an IP licence of £48k is not "£0.0M").
+    const amt = (n: number) => (Math.abs(n) >= 1e6 ? M(n) : money(n, 0));
+    const two = (ls: typeof roy) => Array.from({ length: Math.ceil(ls.length / 2) }, (_, i) => [nameOf(ls[2 * i]), amt(ls[2 * i].amount), ls[2 * i + 1] ? nameOf(ls[2 * i + 1]) : '', ls[2 * i + 1] ? amt(ls[2 * i + 1].amount) : '']);
     const ip = by('licences');
     if (ip.length) {
       sub('Embedded IP licences (a year per module, over the production years)');
-      table(['Module', 'Programme', 'Module', 'Programme'], two(ip, / — IP licences$/).map(r0 => r0.map((c, i) => (i % 2 === 1 && c ? money(ip.find(l => l.label.replace(/ — IP licences$/, '') === r0[i - 1])!.amount, 0) : c))), { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 25 }, 2: { cellWidth: 64 }, 3: { ...R, cellWidth: 25 } }, { bodyStyles: SMALL });
+      table(['Module', 'Programme', 'Module', 'Programme'], two(ip), { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 25 }, 2: { cellWidth: 64 }, 3: { ...R, cellWidth: 25 } }, { bodyStyles: SMALL });
     }
     const cl = by('cloud');
     if (cl.length) {
       sub('Cloud per module');
-      table(['Module', 'Programme', 'Module', 'Programme'], two(cl, / — cloud$/), { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 25 }, 2: { cellWidth: 64 }, 3: { ...R, cellWidth: 25 } }, { bodyStyles: SMALL });
+      table(['Module', 'Programme', 'Module', 'Programme'], two(cl), { 0: { cellWidth: 64 }, 1: { ...R, cellWidth: 25 }, 2: { cellWidth: 64 }, 3: { ...R, cellWidth: 25 } }, { bodyStyles: SMALL });
       para(`Basis (every module): ${p.quotes?.cloudPerVehicleYear ? `your quote — ${p.quotes.cloudPerVehicleYear.source}.` : SW_CLOUD_BASIS} ${SW_SERVICE_BASIS}`, 7.2, MUTED);
     }
   };
@@ -542,13 +529,19 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     section('spend', undefined, md.spend.note);
     const yrs = md.spend.years;
     const keys: Array<['engineering' | 'maintenance' | 'licences' | 'royalties' | 'cloud', string]> = [['engineering', 'Engineering'], ['maintenance', 'Maintenance'], ['licences', 'Licences'], ['royalties', 'Royalties'], ['cloud', 'Cloud']];
-    const raw = Math.max(...yrs.map(x => x.total)) / 4;
-    const mag = Math.pow(10, Math.floor(Math.log10(raw || 1))), step = [1, 2, 2.5, 5, 10].map(k => k * mag).find(k => k >= raw) ?? raw;
-    const max = step * 4, chH = 62, x0 = MG + 14, cw = (CW - 14) / yrs.length;
+    // Round ticks in the REPORT currency (review: a £ step printed in € was not round), each printed with the decimals
+    // its step needs ("€2.5M", "€250k").
+    const fxr = req.currency.perGbp || 1, csym = req.currency.sym;
+    const rawD = Math.max(...yrs.map(x => x.total)) * fxr / 4;
+    const mag = Math.pow(10, Math.floor(Math.log10(rawD || 1))), stepD = [1, 2, 2.5, 5, 10].map(k => k * mag).find(k => k >= rawD) ?? rawD;
+    const [unitDiv, unitSfx] = stepD >= 1e6 ? [1e6, 'M'] : stepD >= 1e3 ? [1e3, 'k'] : [1, ''];
+    const tickDp = Math.max(0, -Math.floor(Math.log10(stepD / unitDiv) + 1e-9)) + (String(stepD / unitDiv).includes('.5') ? 1 : 0);
+    const tick = (vD: number) => `${csym}${(vD / unitDiv).toLocaleString('en-GB', { minimumFractionDigits: Math.min(tickDp, 2), maximumFractionDigits: Math.min(tickDp, 2) })}${unitSfx}`;
+    const max = stepD * 4 / fxr, chH = 62, x0 = MG + 14, cw = (CW - 14) / yrs.length;
     ensure(chH + 22);
     const base = y + chH;
     font(6.6, 'normal', MUTED); doc.setDrawColor(...LINE); doc.setLineWidth(0.2);
-    for (let g = 0; g <= 4; g++) { const gy = base - chH * g / 4; doc.line(x0, gy, W - MG, gy); doc.text(M(max * g / 4), x0 - 1.5, gy + 1, { align: 'right' }); }
+    for (let g = 0; g <= 4; g++) { const gy = base - chH * g / 4; doc.line(x0, gy, W - MG, gy); doc.text(tick(stepD * g), x0 - 1.5, gy + 1, { align: 'right' }); }
     yrs.forEach((yy, i) => {
       let top = base;
       keys.forEach(([k], j) => {
@@ -716,8 +709,7 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
         return [x.label, ff(x.should), ff(x.quoted), `${x.gap >= 0 ? '+' : '−'}${ff(Math.abs(x.gap))} (${x.gapPct >= 0 ? '+' : ''}${x.gapPct.toFixed(0)} %)`];
       }), { 1: R, 2: R, 3: R });
     } else {
-      const lineQuotes = md.yourFigures.filter(y => !y.line.startsWith('Your module')).length;
-      para(`No total supplier quote was entered (Supplier check tab)${lineQuotes ? `; ${lineQuotes} line-item quote${lineQuotes === 1 ? ' was' : 's were'} applied in the costing (see Evidence and sources)` : ''}.`, 8.5);
+      if (md.quoteNote) para(md.quoteNote, 8.5);
     }
     // The target split into what a supplier delivers and what stays with the OEM (review M9).
     const effort = q.target.nre - s.totalToolchain - s.totalHomologation;
@@ -767,8 +759,8 @@ export function renderSWReportPdf(doc: jsPDF, autoTable: AutoTable, model: SWRep
     }
     body.push([strong('All modules'), ...cols.map(([, g]) => strong(K(md.modules.reduce((a, m) => a + g(m), 0))))]);
     if (md.slice.isWhole) {
-      for (const it of md.programmeItems) body.push([it.label, ...cols.map(([h]) => (h === 'Total' || (h === 'Cloud' && it.label.startsWith('Cloud')) ? K(it.amount) : ''))]);
-      body.push([strong('Programme total'), ...cols.map(([h, g]) => strong(h === 'Total' ? K(s.grandTotal) : h === 'Cloud' ? K(md.modules.reduce((a, m) => a + g(m), 0) + (md.programmeItems.find(x => x.label.startsWith('Cloud'))?.amount ?? 0)) : ''))]);
+      for (const it of md.programmeItems) body.push([it.label, ...cols.map(([h]) => (h === 'Total' || (h === 'Cloud' && it.kind === 'cloudFixed') ? K(it.amount) : ''))]);
+      body.push([strong('Programme total'), ...cols.map(([h, g]) => strong(h === 'Total' ? K(s.grandTotal) : h === 'Cloud' ? K(md.modules.reduce((a, m) => a + g(m), 0) + (md.programmeItems.find(x => x.kind === 'cloudFixed')?.amount ?? 0)) : ''))]);
     }
     table(['Module', ...cols.map(([h]) => h)], body, { 0: { cellWidth: 48 }, ...Object.fromEntries(cols.map((_, i) => [i + 1, { halign: 'right', cellWidth: 13 }])) },
       { bodyStyles: { ...SMALL, fontSize: 6.1 }, headStyles: { fillColor: NAVY, textColor: WHITE, fontStyle: 'bold', fontSize: 6.4, halign: 'right' } });

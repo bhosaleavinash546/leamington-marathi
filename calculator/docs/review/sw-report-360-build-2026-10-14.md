@@ -92,3 +92,29 @@ arithmetic was sound. The findings were in labels, units, slices and currency, a
 After the fixes the live e2e (`e2e/sw-report-live.ts`) passes 40 / 40, and every workbook recalculates in LibreOffice with
 0 formula errors and every check ✓ (vehicle 122, executive 113, domain 44, module 12, supplier 113, hubs 112, BEV EUR 116,
 ICE 104, user programme 124).
+
+## Code review fixes (23 Oct 2026)
+
+Two code-review passes over the review-fix commit found 14 distinct issues; all are fixed and pinned in
+`tests/sw-report-review.test.ts` ("code review fixes").
+
+| # | Severity | Issue | Fix |
+|---|---|---|---|
+| 1 | High | Excel cover of a focused report counted every vehicle component | `md.slice.components` on the cover |
+| 2 | High | Evidence lines matched to modules by NAME (a name with " — " lost its lines; duplicates mixed) | `SWEvidenceLine.moduleId`; slice, module blocks, calibration and lifecycle tables match by id |
+| 3 | High | Catalogue gaps hidden by any partial custom-module name ("Seat", "T", empty) | `SW_CATALOGUE_GAP_DEFS` ids; covered only by an explicit link (`SWCustomModule.coversGap`, "Covers catalogue gap" column) or the exact gap name, with effort > 0 (`coveredGaps`) |
+| 4 | High | "Fixed per production year" included the cloud platform paid after the last build | `fixedSplit`: production years v after the last build (security support + platform), PDF and Excel |
+| 5 | High | PDF converted £ text but not `getTextWidth` (autoTable sized cells on unconverted text); regex chain copied in both renderers | One `localiseReportText` (money-text.ts); the PDF goes through `hardenPdfText(doc, { fx, sym, localise })` (text, wrap AND width); Excel calls the same function |
+| 6 | High | Cloud arithmetic called all vehicle-years "connected" | Connected vehicle-years × the rate per connected vehicle-year (product = amount) |
+| 7 | Medium | "Line-item quotes applied" counted typed PM overrides and quotes on modules not in scope | `quotesApplied` counts the cloud quote and royalty / subscription / IP quotes on modules in scope |
+| 8 | Medium | Spend-chart step chosen in £, printed in the report currency | Step and labels in the report currency, decimals per step |
+| 9 | Medium | Security-support years hard-coded / unrounded in the reports | `postYears()` exported; `md.postSupportYears` in both renderers and the Excel year rows |
+| 10 | Medium | Salary observations printed raw factors (× 16.25845936562114) | "a month × 12", "× 14 salaries", "an hour × 2,080 h", other factors to 3 dp |
+| 11 | Medium | Excel make-or-buy said "No total supplier quote" twice | One `md.quoteNote`, printed once by both renderers |
+| 12 | Medium | "a MHEV" | `withDrivetrainArticle` (an ICE, an MHEV, a PHEV, a BEV) in steps and exclusions |
+| 13 | Low | Programme items told apart by label prefix | `programmeItems[].kind` |
+| 14 | Low | `SW_DEV_SOURCE_PHRASE` typed `Record<string, string>` | `Record<DevSource, string>` |
+
+Also: `hubMedianNote` moved to `sw-report-request.ts` so the screen's static import chain never pulls jsPDF into the
+main bundle (checked: the main chunk carries no jsPDF and is 2.74 MB, from 2.80 MB). Re-proved: 3,940 tests; LibreOffice
+recalculation of every workbook 0 errors, all checks ✓; live e2e 40 / 40.

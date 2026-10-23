@@ -12,7 +12,7 @@
  */
 import { SW_MODULES, SW_CLOUD_REFERENCE_FLEET, swModuleDefs, type SWProgramInputs, type SWQuotes, type SWCustomModule, type SWCategory,
   type ASILLevel, type SWComplexity, type SWReuse, type SWCal } from '../../engine/sw-should-cost.js';
-import { SW_CATALOGUE_GAPS } from '../../engine/sw-cockpit.js';
+import { SW_CATALOGUE_GAP_DEFS } from '../../engine/sw-should-cost.js';
 import { projectStore } from '../project-store.js';
 
 export const SW_REGISTER_KIND = 'sw_licence_register';
@@ -159,16 +159,17 @@ export function customModulesCardHTML(p: SWProgramInputs): string {
       ${f('cal', 'cybersecurity CAL', `<select id="swc-${i}-cal" class="sw-config-sel swc-cal">${opt(['none', 'CAL1', 'CAL2', 'CAL3', 'CAL4'], m?.cal ?? c.defaultCal ?? 'none')}</select>`)}
       ${f('roy', 'royalty £ per vehicle', `<input id="swc-${i}-roy" class="sw-config-inp swc-roy" type="number" min="0" step="0.01" value="${c.perVehicleRoyaltyGBP ?? ''}" placeholder="0">`)}
       ${f('src', 'source of the effort figure', `<input id="swc-${i}-src" class="sw-config-inp swc-src" type="text" value="${esc(c.source)}">`)}
+      ${f('gap', 'catalogue gap it covers', `<select id="swc-${i}-gap" class="sw-config-sel swc-gap"><option value="">— none —</option>${SW_CATALOGUE_GAP_DEFS.map(g => `<option value="${g.id}"${g.id === c.coversGap ? ' selected' : ''}>${esc(g.head)}</option>`).join('')}</select>`)}
       <td><button type="button" class="swk-link swc-del" aria-label="Remove ${esc(c.name)}">Remove</button></td>
     </tr>`;
   }).join('');
   return `<h3 class="swk-h">Your modules — software the catalogue does not have</h3>
     <p class="swk-sub">Name it, pick its domain and give its nominal effort (person-months of fresh code at QM / Medium complexity — ASIL, complexity and reuse apply on top) and where that figure comes from. Testing, integration, maintenance and calibration follow the median of the catalogue's modules in the same domain. With no effort it costs nothing — nothing is assumed.</p>
-    ${cm.length ? `<div class="swc-tw"><table class="sw-data-table swc-table"><thead><tr><th scope="col">In</th><th scope="col">Module</th><th scope="col">Domain</th><th scope="col">Nominal PM</th><th scope="col">ASIL</th><th scope="col">Complexity</th><th scope="col">Reuse</th><th scope="col">CAL</th><th scope="col">Royalty £ / veh</th><th scope="col">Source</th><th scope="col"><span class="sr-only">Remove</span></th></tr></thead><tbody>${rows}</tbody></table></div>` : ''}
+    ${cm.length ? `<div class="swc-tw"><table class="sw-data-table swc-table"><thead><tr><th scope="col">In</th><th scope="col">Module</th><th scope="col">Domain</th><th scope="col">Nominal PM</th><th scope="col">ASIL</th><th scope="col">Complexity</th><th scope="col">Reuse</th><th scope="col">CAL</th><th scope="col">Royalty £ / veh</th><th scope="col">Source</th><th scope="col">Covers catalogue gap</th><th scope="col"><span class="sr-only">Remove</span></th></tr></thead><tbody>${rows}</tbody></table></div>` : ''}
     <div class="swk-row swc-add">
       <label class="sw-label" for="swc-new-name" style="margin:0">Add</label>
       <input id="swc-new-name" class="sw-config-inp" type="text" list="swc-gaps" placeholder="e.g. Occupant restraint (airbag) control" style="max-width:300px" data-no-live>
-      <datalist id="swc-gaps">${SW_CATALOGUE_GAPS.map(g => `<option value="${esc(g.replace(/ \(.*\)$/, ''))}">`).join('')}</datalist>
+      <datalist id="swc-gaps">${SW_CATALOGUE_GAP_DEFS.map(g => `<option value="${esc(g.head)}">`).join('')}</datalist>
       <label class="sr-only" for="swc-new-cat">Domain</label><select id="swc-new-cat" class="sw-config-sel" style="max-width:220px" data-no-live>${CATS.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('')}</select>
       <button type="button" class="swk-btn" id="swc-add">Add module</button>
       <span class="swk-sub" id="swc-msg" role="status" style="margin:0"></span>
@@ -187,7 +188,8 @@ function readCustom(root: HTMLElement, p: SWProgramInputs): Pick<SWProgramInputs
       nominalPersonMonths: num(v<HTMLInputElement>('swc-pm').value) ?? 0, defaultAsil: v<HTMLSelectElement>('swc-asil').value as ASILLevel,
       defaultComplexity: v<HTMLSelectElement>('swc-cx').value as SWComplexity, defaultCal: v<HTMLSelectElement>('swc-cal').value as SWCal,
       ...(roy !== undefined ? { perVehicleRoyaltyGBP: roy } : {}), ...(prev?.annualIPLicenceGBP !== undefined ? { annualIPLicenceGBP: prev.annualIPLicenceGBP } : {}),
-      source: v<HTMLInputElement>('swc-src').value.trim() });
+      source: v<HTMLInputElement>('swc-src').value.trim(),
+      ...(v<HTMLSelectElement>('swc-gap')?.value ? { coversGap: v<HTMLSelectElement>('swc-gap').value } : {}) });
     modules = [...modules, { moduleId: id, enabled: v<HTMLInputElement>('swc-on').checked, asil: v<HTMLSelectElement>('swc-asil').value as ASILLevel,
       complexity: v<HTMLSelectElement>('swc-cx').value as SWComplexity, reuse: v<HTMLSelectElement>('swc-reuse').value as SWReuse,
       cal: v<HTMLSelectElement>('swc-cal').value as SWCal, customPersonMonths: null }];
@@ -213,7 +215,9 @@ export function wireCustomModulesCard(root: HTMLElement, host: QuotesHost): void
     while (swModuleDefs(p).has(id)) id = `custom-${slug}-${n++}`;
     const category = (root.querySelector<HTMLSelectElement>('#swc-new-cat')?.value ?? 'D') as SWCategory;
     // Added with NO effort (0 PM) and no source: it costs nothing until the user enters their figure and its source.
-    host.set({ customModules: [...(p.customModules ?? []), { id, name, category, nominalPersonMonths: 0, defaultAsil: 'QM', defaultComplexity: 'Medium', source: '' }],
+    // Picked by its exact gap name from the list → linked to that gap (a partial name never links).
+    const gap = SW_CATALOGUE_GAP_DEFS.find(g => g.head.toLowerCase() === name.toLowerCase());
+    host.set({ customModules: [...(p.customModules ?? []), { id, name, category, nominalPersonMonths: 0, defaultAsil: 'QM', defaultComplexity: 'Medium', source: '', ...(gap ? { coversGap: gap.id } : {}) }],
       modules: [...p.modules, { moduleId: id, enabled: true, asil: 'QM', complexity: 'Medium', reuse: 'Fresh', customPersonMonths: null }] });
     redraw();
     const m2 = root.querySelector('#swc-msg'); if (m2) m2.textContent = `Added "${name}" — enter its nominal person-months and where that figure comes from.`;

@@ -19,7 +19,8 @@ import {
   SW_SERVICE_BASIS, SW_SUBSCRIPTION_BASIS, SW_CLOUD_BASIS, SW_DEVELOPMENT_BASIS, SW_TOOL_SEAT_BASIS, SW_MAINT_BASIS,
   SW_POST_EOP_BASIS, SW_HOMOLOGATION_BASIS, SW_DEV_SOURCE_LABEL, SW_CLOUD_REFERENCE_FLEET, swModuleDefs, maintenanceWeights,
   type SWProgramResult, type SWModuleCostResult, type SWCategory, type ASILLevel, type SWEvidenceLine, type SWEvidenceGrade,
-  type SWPowertrain, type SWModuleDef,
+  type SWPowertrain, type SWModuleDef, type DevSource,
+  SW_CATALOGUE_GAP_DEFS, coveredGaps, postYears, withDrivetrainArticle,
 } from './sw-should-cost.js';
 import {
   swSpendProfile, swUnitEconomics, swQuoteCheck, swMakeBuy, swEvidence, swHubComparison, swCalibrationPriorities, swRateCheck,
@@ -48,7 +49,7 @@ export const SW_REPORT_PROFILES: Record<SWReportProfile, { label: string; reader
 };
 
 /** "engineered … by <phrase>" — never a lower-cased label ("by a oem in-house"). */
-export const SW_DEV_SOURCE_PHRASE: Record<string, string> = { OEM_Internal: 'in-house by the OEM', Tier1_Supplier: 'by a Tier-1 supplier', Startup_OSS: 'by a software start-up / open source' };
+export const SW_DEV_SOURCE_PHRASE: Record<DevSource, string> = { OEM_Internal: 'in-house by the OEM', Tier1_Supplier: 'by a Tier-1 supplier', Startup_OSS: 'by a software start-up / open source' };
 
 export const SW_BODY_TYPES: Record<SWBodyType, string> = {
   suv: 'SUV', saloon: 'Saloon', hatchback: 'Hatchback', pickup: 'Pickup', van: 'Van',
@@ -216,8 +217,15 @@ export interface SWReportModel {
     unsourcedShare: number; components: number };
   /** The costed lines of this report (the slice's modules; programme items too when whole). */
   evidenceLines: SWEvidenceLine[];
-  /** Nominal security support paid after the last build (inside the unit economics' fixed £). */
-  postSupportNominal: number;
+  /** The unit economics' fixed £ (maintenance, IP licences, the fixed cloud platform), nominal, split at the last build:
+   *  what falls in the production years, and what is paid after it (security support + platform in the service years). */
+  fixedSplit: { production: number; afterLastBuild: number; postSupport: number; platformAfter: number };
+  /** Years of security support after the last build, as costed (the engine's rounded figure). */
+  postSupportYears: number;
+  /** Supplier quotes applied in this costing: the cloud rate and royalty / subscription / IP quotes on modules in scope. */
+  quotesApplied: number;
+  /** One sentence for the quote check when no total supplier quote was entered (null when one was). */
+  quoteNote: string | null;
   /** ML training data is not costed (switched off). */
   mlExcluded: boolean;
   /** Catalogue gaps the user has covered with a module of their own (not repeated as gaps). */
@@ -227,7 +235,7 @@ export interface SWReportModel {
     modules: number; domains: number; p10: number; p50: number; p90: number; headlinePercentile: number;
     hubMin?: SWHubRow; hubMax?: SWHubRow; unsourcedShare: number; vehiclesBuilt: number;
   };
-  programmeItems: Array<{ label: string; amount: number; rule: string }>;
+  programmeItems: Array<{ kind: 'homologation' | 'cloudFixed'; label: string; amount: number; rule: string }>;
   findings:    string[];
   definition:  Array<[string, string]>;
   components:  SWReportComponent[];
@@ -297,7 +305,7 @@ export function swExcludedModules(r: SWProgramResult): Array<[string, string, st
 function excludedReason(id: string, pt: SWPowertrain | undefined): string {
   if (id === 'digital_key') return 'not confirmed for this vehicle — excluded rather than assumed';
   if (id === 'mhev_48v') return 'a 48 V mild-hybrid starter-generator; not this drivetrain';
-  if (pt && SW_POWERTRAIN_MODULE_IDS.has(id)) return `drivetrain software not used on ${pt === 'ICE' ? 'an ICE' : `a ${pt}`} vehicle`;
+  if (pt && SW_POWERTRAIN_MODULE_IDS.has(id)) return `drivetrain software not used on ${withDrivetrainArticle(pt)} vehicle`;
   return 'switched off for this programme';
 }
 
@@ -399,7 +407,9 @@ function moduleLines(m: SWModuleCostResult, ev: SWEvidenceLine[], f: SWReportFor
   if (m.cloudCost) {
     const connected = prog.connectedVehicleShare ?? 1;
     const rate = def?.annualCloudCostGBP ? def.annualCloudCostGBP / SW_CLOUD_REFERENCE_FLEET * connected : 0;
-    const expr = rate ? `${f.number(built * S, 0)} connected vehicle-years (${S} a vehicle${connected < 1 ? `, ${Math.round(connected * 100)} % connected` : ''}) × ${f.money(rate, 4)}`
+    // Connected vehicle-years × the rate per connected vehicle-year — the product is the amount (the share is in the count only).
+    const perConnected = connected > 0 ? rate / connected : 0;
+    const expr = rate ? `${f.number(built * S * connected, 0)} connected vehicle-years (${f.number(built, 0)} vehicles × ${S} years${connected < 1 ? ` × ${Math.round(connected * 100)} % connected` : ''}) × ${f.money(perConnected, 4)}`
       + ` (${f.money(def!.annualCloudCostGBP, 0)} a year ÷ ${f.number(SW_CLOUD_REFERENCE_FLEET, 0)} reference fleet${def?.quoted?.cloud ? ', spread from your quote' : ''})${pv}` : `per connected vehicle-year${pv}`;
     L.push({ group: 'lifecycle', label: 'Cloud', expr, value: m.cloudCost, unit: 'money', grade: grade('cloud'), basis: basisOf('cloud') });
   }
@@ -449,7 +459,7 @@ export function buildSWReportModel(result: SWProgramResult, req: SWReportRequest
   const nm = (t: string | undefined) => namesForIds(t, names);
   const modules: SWReportModule[] = sliceMods.map(m => {
     const def = defs.get(m.moduleId);
-    const ev = evidence.lines.filter(l => l.label.startsWith(`${m.moduleName} — `)).map(l => ({ ...l, basis: nm(l.basis) ?? '' }));
+    const ev = evidence.lines.filter(l => l.moduleId === m.moduleId).map(l => ({ ...l, basis: nm(l.basis) ?? '' }));
     const quoted = Object.entries(def?.quoted ?? {}).filter(([, v]) => !!v).map(([k]) => k);
     const H = s.horizonYears;
     return {
@@ -484,27 +494,40 @@ export function buildSWReportModel(result: SWProgramResult, req: SWReportRequest
   // Programme-level items: carried by the vehicle costing, never re-allocated to a domain or module.
   const cloudFixed = s.cloudFixedYearly.length ? evidence.lines.filter(l => l.kind === 'cloudFixed').reduce((a, l) => a + l.amount, 0) : 0;
   const programmeItems: SWReportModel['programmeItems'] = [];
-  if (s.totalHomologation) programmeItems.push({ label: 'Homologation (R155 / R156 / ISO 26262)', amount: s.totalHomologation, rule: 'Programme-level: one type approval, one assessor, a share of the organisation\'s CSMS / SUMS — not allocated to a domain or module.' });
-  if (cloudFixed) programmeItems.push({ label: 'Cloud platform (fixed)', amount: cloudFixed, rule: 'Your fixed platform £ a year while any vehicle is served — not allocated to a domain or module.' });
+  if (s.totalHomologation) programmeItems.push({ kind: 'homologation', label: 'Homologation (R155 / R156 / ISO 26262)', amount: s.totalHomologation, rule: 'Programme-level: one type approval, one assessor, a share of the organisation\'s CSMS / SUMS — not allocated to a domain or module.' });
+  if (cloudFixed) programmeItems.push({ kind: 'cloudFixed', label: 'Cloud platform (fixed)', amount: cloudFixed, rule: 'Your fixed platform £ a year while any vehicle is served — not allocated to a domain or module.' });
 
   // The slice's own evidence, components and calibration list (a focused report states its own figures, review H4/H5).
-  const sliceNames = new Set(sliceMods.map(m => m.moduleName));
-  const evidenceLines = isWhole ? evidence.lines : evidence.lines.filter(l => sliceNames.has(l.label.split(' — ')[0]));
+  const evidenceLines = isWhole ? evidence.lines : evidence.lines.filter(l => l.moduleId !== undefined && inSlice.has(l.moduleId));
   const evTotal = evidenceLines.reduce((a, l) => a + l.amount, 0);
   const sliceUnsourced = evTotal > 0 ? evidenceLines.filter(l => l.grade === 'unsourced').reduce((a, l) => a + l.amount, 0) / evTotal : 0;
   const calAll = swCalibrationPriorities(result);
   const calibration = (() => {
     if (isWhole) return calAll;
-    const rows = calAll.rows.filter(x => sliceNames.has(x.name));
+    const rows = calAll.rows.filter(x => inSlice.has(x.moduleId));
     const total = rows.reduce((a, x) => a + x.amount, 0);
     let cum = 0;
     return { total, rows: rows.map(x => { cum += x.amount; return { ...x, share: total > 0 ? x.amount / total : 0, cumulative: total > 0 ? cum / total : 0 }; }) };
   })();
+  // The unit economics' fixed £ split at the last build (whole programme, as the unit economics are).
   const life0 = prog.programLifeYears;
-  const postSupportNominal = sliceMods.reduce((a, m) => a + m.yearly.maintenance.reduce((b, v, i) => (i >= life0 ? b + v : b), 0), 0);
-  // A catalogue gap the user covered with a module of their own is not listed as a gap.
-  const own = (prog.customModules ?? []).filter(c => prog.modules.find(x => x.moduleId === c.id)?.enabled && c.nominalPersonMonths > 0).map(c => c.name.toLowerCase());
-  const gapsCovered = SW_CATALOGUE_GAPS.filter(g => own.some(n => g.toLowerCase().startsWith(n.split(' (')[0]) || n.startsWith(g.toLowerCase().split(' (')[0])));
+  const sumFrom = (xs: number[], after: boolean) => xs.reduce((b, v, i) => ((i >= life0) === after ? b + v : b), 0);
+  const postSupport = result.modules.reduce((a, m) => a + sumFrom(m.yearly.maintenance, true), 0);
+  const platformAfter = sumFrom(s.cloudFixedYearly, true);
+  const fixedProduction = result.modules.reduce((a, m) => a + sumFrom(m.yearly.maintenance, false) + sumFrom(m.yearly.licences, false), 0) + sumFrom(s.cloudFixedYearly, false);
+  const licencesAfter = result.modules.reduce((a, m) => a + sumFrom(m.yearly.licences, true), 0);
+  const fixedSplit = { production: fixedProduction, afterLastBuild: postSupport + platformAfter + licencesAfter, postSupport, platformAfter };
+  // A catalogue gap is covered only when your module is linked to it or carries its exact name (review: no partial match).
+  const covered = coveredGaps(prog);
+  const gapsCovered: string[] = SW_CATALOGUE_GAP_DEFS.filter(g => covered.includes(g.id)).map(g => g.text);
+  const quote = swQuoteCheck(result, req.quote ?? {});
+  // Quotes actually applied: the cloud rate (when cloud is costed) and royalty / subscription / IP quotes on modules in scope.
+  const enabled = new Set(prog.modules.filter(m => m.enabled).map(m => m.moduleId));
+  const quotesApplied = (prog.quotes?.cloudPerVehicleYear && prog.includeCloudCost && result.modules.some(m => m.cloudCost > 0) ? 1 : 0)
+    + Object.entries(prog.quotes?.modules ?? {}).filter(([id]) => enabled.has(id)).reduce((a, [, q]) => a + [q.perVehicleBuilt, q.perVehicleYear, q.annualIP].filter(Boolean).length, 0);
+  const hasTotalQuote = [quote.nre, quote.perVehicle, quote.perVehicleYear, quote.fixedPerYear].some(Boolean) || quote.byCategory.length > 0;
+  const quoteNote = hasTotalQuote ? null : `No total supplier quote was entered (Supplier check tab)${quotesApplied
+    ? `; ${quotesApplied} line-item supplier quote${quotesApplied === 1 ? ' was' : 's were'} applied in the costing (each listed with its source under your figures)` : ''}.`;
 
   // Headline + findings, all computed from the result.
   const sortedHubs = [...hubs].sort((a, b) => a.total - b.total);
@@ -594,7 +617,7 @@ export function buildSWReportModel(result: SWProgramResult, req: SWReportRequest
     profile, request: req, result, sections, powertrain: prog.powertrain, body: req.bodyType ?? 'suv',
     scopeIds, slice: { total: sliceTotal, nre: sliceNre, lifecycle: sliceTotal - sliceNre, share: s.grandTotal > 0 ? sliceTotal / s.grandTotal : 0, isWhole,
       unsourcedShare: isWhole ? evidence.unsourcedShare : sliceUnsourced, components: isWhole ? components.length : new Set(sliceMods.flatMap(m => numbersFor([m.moduleId]))).size },
-    evidenceLines, postSupportNominal, mlExcluded: !prog.includeMLDataCost, gapsCovered,
+    evidenceLines, fixedSplit, postSupportYears: postYears(prog), quotesApplied, quoteNote, mlExcluded: !prog.includeMLDataCost, gapsCovered,
     headline: {
       total: s.grandTotal, perVehicle: s.perVehicle, nre, lifecycle, effortPM: s.totalEffortPersonMonths, devPM: s.totalPersonMonths,
       modules: result.modules.length, domains: new Set(result.modules.map(m => m.category)).size,
@@ -603,7 +626,7 @@ export function buildSWReportModel(result: SWProgramResult, req: SWReportRequest
     },
     programmeItems, findings, definition, components, steps, buildUp, domains, modules, unit, spend, hubs,
     countries: req.countries ?? [], rateCheck: swRateCheck(result), evidence, calibration, makeBuy,
-    quote: swQuoteCheck(result, req.quote ?? {}), assumptions: swAssumptionRows(makeBuy.basis, prog), yourFigures: swYourFigures(result),
+    quote, assumptions: swAssumptionRows(makeBuy.basis, prog), yourFigures: swYourFigures(result),
     excluded: swExcludedModules(result), gaps: SW_CATALOGUE_GAPS.filter(g => !gapsCovered.includes(g)), skeletons, checks,
   };
 }

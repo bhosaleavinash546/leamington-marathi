@@ -46,3 +46,17 @@ export function localiseRuleValue(label: string, value: string, fx: number, sym:
   const dp = a < 1 ? 4 : a < 100 ? 2 : 0;
   return { label: label.replace(/\(£/g, `(${sym}`), value: v.toLocaleString('en-GB', { minimumFractionDigits: dp === 4 ? 2 : dp, maximumFractionDigits: dp }) };
 }
+
+/**
+ * Money in the TEXT of the software reports (PDF and Excel share this one function — review: the rules were copied into
+ * both renderers). On top of `localiseGbpText`: a conversion the text itself states ("÷ 1.165 EUR per £ = £6,206") keeps its
+ * GBP result instead of being converted back; "£ per …", "£ / …", "£M" / "£k" and "Nominal £ (no discounting)" follow the
+ * report currency. A £ report is returned unchanged.
+ */
+export function localiseReportText(text: string, fx: number, sym: string): string {
+  if (!text || fx === 1 && sym === '£') return text;
+  return localiseGbpText(text.replace(/(per £ = )£(\d[\d,.]*)/g, '$1GBP $2'), fx, sym)
+    .replace(/£(?= \(no discounting)/g, sym)
+    .replace(/£ (?=\/|per |a |an )/g, `${sym} `)
+    .replace(/£(?=M\b|k\b)/g, sym);
+}

@@ -18,14 +18,14 @@
  */
 import type ExcelJSType from 'exceljs';
 import { resolveRateLibrary } from '../engine/sw-rate-library.js';
-import { swRateBasis, SW_DEV_SOURCE_LABEL, SW_MC_RANGE_BY_GRADE, SW_MAINT_FULL_YEARS, SW_MAINT_TAIL, SW_POST_EOP_SHARE, SW_POST_EOP_YEARS,
+import { swRateBasis, SW_DEV_SOURCE_LABEL, SW_MC_RANGE_BY_GRADE, SW_MAINT_FULL_YEARS, SW_MAINT_TAIL, SW_POST_EOP_SHARE,
   SW_DEFAULT_DEVELOPMENT_MONTHS, SW_TOOL_SEAT_GBP, SW_DEV_SPLIT, type SWEvidenceGrade } from '../engine/sw-should-cost.js';
 import { SW_REPORT_PROFILES, type SWReportModel, type SWReportDomain } from '../engine/sw-report-model.js';
 import { SKELETON_W, SKELETON_H, SKELETON_H_NO_LEGEND } from './sw-report-skeleton.js';
 import type { RasterImage } from './svg-raster.js';
 import { addCharts, type ChartSpec } from './xlsx-charts.js';
 import { LOGO_PNG_BASE64 } from '../brand/logo-png.js';
-import { localiseGbpText } from './money-text.js';
+import { localiseReportText } from './money-text.js';
 
 const C = {
   navy: '16325C', blue: '1D6FB8', violet: '6B3FA0', teal: '0D7D71', green: '2A7F50', amber: '99651A', red: 'B03A2E',
@@ -65,7 +65,7 @@ export async function buildSWReportWorkbook(md: SWReportModel, opt: SWWorkbookOp
   };
   const images = opt.images ?? new Map<string, RasterImage>();
   // Money in TEXT follows the report currency (review H6).
-  const T = (t: string) => (fx === 1 && sym === '£') ? t : localiseGbpText(t.replace(/(per £ = )£(\d[\d,.]*)/g, '$1GBP $2'), fx, sym).replace(/£(?= \(no discounting)/g, sym).replace(/£ (?=\/|per |a |an )/g, `${sym} `).replace(/£(?=M\b|k\b)/g, sym);
+  const T = (t: string) => localiseReportText(t, fx, sym);
   const prof = SW_REPORT_PROFILES[md.profile];
   const date = req.generatedAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const meta = [`${req.hubLabel} hub`, `${p.annualProductionVolume.toLocaleString('en-GB')} vehicles / yr × ${p.programLifeYears} yr`,
@@ -237,12 +237,12 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   bar(R, ++row, 2, 5, 'Maintenance profile and discounting');
   const fullC = input('full', 'Years at full maintenance after SOP', SW_MAINT_FULL_YEARS, '0', 'then the tail');
   const tailC = input('tail', 'Tail share', SW_MAINT_TAIL, NF.pct, 'of the full rate');
-  input('post', 'Security support after the last build, years', p.postProductionSupportYears ?? SW_POST_EOP_YEARS, '0', 'UN R155 post-production duty');
+  input('post', 'Security support after the last build, years', md.postSupportYears, '0', 'UN R155 post-production duty');
   const pshC = input('postShare', 'Security support share of the tail team', p.postProductionSupportShare ?? SW_POST_EOP_SHARE, NF.pct, 'CostVision assumption');
   const escC = input('esc', 'Wage escalation % a year', p.wageEscalationPct ?? 0, '0.0', '0 = real terms');
   row++;
   header(R, ++row, [[2, 'Programme year after SOP'], [3, 'Maintenance weight', true], [4, 'Discount factor', true], [5, 'Licence year (1 / 0)']]);
-  const nYears = p.programLifeYears + (p.postProductionSupportYears ?? SW_POST_EOP_YEARS);
+  const nYears = p.programLifeYears + md.postSupportYears;
   const y0 = row + 1;
   for (let i = 1; i <= Math.max(nYears, p.programLifeYears); i++) {
     row++;
@@ -557,7 +557,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
   const dLast = sr;
   if (md.slice.isWhole) for (const it of md.programmeItems) {
     sr++; S.mergeCells(sr, 2, sr, 5); val(S, sr, 2, `${it.label} (programme-level)`, undefined, font(10, C.muted, false, true), 'left');
-    const itemRef = it.label.startsWith('Cloud') ? `${GN}!$${A(gc['Total'])}$${regTotRow + 2}` : `${GN}!$${A(gc['Total'])}$${regTotRow + 1}`;
+    const itemRef = it.kind === 'cloudFixed' ? `${GN}!$${A(gc['Total'])}$${regTotRow + 2}` : `${GN}!$${A(gc['Total'])}$${regTotRow + 1}`;
     val(S, sr, 9, F(itemRef, X(it.amount)), NF.M, font(10, C.muted, false, true)); val(S, sr, 10, F(`I${sr}/${BT}`, it.amount / Math.max(1, s.grandTotal)), NF.pct);
   }
   sr++; S.mergeCells(sr, 2, sr, 5); val(S, sr, 2, md.slice.isWhole ? 'Programme total' : 'This report', undefined, font(10, C.navy, true), 'left');
@@ -609,10 +609,12 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     line('Royalty per vehicle built', u.perVehicleBuilt, NF.money2, `${volR}*${lifeR}`, u.vehiclesBuilt, `C${ur + 1}*D${ur + 1}`, u.perVehicleBuilt * u.vehiclesBuilt, 'engine rate × vehicles built');
     line('Map data per vehicle-year', u.subscriptionPerYear, NF.money2, `${volR}*${lifeR}*${u.subscriptionYears}`, u.subscriptionVehicleYears, `C${ur + 1}*D${ur + 1}`, u.subscriptionPerYear * u.subscriptionVehicleYears, `${u.subscriptionYears} subscription years a vehicle`);
     line('Cloud per connected vehicle-year', u.cloudPerYear, NF.money2, `${volR}*${lifeR}*${u.serviceYears}`, u.serviceVehicleYears, `C${ur + 1}*D${ur + 1}`, u.cloudPerYear * u.serviceVehicleYears, `${u.serviceYears} service years a vehicle`);
-    const fixedProd = u.fixedPerYear - md.postSupportNominal / p.programLifeYears;
-    line('Fixed per production year (average)', fixedProd, NF.money, lifeR, p.programLifeYears, `C${ur + 1}*D${ur + 1}`, fixedProd * p.programLifeYears, 'maintenance, IP licences, platform in the production years');
-    ur++; val(U, ur, 2, 'Security support after the last build', undefined, font(10), 'left'); val(U, ur, 5, X(md.postSupportNominal), NF.money, font(10, C.muted, false, true));
-    val(U, ur, 6, `${p.postProductionSupportYears ?? SW_POST_EOP_YEARS} service years after the last build (engine value)`, undefined, font(9, C.muted), 'left'); zebra(U, ur, 2, 6, false);
+    // The fixed £ split at the last build (review): production years, then what is paid after the last build.
+    const fixedProd = md.fixedSplit.production / p.programLifeYears;
+    line('Fixed per production year (average)', fixedProd, NF.money, lifeR, p.programLifeYears, `C${ur + 1}*D${ur + 1}`, md.fixedSplit.production, 'maintenance, IP licences, platform in the production years');
+    const afterLabel = [md.fixedSplit.postSupport > 0.5 ? `security support (${md.postSupportYears} years)` : '', md.fixedSplit.platformAfter > 0.5 ? 'cloud platform while vehicles are served' : ''].filter(Boolean).join(' + ') || 'nothing';
+    ur++; val(U, ur, 2, `After the last build: ${afterLabel}`, undefined, font(10), 'left'); val(U, ur, 5, X(md.fixedSplit.afterLastBuild), NF.money, font(10, C.muted, false, true));
+    val(U, ur, 6, 'service years after the last build (engine value)', undefined, font(9, C.muted), 'left'); zebra(U, ur, 2, 6, false);
     ur++; val(U, ur, 2, 'Programme total (from unit rates)', undefined, font(10, C.navy, true), 'left');
     const recon = u.nre + u.perVehicleBuilt * u.vehiclesBuilt + u.subscriptionPerYear * u.subscriptionVehicleYears + u.cloudPerYear * u.serviceVehicleYears + u.fixedPerYear * p.programLifeYears;
     val(U, ur, 5, F(`SUM(E${ur - 6}:E${ur - 1})`, X(recon)), NF.money); strong(U, ur, 2, 6);
@@ -730,11 +732,10 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     if (qRows.length) {
       header(Mw, mr, [[2, 'Line'], [3, 'Should-cost', true], [4, 'Quote', true], [5, 'Gap', true], [6, 'Gap %', true]]);
       for (const x of qRows) { mr++; const nf = x.unit === 'perVehicle' ? NF.money2 : NF.M; val(Mw, mr, 2, x.label, undefined, font(10), 'left'); val(Mw, mr, 3, X(x.should), nf); val(Mw, mr, 4, X(x.quoted), nf); val(Mw, mr, 5, F(`D${mr}-C${mr}`, X(x.gap)), nf); val(Mw, mr, 6, F(`IF(C${mr}=0,0,E${mr}/C${mr})`, x.gapPct / 100), '+0%;-0%'); zebra(Mw, mr, 2, 7, false); }
-    } else note(Mw, mr, 2, 7, 'No total supplier quote was entered on the Supplier check tab.', { size: 10 });
+    } else if (md.quoteNote) note(Mw, mr, 2, 7, md.quoteNote, { size: 10 });
     const effort = qc.target.nre - s.totalToolchain - s.totalHomologation;
     const mm = (n: number) => `${sym}${(X(n) / 1e6).toFixed(1)}M`;
     mr += 2; note(Mw, mr, 2, 7, `Negotiation target for a Tier-1 supplier: engineering effort ${mm(effort)} (${Math.round(s.totalEffortPersonMonths).toLocaleString('en-GB')} person-months at ${sym}${Math.round(X(qc.target.ratePerPM)).toLocaleString('en-GB')} per person-month, ${qc.target.basis}) + development tools ${mm(s.totalToolchain)} = ${mm(effort + s.totalToolchain)}.${s.totalHomologation ? ` Homologation ${mm(s.totalHomologation)} (type approval, CSMS / SUMS) stays with the OEM.` : ''}`, { size: 10, color: C.slate, fillHex: C.blueT });
-    if (!qRows.length) { const lq = md.yourFigures.filter(y => !y.line.startsWith('Your module')).length; if (lq) note(Mw, mr + 1, 2, 7, `No total supplier quote was entered; ${lq} line-item quote${lq === 1 ? ' was' : 's were'} applied in the costing (Assumptions sheet).`, { size: 9.5 }); }
   }
 
   // ── Evidence ──────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -833,7 +834,7 @@ const cachedNum = (ws: ExcelJSType.Worksheet, rr: number, c: number) => { const 
     tl(8, 'Engineering (NRE)', BNRE, X(md.slice.nre), NF.M);
     tl(11, 'Lifecycle', BLIFE, X(md.slice.lifecycle), NF.M);
     const used = picture(V, 'cover', 2, 16, 960, false);
-    note(V, 16 + used + 1, 2, 13, `Where the software runs: ${md.components.length} vehicle components carry the software costed here, coloured by the highest ASIL among their modules. Schematic top view, not to scale.`, { italic: true });
+    note(V, 16 + used + 1, 2, 13, `Where the software runs: ${md.slice.components} vehicle components carry the software costed here, coloured by the highest ASIL among their modules. Schematic top view, not to scale.`, { italic: true });
     note(V, 16 + used + 3, 2, 13, 'A deterministic should-cost model: every figure comes from the module catalogue, the hub rate book and stated constants — no AI sets a price. Totals in this workbook are formulas; the Checks sheet compares each with the engine. Accuracy against real programme costs has not been measured.', { size: 10, color: C.slate, fillHex: C.amberT });
   }
 

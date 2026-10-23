@@ -239,13 +239,13 @@ const AM:    RGB = brandRgb('amber');
  * Patching the instance covers `doc.text` and, because jspdf-autotable renders
  * cells through the same instance method, the tables as well.
  */
-export function hardenPdfText(doc: jsPDF, money?: { fx: number; sym: string }): jsPDF {
+export function hardenPdfText(doc: jsPDF, money?: { fx: number; sym: string; localise?: (t: string, fx: number, sym: string) => string }): jsPDF {
   const d = doc as unknown as { text: (...a: unknown[]) => unknown; splitTextToSize: (...a: unknown[]) => unknown; getTextWidth: (...a: unknown[]) => unknown };
   const orig = d.text.bind(doc), split = d.splitTextToSize.bind(doc), width = d.getTextWidth.bind(doc);
   // In a non-£ report every £ amount in the text (rule bases, rate sources, notes) is printed in the report currency
   // (demo review 2026-10-10). The same transform runs where autoTable measures and wraps, so a cell is sized for
   // the text it draws; it is idempotent, so text that is measured and then drawn is converted once.
-  const one = (t: string) => winAnsiSafe(money ? localiseGbpText(t, money.fx, money.sym) : t);
+  const one = (t: string) => winAnsiSafe(money ? (money.localise ?? localiseGbpText)(t, money.fx, money.sym) : t);
   const clean = (t: unknown): unknown =>
     typeof t === 'string' ? one(t)
       : Array.isArray(t) ? t.map(x => (typeof x === 'string' ? one(x) : x))

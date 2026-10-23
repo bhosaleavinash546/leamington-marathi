@@ -8,7 +8,7 @@
  */
 
 import {
-  swModuleDefs, cocomoNominalPM, type SWProgramResult, type ASILLevel,
+  swModuleDefs, cocomoNominalPM, withDrivetrainArticle, type SWProgramResult, type ASILLevel,
 } from './sw-should-cost.js';
 
 export interface SWCostingStep {
@@ -58,7 +58,7 @@ export function swCostingSteps(result: SWProgramResult, rate: StepRate, f: StepF
 
   return [
     { id: 'scope', title: 'Scope', value: `${result.modules.length} modules`,
-      detail: `${cats.size} software domains${prog.powertrain ? ` on ${prog.powertrain === 'ICE' ? 'an' : 'a'} ${prog.powertrain} vehicle` : ''}; nominal effort `
+      detail: `${cats.size} software domains${prog.powertrain ? ` on ${withDrivetrainArticle(prog.powertrain)} vehicle` : ''}; nominal effort `
         + `${f.number(nominal, 0)} person-months (fresh code, QM, medium complexity).`,
       modules: ids },
     { id: 'effort', title: 'Development effort', value: `${f.number(s.totalPersonMonths, 0)} PM`,

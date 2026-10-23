@@ -110,6 +110,10 @@ export const SW_POWERTRAIN_SCOPE: Record<SWPowertrain, {
 };
 
 /** Every module whose presence depends on the drivetrain (category A). Everything else is shared across variants. */
+/** "an ICE", "an MHEV", "a PHEV", "a BEV" — the article as the acronym is read aloud. */
+export const SW_DRIVETRAIN_ARTICLE: Record<SWPowertrain, 'a' | 'an'> = { ICE: 'an', MHEV: 'an', PHEV: 'a', BEV: 'a' };
+export const withDrivetrainArticle = (pt: SWPowertrain): string => `${SW_DRIVETRAIN_ARTICLE[pt] ?? 'a'} ${pt}`;
+
 export const SW_POWERTRAIN_MODULE_IDS: ReadonlySet<string> = new Set([...EV_MODULE_IDS, ...ICE_MODULE_IDS, 'hybrid_supervisor', 'mhev_48v']);
 
 /** Switch the powertrain modules on / off for a drivetrain and apply its de-rating; other modules are left as they are. */
@@ -211,6 +215,26 @@ export interface SWCustomModule {
   perVehicleRoyaltyGBP?: number;
   annualIPLicenceGBP?: number;
   source:              string;          // where the effort figure comes from
+  /** The catalogue gap this module covers (an id of SW_CATALOGUE_GAP_DEFS), set by the user. Reports list a gap as covered
+   *  only when it is linked here or the module's name IS the gap's name — never by a partial name match. */
+  coversGap?:          string;
+}
+
+/** Vehicle software no catalogue module covers (review judgement): usually supplier ECUs priced in the hardware. `head` is
+ *  the gap's name; `text` is what reports print. Add one as "your module" with your own effort to cost it. */
+export const SW_CATALOGUE_GAP_DEFS = [
+  { id: 'airbag',  head: 'Occupant restraint (airbag) control', text: 'Occupant restraint (airbag) control' },
+  { id: 'obc',     head: 'On-board AC charger and DC-DC converter control', text: 'On-board AC charger and DC-DC converter control (the charging module covers DC fast-charge protocols)' },
+  { id: 'eps',     head: 'Electric power steering and electric parking brake base software', text: 'Electric power steering and electric parking brake base software' },
+  { id: 'tpms',    head: 'Tyre-pressure monitoring', text: 'Tyre-pressure monitoring' },
+  { id: 'seat',    head: 'Seat memory / massage and other comfort ECUs', text: 'Seat memory / massage and other comfort ECUs beyond climate and body control' },
+  { id: 'trailer', head: 'Trailer functions', text: 'Trailer functions' },
+] as const;
+const gapKey = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+/** The gap ids your in-scope modules (with an effort figure) cover: an explicit link, or a module named exactly as the gap. */
+export function coveredGaps(prog: Pick<SWProgramInputs, 'customModules' | 'modules'>): string[] {
+  const on = (prog.customModules ?? []).filter(c => c.nominalPersonMonths > 0 && prog.modules.some(m => m.moduleId === c.id && m.enabled));
+  return SW_CATALOGUE_GAP_DEFS.filter(g => on.some(c => c.coversGap === g.id || (gapKey(c.name) !== '' && gapKey(c.name) === gapKey(g.head)))).map(g => g.id);
 }
 
 export interface SWModuleInput {
@@ -1299,7 +1323,8 @@ export function swHorizon(prog: Pick<SWProgramInputs, 'programLifeYears' | 'subs
   const post = prog.includeMaintenanceCost === false ? 0 : postYears(prog);
   return Math.max(prog.programLifeYears + n - 1, prog.programLifeYears + post);
 }
-function postYears(prog: Pick<Partial<SWProgramInputs>, 'postProductionSupportYears'>): number {
+/** Years of security support after the last build, as costed (rounded). Reports print this, never the raw input. */
+export function postYears(prog: Pick<Partial<SWProgramInputs>, 'postProductionSupportYears'>): number {
   return Math.max(0, Math.round(prog.postProductionSupportYears ?? SW_POST_EOP_YEARS));
 }
 const dfAt = (r: number, t: number) => (r > 0 ? 1 / Math.pow(1 + r, t) : 1);
@@ -1765,7 +1790,9 @@ function scaleModuleResult(r: SWModuleCostResult, k: number): SWModuleCostResult
  *  actuals; `sourced` = a published figure; `estimate` = a labelled engineering estimate or a sourced model on entered
  *  sizes; `unsourced` = a catalogue figure with no source. */
 export type SWEvidenceGrade = 'entered' | 'calibrated' | 'sourced' | 'estimate' | 'unsourced';
-export interface SWEvidenceLine { kind: string; label: string; amount: number; grade: SWEvidenceGrade; nre: boolean; basis: string }
+export interface SWEvidenceLine { kind: string; label: string; amount: number; grade: SWEvidenceGrade; nre: boolean; basis: string;
+  /** The module the line belongs to (absent on programme-level lines). Match lines to modules by this, never by the label. */
+  moduleId?: string }
 
 /** Monte Carlo range [low, mode, high] by grade. Wider where the evidence is thinner and skewed upwards (overruns are
  *  larger than savings), but bounded so the headline — the sum of each line's most likely value — stays inside its own
@@ -1790,25 +1817,25 @@ export function swEvidenceLines(prog: SWProgramInputs, modules: SWModuleCostResu
     const effort = m.development.total + m.testing.total + m.integrationCost + m.cybersecCost + m.calibrationCost + m.mlDataCost;
     // A user-defined module's catalogue effort IS the user's figure.
     const eGrade: SWEvidenceGrade = m.effortBasis === 'custom' || (def.custom && m.effortBasis === 'catalogue') ? 'entered' : m.effortBasis === 'size' ? 'estimate' : calibrated ? 'calibrated' : 'unsourced';
-    out.push({ kind: 'effort', label: `${m.moduleName} — engineering`, amount: effort, grade: eGrade, nre: true,
+    out.push({ moduleId: m.moduleId, kind: 'effort', label: `${m.moduleName} — engineering`, amount: effort, grade: eGrade, nre: true,
       basis: m.effortBasis === 'custom' ? 'your person-months' : m.effortBasis === 'size' ? 'COCOMO II on your KSLOC' : def.custom ? def.notes : calibrated ? 'catalogue × your calibration' : 'module catalogue person-months (unsourced)' });
-    out.push({ kind: 'tools', label: `${m.moduleName} — tools`, amount: m.toolchainCost, grade: prog.toolSeatGBPPerYear !== undefined ? 'entered' : 'estimate', nre: true, basis: SW_TOOL_SEAT_BASIS });
+    out.push({ moduleId: m.moduleId, kind: 'tools', label: `${m.moduleName} — tools`, amount: m.toolchainCost, grade: prog.toolSeatGBPPerYear !== undefined ? 'entered' : 'estimate', nre: true, basis: SW_TOOL_SEAT_BASIS });
     // Production-years sustaining (a rule of thumb, estimate) and the post-production security support after the last
     // build (an unsourced share — the duty is regulatory, its cost is not published).
     const life = prog.programLifeYears;
     const post = m.yearly.maintenance.reduce((a, v, i) => (i >= life ? a + v * dfAt(r, i + 1) : a), 0);
-    out.push({ kind: 'maintenance', label: `${m.moduleName} — maintenance`, amount: m.maintenanceCost - post, grade: 'estimate', nre: false, basis: SW_MAINT_BASIS });
-    if (post > 1e-6) out.push({ kind: 'postSupport', label: `${m.moduleName} — security support after the last build`, amount: post, grade: prog.postProductionSupportShare !== undefined ? 'entered' : 'unsourced', nre: false, basis: SW_POST_EOP_BASIS });
+    out.push({ moduleId: m.moduleId, kind: 'maintenance', label: `${m.moduleName} — maintenance`, amount: m.maintenanceCost - post, grade: 'estimate', nre: false, basis: SW_MAINT_BASIS });
+    if (post > 1e-6) out.push({ moduleId: m.moduleId, kind: 'postSupport', label: `${m.moduleName} — security support after the last build`, amount: post, grade: prog.postProductionSupportShare !== undefined ? 'entered' : 'unsourced', nre: false, basis: SW_POST_EOP_BASIS });
     const ip = pvOf(m.yearly.licences, r);
     const ipYours = !!def.quoted?.ip || !!def.custom;
-    out.push({ kind: 'licences', label: `${m.moduleName} — IP licences`, amount: ip, grade: ipYours ? 'entered' : 'unsourced', nre: false,
+    out.push({ moduleId: m.moduleId, kind: 'licences', label: `${m.moduleName} — IP licences`, amount: ip, grade: ipYours ? 'entered' : 'unsourced', nre: false,
       basis: def.quoted?.ip ? `your quote — ${def.quoted.ip}` : def.custom ? 'your figure' : 'module catalogue £ / yr (unsourced)' });
     const roy = m.licensingCost - ip;
     // A royalty is "yours" when every part of it was typed (a quote, or the user's own module).
     const unquotedPart = (!!def.perVehicleRoyaltyGBP && !def.quoted?.royalty && !def.custom) || (!!def.perVehiclePerYearGBP && !def.quoted?.subscription);
-    if (Math.abs(roy) > 1e-6) out.push({ kind: 'royalties', label: `${m.moduleName} — royalties`, amount: roy,
+    if (Math.abs(roy) > 1e-6) out.push({ moduleId: m.moduleId, kind: 'royalties', label: `${m.moduleName} — royalties`, amount: roy,
       grade: !unquotedPart ? 'entered' : /unsourced/i.test(def.royaltyBasis ?? 'unsourced') ? 'unsourced' : 'sourced', nre: false, basis: def.royaltyBasis ?? '' });
-    if (m.cloudCost) out.push({ kind: 'cloud', label: `${m.moduleName} — cloud`, amount: m.cloudCost, grade: def.quoted?.cloud ? 'entered' : 'unsourced', nre: false,
+    if (m.cloudCost) out.push({ moduleId: m.moduleId, kind: 'cloud', label: `${m.moduleName} — cloud`, amount: m.cloudCost, grade: def.quoted?.cloud ? 'entered' : 'unsourced', nre: false,
       basis: def.quoted?.cloud ? `Your quote: £${prog.quotes?.cloudPerVehicleYear?.value} per connected vehicle-year — ${def.quoted.cloud} (spread by the catalogue's module shares). ${SW_SERVICE_BASIS}` : `${SW_CLOUD_BASIS} ${SW_SERVICE_BASIS}` });
   }
   if (summary.totalHomologation) out.push({ kind: 'homologation', label: 'Homologation (R155 / R156 / ISO 26262)', amount: summary.totalHomologation, grade: 'estimate', nre: true, basis: SW_HOMOLOGATION_BASIS });
@@ -1969,6 +1996,7 @@ export function validateSWInputs(prog: SWProgramInputs): string[] {
   const cats: SWCategory[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
   for (const c of prog.customModules ?? []) {
     if (!/^custom-[a-z0-9-]{1,60}$/.test(c.id ?? '') || known.has(c.id)) p.push(`your module id "${c.id}" must be "custom-…" (lower-case) and unique`);
+    if (c.coversGap !== undefined && !SW_CATALOGUE_GAP_DEFS.some(g => g.id === c.coversGap)) p.push(`your module "${c.name}" covers an unknown catalogue gap "${c.coversGap}"`);
     known.add(c.id);
     if (!c.name || !c.name.trim() || c.name.length > 80) p.push(`your module "${c.id}" needs a name (1–80 characters)`);
     if (!cats.includes(c.category)) p.push(`your module "${c.name}" needs a domain A–G`);
