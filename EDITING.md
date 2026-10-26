@@ -104,3 +104,11 @@ and update the Ganeshotsav and Diwali date ranges for the new year.
 
 Every change is saved in the **History** (clock icon on the file). Open the last good
 version and click **Revert** — nothing is ever lost. When in doubt, ask before guessing.
+
+## Marathi headings in the Yatra One font
+
+The decorative heading font (Yatra One) breaks joined letters when the text is marked
+`lang="mr"`: वर्षाचा shows as वर्‌षाचा, साहित्य as साहित्‌य, लेमिंग्टन as लेमिंग्‌टन.
+Marked `lang="hi"`, the same font joins them properly. So any Marathi heading drawn in
+Yatra One (the Diwali Ank headings, the 404 heading, the name लेमिंग्टन) carries
+`lang="hi"`. Body text uses Mukta, which is fine with `lang="mr"`.
