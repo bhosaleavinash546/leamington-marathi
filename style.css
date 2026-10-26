@@ -2343,3 +2343,36 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
    ग्ट with a visible halant (ग्‌ट). Under the Hindi rules the same font joins it
    with a half ग, which is the spelling we want. Only the shaping changes. */
 .name-join { font: inherit; }
+
+/* ---------- Stay connected (contact section) ---------- */
+.connect { max-width: 1100px; margin: 54px auto 0; text-align: center; }
+.connect-title { margin: 0 0 6px; color: var(--red-dark); font-size: 1.5rem; }
+.connect-title .marathi { color: var(--maroon); font-weight: 600; }
+.connect-sub { margin: 0 0 24px; color: var(--ink); }
+.connect-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.connect-card {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 20px 16px 18px; border-radius: var(--radius); background: var(--white);
+  border: 1px solid #f0dcc3; box-shadow: var(--shadow); text-decoration: none; color: var(--ink);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.connect-card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(74, 19, 11, 0.16); }
+.connect-icon svg { width: 40px; height: 40px; }
+.connect-name { font-weight: 800; color: var(--maroon); font-size: 1.05rem; margin-top: 4px; }
+.connect-handle { font-size: 0.9rem; color: var(--saffron-text); font-weight: 700; overflow-wrap: anywhere; }
+.connect-what { font-size: 0.92rem; }
+.connect-qr { width: 150px; height: 150px; margin: 10px 0 6px; border-radius: 10px; border: 1px solid #f0dcc3; }
+.connect-btn {
+  margin-top: 6px; padding: 7px 20px; border-radius: 30px; color: var(--white); font-weight: 700; font-size: 0.95rem;
+}
+.connect-instagram .connect-btn { background: linear-gradient(90deg, #d6266b, #8f44c9); }
+.connect-facebook .connect-btn { background: #1877f2; }
+.connect-whatsapp .connect-btn { background: #128c4b; }
+.connect-youtube .connect-btn { background: #d10000; }
+.footer-socials a { color: var(--gold); font-weight: 700; text-decoration: none; }
+.footer-socials a:hover { text-decoration: underline; }
+@media (max-width: 900px) { .connect-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .connect-qr { display: none; }
+  .connect-card { padding: 16px 10px; }
+}
