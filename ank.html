@@ -4,284 +4,567 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>दिवाळी अंक २०२६ | Leamington Marathi</title>
-  <meta name="description" content="लेमिंग्टन मराठीचा पहिला दिवाळी अंक: लेख, कविता, पाककृती आणि बालविभाग. Send us your writing for the first Leamington Marathi Diwali Ank.">
+  <meta name="description" content="लेमिंग्टन मराठीचा पहिला दिवाळी अंक: संपादकीय, दिवाळी अंकाची परंपरा, दिवाळीचे सहा दिवस, फराळाच्या पाककृती, बालविभाग आणि वर्षाचा आढावा. The first Leamington Marathi Diwali Ank.">
   <link rel="icon" type="image/png" href="images/logo-emblem.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#d92a1c">
+  <meta name="theme-color" content="#4a130b">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Leamington Marathi">
   <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
   <script>if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js'));</script>
   <link rel="canonical" href="https://leamingtonmarathi.com/ank.html">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="article">
   <meta property="og:title" content="दिवाळी अंक २०२६ | Leamington Marathi">
-  <meta property="og:description" content="Our first Diwali Ank. Send us your articles, poems, recipes and kids' drawings. साहित्य पाठवा!">
-  <meta property="og:image" content="https://leamingtonmarathi.com/images/share-banner.jpg">
+  <meta property="og:description" content="लेमिंग्टन मराठीचा पहिला दिवाळी अंक. Our first Diwali Ank: the six days of Diwali, faraal recipes, a kids' corner and our year in review.">
+  <meta property="og:image" content="https://leamingtonmarathi.com/images/diwali-lights.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ---- Diwali Ank page styles ---- */
-    body { background: #2b0a06; }
-    .ank-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 24px;
-      background: rgba(43, 10, 6, 0.9);
-    }
-    .ank-header .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-    .ank-back {
-      color: #ffe9b3;
-      font-weight: 700;
-      text-decoration: none;
-      font-size: 0.95rem;
-      border: 1.5px solid rgba(255, 233, 179, 0.5);
-      border-radius: 30px;
-      padding: 7px 18px;
-    }
-    .ank-back:hover { background: rgba(255, 233, 179, 0.15); }
+    /* ===== Diwali Ank: laid out like a printed magazine. Each .ank-sheet is one "page".
+       Headings use Yatra One and carry lang="hi" (under lang="mr" that font breaks joined
+       letters: वर्षाचा → वर्‌षाचा). Body text is Mukta, lang="mr". ===== */
+    :root { --ank-fs: 1.06rem; --paper: #fffaf2; --ink-soft: #5a4038; --gold-line: #e3b04b; }
+    body { background: #24070a; }
+    .ank-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: linear-gradient(90deg, var(--gold), var(--saffron)); z-index: 60; }
 
+    .ank-bar {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px clamp(14px, 3vw, 28px);
+      background: rgba(36, 7, 10, 0.94); backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(244, 164, 18, 0.25);
+    }
+    .ank-bar .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #ffe9b3; font-weight: 700; }
+    .ank-bar .brand img { width: 40px; height: 40px; }
+    .ank-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .ank-tools a, .ank-tools button {
+      font: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      color: #ffe9b3; background: transparent; text-decoration: none;
+      border: 1.5px solid rgba(255, 233, 179, 0.45); border-radius: 30px; padding: 6px 14px;
+    }
+    .ank-tools a:hover, .ank-tools button:hover { background: rgba(255, 233, 179, 0.14); }
+
+    .ank-book { max-width: 920px; margin: 0 auto; padding: 28px clamp(10px, 3vw, 24px) 50px; font-size: var(--ank-fs); }
+    .ank-sheet {
+      position: relative; background: var(--paper); color: var(--ink);
+      border-radius: 6px; margin: 0 0 30px; padding: clamp(28px, 6vw, 64px) clamp(22px, 7vw, 76px) 70px;
+      box-shadow: 0 1px 0 #e9d6b9, 0 26px 60px rgba(0, 0, 0, 0.5);
+    }
+    .ank-sheet::before { /* fine double frame, like a printed page */
+      content: ""; position: absolute; inset: 14px; border: 1px solid var(--gold-line); outline: 1px solid rgba(227, 176, 75, 0.45); outline-offset: 4px; border-radius: 2px; pointer-events: none;
+    }
+    .ank-folio { position: absolute; left: 0; right: 0; bottom: 26px; text-align: center; font-size: 0.82rem; color: #a07d6c; letter-spacing: 0.04em; }
+    .ank-folio b { color: var(--red-dark); }
+
+    .ank-kicker { margin: 0 0 4px; color: var(--saffron-text); font-weight: 700; font-size: 0.92rem; letter-spacing: 0.03em; }
+    .ank-sheet h2 {
+      font-family: var(--font-display); font-weight: 400; color: var(--red-dark);
+      font-size: clamp(1.9rem, 4.6vw, 2.6rem); line-height: 1.3; margin: 0 0 6px;
+    }
+    .ank-standfirst { font-size: 1.12em; color: var(--ink-soft); font-weight: 600; margin: 0 0 18px; line-height: 1.6; }
+    .ank-divider { display: block; width: min(420px, 80%); height: 28px; margin: 6px 0 22px; stroke: var(--gold); stroke-width: 1.6; fill: var(--saffron); }
+    .ank-divider.center { margin: 10px auto 22px; }
+    .ank-sheet p { line-height: 1.85; margin: 0 0 1em; }
+    .ank-cols { column-count: 2; column-gap: 40px; column-rule: 1px solid #ecd9bd; }
+    .ank-cols p { break-inside: avoid-column; }
+    .ank-sign { text-align: right; font-weight: 700; color: var(--maroon); margin-top: 18px !important; }
+    .ank-pull {
+      margin: 22px 0; padding: 14px 22px; border-left: 0; text-align: center;
+      font-size: 1.22em; font-weight: 700; color: var(--red-dark); line-height: 1.55;
+      background: linear-gradient(90deg, transparent, #fdeeda 18%, #fdeeda 82%, transparent);
+    }
+
+    /* Cover */
     .ank-cover {
-      text-align: center;
-      padding: 70px 20px 60px;
-      background:
-        radial-gradient(circle at 20% 15%, rgba(244, 164, 18, 0.22), transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(217, 42, 28, 0.25), transparent 45%),
-        linear-gradient(180deg, #3d0f08, #2b0a06);
-      color: var(--cream);
+      background: radial-gradient(circle at 78% 12%, rgba(244, 164, 18, 0.32), transparent 42%), radial-gradient(circle at 10% 95%, rgba(217, 42, 28, 0.38), transparent 45%), linear-gradient(160deg, #5a0f1c, #2a050b);
+      color: #fff3dc; text-align: center; padding-bottom: 60px;
     }
-    .ank-diyas { font-size: 1.7rem; letter-spacing: 14px; margin-bottom: 18px; }
-    .ank-cover img.ank-emblem { width: 120px; margin: 0 auto 18px; }
-    .ank-masthead {
-      font-family: var(--font-display);
-      font-weight: 400;
-      font-size: clamp(2.4rem, 7vw, 4.2rem);
-      color: var(--gold);
-      margin: 0;
-      line-height: 1.3;
-      text-shadow: 0 0 34px rgba(244, 164, 18, 0.35);
-    }
-    .ank-year {
-      font-size: clamp(1.2rem, 3vw, 1.6rem);
-      color: #ffb0a3;
-      font-weight: 700;
-      margin: 10px 0 4px;
-    }
-    .ank-tagline { color: #f6dfc8; margin: 0; font-size: 1.05rem; }
+    .ank-cover::before { border-color: rgba(244, 164, 18, 0.7); outline-color: rgba(244, 164, 18, 0.35); }
+    .ank-presents { margin: 0; color: #ffe9b3; font-weight: 700; letter-spacing: 0.06em; font-size: 0.95rem; }
+    .ank-cover .ank-emblem { width: 92px; height: 92px; margin: 14px auto 6px; display: block; filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.4)); }
+    .ank-masthead { font-family: var(--font-display); font-weight: 400; margin: 0; line-height: 1.15; color: var(--gold); }
+    .ank-masthead .m-small { display: block; font-size: clamp(1.4rem, 4vw, 2rem); color: #ffe9b3; }
+    .ank-masthead .m-big { display: block; font-size: clamp(3.6rem, 13vw, 6.6rem); text-shadow: 0 0 40px rgba(244, 164, 18, 0.4); }
+    .ank-issue { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 14px 0 24px; padding: 7px 20px; border-top: 1px solid rgba(244, 164, 18, 0.6); border-bottom: 1px solid rgba(244, 164, 18, 0.6); font-weight: 700; color: #ffe9b3; }
+    .ank-cover-art { display: grid; grid-template-columns: 1.15fr 1fr; gap: 26px; align-items: center; text-align: left; margin: 0 auto; max-width: 720px; }
+    .ank-cover-photo { margin: 0; }
+    .ank-cover-photo img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 4px; border: 5px solid #f4a412; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); display: block; }
+    .ank-cover-photo figcaption { font-size: 0.82rem; color: #f6d7b8; margin-top: 8px; }
+    .ank-inside h3 { font-family: var(--font-display); font-weight: 400; color: var(--gold); font-size: 1.5rem; margin: 0 0 8px; }
+    .ank-inside ul { list-style: none; margin: 0; padding: 0; }
+    .ank-inside li { padding: 7px 0; border-bottom: 1px solid rgba(244, 164, 18, 0.25); font-weight: 600; }
+    .ank-inside li:last-child { border-bottom: none; }
+    .ank-inside li span { color: var(--gold); margin-right: 8px; }
+    .ank-price { margin: 28px 0 0; font-size: 0.9rem; color: #f6d7b8; }
 
-    .ank-page {
-      max-width: 860px;
-      margin: -26px auto 40px;
-      background: var(--cream);
-      border-radius: var(--radius);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-      padding: 46px clamp(22px, 5vw, 60px);
-    }
-    .ank-section { margin-bottom: 52px; }
-    .ank-section:last-child { margin-bottom: 0; }
-    .ank-section h2 {
-      font-family: var(--font-display);
-      font-weight: 400;
-      color: var(--red-dark);
-      font-size: 1.7rem;
-      margin: 0 0 6px;
-    }
-    .ank-section .ank-sub { color: var(--saffron-text); font-weight: 600; margin: 0 0 18px; font-size: 0.98rem; }
-    .ank-rule { border: none; border-top: 3px double var(--gold); margin: 0 0 20px; }
+    /* Colophon + contents */
+    .ank-colophon { display: grid; grid-template-columns: 1fr 1.3fr; gap: 38px; }
+    .ank-credits { font-size: 0.92em; color: var(--ink-soft); }
+    .ank-credits dt { font-weight: 700; color: var(--maroon); margin-top: 12px; }
+    .ank-credits dd { margin: 2px 0 0; }
+    .ank-credits .ank-note { margin-top: 18px; font-size: 0.86em; font-style: italic; }
+    .ank-toc { list-style: none; margin: 0; padding: 0; }
+    .ank-toc li a { display: flex; align-items: baseline; gap: 8px; padding: 9px 0; text-decoration: none; color: var(--ink); }
+    .ank-toc li a:hover .t { color: var(--red-dark); }
+    .ank-toc .t { font-weight: 700; }
+    .ank-toc .s { display: block; font-size: 0.86em; color: #8a6f63; font-weight: 400; }
+    .ank-toc .dots { flex: 1; border-bottom: 2px dotted #d9b98c; transform: translateY(-5px); }
+    .ank-toc .n { font-weight: 800; color: var(--red-dark); min-width: 1.6em; text-align: right; }
 
-    .ank-toc { display: flex; flex-wrap: wrap; gap: 10px; }
-    .ank-toc a {
-      background: var(--cream-deep);
-      color: var(--red-dark);
-      font-weight: 700;
-      text-decoration: none;
-      padding: 8px 18px;
-      border-radius: 30px;
-      font-size: 0.95rem;
-    }
-    .ank-toc a:hover { background: var(--gold); color: var(--maroon); }
+    /* Six days */
+    .ank-days { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .ank-day { background: #fff; border: 1px solid #ecd9bd; border-radius: 10px; padding: 16px 18px; }
+    .ank-day h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.45rem; color: var(--red-dark); margin: 0; }
+    .ank-day .when { margin: 2px 0 8px; font-weight: 700; color: var(--saffron-text); font-size: 0.92em; }
+    .ank-day p { margin: 0; line-height: 1.7; }
+    .ank-small { font-size: 0.88em; color: #8a6f63; margin-top: 16px !important; }
 
+    /* Year in review */
+    .ank-photos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 6px 0 22px; }
+    .ank-photos figure { margin: 0; }
+    .ank-photos img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 4px; display: block; border: 4px solid #fff; box-shadow: 0 6px 18px rgba(74, 19, 11, 0.18); }
+    .ank-photos figcaption { font-size: 0.85em; color: #8a6f63; margin-top: 6px; }
     .ank-review { list-style: none; padding: 0; margin: 0; }
-    .ank-review li {
-      padding: 12px 0 12px 38px;
-      position: relative;
-      border-bottom: 1px dashed #e8d3b8;
-      font-size: 1.02rem;
-    }
-    .ank-review li::before { content: "🪔"; position: absolute; left: 0; }
+    .ank-review li { display: grid; grid-template-columns: 9.5em 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px dashed #e3cdb0; line-height: 1.7; }
     .ank-review li:last-child { border-bottom: none; }
+    .ank-review b { color: var(--red-dark); }
 
-    .ank-empty {
-      border: 2px dashed var(--saffron);
-      border-radius: var(--radius);
-      background: var(--white);
-      padding: 26px;
-      text-align: center;
-      color: var(--saffron-text);
-      font-weight: 600;
-      font-size: 1.02rem;
+    /* Recipes */
+    .ank-recipes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .ank-recipe { background: #fff; border: 1px solid #ecd9bd; border-radius: 10px; padding: 20px 22px; }
+    .ank-recipe h3 { font-family: var(--font-display); font-weight: 400; color: var(--red-dark); font-size: 1.6rem; margin: 0; }
+    .ank-recipe .yield { margin: 0 0 12px; color: var(--saffron-text); font-weight: 700; font-size: 0.9em; }
+    .ank-recipe h4 { margin: 12px 0 6px; color: var(--maroon); font-size: 1em; }
+    .ank-recipe ul, .ank-recipe ol { margin: 0; padding-left: 1.3em; line-height: 1.75; }
+    .ank-tip { margin: 14px 0 0 !important; padding: 10px 14px; background: #fdeeda; border-radius: 8px; font-size: 0.92em; line-height: 1.6 !important; }
+
+    /* Kids */
+    .ank-kids { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: start; }
+    .ank-riddles { list-style: none; counter-reset: r; margin: 0; padding: 0; }
+    .ank-riddles li { counter-increment: r; position: relative; padding: 10px 0 10px 2.2em; border-bottom: 1px dashed #e3cdb0; line-height: 1.7; }
+    .ank-riddles li::before { content: counter(r, devanagari) "."; position: absolute; left: 0; font-weight: 800; color: var(--red-dark); }
+    .ank-match { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    .ank-match td { padding: 8px 6px; border-bottom: 1px dashed #e3cdb0; }
+    .ank-match td:first-child { font-weight: 700; color: var(--maroon); width: 46%; }
+    .ank-answers { margin-top: 14px; }
+    .ank-answers summary { cursor: pointer; font-weight: 700; color: var(--saffron-text); }
+    .ank-answers p { margin: 8px 0 0; }
+    .ank-rangoli-box { text-align: center; }
+    .ank-rangoli { width: min(100%, 340px); height: auto; display: block; margin: 0 auto 10px; }
+    .ank-kids h3 { font-family: var(--font-display); font-weight: 400; color: var(--red-dark); font-size: 1.45rem; margin: 0 0 4px; }
+    .ank-btn { display: inline-block; font: inherit; font-weight: 700; cursor: pointer; border: 0; border-radius: 30px; padding: 9px 22px; background: linear-gradient(135deg, var(--red), var(--saffron)); color: #fff; text-decoration: none; }
+
+    /* Readers' corner */
+    .ank-asks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 6px 0 20px; }
+    .ank-ask { background: #fff; border: 1px solid #ecd9bd; border-radius: 10px; padding: 16px 18px; }
+    .ank-ask b { display: block; color: var(--red-dark); font-size: 1.1em; margin-bottom: 2px; }
+    .ank-center { text-align: center; }
+
+    /* Supporters */
+    .ank-logos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 8px 0 22px; }
+    .ank-logos figure { margin: 0; background: #fff; border: 1px solid #ecd9bd; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 130px; }
+    .ank-logos img { max-width: 100%; max-height: 70px; object-fit: contain; }
+    .ank-logos figure.dark { background: #1d1312; }
+    .ank-logos figcaption { font-size: 0.85em; color: #8a6f63; text-align: center; }
+    .ank-logos figure.dark figcaption { color: #e8d3b8; }
+    .ank-stalls { columns: 2; column-gap: 30px; list-style: none; margin: 0; padding: 0; }
+    .ank-stalls li { padding: 6px 0; break-inside: avoid; }
+    .ank-stalls b { color: var(--maroon); }
+
+    /* Back cover */
+    .ank-back { background: radial-gradient(circle at 20% 15%, rgba(244, 164, 18, 0.3), transparent 42%), linear-gradient(200deg, #5a0f1c, #2a050b); color: #fff3dc; text-align: center; }
+    .ank-back::before { border-color: rgba(244, 164, 18, 0.7); outline-color: rgba(244, 164, 18, 0.35); }
+    .ank-back .big { font-family: var(--font-display); font-weight: 400; color: var(--gold); font-size: clamp(3rem, 11vw, 5.4rem); margin: 10px 0 0; line-height: 1.2; }
+    .ank-back .diyas { font-size: 1.8rem; letter-spacing: 12px; margin: 6px 0 12px; }
+    .ank-back p { color: #ffe9b3; }
+    .ank-qrs { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin: 22px 0 14px; }
+    .ank-qrs a { text-decoration: none; color: #ffe9b3; font-weight: 700; font-size: 0.85rem; }
+    .ank-qrs img { display: block; width: 96px; height: 96px; border-radius: 8px; border: 5px solid #fff; margin: 0 auto 6px; background: #fff; }
+    .ank-back .ank-folio { color: #d8a88f; }
+
+    @media (max-width: 720px) {
+      .ank-cols { column-count: 1; }
+      .ank-cover-art, .ank-colophon, .ank-days, .ank-recipes, .ank-kids, .ank-asks { grid-template-columns: 1fr; }
+      .ank-logos { grid-template-columns: 1fr 1fr; }
+      .ank-photos { grid-template-columns: 1fr; }
+      .ank-review li { grid-template-columns: 1fr; gap: 2px; }
+      .ank-stalls { columns: 1; }
+      .ank-tools .hide-sm { display: none; }
     }
-    .ank-empty .en { display: block; color: #8a6f63; font-weight: 400; font-size: 0.9rem; margin-top: 6px; }
 
-    .ank-photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
-    .ank-photos img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; }
-
-    .ank-contribute {
-      background: linear-gradient(135deg, var(--red-dark), var(--red));
-      border-radius: var(--radius);
-      color: var(--white);
-      text-align: center;
-      padding: 36px 28px;
+    /* Print / Save as PDF: one sheet per A4 page */
+    @page { size: A4; margin: 10mm; }
+    @media print {
+      body { background: #fff; }
+      .ank-bar, .ank-progress, .ank-no-print { display: none !important; }
+      .ank-book { max-width: none; padding: 0; font-size: 11.5pt; }
+      .ank-sheet { box-shadow: none; margin: 0; border-radius: 0; break-after: page; min-height: 270mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .ank-sheet:last-child { break-after: auto; }
+      .ank-answers[open] summary, .ank-answers summary { list-style: none; }
+      a { color: inherit; text-decoration: none; }
     }
-    .ank-contribute h2 { color: var(--gold) !important; }
-    .ank-contribute p { margin: 0 0 10px; }
-    .ank-deadline { color: #ffe9b3; font-weight: 700; }
-
-    .ank-footer { text-align: center; color: #d8a88f; padding: 10px 20px 44px; font-size: 0.9rem; }
-    .ank-footer a { color: var(--gold); }
+    @media print {
+      .ank-sheet { padding: 16mm 15mm 18mm; }
+      .ank-photos { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+      .ank-photos figcaption { font-size: 8pt; }
+      .ank-review li { padding: 6px 0; }
+      .ank-recipe, .ank-day { padding: 12px 14px; }
+      .ank-rangoli { width: 260px; }
+    }
+    @media print { .printing-rangoli .ank-sheet:not(#balvibhag) { display: none !important; } }
   </style>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="paithani" viewBox="0 0 600 40">
+      <path fill="none" d="M0 20 L15 8 30 20 45 32 60 20 75 8 90 20 105 32 120 20 135 8 150 20 165 32 180 20 195 8 210 20 225 32 240 20 255 8 270 20 285 32 300 20 315 8 330 20 345 32 360 20 375 8 390 20 405 32 420 20 435 8 450 20 465 32 480 20 495 8 510 20 525 32 540 20 555 8 570 20 585 32 600 20"/>
+      <path fill="none" d="M0 20 L15 32 30 20 45 8 60 20 75 32 90 20 105 8 120 20 135 32 150 20 165 8 180 20 195 32 210 20 225 8 240 20 255 32 270 20 285 8 300 20 315 32 330 20 345 8 360 20 375 32 390 20 405 8 420 20 435 32 450 20 465 8 480 20 495 32 510 20 525 8 540 20 555 32 570 20 585 8 600 20"/>
+      <g stroke="none"><circle cx="30" cy="20" r="2.4"/><circle cx="90" cy="20" r="2.4"/><circle cx="150" cy="20" r="2.4"/><circle cx="210" cy="20" r="2.4"/><circle cx="270" cy="20" r="2.4"/><circle cx="330" cy="20" r="2.4"/><circle cx="390" cy="20" r="2.4"/><circle cx="450" cy="20" r="2.4"/><circle cx="510" cy="20" r="2.4"/><circle cx="570" cy="20" r="2.4"/><circle cx="300" cy="20" r="6" fill="#d92a1c"/></g>
+    </symbol>
+  </svg>
 
-  <header class="ank-header">
-    <a href="index.html" class="brand">
-      <img src="images/logo-emblem.png" alt="Leamington Marathi" width="46" height="46" style="width:46px;height:46px;">
-    </a>
-    <a href="index.html" class="ank-back">← मुख्य पान / Home</a>
+  <div class="ank-progress" id="ank-progress" aria-hidden="true"></div>
+
+  <header class="ank-bar">
+    <a href="index.html" class="brand"><img src="images/logo-emblem.png" alt="" width="40" height="40"><span>मुख्य पान</span></a>
+    <nav class="ank-tools" aria-label="Reading tools">
+      <a href="#anukramanika">अनुक्रमणिका</a>
+      <button type="button" id="fs-down" aria-label="Smaller text">अ−</button>
+      <button type="button" id="fs-up" aria-label="Larger text">अ+</button>
+      <button type="button" id="print-ank" class="hide-sm">🖨 छापा / PDF</button>
+    </nav>
   </header>
 
-  <!-- ===== Cover ===== -->
-  <section class="ank-cover">
-    <div class="ank-diyas" aria-hidden="true">🪔 ✨ 🪔 ✨ 🪔</div>
-    <img class="ank-emblem" src="images/logo-emblem.png" alt="" width="216" height="216">
-    <h1 class="ank-masthead"><span class="name-join" lang="hi">लेमिंग्टन</span> मराठी<br>दिवाळी अंक</h1>
-    <p class="ank-year">॥ २०२६ । पहिला अंक ॥</p>
-    <p class="ank-tagline">वारसा मराठी संस्कृतीचा</p>
-  </section>
+  <main class="ank-book">
 
-  <!-- Headings here use the Yatra One font. Under lang="mr" that font breaks every joined
-       letter (वर्षाचा shows as वर्‌षाचा, साहित्य as साहित्‌य), so headings carry lang="hi",
-       which only changes how the letters join. Keep it on any new heading. -->
-  <main class="ank-page">
+    <!-- ===== मुखपृष्ठ | Cover ===== -->
+    <section class="ank-sheet ank-cover" aria-label="मुखपृष्ठ">
+      <p class="ank-presents">लेमिंग्टन मराठी प्रस्तुत</p>
+      <img class="ank-emblem" src="images/logo-emblem.png" alt="Leamington Marathi emblem" width="216" height="216">
+      <h1 class="ank-masthead" lang="hi"><span class="m-small">लेमिंग्टन मराठी</span><span class="m-big">दिवाळी अंक</span></h1>
+      <p class="ank-issue"><span>पहिला अंक</span><span>·</span><span>दिवाळी २०२६</span><span>·</span><span>शके १९४८</span></p>
+      <div class="ank-cover-art">
+        <figure class="ank-cover-photo">
+          <img src="images/diwali-lights.jpg" alt="लेमिंग्टनच्या दिवाळी लाईट्सच्या कार्यक्रमात आपलं ढोल-ताशा पथक" width="533" height="400">
+          <figcaption>मुखपृष्ठ: लेमिंग्टनच्या दिवाळी लाईट्सच्या कार्यक्रमात आपलं ढोल-ताशा पथक</figcaption>
+        </figure>
+        <div class="ank-inside">
+          <h3 lang="hi">या अंकात</h3>
+          <ul>
+            <li><span>✦</span>दिवाळी अंकाची ११७ वर्षांची परंपरा</li>
+            <li><span>✦</span>दिवाळीचे सहा दिवस, यंदाच्या तारखांसह</li>
+            <li><span>✦</span>बेसन लाडू आणि शंकरपाळे</li>
+            <li><span>✦</span>मुलांसाठी कोडी आणि रांगोळी</li>
+            <li><span>✦</span>आपल्या मंडळाचं वर्ष</li>
+          </ul>
+        </div>
+      </div>
+      <p class="ank-price">मूल्य: विनामूल्य  ·  leamingtonmarathi.com</p>
+    </section>
 
-    <!-- ===== Editorial ===== -->
-    <!-- TODO: committee to review/replace this draft editorial before Diwali -->
-    <section class="ank-section" id="sampadakiya">
+    <!-- ===== श्रेय आणि अनुक्रमणिका | Credits and contents ===== -->
+    <section class="ank-sheet" id="anukramanika">
+      <div class="ank-colophon">
+        <div class="ank-credits">
+          <p class="ank-kicker">श्रेय</p>
+          <dl>
+            <dt>प्रकाशक</dt><dd>लेमिंग्टन मराठी, लेमिंग्टन स्पा आणि वॉरिक, यूके. स्वयंसेवकांनी चालवलेलं, ना-नफा मराठी मंडळ.</dd>
+            <dt>संपादन</dt><dd>संपादक मंडळ, लेमिंग्टन मराठी</dd>
+            <dt>मुखपृष्ठ</dt><dd>दिवाळी लाईट्सच्या कार्यक्रमात आपलं ढोल-ताशा पथक</dd>
+            <dt>आवृत्ती</dt><dd>पहिली, दिवाळी २०२६ (ऑनलाईन)</dd>
+            <dt>संपर्क</dt><dd><a href="mailto:leamingtonmarathi@gmail.com">leamingtonmarathi@gmail.com</a></dd>
+          </dl>
+          <p class="ank-note">या अंकातील लेखांमधली मतं त्या त्या लेखकांची आहेत.</p>
+        </div>
+        <div>
+          <p class="ank-kicker">Contents</p>
+          <h2 lang="hi">अनुक्रमणिका</h2>
+          <svg class="ank-divider" aria-hidden="true"><use href="#paithani"/></svg>
+          <ol class="ank-toc">
+            <li><a href="#sampadakiya"><span class="t">संपादकीय<span class="s">Editorial</span></span><span class="dots"></span><span class="n">३</span></a></li>
+            <li><a href="#parampara"><span class="t">दिवाळी अंकाची परंपरा<span class="s">A tradition since 1909</span></span><span class="dots"></span><span class="n">४</span></a></li>
+            <li><a href="#diwas"><span class="t">दिवाळीचे सहा दिवस<span class="s">The days of Diwali, 2026</span></span><span class="dots"></span><span class="n">५</span></a></li>
+            <li><a href="#aadhava"><span class="t">वर्षाचा आढावा<span class="s">Our year in review</span></span><span class="dots"></span><span class="n">६</span></a></li>
+            <li><a href="#pharal"><span class="t">फराळ<span class="s">Two faraal recipes</span></span><span class="dots"></span><span class="n">७</span></a></li>
+            <li><a href="#balvibhag"><span class="t">बालविभाग<span class="s">Kids' corner</span></span><span class="dots"></span><span class="n">८</span></a></li>
+            <li><a href="#katta"><span class="t">वाचकांचा कट्टा<span class="s">Write for us</span></span><span class="dots"></span><span class="n">९</span></a></li>
+            <li><a href="#shubhechha"><span class="t">शुभेच्छा आणि आभार<span class="s">Our supporters</span></span><span class="dots"></span><span class="n">१०</span></a></li>
+          </ol>
+        </div>
+      </div>
+      <p class="ank-folio"><b>२</b> · दिवाळी अंक २०२६</p>
+    </section>
+
+    <!-- ===== संपादकीय ===== -->
+    <!-- TODO committee: read through the editorial and the two feature pages before Diwali. -->
+    <section class="ank-sheet" id="sampadakiya">
+      <p class="ank-kicker">Editorial</p>
       <h2 lang="hi">संपादकीय</h2>
-      <p class="ank-sub">Editorial</p>
-      <hr class="ank-rule">
-      <p lang="mr">
-        नमस्कार मंडळी. हा <span class="name-join" lang="hi">लेमिंग्टन</span> मराठीचा पहिला दिवाळी अंक. दिवाळीत घरी अंक वाचायची
-        सवय आपल्यापैकी बऱ्याच जणांना आहे. तीच सवय इथे इंग्लंडमध्ये आपल्या मुलांपर्यंत
-        पोहोचावी, म्हणून हा छोटासा प्रयत्न.
-      </p>
-      <p lang="mr">
-        यात आपल्याच मंडळींचे लेख, कविता, पाककृती आणि मुलांची चित्रं असतील. तुम्हीही लिहा,
-        मुलांना चित्रं काढायला सांगा आणि आम्हाला पाठवा.
-      </p>
-      <p lang="mr"><strong>संपादक मंडळ, <span class="name-join" lang="hi">लेमिंग्टन</span> मराठी</strong></p>
+      <svg class="ank-divider" aria-hidden="true"><use href="#paithani"/></svg>
+      <div class="ank-cols">
+        <p>नमस्कार मंडळी,</p>
+        <p>दिवाळी म्हटलं की फराळाचा वास, दारातला आकाशकंदील, पहाटेचं अभ्यंगस्नान आणि दिवाळी अंक, हे सगळं एकदम आठवतं. महाराष्ट्रात दिवाळी अंकाशिवाय दिवाळी पूर्ण होत नाही. आपल्यापैकी अनेकांनी लहानपणी घरी आलेला अंक आधी कोण वाचणार, यावरून भावंडांशी भांडण केलं असेल.</p>
+        <p>इंग्लंडमध्ये आल्यावर फराळ आपण घरी करतो, कंदील लावतो, रांगोळीही काढतो. पण दिवाळी अंक मात्र राहून जातो. ती उणीव थोडी तरी भरून काढावी, म्हणून हा प्रयत्न. लेमिंग्टन मराठीचा हा पहिलाच दिवाळी अंक.</p>
+        <p>या अंकात दिवाळी अंकाच्या परंपरेची थोडी माहिती आहे, दिवाळीच्या सहा दिवसांची ओळख आहे, फराळाच्या दोन सोप्या पाककृती आहेत आणि मुलांसाठी कोडी आणि रांगोळी आहे. वर्षभरात आपण एकत्र काय काय केलं, त्याचा आढावाही आहे.</p>
+        <p>पहिला अंक लहान आहे. पुढच्या वर्षी तो मोठा व्हावा, असं वाटतं. त्यासाठी तुमचे लेख, कविता, आठवणी आणि मुलांची चित्रं हवी आहेत. लिहायची सवय नसली तरी चालेल. दोन ओळी पाठवल्या तरी आनंद आहे.</p>
+        <p>सर्वांना दिवाळीच्या आणि नवीन वर्षाच्या मनापासून शुभेच्छा!</p>
+        <p class="ank-sign">संपादक मंडळ<br>लेमिंग्टन मराठी</p>
+      </div>
+      <p class="ank-folio"><b>३</b> · दिवाळी अंक २०२६</p>
     </section>
 
-    <!-- ===== Contents ===== -->
-    <section class="ank-section">
-      <h2 lang="hi">अनुक्रमणिका</h2>
-      <p class="ank-sub">Contents</p>
-      <hr class="ank-rule">
-      <nav class="ank-toc" aria-label="Ank contents">
-        <a href="#aadhava">वर्षाचा आढावा</a>
-        <a href="#lekh">लेख आणि कविता</a>
-        <a href="#pakkruti">पाककृती</a>
-        <a href="#balvibhag">बालविभाग</a>
-        <a href="#aathvani">आठवणी</a>
-        <a href="#sahitya">साहित्य पाठवा</a>
-      </nav>
+    <!-- ===== दिवाळी अंकाची परंपरा ===== -->
+    <section class="ank-sheet" id="parampara">
+      <p class="ank-kicker">विशेष लेख · संपादक मंडळ</p>
+      <h2 lang="hi">दिवाळी अंकाची परंपरा</h2>
+      <p class="ank-standfirst">एका मासिकाच्या खास अंकापासून सुरू झालेली प्रथा आज मराठी घराघरात पोहोचली आहे.</p>
+      <svg class="ank-divider" aria-hidden="true"><use href="#paithani"/></svg>
+      <div class="ank-cols">
+        <p>१९०९ साली काशिनाथ रघुनाथ मित्र यांनी आपल्या 'मनोरंजन' मासिकाचा दिवाळीसाठी एक खास अंक काढला. तोच पहिला मराठी दिवाळी अंक मानला जातो. वाचकांना तो इतका आवडला की दरवर्षी दिवाळीत खास अंक काढायची प्रथाच सुरू झाली.</p>
+        <p>आज महाराष्ट्रात दरवर्षी शेकडो दिवाळी अंक निघतात. कथा, कविता, विनोद, प्रवासवर्णनं, मुलाखती, व्यंगचित्रं, पाककृती, असं सगळं त्यात असतं. मुलांसाठी वेगळे अंक असतात, विनोदी अंक असतात, खाद्यपदार्थांवरचे अंकही असतात. नवीन लेखकांना दिवाळी अंकांनी नेहमीच जागा दिली.</p>
+        <p class="ank-pull">दिवाळीत फराळाचं ताट आणि हातात अंक, ही महाराष्ट्राची खास सवय.</p>
+        <p>परदेशातली मराठी मंडळंही आता आपापले दिवाळी अंक काढतात. घरापासून दूर राहताना आपली भाषा वाचायला मिळावी आणि मुलांना ती ओळखीची व्हावी, हाच त्यामागचा हेतू असतो.</p>
+        <p>पहिल्या दिवाळी अंकानंतर ११७ वर्षांनी, लेमिंग्टनमध्ये, आपणही या परंपरेत एक छोटा अंक जोडतोय.</p>
+      </div>
+      <p class="ank-folio"><b>४</b> · दिवाळी अंक २०२६</p>
     </section>
 
-    <!-- ===== Year in review (real milestones) ===== -->
-    <section class="ank-section" id="aadhava">
+    <!-- ===== दिवाळीचे सहा दिवस ===== -->
+    <section class="ank-sheet" id="diwas">
+      <p class="ank-kicker">दिवाळी २०२६</p>
+      <h2 lang="hi">दिवाळीचे सहा दिवस</h2>
+      <p class="ank-standfirst">यंदा लक्ष्मीपूजन रविवारी आहे, त्यामुळे सगळ्यांना घरी एकत्र पूजा करता येईल.</p>
+      <svg class="ank-divider" aria-hidden="true"><use href="#paithani"/></svg>
+      <div class="ank-days">
+        <article class="ank-day">
+          <h3 lang="hi">वसुबारस</h3>
+          <p class="when">धनत्रयोदशीच्या आदल्या दिवशी</p>
+          <p>दिवाळीची सुरुवात. गाय आणि वासराची पूजा करतात. शेतकऱ्यांच्या घरात हा दिवस खास असतो.</p>
+        </article>
+        <article class="ank-day">
+          <h3 lang="hi">धनत्रयोदशी</h3>
+          <p class="when">शुक्रवार, ६ नोव्हेंबर</p>
+          <p>धनाची पूजा आणि आरोग्याची देवता धन्वंतरीची आठवण. संध्याकाळी दारात पहिली पणती लागते.</p>
+        </article>
+        <article class="ank-day">
+          <h3 lang="hi">नरक चतुर्दशी</h3>
+          <p class="when">शनिवार, ७ नोव्हेंबर</p>
+          <p>पहाटे लवकर उठून उटणं लावून अभ्यंगस्नान. कारीट पायाने फोडायची प्रथा. आणि मग फराळ!</p>
+        </article>
+        <article class="ank-day">
+          <h3 lang="hi">लक्ष्मीपूजन</h3>
+          <p class="when">रविवार, ८ नोव्हेंबर</p>
+          <p>संध्याकाळी लक्ष्मीची पूजा, घरभर पणत्या आणि दारात रांगोळी. दिवाळीची मुख्य रात्र.</p>
+        </article>
+        <article class="ank-day">
+          <h3 lang="hi">दिवाळी पाडवा</h3>
+          <p class="when">सोमवार, ९ नोव्हेंबर</p>
+          <p>बलिप्रतिपदा. पत्नी पतीला ओवाळते. व्यापाऱ्यांचं नवीन वर्ष सुरू होतं आणि नवीन वह्यांची पूजा होते.</p>
+        </article>
+        <article class="ank-day">
+          <h3 lang="hi">भाऊबीज</h3>
+          <p class="when">मंगळवार, १० नोव्हेंबर</p>
+          <p>बहीण भावाला ओवाळते आणि भाऊ ओवाळणी घालतो. दूर असलेल्या भावंडांना आज एक व्हिडिओ कॉल नक्की करा.</p>
+        </article>
+      </div>
+      <p class="ank-small">तारखा यूकेच्या वेळेनुसार. स्थानिक पंचांग एकदा पाहून घ्या. शाळा आणि ऑफिस सुरू असल्याने आपला दिवाळी भेट कार्यक्रम आधीच्या शनिवारी, ३१ ऑक्टोबरला होतो.</p>
+      <p class="ank-folio"><b>५</b> · दिवाळी अंक २०२६</p>
+    </section>
+
+    <!-- ===== वर्षाचा आढावा ===== -->
+    <section class="ank-sheet" id="aadhava">
+      <p class="ank-kicker">Our year in review</p>
       <h2 lang="hi">वर्षाचा आढावा</h2>
-      <p class="ank-sub">Our year in review</p>
-      <hr class="ank-rule">
-      <ul class="ank-review">
-        <li lang="mr"><strong>हळदी-कुंकू:</strong> मकर संक्रांतीला ७० हून जास्त महिला जमल्या.</li>
-        <li lang="mr"><strong>गुढीपाडवा:</strong> २०० हून जास्त मंडळींनी एकत्र नवीन वर्ष साजरं केलं.</li>
-        <li lang="mr"><strong>६ जून, विश्वविक्रम:</strong> लंडनमध्ये १३ ढोल-ताशा पथकांतील २७० वादकांनी एकत्र वादन केलं, आणि त्याची नोंद World Book of Records मध्ये झाली. त्यात आपलं पथकही होतं. 🏆</li>
-        <li lang="mr"><strong>शिवराज्योत्सव:</strong> शिवजयंती आणि महाराष्ट्र दिनानिमित्त २८० हून जास्त मंडळी जमली. नाटुकली, गाणी, नृत्य आणि मुलांची चित्रकला स्पर्धा झाली.</li>
-        <li lang="mr"><strong>गणेशोत्सव:</strong> श्री कृष्ण मंदिराच्या गणेशोत्सवात आपण महाराष्ट्रीय जेवण बनवलं आणि वाढलं. आपल्या पथकाने मिरवणुकीत वादन केलं. ७०० हून जास्त भाविक आले.</li>
-        <li lang="mr"><strong>दिवाळी भेट:</strong> ३१ ऑक्टोबरला सुगम संगीत, फराळ आणि स्टॉल्स. याच दिवशी आपल्या वेबसाईटचं, leamingtonmarathi.com चं, अधिकृत उद्घाटन.</li>
-        <li lang="mr"><strong>४००+ कुटुंबं:</strong> गटात आता ४०० हून जास्त कुटुंबं आहेत. 🚩</li>
-      </ul>
-    </section>
-
-    <!-- ===== Articles & poems (awaiting contributions) ===== -->
-    <section class="ank-section" id="lekh">
-      <h2 lang="hi">लेख आणि कविता</h2>
-      <p class="ank-sub">Articles &amp; poems</p>
-      <hr class="ank-rule">
-      <div class="ank-empty" lang="mr">
-        तुम्ही पाठवलेले लेख आणि कविता लवकरच इथे वाचायला मिळतील. ✍️<br>
-        आठवणी, अनुभव, किस्से, कविता, काहीही पाठवा.
-        <span class="en">The articles and poems you sent will appear here soon. Memories, experiences, funny stories, poetry: anything goes. See "साहित्य पाठवा" below.</span>
-      </div>
-    </section>
-
-    <!-- ===== Recipes (awaiting contributions) ===== -->
-    <section class="ank-section" id="pakkruti">
-      <h2 lang="hi">पाककृती</h2>
-      <p class="ank-sub">Recipes</p>
-      <hr class="ank-rule">
-      <div class="ank-empty" lang="mr">
-        आजीची चकली, तुमच्या हातचे लाडू, की इथल्या दुकानातल्या सामानातून केलेला फराळ? 🍛<br>
-        तुमची पाककृती आम्हाला पाठवा. आलेल्या पाककृती लवकरच इथे दिसतील.
-        <span class="en">Send us your recipe. Grandma's chakli, your own ladoo, or faraal made with whatever the local supermarket had. Recipes we receive will appear here soon.</span>
-      </div>
-    </section>
-
-    <!-- ===== Kids' corner (awaiting contributions) ===== -->
-    <section class="ank-section" id="balvibhag">
-      <h2 lang="hi">बालविभाग</h2>
-      <p class="ank-sub">Kids' corner</p>
-      <hr class="ank-rule">
-      <div class="ank-empty" lang="mr">
-        मुलांची चित्रं, गोष्टी आणि कविता लवकरच इथे दिसतील. 🎨<br>
-        मुलांना कागद आणि रंग द्या, आणि त्यांनी काढलेलं चित्र आम्हाला पाठवा.
-        <span class="en">Children's drawings, stories and rhymes will appear here soon. A photo or scan of their work is fine.</span>
-      </div>
-    </section>
-
-    <!-- ===== Memories ===== -->
-    <section class="ank-section" id="aathvani">
-      <h2 lang="hi">आठवणी</h2>
-      <p class="ank-sub">Memories from the year</p>
-      <hr class="ank-rule">
+      <p class="ank-standfirst">हळदी-कुंकवापासून विश्वविक्रमापर्यंत, आपल्या मंडळाचं २०२६. सोबत आधीच्या वर्षांच्या काही आठवणी.</p>
+      <svg class="ank-divider" aria-hidden="true"><use href="#paithani"/></svg>
       <div class="ank-photos">
-        <img src="images/dhol-pathak.jpg" alt="ढोल-ताशा पथक" loading="lazy" width="1000" height="563">
-        <img src="images/haldi-kunku.jpg" alt="हळदी-कुंकू" loading="lazy" width="900" height="500">
-        <img src="images/diwali-lights.jpg" alt="दिवाळी लाईट्सच्या कार्यक्रमात आपलं पथक" loading="lazy" width="533" height="400">
-        <img src="images/ganeshotsav.jpg" alt="गणेशोत्सव" loading="lazy" width="919" height="500">
+        <figure><img src="images/dhol-pathak.jpg" alt="आपलं ढोल-ताशा पथक" loading="lazy" width="1000" height="563"><figcaption>आपलं ढोल-ताशा पथक</figcaption></figure>
+        <figure><img src="images/haldi-kunku.jpg" alt="हळदी-कुंकू" loading="lazy" width="900" height="500"><figcaption>आठवणी: हळदी-कुंकू २०२४</figcaption></figure>
+        <figure><img src="images/ganeshotsav.jpg" alt="गणेशोत्सव" loading="lazy" width="919" height="500"><figcaption>आठवणी: गणेशोत्सव २०२३</figcaption></figure>
+        <figure><img src="images/diwali-bhet.jpg" alt="दिवाळी भेट" loading="lazy" width="892" height="500"><figcaption>आठवणी: पहिली दिवाळी भेट, २०२३</figcaption></figure>
       </div>
+      <ul class="ank-review">
+        <li><b>हळदी-कुंकू</b><span>मकर संक्रांतीला ७० हून जास्त महिला जमल्या. तिळगूळ, गप्पा आणि साड्यांचे रंग.</span></li>
+        <li><b>गुढीपाडवा</b><span>२०० हून जास्त मंडळींनी एकत्र गुढी उभारून नवीन वर्ष साजरं केलं.</span></li>
+        <li><b>६ जून, विश्वविक्रम</b><span>लंडनमध्ये १३ ढोल-ताशा पथकांतील २७० वादकांनी एकत्र वादन केलं, आणि त्याची नोंद World Book of Records मध्ये झाली. त्यात आपलं पथकही होतं. 🏆</span></li>
+        <li><b>शिवराज्योत्सव</b><span>शिवजयंती आणि महाराष्ट्र दिनानिमित्त २८० हून जास्त मंडळी जमली. नाटुकली, गाणी, नृत्य आणि मुलांची चित्रकला स्पर्धा झाली.</span></li>
+        <li><b>गणेशोत्सव</b><span>श्री कृष्ण मंदिराच्या गणेशोत्सवात आपण महाराष्ट्रीय जेवण बनवलं आणि वाढलं. आपल्या पथकाने मिरवणुकीत वादन केलं. ७०० हून जास्त भाविक आले.</span></li>
+        <li><b>दिवाळी भेट</b><span>३१ ऑक्टोबरला सुगम संगीत, फराळ आणि स्टॉल्स. याच दिवशी आपल्या वेबसाईटचं अधिकृत उद्घाटन.</span></li>
+        <li><b>४००+ कुटुंबं</b><span>मंडळात आता ४०० हून जास्त कुटुंबं आहेत. 🚩</span></li>
+      </ul>
+      <p class="ank-folio"><b>६</b> · दिवाळी अंक २०२६</p>
     </section>
 
-    <!-- ===== Contribute ===== -->
-    <section class="ank-section ank-contribute" id="sahitya">
-      <h2 lang="hi">साहित्य पाठवा</h2>
-      <p lang="mr">लेख, कविता, पाककृती, चित्रं, मराठीत किंवा इंग्रजीत पाठवा.</p>
-      <p>Email your article, poem, recipe or your children's artwork (a photo or scan is fine) with your name.</p>
-      <!-- The first deadline (15 Oct 2026) has passed; late entries go into this Ank if there is room, otherwise the next one. -->
-      <p class="ank-deadline" lang="mr">पहिल्या अंकाची शेवटची तारीख १५ ऑक्टोबर होती. उशीर झाला तरी पाठवा: जागा असेल तर याच अंकात, नाहीतर पुढच्या अंकात घेऊ.</p>
-      <p>The first deadline was 15 October. Late entries are still welcome: in this Ank if there is room, otherwise the next one.</p>
-      <a class="btn btn-light" href="mailto:leamingtonmarathi@gmail.com?subject=Diwali%20Ank%202026%20contribution">
-        ✉️ leamingtonmarathi@gmail.com
-      </a>
+    <!-- ===== फराळ ===== -->
+    <section class="ank-sheet" id="pharal">
+      <p class="ank-kicker">पाककृती</p>
+      <h2 lang="hi">फराळ</h2>
+      <p class="ank-standfirst">दिवाळीचा फराळ घरी करायचा तर सुरुवात या दोन सोप्या पदार्थांनी करा.</p>
+      <svg class="ank-divider" aria-hidden="true"><use href="#paithani"/></svg>
+      <div class="ank-recipes">
+        <article class="ank-recipe">
+          <h3 lang="hi">बेसन लाडू</h3>
+          <p class="yield">साधारण १५ लाडू · ४० मिनिटं</p>
+          <h4>साहित्य</h4>
+          <ul>
+            <li>२ कप बेसन (जाडसर असेल तर उत्तम)</li>
+            <li>पाऊण कप साजूक तूप</li>
+            <li>१ कप पिठीसाखर</li>
+            <li>अर्धा चमचा वेलची पूड</li>
+            <li>थोडे काजू-बदामाचे काप</li>
+          </ul>
+          <h4>कृती</h4>
+          <ol>
+            <li>जाड बुडाच्या कढईत तूप गरम करा आणि बेसन घाला.</li>
+            <li>मंद आचेवर सतत हलवत २० ते २५ मिनिटं भाजा. खमंग वास आला आणि रंग सोनेरी झाला की गॅस बंद करा.</li>
+            <li>मिश्रण कोमट होऊ द्या. मग पिठीसाखर, वेलची पूड आणि काजू-बदाम घालून मिसळा.</li>
+            <li>हाताने दाबून लाडू वळा.</li>
+          </ol>
+          <p class="ank-tip"><b>इथे करताना:</b> भारतीय दुकानात "ladoo besan" किंवा coarse gram flour मिळतं. पिठीसाखरेऐवजी icing sugar चालते.</p>
+        </article>
+        <article class="ank-recipe">
+          <h3 lang="hi">शंकरपाळे</h3>
+          <p class="yield">एक मोठा डबा · १ तास</p>
+          <h4>साहित्य</h4>
+          <ul>
+            <li>अर्धा कप दूध</li>
+            <li>अर्धा कप साखर</li>
+            <li>अर्धा कप तूप</li>
+            <li>साधारण अडीच कप मैदा</li>
+            <li>चिमूटभर मीठ, तळायला तेल</li>
+          </ul>
+          <h4>कृती</h4>
+          <ol>
+            <li>दूध, साखर आणि तूप एकत्र गरम करून साखर विरघळू द्या.</li>
+            <li>कोमट झाल्यावर मीठ आणि मावेल तेवढा मैदा घालून घट्ट पीठ मळा. अर्धा तास झाकून ठेवा.</li>
+            <li>जाडसर पोळी लाटा आणि कातण्याने शंकरपाळ्याच्या आकारात कापा.</li>
+            <li>मंद आचेवर हलके गुलाबी होईपर्यंत तळा. गार झाल्यावर डब्यात भरा.</li>
+          </ol>
+          <p class="ank-tip"><b>इथे करताना:</b> मैदा म्हणजे इथलं plain flour. कातणं नसेल तर पिझ्झा कटर छान काम करतो.</p>
+        </article>
+      </div>
+      <p class="ank-folio"><b>७</b> · दिवाळी अंक २०२६</p>
+    </section>
+
+    <!-- ===== बालविभाग ===== -->
+    <section class="ank-sheet" id="balvibhag">
+      <p class="ank-kicker">Kids' corner</p>
+      <h2 lang="hi">बालविभाग</h2>
+      <p class="ank-standfirst">आई-बाबांबरोबर वाचा, कोडी सोडवा आणि रांगोळी रंगवा.</p>
+      <svg class="ank-divider" aria-hidden="true"><use href="#paithani"/></svg>
+      <div class="ank-kids">
+        <div>
+          <h3 lang="hi">ओळखा पाहू!</h3>
+          <ol class="ank-riddles">
+            <li>मी मातीची, इवलीशी. तेल घातलं, वात लावली की उजेड देते. मी कोण?</li>
+            <li>रंगीत कागदाचा मी, दारात उंच टांगतात. रात्री आतून दिवा लागला की चमकतो. मी कोण?</li>
+            <li>गोल गोल, काटेरी, तळल्यावर कुरकुरीत. फराळाच्या ताटात मी हमखास असते. मी कोण?</li>
+            <li>ठिपके जोडून दारात काढतात, रंग भरले की सुंदर दिसते. मी कोण?</li>
+          </ol>
+          <h3 lang="hi" style="margin-top:22px">जोड्या लावा</h3>
+          <table class="ank-match">
+            <tr><td>१. नरक चतुर्दशी</td><td>अ. बहीण भावाला ओवाळते</td></tr>
+            <tr><td>२. लक्ष्मीपूजन</td><td>ब. पहाटे अभ्यंगस्नान</td></tr>
+            <tr><td>३. भाऊबीज</td><td>क. गाय-वासराची पूजा</td></tr>
+            <tr><td>४. वसुबारस</td><td>ड. घरभर पणत्या आणि पूजा</td></tr>
+          </table>
+          <details class="ank-answers">
+            <summary>उत्तरं पाहा</summary>
+            <p>कोडी: १. पणती, २. आकाशकंदील, ३. चकली, ४. रांगोळी.<br>जोड्या: १-ब, २-ड, ३-अ, ४-क.</p>
+          </details>
+        </div>
+        <div class="ank-rangoli-box">
+          <h3 lang="hi">रांगोळी रंगवा</h3>
+          <p>हे पान छापा आणि आवडते रंग भरा. रंगवलेल्या रांगोळीचा फोटो आम्हाला पाठवा!</p>
+          <svg class="ank-rangoli" viewBox="0 0 400 400" role="img" aria-label="रंगवण्यासाठी रांगोळी"><circle cx="370.0" cy="200.0" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="357.1" cy="265.1" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="320.2" cy="320.2" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="265.1" cy="357.1" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="200.0" cy="370.0" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="134.9" cy="357.1" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="79.8" cy="320.2" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="42.9" cy="265.1" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="30.0" cy="200.0" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="42.9" cy="134.9" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="79.8" cy="79.8" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="134.9" cy="42.9" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="200.0" cy="30.0" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="265.1" cy="42.9" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="320.2" cy="79.8" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="357.1" cy="134.9" r="22" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="200" cy="200" r="160" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 170 150, 175 85, 200 55 C 225 85, 230 150, 200 200 Z" transform="rotate(0.0 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 170 150, 175 85, 200 55 C 225 85, 230 150, 200 200 Z" transform="rotate(45.0 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 170 150, 175 85, 200 55 C 225 85, 230 150, 200 200 Z" transform="rotate(90.0 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 170 150, 175 85, 200 55 C 225 85, 230 150, 200 200 Z" transform="rotate(135.0 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 170 150, 175 85, 200 55 C 225 85, 230 150, 200 200 Z" transform="rotate(180.0 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 170 150, 175 85, 200 55 C 225 85, 230 150, 200 200 Z" transform="rotate(225.0 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 170 150, 175 85, 200 55 C 225 85, 230 150, 200 200 Z" transform="rotate(270.0 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 170 150, 175 85, 200 55 C 225 85, 230 150, 200 200 Z" transform="rotate(315.0 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 185 170, 188 130, 200 112 C 212 130, 215 170, 200 200 Z" transform="rotate(22.5 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 185 170, 188 130, 200 112 C 212 130, 215 170, 200 200 Z" transform="rotate(67.5 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 185 170, 188 130, 200 112 C 212 130, 215 170, 200 200 Z" transform="rotate(112.5 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 185 170, 188 130, 200 112 C 212 130, 215 170, 200 200 Z" transform="rotate(157.5 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 185 170, 188 130, 200 112 C 212 130, 215 170, 200 200 Z" transform="rotate(202.5 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 185 170, 188 130, 200 112 C 212 130, 215 170, 200 200 Z" transform="rotate(247.5 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 185 170, 188 130, 200 112 C 212 130, 215 170, 200 200 Z" transform="rotate(292.5 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><path d="M200 200 C 185 170, 188 130, 200 112 C 212 130, 215 170, 200 200 Z" transform="rotate(337.5 200 200)" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="200" cy="200" r="38" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="200" cy="200" r="20" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="338.0" cy="200.0" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="333.3" cy="235.7" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="319.5" cy="269.0" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="297.6" cy="297.6" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="269.0" cy="319.5" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="235.7" cy="333.3" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="200.0" cy="338.0" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="164.3" cy="333.3" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="131.0" cy="319.5" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="102.4" cy="297.6" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="80.5" cy="269.0" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="66.7" cy="235.7" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="62.0" cy="200.0" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="66.7" cy="164.3" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="80.5" cy="131.0" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="102.4" cy="102.4" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="131.0" cy="80.5" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="164.3" cy="66.7" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="200.0" cy="62.0" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="235.7" cy="66.7" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="269.0" cy="80.5" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="297.6" cy="102.4" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="319.5" cy="131.0" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/><circle cx="333.3" cy="164.3" r="4" stroke="#4a130b" stroke-width="2.2" fill="#ffffff"/></svg>
+          <button type="button" class="ank-btn ank-no-print" id="print-rangoli">🖨 रांगोळीचं पान छापा</button>
+        </div>
+      </div>
+      <p class="ank-folio"><b>८</b> · दिवाळी अंक २०२६</p>
+    </section>
+
+    <!-- ===== वाचकांचा कट्टा =====
+         To publish a contribution, add it on this page (or on a new sheet before the
+         supporters page) like this, and add a line to the contents list:
+         <article class="ank-article"><h3 lang="hi">लेखाचं शीर्षक</h3><p class="ank-kicker">लेखकाचं नाव</p><p>…</p></article> -->
+    <section class="ank-sheet" id="katta">
+      <p class="ank-kicker">Write for us</p>
+      <h2 lang="hi">वाचकांचा कट्टा</h2>
+      <p class="ank-standfirst">हा अंक तुमचा आहे. पुढच्या पानांवर तुमचं लिखाण हवं आहे.</p>
+      <svg class="ank-divider" aria-hidden="true"><use href="#paithani"/></svg>
+      <div class="ank-asks">
+        <div class="ank-ask"><b>लेख आणि अनुभव</b>इंग्लंडमधला पहिला हिवाळा, पहिली दिवाळी, गावाकडच्या आठवणी.</div>
+        <div class="ank-ask"><b>कविता</b>मराठीत किंवा इंग्रजीत. चार ओळींची असली तरी चालेल.</div>
+        <div class="ank-ask"><b>पाककृती</b>आजीची चकली, तुमच्या हातचे लाडू, इथल्या सामानातून केलेला फराळ.</div>
+        <div class="ank-ask"><b>मुलांची चित्रं आणि गोष्टी</b>कागदावरच्या चित्राचा फोटो किंवा स्कॅन पुरे.</div>
+      </div>
+      <p class="ank-center">पहिल्या अंकाची शेवटची तारीख १५ ऑक्टोबर होती. उशीर झाला तरी पाठवा: जागा असेल तर या ऑनलाईन अंकात जोडू, नाहीतर पुढच्या अंकात घेऊ.</p>
+      <p class="ank-center ank-no-print"><a class="ank-btn" href="mailto:leamingtonmarathi@gmail.com?subject=Diwali%20Ank%20contribution">✉️ leamingtonmarathi@gmail.com</a></p>
+      <p class="ank-folio"><b>९</b> · दिवाळी अंक २०२६</p>
+    </section>
+
+    <!-- ===== शुभेच्छा आणि आभार ===== -->
+    <section class="ank-sheet" id="shubhechha">
+      <p class="ank-kicker">Our supporters</p>
+      <h2 lang="hi">शुभेच्छा आणि आभार</h2>
+      <p class="ank-standfirst">यांच्या साथीमुळे आपले कार्यक्रम होऊ शकतात. सगळ्यांचे मनापासून आभार.</p>
+      <svg class="ank-divider" aria-hidden="true"><use href="#paithani"/></svg>
+      <div class="ank-logos">
+        <figure><img src="images/sponsors/freedom-circle.png" alt="Freedom Circle" loading="lazy" width="440" height="162"><figcaption>दिवाळी भेट २०२६ चे प्रायोजक</figcaption></figure>
+        <figure class="dark"><img src="images/sponsors/falcon-hatton.jpg" alt="The Falcon at Hatton" loading="lazy" width="440" height="215"><figcaption>The Falcon at Hatton</figcaption></figure>
+        <figure><img src="images/sponsors/sbi-uk.jpg" alt="SBI UK" loading="lazy" width="440" height="87"><figcaption>SBI UK</figcaption></figure>
+      </div>
+      <p class="ank-kicker">दिवाळी भेट २०२६ चे स्टॉल्स</p>
+      <ul class="ank-stalls">
+        <li><b>Namaste Annapurna</b>: फराळ आणि जेवण</li>
+        <li><b>MV's Artistry</b>: पूजेची ताटं आणि सजावट</li>
+        <li><b>Mehndi by Meena</b>: मेहंदी</li>
+        <li><b>Ghar &amp; Grace</b>: हाताने बनवलेली सजावट</li>
+        <li><b>MH-12 Foods</b>: दिवाळीचे खास पदार्थ</li>
+        <li><b>Vamica</b>: महिलांचे कपडे</li>
+        <li><b>J's Natural</b>: केस आणि त्वचेची निगा</li>
+      </ul>
+      <p class="ank-folio"><b>१०</b> · दिवाळी अंक २०२६</p>
+    </section>
+
+    <!-- ===== मलपृष्ठ | Back cover ===== -->
+    <section class="ank-sheet ank-back" aria-label="मलपृष्ठ">
+      <p class="diyas" aria-hidden="true">🪔 ✨ 🪔 ✨ 🪔</p>
+      <p class="big" lang="hi">शुभ दीपावली</p>
+      <p>दिवाळीच्या आणि नवीन वर्षाच्या सर्वांना हार्दिक शुभेच्छा!</p>
+      <div class="ank-qrs">
+        <a href="index.html"><img src="images/qr/website.png" alt="QR code for the website" width="290" height="290">वेबसाईट</a>
+        <a href="https://www.instagram.com/leamington_marathi" target="_blank" rel="noopener"><img src="images/qr/instagram.png" alt="QR code for Instagram" width="290" height="290">Instagram</a>
+        <a href="https://www.facebook.com/share/19DLg1N8L6/" target="_blank" rel="noopener"><img src="images/qr/facebook.png" alt="QR code for Facebook" width="290" height="290">Facebook</a>
+        <a href="https://chat.whatsapp.com/IrafIIW9VRd6Iwp1rcu6c1" target="_blank" rel="noopener"><img src="images/qr/whatsapp.png" alt="QR code for the WhatsApp community" width="290" height="290">WhatsApp</a>
+        <a href="https://www.youtube.com/@leamingtonmarathi" target="_blank" rel="noopener"><img src="images/qr/youtube.png" alt="QR code for YouTube" width="290" height="290">YouTube</a>
+      </div>
+      <p>पुढच्या दिवाळीत पुन्हा भेटू!</p>
+      <p class="ank-folio"><span lang="hi">लेमिंग्टन</span> मराठी · वारसा मराठी संस्कृतीचा · leamingtonmarathi.com</p>
     </section>
 
   </main>
 
-  <footer class="ank-footer">
-    <p lang="mr">दिवाळी अंक २०२६ । <a href="index.html"><span class="name-join" lang="hi">लेमिंग्टन</span> मराठी</a> । वारसा मराठी संस्कृतीचा 🪔</p>
-  </footer>
-
+  <script>
+    // Reading progress, text size (remembered on this device) and print buttons
+    (() => {
+      const bar = document.getElementById('ank-progress');
+      const onScroll = () => { const h = document.documentElement; bar.style.width = (h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) * 100 + '%'; };
+      addEventListener('scroll', onScroll, { passive: true }); onScroll();
+      const sizes = ['0.96rem', '1.06rem', '1.18rem', '1.3rem'];
+      let i = 1; try { const s = localStorage.getItem('ankFs'); if (s !== null) i = +s; } catch (e) {}
+      const apply = () => { document.documentElement.style.setProperty('--ank-fs', sizes[i]); try { localStorage.setItem('ankFs', i); } catch (e) {} };
+      apply();
+      document.getElementById('fs-up').addEventListener('click', () => { i = Math.min(sizes.length - 1, i + 1); apply(); });
+      document.getElementById('fs-down').addEventListener('click', () => { i = Math.max(0, i - 1); apply(); });
+      document.getElementById('print-ank').addEventListener('click', () => print());
+      document.getElementById('print-rangoli').addEventListener('click', () => {
+        document.body.classList.add('printing-rangoli'); print();
+        setTimeout(() => document.body.classList.remove('printing-rangoli'), 500);
+      });
+    })();
+  </script>
 </body>
 </html>
