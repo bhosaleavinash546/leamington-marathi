@@ -22,6 +22,9 @@ CASTING COST INPUT RULES:
   ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]
   manning=1  [one operator to a gravity cell — deterministic, use verbatim]
   leakTestSec=0  [not pressure-tight — no leak test — deterministic, use verbatim]
+  finish question: UNDECIDED — needs "Is the part coated or surface-treated?" (None — bare part | E-coat / KTL (zirconium pre-treat) | Powder coat (iron phosphate pre-treat) | Vibratory mass finish (deburr))
+  finishRoute=  [not asked yet — costed bare (answer "Is the part coated?" to price a finish) — deterministic, use verbatim]
+  finishAreaM2=0.122  [measured surface 1220.0 cm² = 0.1220 m² — the whole wetted surface; a masked or machined-after-coating face is in it — deterministic, use verbatim]
 
 ### context: degraded
 CASTING COST INPUT RULES:
@@ -45,3 +48,6 @@ CASTING COST INPUT RULES:
   ndtCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   manning: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   leakTestSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  finish question=none  [pending the material answer — deterministic, use verbatim]
+  finishRoute=  [not asked yet — costed bare (answer "Is the part coated?" to price a finish) — deterministic, use verbatim]
+  finishAreaM2=0.122  [measured surface 1220.0 cm² = 0.1220 m² — the whole wetted surface; a masked or machined-after-coating face is in it — deterministic, use verbatim]

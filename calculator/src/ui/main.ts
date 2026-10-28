@@ -12,7 +12,7 @@ import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fetchMeshFrame, stlFromFrame } from './cad-mesh-cache.js';
 import { nextCostStep, costStepMessage } from './cad-flow.js';
-import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, notIncludedFor, cadStamp, type BasisRow, type CadStep } from './cad-workspace.js';
+import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, notIncludedFor, cadStamp, routeCompareHtml, type BasisRow, type CadStep, type RouteCompareRow } from './cad-workspace.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
@@ -66,6 +66,9 @@ import { computePaintingDrivers, analysePainting } from '../engine/modules/paint
 import {
   finishingForCommodity, surfaceRouteFromCallout, type CommodityFinishingInput,
 } from '../engine/modules/surface-finishing.js';
+import {
+  SURFACE_FINISH_ROUTES, SURFACE_ROUTE_LABELS, FINISH_PREFIX_BY_COMMODITY, finishSpec,
+} from '../engine/surface-finish-routes.js';
 import { boundDrawingCoating } from '../engine/coating-drawing-read.js';
 import { startLongTask, fmtAllowance } from './long-task-progress.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
@@ -407,6 +410,10 @@ interface CADRuleField {
   source: string; confidence: number; ruleId: string;
 }
 let _cadRuleFields: Record<string, CADRuleField> = {};
+/** The answers the current analysis was run with — Get cost re-runs the rules when the panel's differ (cad-flow.ts). */
+let _cadAnswersApplied: Record<string, unknown> = {};
+/** True while captureCountryFills has another country active — no draft is saved then. */
+let _capturingCountryFills = false;
 /** The part's rules-only analysis in each comparison country (CAD response). */
 let _cadAnalysisByRegion: Record<string, { analysis: CADAnalysisResult; ruleFields: Record<string, CADRuleField> }> = {};
 /** What CAD apply wrote into the form in each comparison country, and in the costed country. */
@@ -1148,7 +1155,7 @@ function setPanelTitle(commodity: string): void {
   if (nameEl) nameEl.textContent = meta.name;
 }
 
-function showWorkflowPanel(commodity: string): void {
+function showWorkflowPanel(commodity: string, opts: { restoreDraft?: boolean } = {}): void {
   const costingEl = document.getElementById('costing-view');
   const backdrop = document.getElementById('picker-backdrop');
   const headerEl = document.getElementById('wf-panel-header');
@@ -1168,7 +1175,9 @@ function showWorkflowPanel(commodity: string): void {
   if (headerEl) headerEl.style.display = '';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
   switchCommodity(commodity as CommodityType);
-  setTimeout(() => { restoreDraft(); initBenchmarkHints(); }, 250);
+  // Back to CAD to COST from its own costing, the screen is the costing's state, not a draft: restoring one there
+  // re-applied the draft's country and re-costed the old route (CAD to COST phase 2 live run).
+  setTimeout(() => { if (opts.restoreDraft !== false) restoreDraft(); initBenchmarkHints(); }, 250);
   setTimeout(() => maybeShowWizard(commodity), 400);
 }
 
@@ -3621,7 +3630,8 @@ function renderSheetMetalFabForm(): string {
     <div class="field-row">
       <div class="field-group"><label>Tooling Cost (£) <span title="Press brake tooling + nesting/CNC programming NRE. Laser: £500–3k. Punch: £2k–10k. Stamping die: £15k–150k.">ℹ</span></label><input type="number" id="smf-tooling" step="500" min="0" value="2000"/></div>
       <div class="field-group"><label>Amort. Volume <span title="Annual volume over which to amortize tooling. Higher volume = lower tooling cost per part.">ℹ</span></label><input type="number" id="smf-amort" step="1000" min="1" value="5000"/></div>
-    </div>`;
+    </div>
+    ${renderSurfaceFinishingSection('smf', 'sheet')}`;
 }
 
 function wireSheetMetalFabAdvisor(): void {
@@ -5519,7 +5529,8 @@ function renderCastAndMachineForm(): string {
       <div class="field-group"><label title="Gate / riser cut-off and grinding at the bench, minutes per casting, costed as foundry LABOUR (not material). Engine defaults: light 2 min (trimmed HPDC / gravity), medium 6, heavy 15 (steel risers, large castings).">Fettling (bench min/part) ⓘ</label><input type="number" id="cam-fettle-min" step="0.5" min="0" value="0" title="Bench minutes per casting at the foundry labour rate. 0 = none."/></div>
       <div class="field-group"><label title="Radiography for safety-critical castings. Engine defaults: 2D X-ray £5/part, industrial CT £32/part.">NDT (£/part) ⓘ</label><input type="number" id="cam-ndt" step="0.5" min="0" value="0" title="X-ray / CT per casting. 0 = none."/></div>
       <div class="field-group"><label title="100% air-decay leak test for pressure-tight castings, seconds a part, on the pressure &amp; leak test rig. Engine default 45 s when pressure-tight.">Leak Test (s/part) ⓘ</label><input type="number" id="cam-leak-sec" step="5" min="0" value="0"/></div>
-    </div>`;
+    </div>
+    ${renderSurfaceFinishingSection('cam', 'casting')}`;
 }
 
 function updateCAMCastSubtype(): void {
@@ -5981,7 +5992,7 @@ function wireCADEvents(): void {
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null; cadDfmJobId = null; cadGeometricDFM = null;
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-    _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
+    _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadAnswersApplied = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
     unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
@@ -6309,7 +6320,7 @@ function setCADFile(f: File): void {
   setCadQualityBadge(null, null);
   // A new part starts with a clean slate — clear any pins from the previous file.
   _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-  _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
+  _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadAnswersApplied = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
   const cadFileInfo = document.getElementById('cad-file-info');
   if (cadFileInfo) cadFileInfo.style.display = 'flex';
@@ -6443,7 +6454,8 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     formData.append('mode', mode);
     // Answers already given to this part's questions (reset on a new file or
     // Clear). The server's /analyze applies them just as /reanalyze does.
-    if (Object.keys(_cadDecisionAnswers).length) formData.append('decisionAnswers', JSON.stringify(_cadDecisionAnswers));
+    const sentAnswers = { ..._cadDecisionAnswers };
+    if (Object.keys(sentAnswers).length) formData.append('decisionAnswers', JSON.stringify(sentAnswers));
 
     const headers: Record<string, string> = { ...authHeader() };
     if (apiKey) headers['x-api-key'] = apiKey;
@@ -6489,6 +6501,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
 
     updateProgress(100, data.geometrySource === 'occt' ? 'OCCT complete — precise geometry extracted' : 'Complete (text-parsed)');
     cadAnalysisResult = data.analysis!;
+    _cadAnswersApplied = sentAnswers;
     cadOCCTGeometry = data.occtGeometry ?? null;
     cadGeometryHash = (data as { geometryHash?: string | null }).geometryHash ?? null;
     _cadVersions = (data as { versions?: { rules: number; kernel: string } }).versions ?? _cadVersions;
@@ -6920,12 +6933,12 @@ async function cadGetCost(calculate = true): Promise<void> {
       return;
     }
     readCADDecisionPanel();
-    let step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers });
+    let step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers, appliedAnswers: _cadAnswersApplied });
     if (step.kind === 'reanalyse') {
       setCADFlowNotice(costStepMessage(step), 'busy');
       const before = new Set(_cadDecisions.map(d => d.id));
       if (!(await reanalyzeCAD())) { setCADFlowNotice('Applying your answers failed — see the message on the panel.', 'error'); return; }
-      step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers });
+      step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers, appliedAnswers: _cadAnswersApplied });
       // New questions the answers opened are shown, not accepted on the engineer's behalf.
       const opened = _cadDecisions.filter(d => d.severity === 'blocking' && !before.has(d.id));
       if (step.kind !== 'apply' && opened.length) {
@@ -6978,8 +6991,8 @@ function shownBlockingQuestionIds(): Set<string> {
 /** Bring the questions into view with one line saying why nothing is costed yet. */
 function showCADQuestions(message: string): void {
   if (activeCommodity !== 'cad_analysis') {
-    // A commodity form is showing — the questions live on the CAD screen.
-    showWorkflowPanel('cad_analysis');
+    // A commodity form is showing — the questions live on the CAD screen (its state, not a saved draft).
+    showWorkflowPanel('cad_analysis', { restoreDraft: false });
   }
   setCADFlowNotice(message, 'ask');
   const panel = document.getElementById('cad-decisions-panel');
@@ -7460,12 +7473,23 @@ async function applyAlternativeProcess(ct: CommodityType, autoCalculate: boolean
   if (!sel) return;
   if (!Array.from(sel.options).some(o => o.value === ct)) sel.add(new Option(COMMODITY_LABELS[ct] ?? ct, ct));
   sel.value = ct;
+  // The chosen route is the process answer from now on. The drop-down is sent once; the next automatic re-run (an
+  // answer to the new route's own questions) sent the old answer instead and the part went back to its first route —
+  // "Cost this route: casting" re-costed the hub flange as a forging (CAD to COST phase 2 live run).
+  _cadDecisionAnswers['commodity.route'] = ct;
   await reanalyzeCAD();
   if (cadAnalysisResult?.costInputSuggestions.recommendedCommodity !== ct) {
     showToast(`Could not re-analyse the part as ${COMMODITY_LABELS[ct] ?? ct} — nothing was applied.`, 'warning');
     return;
   }
-  // Open questions for the new route are on the panel now; applyCADToForm keeps Calculate blocked until they are answered.
+  // The new route's own questions are shown and stopped on — never accepted on the engineer's behalf (the hub flange's
+  // "leak-tight?" was taken at its suggested "No" the moment it appeared). Get cost then goes on as usual.
+  const open = openCADDecisions();
+  if (open.length) {
+    // Shown here with their own message, so the next Get cost accepts what is on screen (no second stop).
+    showCADQuestions(`Costing as ${COMMODITY_LABELS[ct] ?? ct}: ${open.length === 1 ? 'one question' : `${open.length} questions`} for this route — check the suggested answer and press Get cost.`);
+    return;
+  }
   applyCADToForm(ct, autoCalculate);
 }
 
@@ -7545,7 +7569,8 @@ async function reanalyzeCADOnce(): Promise<boolean> {
     body['deepAnalysis'] = (document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
     // The answers the engineer just gave. The server re-runs the rules with them
     // and returns a resolved analysis — the same round-trip the pins use.
-    body['decisionAnswers'] = _cadDecisionAnswers;
+    const sentAnswers = { ..._cadDecisionAnswers };
+    body['decisionAnswers'] = sentAnswers;
     body['mode'] = selectedAnalysisMode();
 
     const res = await fetch('/api/cad/reanalyze', {
@@ -7566,6 +7591,7 @@ async function reanalyzeCADOnce(): Promise<boolean> {
     if (!res.ok || !data.success) throw new Error(data.error ?? `Server error ${res.status}`);
 
     cadAnalysisResult = data.analysis!;
+    _cadAnswersApplied = sentAnswers;
     // Locked grade/process win over anything the AI re-derived — the human decides.
     _applyCadPins(cadAnalysisResult);
     // What the rules could still not settle after the answers were applied.
@@ -10756,10 +10782,10 @@ function populateMachinedFeatures(prefix: string): void {
       Switch <strong>Stock condition</strong> to “machined from solid” and every feature is auto-ticked (all cut from the billet).
     </div>
     <table class="data-table" style="font-size:0.72rem;font-variant-numeric:tabular-nums;width:100%">
-      <thead><tr><th></th><th>Feature</th><th>Ø×depth / area</th><th>Qty</th><th>→ Operation</th></tr></thead>
+      <thead><tr><th scope="col"><span class="sr-only">Machined</span></th><th>Feature</th><th>Ø×depth / area</th><th>Qty</th><th>→ Operation</th></tr></thead>
       <tbody>
         ${rows.map((r, i) => `<tr data-face-ids="${(r.faceIds ?? []).join(',')}" title="${r.faceIds?.length ? 'Click to show these faces in the 3D viewer' : ''}" style="${r.faceIds?.length ? 'cursor:pointer' : ''}">
-          <td><input type="checkbox" class="${prefix}-mf-chk" data-idx="${i}" ${defaultInclude(r as FeatureRow, 'near_net') ? 'checked' : ''}/></td>
+          <td><input type="checkbox" class="${prefix}-mf-chk" data-idx="${i}" aria-label="Machine feature ${i + 1} (${escHtml(String(r.kind))})" ${defaultInclude(r as FeatureRow, 'near_net') ? 'checked' : ''}/></td>
           <td>${icon(r.kind)}</td>
           <td>${dims(r as FeatureRow)}</td>
           <td>${r.count}</td>
@@ -12046,6 +12072,7 @@ async function captureCountryFills(targetCommodity: CommodityType, cadAnnVol: st
   if (!regions.length || !cadAnalysisResult) return out;
   const keep = { analysis: cadAnalysisResult, ruleFields: _cadRuleFields, lib: library, region: _mfgRegion };
   const settle = () => new Promise<void>(res => setTimeout(res, 20));   // the form's own setTimeout(0) set-up
+  _capturingCountryFills = true;
   try {
     for (const X of regions) {
       const there = _cadAnalysisByRegion[X];
@@ -12062,6 +12089,7 @@ async function captureCountryFills(targetCommodity: CommodityType, cadAnnVol: st
       } catch (e) { console.warn(`[comparison] ${X}: CAD fill failed — ${(e as Error).message}`); }
     }
   } finally {
+    _capturingCountryFills = false;
     cadAnalysisResult = keep.analysis; _cadRuleFields = keep.ruleFields;
     library = keep.lib; setActiveRates(keep.lib); _mfgRegion = keep.region;
     switchCommodity(targetCommodity);
@@ -13623,9 +13651,7 @@ function paintMachineMismatch(route: string, machineId: string): string | null {
 // ─── Surface finishing, shared by sheet metal / casting / forging ────────────
 
 /** Which prefix each commodity's surface-treatment block uses. */
-const SURFACE_PREFIX_BY_COMMODITY: Partial<Record<CommodityType, string>> = {
-  sheet_metal: 'sm', casting: 'cast', forging: 'forge',
-};
+const SURFACE_PREFIX_BY_COMMODITY: Partial<Record<CommodityType, string>> = FINISH_PREFIX_BY_COMMODITY;
 
 /**
  * Push the MEASURED coated area and the drawing's finish callout into the form.
@@ -13656,6 +13682,19 @@ function applyCADSurfaceFinishing(
       `Surface treatment: coated area ${(cm2 / 10_000).toFixed(4)} m² MEASURED from the CAD `
       + 'geometry and used in place of the mass-and-wall-thickness bridge. Confirm it is the '
       + 'COATED area — a masked or machined-after-coating face is measured here but not coated.');
+  }
+
+  // ── The finish question's answer (CAD to COST D4) — the rules' route and the load they sized from the measured
+  //    part. Same values headless costs (toCostParams reads costInputSuggestions.surfaceFinish).
+  const sf = r.costInputSuggestions?.surfaceFinish as { route?: string; partsPerRack?: number; racksPerHour?: number } | undefined;
+  const finishAnswered = _cadDecisionAnswers['service.finish'] !== undefined;
+  if (finishAnswered) {
+    const routeEl = document.getElementById(`${prefix}-sf-route`) as HTMLSelectElement | null;
+    const route = sf?.route ?? '';
+    if (routeEl && Array.from(routeEl.options).some(o => o.value === route)) routeEl.value = route;
+    if (sf?.partsPerRack) setNumericField(`${prefix}-sf-rack`, sf.partsPerRack, 0);
+    if (sf?.racksPerHour) setNumericField(`${prefix}-sf-racks`, sf.racksPerHour, 0);
+    return;   // the engineer's answer stands over a drawing read
   }
 
   // ── The drawing's finish callout, mapped deterministically ──────────────
@@ -13709,45 +13748,8 @@ function applyCADSurfaceFinishing(
   }
 }
 
-/**
- * Finishing routes offered inside a commodity form.
- *
- * These three commodities carried NO surface treatment at all, so a coated
- * bracket was costed as a bare bracket and the coating had to be run as a
- * separate painting study and added by hand — which in practice meant it was
- * usually left out entirely.
- */
-const SURFACE_FINISH_ROUTES: Record<string, string[] | undefined> = {
-  '': undefined,
-  powder_coat: ['degrease', 'rinse', 'iron_phosphate', 'rinse', 'di_rinse', 'dry_off', 'powder_coat', 'cure_oven'],
-  powder_coat_zn: ['degrease', 'rinse', 'phosphate', 'rinse', 'di_rinse', 'dry_off', 'powder_coat', 'cure_oven'],
-  e_coat: ['degrease', 'rinse', 'zirconium', 'rinse', 'di_rinse', 'dry_off', 'e_coat', 'cure_oven'],
-  zinc_plate: ['degrease', 'rinse', 'pickle', 'rinse', 'zinc_plate', 'rinse', 'passivate', 'dry_off'],
-  zinc_nickel: ['degrease', 'rinse', 'pickle', 'rinse', 'zinc_nickel', 'rinse', 'passivate', 'dry_off'],
-  zinc_flake: ['degrease', 'rinse', 'zinc_flake', 'cure_oven'],
-  anodise: ['degrease', 'rinse', 'anodise', 'rinse', 'dry_off'],
-  galvanise: ['degrease', 'rinse', 'pickle', 'rinse', 'galvanise'],
-  blast_only: ['shot_blast'],
-  blast_zinc: ['shot_blast', 'degrease', 'rinse', 'pickle', 'rinse', 'zinc_plate', 'rinse', 'passivate', 'dry_off'],
-  cast_ecoat: ['shot_blast', 'impregnation', 'degrease', 'rinse', 'zirconium', 'rinse', 'di_rinse', 'dry_off', 'e_coat', 'cure_oven'],
-  mass_finish: ['mass_finish'],
-};
-
-const SURFACE_ROUTE_LABELS: Record<string, string> = {
-  '': 'None — bare part',
-  powder_coat: 'Powder coat (iron phosphate pre-treat)',
-  powder_coat_zn: 'Powder coat (zinc phosphate pre-treat)',
-  e_coat: 'E-coat / KTL (zirconium pre-treat)',
-  zinc_plate: 'Zinc plate + passivate',
-  zinc_nickel: 'Zinc-nickel + passivate',
-  zinc_flake: 'Zinc flake dip-spin (no H₂ embrittlement)',
-  anodise: 'Sulphuric anodise (aluminium)',
-  galvanise: 'Hot dip galvanise',
-  blast_only: 'Shot blast only (descale)',
-  blast_zinc: 'Shot blast → zinc plate + passivate',
-  cast_ecoat: 'Blast → impregnate → e-coat (casting)',
-  mass_finish: 'Vibratory mass finish (deburr)',
-};
+// Finishing routes and their labels live in src/engine/surface-finish-routes.ts — the CAD finish question and the
+// headless costing build the same spec from them (CAD to COST D4).
 
 /** The bridge forms offered, by commodity family. */
 const SURFACE_FORMS: Record<string, Array<[string, string]>> = {
@@ -13821,37 +13823,21 @@ function renderSurfaceFinishingSection(prefix: string, family: 'sheet' | 'castin
  * which leaves the commodity's cost exactly as it was.
  */
 function collectSurfaceFinishing(prefix: string): CommodityFinishingInput | undefined {
-  const route = sel(`${prefix}-sf-route`);
-  const stages = SURFACE_FINISH_ROUTES[route];
-  if (!stages) return undefined;
-
-  const masked = num(`${prefix}-sf-mask`);
-  // Masking is a per-feature operation; add the mask/de-mask pair only when the
-  // part actually has masked features, rather than carrying a zero-cost stage.
-  const withMasking = masked > 0
-    ? [...stages.slice(0, -1), 'masking', stages[stages.length - 1], 'demask']
-    : stages;
-
-  const area = num(`${prefix}-sf-area`);
-  const thk = num(`${prefix}-sf-thk`);
-  const um = num(`${prefix}-sf-um`);
-  const mpa = num(`${prefix}-sf-mpa`);
-  const reject = num(`${prefix}-sf-reject`);
-
-  return {
-    stages: withMasking,
+  // One builder with headless (toCostParams): the same stages, masking pair and loading for the same field values.
+  return finishSpec({
+    route: sel(`${prefix}-sf-route`),
     productForm: sel(`${prefix}-sf-form`),
-    ...(area > 0 ? { measuredAreaM2: area } : {}),
-    ...(thk > 0 ? { thicknessMm: thk } : {}),
-    partsPerRack: Math.max(1, num(`${prefix}-sf-rack`)),
-    racksPerHour: Math.max(1, num(`${prefix}-sf-racks`)),
-    ...(um > 0 ? { depositThicknessUm: um } : {}),
-    ...(masked > 0 ? { maskedFeatures: masked } : {}),
-    ...(mpa > 0 ? { tensileStrengthMPa: mpa } : {}),
-    ...(reject > 0 ? { platingRejectPct: reject } : {}),
+    measuredAreaM2: num(`${prefix}-sf-area`),
+    thicknessMm: num(`${prefix}-sf-thk`),
+    partsPerRack: num(`${prefix}-sf-rack`),
+    racksPerHour: num(`${prefix}-sf-racks`),
+    depositThicknessUm: num(`${prefix}-sf-um`),
+    maskedFeatures: num(`${prefix}-sf-mask`),
+    tensileStrengthMPa: num(`${prefix}-sf-mpa`),
+    platingRejectPct: num(`${prefix}-sf-reject`),
     annualVolume: num('annual-volume') || 100000,
     region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
-  };
+  });
 }
 
 /**
@@ -14197,6 +14183,9 @@ function collectCastAndMachineInput(): UniversalStackInput {
     ndtCostPerPart: num('cam-ndt') || undefined,
     ...subtypeExtra,
   };
+  const camSurfaceFinishing = collectSurfaceFinishing('cam');
+  reportSurfaceFinishing(camSurfaceFinishing, num('cam-cast-wt'), sel('cam-cast-lab'));
+  if (camSurfaceFinishing) inputs.surfaceFinishing = camSurfaceFinishing;
 
   const drivers = computeCastAndMachineDrivers(inputs);
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
@@ -14222,6 +14211,8 @@ function collectSheetMetalFabInput(): UniversalStackInput {
   if (tigLen > 0 && (!tigMach || !tigLab)) _smExtraWarnings.push(`TIG welding: ${tigLen} m specified but no TIG machine/labour selected — weld cost omitted.`);
   if ((num('smf-amort') || 0) <= 0) _smExtraWarnings.push('Amortisation volume is empty/zero — tooling NRE defaulted to 1 part (full die cost on this part). Set a realistic programme volume.');
 
+  const smfSurfaceFinishing = collectSurfaceFinishing('smf');
+  reportSurfaceFinishing(smfSurfaceFinishing, num('smf-part-wt'), sel('smf-brake-lab'));
   const drivers = computeSheetMetalFabDrivers({
     materialId: sel('smf-mat'),
     partWeightKg: num('smf-part-wt'),
@@ -14260,6 +14251,7 @@ function collectSheetMetalFabInput(): UniversalStackInput {
     toolingCost: num('smf-tooling'),
     amortizationVolume: num('smf-amort') || num('annual-volume') || 100000,
     ...collectSheetHardware('smf', sel('smf-blank-lab')),
+    ...(smfSurfaceFinishing ? { surfaceFinishing: smfSurfaceFinishing } : {}),
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -21071,6 +21063,9 @@ function collectDraft(): Record<string, string> {
 function saveDraftSoon(): void {
   if (_draftTimer) window.clearTimeout(_draftTimer);
   _draftTimer = window.setTimeout(() => {
+    // Never while the comparison countries are being filled: _mfgRegion is another country for a moment, and a draft
+    // saved then put that country back on the page the next time the panel opened (CAD to COST phase 2 live run).
+    if (_capturingCountryFills) { saveDraftSoon(); return; }
     try { localStorage.setItem(draftKey(), JSON.stringify({ ts: Date.now(), region: _mfgRegion, fields: collectDraft() })); } catch { /* quota */ }
   }, 800);
 }
@@ -21264,16 +21259,61 @@ function renderCADCostCard(): void {
     band: _lastBandInfo ? { pm: _lastBandInfo.pm, p10: _lastBandInfo.p10 ?? null, p90: _lastBandInfo.p90 ?? null } : null,
     confidence: _lastBandInfo?.conf ?? null,
     basis: collectCADBasis(),
-    notIncluded: notIncludedFor(activeCommodity),
+    // A finish is in the cost when the form's finishing block holds a route (answered on CAD, or typed).
+    notIncluded: notIncludedFor(activeCommodity,
+      (document.getElementById(`${SURFACE_PREFIX_BY_COMMODITY[activeCommodity as CommodityType] ?? '_'}-sf-route`) as HTMLSelectElement | null)?.value || null),
     stamp: currentCADStamp(),
     fmt: (n: number) => _currFmt(n),
   });
   host.hidden = false;
   document.getElementById('cad-change-answers')?.addEventListener('click', () => {
     // Back to the questions with every answer shown as a chip to reopen.
-    showWorkflowPanel('cad_analysis');
+    showWorkflowPanel('cad_analysis', { restoreDraft: false });
     setTimeout(() => showCADQuestions('Change an answer below, then press Get cost.'), 60);
   });
+  // D5: the comparison runs the first time it is opened (one server round, no AI).
+  const cmp = document.getElementById('cad-compare') as HTMLDetailsElement | null;
+  cmp?.addEventListener('toggle', () => { if (cmp.open && !cmp.dataset.loaded) void loadRouteComparison(); });
+}
+
+/** Cost the measured part on each candidate route (server/services/route-compare.ts) and draw the table. */
+async function loadRouteComparison(): Promise<void> {
+  const host = document.getElementById('cad-compare-host');
+  const cmp = document.getElementById('cad-compare') as HTMLDetailsElement | null;
+  if (!host || !cmp || !cadGeometryHash) return;
+  cmp.dataset.loaded = '1';
+  host.innerHTML = '<p class="cad-cost-note">Costing the part on each route…</p>';
+  const body: Record<string, unknown> = {
+    geometryHash: cadGeometryHash,
+    filename: cadFile?.name ?? 'part.step',
+    current: activeCommodity,
+    decisionAnswers: _cadDecisionAnswers,
+    acknowledged: [..._cadSanityAcks],
+    annualVolume: (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000',
+    region: _mfgRegion,
+  };
+  if (programmeYearsValue()) body['programmeYears'] = programmeYearsValue();
+  if (_cadMaterialLocked && _cadPinnedMaterialId) body['material'] = _cadPinnedMaterialId;
+  if (cadOCCTGeometry?.blank?.blankHash) body['blankHash'] = cadOCCTGeometry.blank.blankHash;
+  try {
+    const res = await fetch('/api/cad/compare-routes', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() }, body: JSON.stringify(body),
+    });
+    const data = await res.json() as { rows?: RouteCompareRow[]; error?: string };
+    if (!res.ok || !data.rows) throw new Error(data.error ?? `HTTP ${res.status}`);
+    host.innerHTML = routeCompareHtml(data.rows, {
+      current: activeCommodity, headline: lastResult?.total ?? null,
+      labels: COMMODITY_LABELS as Record<string, string>, fmt: (n: number) => _currFmt(n),
+    });
+    host.querySelectorAll<HTMLButtonElement>('[data-cost-route]').forEach(btn => btn.addEventListener('click', () => {
+      // Re-analyse AS that route on the CAD screen — its own questions come up there before Get cost.
+      showWorkflowPanel('cad_analysis', { restoreDraft: false });
+      void applyAlternativeProcess(btn.dataset.costRoute as CommodityType, true);
+    }));
+  } catch (err) {
+    delete cmp.dataset.loaded;
+    host.innerHTML = `<p class="cad-cost-note">Could not compare routes: ${escHtml(err instanceof Error ? err.message : String(err))}. Close and open this section to try again.</p>`;
+  }
 }
 
 function tagTraceableRows(): void {

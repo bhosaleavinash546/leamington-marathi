@@ -33,6 +33,7 @@
  *    ring rolling and open-die forging produce none — the advisor's own route
  *    text says so ("no flash"). The prompt charged all five routes 10%.
  */
+import { finishRules } from '../derive/finish.js';
 import { bRepFaceCount } from '../derive/facts.js';
 import { representativeMaterialId } from '../derive/material.js';
 import type { MaterialFamily } from '../../material-family.js';
@@ -854,5 +855,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
             : `${ndt.toUpperCase()} on a safety-critical ${r.advice.process} forging`, 0.65);
       },
     },
+    // The finish question (CAD to COST D4) — asked last: a coating follows the process and the metal.
+    ...finishRules('forging', 'forge'),
   ],
 };

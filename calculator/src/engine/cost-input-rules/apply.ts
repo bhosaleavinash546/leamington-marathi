@@ -66,6 +66,20 @@ const RULE_PATH_MAP: Record<string, FieldMapping> = {
   // priced at the AI's aluminium grade (final verification run).
   'casting.materialId': { to: 'materialId' },
   'machining.netWeightKg': { to: 'netWeightKg' },
+  // The finish question (CAD to COST D4): the route and the measured surface, read by toCostParams for every
+  // commodity whose module carries a finish (surface-finish-routes.ts) — the same spec the screen's block builds.
+  'casting.finishRoute': { to: 'surfaceFinish.route' },
+  'casting.finishAreaM2': { to: 'surfaceFinish.areaM2' },
+  'casting.finishPartsPerRack': { to: 'surfaceFinish.partsPerRack' },
+  'casting.finishRacksPerHour': { to: 'surfaceFinish.racksPerHour' },
+  'forging.finishRoute': { to: 'surfaceFinish.route' },
+  'forging.finishAreaM2': { to: 'surfaceFinish.areaM2' },
+  'forging.finishPartsPerRack': { to: 'surfaceFinish.partsPerRack' },
+  'forging.finishRacksPerHour': { to: 'surfaceFinish.racksPerHour' },
+  'sheetMetal.finishRoute': { to: 'surfaceFinish.route' },
+  'sheetMetal.finishAreaM2': { to: 'surfaceFinish.areaM2' },
+  'sheetMetal.finishPartsPerRack': { to: 'surfaceFinish.partsPerRack' },
+  'sheetMetal.finishRacksPerHour': { to: 'surfaceFinish.racksPerHour' },
   'machining.estimatedCycleTimeHr': { to: 'estimatedCycleTimeHr' },
   'machining.setupTimeHr': { to: 'estimatedSetupTimeHr' },
   // The orphan wiring. Every entry below existed as a computed rule with no
@@ -457,6 +471,9 @@ export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
   'alExtrusion.ageOven': 'report — the builder sets the oven from the temper on both paths',
   'casting.q.grade': 'advisory question — its answer reaches both paths through casting.materialId',
   'forging.q.grade': 'advisory question — its answer reaches both paths through forging.materialId',
+  'casting.q.finish': 'advisory question — its answer reaches both paths through casting.finishRoute',
+  'forging.q.finish': 'advisory question — its answer reaches both paths through forging.finishRoute',
+  'sheetMetal.q.finish': 'advisory question — its answer reaches both paths through sheetMetal.finishRoute',
   'alExtrusion.q.al.route': 'advisory question — its answer reaches both paths through alExtrusion.route',
   'alExtrusion.q.al.temper': 'advisory question — its answer reaches both paths through alExtrusion.temper',
   'alExtrusion.q.al.finish': 'advisory question — its answer reaches both paths through alExtrusion.finish',

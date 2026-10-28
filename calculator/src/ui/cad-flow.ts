@@ -33,6 +33,18 @@ export interface FlowState {
   decisions: readonly FlowDecision[];
   /** The engineer's answers, as recorded from the panel. */
   answers: Readonly<Record<string, unknown>>;
+  /**
+   * The answers the last analysis was run with. An ADVISORY answer (finish, grade) changed since then is not in the
+   * analysis yet: applying it would fill the form from the older run (CAD to COST phase 2 live run — zinc plate
+   * answered last, Get cost pressed, the bracket costed bare at £1.25 against £1.77 coated).
+   */
+  appliedAnswers?: Readonly<Record<string, unknown>>;
+}
+
+/** Answers that differ from the ones the analysis was run with (blank and absent are the same). */
+export function answersChangedSince(now: Readonly<Record<string, unknown>>, applied: Readonly<Record<string, unknown>>): string[] {
+  const norm = (v: unknown) => (v === undefined || v === null ? '' : String(v).trim());
+  return [...new Set([...Object.keys(now), ...Object.keys(applied)])].filter(k => norm(now[k]) !== norm(applied[k]));
 }
 
 /** The blocking questions still open after the last analysis. */
@@ -53,7 +65,9 @@ export function nextCostStep(s: FlowState): CostStep {
   if (!s.hasFile) return { kind: 'upload' };
   if (!s.hasAnalysis) return { kind: 'analyse' };
   const open = blockingQuestions(s.decisions);
-  if (!open.length) return { kind: 'apply' };
+  if (!open.length) {
+    return s.appliedAnswers && answersChangedSince(s.answers, s.appliedAnswers).length ? { kind: 'reanalyse' } : { kind: 'apply' };
+  }
   const missing = open.filter(d => !answered(s.answers[d.id]));
   return missing.length ? { kind: 'answer', missing } : { kind: 'reanalyse' };
 }

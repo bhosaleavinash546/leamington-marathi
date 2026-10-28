@@ -231,3 +231,76 @@ phase 2.
 - **Corrections found while building:**
   - Forging tooling over a programme (D3 above).
   - The knuckle's finished mass is ≈ 2.80 kg (356.1 cm³); 3.255 kg is as-forged.
+
+## 6. Phase 2 built (28 Oct 2026) — D4 finish question, D5 compare routes
+
+### D4 — "Is the part coated or surface-treated?"
+
+- **Where it is asked:** casting, cast + machine, forging and sheet metal (stamped or fabricated) — the routes whose
+  module carries the surface-treatment model (`computeSurfaceFinishing`). Machining and gear have no finishing model;
+  there the cost card still lists coating as "not asked on this route".
+- **Advisory, no leaning:** "None — bare part" is costed until it is answered. A bare part costs exactly what it did:
+  every real-parts baseline total is unchanged.
+- **The options follow the metal and leave out what the route already charges:**
+  - anodise for aluminium only; zinc systems and galvanising for ferrous parts;
+  - no blast-only, blast → zinc or blast → impregnate → e-coat on castings or forgings — the casting rules already
+    shot-blast every casting and the forging rules already descale every forging.
+- **Priced on the measured surface**, with the parts a load sized from the measured surface and mass (`finishLoading`):
+  - Conveyor / hoist coating line: 83.6 m² (900 ft²) of surface a load bar, 20 loads an hour, 113.4 kg (250 lb) rack
+    limit — Electro-Coat Technologies via pfonline.com, Therma-Tron-X monorail v square-transfer comparison.
+  - Barrel zinc: 90.7 kg (200 lb) a barrel, 10 barrels an hour — SUR/FIN 2003 paper sf0347 (sterc.org).
+  - The pages were read through web search; they could not be opened from the build session, so each basis says to
+    confirm the hanging with the coater. The plating dwell can still cap the hourly loads (existing model).
+  - **Why sizing was needed:** the form's own default of 6 parts a rack × 20 racks/h — not a sourced figure — put
+    200 s of barrel-line time on a 0.3 kg bracket: £7.17 of zinc plate on a £1.68 pressing. Sized from the part it is
+    £0.41.
+- **One spec builder** (`surface-finish-routes.ts::finishSpec`) for the screen's surface-treatment block and headless
+  `toCostParams`; the rules write `*-sf-route`, `*-sf-area`, `*-sf-rack`, `*-sf-racks`. The cast + machine and
+  fabrication forms gained the block, their modules the finish.
+
+| Part (UK, 50k/yr) | Bare | Finish | Coated |
+|---|---|---|---|
+| Steering knuckle (forging) | £24.22 | e-coat | £24.61 |
+| Hub flange (forging) | £17.45 | zinc plate (barrel) | £18.63 |
+| Stub axle PRCR002 (cast + machine) | £53.39 | e-coat | £54.30 |
+| Casting bracket (cast + machine) | £21.01 | powder coat | £21.36 |
+| Seat locking bracket (stamping) | £3.38 | e-coat | £3.59 |
+| BIW reinforcement channel (stamping) | £1.68 | zinc plate (barrel) | £2.09 |
+
+### D5 — Compare routes
+
+- `POST /api/cad/compare-routes` → `server/services/route-compare.ts`: the measured part (the server's geometry by hash)
+  costed on each candidate route through `costMeasuredPart`, the engineer's answers carried over. No AI.
+- **Candidates:** the process question's own options when the shape left it open, plus forging / casting / cast +
+  machine / machining (or stamping / laser + brake) — only routes that can make the metal named.
+- **Nothing is filled in silently:** a route's own question is assumed only from its visible leaning, and the row says
+  so; with no leaning the row stops and names the question. A grade the route does not buy, or a finish it does not
+  model, is noted. A route the rules re-price as another on the table is folded into that row.
+- **On the cost card** (opens on demand): route, cost a part, signed difference, tooling a part, basis. The costing's
+  own route is the reference row; if it differs from the headline the row says the form carries a typed change — a
+  built-in check that screen = headless.
+- **"Cost this route"** re-analyses as that route on the CAD screen: the route becomes the process answer, the new
+  route's questions are shown (not accepted unseen), and Get cost costs it.
+
+### Defects found by the live runs and fixed
+
+- **Get cost could apply an analysis that predated the last ADVISORY answer** (finish or grade): it re-ran the rules
+  only for blocking questions. Zinc plate answered last costed the bracket bare (£1.25 against £1.77). The gate now
+  re-runs whenever the panel's answers differ from the ones the analysis was run with (`appliedAnswers`).
+- **Choosing an alternative route reverted to the first one:** the drop-down was sent once, and the next automatic
+  re-run sent the stored process answer instead. Choosing a route now records it as the process answer. This affected
+  "Alternative processes → Apply" too.
+- **A new route's question was accepted at its suggested answer** the moment it appeared. It is now shown and stopped on.
+- **A draft could be saved with the wrong country** while the comparison countries were being filled, and reopening the
+  CAD screen restored it. Drafts are not saved during that fill, and the CAD screen reopens from its own state.
+- **The machined-features tick boxes had no accessible name** (axe, forging step 3).
+
+### Proof
+
+- Live (real server + browser, UK, 100k/yr × 5 years):
+  - knuckle cast + machine with e-coat: screen £35.772579 = headless £35.7726, every bucket equal;
+  - bracket with zinc plate: £1.77 on both the headline and the comparison's reference row;
+  - hub flange with zinc plate: £18.50 on both;
+  - hub flange "Cost this route → casting": £16.81, equal to its comparison row.
+- axe WCAG 2.1 AA: 0 violations at steps 1–3 on every run; Excel and PDF exports download.
+- `tests/cad-phase2.test.ts` (23 tests).

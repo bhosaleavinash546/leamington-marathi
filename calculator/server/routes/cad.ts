@@ -33,7 +33,7 @@ import { diffAnalyses } from '../../src/engine/cost-input-rules/diff.js';
 import type { CADAnalysisResult } from '../../src/engine/ai-analysis.js';
 import { inferCommodity, looksLikeGear, COMMODITY_DECISION_ID } from '../../src/engine/cost-input-rules/derive/commodity.js';
 import { familyFromMaterialId } from '../../src/engine/cost-input-rules/derive/material.js';
-import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
 import type { ManufacturingRegion } from '../../src/engine/regional-rates.js';
 import { regionOf, rateBookForRegion } from '../services/rate-book.js';
 import { systemForFibreId } from '../../src/engine/cost-input-rules/derive/laminate.js';
@@ -2754,6 +2754,46 @@ router.post('/parse-stl', requireAuth, parseStlLimiter, upload.single('cadFile')
 }));
 
 // POST /api/cad/reanalyze — re-run AI analysis using pre-computed (cached) OCCT geometry; no STEP re-upload needed
+/**
+ * Compare routes (CAD to COST v2, D5): the measured part costed on each candidate route through the headless chain
+ * (`costMeasuredPart`), the engineer's answers carried over. The geometry is the server's — looked up by the hash
+ * /analyze returned — never numbers from the body. No AI: every figure is the rules + the rate book.
+ */
+router.post('/compare-routes', requireAuth, reanalyzeLimiter, asyncRoute(async (req, res): Promise<void> => {
+  const geometryHash = typeof req.body?.geometryHash === 'string' ? req.body.geometryHash.trim() : '';
+  const answersIn = parseDecisionAnswers(req.body?.decisionAnswers);
+  const unitScale = answersIn['units.confirm'] === 'inch' ? 25.4 : 1;
+  let geo: OCCTGeometry | null = geometryHash ? getGeometry(geometryHash, unitScale) : null;
+  if (!geo || geo.status !== 'success') {
+    res.status(400).json({ error: 'No measured geometry on this server for that geometryHash — measure the part again.' });
+    return;
+  }
+  const blankHash = typeof req.body?.blankHash === 'string' ? req.body.blankHash.trim() : '';
+  if (blankHash) {
+    const b = getBlank<NonNullable<OCCTGeometry['blank']>>(blankHash);
+    if (b) geo = { ...geo, blank: b };
+  }
+  const current = typeof req.body?.current === 'string' ? req.body.current.trim() : '';
+  if (!specForCommodity(current)) {
+    res.status(400).json({ error: `No deterministic rules for '${current}' — nothing to compare against.` });
+    return;
+  }
+  const filename = (typeof req.body?.filename === 'string' && req.body.filename) || 'part.step';
+  const forcedMaterial = typeof req.body?.material === 'string' ? req.body.material.trim() : '';
+  const programmeYears = parseFloat(req.body?.programmeYears) > 0 ? parseFloat(req.body.programmeYears) : undefined;
+  const region = rateRegionOf(requestRegion(req));
+  const { compareRoutes } = await import('../services/route-compare.js');
+  const rows = await compareRoutes({
+    geo, filename, current,
+    answers: { ...answersFromContext(forcedMaterial, filename), ...answersIn },
+    region, annualVolume: parseFloat(req.body?.annualVolume) || 100000,
+    ...(programmeYears ? { programmeYears } : {}),
+    acknowledge: parseAcknowledged(req.body?.acknowledged),
+    baseBook: recomputeMachineRates(resolveActiveRateBook()),
+  });
+  res.json({ region, rows, versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV } });
+}));
+
 router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, res): Promise<void> => {
   const filename = (req.body.filename as string) || 'cached_part.step';
   // The geometry is the server's, looked up by the hash /analyze returned. It

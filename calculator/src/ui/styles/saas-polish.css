@@ -635,6 +635,14 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile:hover { transform: tran
 .cad-grade--default { background: var(--surface-elevated); color: var(--text-secondary); border: 1px solid var(--border); }
 .cad-not-included { margin: 6px 0 4px; padding-left: 18px; font-size: 0.76rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; }
 .cad-stamp { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.68rem; color: var(--text-muted); }
+.cad-compare-wrap { overflow-x: auto; margin: 6px 0 4px; }
+.cad-compare-table { width: 100%; border-collapse: collapse; font-size: 0.74rem; }
+.cad-compare-table th, .cad-compare-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.cad-compare-table thead th { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); }
+.cad-compare-table tbody th { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+.cad-compare-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cad-compare-ref { background: var(--bg-secondary); }
+.cad-compare-why { margin: 0 0 4px; padding-left: 14px; color: var(--text-secondary); font-size: 0.7rem; display: flex; flex-direction: column; gap: 2px; }
 @media (prefers-reduced-motion: reduce) { #cad-decisions-panel { transition: none; } }
 .cad-ws-card .btn[hidden] { display: none !important; }
 /* DFM finding rows: the "Show on model" button replaces role=button on the <li>. */

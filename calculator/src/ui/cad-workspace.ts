@@ -76,6 +76,7 @@ const ANSWER_NAMES: Record<string, string> = {
   'service.toleranceClass': 'Tolerance',
   'service.safetyCritical': 'Safety-critical',
   'service.pressureTight': 'Leak-tight',
+  'service.finish': 'Finish',
 };
 
 export interface AnswerChip { id: string; name: string; value: string }
@@ -100,10 +101,12 @@ export function answerChipsHtml(chips: AnswerChip[], withChange: boolean): strin
 }
 
 /**
- * What a costing from CAD does not carry, by route (D4: coating is listed now; a priced finish question is phase 2).
- * Each line is something no rule on this route prices — checked against the rule packs, not guessed.
+ * What a costing from CAD does not carry, by route. D4 (phase 2): the routes whose module carries a finish (casting,
+ * cast + machine, forging, sheet metal) ASK for it — the line goes once a finish is answered, and says "costed bare"
+ * until then; machining and gear have no finishing model, so there it stays "not asked". Each line is something no
+ * rule on this route prices — checked against the rule packs, not guessed.
  */
-export function notIncludedFor(commodity: string): string[] {
+export function notIncludedFor(commodity: string, finishRoute: string | null = null): string[] {
   const common = [
     'Assembly, sub-components and fasteners',
     'PPAP, first-article inspection, gauges and fixtures for inspection',
@@ -111,7 +114,13 @@ export function notIncludedFor(commodity: string): string[] {
     'Packaging beyond the size-based default',
     'Engineering changes, prototypes and programme management',
   ];
-  const finishNotAsked = ['forging', 'casting', 'cast_and_machine', 'machining', 'gear', 'sheet_metal', 'sheet_metal_fab'];
+  const finishAsked = ['forging', 'casting', 'cast_and_machine', 'sheet_metal', 'sheet_metal_fab'];
+  const finishNotAsked = ['machining', 'gear'];
+  if (finishAsked.includes(commodity)) {
+    return finishRoute
+      ? common
+      : ['Surface treatment or coating — costed bare; answer "Is the part coated?" to price one', ...common];
+  }
   return finishNotAsked.includes(commodity)
     ? ['Surface treatment or coating (paint, e-coat, plating, zinc flake) — not asked on this route', ...common]
     : common;
@@ -188,6 +197,11 @@ export function cadCostCardHtml(m: CostCardModel): string {
         </div>
         <p class="cad-cost-note">Overhead, margin, packaging and logistics are edited in the form (Edit inputs); each bucket of the breakdown opens how it was computed.</p>
       </details>
+      <details class="cad-cost-more" id="cad-compare">
+        <summary>Compare routes — the same part costed on each route it could be made by</summary>
+        <p class="cad-cost-note">Each row is the rules and this country's rate book on the measured part, with your answers carried over. Typed changes on the form are not in these rows.</p>
+        <div id="cad-compare-host" aria-live="polite"></div>
+      </details>
       <details class="cad-cost-more" id="cad-not-included">
         <summary>Not included in this cost <span class="cad-cost-count">${m.notIncluded.length}</span></summary>
         <ul class="cad-not-included">${m.notIncluded.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
@@ -201,4 +215,59 @@ export function cadStamp(o: { rateBook: string; rules: number | string | null; k
   const d = o.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   return [o.rateBook, o.rules != null ? `rules v${o.rules}` : null, o.kernel ? `kernel ${o.kernel}` : null, d]
     .filter(Boolean).join(' · ');
+}
+
+/** One row of /api/cad/compare-routes (server/services/route-compare.ts). */
+export interface RouteCompareRow {
+  route: string;
+  commodity: string | null;
+  status: string;
+  total: number | null;
+  toolingPerPart: number | null;
+  assumed: string[];
+  openQuestions: string[];
+  notes: string[];
+  refusal: string | null;
+}
+
+/**
+ * The route comparison table (D5). The costing's own route comes first and is the reference; the others are sorted
+ * cheapest first, then the ones that still need an answer or were refused — each says why, nothing is filled in.
+ */
+export function routeCompareHtml(rows: RouteCompareRow[], o: {
+  current: string; headline: number | null; labels: Record<string, string>; fmt: (n: number) => string;
+}): string {
+  const ref = rows.find(r => r.route === o.current) ?? null;
+  const refTotal = ref?.total ?? null;
+  const rank = (r: RouteCompareRow) => (r.route === o.current ? -1 : r.total != null ? 0 : 1);
+  const sorted = [...rows].sort((a, b) => rank(a) - rank(b) || (a.total ?? Infinity) - (b.total ?? Infinity));
+  const label = (r: string | null) => esc(r ? (o.labels[r] ?? r.replace(/_/g, ' ')) : '—');
+  const body = sorted.map(r => {
+    const isRef = r.route === o.current;
+    const delta = !isRef && r.total != null && refTotal != null && refTotal > 0
+      ? `${r.total >= refTotal ? '+' : '−'}${esc(o.fmt(Math.abs(r.total - refTotal)))} (${r.total >= refTotal ? '+' : '−'}${Math.abs((r.total / refTotal - 1) * 100).toFixed(0)}%)`
+      : isRef ? 'reference' : '—';
+    const why: string[] = [];
+    if (isRef && refTotal != null && o.headline != null && Math.abs(o.headline - refTotal) >= 0.005) {
+      why.push(`the headline is ${o.fmt(o.headline)} — the form carries a typed change`);
+    }
+    if (r.commodity && r.commodity !== r.route) why.push(`costed as ${o.labels[r.commodity] ?? r.commodity}`);
+    for (const a of r.assumed) why.push(`assumed: ${a}`);
+    for (const q of r.openQuestions) why.push(`needs an answer: ${q}`);
+    if (r.refusal) why.push(`not costed: ${r.refusal}`);
+    why.push(...r.notes);
+    const action = !isRef && r.total != null
+      ? `<button type="button" class="cad-answer-change" data-cost-route="${esc(r.route)}">Cost this route</button>` : '';
+    return `<tr${isRef ? ' class="cad-compare-ref"' : ''}>
+      <th scope="row">${label(r.route)}${isRef ? ' <span class="cad-cost-count">this costing</span>' : ''}</th>
+      <td class="num">${r.total != null ? esc(o.fmt(r.total)) : '—'}</td>
+      <td class="num">${delta}</td>
+      <td class="num">${r.toolingPerPart != null ? esc(o.fmt(r.toolingPerPart)) : '—'}</td>
+      <td>${why.length ? `<ul class="cad-compare-why">${why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}${action}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="cad-compare-wrap"><table class="cad-compare-table">
+    <caption class="sr-only">Cost per part by manufacturing route</caption>
+    <thead><tr><th scope="col">Route</th><th scope="col" class="num">Cost / part</th><th scope="col" class="num">vs this costing</th><th scope="col" class="num">Tooling / part</th><th scope="col">Basis</th></tr></thead>
+    <tbody>${body}</tbody></table></div>`;
 }

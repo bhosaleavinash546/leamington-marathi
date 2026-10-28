@@ -33,7 +33,7 @@ const DENSITY_KG_PER_CM3: Record<MaterialFamily, number> = {
 };
 
 /** Families a given commodity can physically be made from. */
-const COMMODITY_FAMILIES: Record<string, MaterialFamily[]> = {
+export const COMMODITY_FAMILIES: Record<string, MaterialFamily[]> = {
   casting: ['aluminium', 'magnesium', 'zinc', 'cast iron', 'steel', 'copper alloy', 'nickel alloy'],
   cast_and_machine: ['aluminium', 'magnesium', 'zinc', 'cast iron', 'steel', 'copper alloy', 'nickel alloy'],
   forging: ['aluminium', 'magnesium', 'steel', 'titanium', 'copper alloy', 'nickel alloy'],

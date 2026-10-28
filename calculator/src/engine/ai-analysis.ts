@@ -446,6 +446,9 @@ export interface CADAnalysisResult {
     estimatedCycleTimeHr: number;
     estimatedSetupTimeHr: number;
     estimatedOperations: SuggestedOperation[];
+    /** The CAD finish question's answer (CAD to COST D4): route key in SURFACE_FINISH_ROUTES ('' = bare) and the
+     *  measured surface, m². Costed on casting, cast + machine, forging and sheet metal (stamped or fabricated). */
+    surfaceFinish?: { route?: string; areaM2?: number; partsPerRack?: number; racksPerHour?: number };
     /** Machining-specific derived inputs. Rule-engine written; the model is not
      *  asked for these — they were the largest orphaned group in the A/B. */
     machining?: {

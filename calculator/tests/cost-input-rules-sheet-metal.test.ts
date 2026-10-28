@@ -253,7 +253,8 @@ describe('sheet-metal rules end to end', () => {
   it('completes once the material is answered', () => {
     const r = runCostInputRules(SHEET_METAL_RULES, ctx(CROSS_MEMBER, STEEL));
     expect(r.status).toBe('complete');
-    expect(r.decisions).toHaveLength(0);
+    // Only the ADVISORY finish question remains (CAD to COST D4) — costed bare until answered.
+    expect(r.decisions.map(d => [d.id, d.severity])).toEqual([['service.finish', 'advisory']]);
 
     const sm = r.suggestions.sheetMetal as Record<string, number | string>;
     expect(sm.thicknessMm).toBe(1.5);
@@ -338,7 +339,8 @@ describe('the prompt cannot say anything the engine would not compute', () => {
     const text = renderCommodityRulesPrompt(SHEET_METAL_RULES, c);
     const r = runCostInputRules(SHEET_METAL_RULES, c);
 
-    for (const rule of SHEET_METAL_RULES.rules) {
+    // `.q.` rules hold an advisory QUESTION (the finish), not a value — as in the forging test.
+    for (const rule of SHEET_METAL_RULES.rules.filter(r => !r.id.includes('.q.'))) {
       if (rule.appliesWhen && !rule.appliesWhen(c)) continue;   // the fab route's fields are not this part's
       const out = rule.evaluate(c);
       expect(out.ok, `${rule.id} should be decided`).toBe(true);

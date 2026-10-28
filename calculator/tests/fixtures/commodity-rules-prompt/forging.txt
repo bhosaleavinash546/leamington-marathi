@@ -34,6 +34,9 @@ FORGING COST INPUT RULES:
   heatTreatCostPerKg=1.2  [solution-age for a aluminium forging — deterministic, use verbatim]
   descaleCostPerKg=0.12  [forge scale pickled off before machining — deterministic, use verbatim]
   ndtCostPerPart=0  [not safety-critical — no NDT — deterministic, use verbatim]
+  finish question: UNDECIDED — needs "Is the part coated or surface-treated?" (None — bare part | Sulphuric anodise (aluminium) | Powder coat (iron phosphate pre-treat))
+  finishRoute=  [not asked yet — costed bare (answer "Is the part coated?" to price a finish) — deterministic, use verbatim]
+  finishAreaM2=0.122  [measured surface 1220.0 cm² = 0.1220 m² — the whole wetted surface; a masked or machined-after-coating face is in it — deterministic, use verbatim]
 
 ### context: degraded
 FORGING COST INPUT RULES:
@@ -67,3 +70,6 @@ FORGING COST INPUT RULES:
   heatTreatCostPerKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   descaleCostPerKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
   ndtCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Steel | Titanium | Copper alloy | Nickel alloy)
+  finish question=none  [pending the material answer — deterministic, use verbatim]
+  finishRoute=  [not asked yet — costed bare (answer "Is the part coated?" to price a finish) — deterministic, use verbatim]
+  finishAreaM2=0.122  [measured surface 1220.0 cm² = 0.1220 m² — the whole wetted surface; a masked or machined-after-coating face is in it — deterministic, use verbatim]

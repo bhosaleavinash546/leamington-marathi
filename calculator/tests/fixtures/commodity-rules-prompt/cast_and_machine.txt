@@ -22,6 +22,9 @@ CAST + MACHINE COST INPUT RULES:
   ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]
   manning=1  [one operator to a gravity cell — deterministic, use verbatim]
   leakTestSec=0  [not pressure-tight — no leak test — deterministic, use verbatim]
+  finish question: UNDECIDED — needs "Is the part coated or surface-treated?" (None — bare part | E-coat / KTL (zirconium pre-treat) | Powder coat (iron phosphate pre-treat) | Vibratory mass finish (deburr))
+  finishRoute=  [not asked yet — costed bare (answer "Is the part coated?" to price a finish) — deterministic, use verbatim]
+  finishAreaM2=0.122  [measured surface 1220.0 cm² = 0.1220 m² — the whole wetted surface; a masked or machined-after-coating face is in it — deterministic, use verbatim]
   castPartWeightKg=2.851  [2.800 kg finished + 18.9 cm³ of 10 hole(s) ≤ 20 mm drilled from solid + 0.0 cm³ machining stock (1.5 mm a side on the machined faces and cored bores, gravity — ISO 8062-3 RMA typical, an assumption: no drawing is read for it; type the as-cast weight from the drawing or the foundry to override) — deterministic, use verbatim]
   estimatedCycleTimeHr=0.0783  [2.3 min cutting + 2.4 min handling (face 0 machined face(s), 0 cm² = 0.0 min; holes 2.1 min (≤ Ø20 drilled from solid, larger cored and finish-bored); 2 tools × 6 s (aluminium, ×1 on aluminium)); the kernel's planar-area rate said 16.1 min (not used) — deterministic, use verbatim]
   setupCount=4  [4 fixturing(s) of the split-3axis routing (3 approach direction(s) measured) — deterministic, use verbatim]
@@ -56,6 +59,9 @@ CAST + MACHINE COST INPUT RULES:
   ndtCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   manning: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   leakTestSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  finish question=none  [pending the material answer — deterministic, use verbatim]
+  finishRoute=  [not asked yet — costed bare (answer "Is the part coated?" to price a finish) — deterministic, use verbatim]
+  finishAreaM2=0.122  [measured surface 1220.0 cm² = 0.1220 m² — the whole wetted surface; a masked or machined-after-coating face is in it — deterministic, use verbatim]
   castPartWeightKg=0  [pending the material answer — deterministic, use verbatim]
   estimatedCycleTimeHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   setupCount=1  [no setup analysis available — assuming a single setup — deterministic, use verbatim]

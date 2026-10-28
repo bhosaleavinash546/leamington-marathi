@@ -22,6 +22,7 @@
  *    and the gauge. `estimateStampingDieLife` already models both and was only
  *    ever reachable from a hand-typed form.
  */
+import { finishRules } from '../derive/finish.js';
 import { countryFactor, countryNote } from '../../regional-services.js';
 import { activeMachineRate, activeLabourRate } from '../../rate-context.js';
 import {
@@ -1349,5 +1350,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
           'no drawing tolerance in the CAD — general tolerance (ISO 2768-m class), no cycle multiplier; the form defaulted to 0.2 mm, a ×1.3 multiplier nobody specified', 0.4);
       },
     },
+    // The finish question (CAD to COST D4) — asked last: a coating follows the process and the metal.
+    ...finishRules('sheetMetal', 'sm'),
   ],
 };

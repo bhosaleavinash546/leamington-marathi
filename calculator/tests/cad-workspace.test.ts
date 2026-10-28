@@ -159,7 +159,7 @@ describe('step 3 — the cost card', () => {
     expect(readFileSync('src/export/excel.ts', 'utf8')).toMatch(/\.\.\.\(stamp \? \[\['Reproducibility', stamp\]\] : \[\]\)/);
     expect(readFileSync('src/export/pdf.ts', 'utf8')).toMatch(/Reproducibility: \$\{cadMeta\.stamp\}/);
     const cad = readFileSync('server/routes/cad.ts', 'utf8');
-    expect(cad.match(/versions: \{ rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV \}/g)?.length).toBe(4);
+    expect(cad.match(/versions: \{ rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV \}/g)?.length).toBe(5);
   });
   it('the basis is read off the rule decisions, not the form\'s markers (they clear on any input event)', () => {
     const body = fnBody('collectCADBasis');

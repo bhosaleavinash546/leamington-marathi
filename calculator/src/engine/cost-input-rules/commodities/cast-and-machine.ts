@@ -65,6 +65,11 @@ const FIELD_ID_MAP: Record<string, string> = {
   'cast-ndt': 'cam-ndt',
   'cast-inv-wax': 'cam-inv-wax',
   'cast-inv-shell': 'cam-inv-shell',
+  // finish (CAD to COST D4)
+  'cast-sf-route': 'cam-sf-route',
+  'cast-sf-area': 'cam-sf-area',
+  'cast-sf-rack': 'cam-sf-rack',
+  'cast-sf-racks': 'cam-sf-racks',
   // machining half
   'mach-setup-mach': 'cam-mach-setup-mach',
   'mach-setup-time': 'cam-mach-setup-time',

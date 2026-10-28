@@ -15,6 +15,7 @@
  *    under-charges metal — investment castings were being costed at roughly half
  *    their true material. Only HPDC happened to agree.
  */
+import { finishRules } from '../derive/finish.js';
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, inCountry as countryGbp, countryNote, type CountryBasis } from '../../regional-services.js';
 
 /** A sand core: ~30% sand and binder (traded, held), the rest core-shop labour and machine time. ESTIMATE split. */
@@ -788,5 +789,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
           : decided('casting.leakTestSec', 0, 'rule', 'not pressure-tight — no leak test', 0.6, [PRESSURE_TIGHT_DECISION_ID]);
       },
     },
+    // The finish question (CAD to COST D4) — asked last: a coating follows the process and the metal.
+    ...finishRules('casting', 'cast'),
   ],
 };

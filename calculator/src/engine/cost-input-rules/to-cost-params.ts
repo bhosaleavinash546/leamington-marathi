@@ -33,7 +33,8 @@
  * measurements, and any number that moves because of them is attributable to
  * this block.
  */
-import { activeLabourRate } from '../rate-context.js';
+import { activeLabourRate, activeRates } from '../rate-context.js';
+import { finishSpec, FINISH_PRODUCT_FORM, FINISH_RACK_DEFAULTS, SURFACE_ROUTE_LABELS } from '../surface-finish-routes.js';
 import { countryFactor } from '../regional-services.js';
 import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
 import { pickHPDCMachineId, pickStampingPressId, pickMachiningCentreId } from '../machine-sizing.js';
@@ -343,8 +344,25 @@ export function toCostParams(
   } else {
     assumed.push('flat packaging/logistics (no geometry supplied)');
   }
+  // The finish the CAD question chose (D4), on the commodity actually costed (a stamping re-routed to laser + brake
+  // keeps it). The SAME spec the screen's surface-treatment block builds — region is the book being costed in.
+  const withFinish = (r: ToCostParamsResult): ToCostParamsResult => {
+    const route = ci.surfaceFinish?.route ?? '';
+    const productForm = FINISH_PRODUCT_FORM[r.commodity];
+    if (!route || !productForm) return r;
+    const spec = finishSpec({
+      route, productForm, measuredAreaM2: num(ci.surfaceFinish?.areaM2), annualVolume,
+      // The load the rules sized from the measured part; the form's own defaults only if the rule could not run.
+      partsPerRack: num(ci.surfaceFinish?.partsPerRack) || FINISH_RACK_DEFAULTS.partsPerRack,
+      racksPerHour: num(ci.surfaceFinish?.racksPerHour) || FINISH_RACK_DEFAULTS.racksPerHour,
+      region: activeRates().regional?.code ?? 'UK',
+    });
+    if (!spec) return r;
+    return { ...r, params: { ...r.params, surfaceFinishing: spec },
+      assumed: [...r.assumed, `finish ${SURFACE_ROUTE_LABELS[route] ?? route}: ${spec.partsPerRack} parts a load × ${spec.racksPerHour} loads/h`] };
+  };
   const finish = (r: ToCostParamsResult | null): ToCostParamsResult | null =>
-    r === null ? null : { ...r, packagingPerPart, logisticsPerPart };
+    r === null ? null : { ...withFinish(r), packagingPerPart, logisticsPerPart };
 
   /**
    * The subtype-specific block a casting needs — die, pattern, mould or wax.

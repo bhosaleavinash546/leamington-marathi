@@ -637,6 +637,13 @@ what is true** — nothing here has been compared with a price JLR paid.
   (rate book · rules v · kernel rev) on screen, PDF §1 and Excel summary. CAD responses carry `versions`. Caches key on
   `KERNEL_REV`. Screen = headless to the penny is the acceptance test (`tests/cad-workspace.test.ts`); headless passes
   `maintenanceYears` for moulds and dies as the screen does.
+  Phase 2 (28 Oct 2026, doc §6): D4 finish question `service.finish` (advisory, no leaning, `derive/finish.ts`) on casting /
+  cast + machine / forging / sheet metal — ONE spec builder `surface-finish-routes.ts::finishSpec` for the screen block and
+  headless; the load is sized from the measured part (`finishLoading`, sourced line capacities — never the form's 6 × 20);
+  routes that repeat a charged step (blast on castings, descale on forgings) are not offered. D5 compare routes
+  (`/api/cad/compare-routes`, `server/services/route-compare.ts`, `costMeasuredPart` per route; the reference row must equal
+  the headline). Get cost re-runs when ANY answer differs from the analysed ones (`appliedAnswers`); choosing a route
+  records it as `commodity.route`; the CAD screen reopens with `restoreDraft: false`. `tests/cad-phase2.test.ts`.
 - Motion (review, Oct 2026): ONE system — `src/ui/animations.ts` (GSAP: fades ≤ 8 px, 150–260 ms, power2 out / in,
   no scale, no back / elastic; money never animates its value — the count-up was read mid-way and quoted, CAD to COST v2) + CSS. The `motion` package is gone; never add a second animation library or
   a mousemove effect. Hover = colour / shadow (buttons) or a 2 px lift (cards); commodity picker tiles rise 4 px, take the accent border

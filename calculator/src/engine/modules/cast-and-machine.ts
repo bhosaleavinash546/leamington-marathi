@@ -2,6 +2,7 @@ import type { CommodityDrivers, OperationInput, ToolingInput } from '../types.js
 import type { CastingSubtype, CastingInputs } from './casting.js';
 import type { MachiningOperation } from './machining.js';
 import { computeCastingDrivers } from './casting.js';
+import type { CommodityFinishingInput } from './surface-finishing.js';
 
 export interface CastAndMachineInputs {
   // === CASTING ===
@@ -63,6 +64,8 @@ export interface CastAndMachineInputs {
   postCastLabourId?: string;
   /** Post-casting machine ID (heat treat furnace) */
   heatTreatMachineId?: string;
+  /** Coating / surface treatment — costed by the casting half's finishing model (CAD to COST D4). */
+  surfaceFinishing?: CommodityFinishingInput;
 }
 
 export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): CommodityDrivers {
@@ -85,6 +88,7 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     ...(inputs.fettlingMinutes ? { fettlingMinutes: inputs.fettlingMinutes } : {}),
     ...(inputs.melt ? { melt: inputs.melt } : {}),
     ...(inputs.leakTestSec ? { leakTestSec: inputs.leakTestSec } : {}),
+    ...(inputs.surfaceFinishing ? { surfaceFinishing: inputs.surfaceFinishing } : {}),
   });
 
   // 2. Build machining operations (setup pseudo-op + main ops)

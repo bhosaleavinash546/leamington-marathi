@@ -1,5 +1,6 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import type { SheetHardwareItem } from './sheet-metal-hardware.js';
+import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import {
   hardwareConsumableCostPerPart,
   hardwareInstallOperation,
@@ -98,6 +99,9 @@ export function estimateBlankingCycleSec(inputs: BlankingCycleInputs): number {
 }
 
 export interface SheetMetalFabInputs {
+  /** Coating / plating after fabrication — the same finishing model the stamping form carries (CAD to COST D4: a
+   *  pressing the rules re-route to laser + brake kept its answered finish on the stamping form only). */
+  surfaceFinishing?: CommodityFinishingInput;
   // ── Material ────────────────────────────────────────────────────────────────
   materialId: string;
   partWeightKg: number;
@@ -378,11 +382,20 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
   });
   if (hardwareOp) operations.push(hardwareOp);
 
+  // Coating after fabrication: one operation per line it runs on, chemistry and deposited metal on the material line.
+  const finishing = finishingForCommodity(inputs.surfaceFinishing, {
+    massKg: inputs.partWeightKg, labourId: inputs.bendLabourId, productForm: 'sheet_standard',
+  });
+  if (finishing) operations.push(...finishing.operations);
+  const finishedRawMaterial: RawMaterialInput = finishing?.consumablesPerPart
+    ? { ...rawMaterial, consumablesCostPerPart: (rawMaterial.consumablesCostPerPart ?? 0) + finishing.consumablesPerPart }
+    : rawMaterial;
+
   const tooling: ToolingInput = {
     totalToolingCost: inputs.toolingCost,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };
 
-  return { rawMaterial, operations, tooling };
+  return { rawMaterial: finishedRawMaterial, operations, tooling };
 }

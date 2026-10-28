@@ -327,6 +327,7 @@ describe('the prompt cannot say anything the engine would not compute', () => {
     const text = renderCommodityRulesPrompt(FORGING_RULES, c);
     // `.q.` rules hold an advisory QUESTION (the grade, materials review), not a value.
     for (const rule of FORGING_RULES.rules.filter(r => !r.id.includes('.q.'))) {
+      if (rule.appliesWhen && !rule.appliesWhen(c)) continue;   // the finish load rules apply once a finish is answered
       const out = rule.evaluate(c);
       expect(out.ok, `${rule.id} should be decided`).toBe(true);
       if (!out.ok) continue;
