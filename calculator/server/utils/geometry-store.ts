@@ -19,7 +19,8 @@
  */
 import { createHash } from 'crypto';
 import { mkdirSync, existsSync, writeFileSync, readFileSync, readdirSync, statSync, unlinkSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { tmpdir } from 'os';
 import { createAnalysisCache } from './analysis-cache.js';
 import type { OCCTGeometry } from '../../src/engine/ai-analysis.js';
@@ -77,8 +78,21 @@ export function getUploadFile(hash: string): { buffer: Buffer; ext: string } | n
  * inch model never collide.
  */
 function geoKey(hash: string, unitScale: number): string {
-  return `${hash}:${unitScale}`;
+  return `${hash}:${unitScale}:${KERNEL_REV}`;
 }
+
+/**
+ * The CAD kernel's own revision: a hash of cad-geometry-engine.py. Stored measurements live 30 days on disk; keyed on
+ * the file alone, a kernel fix was not seen until they expired — the knuckle's silhouette read 128.9 cm² from an old
+ * measurement on one machine and 129.6 cm² measured fresh on another (CAD to COST review, Oct 2026). A changed kernel
+ * now measures again. Also part of the analysis cache key (cad.ts).
+ */
+export const KERNEL_REV: string = (() => {
+  try {
+    const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'cad-geometry-engine.py'));
+    return createHash('sha256').update(src).digest('hex').slice(0, 12);
+  } catch { return 'unknown'; }
+})();
 
 export function putGeometry(hash: string, geo: OCCTGeometry, unitScale = 1): void {
   geometryCache.set(geoKey(hash, unitScale), geo);
@@ -153,7 +167,7 @@ export interface StoredMesh {
 }
 
 function meshBase(hash: string, unitScale: number): string {
-  return join(FILE_DIR, `${hash}.${unitScale}`);
+  return join(FILE_DIR, `${hash}.${unitScale}.${KERNEL_REV}`);   // a changed kernel tessellates again
 }
 
 export function putMesh(hash: string, unitScale: number, mesh: StoredMesh): void {

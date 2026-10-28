@@ -129,6 +129,12 @@ export interface RuleContext {
    */
   commoditySource?: 'inferred' | 'engineer';
   /**
+   * The routes still on offer while the process question is open. `commodity` is then only the server's placeholder
+   * ('machining'), so the material question must offer what any of these routes can be made from — not machining's
+   * list (a knuckle was offered "Plastic" and not magnesium, zinc or nickel alloy; CAD to COST review, Oct 2026).
+   */
+  routeCandidates?: string[];
+  /**
    * Resolve unanswered service-context questions to their visible `leaning`
    * instead of blocking.
    *
@@ -236,7 +242,7 @@ export function answeredNumber(
 }
 
 /** Bump on any rule change. Part of the analysis cache key. */
-export const RULE_ENGINE_VERSION = 6;
+export const RULE_ENGINE_VERSION = 7;
 
 // ─── helpers used by every commodity module ─────────────────────────────────
 

@@ -5968,7 +5968,9 @@ function wireCADEvents(): void {
   if (commSel && matSel) {
     commSel.addEventListener('change', () => {
       matSel.innerHTML = _buildCadMaterialOptions(commSel.value);
+      reanalyseForOverride();
     });
+    matSel.addEventListener('change', () => reanalyseForOverride());
   }
 
   // Part photo
@@ -6133,7 +6135,7 @@ function keepCADFormValues(): void {
       else if (el instanceof HTMLInputElement || Array.from(el.options).some(o => o.value === kept)) {
         el.value = String(kept);
         // The process override rebuilds the material list — restore it before the material.
-        if (id === 'cad-commodity-override') el.dispatchEvent(new Event('change'));
+        if (id === 'cad-commodity-override') { _cadRestoringForm = true; el.dispatchEvent(new Event('change')); _cadRestoringForm = false; }
       }
     }
     const record = () => { _cadFormKept[id] = el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value; };
@@ -6147,6 +6149,22 @@ function keepCADFormValues(): void {
  * model and the analysis with its open questions. The screen was redrawn empty and the questions with it, so a user sent
  * back to answer them found nothing to answer (CAD to COST 360 review, Oct 2026).
  */
+/**
+ * A process or material chosen in the overrides after the part was measured: measure again as that. Before, the
+ * choice waited for the next Analyze press, and Get cost costed the old route (the "Not listed?" links lead here).
+ */
+let _cadRestoringForm = false;
+function reanalyseForOverride(): void {
+  if (_cadRestoringForm) return;   // the screen putting back a kept value is not a new choice
+  if (!cadFile || !cadAnalysisResult || activeCommodity !== 'cad_analysis') return;
+  setCADFlowNotice('Measuring again with your choice…', 'busy');
+  void analyzeCAD(false).then(() => {
+    const open = openCADDecisions();
+    if (open.length) showCADQuestions(costStepMessage({ kind: 'answer', missing: open }) + ' Check the suggested answer and press Get cost.');
+    else setCADFlowNotice('', 'clear');
+  });
+}
+
 function restoreCADScreen(): void {
   if (!cadFile) return;
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
@@ -6493,8 +6511,40 @@ function buildFeatureCostCard(): string {
  * that advisory made answerable, and it finally renders the thing the Decision
  * type was built to carry: what each option DOES to the cost, beside the option.
  */
+/**
+ * The questions offer a SHORTLIST (the routes the geometry admits, the families those routes use, six common resins).
+ * The full lists were reachable only through the override drop-downs at the top of the screen, and nothing said so
+ * (CAD to COST review, Oct 2026). Resin gets every in-scope grade inline; the process and material questions say
+ * where the rest are.
+ */
+function otherChoiceHtml(d: CADDecision): string {
+  if (d.entry) return '';
+  if (d.id === 'material.resin') {
+    const commodity = String(cadAnalysisResult?.costInputSuggestions?.recommendedCommodity ?? 'injection_moulding');
+    const scope = MATERIAL_SCOPE_BY_COMMODITY[commodity] ?? MATERIAL_SCOPE_BY_COMMODITY.injection_moulding;
+    const shortlist = new Set(d.options.map(o => o.value));
+    const rest = library.materials.filter(m => scope?.test(m.category) && !shortlist.has(m.id))
+      .sort((a, b) => a.grade.localeCompare(b.grade));
+    if (!rest.length) return '';
+    const answered = _cadDecisionAnswers[d.id];
+    const off = typeof answered === 'string' && !shortlist.has(answered) ? answered : '';
+    return `<label style="display:flex;flex-direction:column;gap:3px;margin-top:6px;font-size:0.72rem;color:var(--text-secondary)">
+      Other resin — any of the ${rest.length + shortlist.size} grades in the rate library for this process
+      <select data-decision-other="1" style="max-width:420px;font-size:0.74rem">
+        <option value="">— not listed above? choose here —</option>
+        ${rest.map(m => `<option value="${escHtml(m.id)}" ${m.id === off ? 'selected' : ''}>${escHtml(m.grade)}</option>`).join('')}
+      </select>
+    </label>`;
+  }
+  const target = d.id === 'commodity.route' ? { id: 'cad-commodity-override', what: 'any process' }
+    : d.id === 'material.family' ? { id: 'cad-material-override', what: 'any material grade' } : null;
+  if (!target) return '';
+  return `<div style="margin-top:4px;font-size:0.7rem;color:var(--text-muted)">These are the ones the geometry admits.
+    <button type="button" class="cad-other-link" data-focus="${target.id}" style="background:none;border:0;padding:0;color:var(--accent-ink);font-size:inherit;text-decoration:underline;cursor:pointer">Not listed? Choose ${target.what}</button> — the part is re-measured as that.</div>`;
+}
+
 /** Above this many options a question is a drop-down. */
-const CAD_DECISION_SELECT_OVER = 8;
+const CAD_DECISION_SELECT_OVER = 12;
 
 function renderCADDecisionsPanel(): string {
   const open = _cadDecisions.filter(d => d.severity === 'blocking');
@@ -6553,10 +6603,10 @@ function renderCADDecisionsPanel(): string {
             ${/* An advisory default is costed until answered; a suggestion is applied only when it is selected (an untouched
                  advisory radio is skipped by Apply — it said "confirm with Apply" and was not applied). */ ''}
             ${o.costed && !o.leaning && d.options.some(x => x.leaning) ? '<span style="color:var(--text-muted);font-style:italic"> (costed until you choose)</span>' : ''}
-            ${o.leaning && !o.costed && d.options.some(x => x.costed) ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above; select it and Apply to cost it)</span>' : ''}
+            ${o.leaning && !o.costed && d.options.some(x => x.costed) ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above; select it to cost it)</span>' : ''}
             ${o.leaning && (o.costed || !d.options.some(x => x.costed)) ? '<span style="color:var(--text-muted);font-style:italic"> (suggested — see why above)</span>' : ''}
           </span>
-        </label>`).join('')}
+        </label>`).join('')}${otherChoiceHtml(d)}
     </div>`;
 
   const blockingBlock = open.length ? `
@@ -6612,7 +6662,8 @@ function readCADDecisionPanel(): void {
     const advisory = _cadDecisions.find(d => d.id === id)?.severity === 'advisory';
     if (advisory && !_cadTouchedDecisions.has(id) && _cadDecisionAnswers[id] === undefined) continue;
     const typed = block.querySelector<HTMLInputElement>('input[data-decision-entry]');
-    const picked = typed ?? block.querySelector<HTMLInputElement>('input[type=radio]:checked, select[data-decision-select]');
+    const other = block.querySelector<HTMLSelectElement>('select[data-decision-other]');
+    const picked = typed ?? (other?.value ? other : block.querySelector<HTMLInputElement>('input[type=radio]:checked, select[data-decision-select]'));
     if (picked && picked.value.trim()) _cadDecisionAnswers[id] = picked.value.trim();
   }
 }
@@ -6625,7 +6676,8 @@ function readyBlockingCount(): { ready: number; total: number } {
   for (const d of open) {
     const block = panel?.querySelector<HTMLElement>(`.cad-decision[data-decision-id="${CSS.escape(d.id)}"]`);
     const typed = block?.querySelector<HTMLInputElement>('input[data-decision-entry]');
-    const picked = typed ?? block?.querySelector<HTMLInputElement>('input[type=radio]:checked, select[data-decision-select]');
+    const other = block?.querySelector<HTMLSelectElement>('select[data-decision-other]');
+    const picked = typed ?? (other?.value ? other : block?.querySelector<HTMLInputElement>('input[type=radio]:checked, select[data-decision-select]'));
     if ((picked?.value ?? '').trim() || _cadDecisionAnswers[d.id]) ready++;
   }
   return { ready, total: open.length };
@@ -6648,6 +6700,14 @@ function wireCADDecisionsPanel(): void {
     if (!id) return;
     _cadTouchedDecisions.add(id);
     _cadNewQuestions.delete(id);
+    const t = e.target as HTMLElement;
+    const blk = t.closest<HTMLElement>('.cad-decision');
+    if (t.matches('select[data-decision-other]') && (t as HTMLSelectElement).value) {
+      blk?.querySelectorAll<HTMLInputElement>('input[type=radio]').forEach(r => { r.checked = false; });
+    } else if (t.matches('input[type=radio]')) {
+      const o = blk?.querySelector<HTMLSelectElement>('select[data-decision-other]');
+      if (o) o.value = '';
+    }
     readCADDecisionPanel();
     status();
     // A blocking answer can change the route, the grade and the questions that follow: re-run the rules now so the
@@ -6664,6 +6724,11 @@ function wireCADDecisionsPanel(): void {
     void reanalyzeCAD();
   });
   document.getElementById('cad-get-cost-btn')?.addEventListener('click', () => { void cadGetCost(true); });
+  panel.querySelectorAll<HTMLButtonElement>('.cad-other-link').forEach(b => b.addEventListener('click', () => {
+    const sel = document.getElementById(b.dataset.focus ?? '') as HTMLSelectElement | null;
+    sel?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    sel?.focus();
+  }));
 }
 
 let _cadCostRunning = false;
@@ -6678,9 +6743,19 @@ const _cadNewQuestions = new Set<string>();
 async function autoRerunCAD(): Promise<void> {
   const before = new Set(openCADDecisions().map(d => d.id));
   if (!(await reanalyzeCAD())) return;
-  const added = openCADDecisions().filter(d => !before.has(d.id));
+  const open = openCADDecisions();
+  const added = open.filter(d => !before.has(d.id));
   for (const d of added) _cadNewQuestions.add(d.id);
   markNewCADQuestions();
+  // The line above the panel follows the panel: it kept saying "2 questions before the cost" after the last one was
+  // answered in place (stub axle live run, Oct 2026).
+  if (added.length) {
+    setCADFlowNotice(`Your answer opened ${added.length === 1 ? 'one more question' : `${added.length} more questions`} — check the suggested answer and press Get cost.`, 'ask');
+  } else if (open.length) {
+    setCADFlowNotice(costStepMessage({ kind: 'answer', missing: open }) + ' Check the suggested answer and press Get cost.', 'ask');
+  } else {
+    setCADFlowNotice('Nothing left to answer — press Get cost.', 'ask');
+  }
 }
 
 /** A "New" tag on questions an answer just opened. */

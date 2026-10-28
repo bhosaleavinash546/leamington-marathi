@@ -1254,6 +1254,11 @@ def _silhouette_areas_mm2(shape, diag_mm: float, cells: int = 400) -> dict:
 	from OCP.TopExp import TopExp_Explorer
 	from OCP.TopAbs import TopAbs_FACE
 	from OCP.TopoDS import TopoDS
+	from OCP.BRepTools import BRepTools
+	# Mesh at THIS resolution, never reuse one an earlier step left on the shape: whether that step ran (and at what
+	# deflection) depends on its time budget, so the same file read 128.9 cm² on one run and 129.6 cm² on another
+	# (CAD to COST review, Oct 2026). BRepMesh keeps a finer existing triangulation instead of re-meshing.
+	BRepTools.Clean_s(shape)
 	BRepMesh_IncrementalMesh(shape, max(0.05, diag_mm / 400.0), False, 0.5, True)
 	tris = []
 	exp = TopExp_Explorer(shape, TopAbs_FACE)

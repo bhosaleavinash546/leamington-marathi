@@ -247,7 +247,7 @@ describe('F10–F12 and kept settings', () => {
   });
 
   it('a long option list is a drop-down the panel reader understands', () => {
-    expect(main).toMatch(/const CAD_DECISION_SELECT_OVER = 8;/);
+    expect(main).toMatch(/const CAD_DECISION_SELECT_OVER = 12;/);
     expect(fnBody('renderCADDecisionsPanel')).toMatch(/<select data-decision-select="1"/);
     expect(fnBody('readCADDecisionPanel')).toMatch(/select\[data-decision-select\]/);
   });
@@ -261,5 +261,68 @@ describe('F10–F12 and kept settings', () => {
   it('the new notices use theme tokens, not light literals', () => {
     const block = css.slice(css.indexOf('.cad-flow-notice {'));
     expect(block).not.toMatch(/:[^;{}]*#[0-9a-f]{3,6}\b/i);   // a colour value, not a #cad- selector
+  });
+});
+
+// ── Shortlists, and where the rest are (review follow-up, 28 Oct 2026) ─────────────────────────────────────────────
+import { familyCandidates } from '../src/engine/cost-input-rules/derive/material.js';
+
+describe('the questions offer shortlists — and say where the full lists are', () => {
+  it('with the process still open, the material families are those of every route on offer, not the placeholder machining list', () => {
+    // The knuckle's shortlist: cast, forged, cast + machined, machined.
+    const open = familyCandidates({ commodity: 'machining', routeCandidates: ['casting', 'forging', 'cast_and_machine', 'machining'] });
+    for (const f of ['magnesium', 'zinc', 'nickel alloy', 'cast iron', 'titanium']) expect(open).toContain(f);
+    // Machining alone (the old list) had none of magnesium, zinc, nickel alloy.
+    const before = familyCandidates({ commodity: 'machining' });
+    expect(before).not.toContain('magnesium');
+    expect(before).not.toContain('zinc');
+    // Moulding routes only: plastic, nothing metal.
+    expect(familyCandidates({ commodity: 'machining', routeCandidates: ['injection_moulding', 'blow_moulding'] })).toEqual(['plastic']);
+    // A decided route keeps its own list (cast iron is not forged).
+    expect(familyCandidates({ commodity: 'forging' })).not.toContain('cast iron');
+  });
+
+  it('the server hands the open route shortlist to the rules on /analyze and /reanalyze', () => {
+    const cad = readFileSync('server/routes/cad.ts', 'utf8');
+    expect(cad).toMatch(/if \(commodityDecision\) ruleCtx\.routeCandidates = commodityDecision\.options\.map/);
+    expect(cad).toMatch(/if \(commodityDecisionRe\) ruleCtx\.routeCandidates = commodityDecisionRe\.options\.map/);
+  });
+
+  it('resin offers every in-scope grade, and the reader prefers that choice', () => {
+    const other = fnBody('otherChoiceHtml');
+    expect(other).toMatch(/d\.id === 'material\.resin'/);
+    expect(other).toMatch(/MATERIAL_SCOPE_BY_COMMODITY\[commodity\]/);
+    expect(other).toMatch(/data-decision-other="1"/);
+    expect(fnBody('readCADDecisionPanel')).toMatch(/other\?\.value \? other :/);
+    expect(fnBody('renderCADDecisionsPanel')).toMatch(/\$\{otherChoiceHtml\(d\)\}/);
+  });
+
+  it('process and material questions link to the full lists, and changing those re-measures', () => {
+    const other = fnBody('otherChoiceHtml');
+    expect(other).toMatch(/'cad-commodity-override'/);
+    expect(other).toMatch(/'cad-material-override'/);
+    expect(fnBody('wireCADDecisionsPanel')).toMatch(/\.cad-other-link/);
+    expect(fnBody('reanalyseForOverride')).toMatch(/if \(_cadRestoringForm\) return;/);
+    expect(fnBody('wireCADEvents')).toMatch(/matSel\.addEventListener\('change', \(\) => reanalyseForOverride\(\)\)/);
+  });
+});
+
+describe('stored measurements follow the kernel that made them', () => {
+  it('geometry, mesh and analysis caches are keyed on the kernel revision', async () => {
+    const store = readFileSync('server/utils/geometry-store.ts', 'utf8');
+    expect(store).toMatch(/return `\$\{hash\}:\$\{unitScale\}:\$\{KERNEL_REV\}`;/);
+    expect(store).toMatch(/`\$\{hash\}\.\$\{unitScale\}\.\$\{KERNEL_REV\}`/);
+    const cad = readFileSync('server/routes/cad.ts', 'utf8');
+    expect(cad.match(/kernelRev: KERNEL_REV/g)?.length).toBe(2);
+    const { KERNEL_REV } = await import('../server/utils/geometry-store.js');
+    expect(KERNEL_REV).toMatch(/^[0-9a-f]{12}$/);
+  });
+});
+
+describe('the notice follows an in-place re-run', () => {
+  it('says what is left after an answer re-runs the rules — never a stale count', () => {
+    const body = fnBody('autoRerunCAD');
+    expect(body).toMatch(/Your answer opened/);
+    expect(body).toMatch(/Nothing left to answer — press Get cost\./);
   });
 });

@@ -9,7 +9,7 @@ import rateLimit from 'express-rate-limit';
 import { createAnthropic, isAirGapped, aiDisabledBody, AI_DISABLED_MESSAGE } from '../utils/ai-client.js';
 import { requireAuth } from '../middleware/auth-middleware.js';
 import { resolveActiveRateBook } from './rate-library.js';
-import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles, putMesh, getMesh } from '../utils/geometry-store.js';
+import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles, putMesh, getMesh, KERNEL_REV } from '../utils/geometry-store.js';
 import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry, tessellateToSTL, kernelStatus } from '../utils/geometry-bridge.js';
@@ -981,7 +981,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     Buffer.from(partPhotoBase64),
     ...(drawingUpload ? [drawingUpload.buffer] : []),
     ...renderViews.map(v => Buffer.from(v)),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION,
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION, kernelRev: KERNEL_REV,
       // Inputs that change the result and were missing (360 review, Oct 2026): the file NAME (it carries
       // material / part-name evidence), the FASTBLANK DXF, and the active company rate book (an admin's
       // upload was not reflected until the cache expired).
@@ -1099,6 +1099,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // The same rules the prompt was rendered from, run again here so their values
   // can be written over the model's reply. One spec, one context, two consumers.
   const ruleCtx = ruleContextFor(selectedCommodity, geo, originalname, userOverrides, decisionAnswers, analysisMode);
+  if (commodityDecision) ruleCtx.routeCandidates = commodityDecision.options.map(o => String(o.value));
   const ruleSpec = specForCommodity(selectedCommodity);
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
   let ruleFields: ReturnType<typeof toRuleFields> | null = null;
@@ -2833,7 +2834,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   const cacheKey = cadCache.buildKey([
     Buffer.from(JSON.stringify(geo)),
     Buffer.from(partPhotoBase64),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, filename, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, filename, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION, kernelRev: KERNEL_REV })),
   ]);
   // `noCache` re-samples the model instead of serving the stored answer. Needed
   // for any A/B or variance measurement: without it a second run of the same
@@ -2921,6 +2922,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   // The same rules the prompt was rendered from, run again here so their values
   // can be written over the model's reply. One spec, one context, two consumers.
   const ruleCtx = ruleContextFor(selectedCommodity, geo, filename, userOverrides, decisionAnswers, analysisMode);
+  if (commodityDecisionRe) ruleCtx.routeCandidates = commodityDecisionRe.options.map(o => String(o.value));
   const ruleSpec = specForCommodity(selectedCommodity);
   let ruleOverrides: ReturnType<typeof applyRuleDecisions> | null = null;
   let ruleFields: ReturnType<typeof toRuleFields> | null = null;

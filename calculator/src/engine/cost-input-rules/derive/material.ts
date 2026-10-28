@@ -81,9 +81,23 @@ function massFor(volumeCm3: number, fam: MaterialFamily): number {
  * density to pick a family and then that family's density to compute the mass is
  * circular. `familyFromDensity` exists for callers who have a real density.
  */
+/**
+ * The families the material question may offer. With the process still open, every family any route on offer can be
+ * made from (in the density table's order); otherwise the chosen route's own list.
+ */
+export function familyCandidates(ctx: Pick<RuleContext, 'commodity' | 'routeCandidates'>): MaterialFamily[] {
+  const all = Object.keys(DENSITY_KG_PER_CM3) as MaterialFamily[];
+  const routes = (ctx.routeCandidates ?? []).filter(r => COMMODITY_FAMILIES[r]);
+  if (routes.length) {
+    const offered = new Set(routes.flatMap(r => COMMODITY_FAMILIES[r]));
+    return all.filter(f => offered.has(f));
+  }
+  return COMMODITY_FAMILIES[ctx.commodity] ?? all;
+}
+
 export function materialFacts(ctx: RuleContext): MaterialFacts {
   const volumeCm3 = ctx.geo.volume?.cm3 ?? 0;
-  const candidates = COMMODITY_FAMILIES[ctx.commodity] ?? Object.keys(DENSITY_KG_PER_CM3) as MaterialFamily[];
+  const candidates = familyCandidates(ctx);
 
   const answered = ctx.answers[MATERIAL_FAMILY_DECISION_ID] as MaterialFamily | undefined;
   if (answered && candidates.includes(answered)) {
