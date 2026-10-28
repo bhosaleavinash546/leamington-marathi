@@ -11504,7 +11504,10 @@ function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: 
     // Size-aware packaging from the shipping envelope + weight (the flat £0.15
     // default is wrong for a bulky bumper and for a 3 g part alike).
     {
-      const pbb = cadOCCTGeometry?.boundingBox;
+      // The envelope the headless chain sizes on (geo.boundingBox). An STL has no OCCT geometry, so its box comes from
+      // the analysis — the STL screen kept the flat £0.15 / £0.25 while headless sized them (ECU cover: £1.45 v £1.17).
+      const abb = r.geometry?.boundingBoxMm;
+      const pbb = cadOCCTGeometry?.boundingBox ?? (abb && abb.x > 0 ? { xMm: abb.x, yMm: abb.y, zMm: abb.z } : undefined);
       // Aluminium extrusion keeps its weight in its own sub-object — headless
       // reads that one, so the screen must too (live crash box: £9.90 v £10.11).
       const pkgKg = c.netWeightKg || Number((c as { alExtrusion?: { partWeightKg?: number } }).alExtrusion?.partWeightKg) || 0;
@@ -11987,7 +11990,7 @@ function fillCADFields(targetCommodity: CommodityType, r: CADAnalysisResult, c: 
       case 'composites': {
         const comp = c.composites;
         setNumericField('comp-part-wt', c.netWeightKg, 4);
-        const compSA = cadOCCTGeometry?.surfaceArea?.cm2 ?? null;
+        const compSA = cadOCCTGeometry?.surfaceArea?.cm2 ?? r.geometry?.estimatedSurfaceAreaCm2 ?? null;   // an STL has no OCCT geometry
         if (comp) {
           setNumericField('comp-fibre-frac', comp.fibreFraction, 2);
           setNumericField('comp-waste-frac', comp.wasteFraction, 2);

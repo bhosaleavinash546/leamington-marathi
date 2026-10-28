@@ -128,6 +128,17 @@ async function main(): Promise<void> {
     await page.click('#calc-btn');
     const hero = await answerAndCost(page);
     check('the STL is costed as an injection moulding', /\d/.test(hero), hero);
+    // sized from the part's envelope like the STEP (and headless) — the STL screen kept the flat £0.15 / £0.25
+    const shop = await page.evaluate(() => ['packaging', 'logistics'].map(id => {
+      const e = document.getElementById(id) as HTMLInputElement | null;
+      return { id, value: e?.value ?? '', prov: e?.getAttribute('data-prov') ?? '' };
+    }));
+    check('packaging and logistics sized from the part, not the flat defaults',
+      shop.every(f => f.prov === 'estimated' && !['0.15', '0.25'].includes(f.value)), JSON.stringify(shop));
+    if (process.env.CV_EXCEL) {   // the costing's workbook, to compare an STL with its STEP line by line
+      const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 120_000 }), page.evaluate(() => document.getElementById('export-excel-btn')!.click())]);
+      await dl.saveAs(process.env.CV_EXCEL);
+    }
 
     // the job the answers re-queued (route + material family), its report and its faces
     const t0 = Date.now();
