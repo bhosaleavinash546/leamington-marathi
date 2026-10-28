@@ -30,6 +30,7 @@ npm run test:e2e:full   # e2e/full.ts — real server, every commodity, exports,
 npm run test:e2e:pcb    # e2e/pcb-live.ts — photo→cost in a browser against e2e/pcb-stand-in.mjs (a fixed model reply)
 npm run test:e2e:sheet  # e2e/sheet-metal-live.ts — the seat bracket STEP through a real server + browser (needs OCP); writes live-<label>.json
 npm run test:e2e:cad-to-cost  # e2e/cad-to-cost-live.ts — CAD to COST three steps on 3 real parts (finish, compare routes = headline, Cost this route, axe); PASS/FAIL, needs a build + OCP
+npm run test:e2e:stl-dfm    # e2e/stl-dfm-live.ts — an STL through CAD to COST: DFM job, findings = the kernel's on the STEP, faces to the viewer; needs a build
 ```
 
 From the repo root, `make start|stop|restart|logs` drives the single Docker
@@ -590,6 +591,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   should-cost, priced findings as switches, drivers with "to hit target alone", what-ifs — every figure is
   `computeUniversalStack` on a varied input; `findingVariant` (shared with the DFM restack) takes EXACTLY a finding's £
   off the factory base (÷ the op's £ per cycle-hour after parts/cycle, OEE and crew). Live: `npx tsx e2e/dtc-live.ts`.
+- STL DFM (Oct 2026, `docs/cad/stl-dfm-2026-10.md`): an STL upload gets the geometric DFM job too. `server/utils/mesh-features.ts`
+  recovers faces from the triangles (planes; cylinders by region growing + circle fit; torus sectors — same radius, axes in one
+  plane tangent to one circle, ≥ 3 — dropped, as the kernel types tori; the rest free-form) and ports the kernel's definitions
+  (hole / boss ≥ 0.83 turn, fillet sweep, breakout, release / cavity / undercut regions, draw). It runs in a worker
+  (`mesh-features-worker.ts`, registers tsx itself — a worker's execArgv cannot `--import`), ≤ 300k triangles; the job applies the
+  STEP path's 0.3–3 × 2·V/S thickness clean-up. The triangle → face map is served by `/api/dfm/jobs/:id/mesh-faces` (never in the
+  report) and the screen gives it to the viewer (`setMeshFaces`, CAD to COST viewers only). Matches the kernel on prismatic and
+  moulded parts (fixtures + kernel truth in `tests/fixtures/stl-dfm/`, `tests/stl-dfm.test.ts`); free-form castings / forgings are
+  indicative. Re-measure with `npx tsx scripts/stl-dfm-validate.ts` (needs OCP); live `npx tsx e2e/stl-dfm-live.ts`.
 - DFM / DtC "pure arithmetic" rules (demo review, Oct 2026, `docs/review/dfm-dtc-demo-review-2026-10-08.md`): a DFM £ must
   move the COSTING's numbers — time pricers carry `minutes` in the costing's model (cast routes: `nearNetHoleMinutes`),
   removed from the costed op at its own rates; tooling carries `nreGBP`. Anything the cost model does not carry is

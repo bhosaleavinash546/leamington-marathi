@@ -118,6 +118,9 @@ export interface CADViewerHandle {
   setFaceCosts(costs: Record<number, number> | null, extra?: { items?: CostItem[]; format?: (gbp: number) => string }): void;
   /** Manufacturability findings for the inspector (null = the viewer's own geometry checks). */
   setIssues(items: ViewerIssue[] | null): void;
+  /** An STL's faces as the DFM job recovered them (1-based id per triangle in file order) — makes its findings, face
+   *  picking, face types and wall thickness work on a mesh. False when it does not fit the loaded model. */
+  setMeshFaces(triFace: Uint32Array, faces: FaceMeta[]): boolean;
   dispose(): void;
   el: HTMLElement;
 }
@@ -1528,23 +1531,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     badgeEl.className = 'cv3d-badge ' + (surfaceOnly ? 'cv3d-badge--warn' : topo?.isClosedSolid ? 'cv3d-badge--ok' : 'cv3d-badge--info');
     badgeEl.textContent = surfaceOnly ? 'Not a closed solid' : topo?.isClosedSolid ? 'Closed solid' : meta ? 'B-rep' : 'Mesh only';
 
-    // Tools that need B-rep data or several bodies are HIDDEN (disabled) on a model that cannot use them.
-    const enable = (act: string, on: boolean, why: string) => {
-      const b = root.querySelector<HTMLButtonElement>(`[data-act="${act}"]`);
-      if (b) { b.disabled = !on; b.title = on ? '' : why; }
-    };
-    enable('facecolors', !!meta, 'Face types need STEP/IGES (B-rep) — STL is mesh-only');
-    enable('tree', !!meta, 'Model tree needs STEP/IGES (B-rep) — STL is mesh-only');
-    enable('explode', bodyMeshes.length >= 2, 'Exploded view needs a multi-body model');
-    enable('bodycolors', bodyMeshes.length >= 2, 'Component colours need a multi-body assembly');
-    enable('rotate', bodyMeshes.length >= 1, '');
-    enable('move', bodyMeshes.length >= 1, '');
-    // wall-thickness heatmap: enabled only when the sidecar carries per-face thickness. The colour scale
-    // is the area-weighted 5th–95th percentile — single-ray outliers no longer flatten it to one colour.
-    const thkFaces = faceList.filter(f => typeof f.thicknessMm === 'number' && f.thicknessMm > 0);
-    thicknessRange = robustRange(thkFaces.map(f => f.thicknessMm as number), thkFaces.map(f => f.areaCm2 ?? 1));
-    enable('thickness', !!thicknessRange, 'Wall thickness needs STEP/IGES (B-rep) — STL is mesh-only');
-    if ((colorMode === 'facetype' && !meta) || (colorMode === 'thickness' && !thicknessRange) || (colorMode === 'body' && bodyMeshes.length < 2)) colorMode = 'none';
+    syncFaceTools();
     // Mesh volume / area for the inspector (exact on a closed mesh).
     partStats = meshVolumeArea(masterPositions!, topo ? topo.isClosedSolid !== false : true);
 
@@ -1657,7 +1644,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           `<div class="cv3d-tree-row cv3d-tree-click" data-ttype="${t}"><i style="background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}"></i>${FACE_TYPE_LABEL[t] ?? t} · ${ids.length}</div>`).join('') +
         `</details>`);
     } else {
-      parts.push('<div class="cv3d-tree-row">Face tree needs STEP/IGES (B-rep) — STL is mesh-only</div>');
+      parts.push('<div class="cv3d-tree-row">Face tree needs STEP/IGES, or an STL\u2019s faces from its DFM report</div>');
     }
     treeList.innerHTML = parts.join('');
     treeList.querySelectorAll('input[data-tbody]').forEach(cb => cb.addEventListener('change', () => {
@@ -2202,6 +2189,27 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const r = robustRange(vals) ?? { min: 0, max: vals[0], absMin: vals[0], absMax: vals[0], clippedLow: false, clippedHigh: false };
     return { ...r, min: 0, clippedLow: false };
   }
+  /** Tools that need face data or several bodies are disabled on a model that cannot use them — after a load, and again
+   *  when an STL's faces arrive from the DFM job (setMeshFaces). */
+  function syncFaceTools(): void {
+    const enable = (act: string, on: boolean, why: string) => {
+      const b = root.querySelector<HTMLButtonElement>(`[data-act="${act}"]`);
+      if (b) { b.disabled = !on; b.title = on ? '' : why; }
+    };
+    enable('facecolors', !!meta, 'Face types need STEP/IGES, or an STL\u2019s faces from its DFM report');
+    enable('tree', !!meta, 'Model tree needs STEP/IGES, or an STL\u2019s faces from its DFM report');
+    enable('explode', bodyMeshes.length >= 2, 'Exploded view needs a multi-body model');
+    enable('bodycolors', bodyMeshes.length >= 2, 'Component colours need a multi-body assembly');
+    enable('rotate', bodyMeshes.length >= 1, '');
+    enable('move', bodyMeshes.length >= 1, '');
+    // wall-thickness heatmap: enabled only when the sidecar carries per-face thickness. The colour scale
+    // is the area-weighted 5th–95th percentile — single-ray outliers no longer flatten it to one colour.
+    const thkFaces = faceList.filter(f => typeof f.thicknessMm === 'number' && f.thicknessMm > 0);
+    thicknessRange = robustRange(thkFaces.map(f => f.thicknessMm as number), thkFaces.map(f => f.areaCm2 ?? 1));
+    enable('thickness', !!thicknessRange, 'Wall thickness needs STEP/IGES, or an STL\u2019s faces from its DFM report');
+    if ((colorMode === 'facetype' && !meta) || (colorMode === 'thickness' && !thicknessRange) || (colorMode === 'body' && bodyMeshes.length < 2)) colorMode = 'none';
+  }
+
   function effectiveMode(): ColorMode {
     if (colorMode === 'cost' && !costRangeNow()) return 'none';
     if (colorMode === 'thickness' && !(meta && triFaceAll && thicknessRange)) return 'none';
@@ -2992,6 +3000,21 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     setIssues(items: ViewerIssue[] | null): void {
       hostIssues = items;
       renderInspector();
+    },
+    setMeshFaces(triFace: Uint32Array, faces: FaceMeta[]): boolean {
+      // An STL only (a STEP has the kernel's faces), and only the mesh these ids were computed on: same triangle count
+      // in the same file order. An STL is one body, so the viewer's triangle order IS the file's.
+      if (meta || !triFaceAll || triFace.length !== triFaceAll.length) return false;
+      const byId: (FaceMeta | null)[] = [];
+      for (const f of faces) byId[f.id] = f;
+      for (let i = 0; i <= faces.length; i++) if (byId[i] === undefined) byId[i] = null;
+      meta = { triFace, faces: byId, bodies: null };
+      faceList = faces;
+      triFaceAll.set(triFace);
+      syncFaceTools();
+      applyColorMode();
+      renderInspector();
+      return true;
     },
     el: root,
     dispose(): void {

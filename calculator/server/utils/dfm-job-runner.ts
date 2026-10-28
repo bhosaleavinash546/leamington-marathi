@@ -14,7 +14,9 @@
 import { regionOf, rateBookForRegion } from '../services/rate-book.js';
 import { randomUUID } from 'node:crypto';
 import db from '../db.js';
-import { analyzeGeometry } from './geometry-bridge.js';
+import { analyzeGeometry, applyShellWallCorrectionToFeatures } from './geometry-bridge.js';
+import { extractStlFeaturesOffThread, type MeshFaceMeta } from './mesh-features-worker.js';
+import type { OCCTGeometry } from './geometry-bridge.js';
 import { readFile, writeFile, unlink } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -28,6 +30,11 @@ import { withRates } from '../../src/engine/rate-context.js';
 import type { CommodityType } from '../../src/engine/types.js';
 
 export type DFMJobStatus = 'queued' | 'running' | 'done' | 'error';
+
+/** An STL's recovered faces, stored with its report: the 1-based face id of every triangle in file order (Uint32,
+ *  little-endian, base64) and the faces the findings name. Served on its own (`/jobs/:id/mesh-faces`), never in the
+ *  report, which travels with costings and exports. */
+export interface MeshFaces { triangles: number; triFaceB64: string; faces: MeshFaceMeta[] }
 
 export interface DFMJobRequest {
   /**
@@ -58,7 +65,7 @@ export interface DFMJobRow {
   status: DFMJobStatus;
   commodity: string;
   partName: string;
-  result: GeometricAnalysis | null;
+  result: (GeometricAnalysis & { meshFaces?: MeshFaces }) | null;
   error: string | null;
   queuedAt: string;
   startedAt: string | null;
@@ -125,8 +132,8 @@ export function getDFMJob(id: string): DFMJobRow | null {
   };
 }
 
-function safeParse(s: string): GeometricAnalysis | null {
-  try { return JSON.parse(s) as GeometricAnalysis; } catch { return null; }
+function safeParse(s: string): (GeometricAnalysis & { meshFaces?: MeshFaces }) | null {
+  try { return JSON.parse(s) as GeometricAnalysis & { meshFaces?: MeshFaces }; } catch { return null; }
 }
 
 /**
@@ -171,35 +178,11 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
       return;
     }
 
-    // CV_EXTRACT_FEATURES turns on the per-face scan. Passed explicitly to the
-    // kernel spawn rather than by mutating process.env around an await — the
-    // costing path never sets it, so a normal run pays nothing for this.
     const buf = await readFile(req.filePath);
-    const geo = await analyzeGeometry(buf, basename(req.filePath), undefined,
-                                      { CV_EXTRACT_FEATURES: '1' });
-
-    if (!geo || geo.status !== 'success') {
-      throw new Error(geo?.error || 'geometry engine did not return a successful measurement');
-    }
-
-    const part: PartContext = {
-      commodity: req.commodity,
-      featureSet: geo.manufacturingFeatures ?? {
-        available: false, features: [],
-        note: 'The kernel ran but produced no feature set — the part may exceed the face cap.',
-      },
-      bboxMm: geo.boundingBox
-        ? { x: geo.boundingBox.xMm, y: geo.boundingBox.yMm, z: geo.boundingBox.zMm }
-        : undefined,
-      medianWallMm: geo.manufacturingFeatures?.medianThicknessMm ?? geo.wallThickness?.meanMm ?? null,
-      materialFamily: req.materialFamily,
-      process: req.process,
-      cost: { ...resolveCostContext(req, geo.volume?.cm3),
-        ...(geo.projectedArea?.alongDrawMm2 ? { projectedAreaCm2: geo.projectedArea.alongDrawMm2 / 100 } : {}) },
-    };
+    const { part, meshFaces } = /\.stl$/i.test(req.filePath) ? await stlPart(buf, req) : { part: await kernelPart(buf, req), meshFaces: undefined };
     // Priced in the requested country's book — toolroom, fixtures and the mould estimator read the ACTIVE book, and
     // the job used to leave it on the UK while the machine and labour rates were the country's.
-    finish(id, withRates(costBook(req), () => analyseGeometricDFM(part)));
+    finish(id, { ...withRates(costBook(req), () => analyseGeometricDFM(part)), ...(meshFaces ? { meshFaces } : {}) });
   } catch (e) {
     db.prepare("UPDATE dfm_jobs SET status = 'error', error = ?, finished_at = ? WHERE id = ?")
       .run(String((e as Error).message ?? e).slice(0, 500), new Date().toISOString(), id);
@@ -207,6 +190,62 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
     // Temp uploads are ours to clean up, on the success and the failure path.
     if (req.ownsFile) await unlink(req.filePath).catch(() => {});
   }
+}
+
+/** A STEP / IGES part: the kernel measures it with the per-face scan on. */
+async function kernelPart(buf: Buffer, req: DFMJobRequest): Promise<PartContext> {
+  // CV_EXTRACT_FEATURES turns on the per-face scan. Passed explicitly to the
+  // kernel spawn rather than by mutating process.env around an await — the
+  // costing path never sets it, so a normal run pays nothing for this.
+  const geo = await analyzeGeometry(buf, basename(req.filePath), undefined,
+                                    { CV_EXTRACT_FEATURES: '1' });
+
+  if (!geo || geo.status !== 'success') {
+    throw new Error(geo?.error || 'geometry engine did not return a successful measurement');
+  }
+
+  return {
+    commodity: req.commodity,
+    featureSet: geo.manufacturingFeatures ?? {
+      available: false, features: [],
+      note: 'The kernel ran but produced no feature set — the part may exceed the face cap.',
+    },
+    bboxMm: geo.boundingBox
+      ? { x: geo.boundingBox.xMm, y: geo.boundingBox.yMm, z: geo.boundingBox.zMm }
+      : undefined,
+    medianWallMm: geo.manufacturingFeatures?.medianThicknessMm ?? geo.wallThickness?.meanMm ?? null,
+    materialFamily: req.materialFamily,
+    process: req.process,
+    cost: { ...resolveCostContext(req, geo.volume?.cm3),
+      ...(geo.projectedArea?.alongDrawMm2 ? { projectedAreaCm2: geo.projectedArea.alongDrawMm2 / 100 } : {}) },
+  };
+}
+
+/**
+ * An STL part: the kernel cannot read a mesh, so the faces are recovered from the triangles
+ * (`mesh-features.ts`, the kernel's feature definitions ported) and the same rule pack runs on them. The STEP path's
+ * thickness clean-up (readings outside 0.3–3 × 2·V/S dropped) is applied to the mesh's readings as well.
+ */
+async function stlPart(buf: Buffer, req: DFMJobRequest): Promise<{ part: PartContext; meshFaces: MeshFaces }> {
+  const m = await extractStlFeaturesOffThread(buf);
+  const volumeCm3 = m.volumeMm3 > 0 ? m.volumeMm3 / 1000 : undefined;
+  applyShellWallCorrectionToFeatures({
+    status: 'success', manufacturingFeatures: m.featureSet,
+    volume: { mm3: m.volumeMm3, cm3: m.volumeMm3 / 1000 }, surfaceArea: { mm2: m.surfaceMm2, cm2: m.surfaceMm2 / 100 },
+  } as OCCTGeometry, null);
+  const part: PartContext = {
+    commodity: req.commodity,
+    featureSet: m.featureSet,
+    bboxMm: m.bboxMm,
+    medianWallMm: m.featureSet.medianThicknessMm ?? null,
+    materialFamily: req.materialFamily,
+    process: req.process,
+    cost: { ...resolveCostContext(req, volumeCm3),
+      ...(m.projectedAlongDrawMm2 ? { projectedAreaCm2: m.projectedAlongDrawMm2 / 100 } : {}) },
+  };
+  // The findings name these face ids; the viewer needs the same ids per triangle to show them on the mesh.
+  const tf = new Uint32Array(m.triFace);
+  return { part, meshFaces: { triangles: tf.length, triFaceB64: Buffer.from(tf.buffer, tf.byteOffset, tf.byteLength).toString('base64'), faces: m.faces } };
 }
 
 /**
@@ -249,7 +288,7 @@ function resolveCostContext(req: DFMJobRequest, volumeCm3?: number): CostContext
   };
 }
 
-function finish(id: string, result: GeometricAnalysis): void {
+function finish(id: string, result: GeometricAnalysis & { meshFaces?: MeshFaces }): void {
   db.prepare("UPDATE dfm_jobs SET status = 'done', result = ?, finished_at = ? WHERE id = ?")
     .run(JSON.stringify(result), new Date().toISOString(), id);
 }

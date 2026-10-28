@@ -1,0 +1,150 @@
+{
+ "source": "FORGE_Hub_Flange.stp: geometry kernel with CV_EXTRACT_FEATURES=1, 2026-10-28; STL diag/500 / 0.3 rad (scripts/stl-export.py)",
+ "commodity": "forging",
+ "family": "steel",
+ "holes": [
+  {
+   "diaMm": 14,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -27.5,
+    -47.631,
+    9
+   ],
+   "depthMm": 18,
+   "openEnds": 2
+  },
+  {
+   "diaMm": 14,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    27.5,
+    -47.631,
+    9
+   ],
+   "depthMm": 18,
+   "openEnds": 2
+  },
+  {
+   "diaMm": 14,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -55,
+    0,
+    9
+   ],
+   "depthMm": 18,
+   "openEnds": 2
+  },
+  {
+   "diaMm": 14,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -27.5,
+    47.631,
+    9
+   ],
+   "depthMm": 18,
+   "openEnds": 2
+  },
+  {
+   "diaMm": 14,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    55,
+    0,
+    9
+   ],
+   "depthMm": 18,
+   "openEnds": 2
+  },
+  {
+   "diaMm": 14,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    27.5,
+    47.631,
+    9
+   ],
+   "depthMm": 18,
+   "openEnds": 2
+  },
+  {
+   "diaMm": 60,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    0,
+    0,
+    25
+   ],
+   "depthMm": 50,
+   "openEnds": 2
+  }
+ ],
+ "bosses": [
+  {
+   "diaMm": 140,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    0,
+    0,
+    9
+   ],
+   "depthMm": 18
+  },
+  {
+   "diaMm": 80,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    0,
+    0,
+    34
+   ],
+   "depthMm": 32
+  }
+ ],
+ "concaveFillets": [],
+ "undercuts": 0,
+ "drawDirectionXYZ": [
+  0,
+  0,
+  1
+ ],
+ "findingsByRule": {}
+}

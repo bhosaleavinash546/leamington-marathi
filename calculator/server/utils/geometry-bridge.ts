@@ -136,7 +136,7 @@ export type { OCCTGeometry };
  *
  * Returns null when there was nothing to correct.
  */
-function applyShellWallCorrectionToFeatures(
+export function applyShellWallCorrectionToFeatures(
   geo: OCCTGeometry, correctedWallMm: number | null,
 ): { dropped: number; total: number; capMm: number; floorMm: number } | null {
   const mf = geo.manufacturingFeatures;

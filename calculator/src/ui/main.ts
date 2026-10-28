@@ -232,6 +232,7 @@ import { showNews, refreshNews } from './panels/news.js';
 import { initSWPanel, applySWCountry, applySWCurrency } from './panels/sw-should-cost-ui.js';
 import { initObservability, breadcrumb } from './observability.js';
 import { escHtml, showToast as sharedShowToast } from './toast.js';
+import { fetchMeshFaces, type MeshFaces } from './mesh-faces.js';
 import { buildGeometricDFMPanel, dfmHighlightHint, measureLabel, measureAgainstLimit, fmtMeasureNum, type DfmAmount } from './dfm-geometry-panel.js';
 import { buildRuleVsAIPanel, type CADDiff } from './cad-diff-panel.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
@@ -379,6 +380,8 @@ let cadAnalysisResult: CADAnalysisResult | null = null;
  * time. If it has not, the report simply omits the section rather than blocking.
  */
 let cadDfmJobId: string | null = null;
+/** An STL's faces from its DFM job, for the viewer (null on a STEP — the kernel's tessellation carries them). */
+let cadMeshFaces: MeshFaces | null = null;
 let cadGeometricDFM: GeometricDFMMeta | null = null;
 let cadOCCTGeometry: OCCTGeometry | null = null;
 let cadGeometrySource: 'occt' | 'stl_parser' | 'text_parsing' = 'text_parsing';
@@ -5902,6 +5905,7 @@ async function _mountCADViewerNow(hostId: string, file: File, compact: boolean):
     if (hostId === 'cad-viewer-host') cadViewer = handle; else cadInlineViewer = handle;
     publishViewerHandle(handle);
     await handle.loadFile(file);
+    pushViewerState();   // what needs the loaded mesh (an STL's faces from its DFM job)
   } catch (err) {
     console.warn('[CAD viewer] mount failed:', err instanceof Error ? err.message : String(err));
     // If the viewer itself mounted, keep it visible — its status bar explains
@@ -5949,6 +5953,7 @@ async function showPersistentCADViewer(file: File): Promise<void> {
     publishViewerHandle(handle);
     cadPersistViewer = handle;
     await handle.loadFile(file);
+    pushViewerState();
   } catch (err) {
     console.warn('[CAD persist viewer] mount failed:', err instanceof Error ? err.message : String(err));
     cadPersistViewer = null;
@@ -5990,7 +5995,7 @@ function wireCADEvents(): void {
 
   // Clear button
   el('cad-clear-btn')?.addEventListener('click', () => {
-    cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null; cadDfmJobId = null; cadGeometricDFM = null;
+    cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null; cadDfmJobId = null; cadGeometricDFM = null; cadMeshFaces = null;
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
     _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadAnswersApplied = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
     unmountCADViewer();
@@ -6116,7 +6121,7 @@ function setCadQualityBadge(isClosedSolid: boolean | null, freeEdges: number | n
   const isMesh = /\.stl$/i.test(cadFile?.name ?? '');
   if (isClosedSolid === true) paint('closed solid', 'success');
   else if (isClosedSolid === false) paint(`not a closed solid · ${freeEdges ?? '?'} free edge(s)`, 'danger');
-  else if (isMesh) paint('mesh (STL) — features not visible to the kernel', 'warning');
+  else if (isMesh) paint('mesh (STL) — faces recovered from the triangles', 'warning');
   else paint('', 'muted');
 }
 
@@ -6334,7 +6339,7 @@ function setCADFile(f: File): void {
   if (cadResults) cadResults.innerHTML = '';
   cadAnalysisResult = null;
   cadOCCTGeometry = null;
-  cadDfmJobId = null; cadGeometricDFM = null;   // the last part's findings are not this part's
+  cadDfmJobId = null; cadGeometricDFM = null; cadMeshFaces = null;   // the last part's findings are not this part's
   setCADFlowNotice('', 'clear');
   updateCADSteps();
   void mountCADViewer('cad-viewer-host', f, false);
@@ -17899,6 +17904,9 @@ async function pollGeometricDFM(jobId: string, maxMs = 15 * 60_000): Promise<voi
       if (!rep.ok) return;
       cadGeometricDFM = await rep.json() as GeometricDFMMeta;
       console.log(`[dfm] geometric DFM ready: ${cadGeometricDFM.grouped?.length ?? 0} issue(s)`);
+      // An STL's findings name faces the job recovered from the triangles: the viewer needs them to show the faces.
+      if (/\.stl$/i.test(cadFile?.name ?? '')) cadMeshFaces = await fetchMeshFaces(jobId, authHeader()).catch(() => null);
+      if (cadDfmJobId !== jobId) return;
       renderGeometricDFMPanel();
       pushViewerState(); // the findings appear in the viewer's inspector too
       if (dtcTabActive()) renderDesignToCost();
@@ -17954,7 +17962,7 @@ function renderGeometricDFMPanel(): void {
  * It used to be `window.__cadViewer`, set on every mount and never cleared, so
  * a DFM click could report "Highlighted N faces" into a disposed viewer.
  */
-type ViewerLike = Pick<import('./cad-viewer.js').CADViewerHandle, 'highlightFaces' | 'setGuardrails' | 'showEnvelope' | 'setFaceCosts' | 'setIssues'> & { dispose(): void };
+type ViewerLike = Pick<import('./cad-viewer.js').CADViewerHandle, 'highlightFaces' | 'setGuardrails' | 'showEnvelope' | 'setFaceCosts' | 'setIssues' | 'setMeshFaces'> & { dispose(): void };
 const viewerBus = {
   handle: null as ViewerLike | null,
   publish(h: ViewerLike): void {
@@ -17974,6 +17982,8 @@ function pushViewerState(): void {
   const v = viewerBus.get();
   if (!v) return;
   try {
+    // CAD to COST's viewers show this part; the standalone viewer may hold another file
+    if (cadMeshFaces && v !== viewerStandalone) v.setMeshFaces(cadMeshFaces.triFace, cadMeshFaces.faces);
     v.setGuardrails(cadSanityWarnings.map(w => ({
       code: w.code, message: w.message, blocking: !!w.blocking, acknowledged: _cadSanityAcks.has(w.code),
       faceIds: guardrailFaceIds(w.code),

@@ -1,0 +1,252 @@
+{
+ "source": "IM_ECU_Cover.stp: geometry kernel with CV_EXTRACT_FEATURES=1, 2026-10-28; STL diag/500 / 0.3 rad (scripts/stl-export.py)",
+ "commodity": "injection_moulding",
+ "family": "plastic",
+ "holes": [
+  {
+   "diaMm": 3.2,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -80,
+    -50,
+    20.75
+   ],
+   "depthMm": 29.5,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 3.2,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    80,
+    -50,
+    20.75
+   ],
+   "depthMm": 29.5,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 3.2,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -80,
+    50,
+    20.75
+   ],
+   "depthMm": 29.5,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 3.2,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    80,
+    50,
+    20.75
+   ],
+   "depthMm": 29.5,
+   "openEnds": 1
+  }
+ ],
+ "bosses": [
+  {
+   "diaMm": 7,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -80,
+    -50,
+    21.75
+   ],
+   "depthMm": 31.5
+  },
+  {
+   "diaMm": 7,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    80,
+    -50,
+    21.75
+   ],
+   "depthMm": 31.5
+  },
+  {
+   "diaMm": 7,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -80,
+    50,
+    21.75
+   ],
+   "depthMm": 31.5
+  },
+  {
+   "diaMm": 7,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    80,
+    50,
+    21.75
+   ],
+   "depthMm": 31.5
+  }
+ ],
+ "concaveFillets": [
+  {
+   "radiusMm": 0.5,
+   "sweepDeg": 88.5,
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "positionMm": [
+    -86.03,
+    0,
+    37
+   ]
+  },
+  {
+   "radiusMm": 0.5,
+   "sweepDeg": 88.5,
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "positionMm": [
+    0,
+    -56.03,
+    37
+   ]
+  },
+  {
+   "radiusMm": 0.5,
+   "sweepDeg": 88.5,
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "positionMm": [
+    0,
+    56.03,
+    37
+   ]
+  },
+  {
+   "radiusMm": 0.5,
+   "sweepDeg": 88.5,
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "positionMm": [
+    86.03,
+    0,
+    37
+   ]
+  },
+  {
+   "radiusMm": 0.5,
+   "sweepDeg": 90,
+   "axis": [
+    0.02617,
+    0.02617,
+    0.99932
+   ],
+   "positionMm": [
+    -86.515,
+    -56.515,
+    18.49
+   ]
+  },
+  {
+   "radiusMm": 0.5,
+   "sweepDeg": 90,
+   "axis": [
+    0.02617,
+    -0.02617,
+    0.99932
+   ],
+   "positionMm": [
+    -86.515,
+    56.515,
+    18.49
+   ]
+  },
+  {
+   "radiusMm": 0.5,
+   "sweepDeg": 90,
+   "axis": [
+    0.02617,
+    -0.02617,
+    -0.99932
+   ],
+   "positionMm": [
+    86.515,
+    -56.515,
+    18.49
+   ]
+  },
+  {
+   "radiusMm": 0.5,
+   "sweepDeg": 90,
+   "axis": [
+    0.02617,
+    0.02617,
+    -0.99932
+   ],
+   "positionMm": [
+    86.515,
+    56.515,
+    18.49
+   ]
+  }
+ ],
+ "undercuts": 8,
+ "drawDirectionXYZ": [
+  0,
+  0,
+  1
+ ],
+ "findingsByRule": {
+  "moulding.draft.insufficient": 28,
+  "moulding.hole.core-pin-slender": 4,
+  "moulding.undercut.requires-side-action": 8,
+  "moulding.boss.wall-ratio": 4,
+  "moulding.rib.thicker-than-0p6-wall": 4
+ }
+}

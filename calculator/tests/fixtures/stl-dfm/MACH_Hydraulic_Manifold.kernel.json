@@ -1,0 +1,272 @@
+{
+ "source": "MACH_Hydraulic_Manifold.stp: geometry kernel with CV_EXTRACT_FEATURES=1, 2026-10-28; STL diag/500 / 0.3 rad (scripts/stl-export.py)",
+ "commodity": "machining",
+ "family": "aluminium",
+ "holes": [
+  {
+   "diaMm": 18,
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "positionMm": [
+    20,
+    60,
+    20
+   ],
+   "depthMm": 40,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 18,
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "positionMm": [
+    20,
+    40,
+    20
+   ],
+   "depthMm": 40,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 18,
+   "axis": [
+    1,
+    0,
+    0
+   ],
+   "positionMm": [
+    20,
+    20,
+    20
+   ],
+   "depthMm": 40,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 8,
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "positionMm": [
+    60,
+    35,
+    12
+   ],
+   "depthMm": 70,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 8,
+   "axis": [
+    0,
+    1,
+    0
+   ],
+   "positionMm": [
+    60,
+    35,
+    30
+   ],
+   "depthMm": 70,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 11,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    10,
+    10,
+    30
+   ],
+   "depthMm": 60,
+   "openEnds": 2
+  },
+  {
+   "diaMm": 5,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    28,
+    18,
+    54
+   ],
+   "depthMm": 12,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 11,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    110,
+    10,
+    30
+   ],
+   "depthMm": 60,
+   "openEnds": 2
+  },
+  {
+   "diaMm": 5,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    92,
+    18,
+    54
+   ],
+   "depthMm": 12,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 5,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    28,
+    62,
+    54
+   ],
+   "depthMm": 12,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 11,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    10,
+    70,
+    30
+   ],
+   "depthMm": 60,
+   "openEnds": 2
+  },
+  {
+   "diaMm": 5,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    92,
+    62,
+    54
+   ],
+   "depthMm": 12,
+   "openEnds": 1
+  },
+  {
+   "diaMm": 11,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    110,
+    70,
+    30
+   ],
+   "depthMm": 60,
+   "openEnds": 2
+  }
+ ],
+ "bosses": [],
+ "concaveFillets": [
+  {
+   "radiusMm": 5,
+   "sweepDeg": 90,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    40,
+    30,
+    50
+   ]
+  },
+  {
+   "radiusMm": 5,
+   "sweepDeg": 90,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    40,
+    50,
+    50
+   ]
+  },
+  {
+   "radiusMm": 5,
+   "sweepDeg": 90,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    80,
+    30,
+    50
+   ]
+  },
+  {
+   "radiusMm": 5,
+   "sweepDeg": 90,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    80,
+    50,
+    50
+   ]
+  }
+ ],
+ "undercuts": 0,
+ "drawDirectionXYZ": [
+  0,
+  0,
+  1
+ ],
+ "findingsByRule": {
+  "machining.hole.depth-beyond-standard-drill": 6,
+  "machining.hole.intersecting": 2,
+  "machining.setup.access-directions": 1
+ }
+}

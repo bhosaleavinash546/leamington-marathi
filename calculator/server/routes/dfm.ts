@@ -147,7 +147,17 @@ router.get('/jobs/:id/report', requireAuth, (req: Request, res: Response) => {
     res.status(409).json({ error: `job is ${job.status}`, status: job.status, detail: job.error });
     return;
   }
-  res.json(job.result);
+  // An STL's faces are served on their own (below): the report travels with costings and exports.
+  const { meshFaces: _faces, ...report } = job.result ?? {};
+  res.json(job.result ? report : null);
+});
+
+/** An STL's recovered faces for the viewer — the ids the report's findings name, one per triangle in file order. */
+router.get('/jobs/:id/mesh-faces', requireAuth, (req: Request, res: Response) => {
+  const job = getDFMJob(req.params.id);
+  if (!job) { res.status(404).json({ error: 'job not found' }); return; }
+  if (!job.result?.meshFaces) { res.status(404).json({ error: 'no mesh faces (not an STL, or the job has not finished)' }); return; }
+  res.json(job.result.meshFaces);
 });
 
 export default router;

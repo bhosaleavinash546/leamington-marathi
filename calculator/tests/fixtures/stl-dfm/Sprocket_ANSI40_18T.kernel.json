@@ -1,0 +1,284 @@
+{
+ "source": "Sprocket_ANSI40_18T.step: geometry kernel with CV_EXTRACT_FEATURES=1, 2026-10-28; STL diag/500 / 0.3 rad (scripts/stl-export.py)",
+ "commodity": "machining",
+ "family": "steel",
+ "holes": [
+  {
+   "diaMm": 20,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    0,
+    0,
+    3.6
+   ],
+   "depthMm": 7.2,
+   "openEnds": 2
+  }
+ ],
+ "bosses": [],
+ "concaveFillets": [
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    34.363,
+    12.507,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    36.568,
+    0,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    34.363,
+    -12.507,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    28.013,
+    -23.506,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    18.284,
+    -31.669,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    6.35,
+    -36.013,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -6.35,
+    -36.013,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -18.284,
+    -31.669,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -28.013,
+    -23.506,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -34.363,
+    -12.507,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -36.568,
+    0,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -34.363,
+    12.507,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -28.013,
+    23.506,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -18.284,
+    31.669,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    -6.35,
+    36.013,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    6.35,
+    36.013,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    18.284,
+    31.669,
+    3.6
+   ]
+  },
+  {
+   "radiusMm": 4.0178,
+   "sweepDeg": 284.6,
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "positionMm": [
+    28.013,
+    23.506,
+    3.6
+   ]
+  }
+ ],
+ "undercuts": 0,
+ "drawDirectionXYZ": [
+  0,
+  0,
+  1
+ ],
+ "findingsByRule": {}
+}

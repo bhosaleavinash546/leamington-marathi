@@ -156,9 +156,7 @@ async function queueGeometricDFM(
   annualVolume?: number, region?: string,
 ): Promise<string | null> {
   if (!GEOMETRIC_DFM_COMMODITIES.has(commodity as CommodityType)) return null;
-  // The kernel cannot read a mesh: every STL job burned a temp file, a queue
-  // slot and a spawn to produce "Unsupported format: .stl".
-  if (/\.stl$/i.test(filename)) return null;
+  // An STL is read by the mesh feature pass (mesh-features.ts) in the job, not by the kernel.
   try {
     return await queueDFMJobFromBuffer(buffer, filename, {
       commodity: commodity as CommodityType,
