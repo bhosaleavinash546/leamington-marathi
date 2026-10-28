@@ -47,6 +47,19 @@ const BUCKET_CV_FACTOR: Record<keyof Breakdown8Bucket, number> = {
  * all Medium or High — 12 Medium, 9 High, 2 Low on the stub axle; 5 Medium, 1 High on the bumper —
  * printed "Model Confidence: Low" (uploaded-parts review, Oct 2026).
  */
+/**
+ * Why the overall grade is what it is — the traceability mix `overallConfidence` grades on, and the data points graded
+ * Low (the cost card prints them: a bare "confidence Low" beside a ±8.8 % band read as a contradiction).
+ */
+export function confidenceWhy(result: PartCostResult): {
+  grade: Confidence; total: number; high: number; medium: number; low: number; lowFields: string[];
+} {
+  const all = result.traceability;
+  const count = (c: Confidence) => all.filter(t => t.confidence === c).length;
+  return { grade: overallConfidence(result), total: all.length, high: count('High'), medium: count('Medium'), low: count('Low'),
+    lowFields: [...new Set(all.filter(t => t.confidence === 'Low').map(t => t.field))] };
+}
+
 export function overallConfidence(result: PartCostResult): Confidence {
   const all = result.traceability;
   if (!all.length) return 'Medium';

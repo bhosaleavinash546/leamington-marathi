@@ -175,15 +175,16 @@ describe('F6: the CAD kernel', () => {
   });
 });
 
-describe('F7: the model beside its cost', () => {
-  it('the compact viewer host is in the results panel, before the result tabs', () => {
-    const results = index.indexOf('<div class="results-panel">');
+describe('F7: the model beside its cost — on the left through all three steps (proposal v2 §3)', () => {
+  it('the compact viewer host heads the input panel, outside (before) the swapped form area', () => {
+    const input = index.indexOf('<div class="input-panel">');
     const host = index.indexOf('id="cad-persist-viewer-host"');
-    const tabs = index.indexOf('id="results-tabs"');
-    expect(results).toBeGreaterThan(0);
-    expect(host).toBeGreaterThan(results);
-    expect(host).toBeLessThan(tabs);
-    expect(index.indexOf('id="commodity-form-area"')).toBeLessThan(results);
+    const form = index.indexOf('id="commodity-form-area"');
+    const results = index.indexOf('<div class="results-panel">');
+    expect(input).toBeGreaterThan(0);
+    expect(host).toBeGreaterThan(input);
+    expect(host).toBeLessThan(form);     // not inside it: a form swap must not destroy the viewer
+    expect(form).toBeLessThan(results);
   });
 });
 

@@ -50,12 +50,12 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-DXig1Wu-.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-BilDGCGi.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/rolldown-runtime-Dd_uD5pT.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-BDYKo4-7.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-DuawmFxQ.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-CvDoa17S.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-DWwnu6ov.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-DAM4qLGm.css">
 </head>
 <body>
 
@@ -1116,6 +1116,12 @@
       </div>
     </div>
 
+    <!-- Persistent CAD 3D viewer — the model on the LEFT through all three CAD to COST steps (proposal v2, §3). It stays
+         through Apply and commodity switches (outside commodity-form-area, so form swaps don't destroy it). It sat 2–5k px
+         down under the form (360 review), then under the cost card in the results column — off screen at the cost step
+         (CAD to COST trace, 28 Oct 2026). Mounted by showPersistentCADViewer(). -->
+    <div id="cad-persist-viewer-host" style="display:none;margin:0 0 12px"></div>
+
     <!-- Dynamic commodity form area -->
     <div id="commodity-form-area"></div>
 
@@ -1186,12 +1192,8 @@
     <!-- Sticky result hero — the answer, always in view -->
     <div id="cv-result-hero" style="display:none"></div>
 
-    <!-- Persistent CAD 3D viewer — the part beside its cost. It stays through Apply and commodity switches (outside
-         commodity-form-area, so form swaps don't destroy it). It sat below the whole commodity form, 2–5k px down the
-         page (CAD to COST 360 review, Oct 2026); it now heads the result. Mounted by showPersistentCADViewer(). -->
     <!-- Step 3 of CAD to COST: tooling investment, band meaning, answers, basis, not included, stamp (cad-workspace.ts). -->
     <div id="cad-cost-card-host" hidden></div>
-    <div id="cad-persist-viewer-host" style="display:none;margin:0 0 12px"></div>
 
     <!-- Geometric DFM findings, from the background CAD analysis. Hidden until
          the job lands; clicking an issue highlights its faces in the viewer. -->

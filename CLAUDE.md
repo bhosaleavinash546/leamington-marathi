@@ -31,6 +31,7 @@ npm run test:e2e:pcb    # e2e/pcb-live.ts — photo→cost in a browser against 
 npm run test:e2e:sheet  # e2e/sheet-metal-live.ts — the seat bracket STEP through a real server + browser (needs OCP); writes live-<label>.json
 npm run test:e2e:cad-to-cost  # e2e/cad-to-cost-live.ts — CAD to COST three steps on 3 real parts (finish, compare routes = headline, Cost this route, axe); PASS/FAIL, needs a build + OCP
 npm run test:e2e:stl-dfm    # e2e/stl-dfm-live.ts — an STL through CAD to COST: DFM job, findings = the kernel's on the STEP, faces to the viewer; needs a build
+npx tsx e2e/cad-to-cost-trace.ts   # CAD to COST traced on 2 parts against every plan item (PASS / FAIL / GAP), exports opened, cost re-added; needs a build + OCP
 ```
 
 From the repo root, `make start|stop|restart|logs` drives the single Docker
@@ -661,6 +662,13 @@ what is true** — nothing here has been compared with a price JLR paid.
   (`/api/cad/compare-routes`, `server/services/route-compare.ts`, `costMeasuredPart` per route; the reference row must equal
   the headline). Get cost re-runs when ANY answer differs from the analysed ones (`appliedAnswers`); choosing a route
   records it as `commodity.route`; the CAD screen reopens with `restoreDraft: false`. `tests/cad-phase2.test.ts`.
+  End-to-end trace (28 Oct 2026, `docs/review/cad-to-cost-e2e-trace-2026-10-28.md`): `e2e/cad-to-cost-trace.ts` checks every
+  plan item live on two parts (116 checks; the cost re-added from the exported workbook). The cost card carries the step
+  indicator, the confidence reason (`confidenceWhy` in uncertainty.ts, labels via `traceFieldLabel`), grade + weight chips,
+  the top five movers (`runSensitivity`, ±10 % re-costed) and the commercial basis as fields (a change is typed into the
+  form and re-costs); it keeps open sections and focus across a redraw. The persistent viewer heads the LEFT pane (outside
+  the swapped form). Packaging / logistics are graded by their source (`shopFigureSource`: default / size / typed — typed
+  only on a trusted keystroke).
 - Motion (review, Oct 2026): ONE system — `src/ui/animations.ts` (GSAP: fades ≤ 8 px, 150–260 ms, power2 out / in,
   no scale, no back / elastic; money never animates its value — the count-up was read mid-way and quoted, CAD to COST v2) + CSS. The `motion` package is gone; never add a second animation library or
   a mousemove effect. Hover = colour / shadow (buttons) or a 2 px lift (cards); commodity picker tiles rise 4 px, take the accent border

@@ -151,6 +151,41 @@ export interface CostCardModel {
   notIncluded: string[];
   stamp: string;
   fmt: (n: number) => string;
+  /** Why the confidence grade (the traceability mix it is graded on), or null when calibrated. */
+  confidenceWhy?: { total: number; high: number; medium: number; low: number; lowFields: string[] } | null;
+  /** The grade the material line is priced at, and whether it was answered or is the default. */
+  grade?: { label: string; answered: boolean } | null;
+  /** The weight the material line is costed on, kg. */
+  costedWeightKg?: number | null;
+  /** The inputs that move the £ most: each ±10 %, re-costed through the stack (engine sensitivity.ts). */
+  topMovers?: Array<{ driver: string; swing: number }>;
+  /** The commercial basis, editable here (proposal v2 #4); each writes its form field and re-costs. */
+  commercial?: Array<{ id: string; label: string; value: number; unit: '%' | 'money' | 'count'; grade: BasisGrade }>;
+}
+
+/**
+ * A traceability field as a person reads it: "CNC Machining — 20 features (1×Ø10.0×12, …) [geometry-measured].labourRatePerHr"
+ * → "CNC Machining — 20 features: labour rate". The card printed the raw key, feature list and all.
+ */
+export function traceFieldLabel(field: string): string {
+  const name = field.split(' (')[0].split(' [')[0].replace(/\.\w+$/, '').trim();
+  const prop = field.match(/\]?\.([a-zA-Z]+)$/)?.[1];
+  if (!prop) return name;
+  const words = prop.replace(/PerHr$|Hr$|Kg$|Gbp$/, '').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+  return words && !name.toLowerCase().includes(words) ? `${name}: ${words}` : name;
+}
+
+/** What raises a confidence grade, from the rule `overallConfidence` grades on. */
+export function confidenceWhyText(grade: string | null, w: CostCardModel['confidenceWhy']): string {
+  if (!grade) return '';
+  if (grade === 'calibrated') return 'Calibrated against prices actually paid for this kind of part.';
+  if (!w || !w.total) return '';
+  const names = [...new Set(w.lowFields.map(traceFieldLabel))];
+  const lows = names.slice(0, 4).join(', ') + (names.length > 4 ? ` and ${names.length - 4} more` : '');
+  return `${grade}: of ${w.total} data points behind this cost, ${w.high} are High, ${w.medium} Medium and ${w.low} Low`
+    + ' (the grade is Low when 40 % or more are Low, High when 70 % or more are High, otherwise their mix).'
+    + (w.low ? ` Low: ${lows}.` : '')
+    + ' A quote typed in for one of them, or prices paid logged with Log actual £, is what moves it.';
 }
 
 /** The Cost step's card, under the result headline: tooling investment, what the band means, answers, basis, exclusions. */
@@ -161,8 +196,28 @@ export function cadCostCardHtml(m: CostCardModel): string {
     : `${m.amortisationVolume.toLocaleString('en-GB')} parts`;
   const counts = m.basis.reduce<Record<string, number>>((acc, r) => { acc[r.grade] = (acc[r.grade] ?? 0) + 1; return acc; }, {});
   const countText = GRADE_ORDER.filter(g => counts[g]).map(g => `${counts[g]} ${g.toLowerCase()}`).join(' · ');
+  const why = confidenceWhyText(m.confidence, m.confidenceWhy ?? null);
+  const commercialHtml = m.commercial?.length ? `
+        <div class="cad-commercial" role="group" aria-labelledby="cad-commercial-h">
+          <div class="cad-commercial-h" id="cad-commercial-h">Commercial basis — change one to re-cost</div>
+          ${m.commercial.map(c => `<label class="cad-commercial-f">
+            <span>${esc(c.label)} <span class="cad-grade cad-grade--${c.grade.toLowerCase()}">${c.grade}</span></span>
+            <input type="number" data-commercial="${esc(c.id)}" value="${esc(String(c.value))}" min="0" step="${c.unit === 'count' ? '1' : c.unit === '%' ? '0.1' : '0.01'}"/>
+            ${c.unit === '%' ? '<span class="cad-commercial-u">%</span>' : c.unit === 'money' ? '<span class="cad-commercial-u">£ a part</span>' : '<span class="cad-commercial-u">parts</span>'}
+          </label>`).join('')}
+        </div>` : '';
+  const moversHtml = m.topMovers?.length ? `
+        <div class="cad-movers">
+          <div class="cad-commercial-h">Moves the cost most — each input ±10 %, re-costed</div>
+          <ol class="cad-movers-list">${m.topMovers.map(t => `<li><span>${esc(t.driver)}</span><span class="cad-basis-val">± ${esc(m.fmt(t.swing))}</span></li>`).join('')}</ol>
+        </div>` : '';
+  const extraChips = [
+    m.grade ? `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Grade</span> <strong>${esc(m.grade.label)}</strong>${m.grade.answered ? '' : ' <span class="cad-answer-k">(default)</span>'}</span>` : '',
+    m.costedWeightKg && m.costedWeightKg > 0 ? `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Weight</span> <strong>${m.costedWeightKg.toFixed(3)} kg</strong> <span class="cad-answer-k">costed</span></span>` : '',
+  ].join('');
   return `
     <div class="cad-cost-card" id="cad-cost-card">
+      <nav class="cad-steps" aria-label="Steps to the cost">${cadStepsHtml(3)}</nav>
       <div class="cad-cost-head">
         <span class="cad-cost-step">Step 3 · Cost from CAD</span>
         <button type="button" class="cad-answer-change" id="cad-change-answers">Change answers</button>
@@ -180,14 +235,18 @@ export function cadCostCardHtml(m: CostCardModel): string {
         </div>
       </div>
       <p class="cad-cost-note">The band is the spread of the modelled input ranges, not the model's error. Accuracy against prices actually paid is not yet measured — log an actual price to calibrate it.</p>
+      ${why ? `<p class="cad-cost-note" id="cad-confidence-why">Confidence ${esc(why)}</p>` : ''}
       <div class="cad-answer-chips" role="list" aria-label="Costing context">
         ${m.chips.some(c => c.name === 'Process') ? '' : `<span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Route</span> <strong>${esc(m.commodityLabel)}</strong></span>`}
         <span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Country</span> <strong>${esc(m.country)}</strong></span>
         <span class="cad-answer-chip" role="listitem"><span class="cad-answer-k">Volume</span> <strong>${m.annualVolume.toLocaleString('en-GB')} / yr</strong></span>
+        ${extraChips}
       </div>
       ${answerChipsHtml(m.chips, false)}
       <details class="cad-cost-more" id="cad-basis">
         <summary>Basis — every input by how it was set <span class="cad-cost-count">${esc(countText)}</span></summary>
+        ${moversHtml}
+        ${commercialHtml}
         <div class="cad-basis-list" role="table" aria-label="Basis of this costing">
           ${sortBasis(m.basis).map(r => `<div class="cad-basis-row" role="row">
             <span role="cell"><span class="cad-grade cad-grade--${r.grade.toLowerCase()}">${r.grade}</span></span>
@@ -195,7 +254,7 @@ export function cadCostCardHtml(m: CostCardModel): string {
             <span role="cell" class="cad-basis-val">${esc(r.value)}</span>
           </div>`).join('')}
         </div>
-        <p class="cad-cost-note">Overhead, margin, packaging and logistics are edited in the form (Edit inputs); each bucket of the breakdown opens how it was computed.</p>
+        <p class="cad-cost-note">Any other input is changed in the form beside the model (Edit inputs); each bucket of the breakdown opens how it was computed.</p>
       </details>
       <details class="cad-cost-more" id="cad-compare">
         <summary>Compare routes — the same part costed on each route it could be made by</summary>

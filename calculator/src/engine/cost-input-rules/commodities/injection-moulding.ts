@@ -453,7 +453,9 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const wall = governingWallMm(ctx.geo.wallThickness)?.mm ?? r.advice.wallMm;
+        // the wall the cycle is costed on (mouldWallMm — the fillet-pair gauge where measured); the basis printed the
+        // 2·V/S wall instead ("cool ≈ 10.6 s at 2.3 mm" on the ECU cover, costed at 2.5 mm: 12.5 s)
+        const wall = mouldWallMm(ctx) ?? r.advice.wallMm;
         const thermo = thermodynamicCoolFactor(r.advice.resin.materialId ?? '');
         if (thermo) {
           const f = thermo.factorSPerMm2;

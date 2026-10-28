@@ -175,7 +175,7 @@ import { setActiveRates } from '../engine/rate-context.js';
 import { computeRegionalComparisonExact } from '../engine/regional-comparison.js';
 import { labourRoles, labourRoleId } from '../engine/labour-roles.js';
 import { syncPcbPickers, pcbMarketNote } from './pcb-country-sync.js';
-import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor } from './country-fields.js';
+import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor, shopFigureSource } from './country-fields.js';
 import { applyCountryMoneyDefaults, watchCountryMoneyDefaults, setCountryDefault } from './country-money-defaults.js';
 import { recostInCountries, formatRuleValue, type CountryCosting } from './country-recost.js';
 import { pcbMarketFor, pcbFabRegionFor } from '../engine/pcb-market.js';
@@ -183,7 +183,7 @@ import { countryFactor } from '../engine/regional-services.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
 import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
-import { computeCostUncertainty } from '../engine/uncertainty.js';
+import { computeCostUncertainty, confidenceWhy } from '../engine/uncertainty.js';
 import {
   computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
   computeConformalBand, applyConformalBand, segmentDrift, calibrationCoverage, calibrationSummary,
@@ -20411,7 +20411,7 @@ async function init(): Promise<void> {
   // country switch scales the engineer's figure, not a default.
   for (const f of ['packaging', 'logistics'] as const) {
     el<HTMLInputElement>(f)?.addEventListener('input', e => {
-      shopBasisFromTyped(_mfgRegion, f, Number((e.target as HTMLInputElement).value));
+      shopBasisFromTyped(_mfgRegion, f, Number((e.target as HTMLInputElement).value), e.isTrusted);
     });
   }
 
@@ -21242,12 +21242,18 @@ function collectCADBasis(): BasisRow[] {
   const oh = num('overhead-pct'), mg = num('margin-pct');
   if (isFinite(oh)) rows.push({ grade: Math.abs(oh - d.overheadPct * 100) < 0.05 ? 'Default' : 'Typed', what: 'Overhead (% of material + process + labour + tooling)', value: `${oh}%` });
   if (isFinite(mg)) rows.push({ grade: Math.abs(mg - 8) < 0.05 ? 'Default' : 'Typed', what: 'Supplier margin (% of subtotal)', value: `${mg}%` });
+  // Packaging and logistics: the size-based estimate (a rule), the country default, or a figure someone typed. They sit
+  // outside the commodity form, so the fill snapshot never held them and every one read "Typed" (CAD to COST trace,
+  // 28 Oct 2026).
   for (const id of ['packaging', 'logistics'] as const) {
     if (seen.has(id)) continue;
     const v = num(id);
-    const filled = _cadFillSource[id];
-    if (isFinite(v)) rows.push({ grade: filled !== undefined && parseFloat(filled) === v ? 'Default' : 'Typed',
-      what: id === 'packaging' ? 'Packaging per part' : 'Logistics per part', value: _currFmt(v) });
+    if (!isFinite(v)) continue;
+    const src = shopFigureSource(id);
+    const inForce = shopFieldsFor(region)[id === 'packaging' ? 'packagingPerPart' : 'logisticsPerPart'];
+    const grade: BasisRow['grade'] = src === 'typed' || Math.abs(inForce - v) > 0.00051 ? 'Typed' : src === 'size' ? 'Rule' : 'Default';
+    const what = (id === 'packaging' ? 'Packaging per part' : 'Logistics per part') + (grade === 'Rule' ? ' (from the part\'s size and mass)' : '');
+    rows.push({ grade, what, value: _currFmt(v) });
   }
   return rows;
 }
@@ -21261,6 +21267,33 @@ function renderCADCostCard(): void {
   if (!host) return;
   if (!costedFromCAD()) { host.innerHTML = ''; host.hidden = true; return; }
   const input = lastInput!;
+  const basis = collectCADBasis();
+  const gradeOf = (what: RegExp) => basis.find(r => what.test(r.what))?.grade ?? 'Default';
+  // The commercial basis on the card (proposal v2 #4): overhead, margin, packaging, logistics and the rules' batch.
+  const batchRule = Object.values(_cadRuleFields).find(rf => /batch/i.test(rf.fieldId ?? '') && document.getElementById(rf.fieldId!));
+  const fieldNum = (id: string) => parseFloat((document.getElementById(id) as HTMLInputElement | null)?.value ?? '');
+  const commercial = ([
+    { id: 'overhead-pct', label: 'Overhead (% of material + process + labour + tooling)', unit: '%' as const, grade: gradeOf(/^Overhead/) },
+    { id: 'margin-pct', label: 'Supplier margin (% of the subtotal)', unit: '%' as const, grade: gradeOf(/^Supplier margin/) },
+    { id: 'packaging', label: 'Packaging', unit: 'money' as const, grade: gradeOf(/^Packaging per part/) },
+    { id: 'logistics', label: 'Logistics', unit: 'money' as const, grade: gradeOf(/^Logistics per part/) },
+    ...(batchRule?.fieldId ? [{ id: batchRule.fieldId, label: 'Batch size', unit: 'count' as const,
+      grade: (fieldNum(batchRule.fieldId) === Number(batchRule.value) ? 'Rule' : 'Typed') as BasisRow['grade'] }] : []),
+  ]).filter(c => Number.isFinite(fieldNum(c.id))).map(c => ({ ...c, value: fieldNum(c.id) }));
+  // The five inputs that move the £ most, each ±10 %, re-costed through the stack (engine sensitivity.ts).
+  let topMovers: Array<{ driver: string; swing: number }> = [];
+  try {
+    topMovers = runSensitivity(input, library, 10).drivers.filter(d => d.range > 0)
+      .sort((a, b) => b.range - a.range).slice(0, 5)
+      // an operation's driver name carries its whole feature list in brackets; the name is enough here
+      .map(d => ({ driver: d.driver.replace(/\s*\(.*$/s, '').slice(0, 80), swing: d.range / 2 }));
+  } catch { /* the card stands without it */ }
+  const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
+  // The card is redrawn on every result (a re-cost from the commercial fields, the DFM report landing): a section the
+  // engineer opened stayed open only until then, and the field being edited vanished under the cursor (CAD to COST
+  // trace, 28 Oct 2026). Keep what was open, and where focus was.
+  const wasOpen = new Set(Array.from(host.querySelectorAll<HTMLDetailsElement>('details[id]')).filter(d => d.open).map(d => d.id));
+  const focusId = (document.activeElement as HTMLElement | null)?.closest?.('#cad-cost-card') ? (document.activeElement as HTMLElement).dataset.commercial : undefined;
   host.innerHTML = cadCostCardHtml({
     commodityLabel: COMMODITY_LABELS[activeCommodity] ?? activeCommodity,
     chips: answerChips(_cadDecisionAnswers, _cadDecisionsAsked),
@@ -21271,7 +21304,12 @@ function renderCADCostCard(): void {
     amortisationVolume: input.tooling.amortizationVolume,
     band: _lastBandInfo ? { pm: _lastBandInfo.pm, p10: _lastBandInfo.p10 ?? null, p90: _lastBandInfo.p90 ?? null } : null,
     confidence: _lastBandInfo?.conf ?? null,
-    basis: collectCADBasis(),
+    basis,
+    confidenceWhy: _lastBandInfo?.conf === 'calibrated' ? null : confidenceWhy(lastResult!),
+    grade: mat ? { label: mat.grade, answered: !!(_cadDecisionAnswers['material.grade'] || _cadDecisionAnswers['material.resin'] || _cadMaterialLocked) } : null,
+    costedWeightKg: input.rawMaterial.directCost ? null : input.rawMaterial.netWeightKg,
+    topMovers,
+    commercial,
     // A finish is in the cost when the form's finishing block holds a route (answered on CAD, or typed).
     notIncluded: notIncludedFor(activeCommodity,
       (document.getElementById(`${SURFACE_PREFIX_BY_COMMODITY[activeCommodity as CommodityType] ?? '_'}-sf-route`) as HTMLSelectElement | null)?.value || null),
@@ -21279,6 +21317,24 @@ function renderCADCostCard(): void {
     fmt: (n: number) => _currFmt(n),
   });
   host.hidden = false;
+  for (const id of wasOpen) {
+    const d = document.getElementById(id) as HTMLDetailsElement | null;
+    if (d && id !== 'cad-compare') d.open = true;   // the comparison reloads when opened again (its rows predate the change)
+  }
+  if (focusId) (host.querySelector(`[data-commercial="${CSS.escape(focusId)}"]`) as HTMLInputElement | null)?.focus();
+  // A commercial figure changed on the card is typed into its form field and the part re-costed — the form stays the
+  // one record (a typed figure is a quote: it is kept, and graded Typed).
+  host.querySelectorAll<HTMLInputElement>('[data-commercial]').forEach(inp => inp.addEventListener('change', () => {
+    const id = inp.dataset.commercial!;
+    const v = parseFloat(inp.value);
+    const field = document.getElementById(id) as HTMLInputElement | null;
+    if (!field || !Number.isFinite(v) || v < 0) return;
+    field.value = String(v);
+    if (id === 'packaging' || id === 'logistics') shopBasisFromTyped(_mfgRegion, id, v, true);
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+    field.dispatchEvent(new Event('change', { bubbles: true }));
+    el('calc-btn')?.click();
+  }));
   document.getElementById('cad-change-answers')?.addEventListener('click', () => {
     // Back to the questions with every answer shown as a chip to reopen.
     showWorkflowPanel('cad_analysis', { restoreDraft: false });

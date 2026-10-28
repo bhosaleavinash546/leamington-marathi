@@ -43,6 +43,15 @@ describe('1. the wall of an ordinary moulding is its wall, not the cavity', () =
     expect(im('IM_ECU_Cover.stp', 'mat-pa66gf30').s.wallThicknessMm).toBe(2.5);
   });
 
+  it('the cooling basis states the wall the cycle is costed on (CAD to COST trace, 28 Oct 2026)', () => {
+    // it printed "cool ≈ 10.6 s at 2.3 mm" (2·V/S) while the cycle cooled the 2.5 mm fillet-pair wall: 12.5 s
+    const { r, s } = im('IM_ECU_Cover.stp', 'mat-pa66gf30');
+    const f = Number(s.coolTimeFactorSPerMm2), wall = Number(s.wallThicknessMm);
+    const basis = String((r.byRule['injectionMoulding.coolTimeFactorSPerMm2'] as { basis?: string } | undefined)?.basis);
+    expect(wall).toBe(2.5);
+    expect(basis).toContain(`cool ≈ ${(f * wall ** 2).toFixed(1)} s at 2.5 mm`);
+  });
+
   it('a solid small part is still left alone', () => {
     // 20 mm cube: 2·V/S 6.7 mm, fill 1.0 — excluded twice over.
     expect(correctShellWallMm(20, 8, 24, 1.0).corrected).toBe(false);

@@ -14,18 +14,25 @@ import { regionalShopDefaults, REGIONAL_DATA, type ManufacturingRegion } from '.
 
 const basis: { packagingPerPart?: number; logisticsPerPart?: number } = {};
 
+/** Where each figure came from — the cost card's Basis grades it by this (it read a size estimate as "Typed"). */
+export type ShopFigureSource = 'default' | 'size' | 'typed';
+const source: Record<'packaging' | 'logistics', ShopFigureSource> = { packaging: 'default', logistics: 'default' };
+export function shopFigureSource(field: 'packaging' | 'logistics'): ShopFigureSource { return source[field]; }
+
 /** Record the UK-basis packaging / logistics (the CAD estimate, or a figure typed in the UK). */
 export function setShopBasisUK(b: { packagingPerPart?: number; logisticsPerPart?: number }): void {
-  if (b.packagingPerPart !== undefined) basis.packagingPerPart = b.packagingPerPart;
-  if (b.logisticsPerPart !== undefined) basis.logisticsPerPart = b.logisticsPerPart;
+  if (b.packagingPerPart !== undefined) { basis.packagingPerPart = b.packagingPerPart; source.packaging = 'size'; }
+  if (b.logisticsPerPart !== undefined) { basis.logisticsPerPart = b.logisticsPerPart; source.logistics = 'size'; }
 }
 
 /** A figure typed into a field while `region` is active, taken back to its UK basis. */
-export function shopBasisFromTyped(region: ManufacturingRegion, field: 'packaging' | 'logistics', value: number): void {
+export function shopBasisFromTyped(region: ManufacturingRegion, field: 'packaging' | 'logistics', value: number, byPerson = true): void {
   const rd = REGIONAL_DATA[region] ?? REGIONAL_DATA.UK;
   const m = field === 'packaging' ? rd.packagingMultiplier : rd.logisticsMultiplier;
   if (!(value >= 0) || !(m > 0)) return;
   if (field === 'packaging') basis.packagingPerPart = value / m; else basis.logisticsPerPart = value / m;
+  // a figure a person typed; the programmatic input events that follow a fill or a country switch are not
+  if (byPerson) source[field] = 'typed';
 }
 
 /** The packaging and logistics a region shows for the current basis. */

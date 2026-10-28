@@ -320,3 +320,23 @@ three things:
 
 Before this the stamp was pinned only by a source-text test (`tests/cad-workspace.test.ts`), which proves the line is
 in the code, not in the export.
+
+## 7. End-to-end trace against this plan (28 Oct 2026)
+
+`e2e/cad-to-cost-trace.ts` drives the knuckle and the ECU cover through the three steps in a real server and browser and
+checks every item above. The checks run against the screen, every `/api` call, the exports and the cost re-added from the
+workbook.
+
+The first run found:
+- **Not built:** confidence "why", grade and weight chips, the Basis led by what moves the £ most, and the commercial basis
+  editable on the card.
+- **Defects:**
+  - the step indicator and the model were gone at step 3;
+  - packaging and logistics were graded "Typed";
+  - the moulding cooling basis named the 2·V/S wall, not the costed one;
+  - the card closed its sections on every redraw;
+  - raw traceability keys were printed on the card.
+
+All are built or fixed. The final run: 116 pass, 0 fail, 0 not built; knuckle £24.0215 and ECU cover £0.8858 as recorded
+in §5. Report: `docs/review/cad-to-cost-e2e-trace-2026-10-28.md`.
+
