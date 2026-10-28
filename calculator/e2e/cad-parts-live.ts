@@ -53,7 +53,9 @@ async function costOne(page: Page, base: string, p: PartSpec): Promise<Record<st
   }
   if (p.annualVolume) await page.fill('#cad-annual-volume', String(p.annualVolume));
   // Programme life typed BEFORE the upload (the order an engineer filling the page top-down uses).
-  if (p.programmeYears && p.programmeYearsFirst) await page.fill('#programme-years', String(p.programmeYears));
+  // On CAD to COST the programme life is the step-1 field (#cad-programme-years, kept in sync with #programme-years,
+  // which sits in the universal costs this screen hides — CAD to COST v2).
+  if (p.programmeYears && p.programmeYearsFirst) await page.fill('#cad-programme-years', String(p.programmeYears));
   await page.setInputFiles('#cad-file-input', p.file);
   await page.click('#cad-analyze-btn');
   const asked: Array<{ id: string; severity: string; options: string[]; checked: string | null }> = [];

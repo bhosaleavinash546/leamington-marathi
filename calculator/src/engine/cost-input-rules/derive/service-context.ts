@@ -77,6 +77,13 @@ export function toleranceClassDecision(): Decision {
   };
 }
 
+/** What "safety-critical" adds on this route — the forging and casting advisors' own secondary operations. */
+export function safetyConsequence(commodity: string): string {
+  if (commodity === 'forging') return 'adds crack testing (MPI on a closed-die forging, UT or CT on open-die / precision)';
+  if (commodity === 'casting' || commodity === 'cast_and_machine') return 'adds X-ray / CT NDT, heat treat and a ductile grade on iron';
+  return 'adds crack testing and a ductile grade where the route uses one';
+}
+
 export function safetyCriticalDecision(ctx: RuleContext): Decision {
   const likely = hint(SAFETY_CRITICAL_HINT, ctx);
   return {
@@ -86,10 +93,14 @@ export function safetyCriticalDecision(ctx: RuleContext): Decision {
     why: 'Nothing in the geometry says whether a bracket carries a seat or a suspension load. '
       + 'It drives NDT, HIP and the choice of a ductile alloy — real cost, and a real risk if wrong.'
       + (likely ? ' The part name suggests a chassis/suspension component.' : ''),
+    // D1 (CAD to COST proposal v2, Director decision 28 Oct 2026): only evidence leans. "No" is never pre-ticked: a
+    // stub axle named "PRCR002" was pre-ticked No and costed in grey iron, £41.46 against £53.06 ductile. With no name
+    // evidence the engineer must choose; the unattended AI path still falls back to No (answeredBool), as stated.
+    // D2: the consequence names the check this process actually charges (MPI on a closed-die forging, not X-ray).
     options: [
       { value: 'yes', label: 'Yes — safety-critical',
-        consequence: 'adds X-ray/CT NDT and heat treat', leaning: likely },
-      { value: 'no', label: 'No', consequence: 'standard inspection', leaning: !likely },
+        consequence: safetyConsequence(ctx.commodity), leaning: likely },
+      { value: 'no', label: 'No', consequence: 'standard inspection', leaning: false },
     ],
     blockedFieldIds: [],
     blockedRuleIds: [],

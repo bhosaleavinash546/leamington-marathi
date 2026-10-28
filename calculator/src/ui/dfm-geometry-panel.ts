@@ -118,12 +118,14 @@ function issueItem(x: Grouped, i: number, amounts?: ReadonlyMap<string, DfmAmoun
   const amt = amounts ? amounts.get(x.ruleId) : own;
   const faces = x.faceIds.length;
   return `
-    <li class="dfm-geo-item ${severityClass(x.severity)}" data-dfm-idx="${i}"
-        role="button" tabindex="0" aria-label="${escHtml(`${x.severity} — ${x.title}. Highlight ${faces} face${faces === 1 ? '' : 's'} in the 3D viewer`)}">
+    <li class="dfm-geo-item ${severityClass(x.severity)}" data-dfm-idx="${i}">
       <div class="dfm-geo-top">
         ${severityBadge(x.severity)}
         <strong class="dfm-geo-title">${escHtml(x.title)}${x.count > 1 ? ` <em>×${x.count}</em>` : ''}</strong>
         ${amt ? `<span class="dfm-geo-cost" title="${escHtml(amt.title)}">${escHtml(amt.text)}</span>` : '<span class="dfm-geo-nocost">not priced</span>'}
+        <!-- A real button, not role="button" on the <li>: the item holds links, and a list item that is itself a control
+             broke the list and nested interactive elements (axe, CAD to COST v2 check). The row still selects on click. -->
+        <button type="button" class="dfm-geo-show" aria-label="${escHtml(`Show on the model: ${x.title} — ${faces} face${faces === 1 ? '' : 's'}`)}">Show on model</button>
       </div>
       <div class="small">${escHtml(x.worst.detail)}</div>
       <div class="small dfm-geo-measure">

@@ -12,6 +12,7 @@ import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fetchMeshFrame, stlFromFrame } from './cad-mesh-cache.js';
 import { nextCostStep, costStepMessage } from './cad-flow.js';
+import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, notIncludedFor, cadStamp, type BasisRow, type CadStep } from './cad-workspace.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
@@ -121,7 +122,7 @@ import {
 import { computeCompositeDrivers } from '../engine/modules/composites.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
-import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison, alBilletMaterialFactors, DEFAULT_RC_REGIONS } from '../engine/regional-rates.js';
+import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison, alBilletMaterialFactors, DEFAULT_RC_REGIONS, regionalShopDefaults } from '../engine/regional-rates.js';
 import type { AlAlloy } from '../engine/al-extrusion-data.js';
 import { featureToOperation } from '../engine/feature-ops.js';
 import { computeFeatureMachining, defaultInclude, secondaryMachiningMachineId, type StockCondition } from '../engine/feature-machining.js';
@@ -414,9 +415,9 @@ let _cadFillSource: Record<string, string> = {};
 let _cadDecisions: CADDecision[] = [];
 /** Every question asked on this upload, by id — the open list empties as they are answered, but the report must still
  *  say what was asked and answered (the Checks sheet listed none on a costing with six answers). */
-let _cadDecisionsAsked: Record<string, { question: string; severity: string }> = {};
+let _cadDecisionsAsked: Record<string, { question: string; severity: string; options?: Array<{ value: string; label: string }> }> = {};
 function rememberDecisions(ds: CADDecision[]): CADDecision[] {
-  for (const d of ds) _cadDecisionsAsked[d.id] = { question: d.question, severity: d.severity };
+  for (const d of ds) _cadDecisionsAsked[d.id] = { question: d.question, severity: d.severity, options: d.options.map(o => ({ value: o.value, label: o.label })) };
   return ds;
 }
 let _cadDecisionAnswers: Record<string, string> = {};
@@ -495,6 +496,8 @@ function _rebuildActiveLibrary(): void {
 }
 /** The commodity a CAD analysis was last applied to — re-applied when the country changes. */
 let _cadAppliedTo: CommodityType | null = null;
+/** The rules and kernel versions the server reported for this analysis — the reproducibility stamp. */
+let _cadVersions: { rules: number; kernel: string } | null = null;
 let _breakdownChart: Chart | null = null;
 let _displayCurrency = 'GBP';
 let _displayFxRate = 1.0;
@@ -5651,30 +5654,59 @@ function _applyCadPins(a: CADAnalysisResult): void {
 function renderCADAnalysisForm(): string {
   const commOpts = CAD_COMMODITY_OPTIONS
     .map(o => `<option value="${o.value}">${escHtml(o.label)}</option>`).join('');
+  // Three steps, the part always on screen (CAD to COST proposal v2, approved 28 Oct 2026): the model on the left, one
+  // card on the right that moves the engineer to a cost. Every id the harnesses click is kept.
+  const years = (document.getElementById('programme-years') as HTMLInputElement | null)?.value ?? '';
   return `
-    <div class="section-title">CAD-to-Cost Analysis</div>
+    <nav id="cad-steps" class="cad-steps" aria-label="Steps to the cost">${cadStepsHtml(1)}</nav>
+    <div class="cad-ws">
+      <section class="cad-ws-model" aria-label="3D model">
+        <div id="cad-model-empty" class="cad-model-empty">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>
+          <span class="cad-model-empty-h">Your part appears here</span>
+          <span>Measured by the CAD kernel: volume, mass, faces, holes, draft</span>
+        </div>
+        <!-- Interactive 3D viewer (orbit/measure/faces) — mounts when a file is picked -->
+        <div id="cad-viewer-host" style="display:none"></div>
+        <div id="cad-facts" class="cad-facts" hidden></div>
+      </section>
 
-    <!-- File upload -->
-    <div id="cad-kernel-notice" class="cad-flow-notice" data-kind="error" role="status" hidden></div>
-    <div id="cad-drop-zone" class="cad-upload-zone">
-      <div class="cad-upload-icon"></div>
-      <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px">Drop your CAD file here, or click to browse</div>
-      <label class="btn btn-primary btn-sm" for="cad-file-input" style="cursor:pointer">Browse Files</label>
-      <input type="file" id="cad-file-input" accept=".stp,.step,.igs,.iges,.stl" style="display:none"/>
-      <div class="cad-file-formats">STEP (.stp, .step) &nbsp;·&nbsp; IGES (.igs, .iges) &nbsp;·&nbsp; STL (.stl)</div>
-    </div>
-    <div id="cad-file-info" class="cad-file-info" style="display:none">
-      <span class="file-icon"></span>
-      <div class="file-details">
-        <div id="cad-fname" style="font-weight:600"></div>
-        <div id="cad-fsize" style="color:var(--text-muted);font-size:0.72rem"></div>
-      </div>
-      <button class="btn btn-secondary btn-sm" id="cad-clear-btn">✕ Clear</button>
-    </div>
+      <section class="cad-ws-card" aria-label="Steps to the cost">
+        <h2 class="cad-card-title" id="cad-step-title" tabindex="-1">Part &amp; costing context</h2>
+        <div id="cad-kernel-notice" class="cad-flow-notice" data-kind="error" role="status" hidden></div>
+        <div id="cad-drop-zone" class="cad-upload-zone">
+          <div class="cad-upload-icon"></div>
+          <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px">Drop your CAD file here, or click to browse</div>
+          <label class="btn btn-primary btn-sm" for="cad-file-input" style="cursor:pointer">Browse Files</label>
+          <input type="file" id="cad-file-input" accept=".stp,.step,.igs,.iges,.stl" style="display:none"/>
+          <div class="cad-file-formats">STEP (.stp, .step) &nbsp;·&nbsp; IGES (.igs, .iges) &nbsp;·&nbsp; STL (.stl)</div>
+        </div>
+        <div id="cad-file-info" class="cad-file-info" style="display:none">
+          <span class="file-icon"></span>
+          <div class="file-details">
+            <div id="cad-fname" style="font-weight:600"></div>
+            <div id="cad-fsize" style="color:var(--text-muted);font-size:0.72rem"></div>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="cad-clear-btn">✕ Clear</button>
+        </div>
 
-    <!-- Interactive 3D viewer (orbit/measure/faces) — mounts when a file is picked -->
-    <div id="cad-viewer-host" style="display:none;margin-top:10px"></div>
+        <div class="cad-context">
+          <div class="field-group">
+            <label for="cad-annual-volume">Annual volume (parts / year)</label>
+            <input type="number" id="cad-annual-volume" value="100000" min="1" step="1000"
+                   title="Annual production volume — used for tooling amortisation and volume-cost optimisation"/>
+          </div>
+          <div class="field-group">
+            <label for="cad-programme-years">Programme life (years) <span class="cad-req">required</span></label>
+            <input type="number" id="cad-programme-years" min="1" step="1" value="${escHtml(years)}" placeholder="e.g. 5" aria-describedby="cad-life-line"/>
+          </div>
+        </div>
+        <p id="cad-life-line" class="cad-life-line" role="status"></p>
+        <p id="cad-country-line" class="cad-country-line"></p>
 
+        <details id="cad-more-options" class="cad-more">
+          <summary>More options — a process or material you already know, drawing, photo, blank DXF, analysis mode</summary>
+          <div class="cad-more-body">
     <!-- Process + Material overrides -->
     <div class="field-row" style="margin-top:10px">
       <div class="field-group">
@@ -5701,13 +5733,8 @@ function renderCADAnalysisForm(): string {
         </select>
       </div>
     </div>
-
-    <!-- Annual Volume -->
-    <div class="field-row" style="margin-top:2px">
-      <div class="field-group">
-        <label style="font-size:0.75rem">Annual Volume (pcs/year)</label>
-        <input type="number" id="cad-annual-volume" value="100000" min="1" step="1000"
-               style="font-size:0.8rem" title="Annual production volume — used for tooling amortisation and volume-cost optimisation"/>
+            <div class="field-row ai-only" style="margin-top:2px">
+              <div class="field-group">
         <label class="ai-only" style="font-size:0.72rem;display:flex;align-items:center;justify-content:flex-start;text-align:left;gap:6px;cursor:pointer;margin-top:6px" title="Runs the specialist analysis on Claude Opus 5.5 instead of Sonnet 5.5 — deeper reasoning on complex geometry and ambiguous materials. Roughly 2x AI cost and slower; best for high-value or intricate parts.">
           <input type="checkbox" id="cad-deep-analysis" style="margin:0;width:auto;flex:none"/>
           <span>Deep analysis — Claude Opus 5.5 (complex parts, slower)</span>
@@ -5718,8 +5745,7 @@ function renderCADAnalysisForm(): string {
         <input type="password" id="cad-api-key" placeholder="sk-ant-api03-…"
                value="${sessionStorage.getItem('cad-api-key') ?? ''}" style="font-family:monospace;font-size:0.78rem"/>
       </div>
-    </div>
-
+            </div>
     <!-- Optional geometry overrides (collapsible) -->
     <details id="cad-geo-overrides" style="margin-top:6px;border:1px solid var(--border);border-radius:6px;padding:6px 10px">
       <summary style="font-size:0.75rem;font-weight:600;cursor:pointer;color:var(--text-secondary);user-select:none">
@@ -5756,7 +5782,6 @@ function renderCADAnalysisForm(): string {
         </div>
       </div>
     </details>
-
     <!-- Optional part photo (helps AI identify material/finish) -->
     <div style="margin-top:6px;border:1px solid var(--border);border-radius:6px;padding:6px 10px">
       <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary)">
@@ -5783,11 +5808,13 @@ function renderCADAnalysisForm(): string {
         <button class="btn btn-secondary btn-sm" id="cad-blank-clear" style="display:none;padding:1px 8px">✕ Remove</button>
       </div>
     </div>
+          </div>
+        </details>
 
-    <div class="cad-btn-row" style="margin-top:10px">
-      <button class="btn btn-secondary" id="cad-analyze-btn" disabled>Analyze Only</button>
-      <button class="btn btn-primary" id="cad-analyze-calc-btn" disabled>Analyze &amp; Calculate </button>
-    </div>
+        <div class="cad-btn-row cad-card-foot">
+          <button class="btn btn-primary" id="cad-analyze-btn" disabled>Measure part</button>
+          <button class="btn btn-secondary btn-sm" id="cad-analyze-calc-btn" disabled hidden>Measure &amp; cost</button>
+        </div>
     <div id="cad-progress-wrap" class="cad-progress-wrap" style="display:none">
       <div class="cad-progress-head">
         <div class="cad-progress-label" id="cad-progress-label">Uploading file…</div>
@@ -5797,8 +5824,10 @@ function renderCADAnalysisForm(): string {
       <div class="cad-progress-bar"><div class="cad-progress-fill" id="cad-progress-fill" style="width:0%"></div></div>
       <div class="cad-progress-hint" id="cad-progress-hint"></div>
     </div>
-    <div id="cad-flow-notice" class="cad-flow-notice" role="status" hidden></div>
-    <div id="cad-results"></div>`;
+        <div id="cad-flow-notice" class="cad-flow-notice" role="status" hidden></div>
+        <div id="cad-results"></div>
+      </section>
+    </div>`;
 }
 
 // ─── Interactive 3D CAD viewer mounts ─────────────────────────────────────────
@@ -5960,6 +5989,8 @@ function wireCADEvents(): void {
     document.getElementById('cad-analyze-calc-btn')?.setAttribute('disabled', 'true');
     const cadRes = document.getElementById('cad-results');
     if (cadRes) cadRes.innerHTML = '';
+    setCADFlowNotice('', 'clear');
+    updateCADSteps();
   });
 
   // Commodity override → rebuild material dropdown
@@ -6049,6 +6080,8 @@ function wireCADEvents(): void {
 
   keepCADFormValues();
   showCADKernelNotice();
+  wireCADContext();
+  updateCADSteps();
 
   // Analyze button
   analyzeBtn.addEventListener('click', () => { void analyzeCAD(false); });
@@ -6118,6 +6151,69 @@ async function sniffCadFormat(f: File): Promise<'.stp' | '.igs' | '.stl' | null>
   return null;
 }
 
+let _cadStepShown: CadStep = 1;
+
+/** Step 1 until the part is measured, step 2 while there is an analysis to confirm (step 3 lives on the result). */
+function updateCADSteps(): void {
+  const step: CadStep = cadFile && cadAnalysisResult ? 2 : 1;
+  const nav = document.getElementById('cad-steps');
+  if (nav) nav.innerHTML = cadStepsHtml(step);
+  const title = document.getElementById('cad-step-title');
+  if (title) title.textContent = step === 2 ? 'Confirm what the geometry cannot settle' : cadFile ? 'Measure the part' : 'Part & costing context';
+  // A new step is announced by moving focus to its heading (proposal M4) — once per change, never on a re-run.
+  if (step !== _cadStepShown) {
+    _cadStepShown = step;
+    if (step === 2 && title && !title.closest('[hidden]')) title.focus({ preventScroll: true });
+  }
+  const empty = document.getElementById('cad-model-empty');
+  if (empty) empty.hidden = !!cadFile;
+  const facts = document.getElementById('cad-facts');
+  if (facts) {
+    const g = cadOCCTGeometry;
+    if (!g || !cadAnalysisResult) { facts.hidden = true; facts.innerHTML = ''; }
+    else {
+      const pa = g.projectedArea;
+      const sil = [pa?.xMm2, pa?.yMm2, pa?.zMm2].filter((n): n is number => typeof n === 'number' && n > 0);
+      facts.innerHTML = cadFactsHtml({
+        envelopeMm: g.boundingBox ? [g.boundingBox.xMm, g.boundingBox.yMm, g.boundingBox.zMm] : null,
+        silhouetteCm2: sil.length ? Math.max(...sil) / 100 : null,
+        faces: g.faces?.total ?? null,
+        volumeCm3: g.volume?.cm3 ?? null,
+      });
+      facts.hidden = false;
+    }
+  }
+}
+
+/** Programme life on the CAD screen IS the costing's programme life (#programme-years): one value, two places. */
+function wireCADContext(): void {
+  const mine = document.getElementById('cad-programme-years') as HTMLInputElement | null;
+  const shared = document.getElementById('programme-years') as HTMLInputElement | null;
+  const vol = document.getElementById('cad-annual-volume') as HTMLInputElement | null;
+  const line = () => {
+    const el2 = document.getElementById('cad-life-line');
+    if (el2) el2.textContent = programmeLifeLine(parseFloat(mine?.value ?? '') || null, parseFloat(vol?.value ?? '') || 0);
+  };
+  mine?.addEventListener('input', () => {
+    if (shared) { shared.value = mine.value; shared.dispatchEvent(new Event('input', { bubbles: true })); }
+    mine.removeAttribute('aria-invalid');
+    line();
+  });
+  vol?.addEventListener('input', line);
+  line();
+  const sel = document.getElementById('costing-country-sel') as HTMLSelectElement | null;
+  const country = () => {
+    const c = document.getElementById('cad-country-line');
+    const name = sel?.selectedOptions[0]?.textContent?.trim();
+    if (c) c.textContent = name ? `Costed with the ${name} rate book — change the country in the bar above.` : '';
+  };
+  if (sel && !(sel as HTMLSelectElement & { _cadWired?: boolean })._cadWired) {
+    (sel as HTMLSelectElement & { _cadWired?: boolean })._cadWired = true;
+    sel.addEventListener('change', country);
+  }
+  country();
+}
+
 /**
  * The CAD screen's own settings — annual volume, process / material override, analysis mode, deep analysis. The screen
  * is redrawn whenever it is opened, and each went back to its default (the volume to 100,000) behind the user's back.
@@ -6182,6 +6278,7 @@ function restoreCADScreen(): void {
     const vol = parseFloat((document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '') || 100000;
     renderCADResults(cadAnalysisResult, false, vol);
   }
+  updateCADSteps();
 }
 
 function setCADFile(f: File): void {
@@ -6227,6 +6324,8 @@ function setCADFile(f: File): void {
   cadAnalysisResult = null;
   cadOCCTGeometry = null;
   cadDfmJobId = null; cadGeometricDFM = null;   // the last part's findings are not this part's
+  setCADFlowNotice('', 'clear');
+  updateCADSteps();
   void mountCADViewer('cad-viewer-host', f, false);
 }
 
@@ -6392,6 +6491,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadAnalysisResult = data.analysis!;
     cadOCCTGeometry = data.occtGeometry ?? null;
     cadGeometryHash = (data as { geometryHash?: string | null }).geometryHash ?? null;
+    _cadVersions = (data as { versions?: { rules: number; kernel: string } }).versions ?? _cadVersions;
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     _cadRuleOverrides = (() => { const ro = (data as { ruleOverrides?: unknown }).ruleOverrides;
@@ -6557,8 +6657,11 @@ function renderCADDecisionsPanel(): string {
   const advisory = _cadDecisions.filter(d => d.severity === 'advisory');
   // Nothing left to ask: keep the action. The panel used to vanish with its Get cost button the moment the last answer
   // was applied (ECU cover, CAD to COST 360 live run, Oct 2026).
+  // Answers already applied, as chips the engineer can reopen (proposal v2, M3): a question the rules no longer list
+  // used to vanish with its answer.
+  const chipsHtml = answerChipsHtml(answerChips(_cadDecisionAnswers, _cadDecisionsAsked), true);
   if (!open.length && !advisory.length) {
-    return `<div id="cad-decisions-panel" class="cad-ready" style="margin-bottom:12px;padding:11px 13px;background:var(--surface-elevated);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    return chipsHtml + `<div id="cad-decisions-panel" class="cad-ready" style="margin-bottom:12px;padding:11px 13px;background:var(--surface-elevated);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <span style="font-size:0.78rem;color:var(--text-primary);flex:1;min-width:220px"><strong>Nothing left to answer.</strong> The geometry${Object.keys(_cadDecisionAnswers).length ? ' and your answers' : ''} settle the route and the material.</span>
       <button class="btn btn-primary" id="cad-get-cost-btn" style="font-size:0.78rem;padding:6px 14px">Get cost →</button>
       <span id="cad-decisions-status" role="status" class="sr-only"></span>
@@ -6630,7 +6733,7 @@ function renderCADDecisionsPanel(): string {
   const bg = open.length
     ? 'background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.28);border-left:3px solid #dc2626'
     : 'background:var(--surface-elevated);border:1px solid var(--border);border-left:3px solid var(--accent)';
-  return `<div id="cad-decisions-panel" style="margin-bottom:12px;padding:11px 13px;${bg};border-radius:8px">
+  return chipsHtml + `<div id="cad-decisions-panel" style="margin-bottom:12px;padding:11px 13px;${bg};border-radius:8px">
     ${blockingBlock}
     ${advisoryBlock}
     <div style="margin-top:11px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
@@ -6724,6 +6827,14 @@ function wireCADDecisionsPanel(): void {
     void reanalyzeCAD();
   });
   document.getElementById('cad-get-cost-btn')?.addEventListener('click', () => { void cadGetCost(true); });
+  document.querySelectorAll<HTMLButtonElement>('#cad-results [data-change-answer]').forEach(b => b.addEventListener('click', () => {
+    // Reopen one answer: drop it and re-run — the question comes back with its options (and what follows from it).
+    const id = b.dataset.changeAnswer ?? '';
+    delete _cadDecisionAnswers[id];
+    if (id === 'commodity.route') delete _cadDecisionAnswers['material.family'];   // the families follow the route
+    setCADFlowNotice('Reopening that question…', 'busy');
+    void reanalyzeCAD().then(ok => { if (ok) showCADQuestions('Choose again and press Get cost.'); });
+  }));
   panel.querySelectorAll<HTMLButtonElement>('.cad-other-link').forEach(b => b.addEventListener('click', () => {
     const sel = document.getElementById(b.dataset.focus ?? '') as HTMLSelectElement | null;
     sel?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -6742,7 +6853,16 @@ const _cadNewQuestions = new Set<string>();
 
 async function autoRerunCAD(): Promise<void> {
   const before = new Set(openCADDecisions().map(d => d.id));
-  if (!(await reanalyzeCAD())) return;
+  // Get cost waits while the answer is applied (proposal v2, M3): it said "Get cost" while the panel was about to change.
+  const btn = document.getElementById('cad-get-cost-btn') as HTMLButtonElement | null;
+  const label = btn?.textContent ?? '';
+  if (btn) { btn.disabled = true; btn.setAttribute('aria-busy', 'true'); btn.textContent = 'Updating…'; }
+  const ok = await reanalyzeCAD();
+  if (!ok) {
+    const b2 = document.getElementById('cad-get-cost-btn') as HTMLButtonElement | null;
+    if (b2) { b2.disabled = false; b2.removeAttribute('aria-busy'); b2.textContent = label || 'Get cost →'; }
+    return;
+  }
   const open = openCADDecisions();
   const added = open.filter(d => !before.has(d.id));
   for (const d of added) _cadNewQuestions.add(d.id);
@@ -6825,6 +6945,20 @@ async function cadGetCost(calculate = true): Promise<void> {
         showCADQuestions(costStepMessage(step));
         return;
       case 'apply':
+        // D3 (Director decision, 28 Oct 2026): programme life is required on CAD to COST. Left blank, the tooling was
+        // amortised over one year's volume while tools that wear out were sized for an assumed five — two different
+        // programmes in one costing. (On the forged knuckle the effect is small: its dies wear out, £0.94 → £0.87 a part
+        // over five years; on a long-life mould or casting die it is most of the tooling line.)
+        if (!programmeYearsValue()) {
+          const f = document.getElementById('cad-programme-years') as HTMLInputElement | null;
+          if (activeCommodity !== 'cad_analysis') showWorkflowPanel('cad_analysis');
+          setCADFlowNotice('Enter the programme life (years) to cost the part — the tooling is spread over it.', 'ask');
+          const field = (document.getElementById('cad-programme-years') as HTMLInputElement | null) ?? f;
+          field?.setAttribute('aria-invalid', 'true');
+          field?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          field?.focus({ preventScroll: true });
+          return;
+        }
         setCADFlowNotice('', 'clear');
         applyCADToForm(cadAnalysisResult!.costInputSuggestions.recommendedCommodity as CommodityType, calculate);
         return;
@@ -6918,33 +7052,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       </ul>
     </div>` : '';
 
-  panel.innerHTML = `${viewerMeasuresPanel}
-    <!-- Header summary -->
-    <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:12px">
-      <div style="text-align:center">
-        <div class="cad-score-ring ${scoreClass}">${r.manufacturabilityScore}</div>
-        <div style="font-size:0.7rem;color:var(--text-muted)">Manufacturability</div>
-      </div>
-      <div style="flex:1">
-        <div style="font-weight:700;font-size:0.9rem">${escHtml(r.partName)}</div>
-        <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:2px">
-          ${bb.x.toFixed(0)}×${bb.y.toFixed(0)}×${bb.z.toFixed(0)} mm &nbsp;·&nbsp;
-          ${g.estimatedVolumeCm3.toFixed(1)} cm³ &nbsp;·&nbsp;
-          ${g.estimatedWeightKg.aluminum.toFixed(3)} kg Al / ${g.estimatedWeightKg.steel.toFixed(3)} kg Steel
-        </div>
-        <div style="margin-top:4px">
-          <span class="cad-confidence-badge ${r.confidenceLevel}">AI: ${r.confidenceLevel}</span>
-          &nbsp;
-          <span class="occt-source-badge ${cadGeometrySource === 'occt' ? 'occt' : 'text'}">${cadGeometrySource === 'occt' ? 'OCCT Kernel' : 'Text-parsed'}</span>
-          ${cadFromCache ? '&nbsp;<span title="This exact file + photo + settings was analysed before — the identical result is returned, so the analysis is repeatable run to run." style="background:var(--info-bg,#eff6ff);color:var(--info,#2563eb);border:1px solid var(--info-border,#bfdbfe);font-size:0.62rem;padding:1px 6px;border-radius:10px;font-weight:700">&#8635; Repeat analysis — identical result</span>' : ''}
-          &nbsp;
-          <span style="font-size:0.72rem;color:var(--text-muted)">${g.estimatedSurfaceAreaCm2.toFixed(0)} cm² surface</span>
-          ${cadBlankSummaryHtml()}
-          ${r.costInputSuggestions.stage1Selection ? `&nbsp;<span style="font-size:0.68rem;background:var(--border);border-radius:3px;padding:1px 5px;color:var(--text-muted)" title="Stage 1 Haiku pre-selection">${escHtml(r.costInputSuggestions.stage1Selection.primary)} (${Math.round((r.costInputSuggestions.stage1Selection.conf ?? 0) * 100)}%)</span>` : ''}
-        </div>
-      </div>
-    </div>
-
+  panel.innerHTML = `
     ${(() => {
       // Guided-input loop — the CAD analog of the PCB re-capture panel: name
       // exactly what would raise accuracy instead of failing silently.
@@ -6982,6 +7090,41 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     })()}
 
     ${renderCADDecisionsPanel()}
+    <div class="cad-next-row">
+      <button class="btn btn-ghost btn-sm" id="cad-apply-btn" data-commodity="${escHtml(recommendedCommodity)}" title="Open the ${escHtml(commodityLabel[recommendedCommodity] ?? recommendedCommodity)} form filled from this analysis, without calculating">Edit inputs first</button>
+      <button class="btn btn-ghost btn-sm" id="cad-export-pdf-btn" title="The analysis report: geometry, features, questions — not the should-cost">Analysis PDF</button>
+    </div>
+
+    <details class="cad-more cad-full" id="cad-full-measurements">
+      <summary>Full measurements, features and options</summary>
+      <div class="cad-more-body">
+    ${viewerMeasuresPanel}
+    <!-- Header summary -->
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:12px">
+      <div style="text-align:center">
+        <div class="cad-score-ring ${scoreClass}">${r.manufacturabilityScore}</div>
+        <div style="font-size:0.7rem;color:var(--text-muted)">Manufacturability</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:0.9rem">${escHtml(r.partName)}</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:2px">
+          ${bb.x.toFixed(0)}×${bb.y.toFixed(0)}×${bb.z.toFixed(0)} mm &nbsp;·&nbsp;
+          ${g.estimatedVolumeCm3.toFixed(1)} cm³ &nbsp;·&nbsp;
+          ${g.estimatedWeightKg.aluminum.toFixed(3)} kg Al / ${g.estimatedWeightKg.steel.toFixed(3)} kg Steel
+        </div>
+        <div style="margin-top:4px">
+          <span class="cad-confidence-badge ${r.confidenceLevel}">AI: ${r.confidenceLevel}</span>
+          &nbsp;
+          <span class="occt-source-badge ${cadGeometrySource === 'occt' ? 'occt' : 'text'}">${cadGeometrySource === 'occt' ? 'OCCT Kernel' : 'Text-parsed'}</span>
+          ${cadFromCache ? '&nbsp;<span title="This exact file + photo + settings was analysed before — the identical result is returned, so the analysis is repeatable run to run." style="background:var(--info-bg,#eff6ff);color:var(--info,#2563eb);border:1px solid var(--info-border,#bfdbfe);font-size:0.62rem;padding:1px 6px;border-radius:10px;font-weight:700">&#8635; Repeat analysis — identical result</span>' : ''}
+          &nbsp;
+          <span style="font-size:0.72rem;color:var(--text-muted)">${g.estimatedSurfaceAreaCm2.toFixed(0)} cm² surface</span>
+          ${cadBlankSummaryHtml()}
+          ${r.costInputSuggestions.stage1Selection ? `&nbsp;<span style="font-size:0.68rem;background:var(--border);border-radius:3px;padding:1px 5px;color:var(--text-muted)" title="Stage 1 Haiku pre-selection">${escHtml(r.costInputSuggestions.stage1Selection.primary)} (${Math.round((r.costInputSuggestions.stage1Selection.conf ?? 0) * 100)}%)</span>` : ''}
+        </div>
+      </div>
+    </div>
+
 
     ${buildRuleVsAIPanel(_cadDiff)}
 
@@ -7128,19 +7271,8 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     </div>`;
     })()}
 
-    <!-- Apply primary recommendation to form -->
     <div class="cad-apply-btn-row">
-      <strong style="font-size:0.8rem;align-self:center">Recommended:</strong>
-      <button class="btn btn-primary btn-sm" id="cad-apply-btn" data-commodity="${escHtml(recommendedCommodity)}">
-        → Apply: ${escHtml(commodityLabel[recommendedCommodity] ?? recommendedCommodity)}
-      </button>
-      <button class="btn btn-secondary btn-sm" id="cad-apply-calc-btn" data-commodity="${escHtml(recommendedCommodity)}">
-        Apply &amp; Calculate 
-      </button>
-      <button class="btn btn-secondary btn-sm" id="cad-export-pdf-btn" style="margin-left:auto;display:flex;align-items:center;gap:4px">
-        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg>
-        Export PDF
-      </button>
+      <button class="btn btn-secondary btn-sm" id="cad-apply-calc-btn" data-commodity="${escHtml(recommendedCommodity)}">Apply to the ${escHtml(commodityLabel[recommendedCommodity] ?? recommendedCommodity)} form &amp; calculate</button>
     </div>
 
     <!-- Process comparison cards (top alternative processes) -->
@@ -7209,6 +7341,8 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     <div class="cad-limitations">
       <strong>Note:</strong> ${escHtml(r.analysisLimitations.join(' · '))}
     </div>` : ''}
+      </div>
+    </details>
   `;
 
   // Wire apply buttons (primary recommendation)
@@ -7288,6 +7422,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
 
   // "Analyze & Calculate": the flow asks what is open and costs when nothing is (cad-flow.ts) — it used to fill the
   // server's fallback route (machining) with the questions still open.
+  updateCADSteps();
   if (autoCalculate) {
     void recommendedCommodity;
     // Analyze & Calculate: questions drawn a moment ago have not been read — ask them; cost straight on only when none.
@@ -11078,6 +11213,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     cadAnalysisResult = data.analysis;
     cadOCCTGeometry = data.occtGeometry ?? null;
     cadGeometryHash = (data as { geometryHash?: string | null }).geometryHash ?? null;
+    _cadVersions = (data as { versions?: { rules: number; kernel: string } }).versions ?? _cadVersions;
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
     _cadDecisions = rememberDecisions(data.decisions ?? []);
     _cadRuleFields = data.ruleFields ?? {};
@@ -11969,7 +12105,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       _cadFillSource = snapshotFormFields();
       // A form filled from the user's own CAD offered "Quick examples" (a BMW X7 knuckle…) that would overwrite it
       // (CAD to COST 360 review, Oct 2026).
-      document.querySelectorAll('#commodity-form-area .inline-demo-strip').forEach(n => n.remove());
+      document.querySelectorAll('#commodity-form-area .inline-demo-strip, #commodity-form-area .cad-inline-panel').forEach(n => n.remove());
     markBlockedDecisionFields();
     showCADProvenanceBanner();
 
@@ -12462,6 +12598,10 @@ function switchCommodity(type: CommodityType): void {
       break;
 
     case 'cad_analysis':
+      // The part needs the width: the commodity list folds away (the header switcher and › still reach every form).
+      setPickerCollapsed(true);
+      // Overhead, margin, packaging and logistics belong to the costed form (step 3, Basis / Edit inputs), not here.
+      el('universal-costs').style.display = 'none';
       area.innerHTML = renderCADAnalysisForm();
       wireCADEvents();
       restoreCADScreen();
@@ -15828,7 +15968,7 @@ function resultBand(result: PartCostResult, input: UniversalStackInput): {
     ? computeCostUncertainty(result, input, { baseCvOverride: cvFromMape(hcal.calibratedMapePct) })
     : computeCostUncertainty(result, input, { provenance: driverProvenance(input), library });
   const conf90 = computeConformalBand(getCalibrationRecords(), seg, 0.9);
-  _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence) };
+  _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence), p10: u.p10, p90: u.p90 };
   return { u, hcalApplied: hcal.applied, mapePct: hcal.calibratedMapePct, n: hcal.n, conf90, region };
 }
 
@@ -16677,7 +16817,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           materialFamily: currentMaterialFamily(),
           region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
         }, 0.9);
-        _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence) };
+        _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence), p10: u.p10, p90: u.p90 };
         const bandNote = hcal.applied
           ? `Band width comes from OBSERVED accuracy (${hcal.calibratedMapePct}% MAPE over ${hcal.n} actuals) — it tightens as more quotes are logged.`
           : 'Range reflects how well each cost driver is known (High/Medium/Low confidence). Tighten it by attaching CAD, a BOM, or logging an actual quote.';
@@ -17169,7 +17309,7 @@ async function downloadExcel(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Workbook not produced: ${why}`, 'error'); return; } }
   const band = (() => { try { return resultBand(lastResult!, lastInput!).u; } catch { return null; } })();
-  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band);
+  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = exportFilename('should-cost', lastResult.partName, 'xlsx');
@@ -17806,8 +17946,7 @@ function renderGeometricDFMPanel(): void {
       const hint = el<HTMLElement>('dfm-geo-hint');
       if (hint) hint.textContent = dfmHighlightHint(faces, shown);
     };
-    node.addEventListener('click', act);
-    node.addEventListener('keydown', e => { if ((e as KeyboardEvent).key === 'Enter') act(e); });
+    node.addEventListener('click', act);   // the row's "Show on model" button is the keyboard route (its click bubbles)
   });
 }
 
@@ -18064,6 +18203,7 @@ function exportBlockedReason(): string | null {
 
 function buildCadReportMeta(): CADReportMeta {
   const universal: CADReportMeta = {
+    stamp: costedFromCAD() ? currentCADStamp() : null,
     // The band the screen shows, so the report cannot print a different one.
     ...(() => {
       if (!lastResult || !lastInput) return { uncertainty: null, uncertaintyBasis: null };
@@ -20973,7 +21113,7 @@ function ratesAsOf(): string {
     ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
     : 'date not recorded';
 }
-let _lastBandInfo: { pm: number; band: string; conf: string } | null = null;
+let _lastBandInfo: { pm: number; band: string; conf: string; p10?: number; p90?: number } | null = null;
 
 const BUCKET_TRACE_META: Record<string, { formula: string; match: RegExp }> = {
   'Raw Material': { formula: 'Net mass × (1 + scrap%) × material £/kg − scrap credit. Prices from the active rate library for the selected region.', match: /material|scrap|regrind|billet|resin|sheet|blank/i },
@@ -21029,6 +21169,111 @@ function renderResultHero(): void {
     b.addEventListener('click', () => document.getElementById(b.dataset.proxy ?? '')?.click()));
   document.getElementById('crh-share-btn')?.addEventListener('click', () => { void shareCurrentCosting(); });
   requestAnimationFrame(() => linkHeadline());   // one headline: the bar's figure shows only when the card is out of view
+  renderCADCostCard();
+}
+
+/** The costing came from the CAD screen and is still the one on screen. */
+function costedFromCAD(): boolean {
+  return !!_cadAppliedTo && _cadAppliedTo === activeCommodity && !!cadAnalysisResult && !!lastInput && !!lastResult;
+}
+
+/** The reproducibility stamp: the rate book, the rules and the kernel behind this costing, and the date. */
+function currentCADStamp(): string {
+  const sel = document.getElementById('costing-country-sel') as HTMLSelectElement | null;
+  const country = sel?.selectedOptions[0]?.textContent?.trim() || 'UK';
+  return cadStamp({ rateBook: `${country} rate book v${library.version}`, rules: _cadVersions?.rules ?? null,
+    kernel: _cadVersions?.kernel ?? null, date: new Date() });
+}
+
+/** Every input of the costing, by how it was set — read off the form the engine costed, never recomputed. */
+function collectCADBasis(): BasisRow[] {
+  const rows: BasisRow[] = [];
+  for (const c of answerChips(_cadDecisionAnswers, _cadDecisionsAsked)) rows.push({ grade: 'Answered', what: c.name, value: c.value });
+  const years = programmeYearsValue();
+  if (years) rows.push({ grade: 'Typed', what: 'Programme life', value: `${years} years` });
+  // Every value the rules set, by its source, read off the analysis the form was filled from — the DOM markers are
+  // cleared by any later input event (the per-country re-collection fires them), so they cannot be the record.
+  // A field whose value no longer matches what the rule wrote was typed by the engineer.
+  const seen = new Set<string>();
+  const labelOf = (id: string) => {
+    const f = document.getElementById(id);
+    const lab = f?.closest('.field-group')?.querySelector('label')?.textContent ?? document.querySelector(`label[for="${CSS.escape(id)}"]`)?.textContent;
+    return (lab ?? id).replace(/\s+/g, ' ').trim();
+  };
+  const shown = (id: string) => {
+    const f = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+    if (!f) return null;
+    return f instanceof HTMLSelectElement ? (f.selectedOptions[0]?.textContent ?? f.value).trim() : f.value.trim();
+  };
+  for (const rf of Object.values(_cadRuleFields)) {
+    const id = rf.fieldId;
+    if (!id || id === 'part-name' || seen.has(id) || !document.getElementById(id)) continue;
+    seen.add(id);
+    const now = (document.getElementById(id) as HTMLInputElement | HTMLSelectElement).value;
+    const value = shown(id);
+    if (!value) continue;
+    const typed = String(rf.value ?? '') !== '' && now !== String(rf.value) && !(Number.isFinite(+now) && Math.abs(+now - Number(rf.value)) < 1e-9);
+    // The grade field holds the representative grade until the grade question is answered — a default, not a rule.
+    const gradeDefault = /-mat$/.test(id) && !_cadDecisionAnswers['material.grade'] && !_cadDecisionAnswers['material.resin'];
+    const grade: BasisRow['grade'] = typed ? 'Typed' : rf.source === 'geometry' ? 'Measured' : rf.source === 'engineer' ? 'Answered'
+      : gradeDefault ? 'Default' : 'Rule';
+    rows.push({ grade, what: labelOf(id), value });
+  }
+  // Measured fields the fill wrote outside the rule set (weights, envelope).
+  for (const id of Object.keys(_cadFillSource)) {
+    if (seen.has(id) || !CAD_MEASURED_ID.test(id) || cadGeometrySource === 'text_parsing') continue;
+    const value = shown(id);
+    if (!value || value === '0') continue;
+    seen.add(id);
+    rows.push({ grade: _cadFillSource[id] === (document.getElementById(id) as HTMLInputElement).value ? 'Measured' : 'Typed', what: labelOf(id), value });
+  }
+  // The commercial basis: a default from the country, or a figure someone typed.
+  const region = ((document.getElementById('mfg-region-selector') as HTMLSelectElement | null)?.value ?? 'UK') as ManufacturingRegion;
+  const d = regionalShopDefaults(region);
+  const num = (id: string) => parseFloat((document.getElementById(id) as HTMLInputElement | null)?.value ?? '');
+  const oh = num('overhead-pct'), mg = num('margin-pct');
+  if (isFinite(oh)) rows.push({ grade: Math.abs(oh - d.overheadPct * 100) < 0.05 ? 'Default' : 'Typed', what: 'Overhead (% of material + process + labour + tooling)', value: `${oh}%` });
+  if (isFinite(mg)) rows.push({ grade: Math.abs(mg - 8) < 0.05 ? 'Default' : 'Typed', what: 'Supplier margin (% of subtotal)', value: `${mg}%` });
+  for (const id of ['packaging', 'logistics'] as const) {
+    if (seen.has(id)) continue;
+    const v = num(id);
+    const filled = _cadFillSource[id];
+    if (isFinite(v)) rows.push({ grade: filled !== undefined && parseFloat(filled) === v ? 'Default' : 'Typed',
+      what: id === 'packaging' ? 'Packaging per part' : 'Logistics per part', value: _currFmt(v) });
+  }
+  return rows;
+}
+
+/**
+ * Step 3 of CAD to COST (proposal v2): under the headline, what a director checks — tooling investment and its
+ * amortisation, what the band means, the answers, every input by how it was set, and what is not included.
+ */
+function renderCADCostCard(): void {
+  const host = document.getElementById('cad-cost-card-host');
+  if (!host) return;
+  if (!costedFromCAD()) { host.innerHTML = ''; host.hidden = true; return; }
+  const input = lastInput!;
+  host.innerHTML = cadCostCardHtml({
+    commodityLabel: COMMODITY_LABELS[activeCommodity] ?? activeCommodity,
+    chips: answerChips(_cadDecisionAnswers, _cadDecisionsAsked),
+    country: (document.getElementById('costing-country-sel') as HTMLSelectElement | null)?.selectedOptions[0]?.textContent?.trim() ?? 'UK',
+    annualVolume: input.annualVolume ?? 0,
+    programmeYears: input.programmeYears ?? null,
+    toolingTotal: input.tooling.totalToolingCost,
+    amortisationVolume: input.tooling.amortizationVolume,
+    band: _lastBandInfo ? { pm: _lastBandInfo.pm, p10: _lastBandInfo.p10 ?? null, p90: _lastBandInfo.p90 ?? null } : null,
+    confidence: _lastBandInfo?.conf ?? null,
+    basis: collectCADBasis(),
+    notIncluded: notIncludedFor(activeCommodity),
+    stamp: currentCADStamp(),
+    fmt: (n: number) => _currFmt(n),
+  });
+  host.hidden = false;
+  document.getElementById('cad-change-answers')?.addEventListener('click', () => {
+    // Back to the questions with every answer shown as a chip to reopen.
+    showWorkflowPanel('cad_analysis');
+    setTimeout(() => showCADQuestions('Change an answer below, then press Get cost.'), 60);
+  });
 }
 
 function tagTraceableRows(): void {

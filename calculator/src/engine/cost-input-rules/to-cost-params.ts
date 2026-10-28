@@ -753,7 +753,11 @@ export function toCostParams(
             setup: { hoursPerChange: num(m.setupHoursPerChange), batchSize: num(m.batchSize),
                      setterLabourId: 'lab-uk-technician', purgeKg: num(m.purgeKg) },
           } : {}),
-          ...(num(m.mouldMaintenanceFraction) > 0 ? { mouldMaintenanceFraction: num(m.mouldMaintenanceFraction) } : {}),
+          ...(num(m.mouldMaintenanceFraction) > 0 ? { mouldMaintenanceFraction: num(m.mouldMaintenanceFraction),
+            // Maintenance is charged for every year the tool is amortised — the screen's _maintenanceYears. Headless
+            // charged one year, so with a programme life the ECU cover's mould read £54,817 here and £61,203 on screen
+            // (CAD to COST v2 parity check, 28 Oct 2026).
+            maintenanceYears: Math.max(1, amortVolume / Math.max(1, annualVolume)) } : {}),
           ...(num(m.dryingKwhPerKg) > 0 ? { drying: { kwhPerKg: num(m.dryingKwhPerKg) } } : {}),
         },
       };
@@ -849,7 +853,8 @@ export function toCostParams(
           dieCostEstimate: num(s.dieCostGBP),
           ...(num(s.setupHoursPerChange) > 0 && num(s.batchSize) > 0
             ? { setup: { hoursPerChange: num(s.setupHoursPerChange), batchSize: num(s.batchSize), setterLabourId: 'lab-uk-technician' } } : {}),
-          ...(num(s.dieMaintenanceFraction) > 0 ? { dieMaintenanceFraction: num(s.dieMaintenanceFraction) } : {}),
+          ...(num(s.dieMaintenanceFraction) > 0 ? { dieMaintenanceFraction: num(s.dieMaintenanceFraction),
+            maintenanceYears: Math.max(1, amortVolume / Math.max(1, annualVolume)) } : {}),
           ...hardware,
         },
       };

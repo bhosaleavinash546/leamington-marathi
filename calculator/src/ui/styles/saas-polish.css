@@ -556,3 +556,91 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile:hover { transform: tran
   color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 #cad-decisions-panel .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ── CAD to COST as three steps (proposal v2, approved 28 Oct 2026) ──────────────────────────────────────────────────
+   The model on the left, one card on the right; a step indicator above. Tokens only — both themes. */
+.cad-steps { margin: 2px 0 14px; }
+.cad-steps-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.cad-step { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 5px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+.cad-step-n { display: inline-flex; width: 24px; height: 24px; border-radius: 999px; align-items: center; justify-content: center; font-size: 0.74rem; border: 1px solid var(--border-strong); }
+.cad-step--current { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--text-primary); }
+.cad-step--current .cad-step-n { background: var(--accent); border-color: var(--accent); color: var(--on-accent, var(--surface)); }
+.cad-step--done { color: var(--accent-ink, var(--accent)); }
+.cad-steps .sr-only, .cad-cost-card .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.cad-ws { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 1100px) { .cad-ws { grid-template-columns: minmax(0, 1fr); } }
+.cad-ws-model { position: sticky; top: 8px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+@media (max-width: 1100px) { .cad-ws-model { position: static; } }
+.cad-ws-card { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.cad-card-title { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+.cad-card-title:focus { outline: none; }
+.cad-card-title:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+.cad-model-empty { min-height: 420px; border: 1.5px dashed var(--border-strong); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 0.82rem; text-align: center; padding: 24px; background: var(--surface); }
+.cad-model-empty[hidden] { display: none; }
+.cad-model-empty-h { font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); }
+.cad-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.cad-facts[hidden] { display: none; }
+@media (max-width: 640px) { .cad-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.cad-fact { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); min-width: 0; }
+.cad-fact-k { font-size: 0.68rem; color: var(--text-muted); }
+.cad-fact-v { font-size: 0.8rem; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+
+.cad-context { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.cad-context label { font-size: 0.76rem; }
+.cad-req { font-size: 0.66rem; font-weight: 600; color: var(--accent-ink, var(--accent)); margin-left: 4px; }
+.cad-context input[aria-invalid="true"] { border-color: var(--danger) !important; box-shadow: 0 0 0 2px var(--danger-bg); }
+.cad-life-line, .cad-country-line { margin: 0; font-size: 0.74rem; line-height: 1.45; color: var(--text-secondary); }
+.cad-country-line { color: var(--text-muted); }
+
+.cad-more { border: 1px solid var(--border); border-radius: 8px; padding: 0 10px; }
+.cad-more > summary { cursor: pointer; padding: 9px 0; font-size: 0.76rem; font-weight: 600; color: var(--text-secondary); }
+.cad-more[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.cad-more-body { padding-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+.cad-card-foot { margin-top: 2px; }
+.cad-card-foot #cad-analyze-btn { min-width: 160px; min-height: 40px; }
+.cad-next-row { display: flex; flex-wrap: wrap; gap: 8px; margin: -4px 0 12px; }
+.cad-full { margin-top: 4px; }
+
+.cad-answer-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.cad-answer-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: var(--surface-elevated); border: 1px solid var(--border); font-size: 0.74rem; color: var(--text-primary); }
+.cad-answer-k { color: var(--text-muted); }
+.cad-answer-change { background: none; border: 0; padding: 0 2px; color: var(--accent-ink, var(--accent)); font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+#cad-get-cost-btn[aria-busy="true"] { opacity: 0.7; cursor: progress; }
+
+/* Step 3 — the cost card under the result headline */
+.cad-cost-card { display: flex; flex-direction: column; gap: 10px; margin: 0 0 12px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.cad-cost-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.cad-cost-step { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink, var(--accent)); }
+.cad-cost-figs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cad-cost-fig { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cad-cost-k { font-size: 0.72rem; color: var(--text-muted); }
+.cad-cost-v { font-size: 1.3rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.cad-cost-sub { font-size: 0.72rem; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.cad-cost-note { margin: 0; font-size: 0.72rem; line-height: 1.45; color: var(--text-muted); }
+.cad-cost-more { border-top: 1px solid var(--border); padding-top: 6px; }
+.cad-cost-more > summary { cursor: pointer; font-size: 0.78rem; font-weight: 600; color: var(--text-primary); padding: 4px 0; }
+.cad-cost-count { font-weight: 400; color: var(--text-muted); margin-left: 6px; font-size: 0.72rem; }
+.cad-basis-list { display: flex; flex-direction: column; margin: 6px 0 8px; }
+.cad-basis-row { display: grid; grid-template-columns: 84px minmax(0, 1fr) minmax(0, 0.8fr); gap: 10px; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 0.74rem; }
+.cad-basis-what { color: var(--text-secondary); min-width: 0; overflow-wrap: anywhere; }
+.cad-basis-val { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-primary); overflow-wrap: anywhere; }
+.cad-grade { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.66rem; font-weight: 700; }
+.cad-grade--measured { background: var(--success-bg); color: var(--success); }
+.cad-grade--answered { background: var(--info-bg); color: var(--info); }
+.cad-grade--typed { background: var(--info-bg); color: var(--info); }
+.cad-grade--rule { background: var(--warning-bg); color: var(--warning); }
+.cad-grade--default { background: var(--surface-elevated); color: var(--text-secondary); border: 1px solid var(--border); }
+.cad-not-included { margin: 6px 0 4px; padding-left: 18px; font-size: 0.76rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; }
+.cad-stamp { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.68rem; color: var(--text-muted); }
+@media (prefers-reduced-motion: reduce) { #cad-decisions-panel { transition: none; } }
+.cad-ws-card .btn[hidden] { display: none !important; }
+/* DFM finding rows: the "Show on model" button replaces role=button on the <li>. */
+.dfm-geo-show { margin-left: auto; background: none; border: 1px solid var(--border-strong); border-radius: 6px; padding: 2px 8px; font: inherit; font-size: 0.7rem; color: var(--text-secondary); cursor: pointer; }
+.dfm-geo-show:hover { border-color: var(--accent); color: var(--text-primary); }
+.dfm-geo-show:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Light-theme contrast (axe, CAD to COST v2 check) — the file badge and the New tag read their text from the ink. */
+#cad-quality-badge { color: color-mix(in srgb, var(--text-primary) 78%, var(--success)) !important; }
+.cad-decision-new { color: color-mix(in srgb, var(--text-primary) 55%, var(--accent)) !important; }

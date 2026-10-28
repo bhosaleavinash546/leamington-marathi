@@ -1,6 +1,6 @@
 # CAD to COST — redesign proposal v2 (joint review, 28 Oct 2026)
 
-**For:** Cost Engineering Director · **Status:** for decision · **Supersedes:** v1 of this file (same day)
+**For:** Cost Engineering Director · **Status:** decided 28 Oct 2026 (recommendations accepted) — built, see §5 · **Supersedes:** v1 of this file (same day)
 **Reviewed by:** senior cost engineer (commodity costing) and chief UI/UX motion design engineer, working together
 **Prototype:** the "CAD to COST redesign" canvas (v2 board) · **Evidence:** `docs/review/cad-to-cost-360-2026-10-28.md`
 
@@ -59,12 +59,12 @@ proposal.
 | Safety-critical | Ductile iron, NDT (£2.50/part on the knuckle) | Asked | Asked | Asked; **pre-tick rule needs a decision (D1)** |
 | Tolerance class | Finishing passes and inspection | Asked | Asked | Asked |
 | Annual volume | Batch, change-over, cavitation, tooling spread | CAD screen | Step 1 | Step 1 |
-| Programme life | Tooling £93,556: £0.94/part over 1 year; £0.19 over 5 → £23.19 total (engine arithmetic) | CAD screen, blank = **1 year** | Step 1, mislabelled "5" | Step 1, effect shown live; **default policy D3** |
+| Programme life | Forged knuckle: dies wear out, so 5 years buys 4.7 die sets (£436,550) — £0.94 → £0.87 a part, £24.10 → £24.02. Moulded ECU cover: the mould lasts the programme — £1.22 → £0.89 (measured, build of 28 Oct) | CAD screen, blank = **1 year** | Step 1, mislabelled "5" | Step 1, effect shown live; **default policy D3** |
 | Country / rate book | Every rate | Header only | Header only | Step 1, with book date |
 | Overhead 12 % / margin 8 % | £2.33 + £1.78 on £24.10 | Commodity form | Hidden | Commercial basis, editable, basis printed |
 | Packaging £0.19 / logistics £0.34 | From part size, UK delivery | Commodity form | Hidden | Commercial basis |
 | Batch size 5,000 | Spreads the 45 min change-over | Rule, form | Hidden | Basis (rule) |
-| Gross 4.918 kg v 3.321 kg as forged (3.255 kg finished + stock; 67.5 %) | Raw material £5.66 before scrap credit | Excel only | Hidden | Breakdown drivers |
+| Gross 4.918 kg bought; 3.255 kg as forged (finished 356.1 cm³ ≈ 2.80 kg + holes + machining stock); 3.321 kg costed; 67.5 % | Raw material £5.66 before scrap credit | Excel only | Hidden | Breakdown drivers |
 | Consumables and services | Descale £0.58, NDT £2.50, tool wear £1.50 | Excel only | Hidden | Breakdown drivers |
 | Cycle time × machine rate | Forge 0.255 min on 1600 t press £91.69/h; CNC 20 features | Excel only | Hidden | Breakdown drivers |
 | Surface treatment / coating | **Not asked** for forgings, castings, machined parts | — | — | **Not included** list; **D4** |
@@ -84,8 +84,11 @@ each one is asked, shown in Basis or Breakdown, or listed under Not included. No
   stated leaning.
 - **D2 — Question wording.** "Yes — adds X-ray/CT NDT and heat treat" is shown for a forging, which the rule
   correctly charges as MPI. *Recommendation:* wording per commodity (MPI / UT on forgings, X-ray / CT on castings).
-- **D3 — Programme-life default.** Blank = one year's volume is conservative and stated, but it puts £0.75/part more
-  tooling on the knuckle than a 5-year life. *Options:* keep blank = 1 year, require the field, or a company default.
+- **D3 — Programme-life default.** Blank amortised tooling over one year's volume while tools that wear out were sized
+  for an assumed five. The effect depends on the tool: small on the forged knuckle (dies are consumed, £0.94 → £0.87 a
+  part), large on a long-life mould (ECU cover £1.22 → £0.89). *Options:* keep blank = 1 year, require the field, or a
+  company default. *Correction:* revision B first said "£0.19 over 5 years → £23.19" for the knuckle — it treated the
+  forging dies as a fixed tool; the build's live run measured £24.02.
 - **D4 — Coating / surface treatment** is not asked on forgings, castings or machined parts. *Options:* list it under
   Not included (v2 does this now), or add an advisory finish question priced through the painting module (engine
   work).
@@ -209,3 +212,22 @@ each one is asked, shown in Basis or Breakdown, or listed under Not included. No
 | D4 | Coating / surface treatment | Not included list · advisory question priced via painting | List now, question in Phase 2 |
 | D5 | Route comparison | Not offered · Phase 2 | Phase 2 |
 | D6 | Band wording | Today · state scope and calibration | State scope |
+
+## 5. Built (28 Oct 2026) — decisions as recommended
+
+D1, D2, D3 (required), D4 (Not included list) and D6 are in; the coating question (D4) and route comparison (D5) remain
+phase 2.
+
+- **Proof that the redesign moves no cost** — the screen equals the headless chain to the penny, with programme life 5 years:
+  - Knuckle: £24.0215 on screen, £24.0215 headless.
+  - Stub axle: £52.8548 on both.
+  - ECU cover: £0.8858 on both.
+  - The ECU only matched after a fix: headless charged mould maintenance for one year where the screen charges every
+    amortised year (`to-cost-params.ts` now passes `maintenanceYears`; sheet-metal dies too).
+  - With programme life blank both chains still give £24.0971 and £1.2211.
+- **Accessibility:** axe WCAG 2.1 AA — 0 violations on step 1, the questions and the cost card, dark and light.
+  - Two fixes were needed on the way: the DFM finding rows (role=button on a list item holding links) and the light-theme
+    contrast of the file badge and the New tag.
+- **Corrections found while building:**
+  - Forging tooling over a programme (D3 above).
+  - The knuckle's finished mass is ≈ 2.80 kg (356.1 cm³); 3.255 kg is as-forged.

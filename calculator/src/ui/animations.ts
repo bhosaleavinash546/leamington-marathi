@@ -10,7 +10,8 @@
  *   than ~0.15 s in total.
  * - HOVER: colour / shadow only, in CSS (calculator.css / saas-polish.css). Nothing in JS listens to mousemove.
  * - EXIT: faster than the enter (ease-in).
- * - ONE "reward" beat: the headline total counts up once.
+ * - Money never animates its value (CAD to COST proposal v2, M2): the headline used to count up, and live runs read
+ *   £16.42, £38.72 and £49.96 off it before the true £24.09 / £41.46 / £53.06 — one of them was quoted in a review.
  * - Reduced motion: every hook returns at once, read LIVE (the OS setting can change while the page is open).
  *
  * Durations and the curve mirror the CSS tokens (--dur-micro 150 ms, --dur-hover 200 ms, --dur-page 260 ms,
@@ -78,29 +79,11 @@ export function onResultsReady(): void {
   if (panes.length) enter(panes, { y: 4 });
 }
 
-/** The headline total: the hero fades in and its figure counts up ONCE — the single reward beat. */
+/** The headline total: the hero fades in; its figure is final from the first frame (no count-up — see the header). */
 export function animateResultHero(): void {
   const hero = document.getElementById('cv-result-hero');
   if (!hero || reducedMotion()) return;
-  enter(hero, { y: -6, duration: DUR.page });
-
-  const totalEl = hero.querySelector<HTMLElement>('.crh-total');
-  if (!totalEl) return;
-  const full = totalEl.innerHTML;                 // may contain the ±% span
-  const m = (totalEl.textContent ?? '').match(/([^\d-]*)([\d,]+(?:\.\d+)?)/);
-  if (!m) return;
-  const target = parseFloat(m[2].replace(/,/g, ''));
-  if (!isFinite(target) || target <= 0) return;
-  const dec = m[2].includes('.') ? (m[2].split('.')[1] ?? '').length : 0;
-  const prefix = m[1];
-  const proxy = { v: target * 0.6 };
-  gsap.to(proxy, {
-    v: target, duration: 0.45, ease: EASE_OUT,
-    onUpdate: () => {
-      totalEl.textContent = prefix + proxy.v.toLocaleString('en-GB', { minimumFractionDigits: dec, maximumFractionDigits: dec });
-    },
-    onComplete: () => { totalEl.innerHTML = full; },
-  });
+  enter(hero, { y: 0, duration: 0.16 });
 }
 
 /** Calculate pressed: a brief accent ring (CSS `.cv-pulse`, coloured by the theme's accent). */

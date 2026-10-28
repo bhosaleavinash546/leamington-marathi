@@ -243,7 +243,7 @@ describe('F10–F12 and kept settings', () => {
 
   it('a CAD-filled form drops the sample examples strip', () => {
     expect(main).toMatch(/class="inline-demo-strip"/);
-    expect(fnBody('applyCADToForm')).toMatch(/\.inline-demo-strip'\)\.forEach\(n => n\.remove\(\)\)/);
+    expect(fnBody('applyCADToForm')).toMatch(/\.inline-demo-strip, #commodity-form-area \.cad-inline-panel'\)\.forEach\(n => n\.remove\(\)\)/);
   });
 
   it('a long option list is a drop-down the panel reader understands', () => {

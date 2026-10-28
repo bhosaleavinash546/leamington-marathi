@@ -82,6 +82,8 @@ export interface GeometricDFMMeta {
 }
 
 export interface CADReportMeta {
+  /** "UK rate book v2.2.0 · rules v7 · kernel 374f8cebdccb · 28 Oct 2026" — what made these numbers (CAD to COST v2). */
+  stamp?: string | null;
   /**
    * The uncertainty band the SCREEN shows (with the drivers' measured / rule provenance, or calibrated by actuals). The
    * PDF recomputed it without provenance and printed ±16.6 % beside a screen that said ±6.3 % (uploaded-parts review,
@@ -843,6 +845,12 @@ export function renderShouldCostSections(
   // §1 — 8-Bucket Cost Breakdown
   // ════════════════════════════════════════════════════════════════════════
   y = secBar(doc, y, '§1 — 8-Bucket Cost Breakdown');
+  if (cadMeta.stamp) {
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(110, 110, 110);
+    doc.text(`Reproducibility: ${cadMeta.stamp}`, MG, y + 1);
+    doc.setTextColor(0, 0, 0);
+    y += 5;
+  }
 
   const buckets: [string, number, number, string][] = [
     ['1.  Raw Material',         result.breakdown.rawMaterial, pcts.rawMaterial,                          ''],

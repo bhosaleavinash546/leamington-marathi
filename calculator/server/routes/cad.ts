@@ -1176,6 +1176,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     // The country whose rate book the rules priced in — read off the book itself,
     // so a reviewer can see it was the requested country (and not the UK).
     ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
+    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers.
+    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV },
       success: true,
       analysis: det.analysis,
       sanityWarnings: detWarnings,
@@ -1297,6 +1299,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     // The country whose rate book the rules priced in — read off the book itself,
     // so a reviewer can see it was the requested country (and not the UK).
     ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
+    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers.
+    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV },
     success: true,
     analysis,
     sanityWarnings,
@@ -2978,6 +2982,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // The country whose rate book the rules priced in — read off the book itself,
     // so a reviewer can see it was the requested country (and not the UK).
     ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
+    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers.
+    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV },
       success: true,
       analysis: det.analysis,
       sanityWarnings: detWarnings,
@@ -3081,6 +3087,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // The country whose rate book the rules priced in — read off the book itself,
     // so a reviewer can see it was the requested country (and not the UK).
     ratesRegion: ruleCtx.rates?.regional?.code ?? 'UK',
+    // Reproducibility stamp (CAD to COST proposal v2, item 12): the rules and the kernel that made these numbers.
+    versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV },
     success: true,
     analysis,
     sanityWarnings,

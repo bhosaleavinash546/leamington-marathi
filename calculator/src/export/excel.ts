@@ -30,6 +30,8 @@ export async function exportToExcelBlob(
   checks: ChecksAppliedMeta | null = null,
   /** The band the screen shows (casting 360 X30: the workbook had no band and no confidence grade). */
   band: { plusMinusPct: number; p10: number; p90: number; overallConfidence?: string } | null = null,
+  /** The rate book, rules and kernel behind a CAD costing (CAD to COST v2) — printed under the country. */
+  stamp: string | null = null,
 ): Promise<Blob> {
   const sym = currencySymbol(currency);
   const m = (gbp: number) => money(gbp * fxRate, sym);
@@ -49,6 +51,7 @@ export async function exportToExcelBlob(
     ['Part Name', result.partName],
     ['Manufacturing Country', library.regional ? `${library.regional.name} (${library.regional.code}) — rates rebuilt for this country` : 'United Kingdom — base rate book'],
     ['Report Date', new Date().toLocaleDateString('en-GB')],
+    ...(stamp ? [['Reproducibility', stamp]] : []),
     ['Currency', currency === 'GBP' ? 'GBP' : `${currency} — 1 GBP = ${fxRate.toFixed(4)} ${currency} (the costing is held in GBP; every figure and note here is converted)`],
     [],
     ['── COST SUMMARY ──'],

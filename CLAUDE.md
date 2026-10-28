@@ -625,8 +625,20 @@ what is true** — nothing here has been compared with a price JLR paid.
     the model supply a number); RFQ should-cost is the engine's or "not costed" (no conversion-factor fallback).
   - Long server waits use `src/ui/long-task-progress.ts` (indeterminate bar + step + elapsed + allowance + Cancel) —
     never a percentage the server did not report.
+- CAD to COST as three steps (proposal v2, decided 28 Oct 2026; `docs/ui/cad-to-cost-redesign-2026-10.md`,
+  `docs/review/cad-to-cost-360-2026-10-28.md`): Part & context → Confirm → Cost, the model left, one card right
+  (`src/ui/cad-workspace.ts` pure builders; state in main.ts). Every cost button goes through `cadGetCost` (`cad-flow.ts`):
+  never apply a form with a blocking question open; a question an automatic re-run adds is tagged New and stopped on
+  once; answers show as chips that reopen. Programme life is REQUIRED on this screen (`#cad-programme-years` mirrors
+  `#programme-years`). The safety-critical question leans only on name evidence — never a pre-ticked "No" (D1); its
+  consequence names the process's check (`safetyConsequence`, D2). Step 3 is the cost card under the result
+  (`renderCADCostCard`): tooling investment + amortisation, what the band means (D6), the Basis read off `_cadRuleFields`
+  (never the DOM `data-prov` markers — any input event clears them), Not included, and the reproducibility stamp
+  (rate book · rules v · kernel rev) on screen, PDF §1 and Excel summary. CAD responses carry `versions`. Caches key on
+  `KERNEL_REV`. Screen = headless to the penny is the acceptance test (`tests/cad-workspace.test.ts`); headless passes
+  `maintenanceYears` for moulds and dies as the screen does.
 - Motion (review, Oct 2026): ONE system — `src/ui/animations.ts` (GSAP: fades ≤ 8 px, 150–260 ms, power2 out / in,
-  no scale, no back / elastic, one count-up) + CSS. The `motion` package is gone; never add a second animation library or
+  no scale, no back / elastic; money never animates its value — the count-up was read mid-way and quoted, CAD to COST v2) + CSS. The `motion` package is gone; never add a second animation library or
   a mousemove effect. Hover = colour / shadow (buttons) or a 2 px lift (cards); commodity picker tiles rise 4 px, take the accent border
   and FILL their icon tile with the accent (one look for every commodity) — the policy blocks at the end of
   `saas-polish.css`; overlays enter AND exit via `display … allow-discrete` + `@starting-style`; no `transition: all`.
