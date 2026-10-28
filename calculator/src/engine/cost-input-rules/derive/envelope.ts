@@ -90,9 +90,12 @@ export function governingWallMm(
         + ' — the thickest section governs cooling',
     };
   }
+  // An STL carries 2·V/S and no ray cast (cad.ts); it was labelled "ray-cast mean wall over 0 samples".
   const basis = wt.method === 'volume_surface_shell'
     ? 'thin-shell wall from 2·V/S (ray-cast overshot the cavity)'
-    : `ray-cast mean wall over ${wt.sampleCount ?? 0} samples`;
+    : (wt.method as string) === 'stl_heuristic'
+      ? 'bulk wall 2·V/S from the mesh (an STL is not ray-cast, and its fillet pairs are too coarse to gauge the wall)'
+      : `ray-cast mean wall over ${wt.sampleCount ?? 0} samples`;
   return { mm: Math.round(mean * 10) / 10, basis };
 }
 

@@ -9,7 +9,8 @@ import rateLimit from 'express-rate-limit';
 import { createAnthropic, isAirGapped, aiDisabledBody, AI_DISABLED_MESSAGE } from '../utils/ai-client.js';
 import { requireAuth } from '../middleware/auth-middleware.js';
 import { resolveActiveRateBook } from './rate-library.js';
-import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles, putMesh, getMesh, KERNEL_REV } from '../utils/geometry-store.js';
+import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles, putMesh, getMesh, KERNEL_REV, MESH_REV } from '../utils/geometry-store.js';
+import { extractStlFeaturesOffThread, type MeshFeatureSummary } from '../utils/mesh-features-worker.js';
 import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry, tessellateToSTL, kernelStatus } from '../utils/geometry-bridge.js';
@@ -148,6 +149,27 @@ function confirmedFamily(answers: Record<string, unknown>): string {
   if (typeof fam === 'string' && fam) return fam;
   const grade = answers['material.grade'];
   return typeof grade === 'string' && grade ? (familyFromMaterialId(grade) ?? '') : '';
+}
+
+/** The mesh pass's silhouettes and draft for an STL, once per file and mesh revision; null (stated in the log) when it
+ *  fails or the mesh is over the triangle cap — the rules then fall back to their stated estimates, as before. */
+const _stlMeasures = new Map<string, Pick<MeshFeatureSummary, 'projectedArea' | 'draftAnalysis'> | null>();
+async function stlMeshMeasures(buffer: Buffer, uploadHash: string): Promise<Pick<MeshFeatureSummary, 'projectedArea' | 'draftAnalysis'> | null> {
+  const key = `${uploadHash}:${MESH_REV}`;
+  if (_stlMeasures.has(key)) return _stlMeasures.get(key)!;
+  let out: Pick<MeshFeatureSummary, 'projectedArea' | 'draftAnalysis'> | null = null;
+  try {
+    const t0 = Date.now();
+    const m = await extractStlFeaturesOffThread(buffer, 120_000);
+    if (m.featureSet.available) out = { projectedArea: m.projectedArea, draftAnalysis: m.draftAnalysis };
+    console.log(`[CAD] STL faces recovered — ${m.stats.faces} faces, silhouette ${m.projectedArea ? (m.projectedArea.alongDrawMm2 / 100).toFixed(1) : '—'} cm², `
+      + `${m.draftAnalysis?.undercutFaceCount ?? '—'} undercut face(s), ${Date.now() - t0} ms${m.featureSet.available ? '' : ` (${m.featureSet.note})`}`);
+  } catch (e) {
+    console.warn('[CAD] STL face recovery failed; the rules use their estimates:', (e as Error).message);
+  }
+  if (_stlMeasures.size > 200) _stlMeasures.clear();
+  _stlMeasures.set(key, out);
+  return out;
 }
 
 async function queueGeometricDFM(
@@ -811,7 +833,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
         // A mesh volume is exact only if the mesh is; a thin drape exported
         // coarsely can be 10% light. The band widens on it (Sprint 6).
         volumeConfidence: 'mesh',
-        // Remaining optional fields not available from mesh-only data
+        // Remaining optional fields not available from mesh-only data (the draft and the silhouettes are filled
+        // below from the faces recovered off the mesh)
         draftAnalysis: null,
         setupAnalysis: null,
         cncCycleTimeEstimate: null,
@@ -821,6 +844,13 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
         assemblyWarning: null,
         unitWarning: null,
       } as unknown as OCCTGeometry;
+      // The faces a mesh hides, recovered (mesh-features.ts — matches the kernel on the ECU cover to 0.3 % and 8 / 8
+      // undercut faces): the silhouette the press closes over and the undercut faces the slides follow, which every
+      // moulding / die rule reads. Without them an STL priced its press on a bbox × √fill estimate (ECU cover 81 cm²
+      // against a measured 216 cm²: a 200 t press and no slides, where the STEP gets 400 t and 2 slides).
+      const mesh = await stlMeshMeasures(buffer, uploadHash);
+      if (mesh?.projectedArea) (geo as { projectedArea?: unknown }).projectedArea = mesh.projectedArea;
+      if (mesh?.draftAnalysis) (geo as { draftAnalysis?: unknown }).draftAnalysis = mesh.draftAnalysis;
     } catch (stlErr) {
       console.error(`[CAD] STL parse failed: ${(stlErr as Error).message}`);
       res.status(422).json({ error: `STL parse error: ${(stlErr as Error).message}` });
@@ -979,7 +1009,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     Buffer.from(partPhotoBase64),
     ...(drawingUpload ? [drawingUpload.buffer] : []),
     ...renderViews.map(v => Buffer.from(v)),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION, kernelRev: KERNEL_REV,
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, mode: analysisMode, answers: decisionAnswers, promptVersion: CAD_PROMPT_VERSION, ruleEngineVersion: RULE_ENGINE_VERSION, kernelRev: KERNEL_REV, meshRev: MESH_REV,
       // Inputs that change the result and were missing (360 review, Oct 2026): the file NAME (it carries
       // material / part-name evidence), the FASTBLANK DXF, and the active company rate book (an admin's
       // upload was not reflected until the cache expired).

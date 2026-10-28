@@ -93,6 +93,9 @@ async function writeFixtures(dir: string) {
       holes: cyl(ref, 'hole').map(pick), bosses: cyl(ref, 'boss').map(pick),
       concaveFillets: cyl(ref, 'fillet').filter(f => f.concave).map(pickFillet),
       undercuts: ref.features.filter(f => f.draftClass === 'undercut').length,
+      // what the STL costing now reads from the mesh (cad.ts stlMeshMeasures): the silhouettes and the draft summary
+      projectedArea: geo.projectedArea ?? null,
+      draftAnalysis: geo.draftAnalysis ? { ...geo.draftAnalysis, pullDirectionSearch: undefined } : null,
       drawDirectionXYZ: ref.drawDirectionXYZ,
       findingsByRule: findingsByRule(ref, c.commodity, c.family),
     }, null, 1) + '\n');

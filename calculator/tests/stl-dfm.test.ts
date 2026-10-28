@@ -8,8 +8,12 @@
  *    `npx tsx scripts/stl-dfm-validate.ts --fixtures tests/fixtures/stl-dfm` (no kernel needed here);
  *  - the DFM job end to end on an STL: findings, and the faces the viewer needs to show them.
  */
-import { describe, it, expect, afterAll } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { describe, it, expect, afterAll, beforeAll } from 'vitest';
+import { readFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { spawn, type ChildProcess } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import jwt from 'jsonwebtoken';
+import { seedUser } from './helpers/seed-user.js';
 import { join } from 'node:path';
 import { readStlTriangles, extractMeshFeatures, MAX_TRIANGLES } from '../server/utils/mesh-features.js';
 import { extractStlFeaturesOffThread } from '../server/utils/mesh-features-worker.js';
@@ -141,6 +145,9 @@ interface KernelTruth {
   commodity: CommodityType; family: string;
   holes: ManufacturingFeature[]; bosses: ManufacturingFeature[]; concaveFillets: ManufacturingFeature[];
   undercuts: number; findingsByRule: Record<string, number>;
+  projectedArea?: { xMm2: number; yMm2: number; zMm2: number; alongDrawMm2: number } | null;
+  draftAnalysis?: { drawDirectionXYZ: number[]; undercutFaceCount: number; zeroDraftFaceCount: number;
+    adequateDraftFaceCount: number; analyzedFaceCount: number } | null;
 }
 const FX = join(import.meta.dirname, 'fixtures', 'stl-dfm');
 /** Same feature: parallel axes, axis lines within 5 % of the diameter (min 0.1 mm), diameter within 1 % (min 0.05 mm). */
@@ -214,6 +221,59 @@ describe('a sprocket\u2019s tooth form (scripts/sprocket-fixture.py: ANSI #40, 1
     expect(matched(truth.holes, of(m.featureSet, 'hole'))).toBe(1);
     expect(of(m.featureSet, 'hole')).toHaveLength(1);   // the seats are not holes
     expect(findings(m.featureSet, truth)).toEqual(truth.findingsByRule);
+  });
+});
+
+// ── what the STL COSTING reads from the mesh ─────────────────────────────────
+describe('STL costing: the silhouette and the draft come from the mesh, as the kernel measures them', () => {
+  it('ECU cover: silhouettes within 1 %, the same undercut / zero-draft / drafted faces as the kernel', () => {
+    const m = extractMeshFeatures(readStlTriangles(readFileSync(join(FX, 'IM_ECU_Cover.stl'))));
+    const t = JSON.parse(readFileSync(join(FX, 'IM_ECU_Cover.kernel.json'), 'utf8')) as KernelTruth;
+    for (const k of ['xMm2', 'yMm2', 'zMm2', 'alongDrawMm2'] as const)
+      expect(Math.abs(m.projectedArea![k] / t.projectedArea![k] - 1)).toBeLessThan(0.01);
+    expect(m.draftAnalysis!.drawDirectionXYZ).toEqual(t.draftAnalysis!.drawDirectionXYZ);
+    expect(m.draftAnalysis!.undercutFaceCount).toBe(t.draftAnalysis!.undercutFaceCount);
+    expect(m.draftAnalysis!.zeroDraftFaceCount).toBe(t.draftAnalysis!.zeroDraftFaceCount);
+    expect(m.draftAnalysis!.adequateDraftFaceCount).toBe(t.draftAnalysis!.adequateDraftFaceCount);
+  });
+
+  // /analyze on the STL through a real server (no kernel needed): the moulding rules price the press on the measured
+  // silhouette and the tool with its slides. Before, an STL took a bbox × √fill estimate — 81 cm² against 216 cm², a
+  // 200 t press and no slides — and the same part cost differently from its STEP (£1.29 v £1.17 on screen).
+  describe('over HTTP', () => {
+    const SECRET = 'stl-costing-' + 'x'.repeat(32), PORT = 3600 + Math.floor(Math.random() * 300), BASE = `http://127.0.0.1:${PORT}`;
+    let dir = '', srv: ChildProcess | null = null;
+    beforeAll(async () => {
+      dir = mkdtempSync(join(tmpdir(), 'cv-stl-cost-'));
+      writeFileSync(join(dir, '.env'), `JWT_SECRET=${SECRET}\nPORT=${PORT}\nAIR_GAPPED=1\n`);
+      const env: NodeJS.ProcessEnv = { ...process.env, CV_DATA_DIR: dir, NODE_ENV: 'development' };
+      delete env.JWT_SECRET; delete env.PORT; delete env.HOST; delete env.AIR_GAPPED; delete env.ANTHROPIC_API_KEY;
+      const root = join(import.meta.dirname, '..');
+      srv = spawn(join(root, 'node_modules/.bin/tsx'), [join(root, 'server/index.ts')], { cwd: dir, env, stdio: 'ignore' });
+      for (let i = 0; i < 160; i++) {
+        try { if ((await fetch(`${BASE}/api/health`)).ok) { seedUser(dir, 'u1'); return; } } catch { /* starting */ }
+        await new Promise(r => setTimeout(r, 250));
+      }
+      throw new Error('server did not start');
+    }, 60_000);
+    afterAll(() => { srv?.kill(); if (dir) rmSync(dir, { recursive: true, force: true }); });
+
+    it('the press closes over the measured silhouette and the tool carries the slides the undercuts need', async () => {
+      const t = JSON.parse(readFileSync(join(FX, 'IM_ECU_Cover.kernel.json'), 'utf8')) as KernelTruth;
+      const form = new FormData();
+      form.append('cadFile', new Blob([readFileSync(join(FX, 'IM_ECU_Cover.stl'))]), 'IM_ECU_Cover.stl');
+      form.append('mode', 'deterministic');
+      form.append('annualVolume', '100000');
+      form.append('decisionAnswers', JSON.stringify({ 'commodity.route': 'injection_moulding', 'material.family': 'plastic', 'material.resin': 'mat-pa66gf30' }));
+      const token = jwt.sign({ userId: 'u1', email: 'u1@test', emailVerified: true }, SECRET, { expiresIn: '10m' });
+      const a = await (await fetch(`${BASE}/api/cad/analyze`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form })).json() as
+        { ruleFields?: Record<string, { value: unknown; basis?: string }> };
+      const f = a.ruleFields ?? {};
+      expect(Math.abs(Number(f['imm-area']?.value) / (t.projectedArea!.alongDrawMm2 / 100) - 1)).toBeLessThan(0.01);
+      expect(f['imm-side-actions']?.value).toBe(Math.ceil(t.draftAnalysis!.undercutFaceCount / 6));
+      // the wall is the bulk 2·V/S and says so (it read "ray-cast mean wall over 0 samples")
+      expect(f['imm-wall']?.basis).toMatch(/2·V\/S from the mesh/);
+    }, 120_000);
   });
 });
 

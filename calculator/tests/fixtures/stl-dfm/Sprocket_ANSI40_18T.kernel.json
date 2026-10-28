@@ -275,6 +275,27 @@
   }
  ],
  "undercuts": 0,
+ "projectedArea": {
+  "zMm2": 3808,
+  "yMm2": 569,
+  "xMm2": 570,
+  "alongDrawMm2": 3808,
+  "method": "silhouette_raster"
+ },
+ "draftAnalysis": {
+  "drawDirectionXYZ": [
+   0,
+   0,
+   1
+  ],
+  "undercutFaceCount": 0,
+  "cavityFaceCount": 0,
+  "zeroDraftFaceCount": 52,
+  "adequateDraftFaceCount": 0,
+  "minPositiveDraftDeg": null,
+  "maxPositiveDraftDeg": null,
+  "analyzedFaceCount": 52
+ },
  "drawDirectionXYZ": [
   0,
   0,

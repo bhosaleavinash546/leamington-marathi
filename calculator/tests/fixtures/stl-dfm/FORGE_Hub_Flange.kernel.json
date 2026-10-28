@@ -141,6 +141,27 @@
  ],
  "concaveFillets": [],
  "undercuts": 0,
+ "projectedArea": {
+  "zMm2": 11602,
+  "yMm2": 5082,
+  "xMm2": 5059,
+  "alongDrawMm2": 11602,
+  "method": "silhouette_raster"
+ },
+ "draftAnalysis": {
+  "drawDirectionXYZ": [
+   0,
+   0,
+   1
+  ],
+  "undercutFaceCount": 0,
+  "cavityFaceCount": 0,
+  "zeroDraftFaceCount": 9,
+  "adequateDraftFaceCount": 0,
+  "minPositiveDraftDeg": null,
+  "maxPositiveDraftDeg": null,
+  "analyzedFaceCount": 9
+ },
  "drawDirectionXYZ": [
   0,
   0,

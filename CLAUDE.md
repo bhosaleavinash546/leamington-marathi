@@ -600,6 +600,10 @@ what is true** — nothing here has been compared with a price JLR paid.
   report) and the screen gives it to the viewer (`setMeshFaces`, CAD to COST viewers only). Matches the kernel on prismatic and
   moulded parts (fixtures + kernel truth in `tests/fixtures/stl-dfm/`, `tests/stl-dfm.test.ts`); free-form castings / forgings are
   indicative. Re-measure with `npx tsx scripts/stl-dfm-validate.ts` (needs OCP); live `npx tsx e2e/stl-dfm-live.ts`.
+  The STL COSTING reads the same pass (`cad.ts::stlMeshMeasures`, cached on `MESH_REV`): `projectedArea` and `draftAnalysis`
+  are attached to the STL geometry, so press, slides and undercut rules match the STEP (ECU cover 216.7 v 216.2 cm², 2 v 2
+  slides). Not the wall: fillet-pair gauging was tried on meshes and dropped (inner fillets are one strip) — an STL wall is
+  2·V/S and says so. STL routing still differs on thin parts (no bends / face types) — the engineer answers the route.
 - DFM / DtC "pure arithmetic" rules (demo review, Oct 2026, `docs/review/dfm-dtc-demo-review-2026-10-08.md`): a DFM £ must
   move the COSTING's numbers — time pricers carry `minutes` in the costing's model (cast routes: `nearNetHoleMinutes`),
   removed from the costed op at its own rates; tooling carries `nreGBP`. Anything the cost model does not carry is

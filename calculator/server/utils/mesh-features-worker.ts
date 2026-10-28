@@ -7,7 +7,8 @@ import { Worker, isMainThread, parentPort, workerData } from 'node:worker_thread
 import { readStlTriangles, extractMeshFeatures, type MeshFeatureResult } from './mesh-features.js';
 
 /** What the DFM job needs: the features, the measures the rules read, and the faces for the viewer. */
-export type MeshFeatureSummary = Pick<MeshFeatureResult, 'featureSet' | 'volumeMm3' | 'surfaceMm2' | 'bboxMm' | 'projectedAlongDrawMm2' | 'stats' | 'triFace'>
+export type MeshFeatureSummary = Pick<MeshFeatureResult, 'featureSet' | 'volumeMm3' | 'surfaceMm2' | 'bboxMm' | 'projectedAlongDrawMm2'
+  | 'projectedArea' | 'draftAnalysis' | 'stats' | 'triFace'>
   & { faces: MeshFaceMeta[] };
 /** A recovered face as the viewer's `FaceMeta` reads it (cad-viewer.ts) — the triangle lists stay behind. */
 export interface MeshFaceMeta {
@@ -35,14 +36,14 @@ export function extractStlFeaturesOffThread(buf: Buffer, timeoutMs = 120_000): P
 
 if (!isMainThread && parentPort) {
   try {
-    const { featureSet, volumeMm3, surfaceMm2, bboxMm, projectedAlongDrawMm2, stats, triFace, faces } =
+    const { featureSet, volumeMm3, surfaceMm2, bboxMm, projectedAlongDrawMm2, projectedArea, draftAnalysis, stats, triFace, faces } =
       extractMeshFeatures(readStlTriangles(Buffer.from(workerData as Uint8Array)));
     const meta: MeshFaceMeta[] = faces.map(f => ({
       id: f.id, type: f.type, radiusMm: f.cyl ? Math.round(f.cyl.r * 1000) / 1000 : null,
       areaCm2: Math.round(f.areaMm2) / 100,
       hole: f.cyl ? (f.cyl.concave && f.cyl.coverage >= 0.83) : null, thicknessMm: f.thicknessMm ?? null,
     }));
-    parentPort.postMessage({ ok: true, r: { featureSet, volumeMm3, surfaceMm2, bboxMm, projectedAlongDrawMm2, stats, triFace, faces: meta } },
+    parentPort.postMessage({ ok: true, r: { featureSet, volumeMm3, surfaceMm2, bboxMm, projectedAlongDrawMm2, projectedArea, draftAnalysis, stats, triFace, faces: meta } },
       [triFace.buffer as ArrayBuffer]);
   } catch (e) {
     parentPort.postMessage({ ok: false, error: String((e as Error).message ?? e) });

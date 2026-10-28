@@ -311,3 +311,12 @@ phase 2.
 server and browser and prints PASS / FAIL per check — costed, finish on the form with a sized load, the comparison's
 reference row equal to the headline, "Cost this route" equal to its row, axe 0 on the cost card, no page errors. First
 run (28 Oct 2026): 20 / 20 passed.
+
+Acceptance criterion 6 is now checked on the files themselves. The harness clicks Excel and PDF, opens both, and checks
+three things:
+- the cost card's reproducibility stamp is in the workbook's summary sheet word for word;
+- it is in the PDF's text word for word (read from the report's content streams);
+- the PDF carries the headline.
+
+Before this the stamp was pinned only by a source-text test (`tests/cad-workspace.test.ts`), which proves the line is
+in the code, not in the export.

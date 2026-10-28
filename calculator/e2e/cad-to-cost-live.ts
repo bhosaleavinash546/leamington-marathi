@@ -8,7 +8,9 @@
  *   - Compare routes opens and its reference row EQUALS the headline (the row is the headless chain, so this is the
  *     screen = headless check, with no "typed change" note);
  *   - optionally "Cost this route": the part re-costed on another route equals that route's row;
- *   - axe WCAG 2.1 AA on the cost card with every section open: 0 violations.
+ *   - axe WCAG 2.1 AA on the cost card with every section open: 0 violations;
+ *   - the PDF and Excel the export buttons produce are opened and read: each carries the card's reproducibility stamp
+ *     word for word, and the PDF the headline (PDF text read from its content streams; Excel with SheetJS).
  * Prints PASS / FAIL per check and exits 1 on any FAIL. Proof run for docs/ui/cad-to-cost-redesign-2026-10.md §6.
  *
  *   npm run build && npm run test:e2e:cad-to-cost            # the three parts below (needs OCP for STEP)
@@ -26,6 +28,7 @@ import { tmpdir } from 'node:os';
 import { chromium, type Page } from 'playwright';
 import Database from 'better-sqlite3';
 import jwt from 'jsonwebtoken';
+import * as XLSX from 'xlsx';
 
 interface PartSpec {
   label: string; file: string; answers: Record<string, string>;
@@ -94,6 +97,42 @@ async function answerAndCost(page: Page, answers: Record<string, string>, label:
   throw new Error('not costed after 14 rounds');
 }
 
+/**
+ * The text a PDF shows, from its uncompressed content streams (the report is jsPDF output: WinAnsi strings in
+ * `( … ) Tj`, which for these characters — £ · € — read the same as Latin-1). A compressed PDF yields no text and the
+ * checks below fail loudly, never silently.
+ */
+function pdfText(buf: Buffer): string {
+  const out: string[] = [];
+  for (const m of buf.toString('latin1').matchAll(/\(((?:\\.|[^\\)])*)\)\s*Tj/g)) {
+    out.push(m[1].replace(/\\([()\\])/g, '$1').replace(/\\(\d{3})/g, (_, o: string) => String.fromCharCode(parseInt(o, 8))));
+  }
+  return out.join('\n');
+}
+
+/** The exports as a person gets them: click the buttons, open the files, find the card's stamp in both. */
+async function checkExports(page: Page, label: string, hero: string): Promise<Record<string, unknown>> {
+  const stamp = ((await page.textContent('#cad-cost-card .cad-stamp').catch(() => null)) ?? '').trim();
+  check(label, 'stamp on the cost card', /rate book .+ · rules v\S+ · kernel \S+ · \d/.test(stamp), stamp || 'no stamp');
+  const xl = join(OUT, `${label}.xlsx`), pdf = join(OUT, `${label}.pdf`);
+  const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 120_000 }), page.evaluate(() => document.getElementById('export-excel-btn')!.click())]);
+  await dl.saveAs(xl);
+  const wb = XLSX.read(readFileSync(xl));
+  const cells = wb.SheetNames.flatMap(n => (XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: false }) as unknown[][]).map(r => ({ sheet: n, row: r.map(c => String(c ?? '')) })));
+  const xlStamp = cells.find(c => c.row[0] === 'Reproducibility');
+  check(label, 'Excel opened: the stamp, word for word', !!xlStamp && xlStamp.row[1] === stamp,
+    xlStamp ? `${xlStamp.sheet}: "${xlStamp.row[1]}"` : `no Reproducibility row in ${wb.SheetNames.length} sheets`);
+  const [dl2] = await Promise.all([page.waitForEvent('download', { timeout: 180_000 }), page.evaluate(() => document.getElementById('export-pdf-btn')!.click())]);
+  await dl2.saveAs(pdf);
+  const text = pdfText(readFileSync(pdf));
+  const flat = text.replace(/\s+/g, ' ');
+  const pdfStamp = flat.match(/Reproducibility: (.*?kernel \S+ · \d{1,2} \w{3} \d{4})/)?.[1] ?? null;
+  check(label, 'PDF opened: the stamp, word for word', pdfStamp === stamp, pdfStamp ? `"${pdfStamp}"` : 'no "Reproducibility:" line in the PDF text');
+  const head = money(hero);
+  check(label, 'PDF opened: the headline', !!head && flat.includes(head), `${head} ${flat.includes(head) ? 'found' : 'not found'} in ${text.length} characters`);
+  return { stamp, excel: xl, pdf };
+}
+
 async function axeCostCard(page: Page): Promise<string[]> {
   await page.evaluate(() => { document.querySelectorAll<HTMLDetailsElement>('#cad-cost-card details').forEach(d => { d.open = true; }); });
   if (!(await page.evaluate(() => 'axe' in window))) await page.evaluate(AXE);
@@ -148,6 +187,7 @@ async function runPart(page: Page, base: string, p: PartSpec): Promise<Record<st
     !!ref && money(ref.cost) === money(hero) && !/typed change/.test(ref.why), `row ${ref?.cost ?? '—'} v headline ${money(hero)}`);
   const violations = await axeCostCard(page);
   check(p.label, 'axe on the cost card', violations.length === 0, violations.join(', ') || '0 violations');
+  rec.exports = await checkExports(page, p.label, hero);
 
   // Cost this route: re-costed on the chosen route, it must equal that route's row.
   if (p.costRoute) {

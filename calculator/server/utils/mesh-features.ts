@@ -67,6 +67,16 @@ export interface MeshFeatureResult {
   /** Envelope and the silhouette along the chosen draw (rasterised), as the kernel's bbox / `projectedArea.alongDrawMm2`. */
   bboxMm?: { x: number; y: number; z: number };
   projectedAlongDrawMm2?: number;
+  /** The kernel's `projectedArea` and `draftAnalysis`, measured on the mesh — what the STL costing reads (the press
+   *  closes over the silhouette, the slides follow the undercut faces). */
+  projectedArea?: { xMm2: number; yMm2: number; zMm2: number; alongDrawMm2: number; method: string };
+  draftAnalysis?: {
+    drawDirectionXYZ: [number, number, number]; undercutFaceCount: number; cavityFaceCount: number;
+    zeroDraftFaceCount: number; adequateDraftFaceCount: number; minPositiveDraftDeg: number | null;
+    maxPositiveDraftDeg: number | null; analyzedFaceCount: number;
+    pullDirectionSearch: { candidates: Array<{ drawDirectionXYZ: number[]; undercutFaceCount: number }>;
+      runnerUp: { drawDirectionXYZ: number[]; undercutFaceCount: number } | null; ambiguous: boolean };
+  };
 }
 
 // ── STL reading ──────────────────────────────────────────────────────────────
@@ -657,9 +667,37 @@ export function extractMeshFeatures(soup: Float32Array, opts: { maxTriangles?: n
     const undercuts = [...table.values()].filter(r => r.blocked !== null && !r.cavity).length;
     return { d, table, undercuts, sil: silhouette(2 - i) };
   });
+  const silByAxis = { zMm2: r3(cands[0].sil, 1), yMm2: r3(cands[1].sil, 1), xMm2: r3(cands[2].sil, 1) };
   cands.sort((x, y) => x.undercuts - y.undercuts || y.sil - x.sil);
   const draw = cands[0];
   const dd = draw.d;
+  /** The kernel's `_compute_draft_analysis` on the same release table: undercut (blocked, not a cavity), zero draft
+   *  (|90° − angle| < 1°), adequate (≥ 1°); end faces (normal within ~18° of the draw) count only when blocked. */
+  const draftSummary = (c: typeof draw) => {
+    let undercut = 0, zero = 0, adequate = 0, cavity = 0;
+    const pos: number[] = [];
+    for (const [id, r] of c.table) {
+      if (r.blocked !== null) { if (r.cavity) cavity++; else undercut++; continue; }
+      const cosA = Math.max(-1, Math.min(1, dot(nT(sampleTri(faces[id - 1])), c.d)));
+      if (Math.abs(cosA) > 0.95) continue;
+      const draft = Math.abs(90 - Math.acos(cosA) * 180 / Math.PI);
+      if (draft < 1) zero++; else { adequate++; pos.push(r3(draft, 2)); }
+    }
+    return { undercut, zero, adequate, cavity, pos };
+  };
+  const ds = draftSummary(draw);
+  const draftAnalysis: NonNullable<MeshFeatureResult['draftAnalysis']> = {
+    drawDirectionXYZ: [dd[0], dd[1], dd[2]],
+    undercutFaceCount: ds.undercut, cavityFaceCount: ds.cavity, zeroDraftFaceCount: ds.zero, adequateDraftFaceCount: ds.adequate,
+    minPositiveDraftDeg: ds.pos.length ? Math.min(...ds.pos) : null, maxPositiveDraftDeg: ds.pos.length ? Math.max(...ds.pos) : null,
+    analyzedFaceCount: ds.undercut + ds.zero + ds.adequate,
+    pullDirectionSearch: {
+      candidates: cands.map(c => ({ drawDirectionXYZ: [...c.d], undercutFaceCount: c.undercuts })),
+      runnerUp: cands[1] ? { drawDirectionXYZ: [...cands[1].d], undercutFaceCount: cands[1].undercuts } : null,
+      ambiguous: !!cands[1] && draw.undercuts > 0 && Math.abs(cands[1].undercuts - draw.undercuts) <= Math.max(1, Math.floor(0.1 * draw.undercuts)),
+    },
+  };
+  const projectedArea = { ...silByAxis, alongDrawMm2: r3(draw.sil, 1), method: 'mesh_silhouette_raster' };
 
   // ── assemble features (the kernel's pass 3) ───────────────────────────────
   const fillRatio = ext[0] * ext[1] * ext[2] > 0 ? volumeMm3 / (ext[0] * ext[1] * ext[2]) : null;
@@ -827,7 +865,7 @@ export function extractMeshFeatures(soup: Float32Array, opts: { maxTriangles?: n
   };
   let surfaceMm2 = 0; for (let t = 0; t < nSoup; t++) surfaceMm2 += A[t];
   return { featureSet, triFace, faces, volumeMm3, surfaceMm2,
-    bboxMm: { x: r3(ext[0]), y: r3(ext[1]), z: r3(ext[2]) }, projectedAlongDrawMm2: r3(draw.sil, 1),
+    bboxMm: { x: r3(ext[0]), y: r3(ext[1]), z: r3(ext[2]) }, projectedAlongDrawMm2: r3(draw.sil, 1), projectedArea, draftAnalysis,
     stats: { triangles: nSoup, vertices: nV, regions: R, faces: faces.length, cylinders: goodCyls.length, ms: Date.now() - t0 } };
 }
 

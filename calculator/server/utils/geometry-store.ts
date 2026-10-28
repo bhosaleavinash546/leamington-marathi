@@ -94,6 +94,14 @@ export const KERNEL_REV: string = (() => {
   } catch { return 'unknown'; }
 })();
 
+/** The same for the STL path's mesh measurements (`mesh-features.ts`): a cached STL analysis is stale once it changes. */
+export const MESH_REV: string = (() => {
+  try {
+    const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'mesh-features.ts'));
+    return createHash('sha256').update(src).digest('hex').slice(0, 12);
+  } catch { return 'unknown'; }
+})();
+
 export function putGeometry(hash: string, geo: OCCTGeometry, unitScale = 1): void {
   geometryCache.set(geoKey(hash, unitScale), geo);
 }
