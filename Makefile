@@ -5,8 +5,8 @@ start:
 	@./start.sh
 
 # ── Local dev, foreground so the sign-in OTP is visible ───────────────────────
-#    Runs natively against your own Python, so STEP/IGES need cadquery installed
-#    locally (pip install cadquery) — the shipped container has it baked in.
+#    Runs natively; STEP/IGES need the CAD kernel (OCP), which dev-start.sh finds
+#    or installs into calculator/.venv-cad — the shipped container has it baked in.
 #    Opens http://localhost:5174/calculator/ automatically.
 dev:
 	@./dev-start.sh

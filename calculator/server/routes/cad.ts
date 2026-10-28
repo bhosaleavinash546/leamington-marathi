@@ -12,7 +12,7 @@ import { resolveActiveRateBook } from './rate-library.js';
 import { hashUpload, putUploadFile, getUploadFile, putGeometry, getGeometry, sweepUploadFiles, putMesh, getMesh } from '../utils/geometry-store.js';
 import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
-import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
+import { analyzeGeometry, tessellateToSTL, kernelStatus } from '../utils/geometry-bridge.js';
 import { measureBlankDxf } from '../utils/dxf-blank.js';
 import { blankHashOf, putBlank, getBlank, getBlankDxf } from '../utils/geometry-store.js';
 import { developBlankFromCad } from '../services/blank-development.js';
@@ -642,12 +642,16 @@ router.get('/blank/:hash/blank.dxf', (req, res) => {
   res.send(dxf);
 });
 
-router.get('/limits', (_req, res) => {
+router.get('/limits', asyncRoute(async (_req, res): Promise<void> => {
+  // Whether STEP / IGES can be read here — said before the upload, not after it (CAD to COST 360 review, Oct 2026).
+  // Only the yes / no and the fix go out: the interpreter path stays on the server.
+  const k = await kernelStatus();
   res.json({
     maxUploadMb: MAX_UPLOAD_MB, maxDrawingPdfMb: MAX_DRAWING_PDF_BYTES / 1048576,
     maxBlankDxfMb: MAX_BLANK_DXF_BYTES / 1048576, accept: CAD_ACCEPT,
+    kernel: { available: k.available },
   });
-});
+}));
 
 // POST /api/cad/analyze
 router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([

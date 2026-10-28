@@ -10,6 +10,8 @@ import { POLYMER_TAXONOMIES } from '../engine/polymer-material-taxonomy.js';
 import { SHEET_TAXONOMY } from '../engine/sheet-material-taxonomy.js';
 import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
+import { fetchMeshFrame, stlFromFrame } from './cad-mesh-cache.js';
+import { nextCostStep, costStepMessage } from './cad-flow.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
@@ -5653,6 +5655,7 @@ function renderCADAnalysisForm(): string {
     <div class="section-title">CAD-to-Cost Analysis</div>
 
     <!-- File upload -->
+    <div id="cad-kernel-notice" class="cad-flow-notice" data-kind="error" role="status" hidden></div>
     <div id="cad-drop-zone" class="cad-upload-zone">
       <div class="cad-upload-icon"></div>
       <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px">Drop your CAD file here, or click to browse</div>
@@ -5794,6 +5797,7 @@ function renderCADAnalysisForm(): string {
       <div class="cad-progress-bar"><div class="cad-progress-fill" id="cad-progress-fill" style="width:0%"></div></div>
       <div class="cad-progress-hint" id="cad-progress-hint"></div>
     </div>
+    <div id="cad-flow-notice" class="cad-flow-notice" role="status" hidden></div>
     <div id="cad-results"></div>`;
 }
 
@@ -6041,6 +6045,9 @@ function wireCADEvents(): void {
     });
   }
 
+  keepCADFormValues();
+  showCADKernelNotice();
+
   // Analyze button
   analyzeBtn.addEventListener('click', () => { void analyzeCAD(false); });
   el('cad-analyze-calc-btn')?.addEventListener('click', () => { void analyzeCAD(true); });
@@ -6052,19 +6059,44 @@ function setCadQualityBadge(isClosedSolid: boolean | null, freeEdges: number | n
   const info = document.getElementById('cad-file-info');
   if (!b && info) { b = document.createElement('span'); b.id = 'cad-quality-badge'; b.style.cssText = 'font-size:0.68rem;padding:1px 7px;border-radius:10px;margin-left:8px'; info.appendChild(b); }
   if (!b) return;
-  if (isClosedSolid === true) { b.textContent = 'closed solid'; b.style.background = '#dcfce7'; b.style.color = '#166534'; }
-  else if (isClosedSolid === false) { b.textContent = `not a closed solid · ${freeEdges ?? '?'} free edge(s)`; b.style.background = '#fee2e2'; b.style.color = '#991b1b'; }
-  else { b.textContent = 'mesh (STL) — features not visible to the kernel'; b.style.background = '#fef3c7'; b.style.color = '#92400e'; }
+  // Theme tokens, not light literals (they glared on the dark theme). With no verdict, only an STL is "a mesh": a STEP
+  // not yet read was labelled "mesh (STL)" from the moment it was chosen (CAD to COST 360 review, Oct 2026).
+  const paint = (text: string, tone: 'success' | 'danger' | 'warning' | 'muted') => {
+    b!.textContent = text;
+    b!.hidden = !text;
+    b!.style.background = tone === 'muted' ? 'var(--surface-elevated)' : `var(--${tone}-bg)`;
+    b!.style.color = tone === 'muted' ? 'var(--text-secondary)' : `var(--${tone})`;
+  };
+  const isMesh = /\.stl$/i.test(cadFile?.name ?? '');
+  if (isClosedSolid === true) paint('closed solid', 'success');
+  else if (isClosedSolid === false) paint(`not a closed solid · ${freeEdges ?? '?'} free edge(s)`, 'danger');
+  else if (isMesh) paint('mesh (STL) — features not visible to the kernel', 'warning');
+  else paint('', 'muted');
 }
 
 /** One accept list for every CAD input, from the server when it answers, else the built-in default. */
-let cadLimits: { maxUploadMb: number; maxDrawingPdfMb: number; accept: string[] } = { maxUploadMb: 250, maxDrawingPdfMb: 30, accept: ['.step', '.stp', '.iges', '.igs', '.stl'] };
+let cadLimits: { maxUploadMb: number; maxDrawingPdfMb: number; accept: string[]; kernel?: { available: boolean } } = { maxUploadMb: 250, maxDrawingPdfMb: 30, accept: ['.step', '.stp', '.iges', '.igs', '.stl'] };
+
+/**
+ * Before the upload: can this install read STEP / IGES? Without the CAD kernel the upload "worked", the viewer said
+ * "No model loaded" and the reason came only after Analyze (CAD to COST 360 review, Oct 2026).
+ */
+function showCADKernelNotice(): void {
+  const n = document.getElementById('cad-kernel-notice');
+  if (!n) return;
+  if (cadLimits.kernel?.available !== false) { n.hidden = true; return; }
+  n.hidden = false;
+  n.innerHTML = '<strong>STEP and IGES files cannot be read on this computer</strong> — the CAD kernel (OCP) is not installed. '
+    + 'STL files still work. To fix it, run <code>pip install -r requirements.txt</code> in the CostVision folder (or start '
+    + 'with <code>./start.sh</code>, which installs it) and restart the server.';
+}
 void (async () => {
   try {
     const r = await fetch('/api/cad/limits');
     if (r.ok) {
       cadLimits = await r.json() as typeof cadLimits;
       document.querySelectorAll<HTMLInputElement>('#cad-file-input, #cad-inline-input, #viewer-file-input').forEach(i => { i.accept = cadLimits.accept.join(','); });
+      showCADKernelNotice();
     }
   } catch { /* offline: defaults stand */ }
 })();
@@ -6082,6 +6114,56 @@ async function sniffCadFormat(f: File): Promise<'.stp' | '.igs' | '.stl' | null>
     if (f.size >= 84 && 84 + 50 * buf.getUint32(80, true) === f.size) return '.stl';
   } catch { /* unreadable — refuse below */ }
   return null;
+}
+
+/**
+ * The CAD screen's own settings — annual volume, process / material override, analysis mode, deep analysis. The screen
+ * is redrawn whenever it is opened, and each went back to its default (the volume to 100,000) behind the user's back.
+ */
+const CAD_KEPT_FIELDS = ['cad-annual-volume', 'cad-commodity-override', 'cad-material-override', 'cad-analysis-mode', 'cad-deep-analysis'] as const;
+const _cadFormKept: Record<string, string | boolean> = {};
+
+function keepCADFormValues(): void {
+  for (const id of CAD_KEPT_FIELDS) {
+    const el = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+    if (!el) continue;
+    const kept = _cadFormKept[id];
+    if (kept !== undefined) {
+      if (el instanceof HTMLInputElement && el.type === 'checkbox') el.checked = kept === true;
+      else if (el instanceof HTMLInputElement || Array.from(el.options).some(o => o.value === kept)) {
+        el.value = String(kept);
+        // The process override rebuilds the material list — restore it before the material.
+        if (id === 'cad-commodity-override') el.dispatchEvent(new Event('change'));
+      }
+    }
+    const record = () => { _cadFormKept[id] = el instanceof HTMLInputElement && el.type === 'checkbox' ? el.checked : el.value; };
+    el.addEventListener('input', record);
+    el.addEventListener('change', record);
+  }
+}
+
+/**
+ * Coming back to the CAD screen (from a commodity form, or to answer a question) keeps the part: the file, its 3D
+ * model and the analysis with its open questions. The screen was redrawn empty and the questions with it, so a user sent
+ * back to answer them found nothing to answer (CAD to COST 360 review, Oct 2026).
+ */
+function restoreCADScreen(): void {
+  if (!cadFile) return;
+  document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
+  const info = document.getElementById('cad-file-info');
+  if (info) info.style.display = 'flex';
+  const fname = document.getElementById('cad-fname');
+  if (fname) fname.textContent = cadFile.name;
+  const fsize = document.getElementById('cad-fsize');
+  if (fsize) fsize.textContent = (cadFile.size / 1024).toFixed(1) + ' KB';
+  document.getElementById('cad-analyze-btn')?.removeAttribute('disabled');
+  document.getElementById('cad-analyze-calc-btn')?.removeAttribute('disabled');
+  hidePersistentCADViewer();
+  void mountCADViewer('cad-viewer-host', cadFile, false);
+  if (cadAnalysisResult) {
+    const vol = parseFloat((document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '') || 100000;
+    renderCADResults(cadAnalysisResult, false, vol);
+  }
 }
 
 function setCADFile(f: File): void {
@@ -6192,25 +6274,20 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     let meshForViews: File | null = null;
     if (/\.stl$/i.test(cadFile.name)) {
       meshForViews = cadFile;
-    } else if (/\.(stp|step|igs|iges)$/i.test(cadFile.name)) {
+    } else if (/\.(stp|step|igs|iges)$/i.test(cadFile.name) && selectedAnalysisMode() !== 'deterministic' && !isAiOff()) {
+      // Rendered views are read only by the AI identification stage — not rendered for a deterministic costing.
+      // The mesh is the viewer's, fetched once per file (cad-mesh-cache.ts).
       try {
-        updateProgress(12, 'Tessellating geometry for rendered views…');
-        const fd2 = new FormData();
-        fd2.append('cadFile', cadFile);
+        updateProgress(12, 'Rendering views for the AI identification…');
         const tessHeaders: Record<string, string> = { ...authHeader() };
         if (apiKey) tessHeaders['x-api-key'] = apiKey;
-        const tr = await fetch('/api/cad/tessellate', { method: 'POST', headers: tessHeaders, body: fd2 });
-        if (tr.ok) {
-          const blob = await tr.blob();
-          meshForViews = new File([blob], cadFile.name.replace(/\.[^.]+$/, '.stl'), { type: 'model/stl' });
-        } else {
-          console.warn('[CAD views] tessellation unavailable:', tr.status);
-        }
+        const frame = await fetchMeshFrame(cadFile, tessHeaders);
+        meshForViews = new File([stlFromFrame(frame)], cadFile.name.replace(/\.[^.]+$/, '.stl'), { type: 'model/stl' });
       } catch (e) {
         console.warn('[CAD views] tessellation skipped:', e instanceof Error ? e.message : String(e));
       }
     }
-    if (meshForViews) {
+    if (meshForViews && selectedAnalysisMode() !== 'deterministic' && !isAiOff()) {
       // Loaded on demand: it pulls in the 3D engine, which no other screen needs (UI/UX review —
       // it was on every first load).
       const { renderSTLViews } = await import('./cad-views.js');
@@ -6349,6 +6426,10 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
  * + DFM, so the designer sees exactly which features drive machining cost.
  */
 function buildFeatureCostCard(): string {
+  // A CNC build-up is a machining figure: on a moulding, casting-only or pressing route it printed "£26.50 · 143.5 min"
+  // of milling next to a part that is never milled (ECU cover, CAD to COST 360 live run, Oct 2026).
+  const route = cadAnalysisResult?.costInputSuggestions?.recommendedCommodity;
+  if (route && route !== 'machining' && route !== 'cast_and_machine') return '';
   const f = cadOCCTGeometry?.features;
   if (!f || (f.estimatedHoleCount + f.planarFaceCount + f.freeFormFaceCount) === 0) return '';
   const undercuts = cadOCCTGeometry?.draftAnalysis?.undercutFaceCount ?? 0;
@@ -6412,6 +6493,9 @@ function buildFeatureCostCard(): string {
  * that advisory made answerable, and it finally renders the thing the Decision
  * type was built to carry: what each option DOES to the cost, beside the option.
  */
+/** Above this many options a question is a drop-down. */
+const CAD_DECISION_SELECT_OVER = 8;
+
 function renderCADDecisionsPanel(): string {
   const open = _cadDecisions.filter(d => d.severity === 'blocking');
   // Advisory decisions are NOT blockers — the engine picked a defensible
@@ -6421,7 +6505,15 @@ function renderCADDecisionsPanel(): string {
   // just a rate. Rendering only blockers meant these questions were computed
   // and then never asked.
   const advisory = _cadDecisions.filter(d => d.severity === 'advisory');
-  if (!open.length && !advisory.length) return '';
+  // Nothing left to ask: keep the action. The panel used to vanish with its Get cost button the moment the last answer
+  // was applied (ECU cover, CAD to COST 360 live run, Oct 2026).
+  if (!open.length && !advisory.length) {
+    return `<div id="cad-decisions-panel" class="cad-ready" style="margin-bottom:12px;padding:11px 13px;background:var(--surface-elevated);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:0.78rem;color:var(--text-primary);flex:1;min-width:220px"><strong>Nothing left to answer.</strong> The geometry${Object.keys(_cadDecisionAnswers).length ? ' and your answers' : ''} settle the route and the material.</span>
+      <button class="btn btn-primary" id="cad-get-cost-btn" style="font-size:0.78rem;padding:6px 14px">Get cost →</button>
+      <span id="cad-decisions-status" role="status" class="sr-only"></span>
+    </div>`;
+  }
   const answered = open.filter(d => _cadDecisionAnswers[d.id]).length;
 
   const decisionRow = (d: CADDecision, accent: string): string => `
@@ -6440,6 +6532,18 @@ function renderCADDecisionsPanel(): string {
                     placeholder="${escHtml(d.entry.placeholder ?? '')}"
                     style="width:130px;padding:3px 6px;font-size:0.72rem"/>
            </label>`
+        : d.options.length > CAD_DECISION_SELECT_OVER
+        // A long list (a steel grade: 28 rows) is a searchable drop-down, not a wall of radios (360 review, Oct 2026).
+        ? (() => {
+            const hasCosted = d.options.some(x => x.costed);
+            const sel = _cadDecisionAnswers[d.id] as string | undefined
+              ?? d.options.find(o => hasCosted ? o.costed : o.leaning)?.value ?? '';
+            const tag = (o: CADDecision['options'][number]) => o.leaning ? ' (suggested)' : o.costed ? ' (costed until you choose)' : '';
+            return `<select data-decision-select="1" aria-label="${escHtml(d.question)}" style="width:100%;max-width:420px;font-size:0.74rem">
+              ${sel ? '' : '<option value="">— choose —</option>'}
+              ${d.options.map(o => `<option value="${escHtml(o.value)}" ${o.value === sel ? 'selected' : ''}>${escHtml(o.label + tag(o))}</option>`).join('')}
+            </select>`;
+          })()
         : d.options.map(o => `
         <label style="display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:0.72rem;cursor:pointer">
           <input type="radio" name="dec-${escHtml(d.id)}" value="${escHtml(o.value)}" ${_cadDecisionAnswers[d.id] === o.value || (_cadDecisionAnswers[d.id] === undefined && (d.options.some(x => x.costed) ? o.costed : o.leaning)) ? 'checked' : ''} style="margin-top:2px"/>
@@ -6456,10 +6560,10 @@ function renderCADDecisionsPanel(): string {
     </div>`;
 
   const blockingBlock = open.length ? `
-    <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">&#9997;&#65039; ${open.length} question${open.length === 1 ? '' : 's'} only you can answer</div>
-    <div style="font-size:0.7rem;color:var(--text-secondary);margin-top:3px;line-height:1.5">
-      Nothing in the geometry settles these, so the costing is blocked until they are answered.
-      A number derived from a guess here is the single largest documented source of error in this tool.
+    <div style="font-size:0.8rem;font-weight:700;color:var(--text-primary)">${open.length === 1 ? 'One question' : `${open.length} questions`} before the cost</div>
+    <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:3px;line-height:1.5">
+      The geometry cannot settle ${open.length === 1 ? 'this' : 'these'}. A suggested answer is ticked where the file or the shape points to one —
+      check it, change it if it is wrong, then press <strong>Get cost</strong>. Follow-up questions appear here as you answer.
     </div>
     ${open.map(d => decisionRow(d, 'rgba(220,38,38,0.18)')).join('')}` : '';
 
@@ -6479,59 +6583,218 @@ function renderCADDecisionsPanel(): string {
   return `<div id="cad-decisions-panel" style="margin-bottom:12px;padding:11px 13px;${bg};border-radius:8px">
     ${blockingBlock}
     ${advisoryBlock}
-    <div style="margin-top:11px;display:flex;align-items:center;gap:9px">
-      <button class="btn btn-primary" id="cad-decisions-apply" style="font-size:0.72rem;padding:5px 12px">Apply answers &amp; re-cost</button>
-      <span id="cad-decisions-status" style="font-size:0.7rem;color:var(--text-muted)">${open.length ? `${answered}/${open.length} answered` : 'optional'}</span>
+    <div style="margin-top:11px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="cad-get-cost-btn" style="font-size:0.78rem;padding:6px 14px">Get cost →</button>
+      <button class="btn btn-secondary" id="cad-decisions-apply" style="font-size:0.72rem;padding:5px 12px" title="Re-run the rules with these answers without costing">Apply answers</button>
+      <span id="cad-decisions-status" role="status" style="font-size:0.7rem;color:var(--text-muted)">${open.length ? `${answered} of ${open.length} answered` : 'optional'}</span>
     </div>
   </div>`;
 }
 
 /** Read the radios back into the store, then re-run the rules with them. */
+/** Advisory questions the engineer touched since the panel was drawn — only those are recorded (see below). */
+const _cadTouchedDecisions = new Set<string>();
+
+/**
+ * Read the questions panel into the answers store.
+ *
+ * An ADVISORY question is answered only when the engineer touches it. Recording every pre-selected default on Apply
+ * pinned the grade suggested for one process after the answers moved the part to another — a sand-cast caliper was
+ * costed in the die-casting alloy ADC12 (uploaded-parts review, Oct 2026). A BLOCKING question records what is selected:
+ * the engineer sees the suggestion ticked and pressing Get cost accepts it.
+ */
+function readCADDecisionPanel(): void {
+  const panel = document.getElementById('cad-decisions-panel');
+  if (!panel) return;
+  for (const block of Array.from(panel.querySelectorAll<HTMLElement>('.cad-decision'))) {
+    const id = block.dataset.decisionId;
+    if (!id) continue;
+    const advisory = _cadDecisions.find(d => d.id === id)?.severity === 'advisory';
+    if (advisory && !_cadTouchedDecisions.has(id) && _cadDecisionAnswers[id] === undefined) continue;
+    const typed = block.querySelector<HTMLInputElement>('input[data-decision-entry]');
+    const picked = typed ?? block.querySelector<HTMLInputElement>('input[type=radio]:checked, select[data-decision-select]');
+    if (picked && picked.value.trim()) _cadDecisionAnswers[id] = picked.value.trim();
+  }
+}
+
+/** Blocking questions with a selection on the panel (a ticked suggestion counts — Get cost accepts what is shown). */
+function readyBlockingCount(): { ready: number; total: number } {
+  const panel = document.getElementById('cad-decisions-panel');
+  const open = _cadDecisions.filter(d => d.severity === 'blocking');
+  let ready = 0;
+  for (const d of open) {
+    const block = panel?.querySelector<HTMLElement>(`.cad-decision[data-decision-id="${CSS.escape(d.id)}"]`);
+    const typed = block?.querySelector<HTMLInputElement>('input[data-decision-entry]');
+    const picked = typed ?? block?.querySelector<HTMLInputElement>('input[type=radio]:checked, select[data-decision-select]');
+    if ((picked?.value ?? '').trim() || _cadDecisionAnswers[d.id]) ready++;
+  }
+  return { ready, total: open.length };
+}
+
+let _cadAutoRerun: ReturnType<typeof setTimeout> | null = null;
+
 function wireCADDecisionsPanel(): void {
   const panel = document.getElementById('cad-decisions-panel');
   if (!panel) return;
-
-  // An ADVISORY question is answered only when the engineer touches it. Recording every pre-selected default on Apply
-  // pinned the grade suggested for one process after the answers moved the part to another — a sand-cast caliper was
-  // costed in the die-casting alloy ADC12 (uploaded-parts review, Oct 2026). Blocking questions record their selection.
-  const touched = new Set<string>();
-  panel.addEventListener('change', e => {
+  _cadTouchedDecisions.clear();
+  const status = (): void => {
+    const el2 = document.getElementById('cad-decisions-status');
+    const { ready, total } = readyBlockingCount();
+    if (el2) el2.textContent = total ? `${ready} of ${total} answered` : 'optional';
+  };
+  status();
+  const onEdit = (e: Event): void => {
     const id = (e.target as HTMLElement | null)?.closest<HTMLElement>('.cad-decision')?.dataset.decisionId;
-    if (id) touched.add(id);
-  });
-  panel.addEventListener('input', e => {
-    const id = (e.target as HTMLElement | null)?.closest<HTMLElement>('.cad-decision')?.dataset.decisionId;
-    if (id) touched.add(id);
-  });
-  const sync = (): void => {
-    for (const block of Array.from(panel.querySelectorAll<HTMLElement>('.cad-decision'))) {
-      const id = block.dataset.decisionId;
-      if (!id) continue;
-      const advisory = _cadDecisions.find(d => d.id === id)?.severity === 'advisory';
-      if (advisory && !touched.has(id) && _cadDecisionAnswers[id] === undefined) continue;
-      const typed = block.querySelector<HTMLInputElement>('input[data-decision-entry]');
-      const picked = typed ?? block.querySelector<HTMLInputElement>('input[type=radio]:checked');
-      if (picked && picked.value.trim()) _cadDecisionAnswers[id] = picked.value.trim();
-    }
-    const open = _cadDecisions.filter(d => d.severity === 'blocking');
-    const status = document.getElementById('cad-decisions-status');
-    if (status) {
-      status.textContent = open.length
-        ? `${open.filter(d => _cadDecisionAnswers[d.id]).length}/${open.length} answered`
-        : 'optional';
+    if (!id) return;
+    _cadTouchedDecisions.add(id);
+    _cadNewQuestions.delete(id);
+    readCADDecisionPanel();
+    status();
+    // A blocking answer can change the route, the grade and the questions that follow: re-run the rules now so the
+    // follow-up questions appear here, in place, instead of one round per button press.
+    if (e.type === 'change' && _cadDecisions.find(d => d.id === id)?.severity === 'blocking') {
+      if (_cadAutoRerun) clearTimeout(_cadAutoRerun);
+      _cadAutoRerun = setTimeout(() => { _cadAutoRerun = null; void autoRerunCAD(); }, 350);
     }
   };
-  panel.addEventListener('change', sync);
-  panel.addEventListener('input', sync);
+  panel.addEventListener('change', onEdit);
+  panel.addEventListener('input', onEdit);
   document.getElementById('cad-decisions-apply')?.addEventListener('click', () => {
-    sync();
+    readCADDecisionPanel();
     void reanalyzeCAD();
   });
+  document.getElementById('cad-get-cost-btn')?.addEventListener('click', () => { void cadGetCost(true); });
 }
 
-/** Blocking questions still unanswered — the Calculate gate reads this. */
+let _cadCostRunning = false;
+
+/**
+ * Blocking questions an AUTOMATIC re-run added that the engineer has not yet touched or been stopped on. The panel
+ * redraws under the mouse half a second after an answer; a question drawn then is not "seen" (live run: the stub axle's
+ * safety question appeared 0.5 s before Get cost was pressed and its "no" was taken — grey iron for a safety part).
+ */
+const _cadNewQuestions = new Set<string>();
+
+async function autoRerunCAD(): Promise<void> {
+  const before = new Set(openCADDecisions().map(d => d.id));
+  if (!(await reanalyzeCAD())) return;
+  const added = openCADDecisions().filter(d => !before.has(d.id));
+  for (const d of added) _cadNewQuestions.add(d.id);
+  markNewCADQuestions();
+}
+
+/** A "New" tag on questions an answer just opened. */
+function markNewCADQuestions(): void {
+  for (const id of _cadNewQuestions) {
+    const block = document.querySelector<HTMLElement>(`#cad-decisions-panel .cad-decision[data-decision-id="${CSS.escape(id)}"]`);
+    if (!block || block.querySelector('.cad-decision-new')) continue;
+    block.classList.add('cad-decision--new');
+    block.firstElementChild?.insertAdjacentHTML('afterbegin', '<span class="cad-decision-new">New</span> ');
+  }
+}
+
+/**
+ * The one path from an upload to a cost (cad-flow.ts). Calculate on the CAD screen, Analyze & Calculate, Apply,
+ * Apply & Calculate and Pin & Recalculate all land here: questions the rules still list are asked — never applied to a
+ * form with their fields empty — and the cost follows when nothing is open.
+ */
+async function cadGetCost(calculate = true): Promise<void> {
+  if (_cadCostRunning) return;
+  _cadCostRunning = true;
+  // Get cost re-runs the rules itself if they have not seen the answers — a pending automatic re-run is not needed.
+  if (_cadAutoRerun) { clearTimeout(_cadAutoRerun); _cadAutoRerun = null; }
+  // What the engineer had in front of them when they pressed. A question that appears after that — an automatic re-run
+  // landing while they pressed — is shown, never accepted on their behalf: the stub axle's "safety-critical? (suggested:
+  // no)" was taken unseen and the part costed in grey iron instead of ductile (CAD to COST 360 live run, Oct 2026).
+  const seen = shownBlockingQuestionIds();
+  try {
+    await _cadReanalyzeChain;   // an automatic re-run in flight lands first
+    if (!cadAnalysisResult && cadFile) {
+      // Calculate before Analyze: measure first, then the same gate (a part with no question goes straight on).
+      await analyzeCAD(false);
+      if (!cadAnalysisResult) return;
+    }
+    const unseen = cadAnalysisResult
+      ? openCADDecisions().filter(d => !seen.has(d.id) || (_cadNewQuestions.has(d.id) && !_cadTouchedDecisions.has(d.id)))
+      : [];
+    _cadNewQuestions.clear();   // stopped on once: the next press accepts what is shown
+    if (unseen.length) {
+      showCADQuestions(seen.size
+        ? `Your answers opened ${unseen.length === 1 ? 'one more question' : `${unseen.length} more questions`} — check the suggested answer and press Get cost.`
+        : costStepMessage({ kind: 'answer', missing: unseen }) + ' Check the suggested answer and press Get cost.');
+      return;
+    }
+    readCADDecisionPanel();
+    let step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers });
+    if (step.kind === 'reanalyse') {
+      setCADFlowNotice(costStepMessage(step), 'busy');
+      const before = new Set(_cadDecisions.map(d => d.id));
+      if (!(await reanalyzeCAD())) { setCADFlowNotice('Applying your answers failed — see the message on the panel.', 'error'); return; }
+      step = nextCostStep({ hasFile: !!cadFile, hasAnalysis: !!cadAnalysisResult, decisions: _cadDecisions, answers: _cadDecisionAnswers });
+      // New questions the answers opened are shown, not accepted on the engineer's behalf.
+      const opened = _cadDecisions.filter(d => d.severity === 'blocking' && !before.has(d.id));
+      if (step.kind !== 'apply' && opened.length) {
+        showCADQuestions(`Your answers opened ${opened.length === 1 ? 'one more question' : `${opened.length} more questions`} — check the suggested answer and press Get cost.`);
+        return;
+      }
+    }
+    switch (step.kind) {
+      case 'upload':
+        showToast(costStepMessage(step), 'info');
+        document.getElementById('cad-drop-zone')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      case 'analyse':   // only when there is no file to measure — handled above otherwise
+        return;
+      case 'answer':
+      case 'reanalyse':
+        showCADQuestions(costStepMessage(step));
+        return;
+      case 'apply':
+        setCADFlowNotice('', 'clear');
+        applyCADToForm(cadAnalysisResult!.costInputSuggestions.recommendedCommodity as CommodityType, calculate);
+        return;
+    }
+  } finally {
+    _cadCostRunning = false;
+  }
+}
+
+/** The blocking questions drawn on the panel right now — what the engineer can see. */
+function shownBlockingQuestionIds(): Set<string> {
+  const panel = document.getElementById('cad-decisions-panel');
+  const ids = Array.from(panel?.querySelectorAll<HTMLElement>('.cad-decision') ?? []).map(b => b.dataset.decisionId ?? '');
+  return new Set(ids.filter(id => _cadDecisions.find(d => d.id === id)?.severity === 'blocking'));
+}
+
+/** Bring the questions into view with one line saying why nothing is costed yet. */
+function showCADQuestions(message: string): void {
+  if (activeCommodity !== 'cad_analysis') {
+    // A commodity form is showing — the questions live on the CAD screen.
+    showWorkflowPanel('cad_analysis');
+  }
+  setCADFlowNotice(message, 'ask');
+  const panel = document.getElementById('cad-decisions-panel');
+  panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  panel?.classList.add('cad-decisions--attention');
+  setTimeout(() => panel?.classList.remove('cad-decisions--attention'), 1600);
+}
+
+/** The one-line status above the questions: busy, asking, an error, or nothing. */
+function setCADFlowNotice(text: string, kind: 'busy' | 'ask' | 'error' | 'clear'): void {
+  const n = document.getElementById('cad-flow-notice');
+  if (!n) return;
+  n.textContent = text;
+  n.dataset.kind = kind;
+  n.hidden = kind === 'clear' || !text;
+}
+
+/**
+ * Blocking questions the last analysis still lists — the Calculate gate reads this. An answer recorded on the panel but
+ * not yet re-run through the rules does not count: the form's fields that wait on it are still empty (an Apply &
+ * Calculate after answering costed a forging at 0.000 kg — CAD to COST 360 review, Oct 2026).
+ */
 function openCADDecisions(): CADDecision[] {
-  return _cadDecisions.filter(d => d.severity === 'blocking' && !_cadDecisionAnswers[d.id]);
+  return _cadDecisions.filter(d => d.severity === 'blocking');
 }
 
 function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVolume = 100000): void {
@@ -6948,9 +7211,14 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   if (_cadProcessLocked && procSel) procSel.value = _cadPinnedSubtype;
   refreshOverrideWarn();
 
-  // Auto-calculate if triggered from "Analyze & Calculate" button
+  // "Analyze & Calculate": the flow asks what is open and costs when nothing is (cad-flow.ts) — it used to fill the
+  // server's fallback route (machining) with the questions still open.
   if (autoCalculate) {
-    applyCADToForm(recommendedCommodity, true);
+    void recommendedCommodity;
+    // Analyze & Calculate: questions drawn a moment ago have not been read — ask them; cost straight on only when none.
+    const open = openCADDecisions();
+    if (open.length) showCADQuestions(costStepMessage({ kind: 'answer', missing: open }) + ' Check the suggested answer and press Get cost.');
+    else void cadGetCost(true);
   }
 }
 
@@ -6997,16 +7265,28 @@ function programmeYearsValue(): string {
   return v > 0 ? String(v) : '';
 }
 
-async function reanalyzeCAD(): Promise<void> {
+/** Re-run the rules with the answers and pins. Resolves true when the analysis was replaced. */
+/**
+ * Re-runs are serialised: an answer changed on the panel starts one by itself (350 ms after the change) and Get cost
+ * may start another — run side by side, the older reply could land last and put back the older questions.
+ */
+let _cadReanalyzeChain: Promise<boolean> = Promise.resolve(true);
+function reanalyzeCAD(): Promise<boolean> {
+  const run = _cadReanalyzeChain.then(reanalyzeCADOnce, reanalyzeCADOnce);
+  _cadReanalyzeChain = run;
+  return run;
+}
+
+async function reanalyzeCADOnce(): Promise<boolean> {
   if (!cadOCCTGeometry) {
     // An STL is measured in the request and not kept on the server, so there is
     // no geometry hash to re-cost against. Answering its questions used to end
     // here in an alert — every STL part, which in the air-gapped build always
     // asks its route and material, could never be costed. Re-run the analysis
     // with the file still in hand; analyzeCAD sends the answers with it.
-    if (cadFile) { await analyzeCAD(); return; }
+    if (cadFile) { await analyzeCAD(); return !!cadAnalysisResult; }
     showToast('Upload the CAD file again to re-cost it.', 'warning');
-    return;
+    return false;
   }
 
   // The drop-down is pre-filled with the first pass's recommendation. Send it only
@@ -7033,7 +7313,7 @@ async function reanalyzeCAD(): Promise<void> {
 
     if (!cadGeometryHash) {
       showToast('Re-analyse needs a part analysed on this server — upload the CAD file again.', 'error');
-      return;
+      return false;
     }
     const body: Record<string, unknown> = {
       geometryHash: cadGeometryHash,
@@ -7092,12 +7372,15 @@ async function reanalyzeCAD(): Promise<void> {
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
     renderCADResults(cadAnalysisResult, false, resolvedVol);
+    return true;
   } catch (err) {
     if (statusEl) {
       statusEl.style.display = '';
       statusEl.style.color = 'var(--red)';
       statusEl.textContent = `Re-analysis error: ${err instanceof Error ? err.message : String(err)}`;
     }
+    setCADFlowNotice(`Re-analysis error: ${err instanceof Error ? err.message : String(err)}`, 'error');
+    return false;
   } finally {
     if (reanalyzeBtn) reanalyzeBtn.removeAttribute('disabled');
     const newStatus = document.getElementById('cad-reanalyze-status');
@@ -7128,7 +7411,7 @@ function buildInlineDemoSection(commodity: string): string {
       Export Full Report PDF
     </button>
   </div>`;
-  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap">Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— illustrative inputs, not OEM data · click a card to load it</span></div><div style="display:flex;gap:8px">${cards}</div>${pdfBanner}</div>`;
+  return `<div class="inline-demo-strip" style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap">Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— illustrative inputs, not OEM data · click a card to load it</span></div><div style="display:flex;gap:8px">${cards}</div>${pdfBanner}</div>`;
 }
 
 // ─── PCB Demo Mode ────────────────────────────────────────────────────────────
@@ -11578,6 +11861,9 @@ async function captureCountryFills(targetCommodity: CommodityType, cadAnnVol: st
 
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
+  // Never fill a form while the rules are still asking: its weight, cycle times and tools wait on the answers, and the
+  // questions would leave the screen with the CAD panel (CAD to COST 360 review, Oct 2026).
+  if (openCADDecisions().length) { void cadGetCost(autoCalculate); return; }
   _cadAppliedTo = targetCommodity;
   _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
   const r = cadAnalysisResult;
@@ -11606,6 +11892,9 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       _cadFillsByRegion = await captureCountryFills(targetCommodity, cadAnnVol, bboxMaxMm);
       fillCADFields(targetCommodity, r, c, cadAnnVol, bboxMaxMm);
       _cadFillSource = snapshotFormFields();
+      // A form filled from the user's own CAD offered "Quick examples" (a BMW X7 knuckle…) that would overwrite it
+      // (CAD to COST 360 review, Oct 2026).
+      document.querySelectorAll('#commodity-form-area .inline-demo-strip').forEach(n => n.remove());
     markBlockedDecisionFields();
     showCADProvenanceBanner();
 
@@ -11669,7 +11958,9 @@ function switchCommodity(type: CommodityType): void {
   const partNameWrap = el('part-name').closest<HTMLElement>('div[style]');
   if (partNameWrap) partNameWrap.style.display = type === 'assembly' || isSoftware ? 'none' : '';
   const photoRow = document.getElementById('part-photo-row');
-  if (photoRow) photoRow.style.display = isSoftware ? 'none' : '';
+  // CAD to COST has its own part-photo input (it feeds the analysis AND the report) — two photo boxes on one screen
+  // asked the same thing twice (CAD to COST 360 review, Oct 2026).
+  if (photoRow) photoRow.style.display = isSoftware || type === 'cad_analysis' ? 'none' : '';
 
   // Show/hide country bar (hidden for AI Agent and the software cockpit)
   const countryBar = document.getElementById('wf-country-bar');
@@ -12098,6 +12389,7 @@ function switchCommodity(type: CommodityType): void {
     case 'cad_analysis':
       area.innerHTML = renderCADAnalysisForm();
       wireCADEvents();
+      restoreCADScreen();
       break;
 
     case 'automotive_software':
@@ -14439,6 +14731,9 @@ function sanityStillApplies(code: string): boolean {
 }
 
 function compute(): void {
+  // On the CAD screen, Calculate is "get the cost of this file": analyse if needed, ask what is open, then cost. It threw
+  // "Apply CAD analysis results … first" into a results pane this screen hides (CAD to COST 360 review, Oct 2026).
+  if (activeCommodity === 'cad_analysis') { void cadGetCost(true); return; }
   const errBox = el('validation-errors');
   const warnBox = el('validation-warnings');
 
@@ -14470,11 +14765,11 @@ function compute(): void {
     errBox.innerHTML = `<strong>${pending.length} question${pending.length === 1 ? '' : 's'} must be answered before this can be costed</strong>`
       + `<ul style="margin:6px 0 0;padding-left:18px">${pending.map(d =>
         `<li>${escHtml(d.question)}</li>`).join('')}</ul>`
-      + '<div style="margin-top:6px;font-size:0.72rem">Answer them in the CAD analysis panel above, '
-      + 'then press <em>Apply answers &amp; re-cost</em>.</div>';
+      + '<div style="margin-top:6px;font-size:0.72rem">They are on the CAD to COST screen — answer them there and press '
+      + '<em>Get cost</em>.</div>';
     document.getElementById('validation-warnings')?.style.setProperty('display', 'none');
     setValidationChip(pending.length);
-    document.getElementById('cad-decisions-panel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showCADQuestions(`${pending.length === 1 ? 'One question' : `${pending.length} questions`} before the cost.`);
     return;
   }
 
@@ -15252,6 +15547,9 @@ function maybeShowWizard(commodity: string): void {
   // Escape hatch for automation / power users: the guided-wizard overlay
   // otherwise intercepts pointer events on the commodity picker.
   try { if (localStorage.getItem('cv-wizard-off') === '1') return; } catch { /* storage blocked */ }
+  // CAD to COST measures weight and size from the file; the wizard asked for both and covered the upload (CAD to COST
+  // 360 review, Oct 2026).
+  if (commodity === 'cad_analysis') return;
   if (_wizardSeen.has(commodity)) return;
   _wizardSeen.add(commodity);
   const history = getCostingHistory();
@@ -20222,7 +20520,22 @@ async function init(): Promise<void> {
 
   // ── Start-a-costing block (Phase A) — input-first entry on the home ──────────
   // Route through showWorkflowPanel so home and the picker share ONE costing UI.
-  document.getElementById('hs-mode-cad')?.addEventListener('click', () => showWorkflowPanel('cad_analysis'));
+  // "Drop a file or browse" now does both: a click opens CAD to COST AND its file chooser (it only opened the screen);
+  // a file dropped on the card is handed to the screen (the browser opened or downloaded it — 360 review, Oct 2026).
+  const hsCad = document.getElementById('hs-mode-cad');
+  hsCad?.addEventListener('click', () => {
+    showWorkflowPanel('cad_analysis');
+    if (!cadFile) (document.getElementById('cad-file-input') as HTMLInputElement | null)?.click();
+  });
+  hsCad?.addEventListener('dragover', (e) => { e.preventDefault(); hsCad.classList.add('hs-mode--drag'); });
+  hsCad?.addEventListener('dragleave', () => hsCad.classList.remove('hs-mode--drag'));
+  hsCad?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    hsCad.classList.remove('hs-mode--drag');
+    const f = e.dataTransfer?.files?.[0];
+    showWorkflowPanel('cad_analysis');
+    if (f) setCADFile(f);
+  });
   document.getElementById('hs-mode-pcb')?.addEventListener('click', () => showWorkflowPanel('pcb_fab'));
   // Tooling amortisation defaults follow annual volume × programme life.
   for (const id of ['annual-volume', 'programme-years']) {

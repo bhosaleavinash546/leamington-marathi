@@ -6,8 +6,8 @@
 #  Runs the real dev stack (Vite UI :5174 + Express/tsx API :3002) in the
 #  FOREGROUND so the sign-in OTP is visible, and auto-opens the browser. Like
 #  `make start` this runs natively, so STEP/IGES render from your local Python —
-#  provided cadquery is installed (it warns you if it isn't). The container that
-#  ships (calculator/Dockerfile.cad) has cadquery baked in.
+#  through the CAD kernel (OCP) — found, or installed into calculator/.venv-cad on
+#  first run. The container that ships (calculator/Dockerfile.cad) has it baked in.
 # ──────────────────────────────────────────────────────────────────────────────
 cd "$(dirname "$0")" || exit 1
 
@@ -73,13 +73,9 @@ if [ ! -d calculator/node_modules ]; then
   ( cd calculator && npm install ) || { echo "  ❌ npm install failed"; exit 1; }
 fi
 
-# ── 3) cadquery check — needed for STEP/IGES (STL works without it) ────────────
-if python3 -c "import cadquery" >/dev/null 2>&1; then
-  echo "  ✅ cadquery detected — STEP / IGES will render in 3D"
-else
-  echo "  ⚠️  cadquery NOT found — STEP/IGES won't open (STL files still work)."
-  echo "     Enable STEP with:   pip install cadquery"
-fi
+# ── 3) CAD kernel (OCP) — needed for STEP/IGES (STL works without it) ─────────
+#    Found or installed into calculator/.venv-cad; exports PYTHON_BIN for the server.
+. ./scripts/ensure-cad-kernel.sh
 echo ""
 
 # ── 4) open the browser once the app answers (background waiter) ──────────────

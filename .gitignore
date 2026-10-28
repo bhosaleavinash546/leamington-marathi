@@ -14,3 +14,4 @@ calculator/data/
 # leaves a __pycache__ behind at the repo root
 __pycache__/
 *.pyc
+calculator/.venv-cad/

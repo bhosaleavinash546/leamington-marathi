@@ -27,6 +27,40 @@ function safeExt(filename: string): string {
  */
 const PYTHON_BIN = process.env.PYTHON_BIN ?? 'python3';
 
+/**
+ * Is the CAD kernel (OCP) importable by the interpreter this server spawns? Asked once and kept. On a local install
+ * without it every STEP / IGES upload failed only after the upload — "No model loaded" in the viewer, the reason only
+ * after Analyze (CAD to COST 360 review, Oct 2026). The screen now says so before the upload.
+ */
+export interface KernelStatus { available: boolean; python: string; version?: string; detail?: string }
+let kernelProbe: Promise<KernelStatus> | null = null;
+export function kernelStatus(): Promise<KernelStatus> {
+  kernelProbe ??= new Promise<KernelStatus>((resolve) => {
+    let out = '', err = '';
+    let settled = false;
+    const done = (s: KernelStatus) => { if (!settled) { settled = true; resolve(s); } };
+    let child: ReturnType<typeof spawn>;
+    try {
+      child = spawn(PYTHON_BIN, ['-c', 'import OCP, sys; print(getattr(OCP, "__version__", "") or "OCP")'], { stdio: ['ignore', 'pipe', 'pipe'] });
+    } catch (e) {
+      done({ available: false, python: PYTHON_BIN, detail: e instanceof Error ? e.message : String(e) });
+      return;
+    }
+    const timer = setTimeout(() => { child.kill(); done({ available: false, python: PYTHON_BIN, detail: 'the kernel check timed out' }); }, 30_000);
+    child.stdout?.on('data', (d: Buffer) => { out += d.toString(); });
+    child.stderr?.on('data', (d: Buffer) => { err += d.toString(); });
+    child.on('error', (e) => { clearTimeout(timer); done({ available: false, python: PYTHON_BIN, detail: `${PYTHON_BIN} could not be started (${e.message})` }); });
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      if (code === 0) done({ available: true, python: PYTHON_BIN, version: out.trim() || undefined });
+      else done({ available: false, python: PYTHON_BIN, detail: (err.trim().split('\n').pop() ?? '').slice(0, 300) || `exit ${code}` });
+    });
+  });
+  return kernelProbe;
+}
+/** Test hook. */
+export function _resetKernelStatus(): void { kernelProbe = null; }
+
 // ── Python spawn semaphore ────────────────────────────────────────────────────
 // Each OCP process costs hundreds of MB RSS; unbounded concurrent spawns let a
 // burst of uploads exhaust the box. Excess requests queue instead of piling on.

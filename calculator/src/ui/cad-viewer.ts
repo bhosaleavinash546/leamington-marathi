@@ -15,6 +15,7 @@
  * standalone CAD-to-Cost view and the per-commodity inline uploader.
  */
 
+import { fetchMeshFrame, meshErrorText } from './cad-mesh-cache.js';
 import { parseSTLMesh } from './cad-views.js';
 import { exportFilename } from '../export/filename.js';
 import { sliceSection, nestLoops, sectionDxf, planeAxes, type SectionResult, type Axis as SecAxis } from './cad-section.js';
@@ -1317,36 +1318,25 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       if (stale()) return;
     } else if (/\.(stp|step|igs|iges)$/i.test(file.name)) {
       statusFile.textContent = `Tessellating ${file.name}…`;
-      const fd = new FormData();
-      fd.append('cadFile', file);
       const aborter = new AbortController();
       // Outer safety net — kept longer than the server's own timeout (default
       // 300 s) so the server's structured error surfaces before the client gives
       // up. Large STEP assemblies can take minutes to mesh.
       const CLIENT_TESS_TIMEOUT_MS = 330_000;
       const timer = setTimeout(() => aborter.abort(new DOMException(`Tessellation timed out after ${CLIENT_TESS_TIMEOUT_MS / 1000} s`, 'TimeoutError')), CLIENT_TESS_TIMEOUT_MS);
-      let resp: Response;
+      // One tessellation per file, shared with the rendered views and the compact viewer (cad-mesh-cache.ts).
+      let frame: ArrayBuffer;
       try {
-        resp = await fetch('/api/cad/tessellate?meta=bin', {
-          method: 'POST', headers: resolveHeaders(), body: fd, signal: aborter.signal,
-        });
+        frame = await fetchMeshFrame(file, resolveHeaders(), aborter.signal);
       } catch (err) {
         clearTimeout(timer);
         if (stale()) return;
-        statusFile.textContent = `Cannot open ${file.name}: ${err instanceof Error ? err.message : 'network error'}`;
+        statusFile.textContent = `Cannot open ${file.name}: ${meshErrorText(err)}`;
         throw err;
       }
       clearTimeout(timer);
       if (stale()) return;
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => ({ error: `HTTP ${resp.status}` })) as { error?: string };
-        if (stale()) return;
-        statusFile.textContent = `Cannot open ${file.name}: ${err.error ?? resp.status}`;
-        throw new Error(err.error ?? `tessellation failed (${resp.status})`);
-      }
       // binary frame: [u32 headerLen][header JSON][raw STL][triFace u32 array]
-      const frame = await resp.arrayBuffer();
-      if (stale()) return;
       const dv = new DataView(frame);
       const headerLen = dv.getUint32(0, true);
       const header = JSON.parse(new TextDecoder().decode(new Uint8Array(frame, 4, headerLen))) as {

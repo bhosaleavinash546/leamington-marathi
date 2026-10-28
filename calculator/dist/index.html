@@ -50,12 +50,12 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-DgXN2mDu.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-HxXMV-Nr.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/rolldown-runtime-Dd_uD5pT.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-BDYKo4-7.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-DuawmFxQ.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-CvDoa17S.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-pkD8MZtO.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-CMCp2IXL.css">
 </head>
 <body>
 
@@ -1119,11 +1119,6 @@
     <!-- Dynamic commodity form area -->
     <div id="commodity-form-area"></div>
 
-    <!-- Persistent CAD 3D viewer — stays visible through Analyse & Calculate and
-         commodity switches (lives OUTSIDE commodity-form-area so form swaps don't
-         destroy it). Mounted by showPersistentCADViewer(). -->
-    <div id="cad-persist-viewer-host" style="display:none;margin-top:10px"></div>
-
     <!-- Universal costs (always visible) -->
     <div id="universal-costs">
       <div class="section-title">Universal Costs</div>
@@ -1190,6 +1185,11 @@
 
     <!-- Sticky result hero — the answer, always in view -->
     <div id="cv-result-hero" style="display:none"></div>
+
+    <!-- Persistent CAD 3D viewer — the part beside its cost. It stays through Apply and commodity switches (outside
+         commodity-form-area, so form swaps don't destroy it). It sat below the whole commodity form, 2–5k px down the
+         page (CAD to COST 360 review, Oct 2026); it now heads the result. Mounted by showPersistentCADViewer(). -->
+    <div id="cad-persist-viewer-host" style="display:none;margin:0 0 12px"></div>
 
     <!-- Geometric DFM findings, from the background CAD analysis. Hidden until
          the job lands; clicking an issue highlights its faces in the viewer. -->
