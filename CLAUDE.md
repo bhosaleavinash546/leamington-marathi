@@ -29,6 +29,7 @@ npm run test:e2e        # e2e/smoke.ts — headless browser boot + drive (needs 
 npm run test:e2e:full   # e2e/full.ts — real server, every commodity, exports, STL upload, axe WCAG 2.1 AA
 npm run test:e2e:pcb    # e2e/pcb-live.ts — photo→cost in a browser against e2e/pcb-stand-in.mjs (a fixed model reply)
 npm run test:e2e:sheet  # e2e/sheet-metal-live.ts — the seat bracket STEP through a real server + browser (needs OCP); writes live-<label>.json
+npm run test:e2e:cad-to-cost  # e2e/cad-to-cost-live.ts — CAD to COST three steps on 3 real parts (finish, compare routes = headline, Cost this route, axe); PASS/FAIL, needs a build + OCP
 ```
 
 From the repo root, `make start|stop|restart|logs` drives the single Docker
@@ -296,7 +297,9 @@ not derivations, so they can be argued with. **It pins what the tool says, not
 what is true** — nothing here has been compared with a price JLR paid.
 
 ## 360 review (Oct 2026) — read `docs/review-360-2026-10.md` before a demo
-- Accuracy is UNMEASURED: 0 real actuals in `npm run accuracy`. Say so.
+- Accuracy is UNMEASURED: 0 real actuals in `npm run accuracy`. Say so. Prices paid for the real CAD parts go in
+  `calculator/scripts/actuals/cad-actuals-input.csv` (a person types them — never the tool); `npx tsx scripts/cad-actuals.ts`
+  re-costs each at its own volume / life / country / finish (headless chain) and writes `cad-actuals.csv` for the report.
 - Security invariants:
   - the OTP is returned only to a same-machine request (`devOtpAllowed`) or with `CV_SHOW_DEV_OTP=1`;
   - admin is promoted only when verified;

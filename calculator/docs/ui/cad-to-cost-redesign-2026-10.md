@@ -304,3 +304,10 @@ phase 2.
   - hub flange "Cost this route → casting": £16.81, equal to its comparison row.
 - axe WCAG 2.1 AA: 0 violations at steps 1–3 on every run; Excel and PDF exports download.
 - `tests/cad-phase2.test.ts` (23 tests).
+
+### Re-running the proof
+
+`npm run build && npm run test:e2e:cad-to-cost` (`e2e/cad-to-cost-live.ts`) drives the three parts above through a real
+server and browser and prints PASS / FAIL per check — costed, finish on the form with a sized load, the comparison's
+reference row equal to the headline, "Cost this route" equal to its row, axe 0 on the cost card, no page errors. First
+run (28 Oct 2026): 20 / 20 passed.

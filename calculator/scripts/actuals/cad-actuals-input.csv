@@ -1,0 +1,11 @@
+# Prices actually paid for the real CAD parts. Fill `actual` (£ per part as invoiced, delivered in the country) and
+# `source` (who, when, PO / quote ref); set the volume, programme life, country and finish the part was bought at.
+# finish: none | e_coat | powder_coat | powder_coat_zn | zinc_plate | zinc_nickel | zinc_flake | galvanise | anodise | mass_finish
+# Then: npx tsx scripts/cad-actuals.ts  →  npm run accuracy scripts/actuals/cad-actuals.csv
+# Rows with no actual are skipped. Prices here are commercial data: decide before committing this file.
+part,annualVolume,programmeYears,country,finish,actual,source
+steering_knuckle_RH.stp,100000,5,UK,none,,
+PRCR002.stp,100000,5,UK,none,,
+Casting_Braket.stp,100000,5,UK,none,,
+Seat_Locking_Bracket.stp,100000,5,UK,none,,
+Part1.stp,100000,5,UK,none,,
