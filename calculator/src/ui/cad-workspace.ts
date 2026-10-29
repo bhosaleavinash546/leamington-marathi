@@ -54,7 +54,7 @@ export function cadFactsHtml(f: CadFacts): string {
 export function programmeLifeLine(years: number | null, annual: number,
   tooling?: { total: number; fmt: (n: number) => string } | null): string {
   if (!years || years <= 0) {
-    return 'Required. Tooling is spread over annual volume × programme life; left blank it used to be loaded onto one year\'s volume.';
+    return 'Required: tooling is spread over annual volume × programme life.';
   }
   const parts = annual * years;
   if (tooling && tooling.total > 0 && parts > 0) {
@@ -378,6 +378,8 @@ export function routeCompareHtml(x: RouteComparisonExport, o: { fmt: (n: number)
           <h5>Feasibility</h5><ul class="cad-compare-checks">${r.checks.map(c => `<li><span class="cad-compare-${c.pass ? 'ok' : 'fail'}">${c.pass ? 'pass' : 'fail'}</span> ${esc(c.label)}: ${esc(c.measured)} — limit ${esc(c.limit)} <span class="cad-compare-src">(${esc(c.source)})</span></li>`).join('')}</ul>
         </div>
       </div></details>` : '';
+    // Two rows a route: the figures on one line, the basis under them full width — the seven-column table used to
+    // scroll sideways inside the card (five-part review, Oct 2026).
     return `<tr${isRef ? ' class="cad-compare-ref"' : ''}>
       <th scope="row">${label(r)}${isRef ? ' <span class="cad-cost-count">this costing</span>' : ''}</th>
       <td class="num">${r.total != null ? money0(r.total) : '—'}${r.band ? `<br><span class="cad-compare-note">± ${r.band.plusMinusPct}%</span>` : ''}</td>
@@ -385,14 +387,14 @@ export function routeCompareHtml(x: RouteComparisonExport, o: { fmt: (n: number)
       <td class="num">${r.tooling ? money0(r.tooling.investment) : '—'}</td>
       <td class="num">${r.toolingPerPart != null ? money0(r.toolingPerPart) : '—'}</td>
       <td class="num">${r.programme ? money0(r.programme.total) : '—'}</td>
-      <td>${r.audit ? `<span class="cad-compare-${r.audit.closes ? 'ok' : 'fail'}">${r.audit.closes ? 're-add closes' : 're-add open'}</span> ` : ''}${!isRef && cross ? `<div class="cad-compare-cross">${esc(cross.text)}</div>` : ''}${why.length ? `<ul class="cad-compare-why">${why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}${action}${detail}</td>
-    </tr>`;
+    </tr>
+    <tr class="cad-compare-basis${isRef ? ' cad-compare-ref' : ''}"><td colspan="6">${r.audit ? `<span class="cad-compare-${r.audit.closes ? 'ok' : 'fail'}">${r.audit.closes ? 're-add closes' : 're-add open'}</span> ` : ''}${!isRef && cross ? `<div class="cad-compare-cross">${esc(cross.text)}</div>` : ''}${why.length ? `<ul class="cad-compare-why">${why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}${action}${detail}</td></tr>`;
   }).join('');
   const excluded = x.excluded.length ? `<details class="cad-compare-excluded"><summary>Not feasible for this part <span class="cad-cost-count">${x.excluded.length}</span></summary>
     <ul class="cad-compare-checks">${x.excluded.map(e => `<li><strong>${label(e)}</strong>: ${e.reasons.map(c => `${esc(c.label)} — ${esc(c.measured)} against ${esc(c.limit)} <span class="cad-compare-src">(${esc(c.source)})</span>`).join('; ')}</li>`).join('')}</ul></details>` : '';
   const prog = x.programme;
   return `<p class="cad-cost-note">${esc(x.principle)} Programme view: ${prog.annualVolume.toLocaleString('en-GB')} a year over ${prog.years} years${prog.yearsAssumed ? ' (5 years assumed — no programme life given)' : ''}. Every costed row is re-added independently from its own rates and times; a row that does not close is marked, never corrected.</p><div class="cad-compare-wrap"><table class="cad-compare-table">
     <caption class="sr-only">Cost per part by manufacturing route and process</caption>
-    <thead><tr><th scope="col">Route · process</th><th scope="col" class="num">Cost / part</th><th scope="col" class="num">vs this costing</th><th scope="col" class="num">Tooling investment</th><th scope="col" class="num">Tooling / part</th><th scope="col" class="num">Programme spend</th><th scope="col">Basis</th></tr></thead>
+    <thead><tr><th scope="col">Route · process</th><th scope="col" class="num">Cost / part</th><th scope="col" class="num">vs this costing</th><th scope="col" class="num">Tooling investment</th><th scope="col" class="num">Tooling / part</th><th scope="col" class="num">Programme spend</th></tr></thead>
     <tbody>${body}</tbody></table></div>${excluded}`;
 }

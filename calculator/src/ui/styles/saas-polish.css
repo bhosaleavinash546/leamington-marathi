@@ -682,3 +682,6 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile:hover { transform: tran
 .cad-compare-cross { font-size: 0.7rem; color: var(--text-primary); margin: 0 0 4px; }
 .cad-compare-excluded { margin-top: 8px; font-size: 0.72rem; }
 .cad-compare-excluded > summary { cursor: pointer; color: var(--text-secondary); }
+
+.cad-compare-basis td { padding-top: 2px; border-bottom: 1px solid var(--border); }
+.cad-compare-table tbody tr:not(.cad-compare-basis) th, .cad-compare-table tbody tr:not(.cad-compare-basis) td { border-bottom: 0; }

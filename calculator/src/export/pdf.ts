@@ -1,6 +1,10 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { routeRowLabel, routeReferenceRow, type RouteComparisonExport } from '../ui/cad-workspace.js';
+import { routeRowLabel, routeReferenceRow, traceFieldLabel, type RouteComparisonExport } from '../ui/cad-workspace.js';
+import { shortOperationName } from '../engine/operation-names.js';
+import { reportNoteText } from './money-text.js';
+import { decisionAnswerLabel } from './decision-text.js';
+import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType, Scenario } from '../engine/types.js';
 import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
@@ -332,6 +336,10 @@ export function winAnsiSafe(s: string): string {
     .replace(/[\u2248]/g, '~').replace(/[\u2260]/g, '!=')
     .replace(/[\u25CF\u25AA]/g, '-')              // block bullets
     .replace(/\u2212/g, '-')                       // maths minus (a note read "book £0.86  base £0.86")
+    // Greek letters in a basis (Σ over 4 operations, π, α_eff): named, not dropped (report audit, Oct 2026)
+    .replace(/[\u03A3\u2211]/g, 'Sum').replace(/\u03C0/g, 'pi').replace(/\u03B1/g, 'alpha').replace(/[\u0394\u03B4]/g, 'delta')
+    .replace(/\u03C3/g, 'sigma').replace(/\u03BC/g, 'mu').replace(/\u03C1/g, 'rho').replace(/\u03B8/g, 'theta').replace(/\u03B7/g, 'eta')
+    .replace(/\u03BB/g, 'lambda').replace(/\u03B5/g, 'eps').replace(/\u03C4/g, 'tau').replace(/[\u03C9\u03A9]/g, 'omega').replace(/\u221A/g, 'sqrt').replace(/\u221E/g, 'inf')
     .replace(/\s?[\u3000-\u9FFF\uFF00-\uFFEF]+/g, '') // CJK names (海天精工): not in the font — dropped with their space
     // A WHITELIST, not a Latin-1 cut-off. WinAnsi's upper range carries the
     // typographic characters this codebase's prose is full of - em/en dash,
@@ -507,7 +515,7 @@ function renderSourcePhotographs(doc: jsPDF, y: number, photos: ReportPhoto[], i
  * finding list being read as a clean part.
  */
 /** "Checks applied" — every guardrail, decision and rule override on one page. */
-function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null | undefined, money: { fx: number; sym: string } = { fx: 1, sym: '£' }): number {
+function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null | undefined, money: { fx: number; sym: string } = { fx: 1, sym: '£' }, grades: Array<{ id: string; grade: string }> = []): number {
   if (!ch) return y;
   y = chk(doc, y, 30);
   doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
@@ -542,7 +550,7 @@ function renderChecksApplied(doc: jsPDF, y: number, ch: ChecksAppliedMeta | null
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG },
       head: [['Decision', 'Severity', 'Answer']],
-      body: ch.decisions.map(d => [d.question, d.severity, decisionAnswerText(d)]),
+      body: ch.decisions.map(d => [d.question, d.severity, decisionAnswerText({ ...d, answer: decisionAnswerLabel(d.id ?? '', d.answer, { routeLabels: COMMODITY_REPORT_LABELS, grades }) })]),
       styles: { fontSize: 6.5, cellPadding: 1.2 }, headStyles: { fillColor: NAVY, fontSize: 6.5 },
       columnStyles: { 1: { cellWidth: 18 }, 2: { cellWidth: 40 } },
     });
@@ -847,6 +855,7 @@ export function renderShouldCostSections(
   // ════════════════════════════════════════════════════════════════════════
   // §1 — 8-Bucket Cost Breakdown
   // ════════════════════════════════════════════════════════════════════════
+  y = chk(doc, y, 78);   // the 8-bucket table on one page (it split after row 4; report audit, Oct 2026)
   y = secBar(doc, y, '§1 — 8-Bucket Cost Breakdown');
   if (cadMeta.stamp) {
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(110, 110, 110);
@@ -966,7 +975,7 @@ export function renderShouldCostSections(
   // Functional safety sits between the commercial parameters and the cost
   // detail: it is the context that explains why the verification operations in
   // section 4 cost what they do.
-  y = renderChecksApplied(doc, y, cadMeta.checks, { fx: fxRate, sym });
+  y = renderChecksApplied(doc, y, cadMeta.checks, { fx: fxRate, sym }, library.materials);
   const fixturings = (() => {
     const m = input.operations.map(o => /Load \/ clamp \/ unload\s*[—-]\s*(\d+) fixturing/i.exec(o.operationName)).find(Boolean);
     return m ? Number(m[1]) : null;
@@ -1014,7 +1023,7 @@ export function renderShouldCostSections(
       [lossIsNotScrap ? 'Melt Loss (metal lost)' : /cast/i.test(String(commodityType)) ? 'Scrap / Runner Weight' : 'Scrap (bought, not in the part)', `${scrapWt.toFixed(4)} kg`, 'kg',
         lossIsNotScrap ? 'Gross - Net: metal lost in melting; runners, risers and rejects are remelted' : 'Gross - Net'],
       ['Material Utilisation',        pct(input.rawMaterial.materialUtilization * 100),        '%',            utilisationBenchmarkNote(commodityType, lossIsNotScrap)],
-      ['Material Price',              c(price),                                               `${currency}/kg`, mat?.sourceNote ?? ''],
+      ['Material Price',              c(price),                                               `${currency}/kg`, reportNoteText(mat?.sourceNote)],
       ['Scrap Recovery Price',        c(scrapPrice),                                          `${currency}/kg`, ''],
       ['Gross Material Cost',         c(grossWt * price),                                     currency,       'Gross × price/kg'],
       ['Scrap Credit',                credit > 0 ? `-${c(credit)}` : c(0),                    currency,       lossIsNotScrap ? 'None — melt loss is metal lost, not scrap sold' : 'Scrap × recovery price'],
@@ -1203,10 +1212,10 @@ export function renderShouldCostSections(
     // A bench task (fettling, melt shop, deburr) is labour only — no machine, rate or OEE — as the Excel and the screen
     // show it. The PDF printed the placeholder machine, its rate and 100 % OEE (casting 360 review, Oct 2026).
     if (op.benchOperation || op.cycleTimeHr === 0) {
-      return [op.operationName, 'bench (no machine time)', '', '', String(op.partsPerCycle ?? 1), '', c(op.processCost)];
+      return [shortOperationName(op.operationName), 'bench (no machine time)', '', '', String(op.partsPerCycle ?? 1), '', c(op.processCost)];
     }
     return [
-      op.operationName,
+      shortOperationName(op.operationName),
       mObj?.machineClass ?? op.machineId,
       c(op.machineRateUsed),
       (op.cycleTimeHr * 60).toFixed(2),
@@ -1257,7 +1266,7 @@ export function renderShouldCostSections(
   const opRowsB = result.operationDetails.map(op => {
     const lObj = library.labour.find(l => l.id === op.labourId);
     return [
-      op.operationName,
+      shortOperationName(op.operationName),
       lObj?.skillLevel ?? op.labourId,
       c(op.labourRateUsed),
       String(op.manning),
@@ -1312,7 +1321,7 @@ export function renderShouldCostSections(
   if (cadMeta.featureLines && cadMeta.featureLines.length > 0) {
     y = chk(doc, y, 26);
     doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-    doc.text('4C  Machined Features — Geometry Audit', MG, y); y += 5;
+    doc.text(cadMeta.featureLinesInCost ? '4C  Machined Features — Geometry Audit' : '4C  Measured Features — audit only (not priced from this table)', MG, y); y += 5;
     if (!cadMeta.featureLinesInCost) {
       // Not the costing: list what was measured, with no £ and no "costed" column.
       doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
@@ -1410,7 +1419,7 @@ export function renderShouldCostSections(
     const rh  = (n: number) => c(n / eff);
 
     machRows.push([{
-      content: `${mach.machineClass}  [${mach.id}]  ·  Confidence: ${mach.confidence}  ·  ${mach.sourceNote}`,
+      content: `${mach.machineClass}  ·  Confidence: ${mach.confidence}  ·  ${reportNoteText(mach.sourceNote)}  (rate id ${mach.id})`,
       colSpan: 4,
       styles: { fontStyle: 'bold', fillColor: HDR, textColor: NAVY, fontSize: 7.5, cellPadding: { top: 3, bottom: 3, left: 4, right: 4 } },
     } as unknown as string]);
@@ -1479,8 +1488,8 @@ export function renderShouldCostSections(
       const key = `${t.rateId ?? ''}|${t.rateSource}`;
       const src = seen.has(key) ? `as above (${role ?? 'same source'})` : (seen.add(key), t.rateSource);
       return t.unit.includes('£')
-        ? [t.field, (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), src, role, t.confidence]
-        : [t.field, t.value.toFixed(4), t.unit, src, role, t.confidence];
+        ? [traceFieldLabel(shortOperationName(t.field)), (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), src, role, t.confidence]
+        : [traceFieldLabel(shortOperationName(t.field)), t.value.toFixed(4), t.unit, src, role, t.confidence];
     }); })(),
     theme: 'plain',
     headStyles: { ...TH.headStyles, fontSize: 7.5 },
@@ -1958,8 +1967,8 @@ export function renderShouldCostSections(
     const lowRates = (result.traceability ?? []).filter(t => t.confidence === 'Low' && t.rateId && !lowSeen.has(t.rateId) && lowSeen.add(t.rateId))
       .slice(0, 8)
       .map(t => ({
-        title: `${t.field.replace(/\.(machineRatePerHr|labourRatePerHr)$/, m => m === '.machineRatePerHr' ? ' — machine rate' : ' — labour rate').replace(/^material\.pricePerKg$/, 'Material price')}`,
-        detail: `Low confidence: ${String(t.rateSource).replace(/^[^:]*book [0-9-]+: /, '').slice(0, 170)}${String(t.rateSource).length > 170 ? '…' : ''}`,
+        title: traceFieldLabel(shortOperationName(t.field)).replace(/^material: price$/i, 'Material price'),
+        detail: `Low confidence — ${/labourRatePerHr/.test(t.field) ? `${t.rateId ? labourRoleLabel(t.rateId) : 'labour'} rate` : /machineRatePerHr/.test(t.field) ? 'machine rate' : 'rate'} ${sym}${(t.value * fxRate).toFixed(2)}${t.unit.replace('£', '')}: ${reportNoteText(String(t.rateSource)).replace(/^[^:]*book [0-9-]+: /, '').split(/(?<=\.)\s/)[0].slice(0, 140)} (the derivation is in §6)`,
         action: /machineRatePerHr/.test(t.field) ? 'Confirm with the supplier\'s machine-hour rate or a local capex quote'
           : /pricePerKg/.test(t.field) ? 'Confirm with a local supplier price for this grade' : 'Confirm with a local quote',
       }));
@@ -2456,9 +2465,13 @@ export function printPDF(
   // plain names, as the form shows them — the cover printed "rawMaterial.materialId: …" (Poland live review)
   const coverWarnings = (result.warnings ?? []).filter(w => !(pcba && /^Costed from the PCB photo analysis/.test(w)))
     .map(w => w.replace(/^([A-Za-z][\w.\[\]() -]*?): /, (_m, f: string) => `${fieldLabel(f)}: `));
-  if (coverWarnings.length) {
-    y = calloutBox(doc, y, `Engine Warnings (${coverWarnings.length})`,
-      coverWarnings, AM, [254, 249, 231]);
+  // A multi-cavity cycle or a price grade is a note; a warning is something that may be wrong (report audit, Oct 2026).
+  const coverNotes = coverWarnings.filter(w => /parts a cycle|price confidence/.test(w)).map(w => shortOperationName(w).replace(/^(.+?) \(operation \d+\) — parts per cycle: /, ''));
+  const coverWarn = coverWarnings.filter(w => !/parts a cycle|price confidence/.test(w)).map(w => shortOperationName(w));
+  if (coverNotes.length) y = calloutBox(doc, y, 'Notes on this costing', coverNotes, GREY, [244, 245, 247]);
+  if (coverWarn.length) {
+    y = calloutBox(doc, y, `Engine Warnings (${coverWarn.length})`,
+      coverWarn, AM, [254, 249, 231]);
   }
 
   // ── Learning curve ────────────────────────────────────────────────────────

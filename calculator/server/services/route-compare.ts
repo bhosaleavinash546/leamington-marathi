@@ -221,6 +221,8 @@ export interface CompareRoutesInput {
   ladder?: boolean;
   /** Run the Monte-Carlo band on every row and ladder point (default true). */
   bands?: boolean;
+  /** The costing's own band as the screen shows it — printed on the reference row, so one costing has one band. */
+  referenceBand?: RouteBand | null;
 }
 
 type ScreenArgs = Pick<CompareRoutesInput, 'geo' | 'filename' | 'current' | 'answers' | 'annualVolume' | 'baseBook'>;
@@ -562,7 +564,8 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
             answers['material.resin'] = same.id;
             notes.push(`resin assumed: ${same.label} — the same polymer (${same.polymer}) as ${v}, in the grade this route buys`);
           } else {
-            notes.push(`${v} is not bought on this route — its representative ${familyOfCategory(cat) ?? fam.family ?? ''} grade is costed`.replace(/\s+grade/, ' grade'));
+            const gradeName = i.baseBook.materials.find(m => m.id === v)?.grade ?? v;
+            notes.push(`${gradeName} is not bought on this route — its representative ${familyOfCategory(cat) ?? fam.family ?? ''} grade is costed`.replace(/\s+grade/, ' grade'));
           }
         }
       }
@@ -617,8 +620,8 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
       tooling,
       operations: costed && r ? operationsOf(r, i.baseBook) : null,
       band,
-      checks: screen?.checks ?? [],
-      caveats: screen?.caveats ?? [],
+      checks: [...(screen?.checks ?? [])],
+      caveats: [...(screen?.caveats ?? [])],
       assumed,
       openQuestions: open,
       notes,
@@ -635,6 +638,11 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
   // The reference row names the process the engine chose: the variant whose figures equal the reference IS the
   // reference, so it is folded in and the reference row carries that process.
   const ref = rows[0];
+  if (i.referenceBand && ref.status === 'costed') {
+    ref.band = { ...i.referenceBand };
+    const at = ref.byVolume.find(p => p.volume === i.annualVolume);
+    if (at) { at.p10 = i.referenceBand.p10; at.p90 = i.referenceBand.p90; }
+  }
   // A process row the rules price with the SAME operations and tooling as the reference differs only in material
   // (yield, machining stock): the row says so, so a "cheaper" process is read as a yield effect, not a process one
   // (the hub flange's precision forging: same press, same die, same CNC minutes — 0.81 against 0.675 yield).
@@ -644,8 +652,8 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
       && row.operations.every((op, k) => Math.abs(op.processCost - ref.operations![k].processCost) < CLOSE_GBP && Math.abs(op.labourCost - ref.operations![k].labourCost) < CLOSE_GBP);
     const sameTool = Math.abs(row.tooling.investment - ref.tooling.investment) <= 0.01 * Math.max(1, ref.tooling.investment);
     if (sameOps && sameTool) {
-      row.caveats.push('the rules price this process with the same operations and tooling as the costed process — only the '
-        + 'material (yield, machining stock) differs, so the difference is a material-yield effect, not a process one');
+      row.caveats.push('the rules price this process with the same operations and tooling as the costed process; the difference is '
+        + 'in the material line (yield, machining stock, per-part services such as NDT), not in the process');
     }
   }
   const kept = rows.filter(row => {

@@ -15,6 +15,7 @@
  * on an assumed (not entered) value, are gated the same way §11–§15 of the
  * report are — see SuggestionContext in insights.ts.
  */
+import { shortOperationName } from './operation-names.js';
 import type { PartCostResult, UniversalStackInput, CommodityType, RateLibrary } from './types.js';
 import type { SuggestionContext } from './insights.js';
 import type { CostOptimisation } from './dfm-dfa.js';
@@ -378,8 +379,8 @@ export function generateIdeaLevers(
   if (topOp && topOpShare > 0.5 && opCount >= 2 && convTotal / tot > 0.2) {
     out.push({
       category: 'process', lever: 'supplier',
-      title: `Attack the Bottleneck: "${topOp.name}"`,
-      description: `One operation — ${topOp.name} — carries ${(topOpShare * 100).toFixed(0)}% of the conversion cost. Improving anything else first is working on the wrong problem.`,
+      title: `Attack the Bottleneck: "${shortOperationName(topOp.name)}"`,
+      description: `One operation — ${shortOperationName(topOp.name)} — carries ${(topOpShare * 100).toFixed(0)}% of the conversion cost. Improving anything else first is working on the wrong problem.`,
       expectedSavingPct: Math.min(8, topOpShare * (procPct + labPct) * 0.2),
       technicalJustification: 'Focused cycle-time engineering on the governing operation (feeds/speeds, tooling upgrade, cooling optimisation, SMED on its changeover) moves the whole part cost; a 20% gain on the bottleneck is a realistic first-pass target.',
       risk: 'Medium', timeframe: 'Medium Term',

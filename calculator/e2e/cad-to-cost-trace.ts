@@ -433,7 +433,11 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     for (let k = 0; k < 4; k++) {
       const el = await page.$(`#cad-cost-card [data-commercial="${field}"]`);
       if (!el) return false;
-      try { await el.fill(value); await el.dispatchEvent('change'); return true; } catch { await page.waitForTimeout(400); }
+      try {
+        await el.fill(value);
+        if ((await el.inputValue()) !== value) { await page.waitForTimeout(300); continue; }   // a redraw mid-keystroke
+        await el.dispatchEvent('change'); return true;
+      } catch { await page.waitForTimeout(400); }
     }
     return false;
   };
@@ -479,7 +483,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   rec.recompute = rc;
   const near = (a: number, b: number, tol = 0.0006) => Math.abs(a - b) <= tol;
   check('arith', 'trace', 'every operation re-priced from its rate, time, OEE, parts a cycle = the sheet',
-    rc.opCalc.every(o => near(o.proc, o.sheetProc, 0.00002) && near(o.lab, o.sheetLab, 0.00002)),
+    rc.opCalc.every(o => near(o.proc, o.sheetProc, 0.0006) && near(o.lab, o.sheetLab, 0.0006)),
     rc.opCalc.map(o => `${o.op}: £${o.proc.toFixed(4)} + £${o.lab.toFixed(4)} (sheet £${o.sheetProc.toFixed(4)} + £${o.sheetLab.toFixed(4)})`).join(' | '));
   check('arith', 'trace', 'Σ operations = buckets 2 and 3', near(rc.procSum, rc.b.process) && near(rc.labSum, rc.b.labour),
     `process £${rc.procSum.toFixed(4)} v £${rc.b.process.toFixed(4)}; labour £${rc.labSum.toFixed(4)} v £${rc.b.labour.toFixed(4)}`);

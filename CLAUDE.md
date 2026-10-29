@@ -682,6 +682,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   answer: answered / assumed / comparison / not asked), its Monte-Carlo `band` (and a band at every ladder point:
   overlapping bands = "indistinguishable"), tooling `payback` and `programme` spend. A process row priced with the same
   ops and tooling as the reference says so (material-yield effect).
+  Five-part review (29 Oct 2026, `docs/review/cad2c-five-part-review-2026-10-29.md`, `tests/cad2c-report-audit.test.ts`):
+  the harness takes a parts manifest (`CV_TRACE_PARTS`) and shoots the light theme; reports print operation NAMES
+  (`src/engine/operation-names.ts::shortOperationName` — the feature list prints once in §4C / the Excel features
+  column), trace fields through `traceFieldLabel`, rate-book notes through `money-text.ts::reportNoteText` (no
+  "| Refresh …", "Was £…/h", pricing-basis cross-references), answers through `decisionAnswerLabel`, commodities through
+  `COMMODITY_REPORT_LABELS`; Greek letters are named in `winAnsiSafe`; a Medium price grade is not a warning and a
+  multi-cavity cycle is a cover NOTE. A process-plausibility sanity check never fires while the route question is open
+  (`runAllGuards(…, { routeOpen })`); the cost card's commercial fields refuse out-of-range figures (`COMMERCIAL_LIMITS`);
+  the comparison's reference row prints the SCREEN's band (`referenceBand`); the compare table is two rows a route.
   End-to-end trace (28 Oct 2026, `docs/review/cad-to-cost-e2e-trace-2026-10-28.md`): `e2e/cad-to-cost-trace.ts` checks every
   plan item live on two parts (116 checks; the cost re-added from the exported workbook). The cost card carries the step
   indicator, the confidence reason (`confidenceWhy` in uncertainty.ts, labels via `traceFieldLabel`), grade + weight chips,

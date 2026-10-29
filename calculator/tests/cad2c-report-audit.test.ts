@@ -1,0 +1,163 @@
+/**
+ * CAD2C five-part review (29 Oct 2026, docs/review/cad2c-five-part-review-2026-10-29.md): the report and screen fixes
+ * the line-by-line audit of five parts' PDFs and workbooks asked for.
+ */
+import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { shortOperationName, operationFeatureList } from '../src/engine/operation-names.js';
+import { reportNoteText } from '../src/export/money-text.js';
+import { decisionAnswerLabel, decisionAnswerText } from '../src/export/decision-text.js';
+import { COMMODITY_REPORT_LABELS } from '../src/ui/data/commodity-meta.js';
+import { winAnsiSafe } from '../src/export/pdf.js';
+import { routeCompareHtml, routeComparisonExport, type RouteCompareRow } from '../src/ui/cad-workspace.js';
+import { compareRoutes } from '../server/services/route-compare.js';
+import { recomputeMachineRates, DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { validateStackInput } from '../src/engine/core.js';
+import { runSensitivity } from '../src/engine/sensitivity.js';
+
+const FULL = 'CNC Machining — 20 features (1×Ø10.0×12, 1×Ø11.0×21, 1×Ø12.0×2, 2×Ø12.5×16, 1× face 1544mm², 1× face 956mm²) [geometry-measured]';
+
+describe('R3 — an operation prints its name, the feature list prints once in the feature audit', () => {
+  it('shortens the measured machining names and leaves every other name alone', () => {
+    expect(shortOperationName(FULL)).toBe('CNC Machining — 20 features');
+    expect(shortOperationName('Drilling — 8 holes (1×Ø10.0×12, 2×Ø12.5×16) [geometry-measured]')).toBe('Drilling — 8 holes');
+    expect(shortOperationName('Finish boring — 4 cored bore(s) (1×Ø63.0×3, 1×Ø68.0×40) [geometry-measured]')).toBe('Finish boring — 4 cored bore(s)');
+    expect(shortOperationName('Machining load / unload + change-over (3 fixturing(s): 0.6 min each + 45 min ÷ batch 5000)'))
+      .toBe('Machining load / unload + change-over (3 fixturing(s): 0.6 min each + 45 min ÷ batch 5000)');
+    expect(shortOperationName('Forging')).toBe('Forging');
+    expect(operationFeatureList(FULL)).toBe('1×Ø10.0×12, 1×Ø11.0×21, 1×Ø12.0×2, 2×Ø12.5×16, 1× face 1544mm², 1× face 956mm²');
+    expect(operationFeatureList('Forging')).toBeNull();
+  });
+  it('the sensitivity names its drivers by the short name', () => {
+    const lib = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+    const input = {
+      partName: 'x', annualVolume: 10_000,
+      rawMaterial: { materialId: 'mat-steel-38mnvs6', netWeightKg: 1, materialUtilization: 0.8 },
+      operations: [{ operationName: FULL, machineId: 'mach-vmc3', labourId: 'lab-uk-skilled', cycleTimeHr: 0.1, partsPerCycle: 1, oee: 0.8, manning: 1, labourTimeHr: 0.1, labourEfficiency: 0.9 }],
+      tooling: { totalToolingCost: 1000, amortizationVolume: 10_000, mode: 'amortized' as const },
+      packagingPerPart: 0.1, logisticsPerPart: 0.1, overheadPct: 0.12, marginPct: 0.08,
+    };
+    const s = runSensitivity(input as never, lib, 10);
+    const names = s.drivers.map(d => d.driver);
+    expect(names.some(n => n.includes('CNC Machining — 20 features'))).toBe(true);
+    expect(names.some(n => n.includes('1×Ø10.0×12'))).toBe(false);
+  });
+});
+
+describe('R10 / R26 / R27 — a rate-book note as a report prints it', () => {
+  it('drops the refresh bookkeeping, the previous figure, the pricing-basis cross-reference and a module parameter', () => {
+    const note = 'UK resin distributor Jun 2026. Automotive interior, electronics housings. coolFactor ~2.2 s/mm² Index-anchored 2026-07 (see RESIN PRICING BASIS). | Refresh 2026-09: -£0.026/kg from 0.6kg pc £1.000->£1.000/kg; premiums held';
+    expect(reportNoteText(note)).toBe('UK resin distributor Jun 2026. Automotive interior, electronics housings. Index-anchored 2026-07.');
+    expect(reportNoteText('UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross. Source: https://x.y/z. Was £24.17/h'))
+      .toBe('UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross. Source: https://x.y/z');
+    expect(reportNoteText(null)).toBe('');
+  });
+});
+
+describe('R6 / R37 — decision answers read as a person reads them', () => {
+  it('routes, materials, yes / no and classes are labelled; the unanswered text uses an em dash', () => {
+    const o = { routeLabels: COMMODITY_REPORT_LABELS, grades: [{ id: 'mat-pc-abs', grade: 'PC/ABS Blend (automotive grade)' }] };
+    expect(decisionAnswerLabel('commodity.route', 'injection_moulding', o)).toBe('Injection moulding');
+    expect(decisionAnswerLabel('material.resin', 'mat-pc-abs', o)).toBe('PC/ABS Blend (automotive grade)');
+    expect(decisionAnswerLabel('service.safetyCritical', 'yes', o)).toBe('Yes');
+    expect(decisionAnswerLabel('service.toleranceClass', 'standard', o)).toBe('Standard');
+    expect(decisionAnswerLabel('material.family', 'cast iron', o)).toBe('Cast iron');
+    expect(decisionAnswerText({ severity: 'advisory', answer: null, used: '38MnVS6' })).toBe('not answered — costed as 38MnVS6');
+  });
+  it('the report labels are full names and every tab label has one', () => {
+    expect(COMMODITY_REPORT_LABELS.injection_moulding).toBe('Injection moulding');
+    expect(COMMODITY_REPORT_LABELS.sheet_metal_fab).toMatch(/laser/);
+    expect(COMMODITY_REPORT_LABELS.cast_and_machine).toBe('Cast and machine');
+    expect(COMMODITY_REPORT_LABELS.gear).toBe('Gear cutting');
+    for (const k of Object.keys(COMMODITY_REPORT_LABELS)) expect(COMMODITY_REPORT_LABELS[k]).not.toMatch(/Cast\+|^SM |^Al /);
+  });
+});
+
+describe('R28 — Greek letters in a basis are named in the PDF, never dropped', () => {
+  it('Σ, π, α, Δ survive the WinAnsi pass as words', () => {
+    expect(winAnsiSafe('Σ over 4 operations')).toBe('Sum over 4 operations');
+    expect(winAnsiSafe('t = wall²/(π²·α)')).toBe('t = wall²/(pi²·alpha)');
+    expect(winAnsiSafe('Δ 3 mm')).toBe('delta 3 mm');
+  });
+});
+
+describe('R5 / R24 — a multi-cavity cycle and a Medium price grade are not warnings', () => {
+  it('core: a Medium-confidence price raises no warning; Low does; parts a cycle is still said (as a note)', () => {
+    const lib = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+    const medium = lib.materials.find(m => m.confidence === 'Medium')!;
+    const low = lib.materials.find(m => m.confidence === 'Low')!;
+    const base = {
+      partName: 'x', annualVolume: 1000,
+      operations: [{ operationName: 'Moulding', machineId: 'imm-400t', labourId: 'lab-uk-semiskilled', cycleTimeHr: 0.01, partsPerCycle: 2, oee: 0.8, manning: 1, labourTimeHr: 0.01, labourEfficiency: 0.9 }],
+      tooling: { totalToolingCost: 1000, amortizationVolume: 1000, mode: 'amortized' as const },
+      packagingPerPart: 0.1, logisticsPerPart: 0.1, overheadPct: 0.12, marginPct: 0.08,
+    };
+    const vMed = validateStackInput({ ...base, rawMaterial: { materialId: medium.id, netWeightKg: 1, materialUtilization: 0.9 } } as never, lib);
+    expect(vMed.warnings.some(w => /price confidence/.test(w.message))).toBe(false);
+    expect(vMed.warnings.some(w => /parts a cycle/.test(w.message))).toBe(true);
+    const vLow = validateStackInput({ ...base, rawMaterial: { materialId: low.id, netWeightKg: 1, materialUtilization: 0.9 } } as never, lib);
+    expect(vLow.warnings.some(w => /price confidence Low/.test(w.message))).toBe(true);
+  });
+  it('the PDF prints them as notes, not engine warnings', () => {
+    const pdf = readFileSync('src/export/pdf.ts', 'utf8');
+    expect(pdf).toContain("'Notes on this costing'");
+    expect(pdf).toMatch(/coverWarn\.length/);
+  });
+});
+
+describe('R1 / R32 / R33 / U6 — the comparison on screen and in the reports', () => {
+  const parts = JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json', 'utf8')) as Array<{ part: string; answers: Record<string, string>; geometry: Record<string, unknown>; outcome: { commodity?: string } }>;
+  const book = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+  it('a caveat lands on its own row once; the reference row prints the band the screen gave; a grade note names the grade', async () => {
+    const p = parts.find(x => x.part === 'FORGE_Hub_Flange.stp')!;
+    const band = { p10: 15.5, p50: 17.3, p90: 19.2, plusMinusPct: 9.4, confidence: 'Low' };
+    const cmp = await compareRoutes({ geo: p.geometry as never, filename: p.part, current: 'forging', answers: p.answers, region: 'UK', annualVolume: 100_000, programmeYears: 5, baseBook: book, bands: false, referenceBand: band });
+    const ref = cmp.rows[0];
+    expect(ref.caveats.filter(c => /same operations and tooling/.test(c))).toHaveLength(0);
+    const precision = cmp.rows.find(r => r.process === 'precision')!;
+    expect(precision.caveats.filter(c => /same operations and tooling/.test(c))).toHaveLength(1);
+    expect(precision.caveats[precision.caveats.length - 1]).toMatch(/material line \(yield, machining stock, per-part services/);
+    expect(ref.band).toEqual(band);
+    expect(ref.byVolume.find(v => v.volume === 100_000)).toMatchObject({ p10: 15.5, p90: 19.2 });
+    const q = parts.find(x => x.part === 'IM_ECU_Cover.stp')!;
+    const c2 = await compareRoutes({ geo: q.geometry as never, filename: q.part, current: 'injection_moulding', answers: q.answers, region: 'UK', annualVolume: 100_000, programmeYears: 5, baseBook: book, bands: false, ladder: false });
+    const mach = c2.rows.find(r => r.route === 'machining')!;
+    expect(mach.notes.join(' ')).not.toMatch(/mat-pa66gf30/);
+    expect(mach.notes.join(' ')).toMatch(/PA66 GF30 is not bought on this route/);
+  }, 120_000);
+  it('the table puts the basis on its own full-width row under the figures (no sideways scroll), with full route names', () => {
+    const row = (route: string, total: number): RouteCompareRow => ({
+      route, process: null, label: route, commodity: route, status: 'costed', total, toolingPerPart: 0.1, breakdown: null, reconciles: null, audit: null, spec: [],
+      material: null, tooling: null, operations: null, band: null, checks: [], caveats: ['c'], assumed: [], openQuestions: [], notes: [], refusal: null, byVolume: [], programme: null,
+    });
+    const html = routeCompareHtml(routeComparisonExport({ principle: 'p', rows: [row('forging', 10), row('cast_and_machine', 12)], excluded: [], ladder: [], crossovers: [], programme: { annualVolume: 1, years: 5, yearsAssumed: false } },
+      { current: 'forging', headline: 10, labels: COMMODITY_REPORT_LABELS }), { fmt: n => `£${n.toFixed(2)}` });
+    expect((html.match(/class="cad-compare-basis/g) ?? []).length).toBe(2);
+    expect(html).toContain('colspan="6"');
+    expect(html).not.toContain('<th scope="col">Basis</th>');
+    expect(html).toContain('Cast and machine');
+  });
+});
+
+describe('S1 / S2 / S4 — screen wording', () => {
+  it('no changelog prose, no emoji markers, no "review before calculating" after the cost', () => {
+    const ws = readFileSync('src/ui/cad-workspace.ts', 'utf8');
+    expect(ws).not.toMatch(/it used to be loaded/);
+    const main = readFileSync('src/ui/main.ts', 'utf8');
+    expect(main).not.toMatch(/&#127919; Improve this analysis|&#128247; Material is only/);
+    expect(main).not.toMatch(/review before calculating/);
+  });
+});
+
+describe('P-A — no process-plausibility block before a process is chosen', () => {
+  it('runAllGuards drops the process checks while the route question is open, keeps them once it is answered', async () => {
+    const { runAllGuards } = await import('../server/routes/cad.js');
+    const parts = JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json', 'utf8')) as Array<{ part: string; geometry: Record<string, unknown> }>;
+    const rail = parts.find(p => p.part === 'AL_Battery_Rail.stp')!;
+    const analysis = { costInputSuggestions: { recommendedCommodity: 'machining' }, materialAnalysis: { primarySuggestion: { name: 'Aluminium', confidencePct: 0 } } };
+    const open = runAllGuards(structuredClone(analysis), rail.geometry as never, (rail.geometry as { volume: { cm3: number } }).volume.cm3, null, { routeOpen: true });
+    expect(open.some(w => w.code === 'process_geometry_implausible')).toBe(false);
+    const chosen = runAllGuards(structuredClone(analysis), rail.geometry as never, (rail.geometry as { volume: { cm3: number } }).volume.cm3, null, { routeOpen: false });
+    expect(chosen.some(w => w.code === 'process_geometry_implausible')).toBe(true);
+  });
+});

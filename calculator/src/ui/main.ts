@@ -238,7 +238,7 @@ import { buildRuleVsAIPanel, type CADDiff } from './cad-diff-panel.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
 import { renderAlExtrusionForm, collectAlExtrusionDrivers, wireAlExtrusionForm } from './al-extrusion-form.js';
 import { CAD_AI_DEMOS } from './data/cad-ai-demos.js';
-import { COMMODITY_LABELS, COMMODITY_BADGE_COLOURS, CPICKER_META } from './data/commodity-meta.js';
+import { COMMODITY_LABELS, COMMODITY_REPORT_LABELS, COMMODITY_BADGE_COLOURS, CPICKER_META } from './data/commodity-meta.js';
 import { CAD_COMMODITY_OPTIONS, CAD_MATERIALS_BY_COMMODITY } from './data/cad-options.js';
 import { analysisErrorHint } from './cad-error-hint.js';
 import { rubberProcFromSuggestion } from '../engine/modules/rubber-advisor.js';
@@ -6287,6 +6287,7 @@ function restoreCADScreen(): void {
   const fsize = document.getElementById('cad-fsize');
   if (fsize) fsize.textContent = (cadFile.size / 1024).toFixed(1) + ' KB';
   document.getElementById('cad-analyze-btn')?.removeAttribute('disabled');
+  document.getElementById('cad-analyze-btn')?.classList.replace('btn-secondary', 'btn-primary');
   document.getElementById('cad-analyze-calc-btn')?.removeAttribute('disabled');
   hidePersistentCADViewer();
   void mountCADViewer('cad-viewer-host', cadFile, false);
@@ -7085,7 +7086,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       if (ambiguityAsk) {
         asks.push(ambiguityAsk);
       } else if (matConf < 70 && !cadPartPhotoDataUrlPresent()) {
-        asks.push(`&#128247; Material is only <strong>${matConf}% confident</strong> — geometry alone cannot identify the alloy or grade. Add a part photo above and re-analyse.`);
+        asks.push(`Material is only <strong>${matConf}% confident</strong> — geometry alone cannot identify the alloy or grade. Add a part photo above and re-analyse.`);
       }
       // Blocking checks are acknowledged ONE BY ONE, here, by code. A single
       // confirm dialog used to accept every blocking code at once, which is
@@ -7101,7 +7102,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
         </li>`).join('');
       if (!asks.length && !sanityHtml) return '';
       return `<div id="cad-guidance-panel" style="margin-bottom:12px;padding:11px 13px;background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.3);border-left:3px solid #d97706;border-radius:8px">
-        <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">&#127919; Improve this analysis</div>
+        <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">Improve this analysis</div>
         ${asks.map(a => `<div style="font-size:0.72rem;color:var(--text-secondary);margin-top:6px;line-height:1.5">${a}</div>`).join('')}
         ${sanityHtml ? `<div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);margin-top:8px;text-transform:uppercase;letter-spacing:0.04em">Consistency checks</div><ul style="margin:4px 0 0;padding-left:16px;font-size:0.72rem;color:var(--text-secondary)">${sanityHtml}</ul>` : ''}
       </div>`;
@@ -11014,8 +11015,8 @@ function markAIFilled(element: HTMLInputElement | HTMLSelectElement | null): voi
   element.title = prov === 'measured'
     ? 'Measured — derived from the CAD file geometry (OCCT/STL kernel)'
     : selectedAnalysisMode() === 'deterministic'
-      ? 'Rule-set — derived by a stated rule (not measured); review before calculating'
-      : 'Estimated — suggested by the analysis (not measured); review before calculating';
+      ? 'Rule-set — derived by a stated rule (not measured); graded in the Basis'
+      : 'Estimated — suggested by the analysis (not measured); graded in the Basis';
   // Remove highlight after user edits (their value now — no longer AI provenance)
   element.addEventListener('input', () => { element.classList.remove('ai-filled'); element.removeAttribute('data-prov'); }, { once: true });
 }
@@ -11121,7 +11122,7 @@ function showCADProvenanceBanner(): void {
   div.style.cssText = 'margin:8px 0;padding:9px 12px;background:var(--info-bg,#eff6ff);border:1px solid var(--info-border,#bfdbfe);border-radius:8px;font-size:0.74rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;flex-wrap:wrap';
   div.innerHTML = `<strong style="color:var(--text-primary)">CAD auto-fill:</strong>` +
     `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#16a34a;margin-right:4px"></span>${measured} measured (geometry)</span>` +
-    `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#d97706;margin-right:4px"></span>${estimated} ${selectedAnalysisMode() === 'deterministic' ? 'set by a rule' : 'estimated'} — review before calculating</span>` +
+    `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#d97706;margin-right:4px"></span>${estimated} ${selectedAnalysisMode() === 'deterministic' ? 'set by a rule' : 'estimated'} — each graded in the Basis</span>` +
     (blocked ? `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#dc2626;margin-right:4px"></span>${blocked} waiting on a decision</span>` : '') +
     `<button style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.9rem;line-height:1" title="Dismiss" onclick="this.parentElement.remove()">&#10005;</button>`;
   const anchor = document.getElementById('commodity-tabs');
@@ -21329,7 +21330,17 @@ function renderCADCostCard(): void {
     const id = inp.dataset.commercial!;
     const v = parseFloat(inp.value);
     const field = document.getElementById(id) as HTMLInputElement | null;
-    if (!field || !Number.isFinite(v) || v < 0) return;
+    if (!field) return;
+    // A figure outside its sense is refused with the reason, and the card shows the costed value again — a margin of
+    // 810 % was accepted and marked Typed (five-part review, Oct 2026).
+    const limit = COMMERCIAL_LIMITS[id] ?? { min: 0, max: Infinity, what: 'a non-negative number' };
+    if (!Number.isFinite(v) || v < limit.min || v > limit.max) {
+      inp.value = field.value;
+      inp.setAttribute('aria-invalid', 'true');
+      showToast(`${inp.getAttribute('aria-label') ?? id} must be ${limit.what} — kept at ${field.value}`, 'warning');
+      return;
+    }
+    inp.removeAttribute('aria-invalid');
     field.value = String(v);
     if (id === 'packaging' || id === 'logistics') shopBasisFromTyped(_mfgRegion, id, v, true);
     field.dispatchEvent(new Event('input', { bubbles: true }));
@@ -21345,6 +21356,14 @@ function renderCADCostCard(): void {
   const cmp = document.getElementById('cad-compare') as HTMLDetailsElement | null;
   cmp?.addEventListener('toggle', () => { if (cmp.open && !cmp.dataset.loaded) void loadRouteComparison(); });
 }
+
+/** What a commercial field on the cost card may hold (percentages as typed, £ per part, parts a batch). */
+const COMMERCIAL_LIMITS: Record<string, { min: number; max: number; what: string }> = {
+  'overhead-pct': { min: 0, max: 100, what: 'between 0 and 100 %' },
+  'margin-pct': { min: 0, max: 60, what: 'between 0 and 60 %' },
+  packaging: { min: 0, max: 1_000_000, what: 'a £ figure a part' },
+  logistics: { min: 0, max: 1_000_000, what: 'a £ figure a part' },
+};
 
 /** The comparison the screen last drew — the PDF and Excel print this, never a re-run (compare-routes review, Oct 2026). */
 let _cadRouteComparison: RouteComparisonExport | null = null;
@@ -21369,6 +21388,9 @@ async function loadRouteComparison(): Promise<void> {
   if (programmeYearsValue()) body['programmeYears'] = programmeYearsValue();
   if (_cadMaterialLocked && _cadPinnedMaterialId) body['material'] = _cadPinnedMaterialId;
   if (cadOCCTGeometry?.blank?.blankHash) body['blankHash'] = cadOCCTGeometry.blank.blankHash;
+  // One costing, one band: the reference row prints the band the card shows (report audit, Oct 2026).
+  const u = buildCadReportMeta().uncertainty;
+  if (u) body['referenceBand'] = { p10: u.p10, p50: u.p50, p90: u.p90, plusMinusPct: u.plusMinusPct, confidence: u.overallConfidence };
   try {
     const res = await fetch('/api/cad/compare-routes', {
       method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() }, body: JSON.stringify(body),
@@ -21376,7 +21398,7 @@ async function loadRouteComparison(): Promise<void> {
     const data = await res.json() as { comparison?: RouteComparison; error?: string };
     if (!res.ok || !data.comparison) throw new Error(data.error ?? `HTTP ${res.status}`);
     _cadRouteComparison = routeComparisonExport(data.comparison, {
-      current: activeCommodity, headline: lastResult?.total ?? null, labels: COMMODITY_LABELS as Record<string, string>,
+      current: activeCommodity, headline: lastResult?.total ?? null, labels: COMMODITY_REPORT_LABELS as Record<string, string>,
     });
     host.innerHTML = routeCompareHtml(_cadRouteComparison, { fmt: (n: number) => _currFmt(n) });
     host.querySelectorAll<HTMLButtonElement>('[data-cost-route]').forEach(btn => btn.addEventListener('click', () => {

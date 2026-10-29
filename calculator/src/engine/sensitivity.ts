@@ -1,3 +1,4 @@
+import { shortOperationName } from './operation-names.js';
 import { computeUniversalStack } from './core.js';
 import type { UniversalStackInput, PartCostResult, RateLibrary } from './types.js';
 
@@ -124,7 +125,7 @@ export function runSensitivity(
   const seenMachine = new Set<string>();
   const seenLabour = new Set<string>();
   const sharing = (pick: (o: typeof input.operations[number]) => string | undefined, id: string) =>
-    input.operations.filter(o => pick(o) === id).map(o => o.operationName);
+    input.operations.filter(o => pick(o) === id).map(o => shortOperationName(o.operationName));
   const rateName = (opName: string, ops: string[], what: string) =>
     ops.length > 1 ? `${what} — shared by ${ops.length} ops (${ops.join(', ')})` : `${opName}: ${what}`;
   for (let i = 0; i < input.operations.length; i++) {
@@ -154,7 +155,7 @@ export function runSensitivity(
         const plusPct = ((plus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         const minusPct = ((minus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         drivers.push({
-          driver: rateName(op.operationName, sharing(o => o.benchOperation ? undefined : o.machineId, op.machineId), 'Machine Rate'),
+          driver: rateName(shortOperationName(op.operationName), sharing(o => o.benchOperation ? undefined : o.machineId, op.machineId), 'Machine Rate'),
           parameter: `operations[${i}].machineId → computedRatePerHr`,
           baseValue: machine.computedRatePerHr,
           unit: '£/hr',
@@ -185,7 +186,7 @@ export function runSensitivity(
         const plusPct = ((plus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         const minusPct = ((minus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         drivers.push({
-          driver: rateName(op.operationName, sharing(o => o.labourId, op.labourId), 'Labour Rate'),
+          driver: rateName(shortOperationName(op.operationName), sharing(o => o.labourId, op.labourId), 'Labour Rate'),
           parameter: `operations[${i}].labourId → fullyLoadedRatePerHr`,
           baseValue: labour.fullyLoadedRatePerHr,
           unit: '£/hr',
@@ -200,7 +201,7 @@ export function runSensitivity(
 
     // Cycle time
     tryDriver(
-      `${op.operationName}: Cycle Time`,
+      `${shortOperationName(op.operationName)}: Cycle Time`,
       `operations[${i}].cycleTimeHr`,
       op.cycleTimeHr,
       'hr',
@@ -268,7 +269,7 @@ export function runSensitivity(
   }
   input.operations.forEach((op, i) => {
     if ((op.partsPerCycle ?? 1) > 1) {
-      tryDriver(`${op.operationName}: Parts per cycle (cavitation)`, `operations[${i}].partsPerCycle`, op.partsPerCycle, 'parts',
+      tryDriver(`${shortOperationName(op.operationName)}: Parts per cycle (cavitation)`, `operations[${i}].partsPerCycle`, op.partsPerCycle, 'parts',
         factor => ({ ...input, operations: input.operations.map((o, j) => j === i ? { ...o, partsPerCycle: Math.max(1, Math.round(o.partsPerCycle * factor)) } : o) }));
     }
   });

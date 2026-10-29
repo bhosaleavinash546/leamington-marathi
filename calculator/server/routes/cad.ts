@@ -597,11 +597,17 @@ export function statedFromAnswers(answers: Record<string, unknown>): Record<stri
 export function runAllGuards(
   analysis: unknown, geo: OCCTGeometry, measuredVol: number | null,
   stated: Record<string, unknown> | null,
+  /** The process question is still open: the commodity on the analysis is the server's placeholder, not a choice. */
+  opts: { routeOpen?: boolean } = {},
 ): CADSanityWarning[] {
   const machining = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
-  return [...machining, ...runCADSanityChecks(
-    analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol, buildGeoSanityContext(geo, analysis, stated)),
-    ...orientationWarning(geo), ...meshFeatureWarning(geo)];
+  const sanity = runCADSanityChecks(
+    analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol, buildGeoSanityContext(geo, analysis, stated));
+  // A plausibility check of geometry against the PROCESS cannot fire before anyone has chosen one — the aluminium
+  // battery rail opened on a red "unusual for machining" block, with a box to acknowledge a route nobody picked
+  // (five-part review, Oct 2026). The check runs again once the route is answered.
+  const kept = opts.routeOpen ? sanity.filter(w => !/^(process_geometry_implausible|material_process_mismatch)$/.test(w.code)) : sanity;
+  return [...machining, ...kept, ...orientationWarning(geo), ...meshFeatureWarning(geo)];
 }
 
 /** A costing is `costable` when no blocking decision is open and no blocking
@@ -1198,7 +1204,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     const det = buildDeterministicAnalysis(ruleSpec!, ruleCtx, geo.partName || originalname);
     const detWarnings = runAllGuards(det.analysis, geo,
       geo.status === 'success' ? (geo.volume?.cm3 ?? null) : (stlGeometry?.volume ?? null),
-      statedFromAnswers(decisionAnswers));
+      statedFromAnswers(decisionAnswers), { routeOpen: !!commodityDecision });
     const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecision ? [commodityDecision] : []), ...det.result.decisions];
     const detPayload = {
     // The country whose rate book the rules priced in — read off the book itself,
@@ -1319,7 +1325,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // volume.cm3 or the ground-truth volume check never fires on the STEP/IGES path.
   const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null);
   // Cap near-net (cast/forged) machining time before it drives the cost, then run sanity.
-  const sanityWarnings = runAllGuards(analysis, geo, measuredVol, aiOriginal ?? statedFromAnswers(decisionAnswers));
+  const sanityWarnings = runAllGuards(analysis, geo, measuredVol, aiOriginal ?? statedFromAnswers(decisionAnswers), { routeOpen: !!commodityDecision });
   if (sanityWarnings.length) console.log(`[CAD] Sanity: ${sanityWarnings.length} warning(s): ${sanityWarnings.map(x => x.code).join(', ')}`);
 
   const aiDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
@@ -2820,6 +2826,10 @@ router.post('/compare-routes', requireAuth, reanalyzeLimiter, asyncRoute(async (
     baseBook: recomputeMachineRates(resolveActiveRateBook()),
     ladder: req.body?.ladder !== false,
     bands: req.body?.bands !== false,
+    referenceBand: req.body?.referenceBand && Number.isFinite(Number(req.body.referenceBand.p10)) ? {
+      p10: Number(req.body.referenceBand.p10), p50: Number(req.body.referenceBand.p50), p90: Number(req.body.referenceBand.p90),
+      plusMinusPct: Number(req.body.referenceBand.plusMinusPct), confidence: String(req.body.referenceBand.confidence ?? ''),
+    } : null,
   });
   res.json({ region, comparison, rows: comparison.rows, versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV } });
 }));
@@ -3046,7 +3056,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // The route the client posts decision answers to. Re-running the rules with
     // them is the whole round-trip: no re-upload, no model, no key.
     const det = buildDeterministicAnalysis(ruleSpec!, ruleCtx, geo.partName || filename);
-    const detWarnings = runAllGuards(det.analysis, geo, geo.volume?.cm3 ?? null, statedFromAnswers(decisionAnswers));
+    const detWarnings = runAllGuards(det.analysis, geo, geo.volume?.cm3 ?? null, statedFromAnswers(decisionAnswers), { routeOpen: !!commodityDecisionRe });
     const detDecisions = [...(unitsDecision ? [unitsDecision] : []), ...(commodityDecisionRe ? [commodityDecisionRe] : []), ...det.result.decisions];
     const detPayload = {
     // The country whose rate book the rules priced in — read off the book itself,
@@ -3151,7 +3161,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     return;
   }
 
-  const sanityWarnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, aiOriginal ?? statedFromAnswers(decisionAnswers));
+  const sanityWarnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, aiOriginal ?? statedFromAnswers(decisionAnswers), { routeOpen: !!commodityDecisionRe });
   const reDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
   const payload = {
     // The country whose rate book the rules priced in — read off the book itself,

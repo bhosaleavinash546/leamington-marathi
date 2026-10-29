@@ -22,6 +22,23 @@ function fmtLike(src: string, value: number, single = false): string {
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** `text` with its £ amounts and £ units in the report currency (`fx` units per £, `sym` its symbol). */
+/**
+ * A rate-book note as a report prints it (CAD2C five-part report audit, Oct 2026): the refresh bookkeeping
+ * ("| Refresh 2026-09: …"), the previous figure ("Was £19.94/h"), a cross-reference to a pricing basis the report
+ * does not carry and a module parameter that rode in the note ("coolFactor ~2.2 s/mm²") are dropped. The rate
+ * database export keeps the note as written.
+ */
+export function reportNoteText(note: string | null | undefined): string {
+  if (!note) return '';
+  return note
+    .replace(/\s*\|\s*Refresh \d{4}-\d{2}:.*$/s, '')
+    .replace(/\.?\s*Was £[\d.,]+\/h\b[^.]*\.?\s*$/, '')
+    .replace(/\s*\(see [A-Z ]+ PRICING BASIS\)/g, '')
+    .replace(/\s*coolFactor ~[\d.]+ s\/mm²/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 export function localiseGbpText(text: string, fx: number, sym: string): string {
   if (!text || fx === 1 && sym === '£') return text;
   return text

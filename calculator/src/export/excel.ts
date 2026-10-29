@@ -2,7 +2,11 @@ import { overallConfidence } from '../engine/uncertainty.js';
 import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
 import { fieldLabel } from '../ui/field-labels.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
-import { routeRowLabel, routeReferenceRow, type RouteComparisonExport } from '../ui/cad-workspace.js';
+import { routeRowLabel, routeReferenceRow, traceFieldLabel, type RouteComparisonExport } from '../ui/cad-workspace.js';
+import { shortOperationName, operationFeatureList } from '../engine/operation-names.js';
+import { decisionAnswerLabel } from './decision-text.js';
+import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
+import { reportNoteText } from './money-text.js';
 import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
@@ -148,7 +152,7 @@ export async function exportToExcelBlob(
     metalNet = gross * price - credit;
     matDetail.push(
       ['Material ID', rm.materialId, '', ''],
-      ['Grade / Description', mat?.grade ?? rm.materialId, '', mat?.sourceNote ?? ''],
+      ['Grade / Description', mat?.grade ?? rm.materialId, '', reportNoteText(mat?.sourceNote)],
       ['Costed Net Weight', num4(rm.netWeightKg), 'kg', 'the weight the material line is costed on — the finished part plus any machining stock or reject allowance the module carries'],
       ['Gross Weight (material bought)', num4(gross), 'kg', '= net ÷ utilisation'],
       ['Material Utilisation', pctCell(rm.materialUtilization), '', lossIsNotScrap ? 'melt loss only — runners and risers are remelted' : '= net ÷ gross'],
@@ -184,7 +188,7 @@ export async function exportToExcelBlob(
 
   // ── Sheet 3: Operations Detail ──────────────────────────────────────────────
   const opHdr: string[] = [
-    'Operation', 'Machine ID', 'Machine Class', 'Machine Rate (/hr)', 'Cycle Time (hr)', 'Cycle Time (min)',
+    'Operation', 'Measured features', 'Machine ID', 'Machine Class', 'Machine Rate (/hr)', 'Cycle Time (hr)', 'Cycle Time (min)',
     'Parts/Cycle', 'OEE', 'Effective Time (hr)', 'Process Cost',
     'Labour ID', 'Labour Grade', 'Labour Rate (/hr)', 'Manning', 'Labour Time (hr)',
     'Labour Efficiency', 'Labour Cost', 'Op Total', '% of Total',
@@ -196,7 +200,8 @@ export async function exportToExcelBlob(
     const bench = !!op.benchOperation || op.cycleTimeHr === 0;
     const untended = op.labourTimeHr === 0;
     opRows.push([
-      op.operationName,
+      shortOperationName(op.operationName),
+      operationFeatureList(op.operationName) ?? '',
       bench ? '— bench (no machine time)' : op.machineId,
       bench ? '' : mach?.machineClass ?? '—',
       bench ? '' : m(op.machineRateUsed),
@@ -274,7 +279,7 @@ export async function exportToExcelBlob(
   const trRows: unknown[][] = [trHdr];
   for (const t of trace) {
     const isMoney = t.unit.includes('£');
-    trRows.push([t.field, isMoney ? m(t.value) : num4(t.value), isMoney ? t.unit.replace('£', sym) : t.unit, t.rateSource, /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId, t.confidence]);
+    trRows.push([traceFieldLabel(shortOperationName(t.field)), isMoney ? m(t.value) : num4(t.value), isMoney ? t.unit.replace('£', sym) : t.unit, reportNoteText(t.rateSource), /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId, t.confidence]);
   }
   sheets.push({ name: '6-Traceability', rows: trRows, cols: [40, 14, 10, 70, 22, 12] });
 
@@ -310,7 +315,7 @@ export async function exportToExcelBlob(
       ...(checks.sanity.length ? checks.sanity.map(w => [w.code, w.severity, w.blocking ? 'yes' : 'no', w.blocking ? (w.acknowledged ? 'yes' : 'NO') : '', w.message]) : [['none fired']]),
       [],
       ['DECISIONS'], ['Question', 'Severity', 'Answer'],
-      ...(checks.decisions.length ? checks.decisions.map(d => [d.question, d.severity, decisionAnswerText(d)]) : [['none recorded']]),
+      ...(checks.decisions.length ? checks.decisions.map(d => [d.question, d.severity, decisionAnswerText({ ...d, answer: decisionAnswerLabel(d.id ?? '', d.answer, { routeLabels: COMMODITY_REPORT_LABELS, grades: library.materials }) })]) : [['none recorded']]),
       [],
       ['VALUES THE RULES SET'], ['Field', 'Costed', 'Rule value', 'Source', 'Basis'],
       ...(checks.ruleValues?.length

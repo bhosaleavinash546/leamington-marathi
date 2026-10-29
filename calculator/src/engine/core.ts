@@ -51,7 +51,9 @@ export function validateStackInput(
     const mat = library.materials.find(m => m.id === rm.materialId);
     if (!mat)
       errors.push({ field: 'rawMaterial.materialId', message: `Material '${rm.materialId}' not found in rate library` });
-    else if (mat.confidence !== 'High')
+    // A Low price confidence is a warning; Medium is the library's ordinary grade and is printed in §3 / §6, not as
+    // a cover warning (CAD2C five-part report audit, Oct 2026).
+    else if (mat.confidence === 'Low')
       warnings.push({ field: 'rawMaterial.materialId', message: `price confidence ${mat.confidence} — see the material price source` });
 
     if (rm.materialUtilization < 0.3)

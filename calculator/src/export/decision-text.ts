@@ -4,7 +4,22 @@ import type { UniversalStackInput } from '../engine/types.js';
 export function decisionAnswerText(d: { severity: 'blocking' | 'advisory'; answer: string | null; used?: string | null }): string {
   if (d.answer) return d.answer;
   if (d.severity === 'blocking') return 'OPEN';
-  return d.used ? `not answered - costed as ${d.used}` : 'not answered - the rules\u2019 value (see the basis)';
+  return d.used ? `not answered \u2014 costed as ${d.used}` : 'not answered \u2014 the rules\u2019 value (see the basis)';
+}
+
+/**
+ * An answer as a person reads it (CAD2C five-part report audit, Oct 2026): a route id becomes its name, a material id
+ * its grade, yes / no and the tolerance classes are capitalised. Anything else is printed as given.
+ */
+export function decisionAnswerLabel(id: string, value: string | null, o: { routeLabels: Record<string, string>; grades: Array<{ id: string; grade: string }> }): string | null {
+  if (!value) return value;
+  if (/^commodity\./.test(id) || id === 'commodity') return o.routeLabels[value] ?? value.replace(/_/g, ' ');
+  const m = o.grades.find(g => g.id === value);
+  if (m) return m.grade;
+  if (/^(yes|no|standard|tight|loose|steel|aluminium|plastic|magnesium|titanium|zinc|copper alloy|nickel alloy|cast iron)$/.test(value)) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  return value;
 }
 
 /** Why the tooling is spread over this many parts — the knuckle's 100,000 was one year because no programme life was entered. */

@@ -16,6 +16,15 @@ export const COMMODITY_LABELS: Record<string, string> = {
   automotive_software: 'Auto SW Cost',
 };
 
+/** The commodity names a report prints (full words — the tab labels above are abbreviated for the picker). */
+export const COMMODITY_REPORT_LABELS: Record<string, string> = {
+  ...COMMODITY_LABELS,
+  sheet_metal: 'Pressed sheet metal', sheet_metal_fab: 'Sheet metal (laser + press brake)', injection_moulding: 'Injection moulding',
+  blow_moulding: 'Blow moulding', aluminium_extrusion: 'Aluminium extrusion', rotational_moulding: 'Rotational moulding',
+  cast_and_machine: 'Cast and machine', gear: 'Gear cutting', wiring_harness: 'Wiring harness', pcb_fab: 'PCB fabrication',
+  battery_pack: 'Battery pack', e_motor: 'Electric motor', biw_assembly: 'BIW assembly',
+};
+
 /** Unique hue per commodity — used for coloured badges throughout the dashboard. */
 export const COMMODITY_BADGE_COLOURS: Record<string, { bg: string; color: string; border: string }> = {
   machining:           { bg: 'rgba(59,130,246,0.13)',  color: '#3b82f6', border: 'rgba(59,130,246,0.28)' },
