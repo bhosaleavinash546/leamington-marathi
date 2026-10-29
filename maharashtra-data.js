@@ -414,6 +414,8 @@ window.LM_ROUTES = {
     mr: 'आषाढी वारी', en: 'The Ashadhi wari to Pandharpur', icon: '🎶', color: '#c2470a', marker: 'procession',
     imr: 'देहू आणि आळंदीहून पंढरपूरपर्यंत, सुमारे अठरा दिवसांची पायी वारी.',
     ien: 'From Dehu and Alandi to Pandharpur, about eighteen days on foot. Day numbers are approximate.',
+    video: { src: 'videos/pandharpur-wari.mp4', poster: 'images/maharashtra/wari-video-poster.jpg',
+      mr: 'वारीची एक झलक', credit: 'Swad Safar Official, Pune' },
     stops: [
       { mr: 'देहू', en: 'Dehu', lon: 73.77, lat: 18.72, when: 'दिवस १',
         tmr: 'तुकाराम महाराजांची पालखी इथून निघते. गावभर टाळ मृदंगाचा गजर.',

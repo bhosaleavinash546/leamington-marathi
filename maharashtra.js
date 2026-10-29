@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
     buildCards(current);
     select(isPhone() ? -1 : 0, false);
     setChips(cat, null);
-    routeBar.hidden = true;
+    routeBar.hidden = true; videoFig.querySelector('video').pause();
     if (viewBox.join() !== FULL.join()) animateViewBox(FULL.slice());
   };
 
@@ -388,6 +388,19 @@ document.addEventListener('DOMContentLoaded', () => {
     select(i, false);
     replayBtn.hidden = false;
   };
+  // a short clip under the journey's intro (only the wari has one for now)
+  const videoFig = routeBar.querySelector('.mh-route-video');
+  const showRouteVideo = v => {
+    const vid = videoFig.querySelector('video');
+    vid.pause();
+    videoFig.hidden = !v;
+    if (!v) { vid.removeAttribute('src'); vid.load(); return; }
+    vid.poster = v.poster;
+    vid.src = v.src;
+    videoFig.querySelector('figcaption').innerHTML = `<span class="marathi" lang="mr"></span> · Video: <span class="credit"></span>`;
+    videoFig.querySelector('.marathi').textContent = v.mr;
+    videoFig.querySelector('.credit').textContent = v.credit;
+  };
   const renderRoute = async key => {
     clearRouteLayer();
     closeSheet(); detail.classList.remove('sheet');
@@ -407,6 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
     routeBar.querySelector('.mh-route-title').textContent = `${route.icon} ${route.mr} | ${route.en}`;
     routeBar.querySelector('.mh-route-intro').textContent = `${route.imr} ${route.ien}`;
     replayBtn.hidden = true;
+    showRouteVideo(route.video);
     const d = 'M' + pts.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(' L');
     routeBase = document.createElementNS(SVG, 'path');
     routeBase.setAttribute('class', 'mh-route-base');
@@ -475,6 +489,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Opening a shared link (maharashtra.html#raigad) shows that place straight away
   const openFromHash = () => {
     const want = decodeURIComponent(location.hash.slice(1));
+    // a whole section: maharashtra.html#kille, #yugpurush, #devasthan, #paryatan, or a journey: #shivaji, #ashtavinayak, #wari
+    if (CATS[want] || routes[want]) {
+      if (CATS[want]) render(want); else renderRoute(want);
+      document.getElementById('mh-map').scrollIntoView({ block: 'start' });
+      return true;
+    }
     const p = want && places.find(x => slug(x) === want);
     if (!p) return false;
     render(p.cat);
@@ -483,7 +503,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('mh-map').scrollIntoView({ block: 'start' });
     return true;
   };
+  const askedForQuiz = location.hash === '#mh-quiz'; // read first: closing the phone sheet clears the hash
   if (!openFromHash()) render('kille');
+  // the quiz is built after the browser's own jump to #mh-quiz, so jump again once it is there
+  if (askedForQuiz) setTimeout(() => document.getElementById('mh-quiz')?.scrollIntoView({ block: 'start', behavior: 'instant' }), 150);
   addEventListener('hashchange', openFromHash);
 
   // ---- quiz ----
