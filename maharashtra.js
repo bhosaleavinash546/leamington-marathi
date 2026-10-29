@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const outline = document.getElementById('mh-outline');
   const MR_DIGITS = '०१२३४५६७८९';
   const mrNum = n => String(n).replace(/\d/g, d => MR_DIGITS[d]);
+  // each place gets its own link: maharashtra.html#raigad, #sant-tukaram ...
+  const slug = p => p.en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const catOf = p => CATS[p.cat] || CATS.kille;
 
   let viewBox = FULL.slice();
   let current = [];
@@ -87,14 +90,20 @@ document.addEventListener('DOMContentLoaded', () => {
       img.loading = 'lazy';
       wrap.appendChild(img);
     } else {
-      wrap.innerHTML = small
-        ? '📷 <span lang="mr" class="marathi">फोटो लवकरच</span>'
-        : '📷 Photo coming soon. Been here? Send us yours!<br><span lang="mr" class="marathi">इथला तुमचा फोटो आम्हाला पाठवा.</span>';
+      if (small) {
+        wrap.classList.add('mh-tile'); wrap.style.setProperty('--c', catOf(p).color);
+        wrap.innerHTML = `<span class="mh-tile-icon">${p.icon || catOf(p).icon}</span>`;
+        return wrap;
+      }
+      wrap.classList.add('mh-band');
+      wrap.style.setProperty('--c', catOf(p).color);
+      wrap.innerHTML = `<span class="mh-band-icon">${p.icon || catOf(p).icon}</span><span class="mh-band-text">📷 <span lang="mr" class="marathi">इथला तुमचा फोटो आमच्याकडे पाठवा</span><br>Been here? Send us your photo.</span>`;
     }
     return wrap;
   };
   const emptyDetail = () => {
-    detail.innerHTML = '<div class="mh-photo">🗺️ Tap a pin on the map to see the place here.<br><span class="marathi" lang="mr">नकाशावरची खूण निवडा.</span></div>';
+    detail.innerHTML = '<div class="mh-empty"><span class="mh-empty-icon">👆</span><p class="marathi" lang="mr">नकाशावरच्या कुठल्याही खुणेवर किंवा खालच्या कार्डवर टॅप करा.</p><p>Tap any pin or card to read the full story of that place here.</p></div>';
+    closeSheet();
   };
   const fillDetail = p => {
     detail.innerHTML = '';
@@ -153,22 +162,51 @@ document.addEventListener('DOMContentLoaded', () => {
       body.appendChild(more);
     }
     detail.appendChild(body);
+    // share this place: its own link, straight to WhatsApp
+    const link = `https://leamingtonmarathi.com/maharashtra.html#${slug(p)}`;
+    const share = document.createElement('div');
+    share.className = 'mh-share';
+    share.innerHTML = `<a class="mh-share-wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(p.mr + ' | ' + p.en + ': ' + link)}">WhatsApp वर पाठवा</a><button type="button" class="mh-share-copy">🔗 लिंक कॉपी करा</button>`;
+    share.querySelector('.mh-share-copy').addEventListener('click', e => {
+      const b = e.currentTarget;
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(() => { b.textContent = '✓ लिंक कॉपी झाली'; }, () => { prompt('Copy this link', link); });
+    });
+    detail.appendChild(share);
     const close = document.createElement('button');
     close.type = 'button';
     close.className = 'mh-close';
     close.setAttribute('aria-label', 'Close');
     close.textContent = '✕';
     close.addEventListener('click', () => select(-1));
-    detail.appendChild(close);
+    detail.prepend(close); // first, so on phones it stays pinned at the top of the sliding panel
   };
-  const select = (idx, scroll = true) => {
+  // On phones (category view) the story slides up over the page instead of sitting far below the map
+  const backdrop = document.createElement('div');
+  backdrop.className = 'mh-backdrop';
+  document.body.appendChild(backdrop);
+  const sheetMode = () => isPhone() && mode === 'cat';
+  function openSheet() {
+    if (!sheetMode()) return;
+    detail.classList.add('open'); backdrop.classList.add('on');
+    document.documentElement.classList.add('mh-sheet-lock'); detail.scrollTop = 0;
+  }
+  function closeSheet() {
+    detail.classList.remove('open'); backdrop.classList.remove('on');
+    document.documentElement.classList.remove('mh-sheet-lock');
+  }
+  const hint = document.getElementById('mh-hint');
+  const tapped = () => { if (hint) hint.classList.add('gone'); };
+  const select = (idx, scroll = true, tap = false) => {
     activeIdx = idx;
     pinsG.querySelectorAll('.mh-pin').forEach(g => g.classList.toggle('active', +g.dataset.i === idx));
     cardsEl.querySelectorAll('.mh-card').forEach(c => c.classList.toggle('active', +c.dataset.i === idx));
-    if (idx < 0) { emptyDetail(); return; }
+    if (idx < 0) { emptyDetail(); if (mode === 'cat') history.replaceState(null, '', location.pathname + location.search); return; }
     fillDetail(current[idx]);
+    if (tap) { tapped(); if (mode === 'cat') history.replaceState(null, '', '#' + slug(current[idx])); }
+    if (sheetMode()) { if (tap) openSheet(); return; }
     if (scroll && isPhone()) detail.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
   };
+  backdrop.addEventListener('click', () => select(-1));
 
   // ---- pins and cards ----
   const buildPins = (list, color, numbered) => {
@@ -212,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
       label.setAttribute('lang', 'mr');
       label.textContent = p.mr;
       g.appendChild(label);
-      const act = () => (mode === 'route' ? jumpTo(i) : select(i));
+      const act = () => (mode === 'route' ? jumpTo(i) : select(i, true, true));
       g.addEventListener('click', act);
       g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
       outer.appendChild(g);
@@ -236,13 +274,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (p.hmr && p.hmr.length) {
         const more = document.createElement('p');
         more.className = 'mh-card-more';
-        more.innerHTML = '<span lang="mr" class="marathi">इतिहास वाचा</span> →';
+        more.innerHTML = '<span lang="mr" class="marathi">पूर्ण इतिहास वाचा</span> →';
         body.appendChild(more);
       }
       card.appendChild(body);
       const act = () => {
-        if (mode === 'route') jumpTo(i); else select(i, false);
-        if (isPhone()) detail.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
+        if (mode === 'route') { jumpTo(i); if (isPhone()) detail.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' }); }
+        else select(i, false, true);
       };
       card.addEventListener('click', act);
       card.addEventListener('keydown', e => { if (e.key === 'Enter') act(); });
@@ -259,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
     exitRoute();
     mode = 'cat';
     current = places.filter(p => p.cat === cat);
+    detail.classList.add('sheet');
     buildPins(current, CATS[cat].color, false);
     buildCards(current);
     select(isPhone() ? -1 : 0, false);
@@ -351,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const renderRoute = async key => {
     clearRouteLayer();
+    closeSheet(); detail.classList.remove('sheet');
     mode = 'route';
     route = routes[key];
     // a stop that is also a place on the map (Raigad, Jejuri...) carries that place's full history and facts
@@ -432,7 +472,19 @@ document.addEventListener('DOMContentLoaded', () => {
     routesEl.appendChild(b);
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && activeIdx >= 0 && mode === 'cat') select(-1); });
-  render('kille');
+  // Opening a shared link (maharashtra.html#raigad) shows that place straight away
+  const openFromHash = () => {
+    const want = decodeURIComponent(location.hash.slice(1));
+    const p = want && places.find(x => slug(x) === want);
+    if (!p) return false;
+    render(p.cat);
+    const i = current.indexOf(p);
+    select(i, false, true);
+    document.getElementById('mh-map').scrollIntoView({ block: 'start' });
+    return true;
+  };
+  if (!openFromHash()) render('kille');
+  addEventListener('hashchange', openFromHash);
 
   // ---- quiz ----
   const quizBody = document.getElementById('mh-quiz-body');
