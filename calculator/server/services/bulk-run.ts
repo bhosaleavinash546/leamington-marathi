@@ -108,6 +108,8 @@ export interface BulkPartResult {
   assumed?: string[];
   /** field → { value, basis } — why each costed input is what it is. */
   provenance?: Record<string, { value: unknown; basis: string }>;
+  /** The commodity module's inputs as costed (headless audit). */
+  params?: Record<string, unknown>;
   questions?: BulkOpenQuestion[];
   /** Geometry-vs-claim checks. Blocking ones stop the costing until acknowledged. */
   warnings?: CADSanityWarning[];
@@ -405,6 +407,8 @@ export async function costMeasuredPart(
     ...(warnings.length ? { warnings } : {}),
     answersUsed: answers,
     ...(cost.trace ? { trace: cost.trace } : {}),
+    // The module's inputs as costed — the arithmetic audit (scripts/arith-audit) recomputes the module from them.
+    params: mapped.params as Record<string, unknown>,
   };
 }
 
