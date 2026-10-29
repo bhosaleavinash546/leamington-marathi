@@ -17,6 +17,7 @@ window.LM_PLACES = [
   // Forts carry a longer history (hmr/hen, a few short paragraphs each) and a facts list
   // shown under the short lines in the detail panel.
   { cat: 'kille', mr: 'रायगड', en: 'Raigad', lon: 73.44, lat: 18.23, dist: 'रायगड',
+    photo: 'images/maharashtra/raigad.jpg',
     tmr: 'स्वराज्याची राजधानी. ६ जून १६७४ रोजी इथेच शिवराज्याभिषेक झाला. महाराजांची समाधीही इथेच आहे.',
     ten: 'The capital of Swarajya. Shivaji Maharaj was crowned here on 6 June 1674, and his samadhi is on the fort.',
     hmr: [
@@ -59,6 +60,7 @@ window.LM_PLACES = [
     ],
     facts: [['उंची', 'सुमारे १३१२ मीटर'], ['जवळचं शहर', 'पुणे, ३० किमी'], ['जायचं कसं', 'गाडी वरपर्यंत जाते; किंवा पायी दीड तास'], ['कधी जावं', 'वर्षभर; पावसाळ्यात सर्वात सुंदर']] },
   { cat: 'kille', mr: 'प्रतापगड', en: 'Pratapgad', lon: 73.58, lat: 17.94, dist: 'सातारा',
+    photo: 'images/maharashtra/pratapgad.jpg',
     tmr: '१६५९ मध्ये अफझलखानाचा वध इथे झाला. गडावर भवानी मातेचं मंदिर आहे. महाबळेश्वरजवळ.',
     ten: 'The fort of the Afzal Khan encounter in 1659. The Bhavani temple is on the fort. Near Mahabaleshwar.',
     hmr: [
@@ -115,6 +117,7 @@ window.LM_PLACES = [
     ],
     facts: [['उंची', 'सुमारे ८४५ मीटर'], ['जवळचं शहर', 'कोल्हापूर, २० किमी'], ['जायचं कसं', 'गाडी वरपर्यंत जाते'], ['कधी जावं', 'वर्षभर; १३ जुलैला पावनखिंड पदयात्रा']] },
   { cat: 'kille', mr: 'सिंधुदुर्ग', en: 'Sindhudurg', lon: 73.46, lat: 16.04, dist: 'सिंधुदुर्ग (मालवण)',
+    photo: 'images/maharashtra/sindhudurg.jpg',
     tmr: 'मालवणच्या समुद्रात महाराजांनी बांधलेला जलदुर्ग. इथे शिवाजी महाराजांचं मंदिर आहे.',
     ten: 'A sea fort built by Shivaji Maharaj off Malvan. It has a temple of Shivaji Maharaj himself.',
     hmr: [
