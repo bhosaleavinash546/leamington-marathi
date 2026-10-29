@@ -41,8 +41,8 @@ describe('D2 — the safety consequence names the check this process charges', (
   it('MPI on a forging, X-ray / CT on a casting', () => {
     expect(safetyConsequence('forging')).toMatch(/MPI on a closed-die forging/);
     expect(safetyConsequence('forging')).not.toMatch(/X-ray/);
-    expect(safetyConsequence('casting')).toMatch(/X-ray \/ CT/);
-    expect(safetyConsequence('cast_and_machine')).toMatch(/X-ray \/ CT/);
+    expect(safetyConsequence('casting')).toMatch(/100% MPI with sample X-ray/);
+    expect(safetyConsequence('cast_and_machine')).toMatch(/in-line X-ray on light alloys/);
     expect(safetyCriticalDecision(ctx('knuckle.stp', 'forging')).options[0].consequence).toBe(safetyConsequence('forging'));
   });
 });

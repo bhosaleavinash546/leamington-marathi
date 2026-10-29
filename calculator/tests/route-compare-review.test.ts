@@ -117,8 +117,8 @@ describe('3. The arithmetic on a row', () => {
       for (const op of r.operations!) expect(op.machine).not.toMatch(/^(mach|press|forge|hpdc|lab)-/);
     }
     const ref = cmp.rows[0];
-    expect(ref.total).toBe(24.0215);
-    expect(ref.tooling!.investment).toBe(436549.69);
+    expect(ref.total).toBe(22.7563);   // pilot rule pack (30 Oct 2026): the knuckle's secondary machining on the twin-pallet cell (was 24.0215)
+    expect(ref.tooling!.investment).toBe(440949.69);   // one hydraulic tombstone fixture (£12,000) in place of three dedicated ones
     expect(ref.tooling!.amortisedOver).toBe(500_000);
     expect(ref.material).toMatchObject({ netKg: 3.321, boughtKg: 4.918 });
     const mach = cmp.rows.find(r => r.route === 'machining')!;

@@ -38,6 +38,8 @@ export async function exportToExcelBlob(
   stamp: string | null = null,
   /** The route comparison the screen drew (compare-routes review, Oct 2026) — sheet 8, never re-run here. */
   routeComparison: RouteComparisonExport | null = null,
+  /** Two isometric renders of the CAD model, placed beside the summary (the Director's request, 30 Oct 2026). */
+  cadViews: Array<{ label: string; dataUrl: string }> | null = null,
 ): Promise<Blob> {
   const sym = currencySymbol(currency);
   const m = (gbp: number) => money(gbp * fxRate, sym);
@@ -386,7 +388,37 @@ export async function exportToExcelBlob(
   if (currency !== 'GBP') {
     for (const sh of sheets) sh.rows = sh.rows.map(row => row.map(c => (typeof c === 'string' ? localiseGbpText(c, fxRate, sym) : c))) as typeof sh.rows;
   }
-  return workbookBlob(await buildWorkbook(sheets));
+  const blob = await workbookBlob(await buildWorkbook(sheets));
+  return cadViews?.length ? embedCadViews(blob, cadViews) : blob;
+}
+
+/**
+ * The summary sheet carries the two CAD views beside the figures. The workbook is built by SheetJS, which cannot embed
+ * a picture, so the finished file is re-opened with ExcelJS (the PCB workbook's library) and the images are added to
+ * `1-Summary`; every cell, formula and width round-trips. If anything fails the workbook is returned without pictures.
+ */
+async function embedCadViews(blob: Blob, views: Array<{ label: string; dataUrl: string }>): Promise<Blob> {
+  try {
+    const mod = await import('exceljs');
+    const ExcelJS = (mod as unknown as { default?: typeof mod }).default ?? mod;
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(await blob.arrayBuffer());
+    const ws = wb.getWorksheet('1-Summary');
+    if (!ws) return blob;
+    const W = 400, H = 300;   // px on the sheet; the picture itself is HD (1920 × 1440)
+    views.slice(0, 2).forEach((v, i) => {
+      const ext = /^data:image\/png/.test(v.dataUrl) ? 'png' : 'jpeg';
+      const id = wb.addImage({ base64: v.dataUrl.replace(/^data:image\/\w+;base64,/, ''), extension: ext });
+      const col = 5 + i * 7;   // F and M
+      ws.getCell(1, col).value = `CAD model — ${v.label}`;
+      ws.getCell(1, col).font = { bold: true, size: 9 };
+      ws.addImage(id, { tl: { col: col - 1, row: 1 }, ext: { width: W, height: H }, editAs: 'oneCell' });
+    });
+    const buf = await wb.xlsx.writeBuffer();
+    return new Blob([buf], { type: blob.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  } catch {
+    return blob;
+  }
 }
 
 // Legacy compat wrapper (called by old main.ts path)

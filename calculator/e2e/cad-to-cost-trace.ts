@@ -529,6 +529,7 @@ async function main(): Promise<void> {
     for (const p of PARTS_FROM_ENV ?? PARTS) {
       const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1440, height: 1000 } });
       const page = await context.newPage();
+      page.on('console', m => { if (m.type() === 'warning' || m.type() === 'error') console.log(`  [page ${m.type()}] ${m.text().slice(0, 200)}`); });
       const net: Array<Record<string, unknown>> = [];
       const started = new Map<string, number>();
       page.on('request', r => { if (r.url().includes('/api/')) started.set(r.url() + r.method() + net.length, Date.now()); });

@@ -128,7 +128,7 @@ describe('X16 — cored bores are finish-bored on the machining centre, not dril
     const dias = [...drill.name.matchAll(/Ø([\d.]+)/g)].map(m => Number(m[1]));
     expect(dias.length).toBeGreaterThan(0);
     expect(Math.max(...dias)).toBeLessThanOrEqual(20);
-    expect(drill.machineId).toBe('mach-drill');
+    expect(drill.machineId).toBe('mach-hmc-400');   // 100,000/yr: drilled in the same clamping on the twin-pallet cell (pilot rule pack)
   });
   it('the Ø63–75 bearing bores are bored on the machining centre', () => {
     expect(bore.name).toMatch(/4 cored bore\(s\).*Ø63\.0.*Ø75\.0/);

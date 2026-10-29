@@ -26,7 +26,7 @@ import { activeLabourRate } from '../../rate-context.js';
 import {
   adviseCastingProcess, CASTING_PROCESS_REFERENCE, SAND_GRAVITY_YIELD_BY_ALLOY,
   FETTLING_MINUTES, HEAT_TREAT_COST_PER_KG, NDT_COST_PER_PART,
-  type AlloyFamily, type CastingProcess, type ComplexityLevel,
+  type AlloyFamily, type CastingProcess, type ComplexityLevel, ndtStationCostPerPart,
 } from '../../modules/casting-advisor.js';
 import { pickHPDCMachineId } from '../../machine-sizing.js';
 import { libraryMachineRate } from '../../uk-tariff.js';
@@ -660,10 +660,19 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const hf = heatTreatServiceFactor();
         const inCountry = (v: number) => Math.round(v * hf * 10_000) / 10_000;
         const fNote = hf !== 1 ? ` × country heat-treat factor ${hf}` : '';
-        if (steel || (iron && r.advice.safetyCritical)) {
+        if (steel) {
           return decided('casting.heatTreatCostPerKg', inCountry(HEAT_TREAT_COST_PER_KG['stress-relieve']), 'library',
-            `${steel ? 'cast steel is normalised to refine the as-cast grain' : 'safety-critical iron is stress-relieved'} — `
-            + `£${HEAT_TREAT_COST_PER_KG['stress-relieve']}/kg (advisor rate, UK)${fNote}`, 0.6);
+            `cast steel is normalised to refine the as-cast grain — £${HEAT_TREAT_COST_PER_KG['stress-relieve']}/kg (advisor rate, UK)${fNote}`, 0.6);
+        }
+        if (iron) {
+          // Pilot rule pack (30 Oct 2026): grey and ductile iron are supplied as-cast — EN 1561 / EN 1563 grades are
+          // specified in the as-cast condition. A safety-critical part changes the grade (ductile) and the NDT, not the
+          // heat treatment; it used to charge a stress relief at £0.35/kg on every safety-critical iron casting. ADI's
+          // austempering is in the grade price (the book says so on each ADI grade).
+          return decided('casting.heatTreatCostPerKg', 0, 'rule',
+            `${a === 'ductile-iron' ? 'ductile' : 'grey'} iron is supplied as-cast (EN 1561 / EN 1563 grades are specified as-cast; `
+            + `an ADI grade carries its austempering in the £/kg) — none unless the drawing calls for a stress relief`, 0.6,
+            [SAFETY_CRITICAL_DECISION_ID]);
         }
         if (al && r.advice.process !== 'hpdc') {
           const t = r.advice.process === 'megacasting' ? 'T7 (priced at the T6 rate)' : 'T6';
@@ -723,10 +732,18 @@ export const CASTING_RULES: CommodityRuleSpec = {
           return decided('casting.ndtCostPerPart', 0, 'rule', 'not safety-critical — no radiography', 0.6,
             [SAFETY_CRITICAL_DECISION_ID]);
         }
-        const kind = r.advice.alloy === 'superalloy' ? 'ct' : 'xray';
-        const nf = ndtServiceFactor();   // inspector + X-ray / CT cell, in the costed country
-        return decided('casting.ndtCostPerPart', Math.round(NDT_COST_PER_PART[kind] * nf * 100) / 100, 'library',
-          `safety-critical — ${kind === 'ct' ? 'industrial CT' : '2D X-ray'} at £${NDT_COST_PER_PART[kind]} a part (advisor rate, UK)${nf !== 1 ? ` × country service factor ${nf}` : ''}`, 0.55,
+        const a = r.advice.alloy;
+        if (a === 'superalloy') {
+          const nf = ndtServiceFactor();   // inspector + CT cell, in the costed country
+          return decided('casting.ndtCostPerPart', Math.round(NDT_COST_PER_PART.ct * nf * 100) / 100, 'library',
+            `safety-critical — industrial CT at £${NDT_COST_PER_PART.ct} a part (advisor rate, UK)${nf !== 1 ? ` × country service factor ${nf}` : ''}`, 0.55,
+            [SAFETY_CRITICAL_DECISION_ID]);
+        }
+        // Pilot rule pack (30 Oct 2026): a safety-critical ferrous casting is 100 % magnetic-particle inspected with a
+        // sample radiographed; a light-alloy one is 100 % X-rayed in line. It used to charge a £5 radiograph on every part.
+        const ferrous = a === 'grey-iron' || a === 'ductile-iron' || a === 'carbon-steel' || a === 'stainless-steel';
+        const st = ndtStationCostPerPart(ferrous ? 'mpi' : 'rtr');
+        return decided('casting.ndtCostPerPart', st.gbp, 'rule', `safety-critical ${a} — ${st.basis}`, 0.55,
           [SAFETY_CRITICAL_DECISION_ID]);
       },
     },

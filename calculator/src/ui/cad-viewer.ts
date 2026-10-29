@@ -121,9 +121,23 @@ export interface CADViewerHandle {
   /** An STL's faces as the DFM job recovered them (1-based id per triangle in file order) — makes its findings, face
    *  picking, face types and wall thickness work on a mesh. False when it does not fit the loaded model. */
   setMeshFaces(triFace: Uint32Array, faces: FaceMeta[]): boolean;
+  /**
+   * Two isometric renders of the loaded part for the reports — front-right-top and back-left-top — at HD size on a
+   * white background with no overlays (grid, box, envelope, measurements, cost colours). Synchronous: the WebGL buffer
+   * is read in the same call. [] when no model is loaded. The viewer is left exactly as it was.
+   */
+  captureIsoViews(opts?: { width?: number; height?: number }): ReportView[];
   dispose(): void;
   el: HTMLElement;
 }
+
+export interface ReportView { label: string; dataUrl: string }
+
+/** The two report views: an isometric from the front-right-top and one from the back-left-top. */
+export const REPORT_ISO_VIEWS: ReadonlyArray<{ label: string; dir: readonly [number, number, number] }> = [
+  { label: 'Isometric — front, right, top', dir: [1, 0.8, 1] },
+  { label: 'Isometric — back, left, top', dir: [-1, 0.8, -1] },
+];
 
 // ── Pure measurement math (exported for unit tests) ──────────────────────────
 
@@ -3015,6 +3029,51 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       applyColorMode();
       renderInspector();
       return true;
+    },
+    captureIsoViews(opts?: { width?: number; height?: number }): ReportView[] {
+      if (disposed || !bodyMeshes.length) return [];
+      const w = Math.max(320, Math.round(opts?.width ?? 1920)), h = Math.max(240, Math.round(opts?.height ?? 1440));
+      // everything the capture changes, restored in `finally`
+      const savedPos = camera.position.clone(), savedTarget = controls.target.clone(), savedAspect = camera.aspect;
+      const savedBg = scene.background, savedMode = colorMode, savedPr = renderer.getPixelRatio();
+      const savedSize = new THREE.Vector2(); renderer.getSize(savedSize);
+      const savedGrid = grid?.visible ?? false, savedBbox = bboxHelper?.visible ?? false;
+      const savedEnv = envelopeHelper?.visible ?? false, savedEnvLabel = envelopeLabel?.visible ?? false, savedOverlay = overlayGroup.visible;
+      const out: ReportView[] = [];
+      try {
+        scene.background = new THREE.Color(0xffffff);
+        if (grid) grid.visible = false;
+        if (bboxHelper) bboxHelper.visible = false;
+        if (envelopeHelper) envelopeHelper.visible = false;
+        if (envelopeLabel) envelopeLabel.visible = false;
+        overlayGroup.visible = false;
+        colorMode = 'none'; applyColorMode();
+        renderer.setPixelRatio(1);
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h; camera.updateProjectionMatrix();
+        for (const v of REPORT_ISO_VIEWS) {
+          setView(v.dir, true);                       // instant: the camera is placed in this call
+          renderer.render(scene, viewCam());          // no view cube — a clean picture of the part
+          out.push({ label: v.label, dataUrl: renderer.domElement.toDataURL('image/jpeg', 0.95) });
+        }
+      } catch {
+        return [];
+      } finally {
+        scene.background = savedBg;
+        if (grid) grid.visible = savedGrid;
+        if (bboxHelper) bboxHelper.visible = savedBbox;
+        if (envelopeHelper) envelopeHelper.visible = savedEnv;
+        if (envelopeLabel) envelopeLabel.visible = savedEnvLabel;
+        overlayGroup.visible = savedOverlay;
+        colorMode = savedMode; applyColorMode();
+        renderer.setPixelRatio(savedPr);
+        renderer.setSize(savedSize.x, savedSize.y, false);
+        camera.aspect = savedAspect; camera.updateProjectionMatrix();
+        nav?.stop(); camAnim = null;
+        camera.position.copy(savedPos); controls.target.copy(savedTarget); controls.update();
+        invalidate();
+      }
+      return out;
     },
     el: root,
     dispose(): void {

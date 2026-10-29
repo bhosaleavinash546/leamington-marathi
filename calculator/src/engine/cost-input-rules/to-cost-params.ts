@@ -43,7 +43,7 @@ import { inMaterialScope } from '../material-scope.js';
 import { buildAlExtrusionInputs, type AlTemper } from '../modules/aluminium-extrusion.js';
 import type { AlAlloy, AlExtrusionRoute, AlFinish } from '../al-extrusion-data.js';
 import { computeFeatureMachining, secondaryMachiningMachineId } from '../feature-machining.js';
-import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell } from '../machining-time.js';
+import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../machining-time.js';
 import { CUTTING_MANNING } from './commodities/machining.js';
 import { standardBatchSize } from '../routing-optimiser.js';
 import type { FeatureRow } from '../feature-ops.js';
@@ -205,16 +205,25 @@ function secondaryMachining(
   };
   // Cutting first, then the cell around it — load / unload, change-over,
   // fixtures, programming, tool wear — the same function the screen calls.
-  const cut = computeFeatureMachining(rows, base);
+  // A turned near-net part (a hub flange): outside and faces on the CNC lathe, holes on the drill centre — it was
+  // face-milled on a VMC (pilot rule pack, 30 Oct 2026). Two chuckings + a drill fixturing; never the HMC cell.
+  const tp = turnedPartFacts(geo);
+  const turned = tp ? nearNetTurnedPlan(rows, tp, fam) : null;
+  const base0 = turned ? { ...base, machineId: 'mach-drill', turned } : base;
+  const cut = computeFeatureMachining(rows, base0);
   if (cut.featureCount === 0) return null;
+  const holes = cut.lines.some(l => l.included && l.kind !== 'face');
   const c = secondaryMachiningCell({
-    fixturings: geo?.setupAnalysis?.estimatedSetupCount ?? 2,
+    fixturings: turned ? 2 + (holes ? 1 : 0) : (geo?.setupAnalysis?.estimatedSetupCount ?? 2),
     weightKg, annualVolume, family: fam,
     featureRows: cut.lines.filter(l => l.included).length,
     cuttingMin: cut.totalCycleHr * 60,
     engineerRatePerHr: activeLabourRate('lab-uk-engineer'),   // the costed country's (rate-context.ts)
+    milled: !turned && base.machineId === 'mach-vmc3',
+    turned: !!turned,
   });
-  const r = computeFeatureMachining(rows, { ...base, cell: c.cell });
+  // The volume cell moves a milled part onto the twin-pallet HMC (the cell's machine); otherwise the choice stands.
+  const r = computeFeatureMachining(rows, { ...base0, ...(c.machineId ? { machineId: c.machineId } : {}), cell: c.cell });
   return { ...r, toolingGBP: c.toolingGBP, toolWearPerPart: c.toolWearPerPart };
 }
 

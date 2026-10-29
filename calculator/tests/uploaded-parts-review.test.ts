@@ -150,7 +150,8 @@ describe('the Excel workbook — numbers, and arithmetic that reconciles', () =>
     for (const r of results) expect(r).toMatch(/OK$/);
     // the material sheet itemises the casting's services and does not need an "other" plug
     const mat = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets['2-Material'], { header: 1, raw: true }).map(r => String(r[0]));
-    expect(mat.some(l => /heat treatment/i.test(l))).toBe(true);
+    // ductile iron is supplied as-cast (pilot rule pack, 30 Oct 2026) — no heat-treatment line; the NDT line is the MPI station
+    expect(mat.some(l => /heat treatment/i.test(l))).toBe(false);
     expect(mat.some(l => /NDT/.test(l))).toBe(true);
     expect(mat).not.toContain('UNRECONCILED');
     expect(mat.join('|')).not.toMatch(/Benchmark: 75-85/);
@@ -171,7 +172,9 @@ describe('observations and levers say only what the costing supports', () => {
     const dfm = generateDFMDFA(result, input, 'cast_and_machine', { region: 'UK', volumeProvided: true, pkgLogisticsEstimated: false, library: book });
     const titles = JSON.stringify(dfm);
     expect(titles).not.toMatch(/Multi-Machine Manning/);
-    expect(titles).not.toMatch(/Consumables Rationalisation/);
+    // Since the pilot rule pack (30 Oct 2026) the stub axle's consumables are led by its cores (the stress relief is gone
+    // and the X-ray is an MPI station), so the cores / patterns lever is a legitimate design lever and IS offered.
+    expect(titles).toMatch(/Consumables Rationalisation/);
     expect(titles).toMatch(/[A-Za-z]/);   // the generator did run
     expect(titles).not.toMatch(/35% floor/);
   });

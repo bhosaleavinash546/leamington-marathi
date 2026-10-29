@@ -52,7 +52,12 @@ export interface FeatureMachiningOptions {
   /** The machining cell's per-part time that is not cutting: load / clamp /
    *  unload at each fixturing and the batch change-over shared over the batch
    *  (`secondaryMachiningCell` in machining-time.ts). Omit for cutting only. */
-  cell?: { fixturings: number; handlingMin: number; setupMinPerFixturing: number; batchSize: number };
+  cell?: { fixturings: number; handlingMin: number; setupMinPerFixturing: number; batchSize: number;
+    /** A twin-pallet cell: the load / unload is labour only (masked by the cut); the machine pays a pallet change. */
+    masked?: boolean; palletChangeSec?: number };
+  /** A turned near-net part: its faces are faced on the lathe with the outside (`latheMin` carries them); the
+   *  feature table's `face` rows are then not milled, and only the holes stay on `machineId`. */
+  turned?: { latheMachineId: string; latheMin: number; basis: string };
 }
 
 export interface FeatureMachiningLine {
@@ -236,8 +241,10 @@ export function computeFeatureMachining(
   const lines: FeatureMachiningLine[] = (rows ?? []).map((row, i) => {
     const auto = defaultInclude(row, stock);
     const included = flags ? Boolean(flags[i]) : auto;
-    const minutesEach = (stock === 'near_net' && opts.coredAboveMm !== undefined
-      ? nearNetHoleMinutes(row, opts.coredAboveMm) : featureMinutesEach(row)) * finish;
+    // A turned part's faces are faced on the lathe (in `turned.latheMin`), not milled.
+    const minutesEach = opts.turned && row.kind === 'face' ? 0
+      : (stock === 'near_net' && opts.coredAboveMm !== undefined
+        ? nearNetHoleMinutes(row, opts.coredAboveMm) : featureMinutesEach(row)) * finish;
     return {
       faceIds: row.faceIds,
       kind: row.kind,
@@ -246,7 +253,7 @@ export function computeFeatureMachining(
       through: row.through,
       count: row.count,
       areaMm2: row.areaMm2,
-      operation: featureToOperation(row),
+      operation: opts.turned && row.kind === 'face' ? 'Faced on the lathe' : featureToOperation(row),
       minutesEach: Math.round(minutesEach * 1000) / 1000,
       totalMinutes: Math.round(minutesEach * row.count * 1000) / 1000,
       volumeCm3: Math.round(featureVolumeCm3(row) * row.count * 1000) / 1000,
@@ -257,40 +264,72 @@ export function computeFeatureMachining(
 
   const active = lines.filter(l => l.included);
   const featureCount = active.reduce((s, l) => s + l.count, 0);
-  const totalMinutes = active.reduce((s, l) => s + l.totalMinutes, 0);
+  const latheMin = opts.turned && featureCount > 0 ? opts.turned.latheMin : 0;
+  const millMinutes = active.reduce((s, l) => s + l.totalMinutes, 0);
+  const totalMinutes = millMinutes + latheMin;
   const totalCycleHr = totalMinutes / 60;
   const materialRemovedKg = stock === 'solid_billet'
     ? Math.round(active.reduce((s, l) => s + l.volumeCm3, 0) * density * 1000) / 1000
     : 0;
 
   const summary = active.map(featureLabel).join(', ');
+  // what the drill / machining centre itself cuts — a turned part's faces are on the lathe
+  const cutLines = active.filter(l => !(opts.turned && l.kind === 'face'));
+  const cutCount = cutLines.reduce((s, l) => s + l.count, 0);
+  const cutSummary = cutLines.map(featureLabel).join(', ');
 
   const cell = opts.cell && featureCount > 0 ? opts.cell : null;
   const cellMin = cell
     ? cell.fixturings * (cell.handlingMin + cell.setupMinPerFixturing / Math.max(1, cell.batchSize))
     : 0;
-  const operations: OperationInput[] = featureCount === 0 ? [] : [{
-    operationName: `CNC Machining — ${featureCount} feature${featureCount === 1 ? '' : 's'} (${summary}) [geometry-measured]`,
-    machineId: opts.machineId,
-    labourId: opts.labourId,
-    cycleTimeHr: totalCycleHr,
-    partsPerCycle: 1,
-    oee: opts.oee ?? 0.80,
-    manning: opts.manning ?? 1,
-    labourTimeHr: totalCycleHr,
-    labourEfficiency: opts.labourEfficiency ?? 0.92,
-  }, ...(cell ? [{
-    operationName: `Machining load / unload + change-over (${cell.fixturings} fixturing(s): `
-      + `${cell.handlingMin} min each + ${cell.setupMinPerFixturing} min ÷ batch ${cell.batchSize})`,
-    machineId: opts.machineId,
-    labourId: opts.labourId,
-    cycleTimeHr: cellMin / 60,
-    partsPerCycle: 1,
-    oee: opts.oee ?? 0.80,
-    manning: 1,
-    labourTimeHr: cellMin / 60,
-    labourEfficiency: opts.labourEfficiency ?? 0.92,
-  }] : [])];
+  const millHr = millMinutes / 60;
+  const common = { labourId: opts.labourId, partsPerCycle: 1, oee: opts.oee ?? 0.80, labourEfficiency: opts.labourEfficiency ?? 0.92 };
+  const operations: OperationInput[] = featureCount === 0 ? [] : [
+    // A turned part: the outside and the faces on the lathe first; the holes stay on the drill / machining centre.
+    ...(opts.turned && latheMin > 0 ? [{
+      ...common,
+      operationName: `Turning — outside and faces on the CNC lathe, op 10 / op 20 [geometry-measured]`,
+      machineId: opts.turned.latheMachineId,
+      cycleTimeHr: latheMin / 60,
+      manning: opts.manning ?? 1,
+      labourTimeHr: latheMin / 60,
+    }] : []),
+    ...(millHr > 0 ? [{
+      ...common,
+      operationName: `CNC Machining — ${cutCount} feature${cutCount === 1 ? '' : 's'} (${cutSummary}) [geometry-measured]`,
+      machineId: opts.machineId,
+      cycleTimeHr: millHr,
+      manning: opts.manning ?? 1,
+      labourTimeHr: millHr,
+    }] : []),
+    ...(cell && cell.masked ? [{
+      // The twin-pallet cell: the spindle pays a pallet change; the operator loads the other pallet while it cuts.
+      ...common,
+      operationName: `Pallet change (${cell.fixturings} fixturing(s) × ${cell.palletChangeSec ?? 10} s)`,
+      machineId: opts.machineId,
+      cycleTimeHr: cell.fixturings * (cell.palletChangeSec ?? 10) / 3600,
+      manning: 1,
+      labourTimeHr: 0,
+      untended: true,
+    }, {
+      ...common,
+      operationName: `Machining load / unload on the pallet while the spindle cuts (${cell.fixturings} fixturing(s): `
+        + `${cell.handlingMin} min each + ${cell.setupMinPerFixturing} min ÷ batch ${cell.batchSize})`,
+      machineId: opts.machineId,
+      cycleTimeHr: 0,
+      oee: 1,
+      manning: 1,
+      labourTimeHr: cellMin / 60,
+      benchOperation: true,
+    }] : cell ? [{
+      ...common,
+      operationName: `Machining load / unload + change-over (${cell.fixturings} fixturing(s): `
+        + `${cell.handlingMin} min each + ${cell.setupMinPerFixturing} min ÷ batch ${cell.batchSize})`,
+      machineId: opts.machineId,
+      cycleTimeHr: cellMin / 60,
+      manning: 1,
+      labourTimeHr: cellMin / 60,
+    }] : [])];
 
   return { operations, lines, featureCount, totalCycleHr, materialRemovedKg, summary };
 }

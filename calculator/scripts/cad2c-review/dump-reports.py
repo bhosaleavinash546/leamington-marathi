@@ -18,7 +18,7 @@ for pdf in sorted(glob.glob(os.path.join(run, '*.pdf'))):
     doc = pymupdf.open(pdf)
     with open(os.path.join(out, label + '.pdf.txt'), 'w') as f:
         for i, page in enumerate(doc):
-            f.write(f'\n===== PAGE {i + 1} / {len(doc)} =====\n')
+            f.write(f'\n===== PAGE {i + 1} / {len(doc)} ===== images: {len(page.get_images())}\n')
             f.write(page.get_text('text'))
             pix = page.get_pixmap(dpi=110)
             pix.save(os.path.join(out, f'{label}.p{i + 1:02d}.png'))
@@ -28,6 +28,7 @@ for xl in sorted(glob.glob(os.path.join(run, '*.xlsx'))):
     wb = openpyxl.load_workbook(xl, data_only=False)
     with open(os.path.join(out, label + '.xlsx.txt'), 'w') as f:
         for ws in wb.worksheets:
+            f.write(f'[images on {ws.title}: {len(getattr(ws, "_images", []))}]\n')
             f.write(f'\n===== SHEET {ws.title} ({ws.max_row} rows × {ws.max_column} cols) =====\n')
             for row in ws.iter_rows(values_only=True):
                 if all(v is None for v in row):

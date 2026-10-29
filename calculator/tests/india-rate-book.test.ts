@@ -79,7 +79,8 @@ describe('machines: the 3-shift operating model; Indian capex for CNC machining'
     // the frozen India book before this change (UK × the regional factors)
     const snap = JSON.parse(readFileSync('scripts/rate-refresh/india-2026-10/current-india-book.json', 'utf8')) as { machines: Array<{ id: string; inrPerHr: number }> };
     for (const m of IN.machines) {
-      const was = snap.machines.find(x => x.id === m.id)!;
+      const was = snap.machines.find(x => x.id === m.id);
+      if (!was) continue;   // a machine added after the snapshot (mach-hmc-400, pilot rule pack 30 Oct 2026) has no pre-book figure
       expect(inr(m.computedRatePerHr), m.id).toBeLessThanOrEqual(was.inrPerHr + 0.01);
     }
     expect(mach('press-400t').sourceNote).toMatch(/HELD/);

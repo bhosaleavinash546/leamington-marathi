@@ -128,7 +128,9 @@ describe('4. the route the screen printed is now the route that is costed', () =
     const r = runCostInputRules(CASTING_RULES, ctxOf('PRCR002.stp',
       { ...ANSWERS, 'material.family': 'aluminium', 'service.safetyCritical': 'yes', 'service.pressureTight': 'yes' }, 'casting'));
     const c = r.suggestions.casting as Record<string, number>;
-    expect(c.ndtCostPerPart).toBe(5);
+    // pilot rule pack: a light-alloy safety-critical casting is 100% X-rayed IN LINE — a station (30 s × ½ inspector + £20/h
+    // cabinet), not a £5 radiograph a part
+    expect(c.ndtCostPerPart).toBeCloseTo(30 / 3600 * (0.5 * 28.03 + 20), 2);
     expect(c.impregnationCostPerPart).toBe(0.9);
   });
 });
@@ -296,7 +298,13 @@ describe('I. plain casting: finish machining is costed the same on screen and he
       casting: { subtype: 'sand', yieldFraction: 0.53, dieMouldCostGBP: 1, dieMouldLife: 1, cavities: 1, cycleTimeHpdcSec: 0, cycleTimeSandGravHr: 0.01 },
     } as never, 50_000, 'steel', g)!;
     const ops = m.params.secondaryMachiningOps as Array<{ machineId: string; labourId: string }>;
-    expect(ops.every(o => o.machineId === 'mach-vmc3' && o.labourId === 'lab-uk-skilled')).toBe(true);
+    // 50,000/yr: the milled bracket runs on the twin-pallet HMC cell (pilot rule pack); below the cell's volume it is the VMC
+    expect(ops.every(o => o.machineId === 'mach-hmc-400' && o.labourId === 'lab-uk-skilled')).toBe(true);
+    const low = toCostParams('casting', {
+      materialId: 'mat-gs-c25', netWeightKg: 2.512,
+      casting: { subtype: 'sand', yieldFraction: 0.53, dieMouldCostGBP: 1, dieMouldLife: 1, cavities: 1, cycleTimeHpdcSec: 0, cycleTimeSandGravHr: 0.01 },
+    } as never, 10_000, 'steel', g)!;
+    expect((low.params.secondaryMachiningOps as Array<{ machineId: string }>).every(o => o.machineId === 'mach-vmc3')).toBe(true);
     // Fixtures + programming are derived now, from the fixturings and features
     // (forging review) — the cell the screen prices too, not an invented £15k.
     expect(m.params.secondaryMachiningToolingCost).toBeGreaterThan(0);

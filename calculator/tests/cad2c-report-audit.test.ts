@@ -177,3 +177,42 @@ describe('P-A — no process-plausibility block before a process is chosen', () 
     expect(chosen.some(w => w.code === 'process_geometry_implausible')).toBe(true);
   });
 });
+
+describe('V1 — two isometric CAD views under the summary (the Director, 30 Oct 2026)', async () => {
+  const { pdfText, sandCastingResult } = await import('./casting-360-review.test.js');
+  const { printPDF } = await import('../src/export/pdf.js');
+  const { exportToExcelBlob } = await import('../src/export/excel.js');
+  const { DEFAULT_RATE_LIBRARY: lib } = await import('../src/engine/rate-library.js');
+  // an 8 × 6 white JPEG (tests/fixtures/tiny-view.jpg, written by PyMuPDF) — a picture jsPDF and ExcelJS both accept
+  const { readFileSync } = await import('node:fs');
+  const JPEG = `data:image/jpeg;base64,${readFileSync('tests/fixtures/tiny-view.jpg').toString('base64')}`;
+  const views = [{ label: 'Isometric — front, right, top', dataUrl: JPEG }, { label: 'Isometric — back, left, top', dataUrl: JPEG }];
+  const { input, result } = sandCastingResult();
+
+  it('the PDF cover prints the block and both captions; a costing without views prints nothing', () => {
+    const withViews = pdfText(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], { cadViews: views } as never));
+    expect(withViews).toMatch(/CAD Model .*Isometric Views/);   // pdfText drops the em dash (an octal escape in the PDF string)
+    expect(withViews).toMatch(/front, right, top/);
+    expect(withViews).toMatch(/back, left, top/);
+    const without = pdfText(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], {} as never));
+    expect(without).not.toMatch(/Isometric Views/);
+  });
+
+  it('the workbook carries both pictures on 1-Summary, and every sheet, cell and formula survives the round trip', async () => {
+    const plain = await exportToExcelBlob(result, input, lib, 'GBP', 1, null);
+    const blob = await exportToExcelBlob(result, input, lib, 'GBP', 1, null, null, null, null, views);
+    const ExcelJS = (await import('exceljs')).default ?? await import('exceljs');
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(await blob.arrayBuffer());
+    const ws = wb.getWorksheet('1-Summary')!;
+    expect(ws.getImages()).toHaveLength(2);
+    expect(String(ws.getCell(1, 5).value)).toMatch(/front, right, top/);
+    const XLSX = await import('xlsx');
+    const a = XLSX.read(new Uint8Array(await plain.arrayBuffer())), b = XLSX.read(new Uint8Array(await blob.arrayBuffer()));
+    expect(b.SheetNames).toEqual(a.SheetNames);
+    // every sheet equal as CSV; on 1-Summary the two picture captions (row 1, columns E and L) are the only addition
+    const body = (csv: string, n: string) => (n === '1-Summary' ? csv.split('\n').slice(1).join('\n') : csv).replace(/,+$/gm, '');
+    for (const n of a.SheetNames) expect(body(XLSX.utils.sheet_to_csv(b.Sheets[n]), n), n).toBe(body(XLSX.utils.sheet_to_csv(a.Sheets[n]), n));
+    expect(XLSX.utils.sheet_to_csv(b.Sheets['1-Summary']).split('\n')[0]).toMatch(/CAD model/);
+  });
+});

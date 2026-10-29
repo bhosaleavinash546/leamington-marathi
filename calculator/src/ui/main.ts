@@ -209,7 +209,7 @@ import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeFeatureCosting } from '../engine/feature-costing.js';
-import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell } from '../engine/machining-time.js';
+import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../engine/machining-time.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { generateInsights, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
 import { localiseGbpText } from '../export/money-text.js';
@@ -10823,8 +10823,12 @@ function populateMachinedFeatures(prefix: string): void {
   // Same machine choice as headless: a drill for holes only, a VMC once a face is milled.
   const machSel = el<HTMLSelectElement>(`${prefix}-mf-mach`);
   if (machSel) {
-    const id = secondaryMachiningMachineId(rows as FeatureRow[], 'near_net');
+    // a turned near-net part's holes go to the drill (its outside and faces are on the lathe) — as headless
+    const id = turnedPartFacts(cadOCCTGeometry) ? 'mach-drill' : secondaryMachiningMachineId(rows as FeatureRow[], 'near_net');
     machSel.value = resolveMachineIdForOp(id, id === 'mach-drill' ? 'CNC Drilling' : 'CNC Milling');
+    // The select follows the rule (the volume cell can move it at Calculate) until the engineer changes it.
+    machSel.dataset.auto = '1';
+    machSel.addEventListener('change', () => { delete machSel.dataset.auto; });
   }
   const labSel = el<HTMLSelectElement>(`${prefix}-mf-lab`); if (labSel) labSel.value = resolveLabourId('lab-uk-skilled');
   const refresh = () => updateMachinedFeaturesReadout(prefix);
@@ -10865,7 +10869,12 @@ function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; too
   if (!body) return null;
   const includeFlags = rows.map((_, i) =>
     (body.querySelector(`.${prefix}-mf-chk[data-idx="${i}"]`) as HTMLInputElement | null)?.checked ?? false);
-  const machineId = sel(`${prefix}-mf-mach`) || resolveMachineIdForOp('mach-vmc3', 'CNC Milling');
+  // The machine select follows the rule until the engineer changes it (data-auto, set when the panel is built):
+  // only a changed select is a typed machine. Screen = headless otherwise (pilot rule pack, 30 Oct 2026).
+  const machSel = el<HTMLSelectElement>(`${prefix}-mf-mach`);
+  const machineAuto = !machSel || machSel.dataset.auto === '1';
+  const typedMachine = machineAuto ? '' : sel(`${prefix}-mf-mach`);
+  const machineId = typedMachine || resolveMachineIdForOp('mach-vmc3', 'CNC Milling');
   const labourId = sel(`${prefix}-mf-lab`) || resolveLabourId('lab-uk-skilled');
   const stockCondition = (sel(`${prefix}-mf-stock`) || 'near_net') as StockCondition;
   const finishFactor = parseFloat(sel(`${prefix}-mf-finish`)) || 1.0;
@@ -10885,22 +10894,35 @@ function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; too
     materialFactor: cuttingDataFor(family).timeFactor,
     ...(coredAboveMm !== undefined ? { coredAboveMm } : {}),
   };
-  const cut = computeFeatureMachining(rows, base);
+  // A turned near-net part (a hub flange): outside and faces on the CNC lathe, holes on the drill centre — as
+  // headless (pilot rule pack, 30 Oct 2026). A machine the engineer picked on the form stands for the holes.
+  const tp = stockCondition === 'near_net' && (prefix === 'cast' || prefix === 'forge') ? turnedPartFacts(cadOCCTGeometry) : null;
+  const turned = tp ? nearNetTurnedPlan(rows, tp, family, undefined, includeFlags) : null;
+  const base0 = turned ? { ...base, machineId: typedMachine || resolveMachineIdForOp('mach-drill', 'CNC Drilling'), turned } : base;
+  const cut = computeFeatureMachining(rows, base0);
   if (cut.featureCount === 0) return null;
   // The machining cell around the cut — load / unload, change-over, fixtures,
   // programming, tool wear — from the same function headless calls (forging
   // review, Oct 2026). Near-net parts only (castings, forgings).
   if (stockCondition === 'near_net' && (prefix === 'cast' || prefix === 'forge')) {
+    const holes = cut.lines.some(l => l.included && l.kind !== 'face');
+    const annualVolume = num(`${prefix}-amort`) || num('annual-volume') || 100000;
     const c = secondaryMachiningCell({
-      fixturings: cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? 2,
+      fixturings: turned ? 2 + (holes ? 1 : 0) : (cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? 2),
       weightKg: num(`${prefix}-part-wt`),
-      annualVolume: num(`${prefix}-amort`) || num('annual-volume') || 100000,
+      annualVolume,
       family,
       featureRows: cut.lines.filter(l => l.included).length,
       cuttingMin: cut.totalCycleHr * 60,
       engineerRatePerHr: library.labour.find(l => l.id === 'lab-uk-engineer')?.fullyLoadedRatePerHr ?? 42.8,
+      // the volume cell only when no machine was picked on the form and the cut mills faces
+      milled: !turned && machineAuto && cut.lines.some(l => l.included && l.kind !== 'hole'),
+      turned: !!turned,
     });
-    const result = computeFeatureMachining(rows, { ...base, cell: c.cell });
+    const cellMachine = c.machineId ? resolveMachineIdForOp(c.machineId, 'CNC Milling') : null;
+    // show the costed machine on the form (the select stays "auto" — a programmatic value is not a change)
+    if (machSel && machineAuto) machSel.value = cellMachine ?? base0.machineId;
+    const result = computeFeatureMachining(rows, { ...base0, ...(cellMachine ? { machineId: cellMachine } : {}), cell: c.cell });
     // A typed figure replaces the derived fixtures + programming; 0 keeps them.
     const typed = num(`${prefix}-mf-tooling`);
     return { ops: result.operations, toolingCost: typed > 0 ? typed : c.toolingGBP, toolWearPerPart: c.toolWearPerPart, result };
@@ -17310,7 +17332,7 @@ async function downloadExcel(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Workbook not produced: ${why}`, 'error'); return; } }
   const band = (() => { try { return resultBand(lastResult!, lastInput!).u; } catch { return null; } })();
-  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null, costedFromCAD() ? _cadRouteComparison : null);
+  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null, costedFromCAD() ? _cadRouteComparison : null, reportCadViews());
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = exportFilename('should-cost', lastResult.partName, 'xlsx');
@@ -17840,6 +17862,24 @@ function currentPartPhotoDataUrl(): string | null {
 
 /** Every source photograph the costing was built from, slot-labelled, newest
  *  flow first: the PCB Image→BOM slots, then the generic part-photo drop-zone. */
+/**
+ * Two HD isometric renders of the CAD model for the reports (the Director's request, 30 Oct 2026) — captured from
+ * whichever viewer holds the part at EXPORT time only (a capture re-renders at 1920 × 1440 twice; never on a redraw).
+ * [] when the costing was not made from CAD or no model is loaded.
+ */
+function reportCadViews(): ReportPhoto[] {
+  if (!costedFromCAD()) return [];
+  // the CAD to COST screen keeps the model in the persistent viewer (outside the swapped form); the two form-area
+  // viewers are the standalone and inline mounts
+  const v = cadPersistViewer ?? cadInlineViewer ?? cadViewer;
+  if (!v) { console.warn('[report] no CAD viewer is mounted — the report prints no model views'); return []; }
+  try {
+    const out = v.captureIsoViews();
+    if (!out.length) console.warn('[report] the viewer holds no model — the report prints no model views');
+    return out;
+  } catch (e) { console.warn('[report] CAD views not captured:', e); return []; }
+}
+
 function reportPhotos(): ReportPhoto[] {
   const out: ReportPhoto[] = [];
   // The board photos belong to the report only when this costing came from them.
@@ -18296,7 +18336,7 @@ async function openPDF(): Promise<void> {
   if (notFromPhoto) {
     showToast(`This report costs the ${activeCommodity === 'pcba' ? 'PCBA' : 'PCB fab'} form as it stands, not your photo board — the photos and ASIL are left out. To report the photo board, use "Apply to ${activeCommodity === 'pcba' ? 'PCBA' : 'Fab'}" first, or Export PDF on the photo results.`, 'warning');
   }
-  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta(), _baseLibrary, comparisonRows(lastInput, lastResult, false));
+  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), { ...buildCadReportMeta(), cadViews: reportCadViews() }, _baseLibrary, comparisonRows(lastInput, lastResult, false));
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────

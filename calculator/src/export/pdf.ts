@@ -86,6 +86,9 @@ export interface GeometricDFMMeta {
 }
 
 export interface CADReportMeta {
+  /** Two isometric renders of the CAD model (front-right-top, back-left-top) captured from the viewer at export — printed
+   *  under the summary on the cover (the Director's request, 30 Oct 2026). Absent on a costing not made from CAD. */
+  cadViews?: ReportPhoto[] | null;
   /** The route comparison the screen drew (compare-routes review, Oct 2026) — printed as §9b, never re-run here. */
   routeComparison?: RouteComparisonExport | null;
   /** "UK rate book v2.2.0 · rules v7 · kernel 374f8cebdccb · 28 Oct 2026" — what made these numbers (CAD to COST v2). */
@@ -2413,6 +2416,31 @@ export function printPDF(
   });
 
   y += 42;
+
+  // ── CAD model — two isometric views under the summary (the Director's request, 30 Oct 2026) ──
+  const cadViews = (cadMeta.cadViews ?? []).slice(0, 2);
+  if (cadViews.length) {
+    try {
+      const gap = 4, iw = (CW - gap * (cadViews.length - 1)) / cadViews.length;
+      const props0 = doc.getImageProperties(cadViews[0].dataUrl);
+      const ih = iw * (props0.height / props0.width);
+      y = chk(doc, y, ih + 16);
+      doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+      doc.text('CAD Model — Isometric Views', MG, y + 3);
+      doc.setFontSize(6); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+      doc.text('rendered from the measured B-rep at export; the part as the costing read it', MG + 52, y + 3);
+      cadViews.forEach((v, i) => {
+        const x = MG + i * (iw + gap);
+        const props = doc.getImageProperties(v.dataUrl);
+        doc.setDrawColor(...NAVY); doc.setLineWidth(0.25);
+        doc.roundedRect(x, y + 5, iw, ih, 2, 2, 'S');
+        doc.addImage(v.dataUrl, props.fileType || 'JPEG', x + 0.8, y + 5.8, iw - 1.6, ih - 1.6, undefined, 'FAST');
+        doc.setFontSize(6); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+        doc.text(v.label, x + 1, y + 5 + ih + 3.2);
+      });
+      y += ih + 12;
+    } catch (e) { console.warn('[report] CAD views not embedded:', e); /* the costing is unaffected */ }
+  }
 
   // ── Uploaded part photo (any commodity) ──────────────────────────────────
   if (partPhotoDataUrl) {

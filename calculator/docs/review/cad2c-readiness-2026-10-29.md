@@ -111,9 +111,12 @@ What the pilot needs on day one:
 
 What should be fixed before the pilot widens beyond that group:
 
-- A volume machining cell in the routing library (HMC, twin-pallet, hydraulic fixture; multi-spindle lathe for round
-  parts) with the turning signature lowered for flanges.
-- Casting safety rules: stress relief only for grades that need it; NDT as MPI / UT at 100 % with X-ray on samples.
+- ~~A volume machining cell in the routing library (HMC, twin-pallet, hydraulic fixture) with the turning signature
+  lowered for flanges.~~ **Done 30 Oct 2026** — `docs/cad/pilot-rule-pack-2026-10-30.md` (stub axle £53.39 → £42.81,
+  hub flange turned on the lathe). Still open from it: the turning finish rate is conservative; no gantry-loaded lathe
+  cell yet; the HMC capex is an estimate.
+- ~~Casting safety rules: stress relief only for grades that need it; NDT as MPI at 100 % with X-ray on samples.~~
+  **Done 30 Oct 2026** — same pack (iron as-cast; MPI £0.77 a part, in-line X-ray £0.28 on light alloys).
 - PC/ABS and tool prices re-sourced for Europe in the next rate refresh (the books are dated and sourced; this is a
   refresh, not a bug).
 - The extrusion press throughput checked against a real extruder's cycle.

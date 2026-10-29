@@ -4189,6 +4189,25 @@
     "annualAvailableHours": 4500,
     "machineUtilization": 0.9
    }
+  },
+  {
+   "id": "mach-hmc-400",
+   "class": "Horizontal machining centre — 400 mm twin pallet, 4th axis (production cell)",
+   "inrPerHr": 670.96,
+   "ukGbpPerHr": 10.87,
+   "hours": 6000,
+   "util": 0.8,
+   "ukBuildupGbp": {
+    "annualDepreciation": 14231,
+    "maintenance": 5550,
+    "energy": 11357,
+    "floorSpace": 8077,
+    "indirectSupport": 9250,
+    "financeCost": 3700,
+    "annualAvailableHours": 6000,
+    "machineUtilization": 0.8
+   },
+   "note": "added 30 Oct 2026 (pilot rule pack): a machine new to the library; its pre-book figure is the UK rate × this snapshot’s VF-2 ratio (local ÷ UK), each build-up line alike"
   }
  ],
  "materials": [

@@ -99,7 +99,7 @@ describe('2. the spindle is turned, and its stock is cast', () => {
     expect(turn.machineId).toBe('mach-lathe-cnc');
     expect(turn.type).toBe('turning');
     expect(turn.cycleTimeHr * 60).toBeCloseTo(3.99 + 1.2, 1);   // + loading the casting
-    expect(m.setupCount).toBe(5);   // 4 milling / drilling fixturings + the lathe
+    expect(m.setupCount).toBe(2);   // one clamping on the twin-pallet cell (3 sides on the tombstone, drilling in the same clamping) + the lathe
     // Near-net names do not claim every face is machined.
     expect(m.operations.some(o => /\(\d+ faces\)/.test(o.name))).toBe(false);
   });
@@ -119,8 +119,9 @@ describe('2. the spindle is turned, and its stock is cast', () => {
   it('the real-parts baseline records the stub axle as cast ductile iron, safety-critical', () => {
     const rec = baseline.find(b => b.part === 'PRCR002.stp')!;
     // £87.38 on the 2026-09 book; £53.39 on the UK rate book (Oct 2026: ductile iron at its charge, machining
-    // machine-only) — still the ductile, safety-critical route, which costs well above the grey-iron one
-    expect(rec.outcome.total).toBeGreaterThan(45);
+    // machine-only); £42.81 after the pilot rule pack (30 Oct 2026: one clamping on the twin-pallet cell, iron
+    // as-cast, 100% MPI with a sample X-ray) — still the ductile, safety-critical route
+    expect(rec.outcome.total).toBeGreaterThan(40);
   });
 });
 

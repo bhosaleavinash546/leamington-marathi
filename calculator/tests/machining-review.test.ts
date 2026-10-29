@@ -121,12 +121,24 @@ describe('5. a 5-axis machine cannot machine the face it is clamped on', () => {
 
 describe('6–8. handling, crew and change-over are charged as the routing was ranked', () => {
   it('load / clamp / unload is an operation: fixturings × the handling minutes for the weight', () => {
-    const c = ctx('MACH_Hydraulic_Manifold.stp', 'aluminium');
+    // 10,000/yr — a job-shop routing; at 50,000 the manifold runs on the twin-pallet cell (pilot rule pack, below)
+    const c = ctx('MACH_Hydraulic_Manifold.stp', 'aluminium', 10_000);
     const ops = machiningOperationPlan(c, 'aluminium');
     const load = ops.find(o => o.name.startsWith('Load / clamp'))!;
     const routing = routingFor(c, solidCut(c, 'aluminium')!);
     expect(load.cycleTimeHr * 60).toBeCloseTo(routing.chosen.setups * handlingMinPerFixturing(1.9), 2);
     expect(load.manning).toBe(1);
+  });
+  it('at volume the load / unload is masked by the cut on the twin-pallet cell: labour only, plus a pallet change', () => {
+    const c = ctx('MACH_Hydraulic_Manifold.stp', 'aluminium', 50_000);
+    const ops = machiningOperationPlan(c, 'aluminium');
+    const routing = routingFor(c, solidCut(c, 'aluminium')!);
+    expect(routing.chosen.label).toBe('volume-cell');
+    const load = ops.find(o => o.name.startsWith('Load / unload on the pallet'))!;
+    expect(load.benchOperation).toBe(true);
+    expect(load.cycleTimeHr * 60).toBeCloseTo(routing.chosen.setups * handlingMinPerFixturing(1.9), 2);
+    const pallet = ops.find(o => o.name.startsWith('Pallet change'))!;
+    expect(pallet.cycleTimeHr * 3600).toBeCloseTo(routing.chosen.setups * 10, 0);   // hours are kept to 4 dp
   });
   it('one operator tends two machines while they cut', () => {
     const ops = machiningOperationPlan(ctx('MACH_Hydraulic_Manifold.stp', 'aluminium'), 'aluminium');
@@ -141,8 +153,9 @@ describe('6–8. handling, crew and change-over are charged as the routing was r
 describe('9–14. fixtures, programming, tool wear, deburr, scrap, batch and grade are rules on both paths', () => {
   it('fixtures and programming were £0 headless and £15,000 / £0 on the screen', () => {
     const m = mach('MACH_Hydraulic_Manifold.stp', 'aluminium');
-    expect(m.toolingCost).toBe(10_000);                      // 4 dedicated fixtures × £2,500
-    expect(Number(m.programmingNRE)).toBeGreaterThan(300);
+    expect(m.toolingCost).toBe(24_000);                      // 2 dedicated hydraulic tombstone fixtures × £12,000 (the volume cell at 50,000/yr)
+    expect(mach('MACH_Hydraulic_Manifold.stp', 'aluminium', 10_000).toolingCost).toBe(10_000);   // 4 dedicated fixtures × £2,500 at 10,000/yr
+    expect(Number(m.programmingNRE)).toBeGreaterThan(150);   // 2 fixturings on the cell (4 on the split routing gave > 300)
   });
   it('cutting tools wear: steel at £0.12 a cutting minute', () => {
     const m = mach('MACH_Stepped_Shaft.stp', 'steel');
@@ -191,7 +204,7 @@ describe('15–18. cast + machine', () => {
   it('PRCR002 costs the same machining as cast-and-machine and as a casting with secondary machining', () => {
     // Before: £50.10 against £80.84 for the same part (a weight ceiling v the feature table).
     const cam = baseline.find(b => b.part === 'PRCR002.stp')!.outcome.total!;
-    expect(cam).toBeGreaterThan(45);
+    expect(cam).toBeGreaterThan(40);   // £42.81 since the pilot rule pack (one clamping on the twin-pallet cell, iron as-cast, MPI not X-ray)
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctx('PRCR002.stp', 'aluminium', 50_000, 'cast_and_machine'));
     const ops = (r.suggestions.machining as Record<string, unknown>).operations as Array<{ name: string }>;
     expect(ops.some(o => o.name.startsWith('Finish machining'))).toBe(true);

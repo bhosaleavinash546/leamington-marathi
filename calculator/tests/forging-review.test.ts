@@ -128,9 +128,12 @@ describe('8. secondary machining is a cell, priced alike on both paths (castings
     const p = toCostParams('forging', analysis.costInputSuggestions as never, 50_000, 'steel', c.geo)!.params as Record<string, unknown>;
     expect(Number(p.secondaryMachiningToolingCost)).toBeGreaterThan(0);
     expect(Number(p.secondaryMachiningConsumablesPerPart)).toBeGreaterThan(0);
-    const ops = p.secondaryMachiningOps as Array<{ operationName: string; manning: number }>;
+    const ops = p.secondaryMachiningOps as Array<{ operationName: string; manning: number; benchOperation?: boolean }>;
     expect(ops[0].manning).toBe(0.5);
-    expect(ops[1].operationName).toContain('load / unload + change-over');
+    // 50,000/yr: the twin-pallet cell (pilot rule pack) — the spindle pays a pallet change, the load / unload is masked
+    expect(ops[1].operationName).toContain('Pallet change');
+    expect(ops[2].operationName).toContain('load / unload on the pallet while the spindle cuts');
+    expect(ops[2].benchOperation).toBe(true);
   });
 });
 
@@ -153,7 +156,9 @@ describe('10. the hub flange reconciles by hand', () => {
   // microalloyed, shorter die life than plain carbon steel): +£0.16 process, +£0.02 tooling.
   // Second pass: 38MnVS6 is controlled-cooled from the forge heat — the normalise (with the overhead and margin on it)
   // is no longer charged: £18.48 → £17.45.
-  it('£17.45 at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(17.45);
+  // Pilot rule pack (30 Oct 2026): a turned part — outside and faces on the lathe, holes on the drill, two chuckings +
+  // one fixturing (was 10.5 min of face milling on a VMC in two fixturings): £17.45 → £17.40.
+  it('£17.40 at 50,000/yr', () => {
+    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(17.40);
   });
 });

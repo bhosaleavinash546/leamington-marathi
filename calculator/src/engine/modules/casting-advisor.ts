@@ -4,7 +4,7 @@
  * and index-anchored to the 2026-07 rate-library basis; treat cost bands as
  * indicative and override with real quotes via the admin Rate Library.
  */
-import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor } from '../regional-services.js';
+import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, countryFactor } from '../regional-services.js';
 import { activeLabourRate } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 import type { CastingSubtype } from './casting.js';
@@ -182,6 +182,7 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
   const tol = inputs.toleranceClass ?? 'standard';
   const dieCastable = DIE_CASTABLE.includes(inputs.alloyFamily);
   const ferrous = FERROUS.includes(inputs.alloyFamily);
+  const steelAlloy = inputs.alloyFamily === 'carbon-steel' || inputs.alloyFamily === 'stainless-steel';
 
   const build = (
     process: CastingProcess,
@@ -205,10 +206,10 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
   // 0. A process chosen rather than recommended (the route comparison costs every feasible process as its own row).
   if (inputs.processOverride && !castingProcessRefusal(inputs.processOverride, inputs.alloyFamily, inputs.sectionMm ?? null)) {
     const p = inputs.processOverride;
-    const secondary = p === 'investment' ? ['Heat treat', ...(inputs.safetyCritical ? ['X-ray NDT'] : [])]
-      : p === 'hpdc' || p === 'megacasting' ? ['Deburr/trim', 'Shot blast', ...(inputs.pressureTight ? ['Vacuum-assist or impregnation'] : []), ...(inputs.safetyCritical ? ['X-ray NDT'] : [])]
-      : p === 'gravity' ? ['T6 heat treat', ...(inputs.safetyCritical ? ['X-ray NDT'] : [])]
-      : [...(ferrous ? ['Stress-relieve / normalise'] : ['Heat treat']), ...(inputs.safetyCritical ? ['X-ray NDT'] : [])];
+    const secondary = p === 'investment' ? ['Heat treat', ...(inputs.safetyCritical ? [ndtStepFor(inputs.alloyFamily)] : [])]
+      : p === 'hpdc' || p === 'megacasting' ? ['Deburr/trim', 'Shot blast', ...(inputs.pressureTight ? ['Vacuum-assist or impregnation'] : []), ...(inputs.safetyCritical ? [ndtStepFor(inputs.alloyFamily)] : [])]
+      : p === 'gravity' ? ['T6 heat treat', ...(inputs.safetyCritical ? [ndtStepFor(inputs.alloyFamily)] : [])]
+      : [...(steelAlloy ? ['Normalise'] : ferrous ? [] : ['Heat treat']), ...(inputs.safetyCritical ? [ndtStepFor(inputs.alloyFamily)] : [])];
     const route = p === 'investment' ? ['Wax injection', 'Shell build', 'Dewax', 'Pour', 'Knockout', 'Finish']
       : p === 'hpdc' ? ['HPDC shot', 'Trim/deburr', 'Shot blast', ...(inputs.pressureTight ? ['Impregnation'] : [])]
       : p === 'megacasting' ? ['Vacuum giga-HPDC', 'Solution + T7 age', 'Laser trim', 'CMM datum-align', 'Leak test']
@@ -231,7 +232,7 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
     return build('investment',
       `tight-tolerance ${alloy} under 10 kg — investment casting gives near-net thin walls and ±0.1–0.5 mm without hard tooling on ferrous alloys`,
       ['Wax injection', 'Shell build', 'Dewax', 'Pour', 'Knockout', 'Finish'],
-      inputs.safetyCritical ? ['X-ray NDT', 'Heat treat'] : ['Heat treat']);
+      inputs.safetyCritical ? [ndtStepFor(inputs.alloyFamily), 'Heat treat'] : ['Heat treat']);
   }
 
   // 3. Large structural aluminium at high volume → megacasting. Structural megacastings are THIN-walled (they replace
@@ -250,7 +251,7 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
   if (dieCastable && inputs.annualVolume >= 20000 && section <= HPDC_SECTION_MAX_MM && inputs.partWeightKg <= 15) {
     const secondary = ['Deburr/trim', 'Shot blast'];
     if (inputs.pressureTight) secondary.push('Vacuum-assist or impregnation');
-    if (inputs.safetyCritical) secondary.push('X-ray NDT');
+    if (inputs.safetyCritical) secondary.push(ndtStepFor(inputs.alloyFamily));
     return build('hpdc',
       `thin-wall ${alloy} (${section.toFixed(1)} mm section) at ${inputs.annualVolume.toLocaleString()}/yr — HPDC gives the lowest piece cost and best surface finish once the die is amortised${inputs.pressureTight ? '; specify vacuum-assist for leak-tight parts' : ''}`,
       ['HPDC shot', 'Trim/deburr', 'Shot blast', ...(inputs.pressureTight ? ['Impregnation'] : [])],
@@ -262,7 +263,7 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
     return build('gravity',
       `medium-volume ${alloy} — gravity die casting gives denser, heat-treatable (T6) structure than HPDC for wheels/knuckles/pistons, with cheaper tooling than a pressure die`,
       ['Gravity/tilt pour', 'Knockout', 'T6 heat treat', 'Machining datums'],
-      ['T6 heat treat', ...(inputs.safetyCritical ? ['X-ray NDT'] : [])]);
+      ['T6 heat treat', ...(inputs.safetyCritical ? [ndtStepFor(inputs.alloyFamily)] : [])]);
   }
 
   // 6. Ferrous, large, or low-volume → sand.
@@ -270,7 +271,7 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
     return build('sand',
       `${alloy}${inputs.partWeightKg > 50 ? `, large casting (${inputs.partWeightKg} kg)` : ''}${inputs.annualVolume < 2000 ? `, low volume (${inputs.annualVolume.toLocaleString()}/yr)` : ''} — sand casting has the lowest tooling NRE and no upper size limit; ductile-iron/steel castings finish by fettling + machining`,
       ['Pattern/core prep', 'Mould + pour', 'Shakeout', 'Fettle', 'Heat treat', 'Machining'],
-      [...(ferrous ? ['Stress-relieve / normalise'] : ['Heat treat']), ...(inputs.safetyCritical ? ['X-ray NDT'] : [])]);
+      [...(steelAlloy ? ['Normalise'] : ferrous ? [] : ['Heat treat']), ...(inputs.safetyCritical ? [ndtStepFor(inputs.alloyFamily)] : [])]);
   }
 
   // 7. Fallback: gravity for remaining die-castable, else sand.
@@ -457,6 +458,51 @@ export const NDT_COST_PER_PART: Record<'xray' | 'ct', number> = {
   xray: 5.0,            // 2D radiography, sampling/100%
   ct: 32.0,            // industrial CT, safety-critical
 };
+
+/**
+ * NDT as a STATION, not a flat £ (pilot rule pack, 30 Oct 2026). A safety-critical ductile-iron knuckle or stub axle is
+ * not X-rayed one by one at £5: it is 100 % magnetic-particle inspected on a bench and radiographed on a sample. A
+ * light-alloy structural casting is 100 % real-time X-rayed in line. Every figure is engineering-typical and labelled;
+ * the £/h equipment figures are UK basis (inspection) and follow the country by `countryFactor('inspection')`.
+ */
+export const NDT_STATION = {
+  /** 100 % wet-fluorescent MPI: load, magnetise, view under UV, demagnetise, unload — 75 s a part, one inspector;
+   *  the bench itself (a ~£25k unit, UV lamps, ink) ~£4/h; one part in 50 radiographed (a sampling plan the drawing
+   *  usually sets — AQL-type, engineering-typical). */
+  mpi: { secPerPart: 75, manning: 1, equipmentGbpPerHrUk: 4, sampleXrayFraction: 0.02 },
+  /** 100 % in-line real-time radiography: a cabinet with a manipulator the inspector half-tends — 30 s a part;
+   *  the cabinet ~£20/h (a ~£250k unit over 13 yr at 6,000 h, maintenance and tube included — engineering-typical). */
+  rtr: { secPerPart: 30, manning: 0.5, equipmentGbpPerHrUk: 20, sampleXrayFraction: 0 },
+} as const;
+
+export type NdtStationKind = keyof typeof NDT_STATION;
+
+/** The NDT station's £ a part in the costed country, with its arithmetic. */
+export function ndtStationCostPerPart(kind: NdtStationKind): { gbp: number; basis: string } {
+  const st = NDT_STATION[kind];
+  const inspector = activeLabourRate('lab-uk-inspector');            // the costed country's inspector (rate-context.ts)
+  const cf = countryFactor('inspection');
+  const equipment = st.equipmentGbpPerHrUk * cf;
+  const hr = st.secPerPart / 3600;
+  const station = hr * (inspector * st.manning + equipment);
+  const sample = st.sampleXrayFraction * NDT_COST_PER_PART.xray * ndtServiceFactor();
+  const gbp = Math.round((station + sample) * 100) / 100;
+  const what = kind === 'mpi' ? '100% magnetic-particle inspection (wet fluorescent bench, demagnetised)' : '100% in-line real-time X-ray';
+  return {
+    gbp,
+    basis: `${what}: ${st.secPerPart} s a part × (inspector £${inspector.toFixed(2)}/h × ${st.manning}`
+      + ` + ${kind === 'mpi' ? 'bench' : 'cabinet'} £${equipment.toFixed(2)}/h) = £${station.toFixed(3)}`
+      + (sample > 0 ? ` + 1 in ${Math.round(1 / st.sampleXrayFraction)} radiographed × £${(NDT_COST_PER_PART.xray * ndtServiceFactor()).toFixed(2)} = £${sample.toFixed(3)}` : '')
+      + ' (engineering-typical station figures; CostVision heuristic)',
+  };
+}
+
+/** The NDT step a safety-critical casting of this alloy gets (the advisor's secondary list and the rule agree). */
+export function ndtStepFor(alloy: AlloyFamily): string {
+  if (alloy === 'superalloy') return 'CT NDT';
+  if (alloy === 'grey-iron' || alloy === 'ductile-iron' || alloy === 'carbon-steel' || alloy === 'stainless-steel') return 'MPI NDT (100%) + sample X-ray';
+  return 'In-line X-ray NDT (100%)';
+}
 
 /**
  * Fettling as bench time — gate / riser cut-off and grinding. The £/part the

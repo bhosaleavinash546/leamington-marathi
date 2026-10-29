@@ -80,7 +80,7 @@ export function toleranceClassDecision(): Decision {
 /** What "safety-critical" adds on this route — the forging and casting advisors' own secondary operations. */
 export function safetyConsequence(commodity: string): string {
   if (commodity === 'forging') return 'adds crack testing (MPI on a closed-die forging, UT or CT on open-die / precision)';
-  if (commodity === 'casting' || commodity === 'cast_and_machine') return 'adds X-ray / CT NDT, heat treat and a ductile grade on iron';
+  if (commodity === 'casting' || commodity === 'cast_and_machine') return 'adds NDT (100% MPI with sample X-ray on iron and steel, in-line X-ray on light alloys, CT on superalloys) and a ductile grade on iron';
   return 'adds crack testing and a ductile grade where the route uses one';
 }
 

@@ -310,9 +310,10 @@ describe('cast_and_machine — the composition', () => {
     // 10 × Ø12 × 30 drilled from solid, 2.3 min, not a capped from-solid cycle.
     const ops = machining.operations as Array<{ name: string; cycleTimeHr: number }>;
     expect(ops.find(o => o.name.startsWith('Drilling'))!.cycleTimeHr).toBe(0.0375);
-    // 2 datum directions + the drill-press fixturing of the chosen split routing.
-    expect(machining.setupCount).toBe(3);
-    expect(machining.setupTimeHr).toBe(2.25);           // 3 × 45 min
+    // 100,000/yr: the twin-pallet cell — 2 datum directions in one clamping, the drilling in the same clamping
+    // (pilot rule pack; it was the 3-fixturing split routing).
+    expect(machining.setupCount).toBe(1);
+    expect(machining.setupTimeHr).toBe(0.75);           // 1 × 45 min
     expect(r.provenance['cam-cast-wt']).toBeDefined();
     expect(r.provenance['cam-mach-setup-time']).toBeDefined();
     expect(r.provenance['cam-mach-tooling']).toBeDefined();

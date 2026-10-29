@@ -364,6 +364,23 @@ what is true** — nothing here has been compared with a price JLR paid.
   (`nearNetTurningTime`); a mesh's triangles are never faces (`bRepFaceCount`). Safety-critical cast iron is ductile
   EN-GJS-500-7 (safety asked before the grade; `castIronDefaultGrade`); the mass follows the costed grade. See
   `docs/cad/stub-axle-live-run-2026-10.md`, `tests/stub-axle-live.test.ts`.
+- Report views (30 Oct 2026): the PDF cover prints two HD isometric renders of the CAD model under the summary and the
+  Excel `1-Summary` carries them beside the figures (`cadMeta.cadViews`). They are captured by the viewer's
+  `captureIsoViews()` (1920 × 1440, white background, no overlays, the viewer restored) at EXPORT time only
+  (`reportCadViews` in main.ts — never inside `buildCadReportMeta`, which runs on every redraw). The CAD workbook is
+  SheetJS, which cannot embed a picture: `excel.ts::embedCadViews` re-opens the finished file with ExcelJS and adds
+  the two images (every cell and formula round-trips; tested). `scripts/cad2c-review/dump-reports.py` counts images.
+- Pilot rule pack (30 Oct 2026, `docs/cad/pilot-rule-pack-2026-10-30.md`, `tests/pilot-rule-pack.test.ts`): at
+  `VOLUME_CELL_MIN_ANNUAL` (25k/yr) a prismatic part is routed on the twin-pallet HMC `mach-hmc-400` (`volume-cell`
+  candidate: ≤ 4 directions a clamping, drilling in the clamping, `PALLET_CHANGE_SEC` of machine time, load / unload a
+  bench op masked by the cut, `FIXTURE_GBP.hydraulic`); the optimiser ranks machine + operator (`labourPerPart`) and
+  `CUTTING_MANNING` lives there. The feature path (forgings, screen panel) gets the same cell from `secondaryMachiningCell({
+  milled })`, which returns the cell's machine. A turned near-net part (`turnedPartFacts`: fraction ≥ 0.6, Ø fills the
+  section) is turned faces-included on the lathe (`nearNetTurnedPlan`; `nearNetCut` sets `turnedPart`), holes on the
+  drill — never the HMC. Casting: iron is as-cast (no stress relief; steel normalised); NDT is a STATION
+  (`NDT_STATION` / `ndtStationCostPerPart`: 100 % MPI + 1-in-50 X-ray on ferrous, in-line RTR on light alloys, CT on
+  superalloys); `ndtStepFor` / `safetyConsequence` say what the rule charges. The HMC capex is an ESTIMATE from used
+  listings (research filed; the UK generator skips it — not in the snapshot). Turning finish rate still conservative.
 - Forging (`cost-input-rules/commodities/forging.ts`, `modules/forging.ts`): the cycle is the forge-line
   takt (`forgeLine`: load + hits × hit time), never the kernel's `forgeStrokes`; flash-making routes
   trim in line (`trimPress`, stamping ladder); crew, labour, scrap and furnace are rules; die sets are

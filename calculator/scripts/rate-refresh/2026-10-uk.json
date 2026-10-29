@@ -149,6 +149,18 @@
     "confidence": "Low"
    },
    {
+    "id": "cnc-hmc",
+    "match": "^mach-hmc-400$",
+    "refId": "mach-hmc-400",
+    "refCapexGbp": 185000,
+    "refKw": 13.0,
+    "kwBasis": "measured machining-centre roughing mean 13 kW",
+    "basis": "Haas EC-400 class twin-pallet HMC: ESTIMATE £185,000 from 2019–2023 used-market listings + 25% (no new list price published)",
+    "research": "capex.mach-hmc-400",
+    "source": "https://www.surplusrecord.com/listing/haas-ec-400-horizontal-machining-center-501-side-mount-tool-changer-22-x-25-y-22-z-15000-rpm-300-psi-thru-spindle-coolant-2023-669939/",
+    "confidence": "Low"
+   },
+   {
     "id": "fibre-laser",
     "match": "^(laser-trumpf-3030|laser-trumpf-5030|laser-bystronic-3015|laser-amada-ensis-3015)$",
     "refId": "laser-trumpf-3030",

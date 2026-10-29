@@ -29,6 +29,7 @@
  * supplier's actual cycle should replace. AI never sets any of them.
  */
 import { activeToolroomFactor } from './rate-context.js';
+import { VOLUME_CELL_MIN_ANNUAL, PALLET_CHANGE_SEC, HMC_SIDES_PER_CLAMPING, HMC_MACHINE_ID } from './routing-optimiser.js';
 import type { MaterialFamily } from './material-family.js';
 import type { FeatureRow } from './feature-ops.js';
 import { featureMinutesEach, nearNetHoleMinutes } from './feature-machining.js';
@@ -403,17 +404,20 @@ export function toolWearPerPart(cuttingMin: number, family: MaterialFamily): num
 }
 
 /** Fixture cost per fixturing, £ — modular / soft-jaw work holding for a short programme, a dedicated fixture otherwise. */
-export const FIXTURE_GBP = { modular: 500, dedicated: 2_500, softJaws: 300, threshold5yParts: 10_000 } as const;
+export const FIXTURE_GBP = { modular: 500, dedicated: 2_500, softJaws: 300, threshold5yParts: 10_000,
+  /** A dedicated hydraulic fixture on a 4th-axis tombstone (the volume cell): engineering-typical toolroom build. */
+  hydraulic: 12_000 } as const;
 
-export function fixtureCostGBP(millFixturings: number, latheChuckings: number, annualVolume: number): { gbp: number; basis: string } {
-  const dedicated = annualVolume * 5 > FIXTURE_GBP.threshold5yParts;
-  const each = dedicated ? FIXTURE_GBP.dedicated : FIXTURE_GBP.modular;
+export function fixtureCostGBP(millFixturings: number, latheChuckings: number, annualVolume: number,
+  kind: 'auto' | 'hydraulic' = 'auto'): { gbp: number; basis: string } {
+  const dedicated = kind === 'hydraulic' || annualVolume * 5 > FIXTURE_GBP.threshold5yParts;
+  const each = kind === 'hydraulic' ? FIXTURE_GBP.hydraulic : dedicated ? FIXTURE_GBP.dedicated : FIXTURE_GBP.modular;
   // Fixtures are toolroom-built where the part is made (× the country's toolroom factor, 1 in the UK).
   const tf = activeToolroomFactor();
   const gbp = Math.round((millFixturings * each + latheChuckings * FIXTURE_GBP.softJaws) * tf);
   return {
     gbp,
-    basis: `${millFixturings} ${dedicated ? 'dedicated' : 'modular'} fixture(s) × £${each.toLocaleString('en-GB')}`
+    basis: `${millFixturings} ${kind === 'hydraulic' ? 'dedicated hydraulic (tombstone)' : dedicated ? 'dedicated' : 'modular'} fixture(s) × £${each.toLocaleString('en-GB')}`
       + (latheChuckings ? ` + ${latheChuckings} set(s) of soft jaws × £${FIXTURE_GBP.softJaws}` : '')
       + ` (${dedicated ? 'dedicated above' : 'modular up to'} ${FIXTURE_GBP.threshold5yParts.toLocaleString('en-GB')} parts over 5 years)`
       + (tf !== 1 ? ` × toolroom factor ${tf}` : ''),
@@ -451,21 +455,80 @@ export function secondaryMachiningCell(p: {
   featureRows: number;
   cuttingMin: number;
   engineerRatePerHr: number;
+  /** The cut mills faces / pockets (a VMC job) rather than holes only — at volume that is the twin-pallet HMC cell. */
+  milled?: boolean;
+  /** A turned part (lathe chuckings + a drill fixturing): never the HMC cell. */
+  turned?: boolean;
 }): {
-  cell: { fixturings: number; handlingMin: number; setupMinPerFixturing: number; batchSize: number };
+  cell: { fixturings: number; handlingMin: number; setupMinPerFixturing: number; batchSize: number; masked?: boolean; palletChangeSec?: number };
+  /** The machine the cell runs on when it is the volume cell; else the caller's choice stands. */
+  machineId: string | null;
+  volumeCell: boolean;
   toolingGBP: number; toolWearPerPart: number; basis: string;
 } {
-  const fixturings = Math.max(1, Math.round(p.fixturings));
+  // Volume cell (pilot rule pack, 30 Oct 2026): a milled near-net part at production volume runs on a twin-pallet
+  // HMC with a dedicated hydraulic fixture — up to four sides in one clamping, load / unload masked by the cut.
+  const volumeCell = !!p.milled && !p.turned && p.annualVolume >= VOLUME_CELL_MIN_ANNUAL;
+  const asked = Math.max(1, Math.round(p.fixturings));
+  const fixturings = volumeCell ? (asked <= HMC_SIDES_PER_CLAMPING ? 1 : 2) : asked;
   const batchSize = Math.round(Math.min(5000, Math.max(50, (p.annualVolume || 10_000) / 20)));
-  const fx = fixtureCostGBP(fixturings, 0, p.annualVolume);
+  const fx = fixtureCostGBP(fixturings, 0, p.annualVolume, volumeCell ? 'hydraulic' : 'auto');
   const hrs = programmingHours(fixturings, p.featureRows, false);
   const programming = Math.round(hrs * p.engineerRatePerHr);
   const wear = toolWearPerPart(p.cuttingMin, p.family);
   return {
-    cell: { fixturings, handlingMin: handlingMinPerFixturing(p.weightKg), setupMinPerFixturing: SETUP_MIN_PER_FIXTURING, batchSize },
+    cell: { fixturings, handlingMin: handlingMinPerFixturing(p.weightKg), setupMinPerFixturing: SETUP_MIN_PER_FIXTURING, batchSize,
+      ...(volumeCell ? { masked: true, palletChangeSec: PALLET_CHANGE_SEC } : {}) },
+    machineId: volumeCell ? HMC_MACHINE_ID : null,
+    volumeCell,
     toolingGBP: fx.gbp + programming,
     toolWearPerPart: wear,
-    basis: `${fx.basis}; programming ${hrs} h × £${p.engineerRatePerHr.toFixed(2)}/h = £${programming}; `
+    basis: (volumeCell ? `twin-pallet HMC cell at ${p.annualVolume.toLocaleString('en-GB')}/yr (≥ ${VOLUME_CELL_MIN_ANNUAL.toLocaleString('en-GB')}): `
+      + `${asked} approach direction(s) in ${fixturings} clamping(s) on a 4th-axis tombstone, load / unload masked by the cut; ` : '')
+      + `${fx.basis}; programming ${hrs} h × £${p.engineerRatePerHr.toFixed(2)}/h = £${programming}; `
       + `tool wear ${p.cuttingMin.toFixed(1)} min × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(4)}/min = £${wear.toFixed(3)}`,
   };
+}
+
+/**
+ * A turned near-net part (pilot rule pack, 30 Oct 2026): most of its surface is one coaxial family of revolved
+ * faces and the shoulders square to it, and that family's largest OUTSIDE diameter fills the part's cross-section —
+ * a hub flange, a pulley, a wheel hub. Such a part is turned, faces included, on the CNC lathe (op 10 / op 20) and
+ * only its holes go to a drill centre; it was face-milled on a VMC because the feature table has no lathe. The
+ * stub axle (fraction 0.35) keeps its spindle-only turning; a control-arm yoke (Ø50 boss on a 250 mm part) is not
+ * turned. Same reading the from-solid route makes (`turnedFacts`), applied to the near-net paths.
+ */
+export const TURNED_PART_FRACTION = 0.6;
+/** Per-side stock a forged / cast turned surface carries when the route does not say (engineering-typical). */
+export const NEAR_NET_TURN_STOCK_MM = 2;
+
+/** The lathe operation of a turned near-net part: its outside plus the measured faces, faced on the lathe. */
+export function nearNetTurnedPlan(
+  rows: FeatureRow[], facts: { externalCm2: number; maxDiaMm: number; fraction: number }, family: MaterialFamily,
+  stockMm = NEAR_NET_TURN_STOCK_MM, includeFlags?: boolean[],
+): { latheMachineId: string; latheMin: number; basis: string; facedCm2: number } {
+  const faces = rows.filter((r, i) => r.kind === 'face' && (includeFlags ? includeFlags[i] : true));
+  const facedCm2 = faces.reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
+  const t = nearNetTurningTime(facts.externalCm2 + facedCm2, family, stockMm, facts.maxDiaMm);
+  return {
+    latheMachineId: 'mach-lathe-cnc', latheMin: t.totalMin, facedCm2,
+    basis: `turned part (${(facts.fraction * 100).toFixed(0)}% of its surface is one coaxial family, Ø${facts.maxDiaMm.toFixed(0)} fills the section): `
+      + `outside ${facts.externalCm2.toFixed(0)} cm² + ${faces.reduce((s, r) => s + r.count, 0)} face(s) ${facedCm2.toFixed(0)} cm² faced on the lathe — ${t.basis}`,
+  };
+}
+export function turnedPartFacts(geo: {
+  turning?: { fraction: number; externalAreaMm2?: number; externalMaxDiaMm?: number; maxDiaMm?: number; axis: number[] | null } | null;
+  boundingBox?: { xMm: number; yMm: number; zMm: number } | null;
+} | null | undefined): { externalCm2: number; maxDiaMm: number; fraction: number } | null {
+  const t = geo?.turning;
+  const bb = geo?.boundingBox;
+  if (!t || !t.axis || !bb || t.fraction < TURNED_PART_FRACTION) return null;
+  const dims = [bb.xMm, bb.yMm, bb.zMm];
+  const ax = t.axis.map(Math.abs);
+  const i = ax.indexOf(Math.max(...ax));
+  const perp = dims.filter((_, k) => k !== i);
+  const dia = t.externalMaxDiaMm ?? t.maxDiaMm ?? 0;
+  const externalCm2 = (t.externalAreaMm2 ?? 0) / 100;
+  if (dia < 0.9 * Math.max(...perp) || externalCm2 < MIN_NEAR_NET_TURNED_CM2) return null;
+  return { externalCm2, maxDiaMm: dia, fraction: t.fraction };
 }
