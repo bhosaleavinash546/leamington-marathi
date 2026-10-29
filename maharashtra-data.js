@@ -31,7 +31,8 @@ window.LM_PLACES = [
       'The Mughals took the fort in 1689 and renamed it Islamgad. In 1869 Mahatma Phule found the samadhi lost in the undergrowth, and Lokmanya Tilak started an annual festival on the fort. Today lakhs of people come to see the samadhi, the royal court, Holicha Mal, Takmak Tok and the Hirkani bastion.',
     ],
     facts: [['उंची', 'सुमारे ८२० मीटर'], ['जवळचं गाव', 'महाड, २५ किमी'], ['जायचं कसं', 'पायऱ्या (सुमारे १४५०) किंवा रोपवे'], ['कधी जावं', 'ऑक्टोबर ते फेब्रुवारी']] },
-  { cat: 'kille', mr: 'राजगड', en: 'Rajgad', lon: 73.68, lat: 18.25, dist: 'पुणे', dy: 8,
+  { cat: 'kille', mr: 'राजगड', en: 'Rajgad', lon: 73.68, lat: 18.25, dist: 'पुणे',
+    photo: 'images/maharashtra/rajgad.jpg', dy: 8,
     tmr: 'रायगडाआधी जवळपास पंचवीस वर्षं स्वराज्याची राजधानी. पुण्याजवळचा ट्रेकर्सचा आवडता किल्ला.',
     ten: 'The capital of Swarajya for about 25 years before Raigad. A favourite trek near Pune.',
     hmr: [
@@ -46,6 +47,7 @@ window.LM_PLACES = [
     ],
     facts: [['उंची', 'सुमारे १३७६ मीटर'], ['जवळचं गाव', 'वेल्हे / गुंजवणे, पुण्यापासून ६० किमी'], ['जायचं कसं', 'पायी, ३ ते ४ तासांचा ट्रेक'], ['कधी जावं', 'पावसाळ्यानंतर, सप्टेंबर ते फेब्रुवारी']] },
   { cat: 'kille', mr: 'सिंहगड', en: 'Sinhagad', lon: 73.75, lat: 18.37, dist: 'पुणे',
+    photo: 'images/maharashtra/sinhagad.jpg',
     tmr: '१६७० मध्ये तानाजी मालुसरेंनी हा किल्ला जिंकला. "गड आला पण सिंह गेला." पुण्यापासून तासाभरावर.',
     ten: 'Won by Tanaji Malusare in 1670. "The fort is won, but the lion is lost." An hour from Pune.',
     hmr: [
@@ -75,6 +77,7 @@ window.LM_PLACES = [
     ],
     facts: [['उंची', 'सुमारे १०८० मीटर'], ['जवळचं शहर', 'महाबळेश्वर, २४ किमी'], ['जायचं कसं', 'गाडी वरपर्यंत जाते'], ['कधी जावं', 'वर्षभर; पावसाळ्यात धुकं']] },
   { cat: 'kille', mr: 'शिवनेरी', en: 'Shivneri', lon: 73.86, lat: 19.20, dist: 'पुणे (जुन्नर)',
+    photo: 'images/maharashtra/shivneri.jpg', credit: 'Moments Capture 05',
     tmr: 'शिवाजी महाराजांचं जन्मस्थान. १९ फेब्रुवारी १६३० रोजी इथे त्यांचा जन्म झाला.',
     ten: 'The birthplace of Shivaji Maharaj, born here on 19 February 1630.',
     hmr: [
@@ -88,7 +91,8 @@ window.LM_PLACES = [
       'The fort has seven gates. On top are the birthplace building, the Badami tank, the Ganga Jamuna cisterns and a statue of young Shivaji with Jijau. The Girijatmaj Ganpati of Lenyadri is close by. A big festival is held here every Shiv Jayanti.',
     ],
     facts: [['उंची', 'सुमारे १०७० मीटर'], ['जवळचं शहर', 'जुन्नर, २ किमी; पुण्यापासून ९५ किमी'], ['जायचं कसं', 'पायऱ्या, सुमारे एक तास'], ['कधी जावं', 'सप्टेंबर ते मार्च; १९ फेब्रुवारीला उत्सव']] },
-  { cat: 'kille', mr: 'तोरणा', en: 'Torna', lon: 73.62, lat: 18.28, dist: 'पुणे', dx: -8,
+  { cat: 'kille', mr: 'तोरणा', en: 'Torna', lon: 73.62, lat: 18.28, dist: 'पुणे',
+    photo: 'images/maharashtra/torna.jpg', dx: -8,
     tmr: 'महाराजांनी वयाच्या सोळाव्या वर्षी जिंकलेला पहिला किल्ला. पुणे जिल्ह्यातला सर्वात उंच किल्ला.',
     ten: 'The first fort Shivaji Maharaj won, at sixteen. The highest fort in Pune district.',
     hmr: [
@@ -103,6 +107,7 @@ window.LM_PLACES = [
     ],
     facts: [['उंची', 'सुमारे १४०३ मीटर'], ['जवळचं गाव', 'वेल्हे, पुण्यापासून ६० किमी'], ['जायचं कसं', 'पायी, ३ तासांचा खडा ट्रेक'], ['कधी जावं', 'ऑक्टोबर ते फेब्रुवारी']] },
   { cat: 'kille', mr: 'पन्हाळा', en: 'Panhala', lon: 74.11, lat: 16.81, dist: 'कोल्हापूर',
+    photo: 'images/maharashtra/panhala.jpg',
     tmr: '१६६० मध्ये सिद्दी जौहरच्या वेढ्यातून महाराज इथूनच निसटले. बाजीप्रभूंची पावनखिंड जवळच आहे.',
     ten: 'Shivaji Maharaj escaped the siege of 1660 from here. Baji Prabhu’s Pavan Khind is close by.',
     hmr: [
