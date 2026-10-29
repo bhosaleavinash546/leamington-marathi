@@ -370,6 +370,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   (`reportCadViews` in main.ts — never inside `buildCadReportMeta`, which runs on every redraw). The CAD workbook is
   SheetJS, which cannot embed a picture: `excel.ts::embedCadViews` re-opens the finished file with ExcelJS and adds
   the two images (every cell and formula round-trips; tested). `scripts/cad2c-review/dump-reports.py` counts images.
+- Nine-commodity parity sweep (30 Oct 2026, `docs/review/cad2c-parity-sweep-2026-10-30.md`, `tests/cad2c-parity-sweep.test.ts`):
+  every CAD route (blow / roto / thermoforming / composites / polymer extrusion / rubber / gear / machining / casting, plus the
+  five reviewed on 29 Oct) goes through the SAME three steps and costs screen = headless. While the process question is open
+  the server runs the LEANING route's rule pack (`placeholderCommodity` in cad.ts, both `/analyze` and `/reanalyze`) — the
+  machining placeholder's family question blocked a rubber / composite / extrusion part. A kernel probe that times out is
+  `unknown` and not cached (the screen says the check did not finish, never "not installed"). Route-specific answers have
+  short chip names (`ANSWER_NAMES` in cad-workspace.ts). A direct-cost material itemises its build-up in
+  `rawMaterial.lines` (composites: fibre / resin / NDI — display only) and the cost card drops the placeholder grade on
+  `mat-virtual`. Manifest-driven live run: `CV_TRACE_PARTS=<json> npx tsx e2e/cad-to-cost-trace.ts`.
 - Pilot rule pack (30 Oct 2026, `docs/cad/pilot-rule-pack-2026-10-30.md`, `tests/pilot-rule-pack.test.ts`): at
   `VOLUME_CELL_MIN_ANNUAL` (25k/yr) a prismatic part is routed on the twin-pallet HMC `mach-hmc-400` (`volume-cell`
   candidate: ≤ 4 directions a clamping, drilling in the clamping, `PALLET_CHANGE_SEC` of machine time, load / unload a

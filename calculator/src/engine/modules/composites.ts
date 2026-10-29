@@ -1,4 +1,4 @@
-import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput, MaterialLineItem } from '../types.js';
 
 export type CompositeProcess =
   | 'hand_layup'
@@ -101,11 +101,29 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
   const grossMatCost = netMatCost / (1 - Math.min(inputs.wasteFraction, 0.60));
   const ndiCost = inputs.ndiCostPerPart ?? 0;
 
+  // The material is two materials (fibre + resin) priced per kg, so the core takes it as a direct cost; the
+  // build-up behind that figure is itemised for the reports (display only — `lines` moves no number). Without it
+  // the hat stiffener's largest bucket printed as one opaque "direct material cost" line (parity sweep, Oct 2026).
+  const waste = Math.min(inputs.wasteFraction, 0.60);
+  const grossFactor = rejectUplift / (1 - waste);
+  const basisNote = `net ÷ (1 − waste ${(waste * 100).toFixed(0)} %)${rejectUplift > 1 ? ` × reject uplift ${rejectUplift.toFixed(3)}` : ''}`;
+  const lines: MaterialLineItem[] = [
+    { ref: 'Fibre', description: inputs.resinPricePerKg > 0 ? 'Dry fibre fabric' : 'Prepreg (fibre + resin)',
+      qty: Math.round(fibreMassNet * grossFactor * 1e4) / 1e4, unitCost: inputs.fibrePricePerKg, pkg: 'kg bought',
+      note: `${fibreMassNet.toFixed(4)} kg net (${(inputs.fibreWeightFraction * 100).toFixed(0)} % fibre by weight); ${basisNote}` },
+  ];
+  if (inputs.resinPricePerKg > 0) {
+    lines.push({ ref: 'Resin', description: 'Infusion / RTM resin', qty: Math.round(resinMassNet * grossFactor * 1e4) / 1e4,
+      unitCost: inputs.resinPricePerKg, pkg: 'kg bought', note: `${resinMassNet.toFixed(4)} kg net; ${basisNote}` });
+  }
+  if (ndiCost > 0) lines.push({ ref: 'NDI', description: 'Non-destructive inspection (C-scan / UT) per part', qty: Math.round(rejectUplift * 1e4) / 1e4, unitCost: ndiCost, note: 'per part × reject uplift' });
+
   const rawMaterial: RawMaterialInput = {
     materialId: 'mat-virtual',
     netWeightKg: 0,
     materialUtilization: 1 - inputs.wasteFraction,
     directCost: (grossMatCost + ndiCost) * rejectUplift,
+    lines,
   };
 
   // ── Operations ───────────────────────────────────────────────────────────

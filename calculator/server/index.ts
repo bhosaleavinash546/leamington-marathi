@@ -180,7 +180,9 @@ const server = app.listen(PORT, HOST, () => {
   console.log(`Metal prices: ${process.env.METAL_PRICE_API_KEY ? '✓ API key configured' : '⚠  METAL_PRICE_API_KEY not set — baseline prices will be used'}`);
   void kernelStatus().then(k => console.log(k.available
     ? `CAD kernel:   ✓ OCP ${k.version ?? ''} (${k.python})`
-    : `CAD kernel:   ✗ not found by ${k.python} — STEP / IGES cannot be read (STL still works). Install it: pip install -r requirements.txt, or set PYTHON_BIN. ${k.detail ?? ''}`));
+    : k.unknown
+      ? `CAD kernel:   ? ${k.detail} (${k.python})`
+      : `CAD kernel:   ✗ not found by ${k.python} — STEP / IGES cannot be read (STL still works). Install it: pip install -r requirements.txt, or set PYTHON_BIN. ${k.detail ?? ''}`));
 
   // Auto-refresh material prices on startup if data is older than 7 days (or never fetched).
   // Runs after the event loop yields so the server can accept health-check requests immediately.

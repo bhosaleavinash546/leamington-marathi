@@ -77,6 +77,26 @@ const ANSWER_NAMES: Record<string, string> = {
   'service.safetyCritical': 'Safety-critical',
   'service.pressureTight': 'Leak-tight',
   'service.finish': 'Finish',
+  // Route-specific questions (nine-commodity parity sweep, Oct 2026): a chip printed the whole question
+  // ("What is the nominal capacity of this container? I know the exact capacity") where the others print a word.
+  'blow.capacityL': 'Capacity',
+  'blow.capacityExactL': 'Capacity',
+  'blow.barrierWall': 'Barrier wall',
+  'gear.helix': 'Helix',
+  'gear.qualityClass': 'Quality class',
+  'gear.materialClass': 'Gear steel',
+  'gear.hardeningRoute': 'Hardening',
+  'gear.effectiveCaseDepthMm': 'Case depth',
+  'gear.moduleEntry': 'Module',
+  'gear.teethEntry': 'Teeth',
+  'gear.faceWidthEntry': 'Face width',
+  'casting.processChoice': 'Casting process',
+  'forging.processChoice': 'Forging process',
+  'al.route': 'Press route',
+  'al.temper': 'Temper',
+  'al.finish': 'Finish',
+  'al.bends': 'Bends',
+  'machine.oversize': 'Oversize',
 };
 
 export interface AnswerChip { id: string; name: string; value: string }

@@ -32,7 +32,11 @@ const PYTHON_BIN = process.env.PYTHON_BIN ?? 'python3';
  * without it every STEP / IGES upload failed only after the upload — "No model loaded" in the viewer, the reason only
  * after Analyze (CAD to COST 360 review, Oct 2026). The screen now says so before the upload.
  */
-export interface KernelStatus { available: boolean; python: string; version?: string; detail?: string }
+export interface KernelStatus {
+  available: boolean; python: string; version?: string; detail?: string;
+  /** The probe did not finish (a busy machine at start-up): not known either way — the first measurement will tell. */
+  unknown?: boolean;
+}
 let kernelProbe: Promise<KernelStatus> | null = null;
 export function kernelStatus(): Promise<KernelStatus> {
   kernelProbe ??= new Promise<KernelStatus>((resolve) => {
@@ -46,7 +50,13 @@ export function kernelStatus(): Promise<KernelStatus> {
       done({ available: false, python: PYTHON_BIN, detail: e instanceof Error ? e.message : String(e) });
       return;
     }
-    const timer = setTimeout(() => { child.kill(); done({ available: false, python: PYTHON_BIN, detail: 'the kernel check timed out' }); }, 30_000);
+    // A timeout is not an answer (parity sweep, 30 Oct 2026: a busy box took > 30 s to import OCP and every screen
+    // said "not installed" for the rest of the session): report unknown and forget the probe so the next ask re-runs it.
+    const timer = setTimeout(() => {
+      child.kill();
+      kernelProbe = null;
+      done({ available: false, unknown: true, python: PYTHON_BIN, detail: 'the kernel check timed out — not known either way; the first measurement will tell' });
+    }, 60_000);
     child.stdout?.on('data', (d: Buffer) => { out += d.toString(); });
     child.stderr?.on('data', (d: Buffer) => { err += d.toString(); });
     child.on('error', (e) => { clearTimeout(timer); done({ available: false, python: PYTHON_BIN, detail: `${PYTHON_BIN} could not be started (${e.message})` }); });

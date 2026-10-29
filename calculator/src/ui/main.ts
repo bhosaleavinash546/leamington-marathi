@@ -6126,7 +6126,7 @@ function setCadQualityBadge(isClosedSolid: boolean | null, freeEdges: number | n
 }
 
 /** One accept list for every CAD input, from the server when it answers, else the built-in default. */
-let cadLimits: { maxUploadMb: number; maxDrawingPdfMb: number; accept: string[]; kernel?: { available: boolean } } = { maxUploadMb: 250, maxDrawingPdfMb: 30, accept: ['.step', '.stp', '.iges', '.igs', '.stl'] };
+let cadLimits: { maxUploadMb: number; maxDrawingPdfMb: number; accept: string[]; kernel?: { available: boolean; unknown?: boolean } } = { maxUploadMb: 250, maxDrawingPdfMb: 30, accept: ['.step', '.stp', '.iges', '.igs', '.stl'] };
 
 /**
  * Before the upload: can this install read STEP / IGES? Without the CAD kernel the upload "worked", the viewer said
@@ -6137,6 +6137,12 @@ function showCADKernelNotice(): void {
   if (!n) return;
   if (cadLimits.kernel?.available !== false) { n.hidden = true; return; }
   n.hidden = false;
+  // The start-up probe did not finish (a busy machine): say that, not "not installed" — the first measurement will tell.
+  if (cadLimits.kernel?.unknown) {
+    n.innerHTML = '<strong>The CAD kernel check did not finish at start-up</strong> (the computer was busy). STEP and IGES files '
+      + 'will be read if the kernel (OCP) is installed — the first Measure part will tell; if it fails, run <code>pip install -r requirements.txt</code> and restart.';
+    return;
+  }
   n.innerHTML = '<strong>STEP and IGES files cannot be read on this computer</strong> — the CAD kernel (OCP) is not installed. '
     + 'STL files still work. To fix it, run <code>pip install -r requirements.txt</code> in the CostVision folder (or start '
     + 'with <code>./start.sh</code>, which installs it) and restart the server.';
@@ -21348,8 +21354,12 @@ function renderCADCostCard(): void {
     confidence: _lastBandInfo?.conf ?? null,
     basis,
     confidenceWhy: _lastBandInfo?.conf === 'calibrated' ? null : confidenceWhy(lastResult!),
-    grade: mat ? { label: mat.grade, answered: !!(_cadDecisionAnswers['material.grade'] || _cadDecisionAnswers['material.resin'] || _cadMaterialLocked) } : null,
-    costedWeightKg: input.rawMaterial.directCost ? null : input.rawMaterial.netWeightKg,
+    // A laminate is two materials priced per kg (a direct cost on the placeholder id): the Laminate chip names it and
+    // the costed weight is the cured part weight the form holds — "Grade Virtual / Pass-through (default)" and no
+    // weight is what the hat stiffener printed (parity sweep, Oct 2026).
+    grade: mat && !/^mat-virtual/.test(input.rawMaterial.materialId) ? { label: mat.grade, answered: !!(_cadDecisionAnswers['material.grade'] || _cadDecisionAnswers['material.resin'] || _cadDecisionAnswers['material.elastomer'] || _cadDecisionAnswers['material.alAlloy'] || _cadDecisionAnswers['gear.materialClass'] || _cadMaterialLocked) } : null,
+    costedWeightKg: input.rawMaterial.netWeightKg > 0 ? input.rawMaterial.netWeightKg   // a gear's blank carries its net weight beside the direct cost
+      : (activeCommodity === 'composites' ? (parseFloat((document.getElementById('comp-part-wt') as HTMLInputElement | null)?.value ?? '') || null) : null),
     topMovers,
     commercial,
     // A finish is in the cost when the form's finishing block holds a route (answered on CAD, or typed).

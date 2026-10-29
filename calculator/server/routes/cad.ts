@@ -594,6 +594,19 @@ export function statedFromAnswers(answers: Record<string, unknown>): Record<stri
 
 /** Every guard, in one place, for every path. The near-net machining cap used
  *  to run only on the AI path (after the deterministic branch had returned). */
+/**
+ * The commodity whose rules run while the process question is still open. The question leans on a route when the
+ * part's own evidence points there (a constant section → extrusion, a laminate name → composites, a 34 % fill with a
+ * rubber name → rubber); the screen pre-ticks that leaning and counts it answered. Until the engineer changes it,
+ * the questions on screen must be THAT route's — a rubber grommet asked "what is this part made of? aluminium /
+ * steel / … / plastic" by the machining placeholder's rules could not be answered and blocked Get cost (nine-commodity
+ * parity sweep, Oct 2026). No leaning, or a leaning without a rule pack → the fallback stays.
+ */
+export function placeholderCommodity(decision: Decision | null, fallback: string): string {
+  const lean = decision?.options.find(o => o.leaning)?.value;
+  return typeof lean === 'string' && specForCommodity(lean) ? lean : fallback;
+}
+
 export function runAllGuards(
   analysis: unknown, geo: OCCTGeometry, measuredVol: number | null,
   stated: Record<string, unknown> | null,
@@ -1098,7 +1111,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       console.log(`[CAD] Deterministic commodity: ${selectedCommodity} — ${verdict.basis}`);
     } else {
       commodityDecision = verdict.decision!;
-      console.log('[CAD] Deterministic commodity: undecided — asking the engineer');
+      selectedCommodity = placeholderCommodity(commodityDecision, selectedCommodity);
+      console.log(`[CAD] Deterministic commodity: undecided — asking the engineer (rules run as ${selectedCommodity} meanwhile)`);
     }
   } else {
     const s1 = await stage1Identify(anthropic!, geo, originalname, deepAnalysis,
@@ -2961,6 +2975,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
       console.log(`[CAD/reanalyze] Deterministic commodity: ${selectedCommodity} — ${verdict.basis}`);
     } else {
       commodityDecisionRe = verdict.decision!;
+      selectedCommodity = placeholderCommodity(commodityDecisionRe, selectedCommodity);
     }
   } else {
     const s1 = await stage1Identify(anthropic!, geo, filename, deepAnalysis,

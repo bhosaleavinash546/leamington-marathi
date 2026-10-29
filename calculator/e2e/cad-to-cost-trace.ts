@@ -97,6 +97,8 @@ async function screenState(page: Page) {
         options: Array.from(d.querySelectorAll<HTMLInputElement>('input[type=radio]')).map(r => ({ value: r.value, checked: r.checked,
           label: (r.closest('label')?.textContent ?? '').replace(/\s+/g, ' ').trim() })),
         select: (d.querySelector('select[data-decision-select]') as HTMLSelectElement | null)?.value ?? null,
+        entry: (d.querySelector('input[data-decision-entry]') as HTMLInputElement | null)?.value ?? null,
+        hasEntry: !!d.querySelector('input[data-decision-entry]'),
         notListed: !!d.querySelector('.cad-other-link, select[data-decision-other]'),
       })),
       decisionsStatus: txt('#cad-decisions-status'),
@@ -155,7 +157,11 @@ function recomputeFromWorkbook(xlsxPath: string) {
   const gross = mval(/^Gross Weight/), price = mval(/^Material Price/), scrap = mval(/^Scrap Credit/);
   const energy = mval(/^Process energy/);
   const extra = mat.filter(x => /^(Bought-in|Consumable|Service|Coating|Surface)/i.test(String(x[0] ?? ''))).reduce((a, x) => a + (Number(x[1]) || 0), 0);
-  const matCalc = gross * price + (Number.isFinite(scrap) ? scrap : 0) + (Number.isFinite(energy) ? energy : 0) + extra;
+  // A direct-cost material (a laminate: fibre + resin per kg) prints its itemised lines under the figure — re-add them.
+  const direct = mval(/^Direct material cost/);
+  const itemised = mat.filter(x => /^\s{3}\S/.test(String(x[0] ?? ''))).reduce((a, x) => a + (Number(x[1]) || 0), 0);
+  const matCalc = Number.isFinite(direct) ? (itemised > 0 ? itemised : direct) + extra
+    : gross * price + (Number.isFinite(scrap) ? scrap : 0) + (Number.isFinite(energy) ? energy : 0) + extra;
   const base = b.material + b.process + b.labour + b.tooling;
   const factory = base + b.packaging + b.logistics;
   const ohCalc = base * ohPct, subtotal = factory + b.overhead, mgCalc = subtotal * mgPct;
@@ -249,8 +255,8 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     }, null, { timeout: 900_000, polling: 300 }).then(h => h.jsonValue());
     if (st.hero) { hero = st.hero; break; }
     const ss = await screenState(page);
-    const todo = ss.decisions.find(d => p.answers[d.id] && (d.select ?? d.options.find(o => o.checked)?.value) !== p.answers[d.id]
-      && (d.options.some(o => o.value === p.answers[d.id]) || d.select !== null));
+    const todo = ss.decisions.find(d => p.answers[d.id] && ((d.hasEntry && !d.options.some(o => o.value === p.answers[d.id])) ? d.entry : (d.select ?? d.options.find(o => o.checked)?.value)) !== p.answers[d.id]
+      && (d.options.some(o => o.value === p.answers[d.id]) || d.select !== null || d.hasEntry));
     const r: Record<string, unknown> = { round, questions: ss.decisions.map(d => ({ id: d.id, isNew: d.isNew, pre: d.select ?? d.options.find(o => o.checked)?.value ?? null,
       options: d.options.map(o => o.value) })), chips: ss.chips, status: ss.decisionsStatus };
     // D1: the safety-critical question pre-ticks only on name evidence, never "No"
@@ -265,7 +271,11 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     if (todo) {
       const sel = `.cad-decision[data-decision-id="${todo.id}"]`;
       const rerun = page.waitForResponse(x => /\/api\/cad\/(re)?analyze$/.test(x.url()), { timeout: 600_000 }).catch(() => null);
-      if (todo.select !== null) await page.selectOption(`${sel} select[data-decision-select]`, p.answers[todo.id]);
+      if (todo.hasEntry && !todo.options.some(o => o.value === p.answers[todo.id])) {
+        // a figure, not a choice (a blow-moulded capacity, a helix angle): typed, then applied by Get cost like a person would
+        await page.fill(`${sel} input[data-decision-entry]`, p.answers[todo.id]);
+        await page.dispatchEvent(`${sel} input[data-decision-entry]`, 'change');
+      } else if (todo.select !== null) await page.selectOption(`${sel} select[data-decision-select]`, p.answers[todo.id]);
       else await page.check(`${sel} input[type=radio][value="${p.answers[todo.id]}"]`);
       // M3 / #9: Get cost says "Updating…" and waits while the rules re-run in place
       let during: { text: string; disabled: boolean } | null = null;
@@ -302,8 +312,11 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   rec.rounds = rounds;
   const answeredRounds = rounds.filter(r => r.answered);
   const updatingSeen = answeredRounds.length > 0 && answeredRounds.every(r => { const d = r.getCostDuringRerun as { text?: string; disabled?: boolean } | undefined; return /Updating/.test(d?.text ?? '') && d?.disabled === true; });
-  check('2', 'M3/#9', 'Get cost reads "Updating…" and is disabled while an answer re-runs the rules', updatingSeen,
-    rounds.filter(r => r.answered).map(r => JSON.stringify(r.getCostDuringRerun)).join(' ') || 'no answer round');
+  // Every answer pre-leaned by the part's own evidence → nothing to answer, no re-run to watch: that is the product
+  // working, not a failure (the vent pipe, the grommet — parity sweep, Oct 2026).
+  if (answeredRounds.length === 0) check('2', 'M3/#9', 'Get cost reads "Updating…" while an answer re-runs the rules', 'info', 'no answer round — every question was pre-leaned, Get cost applied at once');
+  else check('2', 'M3/#9', 'Get cost reads "Updating…" and is disabled while an answer re-runs the rules', updatingSeen,
+    rounds.filter(r => r.answered).map(r => JSON.stringify(r.getCostDuringRerun)).join(' '));
   check('2', 'M3', 'answered questions collapse to chips', rounds.filter(r => r.answered).every(r => (r.chipsAfter as string[]).length > 0),
     rounds.filter(r => r.answered).map(r => (r.chipsAfter as string[]).join(', ')).at(-1) ?? '');
   const remounts = rounds.filter(r => r.viewerRemounted);
@@ -362,7 +375,8 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   check('3', '§3', 'chips: route, grade, weight, country, volume + Change answers',
     card.changeAnswers && card.chips.some(c => /Country/.test(c)) && card.chips.some(c => /Volume/.test(c)),
     card.chips.join(' | '));
-  check('3', '§3', 'grade and costed weight on the chips', card.chips.some(c => /^Grade /.test(c)) && card.chips.some(c => /^Weight .*kg/.test(c)),
+  // A laminate (two materials priced per kg) names its material on the Laminate chip, not a Grade chip (parity sweep).
+  check('3', '§3', 'grade and costed weight on the chips', card.chips.some(c => /^(Grade|Laminate) /.test(c)) && card.chips.some(c => /^Weight .*kg/.test(c)),
     card.chips.filter(c => /^(Grade|Weight)/.test(c)).join(' | ') || 'missing');
   const grades = [...new Set(card.basis.map(r => r[0]))];
   check('3', '#3', 'Basis: every input graded (measured / answered / rule / default)', card.basis.length > 5 && grades.length >= 3, `${card.basis.length} rows; grades ${grades.join(', ')}; first: ${card.basis.slice(0, 3).map(r => r.join(' ')).join(' | ')}`);
