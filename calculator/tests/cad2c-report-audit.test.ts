@@ -58,6 +58,11 @@ describe('R10 / R26 / R27 — a rate-book note as a report prints it', () => {
     expect(reportNoteText(null)).toBe('');
   });
 
+  it('a priced lever\'s re-cost basis names the operation short', async () => {
+    const src = await import('node:fs').then(fs => fs.readFileSync('src/engine/idea-levers.ts', 'utf8'));
+    expect(src).toMatch(/basis: `\$\{shortOperationName\(top\.operationName\)\} cycle time/);
+  });
+
   it('a cover note names the operation whatever its name holds (em dash, commas)', () => {
     const w = 'operations[0] (Direct extrusion — press, quench, stretch, saw).partsPerCycle: Direct extrusion — press, quench, stretch, saw: 15 parts a cycle — each part carries 1/15 of the cycle time';
     expect(coverWarningText(w)).toBe('Direct extrusion — press, quench, stretch, saw (operation 1) — parts per cycle: Direct extrusion — press, quench, stretch, saw: 15 parts a cycle — each part carries 1/15 of the cycle time');

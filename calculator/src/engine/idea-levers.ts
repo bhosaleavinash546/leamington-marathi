@@ -60,7 +60,7 @@ const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: Part
     const top = ops.reduce((a, b) => (b.processCost + b.labourCost > a.processCost + a.labourCost ? b : a));
     const k = input.operations.findIndex(o => o.operationName === top.operationName);
     if (k < 0) return null;
-    return { next: { ...input, operations: input.operations.map((o, i) => i === k ? { ...o, cycleTimeHr: o.cycleTimeHr * 0.8, labourTimeHr: o.labourTimeHr * 0.8 } : o) }, basis: `${top.operationName} cycle time −20%` };
+    return { next: { ...input, operations: input.operations.map((o, i) => i === k ? { ...o, cycleTimeHr: o.cycleTimeHr * 0.8, labourTimeHr: o.labourTimeHr * 0.8 } : o) }, basis: `${shortOperationName(top.operationName)} cycle time −20%` };
   },
   'Multi-Cavity / Multi-Up Tooling': (input) => ({
     next: { ...input,

@@ -60,6 +60,7 @@ Second pass (the re-run's reports read again):
 | R16 | The route comparison's operation rows (screen, §9b, Excel 8-Routes) printed the full names with the feature list. | The comparison names its operations with `shortOperationName` at source. |
 | R17 | The battery rail's cover note printed the raw field path: "operations[0] (Direct extrusion — press, quench, stretch, saw).partsPerCycle: …" — the em dash and commas in the operation's name fell outside the character class that turned a field into its label. | `decision-text.ts::coverWarningText` matches to the first ": " whatever the name holds; test. |
 | R18 | Excel 5-LabourRates printed the labour source as the book wrote it ("Was £19.94/h"). | Through `reportNoteText` like the other rate sheets. |
+| R19 | A priced lever's "Re-costed on:" line (§13) carried the full operation name. | The lever transform names the operation short. |
 
 ### The screen
 
@@ -90,7 +91,7 @@ costs £33.91 (UK, 100k / yr, 5 yr; EN AW-6063, direct press, T6, mill finish): 
 themes, the PDF and Excel opened and re-added. The dumped reports of both parts carry none of the audited patterns
 (previous figures, refresh logs, cross-references, raw field names, feature lists in names, short tab labels).
 
-The final rail run after R17 / R18 is recorded in `scratchpad/five4` (same checks; cover note reads "Direct extrusion —
+All five parts on the final build (`scratchpad/five5`): 311 pass · 0 fail · 3 info; the reports delivered to the President carry none of the audited patterns (one lever line, R19, fixed and the hub flange re-run in `five6`). The final rail run after R17 / R18 is recorded in `scratchpad/five4` (same checks; cover note reads "Direct extrusion —
 press, quench, stretch, saw (operation 1) — parts per cycle: … 15 parts a cycle").
 
 ## 4. Motion and experience
