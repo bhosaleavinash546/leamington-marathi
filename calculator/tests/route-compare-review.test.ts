@@ -105,7 +105,8 @@ describe('2. The screen on every real part: same family, the shape, the equipmen
 describe('3. The arithmetic on a row', () => {
   it('the knuckle: buckets add up on every costed row; the machining row buys 50.9 kg of plate for a 2.85 kg part; tooling investment ÷ amortisation = tooling a part', async () => {
     const cmp = await compareRoutes(input('steering_knuckle_RH.stp'), undefined);
-    expect(cmp.rows.map(r => r.route)).toEqual(['forging', 'cast_and_machine', 'machining']);
+    expect([...new Set(cmp.rows.map(r => r.route))]).toEqual(['forging', 'cast_and_machine', 'machining']);
+    expect(cmp.rows[0].label).toBe('forging — closed-die forging');
     for (const r of cmp.rows) {
       expect(r.status, r.route).toBe('costed');
       expect(r.reconciles, r.route).toBe(true);
@@ -132,7 +133,7 @@ describe('3. The arithmetic on a row', () => {
       // Tooling spread over more parts: the part never gets dearer as the volume rises on these routes.
       for (let k = 1; k < r.byVolume.length; k++) expect(r.byVolume[k].total!).toBeLessThanOrEqual(r.byVolume[k - 1].total! + 0.0001);
     }
-    expect(cmp.crossovers.map(c => c.route)).toEqual(['cast_and_machine', 'machining']);
+    expect([...new Set(cmp.crossovers.map(c => c.route))]).toEqual(['forging', 'cast_and_machine', 'machining']);
     for (const c of cmp.crossovers) { expect(c.atVolume).toBeNull(); expect(c.text).toMatch(/dearer than the costed route at every volume/); }
   }, 60_000);
   it('a volume not on the ladder is added to it', async () => {
@@ -141,14 +142,15 @@ describe('3. The arithmetic on a row', () => {
     expect(cmp.rows[0].byVolume.find(v => v.volume === 60_000)!.total).toBe(cmp.rows[0].total);
   }, 60_000);
   it('a crossover is interpolated between the two re-costs either side of the sign change, never beyond the ladder', () => {
-    const ref = { route: 'a', total: 10, byVolume: [5_000, 10_000, 25_000].map(v => ({ volume: v, total: 10, note: null })) } as unknown as RouteRow;
-    const alt = { route: 'b', total: 9, byVolume: [{ volume: 5_000, total: 12, note: null }, { volume: 10_000, total: 11, note: null }, { volume: 25_000, total: 8, note: null }] } as unknown as RouteRow;
-    const [x] = crossovers([ref, alt], 'a', [5_000, 10_000, 25_000]);
+    const pt = (volume: number, total: number) => ({ volume, total, p10: null, p90: null, note: null });
+    const ref = { route: 'a', process: null, label: 'a', total: 10, byVolume: [5_000, 10_000, 25_000].map(v => pt(v, 10)) } as unknown as RouteRow;
+    const alt = { route: 'b', process: null, label: 'b', total: 9, byVolume: [pt(5_000, 12), pt(10_000, 11), pt(25_000, 8)] } as unknown as RouteRow;
+    const [x] = crossovers([ref, alt], ref, [5_000, 10_000, 25_000], 10_000);
     expect(x.atVolume).toBe(15_000);     // 10 + (25 − 10) × 1 / 3
     expect(x.cheaperAbove).toBe(true);
-    expect(x.text).toMatch(/cheaper than the costed route above ~15,000 a year \(interpolated between re-costs at 10,000 and 25,000\)/);
-    const never = { route: 'c', total: 20, byVolume: [5_000, 10_000, 25_000].map(v => ({ volume: v, total: 20, note: null })) } as unknown as RouteRow;
-    expect(crossovers([ref, never], 'a', [5_000, 10_000, 25_000])[0]).toMatchObject({ atVolume: null, text: expect.stringMatching(/dearer .* every volume from 5,000 to 25,000/) });
+    expect(x.text).toMatch(/cheaper than the costed route above ~15,000 a year on the central estimate \(interpolated between re-costs at 10,000 and 25,000\)/);
+    const never = { route: 'c', process: null, label: 'c', total: 20, byVolume: [5_000, 10_000, 25_000].map(v => pt(v, 20)) } as unknown as RouteRow;
+    expect(crossovers([ref, never], ref, [5_000, 10_000, 25_000], 10_000)[0]).toMatchObject({ atVolume: null, text: expect.stringMatching(/dearer .* every volume from 5,000 to 25,000/) });
   });
 });
 
@@ -182,7 +184,8 @@ describe('5. The screen', () => {
     const html = routeCompareHtml(x, { fmt: n => `£${n.toFixed(2)}` });
     expect(html).toContain('same material family');
     expect(html).toContain('How this row is built');
-    expect(html).toContain('adds up');
+    expect(html).toContain('re-add closes');
+    expect(html).toContain('all close');
     expect(html).toContain('Not feasible for this part');
     expect(html).toContain('cheaper than the costed route above');
     expect(html).toContain('5,000 / yr');
@@ -190,4 +193,78 @@ describe('5. The screen', () => {
     expect(html).not.toMatch(/mat-[a-z0-9-]+</);   // no library id as a label
     expect(html).toContain('Boothroyd');
   }, 60_000);
+});
+
+describe('6. Second round — processes, the independent re-add, the specification, bands and payback', () => {
+  it('a casting or forging route is split into its feasible processes, each refused by the advisor\'s own rules', async () => {
+    const cmp = await compareRoutes(input('FORGE_Hub_Flange.stp'), undefined);
+    const labels = cmp.rows.map(r => r.label);
+    expect(labels[0]).toBe('forging — closed-die forging');            // the reference names the advisor's choice
+    expect(cmp.rows[0].notes.join(' ')).toMatch(/closed-die forging is the process the advisor chose/);
+    expect(labels).toContain('forging — precision forging');
+    expect(labels).toContain('cast and machine — sand casting');
+    expect(labels).toContain('cast and machine — investment casting');
+    const ex = cmp.excluded.map(e => e.label);
+    expect(ex).toContain('forging — cold forming');
+    expect(ex).toContain('cast and machine — high-pressure die casting');
+    expect(cmp.excluded.find(e => e.label === 'cast and machine — high-pressure die casting')!.reasons[0].measured).toMatch(/not die cast/);
+    expect(cmp.excluded.find(e => e.label === 'forging — cold forming')!.reasons[0].measured).toMatch(/slug/);
+    // A process the rules price with the same operations and tooling says so — the difference is yield, not process.
+    const precision = cmp.rows.find(r => r.label === 'forging — precision forging')!;
+    expect(precision.caveats.join(' ')).toMatch(/same operations and tooling/);
+  }, 120_000);
+  it('every costed row re-adds independently to the penny on three parts, and the re-add is not the engine', async () => {
+    for (const name of ['steering_knuckle_RH.stp', 'PRCR002.stp', 'TF_Trim_Cover.stp']) {
+      const cmp = await compareRoutes(input(name, { ladder: false, bands: false }), undefined);
+      for (const r of cmp.rows.filter(r => r.status === 'costed')) {
+        expect(r.audit, `${name} ${r.label}`).not.toBeNull();
+        expect(r.audit!.closes, `${name} ${r.label}: ${r.audit!.lines.filter(l => !l.closes).map(l => `${l.line} ${l.recomputed} v ${l.reported}`).join('; ')}`).toBe(true);
+        expect(r.audit!.lines.map(l => l.line)).toEqual(['Process (machines)', 'Labour', 'Material', 'Tooling', 'Packaging', 'Logistics', 'Overhead', 'Margin', 'Total']);
+        for (const l of r.audit!.lines) expect(l.how.length).toBeGreaterThan(10);
+      }
+    }
+  }, 120_000);
+  it('the specification states each answer\'s source; an answer a route never reads is marked, an assumed one too', async () => {
+    const cmp = await compareRoutes(input('steering_knuckle_RH.stp', { ladder: false, bands: false }), undefined);
+    const ref = cmp.rows[0];
+    expect(ref.spec.find(s => s.id === 'service.safetyCritical')).toMatchObject({ value: 'yes', source: 'answered' });
+    const cam = cmp.rows.find(r => r.route === 'cast_and_machine' && r.process === 'sand')!;
+    expect(cam.spec.find(s => s.id === 'service.pressureTight')).toMatchObject({ source: 'assumed' });
+    expect(cam.spec.find(s => s.id === 'casting.processChoice')).toMatchObject({ value: 'sand casting', source: 'comparison' });
+    const mach = cmp.rows.find(r => r.route === 'machining')!;
+    expect(mach.spec.find(s => s.id === 'service.safetyCritical')).toMatchObject({ source: 'not asked' });
+  }, 120_000);
+  it('each row carries its Monte-Carlo band, the ladder its band at every point, and the crossover says where bands overlap and what the tooling payback is', async () => {
+    const cmp = await compareRoutes(input('TF_Trim_Cover.stp'), undefined);
+    for (const r of cmp.rows.filter(r => r.status === 'costed')) {
+      expect(r.band).not.toBeNull();
+      expect(r.band!.p10).toBeLessThan(r.total!);
+      expect(r.band!.p90).toBeGreaterThan(r.total!);
+      for (const p of r.byVolume) { expect(p.p10).not.toBeNull(); expect(p.p90!).toBeGreaterThan(p.p10!); }
+    }
+    const x = cmp.crossovers.find(c => c.route === 'injection_moulding')!;
+    expect(x.indistinguishable).not.toBeNull();
+    expect(x.text).toMatch(/bands overlap/);
+    expect(x.payback).not.toBeNull();
+    expect(x.payback!.extraTooling).toBeGreaterThan(0);
+    expect(x.payback!.parts).toBe(Math.round(x.payback!.extraTooling / x.payback!.pieceSaving));
+    expect(x.text).toMatch(/paid back/);
+    // Programme spend = piece (ex tooling) × parts + tooling investment.
+    const im = cmp.rows.find(r => r.route === 'injection_moulding')!;
+    expect(im.programme!.total).toBeCloseTo(im.programme!.pieceExTooling * im.programme!.parts + im.tooling!.investment, 1);
+    expect(im.programme!.parts).toBe(500_000);
+  }, 120_000);
+  it('the screen prints the process rows, the re-add verdict, the spec sources, the band and the programme spend', async () => {
+    const cmp = await compareRoutes(input('FORGE_Hub_Flange.stp'), undefined);
+    const x = routeComparisonExport(cmp, { current: 'forging', headline: cmp.rows[0].total, labels: { forging: 'Forging', cast_and_machine: 'Cast + Machine', machining: 'Machining' } });
+    const html = routeCompareHtml(x, { fmt: n => `£${n.toFixed(2)}` });
+    expect(html).toContain('Forging — closed-die forging');
+    expect(html).toContain('Cast + Machine — sand casting');
+    expect(html).toContain('re-add closes');
+    expect(html).toContain('Specification costed');
+    expect(html).toContain('Programme spend');
+    expect(html).toContain('P10 £');
+    expect(html).toContain('data-cost-process="sand"');
+    expect(html).not.toMatch(/mat-[a-z0-9-]+</);
+  }, 120_000);
 });

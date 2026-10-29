@@ -21380,9 +21380,15 @@ async function loadRouteComparison(): Promise<void> {
     });
     host.innerHTML = routeCompareHtml(_cadRouteComparison, { fmt: (n: number) => _currFmt(n) });
     host.querySelectorAll<HTMLButtonElement>('[data-cost-route]').forEach(btn => btn.addEventListener('click', () => {
-      // Re-analyse AS that route on the CAD screen — its own questions come up there before Get cost.
+      // Re-analyse AS that route on the CAD screen — its own questions come up there before Get cost. A process row
+      // (sand / HPDC / precision …) records the process as the engineer's choice; the rules cost it as chosen.
+      const route = btn.dataset.costRoute as CommodityType;
+      delete _cadDecisionAnswers['casting.processChoice']; delete _cadDecisionAnswers['forging.processChoice'];
+      if (btn.dataset.costProcess) {
+        _cadDecisionAnswers[route === 'forging' ? 'forging.processChoice' : 'casting.processChoice'] = btn.dataset.costProcess;
+      }
       showWorkflowPanel('cad_analysis', { restoreDraft: false });
-      void applyAlternativeProcess(btn.dataset.costRoute as CommodityType, true);
+      void applyAlternativeProcess(route, true);
     }));
   } catch (err) {
     delete cmp.dataset.loaded;

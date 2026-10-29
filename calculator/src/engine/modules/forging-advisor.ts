@@ -114,6 +114,25 @@ export interface ForgingAdvisorInputs {
   isRingShape?: boolean;
   /** Safety-critical / fatigue-loaded (aerospace, powertrain) — drives NDT. */
   safetyCritical?: boolean;
+  /** A process chosen by the engineer or the route comparison — costed as chosen when the shape and alloy allow it. */
+  processOverride?: ForgingProcess;
+}
+
+/**
+ * Can this part be forged by this process at all? The ladder's own shape and alloy rules, asked directly (compare-routes
+ * review, Oct 2026). Null = feasible.
+ */
+export function forgingProcessRefusal(process: ForgingProcess, i: Pick<ForgingAdvisorInputs, 'partWeightKg' | 'alloyFamily' | 'complexity' | 'isRingShape'>): string | null {
+  if (process === 'ring-rolling' && !i.isRingShape) return 'not an axisymmetric ring — ring rolling needs one';
+  if (process === 'cold-forming') {
+    if (i.partWeightKg > 5) return `${i.partWeightKg} kg is above the 5 kg a multi-station cold former takes`;
+    if (i.complexity === 'high') return 'a complex shape is not cold formed';
+    const slug = coldSlugDiameterMm(i.partWeightKg, i.alloyFamily);
+    if (slug > COLD_FORMER_MAX_SLUG_MM) return `a Ø${slug.toFixed(0)} mm slug is above the Ø${COLD_FORMER_MAX_SLUG_MM} mm a cold former takes`;
+    if (!['carbon-steel', 'alloy-steel', 'aluminium', 'copper'].includes(i.alloyFamily)) return `${ALLOY_LABEL[i.alloyFamily]} is not cold formed`;
+  }
+  if (process === 'precision' && i.partWeightKg > 100) return `${i.partWeightKg} kg is above the 100 kg precision / isothermal forging takes`;
+  return null;
 }
 
 export interface ForgingProcessRecommendation {
@@ -152,6 +171,17 @@ export function adviseForgingProcess(inputs: ForgingAdvisorInputs): ForgingProce
     reason,
     suggestedSecondary: secondary,
   });
+
+  // 0. A process chosen rather than recommended (the route comparison costs every feasible process as its own row).
+  if (inputs.processOverride && !forgingProcessRefusal(inputs.processOverride, inputs)) {
+    const p = inputs.processOverride;
+    const chosen = `${alloy} by ${FORGING_PROCESS_REFERENCE[p].label.toLowerCase()} — the process chosen for this row, not the advisor's pick`;
+    if (p === 'ring-rolling') return build(p, chosen, ['Billet shear', 'Upset + punch (preform)', 'Ring roll', 'Heat treat', 'Machine'], [...(inputs.safetyCritical ? ['UT / MPI NDT'] : []), 'Heat treat']);
+    if (p === 'precision') return build(p, chosen, ['Preform', 'Isothermal/precision forge', 'Solution + age', ...(inputs.safetyCritical ? ['CT / UT NDT'] : []), 'Finish machine'], ['Heat treat', ...(inputs.safetyCritical ? ['CT/UT NDT'] : []), 'Near-net machining']);
+    if (p === 'cold-forming') return build(p, chosen, ['Wire/slug cut', 'Multi-station cold form', 'Trim', ...(inputs.alloyFamily === 'aluminium' ? ['Age (T6)'] : ['Optional Q&T'])], ['Phosphate/lube prep', 'Optional heat treat']);
+    if (p === 'open-die') return build(p, chosen, ['Ingot/billet heat', 'Open-die forge (draw/upset)', 'Rough machine', 'Heat treat', 'Finish machine'], ['Q&T heat treat', ...(inputs.safetyCritical ? ['UT NDT'] : []), 'Stress relieve']);
+    return build('closed-die', chosen, ['Billet shear + heat', 'Block/finish impressions', 'Flash trim', 'Heat treat', 'Shot blast'], ['Flash trim', 'Heat treat', 'Shot blast', ...(inputs.safetyCritical ? ['MPI NDT'] : [])]);
+  }
 
   // 1. Ring/flange/gear-blank geometry → seamless ring rolling.
   if (inputs.isRingShape && inputs.partWeightKg >= 0.5) {

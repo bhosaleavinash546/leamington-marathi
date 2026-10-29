@@ -118,6 +118,9 @@ export function isRevolutionDominant(ctx: RuleContext): boolean {
 }
 
 /** Shape complexity for the tonnage, die-cost and die-life estimators. */
+/** The engineer's (or the route comparison's) choice of forging process — an answer, never asked by the rules. */
+export const FORGING_PROCESS_CHOICE_ID = 'forging.processChoice';
+
 export function shapeComplexity(ctx: RuleContext): ShapeComplexity {
   const freeForm = ctx.geo.features?.freeFormFaceCount ?? 0;
   const undercuts = ctx.geo.draftAnalysis?.undercutFaceCount ?? 0;
@@ -139,7 +142,7 @@ export function shapeComplexity(ctx: RuleContext): ShapeComplexity {
 }
 
 /** The advisor grades complexity on a three-point scale of its own. */
-function advisorComplexity(s: ShapeComplexity): ComplexityLevel {
+export function advisorComplexity(s: ShapeComplexity): ComplexityLevel {
   return s === 'complex' ? 'high' : s === 'simple' ? 'low' : 'medium';
 }
 
@@ -368,7 +371,10 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
 
   const shape = shapeComplexity(ctx);
   const ring = isRingShape(ctx);
+  const chosen = ctx.answers[FORGING_PROCESS_CHOICE_ID];
+  const processOverride = chosen === 'closed-die' || chosen === 'precision' || chosen === 'cold-forming' || chosen === 'ring-rolling' || chosen === 'open-die' ? chosen : undefined;
   const rec = adviseForgingProcess({
+    ...(processOverride ? { processOverride } : {}),
     annualVolume: ctx.annualVolume,
     partWeightKg: mat.massKg,
     complexity: advisorComplexity(shape),

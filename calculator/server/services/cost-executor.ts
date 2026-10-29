@@ -6,7 +6,7 @@
  * for the `calculate_cost` Anthropic tool_use block.
  */
 
-import type { OperationResult, TraceabilityRecord, CommodityDrivers } from '../../src/engine/types.js';
+import type { OperationResult, TraceabilityRecord, CommodityDrivers, UniversalStackInput, PartCostResult } from '../../src/engine/types.js';
 import { withRates } from '../../src/engine/rate-context.js';
 import { computeUniversalStack, validateStackInput } from '../../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
@@ -80,7 +80,9 @@ export interface CostToolResult {
    * The audit trail that proves a costing in a country used that country's book.
    */
   /** `drivers` is what the module handed the core — the audit trail behind every line (country audit, Oct 2026). */
-  trace?: { operations: OperationResult[]; traceability: TraceabilityRecord[]; rateBook: string; drivers?: CommodityDrivers };
+  trace?: { operations: OperationResult[]; traceability: TraceabilityRecord[]; rateBook: string; drivers?: CommodityDrivers;
+    /** The exact stack input and the core's result (compare-routes review: an independent re-add and the band need both). */
+    stackInput?: UniversalStackInput; result?: PartCostResult };
 }
 
 import { computeBatteryPackDrivers } from '../../src/engine/modules/battery-pack.js';
@@ -292,7 +294,7 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
       },
       total:       Math.round(total           * 10000) / 10000,
       factoryCost: Math.round(result.factoryCost * 10000) / 10000,
-      trace: { operations: result.operationDetails, traceability: result.traceability, rateBook: rates.version, drivers },
+      trace: { operations: result.operationDetails, traceability: result.traceability, rateBook: rates.version, drivers, stackInput, result },
       topDrivers,
       dfmOpportunities,
     };

@@ -105,7 +105,43 @@ Examples (UK, 5-year programme): the ABS trim cover — injection moulding is ch
 - `tests/cad-phase2.test.ts` D5 updated to the new shape (the knuckle's as-cast row is refused with `as_cast_scope`).
 - Live: `npx tsx e2e/cad-to-cost-trace.ts` (compare reference row = headline, the detail and the refused list present).
 
-## 4. Still open
+## 5. Second round (29 Oct 2026) — processes, the independent re-add, the specification, bands, payback
+
+Asked for: more advanced, mathematically precise, accurate from start to finish. What was built:
+
+- **Every feasible casting and forging PROCESS is its own row.** `casting.processChoice` / `forging.processChoice` are
+  engineer answers the advisors honour (`processOverride` on `adviseCastingProcess` / `adviseForgingProcess`), screened
+  by the advisors' own rules (`castingProcessRefusal`: die-castable alloys, `HPDC_SECTION_MAX_MM`; `forgingProcessRefusal`:
+  ring shape, `COLD_FORMER_MAX_SLUG_MM`, 5 kg cold / 100 kg precision; the 20 kg investment tree). The reference row
+  names the process the advisor chose (the variant whose figures equal it is folded in). "Cost this route" on a process
+  row records the choice and the rules cost it as chosen.
+- **An independent re-add on every costed row** (`auditRow`): operations from machine £/hr × cycle ÷ OEE ÷ parts a
+  cycle and labour £/hr × crew × time ÷ efficiency ÷ parts a cycle; material from kg bought × £/kg − scrap credit +
+  energy + consumables (+ bought-in); tooling ÷ amortisation; packaging and logistics as handed in; overhead and margin at
+  their stated percentages as the core applies them (bought-in content takes handling, no margin). Each line against the
+  engine's figure, closing within half a penny — never by running the engine again. The stack input and the core's
+  result ride on the trace for it (`cost-executor.ts`). Every costed row of every part tested closes.
+- **The specification each row was costed to** (`spec`): every material and service answer with its source — answered,
+  assumed from a leaning, chosen by the comparison, or NOT READ on this route (a forging never reads leak-tight; machining
+  never reads safety-critical) — so a cheaper row is not read as a tighter one.
+- **Bands.** The Monte-Carlo band (`computeCostUncertainty`, the drivers' provenance read off the rule fields) on every
+  row at the costing's volume (4,000 trials) and at each ladder point (1,000). A crossover is still the median
+  interpolation, and where the two routes' P10–P90 bands overlap on the ladder the text says the routes are
+  indistinguishable there.
+- **Tooling payback and programme spend.** Where a route costs more tooling and a lower piece price, the parts and
+  months to pay the extra tooling back at the costing's volume; and per row the programme spend = (piece − tooling a
+  part) × annual × years + tooling investment, the figure a director trades.
+- **A rules gap the comparison exposed**, said on the row rather than hidden: the hub flange's precision forging prices
+  £15.66 against £17.32 closed-die with the SAME press, die and CNC minutes — only the yield (0.81 v 0.675) and the
+  machining stock differ. The row carries the caveat "the rules price this process with the same operations and tooling
+  as the costed process — a material-yield effect, not a process one". Precision forging's slower press, dearer dies and
+  lower machining content are not modelled yet.
+
+Proof: `tests/route-compare-review.test.ts` §6 (process rows and refusals on the hub flange; the re-add closes on every
+costed row of three parts; spec sources; bands at every ladder point; overlap and payback on the trim cover; the screen).
+Live: `e2e/cad-to-cost-trace.ts` CR1–CR5.
+
+## 6. Still open
 
 - The engineering-typical limits (mould wall 0.5–6 mm, thermoforming draw ≤ 1×, roto wall 2–20 mm, ferrous castable
   wall 3 mm, forging web 3 mm) are stated limits a cost engineer can argue with, not measurements of a supplier's

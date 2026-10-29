@@ -2,6 +2,7 @@ import { overallConfidence } from '../engine/uncertainty.js';
 import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
 import { fieldLabel } from '../ui/field-labels.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
+import { routeRowLabel, routeReferenceRow, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import type { ChecksAppliedMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
@@ -33,7 +34,7 @@ export async function exportToExcelBlob(
   /** The rate book, rules and kernel behind a CAD costing (CAD to COST v2) — printed under the country. */
   stamp: string | null = null,
   /** The route comparison the screen drew (compare-routes review, Oct 2026) — sheet 8, never re-run here. */
-  routeComparison: import('../ui/cad-workspace.js').RouteComparisonExport | null = null,
+  routeComparison: RouteComparisonExport | null = null,
 ): Promise<Blob> {
   const sym = currencySymbol(currency);
   const m = (gbp: number) => money(gbp * fxRate, sym);
@@ -326,41 +327,54 @@ export async function exportToExcelBlob(
   }
   sheets.push({ name: '7-Checks', rows: ck, cols: [56, 18, 18, 14, 60] });
 
-  // ── Sheet 8: Route comparison — the screen's rows, each with its 8 buckets, material, tooling and ladder ──
+  // ── Sheet 8: Route comparison — the screen's rows, each with its buckets, the independent re-add, its spec, band and ladder ──
   if (routeComparison && routeComparison.rows.length) {
     const x = routeComparison;
-    const ref = x.rows.find(r => r.route === x.current)?.total ?? null;
+    const name = (r: { route: string; process: string | null; label: string }) => routeRowLabel(r, x.labels);
+    const refRow = routeReferenceRow(x);
+    const ref = refRow?.total ?? null;
     const rr: unknown[][] = [
       ['ROUTE COMPARISON', `(${currency})`],
       [x.principle],
+      [`Programme view: ${x.programme.annualVolume.toLocaleString('en-GB')} a year over ${x.programme.years} years${x.programme.yearsAssumed ? ' (5 years assumed — no programme life given)' : ''}.`],
       [],
-      ['Route', 'Status', 'Cost / part', 'vs reference', 'Material', 'Process', 'Labour', 'Tooling', 'Packaging', 'Logistics', 'Overhead', 'Margin', 'Buckets add up', 'Grade costed', 'Net kg', 'Bought kg', 'Utilisation', 'Tooling investment', 'Amortised over', 'Basis'],
+      ['Route · process', 'Status', 'Cost / part', 'Band P10', 'Band P90', '± %', 'vs reference', 'Material', 'Process', 'Labour', 'Tooling', 'Packaging', 'Logistics', 'Overhead', 'Margin', 'Buckets add up', 'Independent re-add', 'Grade costed', 'Net kg', 'Bought kg', 'Utilisation', 'Tooling investment', 'Amortised over', 'Programme spend', 'Basis'],
       ...x.rows.map(r => [
-        `${x.labels[r.route] ?? r.route}${r.route === x.current ? ' (this costing)' : ''}`, r.status,
+        `${name(r)}${r === refRow ? ' (this costing)' : ''}`, r.status,
         r.total != null ? m(r.total) : '—',
-        r.route === x.current ? 'reference' : r.total != null && ref != null ? m(r.total - ref) : '—',
+        r.band ? m(r.band.p10) : '', r.band ? m(r.band.p90) : '', r.band ? pctCell(r.band.plusMinusPct / 100) : '',
+        r === refRow ? 'reference' : r.total != null && ref != null ? m(r.total - ref) : '—',
         ...['rawMaterial', 'process', 'labour', 'tooling', 'packaging', 'logistics', 'overhead', 'margin'].map(k => (r.breakdown ? m(r.breakdown[k] ?? 0) : '—')),
         r.reconciles == null ? '' : r.reconciles ? 'OK' : 'MISMATCH',
+        r.audit ? (r.audit.closes ? 'CLOSES' : 'OPEN') : '',
         r.material?.label ?? '', r.material?.netKg ?? '', r.material?.boughtKg ?? '', r.material?.utilisation != null ? pctCell(r.material.utilisation) : '',
-        r.tooling ? m(r.tooling.investment) : '', r.tooling?.amortisedOver ?? '',
+        r.tooling ? m(r.tooling.investment) : '', r.tooling?.amortisedOver ?? '', r.programme ? m(r.programme.total) : '',
         [...(r.commodity && r.commodity !== r.route ? [`costed as ${x.labels[r.commodity] ?? r.commodity}`] : []), ...r.assumed.map(a => `assumed: ${a}`), ...r.openQuestions.map(q => `needs an answer: ${q}`), ...(r.refusal ? [`not costed: ${r.refusal}`] : []), ...r.notes, ...r.caveats].join('; '),
       ]),
       [],
     ];
+    const specLabels = [...new Set(x.rows.flatMap(r => r.spec.map(sp => sp.label)))];
+    if (specLabels.length) {
+      rr.push(['SPECIFICATION EACH ROW WAS COSTED TO — answered by the engineer · assumed from the question\'s leaning · chosen by the comparison · not read on this route'],
+        ['Route · process', ...specLabels],
+        ...x.rows.map(r => [name(r), ...specLabels.map(l => { const sp = r.spec.find(s2 => s2.label === l); return sp ? `${sp.value} (${sp.source})` : '—'; })]), []);
+    }
     if (x.ladder.length) {
-      rr.push(['COST A PART BY ANNUAL VOLUME — each figure is a re-cost at that volume; a crossover is interpolated between two re-costs'],
-        ['Route', ...x.ladder.map(v => `${v.toLocaleString('en-GB')} / yr`), 'Crossover'],
-        ...x.rows.filter(r => r.byVolume.length).map(r => [x.labels[r.route] ?? r.route,
-          ...x.ladder.map(v => { const p = r.byVolume.find(b => b.volume === v); return p?.total != null ? m(p.total) : '—'; }),
-          x.crossovers.find(k => k.route === r.route)?.text ?? (r.route === x.current ? 'reference' : '')]),
+      rr.push(['COST A PART BY ANNUAL VOLUME — each figure is a re-cost at that volume with its P10–P90 band; a crossover is interpolated between two re-costs; where bands overlap the routes are indistinguishable'],
+        ['Route · process', ...x.ladder.flatMap(v => [`${v.toLocaleString('en-GB')} / yr`, 'P10', 'P90']), 'Crossover'],
+        ...x.rows.filter(r => r.byVolume.length).map(r => [name(r),
+          ...x.ladder.flatMap(v => { const p = r.byVolume.find(b => b.volume === v); return [p?.total != null ? m(p.total) : '—', p?.p10 != null ? m(p.p10) : '', p?.p90 != null ? m(p.p90) : '']; }),
+          x.crossovers.find(k => k.route === r.route && k.process === r.process)?.text ?? (r === refRow ? 'reference' : '')]),
         []);
     }
-    rr.push(['OPERATIONS BY ROUTE'], ['Route', 'Operation', 'Machine class', 'Cycle (min)', 'Process', 'Labour']);
-    for (const r of x.rows) for (const op of r.operations ?? []) rr.push([x.labels[r.route] ?? r.route, op.name, op.machine, op.bench ? '' : op.cycleMin, m(op.processCost), m(op.labourCost)]);
-    rr.push([], ['FEASIBILITY — every route with rules, the checks it passed or failed, and the source of each limit'], ['Route', 'Feasible', 'Check', 'Measured', 'Limit', 'Pass', 'Source']);
-    for (const r of x.rows) for (const ck of r.checks) rr.push([x.labels[r.route] ?? r.route, 'yes', ck.label, ck.measured, ck.limit, ck.pass ? 'pass' : 'fail', ck.source]);
-    for (const e of x.excluded) for (const ck of e.reasons) rr.push([x.labels[e.route] ?? e.route, 'no', ck.label, ck.measured, ck.limit, 'fail', ck.source]);
-    sheets.push({ name: '8-Routes', rows: rr, cols: [26, 12, 12, 12, 11, 11, 11, 11, 11, 11, 11, 11, 10, 26, 9, 9, 10, 14, 12, 70] });
+    rr.push(['INDEPENDENT RE-ADD — recomputed from the rates and times the engine recorded, never by running the engine again'], ['Route · process', 'Line', 'How', 'Re-added', 'Engine', 'Closes']);
+    for (const r of x.rows) for (const ln of r.audit?.lines ?? []) rr.push([name(r), ln.line, ln.how, m(ln.recomputed), m(ln.reported), ln.closes ? 'yes' : 'NO']);
+    rr.push([], ['OPERATIONS BY ROUTE'], ['Route · process', 'Operation', 'Machine class', 'Cycle (min)', 'Process', 'Labour']);
+    for (const r of x.rows) for (const op of r.operations ?? []) rr.push([name(r), op.name, op.machine, op.bench ? '' : op.cycleMin, m(op.processCost), m(op.labourCost)]);
+    rr.push([], ['FEASIBILITY — every route and process with rules, the checks it passed or failed, and the source of each limit'], ['Route · process', 'Feasible', 'Check', 'Measured', 'Limit', 'Pass', 'Source']);
+    for (const r of x.rows) for (const ck of r.checks) rr.push([name(r), 'yes', ck.label, ck.measured, ck.limit, ck.pass ? 'pass' : 'fail', ck.source]);
+    for (const e of x.excluded) for (const ck of e.reasons) rr.push([name(e), 'no', ck.label, ck.measured, ck.limit, 'fail', ck.source]);
+    sheets.push({ name: '8-Routes', rows: rr, cols: [30, 12, 12, 11, 11, 7, 12, 11, 11, 11, 11, 11, 11, 11, 11, 10, 12, 26, 9, 9, 10, 14, 12, 14, 70] });
   }
 
   // Every £ amount in the text of a non-£ workbook (rule bases, rate sources, notes) in the workbook's currency

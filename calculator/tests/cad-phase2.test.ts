@@ -182,11 +182,12 @@ describe('D5 — compare routes (rebuilt in the compare-routes review, Oct 2026)
   });
   it('the table: reference first, deltas signed, a typed change on the form called out, text escaped', () => {
     const row = (route: string, total: number, toolingPerPart: number, assumed: string[]): RouteCompareRow => ({
-      route, commodity: route, status: 'costed', total, toolingPerPart, breakdown: null, reconciles: null, material: null, tooling: null,
-      operations: null, checks: [], caveats: [], assumed, openQuestions: [], notes: [], refusal: null, byVolume: [],
+      route, process: null, label: route, commodity: route, status: 'costed', total, toolingPerPart, breakdown: null, reconciles: null, audit: null, spec: [],
+      material: null, tooling: null, operations: null, band: null, checks: [], caveats: [], assumed, openQuestions: [], notes: [], refusal: null, byVolume: [], programme: null,
     });
     const html = routeCompareHtml(routeComparisonExport({
       principle: 'p', rows: [row('casting', 31.79, 0.9, ['<b>x</b>']), row('forging', 24.22, 1.01, [])], excluded: [], ladder: [], crossovers: [],
+      programme: { annualVolume: 100_000, years: 5, yearsAssumed: false },
     }, { current: 'forging', headline: 24.5, labels: { forging: 'Forging', casting: 'Casting' } }), { fmt: n => `£${n.toFixed(2)}` });
     expect(html.indexOf('Forging')).toBeLessThan(html.indexOf('Casting'));
     expect(html).toContain('+£7.57 (+31%)');

@@ -202,7 +202,7 @@ export interface BulkRunOptions {
  * Memoised per run: a 500-part basket in three regions rebuilds three books,
  * not five hundred.
  */
-function regionalBook(
+export function regionalBook(
   base: RateLibrary, region: ManufacturingRegion, cache: Map<string, RateLibrary>,
 ): RateLibrary {
   // Keyed on the region alone: the cache is created per run and the base book is

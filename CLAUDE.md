@@ -675,6 +675,13 @@ what is true** — nothing here has been compared with a price JLR paid.
   same POLYMER in the route's grades (`samePolymerGrade`). Screen (`routeCompareHtml`: build-up per row, "Not feasible"
   list), PDF §9b and Excel `8-Routes` print `cadMeta.routeComparison` — what the screen drew, never a re-run.
   `tests/route-compare-review.test.ts`; survey `scripts/route-compare-review/`.
+  Second round (29 Oct 2026, doc §5): every feasible casting / forging PROCESS is its own row (`casting.processChoice` /
+  `forging.processChoice` answers → `processOverride` on the advisors, refused by `castingProcessRefusal` /
+  `forgingProcessRefusal`); every costed row carries an INDEPENDENT re-add (`auditRow`: ops, material, tooling,
+  overhead, margin from the trace's `stackInput` + `result`, never the engine again — closes to ½ p), its `spec` (each
+  answer: answered / assumed / comparison / not asked), its Monte-Carlo `band` (and a band at every ladder point:
+  overlapping bands = "indistinguishable"), tooling `payback` and `programme` spend. A process row priced with the same
+  ops and tooling as the reference says so (material-yield effect).
   End-to-end trace (28 Oct 2026, `docs/review/cad-to-cost-e2e-trace-2026-10-28.md`): `e2e/cad-to-cost-trace.ts` checks every
   plan item live on two parts (116 checks; the cost re-added from the exported workbook). The cost card carries the step
   indicator, the confidence reason (`confidenceWhy` in uncertainty.ts, labels via `traceFieldLabel`), grade + weight chips,

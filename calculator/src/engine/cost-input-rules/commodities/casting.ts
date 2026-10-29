@@ -74,6 +74,9 @@ export function complexityBand(ctx: RuleContext): ComplexityLevel {
 }
 
 /** The advisor's process, mapped onto the subtype the cost engine models. */
+/** The engineer's (or the route comparison's) choice of casting process — an answer, never asked by the rules. */
+export const CASTING_PROCESS_CHOICE_ID = 'casting.processChoice';
+
 function toSubtype(p: CastingProcess): CastingSubtype {
   return p === 'megacasting' ? 'hpdc' : p;
 }
@@ -128,7 +131,12 @@ function advise(ctx: RuleContext): { advice: Advice } | { blocked: RuleOutcome<n
   const safetyCritical = answeredBool(ctx, SAFETY_CRITICAL_DECISION_ID);
   if (safetyCritical === null) return { blocked: ask(safetyCriticalDecision(ctx)) };
 
+  // A process the engineer (or the route comparison) chose is costed as chosen when the alloy allows it — the
+  // advisor's ladder otherwise (compare-routes review, Oct 2026).
+  const chosen = ctx.answers[CASTING_PROCESS_CHOICE_ID];
+  const processOverride = chosen === 'sand' || chosen === 'gravity' || chosen === 'hpdc' || chosen === 'investment' ? chosen : undefined;
   const rec = adviseCastingProcess({
+    ...(processOverride ? { processOverride } : {}),
     annualVolume: ctx.annualVolume,
     partWeightKg: mat.massKg!,
     // The shell-wall trap: on a very sparse part the ray-cast minimum is

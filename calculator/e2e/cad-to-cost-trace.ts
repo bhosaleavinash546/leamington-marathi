@@ -40,6 +40,11 @@ const PARTS: PartSpec[] = [
   { label: 'ecu-cover-moulding', file: join(PARTS_DIR, 'IM_ECU_Cover.stp'), programmeYears: 5, annual: 100_000,
     answers: { 'commodity.route': 'injection_moulding', 'material.family': 'plastic', 'material.resin': 'mat-pc-abs' } },
 ];
+// A different set of parts (the five-part CAD2C review, Oct 2026): CV_TRACE_PARTS=<path to a JSON array of PartSpec>,
+// file names relative to cad-audit/parts.
+const PARTS_FROM_ENV: PartSpec[] | null = process.env.CV_TRACE_PARTS
+  ? (JSON.parse(readFileSync(process.env.CV_TRACE_PARTS, 'utf8')) as PartSpec[]).map(p => ({ ...p, file: p.file.startsWith('/') ? p.file : join(PARTS_DIR, p.file) }))
+  : null;
 const OUT = process.env.CV_TRACE_OUT ?? join(tmpdir(), 'cad-to-cost-trace');
 mkdirSync(OUT, { recursive: true });
 const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
@@ -341,6 +346,14 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     };
   });
   rec.step3 = { ...s, card, shot: await snap('step3-cost') };
+  // The same screen in the light theme (CAD2C five-part review, Oct 2026): shot and axe, then back to dark.
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
+  await page.waitForTimeout(300);
+  rec.step3LightShot = await snap('step3-cost-light');
+  const axLight = await axe(page);
+  check('3', 'A5', 'axe WCAG 2.1 AA on the cost step in the LIGHT theme', axLight.length === 0, axLight.join(', ') || '0 violations');
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+  await page.waitForTimeout(200);
   check('3', 'M4', 'step 3 current', s.step === 'Cost', `current "${s.step}"`);
   check('3', '#2', 'tooling investment (one-off) with its amortisation basis', card.figs.some(f => /Tooling investment/.test(f) && /a part over 5 years × 100,000/.test(f)), card.figs[0] ?? '(none)');
   check('3', 'D6', 'the band says what it covers and that accuracy is not measured', /not the model's error/.test(card.note) && /not yet measured/.test(card.note), card.note);
@@ -509,7 +522,7 @@ async function main(): Promise<void> {
     const health = await (await fetch(`${base}/api/health`)).json() as Record<string, unknown>;
     say(`server: ${JSON.stringify({ aiAvailable: health.aiAvailable, kernel: (health as { kernel?: unknown }).kernel ?? null })}`);
     browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH || undefined });
-    for (const p of PARTS) {
+    for (const p of PARTS_FROM_ENV ?? PARTS) {
       const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1440, height: 1000 } });
       const page = await context.newPage();
       const net: Array<Record<string, unknown>> = [];

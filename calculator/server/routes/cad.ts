@@ -2819,6 +2819,7 @@ router.post('/compare-routes', requireAuth, reanalyzeLimiter, asyncRoute(async (
     acknowledge: parseAcknowledged(req.body?.acknowledged),
     baseBook: recomputeMachineRates(resolveActiveRateBook()),
     ladder: req.body?.ladder !== false,
+    bands: req.body?.bands !== false,
   });
   res.json({ region, comparison, rows: comparison.rows, versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV } });
 }));

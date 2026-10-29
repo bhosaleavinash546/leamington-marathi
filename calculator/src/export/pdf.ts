@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { routeRowLabel, routeReferenceRow, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType, Scenario } from '../engine/types.js';
 import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
@@ -83,7 +84,7 @@ export interface GeometricDFMMeta {
 
 export interface CADReportMeta {
   /** The route comparison the screen drew (compare-routes review, Oct 2026) — printed as §9b, never re-run here. */
-  routeComparison?: import('../ui/cad-workspace.js').RouteComparisonExport | null;
+  routeComparison?: RouteComparisonExport | null;
   /** "UK rate book v2.2.0 · rules v7 · kernel 374f8cebdccb · 28 Oct 2026" — what made these numbers (CAD to COST v2). */
   stamp?: string | null;
   /**
@@ -1653,73 +1654,108 @@ export function renderShouldCostSections(
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // §9b — Route Comparison (the screen's comparison, same material family, feasible routes only)
+  // §9b — Route Comparison (the screen's comparison: same material family, feasible routes and processes only)
   // ════════════════════════════════════════════════════════════════════════
   if (cadMeta.routeComparison && cadMeta.routeComparison.rows.length) {
     const x = cadMeta.routeComparison;
+    const name = (r: { route: string; process: string | null; label: string }) => routeRowLabel(r, x.labels);
     y = chk(doc, y, 60);
-    y = secBar(doc, y, '§9b — Route Comparison', `the same part on every route that can make it in ${x.labels[x.current] ? 'its material' : 'its material'}  ·  reference: ${x.currentLabel}`);
+    y = secBar(doc, y, '§9b — Route Comparison', `the same part on every route and process that can make it in its material  ·  reference: ${name(routeReferenceRow(x) ?? x.rows[0])}`);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
-    doc.text(x.principle, MG, y + 3, { maxWidth: CW }); y += 11;
-    const ref = x.rows.find(r => r.route === x.current);
+    doc.text(`${x.principle} Programme view: ${x.programme.annualVolume.toLocaleString('en-GB')} a year over ${x.programme.years} years${x.programme.yearsAssumed ? ' (5 years assumed)' : ''}. Every costed row is re-added independently from its own rates and times (operations, material, tooling, overhead, margin); a row that does not close is marked, never corrected.`, MG, y + 3, { maxWidth: CW }); y += 14;
+    const ref = routeReferenceRow(x);
     const refTotal = ref?.total ?? null;
-    const rowsSorted = [...x.rows].sort((a, b) => (a.route === x.current ? -1 : b.route === x.current ? 1 : (a.total ?? Infinity) - (b.total ?? Infinity)));
+    const rowsSorted = [...x.rows].sort((a, b) => (a === ref ? -1 : b === ref ? 1 : (a.total ?? Infinity) - (b.total ?? Infinity)));
     const why = (r: typeof x.rows[number]): string => {
       const lines: string[] = [];
       if (r.commodity && r.commodity !== r.route) lines.push(`costed as ${x.labels[r.commodity] ?? r.commodity}`);
       lines.push(...r.assumed.map(a => `assumed: ${a}`), ...r.openQuestions.map(q => `needs an answer: ${q}`));
       if (r.refusal) lines.push(`not costed: ${r.refusal}`);
       lines.push(...r.notes, ...r.caveats);
-      const cross = x.crossovers.find(k => k.route === r.route);
-      if (cross && r.route !== x.current) lines.unshift(cross.text);
+      const notAsked = r.spec.filter(sp => sp.source === 'not asked');
+      if (notAsked.length) lines.push(`not read on this route: ${notAsked.map(sp => sp.label.toLowerCase()).join(', ')}`);
+      const cross = x.crossovers.find(k => k.route === r.route && k.process === r.process);
+      if (cross && r !== ref) lines.unshift(cross.text);
       return lines.join('; ');
     };
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
-      head: [['Route', 'Cost / part', 'vs reference', 'Material', 'Process', 'Labour', 'Tooling invest.', 'Tooling / part', 'Material bought', 'Basis']],
+      head: [['Route · process', 'Cost / part', 'Band (P10–P90)', 'vs reference', 'Tooling invest.', 'Tooling / part', 'Programme spend', 'Re-add', 'Material bought', 'Basis']],
       body: rowsSorted.map(r => [
-        `${x.labels[r.route] ?? r.route}${r.route === x.current ? ' (this costing)' : ''}`,
+        `${name(r)}${r === ref ? ' (this costing)' : ''}`,
         r.total != null ? c(r.total) : '—',
-        r.route === x.current ? 'reference' : r.total != null && refTotal != null && refTotal > 0
+        r.band ? `${c(r.band.p10)} – ${c(r.band.p90)} (± ${r.band.plusMinusPct}%)` : '—',
+        r === ref ? 'reference' : r.total != null && refTotal != null && refTotal > 0
           ? `${r.total >= refTotal ? '+' : '-'}${c(Math.abs(r.total - refTotal))} (${r.total >= refTotal ? '+' : '-'}${Math.abs((r.total / refTotal - 1) * 100).toFixed(0)}%)` : '—',
-        r.breakdown ? c(r.breakdown.rawMaterial ?? 0) : '—', r.breakdown ? c(r.breakdown.process ?? 0) : '—', r.breakdown ? c(r.breakdown.labour ?? 0) : '—',
         r.tooling ? c(r.tooling.investment) : '—', r.toolingPerPart != null ? c(r.toolingPerPart) : '—',
+        r.programme ? c(r.programme.total) : '—',
+        r.audit ? (r.audit.closes ? 'closes' : 'OPEN') : '—',
         r.material ? `${r.material.boughtKg != null ? `${r.material.boughtKg.toFixed(3)} kg` : '—'} for ${r.material.netKg != null ? `${r.material.netKg.toFixed(3)} kg` : '—'} (${r.material.label})` : '—',
         why(r),
       ]),
-      headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 6 },
-      bodyStyles: { fontSize: 6, cellPadding: 1.4 },
-      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 24 }, 1: { fontStyle: 'bold' }, 9: { cellWidth: 48 } },
+      headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 5.8 },
+      bodyStyles: { fontSize: 5.8, cellPadding: 1.3 },
+      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 26 }, 1: { fontStyle: 'bold' }, 9: { cellWidth: 44 } },
       didParseCell: (d: { section: string; row: { index: number }; cell: { styles: { fillColor?: unknown } } }) => {
-        if (d.section === 'body' && rowsSorted[d.row.index]?.route === x.current) d.cell.styles.fillColor = HDR as RGB;
+        if (d.section === 'body' && rowsSorted[d.row.index] === ref) d.cell.styles.fillColor = HDR as RGB;
       },
     });
     y = lastFinalY(doc) + 3;
+    // The specification each row was costed to — like for like, or the difference printed.
+    const specIds = [...new Set(x.rows.flatMap(r => r.spec.map(sp => sp.label)))];
+    if (specIds.length) {
+      y = chk(doc, y, 24);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(...NAVY);
+      doc.text('Specification each row was costed to (answered by the engineer · assumed from the question\'s leaning · chosen by the comparison · not read on this route):', MG, y + 3, { maxWidth: CW }); y += 8;
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG },
+        head: [['Route · process', ...specIds]],
+        body: rowsSorted.map(r => [name(r), ...specIds.map(l => { const sp = r.spec.find(s2 => s2.label === l); return sp ? `${sp.value} (${sp.source})` : '—'; })]),
+        styles: { fontSize: 5.6, cellPadding: 1 }, headStyles: { fillColor: NAVY, fontSize: 5.8 },
+        columnStyles: { 0: { cellWidth: 26, fontStyle: 'bold' } },
+      });
+      y = lastFinalY(doc) + 3;
+    }
     if (x.ladder.length) {
       y = chk(doc, y, 30);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(...NAVY);
-      doc.text('Cost a part by annual volume — each figure is the route re-costed at that volume (tooling, batches and cavitation follow it); a crossover is interpolated between two re-costs, never extrapolated.', MG, y + 3, { maxWidth: CW }); y += 9;
+      doc.text('Cost a part by annual volume — each figure is the route re-costed at that volume (tooling, batches and cavitation follow it) with its P10–P90 band; a crossover is interpolated between two re-costs, never extrapolated; where bands overlap the routes are indistinguishable.', MG, y + 3, { maxWidth: CW }); y += 11;
       const costedRows = rowsSorted.filter(r => r.byVolume.length);
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG }, theme: 'grid',
-        head: [['Route', ...x.ladder.map(v => `${v.toLocaleString('en-GB')} / yr`)]],
-        body: costedRows.map(r => [x.labels[r.route] ?? r.route, ...x.ladder.map(v => { const p = r.byVolume.find(b => b.volume === v); return p?.total != null ? c(p.total) : '—'; })]),
-        headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 6 },
-        bodyStyles: { fontSize: 6.2, cellPadding: 1.4 },
+        head: [['Route · process', ...x.ladder.map(v => `${v.toLocaleString('en-GB')} / yr`)]],
+        body: costedRows.map(r => [name(r), ...x.ladder.map(v => { const p = r.byVolume.find(b => b.volume === v); return p?.total != null ? `${c(p.total)}${p.p10 != null && p.p90 != null ? `\n${c(p.p10)}–${c(p.p90)}` : ''}` : '—'; })]),
+        headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 5.8 },
+        bodyStyles: { fontSize: 5.6, cellPadding: 1.3 },
         columnStyles: { 0: { fontStyle: 'bold', cellWidth: 30 } },
+      });
+      y = lastFinalY(doc) + 3;
+    }
+    // The independent re-add of every costed row, line by line.
+    const audited = rowsSorted.filter(r => r.audit);
+    if (audited.length) {
+      y = chk(doc, y, 30);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(...NAVY);
+      doc.text('Independent re-add of each costed row — recomputed from the rates and times the engine recorded, never by running the engine again:', MG, y + 3, { maxWidth: CW }); y += 8;
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG },
+        head: [['Route · process', 'Line', 'How', 'Re-added', 'Engine', 'Closes']],
+        body: audited.flatMap(r => r.audit!.lines.map((ln, k) => [k === 0 ? name(r) : '', ln.line, ln.how, c(ln.recomputed), c(ln.reported), ln.closes ? 'yes' : 'NO'])),
+        styles: { fontSize: 5.4, cellPadding: 0.9 }, headStyles: { fillColor: NAVY, fontSize: 5.6 },
+        columnStyles: { 0: { cellWidth: 26, fontStyle: 'bold' }, 1: { cellWidth: 20 }, 3: { cellWidth: 16 }, 4: { cellWidth: 16 }, 5: { cellWidth: 12 } },
       });
       y = lastFinalY(doc) + 3;
     }
     if (x.excluded.length) {
       y = chk(doc, y, 30);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(...NAVY);
-      doc.text('Routes not feasible for this part — each with the check it failed and the source of the limit:', MG, y + 3); y += 7;
+      doc.text('Routes and processes not feasible for this part — each with the check it failed and the source of the limit:', MG, y + 3); y += 7;
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG },
-        head: [['Route', 'Check', 'Measured', 'Limit', 'Source']],
-        body: x.excluded.flatMap(e => e.reasons.map((r, k) => [k === 0 ? (x.labels[e.route] ?? e.route) : '', r.label, r.measured, r.limit, r.source])),
+        head: [['Route · process', 'Check', 'Measured', 'Limit', 'Source']],
+        body: x.excluded.flatMap(e => e.reasons.map((r, k) => [k === 0 ? name(e) : '', r.label, r.measured, r.limit, r.source])),
         styles: { fontSize: 5.8, cellPadding: 1 }, headStyles: { fillColor: NAVY, fontSize: 6 },
-        columnStyles: { 0: { cellWidth: 24, fontStyle: 'bold' }, 1: { cellWidth: 24 }, 2: { cellWidth: 40 }, 3: { cellWidth: 30 } },
+        columnStyles: { 0: { cellWidth: 26, fontStyle: 'bold' }, 1: { cellWidth: 22 }, 2: { cellWidth: 40 }, 3: { cellWidth: 30 } },
       });
       y = lastFinalY(doc) + 6;
     }

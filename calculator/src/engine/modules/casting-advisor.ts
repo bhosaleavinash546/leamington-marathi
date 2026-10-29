@@ -127,6 +127,8 @@ export interface CastingAdvisorInputs {
   alloyFamily: AlloyFamily;
   /** Part must be leak-tight / pressure-rated (e.g. hydraulic, coolant, fuel). */
   pressureTight?: boolean;
+  /** A process chosen by the engineer or the route comparison — costed as chosen when the alloy allows it. */
+  processOverride?: CastingProcess;
   toleranceClass?: ToleranceClass;
   /** Safety-critical / fatigue-loaded (aerospace, chassis) — drives NDT + HIP. */
   safetyCritical?: boolean;
@@ -148,8 +150,23 @@ const ALLOY_LABEL: Record<AlloyFamily, string> = {
   superalloy: 'nickel superalloy', copper: 'copper alloy',
 };
 
-const DIE_CASTABLE: AlloyFamily[] = ['aluminium', 'magnesium', 'zinc'];
-const FERROUS: AlloyFamily[] = ['grey-iron', 'ductile-iron', 'carbon-steel', 'stainless-steel'];
+export const DIE_CASTABLE: AlloyFamily[] = ['aluminium', 'magnesium', 'zinc'];
+export const FERROUS: AlloyFamily[] = ['grey-iron', 'ductile-iron', 'carbon-steel', 'stainless-steel'];
+
+/**
+ * Can this alloy be cast by this process at all? The ladder's own material rules, asked directly (compare-routes
+ * review, Oct 2026: every casting process the part could take is costed as its own row). Null = feasible.
+ */
+export function castingProcessRefusal(process: CastingProcess, alloy: AlloyFamily, sectionMm: number | null): string | null {
+  const dieCastable = DIE_CASTABLE.includes(alloy);
+  if ((process === 'hpdc' || process === 'megacasting' || process === 'gravity') && !dieCastable) {
+    return `${ALLOY_LABEL[alloy]} is not die cast — pressure and gravity dies take aluminium, magnesium and zinc`;
+  }
+  if ((process === 'hpdc' || process === 'megacasting') && sectionMm != null && sectionMm > HPDC_SECTION_MAX_MM) {
+    return `a ${sectionMm.toFixed(1)} mm section is above the ${HPDC_SECTION_MAX_MM} mm a pressure die fills before it freezes (HPDC_SECTION_MAX_MM)`;
+  }
+  return null;
+}
 
 /**
  * The heaviest section (casting modulus 2·V/S, mm) sent to high-pressure die casting. 2·V/S counts bosses, ribs and
@@ -184,6 +201,21 @@ export function adviseCastingProcess(inputs: CastingAdvisorInputs): CastingProce
     reason,
     suggestedSecondary: secondary,
   });
+
+  // 0. A process chosen rather than recommended (the route comparison costs every feasible process as its own row).
+  if (inputs.processOverride && !castingProcessRefusal(inputs.processOverride, inputs.alloyFamily, inputs.sectionMm ?? null)) {
+    const p = inputs.processOverride;
+    const secondary = p === 'investment' ? ['Heat treat', ...(inputs.safetyCritical ? ['X-ray NDT'] : [])]
+      : p === 'hpdc' || p === 'megacasting' ? ['Deburr/trim', 'Shot blast', ...(inputs.pressureTight ? ['Vacuum-assist or impregnation'] : []), ...(inputs.safetyCritical ? ['X-ray NDT'] : [])]
+      : p === 'gravity' ? ['T6 heat treat', ...(inputs.safetyCritical ? ['X-ray NDT'] : [])]
+      : [...(ferrous ? ['Stress-relieve / normalise'] : ['Heat treat']), ...(inputs.safetyCritical ? ['X-ray NDT'] : [])];
+    const route = p === 'investment' ? ['Wax injection', 'Shell build', 'Dewax', 'Pour', 'Knockout', 'Finish']
+      : p === 'hpdc' ? ['HPDC shot', 'Trim/deburr', 'Shot blast', ...(inputs.pressureTight ? ['Impregnation'] : [])]
+      : p === 'megacasting' ? ['Vacuum giga-HPDC', 'Solution + T7 age', 'Laser trim', 'CMM datum-align', 'Leak test']
+      : p === 'gravity' ? ['Gravity/tilt pour', 'Knockout', 'T6 heat treat', 'Machining datums']
+      : ['Pattern/core prep', 'Mould + pour', 'Shakeout', 'Fettle', 'Heat treat', 'Machining'];
+    return build(p, `${alloy} by ${p === 'hpdc' ? 'high-pressure die casting' : p === 'megacasting' ? 'megacasting' : p + ' casting'} — the process chosen for this row, not the advisor's pick`, route, secondary);
+  }
 
   // 1. Nickel superalloy → investment (only viable route for turbine/hot-section).
   if (inputs.alloyFamily === 'superalloy') {
