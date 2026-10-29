@@ -2287,9 +2287,9 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
   .dhol-grid { max-width: 520px; width: 100%; margin: 0 auto; }
 }
 
-/* Nine nav items no longer fit inline below ~960px, so the hamburger
+/* Ten nav items no longer fit inline below ~1000px, so the hamburger
    takes over earlier than the other mobile styles (768px) */
-@media (max-width: 960px) {
+@media (max-width: 1000px) {
   #nav-toggle { display: flex; }
   #main-nav {
     position: absolute;
@@ -2376,3 +2376,81 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
   .connect-qr { display: none; }
   .connect-card { padding: 16px 10px; }
 }
+
+/* ---------- आपला महाराष्ट्र: making the stories easy to find ---------- */
+.mh-map-wrap { position: relative; }
+.mh-hint {
+  position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); z-index: 3;
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  padding: 8px 18px; border-radius: 30px; background: rgba(74, 19, 11, 0.92); color: #fff3dc;
+  font-weight: 700; font-size: 0.95rem; box-shadow: 0 10px 24px rgba(74, 19, 11, 0.3);
+  animation: mh-hint-pulse 1.8s ease-in-out infinite; pointer-events: none; transition: opacity 0.4s ease;
+}
+.mh-hint.gone { opacity: 0; animation: none; }
+.mh-hint-hand { display: inline-block; animation: mh-hand 1.2s ease-in-out infinite; }
+@keyframes mh-hint-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(244, 164, 18, 0.55); } 60% { box-shadow: 0 0 0 12px rgba(244, 164, 18, 0); } }
+@keyframes mh-hand { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+/* Cards: a coloured category tile instead of an empty photo box, and a real button */
+.mh-photo.mh-tile { aspect-ratio: 16 / 7; padding: 0; background: var(--c); background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 55%, #f4a412)); }
+.mh-tile-icon { font-size: 2.4rem; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25)); }
+.mh-card-more {
+  display: inline-block; margin: 10px 0 0; padding: 6px 14px; border-radius: 30px;
+  background: linear-gradient(135deg, var(--red), var(--saffron)); color: #fff; font-size: 0.85rem; font-weight: 700;
+}
+.mh-card:hover .mh-card-more { box-shadow: 0 6px 14px rgba(217, 42, 28, 0.3); }
+
+/* Detail panel: slim coloured band instead of a big empty photo area */
+.mh-photo.mh-band { aspect-ratio: auto; min-height: 96px; justify-content: flex-start; gap: 14px; padding: 16px 52px 16px 18px; text-align: left;
+  background: var(--c); background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 60%, #f4a412)); color: #fff3dc; }
+.mh-band-icon { font-size: 2.6rem; line-height: 1; }
+.mh-band-text { font-size: 0.82rem; line-height: 1.45; }
+.mh-empty { padding: 34px 22px; text-align: center; color: var(--ink); }
+.mh-empty-icon { display: inline-block; font-size: 2.4rem; animation: mh-hand 1.2s ease-in-out infinite; }
+.mh-empty p { margin: 8px 0 0; }
+.mh-empty .marathi { font-weight: 700; color: var(--maroon); font-size: 1.05rem; }
+.mh-share { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 16px 0; }
+.mh-share a, .mh-share button { font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; border-radius: 30px; padding: 7px 14px; text-decoration: none; }
+.mh-share-wa { background: #128c4b; color: #fff; border: 0; }
+.mh-share-copy { background: var(--white); color: var(--red-dark); border: 1.5px solid #f0dcc3; }
+
+/* Phones: the story slides up over the page */
+.mh-backdrop { display: none; }
+@media (max-width: 900px) {
+  .mh-detail.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 400; max-height: 86vh; overflow-y: auto; margin: 0;
+    border-radius: 20px 20px 0 0; transform: translateY(105%); visibility: hidden; transition: transform 0.35s ease, visibility 0s linear 0.35s;
+    box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.3); padding-bottom: 28px; }
+  .mh-detail.sheet.open { transform: none; visibility: visible; transition: transform 0.35s ease; }
+  .mh-detail.sheet::before { content: ""; position: sticky; top: 0; display: block; width: 44px; height: 5px; margin: 8px auto -13px; border-radius: 3px; background: rgba(255, 255, 255, 0.85); z-index: 2; }
+  .mh-detail.sheet .mh-close { position: sticky; top: 10px; display: block; margin: 10px 10px -42px auto; z-index: 5; }
+  .mh-card .mh-photo.mh-tile { aspect-ratio: 16 / 5; }
+  .mh-backdrop { display: block; position: fixed; inset: 0; z-index: 399; background: rgba(20, 4, 6, 0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .mh-backdrop.on { opacity: 1; pointer-events: auto; }
+  html.mh-sheet-lock, html.mh-sheet-lock body { overflow: hidden; }
+  .mh-hint { bottom: 34px; font-size: 0.85rem; padding: 7px 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .mh-hint, .mh-hint-hand, .mh-empty-icon { animation: none; } }
+
+/* ---------- Home: आपला महाराष्ट्र feature ---------- */
+.nav-links a.nav-mh .marathi { font-weight: 700; color: var(--red-dark); }
+.mh-promo-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 44px; align-items: center; max-width: 1100px; margin: 0 auto; }
+.mh-promo-map { position: relative; display: block; border-radius: var(--radius); overflow: hidden; border: 6px solid var(--white); box-shadow: 0 22px 50px rgba(74, 19, 11, 0.2); transition: transform 0.25s ease; }
+.mh-promo-map:hover { transform: translateY(-4px) rotate(-0.4deg); }
+.mh-promo-map img { display: block; width: 100%; height: auto; }
+.mh-promo-open { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); padding: 9px 20px; border-radius: 30px; background: rgba(74, 19, 11, 0.92); color: #fff3dc; font-weight: 700; white-space: nowrap; animation: mh-hint-pulse 1.8s ease-in-out infinite; }
+.mh-promo-text h2 { margin: 0 0 12px; text-align: left; }
+.mh-promo-text h2::after { margin-left: 0; }
+.mh-promo-lead { font-size: 1.15rem; font-weight: 600; color: var(--maroon); line-height: 1.7; margin: 0 0 8px; }
+.mh-promo-stats { list-style: none; padding: 0; margin: 18px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.mh-promo-stats li { background: var(--white); border-radius: 12px; padding: 12px; box-shadow: var(--shadow); text-align: center; }
+.mh-promo-stats b { display: block; font-size: 1.8rem; color: var(--red); line-height: 1.1; }
+.mh-promo-stats span { font-size: 0.85rem; font-weight: 600; color: var(--maroon); }
+.mh-promo-pick-label { margin: 0 0 8px; font-weight: 700; color: var(--saffron-text); }
+.mh-promo-picks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.mh-promo-picks a { padding: 7px 14px; border-radius: 30px; background: var(--white); border: 1.5px solid #f0dcc3; color: var(--red-dark); font-weight: 700; text-decoration: none; font-size: 0.92rem; }
+.mh-promo-picks a:hover { background: var(--cream-deep); border-color: var(--gold); }
+@media (max-width: 900px) {
+  .mh-promo-grid { grid-template-columns: 1fr; gap: 26px; }
+  .mh-promo-text { text-align: left; }
+}
+@media (max-width: 480px) { .mh-promo-stats { grid-template-columns: 1fr; } .mh-promo-stats li { display: flex; align-items: center; gap: 12px; text-align: left; } .mh-promo-stats b { font-size: 1.5rem; } }
