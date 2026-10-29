@@ -240,7 +240,7 @@ import { decisionAnswerText } from '../src/export/decision-text.js';
 
 describe('X29 — an unanswered advisory question prints what the costing used', () => {
   it('names the costed grade, never "engine default"', () => {
-    expect(decisionAnswerText({ severity: 'advisory', answer: null, used: 'EN-GJS-500-7' })).toBe('not answered - costed as EN-GJS-500-7');
+    expect(decisionAnswerText({ severity: 'advisory', answer: null, used: 'EN-GJS-500-7' })).toBe('not answered — costed as EN-GJS-500-7');
     expect(decisionAnswerText({ severity: 'blocking', answer: null })).toBe('OPEN');
     expect(decisionAnswerText({ severity: 'advisory', answer: 'cast iron' })).toBe('cast iron');
   });

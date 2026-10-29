@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { shortOperationName, operationFeatureList } from '../src/engine/operation-names.js';
 import { reportNoteText } from '../src/export/money-text.js';
-import { decisionAnswerLabel, decisionAnswerText } from '../src/export/decision-text.js';
+import { coverWarningText, decisionAnswerLabel, decisionAnswerText } from '../src/export/decision-text.js';
 import { COMMODITY_REPORT_LABELS } from '../src/ui/data/commodity-meta.js';
 import { winAnsiSafe } from '../src/export/pdf.js';
 import { routeCompareHtml, routeComparisonExport, type RouteCompareRow } from '../src/ui/cad-workspace.js';
@@ -49,8 +49,19 @@ describe('R10 / R26 / R27 — a rate-book note as a report prints it', () => {
     const note = 'UK resin distributor Jun 2026. Automotive interior, electronics housings. coolFactor ~2.2 s/mm² Index-anchored 2026-07 (see RESIN PRICING BASIS). | Refresh 2026-09: -£0.026/kg from 0.6kg pc £1.000->£1.000/kg; premiums held';
     expect(reportNoteText(note)).toBe('UK resin distributor Jun 2026. Automotive interior, electronics housings. Index-anchored 2026-07.');
     expect(reportNoteText('UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross. Source: https://x.y/z. Was £24.17/h'))
-      .toBe('UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross. Source: https://x.y/z');
+      .toBe('UK book 2026-10-10: 15.73 × 2028 h × 1.18 shift = £37,643 gross. Source: https://x.y/z.');
+    // mid-note and per kg too (§5 machine rates, §3 / §6 material notes in the five-part run)
+    expect(reportNoteText('£0.182/kWh. Was £41.32/h (a build-up tuned to a shop rate). UK Tier-2 CNC turning centre.'))
+      .toBe('£0.182/kWh. UK Tier-2 CNC turning centre.');
+    expect(reportNoteText('ladder +£0.010/kg (book grade £0.87 - book base £0.86). Was £0.87/kg. Source: https://a.b/c'))
+      .toBe('ladder +£0.010/kg (book grade £0.87 - book base £0.86). Source: https://a.b/c');
     expect(reportNoteText(null)).toBe('');
+  });
+
+  it('a cover note names the operation whatever its name holds (em dash, commas)', () => {
+    const w = 'operations[0] (Direct extrusion — press, quench, stretch, saw).partsPerCycle: Direct extrusion — press, quench, stretch, saw: 15 parts a cycle — each part carries 1/15 of the cycle time';
+    expect(coverWarningText(w)).toBe('Direct extrusion — press, quench, stretch, saw (operation 1) — parts per cycle: Direct extrusion — press, quench, stretch, saw: 15 parts a cycle — each part carries 1/15 of the cycle time');
+    expect(coverWarningText('rawMaterial.materialUtilization: Very low utilisation')).not.toMatch(/^rawMaterial/);
   });
 });
 

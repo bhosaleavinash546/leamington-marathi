@@ -32,7 +32,7 @@ export function reportNoteText(note: string | null | undefined): string {
   if (!note) return '';
   return note
     .replace(/\s*\|\s*Refresh \d{4}-\d{2}:.*$/s, '')
-    .replace(/\.?\s*Was £[\d.,]+\/h\b[^.]*\.?\s*$/, '')
+    .replace(/\s*Was £[\d.,]+\/[a-z²]+(?:\s*\([^)]*\))?\.?/g, '')
     .replace(/\s*\(see [A-Z ]+ PRICING BASIS\)/g, '')
     .replace(/\s*coolFactor ~[\d.]+ s\/mm²/g, '')
     .replace(/\s{2,}/g, ' ')

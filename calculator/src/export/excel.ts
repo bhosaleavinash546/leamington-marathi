@@ -1,6 +1,5 @@
 import { overallConfidence } from '../engine/uncertainty.js';
-import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
-import { fieldLabel } from '../ui/field-labels.js';
+import { coverWarningText, decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import { routeRowLabel, routeReferenceRow, traceFieldLabel, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import { shortOperationName, operationFeatureList } from '../engine/operation-names.js';
@@ -114,7 +113,7 @@ export async function exportToExcelBlob(
   }
   const warnings = result.warnings ?? [];
   if (warnings.length) {
-    sum.push([], ['── WARNINGS ON THIS COSTING ──'], ...warnings.map(w => [w.replace(/^([A-Za-z][\w.\[\]() -]*?): /, (_m, f: string) => `${fieldLabel(f)}: `)]));
+    sum.push([], ['── WARNINGS ON THIS COSTING ──'], ...warnings.map(w => [shortOperationName(coverWarningText(w))]));
   }
 
   sheets.push({ name: '1-Summary', rows: sum, cols: [58, 18, 12] });
@@ -270,7 +269,7 @@ export async function exportToExcelBlob(
   const labRows: unknown[][] = [labHdr];
   const usedLabIds = new Set(result.operationDetails.filter(o => o.labourTimeHr > 0).map(op => op.labourId));
   for (const lab of library.labour.filter(l => usedLabIds.has(l.id))) {
-    labRows.push([labourRoleLabel(lab.id), lab.region, lab.skillLevel, m(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
+    labRows.push([labourRoleLabel(lab.id), lab.region, lab.skillLevel, m(lab.fullyLoadedRatePerHr), lab.effectiveDate, reportNoteText(lab.sourceNote), lab.confidence]);
   }
   sheets.push({ name: '5-LabourRates', rows: labRows, cols: [22, 14, 20, 20, 14, 50, 12] });
 

@@ -60,7 +60,7 @@ describe('D3 — programme life is required on CAD to COST', () => {
     expect(fnBody('wireCADContext')).toMatch(/shared\.value = mine\.value; shared\.dispatchEvent\(new Event\('input'/);
   });
   it('the line under the field states the basis, and the £ per part once tooling is known', () => {
-    expect(programmeLifeLine(null, 100000)).toMatch(/^Required\./);
+    expect(programmeLifeLine(null, 100000)).toMatch(/^Required: tooling is spread over annual volume × programme life\./);
     expect(programmeLifeLine(5, 100000)).toBe('Tooling is spread over 5 years × 100,000 = 500,000 parts.');
     expect(programmeLifeLine(5, 100000, { total: 436549.69, fmt })).toBe('Tooling £436549.69 over 5 years × 100,000 = £0.87 a part.');
   });

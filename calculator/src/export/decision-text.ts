@@ -1,4 +1,5 @@
 import type { UniversalStackInput } from '../engine/types.js';
+import { fieldLabel } from '../ui/field-labels.js';
 
 /** An answer, OPEN, or what the costing used for an unanswered advisory (casting 360 X29: "engine default" hid the grade). */
 export function decisionAnswerText(d: { severity: 'blocking' | 'advisory'; answer: string | null; used?: string | null }): string {
@@ -11,6 +12,16 @@ export function decisionAnswerText(d: { severity: 'blocking' | 'advisory'; answe
  * An answer as a person reads it (CAD2C five-part report audit, Oct 2026): a route id becomes its name, a material id
  * its grade, yes / no and the tolerance classes are capitalised. Anything else is printed as given.
  */
+/**
+ * An engine warning for the report cover: the field path in front of the message becomes the form's own name.
+ * The match runs to the first ": " whatever the operation's name holds — "operations[0] (Direct extrusion — press,
+ * quench, stretch, saw).partsPerCycle: …" printed raw on the battery rail because the em dash and the commas were
+ * outside the old character class (five-part review, Oct 2026).
+ */
+export function coverWarningText(w: string): string {
+  return w.replace(/^([A-Za-z][^:]*?): /, (_m, f: string) => `${fieldLabel(f)}: `);
+}
+
 export function decisionAnswerLabel(id: string, value: string | null, o: { routeLabels: Record<string, string>; grades: Array<{ id: string; grade: string }> }): string | null {
   if (!value) return value;
   if (/^commodity\./.test(id) || id === 'commodity') return o.routeLabels[value] ?? value.replace(/_/g, ' ');

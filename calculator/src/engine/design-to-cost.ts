@@ -19,6 +19,7 @@
  *   (a lighter casting also cools faster), so they are labelled what-if.
  */
 import { computeUniversalStack } from './core.js';
+import { shortOperationName } from './operation-names.js';
 import type { UniversalStackInput, RateLibrary, PartCostResult } from './types.js';
 
 /** Structural — what the DFM report's grouped finding carries; no import from dfm-geometry (no cycle). */
@@ -179,7 +180,7 @@ export function findingVariant(
   const removed = m * hr + l * labourHr;
   return {
     next: { ...input, operations: ops.map((o, i) => i === k ? { ...o, cycleTimeHr: o.cycleTimeHr - hr, labourTimeHr: o.labourTimeHr - labourHr } : o) },
-    basis: `${(hr * 60).toFixed(2)} min off ${op.operationName} at that operation\u2019s own rates (${money(m + l)} per hour `
+    basis: `${(hr * 60).toFixed(2)} min off ${shortOperationName(op.operationName)} at that operation\u2019s own rates (${money(m + l)} per hour `
       + 'of cycle after parts/cycle, OEE and crew)'
       + (hr < want - 1e-12 ? ` — capped at 90 % of the operation (${(want * 60).toFixed(2)} min asked)` : '')
       + ' through the stack'

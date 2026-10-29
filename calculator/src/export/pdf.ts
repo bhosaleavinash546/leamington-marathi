@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable';
 import { routeRowLabel, routeReferenceRow, traceFieldLabel, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import { shortOperationName } from '../engine/operation-names.js';
 import { reportNoteText } from './money-text.js';
-import { decisionAnswerLabel } from './decision-text.js';
+import { coverWarningText, decisionAnswerLabel } from './decision-text.js';
 import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType, Scenario } from '../engine/types.js';
 import type { CADAnalysisResult } from '../engine/ai-analysis.js';
@@ -24,7 +24,6 @@ import { buildPcbaReport, type PcbaAnalysisLike, type PcbaReport } from './pcba-
 import { brandRgb } from '../brand/index.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
-import { fieldLabel } from '../ui/field-labels.js';
 import { localiseGbpText, localiseRuleValue } from './money-text.js';
 
 /**
@@ -1486,7 +1485,7 @@ export function renderShouldCostSections(
     body: (() => { const seen = new Set<string>(); return result.traceability.map(t => {
       const role = /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId;
       const key = `${t.rateId ?? ''}|${t.rateSource}`;
-      const src = seen.has(key) ? `as above (${role ?? 'same source'})` : (seen.add(key), t.rateSource);
+      const src = seen.has(key) ? `as above (${role ?? 'same source'})` : (seen.add(key), reportNoteText(t.rateSource));
       return t.unit.includes('£')
         ? [traceFieldLabel(shortOperationName(t.field)), (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), src, role, t.confidence]
         : [traceFieldLabel(shortOperationName(t.field)), t.value.toFixed(4), t.unit, src, role, t.confidence];
@@ -2464,7 +2463,7 @@ export function printPDF(
   // screen; the report states the same basis under Key Assumptions.
   // plain names, as the form shows them — the cover printed "rawMaterial.materialId: …" (Poland live review)
   const coverWarnings = (result.warnings ?? []).filter(w => !(pcba && /^Costed from the PCB photo analysis/.test(w)))
-    .map(w => w.replace(/^([A-Za-z][\w.\[\]() -]*?): /, (_m, f: string) => `${fieldLabel(f)}: `));
+    .map(coverWarningText);
   // A multi-cavity cycle or a price grade is a note; a warning is something that may be wrong (report audit, Oct 2026).
   const coverNotes = coverWarnings.filter(w => /parts a cycle|price confidence/.test(w)).map(w => shortOperationName(w).replace(/^(.+?) \(operation \d+\) — parts per cycle: /, ''));
   const coverWarn = coverWarnings.filter(w => !/parts a cycle|price confidence/.test(w)).map(w => shortOperationName(w));

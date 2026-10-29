@@ -37,6 +37,7 @@ import { inMaterialScope } from '../../src/engine/material-scope.js';
 import { POLYMER_TAXONOMIES } from '../../src/engine/polymer-material-taxonomy.js';
 import { computeCostUncertainty, type DriverProvenance, type DriverSource } from '../../src/engine/uncertainty.js';
 import { overheadBaseOf } from '../../src/engine/core.js';
+import { shortOperationName } from '../../src/engine/operation-names.js';
 import { FINISH_PREFIX_BY_COMMODITY } from '../../src/engine/surface-finish-routes.js';
 import {
   screenRoutes, materialFamilyOf, familyOfCategory, COMPARISON_PRINCIPLE, type FeasibilityCheck, type RouteScreen,
@@ -334,7 +335,7 @@ function operationsOf(r: BulkPartResult, book: RateLibrary): RouteOperation[] | 
   const ops = r.trace?.operations;
   if (!ops) return null;
   return ops.map(op => ({
-    name: op.operationName,
+    name: shortOperationName(op.operationName),
     machine: op.benchOperation ? 'bench' : (book.machines.find(m => m.id === op.machineId)?.machineClass ?? 'machine'),
     cycleMin: round((op.cycleTimeHr ?? 0) * 60 / Math.max(1, op.partsPerCycle ?? 1), 3),
     processCost: round(op.processCost ?? 0),

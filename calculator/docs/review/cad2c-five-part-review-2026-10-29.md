@@ -14,7 +14,7 @@ every step, the PDF and Excel opened and re-added. Then every page of every PDF 
 | PRCR002.stp (stub axle) | cast and machine (sand) | £52.85 |
 | IM_ECU_Cover.stp | injection moulding | £0.89 |
 | Seat_Locking_Bracket.stp | pressed sheet metal | £1.25 |
-| AL_Battery_Rail.stp | aluminium extrusion | — (blocked, see P-A) |
+| AL_Battery_Rail.stp | aluminium extrusion | £33.91 (blocked before P-A) |
 
 ## 1. Live run, before the fixes
 
@@ -50,6 +50,17 @@ every step, the PDF and Excel opened and re-added. Then every page of every PDF 
 | R11 | **§4C headed "Machined Features" on a moulding** where nothing is machined. | "Measured Features — audit only" when the lines are not priced. |
 | R12 | "not answered - costed as …" with a hyphen where every other line uses an em dash. | Em dash. |
 
+Second pass (the re-run's reports read again):
+
+| # | Finding | Fix |
+|---|---|---|
+| R13 | "Was £41.32/h (a build-up tuned to a shop rate)." still printed mid-note on §5 machine rates and "Was £0.86/kg." on material notes — the first rule only struck a "Was £…/h" at the END of a note. | `reportNoteText` strikes the previous figure wherever it sits, in any unit, with its bracket. |
+| R14 | §6's Source column was the raw rate source: "| Refresh 2026-09: INDEX …", "(see CASTING PRICING BASIS)". | §6 goes through `reportNoteText` like §5 and the Excel sheet. |
+| R15 | The DFM "In this costing: 2.22 min off Drilling — 12 holes (1×Ø3.1×3, … ) [geometry-measured] at that operation's own rates" carried the feature list. | `design-to-cost.ts` builds the basis on the short name. |
+| R16 | The route comparison's operation rows (screen, §9b, Excel 8-Routes) printed the full names with the feature list. | The comparison names its operations with `shortOperationName` at source. |
+| R17 | The battery rail's cover note printed the raw field path: "operations[0] (Direct extrusion — press, quench, stretch, saw).partsPerCycle: …" — the em dash and commas in the operation's name fell outside the character class that turned a field into its label. | `decision-text.ts::coverWarningText` matches to the first ": " whatever the name holds; test. |
+| R18 | Excel 5-LabourRates printed the labour source as the book wrote it ("Was £19.94/h"). | Through `reportNoteText` like the other rate sheets. |
+
 ### The screen
 
 | # | Finding | Fix |
@@ -68,7 +79,19 @@ every step, the PDF and Excel opened and re-added. Then every page of every PDF 
 
 ## 3. Live run, after the fixes
 
-See §5 (filled from the re-run).
+Re-run of all five parts: 278 pass · 16 fail · 3 info — every failure on the battery rail, and this time the harness,
+not the product: the rail reached its questions (P-A fixed) and the manifest had no answer for the material family,
+so the family question stayed open and Get cost — correctly — never applied the form. The seat bracket's margin round
+trip passed (P-B). Headlines unchanged: £17.32 · £52.85 · £0.89 · £1.25.
+
+Rail + stub axle re-run with the family answer and the second-pass report fixes: 125 pass · 0 fail · 1 info. The rail
+costs £33.91 (UK, 100k / yr, 5 yr; EN AW-6063, direct press, T6, mill finish): two answer rounds (family, then alloy),
+"Updating…" on Get cost during each re-run, the comparison's reference row equal to the headline, axe clean in both
+themes, the PDF and Excel opened and re-added. The dumped reports of both parts carry none of the audited patterns
+(previous figures, refresh logs, cross-references, raw field names, feature lists in names, short tab labels).
+
+The final rail run after R17 / R18 is recorded in `scratchpad/five4` (same checks; cover note reads "Direct extrusion —
+press, quench, stretch, saw (operation 1) — parts per cycle: … 15 parts a cycle").
 
 ## 4. Motion and experience
 
