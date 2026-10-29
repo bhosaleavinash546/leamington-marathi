@@ -2033,6 +2033,9 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
 .mh-route-title { margin: 0; font-weight: 800; color: var(--red-dark); width: 100%; }
 .mh-route-intro { margin: 0; font-size: 0.93rem; color: var(--ink); }
 .mh-route-bar .btn { padding: 8px 18px; font-size: 0.9rem; }
+.mh-route-video { flex-basis: 100%; margin: 6px 0 2px; }
+.mh-route-video video { display: block; width: 230px; max-width: 70vw; aspect-ratio: 9 / 16; margin: 0 auto; border-radius: 12px; background: #2b0f08; box-shadow: 0 10px 26px rgba(74, 19, 11, 0.25); }
+.mh-route-video figcaption { margin-top: 6px; font-size: 0.82rem; color: #6b544b; }
 .mh-route-base { fill: none; stroke: rgba(74, 19, 11, 0.22); stroke-width: 3; stroke-dasharray: 6 6; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .mh-route { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 #mh-marker > circle { fill: var(--white); stroke-width: 2.5; filter: drop-shadow(0 3px 5px rgba(74, 19, 11, 0.35)); }
@@ -2449,6 +2452,9 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
 .mh-promo-picks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
 .mh-promo-picks a { padding: 7px 14px; border-radius: 30px; background: var(--white); border: 1.5px solid #f0dcc3; color: var(--red-dark); font-weight: 700; text-decoration: none; font-size: 0.92rem; }
 .mh-promo-picks a:hover { background: var(--cream-deep); border-color: var(--gold); }
+.mh-promo-picks small { margin-left: 4px; padding: 1px 7px; border-radius: 20px; background: var(--cream-deep); color: var(--saffron-text); font-size: 0.78rem; }
+.mh-promo-picks a.pick-journey { background: linear-gradient(135deg, #fff, #fdeeda); border-color: #f4c47a; }
+.mh-promo-picks + .mh-promo-picks { margin-top: -12px; }
 @media (max-width: 900px) {
   .mh-promo-grid { grid-template-columns: 1fr; gap: 26px; }
   .mh-promo-text { text-align: left; }
