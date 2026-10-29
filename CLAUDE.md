@@ -662,6 +662,19 @@ what is true** — nothing here has been compared with a price JLR paid.
   (`/api/cad/compare-routes`, `server/services/route-compare.ts`, `costMeasuredPart` per route; the reference row must equal
   the headline). Get cost re-runs when ANY answer differs from the analysed ones (`appliedAnswers`); choosing a route
   records it as `commodity.route`; the CAD screen reopens with `restoreDraft: false`. `tests/cad-phase2.test.ts`.
+  Compare routes (review, 29 Oct 2026, `docs/cad/compare-routes-review-2026-10.md`): ONLY feasible routes, in the part's
+  own material family, to the finished scope — `src/engine/route-feasibility.ts` screens every rule pack before costing
+  (family read off whichever material answer the route took, `materialFamilyOf`; closed container, hollow body, constant
+  section, thin shell / near-solid, sheet gauge + one wall, forging web + press ladder, castable wall by family, as-cast
+  scope, gear scope, stock utilisation, mould / forming / blow / roto walls — every limit with its source, engineering-
+  typical ones labelled). The costing's own route is never refused (its failing checks are caveats). Each row carries the
+  8 buckets + `reconciles`, material net / bought / utilisation, tooling investment + amortisation, operations (machine
+  CLASS, never an id), checks and caveats, and `byVolume` on `VOLUME_LADDER` (5k–500k + the costing's volume) from which
+  `crossovers` are interpolated between two real re-costs — never a straight-line formula, never extrapolated. The family
+  travels to every route; an off-scope grade / resin / compound / laminate is dropped with a note, a resin mapped to the
+  same POLYMER in the route's grades (`samePolymerGrade`). Screen (`routeCompareHtml`: build-up per row, "Not feasible"
+  list), PDF §9b and Excel `8-Routes` print `cadMeta.routeComparison` — what the screen drew, never a re-run.
+  `tests/route-compare-review.test.ts`; survey `scripts/route-compare-review/`.
   End-to-end trace (28 Oct 2026, `docs/review/cad-to-cost-e2e-trace-2026-10-28.md`): `e2e/cad-to-cost-trace.ts` checks every
   plan item live on two parts (116 checks; the cost re-added from the exported workbook). The cost card carries the step
   indicator, the confidence reason (`confidenceWhy` in uncertainty.ts, labels via `traceFieldLabel`), grade + weight chips,

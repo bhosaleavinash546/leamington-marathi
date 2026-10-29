@@ -663,3 +663,22 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile:hover { transform: tran
 /* Light-theme contrast (axe, CAD to COST v2 check) — the file badge and the New tag read their text from the ink. */
 #cad-quality-badge { color: color-mix(in srgb, var(--text-primary) 78%, var(--success)) !important; }
 .cad-decision-new { color: color-mix(in srgb, var(--text-primary) 55%, var(--accent)) !important; }
+/* Compare routes (rebuilt Oct 2026): per-row build-up, feasibility checks, the volume ladder. */
+.cad-compare-detail { margin-top: 4px; font-size: 0.7rem; }
+.cad-compare-detail > summary { cursor: pointer; color: var(--text-secondary); }
+.cad-compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 6px; }
+.cad-compare-grid h5 { margin: 6px 0 2px; font-size: 0.68rem; font-weight: 700; color: var(--text-primary); }
+.cad-compare-grid p { margin: 0 0 4px; color: var(--text-secondary); }
+.cad-compare-mini { width: 100%; border-collapse: collapse; font-size: 0.68rem; }
+.cad-compare-mini th, .cad-compare-mini td { padding: 2px 6px; border-bottom: 1px solid var(--border); text-align: left; font-weight: 400; color: var(--text-secondary); vertical-align: top; }
+.cad-compare-mini thead th { color: var(--text-muted); font-size: 0.64rem; }
+.cad-compare-mini .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cad-compare-total th, .cad-compare-total td { font-weight: 700; color: var(--text-primary); }
+.cad-compare-ok, .cad-compare-fail { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; padding: 0 5px; border-radius: 4px; border: 1px solid currentColor; }
+.cad-compare-ok { color: var(--success); }
+.cad-compare-fail { color: var(--danger); }
+.cad-compare-checks { margin: 0; padding-left: 14px; font-size: 0.68rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 3px; }
+.cad-compare-src, .cad-compare-note, .cad-compare-items { color: var(--text-muted); }
+.cad-compare-cross { font-size: 0.7rem; color: var(--text-primary); margin: 0 0 4px; }
+.cad-compare-excluded { margin-top: 8px; font-size: 0.72rem; }
+.cad-compare-excluded > summary { cursor: pointer; color: var(--text-secondary); }

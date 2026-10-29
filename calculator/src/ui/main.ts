@@ -12,7 +12,7 @@ import { MATERIAL_SCOPE_BY_COMMODITY } from '../engine/material-scope.js';
 import { isAiOff } from './ai-mode.js';
 import { fetchMeshFrame, stlFromFrame } from './cad-mesh-cache.js';
 import { nextCostStep, costStepMessage } from './cad-flow.js';
-import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, notIncludedFor, cadStamp, routeCompareHtml, type BasisRow, type CadStep, type RouteCompareRow } from './cad-workspace.js';
+import { cadStepsHtml, cadFactsHtml, programmeLifeLine, answerChips, answerChipsHtml, cadCostCardHtml, notIncludedFor, cadStamp, routeCompareHtml, routeComparisonExport, type BasisRow, type CadStep, type RouteComparison, type RouteComparisonExport } from './cad-workspace.js';
 import { fieldLabel } from './field-labels.js';
 import { initA11y } from './a11y.js';
 import type { PCBConfidenceBand, NPIBreakdown, SanityWarning, PCBBOMItem, PCBCountryBreakdown, VolumeCurvePoint, PCBComplexityScore, PCBImageAnalysis, AutomotiveNRE, SingleSourceWarning, AutomotiveAssemblyCost, AutomotiveFabAdjustment, BOMCompletenessResult, ProgramPricingResult } from './pcb/types.js';
@@ -17309,7 +17309,7 @@ async function downloadExcel(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Workbook not produced: ${why}`, 'error'); return; } }
   const band = (() => { try { return resultBand(lastResult!, lastInput!).u; } catch { return null; } })();
-  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null);
+  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null, costedFromCAD() ? _cadRouteComparison : null);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = exportFilename('should-cost', lastResult.partName, 'xlsx');
@@ -18209,6 +18209,7 @@ function exportBlockedReason(): string | null {
 function buildCadReportMeta(): CADReportMeta {
   const universal: CADReportMeta = {
     stamp: costedFromCAD() ? currentCADStamp() : null,
+    routeComparison: costedFromCAD() ? _cadRouteComparison : null,
     // The band the screen shows, so the report cannot print a different one.
     ...(() => {
       if (!lastResult || !lastInput) return { uncertainty: null, uncertaintyBasis: null };
@@ -21345,13 +21346,17 @@ function renderCADCostCard(): void {
   cmp?.addEventListener('toggle', () => { if (cmp.open && !cmp.dataset.loaded) void loadRouteComparison(); });
 }
 
-/** Cost the measured part on each candidate route (server/services/route-compare.ts) and draw the table. */
+/** The comparison the screen last drew — the PDF and Excel print this, never a re-run (compare-routes review, Oct 2026). */
+let _cadRouteComparison: RouteComparisonExport | null = null;
+
+/** Cost the measured part on each feasible route (server/services/route-compare.ts) and draw the table. */
 async function loadRouteComparison(): Promise<void> {
   const host = document.getElementById('cad-compare-host');
   const cmp = document.getElementById('cad-compare') as HTMLDetailsElement | null;
   if (!host || !cmp || !cadGeometryHash) return;
   cmp.dataset.loaded = '1';
-  host.innerHTML = '<p class="cad-cost-note">Costing the part on each route…</p>';
+  _cadRouteComparison = null;
+  host.innerHTML = '<p class="cad-cost-note">Costing the part on each feasible route, at this volume and across 5,000–500,000 a year…</p>';
   const body: Record<string, unknown> = {
     geometryHash: cadGeometryHash,
     filename: cadFile?.name ?? 'part.step',
@@ -21368,12 +21373,12 @@ async function loadRouteComparison(): Promise<void> {
     const res = await fetch('/api/cad/compare-routes', {
       method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeader() }, body: JSON.stringify(body),
     });
-    const data = await res.json() as { rows?: RouteCompareRow[]; error?: string };
-    if (!res.ok || !data.rows) throw new Error(data.error ?? `HTTP ${res.status}`);
-    host.innerHTML = routeCompareHtml(data.rows, {
-      current: activeCommodity, headline: lastResult?.total ?? null,
-      labels: COMMODITY_LABELS as Record<string, string>, fmt: (n: number) => _currFmt(n),
+    const data = await res.json() as { comparison?: RouteComparison; error?: string };
+    if (!res.ok || !data.comparison) throw new Error(data.error ?? `HTTP ${res.status}`);
+    _cadRouteComparison = routeComparisonExport(data.comparison, {
+      current: activeCommodity, headline: lastResult?.total ?? null, labels: COMMODITY_LABELS as Record<string, string>,
     });
+    host.innerHTML = routeCompareHtml(_cadRouteComparison, { fmt: (n: number) => _currFmt(n) });
     host.querySelectorAll<HTMLButtonElement>('[data-cost-route]').forEach(btn => btn.addEventListener('click', () => {
       // Re-analyse AS that route on the CAD screen — its own questions come up there before Get cost.
       showWorkflowPanel('cad_analysis', { restoreDraft: false });

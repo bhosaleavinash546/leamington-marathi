@@ -82,6 +82,8 @@ export interface GeometricDFMMeta {
 }
 
 export interface CADReportMeta {
+  /** The route comparison the screen drew (compare-routes review, Oct 2026) — printed as §9b, never re-run here. */
+  routeComparison?: import('../ui/cad-workspace.js').RouteComparisonExport | null;
   /** "UK rate book v2.2.0 · rules v7 · kernel 374f8cebdccb · 28 Oct 2026" — what made these numbers (CAD to COST v2). */
   stamp?: string | null;
   /**
@@ -1648,6 +1650,79 @@ export function renderShouldCostSections(
       : 'Each row scales this costing\'s buckets by that country\'s rate factors (no rate book was available to re-cost it).')
       + ' Each row carries that country\'s packaging and delivery allowance (bucket 6) and excludes import duty and cross-border freight to the buyer. Indicative — confirm with an RFQ.', MG, y + 3, { maxWidth: CW });
     y += 12;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // §9b — Route Comparison (the screen's comparison, same material family, feasible routes only)
+  // ════════════════════════════════════════════════════════════════════════
+  if (cadMeta.routeComparison && cadMeta.routeComparison.rows.length) {
+    const x = cadMeta.routeComparison;
+    y = chk(doc, y, 60);
+    y = secBar(doc, y, '§9b — Route Comparison', `the same part on every route that can make it in ${x.labels[x.current] ? 'its material' : 'its material'}  ·  reference: ${x.currentLabel}`);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
+    doc.text(x.principle, MG, y + 3, { maxWidth: CW }); y += 11;
+    const ref = x.rows.find(r => r.route === x.current);
+    const refTotal = ref?.total ?? null;
+    const rowsSorted = [...x.rows].sort((a, b) => (a.route === x.current ? -1 : b.route === x.current ? 1 : (a.total ?? Infinity) - (b.total ?? Infinity)));
+    const why = (r: typeof x.rows[number]): string => {
+      const lines: string[] = [];
+      if (r.commodity && r.commodity !== r.route) lines.push(`costed as ${x.labels[r.commodity] ?? r.commodity}`);
+      lines.push(...r.assumed.map(a => `assumed: ${a}`), ...r.openQuestions.map(q => `needs an answer: ${q}`));
+      if (r.refusal) lines.push(`not costed: ${r.refusal}`);
+      lines.push(...r.notes, ...r.caveats);
+      const cross = x.crossovers.find(k => k.route === r.route);
+      if (cross && r.route !== x.current) lines.unshift(cross.text);
+      return lines.join('; ');
+    };
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG }, theme: 'grid',
+      head: [['Route', 'Cost / part', 'vs reference', 'Material', 'Process', 'Labour', 'Tooling invest.', 'Tooling / part', 'Material bought', 'Basis']],
+      body: rowsSorted.map(r => [
+        `${x.labels[r.route] ?? r.route}${r.route === x.current ? ' (this costing)' : ''}`,
+        r.total != null ? c(r.total) : '—',
+        r.route === x.current ? 'reference' : r.total != null && refTotal != null && refTotal > 0
+          ? `${r.total >= refTotal ? '+' : '-'}${c(Math.abs(r.total - refTotal))} (${r.total >= refTotal ? '+' : '-'}${Math.abs((r.total / refTotal - 1) * 100).toFixed(0)}%)` : '—',
+        r.breakdown ? c(r.breakdown.rawMaterial ?? 0) : '—', r.breakdown ? c(r.breakdown.process ?? 0) : '—', r.breakdown ? c(r.breakdown.labour ?? 0) : '—',
+        r.tooling ? c(r.tooling.investment) : '—', r.toolingPerPart != null ? c(r.toolingPerPart) : '—',
+        r.material ? `${r.material.boughtKg != null ? `${r.material.boughtKg.toFixed(3)} kg` : '—'} for ${r.material.netKg != null ? `${r.material.netKg.toFixed(3)} kg` : '—'} (${r.material.label})` : '—',
+        why(r),
+      ]),
+      headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 6 },
+      bodyStyles: { fontSize: 6, cellPadding: 1.4 },
+      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 24 }, 1: { fontStyle: 'bold' }, 9: { cellWidth: 48 } },
+      didParseCell: (d: { section: string; row: { index: number }; cell: { styles: { fillColor?: unknown } } }) => {
+        if (d.section === 'body' && rowsSorted[d.row.index]?.route === x.current) d.cell.styles.fillColor = HDR as RGB;
+      },
+    });
+    y = lastFinalY(doc) + 3;
+    if (x.ladder.length) {
+      y = chk(doc, y, 30);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(...NAVY);
+      doc.text('Cost a part by annual volume — each figure is the route re-costed at that volume (tooling, batches and cavitation follow it); a crossover is interpolated between two re-costs, never extrapolated.', MG, y + 3, { maxWidth: CW }); y += 9;
+      const costedRows = rowsSorted.filter(r => r.byVolume.length);
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG }, theme: 'grid',
+        head: [['Route', ...x.ladder.map(v => `${v.toLocaleString('en-GB')} / yr`)]],
+        body: costedRows.map(r => [x.labels[r.route] ?? r.route, ...x.ladder.map(v => { const p = r.byVolume.find(b => b.volume === v); return p?.total != null ? c(p.total) : '—'; })]),
+        headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 6 },
+        bodyStyles: { fontSize: 6.2, cellPadding: 1.4 },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 30 } },
+      });
+      y = lastFinalY(doc) + 3;
+    }
+    if (x.excluded.length) {
+      y = chk(doc, y, 30);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(...NAVY);
+      doc.text('Routes not feasible for this part — each with the check it failed and the source of the limit:', MG, y + 3); y += 7;
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG },
+        head: [['Route', 'Check', 'Measured', 'Limit', 'Source']],
+        body: x.excluded.flatMap(e => e.reasons.map((r, k) => [k === 0 ? (x.labels[e.route] ?? e.route) : '', r.label, r.measured, r.limit, r.source])),
+        styles: { fontSize: 5.8, cellPadding: 1 }, headStyles: { fillColor: NAVY, fontSize: 6 },
+        columnStyles: { 0: { cellWidth: 24, fontStyle: 'bold' }, 1: { cellWidth: 24 }, 2: { cellWidth: 40 }, 3: { cellWidth: 30 } },
+      });
+      y = lastFinalY(doc) + 6;
+    }
   }
 
   // ════════════════════════════════════════════════════════════════════════

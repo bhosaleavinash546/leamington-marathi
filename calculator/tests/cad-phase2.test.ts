@@ -18,7 +18,7 @@ import { compareRoutes, candidateRoutes } from '../server/services/route-compare
 import { recomputeMachineRates, DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { computeSheetMetalFabDrivers, type SheetMetalFabInputs } from '../src/engine/modules/sheet-metal-fab.js';
 import { nextCostStep, answersChangedSince } from '../src/ui/cad-flow.js';
-import { notIncludedFor, routeCompareHtml } from '../src/ui/cad-workspace.js';
+import { notIncludedFor, routeCompareHtml, routeComparisonExport, type RouteCompareRow } from '../src/ui/cad-workspace.js';
 import type { RuleContext } from '../src/engine/cost-input-rules/types.js';
 
 const parts = JSON.parse(readFileSync('tests/fixtures/real-parts-baseline.json', 'utf8')) as Array<{
@@ -154,15 +154,18 @@ describe('D4 — costing', () => {
   });
 });
 
-describe('D5 — compare routes', () => {
+describe('D5 — compare routes (rebuilt in the compare-routes review, Oct 2026)', () => {
   it('the costing\'s own route reproduces the headless cost; the others carry their assumptions', async () => {
     const k = part('steering_knuckle_RH.stp');
-    const rows = await compareRoutes({ geo: k.geometry as never, filename: 'k.stp', current: 'forging', answers: k.answers, region: 'UK', annualVolume: 50_000, baseBook: book });
-    const ref = rows.find(r => r.route === 'forging')!;
+    const cmp = await compareRoutes({ geo: k.geometry as never, filename: 'k.stp', current: 'forging', answers: k.answers, region: 'UK', annualVolume: 50_000, baseBook: book, ladder: false });
+    const ref = cmp.rows.find(r => r.route === 'forging')!;
     expect(Math.round(ref.total! * 100) / 100).toBe(k.outcome.total);
-    const casting = rows.find(r => r.route === 'casting')!;
-    expect(casting.status).toBe('costed');
-    expect(casting.assumed.join(' ')).toMatch(/leak-tight/);
+    const cam = cmp.rows.find(r => r.route === 'cast_and_machine')!;
+    expect(cam.status).toBe('costed');
+    expect(cam.assumed.join(' ')).toMatch(/leak-tight/);
+    // As-cast is not the finished knuckle: it has 12 machined holes / bores.
+    expect(cmp.rows.map(r => r.route)).not.toContain('casting');
+    expect(cmp.excluded.find(e => e.route === 'casting')!.reasons[0].id).toBe('as_cast_scope');
   });
   it('only routes that can make the named metal are offered (no rubber for a steel shaft)', () => {
     const s = part('MACH_Stepped_Shaft.stp');
@@ -173,15 +176,18 @@ describe('D5 — compare routes', () => {
   });
   it('a route the rules re-price as one already listed is folded into that row', async () => {
     const b = part('Seat_Locking_Bracket.stp');
-    const rows = await compareRoutes({ geo: b.geometry as never, filename: 'b.stp', current: 'sheet_metal', answers: b.answers, region: 'UK', annualVolume: 50_000, baseBook: book });
-    expect(rows.map(r => r.route)).toEqual(['sheet_metal']);
-    expect(rows[0].notes.join(' ')).toMatch(/also priced/);
+    const cmp = await compareRoutes({ geo: b.geometry as never, filename: 'b.stp', current: 'sheet_metal', answers: b.answers, region: 'UK', annualVolume: 50_000, baseBook: book, ladder: false });
+    expect(cmp.rows.map(r => r.route)).toEqual(['sheet_metal']);
+    expect(cmp.rows[0].notes.join(' ')).toMatch(/also priced/);
   });
   it('the table: reference first, deltas signed, a typed change on the form called out, text escaped', () => {
-    const html = routeCompareHtml([
-      { route: 'casting', commodity: 'casting', status: 'costed', total: 31.79, toolingPerPart: 0.9, assumed: ['<b>x</b>'], openQuestions: [], notes: [], refusal: null },
-      { route: 'forging', commodity: 'forging', status: 'costed', total: 24.22, toolingPerPart: 1.01, assumed: [], openQuestions: [], notes: [], refusal: null },
-    ], { current: 'forging', headline: 24.5, labels: { forging: 'Forging', casting: 'Casting' }, fmt: n => `£${n.toFixed(2)}` });
+    const row = (route: string, total: number, toolingPerPart: number, assumed: string[]): RouteCompareRow => ({
+      route, commodity: route, status: 'costed', total, toolingPerPart, breakdown: null, reconciles: null, material: null, tooling: null,
+      operations: null, checks: [], caveats: [], assumed, openQuestions: [], notes: [], refusal: null, byVolume: [],
+    });
+    const html = routeCompareHtml(routeComparisonExport({
+      principle: 'p', rows: [row('casting', 31.79, 0.9, ['<b>x</b>']), row('forging', 24.22, 1.01, [])], excluded: [], ladder: [], crossovers: [],
+    }, { current: 'forging', headline: 24.5, labels: { forging: 'Forging', casting: 'Casting' } }), { fmt: n => `£${n.toFixed(2)}` });
     expect(html.indexOf('Forging')).toBeLessThan(html.indexOf('Casting'));
     expect(html).toContain('+£7.57 (+31%)');
     expect(html).toContain('the headline is £24.50 — the form carries a typed change');

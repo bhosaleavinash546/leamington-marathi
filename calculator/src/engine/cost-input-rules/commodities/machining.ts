@@ -55,7 +55,7 @@ import { bboxSortedMm } from '../derive/envelope.js';
  * solid stock would buy a block of metal nobody cuts. Clamping keeps a mis-route
  * from turning into a five-figure material line.
  */
-const MIN_UTILISATION = 0.05;
+export const MIN_UTILISATION = 0.05;
 
 /** Shop settings the plan states on every operation (SHOP_DEFAULTS in to-cost-params). */
 const MACHINE_OEE = 0.80;

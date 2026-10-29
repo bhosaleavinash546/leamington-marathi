@@ -276,57 +276,95 @@ export function cadStamp(o: { rateBook: string; rules: number | string | null; k
     .filter(Boolean).join(' · ');
 }
 
-/** One row of /api/cad/compare-routes (server/services/route-compare.ts). */
-export interface RouteCompareRow {
-  route: string;
-  commodity: string | null;
-  status: string;
-  total: number | null;
-  toolingPerPart: number | null;
-  assumed: string[];
-  openQuestions: string[];
-  notes: string[];
-  refusal: string | null;
+/** The comparison the server returns (server/services/route-compare.ts) — the same shape, type-only. */
+export type RouteComparison = import('../../server/services/route-compare.js').RouteComparison;
+export type RouteCompareRow = import('../../server/services/route-compare.js').RouteRow;
+
+/** The comparison with every route labelled — what the screen draws and the PDF / Excel print. */
+export interface RouteComparisonExport extends RouteComparison {
+  current: string;
+  currentLabel: string;
+  labels: Record<string, string>;
+  /** The costing's headline, to call out a typed change on the form. */
+  headline: number | null;
+}
+
+export function routeComparisonExport(cmp: RouteComparison, o: { current: string; labels: Record<string, string>; headline: number | null }): RouteComparisonExport {
+  const labels: Record<string, string> = {};
+  for (const r of [...cmp.rows.map(r => r.route), ...cmp.rows.map(r => r.commodity ?? ''), ...cmp.excluded.map(e => e.route), o.current]) {
+    if (r) labels[r] = o.labels[r] ?? r.replace(/_/g, ' ');
+  }
+  return { ...cmp, current: o.current, currentLabel: labels[o.current], labels, headline: o.headline };
+}
+
+const BUCKETS: Array<[string, string]> = [
+  ['rawMaterial', 'Material'], ['process', 'Process'], ['labour', 'Labour'], ['tooling', 'Tooling'],
+  ['packaging', 'Packaging'], ['logistics', 'Logistics'], ['overhead', 'Overhead'], ['margin', 'Margin'],
+];
+
+/** The lines the "Basis" column carries for a row: what was assumed, what is open, what was refused, the notes. */
+export function routeRowWhy(r: RouteCompareRow, x: RouteComparisonExport, fmt: (n: number) => string): string[] {
+  const why: string[] = [];
+  const isRef = r.route === x.current;
+  if (isRef && r.total != null && x.headline != null && Math.abs(x.headline - r.total) >= 0.005) {
+    why.push(`the headline is ${fmt(x.headline)} — the form carries a typed change`);
+  }
+  if (r.commodity && r.commodity !== r.route) why.push(`costed as ${x.labels[r.commodity] ?? r.commodity}`);
+  for (const a of r.assumed) why.push(`assumed: ${a}`);
+  for (const q of r.openQuestions) why.push(`needs an answer: ${q}`);
+  if (r.refusal) why.push(`not costed: ${r.refusal}`);
+  why.push(...r.notes, ...r.caveats);
+  if (r.reconciles === false) why.push('CHECK: the buckets do not add to the total');
+  return why;
 }
 
 /**
- * The route comparison table (D5). The costing's own route comes first and is the reference; the others are sorted
- * cheapest first, then the ones that still need an answer or were refused — each says why, nothing is filled in.
+ * The route comparison (D5, rebuilt Oct 2026). The costing's own route comes first and is the reference; the others
+ * are sorted cheapest first, then the ones that still need an answer or were refused — each says why, nothing is
+ * filled in. Each costed row opens to its 8 buckets, the material bought, the tooling investment, every operation, the
+ * checks it passed and its cost at each ladder volume. Routes the screen refused are listed with the check they failed.
  */
-export function routeCompareHtml(rows: RouteCompareRow[], o: {
-  current: string; headline: number | null; labels: Record<string, string>; fmt: (n: number) => string;
-}): string {
-  const ref = rows.find(r => r.route === o.current) ?? null;
+export function routeCompareHtml(x: RouteComparisonExport, o: { fmt: (n: number) => string }): string {
+  const ref = x.rows.find(r => r.route === x.current) ?? null;
   const refTotal = ref?.total ?? null;
-  const rank = (r: RouteCompareRow) => (r.route === o.current ? -1 : r.total != null ? 0 : 1);
-  const sorted = [...rows].sort((a, b) => rank(a) - rank(b) || (a.total ?? Infinity) - (b.total ?? Infinity));
-  const label = (r: string | null) => esc(r ? (o.labels[r] ?? r.replace(/_/g, ' ')) : '—');
+  const rank = (r: RouteCompareRow) => (r.route === x.current ? -1 : r.total != null ? 0 : 1);
+  const sorted = [...x.rows].sort((a, b) => rank(a) - rank(b) || (a.total ?? Infinity) - (b.total ?? Infinity));
+  const label = (r: string | null) => esc(r ? (x.labels[r] ?? r.replace(/_/g, ' ')) : '—');
+  const kg = (v: number | null) => (v == null ? '—' : `${v.toFixed(3)} kg`);
   const body = sorted.map(r => {
-    const isRef = r.route === o.current;
+    const isRef = r.route === x.current;
     const delta = !isRef && r.total != null && refTotal != null && refTotal > 0
       ? `${r.total >= refTotal ? '+' : '−'}${esc(o.fmt(Math.abs(r.total - refTotal)))} (${r.total >= refTotal ? '+' : '−'}${Math.abs((r.total / refTotal - 1) * 100).toFixed(0)}%)`
       : isRef ? 'reference' : '—';
-    const why: string[] = [];
-    if (isRef && refTotal != null && o.headline != null && Math.abs(o.headline - refTotal) >= 0.005) {
-      why.push(`the headline is ${o.fmt(o.headline)} — the form carries a typed change`);
-    }
-    if (r.commodity && r.commodity !== r.route) why.push(`costed as ${o.labels[r.commodity] ?? r.commodity}`);
-    for (const a of r.assumed) why.push(`assumed: ${a}`);
-    for (const q of r.openQuestions) why.push(`needs an answer: ${q}`);
-    if (r.refusal) why.push(`not costed: ${r.refusal}`);
-    why.push(...r.notes);
+    const why = routeRowWhy(r, x, o.fmt);
+    const cross = x.crossovers.find(c => c.route === r.route);
     const action = !isRef && r.total != null
       ? `<button type="button" class="cad-answer-change" data-cost-route="${esc(r.route)}">Cost this route</button>` : '';
+    const detail = r.total != null && r.breakdown ? `<details class="cad-compare-detail"><summary>How this row is built</summary>
+      <div class="cad-compare-grid">
+        <div><h5>Buckets</h5><table class="cad-compare-mini"><tbody>${BUCKETS.map(([k, l]) => `<tr><th scope="row">${l}</th><td class="num">${esc(o.fmt(r.breakdown![k] ?? 0))}</td></tr>`).join('')}
+          <tr class="cad-compare-total"><th scope="row">Total${r.reconciles ? ' <span class="cad-compare-ok">adds up</span>' : ''}</th><td class="num">${esc(o.fmt(r.total))}</td></tr></tbody></table></div>
+        <div><h5>Material</h5>${r.material ? `<p>${esc(r.material.label)}<br>net ${kg(r.material.netKg)} · bought ${kg(r.material.boughtKg)}${r.material.utilisation != null ? ` · ${(r.material.utilisation * 100).toFixed(0)}% utilisation` : ''}</p>` : '<p>—</p>'}
+          <h5>Tooling</h5>${r.tooling ? `<p>${esc(o.fmt(r.tooling.investment))} one-off over ${r.tooling.amortisedOver.toLocaleString('en-GB')} parts = ${esc(o.fmt(r.toolingPerPart ?? 0))} a part${r.tooling.items.length ? `<br><span class="cad-compare-items">${r.tooling.items.map(it => `${esc(it.label)} ${esc(o.fmt(it.gbp))}`).join(' · ')}</span>` : ''}</p>` : '<p>—</p>'}
+          ${r.byVolume.length ? `<h5>By volume</h5><table class="cad-compare-mini"><tbody>${r.byVolume.map(v => `<tr><th scope="row">${v.volume.toLocaleString('en-GB')} / yr</th><td class="num">${v.total != null ? esc(o.fmt(v.total)) : `— <span class="cad-compare-note">${esc(v.note ?? '')}</span>`}</td></tr>`).join('')}</tbody></table>${cross ? `<p class="cad-compare-cross">${esc(cross.text)}</p>` : ''}` : ''}
+        </div>
+        <div><h5>Operations</h5>${r.operations?.length ? `<table class="cad-compare-mini"><thead><tr><th scope="col">Operation</th><th scope="col">Machine</th><th scope="col" class="num">min</th><th scope="col" class="num">Process</th><th scope="col" class="num">Labour</th></tr></thead><tbody>${r.operations.map(op => `<tr><td>${esc(op.name)}</td><td>${esc(op.machine)}</td><td class="num">${op.bench ? '—' : op.cycleMin.toFixed(2)}</td><td class="num">${esc(o.fmt(op.processCost))}</td><td class="num">${esc(o.fmt(op.labourCost))}</td></tr>`).join('')}</tbody></table>` : '<p>—</p>'}
+          <h5>Feasibility</h5><ul class="cad-compare-checks">${r.checks.map(c => `<li><span class="cad-compare-${c.pass ? 'ok' : 'fail'}">${c.pass ? 'pass' : 'fail'}</span> ${esc(c.label)}: ${esc(c.measured)} — limit ${esc(c.limit)} <span class="cad-compare-src">(${esc(c.source)})</span></li>`).join('')}</ul>
+        </div>
+      </div></details>` : '';
     return `<tr${isRef ? ' class="cad-compare-ref"' : ''}>
       <th scope="row">${label(r.route)}${isRef ? ' <span class="cad-cost-count">this costing</span>' : ''}</th>
       <td class="num">${r.total != null ? esc(o.fmt(r.total)) : '—'}</td>
       <td class="num">${delta}</td>
+      <td class="num">${r.tooling ? esc(o.fmt(r.tooling.investment)) : '—'}</td>
       <td class="num">${r.toolingPerPart != null ? esc(o.fmt(r.toolingPerPart)) : '—'}</td>
-      <td>${why.length ? `<ul class="cad-compare-why">${why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}${action}</td>
+      <td>${!isRef && cross ? `<div class="cad-compare-cross">${esc(cross.text)}</div>` : ''}${why.length ? `<ul class="cad-compare-why">${why.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}${action}${detail}</td>
     </tr>`;
   }).join('');
-  return `<div class="cad-compare-wrap"><table class="cad-compare-table">
+  const excluded = x.excluded.length ? `<details class="cad-compare-excluded"><summary>Not feasible for this part <span class="cad-cost-count">${x.excluded.length}</span></summary>
+    <ul class="cad-compare-checks">${x.excluded.map(e => `<li><strong>${label(e.route)}</strong>: ${e.reasons.map(c => `${esc(c.label)} — ${esc(c.measured)} against ${esc(c.limit)} <span class="cad-compare-src">(${esc(c.source)})</span>`).join('; ')}</li>`).join('')}</ul></details>` : '';
+  return `<p class="cad-cost-note">${esc(x.principle)}</p><div class="cad-compare-wrap"><table class="cad-compare-table">
     <caption class="sr-only">Cost per part by manufacturing route</caption>
-    <thead><tr><th scope="col">Route</th><th scope="col" class="num">Cost / part</th><th scope="col" class="num">vs this costing</th><th scope="col" class="num">Tooling / part</th><th scope="col">Basis</th></tr></thead>
-    <tbody>${body}</tbody></table></div>`;
+    <thead><tr><th scope="col">Route</th><th scope="col" class="num">Cost / part</th><th scope="col" class="num">vs this costing</th><th scope="col" class="num">Tooling investment</th><th scope="col" class="num">Tooling / part</th><th scope="col">Basis</th></tr></thead>
+    <tbody>${body}</tbody></table></div>${excluded}`;
 }

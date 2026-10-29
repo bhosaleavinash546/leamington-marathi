@@ -2811,15 +2811,16 @@ router.post('/compare-routes', requireAuth, reanalyzeLimiter, asyncRoute(async (
   const programmeYears = parseFloat(req.body?.programmeYears) > 0 ? parseFloat(req.body.programmeYears) : undefined;
   const region = rateRegionOf(requestRegion(req));
   const { compareRoutes } = await import('../services/route-compare.js');
-  const rows = await compareRoutes({
+  const comparison = await compareRoutes({
     geo, filename, current,
     answers: { ...answersFromContext(forcedMaterial, filename), ...answersIn },
     region, annualVolume: parseFloat(req.body?.annualVolume) || 100000,
     ...(programmeYears ? { programmeYears } : {}),
     acknowledge: parseAcknowledged(req.body?.acknowledged),
     baseBook: recomputeMachineRates(resolveActiveRateBook()),
+    ladder: req.body?.ladder !== false,
   });
-  res.json({ region, rows, versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV } });
+  res.json({ region, comparison, rows: comparison.rows, versions: { rules: RULE_ENGINE_VERSION, kernel: KERNEL_REV } });
 }));
 
 router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, res): Promise<void> => {

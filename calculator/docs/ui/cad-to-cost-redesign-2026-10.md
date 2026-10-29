@@ -279,6 +279,9 @@ phase 2.
 - **On the cost card** (opens on demand): route, cost a part, signed difference, tooling a part, basis. The costing's
   own route is the reference row; if it differs from the headline the row says the form carries a typed change — a
   built-in check that screen = headless.
+- **Rebuilt 29 Oct 2026** (`docs/cad/compare-routes-review-2026-10.md`): a feasibility screen with sourced limits decides
+  the candidates (same material family, finished scope); every row carries its buckets, material bought, tooling
+  investment, operations and checks; break-even is read off real re-costs on a volume ladder; PDF §9b and Excel `8-Routes`.
 - **"Cost this route"** re-analyses as that route on the CAD screen: the route becomes the process answer, the new
   route's questions are shown (not accepted unseen), and Get cost costs it.
 

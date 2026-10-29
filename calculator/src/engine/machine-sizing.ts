@@ -29,7 +29,7 @@ const STAMPING_PRESS_TIERS: ReadonlyArray<readonly [number, string]> = [
 ];
 
 /** Closed-die forging presses (metric tonnes-force) present in the rate library. */
-const FORGE_PRESS_TIERS: ReadonlyArray<readonly [number, string]> = [
+export const FORGE_PRESS_TIERS: ReadonlyArray<readonly [number, string]> = [
   [500, 'forge-press-500t'], [1600, 'forge-press-1600t'], [2500, 'forge-press-2500t'],
   [4000, 'forge-press-4000t'], [8000, 'forge-press-8000t'],
 ];

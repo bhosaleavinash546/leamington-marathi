@@ -32,6 +32,8 @@ export async function exportToExcelBlob(
   band: { plusMinusPct: number; p10: number; p90: number; overallConfidence?: string } | null = null,
   /** The rate book, rules and kernel behind a CAD costing (CAD to COST v2) — printed under the country. */
   stamp: string | null = null,
+  /** The route comparison the screen drew (compare-routes review, Oct 2026) — sheet 8, never re-run here. */
+  routeComparison: import('../ui/cad-workspace.js').RouteComparisonExport | null = null,
 ): Promise<Blob> {
   const sym = currencySymbol(currency);
   const m = (gbp: number) => money(gbp * fxRate, sym);
@@ -323,6 +325,43 @@ export async function exportToExcelBlob(
     );
   }
   sheets.push({ name: '7-Checks', rows: ck, cols: [56, 18, 18, 14, 60] });
+
+  // ── Sheet 8: Route comparison — the screen's rows, each with its 8 buckets, material, tooling and ladder ──
+  if (routeComparison && routeComparison.rows.length) {
+    const x = routeComparison;
+    const ref = x.rows.find(r => r.route === x.current)?.total ?? null;
+    const rr: unknown[][] = [
+      ['ROUTE COMPARISON', `(${currency})`],
+      [x.principle],
+      [],
+      ['Route', 'Status', 'Cost / part', 'vs reference', 'Material', 'Process', 'Labour', 'Tooling', 'Packaging', 'Logistics', 'Overhead', 'Margin', 'Buckets add up', 'Grade costed', 'Net kg', 'Bought kg', 'Utilisation', 'Tooling investment', 'Amortised over', 'Basis'],
+      ...x.rows.map(r => [
+        `${x.labels[r.route] ?? r.route}${r.route === x.current ? ' (this costing)' : ''}`, r.status,
+        r.total != null ? m(r.total) : '—',
+        r.route === x.current ? 'reference' : r.total != null && ref != null ? m(r.total - ref) : '—',
+        ...['rawMaterial', 'process', 'labour', 'tooling', 'packaging', 'logistics', 'overhead', 'margin'].map(k => (r.breakdown ? m(r.breakdown[k] ?? 0) : '—')),
+        r.reconciles == null ? '' : r.reconciles ? 'OK' : 'MISMATCH',
+        r.material?.label ?? '', r.material?.netKg ?? '', r.material?.boughtKg ?? '', r.material?.utilisation != null ? pctCell(r.material.utilisation) : '',
+        r.tooling ? m(r.tooling.investment) : '', r.tooling?.amortisedOver ?? '',
+        [...(r.commodity && r.commodity !== r.route ? [`costed as ${x.labels[r.commodity] ?? r.commodity}`] : []), ...r.assumed.map(a => `assumed: ${a}`), ...r.openQuestions.map(q => `needs an answer: ${q}`), ...(r.refusal ? [`not costed: ${r.refusal}`] : []), ...r.notes, ...r.caveats].join('; '),
+      ]),
+      [],
+    ];
+    if (x.ladder.length) {
+      rr.push(['COST A PART BY ANNUAL VOLUME — each figure is a re-cost at that volume; a crossover is interpolated between two re-costs'],
+        ['Route', ...x.ladder.map(v => `${v.toLocaleString('en-GB')} / yr`), 'Crossover'],
+        ...x.rows.filter(r => r.byVolume.length).map(r => [x.labels[r.route] ?? r.route,
+          ...x.ladder.map(v => { const p = r.byVolume.find(b => b.volume === v); return p?.total != null ? m(p.total) : '—'; }),
+          x.crossovers.find(k => k.route === r.route)?.text ?? (r.route === x.current ? 'reference' : '')]),
+        []);
+    }
+    rr.push(['OPERATIONS BY ROUTE'], ['Route', 'Operation', 'Machine class', 'Cycle (min)', 'Process', 'Labour']);
+    for (const r of x.rows) for (const op of r.operations ?? []) rr.push([x.labels[r.route] ?? r.route, op.name, op.machine, op.bench ? '' : op.cycleMin, m(op.processCost), m(op.labourCost)]);
+    rr.push([], ['FEASIBILITY — every route with rules, the checks it passed or failed, and the source of each limit'], ['Route', 'Feasible', 'Check', 'Measured', 'Limit', 'Pass', 'Source']);
+    for (const r of x.rows) for (const ck of r.checks) rr.push([x.labels[r.route] ?? r.route, 'yes', ck.label, ck.measured, ck.limit, ck.pass ? 'pass' : 'fail', ck.source]);
+    for (const e of x.excluded) for (const ck of e.reasons) rr.push([x.labels[e.route] ?? e.route, 'no', ck.label, ck.measured, ck.limit, 'fail', ck.source]);
+    sheets.push({ name: '8-Routes', rows: rr, cols: [26, 12, 12, 12, 11, 11, 11, 11, 11, 11, 11, 11, 10, 26, 9, 9, 10, 14, 12, 70] });
+  }
 
   // Every £ amount in the text of a non-£ workbook (rule bases, rate sources, notes) in the workbook's currency
   // (demo review 2026-10-10: a China workbook read "die £3,056" and "capex £22,394" beside ¥ totals).

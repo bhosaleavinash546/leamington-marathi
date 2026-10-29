@@ -382,21 +382,57 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   const ref = routes.find(r => r.ref);
   check('3', 'A1/#6', 'screen = headless: the comparison\'s reference row (costMeasuredPart) equals the headline', !!ref && money(ref.cost) === money(hero),
     `reference ${ref?.cost ?? '—'} v headline ${money(hero)}; other routes: ${routes.filter(r => !r.ref).map(r => `${r.route} ${r.cost}`).join(', ')}`);
+  // Compare-routes review (Oct 2026): every row opens to its build-up, the refused routes are listed with sources,
+  // and an alternative carries its crossover with the costed route.
+  const cmpDetail = await page.$$eval('#cad-compare-host', hs => {
+    const h = hs[0];
+    const detail = h.querySelectorAll('.cad-compare-detail').length;
+    const open = h.querySelector('.cad-compare-detail') as HTMLDetailsElement | null;
+    if (open) open.open = true;
+    const buckets = open ? open.querySelectorAll('.cad-compare-mini tr').length : 0;
+    return {
+      detail, buckets,
+      addsUp: !!h.querySelector('.cad-compare-ok'),
+      excluded: (h.querySelector('.cad-compare-excluded summary')?.textContent ?? '').replace(/\s+/g, ' ').trim(),
+      excludedRows: h.querySelectorAll('.cad-compare-excluded li').length,
+      sourced: Array.from(h.querySelectorAll('.cad-compare-excluded li')).every(li => /\(.+\)/.test(li.textContent ?? '')),
+      crossover: Array.from(h.querySelectorAll('.cad-compare-cross')).map(e => (e.textContent ?? '').trim()).filter(Boolean),
+      principle: (h.querySelector('p.cad-cost-note')?.textContent ?? '').includes('same material family'),
+      header: Array.from(h.querySelectorAll('thead th')).map(t => t.textContent?.trim()),
+    };
+  });
+  rec.compareDetail = cmpDetail;
+  check('3', 'CR1', 'every costed row opens to its 8 buckets, material, tooling, operations and checks', cmpDetail.detail >= 1 && cmpDetail.buckets >= 9 && cmpDetail.addsUp,
+    `${cmpDetail.detail} detail(s), ${cmpDetail.buckets} mini rows, adds up ${cmpDetail.addsUp}`);
+  check('3', 'CR2', 'routes that cannot make the part are listed with the check failed and its source', cmpDetail.excludedRows > 0 && cmpDetail.sourced,
+    `${cmpDetail.excluded}: ${cmpDetail.excludedRows} route(s), every one sourced ${cmpDetail.sourced}`);
+  check('3', 'CR3', 'the principle (same family, finished scope) and the tooling investment column are on the table', cmpDetail.principle && cmpDetail.header.includes('Tooling investment'),
+    cmpDetail.header.join(' | '));
+  check('3', 'CR4', 'each alternative states its crossover with the costed route from the volume ladder', routes.filter(r => !r.ref && money(r.cost) > 0).length === 0 || cmpDetail.crossover.length > 0,
+    cmpDetail.crossover.join(' / ') || 'no costed alternative');
   await snap('step3-compare');
 
   // #4 end to end: the margin changed on the card re-costs the part (subtotal × 1.10 instead of × 1.08), then back
   const before = money(hero);
+  // The card may redraw between the query and the keystroke (the DFM report landing after a longer comparison):
+  // re-query and type again rather than fail on a detached element.
+  const fillCommercial = async (field: string, value: string): Promise<boolean> => {
+    for (let k = 0; k < 4; k++) {
+      const el = await page.$(`#cad-cost-card [data-commercial="${field}"]`);
+      if (!el) return false;
+      try { await el.fill(value); await el.dispatchEvent('change'); return true; } catch { await page.waitForTimeout(400); }
+    }
+    return false;
+  };
   const mg = await page.$('#cad-cost-card [data-commercial="margin-pct"]');
-  if (mg) {
-    await mg.fill('10'); await mg.dispatchEvent('change');
+  if (mg && await fillCommercial('margin-pct', '10')) {
     const after = await page.waitForFunction(b => { const h = document.querySelector('#cv-result-hero .crh-total')?.textContent ?? ''; return h && !h.includes(b) ? h : false; },
       before, { timeout: 60_000 }).then(h => h.jsonValue() as Promise<string>).catch(() => '');
     const expect10 = Number(String(before).replace(/[^\d.]/g, '')) / 1.08 * 1.10;
     const graded = await page.evaluate(() => Array.from(document.querySelectorAll('#cad-basis .cad-basis-row')).map(r => (r.textContent ?? '').replace(/\s+/g, ' ').trim()).find(t => /Supplier margin/.test(t)) ?? '');
     check('3', '#4', 'margin 8 % → 10 % on the card re-costs the part (subtotal × 1.10)', Math.abs(num(money(after)) - expect10) <= 0.011,
       `${before} → ${money(after)} (expected £${expect10.toFixed(2)}); Basis now "${graded}"`);
-    const mg2 = await page.$('#cad-cost-card [data-commercial="margin-pct"]');
-    await mg2!.fill('8'); await mg2!.dispatchEvent('change');
+    await fillCommercial('margin-pct', '8');
     const back = await page.waitForFunction(b => { const h = document.querySelector('#cv-result-hero .crh-total')?.textContent ?? ''; return h.includes(b) ? h : false; },
       before, { timeout: 60_000 }).then(h => h.jsonValue() as Promise<string>).catch(() => '');
     check('3', '#4', 'margin back to 8 % gives the original cost', money(back) === before, `${money(back) || '(did not return)'} v ${before}`);
@@ -416,6 +452,12 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   check('export', 'A6/#12', 'Excel opened: the stamp word for word', xlStamp === stamp, String(xlStamp));
   const text = pdfText(readFileSync(pdf)).replace(/\s+/g, ' ');
   const pdfStamp = text.match(/Reproducibility: (.*?kernel \S+ · \d{1,2} \w{3} \d{4})/)?.[1] ?? null;
+  // Compare-routes review (Oct 2026): the comparison the screen drew is in both reports.
+  const routesSheet = wb.Sheets['8-Routes'] ? (XLSX.utils.sheet_to_json(wb.Sheets['8-Routes'], { header: 1, raw: false }) as unknown[][]) : null;
+  const routesRows = routesSheet ? routesSheet.filter(r => typeof r[0] === 'string' && /\(this costing\)/.test(String(r[0]))).length : 0;
+  check('3', 'CR5', 'the Excel carries sheet 8-Routes with the costed route marked and the ladder; the PDF prints §9b Route Comparison',
+    routesRows >= 1 && !!routesSheet?.some(r => String(r[0] ?? '').startsWith('COST A PART BY ANNUAL VOLUME')) && /Route Comparison/.test(text),
+    `8-Routes ${routesSheet ? `${routesSheet.length} rows, ${routesRows} reference row(s)` : 'missing'}; PDF §9b ${/Route Comparison/.test(text) ? 'present' : 'missing'}`);
   check('export', 'A6/#12', 'PDF opened: the stamp word for word', pdfStamp === stamp, String(pdfStamp));
   check('export', 'A6', 'PDF opened: the headline', text.includes(money(hero)), `${money(hero)} ${text.includes(money(hero)) ? 'found' : 'NOT found'}`);
 
