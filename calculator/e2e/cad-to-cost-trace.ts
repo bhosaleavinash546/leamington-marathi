@@ -472,8 +472,13 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   };
   const mg = await page.$('#cad-cost-card [data-commercial="margin-pct"]');
   if (mg && await fillCommercial('margin-pct', '10')) {
-    const after = await page.waitForFunction(b => { const h = document.querySelector('#cv-result-hero .crh-total')?.textContent ?? ''; return h && !h.includes(b) ? h : false; },
-      before, { timeout: 60_000 }).then(h => h.jsonValue() as Promise<string>).catch(() => '');
+    // Wait for the re-cost to land: the headline changes, OR the Basis shows the typed 10 % (a part under ~£0.50 can
+    // round to the same pennies at 8 % and 10 % — waiting for a change alone timed out and read nothing, IT / NL grommet).
+    const after = await page.waitForFunction(b => {
+      const h = document.querySelector('#cv-result-hero .crh-total')?.textContent ?? '';
+      const typed = Array.from(document.querySelectorAll('#cad-basis .cad-basis-row')).some(r => /Typed Supplier margin[^%]*10%/.test((r.textContent ?? '').replace(/\s+/g, ' ')));
+      return h && (!h.includes(b) || typed) ? h : false;
+    }, before, { timeout: 60_000 }).then(h => h.jsonValue() as Promise<string>).catch(() => '');
     const expect10 = Number(String(before).replace(/[^\d.]/g, '')) / 1.08 * 1.10;
     const graded = await page.evaluate(() => Array.from(document.querySelectorAll('#cad-basis .cad-basis-row')).map(r => (r.textContent ?? '').replace(/\s+/g, ' ').trim()).find(t => /Supplier margin/.test(t)) ?? '');
     check('3', '#4', 'margin 8 % → 10 % on the card re-costs the part (subtotal × 1.10)', Math.abs(num(money(after)) - expect10) <= 0.011,
