@@ -5,6 +5,11 @@
 The website of Leamington Marathi, a volunteer-run, non-profit community group of 400+
 Marathi families in Leamington Spa & Warwick, UK.
 
+> **© 2026 Leamington Marathi. All rights reserved.** This code, design, text, photos and videos
+> belong to Leamington Marathi and the people credited on the site. They are public so the
+> website can be hosted here, not for reuse. Please do not copy, reuse or republish any part
+> without written permission from leamingtonmarathi@gmail.com.
+
 ## What's here
 
 | File | Purpose |
@@ -47,3 +52,11 @@ sign-in) run on **Firebase Authentication** — free tier, no server needed.
 The page shows a "launching soon" note until `member-config.js` is filled in;
 the step-by-step switch-on checklist is written at the top of that file.
 Member data stored: name + email only, in the community's own Firebase project.
+
+## Copyright
+
+© 2026 Leamington Marathi. All rights reserved. Do not reuse without permission.
+
+The code, design, text, photos and videos in this repository are not open source and are not
+licensed for reuse. Photos and videos by other people remain theirs and are credited on the
+website (see `privacy.html`). To ask about using anything, email leamingtonmarathi@gmail.com.
