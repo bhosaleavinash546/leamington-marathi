@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { WORLD_BOOKS } from '../src/engine/country-books/world.js';
+
 import {
   estimateMouldCost,
   mouldSteelClassFactor,
@@ -255,11 +257,12 @@ describe('C2/H4 — regional machine rate rebuild (energy re-tariff)', () => {
   });
 
   it('a dearer-capex country can be cheaper than the UK on an energy-dominated machine', () => {
-    // AT capex ×1.05 but electricity £0.151 < UK £0.182 (DESNZ, UK rate book Oct 2026 — Germany at £0.199 is now
-    // dearer than the UK, so it no longer shows this); for the energy-heavy 800T press the cheaper power outweighs it.
-    const at = buildRegionalLibrary(lib, 'AT');
-    expect(REGIONAL_DATA.AT.machineRateMultiplier).toBeGreaterThan(1);
-    expect(machineRate(at, 'imm-800t')).toBeLessThan(machineRate(lib, 'imm-800t'));
+    // Germany: held capital × 1.049 (dearer than the UK book) but BDEW electricity €0.179 = £0.150 < the UK's £0.182
+    // (DESNZ) — for the energy-heavy 800T press the cheaper power outweighs the dearer capital. (Austria showed this
+    // until it got its own book in the world round, 30 Oct 2026.)
+    const de = buildRegionalLibrary(lib, 'DE');
+    expect(REGIONAL_DATA.DE.machineRateMultiplier).toBeGreaterThan(1);
+    expect(machineRate(de, 'imm-800t')).toBeLessThan(machineRate(lib, 'imm-800t'));
   });
 
   it('regional machine buildups stay self-consistent (rate recomputes from buildup)', () => {
@@ -305,7 +308,10 @@ describe('L10 — technician / supervisor labour categories', () => {
       expect(l.technician).toBeGreaterThan(l.semiskilled);
       // supervisor above technician everywhere but the UK, where ASHE puts a 2-shift engineering technician (SOC 3113,
       // £35.17/h loaded) just above a tier-1 shift supervisor at the SOC 8160 p75 (£34.57/h) — UK rate book, Oct 2026
-      expect(l.supervisor).toBeGreaterThan(region === 'UK' ? l.semiskilled : l.technician);
+      // a world-round book prices both from the same occupation group (Eurostat SES / ILO publish ISCO major groups
+      // only: manufacturing supervisors 3122 sit in group 3 with the technicians), so it may equal the technician
+      if (WORLD_BOOKS[region]) expect(l.supervisor).toBeGreaterThanOrEqual(l.technician);
+      else expect(l.supervisor).toBeGreaterThan(region === 'UK' ? l.semiskilled : l.technician);
     }
   });
 

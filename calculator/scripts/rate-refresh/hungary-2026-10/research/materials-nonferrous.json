@@ -197,14 +197,21 @@
   },
   {
    "key": "nonferrous.al.amag_rolling_asp",
-   "value": 5.885,
+   "value": 5.867,
    "unit": "EUR/kg",
    "currency": "EUR",
-   "basis": "DERIVED: AMAG (Ranshofen, Austria) Rolling division 2025: EBITDA 67.3 MEUR at a 5.6% margin -> segment revenue 67.3/0.056 = 1,202 MEUR; / shipments 204,200 t = 5.885 EUR/kg = 2141.7 Ft/kg.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 5.885): AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin — original basis: DERIVED: AMAG (Ranshofen, Austria) Rolling division 2025: EBITDA 67.3 MEUR at a 5.6% margin -> segment revenue 67.3/0.056 = 1,202 MEUR; / shipments 204,200 t = 5.885 EUR/kg = 2141.7 Ft/kg.",
    "source": "https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488",
    "date": "2025 (calendar year)",
    "kind": "company results (news report of annual results; derived ASP)",
-   "notes": "Margin is rounded (5.55-5.65% gives 5.83-5.94 EUR/kg). AMAG's mix is specialty-heavy (aerospace plate, automotive, tread plate) and segment revenue may include intersegment sales, so this is an upper reference for Central-European rolled product, not a coil price. Figures from AlCircle's report of AMAG's 2025 results, not read in the company's own annual report. H1 2026: Rolling shipments ~117 kt (+8%), Q2 record ~62 kt; no H1 2026 segment revenue found (https://www.amag-al4u.com/en/media/press-releases/press-detail/amag-austria-metall-ag-erfolgreiches-1-halbjahr-2026-mit-deutlichem-ergebnisanstieg)."
+   "notes": "Margin is rounded (5.55-5.65% gives 5.83-5.94 EUR/kg). AMAG's mix is specialty-heavy (aerospace plate, automotive, tread plate) and segment revenue may include intersegment sales, so this is an upper reference for Central-European rolled product, not a coil price. Figures from AlCircle's report of AMAG's 2025 results, not read in the company's own annual report. H1 2026: Rolling shipments ~117 kt (+8%), Q2 record ~62 kt; no H1 2026 segment revenue found (https://www.amag-al4u.com/en/media/press-releases/press-detail/amag-austria-metall-ag-erfolgreiches-1-halbjahr-2026-mit-deutlichem-ergebnisanstieg).",
+   "corrected": {
+    "was": 5.885,
+    "on": "2026-10-30",
+    "why": "AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin",
+    "verdicts": "verdicts/hungary.json"
+   },
+   "verify": false
   },
   {
    "key": "nonferrous.al.sheet_5754",

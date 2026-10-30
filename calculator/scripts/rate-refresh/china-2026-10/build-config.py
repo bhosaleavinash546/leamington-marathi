@@ -214,7 +214,7 @@ machines = {
     'rentLocalPerM2Month': round(rent, 2),
     'rentBasis': 'JLL Shanghai logistics rent Q2 2026 ¥31.94/m²/month (a ceiling for a factory) and Dongguan factory rents ¥10–28 (midpoint ¥19; estate-agent article, 2025) — mean; Wuhan / Chongqing averages not found (Chongqing listings ¥4–12 suggest this is high for the inland clusters)',
     'ukRentGbpPerM2Yr': 110,
-    'capitalHeldFactor': 0.55,
+    'capitalHeldFactor': 1.0,   # world round, 30 Oct 2026: unpriced capital AT PAR (×1) in every country — the UK × 0.55 factor had no source
     'groups': [
         # round 30 Oct 2026 — makers' average selling prices from annual reports (read from search results: verify)
         {'id': 'fibre-laser-domestic', 'match': '^(laser-trumpf-3030|laser-trumpf-5030|laser-bystronic-3015|laser-amada-ensis-3015)$', 'refId': 'laser-trumpf-3030',
@@ -234,7 +234,7 @@ machines = {
          'basis': 'KEDE 科德数控 2024 five-axis average transaction price ¥2.4251M ex-VAT (its mix runs to large machines — top of range; Nawi IPO ¥2.0M)',
          'source': R['capex.mach-vmc5']['source'], 'confidence': 'Low'},
     ],
-    'notRebuiltBasis': 'capex not sourced for China: the book\'s capital (UK × 0.55) is HELD; the China operating model (2 × 12 h hours, straight-line, LPR finance, rent, tariff, support at China wages) is applied',
+    'notRebuiltBasis': 'capex not sourced for China: the machine\'s capital is the book\'s AT PAR (×1 — no unsourced country discount; the UK × 0.55 factor it replaced had no source), under the China operating model (hours, tax life, finance, rent, tariff, support at China wages)',
 }
 
 # Al extrusion billet = A00 + the 6063 billet processing fee, over the library's LME (al-extrusion-data AL_MARKET)
@@ -244,7 +244,7 @@ billet_usd = (A00 + v('nonferrous.al.billet6063_premium')) / cny_per_usd * 1000
 cfg = {'asOf': '2026-10-10', 'label': 'China rate book — 4-cluster average (Yangtze / Pearl River deltas, Chongqing, Wuhan), 2 × 12 h',
        'region': 'CN', 'currency': 'CNY', 'currencySymbol': '¥', 'dir': 'scripts/rate-refresh/china-2026-10',
        'snapshot': 'scripts/rate-refresh/china-2026-10/current-china-book.json', 'bookFile': 'src/engine/country-books/cn.ts', 'bookConst': 'CHINA_BOOK',
-       'fxPerGbp': FX, 'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held,
+       'fxPerGbp': FX, 'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held, 'heldMaterialsAtPar': {'basis': 'no China price this round — the book\'s European-market price at par, no country factor (world round, 30 Oct 2026; the UK × factor it replaced had no source)'},
        # round 30 Oct 2026: the overhead multiplier checked against supplier filings (it is not changed — the evidence agrees)
        'shopMultipliersBasis': 'Overhead ×0.75 agrees with automotive-supplier filings: SG&A ÷ cost of sales Tuopu 4.15 %, Huayu 6.04 % v the UK\'s TI Fluid Systems 7.68 %, Dowlais ~10.4 % — a ratio of 0.67–0.79 (read from search results; verify); packaging and logistics multipliers held, not researched for China',
        'alBilletPremiumUsdPerT': {'value': round(billet_usd - LME), 'current': -186,

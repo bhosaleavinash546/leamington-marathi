@@ -1,0 +1,1338 @@
+{
+ "asOf": "2026-10-30",
+ "label": "Japan rate book — world round: national / ILO earnings + statutory on-costs, regulator tariffs, regional material markets, 3 × 8 h",
+ "region": "JP",
+ "currency": "JPY",
+ "currencySymbol": "JP¥",
+ "dir": "scripts/rate-refresh/world-2026-10/books/jp",
+ "snapshot": "scripts/rate-refresh/world-2026-10/books/jp/current-book.json",
+ "bookFile": "src/engine/country-books/jp.ts",
+ "bookConst": "JAPAN_BOOK",
+ "writeFx": true,
+ "fxPerGbp": 210.486,
+ "fxBasis": "ECB euro reference rates 2026-10-29: €1 = 175.92 JPY, €1 = £0.83578 → £1 = 210.486 JPY",
+ "labour": {
+  "categories": {
+   "skilled": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "skilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "semiskilled": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "foundry": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "foundry earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "electronics": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "electronics earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "inspector": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "inspector earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "technician": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "technician earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "supervisor": {
+    "localPerHr": 3060.69,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "supervisor earnings (scheduled cash earnings per month (mean), ALL INDUSTRIES, position grade (not ISCO 3122), 2025-06): 399200.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 3060.69/h"
+   },
+   "engineer": {
+    "localPerHr": 4319.93,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "not found for this role: skilled × ISCO 2 ÷ ISCO 7 = 1.707 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — skilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 4319.93/h"
+   }
+  },
+  "grades": {
+   "forge": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "paid as skilled: skilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "furnace": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "blow": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "roto": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "thermoform": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   },
+   "trim-router": {
+    "localPerHr": 2530.13,
+    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
+    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+   }
+  },
+  "loadingIncluded": "Fully-loaded hourly cost INCLUDES: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked)",
+  "loadingNotIncluded": "NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+  "short": "national / ILO occupation earnings + statutory employer contributions ÷ hours worked"
+ },
+ "energy": {
+  "electricityLocalPerKwh": 25.69,
+  "gasLocalPerKwh": 10.46,
+  "basis": "Electricity 25.69 JPY/kWh: GlobalPetrolPrices business electricity JPY 28.26/kWh (Mar 2026, incl. all taxes) / 1.10 consumption tax = JPY 25.69/kWh (2026-03). Gas 10.46 JPY/kWh: GlobalPetrolPrices business gas JPY 11.51/kWh (Mar 2026, incl. taxes, 1 GWh/yr) / 1.10 consumption tax = JPY 10.46/kWh (2026-03)",
+  "sources": [
+   {
+    "research": "energy.electricity",
+    "source": "https://www.globalpetrolprices.com/Japan/electricity_prices/",
+    "date": "2026-03"
+   },
+   {
+    "research": "energy.gas",
+    "source": "https://www.globalpetrolprices.com/Japan/natural_gas_prices/",
+    "date": "2026-03"
+   }
+  ]
+ },
+ "machines": {
+  "hoursPerYear": 5880,
+  "hoursBasis": "3 × 8 h, Monday–Friday, Japan's 2026 working calendar: 5880 h (245 days × 24 h; 16 weekday national public holidays removed — https://date.nager.at/api/v3/PublicHolidays/2026/JP)",
+  "shiftDepreciationFactor": 1.0,
+  "shiftBasis": "Japan straight-line tax depreciation — no shift uplift on capital",
+  "lifeYears": 10.0,
+  "financeRate": 0.02,
+  "financeBasis": "BOJ API, Aug 2026 latest (updated 2026-10-05) (2026-08)",
+  "ukFinanceRate": 0.04,
+  "maintenancePctOfCapex": 0.035,
+  "maintenanceBasis": "the library's own line build-up rule (3.5% of capex); no Japan norm found",
+  "rentLocalPerM2Month": 1131.0,
+  "rentBasis": "CBRE Japan Logistics MarketView Q2 2026 as reported by LNEWS (18 Aug 2026): Chubu (Greater Nagoya) LMT effective rent ¥3,740/tsubo (flat q/q); 3,740 ÷ 3.30579 m²/tsubo = 1,131 JPY/m²/month. (AVERAGE effective rent, large multi-tenant logistics facilities, Chubu / Greater Nagoya (Toyota cluster), 2026-Q2)",
+  "ukRentGbpPerM2Yr": 110,
+  "capitalHeldFactor": 1.0,
+  "groups": [],
+  "notRebuiltBasis": "capex not found for Japan: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Japan's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Japan wages)"
+ },
+ "materialFamilies": [
+  {
+   "family": "CR coil (DC01 / DC04)",
+   "anchorLocalPerKg": 93.3499,
+   "anchorBasis": "CR coil (DC01 / DC04) — the NEA market (TW figure): CRC JIS G3141 SPCC 0.3–1.5 mm NT$19,800–20,500/t incl. 5% VAT; mid 20,150 ÷ 1.05 = NT$19,190/t ex-VAT = 19190 TWD/t ex-VAT (2026-07-30) = JP¥93.3499/kg",
+   "sources": [
+    {
+     "research": "mat.crc",
+     "source": "https://www.steelorbis.com/steel-prices/steel-prices-market-analyses/flats-and-slab/flat-steel-prices-in-localtaiwanese-market-week-31-2026-1467860.htm",
+     "date": "2026-07-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "CR automotive grades",
+   "anchorLocalPerKg": 93.3499,
+   "anchorBasis": "CR automotive grades — the NEA market (TW figure): CRC JIS G3141 SPCC 0.3–1.5 mm NT$19,800–20,500/t incl. 5% VAT; mid 20,150 ÷ 1.05 = NT$19,190/t ex-VAT = 19190 TWD/t ex-VAT (2026-07-30) = JP¥93.3499/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.crc",
+     "source": "https://www.steelorbis.com/steel-prices/steel-prices-market-analyses/flats-and-slab/flat-steel-prices-in-localtaiwanese-market-week-31-2026-1467860.htm",
+     "date": "2026-07-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR structural",
+   "anchorLocalPerKg": 106.0,
+   "anchorBasis": "HR structural — JP's market: Tokyo Steel November-2026 contract list: hot coil SPHC 1.7≤t≤22.0 × 900–1,630 mm ¥106,000/t (1.5≤t<1.7 ¥108,000); grade extras SS400 +1,000, SAPH440 +5,000 = 106000 JPY/t (2026-10-19 (list for November 2026 contracts)) = JP¥106.0000/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.hrc",
+     "source": "https://www.tokyosteel.co.jp/assets/docs/salesprice/kouhan.pdf",
+     "date": "2026-10-19 (list for November 2026 contracts)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.77,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-s355mc",
+    "mat-s420mc"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Coated sheet",
+   "anchorLocalPerKg": 141.0,
+   "anchorBasis": "Coated sheet — JP's market: Tokyo Steel November-2026 list: hot-dip galvanised coil (T-Zinc) SGCC Z08 0.9≤t≤1.6 × 850–1,320 mm ¥141,000/t (0.7–0.9 ¥143,000; 0.6–0.7 ¥145,000; 0.4–0.6 ¥147,000; 0.3–0.4 ¥151,000; SGHC 1.6–2.3 ¥141 = 141000 JPY/t (2026-10-19 (list for November 2026 contracts)) = JP¥141.0000/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.hdg",
+     "source": "https://www.tokyosteel.co.jp/assets/docs/salesprice/kouhan.pdf",
+     "date": "2026-10-19 (list for November 2026 contracts)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR pickled & oiled",
+   "anchorLocalPerKg": 112.0,
+   "anchorBasis": "HR pickled & oiled — JP's market: Tokyo Steel November-2026 list: pickled coil SPHC 1.7≤t≤6.0 × 900–1,600 mm ¥112,000/t (1.5≤t<1.7 ¥114,000) = 112000 JPY/t (2026-10-19 (list for November 2026 contracts)) = JP¥112.0000/kg",
+   "sources": [
+    {
+     "research": "mat.hr_po",
+     "source": "https://www.tokyosteel.co.jp/assets/docs/salesprice/kouhan.pdf",
+     "date": "2026-10-19 (list for November 2026 contracts)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hrpo"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "409L / 441 ferritic sheet",
+   "anchorLocalPerKg": 260.7134,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥260.7134/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.409L_CR",
+     "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429",
+     "date": "2026-07-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.85,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304 sheet",
+   "anchorLocalPerKg": 324.302,
+   "anchorBasis": "304 sheet — the NEA market (TW figure): Stainless CRC SUS304 2B 0.8–1.5 mm NT$69,000–71,000/t incl. 5% VAT; mid 70,000 ÷ 1.05 = NT$66,667/t ex-VAT (SUS304 HRC 3–5 mm NT$67,000–68,000) = 66667 TWD/t ex-VAT (2026-07-30) = JP¥324.3020/kg",
+   "sources": [
+    {
+     "research": "mat.ss304_cr",
+     "source": "https://www.steelorbis.com/steel-prices/steel-prices-market-analyses/flats-and-slab/flat-steel-prices-in-localtaiwanese-market-week-31-2026-1467860.htm",
+     "date": "2026-07-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "301 spring strip",
+   "anchorLocalPerKg": 324.302,
+   "anchorBasis": "301 spring strip — the NEA market (TW figure): Stainless CRC SUS304 2B 0.8–1.5 mm NT$69,000–71,000/t incl. 5% VAT; mid 70,000 ÷ 1.05 = NT$66,667/t ex-VAT (SUS304 HRC 3–5 mm NT$67,000–68,000) = 66667 TWD/t ex-VAT (2026-07-30) = JP¥324.3020/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.ss304_cr",
+     "source": "https://www.steelorbis.com/steel-prices/steel-prices-market-analyses/flats-and-slab/flat-steel-prices-in-localtaiwanese-market-week-31-2026-1467860.htm",
+     "date": "2026-07-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.49,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss301-spring"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "316L sheet",
+   "anchorLocalPerKg": 743.262,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor) — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥743.262/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.316L_CR",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet",
+    "mat-ss316l"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "430 ferritic sheet",
+   "anchorLocalPerKg": 290.0041,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found) — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥290.0041/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.430_CR",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorLocalPerKg": 69.8402,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥69.8402/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJS-500-7",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    },
+    {
+     "research": "ferrous.foundry.FeSi75",
+     "source": "https://api.argusmedia.com/articles/2840817",
+     "date": "2026-06-16"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Grey / malleable iron (charge)",
+   "anchorLocalPerKg": 62.0294,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥62.0294/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJL-250",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorLocalPerKg": 54.2795,
+   "anchorBasis": "steel-foundry charge on JP heavy scrap JP¥51.0000/kg (2026-10-22) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = JP¥54.2795/kg (the German book's arithmetic; mix an engineering assumption)",
+   "sources": [
+    {
+     "research": "mat.scrap_hms",
+     "source": "https://www.tokyosteel.co.jp/assets/docs/scrapprice/price/2026/2026.10.22.pdf",
+     "date": "2026-10-22"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast stainless (charge)",
+   "anchorLocalPerKg": 226.585,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥226.585/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.CF8",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    },
+    {
+     "research": "ferrous.stainless.304_scrap",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorLocalPerKg": 546.4427,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397 — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥546.4427/kg",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorLocalPerKg": 903.015,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥903.015/kg",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "High-Cr white iron (charge)",
+   "anchorLocalPerKg": 170.2026,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): 0.23 × Cr €3.03 + 0.77 × grey charge €0.3526 — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥170.2026/kg",
+   "sources": [
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary cast aluminium (ingot)",
+   "anchorLocalPerKg": 483.6615,
+   "anchorBasis": "Secondary cast aluminium (ingot) — JP's market: SMM ADC12 alloy ingot CIF Japan main ports (Yokohama, Nagoya, Osaka), JIS H2118 AD12.1, US$3,040–3,080/t, avg 3,060, VAT excluded = 3060 USD/t (2026-10-30) = JP¥483.6615/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.al_adc12",
+     "source": "https://www-old.metal.com/aluminum/202007310001",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-a413",
+    "mat-a319",
+    "mat-lm4",
+    "mat-en-ac-46200"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary ADC12",
+   "anchorLocalPerKg": 483.6615,
+   "anchorBasis": "Secondary ADC12 — JP's market: SMM ADC12 alloy ingot CIF Japan main ports (Yokohama, Nagoya, Osaka), JIS H2118 AD12.1, US$3,040–3,080/t, avg 3,060, VAT excluded = 3060 USD/t (2026-10-30) = JP¥483.6615/kg",
+   "sources": [
+    {
+     "research": "mat.al_adc12",
+     "source": "https://www-old.metal.com/aluminum/202007310001",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Primary-based cast aluminium",
+   "anchorLocalPerKg": 628.0344,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥628.0344/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.alsi7mg",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29 / 2026-10-09"
+    },
+    {
+     "research": "nonferrous.al.a356_premium",
+     "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.98,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-lm25",
+    "mat-a365",
+    "mat-alsi10mg",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm6",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium forging stock (floor)",
+   "anchorLocalPerKg": 643.8672,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥643.8672/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.billet6063",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+     "date": "2026-08-28 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-al6061-forge",
+    "mat-al6082-forge",
+    "mat-al2014-forge",
+    "mat-al7075-forge",
+    "mat-al2618-forge",
+    "mat-al7050-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium sheet and plate (floor)",
+   "anchorLocalPerKg": 626.0729,
+   "anchorBasis": "Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg",
+   "sources": [
+    {
+     "research": "mat.al_sheet_asp",
+     "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+     "date": "2025-04-01 to 2026-03-31"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aa5182",
+    "mat-aa5052",
+    "mat-aa5083",
+    "mat-aa6082-sheet",
+    "mat-aa5754-sheet",
+    "mat-aa6061-sheet",
+    "mat-aa6063-sheet",
+    "mat-aa3003-sheet",
+    "mat-al-busbar",
+    "mat-aa6016-t4",
+    "mat-aa6111-t4",
+    "mat-aa7075-t6",
+    "mat-aa1050-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorLocalPerKg": 2353.503,
+   "anchorBasis": "LME copper cash $14560/t (29. October 2026) + KR cathode premium $330.0/t = JP¥2353.5030/kg — no bar or sheet below the copper it contains",
+   "sources": [
+    {
+     "research": "official.lme",
+     "source": "https://www.westmetall.com/en/markdaten.php",
+     "date": "29. October 2026"
+    },
+    {
+     "research": "mat.cu_premium",
+     "source": "https://news.metal.com/newscontent/103631465/Codelco-Sets-2026-CIF-Korea-Copper-Cathode-Contract-at-USD-330mt-Up-Sharply-from-2025",
+     "date": "2025-11-20 (applies calendar 2026)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper",
+    "mat-cu-hairpin"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Free-machining / forging brass rod (floor)",
+   "anchorLocalPerKg": 1965.0264,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥1965.0264/kg",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW614N_rod",
+     "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-brass-cz121",
+    "mat-brass-cz122-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "70/30 and 63/37 brass sheet (floor)",
+   "anchorLocalPerKg": 2033.6352,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): CuZn37 metal basis €11.56/kg (5 Oct 2026) — metal value before rolling — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥2033.6352/kg",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW508L_sheet",
+     "source": "https://www.messingwerk.de/de/rohstoffpreise.html",
+     "date": "2026-10-05"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cz108-brass"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Phosphor / tin bronze (floor)",
+   "anchorLocalPerKg": 2926.5523,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥2926.5523/kg",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "nonferrous.sn.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-bronze-pb1",
+    "mat-bronze-c905",
+    "mat-cusn12-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 3 (floor)",
+   "anchorLocalPerKg": 627.0492,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): Metal content 0.96 × SHG zinc €3.58 (LME + Rotterdam premium) + 0.04 × Al €3.19 — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥627.0492/kg",
+   "sources": [
+    {
+     "research": "nonferrous.zn.shg_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+     "date": "2026-02-02 / 2026-10-09"
+    },
+    {
+     "research": "nonferrous.al.p1020",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns",
+     "date": "2026-10-01 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak3"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 5 (floor)",
+   "anchorLocalPerKg": 643.9728,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): Metal content 0.95 × zinc €3.58 + 0.04 × Al + 0.01 × Cu €13.2 — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥643.9728/kg",
+   "sources": [
+    {
+     "research": "nonferrous.zn.shg_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+     "date": "2026-02-02 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak5"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PP family",
+   "anchorLocalPerKg": 214.9606,
+   "anchorBasis": "PP family — JP's market: businessanalytiq PP index, Northeast Asia, September 2026: US$1.36/kg = 1.36 USD/kg (2026-09) = JP¥214.9606/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pp",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polypropylene-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.99,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-pp-homo",
+    "mat-pp",
+    "mat-pp-impact",
+    "mat-pp-bm",
+    "mat-pp-ext-sheet",
+    "mat-ppr-pipe",
+    "mat-pp-roto",
+    "mat-pp-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PE family",
+   "anchorLocalPerKg": 202.3159,
+   "anchorBasis": "PE family — JP's market: businessanalytiq HDPE index, Northeast Asia, September 2026: US$1.28/kg = 1.28 USD/kg (2026-09) = JP¥202.3159/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.hdpe",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hdpe",
+    "mat-hdpe-bm",
+    "mat-hdpe-fuel-coex",
+    "mat-pe100-pipe",
+    "mat-pe80-pipe",
+    "mat-hdpe-profile",
+    "mat-hdpe-roto",
+    "mat-xlpe-roto",
+    "mat-fr-pe-roto",
+    "mat-foam-pe-roto",
+    "mat-cond-pe-roto",
+    "mat-hdpe-tf",
+    "mat-pex-pipe"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LDPE family",
+   "anchorLocalPerKg": 271.862,
+   "anchorBasis": "LDPE family — JP's market: businessanalytiq LDPE index, Northeast Asia, September 2026: US$1.72/kg = 1.72 USD/kg (2026-09) = JP¥271.8620/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.ldpe",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/ldpe-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.09,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ldpe",
+    "mat-ldpe-bm",
+    "mat-ldpe-tube",
+    "mat-ldpe-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LLDPE family",
+   "anchorLocalPerKg": 216.5412,
+   "anchorBasis": "LLDPE family — JP's market: businessanalytiq LLDPE index, Northeast Asia, September 2026: US$1.37/kg = 1.37 USD/kg (2026-09) = JP¥216.5412/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.lldpe",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/lldpe-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lldpe",
+    "mat-lldpe-bm",
+    "mat-lldpe-roto"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PVC family",
+   "anchorLocalPerKg": 118.5445,
+   "anchorBasis": "PVC family — JP's market: businessanalytiq PVC index, Northeast Asia, September 2026: US$0.75/kg = 0.75 USD/kg (2026-09) = JP¥118.5445/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pvc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pvc-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.76,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-upvc",
+    "mat-fpvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe",
+    "mat-pvc-cable",
+    "mat-upvc-window-profile",
+    "mat-pvcp-profile",
+    "mat-pvc-foam",
+    "mat-rpvc-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ABS family",
+   "anchorLocalPerKg": 298.7321,
+   "anchorBasis": "ABS family — JP's market: businessanalytiq ABS index, Northeast Asia, September 2026: US$1.89/kg = 1.89 USD/kg (2026-09) = JP¥298.7321/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.abs",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/abs-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.62,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-abs",
+    "mat-abs-ext-sheet",
+    "mat-abs-tf",
+    "mat-abs-fr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "GPPS",
+   "anchorLocalPerKg": 237.0889,
+   "anchorBasis": "GPPS — JP's market: businessanalytiq GPPS index, Northeast Asia, September 2026: US$1.5/kg (polystyrene index, not split GPPS / HIPS — taken as GPPS) = 1.5 USD/kg (2026-09) = JP¥237.0889/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.gpps",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polystyrene-ps-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.37,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gpps",
+    "mat-gpps-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HIPS",
+   "anchorLocalPerKg": 295.5456,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): HIPS €1.68/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) — the book had HIPS at the GPPS price — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥295.5456/kg",
+   "sources": [
+    {
+     "research": "polymer.hips",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hips"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC family",
+   "anchorLocalPerKg": 327.1827,
+   "anchorBasis": "PC family — JP's market: businessanalytiq PC index, Northeast Asia, September 2026: US$2.07/kg = 2.07 USD/kg (2026-09) = JP¥327.1827/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc",
+    "mat-pc-glazing",
+    "mat-pc-bm",
+    "mat-pc-ext-sheet",
+    "mat-pc-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA6 family",
+   "anchorLocalPerKg": 327.1827,
+   "anchorBasis": "PA6 family — JP's market: businessanalytiq PA6 index, Northeast Asia, September 2026: US$2.07/kg = 2.07 USD/kg (2026-09) = JP¥327.1827/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pa6",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.68,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-bm",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA66",
+   "anchorLocalPerKg": 458.372,
+   "anchorBasis": "PA66 — JP's market: businessanalytiq PA66 index, Northeast Asia, September 2026: US$2.9/kg = 2.9 USD/kg (2026-09) = JP¥458.3720/kg",
+   "sources": [
+    {
+     "research": "mat.pa66",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PBT",
+   "anchorLocalPerKg": 414.1154,
+   "anchorBasis": "PBT — JP's market: businessanalytiq PBT index, Northeast Asia, September 2026: US$2.62/kg = 2.62 USD/kg (2026-09) = JP¥414.1154/kg",
+   "sources": [
+    {
+     "research": "mat.pbt",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pbt"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PET family",
+   "anchorLocalPerKg": 195.9935,
+   "anchorBasis": "PET family — JP's market: businessanalytiq PET index, Northeast Asia, September 2026: US$1.24/kg = 1.24 USD/kg (2026-09) = JP¥195.9935/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pet",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.21,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pet-bg",
+    "mat-pet-preform",
+    "mat-apet-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PMMA family",
+   "anchorLocalPerKg": 330.3439,
+   "anchorBasis": "PMMA family — JP's market: businessanalytiq PMMA index, Northeast Asia, September 2026: US$2.09/kg = 2.09 USD/kg (2026-09) = JP¥330.3439/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pmma",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.4,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pmma",
+    "mat-pmma-ext-sheet",
+    "mat-pmma-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PEEK family",
+   "anchorLocalPerKg": 13936.3824,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin) — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥13936.3824/kg",
+   "sources": [
+    {
+     "research": "polymer.peek",
+     "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets",
+     "date": "2026-06-30 (9M); H1 to 2026-03-31"
+    }
+   ],
+   "method": "ladder",
+   "base": 76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-peek",
+    "mat-peek-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "POM",
+   "anchorLocalPerKg": 344.5693,
+   "anchorBasis": "POM — JP's market: businessanalytiq POM index, Northeast Asia, September 2026: US$2.18/kg = 2.18 USD/kg (2026-09) = JP¥344.5693/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pom",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pom",
+    "mat-pom-rod"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC/ABS (floor)",
+   "anchorLocalPerKg": 422.208,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥422.208/kg",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    },
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc-abs"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon fabric (floor)",
+   "anchorLocalPerKg": 5263.5264,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥5263.5264/kg",
+   "sources": [
+    {
+     "research": "composite.cf_t700_12k",
+     "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+     "date": "2026-03"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cf-dry-3k"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Natural rubber (raw)",
+   "anchorLocalPerKg": 392.3016,
+   "anchorBasis": "no JP or regional price found — the European market price at par (traded material, no country factor): TSR20 benchmark €2.23/kg (SGX, 28 Sep 2026, as reported) — FOB Asia, freight to Germany NOT added; for the book's raw NR line; compounds held — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥392.3016/kg",
+   "sources": [
+    {
+     "research": "rubber.nr",
+     "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html",
+     "date": "2026-09-28"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "engineering bar (C45, 42CrMo4, 38MnVS6, 16MnCr5, 20MnCr5, 100Cr6, 11SMnPb30, 4140 / 4340), forging stock": "No German mill or stockholder BASE price published; only 2026 alloy / scrap surcharges found (Frankstahl Feb 2026, Swiss Steel Steeltec) — held",
+  "stainless bar (304, 316, 303, martensitic, PH, duplex)": "Not found (surcharges only) — held",
+  "electrical steel (NO / GO / CoFe / NiFe / amorphous)": "EU minimum import price for GO only; NO grades not priced — held",
+  "aluminium extrusion / machining bar and plate (6082-T6 bar, 6061 …)": "No German bar or plate price found (the sheet floor is a rolled-products average) — held",
+  "magnesium alloys (AZ91D, AM60 …)": "No European transaction price found — held",
+  "titanium, nickel superalloys, aluminium bronze, gunmetal": "Not found — held",
+  "filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30, PP-TD20, TPE …), TPU, PPS, PEI, LCP, PA12": "No compound market price found (KI compound prices are subscriber-only) — held",
+  "rubber compounds (EPDM / NBR / CR / FKM / silicone …)": "Raw polymers found (EPDM €2.83, NBR €1.93) but a compound is not its polymer — held",
+  "composites (prepreg, fabrics, SMC), paint, foam cores": "Not found — held"
+ },
+ "heldMaterialsAtPar": {
+  "basis": "no Japan or regional price this round — the book's European-market price at par, no Japan factor"
+ },
+ "shopMultipliersBasis": "Overhead and packaging: the UK basis × Japan's held multipliers — not researched this round",
+ "sources": {
+  "finance": "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=json&lang=en&db=IR04&startDate=202606&code=DLLR2CIDBNL1,DLLR2CIDBNL3",
+  "life": "https://laws.e-gov.go.jp/api/1/lawdata/340M50000040015; https://taxsummaries.pwc.com/japan/corporate/deductions",
+  "rent": "https://www.lnews.jp/2026/08/s0818704.html"
+ },
+ "noLibraryLabourRows": true
+}

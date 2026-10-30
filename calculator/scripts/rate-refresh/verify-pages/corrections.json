@@ -1,26 +1,457 @@
 [
- {"file": "germany-2026-10/research/materials-ferrous.json", "key": "ferrous.stainless.430_CR", "value": 1.6485, "verdicts": "verdicts/germany.json",
-  "why": "the October 2026 1.4016 (430) alloy surcharge on legierungszuschlag.info is €1,085/t, not €985 (that is 1.4034): €1,085 + base €563.5 = €1.6485/kg"},
- {"file": "germany-2026-10/research/materials-ferrous.json", "key": "ferrous.foundry.steel_scrap_heavy", "value": 0.2816, "verdicts": "verdicts/germany.json",
-  "why": "the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg"},
- {"file": "germany-2026-10/research/materials-ferrous.json", "key": "ferrous.charge.GJS-500-7", "value": 0.397, "verdicts": "verdicts/germany.json",
-  "why": "the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg"},
- {"file": "germany-2026-10/research/materials-ferrous.json", "key": "ferrous.charge.GJL-250", "value": 0.3526, "verdicts": "verdicts/germany.json",
-  "why": "the same mix on the corrected scrap: (0.25 × 0.425 + 0.40 × 0.2816) / 0.65 = 0.3368 + FeSi 0.0088 = 0.3456 / 0.98 = €0.3526/kg"},
- {"file": "germany-2026-10/research/materials-ferrous.json", "key": "ferrous.charge.GS-C25", "value": 0.2999, "verdicts": "verdicts/germany.json",
-  "why": "the same arithmetic on the corrected scrap: (0.2816 + 0.0063) / 0.96 = €0.2999/kg"},
- {"file": "germany-2026-10/research/materials-ferrous.json", "key": "ferrous.anchor.crc", "value": 0.855, "verdicts": "verdicts/germany.json",
-  "why": "the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it)"},
- {"file": "germany-2026-10/research/materials-ferrous.json", "key": "ferrous.anchor.hdg", "value": 0.83, "verdicts": "verdicts/germany.json",
-  "why": "the cited Tacto page has been updated: hot-dip galvanised €830/t ex-works Germany (SteelRadar, 19 Oct 2026)"},
- {"file": "germany-2026-10/research/materials-polymer.json", "key": "polymer.pa6", "value": 2.8, "verdicts": "verdicts/germany.json",
-  "why": "businessanalytiq Europe PA6 shows September 2026 US$3.18/kg (+1.3%, so August was ≈ US$3.14, not the US$2.67 read): 3.18 × 0.880 = €2.80/kg"},
- {"file": "germany-2026-10/research/materials-polymer.json", "key": "polymer.pbt", "value": 3.73, "verdicts": "verdicts/germany.json",
-  "why": "businessanalytiq Europe PBT, September 2026, is US$4.24/kg on the page (the research read US$3.70 for the same month): 4.24 × 0.880 = €3.73/kg"},
- {"file": "germany-2026-10/research/materials-polymer.json", "key": "polymer.pmma", "value": 3.16, "verdicts": "verdicts/germany.json",
-  "why": "businessanalytiq Europe PMMA, September 2026, is US$3.59/kg on the page (research US$3.69): 3.59 × 0.880 = €3.16/kg"},
- {"file": "germany-2026-10/research/materials-polymer.json", "key": "polymer.pa66", "value": 3.03, "verdicts": "verdicts/germany.json",
-  "why": "businessanalytiq Europe PA66, September 2026, is US$3.44/kg on the page (research US$3.45): 3.44 × 0.880 = €3.03/kg"},
- {"file": "germany-2026-10/research/labour-energy.json", "key": "energy.electricity.allIn", "value": 0.179, "verdicts": "verdicts/germany.json",
-  "why": "BDEW Strompreisanalyse, October 2026 edition (28 Oct 2026): small and medium industry 17.9 ct/kWh (the research read the previous edition's 17.2 ct)"}
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.stainless.430_CR",
+  "value": 1.6485,
+  "verdicts": "verdicts/germany.json",
+  "why": "the October 2026 1.4016 (430) alloy surcharge on legierungszuschlag.info is €1,085/t, not €985 (that is 1.4034): €1,085 + base €563.5 = €1.6485/kg"
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.foundry.steel_scrap_heavy",
+  "value": 0.2816,
+  "verdicts": "verdicts/germany.json",
+  "why": "the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg"
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.GJS-500-7",
+  "value": 0.397,
+  "verdicts": "verdicts/germany.json",
+  "why": "the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg"
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.GJL-250",
+  "value": 0.3526,
+  "verdicts": "verdicts/germany.json",
+  "why": "the same mix on the corrected scrap: (0.25 × 0.425 + 0.40 × 0.2816) / 0.65 = 0.3368 + FeSi 0.0088 = 0.3456 / 0.98 = €0.3526/kg"
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.GS-C25",
+  "value": 0.2999,
+  "verdicts": "verdicts/germany.json",
+  "why": "the same arithmetic on the corrected scrap: (0.2816 + 0.0063) / 0.96 = €0.2999/kg"
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.crc",
+  "value": 0.855,
+  "verdicts": "verdicts/germany.json",
+  "why": "the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it)"
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.hdg",
+  "value": 0.83,
+  "verdicts": "verdicts/germany.json",
+  "why": "the cited Tacto page has been updated: hot-dip galvanised €830/t ex-works Germany (SteelRadar, 19 Oct 2026)"
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "key": "polymer.pa6",
+  "value": 2.8,
+  "verdicts": "verdicts/germany.json",
+  "why": "businessanalytiq Europe PA6 shows September 2026 US$3.18/kg (+1.3%, so August was ≈ US$3.14, not the US$2.67 read): 3.18 × 0.880 = €2.80/kg"
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "key": "polymer.pbt",
+  "value": 3.73,
+  "verdicts": "verdicts/germany.json",
+  "why": "businessanalytiq Europe PBT, September 2026, is US$4.24/kg on the page (the research read US$3.70 for the same month): 4.24 × 0.880 = €3.73/kg"
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "key": "polymer.pmma",
+  "value": 3.16,
+  "verdicts": "verdicts/germany.json",
+  "why": "businessanalytiq Europe PMMA, September 2026, is US$3.59/kg on the page (research US$3.69): 3.59 × 0.880 = €3.16/kg"
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "key": "polymer.pa66",
+  "value": 3.03,
+  "verdicts": "verdicts/germany.json",
+  "why": "businessanalytiq Europe PA66, September 2026, is US$3.44/kg on the page (research US$3.45): 3.44 × 0.880 = €3.03/kg"
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "key": "energy.electricity.allIn",
+  "value": 0.179,
+  "verdicts": "verdicts/germany.json",
+  "why": "BDEW Strompreisanalyse, October 2026 edition (28 Oct 2026): small and medium industry 17.9 ct/kWh (the research read the previous edition's 17.2 ct)"
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "key": "energy.electricity.capacityFee",
+  "value": 0.137,
+  "why": "the capacity-fee window on the cited page is FIFTEEN hours (07:00–22:00), not 14: 0.2194 × 15/24 = 0.137 PLN/kWh",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "key": "energy.electricity.allIn",
+  "value": 0.712,
+  "why": "the same sum with the corrected capacity fee: 0.4305 + 0.137 + 0.1286 + 0.0073 + 0.003 + 0.005 = 0.712 PLN/kWh",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.stainless.430_CR",
+  "value": 7.211,
+  "why": "October 2026 1.4016 (430) surcharge is €1,085/t on the page (985 is the 1.4034 row): (1,085 + 563.5) × 4.374 = 7.211 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.foundry.steel_scrap_heavy",
+  "value": 1.232,
+  "why": "German E3 heavy scrap August 2026 is US$320/t ex-works on the cited page (US$327 was the US HMS figure) = 1.232 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.GJL-250",
+  "value": 1.543,
+  "why": "the same charge mix on the corrected scrap (verifier recompute) = 1.543 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.GS-C25",
+  "value": 1.312,
+  "why": "(1.232 + 0.005 × 5.511) / 0.96 = 1.312 PLN/kg on the corrected scrap",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.GJS-500-7",
+  "value": 1.74,
+  "why": "the same mix on the corrected scrap: (0.45 × 1.859 + 0.30 × 1.232) / 0.75 = 1.608 + 0.072 + 0.022 = 1.702 / 0.98 = 1.74 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.crc",
+  "value": 3.74,
+  "why": "the cited page has been updated (26 Oct 2026): NW Europe CRC €855/t = 3.74 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.hrc.poland_distributor_St3S",
+  "value": 3.559,
+  "why": "the cited PUDS page has been updated: week 43 2026, 3,484–3,633 PLN/t, mid 3,558.5 = 3.559 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.cu.spot",
+  "value": 55.48,
+  "why": "the cited live page has been updated: LME copper 14,415 × 3.849 = 55.48 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.cu.cathode_delivered",
+  "value": 56.7,
+  "why": "the cited live page has been updated: (14,415 + 315) × 3.849 = 56.7 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.brass.CW614N_rod",
+  "value": 49.73,
+  "why": "the cited live page has been updated: Westmetall CW614N metal basis, 29 Oct 2026 = 49.73 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.zn.spot",
+  "value": 15.32,
+  "why": "the cited live page has been updated: LME zinc 3,980 (29 Oct) × 3.849 = 15.32 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.zn.shg_delivered",
+  "value": 16.19,
+  "why": "the cited live page has been updated: (3,980 + 227.5) × 3.849 = 16.19 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.sn.spot",
+  "value": 193.99,
+  "why": "the cited live page has been updated: LME tin 50,400 (29 Oct) × 3.849 = 193.99 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.ni.spot",
+  "value": 59.12,
+  "why": "the cited live page has been updated: LME nickel 15,360 (29 Oct) × 3.849 = 59.12 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "key": "polymer.pa6",
+  "value": 12.24,
+  "why": "businessanalytiq Europe September 2026 US$3.18 (+1.3%; the August US$2.67 read is inconsistent with it) × 3.849 = 12.24 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "key": "polymer.pa66",
+  "value": 13.24,
+  "why": "businessanalytiq Europe September 2026 US$3.44 (−3.6%; August ≈ 3.57, not 4.23) × 3.849 = 13.24 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "key": "polymer.pbt",
+  "value": 16.32,
+  "why": "businessanalytiq Europe September 2026 US$4.24 — the same month the research read as US$3.70 × 3.849 = 16.32 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "key": "polymer.pet_bottle",
+  "value": 6.0,
+  "why": "businessanalytiq Europe September 2026 US$1.56 — the same month the research read as US$1.29 × 3.849 = 6.0 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "key": "polymer.pmma",
+  "value": 13.82,
+  "why": "businessanalytiq Europe September 2026 US$3.59 (research US$3.69) × 3.849 = 13.82 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-polymer.json",
+  "key": "polymer.pom",
+  "value": 10.08,
+  "why": "businessanalytiq Europe POM now shows September 2026 US$2.62 (the July US$3.04 read is no longer current) × 3.849 = 10.08 PLN/kg",
+  "verdicts": "verdicts/poland.json"
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.crc",
+  "value": 0.855,
+  "why": "the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026)",
+  "verdicts": "verdicts/hungary.json"
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.hdg",
+  "value": 0.83,
+  "why": "the cited Tacto page has been updated: HDG €830/t (SteelRadar, 19 Oct 2026)",
+  "verdicts": "verdicts/hungary.json"
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.stainless.430_CR",
+  "value": 1.6485,
+  "why": "October 2026 1.4016 (430) surcharge is €1,085/t on the page (not 985): 1,085 + 563.5 = €1.6485/kg",
+  "verdicts": "verdicts/hungary.json"
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.al.amag_rolling_asp",
+  "value": 5.867,
+  "why": "AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin",
+  "verdicts": "verdicts/hungary.json"
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "key": "polymer.pa6",
+  "value": 3.18,
+  "why": "businessanalytiq Europe PA6 September 2026 US$3.18 (+1.3%) — the August US$2.67 read is inconsistent with it",
+  "verdicts": "verdicts/hungary.json"
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "key": "polymer.pbt",
+  "value": 4.24,
+  "why": "businessanalytiq Europe PBT September 2026 US$4.24 — the same month the research read as US$3.70",
+  "verdicts": "verdicts/hungary.json"
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "key": "polymer.pmma",
+  "value": 3.59,
+  "why": "businessanalytiq Europe PMMA September 2026 US$3.59 (research US$3.69)",
+  "verdicts": "verdicts/hungary.json"
+ },
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "key": "capex.imm-200t",
+  "value": 214000,
+  "why": "the cited broker page states the Haitian Mars average selling price directly: ¥214,000 (H1 2024: 51.708亿 ÷ 24,115 units); the ¥302,630 figure is on none of the cited pages",
+  "verdicts": "verdicts/uk-round.json"
+ },
+ {
+  "file": "uk-2026-10/research/machines-a.json",
+  "key": "capex.laser-trumpf-3030",
+  "value": 355966,
+  "why": "the page shows \"Est. $400,000 – $550,000\"; its midpoint is US$475,000 (not US$500,000, the \"fully loaded\" figure) = £355,966",
+  "verdicts": "verdicts/uk-round.json"
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.fesimg_eu_import_unit_value",
+  "value": 1.8985,
+  "why": "the page now shows €2.21/kg (Jan 2022 – Mar 2026 import unit value) ÷ 1.1641 = £1.8985/kg",
+  "verdicts": "verdicts/uk-round.json"
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.anchor.brass_rod_cw614n_cw617n_mill",
+  "value": 8.543,
+  "why": "the live page has been updated: €10,070/t ÷ 1.17872 = £8.543/kg",
+  "verdicts": "verdicts/uk-round.json"
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.anchor.sn_lme_spot",
+  "value": 39.71,
+  "why": "the cited page is a MONTHLY IMF series: August 2026 US$53,711.68/t (a 12 Aug daily US$55,818 cannot come from it) × 0.7394 = £39.71/kg",
+  "verdicts": "verdicts/uk-round.json"
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "key": "polymer.anchor.pvc_index_europe_ba",
+  "value": 1.161,
+  "why": "businessanalytiq Europe September 2026 is US$1.57/kg on the page × 0.7394 = £1.161/kg",
+  "verdicts": "verdicts/uk-round.json"
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "key": "polymer.anchor.pa6_index_europe_ba",
+  "value": 2.351,
+  "why": "businessanalytiq Europe September 2026 is US$3.18/kg on the page × 0.7394 = £2.351/kg",
+  "verdicts": "verdicts/uk-round.json"
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "key": "polymer.anchor.pa66_index_europe_ba",
+  "value": 2.544,
+  "why": "businessanalytiq Europe September 2026 is US$3.44/kg on the page × 0.7394 = £2.544/kg",
+  "verdicts": "verdicts/uk-round.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.crc",
+  "value": 3.195,
+  "why": "the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.hdg",
+  "value": 3.451,
+  "why": "the cited rolling page has been updated: Benxi 1.0 mm HDG 3,900 CNY/t (27–28 Oct) ÷ 1.13 = 3.451 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.foundry.pig_iron_casting_Z18",
+  "value": 2.549,
+  "why": "the cited rolling page has been updated: Z18 Linyi 2,880 CNY/t (29 Oct) ÷ 1.13 = 2.549 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.foundry.pig_iron_nodular_Q10",
+  "value": 2.761,
+  "why": "the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.foundry.FeSi75",
+  "value": 5.376,
+  "why": "the cited rolling page has been updated: 75 FeSi 6,050–6,100 (mid 6,075) ÷ 1.13 = 5.376 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.foundry.FeCr_HC",
+  "value": 6.544,
+  "why": "the cited rolling page has been updated: Tisco November tender 7,395 CNY per 50%-Cr t ÷ 1.13 = 6.544 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.electrical.35W300",
+  "value": 5.221,
+  "why": "the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.GJS-500-7",
+  "value": 2.67,
+  "why": "the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.GJL-250",
+  "value": 2.32,
+  "why": "the same mix on the updated inputs: (0.25 × 2.549 + 0.40 × 2.045) / 0.65 = 2.239 + 0.007 × 5.376 = 2.276 / 0.98 = 2.32 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "key": "nonferrous.brass.H62_rod",
+  "value": 75.31,
+  "why": "the cited rolling page has been updated: Ningbo H62 Φ14 85,100 CNY/t (VAT incl.) ÷ 1.13 = 75.31 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "key": "polymer.pvc_sg5",
+  "value": 4.637,
+  "why": "the cited rolling page has been updated: SunSirs PVC 5,240 CNY/t (30 Oct 2026) ÷ 1.13 = 4.637 CNY/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.hrpo_derived",
+  "value": 65.2,
+  "why": "the cited Tata Nexarc page quotes Mumbai HRPO 2.0 mm directly at ₹65,200/t ex-yard ex-GST; the derived 71.18 added a trade spread to a retail anchor",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.anchor.ss304_crc_narrow_mumbai",
+  "value": 218.0,
+  "why": "the cited page has been updated: SS CRC 304 narrow, Mumbai, ₹2,18,000/t (01/10/2026)",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.ni_resist_d2",
+  "value": 339.8,
+  "why": "MCX nickel is ₹1,502.2/kg on the cited page (28 Oct 2026; research 1,625.5 on 17 Aug): the same arithmetic gives ₹339.8/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "key": "ferrous.charge.ni_resist_d5s",
+  "value": 560.3,
+  "why": "MCX nickel ₹1,502.2/kg (28 Oct 2026): the same arithmetic gives ₹560.3/kg",
+  "verdicts": "verdicts/china-india.json"
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "key": "polymer.anchor.pbt.india_index.2026-09",
+  "value": 264.1,
+  "why": "businessanalytiq India PBT September 2026 is US$2.73/kg on the page (research US$2.57) × 96.73 = ₹264.1/kg",
+  "verdicts": "verdicts/china-india.json"
+ }
 ]

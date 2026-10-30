@@ -143,7 +143,7 @@
   "rentLocalPerM2Month": 25.47,
   "rentBasis": "JLL Shanghai logistics rent Q2 2026 ¥31.94/m²/month (a ceiling for a factory) and Dongguan factory rents ¥10–28 (midpoint ¥19; estate-agent article, 2025) — mean; Wuhan / Chongqing averages not found (Chongqing listings ¥4–12 suggest this is high for the inland clusters)",
   "ukRentGbpPerM2Yr": 110,
-  "capitalHeldFactor": 0.55,
+  "capitalHeldFactor": 1.0,
   "groups": [
    {
     "id": "fibre-laser-domestic",
@@ -158,7 +158,7 @@
     "id": "imm-domestic",
     "match": "^imm-\\d+t$",
     "refId": "imm-200t",
-    "refCapexLocal": 302630,
+    "refCapexLocal": 214000,
     "basis": "Haitian FY2024 Mars series average selling price ¥302,630 ex-VAT (revenue ¥104.71亿 ÷ ~34,600 units; bare machine) — an UPPER bound for a 200 t machine (Mars spans ~60–3,300 t); the other sizes by the book's relative capital",
     "source": "https://finance.sina.com.cn/stock/hkstock/hkzmt/2025-03-20/doc-ineqhwiq0600262.shtml ; https://gmg.9fzt.com/report/HKSE/01882/778171497678.html ; https://www.1n9280.com/ndetail/73802.html",
     "confidence": "Low"
@@ -191,12 +191,12 @@
     "confidence": "Low"
    }
   ],
-  "notRebuiltBasis": "capex not sourced for China: the book's capital (UK × 0.55) is HELD; the China operating model (2 × 12 h hours, straight-line, LPR finance, rent, tariff, support at China wages) is applied"
+  "notRebuiltBasis": "capex not sourced for China: the machine's capital is the book's AT PAR (×1 — no unsourced country discount; the UK × 0.55 factor it replaced had no source), under the China operating model (hours, tax life, finance, rent, tariff, support at China wages)"
  },
  "materialFamilies": [
   {
    "family": "CR coil (DC01 / DC04)",
-   "anchorLocalPerKg": 3.239,
+   "anchorLocalPerKg": 3.195,
    "anchorBasis": "Shanghai 1.0 mm SPCC cold-rolled spot ¥3,239/t ex-VAT (Mysteel, 9 Oct 2026)",
    "sources": [
     {
@@ -218,7 +218,7 @@
   },
   {
    "family": "CR automotive grades",
-   "anchorLocalPerKg": 3.239,
+   "anchorLocalPerKg": 3.195,
    "anchorBasis": "CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found",
    "sources": [
     {
@@ -310,7 +310,7 @@
   },
   {
    "family": "Coated sheet",
-   "anchorLocalPerKg": 3.496,
+   "anchorLocalPerKg": 3.451,
    "anchorBasis": "Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI",
    "sources": [
     {
@@ -681,7 +681,7 @@
   },
   {
    "family": "NO electrical steel 0.35 mm",
-   "anchorLocalPerKg": 5.177,
+   "anchorLocalPerKg": 5.221,
    "anchorBasis": "35W300 non-oriented ¥4.89–5.18/kg ex-VAT (Sep 2026; upper end used) — for M270-35A / M330-35A",
    "sources": [
     {
@@ -703,7 +703,7 @@
   },
   {
    "family": "NO electrical steel, premium / thin / high-strength",
-   "anchorLocalPerKg": 5.177,
+   "anchorLocalPerKg": 5.221,
    "anchorBasis": "35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found)",
    "sources": [
     {
@@ -758,8 +758,8 @@
   },
   {
    "family": "Ductile / CGI / ADI / SiMo iron (charge)",
-   "anchorLocalPerKg": 2.69,
-   "anchorBasis": "Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add)",
+   "anchorLocalPerKg": 2.67,
+   "anchorBasis": "Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add)",
    "sources": [
     {
      "research": "ferrous.charge.GJS-500-7",
@@ -799,8 +799,8 @@
   },
   {
    "family": "Grey / malleable iron (charge)",
-   "anchorLocalPerKg": 2.35,
-   "anchorBasis": "Grey-iron charge ¥2.35/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250",
+   "anchorLocalPerKg": 2.32,
+   "anchorBasis": "Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250",
    "sources": [
     {
      "research": "ferrous.charge.GJL-250",
@@ -890,8 +890,8 @@
   },
   {
    "family": "Ni-Resist D-2 (charge)",
-   "anchorLocalPerKg": 23.904,
-   "anchorBasis": "0.20 × Ni ¥107.65 (Changjiang, 9 Oct) + 0.02 × Cr ¥13.80 (HC FeCr) + 0.78 × ductile charge ¥2.69",
+   "anchorLocalPerKg": 23.874,
+   "anchorBasis": "0.20 × Ni ¥107.65 (Changjiang, 9 Oct) + 0.02 × Cr ¥13.09 (HC FeCr) + 0.78 × ductile charge ¥2.67",
    "sources": [
     {
      "research": "nonferrous.ni.spot",
@@ -916,8 +916,8 @@
   },
   {
    "family": "Ni-Resist D-5S (charge)",
-   "anchorLocalPerKg": 39.758,
-   "anchorBasis": "0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 ¥5.442 + 0.59 × ductile charge",
+   "anchorLocalPerKg": 39.73,
+   "anchorBasis": "0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 ¥5.376 + 0.59 × ductile charge",
    "sources": [
     {
      "research": "nonferrous.ni.spot",
@@ -937,8 +937,8 @@
   },
   {
    "family": "High-Cr white iron (charge)",
-   "anchorLocalPerKg": 4.983,
-   "anchorBasis": "0.23 × Cr ¥13.80 + 0.77 × grey charge ¥2.35",
+   "anchorLocalPerKg": 4.797,
+   "anchorBasis": "0.23 × Cr ¥13.09 + 0.77 × grey charge ¥2.32",
    "sources": [
     {
      "research": "ferrous.foundry.FeCr_HC",
@@ -1116,7 +1116,7 @@
   },
   {
    "family": "70/30 and 63/37 brass sheet",
-   "anchorLocalPerKg": 74.34,
+   "anchorLocalPerKg": 75.31,
    "anchorBasis": "H62 brass rod ¥74,340/t ex-VAT (Ningbo, 29 Sep) × the book's premium of CZ108 sheet — H62 is the nearest priced CuZn37",
    "sources": [
     {
@@ -1347,7 +1347,7 @@
   },
   {
    "family": "PVC family",
-   "anchorLocalPerKg": 4.31,
+   "anchorLocalPerKg": 4.637,
    "anchorBasis": "PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC",
    "sources": [
     {
@@ -1654,6 +1654,9 @@
   "filled / FR / blended compounds, TPE / TPV, PPS, PEI, LCP, PA12 and other engineering grades without an anchor": "Only a branded PA66-GF30 trade article (¥31) — held",
   "rubber compounds (EPDM / NBR / CR / FKM / silicone 70 Shore A …)": "Raw polymers found (SBR ¥12.2, NBR ¥14.3, EPDM ¥22.8, CR ¥32.7) but a compound is not its polymer — held",
   "composites (prepreg, fabrics, SMC), paint, foam cores, engineering-plastic stock shapes": "Carbon fibre (2025), epoxy E-51 ¥12.6 and E-glass roving ¥3.16 found; the book lines are fabrics / prepregs / systems — held"
+ },
+ "heldMaterialsAtPar": {
+  "basis": "no China price this round — the book's European-market price at par, no country factor (world round, 30 Oct 2026; the UK × factor it replaced had no source)"
  },
  "shopMultipliersBasis": "Overhead ×0.75 agrees with automotive-supplier filings: SG&A ÷ cost of sales Tuopu 4.15 %, Huayu 6.04 % v the UK's TI Fluid Systems 7.68 %, Dowlais ~10.4 % — a ratio of 0.67–0.79 (read from search results; verify); packaging and logistics multipliers held, not researched for China",
  "alBilletPremiumUsdPerT": {

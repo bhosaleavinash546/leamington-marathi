@@ -205,7 +205,7 @@ export const INDIA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-hrpo": {
-   "gbpPerKg": 0.5596,
+   "gbpPerKg": 0.5126,
    "basis": "HR pickled & oiled: HR coil JPC Sep 2026 ₹64.48 + HRPO extra ₹6.70 (Tata Nexarc Mumbai HRPO May 2026 − BigMint HRC May 2026); direct",
    "source": "https://www.tatanexarc.com/steel/steel-prices-in-india/ (2026-09 (derived)) ; https://www.tatanexarc.com/steel/steel-prices-in-india/ (2026-05)",
    "confidence": "Medium"
@@ -655,13 +655,13 @@ export const INDIA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-ni-resist-d2": {
-   "gbpPerKg": 2.8648,
+   "gbpPerKg": 2.6714,
    "basis": "Ni-Resist D-2 (charge): 20% Ni at MCX nickel ₹1,625.5 + 2% Cr + iron units; direct",
    "source": "https://cbonds.com/indexes/221359/ (2026-08)",
    "confidence": "Low"
   },
   "mat-ni-resist-d5s": {
-   "gbpPerKg": 4.7445,
+   "gbpPerKg": 4.4049,
    "basis": "Ni-Resist D-5S (charge): 35% Ni at MCX nickel + Cr + Si + iron units; direct",
    "source": "https://cbonds.com/indexes/221359/ (2026-08)",
    "confidence": "Low"
@@ -1081,7 +1081,7 @@ export const INDIA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-pbt": {
-   "gbpPerKg": 1.9544,
+   "gbpPerKg": 2.0763,
    "basis": "PBT family: PBT India index ₹248.6 (Business Analytiq, Sep 2026); moderate confidence; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/ (2026-09)",
    "confidence": "Low"
@@ -1104,9 +1104,9 @@ export const INDIA_BOOK: CountryBook = {
   "ukRentGbpPerM2Yr": 110,
   "ukElectricityGbpPerKwh": 0.182,
   "labourRatio": 0.0455,
-  "capitalHeldFactor": 0.52,
+  "capitalHeldFactor": 1,
   "basis": "3 shifts × 8 h × 300 working days (Indian cost-accounting convention); Companies Act 2013 Schedule II: depreciation +50% for double shift, +100% for triple — a held (2-shift) capital charge × 2.0 / 1.5 at 3 shifts; 1-year MCLR 8.70–8.80% (SBI, BoB, BoI, Jul–Oct 2026); the book's line build-ups use 4% on half the capex; rent ₹25.05/sq ft/month (Knight Frank H1 2026 industrial / warehousing rent: Pune 28.7, Chennai 25.7, Bengaluru 23.5, NCR 22.3 ₹/sq ft/month — mean); maintenance the library's own line build-up rule (3.5% of capex); no Indian norm found",
-  "heldBasis": "capex not sourced for India: the book's capital (UK × 0.52) is HELD; the India operating model (3-shift hours, Schedule II, finance, rent, tariff, support at India wages) is applied",
+  "heldBasis": "capex not sourced for India: the machine's capital is the book's AT PAR (×1 — no unsourced country discount; the UK × 0.52 factor it replaced had no source), under the India operating model (hours, tax life, finance, rent, tariff, support at India wages)",
   "groups": [
    {
     "id": "cnc-machining-domestic",

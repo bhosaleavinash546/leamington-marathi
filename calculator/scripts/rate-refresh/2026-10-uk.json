@@ -164,7 +164,7 @@
     "id": "fibre-laser",
     "match": "^(laser-trumpf-3030|laser-trumpf-5030|laser-bystronic-3015|laser-amada-ensis-3015)$",
     "refId": "laser-trumpf-3030",
-    "refCapexGbp": 374700,
+    "refCapexGbp": 355966,
     "refKw": 22,
     "kwBasis": "maker worked example: 6 kW fibre laser ~22 kW average",
     "basis": "TruLaser 3030 6 kW fibre: third-party estimate $400–550k = £374,700 midpoint (Trumpf publishes no list price)",
@@ -773,7 +773,7 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "Brass rod (mill list)",
-   "anchorGbpPerKg": 8.4753,
+   "anchorGbpPerKg": 8.543,
    "anchorBasis": "Almag (Italian brass-rod mill) published CW614N–CW617N rod price €9,990/t on 9 Oct 2026 = £8.48/kg",
    "sources": [
     {
@@ -797,8 +797,8 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "Phosphor bronze PB1 (floor)",
-   "anchorGbpPerKg": 14.4239,
-   "anchorBasis": "Metal content 0.89 × Cu £11.24 + 0.105 × Sn £42.14 (LME tin, Aug 2026) — the book's £13.91 was below it",
+   "anchorGbpPerKg": 14.1691,
+   "anchorBasis": "Metal content 0.89 × Cu £11.24 + 0.105 × Sn £39.71 (LME tin, Aug 2026) — the book's £13.91 was below it",
    "sources": [
     {
      "research": "nonferrous.anchor.sn_lme_spot",
@@ -825,7 +825,7 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "Rigid PVC (floor at the resin)",
-   "anchorGbpPerKg": 1.1135,
+   "anchorGbpPerKg": 1.1285,
    "anchorBasis": "S-PVC NW Europe gross contract £1.096 and Business Analytiq Europe index £1.131 (Sep 2026) — mean; the book's rigid grades (£0.76–0.85) were below the resin they are made of",
    "sources": [
     {
@@ -855,7 +855,7 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "PA6 unfilled",
-   "anchorGbpPerKg": 2.189,
+   "anchorGbpPerKg": 2.351,
    "anchorBasis": "Business Analytiq PA6 Europe index (Sep 2026) — one source",
    "sources": [
     {
@@ -879,7 +879,7 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "PA66 unfilled",
-   "anchorGbpPerKg": 2.551,
+   "anchorGbpPerKg": 2.544,
    "anchorBasis": "Business Analytiq PA66 Europe index (Sep 2026) — one source",
    "sources": [
     {

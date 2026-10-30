@@ -213,7 +213,7 @@ machines = {
     'rentLocalPerM2Month': v('rent.clusterAvg'),
     'rentBasis': 'warehouse / light-industrial headline rent midpoints: Upper Silesia zł20.12, Wrocław zł18.92, Poznań zł21.10 per m²/month (€3.15–6.00 at zł4.374/€; ceo.com.pl, ~Apr 2026) — mean; CBRE Q2 2026 national €4.7 = zł20.56 agrees; Rzeszów listings only',
     'ukRentGbpPerM2Yr': 110,
-    'capitalHeldFactor': 0.72,
+    'capitalHeldFactor': 1.0,   # world round, 30 Oct 2026: unpriced capital AT PAR (×1) in every country — the UK × 0.72 factor had no source
     'groups': [
         # the Haas EU list IS the VF-2's own price (it sat on the generic VMC and the VF-2 was scaled to 69% of it — Germany live review)
         {'id': 'cnc-vmc-eu', 'match': '^(mach-vmc3|mach-haas-vf2|mach-drill)$', 'refId': 'mach-haas-vf2', 'refCapexLocal': v('capex.mach-vmc3'),
@@ -226,7 +226,7 @@ machines = {
          'basis': 'TRUMPF TruBend 3100 (100 t × 3 m) NEW, offered at €136,000 FCA ex-VAT (Jul 2026, advertiser at TRUMPF Ditzingen) = zł594,864; a 2021 purchase at €115k agrees — the UK book\'s build-up (a "Target £/hr" shop rate) implied ~4× this',
          'source': R['capex.brake-trumpf-trubend3100']['source'], 'confidence': 'Low'},
     ],
-    'notRebuiltBasis': 'capex not sourced for Poland: the capital is the UK book\'s × 0.72; the Poland operating model (3 × 8 h, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied',
+    'notRebuiltBasis': 'capex not sourced for Poland: the machine\'s capital is the book\'s AT PAR (×1 — no unsourced country discount; the UK × 0.72 factor it replaced had no source), under the Poland operating model (hours, tax life, finance, rent, tariff, support at Poland wages)',
 }
 
 # Al extrusion billet = LME + the DDP North Germany 6063 billet premium, over the library's LME (al-extrusion-data AL_MARKET)
@@ -235,7 +235,7 @@ billet_usd = v('nonferrous.al.billet6063') / PLN_PER_USD * 1000
 cfg = {'asOf': '2026-10-10', 'label': 'Poland rate book — 4-cluster average (Silesia, Lower Silesia, Wielkopolska, Podkarpacie), 3 × 8 h',
        'region': 'PL', 'currency': 'PLN', 'currencySymbol': 'zł', 'dir': 'scripts/rate-refresh/poland-2026-10',
        'snapshot': 'scripts/rate-refresh/poland-2026-10/current-poland-book.json', 'bookFile': 'src/engine/country-books/pl.ts', 'bookConst': 'POLAND_BOOK',
-       'fxPerGbp': FX, 'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held,
+       'fxPerGbp': FX, 'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held, 'heldMaterialsAtPar': {'basis': 'no Poland price this round — the book\'s European-market price at par, no country factor (world round, 30 Oct 2026; the UK × factor it replaced had no source)'},
        'alBilletPremiumUsdPerT': {'value': round(billet_usd - LME), 'current': 1080,
                                   'basis': f'LME $3,248 (28 Sep 2026) + 6063 billet DDP North Germany premium $1,070–1,135 (Fastmarkets, 28 Aug 2026; being discontinued) = zł{v("nonferrous.al.billet6063")}/kg = ${billet_usd:.0f}/t at zł{PLN_PER_USD}/$ — over the library LME ${LME}',
                                   **src('nonferrous.al.billet6063_premium')}}

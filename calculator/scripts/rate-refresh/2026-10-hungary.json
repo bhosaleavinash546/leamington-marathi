@@ -220,8 +220,8 @@
  "materialFamilies": [
   {
    "family": "CR coil (DC01 / DC04)",
-   "anchorLocalPerKg": 316.728,
-   "anchorBasis": "NW Europe CRC €0.865/kg ex-works (13 Sep 2026) = Ft316.7/kg at €1 = Ft366.16; freight to a Hungarian plant not added",
+   "anchorLocalPerKg": 313.067,
+   "anchorBasis": "NW Europe CRC €0.855/kg ex-works (13 Sep 2026) = Ft313.1/kg at €1 = Ft366.16; freight to a Hungarian plant not added",
    "sources": [
     {
      "research": "ferrous.anchor.crc",
@@ -242,8 +242,8 @@
   },
   {
    "family": "CR automotive grades",
-   "anchorLocalPerKg": 316.728,
-   "anchorBasis": "CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found",
+   "anchorLocalPerKg": 313.067,
+   "anchorBasis": "CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found",
    "sources": [
     {
      "research": "ferrous.anchor.crc",
@@ -308,8 +308,8 @@
   },
   {
    "family": "Coated sheet",
-   "anchorLocalPerKg": 314.898,
-   "anchorBasis": "NW Europe HDG €0.86/kg ex-works (13 Sep 2026) = Ft314.9/kg × the book's premium over DC01 GI",
+   "anchorLocalPerKg": 303.913,
+   "anchorBasis": "NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI",
    "sources": [
     {
      "research": "ferrous.anchor.hdg",
@@ -446,8 +446,8 @@
   },
   {
    "family": "430 ferritic sheet",
-   "anchorLocalPerKg": 566.816,
-   "anchorBasis": "430 CR €1.548/kg — DERIVED: the October 1.4016 alloy surcharge + a base assumed equal to 304's",
+   "anchorLocalPerKg": 603.615,
+   "anchorBasis": "430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base assumed equal to 304's",
    "sources": [
     {
      "research": "ferrous.stainless.430_CR",
@@ -1209,8 +1209,8 @@
   },
   {
    "family": "PA6 family",
-   "anchorLocalPerKg": 878.003,
-   "anchorBasis": "PA6 Ft878.0/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6",
+   "anchorLocalPerKg": 1045.711,
+   "anchorBasis": "PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6",
    "sources": [
     {
      "research": "polymer.pa6",
@@ -1253,8 +1253,8 @@
   },
   {
    "family": "PBT",
-   "anchorLocalPerKg": 1216.708,
-   "anchorBasis": "PBT Ft1216.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026)",
+   "anchorLocalPerKg": 1394.282,
+   "anchorBasis": "PBT Ft1394.3/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026)",
    "sources": [
     {
      "research": "polymer.pbt",
@@ -1274,8 +1274,8 @@
   },
   {
    "family": "PMMA family",
-   "anchorLocalPerKg": 1213.42,
-   "anchorBasis": "PMMA Ft1213.4/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA",
+   "anchorLocalPerKg": 1180.536,
+   "anchorBasis": "PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA",
    "sources": [
     {
      "research": "polymer.pmma",

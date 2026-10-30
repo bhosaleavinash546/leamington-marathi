@@ -1,0 +1,1353 @@
+{
+ "asOf": "2026-10-30",
+ "label": "South Africa rate book — world round: national / ILO earnings + statutory on-costs, regulator tariffs, regional material markets, 3 × 8 h",
+ "region": "ZA",
+ "currency": "ZAR",
+ "currencySymbol": "R",
+ "dir": "scripts/rate-refresh/world-2026-10/books/za",
+ "snapshot": "scripts/rate-refresh/world-2026-10/books/za/current-book.json",
+ "bookFile": "src/engine/country-books/za.ts",
+ "bookConst": "SOUTH_AFRICA_BOOK",
+ "writeFx": true,
+ "fxPerGbp": 22.1611,
+ "fxBasis": "ECB euro reference rates 2026-10-29: €1 = 18.5218 ZAR, €1 = £0.83578 → £1 = 22.1611 ZAR",
+ "labour": {
+  "categories": {
+   "skilled": {
+    "localPerHr": 153.22,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "no occupation figure: all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
+   },
+   "semiskilled": {
+    "localPerHr": 149.31,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+   },
+   "foundry": {
+    "localPerHr": 153.22,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "no occupation figure: all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
+   },
+   "electronics": {
+    "localPerHr": 149.31,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+   },
+   "inspector": {
+    "localPerHr": 153.22,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "no occupation figure: all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
+   },
+   "technician": {
+    "localPerHr": 204.54,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "no occupation figure: all-employee average × ISCO 3 ratio 1.150 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 204.54/h"
+   },
+   "supervisor": {
+    "localPerHr": 204.54,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "no occupation figure: all-employee average × ISCO 3 ratio 1.150 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 204.54/h"
+   },
+   "engineer": {
+    "localPerHr": 261.6,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "no occupation figure: all-employee average × ISCO 2 ratio 1.470 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 261.60/h"
+   }
+  },
+  "grades": {
+   "forge": {
+    "localPerHr": 153.22,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "paid as skilled: no occupation figure: all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
+   },
+   "furnace": {
+    "localPerHr": 149.31,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+   },
+   "blow": {
+    "localPerHr": 149.31,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+   },
+   "roto": {
+    "localPerHr": 149.31,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+   },
+   "thermoform": {
+    "localPerHr": 149.31,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+   },
+   "trim-router": {
+    "localPerHr": 149.31,
+    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
+    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+   }
+  },
+  "loadingIncluded": "Fully-loaded hourly cost INCLUDES: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked)",
+  "loadingNotIncluded": "NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+  "short": "national / ILO occupation earnings + statutory employer contributions ÷ hours worked"
+ },
+ "energy": {
+  "electricityLocalPerKwh": 2.4685,
+  "gasLocalPerKwh": 0.3503,
+  "basis": "Electricity 2.4685 ZAR/kWh: Eskom Megaflex, non-local-authority, >=500 V & <66 kV, Transmission zone <=300 km, 2026/27 (from 1 Apr 2026): active energy high season (Jun-Aug) peak 720.19 / std 180.05 / off 120.03 c/kWh, low season 298.89 / 168.05 / 120.03; legacy 24.14 + ancillary 0.42 +  (1 Apr 2026 - 31 Mar 2027). Gas 0.3503 ZAR/kWh: NERSA-approved Sasol Gas maximum gas price for end users R97.31/GJ (excl. VAT), Q1 of 2026/27 from 1 Jul 2026 / 277.78 kWh per GJ = R0.3503/kWh (from 2026-07-01 (quarterly adjustment to Mar 2028))",
+  "sources": [
+   {
+    "research": "energy.electricity",
+    "source": "https://www.eskom.co.za/distribution/wp-content/uploads/2026/07/Eskom-Tariff-booklet_Final.pdf",
+    "date": "1 Apr 2026 - 31 Mar 2027"
+   },
+   {
+    "research": "energy.gas",
+    "source": "https://www.greenbuildingafrica.co.za/nersa-approves-sasol-gas-maximum-prices-through-march-2028/",
+    "date": "from 2026-07-01 (quarterly adjustment to Mar 2028)"
+   }
+  ]
+ },
+ "machines": {
+  "hoursPerYear": 6000,
+  "hoursBasis": "3 × 8 h, Monday–Friday, South Africa's 2026 working calendar: 6000 h (250 days × 24 h; 11 weekday national public holidays removed — https://date.nager.at/api/v3/PublicHolidays/2026/ZA)",
+  "shiftDepreciationFactor": 1.0,
+  "shiftBasis": "South Africa straight-line tax depreciation — no shift uplift on capital",
+  "lifeYears": 7.0,
+  "financeRate": 0.1075,
+  "financeBasis": "SARB current market rates, 30 Oct 2026 (2026-10-30)",
+  "ukFinanceRate": 0.04,
+  "maintenancePctOfCapex": 0.035,
+  "maintenanceBasis": "the library's own line build-up rule (3.5% of capex); no South Africa norm found",
+  "rentLocalPerM2Month": 203.14,
+  "rentBasis": "no ZA broker rent found (only property listings, which are not a price) — the UK book's rent £110/m²/yr AT PAR = 203.14 ZAR/m²/month (no country factor)",
+  "ukRentGbpPerM2Yr": 110,
+  "capitalHeldFactor": 1.0,
+  "groups": [],
+  "notRebuiltBasis": "capex not found for South Africa: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under South Africa's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at South Africa wages)"
+ },
+ "materialFamilies": [
+  {
+   "family": "CR coil (DC01 / DC04)",
+   "anchorLocalPerKg": 15.8361,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added — at €1 = 18.5218 ZAR (ECB 2026-10-29): R15.8361/kg",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "CR automotive grades",
+   "anchorLocalPerKg": 15.8361,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 18.5218 ZAR (ECB 2026-10-29): R15.8361/kg",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR structural",
+   "anchorLocalPerKg": 13.7987,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): NW Europe HRC €745/t ex-works (Fastmarkets, 6 Oct 2026) = €0.745/kg × the book's premium over HRPO; S355MC / S420MC extras not found — at €1 = 18.5218 ZAR (ECB 2026-10-29): R13.7987/kg",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrc",
+     "source": "https://eurometal.net/european-hrc-prices-edge-higher-despite-sluggish-demand/",
+     "date": "2026-10-06"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.77,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-s355mc",
+    "mat-s420mc"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Coated sheet",
+   "anchorLocalPerKg": 23.4194,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI — at €1 = 18.5218 ZAR (ECB 2026-10-29): R15.3731/kg × 1.5234 (South Africa 52.34% safeguard on coated coil from 12 Jun 2026) = R23.4194/kg",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hdg",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR pickled & oiled",
+   "anchorLocalPerKg": 15.4657,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): HRC €745/t + a service-centre pickling extra ~€90/t (undated) = €0.835/kg — DERIVED — at €1 = 18.5218 ZAR (ECB 2026-10-29): R15.4657/kg",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrpo",
+     "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+     "date": "undated extra; HRC 2026-10-06"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hrpo"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "409L / 441 ferritic sheet",
+   "anchorLocalPerKg": 27.4493,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 18.5218 ZAR (ECB 2026-10-29): R27.4493/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.409L_CR",
+     "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429",
+     "date": "2026-07-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.85,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304 sheet",
+   "anchorLocalPerKg": 51.3054,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): 304 CR 2B €2,770/t delivered N. Europe incl. alloy surcharge (Fastmarkets, 7 Sep 2026) = €2.77/kg; the October 1.4301 surcharge is €2,188/t — at €1 = 18.5218 ZAR (ECB 2026-10-29): R51.3054/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    },
+    {
+     "research": "ferrous.stainless.alloy_surcharge_1.4301_oct2026",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "301 spring strip",
+   "anchorLocalPerKg": 51.3054,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): 304 sheet €2.77 × the book's premium of 301 over 304 sheet — at €1 = 18.5218 ZAR (ECB 2026-10-29): R51.3054/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.49,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss301-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "316L sheet",
+   "anchorLocalPerKg": 78.2546,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R78.2546/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.316L_CR",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet",
+    "mat-ss316l"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "430 ferritic sheet",
+   "anchorLocalPerKg": 30.5332,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R30.5332/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.430_CR",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorLocalPerKg": 7.3532,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R7.3532/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJS-500-7",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    },
+    {
+     "research": "ferrous.foundry.FeSi75",
+     "source": "https://api.argusmedia.com/articles/2840817",
+     "date": "2026-06-16"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Grey / malleable iron (charge)",
+   "anchorLocalPerKg": 6.5308,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R6.5308/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJL-250",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorLocalPerKg": 5.5547,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R5.5547/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GS-C25",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast stainless (charge)",
+   "anchorLocalPerKg": 23.8561,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R23.8561/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.CF8",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    },
+    {
+     "research": "ferrous.stainless.304_scrap",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorLocalPerKg": 57.5324,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R57.5324/kg",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorLocalPerKg": 95.0743,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge — at €1 = 18.5218 ZAR (ECB 2026-10-29): R95.0743/kg",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "High-Cr white iron (charge)",
+   "anchorLocalPerKg": 17.9198,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): 0.23 × Cr €3.03 + 0.77 × grey charge €0.3526 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R17.9198/kg",
+   "sources": [
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary cast aluminium (ingot)",
+   "anchorLocalPerKg": 45.9341,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R45.9341/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-a413",
+    "mat-a319",
+    "mat-lm4",
+    "mat-en-ac-46200"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary ADC12",
+   "anchorLocalPerKg": 45.9341,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): DIN226 €2.48 (Jan 2026, stale) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R45.9341/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Primary-based cast aluminium",
+   "anchorLocalPerKg": 66.1228,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R66.1228/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.alsi7mg",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29 / 2026-10-09"
+    },
+    {
+     "research": "nonferrous.al.a356_premium",
+     "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.98,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-lm25",
+    "mat-a365",
+    "mat-alsi10mg",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm6",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium forging stock (floor)",
+   "anchorLocalPerKg": 67.7898,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 18.5218 ZAR (ECB 2026-10-29): R67.7898/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.billet6063",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+     "date": "2026-08-28 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-al6061-forge",
+    "mat-al6082-forge",
+    "mat-al2014-forge",
+    "mat-al7075-forge",
+    "mat-al2618-forge",
+    "mat-al7050-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium sheet and plate (floor)",
+   "anchorLocalPerKg": 77.0507,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.frp_europe_asp",
+     "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+     "date": "2025-04-01 to 2026-03-31"
+    },
+    {
+     "research": "nonferrous.al.sheet_5754",
+     "source": "https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840",
+     "date": "page read via search Oct 2026 (price undated)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aa5182",
+    "mat-aa5052",
+    "mat-aa5083",
+    "mat-aa6082-sheet",
+    "mat-aa5754-sheet",
+    "mat-aa6061-sheet",
+    "mat-aa6063-sheet",
+    "mat-aa3003-sheet",
+    "mat-al-busbar",
+    "mat-aa6016-t4",
+    "mat-aa6111-t4",
+    "mat-aa7075-t6",
+    "mat-aa1050-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorLocalPerKg": 244.4878,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 18.5218 ZAR (ECB 2026-10-29): R244.4878/kg",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "nonferrous.cu.cathode_premium",
+     "source": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026 contract year (announced 2025-10-07)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper",
+    "mat-cu-hairpin"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Free-machining / forging brass rod (floor)",
+   "anchorLocalPerKg": 206.8885,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 18.5218 ZAR (ECB 2026-10-29): R206.8885/kg",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW614N_rod",
+     "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-brass-cz121",
+    "mat-brass-cz122-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "70/30 and 63/37 brass sheet (floor)",
+   "anchorLocalPerKg": 214.112,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): CuZn37 metal basis €11.56/kg (5 Oct 2026) — metal value before rolling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R214.112/kg",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW508L_sheet",
+     "source": "https://www.messingwerk.de/de/rohstoffpreise.html",
+     "date": "2026-10-05"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cz108-brass"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Phosphor / tin bronze (floor)",
+   "anchorLocalPerKg": 308.1231,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R308.1231/kg",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "nonferrous.sn.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-bronze-pb1",
+    "mat-bronze-c905",
+    "mat-cusn12-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 3 (floor)",
+   "anchorLocalPerKg": 66.0191,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.96 × SHG zinc €3.58 (LME + Rotterdam premium) + 0.04 × Al €3.19 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R66.0191/kg",
+   "sources": [
+    {
+     "research": "nonferrous.zn.shg_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+     "date": "2026-02-02 / 2026-10-09"
+    },
+    {
+     "research": "nonferrous.al.p1020",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns",
+     "date": "2026-10-01 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak3"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 5 (floor)",
+   "anchorLocalPerKg": 67.8009,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.95 × zinc €3.58 + 0.04 × Al + 0.01 × Cu €13.2 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R67.8009/kg",
+   "sources": [
+    {
+     "research": "nonferrous.zn.shg_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+     "date": "2026-02-02 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak5"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PP family",
+   "anchorLocalPerKg": 21.6705,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 18.5218 ZAR (ECB 2026-10-29): R21.6705/kg",
+   "sources": [
+    {
+     "research": "polymer.pp_homo",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.99,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-pp-homo",
+    "mat-pp",
+    "mat-pp-impact",
+    "mat-pp-bm",
+    "mat-pp-ext-sheet",
+    "mat-ppr-pipe",
+    "mat-pp-roto",
+    "mat-pp-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PE family",
+   "anchorLocalPerKg": 23.1522,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE — at €1 = 18.5218 ZAR (ECB 2026-10-29): R23.1522/kg",
+   "sources": [
+    {
+     "research": "polymer.hdpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hdpe",
+    "mat-hdpe-bm",
+    "mat-hdpe-fuel-coex",
+    "mat-pe100-pipe",
+    "mat-pe80-pipe",
+    "mat-hdpe-profile",
+    "mat-hdpe-roto",
+    "mat-xlpe-roto",
+    "mat-fr-pe-roto",
+    "mat-foam-pe-roto",
+    "mat-cond-pe-roto",
+    "mat-hdpe-tf",
+    "mat-pex-pipe"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LDPE family",
+   "anchorLocalPerKg": 23.7079,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): LDPE €1.28/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LDPE — at €1 = 18.5218 ZAR (ECB 2026-10-29): R23.7079/kg",
+   "sources": [
+    {
+     "research": "polymer.ldpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.09,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ldpe",
+    "mat-ldpe-bm",
+    "mat-ldpe-tube",
+    "mat-ldpe-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LLDPE family",
+   "anchorLocalPerKg": 23.1522,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE — at €1 = 18.5218 ZAR (ECB 2026-10-29): R23.1522/kg",
+   "sources": [
+    {
+     "research": "polymer.lldpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lldpe",
+    "mat-lldpe-bm",
+    "mat-lldpe-roto"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PVC family",
+   "anchorLocalPerKg": 18.3366,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin — at €1 = 18.5218 ZAR (ECB 2026-10-29): R18.3366/kg",
+   "sources": [
+    {
+     "research": "polymer.pvc",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.76,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-upvc",
+    "mat-fpvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe",
+    "mat-pvc-cable",
+    "mat-upvc-window-profile",
+    "mat-pvcp-profile",
+    "mat-pvc-foam",
+    "mat-rpvc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ABS family",
+   "anchorLocalPerKg": 34.0801,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): ABS €1.84/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over ABS — at €1 = 18.5218 ZAR (ECB 2026-10-29): R34.0801/kg",
+   "sources": [
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.62,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-abs",
+    "mat-abs-ext-sheet",
+    "mat-abs-tf",
+    "mat-abs-fr"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "GPPS",
+   "anchorLocalPerKg": 28.3384,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): GPPS €1.53/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over GPPS — at €1 = 18.5218 ZAR (ECB 2026-10-29): R28.3384/kg",
+   "sources": [
+    {
+     "research": "polymer.ps",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.37,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gpps",
+    "mat-gpps-ext"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HIPS",
+   "anchorLocalPerKg": 31.1166,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): HIPS €1.68/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) — the book had HIPS at the GPPS price — at €1 = 18.5218 ZAR (ECB 2026-10-29): R31.1166/kg",
+   "sources": [
+    {
+     "research": "polymer.hips",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hips"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC family",
+   "anchorLocalPerKg": 48.8976,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 18.5218 ZAR (ECB 2026-10-29): R48.8976/kg",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc",
+    "mat-pc-glazing",
+    "mat-pc-bm",
+    "mat-pc-ext-sheet",
+    "mat-pc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA6 family",
+   "anchorLocalPerKg": 51.861,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R51.861/kg",
+   "sources": [
+    {
+     "research": "polymer.pa6",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.68,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-bm",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA66",
+   "anchorLocalPerKg": 56.1211,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): PA66 €3.03/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; an August reading was €3.72 — the two extracts conflict) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R56.1211/kg",
+   "sources": [
+    {
+     "research": "polymer.pa66",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PBT",
+   "anchorLocalPerKg": 69.0863,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R69.0863/kg",
+   "sources": [
+    {
+     "research": "polymer.pbt",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pbt"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PET family",
+   "anchorLocalPerKg": 25.3749,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): PET €1.37/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; a general PET index, not bottle grade) × the book's premium over PET bottle grade — at €1 = 18.5218 ZAR (ECB 2026-10-29): R25.3749/kg",
+   "sources": [
+    {
+     "research": "polymer.pet_bottle",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.21,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pet-bg",
+    "mat-pet-preform",
+    "mat-apet-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PMMA family",
+   "anchorLocalPerKg": 58.5289,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): PMMA €3.16/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PMMA — at €1 = 18.5218 ZAR (ECB 2026-10-29): R58.5289/kg",
+   "sources": [
+    {
+     "research": "polymer.pmma",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.4,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pmma",
+    "mat-pmma-ext-sheet",
+    "mat-pmma-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PEEK family",
+   "anchorLocalPerKg": 1467.297,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R1467.297/kg",
+   "sources": [
+    {
+     "research": "polymer.peek",
+     "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets",
+     "date": "2026-06-30 (9M); H1 to 2026-03-31"
+    }
+   ],
+   "method": "ladder",
+   "base": 76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-peek",
+    "mat-peek-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "POM",
+   "anchorLocalPerKg": 50.0089,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): POM €2.7/kg ex-VAT (Plastech monthly offer price, Sep 2026 — a distributor level) × the book's premium over POM — at €1 = 18.5218 ZAR (ECB 2026-10-29): R50.0089/kg",
+   "sources": [
+    {
+     "research": "polymer.pom",
+     "source": "https://www.plasticportal.eu/polymer-prices",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pom",
+    "mat-pom-rod"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC/ABS (floor)",
+   "anchorLocalPerKg": 44.4523,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 18.5218 ZAR (ECB 2026-10-29): R44.4523/kg",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    },
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc-abs"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon fabric (floor)",
+   "anchorLocalPerKg": 554.1723,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 18.5218 ZAR (ECB 2026-10-29): R554.1723/kg",
+   "sources": [
+    {
+     "research": "composite.cf_t700_12k",
+     "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+     "date": "2026-03"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cf-dry-3k"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Natural rubber (raw)",
+   "anchorLocalPerKg": 41.3036,
+   "anchorBasis": "no ZA or regional price found — the European market price at par (traded material, no country factor): TSR20 benchmark €2.23/kg (SGX, 28 Sep 2026, as reported) — FOB Asia, freight to Germany NOT added; for the book's raw NR line; compounds held — at €1 = 18.5218 ZAR (ECB 2026-10-29): R41.3036/kg",
+   "sources": [
+    {
+     "research": "rubber.nr",
+     "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html",
+     "date": "2026-09-28"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "engineering bar (C45, 42CrMo4, 38MnVS6, 16MnCr5, 20MnCr5, 100Cr6, 11SMnPb30, 4140 / 4340), forging stock": "No German mill or stockholder BASE price published; only 2026 alloy / scrap surcharges found (Frankstahl Feb 2026, Swiss Steel Steeltec) — held",
+  "stainless bar (304, 316, 303, martensitic, PH, duplex)": "Not found (surcharges only) — held",
+  "electrical steel (NO / GO / CoFe / NiFe / amorphous)": "EU minimum import price for GO only; NO grades not priced — held",
+  "aluminium extrusion / machining bar and plate (6082-T6 bar, 6061 …)": "No German bar or plate price found (the sheet floor is a rolled-products average) — held",
+  "magnesium alloys (AZ91D, AM60 …)": "No European transaction price found — held",
+  "titanium, nickel superalloys, aluminium bronze, gunmetal": "Not found — held",
+  "filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30, PP-TD20, TPE …), TPU, PPS, PEI, LCP, PA12": "No compound market price found (KI compound prices are subscriber-only) — held",
+  "rubber compounds (EPDM / NBR / CR / FKM / silicone …)": "Raw polymers found (EPDM €2.83, NBR €1.93) but a compound is not its polymer — held",
+  "composites (prepreg, fabrics, SMC), paint, foam cores": "Not found — held"
+ },
+ "heldMaterialsAtPar": {
+  "basis": "no South Africa or regional price this round — the book's European-market price at par, no South Africa factor"
+ },
+ "shopMultipliersBasis": "Overhead and packaging: the UK basis × South Africa's held multipliers — not researched this round",
+ "sources": {
+  "finance": "https://custom.resbank.co.za/SarbWebApi/WebIndicators/CurrentMarketRates",
+  "life": "https://taxsummaries.pwc.com/south-africa/corporate/deductions",
+  "rent": ""
+ },
+ "noLibraryLabourRows": true
+}

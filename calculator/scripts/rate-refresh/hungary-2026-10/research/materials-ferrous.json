@@ -15,25 +15,39 @@
   },
   {
    "key": "ferrous.anchor.crc",
-   "value": 0.865,
+   "value": 0.855,
    "unit": "EUR/kg",
    "currency": "EUR",
-   "basis": "Fastmarkets weekly CRC domestic exw Northern Europe EUR 850-880/t (13 Sep 2026, via Tacto); mid 865/1000 = 0.865 EUR/kg. Indicative HUF 318.0 Ft/kg. Commercial CR (DC01 class), ex-works, ex-VAT, freight not added.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 0.865): the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026) — original basis: Fastmarkets weekly CRC domestic exw Northern Europe EUR 850-880/t (13 Sep 2026, via Tacto); mid 865/1000 = 0.865 EUR/kg. Indicative HUF 318.0 Ft/kg. Commercial CR (DC01 class), ex-works, ex-VAT, freight not added.",
    "source": "https://www.tacto.ai/en/commodities/steel-price",
    "date": "2026-09-13",
    "kind": "price-agency assessment (secondary relay)",
-   "notes": "Carried from scripts/rate-refresh/germany-2026-10/research/materials-ferrous.json (same figure in scripts/rate-refresh/poland-2026-10/research/materials-ferrous.json). No October 2026 CRC print found in this round."
+   "notes": "Carried from scripts/rate-refresh/germany-2026-10/research/materials-ferrous.json (same figure in scripts/rate-refresh/poland-2026-10/research/materials-ferrous.json). No October 2026 CRC print found in this round.",
+   "corrected": {
+    "was": 0.865,
+    "on": "2026-10-30",
+    "why": "the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026)",
+    "verdicts": "verdicts/hungary.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.anchor.hdg",
-   "value": 0.86,
+   "value": 0.83,
    "unit": "EUR/kg",
    "currency": "EUR",
-   "basis": "Fastmarkets weekly HDG domestic exw Northern Europe EUR 850-870/t (13 Sep 2026, via Tacto); mid 860/1000 = 0.860 EUR/kg. Indicative HUF 316.1 Ft/kg. DX51D+Z class, ex-works, ex-VAT.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 0.86): the cited Tacto page has been updated: HDG €830/t (SteelRadar, 19 Oct 2026) — original basis: Fastmarkets weekly HDG domestic exw Northern Europe EUR 850-870/t (13 Sep 2026, via Tacto); mid 860/1000 = 0.860 EUR/kg. Indicative HUF 316.1 Ft/kg. DX51D+Z class, ex-works, ex-VAT.",
    "source": "https://www.tacto.ai/en/commodities/steel-price",
    "date": "2026-09-13",
    "kind": "price-agency assessment (secondary relay)",
-   "notes": "Carried from scripts/rate-refresh/germany-2026-10/research/materials-ferrous.json / scripts/rate-refresh/poland-2026-10/research/materials-ferrous.json."
+   "notes": "Carried from scripts/rate-refresh/germany-2026-10/research/materials-ferrous.json / scripts/rate-refresh/poland-2026-10/research/materials-ferrous.json.",
+   "corrected": {
+    "was": 0.86,
+    "on": "2026-10-30",
+    "why": "the cited Tacto page has been updated: HDG €830/t (SteelRadar, 19 Oct 2026)",
+    "verdicts": "verdicts/hungary.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.anchor.hrpo",
@@ -213,14 +227,21 @@
   },
   {
    "key": "ferrous.stainless.430_CR",
-   "value": 1.548,
+   "value": 1.6485,
    "unit": "EUR/kg",
    "currency": "EUR",
-   "basis": "DERIVED: Oct 2026 1.4016 surcharge EUR 985/t + 304 CR effective base EUR 563.5/t (2,770 - Sep surcharge mid 2,206.5) = EUR 1,548.5/t. Indicative HUF 569.2 Ft/kg.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 1.548): October 2026 1.4016 (430) surcharge is €1,085/t on the page (not 985): 1,085 + 563.5 = €1.6485/kg — original basis: DERIVED: Oct 2026 1.4016 surcharge EUR 985/t + 304 CR effective base EUR 563.5/t (2,770 - Sep surcharge mid 2,206.5) = EUR 1,548.5/t. Indicative HUF 569.2 Ft/kg.",
    "source": "https://legierungszuschlag.info/en/",
    "date": "2026-10-01",
    "kind": "derived",
-   "notes": "Carried from scripts/rate-refresh/germany-2026-10/research/materials-ferrous.json. ENGINEERING ASSUMPTION: ferritic base = austenitic effective base (a floor)."
+   "notes": "Carried from scripts/rate-refresh/germany-2026-10/research/materials-ferrous.json. ENGINEERING ASSUMPTION: ferritic base = austenitic effective base (a floor).",
+   "corrected": {
+    "was": 1.548,
+    "on": "2026-10-30",
+    "why": "October 2026 1.4016 (430) surcharge is €1,085/t on the page (not 985): 1,085 + 563.5 = €1.6485/kg",
+    "verdicts": "verdicts/hungary.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.stainless.409L_CR",

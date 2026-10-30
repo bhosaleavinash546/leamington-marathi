@@ -1,0 +1,1352 @@
+{
+ "asOf": "2026-10-30",
+ "label": "Thailand rate book — world round: national / ILO earnings + statutory on-costs, regulator tariffs, regional material markets, 3 × 8 h",
+ "region": "TH",
+ "currency": "THB",
+ "currencySymbol": "฿",
+ "dir": "scripts/rate-refresh/world-2026-10/books/th",
+ "snapshot": "scripts/rate-refresh/world-2026-10/books/th/current-book.json",
+ "bookFile": "src/engine/country-books/th.ts",
+ "bookConst": "THAILAND_BOOK",
+ "writeFx": true,
+ "fxPerGbp": 44.9508,
+ "fxBasis": "ECB euro reference rates 2026-10-29: €1 = 37.569 THB, €1 = £0.83578 → £1 = 44.9508 THB",
+ "labour": {
+  "categories": {
+   "skilled": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2025; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "semiskilled": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "foundry": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "as skilled — the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2025; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "electronics": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "as semiskilled — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "inspector": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "as skilled — the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2025; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "technician": {
+    "localPerHr": 162.92,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "the engineer burden × ISCO 3 ÷ ISCO 2 = 0.807 (ILOSTAT ISCO major groups, all economy, 2025) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: engineer annual employer burden US$14,105 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 162.92/h (fully loaded — no contributions added)"
+   },
+   "supervisor": {
+    "localPerHr": 162.92,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "costs as a technician (ISCO 3122 is in major group 3) — the engineer burden × ISCO 3 ÷ ISCO 2 = 0.807 (ILOSTAT ISCO major groups, all economy, 2025) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: engineer annual employer burden US$14,105 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 162.92/h (fully loaded — no contributions added)"
+   },
+   "engineer": {
+    "localPerHr": 201.83,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: engineer annual employer burden US$14,105 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 201.83/h (fully loaded — no contributions added)"
+   }
+  },
+  "grades": {
+   "forge": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "paid as skilled: the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2025; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "furnace": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "blow": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "roto": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "thermoform": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   },
+   "trim-router": {
+    "localPerHr": 126.13,
+    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/THA.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
+    "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$8,815 (base + allowances + social security + overtime + bonus) × 33.7547 THB/US$ × wage growth 3.9%/yr over 1 yr = ×1.0390 ÷ 2451 h worked a year (hours/year actually worked) = 126.13/h (fully loaded — no contributions added)"
+   }
+  },
+  "loadingIncluded": "Fully-loaded hourly cost INCLUDES: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked)",
+  "loadingNotIncluded": "NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+  "short": "national / ILO occupation earnings + statutory employer contributions ÷ hours worked"
+ },
+ "energy": {
+  "electricityLocalPerKwh": 3.7584,
+  "basis": "Electricity 3.7584 THB/kWh: PEA/MEA Schedule 4 Large General Service TOU, 22-33 kV: demand 132.93 THB/kW (peak), energy peak 4.1839 / off-peak 2.6037 THB/kWh, service 312.24 THB/month; plus Ft 16.23 satang/kWh (Sep-Dec 2026). Peak = 09:00-22:00 Mon-Fri. Week: 65,000 kWh peak, 69,400 off- (base tariff since 2018 (doc May 2023); Ft Sep-Dec 2026 (ERC decision 23 Jul 2026)). Gas: no industrial gas price found (industrial natural gas (PTT pipeline supply)) — held",
+  "sources": [
+   {
+    "research": "energy.electricity",
+    "source": "https://www.pea.co.th/sites/default/files/documents/tariff/EN_Electricity_Tariffs_May_2023.pdf ; Ft: https://en.thairath.co.th/news/governmentpolicy/2948113",
+    "date": "base tariff since 2018 (doc May 2023); Ft Sep-Dec 2026 (ERC decision 23 Jul 2026)"
+   },
+   {
+    "research": "energy.gas",
+    "source": "",
+    "date": ""
+   }
+  ]
+ },
+ "machines": {
+  "hoursPerYear": 6000,
+  "hoursBasis": "3 × 8 h, Monday–Friday: 250 working days × 24 h = 6,000 h — Thailand's full 2026 public-holiday calendar was not available (the holiday API failed or misses Tết / Islamic holidays), so the round's median working year (250 days) is used",
+  "shiftDepreciationFactor": 1.0,
+  "shiftBasis": "Thailand straight-line tax depreciation — no shift uplift on capital",
+  "lifeYears": 5.0,
+  "financeRate": 0.0499,
+  "financeBasis": "World Bank lending interest rate 2025 4.99% (FR.INR.LEND) — the central bank's own company-loan rate was not found; its policy / money-market rate 1.0% would understate what a manufacturer pays",
+  "ukFinanceRate": 0.04,
+  "maintenancePctOfCapex": 0.035,
+  "maintenanceBasis": "the library's own line build-up rule (3.5% of capex); no Thailand norm found",
+  "rentLocalPerM2Month": 196.0,
+  "rentBasis": "C&W Thailand Industrial MarketBeat Q3 2026: ready-built factory (RBF) average monthly asking rent THB 196/sq m/month (excl. service charge), unchanged q/q. Read directly. (AVERAGE asking rent, ready-built FACTORIES, Thailand (Central, Eastern and Eastern Seaboard zones combined), 2026-Q3)",
+  "ukRentGbpPerM2Yr": 110,
+  "capitalHeldFactor": 1.0,
+  "groups": [],
+  "notRebuiltBasis": "capex not found for Thailand: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Thailand's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Thailand wages)"
+ },
+ "materialFamilies": [
+  {
+   "family": "CR coil (DC01 / DC04)",
+   "anchorLocalPerKg": 19.7803,
+   "anchorBasis": "CR coil (DC01 / DC04) — TH's market: SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ฿19.7803/kg",
+   "sources": [
+    {
+     "research": "mat.crc",
+     "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "CR automotive grades",
+   "anchorLocalPerKg": 19.7803,
+   "anchorBasis": "CR automotive grades — TH's market: SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ฿19.7803/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.crc",
+     "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR structural",
+   "anchorLocalPerKg": 17.5862,
+   "anchorBasis": "HR structural — TH's market: SMM: HRC SS400 3.0×1250 CFR Thailand US$521/t (unchanged) = 521 USD/t (2026-10-30) = ฿17.5862/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.hrc",
+     "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.77,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-s355mc",
+    "mat-s420mc"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Coated sheet",
+   "anchorLocalPerKg": 23.6958,
+   "anchorBasis": "Coated sheet — TH's market: SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ฿23.6958/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.hdg",
+     "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR pickled & oiled",
+   "anchorLocalPerKg": 31.3701,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): HRC €745/t + a service-centre pickling extra ~€90/t (undated) = €0.835/kg — DERIVED — at €1 = 37.569 THB (ECB 2026-10-29): ฿31.3701/kg",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrpo",
+     "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+     "date": "undated extra; HRC 2026-10-06"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hrpo"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "409L / 441 ferritic sheet",
+   "anchorLocalPerKg": 55.6773,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 37.569 THB (ECB 2026-10-29): ฿55.6773/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.409L_CR",
+     "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429",
+     "date": "2026-07-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.85,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304 sheet",
+   "anchorLocalPerKg": 71.3068,
+   "anchorBasis": "304 sheet — the SEA market (SG figure): SMM: FOB Indonesia 304/2B coil mill edge US$2,090–2,135/t, mid US$2,112.5 (304/No.1 US$2,002.5) = 2112.5 USD/t (2026-10-30) = ฿71.3068/kg",
+   "sources": [
+    {
+     "research": "mat.ss304_cr",
+     "source": "https://www-old.metal.com/price/Base-Metals/Nickel",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "301 spring strip",
+   "anchorLocalPerKg": 71.3068,
+   "anchorBasis": "301 spring strip — the SEA market (SG figure): SMM: FOB Indonesia 304/2B coil mill edge US$2,090–2,135/t, mid US$2,112.5 (304/No.1 US$2,002.5) = 2112.5 USD/t (2026-10-30) = ฿71.3068/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.ss304_cr",
+     "source": "https://www-old.metal.com/price/Base-Metals/Nickel",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.49,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss301-spring"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "316L sheet",
+   "anchorLocalPerKg": 158.729,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor) — at €1 = 37.569 THB (ECB 2026-10-29): ฿158.729/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.316L_CR",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet",
+    "mat-ss316l"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "430 ferritic sheet",
+   "anchorLocalPerKg": 61.9325,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found) — at €1 = 37.569 THB (ECB 2026-10-29): ฿61.9325/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.430_CR",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorLocalPerKg": 14.9149,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 37.569 THB (ECB 2026-10-29): ฿14.9149/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJS-500-7",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    },
+    {
+     "research": "ferrous.foundry.FeSi75",
+     "source": "https://api.argusmedia.com/articles/2840817",
+     "date": "2026-06-16"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Grey / malleable iron (charge)",
+   "anchorLocalPerKg": 13.2468,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 37.569 THB (ECB 2026-10-29): ฿13.2468/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJL-250",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorLocalPerKg": 11.2669,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 37.569 THB (ECB 2026-10-29): ฿11.2669/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GS-C25",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast stainless (charge)",
+   "anchorLocalPerKg": 48.3889,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 37.569 THB (ECB 2026-10-29): ฿48.3889/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.CF8",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    },
+    {
+     "research": "ferrous.stainless.304_scrap",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorLocalPerKg": 116.6968,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397 — at €1 = 37.569 THB (ECB 2026-10-29): ฿116.6968/kg",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorLocalPerKg": 192.8454,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge — at €1 = 37.569 THB (ECB 2026-10-29): ฿192.8454/kg",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "High-Cr white iron (charge)",
+   "anchorLocalPerKg": 36.348,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): 0.23 × Cr €3.03 + 0.77 × grey charge €0.3526 — at €1 = 37.569 THB (ECB 2026-10-29): ฿36.348/kg",
+   "sources": [
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary cast aluminium (ingot)",
+   "anchorLocalPerKg": 104.0,
+   "anchorBasis": "Secondary cast aluminium (ingot) — TH's market: SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ฿104.0000/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.al_adc12",
+     "source": "https://www-old.metal.com/price/Base-Metals/Aluminum",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-a413",
+    "mat-a319",
+    "mat-lm4",
+    "mat-en-ac-46200"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary ADC12",
+   "anchorLocalPerKg": 104.0,
+   "anchorBasis": "Secondary ADC12 — TH's market: SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ฿104.0000/kg",
+   "sources": [
+    {
+     "research": "mat.al_adc12",
+     "source": "https://www-old.metal.com/price/Base-Metals/Aluminum",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Primary-based cast aluminium",
+   "anchorLocalPerKg": 134.1213,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 37.569 THB (ECB 2026-10-29): ฿134.1213/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.alsi7mg",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29 / 2026-10-09"
+    },
+    {
+     "research": "nonferrous.al.a356_premium",
+     "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.98,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-lm25",
+    "mat-a365",
+    "mat-alsi10mg",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm6",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium forging stock (floor)",
+   "anchorLocalPerKg": 137.5025,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 37.569 THB (ECB 2026-10-29): ฿137.5025/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.billet6063",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+     "date": "2026-08-28 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-al6061-forge",
+    "mat-al6082-forge",
+    "mat-al2014-forge",
+    "mat-al7075-forge",
+    "mat-al2618-forge",
+    "mat-al7050-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium sheet and plate (floor)",
+   "anchorLocalPerKg": 156.287,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 37.569 THB (ECB 2026-10-29): ฿156.287/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.frp_europe_asp",
+     "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+     "date": "2025-04-01 to 2026-03-31"
+    },
+    {
+     "research": "nonferrous.al.sheet_5754",
+     "source": "https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840",
+     "date": "page read via search Oct 2026 (price undated)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aa5182",
+    "mat-aa5052",
+    "mat-aa5083",
+    "mat-aa6082-sheet",
+    "mat-aa5754-sheet",
+    "mat-aa6061-sheet",
+    "mat-aa6063-sheet",
+    "mat-aa3003-sheet",
+    "mat-al-busbar",
+    "mat-aa6016-t4",
+    "mat-aa6111-t4",
+    "mat-aa7075-t6",
+    "mat-aa1050-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorLocalPerKg": 495.9918,
+   "anchorBasis": "LME copper cash $14560/t (29. October 2026) + SG cathode premium $134.0/t = ฿495.9918/kg — no bar or sheet below the copper it contains",
+   "sources": [
+    {
+     "research": "official.lme",
+     "source": "https://www.westmetall.com/en/markdaten.php",
+     "date": "29. October 2026"
+    },
+    {
+     "research": "mat.cu_premium",
+     "source": "https://www-old.metal.com/price/Base-Metals/Copper",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper",
+    "mat-cu-hairpin"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Free-machining / forging brass rod (floor)",
+   "anchorLocalPerKg": 419.6457,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 37.569 THB (ECB 2026-10-29): ฿419.6457/kg",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW614N_rod",
+     "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-brass-cz121",
+    "mat-brass-cz122-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "70/30 and 63/37 brass sheet (floor)",
+   "anchorLocalPerKg": 434.2976,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): CuZn37 metal basis €11.56/kg (5 Oct 2026) — metal value before rolling — at €1 = 37.569 THB (ECB 2026-10-29): ฿434.2976/kg",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW508L_sheet",
+     "source": "https://www.messingwerk.de/de/rohstoffpreise.html",
+     "date": "2026-10-05"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cz108-brass"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Phosphor / tin bronze (floor)",
+   "anchorLocalPerKg": 624.9866,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 37.569 THB (ECB 2026-10-29): ฿624.9866/kg",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "nonferrous.sn.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-bronze-pb1",
+    "mat-bronze-c905",
+    "mat-cusn12-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 3 (floor)",
+   "anchorLocalPerKg": 136.762,
+   "anchorBasis": "metal content: LME zinc $3980/t + SG SHG premium $112/t, LME Al, Cu (29. October 2026) = ฿136.7620/kg",
+   "sources": [
+    {
+     "research": "official.lme",
+     "source": "https://www.westmetall.com/en/markdaten.php",
+     "date": "29. October 2026"
+    },
+    {
+     "research": "mat.zn_premium",
+     "source": "https://www-old.metal.com/price/Base-Metals/Zinc",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak3"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 5 (floor)",
+   "anchorLocalPerKg": 140.2952,
+   "anchorBasis": "metal content: LME zinc $3980/t + SG SHG premium $112/t, LME Al, Cu (29. October 2026) = ฿140.2952/kg",
+   "sources": [
+    {
+     "research": "official.lme",
+     "source": "https://www.westmetall.com/en/markdaten.php",
+     "date": "29. October 2026"
+    },
+    {
+     "research": "mat.zn_premium",
+     "source": "https://www-old.metal.com/price/Base-Metals/Zinc",
+     "date": "2026-10-30"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak5"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PP family",
+   "anchorLocalPerKg": 43.9557,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 37.569 THB (ECB 2026-10-29): ฿43.9557/kg",
+   "sources": [
+    {
+     "research": "polymer.pp_homo",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.99,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-pp-homo",
+    "mat-pp",
+    "mat-pp-impact",
+    "mat-pp-bm",
+    "mat-pp-ext-sheet",
+    "mat-ppr-pipe",
+    "mat-pp-roto",
+    "mat-pp-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PE family",
+   "anchorLocalPerKg": 51.3072,
+   "anchorBasis": "PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ฿51.3072/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.hdpe",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hdpe",
+    "mat-hdpe-bm",
+    "mat-hdpe-fuel-coex",
+    "mat-pe100-pipe",
+    "mat-pe80-pipe",
+    "mat-hdpe-profile",
+    "mat-hdpe-roto",
+    "mat-xlpe-roto",
+    "mat-fr-pe-roto",
+    "mat-foam-pe-roto",
+    "mat-cond-pe-roto",
+    "mat-hdpe-tf",
+    "mat-pex-pipe"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LDPE family",
+   "anchorLocalPerKg": 61.4336,
+   "anchorBasis": "LDPE family — the SEA market (SG figure): businessanalytiq LDPE index, Southeast Asia, September 2026: US$1.82/kg = 1.82 USD/kg (2026-09) = ฿61.4336/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.ldpe",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/ldpe-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.09,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ldpe",
+    "mat-ldpe-bm",
+    "mat-ldpe-tube",
+    "mat-ldpe-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LLDPE family",
+   "anchorLocalPerKg": 46.9613,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE — at €1 = 37.569 THB (ECB 2026-10-29): ฿46.9613/kg",
+   "sources": [
+    {
+     "research": "polymer.lldpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lldpe",
+    "mat-lldpe-bm",
+    "mat-lldpe-roto"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PVC family",
+   "anchorLocalPerKg": 37.1933,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin — at €1 = 37.569 THB (ECB 2026-10-29): ฿37.1933/kg",
+   "sources": [
+    {
+     "research": "polymer.pvc",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.76,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-upvc",
+    "mat-fpvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe",
+    "mat-pvc-cable",
+    "mat-upvc-window-profile",
+    "mat-pvcp-profile",
+    "mat-pvc-foam",
+    "mat-rpvc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ABS family",
+   "anchorLocalPerKg": 64.134,
+   "anchorBasis": "ABS family — the SEA market (SG figure): businessanalytiq ABS index, Southeast Asia, September 2026: US$1.9/kg = 1.9 USD/kg (2026-09) = ฿64.1340/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.abs",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/abs-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.62,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-abs",
+    "mat-abs-ext-sheet",
+    "mat-abs-tf",
+    "mat-abs-fr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "GPPS",
+   "anchorLocalPerKg": 53.67,
+   "anchorBasis": "GPPS — the SEA market (SG figure): businessanalytiq GPPS index, Southeast Asia, September 2026: US$1.59/kg (polystyrene index, not split GPPS / HIPS — taken as GPPS) = 1.59 USD/kg (2026-09) = ฿53.6700/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.gpps",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polystyrene-ps-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.37,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gpps",
+    "mat-gpps-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HIPS",
+   "anchorLocalPerKg": 63.1159,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): HIPS €1.68/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) — the book had HIPS at the GPPS price — at €1 = 37.569 THB (ECB 2026-10-29): ฿63.1159/kg",
+   "sources": [
+    {
+     "research": "polymer.hips",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hips"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC family",
+   "anchorLocalPerKg": 74.5979,
+   "anchorBasis": "PC family — the SEA market (SG figure): businessanalytiq PC index, Southeast Asia, September 2026: US$2.21/kg = 2.21 USD/kg (2026-09) = ฿74.5979/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc",
+    "mat-pc-glazing",
+    "mat-pc-bm",
+    "mat-pc-ext-sheet",
+    "mat-pc-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA6 family",
+   "anchorLocalPerKg": 84.7243,
+   "anchorBasis": "PA6 family — the SEA market (SG figure): businessanalytiq PA6 index, Southeast Asia, September 2026: US$2.51/kg = 2.51 USD/kg (2026-09) = ฿84.7243/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pa6",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.68,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-bm",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA66",
+   "anchorLocalPerKg": 124.2174,
+   "anchorBasis": "PA66 — the SEA market (SG figure): businessanalytiq PA66 index, Southeast Asia, September 2026: US$3.68/kg = 3.68 USD/kg (2026-09) = ฿124.2174/kg",
+   "sources": [
+    {
+     "research": "mat.pa66",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PBT",
+   "anchorLocalPerKg": 140.1324,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) — at €1 = 37.569 THB (ECB 2026-10-29): ฿140.1324/kg",
+   "sources": [
+    {
+     "research": "polymer.pbt",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pbt"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PET family",
+   "anchorLocalPerKg": 34.4298,
+   "anchorBasis": "PET family — the SEA market (SG figure): businessanalytiq PET index, Southeast Asia, September 2026: US$1.02/kg = 1.02 USD/kg (2026-09) = ฿34.4298/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pet",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.21,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pet-bg",
+    "mat-pet-preform",
+    "mat-apet-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PMMA family",
+   "anchorLocalPerKg": 89.1125,
+   "anchorBasis": "PMMA family — the SEA market (SG figure): businessanalytiq PMMA index, Southeast Asia, September 2026: US$2.64/kg = 2.64 USD/kg (2026-09) = ฿89.1125/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pmma",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.4,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pmma",
+    "mat-pmma-ext-sheet",
+    "mat-pmma-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PEEK family",
+   "anchorLocalPerKg": 2976.2162,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin) — at €1 = 37.569 THB (ECB 2026-10-29): ฿2976.2162/kg",
+   "sources": [
+    {
+     "research": "polymer.peek",
+     "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets",
+     "date": "2026-06-30 (9M); H1 to 2026-03-31"
+    }
+   ],
+   "method": "ladder",
+   "base": 76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-peek",
+    "mat-peek-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "POM",
+   "anchorLocalPerKg": 54.3451,
+   "anchorBasis": "POM — the SEA market (SG figure): businessanalytiq POM index, Southeast Asia, September 2026: US$1.61/kg = 1.61 USD/kg (2026-09) = ฿54.3451/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pom",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pom",
+    "mat-pom-rod"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC/ABS (floor)",
+   "anchorLocalPerKg": 90.1656,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 37.569 THB (ECB 2026-10-29): ฿90.1656/kg",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    },
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc-abs"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon fabric (floor)",
+   "anchorLocalPerKg": 1124.0645,
+   "anchorBasis": "no TH or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 37.569 THB (ECB 2026-10-29): ฿1124.0645/kg",
+   "sources": [
+    {
+     "research": "composite.cf_t700_12k",
+     "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+     "date": "2026-03"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cf-dry-3k"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Natural rubber (raw)",
+   "anchorLocalPerKg": 84.2518,
+   "anchorBasis": "Natural rubber (raw) — the SEA market (SG figure): SGX TSR20 November-2026 contract 249.60 US¢/kg (−2.27%); Dec-26 248.20, Jan-27 246.80 — session of 29 Oct 2026 as reported 06:33 30 Oct 2026 = 249.6 US cents/kg (2026-10-29) = ฿84.2518/kg",
+   "sources": [
+    {
+     "research": "mat.nr_tsr20",
+     "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-30-10-dong-loat-giam-tren-cac-san-giao-dich-a339991.html",
+     "date": "2026-10-29"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "engineering bar (C45, 42CrMo4, 38MnVS6, 16MnCr5, 20MnCr5, 100Cr6, 11SMnPb30, 4140 / 4340), forging stock": "No German mill or stockholder BASE price published; only 2026 alloy / scrap surcharges found (Frankstahl Feb 2026, Swiss Steel Steeltec) — held",
+  "stainless bar (304, 316, 303, martensitic, PH, duplex)": "Not found (surcharges only) — held",
+  "electrical steel (NO / GO / CoFe / NiFe / amorphous)": "EU minimum import price for GO only; NO grades not priced — held",
+  "aluminium extrusion / machining bar and plate (6082-T6 bar, 6061 …)": "No German bar or plate price found (the sheet floor is a rolled-products average) — held",
+  "magnesium alloys (AZ91D, AM60 …)": "No European transaction price found — held",
+  "titanium, nickel superalloys, aluminium bronze, gunmetal": "Not found — held",
+  "filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30, PP-TD20, TPE …), TPU, PPS, PEI, LCP, PA12": "No compound market price found (KI compound prices are subscriber-only) — held",
+  "rubber compounds (EPDM / NBR / CR / FKM / silicone …)": "Raw polymers found (EPDM €2.83, NBR €1.93) but a compound is not its polymer — held",
+  "composites (prepreg, fabrics, SMC), paint, foam cores": "Not found — held"
+ },
+ "heldMaterialsAtPar": {
+  "basis": "no Thailand or regional price this round — the book's European-market price at par, no Thailand factor"
+ },
+ "shopMultipliersBasis": "Overhead and packaging: the UK basis × Thailand's held multipliers — not researched this round",
+ "sources": {
+  "finance": "https://api.worldbank.org/v2/country/THA/indicator/FR.INR.LEND?format=json&mrv=5",
+  "life": "https://taxsummaries.pwc.com/thailand/corporate/deductions",
+  "rent": "https://assets.cushmanwakefield.com/-/media/cw/marketbeat-pdfs/2026/q3/apac-and-gc/thailand-industrial-mb-3q2026-final-v2.pdf?rev=73c7b726cf1c4c6395b3ecf6142117a2"
+ },
+ "noLibraryLabourRows": true
+}

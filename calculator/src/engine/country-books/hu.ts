@@ -49,162 +49,6 @@ export const HUNGARY_BOOK: CountryBook = {
   }
  },
  "materials": {
-  "mat-dc01": {
-   "gbpPerKg": 0.7235,
-   "basis": "CR coil (DC01 / DC04): NW Europe CRC €0.865/kg ex-works (13 Sep 2026) = Ft316.7/kg at €1 = Ft366.16; freight to a Hungarian plant not added; direct",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Medium"
-  },
-  "mat-dc04": {
-   "gbpPerKg": 0.7235,
-   "basis": "CR coil (DC01 / DC04): NW Europe CRC €0.865/kg ex-works (13 Sep 2026) = Ft316.7/kg at €1 = Ft366.16; freight to a Hungarian plant not added; direct",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Medium"
-  },
-  "mat-dc05": {
-   "gbpPerKg": 0.7235,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; the anchor grade itself",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dc06": {
-   "gbpPerKg": 0.7321,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.012 (book £0.85 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-if-dx56": {
-   "gbpPerKg": 0.8614,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.190 (book £1 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-if-hs260": {
-   "gbpPerKg": 0.9733,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.345 (book £1.13 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-bh260": {
-   "gbpPerKg": 0.9475,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-greensteel-dc01": {
-   "gbpPerKg": 0.9475,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-hsla340": {
-   "gbpPerKg": 1.025,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.417 (book £1.19 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-hsla420": {
-   "gbpPerKg": 1.1111,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.536 (book £1.29 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-hsla550": {
-   "gbpPerKg": 1.1973,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.655 (book £1.39 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dp600": {
-   "gbpPerKg": 1.1198,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.548 (book £1.3 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dp780": {
-   "gbpPerKg": 1.1801,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.631 (book £1.37 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dp980": {
-   "gbpPerKg": 1.292,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.786 (book £1.5 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dp1000": {
-   "gbpPerKg": 1.3523,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.869 (book £1.57 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-trip780": {
-   "gbpPerKg": 1.249,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.726 (book £1.45 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-cp800": {
-   "gbpPerKg": 1.2317,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.702 (book £1.43 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-ms1200": {
-   "gbpPerKg": 1.3782,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-ms1300": {
-   "gbpPerKg": 1.4385,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.988 (book £1.67 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-ms1500": {
-   "gbpPerKg": 1.5246,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.107 (book £1.77 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-qp980": {
-   "gbpPerKg": 1.4901,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.060 (book £1.73 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-medmn1180": {
-   "gbpPerKg": 1.5504,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.143 (book £1.8 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-22mnb5": {
-   "gbpPerKg": 1.5418,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.131 (book £1.79 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-usibor1500": {
-   "gbpPerKg": 1.7227,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.381 (book £2 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-usibor2000": {
-   "gbpPerKg": 2.0672,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.857 (book £2.4 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-c67s-spring": {
-   "gbpPerKg": 1.3782,
-   "basis": "CR automotive grades: CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
   "mat-s355mc": {
    "gbpPerKg": 0.6448,
    "basis": "HR structural: Fastmarkets N. Europe HRC €0.742/kg (12 Oct 2026) = Ft271.7/kg × the book's premium over HRPO; S355MC / S420MC extras not found; ladder ×1.039 (book £0.8 ÷ base £0.77)",
@@ -215,6 +59,42 @@ export const HUNGARY_BOOK: CountryBook = {
    "gbpPerKg": 0.661,
    "basis": "HR structural: Fastmarkets N. Europe HRC €0.742/kg (12 Oct 2026) = Ft271.7/kg × the book's premium over HRPO; S355MC / S420MC extras not found; ladder ×1.065 (book £0.82 ÷ base £0.77)",
    "source": "https://eurometal.net/?p=43738 (2026-10-12)",
+   "confidence": "Low"
+  },
+  "mat-dc01-gi": {
+   "gbpPerKg": 0.6943,
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; the anchor grade itself",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dc03-ga": {
+   "gbpPerKg": 0.7193,
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dc01-ze": {
+   "gbpPerKg": 0.6943,
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; the anchor grade itself",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-znni-eg": {
+   "gbpPerKg": 0.7693,
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-zm-coated": {
+   "gbpPerKg": 0.7506,
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-tinplate-etp": {
+   "gbpPerKg": 0.8444,
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-hrpo": {
@@ -260,8 +140,8 @@ export const HUNGARY_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-aisi430": {
-   "gbpPerKg": 1.2948,
-   "basis": "430 ferritic sheet: 430 CR €1.548/kg — DERIVED: the October 1.4016 alloy surcharge + a base assumed equal to 304's; direct",
+   "gbpPerKg": 1.3789,
+   "basis": "430 ferritic sheet: 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base assumed equal to 304's; direct",
    "source": "https://legierungszuschlag.info/en/ (2026-10-01)",
    "confidence": "Low"
   },
@@ -932,20 +812,20 @@ export const HUNGARY_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-pa6": {
-   "gbpPerKg": 2.0057,
-   "basis": "PA6 family: PA6 Ft878.0/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
+   "gbpPerKg": 2.3888,
+   "basis": "PA6 family: PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-bm": {
-   "gbpPerKg": 3.701,
-   "basis": "PA6 family: PA6 Ft878.0/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; ladder ×1.845 (book £3.1 ÷ base £1.68)",
+   "gbpPerKg": 4.408,
+   "basis": "PA6 family: PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; ladder ×1.845 (book £3.1 ÷ base £1.68)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-ext-tube": {
-   "gbpPerKg": 2.0057,
-   "basis": "PA6 family: PA6 Ft878.0/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
+   "gbpPerKg": 2.3888,
+   "basis": "PA6 family: PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
@@ -956,26 +836,26 @@ export const HUNGARY_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-pbt": {
-   "gbpPerKg": 2.7795,
-   "basis": "PBT: PBT Ft1216.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026); direct",
+   "gbpPerKg": 3.1851,
+   "basis": "PBT: PBT Ft1394.3/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026); direct",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pmma": {
-   "gbpPerKg": 2.7719,
-   "basis": "PMMA family: PMMA Ft1213.4/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; the anchor grade itself",
+   "gbpPerKg": 2.6968,
+   "basis": "PMMA family: PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pmma-ext-sheet": {
-   "gbpPerKg": 3.0029,
-   "basis": "PMMA family: PMMA Ft1213.4/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; ladder ×1.083 (book £2.6 ÷ base £2.4)",
+   "gbpPerKg": 2.9216,
+   "basis": "PMMA family: PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; ladder ×1.083 (book £2.6 ÷ base £2.4)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pmma-tf": {
-   "gbpPerKg": 3.3494,
-   "basis": "PMMA family: PMMA Ft1213.4/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; ladder ×1.208 (book £2.9 ÷ base £2.4)",
+   "gbpPerKg": 3.2587,
+   "basis": "PMMA family: PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; ladder ×1.208 (book £2.9 ÷ base £2.4)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Medium"
   },

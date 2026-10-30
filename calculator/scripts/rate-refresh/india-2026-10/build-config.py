@@ -227,19 +227,19 @@ machines = {
     'rentInrPerSqftMonth': rent_inr_sqft_month,
     'rentBasis': 'Knight Frank H1 2026 industrial / warehousing rent: Pune 28.7, Chennai 25.7, Bengaluru 23.5, NCR 22.3 ₹/sq ft/month — mean',
     'ukRentGbpPerM2Yr': 110,
-    'capitalHeldFactor': 0.52,
+    'capitalHeldFactor': 1.0,   # world round, 30 Oct 2026: unpriced capital AT PAR (×1) in every country — the UK × 0.52 factor had no source
     'groups': [
         {'id': 'cnc-machining-domestic', 'match': '^(mach-vmc3|mach-haas-vf2|mach-lathe-cnc|mach-mazak-qt200|mach-drill)$', 'refId': 'mach-vmc3',
          'refCapexInr': R['capex.vmc3.domestic']['value'],
          'basis': 'Jyoti CNC average realisation per machine sold ₹34.56 lakh (Q1 FY27; domestic VMC / turning-centre maker); an Indian-built machine of the class — an imported HAAS / Mazak costs more (not found)',
          'research': 'capex.vmc3.domestic', 'source': R['capex.vmc3.domestic']['source'], 'confidence': 'Medium'},
     ],
-    'notRebuiltBasis': 'capex not sourced for India: the book\'s capital (UK × 0.52) is HELD; the India operating model (3-shift hours, Schedule II, finance, rent, tariff, support at India wages) is applied',
+    'notRebuiltBasis': 'capex not sourced for India: the machine\'s capital is the book\'s AT PAR (×1 — no unsourced country discount; the UK × 0.52 factor it replaced had no source), under the India operating model (hours, tax life, finance, rent, tariff, support at India wages)',
     'sources': [src('hours.threeShift'), src('depreciation.scheduleII.extraShift'), src('finance.rate'), src('rent.fourClusterAverage'), src('capex.vmc3.domestic')],
 }
 
 cfg = {'asOf': '2026-10-10', 'label': 'India rate book — 4-cluster average (Pune, Chennai, Bengaluru, Delhi NCR), 3-shift', 'fxInrPerGbp': FX,
-       'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held,
+       'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held, 'heldMaterialsAtPar': {'basis': 'no India price this round — the book\'s European-market price at par, no country factor (world round, 30 Oct 2026; the UK × factor it replaced had no source)'},
        'alBilletPremiumUsdPerT': {'value': R['nonferrous.anchor.aluminium.billet6063.premiumOverLme3m']['value'],
                                   'basis': 'Hindalco AA6063 billet (P1020 + ₹17,600/t, Aug 2026) over LME 3M, Oct 2026 derived; May measured $803–842/t — the book held $550',
                                   **src('nonferrous.anchor.aluminium.billet6063.premiumOverLme3m')}}

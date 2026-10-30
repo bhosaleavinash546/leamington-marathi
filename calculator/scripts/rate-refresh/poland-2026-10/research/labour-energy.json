@@ -535,12 +535,19 @@
   },
   {
    "key": "energy.electricity.capacityFee",
-   "value": 0.128,
+   "value": 0.137,
    "unit": "PLN/kWh ex-VAT (load-averaged)",
-   "basis": "Flat 3 × 8 h Mon–Fri load: share of energy in the charged 07:00–21:00 window = 14 ÷ 24 = 0.583; 0.2194 × 0.583 = 0.128",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 0.128): the capacity-fee window on the cited page is FIFTEEN hours (07:00–22:00), not 14: 0.2194 × 15/24 = 0.137 PLN/kWh — original basis: Flat 3 × 8 h Mon–Fri load: share of energy in the charged 07:00–21:00 window = 14 ÷ 24 = 0.583; 0.2194 × 0.583 = 0.128",
    "source": "https://www.gramwzielone.pl/?p=20339842",
    "date": "2026",
-   "notes": "Upper bound: the capacity-market act gives MV/HV customers with a flat profile a reduced coefficient (stable-consumption correction) — rate NOT verified this session; it could cut this term to a fraction (e.g. ~0.02–0.06 PLN/kWh). Weekend base load ignored."
+   "notes": "Upper bound: the capacity-market act gives MV/HV customers with a flat profile a reduced coefficient (stable-consumption correction) — rate NOT verified this session; it could cut this term to a fraction (e.g. ~0.02–0.06 PLN/kWh). Weekend base load ignored.",
+   "corrected": {
+    "was": 0.128,
+    "on": "2026-10-30",
+    "why": "the capacity-fee window on the cited page is FIFTEEN hours (07:00–22:00), not 14: 0.2194 × 15/24 = 0.137 PLN/kWh",
+    "verdicts": "verdicts/poland.json"
+   },
+   "verify": false
   },
   {
    "key": "energy.electricity.networkCharges",
@@ -589,12 +596,19 @@
   },
   {
    "key": "energy.electricity.allIn",
-   "value": 0.702,
+   "value": 0.712,
    "unit": "PLN/kWh ex-VAT",
-   "basis": "Build-up: energy 0.4305 + capacity fee 0.128 + network (proxy) 0.1286 + OZE 0.0073 + cogeneration 0.003 + excise 0.005 = 0.702 PLN/kWh (= €0.161/kWh at 4.374; = £0.138/kWh at 5.096)",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 0.702): the same sum with the corrected capacity fee: 0.4305 + 0.137 + 0.1286 + 0.0073 + 0.003 + 0.005 = 0.712 PLN/kWh — original basis: Build-up: energy 0.4305 + capacity fee 0.128 + network (proxy) 0.1286 + OZE 0.0073 + cogeneration 0.003 + excise 0.005 = 0.702 PLN/kWh (= €0.161/kWh at 4.374; = £0.138/kWh at 5.096)",
    "source": "derived",
    "date": "2026",
-   "notes": "Range: full capacity fee and no supplier margin → 0.70; flat-profile capacity reduction → ~0.60–0.64. Eurostat cross-check: non-household band IC (500–2,000 MWh) Poland H2 2025 = €0.1226/kWh excl. VAT and recoverable taxes (Statista quoting nrg_pc_205, https://www.statista.com/statistics/1046605/non-household-electricity-prices-european-union-country/) × 4.374 = 0.536 PLN/kWh — before the 2026 capacity-fee rise. Band ID not found (Eurostat database not reachable). Forum Energii 2024 energy-intensive all-in €166.9/MWh = 0.730 PLN/kWh."
+   "notes": "Range: full capacity fee and no supplier margin → 0.70; flat-profile capacity reduction → ~0.60–0.64. Eurostat cross-check: non-household band IC (500–2,000 MWh) Poland H2 2025 = €0.1226/kWh excl. VAT and recoverable taxes (Statista quoting nrg_pc_205, https://www.statista.com/statistics/1046605/non-household-electricity-prices-european-union-country/) × 4.374 = 0.536 PLN/kWh — before the 2026 capacity-fee rise. Band ID not found (Eurostat database not reachable). Forum Energii 2024 energy-intensive all-in €166.9/MWh = 0.730 PLN/kWh.",
+   "corrected": {
+    "was": 0.702,
+    "on": "2026-10-30",
+    "why": "the same sum with the corrected capacity fee: 0.4305 + 0.137 + 0.1286 + 0.0073 + 0.003 + 0.005 = 0.712 PLN/kWh",
+    "verdicts": "verdicts/poland.json"
+   },
+   "verify": false
   },
   {
    "key": "energy.gas.commodity",

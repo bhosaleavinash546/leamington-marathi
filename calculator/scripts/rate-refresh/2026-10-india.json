@@ -136,7 +136,7 @@
   "rentInrPerSqftMonth": 25.05,
   "rentBasis": "Knight Frank H1 2026 industrial / warehousing rent: Pune 28.7, Chennai 25.7, Bengaluru 23.5, NCR 22.3 ₹/sq ft/month — mean",
   "ukRentGbpPerM2Yr": 110,
-  "capitalHeldFactor": 0.52,
+  "capitalHeldFactor": 1.0,
   "groups": [
    {
     "id": "cnc-machining-domestic",
@@ -149,7 +149,7 @@
     "confidence": "Medium"
    }
   ],
-  "notRebuiltBasis": "capex not sourced for India: the book's capital (UK × 0.52) is HELD; the India operating model (3-shift hours, Schedule II, finance, rent, tariff, support at India wages) is applied",
+  "notRebuiltBasis": "capex not sourced for India: the machine's capital is the book's AT PAR (×1 — no unsourced country discount; the UK × 0.52 factor it replaced had no source), under the India operating model (hours, tax life, finance, rent, tariff, support at India wages)",
   "sources": [
    {
     "research": "hours.threeShift",
@@ -252,7 +252,7 @@
   },
   {
    "family": "HR pickled & oiled",
-   "anchorInrPerKg": 71.18,
+   "anchorInrPerKg": 65.2,
    "anchorBasis": "HR coil JPC Sep 2026 ₹64.48 + HRPO extra ₹6.70 (Tata Nexarc Mumbai HRPO May 2026 − BigMint HRC May 2026)",
    "sources": [
     {
@@ -669,7 +669,7 @@
   },
   {
    "family": "Ni-Resist D-2 (charge)",
-   "anchorInrPerKg": 364.4,
+   "anchorInrPerKg": 339.8,
    "anchorBasis": "20% Ni at MCX nickel ₹1,625.5 + 2% Cr + iron units",
    "sources": [
     {
@@ -690,7 +690,7 @@
   },
   {
    "family": "Ni-Resist D-5S (charge)",
-   "anchorInrPerKg": 603.5,
+   "anchorInrPerKg": 560.3,
    "anchorBasis": "35% Ni at MCX nickel + Cr + Si + iron units",
    "sources": [
     {
@@ -1091,7 +1091,7 @@
   },
   {
    "family": "PBT family",
-   "anchorInrPerKg": 248.6,
+   "anchorInrPerKg": 264.1,
    "anchorBasis": "PBT India index ₹248.6 (Business Analytiq, Sep 2026); moderate confidence",
    "sources": [
     {
@@ -1143,6 +1143,9 @@
   "polymers without an anchor (POM, PMMA, PS, TPU/TPE/TPV, PEEK, PEI, PPS, LCP, PPA, PSU, PA12, PLA, recycled grades)": "Not found in India sources this round; held",
   "rubber compounds (70 Shore A EPDM / NBR / CR / FKM / silicone …)": "Raw NBR ₹209 and listing cross-checks only; a compound price is not the polymer price; held",
   "composites, paint, masterbatch": "Only marketplace listings (not prices under the rules); held"
+ },
+ "heldMaterialsAtPar": {
+  "basis": "no India price this round — the book's European-market price at par, no country factor (world round, 30 Oct 2026; the UK × factor it replaced had no source)"
  },
  "alBilletPremiumUsdPerT": {
   "value": 710,

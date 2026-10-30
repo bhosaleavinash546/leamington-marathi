@@ -13,21 +13,35 @@
   },
   {
    "key": "ferrous.anchor.crc",
-   "value": 3.239,
+   "value": 3.195,
    "unit": "CNY/kg ex-VAT",
-   "basis": "Mysteel Shanghai spot, CRC 1.0mm (Benxi), 3,660 CNY/t VAT-incl. (9 Oct 2026); 3,660/1.13/1000 = 3.239. 29 Sep 2026: 3,690; Sep 2026 one-month average 3,731-3,733.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 3.239): the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg — original basis: Mysteel Shanghai spot, CRC 1.0mm (Benxi), 3,660 CNY/t VAT-incl. (9 Oct 2026); 3,660/1.13/1000 = 3.239. 29 Sep 2026: 3,690; Sep 2026 one-month average 3,731-3,733.",
    "source": "https://www.mysteel.com/hot/563511.html",
    "date": "2026-10-09",
-   "notes": "Price-agency spot, commercial-quality CR (SPCC/DC01 class, Benxi brand). A Baosteel-brand / automotive-quality DC01 sells above this (see hdg note for the Baosteel brand gap)."
+   "notes": "Price-agency spot, commercial-quality CR (SPCC/DC01 class, Benxi brand). A Baosteel-brand / automotive-quality DC01 sells above this (see hdg note for the Baosteel brand gap).",
+   "corrected": {
+    "was": 3.239,
+    "on": "2026-10-30",
+    "why": "the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg",
+    "verdicts": "verdicts/china-india.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.anchor.hdg",
-   "value": 3.496,
+   "value": 3.451,
    "unit": "CNY/kg ex-VAT",
-   "basis": "Mysteel Shanghai spot, HDG 1.0mm (Benxi, regular spangle-free), 3,950 CNY/t VAT-incl. (24-29 Sep 2026, flat all September); 3,950/1.13/1000 = 3.496.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 3.496): the cited rolling page has been updated: Benxi 1.0 mm HDG 3,900 CNY/t (27–28 Oct) ÷ 1.13 = 3.451 CNY/kg — original basis: Mysteel Shanghai spot, HDG 1.0mm (Benxi, regular spangle-free), 3,950 CNY/t VAT-incl. (24-29 Sep 2026, flat all September); 3,950/1.13/1000 = 3.496.",
    "source": "https://m.mysteel.com/hot/39907.html",
    "date": "2026-09-29",
-   "notes": "Same day, by mill, 1.0mm zero-spangle, 现汇含税 (Mysteel 29 Sep 2026 afternoon): Baosteel-Qingshan 4,280 (=3.788 ex-VAT), Masteel 4,060, Shougang 4,060, Ansteel 4,000, Benxi 3,950, Tangsteel 4,010. Special coating weights / grades are negotiated separately (Mysteel). Source for the per-mill list: https://list1.mysteel.com/zhishi/dxbjgds.html"
+   "notes": "Same day, by mill, 1.0mm zero-spangle, 现汇含税 (Mysteel 29 Sep 2026 afternoon): Baosteel-Qingshan 4,280 (=3.788 ex-VAT), Masteel 4,060, Shougang 4,060, Ansteel 4,000, Benxi 3,950, Tangsteel 4,010. Special coating weights / grades are negotiated separately (Mysteel). Source for the per-mill list: https://list1.mysteel.com/zhishi/dxbjgds.html",
+   "corrected": {
+    "was": 3.496,
+    "on": "2026-10-30",
+    "why": "the cited rolling page has been updated: Benxi 1.0 mm HDG 3,900 CNY/t (27–28 Oct) ÷ 1.13 = 3.451 CNY/kg",
+    "verdicts": "verdicts/china-india.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.anchor.hdg.baosteel",
@@ -220,21 +234,35 @@
   },
   {
    "key": "ferrous.foundry.pig_iron_casting_Z18",
-   "value": 2.611,
+   "value": 2.549,
    "unit": "CNY/kg ex-VAT",
-   "basis": "Mysteel 30 Sep 2026, East China foundry pig iron Z18: Linyi 2,950, Changzhou 3,070, Sanming 3,110, Rizhao 2,950 CNY/t, 现款含税 (cash, VAT-incl.); Linyi 2,950/1.13/1000 = 2.611.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 2.611): the cited rolling page has been updated: Z18 Linyi 2,880 CNY/t (29 Oct) ÷ 1.13 = 2.549 CNY/kg — original basis: Mysteel 30 Sep 2026, East China foundry pig iron Z18: Linyi 2,950, Changzhou 3,070, Sanming 3,110, Rizhao 2,950 CNY/t, 现款含税 (cash, VAT-incl.); Linyi 2,950/1.13/1000 = 2.611.",
    "source": "https://www.mysteel.com/hot/1486014.html",
    "date": "2026-09-30",
-   "notes": "Ex-works; Changzhou (in the YRD cluster) 3,070 = 2.717 ex-VAT."
+   "notes": "Ex-works; Changzhou (in the YRD cluster) 3,070 = 2.717 ex-VAT.",
+   "corrected": {
+    "was": 2.611,
+    "on": "2026-10-30",
+    "why": "the cited rolling page has been updated: Z18 Linyi 2,880 CNY/t (29 Oct) ÷ 1.13 = 2.549 CNY/kg",
+    "verdicts": "verdicts/china-india.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.foundry.pig_iron_nodular_Q10",
-   "value": 2.796,
+   "value": 2.761,
    "unit": "CNY/kg ex-VAT",
-   "basis": "Mysteel 30 Sep 2026, East China nodular pig Q10 2,970-3,350 CNY/t 现款含税, one-by-one; mid 3,160/1.13/1000 = 2.796. Other regions same day: Benxi 3,050, Liaoyang 3,030, Wu'an 3,080, Linfen 3,120, Linzhou 3,050, Huangshi 2,890, Xinjiang 2,810.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 2.796): the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg — original basis: Mysteel 30 Sep 2026, East China nodular pig Q10 2,970-3,350 CNY/t 现款含税, one-by-one; mid 3,160/1.13/1000 = 2.796. Other regions same day: Benxi 3,050, Liaoyang 3,030, Wu'an 3,080, Linfen 3,120, Linzhou 3,050, Huangshi 2,890, Xinjiang 2,810.",
    "source": "https://m.mysteel.com/hot/1487195.html",
    "date": "2026-09-30",
-   "notes": "Huangshi (Wuhan cluster) 2,890 = 2.558 ex-VAT."
+   "notes": "Huangshi (Wuhan cluster) 2,890 = 2.558 ex-VAT.",
+   "corrected": {
+    "was": 2.796,
+    "on": "2026-10-30",
+    "why": "the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg",
+    "verdicts": "verdicts/china-india.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.foundry.steel_scrap_heavy",
@@ -265,21 +293,35 @@
   },
   {
    "key": "ferrous.foundry.FeSi75",
-   "value": 5.442,
+   "value": 5.376,
    "unit": "CNY/kg ex-VAT",
-   "basis": "Mysteel spot, end Sep 2026: 75 FeSi 6,100-6,200 CNY/t, cash VAT-incl. ex-works main producing areas (72 FeSi natural lump 5,700-5,750); mid 6,150/1.13/1000 = 5.442.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 5.442): the cited rolling page has been updated: 75 FeSi 6,050–6,100 (mid 6,075) ÷ 1.13 = 5.376 CNY/kg — original basis: Mysteel spot, end Sep 2026: 75 FeSi 6,100-6,200 CNY/t, cash VAT-incl. ex-works main producing areas (72 FeSi natural lump 5,700-5,750); mid 6,150/1.13/1000 = 5.442.",
    "source": "https://m.mysteel.com/hot/47879.html",
    "date": "2026-09-30",
-   "notes": "SunSirs FeSi benchmark 30 Sep 2026 5,685.71 CNY/t (grade not stated, matches 72#) https://www.100ppi.com/vane/detail-1154.html"
+   "notes": "SunSirs FeSi benchmark 30 Sep 2026 5,685.71 CNY/t (grade not stated, matches 72#) https://www.100ppi.com/vane/detail-1154.html",
+   "corrected": {
+    "was": 5.442,
+    "on": "2026-10-30",
+    "why": "the cited rolling page has been updated: 75 FeSi 6,050–6,100 (mid 6,075) ÷ 1.13 = 5.376 CNY/kg",
+    "verdicts": "verdicts/china-india.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.foundry.FeCr_HC",
-   "value": 6.898,
+   "value": 6.544,
    "unit": "CNY/kg ex-VAT",
-   "basis": "Tisco Sep 2026 HC FeCr tender 7,795 CNY per 50%-Cr base tonne, cash VAT-incl. delivered (-100 m/m); Qingshan Sep long-term 7,995; ex-works 30 Sep 7,600-7,900. Per kg of 50%-Cr alloy: 7,795/1.13/1000 = 6.898 (= 13.80 CNY per kg contained Cr).",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 6.898): the cited rolling page has been updated: Tisco November tender 7,395 CNY per 50%-Cr t ÷ 1.13 = 6.544 CNY/kg — original basis: Tisco Sep 2026 HC FeCr tender 7,795 CNY per 50%-Cr base tonne, cash VAT-incl. delivered (-100 m/m); Qingshan Sep long-term 7,995; ex-works 30 Sep 7,600-7,900. Per kg of 50%-Cr alloy: 7,795/1.13/1000 = 6.898 (= 13.80 CNY per kg contained Cr).",
    "source": "https://m.mysteel.com/zta/gaotangetie/",
    "date": "2026-09",
-   "notes": "Price is per 50% Cr base tonne (元/50基吨): scale by actual Cr%/50."
+   "notes": "Price is per 50% Cr base tonne (元/50基吨): scale by actual Cr%/50.",
+   "corrected": {
+    "was": 6.898,
+    "on": "2026-10-30",
+    "why": "the cited rolling page has been updated: Tisco November tender 7,395 CNY per 50%-Cr t ÷ 1.13 = 6.544 CNY/kg",
+    "verdicts": "verdicts/china-india.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.foundry.Ni",
@@ -310,21 +352,35 @@
   },
   {
    "key": "ferrous.charge.GJS-500-7",
-   "value": 2.69,
+   "value": 2.67,
    "unit": "CNY/kg ex-VAT",
-   "basis": "ENGINEERING ASSUMPTION mix (per kg charged): 45% nodular pig Q10 (2.796) + 30% steel scrap (2.045) + 25% returns valued at the charge's own cost -> metallics = (0.45x2.796 + 0.30x2.045)/0.75 = 2.496; + FeSiMg 1.3% x 9.071 (rare-earth FeSi PROXY) = 0.118; + inoculant 0.4% x 5.442 (FeSi75 as proxy; Ba/Ca inoculants cost more) = 0.022; / 0.98 melt & treatment loss = 2.689 CNY/kg ex-VAT.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 2.69): the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg — original basis: ENGINEERING ASSUMPTION mix (per kg charged): 45% nodular pig Q10 (2.796) + 30% steel scrap (2.045) + 25% returns valued at the charge's own cost -> metallics = (0.45x2.796 + 0.30x2.045)/0.75 = 2.496; + FeSiMg 1.3% x 9.071 (rare-earth FeSi PROXY) = 0.118; + inoculant 0.4% x 5.442 (FeSi75 as proxy; Ba/Ca inoculants cost more) = 0.022; / 0.98 melt & treatment loss = 2.689 CNY/kg ex-VAT.",
    "source": "https://m.mysteel.com/hot/1487195.html",
    "date": "2026-09-30",
-   "notes": "Excludes carburiser (not priced), Cu/Sn pearlite additions for 500-7 (Cu from the non-ferrous research: ~0.3% Cu adds ~0.25 CNY/kg at ~85 CNY/kg Cu - not researched here), and the foundry-grade scrap premium over HMS. Ex-works prices, delivery not added."
+   "notes": "Excludes carburiser (not priced), Cu/Sn pearlite additions for 500-7 (Cu from the non-ferrous research: ~0.3% Cu adds ~0.25 CNY/kg at ~85 CNY/kg Cu - not researched here), and the foundry-grade scrap premium over HMS. Ex-works prices, delivery not added.",
+   "corrected": {
+    "was": 2.69,
+    "on": "2026-10-30",
+    "why": "the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg",
+    "verdicts": "verdicts/china-india.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.charge.GJL-250",
-   "value": 2.35,
+   "value": 2.32,
    "unit": "CNY/kg ex-VAT",
-   "basis": "ENGINEERING ASSUMPTION mix (induction grey iron): 25% foundry pig Z18 (2.611) + 40% steel scrap (2.045) + 35% returns at charge cost -> (0.25x2.611 + 0.40x2.045)/0.65 = 2.263; + FeSi75 0.5% Si trim + 0.2% inoculant = 0.7% x 5.442 = 0.038; / 0.98 melt loss = 2.348 CNY/kg ex-VAT.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 2.35): the same mix on the updated inputs: (0.25 × 2.549 + 0.40 × 2.045) / 0.65 = 2.239 + 0.007 × 5.376 = 2.276 / 0.98 = 2.32 CNY/kg — original basis: ENGINEERING ASSUMPTION mix (induction grey iron): 25% foundry pig Z18 (2.611) + 40% steel scrap (2.045) + 35% returns at charge cost -> (0.25x2.611 + 0.40x2.045)/0.65 = 2.263; + FeSi75 0.5% Si trim + 0.2% inoculant = 0.7% x 5.442 = 0.038; / 0.98 melt loss = 2.348 CNY/kg ex-VAT.",
    "source": "https://www.mysteel.com/hot/1486014.html",
    "date": "2026-09-30",
-   "notes": "Excludes carburiser (needed with 40% steel scrap; not priced) and bought cast-iron scrap (no China price found - the UK book's 60% cast-iron-scrap mix cannot be priced in China). A cupola/higher-pig mix (e.g. 50% pig) gives ~2.5."
+   "notes": "Excludes carburiser (needed with 40% steel scrap; not priced) and bought cast-iron scrap (no China price found - the UK book's 60% cast-iron-scrap mix cannot be priced in China). A cupola/higher-pig mix (e.g. 50% pig) gives ~2.5.",
+   "corrected": {
+    "was": 2.35,
+    "on": "2026-10-30",
+    "why": "the same mix on the updated inputs: (0.25 × 2.549 + 0.40 × 2.045) / 0.65 = 2.239 + 0.007 × 5.376 = 2.276 / 0.98 = 2.32 CNY/kg",
+    "verdicts": "verdicts/china-india.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.charge.GS-C25",
@@ -346,12 +402,19 @@
   },
   {
    "key": "ferrous.electrical.35W300",
-   "value": 5.177,
+   "value": 5.221,
    "unit": "CNY/kg ex-VAT",
-   "basis": "Mysteel Qingdao market 20 Sep 2026: Baosteel 300-grade (35W300) 5,850 CNY/t VAT-incl.; /1.13/1000 = 5.177. Shougang 300-grade 5,530 (4.894); Wuhan market WISCO 35WW300 5,600 (4.956). Baosteel B35A300 5,830 on 30 Sep 2026 (region not stated). 4 Sep: Baosteel 300 5,950, Shougang 5,730.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 5.177): the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg — original basis: Mysteel Qingdao market 20 Sep 2026: Baosteel 300-grade (35W300) 5,850 CNY/t VAT-incl.; /1.13/1000 = 5.177. Shougang 300-grade 5,530 (4.894); Wuhan market WISCO 35WW300 5,600 (4.956). Baosteel B35A300 5,830 on 30 Sep 2026 (region not stated). 4 Sep: Baosteel 300 5,950, Shougang 5,730.",
    "source": "https://m.mysteel.com/hot/3849.html",
    "date": "2026-09-20",
-   "notes": "Baosteel raised NO base list +200 CNY/t for October (ferrous.anchor.baosteel.*), not yet visible in spot."
+   "notes": "Baosteel raised NO base list +200 CNY/t for October (ferrous.anchor.baosteel.*), not yet visible in spot.",
+   "corrected": {
+    "was": 5.177,
+    "on": "2026-10-30",
+    "why": "the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg",
+    "verdicts": "verdicts/china-india.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.electrical.50W800",

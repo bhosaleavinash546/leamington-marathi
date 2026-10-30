@@ -6,33 +6,69 @@ import type { CountryBook } from '../country-books.js';
 import { AUSTRIA_BOOK } from './at.js';
 import { BELGIUM_BOOK } from './be.js';
 import { BULGARIA_BOOK } from './bg.js';
+import { BRAZIL_BOOK } from './br.js';
+import { CANADA_BOOK } from './ca.js';
 import { CZECH_REPUBLIC_BOOK } from './cz.js';
+import { EGYPT_BOOK } from './eg.js';
 import { SPAIN_BOOK } from './es.js';
 import { FRANCE_BOOK } from './fr.js';
+import { INDONESIA_BOOK } from './id.js';
 import { ITALY_BOOK } from './it.js';
+import { JAPAN_BOOK } from './jp.js';
+import { SOUTH_KOREA_BOOK } from './kr.js';
 import { LITHUANIA_BOOK } from './lt.js';
+import { MOROCCO_BOOK } from './ma.js';
+import { MEXICO_BOOK } from './mx.js';
+import { MALAYSIA_BOOK } from './my.js';
 import { NETHERLANDS_BOOK } from './nl.js';
+import { PHILIPPINES_BOOK } from './ph.js';
 import { PORTUGAL_BOOK } from './pt.js';
 import { ROMANIA_BOOK } from './ro.js';
 import { SERBIA_BOOK } from './rs.js';
 import { SWEDEN_BOOK } from './se.js';
+import { SINGAPORE_BOOK } from './sg.js';
 import { SLOVENIA_BOOK } from './si.js';
 import { SLOVAKIA_BOOK } from './sk.js';
+import { THAILAND_BOOK } from './th.js';
+import { TUNISIA_BOOK } from './tn.js';
+import { TURKEY_BOOK } from './tr.js';
+import { TAIWAN_BOOK } from './tw.js';
+import { UNITED_STATES_BOOK } from './us.js';
+import { VIETNAM_BOOK } from './vn.js';
+import { SOUTH_AFRICA_BOOK } from './za.js';
 
 export const WORLD_BOOKS: Record<string, CountryBook> = {
   AT: AUSTRIA_BOOK,
   BE: BELGIUM_BOOK,
   BG: BULGARIA_BOOK,
+  BR: BRAZIL_BOOK,
+  CA: CANADA_BOOK,
   CZ: CZECH_REPUBLIC_BOOK,
+  EG: EGYPT_BOOK,
   ES: SPAIN_BOOK,
   FR: FRANCE_BOOK,
+  ID: INDONESIA_BOOK,
   IT: ITALY_BOOK,
+  JP: JAPAN_BOOK,
+  KR: SOUTH_KOREA_BOOK,
   LT: LITHUANIA_BOOK,
+  MA: MOROCCO_BOOK,
+  MX: MEXICO_BOOK,
+  MY: MALAYSIA_BOOK,
   NL: NETHERLANDS_BOOK,
+  PH: PHILIPPINES_BOOK,
   PT: PORTUGAL_BOOK,
   RO: ROMANIA_BOOK,
   RS: SERBIA_BOOK,
   SE: SWEDEN_BOOK,
+  SG: SINGAPORE_BOOK,
   SI: SLOVENIA_BOOK,
   SK: SLOVAKIA_BOOK,
+  TH: THAILAND_BOOK,
+  TN: TUNISIA_BOOK,
+  TR: TURKEY_BOOK,
+  TW: TAIWAN_BOOK,
+  US: UNITED_STATES_BOOK,
+  VN: VIETNAM_BOOK,
+  ZA: SOUTH_AFRICA_BOOK,
 };

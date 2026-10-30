@@ -13,21 +13,35 @@
   },
   {
    "key": "ferrous.anchor.hrc.poland_distributor_St3S",
-   "value": 3.427,
+   "value": 3.559,
    "unit": "PLN/kg",
-   "basis": "PUDS (Polska Unia Dystrybutorow Stali) steel price index, week 39/2026: hot-rolled sheet St3S 3,348-3,506 PLN/t net; mid 3,427/1000 = 3.427. Survey of wholesale transactions distributor -> end user, loco Warsaw (Central Poland), ex-VAT.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 3.427): the cited PUDS page has been updated: week 43 2026, 3,484–3,633 PLN/t, mid 3,558.5 = 3.559 PLN/kg — original basis: PUDS (Polska Unia Dystrybutorow Stali) steel price index, week 39/2026: hot-rolled sheet St3S 3,348-3,506 PLN/t net; mid 3,427/1000 = 3.427. Survey of wholesale transactions distributor -> end user, loco Warsaw (Central Poland), ex-VAT.",
    "source": "https://www.wnp.pl/rynki/gielda-i-notowania/indeks-cen-stali-puds/",
    "date": "2026-09-28",
-   "notes": "Survey (trade association index). Same index wk 39: HEB 200 3,544-3,615, rebar fi12 2,716-2,835 PLN/t. PUDS states the index is a trend indicator, not a market price. Includes distributor margin and cut sheet, so above mill coil."
+   "notes": "Survey (trade association index). Same index wk 39: HEB 200 3,544-3,615, rebar fi12 2,716-2,835 PLN/t. PUDS states the index is a trend indicator, not a market price. Includes distributor margin and cut sheet, so above mill coil.",
+   "corrected": {
+    "was": 3.427,
+    "on": "2026-10-30",
+    "why": "the cited PUDS page has been updated: week 43 2026, 3,484–3,633 PLN/t, mid 3,558.5 = 3.559 PLN/kg",
+    "verdicts": "verdicts/poland.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.anchor.crc",
-   "value": 3.784,
+   "value": 3.74,
    "unit": "PLN/kg",
-   "basis": "Fastmarkets weekly CRC domestic exw Northern Europe EUR 850-880/t (13 Sep 2026, as relayed by Tacto); mid 865/1000 x 4.374 = 3.784. Earlier: 825-830 (13 Aug 2026), 825-840 (5 Aug 2026), Eurometal.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 3.784): the cited page has been updated (26 Oct 2026): NW Europe CRC €855/t = 3.74 PLN/kg — original basis: Fastmarkets weekly CRC domestic exw Northern Europe EUR 850-880/t (13 Sep 2026, as relayed by Tacto); mid 865/1000 x 4.374 = 3.784. Earlier: 825-830 (13 Aug 2026), 825-840 (5 Aug 2026), Eurometal.",
    "source": "https://www.tacto.ai/en/commodities/steel-price",
    "date": "2026-09-13",
-   "notes": "Secondary relay of a Fastmarkets assessment (medium confidence). Commercial CR (DC01 class), ex-works, freight not added. Polish distributor DC01 (PUDS wk 16/2026, April) 3,794-4,024 PLN/t net - https://blog.ongeo.pl/ceny-stali-2026 - stale, cross-check only. ArcelorMittal CR new-contract offer reported at EUR 880/t (gmk.center, date inconsistent)."
+   "notes": "Secondary relay of a Fastmarkets assessment (medium confidence). Commercial CR (DC01 class), ex-works, freight not added. Polish distributor DC01 (PUDS wk 16/2026, April) 3,794-4,024 PLN/t net - https://blog.ongeo.pl/ceny-stali-2026 - stale, cross-check only. ArcelorMittal CR new-contract offer reported at EUR 880/t (gmk.center, date inconsistent).",
+   "corrected": {
+    "was": 3.784,
+    "on": "2026-10-30",
+    "why": "the cited page has been updated (26 Oct 2026): NW Europe CRC €855/t = 3.74 PLN/kg",
+    "verdicts": "verdicts/poland.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.anchor.hdg",
@@ -112,7 +126,7 @@
   },
   {
    "key": "ferrous.stainless.alloy_surcharge_1.4301_oct2026",
-   "value": 9.570,
+   "value": 9.57,
    "unit": "PLN/kg",
    "basis": "Alloy surcharge 1.4301, October 2026: EUR 2,188/t (legierungszuschlag.info, last update 1 Oct 2026); 2,188/1000 x 4.374 = 9.570. Surcharge only, not a price.",
    "source": "https://legierungszuschlag.info/en/",
@@ -130,12 +144,19 @@
   },
   {
    "key": "ferrous.stainless.430_CR",
-   "value": 6.773,
+   "value": 7.211,
    "unit": "PLN/kg",
-   "basis": "DERIVED (no 430 transaction price found): Oct 2026 1.4016 alloy surcharge EUR 985/t (legierungszuschlag.info) + effective base taken equal to the 304 CR effective base EUR 563.5/t (2,770 - Sep surcharge mid 2,206.5) = EUR 1,548.5/t; x 4.374/1000 = 6.773.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 6.773): October 2026 1.4016 (430) surcharge is €1,085/t on the page (985 is the 1.4034 row): (1,085 + 563.5) × 4.374 = 7.211 PLN/kg — original basis: DERIVED (no 430 transaction price found): Oct 2026 1.4016 alloy surcharge EUR 985/t (legierungszuschlag.info) + effective base taken equal to the 304 CR effective base EUR 563.5/t (2,770 - Sep surcharge mid 2,206.5) = EUR 1,548.5/t; x 4.374/1000 = 6.773.",
    "source": "https://legierungszuschlag.info/en/",
    "date": "2026-10-01",
-   "notes": "ENGINEERING ASSUMPTION: ferritic base = austenitic effective base (ferritic bases are often slightly higher, so this is a floor). Outokumpu 430 surcharge Apr 2026 EUR 1,059/t (bigmint) - https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-surcharges-for-apr26-36145"
+   "notes": "ENGINEERING ASSUMPTION: ferritic base = austenitic effective base (ferritic bases are often slightly higher, so this is a floor). Outokumpu 430 surcharge Apr 2026 EUR 1,059/t (bigmint) - https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-surcharges-for-apr26-36145",
+   "corrected": {
+    "was": 6.773,
+    "on": "2026-10-30",
+    "why": "October 2026 1.4016 (430) surcharge is €1,085/t on the page (985 is the 1.4034 row): (1,085 + 563.5) × 4.374 = 7.211 PLN/kg",
+    "verdicts": "verdicts/poland.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.stainless.304_bar",
@@ -157,12 +178,19 @@
   },
   {
    "key": "ferrous.foundry.steel_scrap_heavy",
-   "value": 1.204,
+   "value": 1.232,
    "unit": "PLN/kg",
-   "basis": "German E3 heavy scrap (>6 mm) ex-works USD 327/t in July 2026 (-USD 29 m/m, GMK Center citing Kallanish); August 2026 German prices -EUR 10-15/t (GMK). 327 x 3.849 = 1,258.6 PLN/t - 12.5 x 4.374 = 54.7 -> 1,203.9 PLN/t = 1.204 PLN/kg (Aug 2026 estimate).",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 1.204): German E3 heavy scrap August 2026 is US$320/t ex-works on the cited page (US$327 was the US HMS figure) = 1.232 PLN/kg — original basis: German E3 heavy scrap (>6 mm) ex-works USD 327/t in July 2026 (-USD 29 m/m, GMK Center citing Kallanish); August 2026 German prices -EUR 10-15/t (GMK). 327 x 3.849 = 1,258.6 PLN/t - 12.5 x 4.374 = 54.7 -> 1,203.9 PLN/t = 1.204 PLN/kg (Aug 2026 estimate).",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
    "date": "2026-08 (published 2026-09-16)",
-   "notes": "Central-EU mill-grade benchmark (Poland's EAF mills compete for the same scrap); freight to the foundry not added; foundry-grade clean scrap (E2/E8 new) costs more - April 2026: E3 EUR 295/t, E2/8 EUR 305/t (GMK/Kallanish). Polish yard (buy-side) cross-checks: zlom.info.pl week 28/2026 W5 1,010, W7 990, W2 960 PLN/t (https://www.zlom.info.pl/cena-zlomu/srednie-ceny-zlomu/5282/ceny-zlomu-na-tydzien-numer-28-2026-r.html); OLMET 19 Aug 2026 charge grades 1,030-1,180 PLN/t (makra-met.com.pl). No Sep/Oct 2026 Polish or German mill price found."
+   "notes": "Central-EU mill-grade benchmark (Poland's EAF mills compete for the same scrap); freight to the foundry not added; foundry-grade clean scrap (E2/E8 new) costs more - April 2026: E3 EUR 295/t, E2/8 EUR 305/t (GMK/Kallanish). Polish yard (buy-side) cross-checks: zlom.info.pl week 28/2026 W5 1,010, W7 990, W2 960 PLN/t (https://www.zlom.info.pl/cena-zlomu/srednie-ceny-zlomu/5282/ceny-zlomu-na-tydzien-numer-28-2026-r.html); OLMET 19 Aug 2026 charge grades 1,030-1,180 PLN/t (makra-met.com.pl). No Sep/Oct 2026 Polish or German mill price found.",
+   "corrected": {
+    "was": 1.204,
+    "on": "2026-10-30",
+    "why": "German E3 heavy scrap August 2026 is US$320/t ex-works on the cited page (US$327 was the US HMS figure) = 1.232 PLN/kg",
+    "verdicts": "verdicts/poland.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.foundry.pig_iron",
@@ -211,30 +239,51 @@
   },
   {
    "key": "ferrous.charge.GJS-500-7",
-   "value": 1.73,
+   "value": 1.74,
    "unit": "PLN/kg",
-   "basis": "ENGINEERING ASSUMPTION mix (per kg charged, as China file): 45% pig iron (1.859) + 30% steel scrap (1.204) + 25% returns valued at the charge's own cost -> metallics = (0.45x1.859 + 0.30x1.204)/0.75 = 1.597; + FeSiMg 1.3% x 5.511 (FeSi75 PROXY) = 0.072; + inoculant 0.4% x 5.511 = 0.022; / 0.98 melt & treatment loss = 1.725 PLN/kg.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 1.73): the same mix on the corrected scrap: (0.45 × 1.859 + 0.30 × 1.232) / 0.75 = 1.608 + 0.072 + 0.022 = 1.702 / 0.98 = 1.74 PLN/kg — original basis: ENGINEERING ASSUMPTION mix (per kg charged, as China file): 45% pig iron (1.859) + 30% steel scrap (1.204) + 25% returns valued at the charge's own cost -> metallics = (0.45x1.859 + 0.30x1.204)/0.75 = 1.597; + FeSiMg 1.3% x 5.511 (FeSi75 PROXY) = 0.072; + inoculant 0.4% x 5.511 = 0.022; / 0.98 melt & treatment loss = 1.725 PLN/kg.",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
    "date": "2026-08",
-   "notes": "Floor: pig is merchant not nodular grade, FeSiMg priced at FeSi, excludes carburiser, Cu/Sn pearlite additions, CBAM on pig, freight and the clean-scrap premium."
+   "notes": "Floor: pig is merchant not nodular grade, FeSiMg priced at FeSi, excludes carburiser, Cu/Sn pearlite additions, CBAM on pig, freight and the clean-scrap premium.",
+   "corrected": {
+    "was": 1.73,
+    "on": "2026-10-30",
+    "why": "the same mix on the corrected scrap: (0.45 × 1.859 + 0.30 × 1.232) / 0.75 = 1.608 + 0.072 + 0.022 = 1.702 / 0.98 = 1.74 PLN/kg",
+    "verdicts": "verdicts/poland.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.charge.GJL-250",
-   "value": 1.52,
+   "value": 1.543,
    "unit": "PLN/kg",
-   "basis": "ENGINEERING ASSUMPTION mix (induction grey iron, as China file): 25% pig (1.859) + 40% steel scrap (1.204) + 35% returns at charge cost -> (0.25x1.859 + 0.40x1.204)/0.65 = 1.456; + FeSi75 0.7% (Si trim + inoculant) x 5.511 = 0.039; / 0.98 = 1.525 PLN/kg.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 1.52): the same charge mix on the corrected scrap (verifier recompute) = 1.543 PLN/kg — original basis: ENGINEERING ASSUMPTION mix (induction grey iron, as China file): 25% pig (1.859) + 40% steel scrap (1.204) + 35% returns at charge cost -> (0.25x1.859 + 0.40x1.204)/0.65 = 1.456; + FeSi75 0.7% (Si trim + inoculant) x 5.511 = 0.039; / 0.98 = 1.525 PLN/kg.",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
    "date": "2026-08",
-   "notes": "Alternative with Polish bought cast-iron scrap: 20% pig + 30% steel scrap + 25% cast-iron scrap at 0.90 (yard floor) + 25% returns -> (0.372+0.361+0.225)/0.75 = 1.277 + 0.039 = 1.316 / 0.98 = 1.343 PLN/kg. Excludes carburiser and freight."
+   "notes": "Alternative with Polish bought cast-iron scrap: 20% pig + 30% steel scrap + 25% cast-iron scrap at 0.90 (yard floor) + 25% returns -> (0.372+0.361+0.225)/0.75 = 1.277 + 0.039 = 1.316 / 0.98 = 1.343 PLN/kg. Excludes carburiser and freight.",
+   "corrected": {
+    "was": 1.52,
+    "on": "2026-10-30",
+    "why": "the same charge mix on the corrected scrap (verifier recompute) = 1.543 PLN/kg",
+    "verdicts": "verdicts/poland.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.charge.GS-C25",
-   "value": 1.28,
+   "value": 1.312,
    "unit": "PLN/kg",
-   "basis": "ENGINEERING ASSUMPTION: 70% steel scrap (1.204) + 30% returns at charge cost -> 1.204; + FeSi75 0.5% x 5.511 = 0.028; / 0.96 melt loss = 1.283 PLN/kg.",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 1.28): (1.232 + 0.005 × 5.511) / 0.96 = 1.312 PLN/kg on the corrected scrap — original basis: ENGINEERING ASSUMPTION: 70% steel scrap (1.204) + 30% returns at charge cost -> 1.204; + FeSi75 0.5% x 5.511 = 0.028; / 0.96 melt loss = 1.283 PLN/kg.",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
    "date": "2026-08",
-   "notes": "Floor: excludes FeMn, Al, clean-scrap premium and freight. Also a base for G20Mn5 / A216 WCB."
+   "notes": "Floor: excludes FeMn, Al, clean-scrap premium and freight. Also a base for G20Mn5 / A216 WCB.",
+   "corrected": {
+    "was": 1.28,
+    "on": "2026-10-30",
+    "why": "(1.232 + 0.005 × 5.511) / 0.96 = 1.312 PLN/kg on the corrected scrap",
+    "verdicts": "verdicts/poland.json"
+   },
+   "verify": false
   },
   {
    "key": "ferrous.charge.CF8",

@@ -1,0 +1,1367 @@
+{
+ "asOf": "2026-10-30",
+ "label": "United States rate book — world round: national / ILO earnings + statutory on-costs, regulator tariffs, regional material markets, 3 × 8 h",
+ "region": "US",
+ "currency": "USD",
+ "currencySymbol": "$",
+ "dir": "scripts/rate-refresh/world-2026-10/books/us",
+ "snapshot": "scripts/rate-refresh/world-2026-10/books/us/current-book.json",
+ "bookFile": "src/engine/country-books/us.ts",
+ "bookConst": "UNITED_STATES_BOOK",
+ "writeFx": true,
+ "fxPerGbp": 1.3317,
+ "fxBasis": "ECB euro reference rates 2026-10-29: €1 = 1.113 USD, €1 = £0.83578 → £1 = 1.3317 USD",
+ "labour": {
+  "categories": {
+   "skilled": {
+    "localPerHr": 43.68,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "skilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 28.24 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 43.68/h"
+   },
+   "semiskilled": {
+    "localPerHr": 32.98,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h"
+   },
+   "foundry": {
+    "localPerHr": 35.78,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "foundry earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 23.13 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 35.78/h"
+   },
+   "electronics": {
+    "localPerHr": 34.09,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "electronics earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 22.04 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 34.09/h"
+   },
+   "inspector": {
+    "localPerHr": 36.12,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "inspector earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 23.35 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 36.12/h"
+   },
+   "technician": {
+    "localPerHr": 49.17,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "technician earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 31.79 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 49.17/h"
+   },
+   "supervisor": {
+    "localPerHr": 55.36,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "supervisor earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 35.79 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 55.36/h"
+   },
+   "engineer": {
+    "localPerHr": 77.41,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "engineer earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 50.05 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 77.41/h"
+   }
+  },
+  "grades": {
+   "forge": {
+    "localPerHr": 43.68,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "paid as skilled: skilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 28.24 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 43.68/h"
+   },
+   "furnace": {
+    "localPerHr": 32.98,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h"
+   },
+   "blow": {
+    "localPerHr": 32.98,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h"
+   },
+   "roto": {
+    "localPerHr": 32.98,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h"
+   },
+   "thermoform": {
+    "localPerHr": 32.98,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h"
+   },
+   "trim-router": {
+    "localPerHr": 32.98,
+    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
+    "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h"
+   }
+  },
+  "loadingIncluded": "Fully-loaded hourly cost INCLUDES: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked)",
+  "loadingNotIncluded": "NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+  "short": "national / ILO occupation earnings + statutory employer contributions ÷ hours worked"
+ },
+ "energy": {
+  "electricityLocalPerKwh": 0.0909,
+  "gasLocalPerKwh": 0.01721,
+  "basis": "Electricity 0.0909 USD/kWh: EIA average revenue per kWh, industrial sector, U.S. total, year-to-date Jan-Aug 2026 = 9.09 c/kWh (Aug 2025 YTD 8.50; August 2026 month 9.64) (2026-01..2026-08 (preliminary)). Gas 0.01721 USD/kWh: EIA industrial natural gas price 2025 annual average $5.23 per thousand cubic feet / 1.037 MMBtu per Mcf (EIA 2025 heat content, GCV) = $5.043/MMBtu / 293.071 kWh per MMBtu = $0.01721/kWh (2025 annual)",
+  "sources": [
+   {
+    "research": "energy.electricity",
+    "source": "https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_b",
+    "date": "2026-01..2026-08 (preliminary)"
+   },
+   {
+    "research": "energy.gas",
+    "source": "https://www.eia.gov/dnav/ng/ng_pri_sum_dcu_nus_a.htm ; heat content https://www.eia.gov/tools/faqs/faq.php?id=45&t=8",
+    "date": "2025 annual"
+   }
+  ]
+ },
+ "machines": {
+  "hoursPerYear": 6000,
+  "hoursBasis": "3 × 8 h, Monday–Friday, United States's 2026 working calendar: 6000 h (250 days × 24 h; 11 weekday national public holidays removed — https://date.nager.at/api/v3/PublicHolidays/2026/US)",
+  "shiftDepreciationFactor": 1.0,
+  "shiftBasis": "United States straight-line tax depreciation — no shift uplift on capital",
+  "lifeYears": 7.0,
+  "financeRate": 0.07,
+  "financeBasis": "7.00% on every day of the latest H.15 week; DPRIME 7.00% since 17 Sep 2026 (6.75% before); Sep 2026 monthly average MPRIME 6.87% (2026-10-27)",
+  "ukFinanceRate": 0.04,
+  "maintenancePctOfCapex": 0.035,
+  "maintenanceBasis": "the library's own line build-up rule (3.5% of capex); no United States norm found",
+  "rentLocalPerM2Month": 7.05,
+  "rentBasis": "C&W U.S. Industrial MarketBeat Q3 2026, asking-rent table: Detroit, MI manufacturing (MFG) asking rent $7.86/sf/yr NNN (overall $7.40, W/D $6.48); 7.86 × 10.7639 sf/m² ÷ 12 = 7.05 USD/m²/month. (AVERAGE manufacturing-space asking rent (NNN), Detroit metro — automotive-supplier cluster, 2026-Q3 (preliminary))",
+  "ukRentGbpPerM2Yr": 110,
+  "capitalHeldFactor": 1.0,
+  "groups": [
+   {
+    "id": "cnc-vmc-us",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
+    "refId": "mach-haas-vf2",
+    "refCapexLocal": 70995.0,
+    "basis": "Haas VF-2 US list $70,995 (2026; machine only — options, tooling and installation not included)",
+    "source": "https://machinetoolindex.com/machines/haas-vf-2",
+    "confidence": "Medium"
+   },
+   {
+    "id": "cnc-5axis-us",
+    "match": "^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$",
+    "refId": "mach-haas-umc500",
+    "refCapexLocal": 119995.0,
+    "basis": "Haas UMC-500 US list \"from $119,995\" (machine only)",
+    "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+    "confidence": "Low"
+   }
+  ],
+  "notRebuiltBasis": "capex not found for United States: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under United States's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at United States wages)"
+ },
+ "materialFamilies": [
+  {
+   "family": "CR coil (DC01 / DC04)",
+   "anchorLocalPerKg": 1.675,
+   "anchorBasis": "CR coil (DC01 / DC04) — US's market: SteelBenchmarker #493 USA cold-rolled coil $1,675/t ($1,520/net ton), FOB mill, East of the Mississippi. = 1675 USD/t (2026-10-28) = $1.6750/kg",
+   "sources": [
+    {
+     "research": "mat.crc",
+     "source": "http://steelbenchmarker.com/history.pdf",
+     "date": "2026-10-28"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "CR automotive grades",
+   "anchorLocalPerKg": 1.675,
+   "anchorBasis": "CR automotive grades — US's market: SteelBenchmarker #493 USA cold-rolled coil $1,675/t ($1,520/net ton), FOB mill, East of the Mississippi. = 1675 USD/t (2026-10-28) = $1.6750/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.crc",
+     "source": "http://steelbenchmarker.com/history.pdf",
+     "date": "2026-10-28"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR structural",
+   "anchorLocalPerKg": 1.357,
+   "anchorBasis": "HR structural — US's market: SteelBenchmarker #493 USA hot-rolled band $1,357/t ($1,231/net ton), FOB mill, region East of the Mississippi; up $47/t from $1,310 two weeks earlier. = 1357 USD/t (2026-10-28) = $1.3570/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.hrc",
+     "source": "http://steelbenchmarker.com/history.pdf",
+     "date": "2026-10-28"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.77,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-s355mc",
+    "mat-s420mc"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Coated sheet",
+   "anchorLocalPerKg": 1.6513,
+   "anchorBasis": "Coated sheet — US's market: Phoenix Steel Service 'Steel base prices - Midwest' GALV $1,498/st = $1,651.26/t (US$ per short ton, updated 15 Oct 2026; weekly history 9 Sep 2026: $1,446/st). = 1498 USD/short ton (2026-10-15) = $1.6513/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.hdg",
+     "source": "https://phoenixsteelservice.com/usa-steel-base-prices/",
+     "date": "2026-10-15"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR pickled & oiled",
+   "anchorLocalPerKg": 0.9294,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): HRC €745/t + a service-centre pickling extra ~€90/t (undated) = €0.835/kg — DERIVED — at €1 = 1.113 USD (ECB 2026-10-29): $0.9294/kg",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrpo",
+     "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+     "date": "undated extra; HRC 2026-10-06"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hrpo"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "409L / 441 ferritic sheet",
+   "anchorLocalPerKg": 1.6495,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 1.113 USD (ECB 2026-10-29): $1.6495/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.409L_CR",
+     "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429",
+     "date": "2026-07-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.85,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304 sheet",
+   "anchorLocalPerKg": 3.083,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): 304 CR 2B €2,770/t delivered N. Europe incl. alloy surcharge (Fastmarkets, 7 Sep 2026) = €2.77/kg; the October 1.4301 surcharge is €2,188/t — at €1 = 1.113 USD (ECB 2026-10-29): $3.083/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    },
+    {
+     "research": "ferrous.stainless.alloy_surcharge_1.4301_oct2026",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "301 spring strip",
+   "anchorLocalPerKg": 3.083,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): 304 sheet €2.77 × the book's premium of 301 over 304 sheet — at €1 = 1.113 USD (ECB 2026-10-29): $3.083/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.49,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss301-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "316L sheet",
+   "anchorLocalPerKg": 4.7024,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor) — at €1 = 1.113 USD (ECB 2026-10-29): $4.7024/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.316L_CR",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet",
+    "mat-ss316l"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "430 ferritic sheet",
+   "anchorLocalPerKg": 1.8348,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found) — at €1 = 1.113 USD (ECB 2026-10-29): $1.8348/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.430_CR",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorLocalPerKg": 0.4419,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 1.113 USD (ECB 2026-10-29): $0.4419/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJS-500-7",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    },
+    {
+     "research": "ferrous.foundry.FeSi75",
+     "source": "https://api.argusmedia.com/articles/2840817",
+     "date": "2026-06-16"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Grey / malleable iron (charge)",
+   "anchorLocalPerKg": 0.3924,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 1.113 USD (ECB 2026-10-29): $0.3924/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJL-250",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorLocalPerKg": 0.3969,
+   "anchorBasis": "steel-foundry charge on US heavy scrap $0.3740/kg (2026-10-28) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = $0.3969/kg (the German book's arithmetic; mix an engineering assumption)",
+   "sources": [
+    {
+     "research": "mat.scrap_hms",
+     "source": "http://steelbenchmarker.com/history.pdf",
+     "date": "2026-10-28"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast stainless (charge)",
+   "anchorLocalPerKg": 1.4335,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 1.113 USD (ECB 2026-10-29): $1.4335/kg",
+   "sources": [
+    {
+     "research": "ferrous.charge.CF8",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    },
+    {
+     "research": "ferrous.stainless.304_scrap",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorLocalPerKg": 3.4572,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397 — at €1 = 1.113 USD (ECB 2026-10-29): $3.4572/kg",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorLocalPerKg": 5.7131,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge — at €1 = 1.113 USD (ECB 2026-10-29): $5.7131/kg",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "High-Cr white iron (charge)",
+   "anchorLocalPerKg": 1.0768,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): 0.23 × Cr €3.03 + 0.77 × grey charge €0.3526 — at €1 = 1.113 USD (ECB 2026-10-29): $1.0768/kg",
+   "sources": [
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary cast aluminium (ingot)",
+   "anchorLocalPerKg": 2.7602,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12 — at €1 = 1.113 USD (ECB 2026-10-29): $2.7602/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-a413",
+    "mat-a319",
+    "mat-lm4",
+    "mat-en-ac-46200"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary ADC12",
+   "anchorLocalPerKg": 2.7602,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): DIN226 €2.48 (Jan 2026, stale) — at €1 = 1.113 USD (ECB 2026-10-29): $2.7602/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Primary-based cast aluminium",
+   "anchorLocalPerKg": 3.9734,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 1.113 USD (ECB 2026-10-29): $3.9734/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.alsi7mg",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29 / 2026-10-09"
+    },
+    {
+     "research": "nonferrous.al.a356_premium",
+     "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.98,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-lm25",
+    "mat-a365",
+    "mat-alsi10mg",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm6",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium forging stock (floor)",
+   "anchorLocalPerKg": 4.0736,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.113 USD (ECB 2026-10-29): $4.0736/kg",
+   "sources": [
+    {
+     "research": "nonferrous.al.billet6063",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+     "date": "2026-08-28 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-al6061-forge",
+    "mat-al6082-forge",
+    "mat-al2014-forge",
+    "mat-al7075-forge",
+    "mat-al2618-forge",
+    "mat-al7050-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium sheet and plate (floor)",
+   "anchorLocalPerKg": 5.7478,
+   "anchorBasis": "Aluminium sheet and plate (floor) — US's market: DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = $5.7478/kg",
+   "sources": [
+    {
+     "research": "mat.al_sheet_asp",
+     "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+     "date": "2025-04-01 to 2026-03-31"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aa5182",
+    "mat-aa5052",
+    "mat-aa5083",
+    "mat-aa6082-sheet",
+    "mat-aa5754-sheet",
+    "mat-aa6061-sheet",
+    "mat-aa6063-sheet",
+    "mat-aa3003-sheet",
+    "mat-al-busbar",
+    "mat-aa6016-t4",
+    "mat-aa6111-t4",
+    "mat-aa7075-t6",
+    "mat-aa1050-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorLocalPerKg": 14.6916,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 1.113 USD (ECB 2026-10-29): $14.6916/kg",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "nonferrous.cu.cathode_premium",
+     "source": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026 contract year (announced 2025-10-07)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper",
+    "mat-cu-hairpin"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Free-machining / forging brass rod (floor)",
+   "anchorLocalPerKg": 12.4322,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 1.113 USD (ECB 2026-10-29): $12.4322/kg",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW614N_rod",
+     "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-brass-cz121",
+    "mat-brass-cz122-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "70/30 and 63/37 brass sheet (floor)",
+   "anchorLocalPerKg": 12.8663,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): CuZn37 metal basis €11.56/kg (5 Oct 2026) — metal value before rolling — at €1 = 1.113 USD (ECB 2026-10-29): $12.8663/kg",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW508L_sheet",
+     "source": "https://www.messingwerk.de/de/rohstoffpreise.html",
+     "date": "2026-10-05"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cz108-brass"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Phosphor / tin bronze (floor)",
+   "anchorLocalPerKg": 18.5155,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 1.113 USD (ECB 2026-10-29): $18.5155/kg",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "nonferrous.sn.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-bronze-pb1",
+    "mat-bronze-c905",
+    "mat-cusn12-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 3 (floor)",
+   "anchorLocalPerKg": 4.3204,
+   "anchorBasis": "metal content: LME zinc $3980/t + US SHG premium $392/t, LME Al, Cu (29. October 2026) = $4.3204/kg",
+   "sources": [
+    {
+     "research": "official.lme",
+     "source": "https://www.westmetall.com/en/markdaten.php",
+     "date": "29. October 2026"
+    },
+    {
+     "research": "mat.zn_premium",
+     "source": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/files/mis-202606-zinc.pdf",
+     "date": "2026-06"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak3"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 5 (floor)",
+   "anchorLocalPerKg": 4.4222,
+   "anchorBasis": "metal content: LME zinc $3980/t + US SHG premium $392/t, LME Al, Cu (29. October 2026) = $4.4222/kg",
+   "sources": [
+    {
+     "research": "official.lme",
+     "source": "https://www.westmetall.com/en/markdaten.php",
+     "date": "29. October 2026"
+    },
+    {
+     "research": "mat.zn_premium",
+     "source": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/files/mis-202606-zinc.pdf",
+     "date": "2026-06"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak5"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PP family",
+   "anchorLocalPerKg": 1.38,
+   "anchorBasis": "PP family — US's market: businessanalytiq PP price index, North America, September 2026: US$1.38/kg (6.2% up m/m) = 62.6 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis no = 1.38 USD/kg (2026-09) = $1.3800/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pp",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polypropylene-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.99,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-pp-homo",
+    "mat-pp",
+    "mat-pp-impact",
+    "mat-pp-bm",
+    "mat-pp-ext-sheet",
+    "mat-ppr-pipe",
+    "mat-pp-roto",
+    "mat-pp-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PE family",
+   "anchorLocalPerKg": 1.26,
+   "anchorBasis": "PE family — US's market: businessanalytiq HDPE price index, North America, September 2026: US$1.26/kg (4.1% up m/m) = 57.2 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis  = 1.26 USD/kg (2026-09) = $1.2600/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.hdpe",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hdpe",
+    "mat-hdpe-bm",
+    "mat-hdpe-fuel-coex",
+    "mat-pe100-pipe",
+    "mat-pe80-pipe",
+    "mat-hdpe-profile",
+    "mat-hdpe-roto",
+    "mat-xlpe-roto",
+    "mat-fr-pe-roto",
+    "mat-foam-pe-roto",
+    "mat-cond-pe-roto",
+    "mat-hdpe-tf",
+    "mat-pex-pipe"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LDPE family",
+   "anchorLocalPerKg": 1.67,
+   "anchorBasis": "LDPE family — US's market: businessanalytiq LDPE price index, North America, September 2026: US$1.67/kg (3.7% up m/m) = 75.8 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis  = 1.67 USD/kg (2026-09) = $1.6700/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.ldpe",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/ldpe-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.09,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ldpe",
+    "mat-ldpe-bm",
+    "mat-ldpe-tube",
+    "mat-ldpe-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LLDPE family",
+   "anchorLocalPerKg": 1.43,
+   "anchorBasis": "LLDPE family — US's market: businessanalytiq LLDPE price index, North America, September 2026: US$1.43/kg (3.6% up m/m) = 64.9 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis = 1.43 USD/kg (2026-09) = $1.4300/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.lldpe",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/lldpe-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lldpe",
+    "mat-lldpe-bm",
+    "mat-lldpe-roto"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PVC family",
+   "anchorLocalPerKg": 0.9,
+   "anchorBasis": "PVC family — US's market: businessanalytiq PVC price index, North America, September 2026: US$0.9/kg (2.3% up m/m) = 40.8 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis no = 0.9 USD/kg (2026-09) = $0.9000/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pvc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pvc-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.76,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-upvc",
+    "mat-fpvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe",
+    "mat-pvc-cable",
+    "mat-upvc-window-profile",
+    "mat-pvcp-profile",
+    "mat-pvc-foam",
+    "mat-rpvc-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ABS family",
+   "anchorLocalPerKg": 2.13,
+   "anchorBasis": "ABS family — US's market: businessanalytiq ABS price index, North America, September 2026: US$2.13/kg (4.4% up m/m) = 96.6 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis n = 2.13 USD/kg (2026-09) = $2.1300/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.abs",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/abs-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.62,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-abs",
+    "mat-abs-ext-sheet",
+    "mat-abs-tf",
+    "mat-abs-fr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "GPPS",
+   "anchorLocalPerKg": 1.7029,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): GPPS €1.53/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over GPPS — at €1 = 1.113 USD (ECB 2026-10-29): $1.7029/kg",
+   "sources": [
+    {
+     "research": "polymer.ps",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.37,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gpps",
+    "mat-gpps-ext"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HIPS",
+   "anchorLocalPerKg": 1.8698,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): HIPS €1.68/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) — the book had HIPS at the GPPS price — at €1 = 1.113 USD (ECB 2026-10-29): $1.8698/kg",
+   "sources": [
+    {
+     "research": "polymer.hips",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hips"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC family",
+   "anchorLocalPerKg": 3.29,
+   "anchorBasis": "PC family — US's market: businessanalytiq PC price index, North America, September 2026: US$3.29/kg (2.2% up m/m) = 149.2 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis n = 3.29 USD/kg (2026-09) = $3.2900/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc",
+    "mat-pc-glazing",
+    "mat-pc-bm",
+    "mat-pc-ext-sheet",
+    "mat-pc-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA6 family",
+   "anchorLocalPerKg": 2.99,
+   "anchorBasis": "PA6 family — US's market: businessanalytiq PA6 price index, North America, September 2026: US$2.99/kg (1.4% up m/m) = 135.6 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis  = 2.99 USD/kg (2026-09) = $2.9900/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pa6",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.68,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-bm",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA66",
+   "anchorLocalPerKg": 3.14,
+   "anchorBasis": "PA66 — US's market: businessanalytiq PA66 price index, North America, September 2026: US$3.14/kg (1.3% up m/m) = 142.4 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis = 3.14 USD/kg (2026-09) = $3.1400/kg",
+   "sources": [
+    {
+     "research": "mat.pa66",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PBT",
+   "anchorLocalPerKg": 2.77,
+   "anchorBasis": "PBT — US's market: businessanalytiq PBT price index, North America, September 2026: US$2.77/kg (2.6% up m/m) = 125.6 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis  = 2.77 USD/kg (2026-09) = $2.7700/kg",
+   "sources": [
+    {
+     "research": "mat.pbt",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pbt"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PET family",
+   "anchorLocalPerKg": 1.67,
+   "anchorBasis": "PET family — US's market: businessanalytiq PET price index, North America, September 2026: US$1.67/kg (4.4% up m/m) = 75.8 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis n = 1.67 USD/kg (2026-09) = $1.6700/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pet",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.21,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pet-bg",
+    "mat-pet-preform",
+    "mat-apet-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PMMA family",
+   "anchorLocalPerKg": 3.41,
+   "anchorBasis": "PMMA family — US's market: businessanalytiq PMMA price index, North America, September 2026: US$3.41/kg (2.1% up m/m) = 154.7 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis = 3.41 USD/kg (2026-09) = $3.4100/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pmma",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.4,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pmma",
+    "mat-pmma-ext-sheet",
+    "mat-pmma-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PEEK family",
+   "anchorLocalPerKg": 88.1719,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin) — at €1 = 1.113 USD (ECB 2026-10-29): $88.1719/kg",
+   "sources": [
+    {
+     "research": "polymer.peek",
+     "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets",
+     "date": "2026-06-30 (9M); H1 to 2026-03-31"
+    }
+   ],
+   "method": "ladder",
+   "base": 76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-peek",
+    "mat-peek-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "POM",
+   "anchorLocalPerKg": 3.16,
+   "anchorBasis": "POM — US's market: businessanalytiq POM price index, North America, September 2026: US$3.16/kg (2.9% up m/m) = 143.3 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis  = 3.16 USD/kg (2026-09) = $3.1600/kg × the book's grade premium over its base",
+   "sources": [
+    {
+     "research": "mat.pom",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pom",
+    "mat-pom-rod"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC/ABS (floor)",
+   "anchorLocalPerKg": 2.6712,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 1.113 USD (ECB 2026-10-29): $2.6712/kg",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    },
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc-abs"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon fabric (floor)",
+   "anchorLocalPerKg": 33.301,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 1.113 USD (ECB 2026-10-29): $33.301/kg",
+   "sources": [
+    {
+     "research": "composite.cf_t700_12k",
+     "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+     "date": "2026-03"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cf-dry-3k"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Natural rubber (raw)",
+   "anchorLocalPerKg": 2.482,
+   "anchorBasis": "no US or regional price found — the European market price at par (traded material, no country factor): TSR20 benchmark €2.23/kg (SGX, 28 Sep 2026, as reported) — FOB Asia, freight to Germany NOT added; for the book's raw NR line; compounds held — at €1 = 1.113 USD (ECB 2026-10-29): $2.482/kg",
+   "sources": [
+    {
+     "research": "rubber.nr",
+     "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html",
+     "date": "2026-09-28"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "engineering bar (C45, 42CrMo4, 38MnVS6, 16MnCr5, 20MnCr5, 100Cr6, 11SMnPb30, 4140 / 4340), forging stock": "No German mill or stockholder BASE price published; only 2026 alloy / scrap surcharges found (Frankstahl Feb 2026, Swiss Steel Steeltec) — held",
+  "stainless bar (304, 316, 303, martensitic, PH, duplex)": "Not found (surcharges only) — held",
+  "electrical steel (NO / GO / CoFe / NiFe / amorphous)": "EU minimum import price for GO only; NO grades not priced — held",
+  "aluminium extrusion / machining bar and plate (6082-T6 bar, 6061 …)": "No German bar or plate price found (the sheet floor is a rolled-products average) — held",
+  "magnesium alloys (AZ91D, AM60 …)": "No European transaction price found — held",
+  "titanium, nickel superalloys, aluminium bronze, gunmetal": "Not found — held",
+  "filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30, PP-TD20, TPE …), TPU, PPS, PEI, LCP, PA12": "No compound market price found (KI compound prices are subscriber-only) — held",
+  "rubber compounds (EPDM / NBR / CR / FKM / silicone …)": "Raw polymers found (EPDM €2.83, NBR €1.93) but a compound is not its polymer — held",
+  "composites (prepreg, fabrics, SMC), paint, foam cores": "Not found — held"
+ },
+ "heldMaterialsAtPar": {
+  "basis": "no United States or regional price this round — the book's European-market price at par, no United States factor"
+ },
+ "shopMultipliersBasis": "Overhead and packaging: the UK basis × United States's held multipliers — not researched this round",
+ "sources": {
+  "finance": "https://www.federalreserve.gov/releases/h15/",
+  "life": "https://taxsummaries.pwc.com/united-states/corporate/deductions; https://www.irs.gov/publications/p946",
+  "rent": "https://assets.cushmanwakefield.com/-/media/cw/marketbeat-pdfs/2026/q3/us-reports/national/q32026usindustrialmarketbeat.pdf?rev=112a2b40c59940c98a21b71509262856"
+ },
+ "noLibraryLabourRows": true
+}

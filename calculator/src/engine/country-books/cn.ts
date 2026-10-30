@@ -50,157 +50,157 @@ export const CHINA_BOOK: CountryBook = {
  },
  "materials": {
   "mat-dc01": {
-   "gbpPerKg": 0.3648,
+   "gbpPerKg": 0.3598,
    "basis": "CR coil (DC01 / DC04): Shanghai 1.0 mm SPCC cold-rolled spot ¥3,239/t ex-VAT (Mysteel, 9 Oct 2026); direct",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09)",
    "confidence": "Medium"
   },
   "mat-dc04": {
-   "gbpPerKg": 0.3648,
+   "gbpPerKg": 0.3598,
    "basis": "CR coil (DC01 / DC04): Shanghai 1.0 mm SPCC cold-rolled spot ¥3,239/t ex-VAT (Mysteel, 9 Oct 2026); direct",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09)",
    "confidence": "Medium"
   },
   "mat-dc05": {
-   "gbpPerKg": 0.3648,
+   "gbpPerKg": 0.3598,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; the anchor grade itself",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dc06": {
-   "gbpPerKg": 0.3691,
+   "gbpPerKg": 0.3641,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.012 (book £0.85 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-if-dx56": {
-   "gbpPerKg": 0.4342,
+   "gbpPerKg": 0.4283,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.190 (book £1 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-if-hs260": {
-   "gbpPerKg": 0.4907,
+   "gbpPerKg": 0.484,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.345 (book £1.13 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-bh260": {
-   "gbpPerKg": 0.4777,
+   "gbpPerKg": 0.4712,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-greensteel-dc01": {
-   "gbpPerKg": 0.4777,
+   "gbpPerKg": 0.4712,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-hsla340": {
-   "gbpPerKg": 0.5167,
+   "gbpPerKg": 0.5097,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.417 (book £1.19 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-hsla420": {
-   "gbpPerKg": 0.5602,
+   "gbpPerKg": 0.5525,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.536 (book £1.29 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-hsla550": {
-   "gbpPerKg": 0.6036,
+   "gbpPerKg": 0.5954,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.655 (book £1.39 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dp600": {
-   "gbpPerKg": 0.5645,
+   "gbpPerKg": 0.5568,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.548 (book £1.3 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dp780": {
-   "gbpPerKg": 0.5949,
+   "gbpPerKg": 0.5868,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.631 (book £1.37 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dp980": {
-   "gbpPerKg": 0.6513,
+   "gbpPerKg": 0.6425,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.786 (book £1.5 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dp1000": {
-   "gbpPerKg": 0.6817,
+   "gbpPerKg": 0.6725,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.869 (book £1.57 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-trip780": {
-   "gbpPerKg": 0.6296,
+   "gbpPerKg": 0.6211,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.726 (book £1.45 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-cp800": {
-   "gbpPerKg": 0.6209,
+   "gbpPerKg": 0.6125,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.702 (book £1.43 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-ms1200": {
-   "gbpPerKg": 0.6948,
+   "gbpPerKg": 0.6853,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-ms1300": {
-   "gbpPerKg": 0.7252,
+   "gbpPerKg": 0.7153,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.988 (book £1.67 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-ms1500": {
-   "gbpPerKg": 0.7686,
+   "gbpPerKg": 0.7581,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.107 (book £1.77 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-qp980": {
-   "gbpPerKg": 0.7512,
+   "gbpPerKg": 0.741,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.060 (book £1.73 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-medmn1180": {
-   "gbpPerKg": 0.7816,
+   "gbpPerKg": 0.771,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.143 (book £1.8 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-22mnb5": {
-   "gbpPerKg": 0.7773,
+   "gbpPerKg": 0.7667,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.131 (book £1.79 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-usibor1500": {
-   "gbpPerKg": 0.8685,
+   "gbpPerKg": 0.8567,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.381 (book £2 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-usibor2000": {
-   "gbpPerKg": 1.0421,
+   "gbpPerKg": 1.028,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.857 (book £2.4 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-c67s-spring": {
-   "gbpPerKg": 0.6948,
+   "gbpPerKg": 0.6853,
    "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
@@ -224,37 +224,37 @@ export const CHINA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-dc01-gi": {
-   "gbpPerKg": 0.3937,
+   "gbpPerKg": 0.3886,
    "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; the anchor grade itself",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-dc03-ga": {
-   "gbpPerKg": 0.4079,
+   "gbpPerKg": 0.4026,
    "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-dc01-ze": {
-   "gbpPerKg": 0.3937,
+   "gbpPerKg": 0.3886,
    "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; the anchor grade itself",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-znni-eg": {
-   "gbpPerKg": 0.4363,
+   "gbpPerKg": 0.4306,
    "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-zm-coated": {
-   "gbpPerKg": 0.4256,
+   "gbpPerKg": 0.4201,
    "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-tinplate-etp": {
-   "gbpPerKg": 0.4788,
+   "gbpPerKg": 0.4727,
    "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
@@ -500,67 +500,67 @@ export const CHINA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-nogo-m270-35a": {
-   "gbpPerKg": 0.583,
+   "gbpPerKg": 0.588,
    "basis": "NO electrical steel 0.35 mm: 35W300 non-oriented ¥4.89–5.18/kg ex-VAT (Sep 2026; upper end used) — for M270-35A / M330-35A; direct",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-m330-35a": {
-   "gbpPerKg": 0.583,
+   "gbpPerKg": 0.588,
    "basis": "NO electrical steel 0.35 mm: 35W300 non-oriented ¥4.89–5.18/kg ex-VAT (Sep 2026; upper end used) — for M270-35A / M330-35A; direct",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-m235-35a": {
-   "gbpPerKg": 0.6668,
+   "gbpPerKg": 0.6724,
    "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.144 (book £1.99 ÷ base £1.74)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no27-27a": {
-   "gbpPerKg": 0.8175,
+   "gbpPerKg": 0.8245,
    "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.402 (book £2.44 ÷ base £1.74)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no25-25a": {
-   "gbpPerKg": 0.9181,
+   "gbpPerKg": 0.9259,
    "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.575 (book £2.74 ÷ base £1.74)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no20-20a": {
-   "gbpPerKg": 1.1526,
+   "gbpPerKg": 1.1624,
    "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.977 (book £3.44 ÷ base £1.74)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no15-15a": {
-   "gbpPerKg": 1.3201,
+   "gbpPerKg": 1.3313,
    "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×2.264 (book £3.94 ÷ base £1.74)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no10-10a": {
-   "gbpPerKg": 1.8562,
+   "gbpPerKg": 1.872,
    "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×3.184 (book £5.54 ÷ base £1.74)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-hsno-rotor-700": {
-   "gbpPerKg": 0.8845,
+   "gbpPerKg": 0.8921,
    "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.517 (book £2.64 ÷ base £1.74)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-hsno-rotor-960": {
-   "gbpPerKg": 1.0856,
+   "gbpPerKg": 1.0948,
    "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.862 (book £3.24 ÷ base £1.74)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-uhsno-1100": {
-   "gbpPerKg": 1.2196,
+   "gbpPerKg": 1.23,
    "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×2.092 (book £3.64 ÷ base £1.74)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
@@ -602,104 +602,104 @@ export const CHINA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-gjs500": {
-   "gbpPerKg": 0.3029,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); the anchor grade itself",
+   "gbpPerKg": 0.3007,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); the anchor grade itself",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs400": {
-   "gbpPerKg": 0.2629,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.36/kg (the book's premium: £0.82 - base £0.86)",
+   "gbpPerKg": 0.2607,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.36/kg (the book's premium: £0.82 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs450-ssf": {
-   "gbpPerKg": 0.2729,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.27/kg (the book's premium: £0.83 - base £0.86)",
+   "gbpPerKg": 0.2707,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.27/kg (the book's premium: £0.83 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs500-14": {
-   "gbpPerKg": 0.2829,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.18/kg (the book's premium: £0.84 - base £0.86)",
+   "gbpPerKg": 0.2807,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.18/kg (the book's premium: £0.84 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs600": {
-   "gbpPerKg": 0.3429,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.36/kg (the book's premium: £0.9 - base £0.86)",
+   "gbpPerKg": 0.3407,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.36/kg (the book's premium: £0.9 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs700": {
-   "gbpPerKg": 0.3929,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.80/kg (the book's premium: £0.95 - base £0.86)",
+   "gbpPerKg": 0.3907,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.80/kg (the book's premium: £0.95 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs350-lt": {
-   "gbpPerKg": 0.3129,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.09/kg (the book's premium: £0.87 - base £0.86)",
+   "gbpPerKg": 0.3107,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.09/kg (the book's premium: £0.87 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-simo": {
-   "gbpPerKg": 0.7929,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥4.35/kg (the book's premium: £1.35 - base £0.86)",
+   "gbpPerKg": 0.7907,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥4.35/kg (the book's premium: £1.35 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-adi": {
-   "gbpPerKg": 1.0229,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥6.39/kg (the book's premium: £1.58 - base £0.86)",
+   "gbpPerKg": 1.0207,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥6.39/kg (the book's premium: £1.58 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjv450": {
-   "gbpPerKg": 0.5629,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥2.31/kg (the book's premium: £1.12 - base £0.86)",
+   "gbpPerKg": 0.5607,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥2.31/kg (the book's premium: £1.12 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjv500": {
-   "gbpPerKg": 0.5929,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.69/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥2.58/kg (the book's premium: £1.15 - base £0.86)",
+   "gbpPerKg": 0.5907,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥2.58/kg (the book's premium: £1.15 - base £0.86)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjl250": {
-   "gbpPerKg": 0.2646,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.35/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; the anchor grade itself",
+   "gbpPerKg": 0.2613,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; the anchor grade itself",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjl150": {
-   "gbpPerKg": 0.2316,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.35/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64)",
+   "gbpPerKg": 0.2286,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjl200": {
-   "gbpPerKg": 0.2481,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.35/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64)",
+   "gbpPerKg": 0.2449,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjl300": {
-   "gbpPerKg": 0.2894,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.35/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64)",
+   "gbpPerKg": 0.2858,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjl350": {
-   "gbpPerKg": 0.306,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.35/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64)",
+   "gbpPerKg": 0.3021,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjmb350": {
-   "gbpPerKg": 0.2729,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.35/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64)",
+   "gbpPerKg": 0.2694,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
@@ -764,20 +764,20 @@ export const CHINA_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-ni-resist-d2": {
-   "gbpPerKg": 2.6919,
-   "basis": "Ni-Resist D-2 (charge): 0.20 × Ni ¥107.65 (Changjiang, 9 Oct) + 0.02 × Cr ¥13.80 (HC FeCr) + 0.78 × ductile charge ¥2.69; direct",
+   "gbpPerKg": 2.6885,
+   "basis": "Ni-Resist D-2 (charge): 0.20 × Ni ¥107.65 (Changjiang, 9 Oct) + 0.02 × Cr ¥13.09 (HC FeCr) + 0.78 × ductile charge ¥2.67; direct",
    "source": "http://news.10jqka.com.cn/20261009/c680512152.shtml (2026-10-09) ; https://m.mysteel.com/zta/gaotangetie/ (2026-09)",
    "confidence": "Low"
   },
   "mat-ni-resist-d5s": {
-   "gbpPerKg": 4.4773,
-   "basis": "Ni-Resist D-5S (charge): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 ¥5.442 + 0.59 × ductile charge; direct",
+   "gbpPerKg": 4.4741,
+   "basis": "Ni-Resist D-5S (charge): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 ¥5.376 + 0.59 × ductile charge; direct",
    "source": "http://news.10jqka.com.cn/20261009/c680512152.shtml (2026-10-09)",
    "confidence": "Low"
   },
   "mat-hicr-white": {
-   "gbpPerKg": 0.5611,
-   "basis": "High-Cr white iron (charge): 0.23 × Cr ¥13.80 + 0.77 × grey charge ¥2.35; direct",
+   "gbpPerKg": 0.5402,
+   "basis": "High-Cr white iron (charge): 0.23 × Cr ¥13.09 + 0.77 × grey charge ¥2.32; direct",
    "source": "https://m.mysteel.com/zta/gaotangetie/ (2026-09)",
    "confidence": "Low"
   },
@@ -944,7 +944,7 @@ export const CHINA_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-cz108-brass": {
-   "gbpPerKg": 8.3716,
+   "gbpPerKg": 8.4809,
    "basis": "70/30 and 63/37 brass sheet: H62 brass rod ¥74,340/t ex-VAT (Ningbo, 29 Sep) × the book's premium of CZ108 sheet — H62 is the nearest priced CuZn37; direct",
    "source": "https://list1.mysteel.com/zhishi/nbtbjgzxxq.html (2026-09-29)",
    "confidence": "Low"
@@ -1142,31 +1142,31 @@ export const CHINA_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-upvc": {
-   "gbpPerKg": 0.4854,
+   "gbpPerKg": 0.5222,
    "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; the anchor grade itself",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
   },
   "mat-fpvc": {
-   "gbpPerKg": 0.7089,
+   "gbpPerKg": 0.7627,
    "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×1.461 (book £1.11 ÷ base £0.76)",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
   },
   "mat-pvc-bm": {
-   "gbpPerKg": 0.5428,
+   "gbpPerKg": 0.584,
    "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×1.118 (book £0.85 ÷ base £0.76)",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
   },
   "mat-upvc-window-profile": {
-   "gbpPerKg": 0.8238,
+   "gbpPerKg": 0.8863,
    "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×1.697 (book £1.29 ÷ base £0.76)",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
   },
   "mat-pvcp-profile": {
-   "gbpPerKg": 0.9835,
+   "gbpPerKg": 1.0581,
    "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×2.026 (book £1.54 ÷ base £0.76)",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
@@ -1315,9 +1315,9 @@ export const CHINA_BOOK: CountryBook = {
   "ukRentGbpPerM2Yr": 110,
   "ukElectricityGbpPerKwh": 0.182,
   "labourRatio": 0.1333,
-  "capitalHeldFactor": 0.55,
+  "capitalHeldFactor": 1,
   "basis": "two 12-h shifts × 11 h worked × 24 days/month × 12 = 6,336 h (the labour model's pattern); PRC straight-line (time-based) depreciation — no shift uplift on held capital; PBoC 5-year LPR 3.5% (20 Sep 2026; 1-year 3.0%) — the book's line build-ups use 4% on half the capex; rent ¥25.47/m²/month (JLL Shanghai logistics rent Q2 2026 ¥31.94/m²/month (a ceiling for a factory) and Dongguan factory rents ¥10–28 (midpoint ¥19; estate-agent article, 2025) — mean; Wuhan / Chongqing averages not found (Chongqing listings ¥4–12 suggest this is high for the inland clusters)); maintenance the library's own line build-up rule (3.5% of capex); no Chinese norm found",
-  "heldBasis": "capex not sourced for China: the book's capital (UK × 0.55) is HELD; the China operating model (2 × 12 h hours, straight-line, LPR finance, rent, tariff, support at China wages) is applied",
+  "heldBasis": "capex not sourced for China: the machine's capital is the book's AT PAR (×1 — no unsourced country discount; the UK × 0.55 factor it replaced had no source), under the China operating model (hours, tax life, finance, rent, tariff, support at China wages)",
   "groups": [
    {
     "id": "fibre-laser-domestic",
@@ -1332,7 +1332,7 @@ export const CHINA_BOOK: CountryBook = {
     "id": "imm-domestic",
     "match": "^imm-\\d+t$",
     "refId": "imm-200t",
-    "refCapexGbp": 34079.95,
+    "refCapexGbp": 24099.1,
     "basis": "Haitian FY2024 Mars series average selling price ¥302,630 ex-VAT (revenue ¥104.71亿 ÷ ~34,600 units; bare machine) — an UPPER bound for a 200 t machine (Mars spans ~60–3,300 t); the other sizes by the book's relative capital",
     "source": "https://finance.sina.com.cn/stock/hkstock/hkzmt/2025-03-20/doc-ineqhwiq0600262.shtml ; https://gmg.9fzt.com/report/HKSE/01882/778171497678.html ; https://www.1n9280.com/ndetail/73802.html",
     "confidence": "Low"

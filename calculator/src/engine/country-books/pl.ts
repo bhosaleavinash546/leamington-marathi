@@ -49,162 +49,6 @@ export const POLAND_BOOK: CountryBook = {
   }
  },
  "materials": {
-  "mat-dc01": {
-   "gbpPerKg": 0.7425,
-   "basis": "CR coil (DC01 / DC04): NW Europe CRC €850–880/t ex-works (13 Sep 2026, as relayed by Tacto) = zł3.78/kg at zł4.374/€; freight to a Polish plant not added; direct",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Medium"
-  },
-  "mat-dc04": {
-   "gbpPerKg": 0.7425,
-   "basis": "CR coil (DC01 / DC04): NW Europe CRC €850–880/t ex-works (13 Sep 2026, as relayed by Tacto) = zł3.78/kg at zł4.374/€; freight to a Polish plant not added; direct",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Medium"
-  },
-  "mat-dc05": {
-   "gbpPerKg": 0.7425,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; the anchor grade itself",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dc06": {
-   "gbpPerKg": 0.7514,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.012 (book £0.85 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-if-dx56": {
-   "gbpPerKg": 0.884,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.190 (book £1 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-if-hs260": {
-   "gbpPerKg": 0.9989,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.345 (book £1.13 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-bh260": {
-   "gbpPerKg": 0.9724,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-greensteel-dc01": {
-   "gbpPerKg": 0.9724,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-hsla340": {
-   "gbpPerKg": 1.0519,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.417 (book £1.19 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-hsla420": {
-   "gbpPerKg": 1.1403,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.536 (book £1.29 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-hsla550": {
-   "gbpPerKg": 1.2287,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.655 (book £1.39 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dp600": {
-   "gbpPerKg": 1.1492,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.548 (book £1.3 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dp780": {
-   "gbpPerKg": 1.2111,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.631 (book £1.37 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dp980": {
-   "gbpPerKg": 1.326,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.786 (book £1.5 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-dp1000": {
-   "gbpPerKg": 1.3878,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.869 (book £1.57 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-trip780": {
-   "gbpPerKg": 1.2818,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.726 (book £1.45 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-cp800": {
-   "gbpPerKg": 1.2641,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.702 (book £1.43 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-ms1200": {
-   "gbpPerKg": 1.4144,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-ms1300": {
-   "gbpPerKg": 1.4762,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.988 (book £1.67 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-ms1500": {
-   "gbpPerKg": 1.5646,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.107 (book £1.77 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-qp980": {
-   "gbpPerKg": 1.5293,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.060 (book £1.73 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-medmn1180": {
-   "gbpPerKg": 1.5912,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.143 (book £1.8 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-22mnb5": {
-   "gbpPerKg": 1.5823,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.131 (book £1.79 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-usibor1500": {
-   "gbpPerKg": 1.768,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.381 (book £2 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-usibor2000": {
-   "gbpPerKg": 2.1216,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.857 (book £2.4 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
-  "mat-c67s-spring": {
-   "gbpPerKg": 1.4144,
-   "basis": "CR automotive grades: CR coil zł3.78 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
-   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
-   "confidence": "Low"
-  },
   "mat-s355mc": {
    "gbpPerKg": 0.6644,
    "basis": "HR structural: NW Europe HRC €745/t ex-works (Fastmarkets via Eurometal, 6 Oct 2026) = zł3.26/kg (Polish distributor index PUDS St3S sheet zł3.43, w/e 28 Sep, agrees) × the book's premium over HRPO; S355MC / S420MC extras not found; ladder ×1.039 (book £0.8 ÷ base £0.77)",
@@ -368,134 +212,134 @@ export const POLAND_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-aisi430": {
-   "gbpPerKg": 1.3291,
+   "gbpPerKg": 1.415,
    "basis": "430 ferritic sheet: 430 CR zł6.77/kg — DERIVED: the October 1.4016 alloy surcharge €985/t + a base assumed equal to 304's (no 430 transaction price found); direct",
    "source": "https://legierungszuschlag.info/en/ (2026-10-01)",
    "confidence": "Low"
   },
   "mat-gjs500": {
-   "gbpPerKg": 0.3395,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); the anchor grade itself",
+   "gbpPerKg": 0.3414,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); the anchor grade itself",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs400": {
-   "gbpPerKg": 0.2995,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł-0.20/kg (the book's premium: £0.82 - base £0.86)",
+   "gbpPerKg": 0.3014,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł-0.20/kg (the book's premium: £0.82 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs450-ssf": {
-   "gbpPerKg": 0.3095,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł-0.15/kg (the book's premium: £0.83 - base £0.86)",
+   "gbpPerKg": 0.3114,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł-0.15/kg (the book's premium: £0.83 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs500-14": {
-   "gbpPerKg": 0.3195,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł-0.10/kg (the book's premium: £0.84 - base £0.86)",
+   "gbpPerKg": 0.3214,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł-0.10/kg (the book's premium: £0.84 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs600": {
-   "gbpPerKg": 0.3795,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł0.20/kg (the book's premium: £0.9 - base £0.86)",
+   "gbpPerKg": 0.3814,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł0.20/kg (the book's premium: £0.9 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs700": {
-   "gbpPerKg": 0.4295,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł0.46/kg (the book's premium: £0.95 - base £0.86)",
+   "gbpPerKg": 0.4314,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł0.46/kg (the book's premium: £0.95 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs350-lt": {
-   "gbpPerKg": 0.3495,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł0.05/kg (the book's premium: £0.87 - base £0.86)",
+   "gbpPerKg": 0.3514,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł0.05/kg (the book's premium: £0.87 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-simo": {
-   "gbpPerKg": 0.8295,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł2.50/kg (the book's premium: £1.35 - base £0.86)",
+   "gbpPerKg": 0.8314,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł2.50/kg (the book's premium: £1.35 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-adi": {
-   "gbpPerKg": 1.0595,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł3.67/kg (the book's premium: £1.58 - base £0.86)",
+   "gbpPerKg": 1.0614,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł3.67/kg (the book's premium: £1.58 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjv450": {
-   "gbpPerKg": 0.5995,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł1.32/kg (the book's premium: £1.12 - base £0.86)",
+   "gbpPerKg": 0.6014,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł1.32/kg (the book's premium: £1.12 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjv500": {
-   "gbpPerKg": 0.6295,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.73/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł1.48/kg (the book's premium: £1.15 - base £0.86)",
+   "gbpPerKg": 0.6314,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge zł1.74/kg (45% merchant pig zł1.86 — Brazil→Italy Aug 2026 — + 30% heavy scrap zł1.20 + returns, FeSiMg and inoculant priced at FeSi75 zł5.51; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at zł5.096/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +zł1.48/kg (the book's premium: £1.15 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjl250": {
-   "gbpPerKg": 0.2983,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.52/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; the anchor grade itself",
+   "gbpPerKg": 0.3028,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.543/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; the anchor grade itself",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl150": {
-   "gbpPerKg": 0.261,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.52/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64)",
+   "gbpPerKg": 0.2649,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.543/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl200": {
-   "gbpPerKg": 0.2796,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.52/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64)",
+   "gbpPerKg": 0.2839,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.543/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl300": {
-   "gbpPerKg": 0.3262,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.52/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64)",
+   "gbpPerKg": 0.3312,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.543/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl350": {
-   "gbpPerKg": 0.3449,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.52/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64)",
+   "gbpPerKg": 0.3501,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.543/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjmb350": {
-   "gbpPerKg": 0.3076,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.52/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64)",
+   "gbpPerKg": 0.3122,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge zł1.543/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gs-c25": {
-   "gbpPerKg": 0.2512,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge zł1.28/kg (heavy melting scrap zł1.20 — German E3 / Polish scrap boards, Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
+   "gbpPerKg": 0.2575,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge zł1.312/kg (heavy melting scrap zł1.20 — German E3 / Polish scrap boards, Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-astm-a216-wcb": {
-   "gbpPerKg": 0.2512,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge zł1.28/kg (heavy melting scrap zł1.20 — German E3 / Polish scrap boards, Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
+   "gbpPerKg": 0.2575,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge zł1.312/kg (heavy melting scrap zł1.20 — German E3 / Polish scrap boards, Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-g20mn5": {
-   "gbpPerKg": 0.2512,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge zł1.28/kg (heavy melting scrap zł1.20 — German E3 / Polish scrap boards, Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
+   "gbpPerKg": 0.2575,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge zł1.312/kg (heavy melting scrap zł1.20 — German E3 / Polish scrap boards, Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
-   "gbpPerKg": 0.3912,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge zł1.28/kg (heavy melting scrap zł1.20 — German E3 / Polish scrap boards, Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); ladder +zł0.71/kg (the book's premium: £2.24 - base £2.1)",
+   "gbpPerKg": 0.3975,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge zł1.312/kg (heavy melting scrap zł1.20 — German E3 / Polish scrap boards, Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); ladder +zł0.71/kg (the book's premium: £2.24 - base £2.1)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
@@ -536,20 +380,20 @@ export const POLAND_BOOK: CountryBook = {
    "confidence": "Low"
   },
   "mat-ni-resist-d2": {
-   "gbpPerKg": 2.8356,
-   "basis": "Ni-Resist D-2 (charge): 0.20 × Ni zł64.18 (LME, 8 Sep) + 0.02 × Cr zł13.24 (HC FeCr) + 0.78 × ductile charge zł1.73; direct",
+   "gbpPerKg": 2.6385,
+   "basis": "Ni-Resist D-2 (charge): 0.20 × Ni zł59.12 (LME, 8 Sep) + 0.02 × Cr zł13.24 (HC FeCr) + 0.78 × ductile charge zł1.74; direct",
    "source": "https://www.westmetall.com/de/markdaten.php (2026-09-08) ; https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome (2026-Q3)",
    "confidence": "Low"
   },
   "mat-ni-resist-d5s": {
-   "gbpPerKg": 4.7035,
+   "gbpPerKg": 4.3571,
    "basis": "Ni-Resist D-5S (charge): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 zł5.511 + 0.59 × ductile charge; direct",
    "source": "https://www.westmetall.com/de/markdaten.php (2026-09-08)",
    "confidence": "Low"
   },
   "mat-hicr-white": {
-   "gbpPerKg": 0.8271,
-   "basis": "High-Cr white iron (charge): 0.23 × Cr zł13.24 + 0.77 × grey charge zł1.52; direct",
+   "gbpPerKg": 0.8307,
+   "basis": "High-Cr white iron (charge): 0.23 × Cr zł13.24 + 0.77 × grey charge zł1.543; direct",
    "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome (2026-Q3)",
    "confidence": "Low"
   },
@@ -751,26 +595,14 @@ export const POLAND_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.atreon.pl/blacha-aluminiowa-6x1250x2500--5754-z-folia/ (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
-  "mat-c101-bar": {
-   "gbpPerKg": 11.3717,
-   "basis": "ETP copper bar / sheet (floor): LME copper $14,740 (25 Sep 2026) + Aurubis 2026 cathode premium $315 = zł57.95/kg delivered — the book's bar and sheet zł56.86 were below the copper they contain; floor (raised to metal content)",
-   "source": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-09-25) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
-   "confidence": "Medium"
-  },
-  "mat-c110-copper": {
-   "gbpPerKg": 11.3717,
-   "basis": "ETP copper bar / sheet (floor): LME copper $14,740 (25 Sep 2026) + Aurubis 2026 cathode premium $315 = zł57.95/kg delivered — the book's bar and sheet zł56.86 were below the copper they contain; floor (raised to metal content)",
-   "source": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-09-25) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
-   "confidence": "Medium"
-  },
   "mat-brass-cz121": {
-   "gbpPerKg": 9.4329,
+   "gbpPerKg": 9.7586,
    "basis": "Free-machining / forging brass rod (floor): Westmetall MS 58 metal basis €10.99/kg (9 Sep 2026) = zł48.07/kg — metal value before fabrication; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php (2026-09-09)",
    "confidence": "Low"
   },
   "mat-brass-cz122-forge": {
-   "gbpPerKg": 9.4329,
+   "gbpPerKg": 9.7586,
    "basis": "Free-machining / forging brass rod (floor): Westmetall MS 58 metal basis €10.99/kg (9 Sep 2026) = zł48.07/kg — metal value before fabrication; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php (2026-09-09)",
    "confidence": "Low"
@@ -781,33 +613,15 @@ export const POLAND_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php (2026-09-09)",
    "confidence": "Low"
   },
-  "mat-bronze-pb1": {
-   "gbpPerKg": 14.4747,
-   "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu zł57.95 + 0.105 × Sn zł211.31 (LME, 8 Sep); floor (raised to metal content)",
-   "source": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-09-25) ; https://www.westmetall.com/de/markdaten.php (2026-09-08)",
-   "confidence": "Low"
-  },
   "mat-bronze-c905": {
-   "gbpPerKg": 14.4747,
-   "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu zł57.95 + 0.105 × Sn zł211.31 (LME, 8 Sep); floor (raised to metal content)",
+   "gbpPerKg": 13.8995,
+   "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu zł56.7 + 0.105 × Sn zł193.99 (LME, 8 Sep); floor (raised to metal content)",
    "source": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-09-25) ; https://www.westmetall.com/de/markdaten.php (2026-09-08)",
-   "confidence": "Low"
-  },
-  "mat-cusn12-cast": {
-   "gbpPerKg": 14.4747,
-   "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu zł57.95 + 0.105 × Sn zł211.31 (LME, 8 Sep); floor (raised to metal content)",
-   "source": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-09-25) ; https://www.westmetall.com/de/markdaten.php (2026-09-08)",
-   "confidence": "Low"
-  },
-  "mat-zamak3": {
-   "gbpPerKg": 3.2598,
-   "basis": "Zamak 3 (floor): Metal content 0.96 × SHG zinc zł16.7 (LME $4,110, 8 Sep, + Argus Rotterdam premium) + 0.04 × Al zł14.5; a Zamak premium was not found; floor (raised to metal content)",
-   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-09-08) ; https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/ (2026-09-15 / 2026-09-28)",
    "confidence": "Low"
   },
   "mat-zamak5": {
-   "gbpPerKg": 3.3407,
-   "basis": "Zamak 5 (floor): Metal content 0.95 × zinc zł16.7 + 0.04 × Al + 0.01 × Cu zł57.95; floor (raised to metal content)",
+   "gbpPerKg": 3.2431,
+   "basis": "Zamak 5 (floor): Metal content 0.95 × zinc zł16.19 + 0.04 × Al + 0.01 × Cu zł56.7; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-09-08)",
    "confidence": "Low"
   },
@@ -998,49 +812,43 @@ export const POLAND_BOOK: CountryBook = {
    "confidence": "Medium"
   },
   "mat-pa6": {
-   "gbpPerKg": 2.0173,
+   "gbpPerKg": 2.4019,
    "basis": "PA6 family: PA6 zł10.28/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-bm": {
-   "gbpPerKg": 3.7223,
+   "gbpPerKg": 4.432,
    "basis": "PA6 family: PA6 zł10.28/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; ladder ×1.845 (book £3.1 ÷ base £1.68)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-ext-tube": {
-   "gbpPerKg": 2.0173,
+   "gbpPerKg": 2.4019,
    "basis": "PA6 family: PA6 zł10.28/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa66": {
-   "gbpPerKg": 3.1947,
+   "gbpPerKg": 2.5981,
    "basis": "PA66: PA66 zł16.28/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026); direct",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pbt": {
-   "gbpPerKg": 2.7943,
+   "gbpPerKg": 3.2025,
    "basis": "PBT: PBT zł14.24/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026); direct",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pet-bg": {
-   "gbpPerKg": 0.9753,
+   "gbpPerKg": 1.1774,
    "basis": "PET family: PET bottle grade zł4.97/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PET bottle grade; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/ (2026-09)",
    "confidence": "Medium"
   },
-  "mat-pet-preform": {
-   "gbpPerKg": 1.0075,
-   "basis": "PET family: PET bottle grade zł4.97/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PET bottle grade; ladder ×1.033 (book £1.25 ÷ base £1.21)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/ (2026-09)",
-   "confidence": "Medium"
-  },
   "mat-pmma": {
-   "gbpPerKg": 2.7865,
+   "gbpPerKg": 2.7119,
    "basis": "PMMA family: PMMA zł14.20/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Medium"
@@ -1057,14 +865,8 @@ export const POLAND_BOOK: CountryBook = {
    "source": "https://www.investegate.co.uk/announcement/rns/victrex-plc--vct/trading-statement/9654844 (2026-06-30 (Q3 FY2026))",
    "confidence": "Low"
   },
-  "mat-pom": {
-   "gbpPerKg": 2.2959,
-   "basis": "POM: POM zł11.70/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Jul 2026; a Polish offer list zł11.65 agrees) × the book's premium over POM; the anchor grade itself",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/ (2026-07)",
-   "confidence": "Medium"
-  },
   "mat-pom-rod": {
-   "gbpPerKg": 2.5983,
+   "gbpPerKg": 2.2385,
    "basis": "POM: POM zł11.70/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Jul 2026; a Polish offer list zł11.65 agrees) × the book's premium over POM; ladder ×1.132 (book £2.32 ÷ base £2.05)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/ (2026-07)",
    "confidence": "Medium"
@@ -1099,9 +901,9 @@ export const POLAND_BOOK: CountryBook = {
   "ukRentGbpPerM2Yr": 110,
   "ukElectricityGbpPerKwh": 0.182,
   "labourRatio": 0.4658,
-  "capitalHeldFactor": 0.72,
+  "capitalHeldFactor": 1,
   "basis": "3 × 8 h, Monday–Friday, 251 working days in 2026 = 6,024 h (the labour model's pattern); Polish straight-line tax depreciation — no shift uplift on held capital; SME machinery / investment loan WIBOR 3M 3.82% + 3.9–4.9 pp = 7.72–8.72%, midpoint 8.22% (cooperative bank tariff, Mar 2026); NBP reference rate 3.75% (7 Oct 2026) — a large Tier-1 borrows below this; the book's line build-ups use 4% on half the capex; rent zł20.05/m²/month (warehouse / light-industrial headline rent midpoints: Upper Silesia zł20.12, Wrocław zł18.92, Poznań zł21.10 per m²/month (€3.15–6.00 at zł4.374/€; ceo.com.pl, ~Apr 2026) — mean; CBRE Q2 2026 national €4.7 = zł20.56 agrees; Rzeszów listings only); maintenance the library's own line build-up rule (3.5% of capex); no Polish norm found",
-  "heldBasis": "capex not sourced for Poland: the capital is the UK book's × 0.72; the Poland operating model (3 × 8 h, straight-line tax life, loan finance, rent, tariff, support at Polish wages) is applied",
+  "heldBasis": "capex not sourced for Poland: the machine's capital is the book's AT PAR (×1 — no unsourced country discount; the UK × 0.72 factor it replaced had no source), under the Poland operating model (hours, tax life, finance, rent, tariff, support at Poland wages)",
   "groups": [
    {
     "id": "cnc-vmc-eu",
