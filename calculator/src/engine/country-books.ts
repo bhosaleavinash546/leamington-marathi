@@ -22,6 +22,7 @@ import { CHINA_BOOK } from './country-books/cn.js';
 import { POLAND_BOOK } from './country-books/pl.js';
 import { GERMANY_BOOK } from './country-books/de.js';
 import { HUNGARY_BOOK } from './country-books/hu.js';
+import { WORLD_BOOKS } from './country-books/world.js';
 
 export interface CountryMaterialPrice { gbpPerKg: number; scrapGbpPerKg?: number; basis: string; source: string; confidence: Confidence }
 export interface CountryMachineGroup {
@@ -109,7 +110,8 @@ export function sourcedServiceFactor(region: string, kind: ServiceKind): { facto
   };
 }
 
-export const COUNTRY_BOOKS: Record<string, CountryBook | undefined> = { IN: INDIA_BOOK, CN: CHINA_BOOK, PL: POLAND_BOOK, DE: GERMANY_BOOK, HU: HUNGARY_BOOK };
+// the world round (30 Oct 2026) adds every other country's own book — country-books/world.ts, generated
+export const COUNTRY_BOOKS: Record<string, CountryBook | undefined> = { IN: INDIA_BOOK, CN: CHINA_BOOK, PL: POLAND_BOOK, DE: GERMANY_BOOK, HU: HUNGARY_BOOK, ...WORLD_BOOKS };
 
 const r0 = (n: number) => Math.round(n);
 

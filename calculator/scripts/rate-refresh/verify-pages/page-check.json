@@ -1,17 +1,17 @@
 {
  "checked": "2026-10-30",
  "counts": {
-  "value-on-page": 196,
-  "page-failed": 499,
-  "page-no-figure": 653,
+  "value-on-page": 221,
+  "page-failed": 399,
+  "page-no-figure": 717,
   "no-url": 638,
-  "basis-on-page": 215
+  "basis-on-page": 226
  },
  "flaggedCounts": {
-  "page-no-figure": 119,
-  "basis-on-page": 31,
-  "value-on-page": 55,
-  "page-failed": 82,
+  "page-no-figure": 122,
+  "basis-on-page": 32,
+  "value-on-page": 59,
+  "page-failed": 74,
   "no-url": 51
  },
  "items": [
@@ -400,7 +400,7 @@
     "https://www.zhaopin.com/zhaopin/00317a19a8314b26b64902b5680454d3/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": false
   },
   {
@@ -1155,7 +1155,7 @@
     "https://www.zhaopin.com/zhaopin/00317a19a8314b26b64902b5680454d3/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -1167,7 +1167,7 @@
     "https://www.zhaopin.com/zhaopin/00317a19a8314b26b64902b5680454d3/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": false
   },
   {
@@ -2521,7 +2521,7 @@
     "https://list1.m.mysteel.com/zhishi/316bxglsjg.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -3120,8 +3120,13 @@
     "1000",
     "21.42"
    ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "quotedOnPage": [
+    "24,000",
+    "24,400",
+    "24,200",
+    "24,200"
+   ],
+   "status": "basis-on-page",
    "used": true
   },
   {
@@ -3382,7 +3387,11 @@
     "1000",
     "22.93"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "25,910",
+    "390",
+    "25,910"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -3395,7 +3404,7 @@
     "https://list1.m.mysteel.com/zhishi/2026nxhjjgylb.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -3407,7 +3416,7 @@
     "https://list1.m.mysteel.com/zhishi/2026nxhjjgylb.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -3419,7 +3428,15 @@
     "https://www.sohu.com/a/1085524211_121123889"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "9990",
+    "15,500",
+    "1.13",
+    "1000",
+    "13.72"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -3451,8 +3468,12 @@
     "1000",
     "345.13"
    ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "quotedOnPage": [
+    "390,000",
+    "390,000",
+    "1000"
+   ],
+   "status": "basis-on-page",
    "used": true
   },
   {
@@ -3604,7 +3625,15 @@
     "https://hdpe.100ppi.com/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "10,475",
+    "1.13",
+    "9,269.9"
+   ],
+   "quotedOnPage": [
+    "10,475"
+   ],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -3638,7 +3667,15 @@
     "https://www.100ppi.com/news/detail-20260813-6060907.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "10,350",
+    "1.13",
+    "9,159"
+   ],
+   "quotedOnPage": [
+    "10,350"
+   ],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -3650,7 +3687,15 @@
     "https://m.10jqka.com.cn/20261001/c680427759.shtml"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "9,390",
+    "1.13",
+    "8,309.7"
+   ],
+   "quotedOnPage": [
+    "9,390"
+   ],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -3662,7 +3707,13 @@
     "https://pvc.100ppi.com/news/list---1.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "4,865",
+    "1.13",
+    "4,305"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -3674,7 +3725,7 @@
     "https://abs.100ppi.com/news/list--121311-1.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -3722,7 +3773,7 @@
     "https://pa6.100ppi.com/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -3755,7 +3806,7 @@
     "https://www.100ppi.com/news/detail-20260724-5970637.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -3786,7 +3837,15 @@
     "https://m.10jqka.com.cn/20261001/c680427815.shtml"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "8,750",
+    "1.13",
+    "7,743"
+   ],
+   "quotedOnPage": [
+    "8,750"
+   ],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -3810,7 +3869,7 @@
     "https://rp.100ppi.com/price/plist-459-1.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -3904,7 +3963,7 @@
     "https://nr.100ppi.com/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -5150,7 +5209,12 @@
     "https://www.vea.de/newsroom/aktuelles/thema/netztransparenzde-meldet-netzentgeltbasierte-umlagen-fuer-2026"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "0.446",
+    "0.277"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -5162,7 +5226,12 @@
     "https://www.vea.de/newsroom/aktuelles/thema/netztransparenzde-meldet-netzentgeltbasierte-umlagen-fuer-2026"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "0.941",
+    "0.816"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -5376,7 +5445,11 @@
     "https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "64,995"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -5410,7 +5483,14 @@
     "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "500",
+    "119,995",
+    "0.880",
+    "105,596"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -5422,7 +5502,13 @@
     "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "119,995",
+    "0.880",
+    "105,596"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -5435,7 +5521,9 @@
     "https://www.haascnc.com/sv/shop/2024_stock/HAE/canceled-orders-master/ST-20-HE-AC_3132431.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -6218,8 +6306,15 @@
     "1249.6",
     "1.250"
    ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "quotedOnPage": [
+    "304",
+    "1,420",
+    "316",
+    "2,800",
+    "2,820",
+    "1,420"
+   ],
+   "status": "basis-on-page",
    "used": true
   },
   {
@@ -6330,7 +6425,9 @@
     "3.027",
     "1.513"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "156"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -6408,7 +6505,9 @@
     "0.97",
     "1.288"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "304"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -6762,7 +6861,19 @@
     "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "5,272",
+    "1,115",
+    "4.728",
+    "0.880",
+    "4.16",
+    "4,606",
+    "1,083",
+    "4.253",
+    "3.74"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -6774,7 +6885,7 @@
     "https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840"
    ],
    "flagged": true,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -6854,7 +6965,7 @@
     "https://www.wiska.com/de/175/messingnotierungen/link/messing.php"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -6978,7 +7089,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,168",
+    "1000",
+    "1.17"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -6990,7 +7107,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,332",
+    "1000",
+    "1.33"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7002,7 +7125,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,250",
+    "1000",
+    "1.25"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7014,7 +7143,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,276",
+    "1000",
+    "1.28"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7026,7 +7161,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,247",
+    "1000",
+    "1.25"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7038,7 +7179,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": true,
-   "status": "page-failed",
+   "quoted": [
+    "993",
+    "1000",
+    "0.99"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7050,7 +7197,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": true,
-   "status": "page-failed",
+   "quoted": [
+    "1,835",
+    "1000",
+    "1.84"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7062,7 +7215,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,534",
+    "1000",
+    "1.53"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7074,7 +7233,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,676",
+    "1000",
+    "1.68"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7196,7 +7361,12 @@
     "https://www.plasticportal.eu/polymer-prices"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "2.70",
+    "2.37"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7208,7 +7378,21 @@
     "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "231.6",
+    "3,375",
+    "1.165",
+    "79.22",
+    "231.6",
+    "3,375",
+    "68.6",
+    "147.1",
+    "2,137",
+    "68.8",
+    "80.39"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -7973,7 +8157,14 @@
     "https://www.cbre.com/insights/figures/hungary-industrial-figures-q1-2026"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "363",
+    "1,996.5",
+    "4.95",
+    "1,797"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -9118,7 +9309,11 @@
     "https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "64,995"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -9148,7 +9343,14 @@
     "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "500",
+    "119,995",
+    "0.880",
+    "105,596"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -9160,7 +9362,14 @@
     "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "500",
+    "119,995",
+    "0.880",
+    "105,596"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -9197,7 +9406,17 @@
     "https://www.werktuigen.com/dn+solutions-lynx+2100ga/wt-214-45867"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "2100",
+    "2100",
+    "26,500",
+    "26,500",
+    "28,000",
+    "2100",
+    "36,000"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -9247,7 +9466,21 @@
     "https://www.machineseeker.ie/haas-ec-400/i-21319067"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "400",
+    "4000",
+    "4000",
+    "4000",
+    "400"
+   ],
+   "quotedOnPage": [
+    "400",
+    "4000",
+    "4000",
+    "4000",
+    "400"
+   ],
+   "status": "basis-on-page",
    "used": true
   },
   {
@@ -9499,7 +9732,11 @@
     "https://resale.info/en/amada-hfe-100-3-prensa-plegadora/No-166672578"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "100"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -11219,7 +11456,9 @@
     "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -11939,7 +12178,10 @@
     "1,249.6",
     "459.4"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "304",
+    "1,420"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -12194,7 +12436,9 @@
     "3.027",
     "1.513"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "156"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -12593,7 +12837,14 @@
     "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "5,272",
+    "1,115",
+    "4,728",
+    "1533.6"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -12631,7 +12882,7 @@
     "https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -12774,7 +13025,7 @@
     "https://www.wiska.com/de/175/messingnotierungen/link/messing.php"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -13042,7 +13293,15 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,197",
+    "1000",
+    "1.197",
+    "364.42",
+    "436.2"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13054,7 +13313,15 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,332",
+    "1000",
+    "1.332",
+    "364.42",
+    "485.4"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13066,7 +13333,15 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": true,
-   "status": "page-failed",
+   "quoted": [
+    "1,261",
+    "1000",
+    "1.261",
+    "364.42",
+    "459.5"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13078,7 +13353,17 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,306",
+    "1,276",
+    "1.024",
+    "1000",
+    "1.306",
+    "364.42",
+    "475.9"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13090,7 +13375,15 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,247",
+    "1000",
+    "1.247",
+    "364.42",
+    "454.4"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13102,7 +13395,15 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "974",
+    "1000",
+    "0.974",
+    "364.42",
+    "354.9"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13114,7 +13415,15 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,842",
+    "1000",
+    "1.842",
+    "364.42",
+    "671.3"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13126,7 +13435,15 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,534",
+    "1000",
+    "1.534",
+    "364.42",
+    "559.0"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13138,7 +13455,15 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": true,
-   "status": "page-failed",
+   "quoted": [
+    "1,676",
+    "1000",
+    "1.676",
+    "364.42",
+    "610.8"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13255,7 +13580,13 @@
     "https://www.plasticportal.eu/polymer-prices"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "2.66",
+    "364.42",
+    "969.4"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -13267,7 +13598,17 @@
     "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "231.6",
+    "3,375",
+    "68.6",
+    "1.165",
+    "364.42",
+    "424.55",
+    "28869.4"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -14500,7 +14841,11 @@
     "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "23,000"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -14512,7 +14857,22 @@
     "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "23,000",
+    "11,500",
+    "15000",
+    "1,495",
+    "3.25",
+    "21000",
+    "8.33",
+    "18677",
+    "21000",
+    "958",
+    "4.81",
+    "553"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -14592,7 +14952,16 @@
     "https://in.indeed.com/Smt-jobs-in-South-India"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "336,000",
+    "200,804",
+    "16,700",
+    "966",
+    "23,000",
+    "16.7"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -14604,7 +14973,22 @@
     "https://in.indeed.com/Smt-jobs-in-South-India"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "23,000",
+    "11,500",
+    "15000",
+    "1,495",
+    "3.25",
+    "21000",
+    "8.33",
+    "18677",
+    "21000",
+    "958",
+    "4.81",
+    "553"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -15055,7 +15439,8 @@
     "4.47"
    ],
    "quotedOnPage": [
-    "44.68"
+    "44.68",
+    "11.63"
    ],
    "status": "page-no-figure",
    "used": true
@@ -15644,11 +16029,7 @@
     "https://www.scribd.com/document/678737769/Solution8"
    ],
    "flagged": false,
-   "quoted": [
-    "300"
-   ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "status": "value-on-page",
    "used": false
   },
   {
@@ -15729,8 +16110,10 @@
    "quoted": [
     "12,500"
    ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "quotedOnPage": [
+    "12,500"
+   ],
+   "status": "basis-on-page",
    "used": false
   },
   {
@@ -15742,14 +16125,7 @@
     "https://www.scribd.com/document/678737769/Solution8"
    ],
    "flagged": false,
-   "quoted": [
-    "300",
-    "7,200",
-    "300",
-    "313"
-   ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -16158,8 +16534,13 @@
     "4140",
     "110"
    ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "quotedOnPage": [
+    "8620",
+    "100",
+    "4140",
+    "110"
+   ],
+   "status": "basis-on-page",
    "used": true
   },
   {
@@ -16395,16 +16776,7 @@
     "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs"
    ],
    "flagged": false,
-   "quoted": [
-    "304",
-    "145,000",
-    "2,000",
-    "145,000",
-    "304",
-    "1,525"
-   ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -16452,7 +16824,13 @@
     "https://cbonds.com/indexes/221359/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,625.5",
+    "1,656.9",
+    "1,842.9"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": false
   },
   {
@@ -16532,13 +16910,7 @@
     "https://news.metal.com/newscontent/104081100-smm-stainless-steel-flash-indias-stainless-steel-scrap-prices-strengthen-amid-tight-supply-and-firm-alloy-costs"
    ],
    "flagged": false,
-   "quoted": [
-    "304",
-    "304",
-    "145.0"
-   ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -16550,7 +16922,21 @@
     "https://cbonds.com/indexes/221359/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1625.5",
+    "0.02",
+    "0.60",
+    "122.2",
+    "46.01",
+    "0.20",
+    "0.033",
+    "0.766",
+    "364.4"
+   ],
+   "quotedOnPage": [
+    "0.033"
+   ],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -16562,7 +16948,16 @@
     "https://cbonds.com/indexes/221359/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1625.5",
+    "0.03",
+    "0.70",
+    "95.1",
+    "46.01",
+    "603.5"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -16622,11 +17017,7 @@
     "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline"
    ],
    "flagged": true,
-   "quoted": [
-    "3,210"
-   ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "status": "value-on-page",
    "used": false
   },
   {
@@ -16746,9 +17137,7 @@
     "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline"
    ],
    "flagged": true,
-   "quoted": [],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -16760,13 +17149,7 @@
     "https://news.metal.com/newscontent/104146665-smm-analysis-indian-adc-12-prices-drop-as-automakers-cut-purchases-amid-lme-aluminium-decline"
    ],
    "flagged": true,
-   "quoted": [
-    "304,500",
-    "305,000",
-    "3,080"
-   ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -16795,7 +17178,9 @@
     "352477",
     "47477"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "305,000"
+   ],
    "status": "page-no-figure",
    "used": false
   },
@@ -16832,7 +17217,18 @@
     "https://www.alpha-maven.com/story/venture-capital/commodity-update-copper-sourcebenchmarkmineralscom"
    ],
    "flagged": true,
-   "status": "page-failed",
+   "quoted": [
+    "6.49",
+    "2,204.62",
+    "96.79",
+    "1000",
+    "1385",
+    "1,384.75"
+   ],
+   "quotedOnPage": [
+    "6.49"
+   ],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -16954,7 +17350,12 @@
     "https://cbonds.com/indexes/181085/"
    ],
    "flagged": true,
-   "status": "page-failed",
+   "quoted": [
+    "17,193",
+    "16,995"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": false
   },
   {
@@ -16966,7 +17367,19 @@
     "https://cbonds.com/indexes/181085/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "0.80",
+    "1385",
+    "0.05",
+    "1625",
+    "16,790",
+    "96.79",
+    "0.10",
+    "352.5",
+    "1225.0"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -18004,7 +18417,14 @@
     "https://wynagrodzenia.pl/moja-placa/ile-zarabia-technik-utrzymania-ruchu"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "8,070",
+    "1.056",
+    "0.983",
+    "8,384"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -18016,7 +18436,22 @@
     "https://wynagrodzenia.pl/moja-placa/ile-zarabia-technik-utrzymania-ruchu"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "8,384",
+    "100,608",
+    "8,384",
+    "20.92",
+    "802",
+    "99,806",
+    "5.744",
+    "1,720",
+    "573.3",
+    "3,293",
+    "21.98",
+    "100,608"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -18561,7 +18996,15 @@
     "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "64,995",
+    "4.374",
+    "284,288",
+    "68,990",
+    "71,990"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -18594,7 +19037,9 @@
     "https://www.haascnc.com/machines/lathes/st/models/standard/st-20.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -18606,7 +19051,14 @@
     "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "500",
+    "119,995",
+    "3.849",
+    "461,861"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -18618,7 +19070,9 @@
     "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -18794,7 +19248,15 @@
     "https://ceo.com.pl/en/poland-warehouse-sector-rents-demand-and-regional-differences-56298/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "3.80",
+    "5.40",
+    "4.600",
+    "4.374",
+    "20.12"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": false
   },
   {
@@ -18806,7 +19268,7 @@
     "https://ceo.com.pl/en/poland-warehouse-sector-rents-demand-and-regional-differences-56298/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": false
   },
   {
@@ -18818,7 +19280,15 @@
     "https://ceo.com.pl/en/poland-warehouse-sector-rents-demand-and-regional-differences-56298/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "3.65",
+    "6.00",
+    "4.825",
+    "4.374",
+    "21.10"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": false
   },
   {
@@ -18843,7 +19313,16 @@
     "https://mktgdocs.cbre.com/2299/afd5dde1-5a40-46be-a412-88753ce4fc8b-707339420/CBRE_Poland_Industrial_and_Log.pdf"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "4.600",
+    "4.325",
+    "4.825",
+    "4.583",
+    "4.374",
+    "20.05"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -19324,8 +19803,15 @@
     "3.849",
     "5.466"
    ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "quotedOnPage": [
+    "304",
+    "1,420",
+    "316",
+    "2,800",
+    "2,820",
+    "1,420"
+   ],
+   "status": "basis-on-page",
    "used": true
   },
   {
@@ -19448,7 +19934,9 @@
     "13.238",
     "6.619"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "156"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -19543,7 +20031,9 @@
     "0.97",
     "5.635"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "304"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -20093,7 +20583,14 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,168",
+    "1000",
+    "4.374",
+    "5.11"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -20124,7 +20621,14 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,250",
+    "1000",
+    "4.374",
+    "5.47"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -20155,7 +20659,14 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,276",
+    "1000",
+    "4.374",
+    "5.58"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -20167,7 +20678,14 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,247",
+    "1000",
+    "4.374",
+    "5.45"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -20179,7 +20697,14 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "993",
+    "1000",
+    "4.374",
+    "4.34"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -20191,7 +20716,14 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,835",
+    "1000",
+    "4.374",
+    "8.03"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -20203,7 +20735,14 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,534",
+    "1000",
+    "4.374",
+    "6.71"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -20215,7 +20754,14 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "1,676",
+    "1000",
+    "4.374",
+    "7.33"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -20546,7 +21092,11 @@
     "https://resale.info/en/amada-hfe-100-3-prensa-plegadora/No-166672578"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "100"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -20558,7 +21108,11 @@
     "https://resale.info/en/trumpf-trulaser-3030-laser-cutting-machines/No-165417843"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "3030"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -21102,7 +21656,9 @@
     "https://www.haascnc.com/pl/machines/Special-Series/eu-series.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -21459,7 +22015,13 @@
     "1,482.5",
     "4.374"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "409",
+    "919",
+    "917",
+    "304",
+    "304"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -21731,7 +22293,7 @@
     "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -21967,7 +22529,17 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "0.70",
+    "5.11",
+    "0.30",
+    "3.95",
+    "3.58",
+    "1.19",
+    "4.76"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": false
   },
   {
@@ -22278,7 +22850,13 @@
     "https://www.plasticportal.eu/price-reports"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "0.80",
+    "5.11",
+    "4.09"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": false
   },
   {
@@ -22719,6 +23297,7 @@
    ],
    "quotedOnPage": [
     "200",
+    "56,000",
     "51.71"
    ],
    "status": "page-no-figure",
@@ -24686,8 +25265,11 @@
     "4140",
     "110"
    ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "quotedOnPage": [
+    "4140",
+    "110"
+   ],
+   "status": "basis-on-page",
    "used": false
   },
   {
@@ -24703,8 +25285,11 @@
     "4140",
     "110"
    ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "quotedOnPage": [
+    "4140",
+    "110"
+   ],
+   "status": "basis-on-page",
    "used": false
   },
   {
@@ -24720,8 +25305,11 @@
     "4140",
     "110"
    ],
-   "quotedOnPage": [],
-   "status": "page-no-figure",
+   "quotedOnPage": [
+    "4140",
+    "110"
+   ],
+   "status": "basis-on-page",
    "used": false
   },
   {
@@ -25943,7 +26531,9 @@
     "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line"
    ],
    "flagged": true,
-   "status": "page-failed",
+   "quoted": [],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -28317,7 +28907,7 @@
     "https://www.pesmedia.com/haas-umc-500-affordable-and-compact-5-axis-capability"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "status": "value-on-page",
    "used": true
   },
   {
@@ -28365,7 +28955,9 @@
     "https://www.haascnc.com/machines/lathes/st/models/standard/st-20.html"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -28921,7 +29513,26 @@
     "https://www.equipt.com/listings/67598-used-2021-haitian-ma1600iii-injection-molding-machines-in-florida"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "200",
+    "200",
+    "18,50",
+    "000",
+    "160",
+    "700",
+    "69,500",
+    "130",
+    "160",
+    "60,200"
+   ],
+   "quotedOnPage": [
+    "18,50",
+    "160",
+    "700",
+    "69,500",
+    "160"
+   ],
+   "status": "basis-on-page",
    "used": true
   },
   {
@@ -29573,7 +30184,9 @@
     "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -30786,7 +31399,9 @@
     "2700",
     "0.859"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "2700"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -30804,7 +31419,9 @@
     "2900",
     "0.859"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "2900"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -31069,7 +31686,9 @@
     "0.743",
     "2,558"
    ],
-   "quotedOnPage": [],
+   "quotedOnPage": [
+    "156"
+   ],
    "status": "page-no-figure",
    "used": true
   },
@@ -31174,7 +31793,17 @@
     "https://www.cliffsnotes.com/study-notes/24588812"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "125.0",
+    "142.5",
+    "386.7",
+    "75.0",
+    "35.6",
+    "58.0",
+    "168.6"
+   ],
+   "quotedOnPage": [],
+   "status": "page-no-figure",
    "used": true
   },
   {
@@ -31817,7 +32446,15 @@
     "https://cbonds.pl/indexes/181087/"
    ],
    "flagged": false,
-   "status": "page-failed",
+   "quoted": [
+    "55,818",
+    "1.324",
+    "1000"
+   ],
+   "quotedOnPage": [
+    "1000"
+   ],
+   "status": "page-no-figure",
    "used": true
   },
   {

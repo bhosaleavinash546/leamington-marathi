@@ -18,7 +18,7 @@
  * ratio carries no mixing of bases. The skill mix (skilled vs semi-skilled vs
  * engineer) is the analogue's — an assumption the doc states.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -70,7 +70,31 @@ export function labourRatio(c: Country): number {
 
 const countries: Country[] = CFG.countries;
 const entries: string[] = [], names: string[] = [], surf: string[] = [], billet: string[] = [], spell: string[] = [];
+// A country with its OWN rate book (world round, Oct 2026: src/engine/country-books/<cc>.ts, written by
+// scripts/country-book.ts) is no longer "analogue × ratio": its REGIONAL_DATA entry and billet premium are the book's,
+// kept here verbatim so this script and the book generator never fight over the same lines.
+const regSrc = readFileSync(REG, 'utf8'), alSrc = readFileSync(AL, 'utf8');
+const booked = (code: string) => existsSync(resolve(ROOT, `src/engine/country-books/${code.toLowerCase()}.ts`));
+const keptEntry = (code: string, name: string): string => {
+  const m = new RegExp(`(?:  \\/\\/ ${name}:[^\\n]*\\n)*  ${code}: \\{\\n    name: '${name}',[\\s\\S]*?\\n  \\},`).exec(regSrc);
+  if (!m) throw new Error(`${code}: booked, but its REGIONAL_DATA entry was not found`);
+  return m[0];
+};
+const keptBillet = (code: string): string => {
+  const m = new RegExp(`  ${code}: \\{ usdPerT: [^\\n]*\\},`).exec(alSrc.slice(alSrc.indexOf('BILLET_PREMIUM_USD_PER_T')));
+  if (!m) throw new Error(`${code}: booked, but its billet premium was not found`);
+  return m[0];
+};
+export const bookedCountries = countries.filter(c => booked(c.code)).map(c => c.code);
 for (const c of countries) {
+  if (booked(c.code)) {
+    entries.push(keptEntry(c.code, c.name));
+    names.push(`  ${c.code}: '${c.name}',`);
+    surf.push(`  ${c.code}: { effluent: ${c.surface.effluent.toFixed(2)}, chemical: ${c.surface.chemical.toFixed(2)} },`);
+    billet.push(keptBillet(c.code));
+    if (c.spellings.length) spell.push(`  ${c.code}: [${c.spellings.map(s => `'${s}'`).join(', ')}],`);
+    continue;
+  }
   const an = REGIONAL_DATA[c.analogue as keyof typeof REGIONAL_DATA] as RD;
   if (!an) throw new Error(`${c.code}: analogue ${c.analogue} is not a region`);
   // Multipliers from a better-matched country where the labour analogue's would contradict the country (Singapore).
@@ -143,5 +167,5 @@ if (check) {
 } else {
   writeFileSync(REG, reg);
   writeFileSync(AL, al);
-  for (const c of countries) console.log(`${c.code} ${c.name.padEnd(13)} labour ×${labourRatio(c).toFixed(4)} vs ${c.analogue}`);
+  for (const c of countries) console.log(booked(c.code) ? `${c.code} ${c.name.padEnd(13)} own rate book (kept)` : `${c.code} ${c.name.padEnd(13)} labour ×${labourRatio(c).toFixed(4)} vs ${c.analogue}`);
 }

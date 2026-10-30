@@ -1,0 +1,1714 @@
+[
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 27,
+  "key": "labour.loadingIncluded",
+  "value": null,
+  "unit": "—",
+  "currency": null,
+  "basis": "Fully-loaded hourly cost INCLUDES: gross total pay (Sedlak OBW \"wynagrodzenie całkowite\" = base + bonuses / variable pay, indexed to 2026 and adjusted to the four clusters), paid annual leave and public holidays (inside the 12 monthly salaries), sick pay at 80% for 10 days, the statutory night allowance on one third of hours worked (3 × 8 h, shop-floor roles), and employer ZUS + FP + FGŚP + PPK (21.98%); divided by 1,720 productive hours.",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 28,
+  "key": "labour.loadingNotIncluded",
+  "value": null,
+  "unit": "—",
+  "currency": null,
+  "basis": "NOT included (not sourced): 13th-month salary (no statutory 13th month in Polish private industry — any annual bonus is already inside OBW total pay), shift allowances above the statutory night allowance, ZFŚS social fund write-off (mandatory at ≥50 FTE), bridging-pension FEP 1.5%, PFRON, meal / transport / work-clothing / medical exams, training time, overtime and weekend premiums, agency-worker margins, severance and jubilee-award accruals.",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 29,
+  "key": "labour.skilled.monthlyGross",
+  "value": 7625.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "Operator CNC / operator obrabiarek CNC (median total; IQR 6,400–8,450): 7,340 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 7,625",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b420d0401d1b2622.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b420d0401d1b2622.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 30,
+  "key": "labour.skilled.fullyLoadedPlnPerHr",
+  "value": 66.34,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 7,625 = 91,500 − sick-pay saving 20% × 10 days × (7,625 ÷ 20.92 days) 729 = 90,771; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (91,500 − sick days 3,645 + night 3,293 = 91,148) = 20,034; annual cost 114,099 ÷ 1,720 productive h = 66.34",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b420d0401d1b2622.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b420d0401d1b2622.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 31,
+  "key": "labour.semiskilled.monthlyGross",
+  "value": 7044.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "Operator maszyn i urządzeń produkcyjnych (median total): 6,780 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 7,044",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-maszyn-i-urzadzen-produkcyjnych",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/df22bc554029f282.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/df22bc554029f282.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 32,
+  "key": "labour.semiskilled.fullyLoadedPlnPerHr",
+  "value": 61.46,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 7,044 = 84,528 − sick-pay saving 20% × 10 days × (7,044 ÷ 20.92 days) 674 = 83,854; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (84,528 − sick days 3,368 + night 3,293 = 84,454) = 18,563; annual cost 105,711 ÷ 1,720 productive h = 61.46",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-maszyn-i-urzadzen-produkcyjnych",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/df22bc554029f282.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/df22bc554029f282.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 33,
+  "key": "labour.foundry.monthlyGross",
+  "value": 6462.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "Formierz (moulder) median total, IQR 5,590–7,620: 6,220 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 6,462",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bdb69f90d717fe6d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bdb69f90d717fe6d.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 34,
+  "key": "labour.foundry.fullyLoadedPlnPerHr",
+  "value": 56.57,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,462 = 77,544 − sick-pay saving 20% × 10 days × (6,462 ÷ 20.92 days) 618 = 76,926; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (77,544 − sick days 3,089 + night 3,293 = 77,748) = 17,089; annual cost 97,308 ÷ 1,720 productive h = 56.57",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bdb69f90d717fe6d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bdb69f90d717fe6d.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 35,
+  "key": "labour.electronics.monthlyGross",
+  "value": 6250,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "SMT machine operator job ad, Kraków: 6,000–6,500 PLN gross/month (≥1 yr SMT experience); midpoint 6,250: 6,250 national (used as is)",
+  "source": "https://www.pracuj.pl/praca/operator-ka-maszyn-smt-krakow-christo-botewa-6,oferta,1004966189",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 36,
+  "key": "labour.electronics.fullyLoadedPlnPerHr",
+  "value": 54.8,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,250 = 75,000 − sick-pay saving 20% × 10 days × (6,250 ÷ 20.92 days) 598 = 74,402; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (75,000 − sick days 2,988 + night 3,293 = 75,305) = 16,552; annual cost 94,248 ÷ 1,720 productive h = 54.80",
+  "source": "https://www.pracuj.pl/praca/operator-ka-maszyn-smt-krakow-christo-botewa-6,oferta,1004966189",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 37,
+  "key": "labour.inspector.monthlyGross",
+  "value": 7064.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "Kontroler jakości (median total; lower quartile 5,910): 6,800 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 7,064",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-kontroler-jakosci",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b80e25eb0b7063d7.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b80e25eb0b7063d7.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 38,
+  "key": "labour.inspector.fullyLoadedPlnPerHr",
+  "value": 61.63,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 7,064 = 84,768 − sick-pay saving 20% × 10 days × (7,064 ÷ 20.92 days) 675 = 84,093; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (84,768 − sick days 3,377 + night 3,293 = 84,684) = 18,614; annual cost 105,999 ÷ 1,720 productive h = 61.63",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-kontroler-jakosci",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b80e25eb0b7063d7.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b80e25eb0b7063d7.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 39,
+  "key": "labour.technician.monthlyGross",
+  "value": 8384.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "Technik utrzymania ruchu (median total): 8,070 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 8,384",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-technik-utrzymania-ruchu",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/81f1def0a3ad26d1.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 40,
+  "key": "labour.technician.fullyLoadedPlnPerHr",
+  "value": 72.71,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 8,384 = 100,608 − sick-pay saving 20% × 10 days × (8,384 ÷ 20.92 days) 802 = 99,806; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (100,608 − sick days 4,008 + night 3,293 = 99,893) = 21,956; annual cost 125,056 ÷ 1,720 productive h = 72.71",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-technik-utrzymania-ruchu",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/81f1def0a3ad26d1.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 41,
+  "key": "labour.supervisor.monthlyGross",
+  "value": 8903.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "Mistrz zmiany (shift foreman) median total, IQR 7,070–9,980 (389 respondents): 8,570 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 8,903",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-mistrz-zmiany",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/020409b1966eb26b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/020409b1966eb26b.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 42,
+  "key": "labour.supervisor.fullyLoadedPlnPerHr",
+  "value": 77.06,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 8,903 = 106,836 − sick-pay saving 20% × 10 days × (8,903 ÷ 20.92 days) 851 = 105,985; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (106,836 − sick days 4,256 + night 3,293 = 105,873) = 23,271; annual cost 132,549 ÷ 1,720 productive h = 77.06",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-mistrz-zmiany",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/020409b1966eb26b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/020409b1966eb26b.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 43,
+  "key": "labour.forge.monthlyGross",
+  "value": 6867.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "PROXY: Operator pras (press operator) median total, IQR 5,600–8,070: 6,610 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 6,867",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-pras",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/be922d278ea6f4bf.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/be922d278ea6f4bf.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 44,
+  "key": "labour.forge.fullyLoadedPlnPerHr",
+  "value": 59.97,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,867 = 82,404 − sick-pay saving 20% × 10 days × (6,867 ÷ 20.92 days) 657 = 81,747; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (82,404 − sick days 3,283 + night 3,293 = 82,414) = 18,115; annual cost 103,155 ÷ 1,720 productive h = 59.97",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-pras",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/be922d278ea6f4bf.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/be922d278ea6f4bf.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 45,
+  "key": "labour.furnace.monthlyGross",
+  "value": 6462.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "PROXY = foundry (formierz) — no melter / furnace-operator figure found: 6,220 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 6,462",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bdb69f90d717fe6d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bdb69f90d717fe6d.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 46,
+  "key": "labour.furnace.fullyLoadedPlnPerHr",
+  "value": 56.57,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,462 = 77,544 − sick-pay saving 20% × 10 days × (6,462 ÷ 20.92 days) 618 = 76,926; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (77,544 − sick days 3,089 + night 3,293 = 77,748) = 17,089; annual cost 97,308 ÷ 1,720 productive h = 56.57",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bdb69f90d717fe6d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bdb69f90d717fe6d.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 47,
+  "key": "labour.blow.monthlyGross",
+  "value": 6285.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "PROXY: Operator wtryskarki (injection-moulding operator) median total, IQR 5,360–6,960: 6,050 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 6,285",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 48,
+  "key": "labour.blow.fullyLoadedPlnPerHr",
+  "value": 55.09,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,285 = 75,420 − sick-pay saving 20% × 10 days × (6,285 ÷ 20.92 days) 601 = 74,819; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (75,420 − sick days 3,005 + night 3,293 = 75,709) = 16,641; annual cost 94,753 ÷ 1,720 productive h = 55.09",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 49,
+  "key": "labour.roto.monthlyGross",
+  "value": 6285.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "PROXY: Operator wtryskarki median total: 6,050 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 6,285",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 50,
+  "key": "labour.roto.fullyLoadedPlnPerHr",
+  "value": 55.09,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,285 = 75,420 − sick-pay saving 20% × 10 days × (6,285 ÷ 20.92 days) 601 = 74,819; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (75,420 − sick days 3,005 + night 3,293 = 75,709) = 16,641; annual cost 94,753 ÷ 1,720 productive h = 55.09",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 51,
+  "key": "labour.thermoform.monthlyGross",
+  "value": 6285.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "PROXY: Operator wtryskarki median total: 6,050 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 6,285",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 52,
+  "key": "labour.thermoform.fullyLoadedPlnPerHr",
+  "value": 55.09,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 6,285 = 75,420 − sick-pay saving 20% × 10 days × (6,285 ÷ 20.92 days) 601 = 74,819; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (75,420 − sick days 3,005 + night 3,293 = 75,709) = 16,641; annual cost 94,753 ÷ 1,720 productive h = 55.09",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/daa145b13a98d892.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 53,
+  "key": "labour.trimRouter.monthlyGross",
+  "value": 7625.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "PROXY = skilled (Operator CNC): 7,340 national × 1.056 (GUS y/y wage growth to 2026) × 0.9838 (cluster factor) = 7,625",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b420d0401d1b2622.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b420d0401d1b2622.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 54,
+  "key": "labour.trimRouter.fullyLoadedPlnPerHr",
+  "value": 66.34,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "3 × 8 h Mon–Fri. Pay: 12 × 7,625 = 91,500 − sick-pay saving 20% × 10 days × (7,625 ÷ 20.92 days) 729 = 90,771; + night allowance 5.744 PLN/h × (1,720 ÷ 3 = 573.3 night h) = 3,293; + employer on-costs 21.98% × contribution base (91,500 − sick days 3,645 + night 3,293 = 91,148) = 20,034; annual cost 114,099 ÷ 1,720 productive h = 66.34",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b420d0401d1b2622.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b420d0401d1b2622.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 55,
+  "key": "labour.engineer.monthlyGross",
+  "value": 10129.0,
+  "unit": "PLN/month gross (total)",
+  "currency": null,
+  "basis": "Inżynier procesu (process engineer) median total 9,750 (IQR 8,330–11,580; senior specialist ≈ 11,910) national × 1.056 × 0.9838 = 10,129",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-inzynier-procesu",
+  "date": "OBW (taken as 2025) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/32638bfa8c4982a4.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/32638bfa8c4982a4.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 56,
+  "key": "labour.engineer.fullyLoadedPlnPerHrStd",
+  "value": 85.02,
+  "unit": "PLN/h",
+  "currency": null,
+  "basis": "Day shift, salaried. Pay 12 × 10,129 − sick-pay saving 969 = 120,579; + 21.98% × (121,548 − 4,843 = 116,705) = 25,652; annual 146,231 ÷ 1,720 h = 85.02",
+  "source": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-inzynier-procesu",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/32638bfa8c4982a4.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/32638bfa8c4982a4.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 57,
+  "key": "energy.electricity.energyComponent",
+  "value": 0.4305,
+  "unit": "PLN/kWh ex-VAT",
+  "currency": null,
+  "basis": "TGE: volume-weighted average of BASE_Y-26 (2026 baseload year contract) over 2025 trading = 430.50 PLN/MWh (monthly 412.75–453.92)",
+  "source": "https://tge.pl/pub/TGE/komunikaty/2026/01/2026.01.07_podsumowanie dzialalnosci tge w 2025 roku.pdf",
+  "date": "2026 delivery (traded 2025)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 59,
+  "key": "energy.electricity.capacityFee",
+  "value": 0.128,
+  "unit": "PLN/kWh ex-VAT (load-averaged)",
+  "currency": null,
+  "basis": "Flat 3 × 8 h Mon–Fri load: share of energy in the charged 07:00–21:00 window = 14 ÷ 24 = 0.583; 0.2194 × 0.583 = 0.128",
+  "source": "https://www.gramwzielone.pl/?p=20339842",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d46544b63f788309.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d46544b63f788309.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 60,
+  "key": "energy.electricity.networkCharges",
+  "value": 0.1286,
+  "unit": "PLN/kWh ex-VAT",
+  "currency": null,
+  "basis": "PROXY: Forum Energii — transmission + distribution paid by Polish energy-intensive industry in 2024 = €29.4/MWh × 4.374 = 128.6 PLN/MWh",
+  "source": "https://www.forum-energii.eu/download/pobierz/rachunek-za-konkurencyjnosc",
+  "date": "2024",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 65,
+  "key": "energy.electricity.allIn",
+  "value": 0.702,
+  "unit": "PLN/kWh ex-VAT",
+  "currency": null,
+  "basis": "Build-up: energy 0.4305 + capacity fee 0.128 + network (proxy) 0.1286 + OZE 0.0073 + cogeneration 0.003 + excise 0.005 = 0.702 PLN/kWh (= €0.161/kWh at 4.374; = £0.138/kWh at 5.096)",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 66,
+  "key": "energy.gas.commodity",
+  "value": 0.2237,
+  "unit": "PLN/kWh ex-VAT (GCV)",
+  "currency": null,
+  "basis": "TGE gas day-ahead (RDNg) monthly averages: March 2026 234.05, April 2026 213.25 PLN/MWh → mean 223.65 PLN/MWh",
+  "source": "https://tge.pl/pub/TGE/komunikaty/2026/05/2026.05.06_podsumowanie dzialalnosci tge w kwietniu 2026.pdf",
+  "date": "2026-03/04",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 67,
+  "key": "energy.gas.distribution",
+  "value": 0.0251,
+  "unit": "PLN/kWh ex-VAT",
+  "currency": null,
+  "basis": "PSG variable distribution rate, groups W-5.1 / W-6A.1: 2.416 / 2.405 gr/kWh (Gdańsk area) and 2.605 gr/kWh (Tarnów area, W-5.1), H1 2024; midpoint of 2.416–2.605 = 2.51 gr/kWh",
+  "source": "https://pgnig.pl/documents/10184/45904/Informacja+w+zakresie+stawek+op%C5%82at+obowi%C4%85zuj%C4%85cych+w+okresie+I-VI+2024+r.+w+rozliczeniach+z+odbiorcami+uprawnionymi+do+ochrony+taryfowej+przy%C5%82%C4%85czonych+do+sieci+PSG/6eb476a2-88d4-4672-a10f-3e7cac239245",
+  "date": "2024-H1",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 68,
+  "key": "energy.gas.allIn",
+  "value": 0.249,
+  "unit": "PLN/kWh ex-VAT (GCV)",
+  "currency": null,
+  "basis": "Sourced components only: commodity 0.2237 + variable distribution 0.0251 = 0.249 PLN/kWh (= €0.057/kWh; £0.049/kWh)",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 0,
+  "key": "capex.mach-vmc3",
+  "value": 284288,
+  "unit": "PLN/unit ex-VAT (maker list / EU special-package price, machine only)",
+  "currency": null,
+  "basis": "Haas EU-series list: VF-2SSYT-EU (VF-2-size 3-axis VMC, super-speed, EU configuration) special price EUR 64,995 on Haas's Polish-language site; × 4.374 = 284,288 PLN. Same page: with 4th-axis package EUR 68,990, with 5th-axis package EUR 71,990",
+  "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html",
+  "date": "page undated (EU-series offer; retrieved via search 2026-10-10)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1b3558d12f47e41c.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 1,
+  "key": "capex.mach-haas-vf2",
+  "value": 284288,
+  "unit": "PLN/unit ex-VAT (list)",
+  "currency": null,
+  "basis": "same evidence as capex.mach-vmc3 (Haas VF-2SSYT-EU EUR 64,995; US list VF-2 US$70,995 = 273,260 PLN)",
+  "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://machinetoolindex.com/machines/haas-vf-2",
+  "date": "page undated; US list verified 2026-08-31",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1b3558d12f47e41c.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0fdf464c8e68f9f7.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0fdf464c8e68f9f7.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 2,
+  "key": "capex.mach-lathe-cnc",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found in any source (no Polish/EU list or award price for a Haas ST-20, AVIA turning centre or DN Solutions Lynx; Haas's ST-20 pages show no price — 'contact your HFO')",
+  "source": "https://www.haascnc.com/machines/lathes/st/models/standard/st-20.html",
+  "date": "retrieved 2026-10-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/fd8ec9a013cfc8c3.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 3,
+  "key": "capex.mach-vmc5",
+  "value": 461861,
+  "unit": "PLN/unit (US list, machine only; older figure)",
+  "currency": null,
+  "basis": "Haas UMC-500 'starts at US$119,995' (before educational discount) per an older Haas article quoted by the search; × 3.849 = 461,861 PLN",
+  "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "date": "article date not shown (older than 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09530ff8183cdcd2.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 4,
+  "key": "capex.mach-haas-umc500",
+  "value": 461861,
+  "unit": "PLN/unit (US list)",
+  "currency": null,
+  "basis": "same evidence as capex.mach-vmc5",
+  "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "date": "older than 2026 (article date not shown)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09530ff8183cdcd2.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 10,
+  "key": "capex.imm-200t",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found in any source (Polish/EU searches returned only used-machine listings)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 15,
+  "key": "capex.robot-mig-cell",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found in any source (Polish/EU searches returned only used-machine listings)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 18,
+  "key": "finance.machineryLoan",
+  "value": 8.22,
+  "unit": "% p.a. (SME investment loan, midpoint)",
+  "currency": null,
+  "basis": "bank price list: Bank Spółdzielczy Rzemiosła Kraków 'Kredyt inwestycyjny Unia Biznes' (up to 15 yr) = WIBOR 3M + 3.90 to 4.90 pp (tariff from 5 Mar 2026). With WIBOR 3M 3.82%: 7.72%–8.72%, midpoint (7.72 + 8.72) / 2 = 8.22%",
+  "source": "https://bsr.krakow.pl/assets/public/dokumenty/oprocentowanie/77-produkt-kredytowe-wycofane-z-oferty-oddzial-w-debicy-od-5-marca-2026.pdf",
+  "date": "2026-03-05 tariff",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 23,
+  "key": "rent.clusterAvg",
+  "value": 20.05,
+  "unit": "PLN/m²/month",
+  "currency": null,
+  "basis": "arithmetic mean of the three sourced cluster midpoints (Rzeszów has listings only): (4.600 + 4.325 + 4.825) / 3 = EUR 4.583 × 4.374 = 20.05 PLN",
+  "source": "https://ceo.com.pl/en/poland-warehouse-sector-rents-demand-and-regional-differences-56298/ ; https://mktgdocs.cbre.com/2299/afd5dde1-5a40-46be-a412-88753ce4fc8b-707339420/CBRE_Poland_Industrial_and_Log.pdf",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c8e59b32b60c3650.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 1,
+  "key": "ferrous.anchor.hrc.poland_distributor_St3S",
+  "value": 3.427,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "PUDS (Polska Unia Dystrybutorow Stali) steel price index, week 39/2026: hot-rolled sheet St3S 3,348-3,506 PLN/t net; mid 3,427/1000 = 3.427. Survey of wholesale transactions distributor -> end user, loco Warsaw (Central Poland), ex-VAT.",
+  "source": "https://www.wnp.pl/rynki/gielda-i-notowania/indeks-cen-stali-puds/",
+  "date": "2026-09-28",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5a985d4baaf9b83f.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5a985d4baaf9b83f.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 2,
+  "key": "ferrous.anchor.crc",
+  "value": 3.784,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Fastmarkets weekly CRC domestic exw Northern Europe EUR 850-880/t (13 Sep 2026, as relayed by Tacto); mid 865/1000 x 4.374 = 3.784. Earlier: 825-830 (13 Aug 2026), 825-840 (5 Aug 2026), Eurometal.",
+  "source": "https://www.tacto.ai/en/commodities/steel-price",
+  "date": "2026-09-13",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 4,
+  "key": "ferrous.anchor.pickled",
+  "value": null,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Not found in any source: no public 2026 European HRPO price or P&O extra over HRC.",
+  "source": "https://gmk.center/en/news/the-global-hot-rolled-coil-market-remained-stable-in-july-against-a-backdrop-of-a-seasonal-lull/",
+  "date": "2026-10-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e9f17ab820c0fa23.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e9f17ab820c0fa23.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 6,
+  "key": "ferrous.bar.C45",
+  "value": 3.173,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "24metal (Polish steel distributor, own web price list): C45 hot-rolled round bar fi 24 mm, 6 m, sold in 2-tonne bundles, 3,173.44 PLN/t net; /1000 = 3.173.",
+  "source": "https://24metal.com/pl/prety-okragle-gladkie/419-pret-gladki-c45-fi-24-dlugosc-6000-paczka-2-tony.html",
+  "date": "undated (read 2026-10-10)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/456fab7d8be48006.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/456fab7d8be48006.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 12,
+  "key": "ferrous.stainless.alloy_surcharge_1.4301_oct2026",
+  "value": 9.57,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Alloy surcharge 1.4301, October 2026: EUR 2,188/t (legierungszuschlag.info, last update 1 Oct 2026); 2,188/1000 x 4.374 = 9.570. Surcharge only, not a price.",
+  "source": "https://legierungszuschlag.info/en/",
+  "date": "2026-10-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 13,
+  "key": "ferrous.stainless.316L_CR",
+  "value": 18.48,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Fastmarkets stainless CR sheet 316 2 mm transaction, delivered North Europe, EUR 4,150-4,300/t (7 Sep 2026, range narrowed); mid 4,225/1000 x 4.374 = 18.480.",
+  "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+  "date": "2026-09-07",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a5eca96e0ccca504.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a5eca96e0ccca504.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 14,
+  "key": "ferrous.stainless.430_CR",
+  "value": 6.773,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "DERIVED (no 430 transaction price found): Oct 2026 1.4016 alloy surcharge EUR 985/t (legierungszuschlag.info) + effective base taken equal to the 304 CR effective base EUR 563.5/t (2,770 - Sep surcharge mid 2,206.5) = EUR 1,548.5/t; x 4.374/1000 = 6.773.",
+  "source": "https://legierungszuschlag.info/en/",
+  "date": "2026-10-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 15,
+  "key": "ferrous.stainless.304_bar",
+  "value": null,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Not found in any source: no 2026 European 304 bar base/transaction price (only the alloy surcharge, see ferrous.stainless.alloy_surcharge_1.4301_oct2026).",
+  "source": "https://legierungszuschlag.info/en/",
+  "date": "2026-10-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 17,
+  "key": "ferrous.foundry.steel_scrap_heavy",
+  "value": 1.204,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "German E3 heavy scrap (>6 mm) ex-works USD 327/t in July 2026 (-USD 29 m/m, GMK Center citing Kallanish); August 2026 German prices -EUR 10-15/t (GMK). 327 x 3.849 = 1,258.6 PLN/t - 12.5 x 4.374 = 54.7 -> 1,203.9 PLN/t = 1.204 PLN/kg (Aug 2026 estimate).",
+  "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "date": "2026-08 (published 2026-09-16)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 18,
+  "key": "ferrous.foundry.pig_iron",
+  "value": 1.859,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Brazilian pig iron exports to Italy, August 2026: 103 kt at USD 483/t (GMK Center, customs data); 483/1000 x 3.849 = 1.859. Brazilian average fell USD 20/t in September 2026 (GMK, 4 Oct 2026). Jan 2026 CFR Italy USD 460-470/t excl. CBAM (Kallanish via GMK).",
+  "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3c390078ec32ee9e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3c390078ec32ee9e.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.foundry.FeSi75",
+  "value": 5.511,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Argus: FeSi 75 EUR 1,240-1,280/t DDP NW Europe (16 Jun 2026, rangebound 3 weeks; prices eased after EU safeguard quotas renewed in May); mid 1,260/1000 x 4.374 = 5.511.",
+  "source": "https://api.argusmedia.com/articles/2840817",
+  "date": "2026-06-16",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1c2a278a3ef3fdc8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1c2a278a3ef3fdc8.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 22,
+  "key": "ferrous.foundry.FeCr_HC",
+  "value": 6.619,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "European benchmark ferrochrome Q3 2026: 156 US cents/lb Cr (Samchrome/Samancor reference, 6 Aug 2026). Per kg Cr = 1.56 x 2.20462 = USD 3.439 x 3.849 = 13.238 PLN/kg Cr; per kg of 50%-Cr alloy (same basis as the China file) = 6.619.",
+  "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+  "date": "2026-Q3",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5e4024ac72790434.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5e4024ac72790434.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 23,
+  "key": "ferrous.charge.GJS-500-7",
+  "value": 1.73,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION mix (per kg charged, as China file): 45% pig iron (1.859) + 30% steel scrap (1.204) + 25% returns valued at the charge's own cost -> metallics = (0.45x1.859 + 0.30x1.204)/0.75 = 1.597; + FeSiMg 1.3% x 5.511 (FeSi75 PROXY) = 0.072; + inoculant 0.4% x 5.511 = 0.022; / 0.98 melt & treatment loss = 1.725 PLN/kg.",
+  "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3c390078ec32ee9e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3c390078ec32ee9e.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 24,
+  "key": "ferrous.charge.GJL-250",
+  "value": 1.52,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION mix (induction grey iron, as China file): 25% pig (1.859) + 40% steel scrap (1.204) + 35% returns at charge cost -> (0.25x1.859 + 0.40x1.204)/0.65 = 1.456; + FeSi75 0.7% (Si trim + inoculant) x 5.511 = 0.039; / 0.98 = 1.525 PLN/kg.",
+  "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 25,
+  "key": "ferrous.charge.GS-C25",
+  "value": 1.28,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION: 70% steel scrap (1.204) + 30% returns at charge cost -> 1.204; + FeSi75 0.5% x 5.511 = 0.028; / 0.96 melt loss = 1.283 PLN/kg.",
+  "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 26,
+  "key": "ferrous.charge.CF8",
+  "value": 5.64,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION, scrap route: 80% 304 scrap (5.466) + 20% returns at charge cost -> 5.466; / 0.97 melt loss = 5.635 PLN/kg.",
+  "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+  "date": "2026-09-18",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f51ab8cf9fa2be4b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f51ab8cf9fa2be4b.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 0,
+  "key": "nonferrous.al.lme",
+  "value": 12.5,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "LME aluminium cash bid 28 Sep 2026: 3,248 USD/t (exchange settlement, as reported by AlCircle). 3,248/1000 x 3.849 = 12.50 PLN/kg. Exchange price; duty, premium and VAT not included.",
+  "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346",
+  "date": "2026-09-28",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c321ccbb972ce582.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c321ccbb972ce582.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 1,
+  "key": "nonferrous.al.dutyPaidPremium",
+  "value": 2.0,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Fastmarkets aluminium P1020A premium, in-warehouse duty-paid Rotterdam: 510-530 USD/t on Tue 15 Sep 2026 (price-agency assessment, quoted in a Fastmarkets correction notice). Mid 520/1000 x 3.849 = 2.00 PLN/kg.",
+  "source": "https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/",
+  "date": "2026-09-15",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/badcdf1e3a365682.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/badcdf1e3a365682.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 3,
+  "key": "nonferrous.al.adc12",
+  "value": 10.85,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Fastmarkets aluminium pressure diecasting ingot DIN226/A380, delivered Europe (MB-AL-0005): 2,430-2,530 EUR/t on 23 Jan 2026 (price-agency assessment, +10 EUR). Mid 2,480/1000 x 4.374 = 10.85 PLN/kg, delivered, ex-VAT. STALE (January 2026): no later public DIN226 print found.",
+  "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+  "date": "2026-01-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4cdffc5c51c6fd6f.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4cdffc5c51c6fd6f.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 5,
+  "key": "nonferrous.al.a356",
+  "value": null,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Not found in any public source. Fastmarkets' European foundry-alloy (AlSi7Mg) premium report is subscriber-only.",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 6,
+  "key": "nonferrous.al.billet6063_premium",
+  "value": 4.24,
+  "unit": "PLN/kg (premium over LME cash)",
+  "currency": null,
+  "basis": "Fastmarkets aluminium 6063 extrusion billet premium, DDP North Germany (Ruhr): 1,070-1,135 USD/t on Fri 28 Aug 2026 (prev. week 1,080-1,150). Mid 1,102.5/1000 x 3.849 = 4.24 PLN/kg. Premium over LME cash, duty-paid and delivered, CBAM included from Jan 2026.",
+  "source": "https://www.fastmarkets.com/insights/final-decision-on-open-consultation-on-methodology-review-for-aluminium-extrusion-billet-premiums-ddp-italy-ddp-north-germany-ddp-spain-in-relation-to-cbam/",
+  "date": "2026-08-28",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/120a335cf0574bef.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/120a335cf0574bef.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 7,
+  "key": "nonferrous.al.billet6063",
+  "value": 16.75,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "DERIVED: LME cash 3,248 (28 Sep) + DDP North Germany 6063 billet premium 1,102.5 (28 Aug) = 4,350.5 USD/t; x 3.849/1000 = 16.75 PLN/kg ex-VAT, delivered Germany.",
+  "source": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/final-decision-on-open-consultation-on-methodology-review-for-aluminium-extrusion-billet-premiums-ddp-italy-ddp-north-germany-ddp-spain-in-relation-to-cbam/",
+  "date": "2026-08-28 / 2026-09-28",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c321ccbb972ce582.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c321ccbb972ce582.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/120a335cf0574bef.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/120a335cf0574bef.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 9,
+  "key": "nonferrous.cu.spot",
+  "value": 56.73,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "LME copper cash 25 Sep 2026: 14,740 USD/t (exchange price, as reported by a market-data page). 14,740/1000 x 3.849 = 56.73 PLN/kg.",
+  "source": "https://www.tacto.ai/en/commodities/copper-price",
+  "date": "2026-09-25",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/27c2c171c0407d70.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/27c2c171c0407d70.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 10,
+  "key": "nonferrous.cu.cathode_premium",
+  "value": 1.21,
+  "unit": "PLN/kg (premium over LME)",
+  "currency": null,
+  "basis": "Aurubis 2026 annual European copper cathode premium offer: 315 USD/t (producer list premium, announced 7 Oct 2025, +38% vs 228 in 2025). 315/1000 x 3.849 = 1.21 PLN/kg. Codelco 2026 Europe offer 325 USD/t.",
+  "source": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+  "date": "2026 contract year (announced 2025-10-07)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/08fec7584329023e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/08fec7584329023e.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 11,
+  "key": "nonferrous.cu.cathode_delivered",
+  "value": 57.95,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "DERIVED: LME cash 14,740 + Aurubis 2026 premium 315 = 15,055 USD/t; x 3.849/1000 = 57.95 PLN/kg ex-VAT (metal value of a cathode before any rolling/drawing).",
+  "source": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+  "date": "2026-09-25",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/27c2c171c0407d70.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/27c2c171c0407d70.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/08fec7584329023e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/08fec7584329023e.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 13,
+  "key": "nonferrous.brass.CW614N_rod",
+  "value": 48.07,
+  "unit": "PLN/kg (metal basis only)",
+  "currency": null,
+  "basis": "German metal notation (Deutsche Metallnotierungen, Westmetall) 'Metallbasis MS 58 1. Verarbeitungsstufe' 1,088-1,110 EUR/100 kg on 9 Sep 2026 (1,091-1,114 on 8 Sep). Mid 10.99 EUR/kg x 4.374 = 48.07 PLN/kg. This is the brass METAL BASIS used for semi-finished surcharges, NOT a rod price; the rod fabrication charge is extra and was not found.",
+  "source": "https://www.westmetall.com/de/markdaten.php",
+  "date": "2026-09-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 15,
+  "key": "nonferrous.zn.spot",
+  "value": 15.82,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Westmetall official LME zinc cash 8 Sep 2026: 4,110 USD/t (exchange settlement). 4,110/1000 x 3.849 = 15.82 PLN/kg. No late-Sep LME zinc print found.",
+  "source": "https://www.westmetall.com/de/markdaten.php",
+  "date": "2026-09-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 16,
+  "key": "nonferrous.zn.shg_premium",
+  "value": 0.88,
+  "unit": "PLN/kg (premium over LME)",
+  "currency": null,
+  "basis": "Argus zinc SHG in-warehouse Rotterdam premium 215-240 USD/t, last 227.5, on 2 Feb 2026 (price-agency assessment). 227.5/1000 x 3.849 = 0.88 PLN/kg. STALE (Feb 2026); in-warehouse, not delivered.",
+  "source": "https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "date": "2026-02-02",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 17,
+  "key": "nonferrous.zn.shg_delivered",
+  "value": 16.7,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "DERIVED: LME zinc 4,110 (8 Sep 2026) + Rotterdam SHG premium 227.5 (2 Feb 2026) = 4,337.5 USD/t; x 3.849/1000 = 16.70 PLN/kg ex-VAT, in-warehouse Rotterdam.",
+  "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "date": "2026-09-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 18,
+  "key": "nonferrous.zn.zamak3",
+  "value": null,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "European Zamak 3 price or premium over LME zinc: NOT FOUND (Fastmarkets/Argus paywalled; ZGH Bolesław publishes none found). DERIVED METAL-CONTENT FLOOR ONLY: 0.96 x SHG zinc 4,337.5 + 0.04 x P1020 3,768 = 4,315 USD/t = 16.61 PLN/kg, before the alloying/ingot premium.",
+  "source": "",
+  "date": "2026-09 (inputs)",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 19,
+  "key": "nonferrous.zn.zamak5",
+  "value": null,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "NOT FOUND. DERIVED METAL-CONTENT FLOOR ONLY: 0.95 x zinc 4,337.5 + 0.04 x P1020 3,768 + 0.01 x copper 14,740 = 4,419 USD/t = 17.01 PLN/kg, before the alloying premium.",
+  "source": "",
+  "date": "2026-09 (inputs)",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 20,
+  "key": "nonferrous.mg.ingot",
+  "value": 10.98,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "LOW CONFIDENCE (market-research aggregator, not a price agency): IMARC magnesium price, Netherlands, Q2 2026: 2,853 USD/t. 2,853/1000 x 3.849 = 10.98 PLN/kg.",
+  "source": "https://www.imarcgroup.com/magnesium-pricing-report",
+  "date": "2026-Q2",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/49854b94c2a23861.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/49854b94c2a23861.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 21,
+  "key": "nonferrous.mg.az91d",
+  "value": null,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Not found in any public European source for 2026.",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 22,
+  "key": "nonferrous.sn.spot",
+  "value": 211.31,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Westmetall official LME tin cash 8 Sep 2026: 54,900 USD/t; x 3.849/1000 = 211.31 PLN/kg.",
+  "source": "https://www.westmetall.com/de/markdaten.php",
+  "date": "2026-09-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 23,
+  "key": "nonferrous.ni.spot",
+  "value": 64.18,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "Westmetall official LME nickel cash 8 Sep 2026: 16,675 USD/t; x 3.849/1000 = 64.18 PLN/kg.",
+  "source": "https://www.westmetall.com/de/markdaten.php",
+  "date": "2026-09-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pp_homo",
+  "value": 5.11,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. PP homopolymer injection moulding (PPH IM) 1,168 EUR/t (week 37/2026, +1.6% w/w) ÷ 1000 × 4.374 = 5.11 PLN/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 2,
+  "key": "polymer.hdpe",
+  "value": 5.47,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. HDPE film 1,250 EUR/t (week 37/2026, +2.5% w/w) ÷ 1000 × 4.374 = 5.47 PLN/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 4,
+  "key": "polymer.ldpe",
+  "value": 5.58,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. LDPE film 1,276 EUR/t (week 37/2026, +0.8% w/w) ÷ 1000 × 4.374 = 5.58 PLN/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 5,
+  "key": "polymer.lldpe",
+  "value": 5.45,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. (m)LLDPE C6 1,247 EUR/t (week 37/2026, unchanged) ÷ 1000 × 4.374 = 5.45 PLN/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.pvc",
+  "value": 4.34,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. S-PVC (suspension) 993 EUR/t (week 37/2026, −10 w/w) ÷ 1000 × 4.374 = 4.34 PLN/kg. K-value not stated (general S-PVC, K67-type).",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 7,
+  "key": "polymer.abs",
+  "value": 8.03,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. ABS 1,835 EUR/t (week 37/2026, −10 w/w) ÷ 1000 × 4.374 = 8.03 PLN/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 8,
+  "key": "polymer.ps",
+  "value": 6.71,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. GPPS 1,534 EUR/t (week 37/2026, −3.8% w/w) ÷ 1000 × 4.374 = 6.71 PLN/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 9,
+  "key": "polymer.hips",
+  "value": 7.33,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 2), EUR/t, published with a ~5-week delay. HIPS 1,676 EUR/t (week 37/2026, −29 w/w) ÷ 1000 × 4.374 = 7.33 PLN/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 10,
+  "key": "polymer.pc",
+  "value": 11.55,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Price index (businessanalytiq, aggregator; methodology not published in detail): Europe polycarbonate US$3.00/kg Sep 2026 (−2.9% m/m) × 3.849 = 11.55 PLN/kg. Not a single transaction or contract price.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d91767248ff04080.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d91767248ff04080.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 11,
+  "key": "polymer.pa6",
+  "value": 10.28,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Price index (businessanalytiq): Europe PA6 US$2.67/kg Aug 2026 (+3.1% m/m) × 3.849 = 10.28 PLN/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f6a490421e498d14.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f6a490421e498d14.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.pa66",
+  "value": 16.28,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Price index (businessanalytiq): Europe PA66 US$4.23/kg Aug 2026 (+14.6% m/m) × 3.849 = 16.28 PLN/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5920aad86d4672dd.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5920aad86d4672dd.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 14,
+  "key": "polymer.pbt",
+  "value": 14.24,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Price index (businessanalytiq): Europe PBT US$3.70/kg Sep 2026 (−1.1% m/m) × 3.849 = 14.24 PLN/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9ae9b9bd720a68b5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9ae9b9bd720a68b5.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 15,
+  "key": "polymer.pet_bottle",
+  "value": 4.97,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Price index (businessanalytiq): Europe PET US$1.29/kg Sep 2026 (+1.6% m/m) × 3.849 = 4.97 PLN/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5d00e881cc44bf4b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5d00e881cc44bf4b.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 16,
+  "key": "polymer.pmma",
+  "value": 14.2,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Price index (businessanalytiq): Europe PMMA US$3.69/kg Sep 2026 (unchanged) × 3.849 = 14.2 PLN/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a502e1709fd0288a.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a502e1709fd0288a.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 17,
+  "key": "polymer.tpu",
+  "value": null,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Not found in any source.",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 18,
+  "key": "polymer.peek",
+  "value": 346.5,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "DERIVED from a company report: Victrex plc Q3 FY2026 trading statement — group average selling price £68/kg (Q3 and year-to-date to 30 Jun 2026; YTD revenue £231.6m ÷ 3,375 t = £68.6/kg). £68 × 5.096 = 346.5 PLN/kg. Revenue is ex-VAT.",
+  "source": "https://www.investegate.co.uk/announcement/rns/victrex-plc--vct/trading-statement/9654844",
+  "date": "2026-06-30 (Q3 FY2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/49bbf100095eb62e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/49bbf100095eb62e.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 26,
+  "key": "composite.cf_t700_12k",
+  "value": null,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Not found in any source.",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 0,
+  "key": "capex.brake-trumpf-trubend3100",
+  "value": 594864,
+  "unit": "PLN/unit ex-VAT (new machine, FCA Ditzingen; machine only)",
+  "currency": null,
+  "basis": "TRUMPF TruBend 3100, 100 t, NEW, CE, 4-axis back gauge (expandable to 5), BendGuard, ACB laser angle measurement, on-demand hydraulic drive; asking price EUR 136,000 FCA, fixed price plus VAT; × 4.374 = 594,864 PLN. The advertiser's address is Johann-Maus-Straße 2, Ditzingen — TRUMPF's headquarters — so this reads as the maker's own new-machine offer.",
+  "source": "https://www.machineseeker.com/trumpf-trubend+3100/i-22233802",
+  "date": "listing updated 30.06.2026 / 10.07.2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b3e44e5e1aa2fe4d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b3e44e5e1aa2fe4d.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 1,
+  "key": "capex.brake-amada-hfe100",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found in any source (no new-machine list, distributor price or award for an Amada HFE 100-3)",
+  "source": "https://resale.info/en/amada-hfe-100-3-prensa-plegadora/No-166672578",
+  "date": "listings 2015–2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/13dffc896f1a037a.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 2,
+  "key": "capex.laser-trumpf-3030",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found: no EU/PL new list price or award for a TruLaser 3030 fiber 6 kW (TRUMPF quotes on request)",
+  "source": "https://resale.info/en/trumpf-trulaser-3030-laser-cutting-machines/No-165417843",
+  "date": "resale records 2019–2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/eee2813d6d9b0fb6.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 13,
+  "key": "capex.grav-die-cast-std",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found in any source (not searched separately — budget)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 14,
+  "key": "capex.heat-treat-furnace",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found in any source (not searched separately — budget)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 29,
+  "key": "capex.robot-mig-cell",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found in any Polish source (EU-funded 'zrobotyzowane stanowisko spawalnicze' inquiries found — Fortaco Janów Lubelski 2023, Unidex 2022 — but no awarded value)",
+  "source": "https://fortacogroup.com/wp-content/uploads/2026/04/Zapytanie_ofertowe-nr-2_2023_Zrobotyzowane-stanowisko-spawalnicze.pdf",
+  "date": "2023",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-plastics.json",
+  "i": 2,
+  "key": "capex.imm-200t",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found in any source. EU-funded tender located (Improdex, Czechowice-Dziedzice: hybrid IMM ≥200 t + 3-axis robot, purchase + delivery + installation) but the search returned no award value",
+  "source": "https://bazakonkurencyjnosci.funduszeeuropejskie.gov.pl/api/files/1975317",
+  "date": "2025–2026 (notice; award not found)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f279d19d07a9b23e.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-plastics.json",
+  "i": 16,
+  "key": "capex.mach-lathe-cnc",
+  "value": null,
+  "unit": "PLN/unit",
+  "currency": null,
+  "basis": "not found in any source: Haas ST-10/ST-20 EU-series pages (haascnc.com/pl, /nl, /ja) show 'special European price' but no figure in the search snippets (price field labelled CNY-only / 'contact your HFO'); no US list on machinetoolindex",
+  "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series.html",
+  "date": "retrieved 2026-10-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d6864b57afbfb05a.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-plastics.json",
+  "i": 27,
+  "key": "capex.al-ext-press-1800t",
+  "value": 43740000,
+  "unit": "PLN/line (EU transaction-level programme value, installed)",
+  "currency": null,
+  "basis": "Vimetco Extrusion (ALRO group, Slatina, Romania): EUR 10 m investment = acquisition and installation of an automated 7-inch aluminium extrusion line supplied by Presezzi Extrusion (profiles up to 60 m at 50 m/min, +11,000 t/yr); × 4.374 = 43,740,000 PLN",
+  "source": "https://www.alcircle.com/news/vimetco-extrusion-to-expand-aluminium-profiles-extrusion-line-with-eur-10-million-investments-63714 ; https://www.thediplomat.ro/?p=10490 ; https://www.alro.ro/en/article/vimetco-extrusion-announces-new-press ; https://www.lightmetalage.com/news/industry-news/extrusion/vimetco-extrudes-first-billet-on-new-press-line/",
+  "date": "project started March 2021, first billet 2022 (company announcement; 2021–22 prices)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/50d7b59bc076f6b4.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/50d7b59bc076f6b4.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f9931bc0d107d2d5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f9931bc0d107d2d5.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6578b10ac5e4a037.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6578b10ac5e4a037.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6fa0ee40c73e9462.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6fa0ee40c73e9462.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-ferrous.json",
+  "i": 13,
+  "key": "ferrous.stainless.409L_CR",
+  "value": 6.484,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "DERIVED: Aperam July 2026 flat surcharge 409 / 1.4512 EUR 919/t (Jun 917, Mar 865) + effective base taken equal to the 304 CR effective base EUR 563.5/t (round 1: Fastmarkets 304 CR 2,770 - Sep surcharge 2,206.5) = EUR 1,482.5/t; x 4.374/1000 = 6.484.",
+  "source": "https://news.metal.com/en/newscontent/104001715-smm-stainless-steel-flash-aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026",
+  "date": "2026-07-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4b20c914db85684c.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4b20c914db85684c.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.anchor.hrpo",
+  "value": 3.652,
+  "unit": "PLN/kg",
+  "currency": null,
+  "basis": "DERIVED: round 1 HRC anchor EUR 745/t (Fastmarkets N. Europe exw, 6 Oct 2026) + pickling extra EUR 90/t = EUR 835/t; x 4.374/1000 = 3.652. Extra from a German service centre quote (Kallanish via Eurometal, UNDATED): pickled EUR 930-980/t v unpickled 860-870 -> mid 955 - 865 = 90.",
+  "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+  "date": "undated extra; HRC 2026-10-06",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5350d80b76e77c4c.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5350d80b76e77c4c.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pom",
+  "value": 11.7,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Europe POM (homo/copolymer, unfilled) US$3.04/kg, July 2026 (−2.9% m/m) × 3.849 = 11.70 PLN/kg. Aggregator index (businessanalytiq, 'calculated from multiple separate sources', method not published; US$/kg at period FX) — priority 2/5, moderate confidence. Market price, not an offer list.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/",
+  "date": "2026-07",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2b422522670e47c3.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2b422522670e47c3.render.txt"
+  ]
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-polymer.json",
+  "i": 8,
+  "key": "polymer.tpu",
+  "value": null,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "Not found in any source within budget.",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-polymer.json",
+  "i": 18,
+  "key": "composite.cf_t700_12k",
+  "value": 130.87,
+  "unit": "PLN/kg ex-VAT",
+  "currency": null,
+  "basis": "IMARC carbon fibre price, Germany, March 2026 US$34/kg × 3.849 = 130.87 PLN/kg (UK same month US$35/kg = 134.72). Market-research vendor (priority 5); generic standard-modulus carbon fibre, not T700-specific. Toray announced +10–20% on TORAYCA from Jan 2026.",
+  "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+  "date": "2026-03",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/330cc45fd1b5a6e7.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/330cc45fd1b5a6e7.render.txt"
+  ]
+ }
+]

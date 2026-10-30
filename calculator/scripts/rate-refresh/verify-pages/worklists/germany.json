@@ -1,0 +1,1370 @@
+[
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 32,
+  "key": "labour.skilled.monthlyGross",
+  "value": 4316.88,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "Zerspanungsmechaniker / CNC machinist: 3.5-year apprenticeship + experience setting and editing CNC programs → one group above the Eckentgelt (EG 7 = completed 3-yr apprenticeship) = EG 8. BW EG 8 3,962.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4316.88",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 33,
+  "key": "labour.skilled.fullyLoadedEurPerHr",
+  "value": 52.45,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4316.88 = 51803; + late-shift premium 2599 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 8268; annual gross 62670; + employer social contributions 14265 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 76935 ÷ 1466.78 productive h = 52.45",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 34,
+  "key": "labour.semiskilled.monthlyGross",
+  "value": 3590.77,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "Maschinen- und Anlagenführer: 2-year apprenticeship / trained operator → EG 5 (two below Eckentgelt). BW EG 5 3,296.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3590.77",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 35,
+  "key": "labour.semiskilled.fullyLoadedEurPerHr",
+  "value": 43.76,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3590.77 = 43089; + late-shift premium 2162 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7033; annual gross 52284; + employer social contributions 11900 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 64184 ÷ 1466.78 productive h = 43.76",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 36,
+  "key": "labour.foundry.monthlyGross",
+  "value": 4034.72,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "Gießereimechaniker: 3.5-year apprenticeship → Eckentgelt EG 7. BW EG 7 3,703.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4034.72",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 37,
+  "key": "labour.foundry.fullyLoadedEurPerHr",
+  "value": 49.07,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4034.72 = 48417; + late-shift premium 2429 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7788; annual gross 58634; + employer social contributions 13346 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 71980 ÷ 1466.78 productive h = 49.07",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 38,
+  "key": "labour.electronics.monthlyGross",
+  "value": 3590.77,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "SMT / electronics production operator: trained-on operator (no 3-yr apprenticeship needed) → EG 5, same level as the semi-skilled operator. BW EG 5 3,296.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3590.77",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 39,
+  "key": "labour.electronics.fullyLoadedEurPerHr",
+  "value": 43.76,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3590.77 = 43089; + late-shift premium 2162 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7033; annual gross 52284; + employer social contributions 11900 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 64184 ÷ 1466.78 productive h = 43.76",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 40,
+  "key": "labour.inspector.monthlyGross",
+  "value": 4034.72,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "Quality inspector (CMM, measuring-room): skilled-worker level → Eckentgelt EG 7. BW EG 7 3,703.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4034.72",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 41,
+  "key": "labour.inspector.fullyLoadedEurPerHr",
+  "value": 49.07,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4034.72 = 48417; + late-shift premium 2429 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7788; annual gross 58634; + employer social contributions 13346 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 71980 ÷ 1466.78 productive h = 49.07",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 42,
+  "key": "labour.technician.monthlyGross",
+  "value": 4599.59,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "Maintenance Mechatroniker: 3.5-year apprenticeship + several years' experience, fault-finding across trades → EG 9. BW EG 9 4,222.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4599.59",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 43,
+  "key": "labour.technician.fullyLoadedEurPerHr",
+  "value": 55.84,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4599.59 = 55195; + late-shift premium 2770 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 8749; annual gross 66714; + employer social contributions 15186 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 81899 ÷ 1466.78 productive h = 55.84",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 44,
+  "key": "labour.supervisor.monthlyGross",
+  "value": 5587.7,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "Shift foreman / Industriemeister: Meister qualification with staff responsibility → EG 12 (BW Meister band EG 11–12). BW EG 12 5,129.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 5587.70",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 45,
+  "key": "labour.supervisor.fullyLoadedEurPerHr",
+  "value": 66.87,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 5587.70 = 67052; + late-shift premium 3365 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 10430; annual gross 80847; + employer social contributions 17233 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 98080 ÷ 1466.78 productive h = 66.87",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 46,
+  "key": "labour.forge.monthlyGross",
+  "value": 3792.32,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "PROXY — Umformer / forging press operator: Maschinen- und Anlagenführer (Umformtechnik) level plus hot heavy-press work → EG 6 (one above the semi-skilled operator). BW EG 6 3,481.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3792.32",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 47,
+  "key": "labour.forge.fullyLoadedEurPerHr",
+  "value": 46.17,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 48,
+  "key": "labour.furnace.monthlyGross",
+  "value": 4034.72,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "PROXY = foundry (Gießereimechaniker, EG 7) — no melter / furnace-operator grading found. BW EG 7 3,703.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4034.72",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 49,
+  "key": "labour.furnace.fullyLoadedEurPerHr",
+  "value": 49.07,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4034.72 = 48417; + late-shift premium 2429 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7788; annual gross 58634; + employer social contributions 13346 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 71980 ÷ 1466.78 productive h = 49.07",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 50,
+  "key": "labour.blow.monthlyGross",
+  "value": 3792.32,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "PROXY — Verfahrensmechaniker Kunststoff- und Kautschuktechnik as machine operator: trained operator with mould change / process setting → EG 6 on the M+E table. BW EG 6 3,481.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3792.32",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 51,
+  "key": "labour.blow.fullyLoadedEurPerHr",
+  "value": 46.17,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 52,
+  "key": "labour.roto.monthlyGross",
+  "value": 3792.32,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "PROXY — as blow: Verfahrensmechaniker Kunststoff operator → EG 6 (M+E table). BW EG 6 3,481.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3792.32",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 53,
+  "key": "labour.roto.fullyLoadedEurPerHr",
+  "value": 46.17,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 54,
+  "key": "labour.thermoform.monthlyGross",
+  "value": 3792.32,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "PROXY — as blow: Verfahrensmechaniker Kunststoff operator → EG 6 (M+E table). BW EG 6 3,481.00 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 3792.32",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 55,
+  "key": "labour.thermoform.fullyLoadedEurPerHr",
+  "value": 46.17,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 56,
+  "key": "labour.trimRouter.monthlyGross",
+  "value": 4316.88,
+  "unit": "EUR/month gross (Grundentgelt + average Leistungszulage, 4-cluster)",
+  "currency": null,
+  "basis": "PROXY = skilled (CNC router / trim operator → EG 8). BW EG 8 3,962.50 × 1.15 (BW average Leistungszulage) × 0.9473 (cluster factor) = 4316.88",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 57,
+  "key": "labour.trimRouter.fullyLoadedEurPerHr",
+  "value": 52.45,
+  "unit": "EUR/h per productive hour",
+  "currency": null,
+  "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4316.88 = 51803; + late-shift premium 2599 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 8268; annual gross 62670; + employer social contributions 14265 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 76935 ÷ 1466.78 productive h = 52.45",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 58,
+  "key": "labour.engineer.monthlyGross",
+  "value": 6313.81,
+  "unit": "EUR/month gross",
+  "currency": null,
+  "basis": "Process / manufacturing engineer (Bachelor/Diplom, several years' experience) → BW EG 14 5,795.50 × 1.15 × 0.9473 = 6313.81 (tariff-covered engineer; BW engineers span EG 13–17)",
+  "source": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/15287648f75fd460.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 59,
+  "key": "labour.engineer.fullyLoadedEurPerHrStd",
+  "value": 71.9,
+  "unit": "EUR/h per productive hour (day shift)",
+  "currency": null,
+  "basis": "Day shift, salaried, no shift premium. Pay 12 × 6313.81 = 75766; + special payments 11665; annual gross 87431 (above the KV/PV ceiling 69,750); + employer social contributions 18035 (RV/AV/insolvency 10.75% on 87k < 101,400; KV/PV 10.55% capped at 69,750; accident 1.08%; U2 0.44%); total 105466 ÷ 1466.78 h = 71.90",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 60,
+  "key": "labour.loadingIncluded",
+  "value": null,
+  "unit": "—",
+  "currency": null,
+  "basis": "Fully-loaded hourly cost INCLUDES: ERA monthly Grundentgelt (tables valid 1 Apr – 31 Oct 2026, incl. the +3.1% step) + average Leistungszulage, 4-cluster average; 30 days' paid leave and paid public holidays (inside 12 monthly pays); Entgeltfortzahlung for 13.2 sickness working days; Urlaubsgeld (0.69 month), tarifliche Sonderzahlung 55%, T-ZUG A 27.5%, T-Geld 18.4%, T-ZUG B (26.5% of Eckentgelt); late-shift premium 20% on 14:00–19:00 (shop-floor roles); employer RV, AV, KV incl. half Zusatzbeitrag, PV, accident (DGUV average), Insolvenzgeldumlage, U2 — with the 2026 ceilings; divided by 1,466.78 productive hours.",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 61,
+  "key": "labour.loadingNotIncluded",
+  "value": null,
+  "unit": "—",
+  "currency": null,
+  "basis": "NOT included: night premiums for any late-shift hours after 19:00/20:00 (regional night definition not confirmed); third shift / weekend / overtime premiums; Erschwernis- / hot-work allowances; occupational pension (tarifliche Altersvorsorge AVWL, company bAV) and vermögenswirksame Leistungen; Bildungsurlaub; training time; works-council and meeting time; protective clothing, canteen subsidy; recruitment; agency-worker mark-ups; the Nov 2026 tariff round (tables expire 31 Oct 2026); AT (above-tariff) pay; U1 (n/a > 30 staff).",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 63,
+  "key": "energy.electricity.energyComponent",
+  "value": 0.0866,
+  "unit": "EUR/kWh ex-VAT",
+  "currency": null,
+  "basis": "EEX Phelix-DE Cal-26 baseload settlements during 2025 procurement: 88.03 (8 Oct 2025), 87.16 (22 Oct 2025), 84.58 (1 Jul 2025); low 77.62 (Apr 2025); mean of the three dated points (88.03 + 87.16 + 84.58) ÷ 3 = 86.59 EUR/MWh",
+  "source": "https://www.ewv.de/fileadmin/user_upload/user_upload/Geschaeftskunden/Marktberichte/2025/EWV-Marktbericht-Nr.41-Strom.pdf",
+  "date": "2025-10",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 65,
+  "key": "energy.electricity.kwkgLevy",
+  "value": 0.00446,
+  "unit": "EUR/kWh",
+  "currency": null,
+  "basis": "KWKG-Umlage 2026 = 0.446 ct/kWh net (2025: 0.277)",
+  "source": "https://www.vea.de/newsroom/aktuelles/thema/netztransparenzde-meldet-netzentgeltbasierte-umlagen-fuer-2026",
+  "date": "2026-01-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e117d9acc8453cd9.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 66,
+  "key": "energy.electricity.offshoreLevy",
+  "value": 0.00941,
+  "unit": "EUR/kWh",
+  "currency": null,
+  "basis": "Offshore-Netzumlage 2026 = 0.941 ct/kWh net (2025: 0.816)",
+  "source": "https://www.vea.de/newsroom/aktuelles/thema/netztransparenzde-meldet-netzentgeltbasierte-umlagen-fuer-2026",
+  "date": "2026-01-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e117d9acc8453cd9.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 71,
+  "key": "energy.electricity.allIn",
+  "value": 0.172,
+  "unit": "EUR/kWh ex-VAT",
+  "currency": null,
+  "basis": "BDEW Strompreisanalyse (autumn 2026): average electricity price for small–medium industry (160 MWh – 20 GWh/yr, medium-voltage supply, incl. reduced Stromsteuer, excl. VAT) in 2026 to date = 17.2 ct/kWh (−0.4 ct v 2025; rising at the margin after the Iran war). Consistent with the sourced build-up 0.149 + profile/margin",
+  "source": "https://www.bdew.de/service/daten-und-grafiken/bdew-strompreisanalyse/",
+  "date": "2026 (published Aug/Sep 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/da6cf2adbc7b2ef1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/da6cf2adbc7b2ef1.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 73,
+  "key": "energy.gas.commodity",
+  "value": 0.0335,
+  "unit": "EUR/kWh ex-VAT (Hs)",
+  "currency": null,
+  "basis": "EEX THE natural gas Cal-26 = 33.50 EUR/MWh on 7 Oct 2025 (2025 range 32.33–46.11); THE day-ahead 34.15 the same day",
+  "source": "https://www.mainova.de/resource/blob/57556/119d6c21bb0f872a3ffdde0402f013fc/marktbericht-07102025-data.pdf",
+  "date": "2025-10-07",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 76,
+  "key": "energy.gas.distribution",
+  "value": null,
+  "unit": "EUR/kWh ex-VAT",
+  "currency": null,
+  "basis": "NOT FOUND: 2026 gas network / distribution charges for an RLM industrial customer (DSO price sheets not reached)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 0,
+  "key": "capex.mach-vmc3",
+  "value": 64995,
+  "unit": "EUR/unit ex-VAT (Haas EU-series list / special price, machine only)",
+  "currency": null,
+  "basis": "Haas EU-series VF-2SSYT-EU (VF-2-size 3-axis VMC, 12k rpm, extended Y, EU configuration) special price EUR 64,995 as shown on Haas's own EU (Polish-locale) site and recorded by the Poland round on 2026-10-10. Haas sells the EU series at one EUR price across the EU; the German page (haascnc.com/de) describes the same model as 'zu einem Sonderpreis für den europäischen Markt' but the search did not return the figure from the German page.",
+  "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu",
+  "date": "page undated; retrieved via search 2026-10-10 (PL) and 2026-10-12 (DE page, no price in snippet)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1b3558d12f47e41c.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/81273040fcb6c941.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 1,
+  "key": "capex.mach-haas-vf2",
+  "value": 64995,
+  "unit": "EUR/unit ex-VAT (list)",
+  "currency": null,
+  "basis": "same evidence as capex.mach-vmc3: Haas VF-2SSYT-EU EU special price EUR 64,995; US list VF-2 US$70,995 × 0.880 = EUR 62,476",
+  "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://machinetoolindex.com/machines/haas-vf-2",
+  "date": "page undated; US list verified 2026-08-31",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1b3558d12f47e41c.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0fdf464c8e68f9f7.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0fdf464c8e68f9f7.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 2,
+  "key": "capex.mach-vmc5",
+  "value": 105596,
+  "unit": "EUR/unit (US list converted, machine only; older figure)",
+  "currency": null,
+  "basis": "Haas UMC-500 'starts at US$119,995' (older Haas article quoted by the Poland round's search) × 0.880 = EUR 105,596",
+  "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "date": "article date not shown (older than 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09530ff8183cdcd2.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 3,
+  "key": "capex.mach-haas-umc500",
+  "value": 105596,
+  "unit": "EUR/unit (US list converted)",
+  "currency": null,
+  "basis": "same as capex.mach-vmc5: US$119,995 × 0.880 = EUR 105,596",
+  "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "date": "older than 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09530ff8183cdcd2.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 4,
+  "key": "capex.mach-lathe-cnc",
+  "value": null,
+  "unit": "EUR/unit",
+  "currency": null,
+  "basis": "not found: no EUR list price for a Haas ST-20 on the German Haas site (configurator shows only a 'CNY' starting price; ST-20LY-EU 'Sonderpreis' with no figure)",
+  "source": "https://www.haascnc.com/de/machines/compare-machines.ST-20.html ; https://www.haascnc.com/sv/shop/2024_stock/HAE/canceled-orders-master/ST-20-HE-AC_3132431.html",
+  "date": "retrieved via search 2026-10-12",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/04ac8fec207e9bf6.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/88c5dec86d41da44.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 16,
+  "key": "capex.laser-trumpf-3030",
+  "value": null,
+  "unit": "EUR/unit",
+  "currency": null,
+  "basis": "not found: no new-machine EUR list price for a TRUMPF TruLaser 3030 fiber (TRUMPF quotes on request); search returned only used listings",
+  "source": "https://www.maschinensucher.de/trumpf-trulaser+3030+fiber+%28l81%29+%2B+storemaster/i-20635200",
+  "date": "listings current at 2026-10-12",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 18,
+  "key": "capex.imm-200t",
+  "value": null,
+  "unit": "EUR/unit",
+  "currency": null,
+  "basis": "not searched (budget exhausted); no Engel / Arburg / KraussMaffei price found",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 19,
+  "key": "capex.heat-treat-furnace",
+  "value": null,
+  "unit": "EUR/unit",
+  "currency": null,
+  "basis": "not searched (budget exhausted)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 20,
+  "key": "finance.machineryLoan",
+  "value": 3.73,
+  "unit": "% p.a. (bank new business, loans > EUR 1 M to non-financial corporations, initial rate fixation > 10 years, EURO AREA, July 2026)",
+  "currency": null,
+  "basis": "Bundesbank release of the euro-area MFI interest rate statistics for July 2026: loans > EUR 1 M to non-financial corporations, fixation > 10 years 3.73% (−5 bp); floating / ≤ 3 months 3.49% (−7 bp); > 3 months–1 year 3.84% (+17 bp). Earlier 2026: > 10 yr 3.65% (Mar), 3.74% (Apr), 3.60% (May), 3.77% (Jun)",
+  "source": "https://www.bundesbank.de/resource/blob/1007288/4cb2afba5124a71bb1996fd5aa0def80/472B63F073F071307366337C94F8C870/2026-09-02-mfi-zinsstatistik-download.pdf",
+  "date": "July 2026 (published 2026-09-02)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 27,
+  "key": "rent.clusterAvg",
+  "value": 8.54,
+  "unit": "EUR/m²/month net (prime logistics; production space not found)",
+  "currency": null,
+  "basis": "(8.75 Stuttgart + 11.00 Munich + 6.40 Hannover/Braunschweig + 8.00 Cologne) / 4 = 34.15 / 4 = 8.54",
+  "source": "see the four rent.* items",
+  "date": "2025–2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 1,
+  "key": "ferrous.anchor.crc",
+  "value": 0.865,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "Fastmarkets weekly CRC domestic exw Northern Europe EUR 850-880/t (13 Sep 2026, as relayed by Tacto); mid 865/1000 = 0.865 EUR/kg. Commercial CR (DC01 class), ex-works, ex-VAT, freight not added.",
+  "source": "https://www.tacto.ai/en/commodities/steel-price",
+  "date": "2026-09-13",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 2,
+  "key": "ferrous.anchor.hdg",
+  "value": 0.86,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "Fastmarkets weekly HDG domestic exw Northern Europe EUR 850-870/t (13 Sep 2026, via Tacto); mid 860/1000 = 0.860 EUR/kg. DX51D+Z class, standard coating, ex-works, ex-VAT, freight not added.",
+  "source": "https://www.tacto.ai/en/commodities/steel-price",
+  "date": "2026-09-13",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 3,
+  "key": "ferrous.anchor.hrpo",
+  "value": 0.835,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "DERIVED: HRC anchor EUR 745/t (Fastmarkets N. Europe exw, 6 Oct 2026) + pickling extra EUR 90/t = EUR 835/t = 0.835 EUR/kg. Extra from a German service-centre quote (Kallanish via Eurometal, UNDATED): pickled EUR 930-980/t v unpickled 860-870 -> mid 955 - 865 = 90.",
+  "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+  "date": "undated extra; HRC 2026-10-06",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5350d80b76e77c4c.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5350d80b76e77c4c.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 6,
+  "key": "ferrous.bar.C45",
+  "value": null,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "Not found in any source (full price). Alloy surcharge only: 1.0503 C45 EUR 5/t (bright, both delivery forms) on Swiss Steel Steeltec sheets of Mar 2026 and Jul 2026 = 0.005 EUR/kg; + scrap surcharge EUR 253/t rolled / 291 bright (Frankstahl Feb 2026). Price = base + scrap surcharge + alloy surcharge; base not found. No published German engineering-bar BASE price (Grundpreis) was found: Saarstahl, Swiss Steel / DEW, GMH and Ovako publish surcharges only, base prices are negotiated; German stockholders (Kerschgens, Frankstahl/THE STEEL) show surcharge sheets but no tonne price; web prices are eBay cut pieces (not a basis) and Kallanish/Fastmarkets SBQ assessments are paywalled. October 2026 surcharge sheets were not found (latest seen: Frankstahl Feb 2026, Steeltec Jul 2026, Ovako Jan 2026).",
+  "source": "https://swisssteel-group.com/content-media/documents/Steeltec/Secure-area-Steeltec/July/Zuschlaege_Surcharges-07_2026.pdf",
+  "date": "2026-07-01",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 13,
+  "key": "ferrous.stainless.304_CR_2B",
+  "value": 2.77,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "Fastmarkets stainless CR sheet 304 2 mm transaction price, delivered North Europe, EUR 2,740-2,800/t (7 Sep 2026); mid 2770/1000 = 2.770 EUR/kg. Sep 2026 European alloy surcharge for the product EUR 2,178-2,235/t, so effective base = 2770 - 2206.5 = EUR 563.5/t.",
+  "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+  "date": "2026-09-07",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a5eca96e0ccca504.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a5eca96e0ccca504.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 16,
+  "key": "ferrous.stainless.430_CR",
+  "value": 1.548,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "DERIVED (no 430 transaction price found): Oct 2026 1.4016 alloy surcharge EUR 985/t (legierungszuschlag.info) + effective base taken equal to the 304 CR effective base EUR 563.5/t = EUR 1548.5/t = 1.548 EUR/kg.",
+  "source": "https://legierungszuschlag.info/en/",
+  "date": "2026-10-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 18,
+  "key": "ferrous.stainless.304_bar",
+  "value": null,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "Not found in any source: no 2026 European 304 bar base or transaction price. Only surcharges: Oct 2026 1.4301 EUR 2,188/t (flat; legierungszuschlag.info); Alleima NAFTA bar Sep 2026 1.4301 USD 1.01/lb = 2.227 USD/kg x 0.880 = EUR 1.959/kg (North America, reference only).",
+  "source": "https://www.alleima.com/siteassets/documents/alloy-surcharges/bar-nafta/surcharge-history-nafta/2026/09-september-2026-asc-bar-nafta.pdf",
+  "date": "2026-09-01",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.foundry.steel_scrap_heavy",
+  "value": 0.275,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "German E3 heavy old scrap: July 2026 USD 327/t ex-works (-USD 29 m/m; GMK Center citing Kallanish) = 327 x 0.880 = EUR 287.8/t; August 2026 German prices -EUR 10-15/t, stabilising at month end and expected flat in September (GMK, 16 Sep 2026) -> 287.8 - 12.5 = EUR 275.3/t = 0.275 EUR/kg (Aug/Sep 2026 estimate).",
+  "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "date": "2026-08 (published 2026-09-16)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 23,
+  "key": "ferrous.foundry.FeSi75",
+  "value": 1.26,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "Argus: FeSi 75 EUR 1,240-1,280/t DDP NW Europe (16 Jun 2026, rangebound 3 weeks; eased after the EU safeguard quotas were renewed in May); mid 1,260/1000 = 1.260 EUR/kg.",
+  "source": "https://api.argusmedia.com/articles/2840817",
+  "date": "2026-06-16",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1c2a278a3ef3fdc8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1c2a278a3ef3fdc8.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 25,
+  "key": "ferrous.foundry.FeCr_HC",
+  "value": 1.513,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "European benchmark ferrochrome Q3 2026: 156 US cents/lb Cr (Samchrome/Samancor reference, 6 Aug 2026). Per kg Cr = 1.56 x 2.20462 = USD 3.439 x 0.880 = EUR 3.027/kg Cr; per kg of 50%-Cr alloy (same basis as the Poland / China files) = 1.513 EUR/kg.",
+  "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+  "date": "2026-Q3",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5e4024ac72790434.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5e4024ac72790434.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 27,
+  "key": "ferrous.charge.GJL-250",
+  "value": 0.349,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION mix (induction grey iron, as the Poland / China files): 25% pig (0.425) + 40% steel scrap (0.275) + 35% returns at charge cost -> (0.25x0.425 + 0.40x0.275)/0.65 = 0.3329; + FeSi75 0.7% (Si trim + inoculant) x 1.260 = 0.0088; / 0.98 = 0.349 EUR/kg.",
+  "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 28,
+  "key": "ferrous.charge.GS-C25",
+  "value": 0.293,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION: 70% steel scrap (0.275) + 30% returns at charge cost -> 0.275; + FeSi75 0.5% x 1.260 = 0.0063; / 0.96 melt loss = 0.293 EUR/kg.",
+  "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 29,
+  "key": "ferrous.charge.CF8",
+  "value": 1.288,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION, scrap route: 80% 304 scrap (1.250) + 20% returns at charge cost -> 1.250; / 0.97 melt loss = 1.288 EUR/kg.",
+  "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+  "date": "2026-09-18",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f51ab8cf9fa2be4b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f51ab8cf9fa2be4b.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 0,
+  "key": "nonferrous.al.lme",
+  "value": 2.69,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "LME aluminium official cash 9 Oct 2026: 3,055.5 USD/t (exchange settlement, Westmetall LME table, read from a search-tool extract). 3,055.5/1000 x 0.880 = 2.69 EUR/kg. Exchange price: no duty, premium, freight or VAT.",
+  "source": "https://www.westmetall.com/de/markdaten.php",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 1,
+  "key": "nonferrous.al.dutyPaidPremium",
+  "value": 0.51,
+  "unit": "EUR/kg (premium over LME)",
+  "currency": null,
+  "basis": "European duty-paid in-warehouse Rotterdam P1020 premium 574 USD/t on 1 Oct 2026, highest since 8 Jun (LSEG data reported by Reuters via Kitco / AlCircle; price-agency/data-vendor assessment). 574/1000 x 0.880 = 0.51 EUR/kg. Includes CBAM costs from 1 Jan 2026.",
+  "source": "https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns",
+  "date": "2026-10-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e777634b072b7e55.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e777634b072b7e55.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 2,
+  "key": "nonferrous.al.p1020",
+  "value": 3.19,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "DERIVED: LME cash 3,055.5 (9 Oct 2026) + duty-paid Rotterdam premium 574 (1 Oct 2026) = 3,629.5 USD/t; x 0.880/1000 = 3.19 EUR/kg ex-VAT, duty-paid in-warehouse Rotterdam (freight to plant extra).",
+  "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns",
+  "date": "2026-10-01 / 2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e777634b072b7e55.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e777634b072b7e55.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 4,
+  "key": "nonferrous.al.billet6063",
+  "value": 3.66,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "DERIVED: LME cash 3,055.5 (9 Oct 2026) + 6063 billet premium ddp North Germany mid 1,102.5 (28 Aug 2026) = 4,158.0 USD/t; x 0.880/1000 = 3.66 EUR/kg ex-VAT, delivered duty-paid Ruhr.",
+  "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+  "date": "2026-08-28 / 2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/465deea8941285ef.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/465deea8941285ef.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 6,
+  "key": "nonferrous.al.adc12",
+  "value": 2.48,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "Fastmarkets aluminium pressure diecasting ingot DIN226/A380, delivered Europe (MB-AL-0005): 2,430-2,530 EUR/t, +10 EUR, late January 2026 (price-agency assessment). Mid 2,480/1000 = 2.48 EUR/kg delivered, ex-VAT. STALE: no later 2026 public print found.",
+  "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+  "date": "2026-01-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4cdffc5c51c6fd6f.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4cdffc5c51c6fd6f.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 9,
+  "key": "nonferrous.al.alsi7mg",
+  "value": 3.57,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "DERIVED: LME cash 3,055.5 (9 Oct 2026) + PFA Si7 premium ddp Germany mid 1,000 (29 May 2026) = 4,055.5 USD/t; x 0.880/1000 = 3.57 EUR/kg ex-VAT, delivered duty-paid Germany.",
+  "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+  "date": "2026-05-29 / 2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3bf7d7958dc0d4e8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3bf7d7958dc0d4e8.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 11,
+  "key": "nonferrous.al.frp_europe_asp",
+  "value": 4.16,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "DERIVED average selling price: Novelis Europe segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 5,272 MUSD / total shipments 1,115 kt = 4.728 USD/kg; x 0.880 = 4.16 EUR/kg (company annual report, Form 10-K). FY2025: 4,606 / 1,083 = 4.253 USD/kg = 3.74 EUR/kg.",
+  "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+  "date": "2025-04-01 to 2026-03-31",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7c299beaa07d9a19.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 13,
+  "key": "nonferrous.cu.spot",
+  "value": 12.93,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "LME copper official cash 9 Oct 2026: 14,689 USD/t (Westmetall LME table, search extract). x 0.880/1000 = 12.93 EUR/kg. Exchange price.",
+  "source": "https://www.westmetall.com/de/markdaten.php",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 15,
+  "key": "nonferrous.cu.cathode_delivered",
+  "value": 13.2,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "DERIVED: LME cash 14,689 (9 Oct 2026) + Aurubis 2026 premium 315 = 15,004 USD/t; x 0.880/1000 = 13.2 EUR/kg ex-VAT, delivered Germany (Aurubis premium is CIF/delivered Europe basis).",
+  "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/08fec7584329023e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/08fec7584329023e.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 18,
+  "key": "nonferrous.zn.spot",
+  "value": 3.38,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "LME zinc official cash 9 Oct 2026: 3,840 USD/t (Westmetall LME table, search extract). x 0.880/1000 = 3.38 EUR/kg.",
+  "source": "https://www.westmetall.com/de/markdaten.php",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 19,
+  "key": "nonferrous.zn.shg_premium",
+  "value": 0.2,
+  "unit": "EUR/kg (premium over LME)",
+  "currency": null,
+  "basis": "Argus zinc SHG in-warehouse Rotterdam premium: 215-240 USD/t on 2 Feb 2026 (price-agency assessment), mid 227.5; x 0.880/1000 = 0.2 EUR/kg. STALE: latest public print found.",
+  "source": "https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "date": "2026-02-02",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 20,
+  "key": "nonferrous.zn.shg_delivered",
+  "value": 3.58,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "DERIVED: LME cash 3,840 (9 Oct 2026) + Rotterdam SHG premium 227.5 (2 Feb 2026) = 4,067.5 USD/t; x 0.880/1000 = 3.58 EUR/kg ex-VAT, in-warehouse Rotterdam (freight to plant extra).",
+  "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "date": "2026-02-02 / 2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 21,
+  "key": "nonferrous.sn.spot",
+  "value": 46.55,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "LME tin official cash 9 Oct 2026: 52,900 USD/t (Westmetall LME table, search extract). x 0.880/1000 = 46.55 EUR/kg.",
+  "source": "https://www.westmetall.com/de/markdaten.php",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/2ce55d3b720131f5.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 23,
+  "key": "nonferrous.mg.az91d",
+  "value": null,
+  "unit": "EUR/kg",
+  "currency": null,
+  "basis": "Not found: no public 2026 European AZ91D (or Mg ingot) price. IMARC's Netherlands AZ91D figure (3,587 USD/t) is December 2023 and is not used; SMM China AZ91D pages are login-walled; Fastmarkets/Argus Rotterdam Mg prints are subscriber-only.",
+  "source": "https://www.imarcgroup.com/magnesium-alloy-ingot-pricing-report",
+  "date": "",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/81961e98bb5737fd.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/81961e98bb5737fd.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pp_homo",
+  "value": 1.17,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 3), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B market level. No German-specific (KI) level could be read: the KI price pages are subscriber-only and could not be fetched. PP homopolymer injection moulding (PPH IM) 1,168 EUR/t (week 37/2026, +1.6% / +18 EUR/t w/w) / 1000 = 1.17 EUR/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 1,
+  "key": "polymer.pp_copo",
+  "value": 1.33,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 3), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B market level. No German-specific (KI) level could be read: the KI price pages are subscriber-only and could not be fetched. PP copolymer (PPC) 1,332 EUR/t (week 37/2026, +2.6% / +34 EUR/t w/w) / 1000 = 1.33 EUR/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 2,
+  "key": "polymer.hdpe",
+  "value": 1.25,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 3), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B market level. No German-specific (KI) level could be read: the KI price pages are subscriber-only and could not be fetched. HDPE film 1,250 EUR/t (week 37/2026, +2.5% / +30 EUR/t w/w) / 1000 = 1.25 EUR/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 3,
+  "key": "polymer.ldpe",
+  "value": 1.28,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 3), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B market level. No German-specific (KI) level could be read: the KI price pages are subscriber-only and could not be fetched. LDPE film 1,276 EUR/t (week 37/2026) / 1000 = 1.28 EUR/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 4,
+  "key": "polymer.lldpe",
+  "value": 1.25,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 3), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B market level. No German-specific (KI) level could be read: the KI price pages are subscriber-only and could not be fetched. (m)LLDPE C6 1,247 EUR/t (week 37/2026, unchanged) / 1000 = 1.25 EUR/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 5,
+  "key": "polymer.pvc",
+  "value": 0.99,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 3), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B market level. No German-specific (KI) level could be read: the KI price pages are subscriber-only and could not be fetched. S-PVC 993 EUR/t (week 37/2026) / 1000 = 0.99 EUR/kg. Suspension resin, not a compound.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.abs",
+  "value": 1.84,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 3), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B market level. No German-specific (KI) level could be read: the KI price pages are subscriber-only and could not be fetched. ABS 1,835 EUR/t (week 37/2026) / 1000 = 1.84 EUR/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 7,
+  "key": "polymer.ps",
+  "value": 1.53,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 3), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B market level. No German-specific (KI) level could be read: the KI price pages are subscriber-only and could not be fetched. GPPS 1,534 EUR/t (week 37/2026, -3.8% / -61 EUR/t w/w) / 1000 = 1.53 EUR/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 8,
+  "key": "polymer.hips",
+  "value": 1.68,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "myCEPPI weekly Central & Eastern Europe market price (survey of processors, distributors and producers; price-agency type, priority 3), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B market level. No German-specific (KI) level could be read: the KI price pages are subscriber-only and could not be fetched. HIPS 1,676 EUR/t (week 37/2026, -1.7% / -29 EUR/t w/w) / 1000 = 1.68 EUR/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 9,
+  "key": "polymer.pc",
+  "value": 2.64,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "businessanalytiq Europe index (aggregator, 'calculated from multiple separate sources', method not published; US$/kg at period FX): Europe polycarbonate Sep 2026 US$3.00/kg (-2.9%) x 0.880 = 2.64 EUR/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d91767248ff04080.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d91767248ff04080.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 10,
+  "key": "polymer.pa6",
+  "value": 2.35,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "businessanalytiq Europe index (aggregator, 'calculated from multiple separate sources', method not published; US$/kg at period FX): Europe PA6 Aug 2026 US$2.67/kg (+3.1%) x 0.880 = 2.35 EUR/kg. No September businessanalytiq figure seen.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f6a490421e498d14.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f6a490421e498d14.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 11,
+  "key": "polymer.pa66",
+  "value": 3.04,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "businessanalytiq Europe index (aggregator, 'calculated from multiple separate sources', method not published; US$/kg at period FX): Europe PA66 Sep 2026 US$3.45/kg (-3.9%) x 0.880 = 3.04 EUR/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5920aad86d4672dd.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5920aad86d4672dd.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.pbt",
+  "value": 3.26,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "businessanalytiq Europe index (aggregator, 'calculated from multiple separate sources', method not published; US$/kg at period FX): Europe PBT Sep 2026 US$3.70/kg (-1.1%) x 0.880 = 3.26 EUR/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9ae9b9bd720a68b5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9ae9b9bd720a68b5.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.pet_bottle",
+  "value": 1.37,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "businessanalytiq Europe index (aggregator, 'calculated from multiple separate sources', method not published; US$/kg at period FX): Europe PET (general, not bottle-grade specific) Sep 2026 US$1.56/kg (+4%) x 0.880 = 1.37 EUR/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5d00e881cc44bf4b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5d00e881cc44bf4b.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 14,
+  "key": "polymer.pmma",
+  "value": 3.25,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "businessanalytiq Europe index (aggregator, 'calculated from multiple separate sources', method not published; US$/kg at period FX): Europe PMMA Sep 2026 US$3.69/kg (unchanged) x 0.880 = 3.25 EUR/kg.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a502e1709fd0288a.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a502e1709fd0288a.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 15,
+  "key": "polymer.pom",
+  "value": 2.7,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "Plastech.pl monthly average OFFER price, Central Europe, EUR/kg (producers/distributors survey; distributor offer level, runs ~20-35% above myCEPPI for commodities): POM natural Sep 2026 2.70 EUR/kg (+14% y/y from 2.37).",
+  "source": "https://www.plasticportal.eu/polymer-prices",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4db4589a0d9b29b1.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 16,
+  "key": "polymer.peek",
+  "value": 79.22,
+  "unit": "EUR/kg ex-VAT",
+  "currency": null,
+  "basis": "Victrex plc (company report, priority 4) — all-mix average selling price: Q3 2026 trading update (7 Jul 2026), nine months to 30 Jun 2026 revenue GBP 231.6m on 3,375 t, ASP stated stable at GBP 68/kg; 68 x 1.165 = 79.22 EUR/kg. Check: 231.6 / 3,375 = GBP 68.6/kg. H1 (to 31 Mar 2026): GBP 147.1m / 2,137 t = GBP 68.8/kg, stated ASP GBP 69/kg (-4% y/y) = 80.39 EUR/kg.",
+  "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets",
+  "date": "2026-06-30 (9M); H1 to 2026-03-31",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1b21b7cafafa45ee.render.txt"
+  ]
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 22,
+  "key": "rubber.nr",
+  "value": 2.23,
+  "unit": "EUR/kg ex-VAT, FOB Asia (NOT delivered)",
+  "currency": null,
+  "basis": "SGX SICOM TSR20 FOB rubber futures (exchange settlement level, read from a secondary daily market report): October 2026 contract 253.20 US cents/kg on 28 Sep 2026 -> US$2.532 x 0.880 = 2.23 EUR/kg FOB Southeast Asia.",
+  "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html",
+  "date": "2026-09-28",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5c57831d3a03c021.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5c57831d3a03c021.render.txt"
+  ]
+ }
+]

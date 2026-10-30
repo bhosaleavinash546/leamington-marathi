@@ -1,0 +1,1726 @@
+[
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 20,
+  "key": "labour.skilled.monthlyGross.clusterAvg",
+  "value": 6543,
+  "unit": "CNY/month",
+  "currency": null,
+  "basis": "(7,000 + 7,171 + 6,000 + 6,000) ÷ 4 = 6,543; annual = 6,543 × 13 = 85,059 (13th month assumed, see labour.bonus)",
+  "source": "see cluster items",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 83,
+  "key": "labour.semiskilled.fullyLoadedCnyPerHr",
+  "value": 31.67,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 85,
+  "key": "labour.skilled.fullyLoadedCnyPerHr",
+  "value": 33.08,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 85,059 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "labour.skilled.monthlyGross.clusterAvg",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 87,
+  "key": "labour.supervisor.fullyLoadedCnyPerHr",
+  "value": 41.47,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 111,150 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.jobui.com/salary/quanguo-shengchanzuchang/",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 89,
+  "key": "labour.technician.fullyLoadedCnyPerHr",
+  "value": 39.59,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 105,300 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.jobui.com/salary/quanguo-shebeiweixiugong/",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 91,
+  "key": "labour.electronics.fullyLoadedCnyPerHr",
+  "value": 33.32,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 85,800 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.jobui.com/salary/quanguo-smttiepianjicaozuoyuan/",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 95,
+  "key": "labour.foundry.fullyLoadedCnyPerHr",
+  "value": 31.67,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 97,
+  "key": "labour.forge.fullyLoadedCnyPerHr",
+  "value": 31.67,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 99,
+  "key": "labour.furnace.fullyLoadedCnyPerHr",
+  "value": 31.67,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 101,
+  "key": "labour.blow.fullyLoadedCnyPerHr",
+  "value": 31.67,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 103,
+  "key": "labour.roto.fullyLoadedCnyPerHr",
+  "value": 31.67,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 105,
+  "key": "labour.thermoform.fullyLoadedCnyPerHr",
+  "value": 31.67,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 80,667 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 107,
+  "key": "labour.trimRouter.fullyLoadedCnyPerHr",
+  "value": 33.08,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "2×12 h model: (annual pay incl. OT & bonus 85,059 + employer SI & HPF at floor 17,932) ÷ 3,113 h",
+  "source": "labour.skilled.monthlyGross.clusterAvg",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 109,
+  "key": "labour.engineer.fullyLoadedCnyPerHrStd",
+  "value": 99.08,
+  "unit": "CNY/hr",
+  "currency": null,
+  "basis": "Salaried, standard hours: (148,391 + 12 × (24.8% avg employer SI × 12,366 = 3,066.8 + 5% HPF 618.3)) ÷ 1,944 h = (148,391 + 44,221) ÷ 1,944. SI on actual pay (below every cluster cap).",
+  "source": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "date": "2025-26",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 111,
+  "key": "energy.electricity.Chongqing",
+  "value": 0.724,
+  "unit": "CNY/kWh ex-VAT",
+  "currency": null,
+  "basis": "Chongqing flat-period price 0.8146 (Jul 2026, highest flat price nationally; national flat mean 0.6691) × (national TOU 24-h average 0.6717 ÷ national flat 0.669) = 0.818 incl. VAT ÷ 1.13 = 0.724",
+  "source": "https://finance.sina.com.cn/wm/2026-07-06/doc-inifwscq1812919.shtml",
+  "date": "2026-07",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/dce6cd752e0ae343.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/dce6cd752e0ae343.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 122,
+  "key": "energy.gas.national36CityIndustrial",
+  "value": 0.328,
+  "unit": "CNY/kWh ex-VAT",
+  "currency": null,
+  "basis": "NDRC Price Monitoring Centre 36-city monthly average industrial natural gas price Apr 2026: 3.570 CNY/m³ ÷ 1.09 ÷ 10 (Feb 2026: 3.62)",
+  "source": "https://www.ceicdata.com/zh-hans/china/price-monitoring-center-ndrc-36-city-monthly-avg-transaction-price-production-material/cn-usage-price-36-city-avg-natural-gas-natural-gas-for-industry",
+  "date": "2026-04",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6d388b39c2a793b5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6d388b39c2a793b5.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 123,
+  "key": "energy.gas.clusterAvg",
+  "value": 0.356,
+  "unit": "CNY/kWh ex-VAT",
+  "currency": null,
+  "basis": "YRD = (Shanghai 4.12 + Wuxi 3.86) ÷ 2 = 3.99; PRD 4.47; Chongqing 3.365; Wuhan 3.71 → mean 3.884 CNY/m³ incl. VAT ÷ 1.09 = 3.563 ÷ 10 kWh/m³",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 0,
+  "key": "capex.mach-vmc3",
+  "value": 287817,
+  "unit": "CNY/unit ex-VAT (maker average selling price, ex-works)",
+  "currency": null,
+  "basis": "company annual report (derived ASP): Haitian Precision 海天精工 2025 CNC vertical machining centre (数控立式加工中心) revenue 8.41亿元 ÷ 2,922 units sold (2025 annual report 产销量 table) = 841,000,000 ÷ 2,922 = 287,816 CNY/unit",
+  "source": "https://finance.sina.cn/2026-03-23/detail-inhrynrq1147454.d.html ; units: http://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260323/71ad745b243c48e79d848681d7931b2a.PDF",
+  "date": "FY2025 (annual report published 2026-03-23)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/ca2fd6d727ac5f13.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 1,
+  "key": "capex.mach-haas-vf2",
+  "value": 287817,
+  "unit": "CNY/unit ex-VAT",
+  "currency": null,
+  "basis": "same evidence as capex.mach-vmc3 (Haitian Precision 2025 VMC ASP 287,816 CNY); a VF-2-class VMC is at the small end of that mix",
+  "source": "https://finance.sina.cn/2026-03-23/detail-inhrynrq1147454.d.html",
+  "date": "FY2025",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/ca2fd6d727ac5f13.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 7,
+  "key": "capex.mach-vmc5",
+  "value": 2425100,
+  "unit": "CNY/unit ex-VAT (maker average transaction price)",
+  "currency": null,
+  "basis": "company disclosure: KEDE 科德数控 2024 five-axis machine average transaction price 242.51万元 (不含税), +27.49% y/y; 9M-2024 recognised-revenue average 233万元; H1-2024 new-order average 222万元",
+  "source": "https://stcn.com/article/detail/1725042.html ; https://www.stcn.com/article/detail/1413392.html",
+  "date": "FY2024 (2025 report not found)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 9,
+  "key": "capex.mach-haas-umc500",
+  "value": null,
+  "unit": "CNY/unit",
+  "currency": null,
+  "basis": "not found (no China price for a compact UMC-500-class 5-axis)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 11,
+  "key": "capex.laser-trumpf-3030",
+  "value": null,
+  "unit": "CNY/unit",
+  "currency": null,
+  "basis": "not found for a 6 kW 3015 in 2025–2026",
+  "source": "https://laser.ofweek.com/2020-05/ART-240015-8120-30439186.html",
+  "date": "FY2019",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f38c74d734d0f2cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f38c74d734d0f2cb.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 12,
+  "key": "capex.brake-amada-hfe100",
+  "value": null,
+  "unit": "CNY/unit",
+  "currency": null,
+  "basis": "not found",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 16,
+  "key": "capex.imm-200t",
+  "value": null,
+  "unit": "CNY/unit",
+  "currency": null,
+  "basis": "not found (no tonnage-specific price or tender)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 26,
+  "key": "capex.robot-mig-cell",
+  "value": null,
+  "unit": "CNY/unit",
+  "currency": null,
+  "basis": "not found",
+  "source": "https://finance.sina.com.cn/stock/aigc/stockfs/2026-04-14/doc-inhunicw1595579.shtml",
+  "date": "FY2025",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e1eb15858cf3d297.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e1eb15858cf3d297.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 29,
+  "key": "rent.shanghaiSuzhou",
+  "value": 31.94,
+  "unit": "CNY/m²/month",
+  "currency": null,
+  "basis": "real-estate adviser survey: JLL Shanghai overall logistics rent Q2 2026 RMB 1.05/m²/day (−2.9% q/q); ×365/12 = 31.94 CNY/m²/month",
+  "source": "https://research.jllapsites.com/?p=37261",
+  "date": "2026-Q2",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3035247fb218d118.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3035247fb218d118.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 33,
+  "key": "rent.clusterAvg",
+  "value": null,
+  "unit": "CNY/m²/month",
+  "currency": null,
+  "basis": "not derivable — only Shanghai (logistics) and partial Dongguan/Chongqing ranges found",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 36,
+  "key": "hours.annual",
+  "value": null,
+  "unit": "h/yr",
+  "currency": null,
+  "basis": "not found (no Chinese source stating 2×12 h × days/yr for auto-parts plants)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 1,
+  "key": "ferrous.anchor.crc",
+  "value": 3.239,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel Shanghai spot, CRC 1.0mm (Benxi), 3,660 CNY/t VAT-incl. (9 Oct 2026); 3,660/1.13/1000 = 3.239. 29 Sep 2026: 3,690; Sep 2026 one-month average 3,731-3,733.",
+  "source": "https://www.mysteel.com/hot/563511.html",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6cc3d64ab7009df2.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6cc3d64ab7009df2.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 2,
+  "key": "ferrous.anchor.hdg",
+  "value": 3.496,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel Shanghai spot, HDG 1.0mm (Benxi, regular spangle-free), 3,950 CNY/t VAT-incl. (24-29 Sep 2026, flat all September); 3,950/1.13/1000 = 3.496.",
+  "source": "https://m.mysteel.com/hot/39907.html",
+  "date": "2026-09-29",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/22758cc90671c564.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/22758cc90671c564.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 6,
+  "key": "ferrous.anchor.baosteel.auto_grades",
+  "value": null,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Not found in any source: Baosteel automotive grade list prices / extras are not public (sold on annual / quarterly OEM contracts).",
+  "source": "https://m.mysteel.com/hot/426801.html",
+  "date": "2026-10-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/8413da60cad54f54.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/8413da60cad54f54.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 7,
+  "key": "ferrous.bar.45",
+  "value": 3.257,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel Shanghai special-bar spot 24 Sep 2026: 45# (Huaigang) 3,680 CNY/t VAT-incl.; 3,680/1.13/1000 = 3.257. Mysteel 30 Sep 2026: Shanghai carbon structural round 45# 20mm 3,680.",
+  "source": "https://m.mysteel.com/hot/78153.html",
+  "date": "2026-09-24",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a564049a21fff36d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a564049a21fff36d.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 8,
+  "key": "ferrous.bar.40Cr",
+  "value": 3.451,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel Shanghai 24 Sep 2026: 40Cr (Huaigang) 3,900 CNY/t VAT-incl.; /1.13/1000 = 3.451. 30 Sep 2026: 40Cr Φ80 3,860.",
+  "source": "https://m.mysteel.com/hot/13617.html",
+  "date": "2026-09-24",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a053df7877a8a748.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 9,
+  "key": "ferrous.bar.42CrMo",
+  "value": 4.283,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel Shanghai 24 Sep 2026: 42CrMo (Xiangtan Steel) 4,840 CNY/t VAT-incl.; /1.13/1000 = 4.283.",
+  "source": "https://m.mysteel.com/hot/78153.html",
+  "date": "2026-09-24",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a564049a21fff36d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a564049a21fff36d.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 10,
+  "key": "ferrous.bar.20CrMnTi",
+  "value": 3.646,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel Shanghai 24 Sep 2026: 20CrMnTi (Huaigang) 4,120 CNY/t VAT-incl.; /1.13/1000 = 3.646.",
+  "source": "https://m.mysteel.com/hot/78153.html",
+  "date": "2026-09-24",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a564049a21fff36d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a564049a21fff36d.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 11,
+  "key": "ferrous.bar.GCr15",
+  "value": 5.265,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel flash 23 Sep 2026: GCr15 Xingcheng 5,900-6,000 CNY/t (ex-mill quote, VAT-incl. assumed per Chinese convention); mid 5,950/1.13/1000 = 5.265.",
+  "source": "https://m.mysteel.com/hot/13792.html",
+  "date": "2026-09-23",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 17,
+  "key": "ferrous.stainless.304_CR_2B_tisco",
+  "value": 13.363,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "CCMN Wuxi 304/2B CR coil 2.0x1219 Tisco 15,100 CNY/t VAT-incl.; /1.13/1000 = 13.363.",
+  "source": "https://www.ccmn.cn/bxg/304/",
+  "date": "2026-09 (late; date not shown in result)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/814aef3c9a3e1790.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/814aef3c9a3e1790.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.stainless.409L_CR",
+  "value": 6.681,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SMM Wuxi 409L/2B coil 7,500-7,600 CNY/t VAT-incl. (Jun 2026 - latest found); mid 7,550/1.13/1000 = 6.681. Foshan 7,550-7,650.",
+  "source": "https://hq.smm.cn/h5/sus-400sus-price",
+  "date": "2026-06",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/dd90454a52c09776.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 23,
+  "key": "ferrous.stainless.304_scrap",
+  "value": 8.363,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel 29 Sep 2026: 304 industrial scrap (304工业料) 9,450 CNY/t; ≈1,028 CNY per Ni point, 12-37 below high-Ni NPI (1,040-1,065 CNY/Ni point delivered VAT-incl.). VAT-incl. assumed; /1.13/1000 = 8.363.",
+  "source": "https://list1.mysteel.com/zhishi/ntjgzst25884.html",
+  "date": "2026-09-29",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/83fb331c1245114e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/83fb331c1245114e.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 24,
+  "key": "ferrous.foundry.pig_iron_casting_Z18",
+  "value": 2.611,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel 30 Sep 2026, East China foundry pig iron Z18: Linyi 2,950, Changzhou 3,070, Sanming 3,110, Rizhao 2,950 CNY/t, 现款含税 (cash, VAT-incl.); Linyi 2,950/1.13/1000 = 2.611.",
+  "source": "https://www.mysteel.com/hot/1486014.html",
+  "date": "2026-09-30",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/10675e879666658d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/10675e879666658d.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 25,
+  "key": "ferrous.foundry.pig_iron_nodular_Q10",
+  "value": 2.796,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel 30 Sep 2026, East China nodular pig Q10 2,970-3,350 CNY/t 现款含税, one-by-one; mid 3,160/1.13/1000 = 2.796. Other regions same day: Benxi 3,050, Liaoyang 3,030, Wu'an 3,080, Linfen 3,120, Linzhou 3,050, Huangshi 2,890, Xinjiang 2,810.",
+  "source": "https://m.mysteel.com/hot/1487195.html",
+  "date": "2026-09-30",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/10f28ba19bfe8230.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/10f28ba19bfe8230.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 29,
+  "key": "ferrous.foundry.FeSi75",
+  "value": 5.442,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel spot, end Sep 2026: 75 FeSi 6,100-6,200 CNY/t, cash VAT-incl. ex-works main producing areas (72 FeSi natural lump 5,700-5,750); mid 6,150/1.13/1000 = 5.442.",
+  "source": "https://m.mysteel.com/hot/47879.html",
+  "date": "2026-09-30",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/affb7971f17d2392.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/affb7971f17d2392.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 30,
+  "key": "ferrous.foundry.FeCr_HC",
+  "value": 6.898,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Tisco Sep 2026 HC FeCr tender 7,795 CNY per 50%-Cr base tonne, cash VAT-incl. delivered (-100 m/m); Qingshan Sep long-term 7,995; ex-works 30 Sep 7,600-7,900. Per kg of 50%-Cr alloy: 7,795/1.13/1000 = 6.898 (= 13.80 CNY per kg contained Cr).",
+  "source": "https://m.mysteel.com/zta/gaotangetie/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b14b7d1155917a0b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b14b7d1155917a0b.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 34,
+  "key": "ferrous.charge.GJS-500-7",
+  "value": 2.69,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION mix (per kg charged): 45% nodular pig Q10 (2.796) + 30% steel scrap (2.045) + 25% returns valued at the charge's own cost -> metallics = (0.45x2.796 + 0.30x2.045)/0.75 = 2.496; + FeSiMg 1.3% x 9.071 (rare-earth FeSi PROXY) = 0.118; + inoculant 0.4% x 5.442 (FeSi75 as proxy; Ba/Ca inoculants cost more) = 0.022; / 0.98 melt & treatment loss = 2.689 CNY/kg ex-VAT.",
+  "source": "https://m.mysteel.com/hot/1487195.html",
+  "date": "2026-09-30",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/10f28ba19bfe8230.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/10f28ba19bfe8230.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 35,
+  "key": "ferrous.charge.GJL-250",
+  "value": 2.35,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION mix (induction grey iron): 25% foundry pig Z18 (2.611) + 40% steel scrap (2.045) + 35% returns at charge cost -> (0.25x2.611 + 0.40x2.045)/0.65 = 2.263; + FeSi75 0.5% Si trim + 0.2% inoculant = 0.7% x 5.442 = 0.038; / 0.98 melt loss = 2.348 CNY/kg ex-VAT.",
+  "source": "https://www.mysteel.com/hot/1486014.html",
+  "date": "2026-09-30",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/10675e879666658d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/10675e879666658d.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 36,
+  "key": "ferrous.charge.GS-C25",
+  "value": 2.16,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION: 70% steel scrap (2.045) + 30% returns at charge cost -> metallics 2.045; + FeSi75 0.5% x 5.442 = 0.027 deoxidation/Si; / 0.96 melt loss (steel) = 2.159 CNY/kg ex-VAT.",
+  "source": "https://news.mysteel.com/a/26100711/92F88C485B219078.html",
+  "date": "2026-10-07",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/acc0be250803c43f.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/acc0be250803c43f.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 37,
+  "key": "ferrous.charge.CF8",
+  "value": 8.62,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "ENGINEERING ASSUMPTION, scrap route (usual for a CF8 foundry): 80% 304 industrial scrap (8.363) + 20% returns at charge cost -> 8.363; / 0.97 melt loss = 8.622 CNY/kg ex-VAT. Virgin-alloy upper bound: Fe 70% steel scrap (2.045) + Cr 19% at 13.80/kg Cr (HC FeCr) + Ni 9% at 115.619 = (1.432 + 2.622 + 10.406)/0.97 = 14.91.",
+  "source": "https://list1.mysteel.com/zhishi/ntjgzst25884.html",
+  "date": "2026-09-29",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/83fb331c1245114e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/83fb331c1245114e.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 38,
+  "key": "ferrous.electrical.35W300",
+  "value": 5.177,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel Qingdao market 20 Sep 2026: Baosteel 300-grade (35W300) 5,850 CNY/t VAT-incl.; /1.13/1000 = 5.177. Shougang 300-grade 5,530 (4.894); Wuhan market WISCO 35WW300 5,600 (4.956). Baosteel B35A300 5,830 on 30 Sep 2026 (region not stated). 4 Sep: Baosteel 300 5,950, Shougang 5,730.",
+  "source": "https://m.mysteel.com/hot/3849.html",
+  "date": "2026-09-20",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/ea441a7d52e49d45.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/ea441a7d52e49d45.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 0,
+  "key": "nonferrous.al.a00",
+  "value": 21.47,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Changjiang (长江有色) A00 aluminium ingot spot, SEPTEMBER 2026 MONTHLY AVERAGE 24,259.52 CNY/t incl. 13% VAT; 24,259.52/1.13/1000 = 21.47. Exchange/price-agency spot (transaction assessment).",
+  "source": "https://finance.sina.com.cn/money/future/indu/2026-09-30/doc-initqzmc2066184.shtml",
+  "date": "2026-09 (article 2026-09-30)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/99d889106465c901.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 12,
+  "key": "nonferrous.brass.H62_rod",
+  "value": 74.34,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Mysteel Ningbo H62 brass rod 2026-09-29: 84,000 CNY/t (9-22 84,300; 9-15 81,700), assumed incl. VAT; /1.13/1000 = 74.34.",
+  "source": "https://list1.mysteel.com/zhishi/nbtbjgzxxq.html",
+  "date": "2026-09-29",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0310c140ab142437.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0310c140ab142437.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 15,
+  "key": "nonferrous.zn.spot",
+  "value": 22.93,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SMM Guangdong 0# zinc 2026-10-09: 25,910 CNY/t (-390); Shanghai midday range 25,775-26,060. 25,910/1.13/1000 = 22.93.",
+  "source": "https://news.metal.com/newscontent/104147388",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c8363e9d2f4e7679.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c8363e9d2f4e7679.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 18,
+  "key": "nonferrous.mg.ingot",
+  "value": 13.72,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SMM 尚镁网 2026-10-09: Mg ingot 9990 (Fugu/Shenmu) 15,500 CNY/t (-50), ex-works cash incl. VAT; /1.13/1000 = 13.72.",
+  "source": "https://www.sohu.com/a/1085524211_121123889",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/8b6aa3fc81264c9b.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 19,
+  "key": "nonferrous.mg.az91d",
+  "value": 16.02,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "91金属网 AZ91D reference 2026-07-23: 18,100 CNY/t (17,800-18,400), assumed incl. VAT; /1.13/1000 = 16.02. Dated July — Mg ingot has since fallen ~500-1,000 CNY/t.",
+  "source": "https://hq.91jinshu.com/zd91dmeihejin/202607/52846.html",
+  "date": "2026-07-23",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 21,
+  "key": "nonferrous.ni.spot",
+  "value": 107.65,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "同花顺 iFinD: Shanghai 1# electrolytic nickel spot avg 2026-10-09 (10:50) 121,650 CNY/t (-550), incl. VAT; /1.13/1000 = 107.65.",
+  "source": "http://news.10jqka.com.cn/20261009/c680512152.shtml",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f97d6a9c898db97e.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pp_homo",
+  "value": 8.79,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PP raffia (拉丝, T30S-type homopolymer) 9,933.33 CNY/t incl. VAT ÷ 1.13 = 8,790.6 CNY/t = 8.79 CNY/kg.",
+  "source": "http://www.chemrp.com/info/detail-20261001-6294429.html",
+  "date": "2026-10-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1981b6c173188663.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 2,
+  "key": "polymer.hdpe",
+  "value": 9.27,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). HDPE reference 10,475 CNY/t incl. VAT ÷ 1.13 = 9,269.9 CNY/t.",
+  "source": "https://hdpe.100ppi.com/",
+  "date": "2026-10-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/57769bfeba5cbbff.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 4,
+  "key": "polymer.ldpe",
+  "value": 9.16,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). LDPE 10,350 CNY/t incl. VAT ÷ 1.13 = 9,159 CNY/t.",
+  "source": "https://www.100ppi.com/news/detail-20260813-6060907.html",
+  "date": "2026-08-13",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/31d88dee390d61fa.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 5,
+  "key": "polymer.lldpe",
+  "value": 8.31,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). LLDPE 9,390 CNY/t incl. VAT ÷ 1.13 = 8,309.7 CNY/t.",
+  "source": "https://m.10jqka.com.cn/20261001/c680427759.shtml",
+  "date": "2026-10-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/04e06a7a311a94d9.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.pvc_sg5",
+  "value": 4.31,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PVC (carbide SG-5) 4,865 CNY/t incl. VAT ÷ 1.13 = 4,305 CNY/t.",
+  "source": "https://pvc.100ppi.com/news/list---1.html",
+  "date": "2026-10-05",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/cdf261d9262e556b.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 8,
+  "key": "polymer.ps",
+  "value": 9.85,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PS (general purpose) 11,133.33 CNY/t incl. VAT ÷ 1.13 = 9,852.5 CNY/t.",
+  "source": "http://www.chemrp.com/info/detail-20260902-6155369.html",
+  "date": "2026-10-05",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1e673910b6d09091.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 9,
+  "key": "polymer.pc",
+  "value": 11.12,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PC 12,566.67 CNY/t incl. VAT ÷ 1.13 = 11,121 CNY/t.",
+  "source": "http://www.chemrp.com/info/detail-20260709-5896771.html",
+  "date": "2026-07-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0cd7bfe59f548cf8.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 11,
+  "key": "polymer.pa66_chips",
+  "value": 16.9,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Producer spot offers reported in SunSirs PA66 chain report 22 Sep 2026 (现货实单商谈): 安徽昊源 AHY4800 19,000, 浙江华峰 EP158 19,500, 神马 EPR27 18,800 CNY/t incl. VAT. Mean 19,100 ÷ 1.13 = 16,903 CNY/t.",
+  "source": "http://stock.10jqka.com.cn/20260922/c680178557.shtml",
+  "date": "2026-09-22",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f7bdf12950c883c9.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.pbt",
+  "value": 8.85,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Upper bound only. OilChem (隆众, priority 2): 'entering Q2 2026 domestic PBT prices kept weakening… mainstream transactions lost the 10,000 CNY/t mark'. 10,000 incl. VAT ÷ 1.13 = 8,850 CNY/t is a CEILING, not a quote.",
+  "source": "https://plas.oilchem.net/plastic/pbt.shtml",
+  "date": "2026-Q2",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c52639a5a3513363.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c52639a5a3513363.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 14,
+  "key": "polymer.pet_bottle",
+  "value": 7.74,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "SunSirs (生意社) benchmark/reference price — an exchange-style transaction guide price (agency, priority 2), East China spot, quoted VAT-inclusive (13%). PET (bottle-chip benchmark) 8,750 CNY/t incl. VAT ÷ 1.13 = 7,743 CNY/t.",
+  "source": "https://m.10jqka.com.cn/20261001/c680427815.shtml",
+  "date": "2026-10-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c917ea62e0ea5a29.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 19,
+  "key": "polymer.peek",
+  "value": 247.3,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "DERIVED average selling price, 中研股份 (688716, China's largest PEEK maker) FY2025 annual report: revenue 309 M CNY × 86.42% (PEEK pure resin 58.49% + reinforced compound pellets) = 267.04 M CNY ÷ 1,079.84 t PEEK sold = 247,300 CNY/t = 247.3 CNY/kg. Revenue is ex-VAT.",
+  "source": "https://news.qq.com/rain/a/20260429A0934U00",
+  "date": "2025 (FY, published 2026-04-29)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9dbaa094d271a87c.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9dbaa094d271a87c.render.txt"
+  ]
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 32,
+  "key": "composite.cf_t700_12k",
+  "value": 92.92,
+  "unit": "CNY/kg ex-VAT",
+  "currency": null,
+  "basis": "Baiinfo: domestic T700-class 12K delivered 90–120 CNY/kg, 20 Aug 2025. Midpoint 105 ÷ 1.13 = 92.92 CNY/kg.",
+  "source": "https://www.baiinfo.com/xianweicailiao/tanxianwei",
+  "date": "2025-08-20",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/db8db17f5a80c949.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/db8db17f5a80c949.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 21,
+  "key": "labour.skilledMachinist.monthlyGross",
+  "value": 27000,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Skilled CNC machinist / setter-operator: Pune: Payscale CNC operator avg base INR 222,000/yr (18,500/mo) https://www.payscale.com/research/IN/Job=Computer_Numerically_Controlled_(CNC)_Operator/Salary/44687486/Pune and Hyring median INR 4.0 L/yr (33,333/mo; P25-P75 2.8-6 L) https://hyring.com/jobseeker-toolkit/salary/cnc-operator-salary-in-pune -> mid 26,000. Chennai: VMC operator/setter postings 15-30k and 20-30k/mo (TN Govt private job portal https://www.tnprivatejobs.tn.gov.in/candidate/Home/ca_jobfair_single/26052109442034356 ; Jobhai Ambattur https://www.jobhai.com/manufacturing-vmc-machine-operator-job-in-maas-factree-solutions-private-limited-ambattur-chennai-0-to-6-plus-years-1785916789-8109815-jid) -> 25,000. Bengaluru: AmbitionBox listings CNC operator 2.5-4 LPA, setter-operator 4-7 LPA https://ambitionbox.com/jobs/cnc-setter-jobs-prf -> 27,000 (operator band mid). NCR: IMT Manesar CNC operator 25-35k/mo https://www.jobhai.com/manufacturing-cnc-machine-operator-job-in-shree-krishna-manpower-services-sector-6-imt-manesar-gurgaon-0-to-1-years-1785303229-8064993-jid -> 30,000. India avg = (26+25+27+30)/4 = 27,000.",
+  "source": "https://hyring.com/jobseeker-toolkit/salary/cnc-operator-salary-in-pune",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d7c958a0e5097323.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d7c958a0e5097323.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 22,
+  "key": "labour.skilledMachinist.fullyLoadedInrPerHr",
+  "value": 161.8,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=27,000; basic=0.5G=13,500; PF+EDLI+admin=13%xmin(basic,15000)=1,755; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =1,125; gratuity=4.81%xbasic=649; monthly employer cost=30,529 (+13.1%); x12=366,347/yr / 2,264 h = 161.8 INR/h",
+  "source": "https://hyring.com/jobseeker-toolkit/salary/cnc-operator-salary-in-pune",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d7c958a0e5097323.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d7c958a0e5097323.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 23,
+  "key": "labour.semiskilledOperator.monthlyGross",
+  "value": 18500,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Semi-skilled machine operator / helper: NCR: IMT Manesar machine operator postings Jay Bharat Maruti 19-20k, RV Exhaust 20-22k, Carbon 16-18k (Jobhai, 2026) https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-jay-bharat-maruti-sector-3-imt-manesar-gurgaon-0-to-0-years-1783940761-7949162-jid -> 19,500. Pune: MH semi-skilled floor 17,536; TeamLease client automotive technician (ITI/diploma) 18-25k https://www.teamlease.com/jobs/technician-automotive-manufacturing-in-pune-for-for-a-client-of-teamlease-services-ltd-5120781 -> 19,500. Chennai/Hosur: TeamLease fresher assembly technician 16-18k (Jan 2026) https://www.teamlease.com/jobs/assembly-technician-recruitment-in-hosur-teamlease-1791808 -> 17,000. Bengaluru: KA semi-skilled floor 17,296 -> 18,000 (floor-anchored; no posting found). India-wide cross-check: Payscale machine operator helper avg INR 190,000/yr = 15,833/mo https://www.payscale.com/research/IN/Job=Machine_Operator_Helper/Salary/ff0564b5/Early-Career. Avg = 18,500.",
+  "source": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-jay-bharat-maruti-sector-3-imt-manesar-gurgaon-0-to-0-years-1783940761-7949162-jid",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 24,
+  "key": "labour.semiskilledOperator.fullyLoadedInrPerHr",
+  "value": 114.1,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=18,500; basic=0.5G=9,250; PF+EDLI+admin=13%xmin(basic,15000)=1,202; ESI=3.25%xG if G<=21000 =601; bonus=8.33%xmin(basic,18677) if basic<=21000 =771; gratuity=4.81%xbasic=445; monthly employer cost=21,519 (+16.3%); x12=258,230/yr / 2,264 h = 114.1 INR/h",
+  "source": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-jay-bharat-maruti-sector-3-imt-manesar-gurgaon-0-to-0-years-1783940761-7949162-jid",
+  "date": "2026-10",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 25,
+  "key": "labour.foundryOperative.monthlyGross",
+  "value": 21000,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Foundry operative (moulding, pouring, fettling): WageIndicator India metal moulders & coremakers: majority 16,844-35,914/mo (2025) https://prd.wageindicator.org/en-in/work-in-india/role-and-pay/india-metal-moulders-and-coremakers ; Coimbatore melting/pouring operator posting 25-30k (Marks Engineering Works, Indeed) https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division ; KA foundry skilled moulder floor 18,361. Mid 21,000 = blend of fettling (semi-skilled, ~floor) and moulding/pouring (skilled). No per-cluster data found (Coimbatore is not one of the four clusters).",
+  "source": "https://prd.wageindicator.org/en-in/work-in-india/role-and-pay/india-metal-moulders-and-coremakers",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 26,
+  "key": "labour.foundryOperative.fullyLoadedInrPerHr",
+  "value": 129.5,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=21,000; basic=0.5G=10,500; PF+EDLI+admin=13%xmin(basic,15000)=1,365; ESI=3.25%xG if G<=21000 =682; bonus=8.33%xmin(basic,18677) if basic<=21000 =875; gratuity=4.81%xbasic=505; monthly employer cost=24,427 (+16.3%); x12=293,126/yr / 2,264 h = 129.5 INR/h",
+  "source": "https://prd.wageindicator.org/en-in/work-in-india/role-and-pay/india-metal-moulders-and-coremakers",
+  "date": "2026-10",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 28,
+  "key": "labour.forgeOperator.fullyLoadedInrPerHr",
+  "value": 131.8,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=22,000; basic=0.5G=11,000; PF+EDLI+admin=13%xmin(basic,15000)=1,430; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =916; gratuity=4.81%xbasic=529; monthly employer cost=24,875 (+13.1%); x12=298,505/yr / 2,264 h = 131.8 INR/h",
+  "source": "https://wageindicator.org/en-in/work-in-india/role-and-pay/india-blacksmiths-hammersmiths-and-forging-press",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6c9e1072b97b111d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/6c9e1072b97b111d.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 29,
+  "key": "labour.furnaceOperator.monthlyGross",
+  "value": 23000,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Furnace operator: No furnace-operator salary found for the four clusters. Proxy: Coimbatore melting/pouring operator posting 25-30k https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division and the foundry/forge bands above. Mid 23,000 is a PROXY — low confidence.",
+  "source": "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c778d5d49da0a351.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 30,
+  "key": "labour.furnaceOperator.fullyLoadedInrPerHr",
+  "value": 137.8,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=23,000; basic=0.5G=11,500; PF+EDLI+admin=13%xmin(basic,15000)=1,495; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =958; gratuity=4.81%xbasic=553; monthly employer cost=26,006 (+13.1%); x12=312,073/yr / 2,264 h = 137.8 INR/h",
+  "source": "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c778d5d49da0a351.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 31,
+  "key": "labour.pressShopOperator.monthlyGross",
+  "value": 20500,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Press-shop operator: No press-operator title found; proxy = IMT Manesar machine-operator postings at sheet-metal / exhaust press-shop employers: Jay Bharat Maruti 19-20k, RV Exhaust System 20-22k https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-rv-exhaust-system-imt-manesar-gurgaon-0-to-0-years-1785741657-8094970-jid , Mark Exhaust Systems 20-31k. Mid 20,500. NCR only.",
+  "source": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-rv-exhaust-system-imt-manesar-gurgaon-0-to-0-years-1785741657-8094970-jid",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 33,
+  "key": "labour.plasticsOperator.monthlyGross",
+  "value": 18000,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Plastics operator (injection / blow / roto / thermoform): CorpReady injection moulding operator band 1.8-4 L/yr (15-33k/mo) 0-2 yrs https://corpready.in/salary/injection-moulding-operator ; Chennai Sriperumbudur IM apprentice stipend ~13k + ESI/OT (TN Govt portal) https://www.tnprivatejobs.tn.gov.in/candidate/Home/ca_jobfair_single/24011210571434147 ; Chennai IM setter (5+ yrs) 25-40k (Apna). Mid 18,000 (operator, not setter). No Pune/Bengaluru/NCR data found; blow/roto/thermoform operators not found separately.",
+  "source": "https://corpready.in/salary/injection-moulding-operator",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/aa1f6b5fcbaac619.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/aa1f6b5fcbaac619.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 34,
+  "key": "labour.plasticsOperator.fullyLoadedInrPerHr",
+  "value": 111.0,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=18,000; basic=0.5G=9,000; PF+EDLI+admin=13%xmin(basic,15000)=1,170; ESI=3.25%xG if G<=21000 =585; bonus=8.33%xmin(basic,18677) if basic<=21000 =750; gratuity=4.81%xbasic=433; monthly employer cost=20,938 (+16.3%); x12=251,251/yr / 2,264 h = 111.0 INR/h",
+  "source": "https://corpready.in/salary/injection-moulding-operator",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/aa1f6b5fcbaac619.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/aa1f6b5fcbaac619.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 35,
+  "key": "labour.smtOperator.monthlyGross",
+  "value": 23000,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Electronics assembly / SMT operator: Bengaluru SMT operator posting 3.5-5.5 LPA (29-46k/mo) and Southern Chips (Hosur Rd) Yamaha operator from INR 336,000/yr (28k) (Indeed) https://in.indeed.com/Smt-jobs-in-South-India ; Payscale India SMT machine operator avg INR 200,804/yr (16,700/mo) https://www.payscale.com/research/IN/Job=Surface_Mount_Technology_(SMT)_Machine_Operator/Salary . Payscale Chennai (966k/yr) rejected as implausible. Mid 23,000 = mean of Bengaluru ~30k and India-wide 16.7k. Low confidence.",
+  "source": "https://in.indeed.com/Smt-jobs-in-South-India",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bc72ac406b72fd61.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 36,
+  "key": "labour.smtOperator.fullyLoadedInrPerHr",
+  "value": 137.8,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=23,000; basic=0.5G=11,500; PF+EDLI+admin=13%xmin(basic,15000)=1,495; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =958; gratuity=4.81%xbasic=553; monthly employer cost=26,006 (+13.1%); x12=312,073/yr / 2,264 h = 137.8 INR/h",
+  "source": "https://in.indeed.com/Smt-jobs-in-South-India",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bc72ac406b72fd61.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 37,
+  "key": "labour.qualityInspector.monthlyGross",
+  "value": 20000,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Quality inspector: AmbitionBox quality inspector CTC: Tata Motors 1-4.5 L/yr (300+ salaries; take-home 16.2-17.8k) https://www.ambitionbox.com/salaries/tata-motors-salaries/quality-inspector ; Indo Autotech 1.2-2.6 L (take-home 14.6-16.2k); IAC 1-2.7 L; Mahindra Automotives 1.5-2.8 L; Ronch Polymers Pune 1.5-3.5 L https://www.ambitionbox.com/salaries/ronch-polymers-salaries/quality-inspector/pune-location . Take-home ~16-17.5k -> gross ~19-20k (after employee PF/PT). Mid 20,000. India-level, not per cluster.",
+  "source": "https://www.ambitionbox.com/salaries/tata-motors-salaries/quality-inspector",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 38,
+  "key": "labour.qualityInspector.fullyLoadedInrPerHr",
+  "value": 123.3,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=20,000; basic=0.5G=10,000; PF+EDLI+admin=13%xmin(basic,15000)=1,300; ESI=3.25%xG if G<=21000 =650; bonus=8.33%xmin(basic,18677) if basic<=21000 =833; gratuity=4.81%xbasic=481; monthly employer cost=23,264 (+16.3%); x12=279,168/yr / 2,264 h = 123.3 INR/h",
+  "source": "https://www.ambitionbox.com/salaries/tata-motors-salaries/quality-inspector",
+  "date": "2026-10",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 39,
+  "key": "labour.maintenanceTechnician.monthlyGross",
+  "value": 24000,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Maintenance technician (electrical / mechanical): Chennai Ambattur maintenance technician/electrical posting (diploma/ITI, 1-2 yrs) 15-25k (TN Govt portal) https://www.tnprivatejobs.tn.gov.in/candidate/Home/ca_jobfair_single/26041702564834976 ; Payscale Chennai electrical technician (maintenance) avg INR 170,893/yr https://www.payscale.com/research/IN/Job=Electrical_Technician/Salary/f580ea1b/Chennai-Maintenance ; CorpReady maintenance technician electrical 2.5-6 L/yr (0-2 y), 6-15 L (3-7 y) https://corpready.in/salary/maintenance-technician-electrical . Mid 24,000 for an experienced plant technician (above the fresher posting, below CorpReady mid-career). Low-medium confidence.",
+  "source": "https://corpready.in/salary/maintenance-technician-electrical",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/51807ae322c4cf82.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/51807ae322c4cf82.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 40,
+  "key": "labour.maintenanceTechnician.fullyLoadedInrPerHr",
+  "value": 143.8,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=24,000; basic=0.5G=12,000; PF+EDLI+admin=13%xmin(basic,15000)=1,560; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =1,000; gratuity=4.81%xbasic=577; monthly employer cost=27,137 (+13.1%); x12=325,642/yr / 2,264 h = 143.8 INR/h",
+  "source": "https://corpready.in/salary/maintenance-technician-electrical",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/51807ae322c4cf82.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/51807ae322c4cf82.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 42,
+  "key": "labour.productionSupervisor.fullyLoadedInrPerHr",
+  "value": 196.7,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=33,000; basic=0.5G=16,500; PF+EDLI+admin=13%xmin(basic,15000)=1,950; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =1,374; gratuity=4.81%xbasic=794; monthly employer cost=37,118 (+12.5%); x12=445,417/yr / 2,264 h = 196.7 INR/h",
+  "source": "https://www.payscale.com/research/IN/Job=Production_Supervisor%2C_Manufacturing/Salary/febb9359/Pune",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3a6fcf264428687c.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 43,
+  "key": "labour.processEngineer.monthlyGross",
+  "value": 45000,
+  "unit": "INR/month (gross wage / CTC excl. employer statutory)",
+  "currency": null,
+  "basis": "Manufacturing / process engineer (2-6 yrs): Payscale Pune process engineer (manufacturing process eng.): mid-career avg INR 530,000/yr (44,167/mo), early-career 276,000 https://www.payscale.com/research/IN/Job=Process_Engineer/Salary/2a531e0b/Mid-Career-Pune-Manufacturing-Process-Engineering ; AmbitionBox Cikautxo Pune process engineer ~5.6-5.7 L/yr (47k/mo, n=4) https://www.ambitionbox.com/salaries/cikautxo-salaries/process-engineer/pune-location . Mid 45,000. Pune only.",
+  "source": "https://www.payscale.com/research/IN/Job=Process_Engineer/Salary/2a531e0b/Mid-Career-Pune-Manufacturing-Process-Engineering",
+  "date": "2026 (pages as of Oct 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7ab8e2e5ee68b98c.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7ab8e2e5ee68b98c.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 44,
+  "key": "labour.processEngineer.fullyLoadedInrPerHr",
+  "value": 254.6,
+  "unit": "INR/productive hour",
+  "currency": null,
+  "basis": "G=45,000; basic=0.5G=22,500; PF+EDLI+admin=13%xmin(basic,15000)=1,950; ESI=3.25%xG if G<=21000 =0; bonus=8.33%xmin(basic,18677) if basic<=21000 =0; gratuity=4.81%xbasic=1,082; monthly employer cost=48,032 (+6.7%); x12=576,387/yr / 2,264 h = 254.6 INR/h",
+  "source": "https://www.payscale.com/research/IN/Job=Process_Engineer/Salary/2a531e0b/Mid-Career-Pune-Manufacturing-Process-Engineering",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7ab8e2e5ee68b98c.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7ab8e2e5ee68b98c.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 52,
+  "key": "energy.electricity.tamilnadu.allInInrPerKwh",
+  "value": 8.81,
+  "unit": "INR/kWh",
+  "currency": null,
+  "basis": "7.50 + 608/465.0 = 7.50 + 1.31 = 8.81 (ex electricity tax)",
+  "source": "https://mercomindia.com/tamil-nadu-hikes-fy-2026-electricity-tariffs-by-3-16",
+  "date": "2025-07-01 (still current Oct 2026 per source)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/29bbb20eb81c5c38.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/29bbb20eb81c5c38.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 58,
+  "key": "energy.electricity.haryana.allInInrPerKwh",
+  "value": 7.72,
+  "unit": "INR/kWh",
+  "currency": null,
+  "basis": "6.95/0.98 + 290/465.0 = 7.09 + 0.62 = 7.72 (ex electricity duty, FSA)",
+  "source": "https://www.tribuneindia.com/news/haryana/power-shock-consumers-to-pay-30-paise-more-per-unit",
+  "date": "FY2026-27",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7f38cf9d92695093.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7f38cf9d92695093.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 63,
+  "key": "energy.gas.industrialPNG.inrPerKwh",
+  "value": 3.84,
+  "unit": "INR/kWh (GCV)",
+  "currency": null,
+  "basis": "44.68 INR/SCM / (10,000 kcal/SCM x 1.163 Wh/kcal = 11.63 kWh) = 3.84; at 8,600 kcal/SCM (10.0 kWh) = 4.47",
+  "source": "https://indianinfrastructure.com/2024/07/05/gujarat-gas-increases-industrial-png-price-in-morbi-gujarat/",
+  "date": "2024-07-04",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e21ef9ea9ce25cac.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e21ef9ea9ce25cac.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/machines.json",
+  "i": 0,
+  "key": "capex.vmc3.domestic",
+  "value": 3456000,
+  "unit": "INR per machine (ex-works realisation)",
+  "currency": null,
+  "basis": "Producer-reported blended realisation per machine, Jyoti CNC Automation (domestic maker, VMC/turning/5-axis mix): ~Rs 34.56 lakh in Q1 FY27 vs Rs 34.41 lakh in Q1 FY26 (earnings-call summary). Revenue per machine, so ex-GST; excludes freight/installation/tooling. It is a MIX of entry, mid and high-end machines (incl. some 5-axis), so it is an upper-side proxy for a standard 3-axis VMC and a lower-side proxy for 5-axis.",
+  "source": "https://compoundingai.in/market-news/jyoticnc-q1-fy27-earnings-call",
+  "date": "2026-08 (Q1 FY27 call)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/769c025a4627c7d2.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/769c025a4627c7d2.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/machines.json",
+  "i": 28,
+  "key": "finance.rate",
+  "value": 0.0875,
+  "unit": "fraction per year (proposed)",
+  "currency": null,
+  "basis": "Proposed P&M term-loan cost = 1-year MCLR band 8.70-8.80% (SBI/BoB/BoI, Jul-Oct 2026); MSME EBR floor 8.15% + unknown risk spread. 8.75% = BoB 1Y MCLR, the mid of the band. Corporate tier-1 likely at/below MCLR, small tier-2 above it.",
+  "source": "https://nsearchives.nseindia.com/corporate/BANKBARODA_10092026170139_SEMCLR.pdf",
+  "date": "2026-09/10",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/machines.json",
+  "i": 37,
+  "key": "rent.fourClusterAverage",
+  "value": 25.05,
+  "unit": "INR per sq ft per month (derived)",
+  "currency": null,
+  "basis": "(28.7 + 25.7 + 23.5 + 22.3) / 4 = 25.05 => Rs 300.6 per sq ft per year = Rs 3,236 per m2 per year (x 10.764). Mixed basis: Pune/Chennai city averages, Bengaluru/NCR prime.",
+  "source": "see rent.pune / rent.chennai / rent.bengaluru / rent.ncr",
+  "date": "H1 2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 7,
+  "key": "ferrous.extra.flat.hrpo_over_hrc",
+  "value": 6.7,
+  "unit": "INR/kg",
+  "currency": null,
+  "basis": "Tata Nexarc table: Mumbai HRPO sheet 2.0x1250x2500 mm INR 65,200/MT, May 2026 (JSW/Tata) minus BigMint trade HRC May 2026 INR 58,500/t = 6,700/t.",
+  "source": "https://www.tatanexarc.com/steel/steel-prices-in-india/",
+  "date": "2026-05",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/93d36b3b35d38caa.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/93d36b3b35d38caa.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 8,
+  "key": "ferrous.anchor.hrpo_derived",
+  "value": 71.18,
+  "unit": "INR/kg ex-GST",
+  "currency": null,
+  "basis": "Derived: HR anchor 64.48 (JPC Sep 2026) + HRPO extra 6.7 (May 2026) = 71.18.",
+  "source": "https://www.tatanexarc.com/steel/steel-prices-in-india/",
+  "date": "2026-09 (derived)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/93d36b3b35d38caa.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/93d36b3b35d38caa.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 9,
+  "key": "ferrous.extra.flat.automotive_grades",
+  "value": null,
+  "unit": "INR/kg",
+  "currency": null,
+  "basis": "not found in any source: no public 2026 India grade extras for IF/DC05-06, HSLA 340-550, DP600-1180, TRIP/CP/MS, 22MnB5/Usibor, BH, EG/ZnNi/ZM, galvannealed, or tinplate. OEM contract prices are negotiated (Tata/JSW ~15-20% of sales on auto contracts) and not published.",
+  "source": "https://www.hellenicshippingnews.com/explained-steel-firms-renegotiating-auto-contracts-and-the-impact-on-stocks-consumers/",
+  "date": "n/a",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f1b2bbf6e80edfab.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f1b2bbf6e80edfab.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 12,
+  "key": "ferrous.anchor.en8_c45_round_bar_black",
+  "value": 72.75,
+  "unit": "INR/kg (GST not stated), exw Mumbai",
+  "currency": null,
+  "basis": "BigMint weekly: EN-8/C45 round bar 110-150 mm INR 72,750/t; 160-200 mm INR 76,750/t, unchanged w-o-w on 22 Apr 2026 (69,250/73,750 on 1 Apr; 66,000/70,000 on 4 Feb).",
+  "source": "https://www.bigmint.co/intel/detail/india-alloy-steel-round-bar-prices-remain-stable-w-o-w-36412",
+  "date": "2026-04-22",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 14,
+  "key": "ferrous.anchor.ss316_hrc_mumbai",
+  "value": 395.0,
+  "unit": "INR/kg, ex-Mumbai",
+  "currency": null,
+  "basis": "BigMint: 316 HRC INR 395,000/t ex-Mumbai after -3,000 (snippet mentions July alloy surcharges -> ~Jun 2026); 390,000 early May; 348,000 Feb 2026.",
+  "source": "https://www.bigmint.co/insights/detail/india-stainless-steel-finished-prices-ease-w-o-w-on-weak-demand-softening-nickel-prices-765276",
+  "date": "2026-06 (approx.)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 15,
+  "key": "ferrous.anchor.ss316l_black_round_bar_mumbai",
+  "value": 340.0,
+  "unit": "INR/kg, ex-Mumbai",
+  "currency": null,
+  "basis": "BigMint: SS 316L black round bar INR 340,000/t ex-Mumbai (-5,000); 290,000 late Feb 2026.",
+  "source": "https://www.bigmint.co/insights/detail/india-stainless-steel-finished-prices-ease-w-o-w-on-weak-demand-softening-nickel-prices-765276",
+  "date": "2026-06 (approx.)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 16,
+  "key": "ferrous.anchor.ss304_crc_narrow_mumbai",
+  "value": 215.0,
+  "unit": "INR/kg, Mumbai",
+  "currency": null,
+  "basis": "Nexizo price table: SS cold rolled coil 304 narrow, Mumbai INR 2,15,000/MT dated 01/07/2026 (same site also shows Rs 210/kg ex-Mumbai).",
+  "source": "https://nexizo.ai/stainless-steel-category",
+  "date": "2026-07-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5627044aa047f7b0.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5627044aa047f7b0.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 22,
+  "key": "ferrous.anchor.pig_iron_foundry_grade",
+  "value": 47.05,
+  "unit": "INR/kg, Ludhiana",
+  "currency": null,
+  "basis": "BigMint: foundry-grade pig iron eased to INR 47,050/t from 47,250 at Ludhiana; prices expected firm in Oct (exports, tight supply).",
+  "source": "https://www.bigmint.co/insights/detail/india-pig-iron-prices-rise-in-september-as-exports-input-costs-hurt-availability-796063",
+  "date": "2026-10-06",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 24,
+  "key": "ferrous.anchor.scrap_cr_busheling_lowmn",
+  "value": 39.8,
+  "unit": "INR/kg",
+  "currency": null,
+  "basis": "Average of three OEM/market low-Mn CR busheling prints: Chennai INR 43,000/t (9 Jun 2026), Gurgaon automaker auction 37,300-37,500 exw (mid 37,400; 1 Jul 2026), Pune OEM auction 39,000 exw (mid-Apr 2026): (43.0+37.4+39.0)/3 = 39.8.",
+  "source": "https://www.bigmint.co/insights/detail/india-foundry-scrap-market-remains-under-pressure-low-manganese-cr-busheling-sees-sharper-correction-758327",
+  "date": "2026-04 to 2026-07",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 34,
+  "key": "ferrous.charge.gjs500_7",
+  "value": [
+   41.87,
+   46.01
+  ],
+  "unit": "INR/kg of charge (metallic only)",
+  "currency": null,
+  "basis": "Returns are remelted and valued at charge cost C, so C = sum(fresh share x price)/(fresh share). Mix A (KTU 'basic' ductile charge: 60% pig iron, 10% mild steel, 26% returns, ~4% FeSi+carburiser; the 4% treated as at C): (0.60x47.05 + 0.10x39.8)/0.70 = 46.01. Mix B (steel-rich, >50% steel scrap - per the Estonian study gives finer nodules; KTU notes steel scrap is cheaper but limits nucleation): 20% pig + 50% low-Mn CR busheling + 30% returns: (0.20x47.05 + 0.50x39.8)/0.70 = 41.87. Range 41.87-46.01.",
+  "source": "https://matsc.ktu.lt/index.php/MatSc/article/view/26589/13665",
+  "date": "2026-10 (inputs Apr-Oct 2026)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 35,
+  "key": "ferrous.charge.gjl250",
+  "value": 42.6,
+  "unit": "INR/kg of charge",
+  "currency": null,
+  "basis": "Mix (CostVision engineering assumption - NO source found for an Indian grey-iron charge mix): 40% steel scrap (low-Mn CR busheling 39.8) + 20% foundry pig iron (47.05) + 40% returns valued at C: (0.40x39.8 + 0.20x47.05)/0.60 = 42.22; + FeSi70 0.5% -> +0.005x(95.1-42.22) and FeMn70 0.3% -> +0.003x(79.2-42.22) = 42.6.",
+  "source": "https://www.bigmint.co/insights/detail/india-pig-iron-prices-rise-in-september-as-exports-input-costs-hurt-availability-796063",
+  "date": "2026-10 (inputs Apr-Oct 2026)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 36,
+  "key": "ferrous.charge.wcb_gs_c25",
+  "value": 38.25,
+  "unit": "INR/kg of charge",
+  "currency": null,
+  "basis": "Steel foundry charge = melting scrap + returns (at C) + deoxidation/Mn: scrap = mean(Chennai foundry plate 38.6 [Jun 2026], Alang HMS 80:20 36.5 [Sep 2026]) = 37.55; + FeMn70 1% -> 0.01x(79.2-37.55) + FeSi70 0.5% -> 0.005x(95.1-37.55) = 38.25. Addition rates are CostVision engineering assumptions (unsourced).",
+  "source": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/095b48e896317eff.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/095b48e896317eff.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 38,
+  "key": "ferrous.charge.ni_resist_d2",
+  "value": 364.4,
+  "unit": "INR/kg of charge (virgin-alloy route)",
+  "currency": null,
+  "basis": "20% Ni as MCX nickel (1625.5) + 2% Cr via HC FeCr 60% (0.02/0.60 kg x 122.2) + balance iron units at ductile Mix A (46.01): 0.20x1625.5 + 0.0333x122.2 + 0.7667x46.01 = 364.4.",
+  "source": "https://cbonds.com/indexes/221359/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/fb8f682ae1cf8c48.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 39,
+  "key": "ferrous.charge.ni_resist_d5s",
+  "value": 603.5,
+  "unit": "INR/kg of charge (virgin-alloy route)",
+  "currency": null,
+  "basis": "35% Ni (1625.5) + 2% Cr via HC FeCr 60% + ~3% extra Si via FeSi70 (0.03/0.70 kg x 95.1) + balance at 46.01: = 603.5.",
+  "source": "https://cbonds.com/indexes/221359/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/fb8f682ae1cf8c48.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 40,
+  "key": "ferrous.charge.hadfield_mn12",
+  "value": 44.7,
+  "unit": "INR/kg of charge",
+  "currency": null,
+  "basis": "12% Mn via HC FeMn 70% (0.12/0.70 = 0.171 kg x 79.2) + balance steel scrap (37.55): = 44.7. HC FeMn also supplies the ~1.2% C.",
+  "source": "https://www.bigmint.co/insights/detail/weekly-round-up-indian-ferro-alloys-prices-witness-mixed-trends-w-o-w-764117",
+  "date": "2026-06/09",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 41,
+  "key": "ferrous.charge.hicr_white_iron",
+  "value": 72.9,
+  "unit": "INR/kg of charge",
+  "currency": null,
+  "basis": "23% Cr via HC FeCr 60% (0.383 kg x 122.2) + balance at grey-iron metallic charge (42.22): = 72.9.",
+  "source": "https://www.bigmint.co/insights/detail/india-ferro-chrome-prices-rise-slightly-w-o-w-as-sellers-quote-firm-offers-759134",
+  "date": "2026-06",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-nonferrous.json",
+  "i": 11,
+  "key": "nonferrous.anchor.aluminium.billet6063.premiumOverLme3m",
+  "value": 710,
+  "unit": "USD/t",
+  "currency": null,
+  "basis": "DERIVED all-in India 6063 billet premium over LME 3M (ex-works, ex-GST, duty-inclusive): Oct 2026 = (derived P1020 352477 + 17,600) / 96.79 − 3,114 = 710. May 2026 cross-check with FX 408,800/4,272 = 95.69: Hindalco (412,500+17,600)/FX − 3,653 = 842; NALCO (408,800+17,600)/FX − 3,653 = 803.",
+  "source": "https://www.hindalco.com/Upload/PDF/primary-ready-reckoner-14-august-2026.pdf",
+  "date": "2026-10-07",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "india-2026-10/research/materials-nonferrous.json",
+  "i": 18,
+  "key": "nonferrous.anchor.copper.oct2026Derived",
+  "value": 1385,
+  "unit": "INR/kg",
+  "currency": null,
+  "basis": "DERIVED: copper USD 6.49/lb on 2 Oct 2026 (Comex-quoted) × 2,204.62 lb/t × FX 96.79 / 1000 = 1385. Consistent with MCX 1,384.75 on 11 Sep. Cathode ≈ MCX (+0.3%).",
+  "source": "https://www.alpha-maven.com/story/venture-capital/commodity-update-copper-sourcebenchmarkmineralscom",
+  "date": "2026-10-02",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/70378cfaf27fbdfb.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-nonferrous.json",
+  "i": 27,
+  "key": "nonferrous.check.AB2_CuAl10Ni5Fe5.metalContent",
+  "value": 1225.0,
+  "unit": "INR/kg",
+  "currency": null,
+  "basis": "DERIVED metal-content floor (no scrap credit, no melt or conversion): 0.80 × Cu 1385 + 0.05 × Ni 1625 (16,790 USD/t × 96.79) + 0.10 × Al 352.5 + Fe 5% ≈ 0 = 1225.0",
+  "source": "https://cbonds.com/indexes/181085/",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/df859c8df78f6f2c.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 3,
+  "key": "polymer.anchor.pp.india_index.2026-09",
+  "value": 127.7,
+  "unit": "INR/kg",
+  "currency": null,
+  "basis": "IMARC India polypropylene USD 1.32/kg, Sep 2026 × 96.72 INR/USD = 127.7. Cross-check: Business Analytiq India USD 1.28/kg (+2.4%) Sep 2026 = 123.8 INR/kg; Procurement Resource CIF India USD 1,452/t Aug 2026 = 140.4 INR/kg before duty.",
+  "source": "https://www.imarcgroup.com/polypropylene-pricing-report",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e25952086dd78957.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e25952086dd78957.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.anchor.pvc_k67.delhi_exgodown.2026-09-25",
+  "value": "PVC K67 108.00; Hygain PVC K67 96.50",
+  "unit": "INR/kg",
+  "currency": null,
+  "basis": "Credco Delhi NCR indicative ex-godown, 25 Sep 2026.",
+  "source": "https://credcosourcing.com/prices",
+  "date": "2026-09-25",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/cb4605a4f7f10de2.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/cb4605a4f7f10de2.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 7,
+  "key": "polymer.anchor.pet_bottle.india_index.2026-09",
+  "value": 104.5,
+  "unit": "INR/kg",
+  "currency": null,
+  "basis": "Polyester Time PET bottle-grade chip trend, India USD 1.08/kg 'steady (-0.9%)', article dated 10-09-2026 × 96.72 = 104.5.",
+  "source": "https://www.polyestertime.com/pet-bottle-grade-chip-price-trends/",
+  "date": "2026-09-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/06359bcebf3700a0.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/06359bcebf3700a0.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.anchor.pbt.india_index.2026-09",
+  "value": 248.6,
+  "unit": "INR/kg",
+  "currency": null,
+  "basis": "Business Analytiq PBT index, India USD 2.57/kg (+1.2%) Sep 2026 × 96.72 = 248.6.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9ae9b9bd720a68b5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9ae9b9bd720a68b5.render.txt"
+  ]
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.import_duty.chapter39",
+  "value": "7.5–10% BCD (standard); nil 2 Apr–30 Jun 2026 for listed items",
+  "unit": "percent of assessable value",
+  "currency": null,
+  "basis": "Notification 12/2026-Customs cut BCD to nil on 40+ items incl. PP, PE, PS, PVC, PET chips, ABS, styrene etc., valid 2 Apr–30 Jun 2026; no extension found, so standard rates apply in Oct 2026. Standard Chapter 39 BCD 7.5–10% per aggregator pages.",
+  "source": "https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480",
+  "date": "2026-04-02",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/75e8c8f889b4409a.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/75e8c8f889b4409a.render.txt"
+  ]
+ }
+]

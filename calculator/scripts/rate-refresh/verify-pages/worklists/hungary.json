@@ -1,0 +1,1546 @@
+[
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 2,
+  "key": "energy.electricity.networkCharges",
+  "value": 12.14,
+  "unit": "Ft/kWh ex-VAT (distribution, MV connection — CONDITIONAL reading)",
+  "currency": "HUF",
+  "basis": "E.ON 2026 system-usage tariff table (MEKH decision H2995/2025, from 1 Jan 2026), row 'Középfeszültségű csatlakozás' prints 216,504 / 15,924 / 8.39 and reactive 3.95 Ft/kVArh. IF read as basic fee 216,504 Ft/connection point/yr, capacity fee 15,924 Ft/kW/yr and volumetric 8.39 Ft/kWh: capacity term at an assumed 70% average draw of contracted kW over the 6,072 running hours = 15,924 / (6,072 × 0.70) = 3.75 Ft/kWh; + 8.39 = 12.14 Ft/kWh (basic fee negligible per kWh for a MW-scale plant).",
+  "source": "https://www.eon.hu/content/dam/eon/eon-hungary/documents/hatarozatok-szabalyzatok-aram/arak-tarifak/Aram_RHD_EON_20260101.pdf",
+  "date": "2026-01-01 tariff",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 4,
+  "key": "energy.electricity.allIn",
+  "value": 55.02,
+  "unit": "Ft/kWh ex-VAT",
+  "currency": "HUF",
+  "basis": "Build-up: energy 42.47 (HUPX Cal-26 EUR 117/MWh) + network 12.14 (conditional reading of the E.ON MV row, 70% draw) + energiaadó 0.415 = 55.02 Ft/kWh (= EUR 0.152/kWh at 363). Sourced-only FLOOR (energy + energiaadó, no network): 42.89 Ft/kWh. On the Q1-2026 spot mean (46.11) instead of Cal-26: 58.67 Ft/kWh.",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 7,
+  "key": "energy.gas.distribution",
+  "value": null,
+  "unit": "Ft/kWh",
+  "currency": "HUF",
+  "basis": "NOT FOUND — no 2026 MEKH gas distribution tariff for a non-household (>100 m³/h) customer was reached within the search budget.",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 8,
+  "key": "energy.gas.allIn",
+  "value": 29.73,
+  "unit": "Ft/kWh ex-VAT (GCV) — FLOOR",
+  "currency": "HUF",
+  "basis": "Sourced components only: commodity 29.73 (TTF Oct-26 proxy) + distribution (not found) + gas energiaadó (not found) = 29.73 Ft/kWh (= EUR 0.0819/kWh). On the January-2026 price level it would be 12.35 Ft/kWh + network.",
+  "source": "derived",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 10,
+  "key": "hours.annual",
+  "value": 6072,
+  "unit": "h/yr (3 × 8 h, Monday–Friday, 2026)",
+  "currency": "",
+  "basis": "2026 has 261 Mon–Fri days. Statutory holidays (Mt. 102 §) on weekdays: 1 Jan (Thu), 3 Apr Good Friday, 6 Apr Easter Monday, 1 May (Fri), 25 May Whit Monday, 20 Aug (Thu), 23 Oct (Fri), 25 Dec (Fri) = 8 (15 Mar, Easter Sunday 5 Apr, Whit Sunday 24 May, 1 Nov fall on Sunday; 26 Dec on Saturday). Official swaps: rest days Fri 2 Jan, Fri 21 Aug, Thu 24 Dec, worked Saturdays 10 Jan, 8 Aug, 12 Dec — net zero for a Mon–Fri plant (3 days off, 3 Saturdays worked). 261 − 8 − 3 + 3 = 253 days × 24 h = 6,072 h.",
+  "source": "https://financera.hu/szemelyes-penzugyek/munkaszuneti-napok/ ; https://www.penzcentrum.hu/karrier/20250524/ledolgozos-szombatok-2026-ban-itt-van-minden-athelyezett-munkanap-1179148",
+  "date": "calendar year 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4f713f127a836c33.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4f713f127a836c33.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/ea3056c85fc4930b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/ea3056c85fc4930b.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 11,
+  "key": "life.machinery",
+  "value": 6.9,
+  "unit": "years (TAX life implied by the 14.5% straight-line rate)",
+  "currency": "",
+  "basis": "Act LXXXI of 1996 (Tao. tv.), Annex 2 chapter IV: machines and equipment at 33%, 20%, 10% or 7% where specifically listed, and 14.5% for machinery not listed under any of the enumerated items; 100 / 14.5 = 6.9 years. 33% → 3.0 years applies only to the enumerated items.",
+  "source": "https://adozona.hu/cimke/le%c3%adr%c3%a1si+kulcs/2",
+  "date": "rule in force (date of the Q&A pages not shown)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 15,
+  "key": "finance.machineryLoan",
+  "value": 7.7,
+  "unit": "% p.a. (derived)",
+  "currency": "",
+  "basis": "Spread method: Q1-2026 new small corporate HUF loans 8.6% when the base rate was ~6.4% on average (6.50% January, 6.25% by spring) → spread ≈ 8.6 − 6.4 = 2.2 pp; applied to the current 5.50% base rate: 5.50 + 2.2 = 7.7%.",
+  "source": "derived from https://www.mnb.hu/letoltes/hitelezesi-folyamatok-flyer-2026q1.pdf and finance.mnbBase",
+  "date": "2026-10",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 20,
+  "key": "rent.clusterAvg",
+  "value": 1996.5,
+  "unit": "Ft/m²/month (NATIONAL proxy, not a four-city mean)",
+  "currency": "HUF",
+  "basis": "The four-city mean cannot be computed (three cities not found). Proxy: CBRE Hungary Q1 2026 prime big-box rent EUR 5.5/m²/month × 363 = 1,996.5 Ft/m²/month. Other readings: CBRE Q2 2026 new A-grade logistics headline rents 'from EUR 4.95' (= 1,797 Ft); prime city-logistics EUR 6.7 (urban, not a factory); Kecskemét (weak) EUR 7.0.",
+  "source": "https://mktgdocs.cbre.com/2299/e69a5ac8-bba5-4401-baa9-3f964f410621-1323972446/HU_Industrial_Figures_Q1_2026.pdf ; https://www.cbre.com/insights/figures/hungary-industrial-figures-q1-2026",
+  "date": "2026-Q1",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/05af2d226cac4272.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 2,
+  "key": "fx.mnb.USDHUF",
+  "value": 328.84,
+  "unit": "HUF per USD",
+  "currency": "HUF",
+  "basis": "MNB official mid rate, Thursday 29 October 2026",
+  "source": "https://www.mnb.hu/arfolyamok",
+  "date": "2026-10-29",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b50d5e40af5370e6.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b50d5e40af5370e6.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 35,
+  "key": "labour.skilled.monthlyGross",
+  "value": 774530,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "FEOR 7323 Forgácsoló (machinist incl. CNC): 759,633 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 774,530",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 36,
+  "key": "labour.skilled.fullyLoadedHufPerHr",
+  "value": 6881.31,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. Without the shift allowance: 6,008.05",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 37,
+  "key": "labour.semiskilled.monthlyGross",
+  "value": 670594,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY: FEOR major group 8 average (machine operators, assemblers, drivers; 49 occupations): 657,696 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 670,594",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 38,
+  "key": "labour.semiskilled.fullyLoadedHufPerHr",
+  "value": 5957.89,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. Without the shift allowance: 5,201.81",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 39,
+  "key": "labour.foundry.monthlyGross",
+  "value": 591374,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY: FEOR 7310 Fémöntőminta-készítő (pattern maker, the nearest foundry occupation found; aggregator rounds to 580 e Ft): 580,000 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 591,374",
+  "source": "https://berindex.hu/fizetes/",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f555aee5faea0916.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f555aee5faea0916.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 41,
+  "key": "labour.electronics.monthlyGross",
+  "value": 670594,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY: FEOR major group 8 average (assemblers are in group 8): 657,696 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 670,594",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 42,
+  "key": "labour.electronics.fullyLoadedHufPerHr",
+  "value": 5957.89,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. Without the shift allowance: 5,201.81",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 43,
+  "key": "labour.inspector.monthlyGross",
+  "value": 774530,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY: FEOR 7323 Forgácsoló (CMM / quality inspection drawn from the metal-cutting trades): 759,633 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 774,530",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 44,
+  "key": "labour.inspector.fullyLoadedHufPerHr",
+  "value": 6881.31,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. Without the shift allowance: 6,008.05",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 45,
+  "key": "labour.technician.monthlyGross",
+  "value": 774530,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY: FEOR 7323 Forgácsoló (highest skilled metal trade found): 759,633 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 774,530",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 46,
+  "key": "labour.technician.fullyLoadedHufPerHr",
+  "value": 6881.31,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. Without the shift allowance: 6,008.05",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 47,
+  "key": "labour.supervisor.monthlyGross",
+  "value": 774530,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY FLOOR: FEOR 7323 Forgácsoló — no shift-leader (műszakvezető) figure found: 759,633 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 774,530",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 48,
+  "key": "labour.supervisor.fullyLoadedHufPerHr",
+  "value": 6881.31,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. Without the shift allowance: 6,008.05",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 49,
+  "key": "labour.forge.monthlyGross",
+  "value": 632926,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "FEOR 7326 Kovács (smith / forger): 620,753 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 632,926",
+  "source": "https://mennyitkeres-info.hu/feor-kodok/",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09ed41e4bbb29d71.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09ed41e4bbb29d71.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 50,
+  "key": "labour.forge.fullyLoadedHufPerHr",
+  "value": 5623.23,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 632,926 ÷ 174 = 3,637.51. Pay 12 × 632,926 = 7,595,112 − sick-pay saving 30% × 80 h × 3,637.51 = 87,300 → 7,507,812; + shift allowance 30% × 3,637.51 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,091,252; taxable 8,599,064 + szocho 13% 1,117,878 = annual cost 9,716,942 ÷ 1728 productive h = 5,623.23. Without the shift allowance: 4,909.62",
+  "source": "https://mennyitkeres-info.hu/feor-kodok/",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09ed41e4bbb29d71.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09ed41e4bbb29d71.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 51,
+  "key": "labour.furnace.monthlyGross",
+  "value": 591374,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY = foundry (FEOR 7310) — no furnace / heat-treat operator figure found: 580,000 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 591,374",
+  "source": "https://berindex.hu/fizetes/",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f555aee5faea0916.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f555aee5faea0916.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 53,
+  "key": "labour.blow.monthlyGross",
+  "value": 670594,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY: FEOR major group 8 average (plastics-machine operators are in group 8): 657,696 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 670,594",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 54,
+  "key": "labour.blow.fullyLoadedHufPerHr",
+  "value": 5957.89,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. Without the shift allowance: 5,201.81",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 55,
+  "key": "labour.roto.monthlyGross",
+  "value": 670594,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY: FEOR major group 8 average (plastics-machine operators are in group 8): 657,696 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 670,594",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 56,
+  "key": "labour.roto.fullyLoadedHufPerHr",
+  "value": 5957.89,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. Without the shift allowance: 5,201.81",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 57,
+  "key": "labour.thermoform.monthlyGross",
+  "value": 670594,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY: FEOR major group 8 average (plastics-machine operators are in group 8): 657,696 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 670,594",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 58,
+  "key": "labour.thermoform.fullyLoadedHufPerHr",
+  "value": 5957.89,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. Without the shift allowance: 5,201.81",
+  "source": "https://magyarfizetesek.hu/",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/38f1ab251fdb24cb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 59,
+  "key": "labour.trimRouter.monthlyGross",
+  "value": 774530,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "PROXY = skilled (FEOR 7323 Forgácsoló) — CNC router operation is a metal/CNC-trade skill: 759,633 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 774,530",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2025 (annual) indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 60,
+  "key": "labour.trimRouter.fullyLoadedHufPerHr",
+  "value": 6881.31,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. Without the shift allowance: 6,008.05",
+  "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9817afe1e88b06c1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 61,
+  "key": "labour.engineer.monthlyGross",
+  "value": null,
+  "unit": "HUF/month gross",
+  "currency": "HUF",
+  "basis": "NOT FOUND: no manufacturing / process engineer (gépészmérnök, folyamatmérnök) 2025–2026 earnings figure was returned by any search within the budget",
+  "source": "",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 63,
+  "key": "labour.loadingIncluded",
+  "value": null,
+  "unit": "—",
+  "currency": "HUF",
+  "basis": "Fully-loaded hourly cost INCLUDES: KSH total gross earnings (base + bonuses / premiums + allowances, as KSH measures them) for the occupation, 2025 national average indexed +8.4% to 2026 and scaled ×0.9406 to the four clusters; paid annual leave (27 days) and weekday public holidays inside the 12 monthly salaries; employer-paid sick leave at 70% for 10 days; the 30% shift allowance (Mt. 141) on the 50% of hours that fall 18:00–06:00 in rotating 3 × 8 h (shop-floor roles), carried into leave and sick pay; szocho 13% on all of it; divided by 1728 productive hours.",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 64,
+  "key": "labour.loadingNotIncluded",
+  "value": null,
+  "unit": "—",
+  "currency": "HUF",
+  "basis": "NOT included (not shown to be standard by a source, or not verified): 13th-month salary (not statutory in Hungary; any annual bonus is already inside KSH total earnings); cafeteria / SZÉP-card benefits (common but not statutory; their tax would add on top); commuting reimbursement (statutory share of pass / ticket cost, Korm. rendelet 39/2010 — not verified); rehabilitation contribution for employers ≥ 25 staff short of the 5% disabled-employee quota (not verified); work clothing, occupational medicine, training time; overtime, weekend and holiday premiums; child additional leave; agency margins; the vocational-training contribution (believed abolished 2022).",
+  "source": "derived",
+  "date": "2026",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 0,
+  "key": "capex.mach-vmc3",
+  "value": 64995,
+  "unit": "EUR/unit ex-VAT",
+  "currency": "EUR",
+  "basis": "Haas EU-series VF-2SSYT-EU (VF-2-size 3-axis VMC, 12k rpm, extended Y, EU configuration) special price EUR 64,995 on Haas's own EU site (one EUR price across the EU market). Machine only.",
+  "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu",
+  "date": "page undated; retrieved via search 2026-10-10 (Poland round) / 2026-10-12 (Germany round)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1b3558d12f47e41c.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/81273040fcb6c941.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 1,
+  "key": "capex.mach-haas-vf2",
+  "value": 64995,
+  "unit": "EUR/unit ex-VAT",
+  "currency": "EUR",
+  "basis": "Same evidence as capex.mach-vmc3: Haas VF-2SSYT-EU EU special price EUR 64,995 (machine only).",
+  "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu ; https://machinetoolindex.com/machines/haas-vf-2",
+  "date": "page undated; US list verified 2026-08-31",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1b3558d12f47e41c.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/81273040fcb6c941.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0fdf464c8e68f9f7.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0fdf464c8e68f9f7.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 2,
+  "key": "capex.mach-vmc5",
+  "value": 105596,
+  "unit": "EUR/unit ex-VAT",
+  "currency": "EUR",
+  "basis": "Haas UMC-500 (5-axis trunnion VMC) 'starts at US$119,995' (older Haas article) × 0.880 EUR/USD (the Germany round's conversion) = EUR 105,596. Machine only.",
+  "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "date": "article date not shown (older than 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09530ff8183cdcd2.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 3,
+  "key": "capex.mach-haas-umc500",
+  "value": 105596,
+  "unit": "EUR/unit ex-VAT",
+  "currency": "EUR",
+  "basis": "Same as capex.mach-vmc5: Haas UMC-500 US$119,995 × 0.880 = EUR 105,596.",
+  "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "date": "older than 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/09530ff8183cdcd2.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 5,
+  "key": "capex.mach-lathe-cnc",
+  "value": 26500,
+  "unit": "EUR/unit ex-VAT",
+  "currency": "EUR",
+  "basis": "DN Solutions (ex-Doosan) LYNX 2100GA, 2-axis CNC lathe (Lynx 2100 class, 8\" chuck class), build year 2025, NEW, offered by a dealer in Busan (Korea): EXW fixed price EUR 26,500 excluding VAT. The German-language copy of the same listing shows 26,500 € and 28,000 € (the second may be a former or list price); another new LYNX 2100GA listing quotes EUR 36,000 FOB Busan plus VAT (URL not certain).",
+  "source": "https://www.machineseeker.fr/dn+solutions-lynx+2100ga/i-21582813 ; https://www.maschinensucher.de/dn+solutions-lynx+2100ga/i-21582813 ; https://www.werktuigen.com/dn+solutions-lynx+2100ga/wt-214-45867",
+  "date": "listing 2025–2026 (retrieved via search 2026-10-30)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b0679d62d5502980.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4c441f59a36bf969.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/ae7c3781286cdfd4.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 26,
+  "key": "capex.laser-trumpf-3030",
+  "value": null,
+  "unit": "EUR/unit",
+  "currency": "EUR",
+  "basis": "not found: TRUMPF quotes on request; no EU new-machine list price or award for a TruLaser 3030 fiber 6 kW (this and earlier rounds).",
+  "source": "https://www.maschinensucher.de/trumpf-trulaser+3030+fiber+%28l81%29+%2B+storemaster/i-20635200",
+  "date": "retrieved via search 2026-10-12 / 2026-10-30",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 31,
+  "key": "capex.punch-amada-emz3610",
+  "value": null,
+  "unit": "EUR/unit",
+  "currency": "EUR",
+  "basis": "not found: no new price or award for an Amada EMZ 3610 turret punch.",
+  "source": "",
+  "date": "searched 2026-10-30 (via the TRUMPF/Amada queries)",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 32,
+  "key": "capex.brake-amada-hfe100",
+  "value": null,
+  "unit": "EUR/unit",
+  "currency": "EUR",
+  "basis": "not found: no new-machine list price, distributor price or award for an Amada HFE 100-3 (Poland round and this one).",
+  "source": "https://resale.info/en/amada-hfe-100-3-prensa-plegadora/No-166672578",
+  "date": "2026-10-10 / 2026-10-30",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/13dffc896f1a037a.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-forming-casting.json",
+  "i": 33,
+  "key": "capex.grav-die-cast-std",
+  "value": null,
+  "unit": "EUR/unit",
+  "currency": "EUR",
+  "basis": "not found in any source (not searched — budget).",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/machines-forming-casting.json",
+  "i": 38,
+  "key": "capex.al-ext-press-1800t",
+  "value": 10000000,
+  "unit": "EUR per automatic extrusion line incl. automation (investment announcement)",
+  "currency": "EUR",
+  "basis": "Carried from germany-2026-10/research/machines.json: ALRO subsidiary Vimetco Extrusion (Slatina, RO) ~EUR 10 M for an automatic aluminium-profile extrusion line from Presezzi Extrusion — 7-inch press, profiles to 60 m at 50 m/min, +~11,000 t/yr; started March 2021, commissioned Sept 2022. HUF at €1 = 364.42 Ft: 10,000,000 × 364.42 = 3,644,200,000 Ft.",
+  "source": "https://www.alro.ro/en/news-resources/news/vimetco-extrusion-alro-s-downstream-subsidiary-1st-billet-extruded-on-a-new-automatic-line-for-aluminium-profiles-following-a-eur-10-million-investment ; https://www.alcircle.com/news/vimetco-extrusion-to-expand-aluminium-profiles-extrusion-line-with-eur-10-million-investments-63714",
+  "date": "2021-03 to 2022-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bc9bb8e35d8acd8e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bc9bb8e35d8acd8e.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/50d7b59bc076f6b4.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/50d7b59bc076f6b4.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-forming-casting.json",
+  "i": 41,
+  "key": "capex.al-ext-press-5500t",
+  "value": 35700000,
+  "unit": "EUR per new 12-inch automotive extrusion press line (investment announcement; in an existing building)",
+  "currency": "EUR",
+  "basis": "Hydro Extrusion Hungary, Székesfehérvár: NOK 360 M = EUR 35.7 M (HUF 14.6 bn as reported by D&T) for a new high-strength automotive extrusion press — a copy of the site's existing P60 / 12-inch automotive press line with upgraded low-carbon technology; installed in an EXISTING building, fed with billets from the site's new recycling plant; the seventh extrusion line at the site; start-up 2025. (The HUF 14.6 bn in the source is at the 2022 rate; the converted figure here uses the 2026 rate.) HUF at €1 = 364.42 Ft: 35,700,000 × 364.42 = 13,009,794,000 Ft.",
+  "source": "https://hydro.com/en/media/news/2022/hydro-invests-in-new-automotive-press-in-hungary ; https://alcircle.com/news/norsk-hydro-invests-in-a-new-automotive-press-in-hungary-87442 ; https://industryinsider.eu/?p=65071 ; https://dteurope.com/?p=59103",
+  "date": "2022 (announcement; start-up 2025)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b3827c0861a8ef06.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7a186000462676d3.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7a186000462676d3.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bb8da5402e081c4d.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bb8da5402e081c4d.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d892539978ae06c5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d892539978ae06c5.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-plastics-other.json",
+  "i": 2,
+  "key": "capex.imm-200t",
+  "value": null,
+  "unit": "per unit",
+  "currency": "",
+  "basis": "not found in any source for a new 200 t machine (no EU list, dealer offer or award value). Poland round found an EU-funded tender (Improdex, hybrid IMM >= 200 t + robot) without an award value",
+  "source": "https://bazakonkurencyjnosci.funduszeeuropejskie.gov.pl/api/files/1975317",
+  "date": "",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f279d19d07a9b23e.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-plastics-other.json",
+  "i": 53,
+  "key": "capex.autoclave-1200mm",
+  "value": null,
+  "unit": "per unit",
+  "currency": "",
+  "basis": "not found for a 1.2 m production autoclave",
+  "source": "https://www.find-tender.service.gov.uk/Notice/037283-2025",
+  "date": "",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9f5bd2fc51666e86.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9f5bd2fc51666e86.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/machines-plastics-other.json",
+  "i": 55,
+  "key": "capex.rtm-press-std",
+  "value": null,
+  "unit": "per unit",
+  "currency": "",
+  "basis": "not found in any source (not searched to a result)",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/machines-plastics-other.json",
+  "i": 65,
+  "key": "capex.smt-high-speed-line",
+  "value": 1600000,
+  "unit": "GBP per line (investment announcement)",
+  "currency": "GBP",
+  "basis": "Trade press: Plexus (Kelso, UK) GBP 1.6 m SMT line - ASM pick-and-place, DEK printer, Speedline reflow. Carried from uk-2026-10/research/machines-b.json, same value, URL and date",
+  "source": "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line",
+  "date": "date not visible in the search snippet (UK round)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/72ee2701ff59fbcb.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 1,
+  "key": "ferrous.anchor.crc",
+  "value": 0.865,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "Fastmarkets weekly CRC domestic exw Northern Europe EUR 850-880/t (13 Sep 2026, via Tacto); mid 865/1000 = 0.865 EUR/kg. Indicative HUF 318.0 Ft/kg. Commercial CR (DC01 class), ex-works, ex-VAT, freight not added.",
+  "source": "https://www.tacto.ai/en/commodities/steel-price",
+  "date": "2026-09-13",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 2,
+  "key": "ferrous.anchor.hdg",
+  "value": 0.86,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "Fastmarkets weekly HDG domestic exw Northern Europe EUR 850-870/t (13 Sep 2026, via Tacto); mid 860/1000 = 0.860 EUR/kg. Indicative HUF 316.1 Ft/kg. DX51D+Z class, ex-works, ex-VAT.",
+  "source": "https://www.tacto.ai/en/commodities/steel-price",
+  "date": "2026-09-13",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/426d4818b334f148.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 3,
+  "key": "ferrous.anchor.hrpo",
+  "value": 0.832,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "DERIVED: HRC EUR 741.67/t (12 Oct 2026) + pickling extra EUR 90/t (German service-centre quote, Kallanish via Eurometal, UNDATED: pickled 930-980 v unpickled 860-870 -> 955-865 = 90) = EUR 831.67/t = 0.832 EUR/kg. Indicative HUF 305.7 Ft/kg.",
+  "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+  "date": "undated extra; HRC 2026-10-12",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5350d80b76e77c4c.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5350d80b76e77c4c.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 6,
+  "key": "ferrous.bar.C45",
+  "value": null,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "Not found in any source (full price). European engineering bar = negotiated base + scrap surcharge (EUR 253/t rolled, Feb 2026) + alloy surcharge (C45 EUR 5/t bright, Swiss Steel Steeltec Mar/Jul 2026). No Hungarian stockholder (Ferroglobus, Interferrum, thyssenkrupp Materials Hungary) publishes a Ft/kg list; thyssenkrupp Materials Hungary's bar catalogues give kg/m only.",
+  "source": "https://swisssteel-group.com/content-media/documents/Steeltec/Secure-area-Steeltec/July/Zuschlaege_Surcharges-07_2026.pdf",
+  "date": "2026-07-01",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 16,
+  "key": "ferrous.stainless.304_CR_2B",
+  "value": 2.77,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "Fastmarkets stainless CR sheet 304 2 mm transaction, delivered North Europe, EUR 2,740-2,800/t (7 Sep 2026); mid 2,770/1000 = 2.770 EUR/kg. Indicative HUF 1018.3 Ft/kg.",
+  "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+  "date": "2026-09-07",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a5eca96e0ccca504.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a5eca96e0ccca504.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 19,
+  "key": "ferrous.stainless.430_CR",
+  "value": 1.548,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "DERIVED: Oct 2026 1.4016 surcharge EUR 985/t + 304 CR effective base EUR 563.5/t (2,770 - Sep surcharge mid 2,206.5) = EUR 1,548.5/t. Indicative HUF 569.2 Ft/kg.",
+  "source": "https://legierungszuschlag.info/en/",
+  "date": "2026-10-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a1dd5ed926d4c042.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.stainless.409L_CR",
+  "value": 1.482,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "DERIVED: Aperam Jul 2026 1.4512 surcharge EUR 919/t + effective base EUR 563.5/t = EUR 1,482.5/t. Indicative HUF 545.0 Ft/kg.",
+  "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429",
+  "date": "2026-07-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a42b07a40e47c27f.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 21,
+  "key": "ferrous.stainless.304_bar",
+  "value": null,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "Not found in any source: no 2026 European or Hungarian price for this stainless bar. Fastmarkets' 304 bright-bar base (MB-STS-0005) is paywalled; thyssenkrupp Materials Hungary's stainless bar catalogue (1.4301/1.4307, 1.4305, 1.4401/1.4404, 1.4104, 1.4021) lists kg/m only, no Ft/kg.",
+  "source": "https://ucpcdn.thyssenkrupp.com/_binary/UCPthyssenkruppBAMXHungary/53d055db-9414-4bd9-b053-13b01f9c91a5/thyssenkrupp_Rozsdamentes_rud.pdf",
+  "date": "2026-10-30",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 27,
+  "key": "ferrous.stainless.304_scrap",
+  "value": 1.25,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "SMM: 304 stainless scrap ~USD 1,420/t CIF Rotterdam, week ended 18 Sep 2026; x 0.880 EUR/USD = EUR 1,249.6/t. Indicative HUF 459.4 Ft/kg.",
+  "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+  "date": "2026-09-18",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f51ab8cf9fa2be4b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f51ab8cf9fa2be4b.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 36,
+  "key": "ferrous.foundry.steel_scrap_heavy",
+  "value": 0.275,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "German E3 heavy old scrap: Jul 2026 USD 327/t ex-works (GMK citing Kallanish) x 0.880 = EUR 287.8/t; Aug 2026 -EUR 10-15/t -> EUR 275.3/t = 0.275 EUR/kg (Aug/Sep 2026 estimate). Indicative HUF 101.2 Ft/kg.",
+  "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "date": "2026-08 (published 2026-09-16)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a4e9d6b431114ec1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 37,
+  "key": "ferrous.hu.steel_scrap_7204",
+  "value": 110,
+  "unit": "HUF/kg",
+  "currency": "HUF",
+  "basis": "Hungarian liquidation tender (Ecometalex Recycling Kft., felszámolás): steel scrap VTSZ 7204, estimated 3,160,081 kg, appraised value (becsérték) 110 Ft/kg = 347,608,910 Ft net, ex-VAT; buyer weighs and collects (ex-yard). 110 / 367.6 = EUR 299/t (indicative FX).",
+  "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf",
+  "date": "2026 (tender reported by Telex 2026-02-14; application window from 2026-05-29 per the extract)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 43,
+  "key": "ferrous.foundry.FeCr_HC",
+  "value": 1.513,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "European benchmark ferrochrome Q3 2026: 156 USc/lb Cr (Samchrome, 6 Aug 2026) = USD 3.439/kg Cr x 0.880 = EUR 3.027/kg Cr; per kg of 50%-Cr alloy 1.513 EUR/kg.",
+  "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+  "date": "2026-Q3",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5e4024ac72790434.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5e4024ac72790434.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 45,
+  "key": "ferrous.charge.GS-C25",
+  "value": 117.0,
+  "unit": "HUF/kg",
+  "currency": "HUF",
+  "basis": "ENGINEERING ASSUMPTION (same mix as the Poland / Germany files): 70% steel scrap (HU 110 Ft/kg) + 30% returns at the charge's own cost -> 110; + FeSi75 0.5% x 463.2 = 2.32; / 0.96 melt loss = 117.0 Ft/kg. Pig / FeSi converted at indicative EUR 1 = 367.6 Ft.",
+  "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 46,
+  "key": "ferrous.charge.GJL-250",
+  "value": 133.7,
+  "unit": "HUF/kg",
+  "currency": "HUF",
+  "basis": "ENGINEERING ASSUMPTION: 25% pig (156.2) + 40% steel scrap (110) + 35% returns at charge cost -> (0.25x156.2 + 0.40x110)/0.65 = 127.8; + FeSi75 0.7% x 463.2 = 3.24; / 0.98 = 133.7 Ft/kg.",
+  "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3c390078ec32ee9e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3c390078ec32ee9e.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 47,
+  "key": "ferrous.charge.GJS-500-7",
+  "value": 148.6,
+  "unit": "HUF/kg",
+  "currency": "HUF",
+  "basis": "ENGINEERING ASSUMPTION: 45% pig (156.2) + 30% steel scrap (110) + 25% returns at charge cost -> (0.45x156.2 + 0.30x110)/0.75 = 137.7; + FeSiMg 1.3% x 463.2 (FeSi75 PROXY) = 6.02; + inoculant 0.4% x 463.2 = 1.85; / 0.98 = 148.6 Ft/kg.",
+  "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3c390078ec32ee9e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3c390078ec32ee9e.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 0,
+  "key": "nonferrous.al.lme",
+  "value": 3043.0,
+  "unit": "USD/t",
+  "currency": "USD",
+  "basis": "LME aluminium official cash settlement 23 Oct 2026: 3,043.00 USD/t. = 987.1 Ft/kg (3,043.0 x 324.37/1000). Exchange price: no premium, duty, freight or VAT.",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+  "date": "2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 1,
+  "key": "nonferrous.cu.spot",
+  "value": 14415.0,
+  "unit": "USD/t",
+  "currency": "USD",
+  "basis": "LME copper official cash settlement 23 Oct 2026: 14,415.00 USD/t. = 4675.8 Ft/kg (14,415.0 x 324.37/1000). Exchange price: no premium, duty, freight or VAT.",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+  "date": "2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 2,
+  "key": "nonferrous.zn.spot",
+  "value": 3790.0,
+  "unit": "USD/t",
+  "currency": "USD",
+  "basis": "LME zinc official cash settlement 23 Oct 2026: 3,790.00 USD/t. = 1229.4 Ft/kg (3,790.0 x 324.37/1000). Exchange price: no premium, duty, freight or VAT.",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+  "date": "2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 3,
+  "key": "nonferrous.ni.spot",
+  "value": 15695.0,
+  "unit": "USD/t",
+  "currency": "USD",
+  "basis": "LME nickel official cash settlement 23 Oct 2026: 15,695.00 USD/t. = 5091.0 Ft/kg (15,695.0 x 324.37/1000). Exchange price: no premium, duty, freight or VAT.",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+  "date": "2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 4,
+  "key": "nonferrous.sn.spot",
+  "value": 50855.0,
+  "unit": "USD/t",
+  "currency": "USD",
+  "basis": "LME tin official cash settlement 23 Oct 2026: 50,855.00 USD/t. = 16495.8 Ft/kg (50,855.0 x 324.37/1000). Exchange price: no premium, duty, freight or VAT.",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+  "date": "2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 7,
+  "key": "nonferrous.al.p1020",
+  "value": 1173.2,
+  "unit": "Ft/kg",
+  "currency": "HUF",
+  "basis": "DERIVED: LME cash 3,043 (23 Oct 2026) + duty-paid Rotterdam premium 574 (1 Oct 2026) = 3,617 USD/t; x 324.37/1000 = 1173.2 Ft/kg ex-VAT, duty-paid in-warehouse Rotterdam (freight to plant extra).",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns",
+  "date": "2026-10-01 / 2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e777634b072b7e55.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e777634b072b7e55.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 9,
+  "key": "nonferrous.al.billet6063",
+  "value": 1344.7,
+  "unit": "Ft/kg",
+  "currency": "HUF",
+  "basis": "DERIVED: LME cash 3,043 (23 Oct 2026) + Ruhr 6063 billet premium mid 1102.5 (28 Aug 2026) = 4,145.5 USD/t; x 324.37/1000 = 1344.7 Ft/kg ex-VAT, delivered duty-paid North Germany.",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+  "date": "2026-08-28 / 2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/465deea8941285ef.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/465deea8941285ef.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 11,
+  "key": "nonferrous.al.alsi7mg",
+  "value": 1311.4,
+  "unit": "Ft/kg",
+  "currency": "HUF",
+  "basis": "DERIVED: LME cash 3,043 (23 Oct 2026) + PFA Si7 premium ddp Eastern Europe mid 1,000 (29 May 2026) = 4,043 USD/t; x 324.37/1000 = 1311.4 Ft/kg ex-VAT, duty-paid delivered Eastern Europe.",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+  "date": "2026-05-29 / 2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3bf7d7958dc0d4e8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/3bf7d7958dc0d4e8.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 12,
+  "key": "nonferrous.al.adc12",
+  "value": 2480.0,
+  "unit": "EUR/t",
+  "currency": "EUR",
+  "basis": "Fastmarkets aluminium pressure diecasting ingot DIN226/A380 delivered Europe (MB-AL-0005): 2,430-2,530 EUR/t on 23 Jan 2026; mid 2,480 = 902.5 Ft/kg delivered, ex-VAT. STALE (January 2026). carried from poland-2026-10/research/materials-nonferrous.json.",
+  "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+  "date": "2026-01-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4cdffc5c51c6fd6f.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4cdffc5c51c6fd6f.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 16,
+  "key": "nonferrous.al.frp_europe_asp",
+  "value": 4728.0,
+  "unit": "USD/t",
+  "currency": "USD",
+  "basis": "DERIVED, company annual report (Form 10-K): Novelis Europe FY2026 (Apr 2025-Mar 2026) net sales 5,272 MUSD / shipments 1,115 kt = 4,728 USD/t = 1533.6 Ft/kg. All-product average (can, auto, specialty), metal included. carried from poland-2026-10/research/r2-materials-nonferrous.json.",
+  "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+  "date": "2025-04-01 to 2026-03-31",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/7c299beaa07d9a19.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 17,
+  "key": "nonferrous.al.amag_rolling_asp",
+  "value": 5.885,
+  "unit": "EUR/kg",
+  "currency": "EUR",
+  "basis": "DERIVED: AMAG (Ranshofen, Austria) Rolling division 2025: EBITDA 67.3 MEUR at a 5.6% margin -> segment revenue 67.3/0.056 = 1,202 MEUR; / shipments 204,200 t = 5.885 EUR/kg = 2141.7 Ft/kg.",
+  "source": "https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488",
+  "date": "2025 (calendar year)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/dc01cd90e8d84dd2.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/dc01cd90e8d84dd2.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 23,
+  "key": "nonferrous.cu.cathode_delivered",
+  "value": 4778.0,
+  "unit": "Ft/kg",
+  "currency": "HUF",
+  "basis": "DERIVED: LME cash 14,415 (23 Oct 2026) + Aurubis 2026 premium 315 = 14,730 USD/t; x 324.37/1000 = 4778.0 Ft/kg ex-VAT (metal value of cathode, before rolling/drawing).",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+  "date": "2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/08fec7584329023e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/08fec7584329023e.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 24,
+  "key": "nonferrous.zn.shg_premium",
+  "value": 227.5,
+  "unit": "USD/t (premium over LME)",
+  "currency": "USD",
+  "basis": "Argus zinc SHG in-warehouse Rotterdam premium 215-240 USD/t, 2 Feb 2026; mid 227.5. STALE. carried from poland-2026-10/research/materials-nonferrous.json.",
+  "source": "https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "date": "2026-02-02",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 25,
+  "key": "nonferrous.zn.shg_delivered",
+  "value": 1303.2,
+  "unit": "Ft/kg",
+  "currency": "HUF",
+  "basis": "DERIVED: LME zinc 3,790 (23 Oct 2026) + Rotterdam SHG premium 227.5 (2 Feb 2026) = 4,017.5 USD/t; x 324.37/1000 = 1303.2 Ft/kg ex-VAT, in-warehouse Rotterdam.",
+  "source": "https://www.westmetall.com/en/markdaten.php?action=showtable ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "date": "2026-02-02 / 2026-10-23",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/139a1371a58506a8.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 26,
+  "key": "nonferrous.zn.zamak3",
+  "value": null,
+  "unit": "Ft/kg",
+  "currency": "HUF",
+  "basis": "European Zamak 3 price / premium NOT FOUND (only Chinese and Thai SMM Zamak3 premiums public). METAL-CONTENT FLOOR only: 0.96 x Zn SHG 4,017.5 + 0.04 x P1020 3,617 = 4,001.5 USD/t = 1298.0 Ft/kg, before the alloying/ingot premium.",
+  "source": "https://www.metal.com/price/Base-Metals/Zinc",
+  "date": "2026-10-23 (inputs)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5c07d1461f120c58.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5c07d1461f120c58.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 27,
+  "key": "nonferrous.zn.zamak5",
+  "value": null,
+  "unit": "Ft/kg",
+  "currency": "HUF",
+  "basis": "NOT FOUND. METAL-CONTENT FLOOR only: 0.95 x Zn 4,017.5 + 0.04 x P1020 3,617 + 0.01 x Cu 14,730 = 4,108.6 USD/t = 1332.7 Ft/kg.",
+  "source": "",
+  "date": "2026-10-23 (inputs)",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 35,
+  "key": "nonferrous.mg.az91d",
+  "value": 2885.0,
+  "unit": "USD/t",
+  "currency": "USD",
+  "basis": "SMM price table: magnesium alloy AZ91D FOB Tianjin 2,860-2,910 USD/t, avg 2,885, on 27 Mar 2026 (price-agency assessment, read from a search extract) = 935.8 Ft/kg FOB China - ocean freight, EU import duty and delivery to Hungary NOT included. Same table: ex-works Shaanxi ~2,456 USD/t.",
+  "source": "https://www.metal.com/price/Minor%20Metals/Magnesium",
+  "date": "2026-03-27",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/cd11e453d43031cc.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/cd11e453d43031cc.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pp_homo",
+  "value": 1.197,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "myCEPPI weekly Central & Eastern Europe average market price (interviews with processors, distributors and producers in the region; not one producer's list), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B. PPH injection moulding 1,197 EUR/t, week 38/2026 (+2.5% / +29 EUR/t w/w) / 1000 = 1.197 EUR/kg x 364.42 = 436.2 Ft/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W38 (mid-September 2026; page titled 'Plastic Prices September 2026')",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 1,
+  "key": "polymer.pp_copo",
+  "value": 1.332,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "myCEPPI weekly Central & Eastern Europe average market price (interviews with processors, distributors and producers in the region; not one producer's list), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B. PP copolymer (PPC) 1,332 EUR/t, week 37/2026 (+2.6% w/w) / 1000 = 1.332 EUR/kg x 364.42 = 485.4 Ft/kg. Carried from germany-2026-10/research/materials-polymer.json (no W38 PPC figure seen).",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 2,
+  "key": "polymer.hdpe",
+  "value": 1.261,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "myCEPPI weekly Central & Eastern Europe average market price (interviews with processors, distributors and producers in the region; not one producer's list), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B. HDPE film 1,261 EUR/t, week 38/2026 (+0.9% w/w) / 1000 = 1.261 EUR/kg x 364.42 = 459.5 Ft/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W38",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 3,
+  "key": "polymer.ldpe",
+  "value": 1.306,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "myCEPPI weekly Central & Eastern Europe average market price (interviews with processors, distributors and producers in the region; not one producer's list), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B. LDPE film 1,306 EUR/t, week 38/2026 (+2.4% w/w; consistent with W37 1,276 x 1.024) / 1000 = 1.306 EUR/kg x 364.42 = 475.9 Ft/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W38",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 4,
+  "key": "polymer.lldpe",
+  "value": 1.247,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "myCEPPI weekly Central & Eastern Europe average market price (interviews with processors, distributors and producers in the region; not one producer's list), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B. (m)LLDPE C6 1,247 EUR/t, week 37/2026 (unchanged) / 1000 = 1.247 EUR/kg x 364.42 = 454.4 Ft/kg. Carried from poland-2026-10/research/materials-polymer.json.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W37 (page updated 2026-10-01)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 5,
+  "key": "polymer.pvc",
+  "value": 0.974,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "myCEPPI weekly Central & Eastern Europe average market price (interviews with processors, distributors and producers in the region; not one producer's list), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B. S-PVC 974 EUR/t, week 38/2026 (-1.9% / -19 EUR/t w/w) / 1000 = 0.974 EUR/kg x 364.42 = 354.9 Ft/kg. Suspension resin, not a compound.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W38",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.abs",
+  "value": 1.842,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "myCEPPI weekly Central & Eastern Europe average market price (interviews with processors, distributors and producers in the region; not one producer's list), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B. ABS 1,842 EUR/t, week 38/2026 (+0.4% / +7 EUR/t w/w) / 1000 = 1.842 EUR/kg x 364.42 = 671.3 Ft/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W38",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 7,
+  "key": "polymer.ps",
+  "value": 1.534,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "myCEPPI weekly Central & Eastern Europe average market price (interviews with processors, distributors and producers in the region; not one producer's list), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B. GPPS 1,534 EUR/t, week 38/2026 (unchanged) / 1000 = 1.534 EUR/kg x 364.42 = 559.0 Ft/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W38",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 8,
+  "key": "polymer.hips",
+  "value": 1.676,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "myCEPPI weekly Central & Eastern Europe average market price (interviews with processors, distributors and producers in the region; not one producer's list), EUR/t, published on plasticportal.eu with a ~5-week delay; delivered CEE, ex-VAT B2B. HIPS 1,676 EUR/t, week 38/2026 (unchanged) / 1000 = 1.676 EUR/kg x 364.42 = 610.8 Ft/kg.",
+  "source": "https://www.plasticportal.eu/price-reports",
+  "date": "2026-W38",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e824fc5d9d5085b0.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 9,
+  "key": "polymer.pc",
+  "value": 3.0,
+  "unit": "USD/kg ex-VAT",
+  "currency": "USD",
+  "basis": "businessanalytiq Europe polycarbonate index (aggregator, 'calculated from multiple separate sources', method not published) US$3.00/kg September 2026 (-2.9% m/m) x 319.89 = 959.7 Ft/kg. Carried from poland-2026-10 / germany-2026-10 research.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d91767248ff04080.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d91767248ff04080.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 10,
+  "key": "polymer.pa6",
+  "value": 2.67,
+  "unit": "USD/kg ex-VAT",
+  "currency": "USD",
+  "basis": "businessanalytiq Europe PA6 index US$2.67/kg August 2026 (+3.1%) x 319.89 = 854.1 Ft/kg. Carried from poland-2026-10 research.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f6a490421e498d14.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f6a490421e498d14.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.pbt",
+  "value": 3.7,
+  "unit": "USD/kg ex-VAT",
+  "currency": "USD",
+  "basis": "businessanalytiq Europe PBT index US$3.70/kg September 2026 (-1.1%) x 319.89 = 1183.6 Ft/kg. Carried from poland-2026-10 / germany-2026-10.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9ae9b9bd720a68b5.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9ae9b9bd720a68b5.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.pet_bottle",
+  "value": null,
+  "unit": "USD/kg ex-VAT",
+  "currency": "USD",
+  "basis": "Conflicting reads of the same index: businessanalytiq Europe PET September 2026 read as US$1.29/kg (+1.6%) in poland-2026-10 (= 412.7 Ft) and as US$1.56/kg (+4%) in germany-2026-10 (= 499.0 Ft). Not resolved (page could not be fetched) — no single value given.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5d00e881cc44bf4b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5d00e881cc44bf4b.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 14,
+  "key": "polymer.pmma",
+  "value": 3.69,
+  "unit": "USD/kg ex-VAT",
+  "currency": "USD",
+  "basis": "businessanalytiq Europe PMMA index US$3.69/kg September 2026 (unchanged) x 319.89 = 1180.4 Ft/kg. Carried from poland-2026-10 / germany-2026-10.",
+  "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a502e1709fd0288a.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/a502e1709fd0288a.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 15,
+  "key": "polymer.pom",
+  "value": 2.66,
+  "unit": "EUR/kg ex-VAT",
+  "currency": "EUR",
+  "basis": "Plastech.pl Central Europe monthly average OFFER price (producers / distributors survey), POM natural October 2026 2.66 EUR/kg x 364.42 = 969.4 Ft/kg. Offer level (distributor), an upper reference.",
+  "source": "https://www.plasticportal.eu/polymer-prices",
+  "date": "2026-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4db4589a0d9b29b1.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 16,
+  "key": "polymer.peek",
+  "value": 68,
+  "unit": "GBP/kg ex-VAT",
+  "currency": "GBP",
+  "basis": "DERIVED from a company report: Victrex plc Q3 FY2026 trading statement, nine months to 30 Jun 2026 revenue GBP 231.6m / 3,375 t = GBP 68.6/kg, stated ASP GBP 68/kg. GBP 68 x (1.165 EUR/GBP, germany-2026-10 rate) x 364.42 = 68 x 424.55 = 28869.4 Ft/kg. Carried from germany-2026-10 / poland-2026-10.",
+  "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets",
+  "date": "2026-06-30 (9M FY2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1b21b7cafafa45ee.render.txt"
+  ]
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 29,
+  "key": "rubber.nr",
+  "value": 2.532,
+  "unit": "USD/kg, FOB SE Asia (NOT delivered)",
+  "currency": "USD",
+  "basis": "SGX SICOM TSR20 October 2026 contract 253.20 US cents/kg on 28 Sep 2026 (exchange settlement level read from a secondary daily report) x 319.89 = 810.0 Ft/kg. Carried from germany-2026-10.",
+  "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html",
+  "date": "2026-09-28",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5c57831d3a03c021.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5c57831d3a03c021.render.txt"
+  ]
+ }
+]

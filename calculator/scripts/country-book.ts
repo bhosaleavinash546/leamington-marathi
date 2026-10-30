@@ -49,7 +49,10 @@ const BOOK_FILE: string = cfg.bookFile ?? 'src/engine/country-books/in.ts';
 const BOOK_CONST: string = cfg.bookConst ?? 'INDIA_BOOK';
 const cc = REGION.toLowerCase();
 const FX: number = cfg.fxPerGbp ?? cfg.fxInrPerGbp;
-if (Math.abs(RD.fxToGBP - FX) > 0.05) throw new Error(`config FX ${FX} ≠ REGIONAL_DATA.${REGION}.fxToGBP ${RD.fxToGBP}`);
+// A world-round config (Oct 2026) carries its own dated FX and writes it into REGIONAL_DATA (`writeFx`); every other
+// config must agree with the table it is written into.
+const WRITE_FX = cfg.writeFx === true;
+if (!WRITE_FX && Math.abs(RD.fxToGBP - FX) > 0.05) throw new Error(`config FX ${FX} ≠ REGIONAL_DATA.${REGION}.fxToGBP ${RD.fxToGBP}`);
 /** A local-currency figure: `<stem>Local<tail>` or the India config's `<stem>Inr<tail>`. */
 const local = (o: Record<string, unknown>, stem: string, tail: string): number => (o[`${stem}Local${tail}`] ?? o[`${stem}Inr${tail}`]) as number;
 /** The snapshot's local value (`inrPerKg` / `cnyPerKg` …). */
@@ -259,11 +262,13 @@ export const ${BOOK_CONST}: CountryBook = ${JSON.stringify(book, null, 1)};
 // REGIONAL_DATA.<region> labour (+ energy) + machineRateMultiplier
 const REG = resolve(ROOT, 'src/engine/regional-rates.ts');
 let reg = readFileSync(REG, 'utf8');
-const blockRe = new RegExp(`((?:  \\/\\/ ${NAME}: labour from the ${NAME} rate book[^\\n]*\\n  \\/\\/ machineRateMultiplier[^\\n]*\\n)?  ${REGION}: \\{\\n    name: '${NAME}',[\\s\\S]*?\\n  \\},\\n)`);
+// the comment lines above the block (the book's own two, or region-expand's one) are replaced with the book's
+const blockRe = new RegExp(`((?:  \\/\\/ ${NAME}:[^\\n]*\\n(?:  \\/\\/ [^\\n]*\\n)?)?  ${REGION}: \\{\\n    name: '${NAME}',[\\s\\S]*?\\n  \\},\\n)`);
 const inBlock = blockRe.exec(reg);
 if (!inBlock) throw new Error(`REGIONAL_DATA.${REGION} block not found`);
 const L = labourGbp;
 let newBlock = inBlock[1].replace(/^(?:  \/\/[^\n]*\n)+/, '')
+  .replace(/fxToGBP: [0-9.]+/, m => WRITE_FX ? `fxToGBP: ${FX}` : m)
   .replace(/labour: \{[^}]*\}/, `labour: { skilled: ${L.skilled}, semiskilled: ${L.semiskilled}, engineer: ${L.engineer}, foundry: ${L.foundry}, electronics: ${L.electronics}, inspector: ${L.inspector}, technician: ${L.technician}, supervisor: ${L.supervisor} }`)
   .replace(/machineRateMultiplier: [0-9.]+/, `machineRateMultiplier: ${machineMult}`);
 if (newElec !== undefined || newGas !== undefined) newBlock = newBlock.replace(/energy: \{[^}]*\}/, `energy: { electricityPerKwh: ${elecGbp}, gasPerKwh: ${gasGbp} }`);

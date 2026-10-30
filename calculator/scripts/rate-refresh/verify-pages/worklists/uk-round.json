@@ -1,0 +1,1037 @@
+[
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 0,
+  "key": "capex.imm-200t",
+  "value": 302630,
+  "unit": "CNY/unit ex-VAT (maker average selling price, ex-works; mix of all Mars clamp sizes)",
+  "currency": "CNY",
+  "basis": "company annual report (derived ASP, broker reading): Haitian International 海天国际 FY2024 Mars series (servo-hydraulic toggle, the series a 200 t machine is sold in) revenue RMB 104.71亿 ÷ ~34,600 units ('约3.46万台') = 10,471,000,000 ÷ 34,600 = 302,630 CNY/unit. Cross-check: FY2025 all-IMM revenue RMB 16,897.3m ÷ '>56,000' machines ≤ 301,732 CNY (carried from scripts/rate-refresh/china-2026-10/research/machines.json, capex.imm-fleetAvg); H1 2025 Mars revenue RMB 51.71亿 (units for the series not given).",
+  "source": "https://finance.sina.com.cn/stock/hkstock/hkzmt/2025-03-20/doc-ineqhwiq0600262.shtml ; https://gmg.9fzt.com/report/HKSE/01882/778171497678.html ; https://www.1n9280.com/ndetail/73802.html",
+  "date": "FY2024 (results March 2025)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/23032815fe296147.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/23032815fe296147.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c3d640332bfef7c6.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/c3d640332bfef7c6.render.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e39ce01e44804461.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e39ce01e44804461.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 10,
+  "key": "capex.autoclave-1200mm",
+  "value": null,
+  "unit": "CNY/unit",
+  "currency": "CNY",
+  "basis": "not searched — budget spent on higher-weight machines",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 15,
+  "key": "capex.mach-hmc-400",
+  "value": 1476015,
+  "unit": "CNY/unit ex-VAT (maker average selling price; mix of all HMC sizes) — carried",
+  "currency": "CNY",
+  "basis": "carried from scripts/rate-refresh/china-2026-10/research/machines.json (capex.mach-hmc.reference): Haitian Precision 海天精工 FY2025 horizontal machining centre revenue 4.00亿元 ÷ 271 units sold = 1,476,015 CNY/unit",
+  "source": "https://finance.sina.cn/2026-03-23/detail-inhrynrq1147454.d.html ; http://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260323/71ad745b243c48e79d848681d7931b2a.PDF",
+  "date": "FY2025",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/ca2fd6d727ac5f13.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 16,
+  "key": "capex.brake-amada-hfe100",
+  "value": null,
+  "unit": "CNY/unit",
+  "currency": "CNY",
+  "basis": "not found",
+  "source": "https://www.cfi.net.cn/p20260420003126.html",
+  "date": "FY2025",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 17,
+  "key": "capex.laser-trumpf-3030",
+  "value": 372500,
+  "unit": "CNY/unit ex-VAT (maker average selling price, high-power fibre laser cutting)",
+  "currency": "CNY",
+  "basis": "company annual report (derived ASP): Han's Laser 大族激光 2025 annual report summary — high-power laser cutting (高功率激光切割) sales 6,800 units (+30.47%), business revenue 25.33亿元 (+4.25%); 2,533,000,000 ÷ 6,800 = 372,500 CNY/unit",
+  "source": "https://static.cninfo.com.cn/finalpage/2026-04-17/1225114032.PDF ; https://finance.sina.com.cn/tech/roll/2026-04-17/doc-inhuuyhy2208124.shtml",
+  "date": "FY2025 (summary published 2026-04-17)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b133e10053503c10.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/b133e10053503c10.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/eu-capex-plastics-composites.json",
+  "i": 18,
+  "key": "capex.imm-200t",
+  "value": null,
+  "unit": "GBP per machine",
+  "currency": "GBP",
+  "basis": "Not found for a named 200 t machine.",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 8,
+  "key": "labour.engineer.monthlyGross",
+  "value": 1139181,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "FEOR 2118 Gépészmérnök (mechanical engineer): 1,117,271 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 1,139,181",
+  "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "date": "2025 base indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 9,
+  "key": "labour.engineer.fullyLoadedHufPerHr",
+  "value": 8939.41,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "12 × 1,139,181 = 13,670,172 × 1.13 (szocho 13%) = 15,447,294 ÷ 1,728 productive h = 8,939.41. No shift allowance added (KSH total earnings already include allowances paid).",
+  "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 10,
+  "key": "labour.technician.monthlyGross",
+  "value": 831481,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "FEOR 3116 Gépésztechnikus (mechanical engineering technician): 815,489 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 831,481",
+  "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "date": "2025 base indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 11,
+  "key": "labour.technician.fullyLoadedHufPerHr",
+  "value": 6524.82,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "12 × 831,481 = 9,977,772 × 1.13 (szocho 13%) = 11,274,882 ÷ 1,728 productive h = 6,524.82. No shift allowance added (KSH total earnings already include allowances paid).",
+  "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 12,
+  "key": "labour.supervisor.monthlyGross",
+  "value": 928405,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "FEOR 3212 Feldolgozóipari szakmai irányító, felügyelő (manufacturing foreman / shift leader): 910,549 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 928,405",
+  "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "date": "2025 base indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 13,
+  "key": "labour.supervisor.fullyLoadedHufPerHr",
+  "value": 7285.4,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "12 × 928,405 = 11,140,860 × 1.13 (szocho 13%) = 12,589,172 ÷ 1,728 productive h = 7,285.4. No shift allowance added (KSH total earnings already include allowances paid).",
+  "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 14,
+  "key": "labour.inspector.monthlyGross",
+  "value": 740906,
+  "unit": "HUF/month gross (total earnings)",
+  "currency": "HUF",
+  "basis": "FEOR 3135 Minőségbiztosítási technikus (quality-assurance technician): 726,656 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 740,906",
+  "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "date": "2025 base indexed to 2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 15,
+  "key": "labour.inspector.fullyLoadedHufPerHr",
+  "value": 5814.05,
+  "unit": "HUF/h",
+  "currency": "HUF",
+  "basis": "12 × 740,906 = 8,890,872 × 1.13 (szocho 13%) = 10,046,685 ÷ 1,728 productive h = 5,814.05. No shift allowance added (KSH total earnings already include allowances paid).",
+  "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "date": "2026",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0f4f6b3028f21ae8.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/in-capex.json",
+  "i": 10,
+  "key": "capex.autoclave-1200mm",
+  "value": "not found in any source",
+  "unit": "INR per machine",
+  "currency": "INR",
+  "basis": "No search budget left for this family after higher-volume families; no figure in earlier research.",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "round-2026-10-30/research/in-capex.json",
+  "i": 15,
+  "key": "capex.mach-hmc-400",
+  "value": "not found in any source",
+  "unit": "INR per machine",
+  "currency": "INR",
+  "basis": "No award for a 400 mm twin-pallet HMC. AWEIL tender for a 'Non Tooled Up CNC Horizontal Machining Centre' (bid end 09-Feb-2026) shows only EMD Rs 87,40,795 (deposit, not a price; size and quantity not in the result). BHEL GeM bid 7799334 (May 2025) is an 800 x 800 mm table HMC, no price visible.",
+  "source": "https://tenderdekho.com/tender-detail/td-2zLxV2NucX ; https://tenders.bhel.com/sites/default/files/GeM-Bidding-7799334_%284%29-2025-05-06-08%3A49%3A16.pdf",
+  "date": "2025-05 / 2026-02",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/caadb8ee21681267.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/caadb8ee21681267.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30/research/in-capex.json",
+  "i": 16,
+  "key": "capex.mach-vmc5",
+  "value": "not found in any source",
+  "unit": "INR per machine",
+  "currency": "INR",
+  "basis": "No 5-axis price in INR (Haas UMC: only used European listings in EUR). Carried from india-2026-10/research/machines.json capex.vmc3.domestic: Jyoti CNC blended realisation Rs 34.56 lakh/machine (Q1 FY27) is a mix including some 5-axis — a LOWER-side proxy for a 5-axis machine, not its price.",
+  "source": "https://compoundingai.in/market-news/jyoticnc-q1-fy27-earnings-call",
+  "date": "2026-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/769c025a4627c7d2.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/769c025a4627c7d2.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30b/research/capex-electronics-test.json",
+  "i": 1,
+  "key": "capex.smt-high-speed-line",
+  "value": 1600000,
+  "unit": "per line (company investment announcement)",
+  "currency": "GBP",
+  "basis": "Trade press: Plexus (Kelso, UK) £1.6 m SMT line - ASM pick-and-place, DEK printer, Speedline reflow. Carried from uk-2026-10/research/machines-b.json.",
+  "source": "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line",
+  "date": "date not visible in the search snippet (UK round)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/72ee2701ff59fbcb.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30b/research/capex-forming-casting.json",
+  "i": 34,
+  "key": "capex.heat-treat-furnace",
+  "value": null,
+  "unit": "per furnace",
+  "currency": "USD",
+  "basis": "not found in UK/EU for the same scope; carried US award kept as cross-check",
+  "source": "https://govcontractfinder.com/contracts/intent-to-sole-source-delta-h-single-chamber-heat-treat-oven-FA487725P0169",
+  "date": "FY2025 (from contract number)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/17bd4143818a0ae9.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/17bd4143818a0ae9.render.txt"
+  ]
+ },
+ {
+  "file": "round-2026-10-30b/research/capex-plastics-rubber.json",
+  "i": 5,
+  "key": "capex.imm-200t",
+  "value": null,
+  "unit": "GBP per machine",
+  "currency": "GBP",
+  "basis": "Not found for one named 200 t machine with its own value. Pair figures only: MGS Technical Plastics GBP 400,000 for two Sumitomo (SHI) Demag machines, a 'D210' and a 'D420' (crosscheck.imm.demag-pair-210-420); Romi 70 t + 200 t pair ~GBP 200,000 (crosscheck.imm.romi-pair-70t-200t).",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 0,
+  "key": "labour.oncost.employerNicRate",
+  "value": 0.15,
+  "unit": "fraction of earnings above secondary threshold",
+  "currency": null,
+  "basis": "HMRC rates and thresholds for employers 2026 to 2027 (regulator statistic)",
+  "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027",
+  "date": "2026-04-06",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f24f5d49bdb1e49e.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/f24f5d49bdb1e49e.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 3,
+  "key": "labour.oncost.pensionTypical",
+  "value": 0.05,
+  "unit": "fraction of gross pay",
+  "currency": null,
+  "basis": "IFS (Jul 2026): average employer contribution, all private-sector employees, 5.1% of pay in 2024; Unbiased: manufacturing median employer contribution 4.9% (undated). Used 5.0% of gross.",
+  "source": "https://ifs.org.uk/sites/default/files/2026-07/IFS%20Report%20-%20Automatic%20enrolment%20trends%20in%20employer%20pension%20contributions%20and%20the%20impact%20of%20potential%20reforms.pdf",
+  "date": "2024 (published 2026-07)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 5,
+  "key": "labour.oncost.shiftPremium2Shift",
+  "value": 0.18,
+  "unit": "fraction of basic pay",
+  "currency": null,
+  "basis": "IDR Standby, call-out and shift pay 2025 study (60+ organisations, mostly manufacturing): two-shift systems ~17–19% → 18% midpoint. IDR 2023: double-day mean 17%, median 18%.",
+  "source": "https://www.incomesdataresearch.co.uk/resources/insights/findings-from-the-standby-call-out-and-shift-pay-2025-study",
+  "date": "2025",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0a488348e5edfe8b.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0a488348e5edfe8b.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 12,
+  "key": "labour.productiveHoursPerYear",
+  "value": 1773.4,
+  "unit": "h/yr",
+  "currency": null,
+  "basis": "39 h × 52 = 2028 paid h − 28 days × 7.8 h = 218.4 h holiday − 2.0% × 1809.6 = 36.2 h sickness = 1773.4 h",
+  "source": "derived (see labour.oncost.*)",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 16,
+  "key": "labour.skilled.fullyLoadedGbpPerHr",
+  "value": 27.95,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "17.45 × 2028 h × 1.18 shift = £41,759 gross; + NIC 15% × (gross − 5,000) £5,514 + pension 5% £2,088 + levy 0.5% £209 = £49,569/yr ÷ 1773.4 productive h = £27.95/h",
+  "source": "derived from labour.skilled.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 19,
+  "key": "labour.semiskilled.fullyLoadedGbpPerHr",
+  "value": 24.65,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h",
+  "source": "derived from labour.semiskilled.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 22,
+  "key": "labour.engineer.fullyLoadedGbpPerHr",
+  "value": 33.27,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "24.46 × 1950 h = £47,697 gross; + NIC 15% × (gross − 5,000) £6,405 + pension 5% £2,385 + levy 0.5% £238 = £56,725/yr ÷ 1705.2 productive h = £33.27/h",
+  "source": "derived from labour.engineer.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 25,
+  "key": "labour.foundry.fullyLoadedGbpPerHr",
+  "value": 24.6,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h",
+  "source": "derived from labour.foundry.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 28,
+  "key": "labour.electronics.fullyLoadedGbpPerHr",
+  "value": 23.41,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "14.66 × 2028 h × 1.18 shift = £35,082 gross; + NIC 15% × (gross − 5,000) £4,512 + pension 5% £1,754 + levy 0.5% £175 = £41,524/yr ÷ 1773.4 productive h = £23.41/h",
+  "source": "derived from labour.electronics.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 31,
+  "key": "labour.inspector.fullyLoadedGbpPerHr",
+  "value": 28.03,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "17.5 × 2028 h × 1.18 shift = £41,878 gross; + NIC 15% × (gross − 5,000) £5,532 + pension 5% £2,094 + levy 0.5% £209 = £49,713/yr ÷ 1773.4 productive h = £28.03/h",
+  "source": "derived from labour.inspector.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 34,
+  "key": "labour.technician.fullyLoadedGbpPerHr",
+  "value": 35.17,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "21.89 × 2028 h × 1.18 shift = £52,384 gross; + NIC 15% × (gross − 5,000) £7,108 + pension 5% £2,619 + levy 0.5% £262 = £62,372/yr ÷ 1773.4 productive h = £35.17/h",
+  "source": "derived from labour.technician.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 37,
+  "key": "labour.supervisor.fullyLoadedGbpPerHr",
+  "value": 28.86,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "18.01 × 2028 h × 1.18 shift = £43,099 gross; + NIC 15% × (gross − 5,000) £5,715 + pension 5% £2,155 + levy 0.5% £215 = £51,184/yr ÷ 1773.4 productive h = £28.86/h",
+  "source": "derived from labour.supervisor.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 38,
+  "key": "labour.forge.hourlyGross",
+  "value": 15.73,
+  "unit": "GBP/h basic",
+  "currency": null,
+  "basis": "No ASHE 2025 SOC 5211 figure found. Midpoint of two Halesowen forge-operative job adverts £14.69 and £16.76/h = £15.73/h",
+  "source": "https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton",
+  "date": "2026",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 40,
+  "key": "labour.forge.fullyLoadedGbpPerHr",
+  "value": 25.15,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "15.73 × 2028 h × 1.18 shift = £37,643 gross; + NIC 15% × (gross − 5,000) £4,896 + pension 5% £1,882 + levy 0.5% £188 = £44,609/yr ÷ 1773.4 productive h = £25.15/h",
+  "source": "derived from labour.forge.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 43,
+  "key": "labour.furnace.fullyLoadedGbpPerHr",
+  "value": 24.6,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "15.39 × 2028 h × 1.18 shift = £36,829 gross; + NIC 15% × (gross − 5,000) £4,774 + pension 5% £1,841 + levy 0.5% £184 = £43,629/yr ÷ 1773.4 productive h = £24.6/h",
+  "source": "derived from labour.furnace.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 46,
+  "key": "labour.blow.fullyLoadedGbpPerHr",
+  "value": 23.07,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "14.45 × 2028 h × 1.18 shift = £34,579 gross; + NIC 15% × (gross − 5,000) £4,437 + pension 5% £1,729 + levy 0.5% £173 = £40,918/yr ÷ 1773.4 productive h = £23.07/h",
+  "source": "derived from labour.blow.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 49,
+  "key": "labour.roto.fullyLoadedGbpPerHr",
+  "value": 23.07,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "14.45 × 2028 h × 1.18 shift = £34,579 gross; + NIC 15% × (gross − 5,000) £4,437 + pension 5% £1,729 + levy 0.5% £173 = £40,918/yr ÷ 1773.4 productive h = £23.07/h",
+  "source": "derived from labour.roto.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 52,
+  "key": "labour.thermoform.fullyLoadedGbpPerHr",
+  "value": 23.07,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "14.45 × 2028 h × 1.18 shift = £34,579 gross; + NIC 15% × (gross − 5,000) £4,437 + pension 5% £1,729 + levy 0.5% £173 = £40,918/yr ÷ 1773.4 productive h = £23.07/h",
+  "source": "derived from labour.thermoform.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 55,
+  "key": "labour.trimRouter.fullyLoadedGbpPerHr",
+  "value": 24.65,
+  "unit": "GBP/productive h",
+  "currency": null,
+  "basis": "15.42 × 2028 h × 1.18 shift = £36,901 gross; + NIC 15% × (gross − 5,000) £4,785 + pension 5% £1,845 + levy 0.5% £185 = £43,715/yr ÷ 1773.4 productive h = £24.65/h",
+  "source": "derived from labour.trimRouter.hourlyGrossOct2026 and labour.oncost.*",
+  "date": "2026-10",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 56,
+  "key": "energy.electricity.manufacturingAvg",
+  "value": 17.4,
+  "unit": "p/kWh",
+  "currency": null,
+  "basis": "DESNZ Quarterly Energy Prices Sept 2026: average electricity price paid by the manufacturing sector, Q2 2026 (+4.0% y/y, −0.4% q/q) — regulator statistic",
+  "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+  "date": "2026-Q2 (published 2026-09-29)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 58,
+  "key": "energy.gas.manufacturingAvg",
+  "value": 3.8,
+  "unit": "p/kWh",
+  "currency": null,
+  "basis": "DESNZ QEP Sept 2026: average gas price paid by the manufacturing sector, Q2 2026 (+6.3% y/y)",
+  "source": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+  "date": "2026-Q2 (published 2026-09-29)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 60,
+  "key": "energy.cclMainRate",
+  "value": 0.801,
+  "unit": "p/kWh",
+  "currency": null,
+  "basis": "Climate Change Levy main rate from 1 Apr 2026, electricity and gas both £0.00801/kWh (RPI uprating; £0.00827 from 1 Apr 2027) — HMRC",
+  "source": "https://www.gov.uk/government/publications/climate-change-levy-rates-from-1-april-2026/climate-change-levy-changes-to-rates-from-1-april-2026",
+  "date": "2026-04-01",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e21e0efaa7ed4eb2.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e21e0efaa7ed4eb2.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/machines-a.json",
+  "i": 2,
+  "key": "capex.mach-haas-vf2",
+  "value": 53204,
+  "unit": "GBP (machine only)",
+  "currency": null,
+  "basis": "US list price US$70,995 / 1.3344 = £53,204. List price of the base machine; options, tooling, freight and installation are EXTRA (stated by the source).",
+  "source": "https://machinetoolindex.com/machines/haas-vf-2",
+  "date": "2026-08-31",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0fdf464c8e68f9f7.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/0fdf464c8e68f9f7.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/machines-a.json",
+  "i": 8,
+  "key": "capex.mach-lathe-cnc",
+  "value": null,
+  "unit": "GBP",
+  "currency": null,
+  "basis": "not found in any source (Haas ST-20 has no published US/UK list price reachable; Haas pages show prices labelled CNY only)",
+  "source": "https://www.haascnc.com/machines/lathes/st/models/standard/st-20.html",
+  "date": "retrieved 2026-10-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/fd8ec9a013cfc8c3.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/machines-a.json",
+  "i": 9,
+  "key": "capex.laser-trumpf-3030",
+  "value": 374700,
+  "unit": "GBP (machine, estimate)",
+  "currency": null,
+  "basis": "Third-party ESTIMATE for a new 6 kW TruLaser 3030 fiber: US$400,000-550,000 (machinetoolindex), and US$400,000 base / ~US$500,000 fully loaded (cncmachines.com). Midpoint US$500,000 / 1.3344 = £374,700; range £299,760-412,170.",
+  "source": "https://machinetoolindex.com/machines/trumpf-trulaser-3030-fiber",
+  "date": "2026 (page titled '[2026]'; retrieved 2026-10-10)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1e6095249657eb61.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1e6095249657eb61.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/machines-a.json",
+  "i": 11,
+  "key": "capex.brake-amada-hfe100",
+  "value": null,
+  "unit": "GBP",
+  "currency": null,
+  "basis": "not found in any source (UK dealers quote on application)",
+  "source": "https://www.quinnbros.co.uk/product-page/bystronic-xact-100-cnc-pressbrake",
+  "date": "retrieved 2026-10-10",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e9f6ae4a474319e8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/e9f6ae4a474319e8.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/machines-b.json",
+  "i": 28,
+  "key": "capex.grav-die-cast-std",
+  "value": null,
+  "unit": "GBP",
+  "currency": null,
+  "basis": "not found in any source",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/machines-b.json",
+  "i": 56,
+  "key": "capex.smt-high-speed-line",
+  "value": 1600000,
+  "unit": "GBP",
+  "currency": null,
+  "basis": "trade-press: Plexus (Kelso) £1.6m SMT line — ASM pick-and-place, DEK printer, Speedline reflow",
+  "source": "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line",
+  "date": "date not visible in search snippet",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/72ee2701ff59fbcb.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/machines-b.json",
+  "i": 63,
+  "key": "capex.rtm-press-std",
+  "value": null,
+  "unit": "GBP",
+  "currency": null,
+  "basis": "not found in any source",
+  "source": "",
+  "date": "",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 69,
+  "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.304.2026-05",
+  "value": 1.93,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "Outokumpu Europe flat-product alloy surcharge 2026-05: 304 EUR 2247/t; x 0.859",
+  "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+  "date": "2026-04 (for May 2026 deliveries)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 70,
+  "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.316L.2026-05",
+  "value": 3.28,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "Outokumpu Europe flat-product alloy surcharge 2026-05: 316L EUR 3818/t; x 0.859",
+  "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+  "date": "2026-04 (for May 2026 deliveries)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 71,
+  "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.430.2026-05",
+  "value": 0.94,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "Outokumpu Europe flat-product alloy surcharge 2026-05: 430 EUR 1094/t; x 0.859",
+  "source": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+  "date": "2026-04 (for May 2026 deliveries)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 78,
+  "key": "ferrous.anchor.stainless.crc304_may_deliv_transaction",
+  "value": 2.199,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "European 304 CRC (effective, incl. alloy surcharge) EUR 2560/t delivered; x 0.859",
+  "source": "https://news.metal.com/newscontent/103862945-smm-스테인리스-스틸-시장-속보-유럽-철강사들-7월분-crc-공급가격을-도착도-기준-톤당-€2700으로-인상",
+  "date": "2026-04",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9a46e02f5eac7b38.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9a46e02f5eac7b38.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 79,
+  "key": "ferrous.anchor.stainless.crc304_jul_offer",
+  "value": 2.319,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "European 304 CRC (effective, incl. alloy surcharge) EUR 2700/t delivered; x 0.859",
+  "source": "https://news.metal.com/newscontent/103862945-smm-스테인리스-스틸-시장-속보-유럽-철강사들-7월분-crc-공급가격을-도착도-기준-톤당-€2700으로-인상",
+  "date": "2026-04",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9a46e02f5eac7b38.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9a46e02f5eac7b38.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 80,
+  "key": "ferrous.anchor.stainless.crc304_mill_target_endQ3",
+  "value": 2.491,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "European 304 CRC (effective, incl. alloy surcharge) EUR 2900/t delivered; x 0.859",
+  "source": "https://news.metal.com/en/newscontent/103920057-smm-stainless-steel-market-flash-eu-mills-target-€2900t-crc-by-end-q3-as-buyers-see-no-near-term-price-drop",
+  "date": "2026-05-25",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/8c87e84141bf7b79.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/8c87e84141bf7b79.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 96,
+  "key": "ferrous.anchor.fesi75_ddp_nwe",
+  "value": 1.082,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "Argus ferro-silicon 75% EUR 1,240-1,280/t ddp NW Europe on 16 Jun 2026; midpoint 1,260 x 0.859 = GBP 1082/t",
+  "source": "https://api.argusmedia.com/articles/2840817",
+  "date": "2026-06-16",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1c2a278a3ef3fdc8.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/1c2a278a3ef3fdc8.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 97,
+  "key": "ferrous.anchor.fesimg_eu_import_unit_value",
+  "value": 1.907,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "EU import average unit value, CN 7202 29 10 (FeSi with 4-10% Mg = FeSiMg nodulariser): EUR 2.22/kg; x 0.859",
+  "source": "https://www.thetradehub.eu/de/customs/trade/72022910",
+  "date": "period not stated on the page (indexed 2026)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d8bc4cb7e91aea12.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/d8bc4cb7e91aea12.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 98,
+  "key": "ferrous.anchor.ferrochrome_eu_benchmark_q3",
+  "value": 2.558,
+  "unit": "GBP/kg Cr contained",
+  "currency": null,
+  "basis": "European ferrochrome benchmark Q3 2026 = 156 US c/lb Cr contained (Samchrome/Samancor); 1.56 x 2204.62 = USD 3,439/t Cr x 0.7437 = GBP 2,558/t Cr",
+  "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+  "date": "2026 Q3",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5e4024ac72790434.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/5e4024ac72790434.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 108,
+  "key": "ferrous.charge.GJL-250",
+  "value": 0.169,
+  "unit": "GBP/kg bought metallics",
+  "currency": null,
+  "basis": "Bought charge 60% cast-iron scrap @ 125.0 + 25% steel scrap @ 142.5 + 15% pig iron @ 386.7 = 75.0 + 35.6 + 58.0 = GBP 168.6/t",
+  "source": "https://www.cliffsnotes.com/study-notes/24588812",
+  "date": "2026-10-10 (derived)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/9232ddfc2585fe33.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 109,
+  "key": "ferrous.charge.GJS-500-7",
+  "value": 0.287,
+  "unit": "GBP/kg treated metal",
+  "currency": null,
+  "basis": "Bought charge 50% pig iron @ 386.7 + 50% steel scrap @ 142.5 = 264.6; + FeSiMg 1.2% x 1907 = 22.9; total GBP 287.5/t",
+  "source": "https://journals.pan.pl//Content/127177/PDF/AFE%202_2023_10_final%20version.pdf",
+  "date": "2026-10-10 (derived)",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 111,
+  "key": "ferrous.charge.CF8",
+  "value": 1.805,
+  "unit": "GBP/kg (virgin-units basis)",
+  "currency": null,
+  "basis": "Element costing at ASTM A351 CF8 mid-range Cr 19.5% / Ni 9.5%: Ni 0.095 x 12717 = 1208; Cr 0.195 x 2558 (FeCr, per t Cr) = 499; Fe balance 0.690 x carbon scrap 142.5 = 98; total GBP 1805/t",
+  "source": "https://www.astm.org/a0351_a0351m-18.html",
+  "date": "2026-10-10 (derived)",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/06ae4a6364b55fe3.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/06ae4a6364b55fe3.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 6,
+  "key": "nonferrous.anchor.al_rotterdam_dp_premium",
+  "value": 0.4208,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "P1020A in-whs Rotterdam DUTY-PAID premium $545–570/t on 1 Oct 2026 (LME Insight 'Aluminium Insight' weekly, ed. 5); midpoint $557.5/t ÷ 1.32470673 ÷ 1000. Premium over LME cash official.",
+  "source": "https://storage.ghost.io/c/a7/38/a7384b33-c2f9-4c7c-85e7-bc1b263c8a1b/content/files/2026/10/Aluminium-Insight-by-LME-Insight-Edition-5-1.pdf",
+  "date": "2026-10-01",
+  "status": "page-failed",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 8,
+  "key": "nonferrous.anchor.al_p1020_dp_rotterdam_allin",
+  "value": 2.7867,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "derived: LME cash $3,134 + dp premium $557.5 = $3691.5/t ÷ 1.32470673 ÷ 1000",
+  "source": "see the two anchors above",
+  "date": "2026-10-01/06",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 20,
+  "key": "nonferrous.anchor.cu_cathode_delivered_derived",
+  "value": 11.2355,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "derived: $14568.72 + $315 = $14883.72/t ÷ 1.32470673 ÷ 1000",
+  "source": "see the two anchors",
+  "date": "2026-10-08",
+  "status": "no-url",
+  "cachedText": []
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 21,
+  "key": "nonferrous.anchor.brass_rod_cw614n_cw617n_mill",
+  "value": 8.4753,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "Almag S.p.A. (Italian brass-rod mill) published brass rod CW614N–CW617N price €9,990/t on 9 Oct 2026 (€9,960 on 6 Oct); basis calculated on previous-day LME; ÷ 1.17871931 ÷ 1000",
+  "source": "https://www.almagbrass.com/stock-price-brass-copper-zinc.html",
+  "date": "2026-10-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/59775012c3fc3d1c.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/59775012c3fc3d1c.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 33,
+  "key": "nonferrous.anchor.sn_lme_spot",
+  "value": 42.1361,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "LME tin $55,818/t on 12 Aug 2026 (cbonds index) ÷ 1.32470673 ÷ 1000",
+  "source": "https://cbonds.pl/indexes/181087/",
+  "date": "2026-08-12",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/76c4646910bfbb3d.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.anchor.pvc_s_gross_contract_nwe",
+  "value": 1.096,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "S-PVC 'contract' EUR 1,275-1,280/t FD NWE France/Germany (+20 w/w), mid 1277.5 x 0.858 / 1000 = 1.096",
+  "source": "https://polymerupdate.com/News/Details/1485733",
+  "date": "2026-05-08",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/97f08d4a4027593f.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/97f08d4a4027593f.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.anchor.pvc_index_europe_ba",
+  "value": 1.131,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "Business Analytiq Europe PVC Sep 2026 US$1.53/kg (-0.6%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 1.131",
+  "source": "https://businessanalytiq.com/?p=2559",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/cafd8bd12b51a441.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/cafd8bd12b51a441.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 20,
+  "key": "polymer.anchor.pa6_index_europe_ba",
+  "value": 2.189,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "Business Analytiq Europe PA6 Sep 2026 US$2.96/kg (+5.7%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 2.189",
+  "source": "https://businessanalytiq.com/?p=2215",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/73fd4b8aa8698ed3.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/73fd4b8aa8698ed3.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 21,
+  "key": "polymer.anchor.pa66_index_europe_ba",
+  "value": 2.551,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "Business Analytiq Europe PA66 Sep 2026 US$3.45/kg (-3.9%) x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 2.551",
+  "source": "https://businessanalytiq.com/?p=2623",
+  "date": "2026-09",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bb93af13e1247073.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/bb93af13e1247073.render.txt"
+  ]
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 35,
+  "key": "rubber.nr_tsr20_sgx",
+  "value": 1.905,
+  "unit": "GBP/kg",
+  "currency": null,
+  "basis": "SGX TSR20 Nov-2026 contract 257.60 US c/kg (+1.10%) on 3 Oct 2026 x USD->GBP 0.7394 (1/1.3524, GBP/USD on 10 Sep 2026) = 1.905",
+  "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-3-10-bien-dong-trai-chieu-a336568.html",
+  "date": "2026-10-03",
+  "status": "page-no-figure",
+  "cachedText": [
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4a639b6c6c5a1ca0.txt",
+   "/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/pages/4a639b6c6c5a1ca0.render.txt"
+  ]
+ }
+]
