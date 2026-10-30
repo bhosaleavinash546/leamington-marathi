@@ -216,6 +216,8 @@ export interface CompareRoutesInput {
   region: ManufacturingRegion;
   annualVolume: number;
   programmeYears?: number;
+  /** Delivery terms of the costing (default DAP) — every route is priced on the same terms as the headline. */
+  deliveryTerms?: 'DAP' | 'EXW';
   acknowledge?: string[];
   baseBook: RateLibrary;
   /** Re-cost every route on the volume ladder (default true). */
@@ -462,7 +464,7 @@ async function costRoute(
       i.geo, i.filename,
       { partNumber: i.filename, file: i.filename, commodity: route, annualVolume },
       answers, i.region,
-      { annualVolume, ...(i.programmeYears ? { programmeYears: i.programmeYears } : {}), acknowledge: i.acknowledge ?? [] },
+      { annualVolume, ...(i.programmeYears ? { programmeYears: i.programmeYears } : {}), ...(i.deliveryTerms ? { deliveryTerms: i.deliveryTerms } : {}), acknowledge: i.acknowledge ?? [] },
       i.baseBook,
       { partNumber: i.filename, file: i.filename, status: 'error' },
     );

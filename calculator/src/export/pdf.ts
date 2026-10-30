@@ -15,7 +15,7 @@ import { computeCostUncertainty, overallConfidence, UNCERTAINTY_BASIS, UNCERTAIN
 import { measureLabel, measureAgainstLimit } from '../engine/dfm-geometry/measure-format.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { computeRegionalComparison, alBilletMaterialFactors, shopDefaultsBasis, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
+import { computeRegionalComparison, alBilletMaterialFactors, shopDefaultsBasis, deliveryTermsLine, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
 import { computeRegionalComparisonExact } from '../engine/regional-comparison.js';
 import { AL_ALLOY_LIST } from '../engine/al-extrusion-data.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
@@ -951,7 +951,8 @@ export function renderShouldCostSections(
     body: [
       ['Overhead Rate', pct(input.overheadPct * 100), 'Supplier Margin', pct(input.marginPct * 100)],
       ['Packaging / part', c(input.packagingPerPart), 'Logistics / part', c(input.logisticsPerPart)],
-      ['Basis', { content: shopDefaultsBasis(region as ManufacturingRegion | undefined), colSpan: 3 }],
+      ['Delivery terms', { content: deliveryTermsLine(input.deliveryTerms), colSpan: 3 }],
+      ['Basis', { content: shopDefaultsBasis(region as ManufacturingRegion | undefined, input.deliveryTerms), colSpan: 3 }],
       ...(input.tooling.mode === 'amortized' ? [[
         'Total Tooling Cost', c(input.tooling.totalToolingCost),
         'Amortisation Volume', `${input.tooling.amortizationVolume.toLocaleString()} parts`,

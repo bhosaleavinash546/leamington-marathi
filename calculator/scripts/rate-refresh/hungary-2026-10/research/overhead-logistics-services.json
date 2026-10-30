@@ -1,0 +1,255 @@
+{
+  "domain": "Hungary — overhead, packaging, logistics and bought-in service prices",
+  "researched": "2026-10-30",
+  "items": [
+    {
+      "key": "services.galvanisePerKg",
+      "value": null,
+      "unit": "HUF/kg ex-VAT (hot-dip, batch, structural steel)",
+      "currency": "HUF",
+      "basis": "Not found. No Hungarian hot-dip galvaniser (tűzihorganyzó) publishes a HUF/kg list that surfaced in three searches. The Hungarian Hot Dip Galvanizers Association (Magyar Tűzihorganyzók Szövetsége) states only how it is charged: on the mass of the FINISHED galvanised goods (zinc pick-up included), driven by design, steel grade, quantity and the world zinc price; it compares the first galvanising of an average structure to a good two-coat paint system. The only HUF/kg figure for hot-dip (daibau.hu, 3,000 Ft/kg) is galvanised steelwork INCLUDING site erection, undated — excluded.",
+      "source": "https://hhga.hu/muszaki-informaciok/fontos-tudnivalok/gazdasagossag/",
+      "date": "",
+      "kind": "trade association (method only, no price)",
+      "notes": "Electro-zinc prices found are a different process — see services.electroZincPerKg (reference only). Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "services.electroZincPerKg",
+      "value": 525,
+      "unit": "HUF/kg ex-VAT (electrolytic / barrel zinc plating, ≥ 300 kg one-off lot, midpoint)",
+      "currency": "HUF",
+      "basis": "Galvanic (electrolytic) zinc plating, NOT hot-dip: 700 Ft + ÁFA/kg with a 10 kg minimum; 450–600 Ft + ÁFA/kg for a one-off lot ≥ 300 kg → midpoint (450 + 600) / 2 = 525 Ft/kg = €1.44/kg at 364.42. Second shop: barrel (forgódobos) zinc plating from 130 Ft + Áfa/kg (Gőcze Kft., https://www.goczekft.hu/termek/forgodobos-horganyzas/, undated, 'from' price).",
+      "source": "https://ujszaszigalvan.hu/galvanizalas-arak.html",
+      "date": "undated (live page, Oct 2026 search)",
+      "kind": "company published price list",
+      "notes": "Attribution of the 700 / 450–600 figures to Újszászi Galván (Jász-Nagykun-Szolnok, not a cluster) is from the search summary, which named 'a provider' with this page among the results. Reference only — not for a hot-dip galvanising rate. Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "services.powderCoatPerM2",
+      "value": 4800,
+      "unit": "HUF/m² ex-VAT (standard RAL, sheet / small parts, job shop list)",
+      "currency": "HUF",
+      "basis": "Mean of the two job-shop list prices in the four clusters: Debrecen (Hajdú-Bihar) RAL basic 4,600 Ft/m² net, RAL 1000–4000 colours 5,000 Ft/m², '27% ÁFA not included'; Szalcsa Porfestés (near Székesfehérvár, Central Transdanubia) sheet > 0.5 m² from 5,000 Ft/m² net, valid from 2026-08-01. (4,600 + 5,000) / 2 = 4,800 Ft/m² = €13.17/m² at 364.42. Range seen: Colorsztatik 'serial' RAL basic from 3,300 Ft + Áfa/m² (custom from 5,500) — the closest to a series price (http://www.colorsztatik.hu/arjegyzek.html, undated); Takács Művek list from 2026-02-01: RAL basic 5,670, special colours 7,370, lacquer 10,835 Ft/m² ex-27% VAT, doubled above 10 mm material (http://takacsmuvek.hu/Takacs_Muvek-arlista.pdf); Maczkó Kft. small lots 8,000 Ft/m² net (https://maczkokft.hu/hu/porfestes); Pere és Társa from 2,000 Ft/m² (VAT not stated, https://porszoras.hu/).",
+      "source": "https://debreceniporfestes.hu/",
+      "date": "2026 (Szalcsa valid from 2026-08-01; Takács from 2026-02-01; Debrecen undated live page)",
+      "kind": "company published price list",
+      "notes": "Second cluster source: https://www.szalcsaporfestes.hu/ . Job-shop / small-lot prices, not an automotive volume line — an upper bound for a volume part (the serial 3,300 Ft/m² is a better floor). Cross-check: Poland kb.pl ~50 PLN/m² ex-VAT (≈ €11.4) and COATINC Bochum €55/m² (Oct 2025) — carried from poland-2026-10/research/r2-overhead-logistics-services.json and germany-2026-10/research/r2-overhead-logistics-services.json; Hungary sits with Poland. Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "services.blastPerM2",
+      "value": 5050,
+      "unit": "HUF/m² ex-VAT (sand / grit blasting of thin steel sheet, job shop)",
+      "currency": "HUF",
+      "basis": "Median of three shop lists: Debrecen 4,600 Ft/m² net (also 1,200 Ft per running metre) (https://debreceniporfestes.hu/); Weld-Impex Kft. 5,050 Ft/m² for sheet ≤ 2.5 mm rising to 7,770 Ft/m² for 10.1–20 mm, base material excluded (https://weldimpex.hu/oldal/Szolgaltatasok); Takács Művek 'Szemcseszórás, homokfúvás m²' 5,670 Ft net, from 2026-02-01, ex-27% VAT. Median(4,600; 5,050; 5,670) = 5,050 Ft/m² = €13.86/m². Hourly: Weld-Impex 13,386 Ft/h net; Mobil Homok Team 14,000 Ft per operating hour ex-VAT (http://www.mobilhomokteam.hu/arak.html).",
+      "source": "http://takacsmuvek.hu/Takacs_Muvek-arlista.pdf",
+      "date": "2026-02-01 (Takács); others undated live pages",
+      "kind": "company published price list",
+      "notes": "No HUF/kg shot-blast (castings / forgings, tumble / hanger blast) price found — these are sheet / structure sandblasting prices, far above an in-line shot-blast cost per part. Aggregator szakiweb.hu (2026) 4,500–5,500 Ft/m², VAT not stated — cross-check only. The Debrecen 4,600 figure equals that shop's powder-coat price; the snippet may have merged the two. Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "services.heatTreat.quenchTemperPerKg",
+      "value": 750,
+      "unit": "HUF/kg ex-VAT (harden + 1 temper, < 1000 °C, 10–50 kg batch, job shop)",
+      "currency": "HUF",
+      "basis": "Borsodi Műhely Kft. heat-treatment shop list (hokezeloHUFt.pdf, prices net): 'Edzés + 1 megeresztés' 750 Ft/kg for a 10–50 kg batch; tempering / stress relief 200 Ft/kg above 50 kg; minimum order €108 (43,200 Ft — the list's own conversion, 400 Ft/€). Earlier list (1 Jan 2012, https://www.borsodimuhely.hu/content/file/rlista_2012_01_01-tl.pdf): 630 Ft/kg at 10–50 kg, 570 Ft/kg at 100–250 kg, flat 4,000 Ft up to 10 kg. 750 Ft/kg = €2.06/kg at 364.42.",
+      "source": "https://www.borsodimuhely.hu/content/file/hokezeloHUFt.pdf",
+      "date": "undated list; the search summary places it c. 2018 (later than the 2012 list)",
+      "kind": "company published price list",
+      "notes": "OLD and small-lot: the only Hungarian heat-treat HUF/kg list found; used with that stated reason. Miskolc (Borsod), not a cluster. Not inflated — no index applied. For comparison the current book's own-shop volume model gives quench + temper 0.4147 £/kg × 428.2 = 178 Ft/kg (computeHeatTreatRate('quench_temper','HU')) — a volume furnace load, not a job-shop small batch, so the two are not comparable and the book is not shown wrong by this. Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "services.heatTreat.carburisePerKg",
+      "value": null,
+      "unit": "HUF/kg ex-VAT",
+      "currency": "HUF",
+      "basis": "Not found — no Hungarian betétedzés HUF/kg price published. voestalpine High Performance Metals Hungary (Dunaharaszti) lists gas nitriding / carbonitriding (2,000 kg furnace load) with no prices.",
+      "source": "https://voestalpine.com/highperformancemetals/hungary/app/uploads/sites/297/2024/07/Nitrex®.pdf",
+      "date": "2024-07",
+      "kind": "company leaflet (no price)",
+      "notes": ""
+    },
+    {
+      "key": "services.heatTreat.nitridePerKg",
+      "value": null,
+      "unit": "HUF/kg ex-VAT",
+      "currency": "HUF",
+      "basis": "Not found — a generic price page says nitriding above 0.3 mm case depth is quoted individually; no HUF/kg figure.",
+      "source": "http://haz.ritlen.ru/hokezeles-arak/",
+      "date": "",
+      "kind": "web page (no price)",
+      "notes": ""
+    },
+    {
+      "key": "services.anodisePerM2",
+      "value": null,
+      "unit": "HUF/m² ex-VAT",
+      "currency": "HUF",
+      "basis": "Not found. Hungarian anodisers (Alucentrum, Unicorn Galvanizáló, Mezőtúr Galván) quote individually (Alucentrum: minimum 10 m²). A catalogue site says black anodising prices 'start at 1,000 Ft/m²' — not a shop list, not credible against EU references (DE guide €30–50/m² ex-VAT), excluded.",
+      "source": "https://alucentrum.hu/aluminium-eloxalas/",
+      "date": "",
+      "kind": "company page (no price)",
+      "notes": "Excluded figure: https://www.tablazat.hu/feluletkezeles/fekete_eloxalas.html"
+    },
+    {
+      "key": "services.ecoat",
+      "value": null,
+      "unit": "HUF/m² ex-VAT (cathodic e-coat, KTL)",
+      "currency": "HUF",
+      "basis": "Not searched to a result within the 20-search budget; no Hungarian KTL price surfaced in the coating searches.",
+      "source": "",
+      "date": "",
+      "kind": "",
+      "notes": ""
+    },
+    {
+      "key": "services.ndt",
+      "value": null,
+      "unit": "HUF/h or HUF/part (MPI / UT)",
+      "currency": "HUF",
+      "basis": "Not found. Hungarian NDT labs (Uniduna, R.U.M. Testing, anyagvizsgalas.hu, Röntgen Kanizsa) publish services, no prices. Only a UT1–UT2 TRAINING fee surfaced (275,000 Ft + ÁFA per person, 120 h) — a course fee, excluded.",
+      "source": "https://rumtesting.hu/",
+      "date": "",
+      "kind": "company page (no price)",
+      "notes": ""
+    },
+    {
+      "key": "services.cncJobShopPerHr.3axis",
+      "value": 6875,
+      "unit": "HUF/h ex-VAT (CNC milling, 3-axis, job shop, all-in shop rate)",
+      "currency": "HUF",
+      "basis": "Mean of two published job-shop ranges: JE-ZO Kft. CNC milling 6,000–7,500 Ft/h (midpoint 6,750; page footer ©2026); Alten CNC milling 6,000–8,000 Ft + Áfa/h (midpoint 7,000; 'indicative, not an offer', undated, https://alten.hu/esztergalas_arak.html). (6,750 + 7,000) / 2 = 6,875 Ft/h = €18.87/h. Turning: JE-ZO 5,500–6,500 Ft/h, Alten 4,500–6,000 Ft + Áfa/h. Higher outlier: Profi Forgácsolás CNC milling 15,000 Ft/h, turning 8,000 Ft/h (https://profiforgacsolas.hu/, undated).",
+      "source": "https://je-zo.hu/en/services/",
+      "date": "2026 (JE-ZO page ©2026); Alten undated",
+      "kind": "company published price list",
+      "notes": "JE-ZO snippet does not state VAT basis; locations not stated in snippets. Small-shop rates. Cross-check with the current book: mach-vmc3 3,231.6 Ft/h (machine only) + lab-uk-skilled 3,982.26 Ft/h = 7,213.86 Ft/h BEFORE overhead and margin — already above the published job-shop all-in rate (6,875) and the Alten midpoint (7,000); suggests the book's Hungary CNC machine + labour stack is on the high side, but small-shop list rates are not a firm basis to call it wrong. Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "services.cncJobShopPerHr.5axis",
+      "value": 8000,
+      "unit": "HUF/h (CNC 5-axis machining centre, job shop, midpoint)",
+      "currency": "HUF",
+      "basis": "JE-ZO Kft.: 'CNC marás (5 tengelyes CNC megmunkáló központ) 7000 – 9000 Ft/óra' → midpoint 8,000 Ft/h = €21.95/h. Single source.",
+      "source": "https://je-zo.hu/en/services/",
+      "date": "2026 (page ©2026)",
+      "kind": "company published price list",
+      "notes": "VAT basis not stated in the snippet. Book check: mach-vmc5 5,780.52 Ft/h machine only + skilled 3,982.26 = 9,762.78 Ft/h before overhead / margin, above this all-in shop rate. Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "services.toolroomPerHr",
+      "value": null,
+      "unit": "HUF/h ex-VAT (toolmaker shop rate)",
+      "currency": "HUF",
+      "basis": "Not found — no Hungarian toolroom (szerszámkészítő) shop rate published. Nearest published machine-shop list (company PDF on cylex, undated): 1,500 mm lathe 6,500 Ft + ÁFA/h, universal milling machine 5,500 Ft + ÁFA/h, fitting 3,500 Ft + ÁFA/h per person — a general machine shop, not a toolroom. Wage cross-check (job board, not a rate): profession.hu toolmaker average salary request 447,016 Ft/month.",
+      "source": "https://media.cylex.hu/companies/8948/55/uploadedfiles/894855_635396845173972392_rlista.pdf",
+      "date": "undated",
+      "kind": "company published price list (machine shop, reference only)",
+      "notes": "Salary page: https://www.profession.hu/fizetesek/szerszamkeszito (job board — cross-check only per RULES). Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "services.engineeringPerHr",
+      "value": 25000,
+      "unit": "HUF/h ex-VAT (design engineer hour, 'from')",
+      "currency": "HUF",
+      "basis": "SZGS: design ('tervezés') from 25,000 HUF per hour per engineer, drafting ('szerkesztés') from 12,500 HUF/h, net of VAT = €68.60/h and €34.30/h at 364.42. Ceiling reference: Hungarian Chamber of Engineers (MÉK) 2026 recommended hourly fee table, category 1, activity multiplier 12 = 66,027 Ft per engineer-hour ex-VAT (→ 66,027 / 12 = 5,502 Ft per multiplier unit), https://mek.hu/FILES/CONT/41927/radjas_tblzat_2026_v.pdf (2025: 59,482; 2024: 54,573). mernokvagyok.hu table valid from 2026-01-01: 12,000–54,800 Ft/h (https://mernokvagyok.hu/mernoki-dijszabas/).",
+      "source": "https://www.szgs.hu/arak/",
+      "date": "undated live page (Oct 2026 search); MÉK table 2026",
+      "kind": "company published price list (MÉK: professional chamber recommended fee)",
+      "notes": "LOW confidence: SZGS's discipline is not stated (not specifically mechanical / automotive); the MÉK table is for building-design engineering services, a recommended (not transaction) fee. Not an automotive supplier's internal engineering cost. Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "logistics.ftlPerKm.HU",
+      "value": 950,
+      "unit": "HUF/km (domestic, 16 t payload trailer combination, carrier list)",
+      "currency": "HUF",
+      "basis": "Fuvarcenter 2026 price list: per-km rate rises with payload, 300 Ft/km (0.5 t) up to 950 Ft/km for a 16 t trailer set. 950 Ft/km = €2.61/km at 364.42. Other Hungarian figures: Bástifuvar (Vác) box / tarpaulin truck 250 Ft/km countryside, 300 Ft/km Budapest, maximum-utilisation rate 530 Ft/km (https://bastifuvar.hu/fuvarozasi-dijak/); a carrier cost model gives full cost ≈ 405 Ft/km and a suggested market price ≈ 580–600 Ft/km (illustrative, https://www.kamionshopkft.hu/fuvarar-kepzes-mibol-all-ossze-a-km-dij).",
+      "source": "https://fuvarcenter.hu/arak/",
+      "date": "2026",
+      "kind": "company published price list",
+      "notes": "LOW confidence for an automotive FTL lane: small-carrier domestic list prices for part / short loads, VAT basis not stated in the snippet, and not a 13.6 m / 24 t articulated contract rate (CEE-origin benchmark lanes run €1.45–1.73/km — see logistics.ftlPerKm.CEE_reference). Hungarian tolls: +4.3% on 1 Jan 2026; a planned ~30% March rise was cancelled on 26 Feb (Upply/IRU/Ti Q1 2026 benchmark, https://ti-insight.com/wp-content/uploads/2026/05/upply-iru-ti-q1-2026-european-road-freight-rates-benchmark.pdf). Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "logistics.ftlPerKm.CEE_reference",
+      "value": 1.73,
+      "unit": "EUR/km (FTL contract, Duisburg–Prague, Q2 2026)",
+      "currency": "EUR",
+      "basis": "Carried from germany-2026-10/research/r2-overhead-logistics-services.json: IRU / Upply / Ti benchmark Q2 2026 Duisburg–Prague €1.73/km contract (= 630 Ft/km at 364.42). Carried from poland-2026-10/research/r2-overhead-logistics-services.json: Warsaw–Duisburg contract €1.45/km, spot €1.51/km (Q2 2026) = 528 Ft/km. Same benchmark in Hungarian press: Antwerp–Duisburg ≈ €3.05/km, Duisburg–Lille ≈ €2.58/km, German domestic contract index 158.3 in June 2026 (https://trans.info/hu/dragabb-fuvarok-kevesebb-aru-europaban-495972).",
+      "source": "https://trans.info/en/june-freight-paradox-495918",
+      "date": "Q2 2026",
+      "kind": "benchmark (contract-rate survey)",
+      "notes": "No Hungary-origin lane is in the public benchmark snippets. Nearest CEE lanes, not Hungarian. Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "logistics.lane.HU_DE",
+      "value": null,
+      "unit": "EUR per FTL load, Hungary → Germany",
+      "currency": "EUR",
+      "basis": "Not found — no published 2026 HU→DE FTL price (TIMOCOM, trans.info HU, Upply) surfaced. Indicative only, NOT a sourced figure: at the CEE benchmark €1.45–1.73/km, a Győr → Ingolstadt run would be priced at €1.45–1.73 × its distance; the distance is not researched here.",
+      "source": "https://trans.info/hu/dragabb-fuvarok-kevesebb-aru-europaban-495972",
+      "date": "",
+      "kind": "",
+      "notes": "German toll on the DE leg €0.348/km (Euro VI, CO2 class 1, 5+ axles) — carried from germany-2026-10 r2 file (https://www.autobahn-baustellen.de/lkw-maut-rechner/). Hungarian HGV toll ≈ €0.15–0.20/km per a secondary blog (https://nsroute.com/en/blog/truck-tolls-europe-2026/) — reference only."
+    },
+    {
+      "key": "logistics.ratio",
+      "value": null,
+      "unit": "HU ÷ UK logistics £/part",
+      "currency": "",
+      "basis": "NOT SUPPORTED — no UK domestic per-km rate (as in the Poland and Germany rounds) and no Hungarian automotive FTL contract rate were found. Directional: CEE-origin contract lanes (€1.45–1.73/km) are ~0.56–0.67 of a West-European lane (Duisburg–Lille €2.58/km); 1.45 / 2.58 = 0.56, 1.73 / 2.58 = 0.67. A logistics multiplier of 1.22 can hold only if the Hungarian supplier's lane to its OEM is ~1.8–2.2× (1.22 / 0.67 to 1.22 / 0.56) the UK supplier's — a distance assumption, not a researched figure.",
+      "source": "https://trans.info/en/june-freight-paradox-495918",
+      "date": "2026-10-30 (derived)",
+      "kind": "derived",
+      "notes": "Keep 1.22 labelled as an unresearched assumption."
+    },
+    {
+      "key": "packaging.epalPallet.HU",
+      "value": 5250,
+      "unit": "HUF/pallet ex-VAT (new EUR / EPAL 1200×800, single-unit webshop price)",
+      "currency": "HUF",
+      "basis": "Three Hungarian distributors' own published prices, net: Zovapack new UIC-EUR 800×1200 5,197 Ft + ÁFA (6,600 Ft gross; 5,197 × 1.27 = 6,600); Fiorex new EPAL-EUR 80×120 heat-treated 5,252 Ft + ÁFA (listing marked unavailable, expiring 2026-09, https://www.fiorex.hu/epal-eur-uj-raklap-80x120-2133); Raklap Budafok new EUR pallet 5,300 Ft net (undated, https://raklapbudafok.hu/oldal/raklap-arak/). Mean (5,197 + 5,252 + 5,300) / 3 = 5,249.7 → 5,250 Ft = €14.41 at 364.42. Cross-check (carried from germany-2026-10 r2 file): DACH new EUR-1 index €12.21 (Aug 2026, Tacto / PalettenReport) × 364.42 = 4,450 Ft; Hungary single-unit webshop / DACH index = 5,250 / 4,450 = 1.18.",
+      "source": "https://www.zovapack.hu/raklapok-magasito-keretek/raklapok/fa-raklapok",
+      "date": "2026 (live pages, Oct 2026 search; Fiorex listing to 2026-09)",
+      "kind": "distributor published price list",
+      "notes": "Single-unit / small-lot prices, Budapest area; a plant buying by the truckload pays less. Outliers excluded: Csomagolás Király 15,993 Ft/db (likely a multi-pallet unit), Europellet 6,000 Ft (VAT basis unclear), a 2025 classified ad 4,900 Ft (marketplace — RULES). Read from search-result snippets: the host is not reachable from this environment (DNS refused), so the figure was not read on the page itself — re-read before it sets a rate."
+    },
+    {
+      "key": "packaging.containerboard.CEE",
+      "value": 865,
+      "unit": "EUR/tonne (unbleached kraftliner 170 g, delivered Poland, midpoint)",
+      "currency": "EUR",
+      "basis": "Carried from poland-2026-10/research/r2-overhead-logistics-services.json: Fastmarkets kraftliner 170 g dap Poland €850–880/t, midpoint €865/t (= 315,223 Ft/t at 364.42). Also carried from germany-2026-10 r2 file: testliner 2 Germany €480–530/t, Feb 2026 (low confidence).",
+      "source": "https://www.fastmarkets.com/insights/https-www-fastmarkets-com-insights-poland-containerboard-kraftliner-prices-stable/",
+      "date": "June (2025 probable)",
+      "kind": "price agency (headline)",
+      "notes": "No Hungarian containerboard or corrugated-box price searched to a result (budget)."
+    },
+    {
+      "key": "packaging.ratio",
+      "value": null,
+      "unit": "HU ÷ UK packaging £/part",
+      "currency": "",
+      "basis": "NOT SUPPORTED — no UK pallet or containerboard price found (as in the Poland and Germany rounds). Pallets and board trade in € across Europe; the Hungarian single-unit pallet sits 1.18× the DACH index, which says nothing about the UK. Keep 0.88 labelled as an unresearched assumption.",
+      "source": "https://www.zovapack.hu/raklapok-magasito-keretek/raklapok/fa-raklapok",
+      "date": "2026-10-30",
+      "kind": "derived",
+      "notes": ""
+    },
+    {
+      "key": "overhead.HU.share",
+      "value": null,
+      "unit": "% (SBS gross operating rate / personnel-cost share, NACE C29)",
+      "currency": "",
+      "basis": "Not found. Eurostat SBS (sbs_ovw_act, NACE C29, HU v UK) could not be read: ec.europa.eu is refused by this environment's proxy and the values did not appear in snippets. Fragments only, from different years and so NOT combined: Hungary motor-vehicle manufacturing turnover ≈ €17.71 bn (2023) and personnel costs ≈ €692.27 m (2021), Statista citing Eurostat (https://www.statista.com/statistics/428821/turnover-motor-vehicles-hungary). EU manufacturing gross operating rate 10.4% in 2023 (Eurostat Statistics Explained). No e-beszamolo.im.gov.hu filing of a Hungarian supplier subsidiary was read within the budget.",
+      "source": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Structural_business_statistics_overview",
+      "date": "2023 (EU figure)",
+      "kind": "statistics (fragment)",
+      "notes": "Lead: MNB Hitelintézeti Szemle paper 'Insight into the Hungarian Automotive Industry in International Comparison' (Rechnitzer, Hausmann, Tóth) uses SBS value added = personnel costs + operating result + depreciation (https://hitelintezetiszemle.mnb.hu/sw/static/file/janos-rechnitzer-robert-hausmann-tamas-toth.pdf). Keep overheadMultiplier 0.83 labelled as an unresearched assumption."
+    }
+  ],
+  "notes": [
+    "FX: €1 = 364.42 HUF, MNB official rate of 25 Sep 2026 as republished by an aggregator (https://allratestoday.com/central-bank-rates-api/mnb.md; a second copy of the site gives 364.64) — mnb.hu was not readable here. Replace with the labour / energy researcher's MNB October 2026 rate. Most figures are given in HUF by their source, so only the € cross-checks depend on it.",
+    "Environment: every Hungarian shop host tried (takacsmuvek.hu, hhga.hu, szalcsaporfestes.hu, debreceniporfestes.hu, importexport.hu, ti-insight.com) failed DNS in this session and ec.europa.eu was refused by the proxy, so every figure was read from search-result snippets, not from the page. Treat as 'reported by' and re-read on the page before it sets a rate.",
+    "Hungarian VAT 27% — all HUF service prices above are the net ('+ ÁFA' / 'nettó') figures where the source states it; where it does not, the item says so.",
+    "Found: powder coat ~4,800 Ft/m² (cluster shops, 2026), blasting ~5,050 Ft/m², CNC job shop ~6,875 Ft/h 3-axis / ~8,000 Ft/h 5-axis, engineering from 25,000 Ft/h (MÉK ceiling 66,027), new EPAL pallet ~5,250 Ft, quench + temper 750 Ft/kg small batch (old list), small-carrier domestic truck 950 Ft/km. Not found: hot-dip galvanising Ft/kg, carburise / nitride, anodise, KTL, NDT, toolroom rate, HU→DE lane, any UK comparator, overhead share.",
+    "20 web searches used."
+  ]
+}

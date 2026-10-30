@@ -1,4 +1,4 @@
-import type { RateLibrary, MaterialRate, Breakdown8Bucket } from './types.js';
+import type { RateLibrary, MaterialRate, Breakdown8Bucket, DeliveryTerms } from './types.js';
 import { computeMachineRatePerHr } from './rate-library-merge.js';
 import { COUNTRY_BOOKS, countryMachine, countryMaterial } from './country-books.js';
 import { UK_ELECTRICITY_GBP_PER_KWH } from './uk-energy.js';
@@ -101,6 +101,8 @@ export interface RegionalData {
   packagingMultiplier: number;
   /** Default logistics £/part relative to UK (UK domestic = 1.0) */
   logisticsMultiplier: number;
+  /** Where the overhead / packaging / logistics multipliers come from, when a country book sourced them (else "held"). */
+  shopMultipliersBasis?: string;
 }
 
 export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
@@ -212,15 +214,17 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     packagingMultiplier: 0.85,
     logisticsMultiplier: 1.25,
   },
+  // Hungary: labour from the Hungary rate book 2026-10-30 (scripts/country-book.ts; 4-cluster, KSH total earnings + szocho, 1,728 productive h; engineer held);
+  // machineRateMultiplier = median Hungary ÷ UK machine rate in that book (the service factors read it).
   HU: {
     name: 'Hungary',
     currency: 'HUF',
-    fxToGBP: 428.2,
-    labour: { skilled: 9.30, semiskilled: 7.34, engineer: 16.63, foundry: 6.85, electronics: 6.65, inspector: 10.76, technician: 10.23, supervisor: 12.55 },
-    energy: { electricityPerKwh: 0.115, gasPerKwh: 0.069 },
-    materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
-    materialMultiplier: 0.97,
-    machineRateMultiplier: 0.70,
+    fxToGBP: 437.75,   // MNB official mid rate 29 Oct 2026 (Hungary rate book, scripts/rate-refresh/hungary-2026-10)
+    labour: { skilled: 13.7248, semiskilled: 11.8831, engineer: 16.63, foundry: 10.4793, electronics: 11.8831, inspector: 13.7248, technician: 13.7248, supervisor: 13.7248 },
+    energy: { electricityPerKwh: 0.1257, gasPerKwh: 0.0679 },
+    materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
+    materialMultiplier: 1,
+    machineRateMultiplier: 0.7,
     overheadMultiplier: 0.83,
     packagingMultiplier: 0.88,
     logisticsMultiplier: 1.22,
@@ -941,23 +945,37 @@ export function toolroomFactorFor(region: ManufacturingRegion): number {
 export function regionalShopDefaults(
   region: ManufacturingRegion,
   ukBasis: { packagingPerPart?: number; logisticsPerPart?: number } = {},
+  terms: DeliveryTerms = 'DAP',
 ): { overheadPct: number; packagingPerPart: number; logisticsPerPart: number } {
   const rd = REGIONAL_DATA[region] ?? REGIONAL_DATA.UK;
   const r4 = (n: number) => Math.round(n * 10_000) / 10_000;
   return {
     overheadPct: Math.round(12 * rd.overheadMultiplier) / 100,
     packagingPerPart: r4((ukBasis.packagingPerPart ?? 0.15) * rd.packagingMultiplier),
-    logisticsPerPart: r4((ukBasis.logisticsPerPart ?? 0.25) * rd.logisticsMultiplier),
+    // ex-works: the buyer collects at the gate — packaging is in the price, freight is not
+    logisticsPerPart: terms === 'EXW' ? 0 : r4((ukBasis.logisticsPerPart ?? 0.25) * rd.logisticsMultiplier),
   };
 }
 
+/** What the delivery terms mean, for the reports and the cost card. */
+export function deliveryTermsLine(terms: DeliveryTerms | undefined): string {
+  return terms === 'EXW'
+    ? 'Ex-works (EXW): the price at the supplier\'s gate — packaging included, freight to your plant NOT included (logistics 0)'
+    : 'Delivered to your plant (DAP): the logistics line is the freight to your plant';
+}
+
 /** Where the overhead / packaging / logistics DEFAULTS come from — the reports printed them with no basis (Germany review). */
-export function shopDefaultsBasis(region: ManufacturingRegion | undefined): string {
+export function shopDefaultsBasis(region: ManufacturingRegion | undefined, terms: DeliveryTerms = 'DAP'): string {
   const rd = REGIONAL_DATA[region ?? 'UK'] ?? REGIONAL_DATA.UK;
   const f = (n: number) => `×${n.toFixed(2)}`;
-  return region && region !== 'UK'
-    ? `Defaults: the UK basis (overhead 12%, packaging and logistics from the part's size) × ${rd.name}'s multipliers — overhead ${f(rd.overheadMultiplier)}, packaging ${f(rd.packagingMultiplier)}, logistics ${f(rd.logisticsMultiplier)} (delivery to the UK). Held, not researched for ${rd.name}; a typed figure is used as given.`
-    : 'Defaults: overhead 12%; packaging and logistics from the part\'s size (delivery within the UK). A typed figure is used as given.';
+  const exw = terms === 'EXW';
+  const sized = exw ? 'packaging from the part\'s size' : 'packaging and logistics from the part\'s size';
+  const freight = exw ? ' Ex-works: no freight in the price (logistics 0).' : '';
+  return (region && region !== 'UK'
+    ? `Defaults: the UK basis (overhead 12%, ${sized}) × ${rd.name}'s multipliers — overhead ${f(rd.overheadMultiplier)}, packaging ${f(rd.packagingMultiplier)}`
+      + (exw ? '' : `, logistics ${f(rd.logisticsMultiplier)} (delivery to the UK)`)
+      + `. ${rd.shopMultipliersBasis ?? `Held, not researched for ${rd.name}`}; a typed figure is used as given.`
+    : `Defaults: overhead 12%; ${sized}${exw ? '' : ' (delivery within the UK)'}. A typed figure is used as given.`) + freight;
 }
 
 export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
@@ -1083,8 +1101,11 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         pricePerKg: m.pricePerKg * f,
         scrapRecoveryPricePerKg: m.scrapRecoveryPricePerKg * f,
         region: rd.name,
-        sourceNote: `${rd.name}: no ${rd.name} price for this grade — the UK book £${m.pricePerKg.toFixed(2)}/kg × ${f.toFixed(3)} `
-          + `(${classifyMaterialFamily(m)} country factor). UK basis: ${m.sourceNote}`,
+        sourceNote: f === 1
+          // at par (Hungary book): no unsourced country discount — the European-market price as the book holds it
+          ? `${rd.name}: no ${rd.name} price for this grade — the book's European-market price £${m.pricePerKg.toFixed(2)}/kg at par (no country factor). UK basis: ${m.sourceNote}`
+          : `${rd.name}: no ${rd.name} price for this grade — the UK book £${m.pricePerKg.toFixed(2)}/kg × ${f.toFixed(3)} `
+            + `(${classifyMaterialFamily(m)} country factor). UK basis: ${m.sourceNote}`,
         // a country WITH its own rate book looked for this grade and found no price: UK × a factor is Low there
         // (a Poland ECU cover's resin — 53% of the part — printed "Medium" on a UK price × 0.97; live review 10 Oct 2026)
         ...(book ? { confidence: 'Low' as const } : {}),

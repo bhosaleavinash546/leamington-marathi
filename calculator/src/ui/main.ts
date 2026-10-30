@@ -175,7 +175,7 @@ import { setActiveRates } from '../engine/rate-context.js';
 import { computeRegionalComparisonExact } from '../engine/regional-comparison.js';
 import { labourRoles, labourRoleId } from '../engine/labour-roles.js';
 import { syncPcbPickers, pcbMarketNote } from './pcb-country-sync.js';
-import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor, shopFigureSource } from './country-fields.js';
+import { applyCountryShopFields, setShopBasisUK, shopBasisFromTyped, shopFieldsFor, shopFigureSource, deliveryTerms, setDeliveryTerms, applyDeliveryTermsToForm } from './country-fields.js';
 import { applyCountryMoneyDefaults, watchCountryMoneyDefaults, setCountryDefault } from './country-money-defaults.js';
 import { recostInCountries, formatRuleValue, type CountryCosting } from './country-recost.js';
 import { pcbMarketFor, pcbFabRegionFor } from '../engine/pcb-market.js';
@@ -5722,6 +5722,13 @@ function renderCADAnalysisForm(): string {
             <label for="cad-programme-years">Programme life (years) <span class="cad-req">required</span></label>
             <input type="number" id="cad-programme-years" min="1" step="1" value="${escHtml(years)}" placeholder="e.g. 5" aria-describedby="cad-life-line"/>
           </div>
+          <div class="field-group">
+            <label for="cad-delivery-terms">Delivery terms</label>
+            <select id="cad-delivery-terms" title="Delivered to your plant (DAP) carries the freight; ex-works (EXW) is the price at the supplier's gate — packaging in, freight out.">
+              <option value="DAP"${deliveryTerms() === 'DAP' ? ' selected' : ''}>Delivered to your plant (DAP)</option>
+              <option value="EXW"${deliveryTerms() === 'EXW' ? ' selected' : ''}>Ex-works (EXW) — no freight</option>
+            </select>
+          </div>
         </div>
         <p id="cad-life-line" class="cad-life-line" role="status"></p>
         <p id="cad-country-line" class="cad-country-line"></p>
@@ -6215,6 +6222,20 @@ function updateCADSteps(): void {
   }
 }
 
+/** Delivery terms: one value, two selects (the form's #delivery-terms and the CAD screen's #cad-delivery-terms). */
+function wireDeliveryTerms(): void {
+  for (const id of ['delivery-terms', 'cad-delivery-terms']) {
+    const sel = document.getElementById(id) as (HTMLSelectElement & { _termsWired?: boolean }) | null;
+    if (!sel || sel._termsWired) continue;
+    sel._termsWired = true;
+    sel.addEventListener('change', () => {
+      setDeliveryTerms(sel.value);
+      applyDeliveryTermsToForm(_mfgRegion);
+      document.getElementById('logistics')?.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  }
+}
+
 /** Programme life on the CAD screen IS the costing's programme life (#programme-years): one value, two places. */
 function wireCADContext(): void {
   const mine = document.getElementById('cad-programme-years') as HTMLInputElement | null;
@@ -6231,6 +6252,7 @@ function wireCADContext(): void {
   });
   vol?.addEventListener('input', line);
   line();
+  wireDeliveryTerms();
   const sel = document.getElementById('costing-country-sel') as HTMLSelectElement | null;
   const country = () => {
     const c = document.getElementById('cad-country-line');
@@ -12751,11 +12773,15 @@ function followAmortDefaults(root: ParentNode = document): void {
 // ─── Input collectors ─────────────────────────────────────────────────────────
 
 function getUniversalTail(): Pick<UniversalStackInput,
-  'partName' | 'packagingPerPart' | 'logisticsPerPart' | 'overheadPct' | 'marginPct' | 'annualVolume' | 'programmeYears'> {
+  'partName' | 'packagingPerPart' | 'logisticsPerPart' | 'deliveryTerms' | 'overheadPct' | 'marginPct' | 'annualVolume' | 'programmeYears'> {
+  // Ex-works carries no freight whatever a demo or a fill wrote into the field — the one place the stack reads it.
+  const exw = deliveryTerms() === 'EXW';
+  if (exw) applyDeliveryTermsToForm(_mfgRegion);
   return {
     partName: val('part-name') || 'Unnamed Part',
     packagingPerPart: num('packaging'),
-    logisticsPerPart: num('logistics'),
+    logisticsPerPart: exw ? 0 : num('logistics'),
+    deliveryTerms: deliveryTerms(),
     overheadPct: num('overhead-pct') / 100,
     marginPct: num('margin-pct') / 100,
     // The #annual-volume field used to be read ONLY as an amortisation fallback
@@ -20591,6 +20617,7 @@ async function init(): Promise<void> {
   // Form quality-of-life
   initBenchmarkHints();
   initDraftAutosave();
+  wireDeliveryTerms();
   initWhatsNew();
   initWhatIfSlider();
 
@@ -21133,6 +21160,9 @@ function restoreDraft(): void {
       if (elm instanceof HTMLInputElement && elm.type === 'checkbox') elm.checked = val === '1';
       else if (val !== '') elm.value = val;
     });
+    // the terms select restored its value — the state and the logistics field follow it
+    const t = (document.getElementById('delivery-terms') as HTMLSelectElement | null)?.value;
+    if (t) { setDeliveryTerms(t); applyDeliveryTermsToForm(_mfgRegion); }
   } catch { /* corrupt draft — ignore */ }
 }
 
@@ -21285,6 +21315,10 @@ function collectCADBasis(): BasisRow[] {
     const src = shopFigureSource(id);
     const inForce = shopFieldsFor(region)[id === 'packaging' ? 'packagingPerPart' : 'logisticsPerPart'];
     const grade: BasisRow['grade'] = src === 'typed' || Math.abs(inForce - v) > 0.00051 ? 'Typed' : src === 'size' ? 'Rule' : 'Default';
+    if (id === 'logistics' && deliveryTerms() === 'EXW') {
+      rows.push({ grade: 'Answered', what: 'Logistics per part — ex-works (EXW): no freight in the price', value: _currFmt(0) });
+      continue;
+    }
     const what = (id === 'packaging' ? 'Packaging per part' : 'Logistics per part') + (grade === 'Rule' ? ' (from the part\'s size and mass)' : '');
     rows.push({ grade, what, value: _currFmt(v) });
   }
@@ -21350,7 +21384,8 @@ function renderCADCostCard(): void {
     commercial,
     // A finish is in the cost when the form's finishing block holds a route (answered on CAD, or typed).
     notIncluded: notIncludedFor(activeCommodity,
-      (document.getElementById(`${SURFACE_PREFIX_BY_COMMODITY[activeCommodity as CommodityType] ?? '_'}-sf-route`) as HTMLSelectElement | null)?.value || null),
+      (document.getElementById(`${SURFACE_PREFIX_BY_COMMODITY[activeCommodity as CommodityType] ?? '_'}-sf-route`) as HTMLSelectElement | null)?.value || null,
+      deliveryTerms()),
     stamp: currentCADStamp(),
     fmt: (n: number) => _currFmt(n),
   });
@@ -21422,6 +21457,7 @@ async function loadRouteComparison(): Promise<void> {
     region: _mfgRegion,
   };
   if (programmeYearsValue()) body['programmeYears'] = programmeYearsValue();
+  if (deliveryTerms() === 'EXW') body['deliveryTerms'] = 'EXW';
   if (_cadMaterialLocked && _cadPinnedMaterialId) body['material'] = _cadPinnedMaterialId;
   if (cadOCCTGeometry?.blank?.blankHash) body['blankHash'] = cadOCCTGeometry.blank.blankHash;
   // One costing, one band: the reference row prints the band the card shows (report audit, Oct 2026).

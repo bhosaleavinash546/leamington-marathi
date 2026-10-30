@@ -1,0 +1,1426 @@
+{
+ "asOf": "2026-10-30",
+ "label": "Hungary rate book — 4-cluster average (Győr, Central Transdanubia, Kecskemét, Debrecen), 3 × 8 h",
+ "region": "HU",
+ "currency": "HUF",
+ "currencySymbol": "Ft",
+ "dir": "scripts/rate-refresh/hungary-2026-10",
+ "snapshot": "scripts/rate-refresh/hungary-2026-10/current-hungary-book.json",
+ "bookFile": "src/engine/country-books/hu.ts",
+ "bookConst": "HUNGARY_BOOK",
+ "fxPerGbp": 437.75,
+ "fxBasis": "MNB official rates (2026-10-29): €1 = Ft366.16, $1 = Ft328.84, £1 = Ft437.75",
+ "labour": {
+  "categories": {
+   "skilled": {
+    "localPerHr": 6008.05,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft6,008.05/h",
+    "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+    "research": "labour.skilled.fullyLoadedHufPerHr"
+   },
+   "semiskilled": {
+    "localPerHr": 5201.81,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft5,201.81/h",
+    "source": "https://magyarfizetesek.hu/",
+    "research": "labour.semiskilled.fullyLoadedHufPerHr"
+   },
+   "foundry": {
+    "localPerHr": 4587.3,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 591,374 ÷ 174 = 3,398.70. Pay 12 × 591,374 = 7,096,488 − sick-pay saving 30% × 80 h × 3,398.70 = 81,569 → 7,014,919; + shift allowance 30% × 3,398.70 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,019,610; taxable 8,034,530 + szocho 13% 1,044,489 = annual cost 9,079,018 ÷ 1728 productive h = 5,254.06. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft4,587.30/h",
+    "source": "https://berindex.hu/fizetes/",
+    "research": "labour.foundry.fullyLoadedHufPerHr"
+   },
+   "electronics": {
+    "localPerHr": 5201.81,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft5,201.81/h",
+    "source": "https://magyarfizetesek.hu/",
+    "research": "labour.electronics.fullyLoadedHufPerHr"
+   },
+   "inspector": {
+    "localPerHr": 6008.05,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft6,008.05/h",
+    "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+    "research": "labour.inspector.fullyLoadedHufPerHr"
+   },
+   "technician": {
+    "localPerHr": 6008.05,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft6,008.05/h",
+    "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+    "research": "labour.technician.fullyLoadedHufPerHr"
+   },
+   "supervisor": {
+    "localPerHr": 6008.05,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft6,008.05/h",
+    "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+    "research": "labour.supervisor.fullyLoadedHufPerHr"
+   },
+   "engineer": {
+    "localPerHr": 7279.78,
+    "basis": "HELD — no Hungarian engineer pay found this round (KSH FEOR 2141/2143 not reachable): the regional table's £16.63/h at £1 = Ft437.75 (UK × factor — the one labour rate not yet Hungary's own)",
+    "source": "",
+    "research": "labour.engineer (not found)"
+   }
+  },
+  "grades": {
+   "forge": {
+    "localPerHr": 4909.62,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 632,926 ÷ 174 = 3,637.51. Pay 12 × 632,926 = 7,595,112 − sick-pay saving 30% × 80 h × 3,637.51 = 87,300 → 7,507,812; + shift allowance 30% × 3,637.51 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,091,252; taxable 8,599,064 + szocho 13% 1,117,878 = annual cost 9,716,942 ÷ 1728 productive h = 5,623.23. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft4,909.62/h",
+    "source": "https://mennyitkeres-info.hu/feor-kodok/",
+    "research": "labour.forge.fullyLoadedHufPerHr"
+   },
+   "furnace": {
+    "localPerHr": 4587.3,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 591,374 ÷ 174 = 3,398.70. Pay 12 × 591,374 = 7,096,488 − sick-pay saving 30% × 80 h × 3,398.70 = 81,569 → 7,014,919; + shift allowance 30% × 3,398.70 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,019,610; taxable 8,034,530 + szocho 13% 1,044,489 = annual cost 9,079,018 ÷ 1728 productive h = 5,254.06. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft4,587.30/h",
+    "source": "https://berindex.hu/fizetes/",
+    "research": "labour.furnace.fullyLoadedHufPerHr"
+   },
+   "blow": {
+    "localPerHr": 5201.81,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft5,201.81/h",
+    "source": "https://magyarfizetesek.hu/",
+    "research": "labour.blow.fullyLoadedHufPerHr"
+   },
+   "roto": {
+    "localPerHr": 5201.81,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft5,201.81/h",
+    "source": "https://magyarfizetesek.hu/",
+    "research": "labour.roto.fullyLoadedHufPerHr"
+   },
+   "thermoform": {
+    "localPerHr": 5201.81,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 670,594 ÷ 174 = 3,853.99. Pay 12 × 670,594 = 8,047,128 − sick-pay saving 30% × 80 h × 3,853.99 = 92,496 → 7,954,632; + shift allowance 30% × 3,853.99 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,156,197; taxable 9,110,829 + szocho 13% 1,184,408 = annual cost 10,295,237 ÷ 1728 productive h = 5,957.89. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft5,201.81/h",
+    "source": "https://magyarfizetesek.hu/",
+    "research": "labour.thermoform.fullyLoadedHufPerHr"
+   },
+   "trim-router": {
+    "localPerHr": 6008.05,
+    "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft6,008.05/h",
+    "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+    "research": "labour.trimRouter.fullyLoadedHufPerHr"
+   }
+  },
+  "loadingIncluded": "Fully-loaded hourly cost INCLUDES: KSH total gross earnings (base + bonuses / premiums + allowances, as KSH measures them) for the occupation, 2025 national average indexed +8.4% to 2026 and scaled ×0.9406 to the four clusters; paid annual leave (27 days) and weekday public holidays inside the 12 monthly salaries; employer-paid sick leave at 70% for 10 days; the 30% shift allowance (Mt. 141) on the 50% of hours that fall 18:00–06:00 in rotating 3 × 8 h (shop-floor roles), carried into leave and sick pay; szocho 13% on all of it; divided by 1728 productive hours.",
+  "loadingNotIncluded": "NOT included (not shown to be standard by a source, or not verified): 13th-month salary (not statutory in Hungary; any annual bonus is already inside KSH total earnings); cafeteria / SZÉP-card benefits (common but not statutory; their tax would add on top); commuting reimbursement (statutory share of pass / ticket cost, Korm. rendelet 39/2010 — not verified); rehabilitation contribution for employers ≥ 25 staff short of the 5% disabled-employee quota (not verified); work clothing, occupational medicine, training time; overtime, weekend and holiday premiums; child additional leave; agency margins; the vocational-training contribution (believed abolished 2022).",
+  "short": "4-cluster, KSH total earnings + szocho, 1,728 productive h; engineer held"
+ },
+ "energy": {
+  "electricityLocalPerKwh": 55.02,
+  "gasLocalPerKwh": 29.73,
+  "basis": "Electricity Ft55.02/kWh ex-VAT: HUPX Cal-26 baseload ~€117/MWh = Ft42.47 + MV network (E.ON 2026 tariff, MEKH H2995/2025, at 70% of contracted kW — an assumption) Ft12.14 + energiaadó Ft0.415 — DERIVED; MAVIR system charges and KÁT/METÁR levies not found. Gas Ft29.73/kWh (GCV): TTF October 2026 contract as the commodity — a FLOOR (distribution and excise not found)",
+  "sources": [
+   {
+    "research": "energy.electricity.allIn",
+    "source": "derived",
+    "date": "2026"
+   },
+   {
+    "research": "energy.electricity.energyComponent",
+    "source": "https://serbia-energy.eu/market-fundamentals-central-south-east-europe-electricity-markets-11-march-2026/ ; https://serbia-energy.eu/hungary-hupx-day-ahead-electricity-prices-surge-in-january-2026/ ; https://serbia-energy.eu/hungary-prices-fall-sharply-as-volumes-decline-on-hupx-in-february-2026/ ; https://serbia-energy.eu/hungary-hupx-electricity-prices-rise-in-march-2026-as-intraday-trading-expands/",
+    "date": "Cal-26 as of March 2026; spot Jan–Mar 2026"
+   },
+   {
+    "research": "energy.electricity.networkCharges",
+    "source": "https://www.eon.hu/content/dam/eon/eon-hungary/documents/hatarozatok-szabalyzatok-aram/arak-tarifak/Aram_RHD_EON_20260101.pdf",
+    "date": "2026-01-01 tariff"
+   },
+   {
+    "research": "energy.electricity.levies",
+    "source": "https://nav.gov.hu/print/ugyfeliranytu/adokulcsok_jarulekmertekek/valorizalt-adomertekek/jovedeki-ado/adomertek/adomertekek",
+    "date": "validity period not shown in the snippet (valorised rate, assumed current)"
+   },
+   {
+    "research": "energy.gas.allIn",
+    "source": "derived",
+    "date": "2026-10"
+   }
+  ]
+ },
+ "machines": {
+  "hoursPerYear": 6072,
+  "hoursBasis": "3 × 8 h, Monday–Friday, Hungary's 2026 working calendar: 6072 h (253 days × 24 h)",
+  "shiftDepreciationFactor": 1.0,
+  "shiftBasis": "Hungarian straight-line tax depreciation (14.5% a year) — no shift uplift on capital",
+  "lifeYears": 6.9,
+  "financeRate": 0.077,
+  "financeBasis": "MNB base rate 5.5% (since 26 Aug 2026) + the Q1-2026 spread of new small HUF corporate loans (8.6%) over the base then ≈ 2.2 pp = 7.7% — DERIVED",
+  "ukFinanceRate": 0.04,
+  "maintenancePctOfCapex": 0.035,
+  "maintenanceBasis": "the library's own line build-up rule (3.5% of capex); no Hungarian norm found",
+  "rentLocalPerM2Month": 1996.5,
+  "rentBasis": "CBRE Q1 2026 prime big-box rent €5.5/m²/month (national — the four cluster rents were not found; Kecskemét €6.8–7.2 from a recruiter quoting CBRE) = Ft1996.5",
+  "ukRentGbpPerM2Yr": 110,
+  "capitalHeldFactor": 1.0,
+  "groups": [
+   {
+    "id": "cnc-vmc-eu",
+    "match": "^(mach-vmc3|mach-haas-vf2)$",
+    "refId": "mach-haas-vf2",
+    "refCapexLocal": 23798569,
+    "basis": "Haas VF-2 EU-series list €64,995 (machine only; delivery, installation and tooling not included) — an imported machine costs Hungary what it costs the EU = Ft23,798,569 (EUR 64,995 at the MNB rate)",
+    "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu ; https://machinetoolindex.com/machines/haas-vf-2",
+    "confidence": "Medium"
+   },
+   {
+    "id": "cnc-5axis",
+    "match": "^(mach-vmc5|mach-haas-umc500)$",
+    "refId": "mach-haas-umc500",
+    "refCapexLocal": 38665031,
+    "basis": "Haas UMC-500 US list $119,995 (no EU list found) = Ft38,665,031 (EUR 105,596 at the MNB rate)",
+    "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+    "confidence": "Low"
+   },
+   {
+    "id": "press-brake-eu",
+    "match": "^brake-",
+    "refId": "brake-trumpf-trubend3100",
+    "refCapexLocal": 49797760,
+    "basis": "TRUMPF TruBend 3100 (100 t × 3 m) NEW, offered at €136,000 FCA ex-VAT (2026, advertiser at TRUMPF Ditzingen); the other brakes sized by the book's relative capital = Ft49,797,760 (EUR 136,000 at the MNB rate)",
+    "source": "https://www.machineseeker.com/trumpf-trubend+3100/i-22233802",
+    "confidence": "Low"
+   },
+   {
+    "id": "waterjet-5ax",
+    "match": "^waterjet-5ax-composite$",
+    "refId": "waterjet-5ax-composite",
+    "refCapexLocal": 63392548,
+    "basis": "5-axis waterjet, public tender award 2022 (make not named) €173,128 = Ft63,392,548 (EUR 173,128 at the MNB rate)",
+    "source": "https://irl.eu-supply.com/ctm/Supplier/PublicTenders/ViewNotice/268046",
+    "confidence": "Low"
+   },
+   {
+    "id": "al-extrusion-line-hu",
+    "match": "^al-ext-press-\\d+t$",
+    "refId": "al-ext-press-5500t",
+    "refCapexLocal": 13071912000,
+    "basis": "Hydro Székesfehérvár new 12-inch automotive extrusion press, HUF 14.6 bn as reported (€35.7 M, announced 2022, in an existing building) — Hungarian evidence; the other direct presses sized by the book's relative capital (Vimetco 7-inch line €10 M agrees in order) = Ft13,071,912,000 (EUR 35,700,000 at the MNB rate)",
+    "source": "https://hydro.com/en/media/news/2022/hydro-invests-in-new-automotive-press-in-hungary ; https://alcircle.com/news/norsk-hydro-invests-in-a-new-automotive-press-in-hungary-87442 ; https://industryinsider.eu/?p=65071 ; https://dteurope.com/?p=59103",
+    "confidence": "Low"
+   },
+   {
+    "id": "heat-treat-furnace",
+    "match": "^heat-treat-furnace$",
+    "refId": "heat-treat-furnace",
+    "refCapexLocal": 44363804,
+    "basis": "Single-chamber heat-treat furnace, public purchase FY2025 $134,910 = Ft44,363,804 (USD 134,910 at the MNB rate)",
+    "source": "https://govcontractfinder.com/contracts/intent-to-sole-source-delta-h-single-chamber-heat-treat-oven-FA487725P0169",
+    "confidence": "Low"
+   },
+   {
+    "id": "smt-high-speed",
+    "match": "^smt-high-speed-line$",
+    "refId": "smt-high-speed-line",
+    "refCapexLocal": 700400000,
+    "basis": "High-speed SMT line £1.6 M (company investment, trade press) = Ft700,400,000 (GBP 1,600,000 at the MNB rate)",
+    "source": "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line",
+    "confidence": "Low"
+   }
+  ],
+  "notRebuiltBasis": "capex not found for Hungary: the machine's capital is the book's AT PAR (×1 — the same machine costs the same on the EU market; no unsourced country discount), under Hungary's operating model (3 × 8 h, 14.5% straight-line life, loan finance, rent, tariff, support at Hungarian wages)"
+ },
+ "materialFamilies": [
+  {
+   "family": "CR coil (DC01 / DC04)",
+   "anchorLocalPerKg": 316.728,
+   "anchorBasis": "NW Europe CRC €0.865/kg ex-works (13 Sep 2026) = Ft316.7/kg at €1 = Ft366.16; freight to a Hungarian plant not added",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "CR automotive grades",
+   "anchorLocalPerKg": 316.728,
+   "anchorBasis": "CR coil Ft316.7 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR structural",
+   "anchorLocalPerKg": 271.691,
+   "anchorBasis": "Fastmarkets N. Europe HRC €0.742/kg (12 Oct 2026) = Ft271.7/kg × the book's premium over HRPO; S355MC / S420MC extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrc",
+     "source": "https://eurometal.net/?p=43738",
+     "date": "2026-10-12"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.77,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-s355mc",
+    "mat-s420mc"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Coated sheet",
+   "anchorLocalPerKg": 314.898,
+   "anchorBasis": "NW Europe HDG €0.86/kg ex-works (13 Sep 2026) = Ft314.9/kg × the book's premium over DC01 GI",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hdg",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR pickled & oiled",
+   "anchorLocalPerKg": 304.645,
+   "anchorBasis": "HRC + a service-centre pickling extra = €0.832/kg = Ft304.6/kg — DERIVED",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrpo",
+     "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+     "date": "undated extra; HRC 2026-10-12"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hrpo"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "409L / 441 ferritic sheet",
+   "anchorLocalPerKg": 542.649,
+   "anchorBasis": "1.4512 alloy surcharge + an effective base equal to 304's = €1.482/kg = Ft542.6/kg — DERIVED; 441 at the book's premium over 409L",
+   "sources": [
+    {
+     "research": "ferrous.stainless.409L_CR",
+     "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429",
+     "date": "2026-07-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.85,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304 sheet",
+   "anchorLocalPerKg": 1014.263,
+   "anchorBasis": "304 CR 2B €2.77/kg delivered N. Europe incl. alloy surcharge (Eurometal, 7 Sep 2026) = Ft1014.3/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    },
+    {
+     "research": "ferrous.stainless.alloy_surcharge_1.4301_oct2026",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "301 spring strip",
+   "anchorLocalPerKg": 1014.263,
+   "anchorBasis": "304 sheet Ft1014.3 × the book's premium of 301 over 304 sheet",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.49,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss301-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "316L sheet",
+   "anchorLocalPerKg": 1547.026,
+   "anchorBasis": "316 CR €4.225/kg delivered N. Europe (Eurometal, 7 Sep 2026) = Ft1547.0/kg",
+   "sources": [
+    {
+     "research": "ferrous.stainless.316L_CR",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet",
+    "mat-ss316l"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "430 ferritic sheet",
+   "anchorLocalPerKg": 566.816,
+   "anchorBasis": "430 CR €1.548/kg — DERIVED: the October 1.4016 alloy surcharge + a base assumed equal to 304's",
+   "sources": [
+    {
+     "research": "ferrous.stainless.430_CR",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorLocalPerKg": 148.6,
+   "anchorBasis": "Treated ductile charge Ft148.6/kg (pig iron + steel scrap + returns + FeSiMg + inoculant; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research; Hungarian steel scrap Ft110/kg, 2026, agrees with German E3) + the book's grade premium in £/kg at Ft437.75/£ (alloy content)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJS-500-7",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.hu.steel_scrap_7204",
+     "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf",
+     "date": "2026 (tender reported by Telex 2026-02-14; application window from 2026-05-29 per the extract)"
+    },
+    {
+     "research": "ferrous.foundry.FeSi75",
+     "source": "https://api.argusmedia.com/articles/2840817",
+     "date": "2026-06-16"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Grey / malleable iron (charge)",
+   "anchorLocalPerKg": 133.7,
+   "anchorBasis": "Grey-iron charge Ft133.7/kg (pig iron + steel scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJL-250",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.hu.steel_scrap_7204",
+     "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf",
+     "date": "2026 (tender reported by Telex 2026-02-14; application window from 2026-05-29 per the extract)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorLocalPerKg": 117.0,
+   "anchorBasis": "Steel-foundry charge Ft117.0/kg (Hungarian steel scrap Ft110/kg — liquidator's 2026 valuation, agreeing with German E3 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GS-C25",
+     "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf",
+     "date": "2026"
+    },
+    {
+     "research": "ferrous.hu.steel_scrap_7204",
+     "source": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf",
+     "date": "2026 (tender reported by Telex 2026-02-14; application window from 2026-05-29 per the extract)"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast stainless (charge)",
+   "anchorLocalPerKg": 471.856,
+   "anchorBasis": "CF8 charged as 304 scrap €1.25/kg (CIF Rotterdam, mid-Sep 2026) ÷ 0.97 melt loss = Ft471.9/kg + the book's premium in £/kg (Mo / Ni / Cr)",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_scrap",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorLocalPerKg": 1170.297,
+   "anchorBasis": "0.20 × Ni Ft5161.1 (LME, 23 Oct 2026) + 0.02 × Cr Ft1108.0 (HC FeCr) + 0.78 × ductile charge Ft148.6",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+     "date": "2026-10-23"
+    },
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorLocalPerKg": 1934.689,
+   "anchorBasis": "0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 Ft461.4 + 0.59 × ductile charge",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+     "date": "2026-10-23"
+    },
+    {
+     "research": "ferrous.foundry.FeSi75",
+     "source": "https://api.argusmedia.com/articles/2840817",
+     "date": "2026-06-16"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "High-Cr white iron (charge)",
+   "anchorLocalPerKg": 357.789,
+   "anchorBasis": "0.23 × Cr Ft1108.0 + 0.77 × grey charge Ft133.7",
+   "sources": [
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary cast aluminium (ingot)",
+   "anchorLocalPerKg": 908.077,
+   "anchorBasis": "Fastmarkets DIN226 / A380 €2480.0/t delivered Europe = Ft908.1/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-a413",
+    "mat-a319",
+    "mat-lm4",
+    "mat-en-ac-46200"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary ADC12",
+   "anchorLocalPerKg": 908.077,
+   "anchorBasis": "DIN226 Ft908.1 (Jan 2026, stale)",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Primary-based cast aluminium",
+   "anchorLocalPerKg": 1329.5,
+   "anchorBasis": "AlSi7Mg = LME $3043 (23 Oct 2026) + Fastmarkets primary-foundry-alloy Si7 premium ddp Eastern Europe $1000.0/t (29 May 2026) = Ft1329.5/kg × the book's premium over LM25, never below A356",
+   "sources": [
+    {
+     "research": "nonferrous.al.lme",
+     "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+     "date": "2026-10-23"
+    },
+    {
+     "research": "nonferrous.al.a356_premium",
+     "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.98,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-lm25",
+    "mat-a365",
+    "mat-alsi10mg",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm6",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium forging stock (floor)",
+   "anchorLocalPerKg": 1363.206,
+   "anchorBasis": "Delivered 6063 billet Ft1363.2/kg (LME $3043 + 6063 billet premium $1102.5/t, Fastmarkets 28 Aug 2026) — forging stock is never below the billet it is cut from",
+   "sources": [
+    {
+     "research": "nonferrous.al.lme",
+     "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+     "date": "2026-10-23"
+    },
+    {
+     "research": "nonferrous.al.billet6063_premium",
+     "source": "https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+     "date": "2026-08-28"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-al6061-forge",
+    "mat-al6082-forge",
+    "mat-al2014-forge",
+    "mat-al7075-forge",
+    "mat-al2618-forge",
+    "mat-al7050-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium sheet and plate (floor)",
+   "anchorLocalPerKg": 1554.756,
+   "anchorBasis": "Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference)",
+   "sources": [
+    {
+     "research": "nonferrous.al.frp_europe_asp",
+     "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+     "date": "2025-04-01 to 2026-03-31"
+    },
+    {
+     "research": "nonferrous.al.amag_rolling_asp",
+     "source": "https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488",
+     "date": "2025 (calendar year)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aa5182",
+    "mat-aa5052",
+    "mat-aa5083",
+    "mat-aa6082-sheet",
+    "mat-aa5754-sheet",
+    "mat-aa6061-sheet",
+    "mat-aa6063-sheet",
+    "mat-aa3003-sheet",
+    "mat-al-busbar",
+    "mat-aa6016-t4",
+    "mat-aa6111-t4",
+    "mat-aa7075-t6",
+    "mat-aa1050-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorLocalPerKg": 4843.813,
+   "anchorBasis": "LME copper $14415 (23 Oct 2026) + Aurubis 2026 cathode premium $315.0 = Ft4843.8/kg delivered — bar and sheet are never below the copper they contain",
+   "sources": [
+    {
+     "research": "nonferrous.cu.spot",
+     "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+     "date": "2026-10-23"
+    },
+    {
+     "research": "nonferrous.cu.cathode_premium",
+     "source": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026 contract year (announced 2025-10-07)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper",
+    "mat-cu-hairpin"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Free-machining / forging brass rod (floor)",
+   "anchorLocalPerKg": 4090.007,
+   "anchorBasis": "MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW614N_rod",
+     "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-brass-cz121",
+    "mat-brass-cz122-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "70/30 and 63/37 brass sheet (floor)",
+   "anchorLocalPerKg": 4232.81,
+   "anchorBasis": "CuZn37 metal basis €11.56/kg (5 Oct 2026) — metal value before rolling",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW508L_sheet",
+     "source": "https://www.messingwerk.de/de/rohstoffpreise.html",
+     "date": "2026-10-05"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cz108-brass"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Phosphor / tin bronze (floor)",
+   "anchorLocalPerKg": 6066.925,
+   "anchorBasis": "Metal content 0.89 × Cu Ft4843.8 + 0.105 × Sn Ft16723.2 (LME, 23 Oct 2026)",
+   "sources": [
+    {
+     "research": "nonferrous.cu.spot",
+     "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+     "date": "2026-10-23"
+    },
+    {
+     "research": "nonferrous.sn.spot",
+     "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+     "date": "2026-10-23"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-bronze-pb1",
+    "mat-bronze-c905",
+    "mat-cusn12-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 3 (floor)",
+   "anchorLocalPerKg": 1315.847,
+   "anchorBasis": "Metal content 0.96 × SHG zinc Ft1321.1 (LME $3790 + Argus Rotterdam premium) + 0.04 × Al Ft1189.4; a Zamak premium was not found",
+   "sources": [
+    {
+     "research": "nonferrous.zn.spot",
+     "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+     "date": "2026-10-23"
+    },
+    {
+     "research": "nonferrous.zn.shg_premium",
+     "source": "https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+     "date": "2026-02-02"
+    },
+    {
+     "research": "nonferrous.al.dutyPaidPremium",
+     "source": "https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak3"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 5 (floor)",
+   "anchorLocalPerKg": 1351.074,
+   "anchorBasis": "Metal content 0.95 × zinc Ft1321.1 + 0.04 × Al + 0.01 × Cu Ft4843.8",
+   "sources": [
+    {
+     "research": "nonferrous.zn.spot",
+     "source": "https://www.westmetall.com/en/markdaten.php?action=showtable",
+     "date": "2026-10-23"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak5"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PP family",
+   "anchorLocalPerKg": 438.294,
+   "anchorBasis": "PP homo Ft438.3/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over PP homopolymer",
+   "sources": [
+    {
+     "research": "polymer.pp_homo",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W38 (mid-September 2026; page titled 'Plastic Prices September 2026')"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.99,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-pp-homo",
+    "mat-pp",
+    "mat-pp-impact",
+    "mat-pp-bm",
+    "mat-pp-ext-sheet",
+    "mat-ppr-pipe",
+    "mat-pp-roto",
+    "mat-pp-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PE family",
+   "anchorLocalPerKg": 461.728,
+   "anchorBasis": "HDPE film Ft461.7/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over HDPE",
+   "sources": [
+    {
+     "research": "polymer.hdpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W38"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hdpe",
+    "mat-hdpe-bm",
+    "mat-hdpe-fuel-coex",
+    "mat-pe100-pipe",
+    "mat-pe80-pipe",
+    "mat-hdpe-profile",
+    "mat-hdpe-roto",
+    "mat-xlpe-roto",
+    "mat-fr-pe-roto",
+    "mat-foam-pe-roto",
+    "mat-cond-pe-roto",
+    "mat-hdpe-tf",
+    "mat-pex-pipe"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LDPE family",
+   "anchorLocalPerKg": 478.205,
+   "anchorBasis": "LDPE Ft478.2/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over LDPE",
+   "sources": [
+    {
+     "research": "polymer.ldpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W38"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.09,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ldpe",
+    "mat-ldpe-bm",
+    "mat-ldpe-tube",
+    "mat-ldpe-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LLDPE family",
+   "anchorLocalPerKg": 456.602,
+   "anchorBasis": "LLDPE Ft456.6/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over LLDPE",
+   "sources": [
+    {
+     "research": "polymer.lldpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lldpe",
+    "mat-lldpe-bm",
+    "mat-lldpe-roto"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PVC family",
+   "anchorLocalPerKg": 356.64,
+   "anchorBasis": "S-PVC resin Ft356.6/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium of each compound over uPVC, never below the resin",
+   "sources": [
+    {
+     "research": "polymer.pvc",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W38"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.76,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-upvc",
+    "mat-fpvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe",
+    "mat-pvc-cable",
+    "mat-upvc-window-profile",
+    "mat-pvcp-profile",
+    "mat-pvc-foam",
+    "mat-rpvc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ABS family",
+   "anchorLocalPerKg": 674.467,
+   "anchorBasis": "ABS Ft674.5/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over ABS",
+   "sources": [
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W38"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.62,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-abs",
+    "mat-abs-ext-sheet",
+    "mat-abs-tf",
+    "mat-abs-fr"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "GPPS",
+   "anchorLocalPerKg": 561.689,
+   "anchorBasis": "GPPS Ft561.7/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over GPPS",
+   "sources": [
+    {
+     "research": "polymer.ps",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W38"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.37,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gpps",
+    "mat-gpps-ext"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HIPS",
+   "anchorLocalPerKg": 613.684,
+   "anchorBasis": "HIPS Ft613.7/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) — the book had HIPS at the GPPS price",
+   "sources": [
+    {
+     "research": "polymer.hips",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W38"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hips"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC family",
+   "anchorLocalPerKg": 986.52,
+   "anchorBasis": "PC Ft986.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc",
+    "mat-pc-glazing",
+    "mat-pc-bm",
+    "mat-pc-ext-sheet",
+    "mat-pc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA6 family",
+   "anchorLocalPerKg": 878.003,
+   "anchorBasis": "PA6 Ft878.0/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6",
+   "sources": [
+    {
+     "research": "polymer.pa6",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.68,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-bm",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA66",
+   "anchorLocalPerKg": 1131.21,
+   "anchorBasis": "PA66 Ft1131.2/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026)",
+   "sources": [
+    {
+     "research": "polymer.pa66",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PBT",
+   "anchorLocalPerKg": 1216.708,
+   "anchorBasis": "PBT Ft1216.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026)",
+   "sources": [
+    {
+     "research": "polymer.pbt",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pbt"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PMMA family",
+   "anchorLocalPerKg": 1213.42,
+   "anchorBasis": "PMMA Ft1213.4/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA",
+   "sources": [
+    {
+     "research": "polymer.pmma",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.4,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pmma",
+    "mat-pmma-ext-sheet",
+    "mat-pmma-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PEEK family",
+   "anchorLocalPerKg": 29767.0,
+   "anchorBasis": "PEEK ≈ Ft29767.0/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin)",
+   "sources": [
+    {
+     "research": "polymer.peek",
+     "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets",
+     "date": "2026-06-30 (9M FY2026)"
+    }
+   ],
+   "method": "ladder",
+   "base": 76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-peek",
+    "mat-peek-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "POM",
+   "anchorLocalPerKg": 973.986,
+   "anchorBasis": "POM Ft974.0/kg ex-VAT (Plastech October 2026 offer average — offers run above market settlements, so an upper reference) × the book's premium over POM",
+   "sources": [
+    {
+     "research": "polymer.pom",
+     "source": "https://www.plasticportal.eu/polymer-prices",
+     "date": "2026-10"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pom",
+    "mat-pom-rod"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC/ABS (floor)",
+   "anchorLocalPerKg": 892.904,
+   "anchorBasis": "Resin content 0.7 × PC + 0.3 × ABS = Ft892.9/kg — the book's PC/ABS sat below its own resins",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    },
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W38"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc-abs"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon fabric (floor)",
+   "anchorLocalPerKg": 11180.56,
+   "anchorBasis": "Carbon fibre (12K, generic) $34/kg (IMARC Germany, Mar 2026) = Ft11180.6/kg — a woven fabric is never below the fibre it is woven from",
+   "sources": [
+    {
+     "research": "composite.cf_12k",
+     "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+     "date": "2026-03"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cf-dry-3k"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Natural rubber (raw)",
+   "anchorLocalPerKg": 832.623,
+   "anchorBasis": "TSR20 benchmark $2.532/kg (28 Sep 2026) = Ft832.6/kg — FOB Asia, freight to Hungary NOT added; for the book's raw NR SMR20 line; compounds at par",
+   "sources": [
+    {
+     "research": "rubber.nr",
+     "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html",
+     "date": "2026-09-28"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "materials at par": "no Hungarian or European price found this round (alloy engineering and stainless bar, electrical steel, wrought Al sheet grades beyond the floor, magnesium, titanium / nickel, filled / FR compounds, TPE / TPU, rubber compounds, composites, stock shapes) — priced at the book's own European-market price, ×1: a traded material costs Hungary what it costs the European market, and the 0.97 / resin factors this replaces had no source"
+ },
+ "heldMaterialsAtPar": {
+  "basis": "no Hungarian or European price found this round (alloy engineering and stainless bar, electrical steel, wrought Al sheet grades beyond the floor, magnesium, titanium / nickel, filled / FR compounds, TPE / TPU, rubber compounds, composites, stock shapes) — priced at the book's own European-market price, ×1: a traded material costs Hungary what it costs the European market, and the 0.97 / resin factors this replaces had no source"
+ },
+ "noLibraryLabourRows": true,
+ "alBilletPremiumUsdPerT": {
+  "value": 1102,
+  "current": 1080,
+  "basis": "6063 billet premium $1102.5/t over LME (Fastmarkets, 28 Aug 2026; DDP North Germany — no Central-European print found)",
+  "research": "nonferrous.al.billet6063_premium",
+  "source": "https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+  "date": "2026-08-28"
+ }
+}

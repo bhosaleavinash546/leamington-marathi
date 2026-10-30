@@ -1,0 +1,253 @@
+{
+  "domain": "energy-operating",
+  "researched": "2026-10-30",
+  "items": [
+    {
+      "key": "fx.eurHuf.working",
+      "value": 363,
+      "unit": "HUF per EUR",
+      "currency": "HUF",
+      "basis": "Market rate as quoted by a currency-converter page in July 2026: ~363 HUF/EUR (previous close 361.45; 52-week range 348.51–400.49). Cross-check: EUR/HUF ~367 after the April 2026 election (TMGM market news). Used for every EUR → HUF conversion in this file.",
+      "source": "https://pluang.com/en/tools/currency-converter/eur-huf ; https://www.tmgm.com/pt/analysis/market-news/article/eur-huf-drops-to-february-2024-lows-as-hungary-election-lifts-forint-202604131041",
+      "date": "2026-07 (converter); 2026-04-13 (TMGM)",
+      "kind": "market quote (NOT the MNB official rate)",
+      "notes": "The MNB official October 2026 EUR/HUF rate was NOT reached: mnb.hu, ECB and every Hungarian site are blocked by this session's egress proxy (403 on CONNECT), and no search result printed the October 2026 MNB figure. Re-convert every Ft figure below with the MNB rate the labour / energy researcher fetched (multiply the EUR figure by that rate). Book cross-check: book GBP/HUF 428.2."
+    },
+    {
+      "key": "energy.electricity.energyComponent",
+      "value": 42.47,
+      "unit": "Ft/kWh ex-VAT (wholesale baseload)",
+      "currency": "HUF",
+      "basis": "HUPX Cal-26 baseload ~EUR 117/MWh (March 2026 market note) × 363 / 1000 = 42.47 Ft/kWh. Cross-check: HUPX day-ahead 2026 monthly averages Jan 150.41, Feb 113.29, Mar 117.4 EUR/MWh → Q1 mean (150.41 + 113.29 + 117.4) / 3 = 127.03 EUR/MWh = 46.11 Ft/kWh. Oct 2025 122.09, Sep 2025 101.93 EUR/MWh.",
+      "source": "https://serbia-energy.eu/market-fundamentals-central-south-east-europe-electricity-markets-11-march-2026/ ; https://serbia-energy.eu/hungary-hupx-day-ahead-electricity-prices-surge-in-january-2026/ ; https://serbia-energy.eu/hungary-prices-fall-sharply-as-volumes-decline-on-hupx-in-february-2026/ ; https://serbia-energy.eu/hungary-hupx-electricity-prices-rise-in-march-2026-as-intraday-trading-expands/",
+      "date": "Cal-26 as of March 2026; spot Jan–Mar 2026",
+      "kind": "exchange settlement (as reported by trade press)",
+      "notes": "Trade-press reports of HUPX data, read from search snippets (hupx.hu and serbia-energy.eu pages could not be opened — proxy). No HUPX monthly average after March 2026 found (Apr 2026 daily prints e.g. 103.01 on 9 Apr, 89.82 on 30 Apr). The autumn 2026 gas shock (TTF Oct-26 ~EUR 82, see energy.gas.commodity) probably lifted Hungarian power after March; NOT measured. Supplier margin, balancing / profile cost not found."
+    },
+    {
+      "key": "energy.electricity.networkCharges",
+      "value": 12.14,
+      "unit": "Ft/kWh ex-VAT (distribution, MV connection — CONDITIONAL reading)",
+      "currency": "HUF",
+      "basis": "E.ON 2026 system-usage tariff table (MEKH decision H2995/2025, from 1 Jan 2026), row 'Középfeszültségű csatlakozás' prints 216,504 / 15,924 / 8.39 and reactive 3.95 Ft/kVArh. IF read as basic fee 216,504 Ft/connection point/yr, capacity fee 15,924 Ft/kW/yr and volumetric 8.39 Ft/kWh: capacity term at an assumed 70% average draw of contracted kW over the 6,072 running hours = 15,924 / (6,072 × 0.70) = 3.75 Ft/kWh; + 8.39 = 12.14 Ft/kWh (basic fee negligible per kWh for a MW-scale plant).",
+      "source": "https://www.eon.hu/content/dam/eon/eon-hungary/documents/hatarozatok-szabalyzatok-aram/arak-tarifak/Aram_RHD_EON_20260101.pdf",
+      "date": "2026-01-01 tariff",
+      "kind": "regulator-approved DSO tariff (MEKH decision), as extracted by search",
+      "notes": "UNCERTAIN: the search's PDF text extraction scrambled the column headings — the mapping of 15,924 and 8.39 to Ft/kW/yr and Ft/kWh is my reading, not confirmed; the 70% draw factor is an assumption, not sourced. Transmission / system-service charges (MAVIR átviteli rendszerirányítási díj, rendszerszintű szolgáltatások) NOT found and may or may not be in the 8.39. Structure per 10/2024 (XI.14.) MEKH rendelet; residential network fees frozen for 2026 (does not apply to MV industry). From 2027 a minimum capacity fee applies mainly to MV/HV users (2024 press). Verify against the PDF before use."
+    },
+    {
+      "key": "energy.electricity.levies",
+      "value": 0.415,
+      "unit": "Ft/kWh (energiaadó, excise on electricity)",
+      "currency": "HUF",
+      "basis": "NAV valorised tax rates page: energiaadó on electricity 415 Ft/MWh = 0.415 Ft/kWh",
+      "source": "https://nav.gov.hu/print/ugyfeliranytu/adokulcsok_jarulekmertekek/valorizalt-adomertekek/jovedeki-ado/adomertek/adomertekek",
+      "date": "validity period not shown in the snippet (valorised rate, assumed current)",
+      "kind": "statute / tax authority notice",
+      "notes": "Page not opened (proxy); the period the 415 Ft/MWh applies to was not visible — verify. KÁT / METÁR and other pénzeszköz levies (szénipari, kedvezményes árú) per kWh for 2026 NOT found; CMS (2025) reports KÁT/METÁR rule changes intended to relieve industrial consumers (https://cms.law/en/hun/legal-updates/hungary-s-changes-to-kat-metar-support-scheme-rules-to-benefit-industrial-energy-consumers) but gives no Ft/kWh."
+    },
+    {
+      "key": "energy.electricity.allIn",
+      "value": 55.02,
+      "unit": "Ft/kWh ex-VAT",
+      "currency": "HUF",
+      "basis": "Build-up: energy 42.47 (HUPX Cal-26 EUR 117/MWh) + network 12.14 (conditional reading of the E.ON MV row, 70% draw) + energiaadó 0.415 = 55.02 Ft/kWh (= EUR 0.152/kWh at 363). Sourced-only FLOOR (energy + energiaadó, no network): 42.89 Ft/kWh. On the Q1-2026 spot mean (46.11) instead of Cal-26: 58.67 Ft/kWh.",
+      "source": "derived",
+      "date": "2026",
+      "kind": "derived",
+      "notes": "Excludes supplier margin, balancing, transmission / system services and KÁT-type levies (none found) — so likely still a little low; also excludes any autumn-2026 wholesale rise. Range of evidence ≈ 43–59 Ft/kWh. Current book 49.24 Ft/kWh (UK £0.115 × 428.2) sits inside it: not shown wrong. Eurostat cross-check NOT reached (see energy.electricity.eurostat)."
+    },
+    {
+      "key": "energy.electricity.eurostat",
+      "value": null,
+      "unit": "EUR/kWh excl. VAT and recoverable taxes",
+      "currency": "EUR",
+      "basis": "Hungary non-household band IC / ID, 2025-S2 (nrg_pc_205): NOT found — no search result printed the Hungary value and ec.europa.eu is blocked by the proxy. EU average for medium non-household users (500–2,000 MWh = band IC) H2 2025 = EUR 0.1837/kWh (EUR 18.37 per 100 kWh, −3.5% on H1) = 66.68 Ft/kWh at 363.",
+      "source": "https://www.brusselstimes.com/2121012/eus-non-household-electricity-costs-drop-3-5-yet-rates-surge-in-some-nations",
+      "date": "2025-S2 (published 2026-05)",
+      "kind": "official statistics (Eurostat, via press)",
+      "notes": "EU average only, not Hungary. A Statista page cites Eurostat 2023 non-household (<2,000 MWh) Hungary at EUR 0.2885/kWh — the EU's highest then (https://statista.com/statistics/1046526/non-household-electricity-price-european-union-eu28-country) — old and pre-normalisation."
+    },
+    {
+      "key": "energy.gas.commodity",
+      "value": 29.73,
+      "unit": "Ft/kWh ex-VAT (GCV, wholesale)",
+      "currency": "HUF",
+      "basis": "PROXY — TTF October-2026 delivery contract EUR 81.91/MWh (late September 2026; it was 31.47 on 27 Feb 2026) × 363 / 1000 = 29.73 Ft/kWh. Cross-checks: French PEG Nov-26 EUR 83.32/MWh at the 20 Oct 2026 close (30.25 Ft/kWh), Dec-26 83.64; TTF EUR 53.3 early April, 49.23 on 15 May 2026; Belgian average variable gas price January 2026 EUR 34.01/MWh (12.35 Ft/kWh).",
+      "source": "https://www.economiematin.fr/gaz-prix-augmente-encore-6-octobre-2026 ; https://selectra.info/energie/actualites/prix-gaz/2026-10-21 ; https://www.elexys.be/sites/default/files/marketupdates/05022026---elexys_market_update.pdf ; https://tradingeconomics.com/commodity/eu-natural-gas/news/516259",
+      "date": "2026-09 (TTF Oct-26); 2026-10-20 (PEG)",
+      "kind": "exchange settlement (as reported by press)",
+      "notes": "CEEGEX 2026 prices NOT found (latest CEEGEX figures in results were 2023/2024). Hungary normally prices at THE / TTF plus a cross-border transport spread — spread not found. The spring–autumn 2026 rise follows Middle-East / Qatar LNG disruption (press). A plant that bought 2026 gas forward in 2025 pays less than this October spot level; the book is 'effective October 2026', so the October contract is used — choose deliberately."
+    },
+    {
+      "key": "energy.gas.distribution",
+      "value": null,
+      "unit": "Ft/kWh",
+      "currency": "HUF",
+      "basis": "NOT FOUND — no 2026 MEKH gas distribution tariff for a non-household (>100 m³/h) customer was reached within the search budget.",
+      "source": "",
+      "date": "",
+      "kind": "",
+      "notes": ""
+    },
+    {
+      "key": "energy.gas.allIn",
+      "value": 29.73,
+      "unit": "Ft/kWh ex-VAT (GCV) — FLOOR",
+      "currency": "HUF",
+      "basis": "Sourced components only: commodity 29.73 (TTF Oct-26 proxy) + distribution (not found) + gas energiaadó (not found) = 29.73 Ft/kWh (= EUR 0.0819/kWh). On the January-2026 price level it would be 12.35 Ft/kWh + network.",
+      "source": "derived",
+      "date": "2026-10",
+      "kind": "derived",
+      "notes": "A FLOOR at October-2026 wholesale: distribution, capacity booking, transport spread, supplier margin and gas excise are missing. Current book 29.55 Ft/kWh equals the October commodity alone — low if October prices hold, high on the H1-2026 level; not shown wrong either way. Eurostat EU average I3 H2 2025 EUR 6.05/100 kWh = 21.96 Ft/kWh (see energy.gas.eurostat)."
+    },
+    {
+      "key": "energy.gas.eurostat",
+      "value": null,
+      "unit": "EUR/kWh excl. VAT and recoverable taxes",
+      "currency": "EUR",
+      "basis": "Hungary band I3 2025-S2 (nrg_pc_203): NOT found. Eurostat news: EU average non-household (band I3, 10,000–100,000 GJ) H2 2025 EUR 6.05 per 100 kWh (H1 6.60, −8.3%); Hungary among the largest falls, −14.4% H2 on H1 (value not printed).",
+      "source": "https://ec.europa.eu/eurostat/web/products-eurostat-news/w/ddn-20260508-3",
+      "date": "2025-S2 (published 2026-05-08)",
+      "kind": "official statistics (Eurostat news release, via search)",
+      "notes": "EU average 6.05 c/kWh × 363 = 21.96 Ft/kWh — before the 2026 price rise."
+    },
+    {
+      "key": "hours.annual",
+      "value": 6072,
+      "unit": "h/yr (3 × 8 h, Monday–Friday, 2026)",
+      "currency": "",
+      "basis": "2026 has 261 Mon–Fri days. Statutory holidays (Mt. 102 §) on weekdays: 1 Jan (Thu), 3 Apr Good Friday, 6 Apr Easter Monday, 1 May (Fri), 25 May Whit Monday, 20 Aug (Thu), 23 Oct (Fri), 25 Dec (Fri) = 8 (15 Mar, Easter Sunday 5 Apr, Whit Sunday 24 May, 1 Nov fall on Sunday; 26 Dec on Saturday). Official swaps: rest days Fri 2 Jan, Fri 21 Aug, Thu 24 Dec, worked Saturdays 10 Jan, 8 Aug, 12 Dec — net zero for a Mon–Fri plant (3 days off, 3 Saturdays worked). 261 − 8 − 3 + 3 = 253 days × 24 h = 6,072 h.",
+      "source": "https://financera.hu/szemelyes-penzugyek/munkaszuneti-napok/ ; https://www.penzcentrum.hu/karrier/20250524/ledolgozos-szombatok-2026-ban-itt-van-minden-athelyezett-munkanap-1179148",
+      "date": "calendar year 2026",
+      "kind": "statute / ministerial decree (as reported by press); weekday arithmetic my own",
+      "notes": "Weekday count and holiday weekdays computed from the calendar (Easter 2026 = 5 April). Without the Saturday swaps (plant does not work the swapped Saturdays) 250 × 24 = 6,000 h. Current book uses 4,000 h a year (UK basis, machines-list.txt) — 34% fewer hours than a 3 × 8 Mon–Fri Hungarian plant runs."
+    },
+    {
+      "key": "life.machinery",
+      "value": 6.9,
+      "unit": "years (TAX life implied by the 14.5% straight-line rate)",
+      "currency": "",
+      "basis": "Act LXXXI of 1996 (Tao. tv.), Annex 2 chapter IV: machines and equipment at 33%, 20%, 10% or 7% where specifically listed, and 14.5% for machinery not listed under any of the enumerated items; 100 / 14.5 = 6.9 years. 33% → 3.0 years applies only to the enumerated items.",
+      "source": "https://adozona.hu/cimke/le%c3%adr%c3%a1si+kulcs/2",
+      "date": "rule in force (date of the Q&A pages not shown)",
+      "kind": "statute (as summarised by a tax portal)",
+      "notes": "Whether metal-cutting machine tools appear on the 33% list was NOT confirmed — I take general production machinery as the 14.5% default. Annex 1 point 9 allows 50% first-year depreciation on previously unused assets in the 33% and 14.5% classes (per the same portal). Accounting (Act C of 2000) practice life for machinery: NOT found."
+    },
+    {
+      "key": "finance.mnbBase",
+      "value": 5.5,
+      "unit": "% p.a.",
+      "currency": "",
+      "basis": "MNB cut the base rate by 25 bp from 5.75% to 5.50%, effective 26 Aug 2026 (fourth cut of 2026); an October 2026 article states the last cut was in August (to 5.50%, unanimous) — i.e. September held. Path: 6.50% Jan 2026 hold; 6.25% Apr–May (O/N corridor 5.25–7.25%); 5.75% from 22 Jul 2026.",
+      "source": "https://currencythoughts.com/2026/08/25/another-hungarian-central-bank-interest-rate-cut-3/ ; https://infostart.hu/gazdasag/2026/10/20/itt-az-mnb-kamatdontese ; https://xpatloop.com/channels/2026/07/central-bank-cuts-base-rate-in-hungary-to-5-point-75-percent.html",
+      "date": "2026-08-26 (latest confirmed); 20 Oct 2026 decision NOT seen",
+      "kind": "regulator decision (as reported by press)",
+      "notes": "The outcome of the 20 October 2026 Monetary Council meeting was not in any result; mnb.hu not reachable."
+    },
+    {
+      "key": "finance.bubor3m",
+      "value": null,
+      "unit": "% p.a.",
+      "currency": "",
+      "basis": "NOT FOUND — no 2026 3-month BUBOR fixing returned (Széchenyi liquidity loans switch to 3M BUBOR from June 2026 per press, rate not given).",
+      "source": "",
+      "date": "",
+      "kind": "",
+      "notes": ""
+    },
+    {
+      "key": "finance.corporateInvestmentLoan",
+      "value": 8.6,
+      "unit": "% p.a.",
+      "currency": "",
+      "basis": "MNB 'Hitelezési folyamatok' 2026 Q1: average rate on NEW small-amount corporate HUF loans (floating or ≤ 1-year fixation) 8.6% in Q1 2026 (8.5% a year earlier). New non-overdraft corporate contracts HUF 1,293 bn in Q1 2026 (+72% y/y).",
+      "source": "https://www.mnb.hu/letoltes/hitelezesi-folyamatok-flyer-2026q1.pdf",
+      "date": "2026-Q1",
+      "kind": "official statistics (MNB)",
+      "notes": "NOT the category asked: the >1-year / investment-loan average was not printed in any result. 'Small-amount' loans (MNB definition: below EUR 1m) carry higher margins than a large supplier's. Latest month after Q1 not found."
+    },
+    {
+      "key": "finance.machineryLoan",
+      "value": 7.7,
+      "unit": "% p.a. (derived)",
+      "currency": "",
+      "basis": "Spread method: Q1-2026 new small corporate HUF loans 8.6% when the base rate was ~6.4% on average (6.50% January, 6.25% by spring) → spread ≈ 8.6 − 6.4 = 2.2 pp; applied to the current 5.50% base rate: 5.50 + 2.2 = 7.7%.",
+      "source": "derived from https://www.mnb.hu/letoltes/hitelezesi-folyamatok-flyer-2026q1.pdf and finance.mnbBase",
+      "date": "2026-10",
+      "kind": "derived",
+      "notes": "The Q1 base-rate average (~6.4%) is approximate (date of the 6.50 → 6.25 cut not confirmed). A mid-size Tier-2 borrowing over 5–7 years would likely pay this or a little less; state-subsidised schemes (Széchenyi, MNB/EXIM) are cheaper. EUR-denominated borrowing by exporters (EURIBOR + margin): NOT found within the search budget."
+    },
+    {
+      "key": "rent.gyor",
+      "value": null,
+      "unit": "EUR/m²/month",
+      "currency": "EUR",
+      "basis": "NOT FOUND — CBRE Q2 2026 says Győr (with Polgár and Szeged) had a SHORTAGE of immediately available industrial space, no rent printed.",
+      "source": "https://www.property-forum.eu/news/hungarys-industrial-stock-tops-65-million-sqm-in-q2-2026/21780",
+      "date": "2026-Q2",
+      "kind": "survey (broker market report)",
+      "notes": ""
+    },
+    {
+      "key": "rent.szekesfehervar",
+      "value": null,
+      "unit": "EUR/m²/month",
+      "currency": "EUR",
+      "basis": "NOT FOUND — CBRE Q2 2026 says Székesfehérvár had among the HIGHEST availability, no rent printed.",
+      "source": "https://www.property-forum.eu/news/hungarys-industrial-stock-tops-65-million-sqm-in-q2-2026/21780",
+      "date": "2026-Q2",
+      "kind": "survey (broker market report)",
+      "notes": ""
+    },
+    {
+      "key": "rent.kecskemet",
+      "value": 7.0,
+      "unit": "EUR/m²/month (prime, midpoint) — WEAK",
+      "currency": "EUR",
+      "basis": "Recruitment-firm article citing 'CBRE's index': Kecskemét prime rents EUR 6.80–7.20/m²/month (+14% y/y); midpoint 7.00 × 363 = 2,541 Ft/m²/month",
+      "source": "https://kitalent.com/articles/article-kecskemet-logistics-talent-market/",
+      "date": "article undated (2026 per search)",
+      "kind": "secondary (recruiter quoting a broker)",
+      "notes": "Above CBRE's own national prime big-box rent (EUR 5.5, Q1 2026) — not verified against CBRE; treat as cross-check only."
+    },
+    {
+      "key": "rent.debrecen",
+      "value": null,
+      "unit": "EUR/m²/month",
+      "currency": "EUR",
+      "basis": "NOT FOUND",
+      "source": "",
+      "date": "",
+      "kind": "",
+      "notes": ""
+    },
+    {
+      "key": "rent.clusterAvg",
+      "value": 1996.5,
+      "unit": "Ft/m²/month (NATIONAL proxy, not a four-city mean)",
+      "currency": "HUF",
+      "basis": "The four-city mean cannot be computed (three cities not found). Proxy: CBRE Hungary Q1 2026 prime big-box rent EUR 5.5/m²/month × 363 = 1,996.5 Ft/m²/month. Other readings: CBRE Q2 2026 new A-grade logistics headline rents 'from EUR 4.95' (= 1,797 Ft); prime city-logistics EUR 6.7 (urban, not a factory); Kecskemét (weak) EUR 7.0.",
+      "source": "https://mktgdocs.cbre.com/2299/e69a5ac8-bba5-4401-baa9-3f964f410621-1323972446/HU_Industrial_Figures_Q1_2026.pdf ; https://www.cbre.com/insights/figures/hungary-industrial-figures-q1-2026",
+      "date": "2026-Q1",
+      "kind": "survey (broker market report)",
+      "notes": "Prime big-box warehouse rent, dominated by the Budapest ring; regional manufacturing space is usually at or below it; service charge excluded; national vacancy 8.8%. Use the MNB rate when merged."
+    },
+    {
+      "key": "maintenancePct",
+      "value": null,
+      "unit": "% of capex / yr",
+      "currency": "",
+      "basis": "not found (no Hungarian or European source giving machine maintenance as % of capex was reached within the search budget)",
+      "source": "",
+      "date": "",
+      "kind": "",
+      "notes": "Book keeps its UK basis (maintenance in buildupHuf)."
+    }
+  ],
+  "notes": [
+    "Every Hungarian site, mnb.hu, ec.europa.eu, ECB, hupx.hu, eon.hu and njt.jog.gov.hu were blocked by this session's egress proxy (403 / ENOTFOUND); all figures are as quoted by web-search results for the cited URLs and should be verified on the page before use.",
+    "FX: EUR 1 = 363 Ft is a July-2026 MARKET quote, not the MNB October figure; re-convert with the MNB rate from the labour / energy research.",
+    "20 web searches used (task limit 20)."
+  ]
+}

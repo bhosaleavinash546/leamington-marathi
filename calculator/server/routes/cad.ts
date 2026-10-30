@@ -2849,6 +2849,7 @@ router.post('/compare-routes', requireAuth, reanalyzeLimiter, asyncRoute(async (
     answers: { ...answersFromContext(forcedMaterial, filename), ...answersIn },
     region, annualVolume: parseFloat(req.body?.annualVolume) || 100000,
     ...(programmeYears ? { programmeYears } : {}),
+    ...(req.body?.deliveryTerms === 'EXW' ? { deliveryTerms: 'EXW' as const } : {}),
     acknowledge: parseAcknowledged(req.body?.acknowledged),
     baseBook: recomputeMachineRates(resolveActiveRateBook()),
     ladder: req.body?.ladder !== false,

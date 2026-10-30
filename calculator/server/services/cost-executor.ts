@@ -43,6 +43,8 @@ export interface CostToolInput {
   marginPct?: number;        // default 0.08
   packagingPerPart?: number; // default 0.15
   logisticsPerPart?: number; // default 0.25
+  /** Delivery terms of the price — 'EXW' carries no freight (the caller passes logistics 0); printed by the reports. */
+  deliveryTerms?: 'DAP' | 'EXW';
   /**
    * The rates to cost on. Defaults to the built-in UK book.
    *
@@ -214,6 +216,7 @@ export function executeCalculateCost(input: CostToolInput): CostToolResult {
       tooling:          drivers.tooling,
       packagingPerPart,
       logisticsPerPart,
+      ...(input.deliveryTerms ? { deliveryTerms: input.deliveryTerms } : {}),
       overheadPct,
       marginPct,
       // A supplier's price (PCB fabrication) already contains their overhead

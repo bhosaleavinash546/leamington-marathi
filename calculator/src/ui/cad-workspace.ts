@@ -126,11 +126,13 @@ export function answerChipsHtml(chips: AnswerChip[], withChange: boolean): strin
  * until then; machining and gear have no finishing model, so there it stays "not asked". Each line is something no
  * rule on this route prices — checked against the rule packs, not guessed.
  */
-export function notIncludedFor(commodity: string, finishRoute: string | null = null): string[] {
+export function notIncludedFor(commodity: string, finishRoute: string | null = null, terms: 'DAP' | 'EXW' = 'DAP'): string[] {
   const common = [
     'Assembly, sub-components and fasteners',
     'PPAP, first-article inspection, gauges and fixtures for inspection',
-    'Freight beyond the default delivery in the costing country; duty and Incoterms',
+    terms === 'EXW'
+      ? 'Freight to your plant, insurance and duty — the price is ex-works (EXW): the buyer collects at the supplier\'s gate'
+      : 'Freight beyond the default delivery in the costing country; duty and Incoterms',
     'Packaging beyond the size-based default',
     'Engineering changes, prototypes and programme management',
   ];

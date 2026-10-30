@@ -27,6 +27,7 @@ import { chromium, type Page } from 'playwright';
 import Database from 'better-sqlite3';
 import jwt from 'jsonwebtoken';
 import * as XLSX from 'xlsx';
+import { REGIONAL_DATA } from '../src/engine/regional-rates.js';
 
 interface PartSpec { label: string; file: string; answers: Record<string, string>; programmeYears: number; annual: number }
 const ROOT = resolve(import.meta.dirname, '..');
@@ -49,7 +50,18 @@ const OUT = process.env.CV_TRACE_OUT ?? join(tmpdir(), 'cad-to-cost-trace');
 mkdirSync(OUT, { recursive: true });
 const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
 const freePort = () => new Promise<number>((res, rej) => { const s = createServer(); s.once('error', rej); s.listen(0, '127.0.0.1', () => { const p = (s.address() as { port: number }).port; s.close(() => res(p)); }); });
-const money = (t: string) => (t.match(/[£€$¥₹]\s?[\d,]+\.\d{2}/)?.[0] ?? '').replace(/\s/g, '');
+// the amount without its symbol: a country run shows Ft / zł / ¥ / ₹, and the workbook re-add is compared as a number
+const money = (t: string) => (t.match(/(?:£|€|\$|¥|₹|Ft|zł)\s?([\d,]+\.\d{2})/)?.[1] ?? '');
+// Country review (Oct 2026): CV_TRACE_COUNTRY=<code> costs every part in that country's book; CV_TRACE_TERMS=EXW prices ex-works.
+const COUNTRY = process.env.CV_TRACE_COUNTRY ?? '';
+const TERMS = process.env.CV_TRACE_TERMS === 'EXW' ? 'EXW' : '';
+// The page shows the country's currency: a tolerance written in £ is this many display units (Ft 437.75 to the £).
+const FXD = COUNTRY ? (REGIONAL_DATA as Record<string, { fxToGBP: number }>)[COUNTRY]?.fxToGBP ?? 1 : 1;
+/** Two displayed amounts are the same costing to the penny — compared in £, so forint / yuan rounding is not a difference. */
+const samePenny = (a: string, b: string) => {
+  const x = Number(money(a).replace(/,/g, '')), y = Number(money(b).replace(/,/g, ''));
+  return money(a) !== '' && money(b) !== '' && (FXD === 1 ? money(a) === money(b) : Math.abs(x - y) / FXD < 0.006);
+};
 const num = (t: string) => Number(String(t).replace(/[^\d.-]/g, ''));
 
 type Verdict = 'PASS' | 'FAIL' | 'GAP' | 'INFO';
@@ -180,9 +192,14 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   say(`\n## ${p.label} (${basename(p.file)}) — step 1: part & context`);
   await page.goto(`${base}/calculator/`, { waitUntil: 'networkidle' });
   await page.waitForSelector('html[data-country-ready="1"]', { timeout: 60_000 });
+  if (COUNTRY) {
+    await page.selectOption('#mfg-region-selector', COUNTRY);
+    await page.waitForFunction(r => (document.getElementById('costing-country-sel') as HTMLSelectElement | null)?.value === r, COUNTRY, { timeout: 30_000 });
+  }
   await page.click('#new-costing-btn', { timeout: 15_000 });
   await page.locator('#commodity-picker-view .cpicker-tile[data-commodity="cad_analysis"]:visible').first().click({ timeout: 15_000 });
   await page.waitForSelector('#cad-steps', { timeout: 30_000 });
+  if (TERMS) await page.selectOption('#cad-delivery-terms', TERMS);
   let s = await screenState(page);
   rec.step1Empty = { ...s, shot: await snap('step1-empty') };
   check('1', 'M4', 'step indicator is a labelled nav, step 1 current', s.stepsNavLabel === 'Steps to the cost' && s.step === 'Part & context', `nav "${s.stepsNavLabel}", current "${s.step}"`);
@@ -407,7 +424,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     why: (tr.querySelector('td:last-child')?.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 160) })));
   rec.compareRoutes = routes;
   const ref = routes.find(r => r.ref);
-  check('3', 'A1/#6', 'screen = headless: the comparison\'s reference row (costMeasuredPart) equals the headline', !!ref && money(ref.cost) === money(hero),
+  check('3', 'A1/#6', 'screen = headless: the comparison\'s reference row (costMeasuredPart) equals the headline', !!ref && samePenny(ref.cost, hero),
     `reference ${ref?.cost ?? '—'} v headline ${money(hero)}; other routes: ${routes.filter(r => !r.ref).map(r => `${r.route} ${r.cost}`).join(', ')}`);
   // Compare-routes review (Oct 2026): every row opens to its build-up, the refused routes are listed with sources,
   // and an alternative carries its crossover with the costed route.
@@ -491,11 +508,23 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     `8-Routes ${routesSheet ? `${routesSheet.length} rows, ${routesRows} reference row(s)` : 'missing'}; PDF §9b ${/Route Comparison/.test(text) ? 'present' : 'missing'}`);
   check('export', 'A6/#12', 'PDF opened: the stamp word for word', pdfStamp === stamp, String(pdfStamp));
   check('export', 'A6', 'PDF opened: the headline', text.includes(money(hero)), `${money(hero)} ${text.includes(money(hero)) ? 'found' : 'NOT found'}`);
+  if (COUNTRY) {
+    const countryName = (await page.evaluate(() => (document.getElementById('costing-country-sel') as HTMLSelectElement | null)?.selectedOptions[0]?.textContent ?? '')).trim();
+    check('export', 'country', 'the stamp names the country\'s rate book', new RegExp(`-${COUNTRY}\\b`).test(stamp), stamp);
+    check('export', 'country', 'the PDF names the country', !!countryName && text.includes(countryName.replace(/\s*\(.*$/, '')), countryName);
+  }
+  if (TERMS === 'EXW') {
+    const sumRows = XLSX.utils.sheet_to_json(wb.Sheets['1-Summary'], { header: 1, raw: false }) as unknown[][];
+    const terms = String(sumRows.find(r => r[0] === 'Delivery terms')?.[1] ?? '');
+    check('export', 'EXW', 'Excel states the terms: ex-works, no freight', /Ex-works \(EXW\)/.test(terms), terms || '(no Delivery terms row)');
+    check('export', 'EXW', 'PDF states the terms: ex-works, no freight', /Ex-works \(EXW\)/.test(text), /Ex-works \(EXW\)/.test(text) ? 'found' : 'NOT found');
+    check('3', 'EXW', 'Not included names freight to your plant (ex-works)', card.notIncluded.some(t => /ex-works \(EXW\)/i.test(t)), card.notIncluded.join(' · '));
+  }
 
   // The cost re-added from the workbook
   const rc = recomputeFromWorkbook(xl);
   rec.recompute = rc;
-  const near = (a: number, b: number, tol = 0.0006) => Math.abs(a - b) <= tol;
+  const near = (a: number, b: number, tol = 0.0006) => Math.abs(a - b) <= tol * FXD;   // £ tolerances in display units
   check('arith', 'trace', 'every operation re-priced from its rate, time, OEE, parts a cycle = the sheet',
     rc.opCalc.every(o => near(o.proc, o.sheetProc, 0.0006) && near(o.lab, o.sheetLab, 0.0006)),
     rc.opCalc.map(o => `${o.op}: £${o.proc.toFixed(4)} + £${o.lab.toFixed(4)} (sheet £${o.sheetProc.toFixed(4)} + £${o.sheetLab.toFixed(4)})`).join(' | '));
@@ -509,7 +538,8 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     `£${rc.base.toFixed(4)} × ${rc.ohPct} = £${rc.ohCalc.toFixed(4)} v £${rc.b.overhead.toFixed(4)}`);
   check('arith', 'trace', `margin = ${(rc.mgPct * 100).toFixed(0)}% of the subtotal`, near(rc.mgCalc, rc.b.margin),
     `£${rc.subtotal.toFixed(4)} × ${rc.mgPct} = £${rc.mgCalc.toFixed(4)} v £${rc.b.margin.toFixed(4)}`);
-  check('arith', 'trace', 'buckets re-added = the headline', money(`£${rc.totalCalc.toFixed(2)}`) === money(hero),
+  if (TERMS === 'EXW') check('arith', 'EXW', 'logistics bucket is 0 ex-works', rc.b.logistics === 0, `logistics ${rc.b.logistics}`);
+  check('arith', 'trace', 'buckets re-added = the headline', samePenny(`£${rc.totalCalc.toFixed(2)}`, hero),
     `£${rc.totalCalc.toFixed(4)} v headline ${money(hero)}`);
   rec.totalMs = Date.now() - t0;
   rec.headline = money(hero);

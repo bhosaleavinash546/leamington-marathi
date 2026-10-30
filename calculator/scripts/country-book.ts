@@ -129,8 +129,16 @@ for (const f of cfg.materialFamilies) {
   }
 }
 const priced = new Set(register.map(r => r.id));
+const atPar = cfg.heldMaterialsAtPar as { basis: string } | undefined;
 for (const m of SNAP.materials) {
   if (priced.has(m.id)) continue;
+  if (atPar) {
+    const live = UK.materials.find(x => x.id === m.id);   // what buildRegionalLibrary prices it at (the live UK book × 1)
+    const nw = live ? r2(live.pricePerKg * FX) : m.inrPerKg;
+    register.push({ kind: 'material', id: m.id, name: m.grade, currentInr: m.inrPerKg, newInr: nw, unit: `${SYM}/kg`,
+      decision: `at par (no ${NAME} evidence this round — the book's European-market price, no country factor)`, basis: `${m.category} — ${atPar.basis}`, source: '' });
+    continue;
+  }
   const why = Object.entries(cfg.held as Record<string, string>).map(([k, v]) => `${k}: ${v}`).join(' | ');
   register.push({ kind: 'material', id: m.id, name: m.grade, currentInr: m.inrPerKg, newInr: m.inrPerKg, unit: `${SYM}/kg`,
     decision: `held (no ${NAME} evidence this round)`, basis: m.category, source: why.slice(0, 0) });
@@ -255,6 +263,12 @@ if (newElec !== undefined || newGas !== undefined) newBlock = newBlock.replace(/
 for (const k of ['overhead', 'packaging', 'logistics'] as const) {
   const m = MULTS[k]; if (m) newBlock = newBlock.replace(new RegExp(`${k}Multiplier: [0-9.]+`), `${k}Multiplier: ${m.value}`);
 }
+// held materials at par (Hungary, Oct 2026): a grade with no country evidence is priced at the book's own (European
+// market) price — no unsourced country discount (the 0.97 / resin factors had no source)
+if (cfg.heldMaterialsAtPar) {
+  newBlock = newBlock.replace(/materialFactors: \{[^}]*\}/, 'materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 }')
+    .replace(/materialMultiplier: [0-9.]+/, 'materialMultiplier: 1');
+}
 reg = reg.replace(inBlock[1], `  // ${NAME}: labour from the ${NAME} rate book ${cfg.asOf} (scripts/country-book.ts; ${cfg.labour.short ?? 'statutory-loaded, 4-cluster, see the book'});\n  // machineRateMultiplier = median ${NAME} ÷ UK machine rate in that book (the service factors read it).\n${newBlock}`);
 writeFileSync(REG, reg);
 
@@ -270,12 +284,13 @@ for (const [suffix, cat] of [['skilled', 'skilled'], ['semiskilled', 'semiskille
   const v = cats[cat];
   lib = lib.replace(re, `$1${labourGbp[cat]}$2${cfg.asOf}$3${NAME} rate book ${cfg.asOf}: ${SYM}${localHr(v)}/h fully loaded (${cfg.labour.short ?? '4-cluster, statutory loading'})$4Medium$5`);
 }
-if (!labFound) throw new Error(`no lab-${cc}-* entry in rate-library.ts`);
+// a country whose library has no lab-<cc>-* rows (Hungary) reads its labour from REGIONAL_DATA alone — written above
+if (!labFound && !cfg.noLibraryLabourRows) throw new Error(`no lab-${cc}-* entry in rate-library.ts`);
 // the book's own energy-<cc> entry wins over the regional table, so it must agree
 if (newElec !== undefined || newGas !== undefined) {
   const re = new RegExp(`(id: 'energy-${cc}',[\\s\\S]*?electricityPerKwh: )[0-9.]+(,[\\s\\S]*?gasPerKwh: )[0-9.]+(,[\\s\\S]*?effectiveDate: ')[^']*(',[\\s\\S]*?sourceNote: )(?:'(?:[^'\\\\]|\\\\.)*'(?:\\s*\\+\\s*'(?:[^'\\\\]|\\\\.)*')*)(,[\\s\\S]*?confidence: ')[A-Za-z]+(')`);
-  if (!re.test(lib)) throw new Error(`energy-${cc} not found`);
-  lib = lib.replace(re, `$1${elecGbp}$2${gasGbp}$3${cfg.asOf}$4'${NAME} rate book ${cfg.asOf}: ${SYM}${newElec}/kWh electricity, ${SYM}${newGas}/kWh gas — ${String(E.basis).replace(/'/g, '’').replace(/\$/g, '$$$$')}'$5Medium$6`);   // '$' in the basis escaped for the replacement string
+  if (!re.test(lib) && !cfg.noLibraryLabourRows) throw new Error(`energy-${cc} not found`);
+  if (re.test(lib)) lib = lib.replace(re, `$1${elecGbp}$2${gasGbp}$3${cfg.asOf}$4'${NAME} rate book ${cfg.asOf}: ${SYM}${newElec}/kWh electricity, ${SYM}${newGas}/kWh gas — ${String(E.basis).replace(/'/g, '’').replace(/\$/g, '$$$$')}'$5Medium$6`);   // '$' in the basis escaped for the replacement string
 }
 writeFileSync(LIB, lib);
 

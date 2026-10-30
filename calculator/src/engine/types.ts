@@ -254,6 +254,9 @@ export interface LearningCurveConfig {
   referenceVolume: number;   // cumulative volume at which base labour cost was established
 }
 
+/** Incoterm of the should-cost price: delivered to your plant, or ex-works (the buyer collects). */
+export type DeliveryTerms = 'DAP' | 'EXW';
+
 export interface UniversalStackInput {
   partName: string;
   rawMaterial: RawMaterialInput;
@@ -261,6 +264,12 @@ export interface UniversalStackInput {
   tooling: ToolingInput;
   packagingPerPart: number;
   logisticsPerPart: number;
+  /**
+   * The terms the price is quoted on: 'DAP' (default) = delivered to the buyer's plant, freight in the logistics line;
+   * 'EXW' = ex-works, the buyer collects at the supplier's gate — the price carries packaging but no freight, and the
+   * logistics line is 0 (country review, Oct 2026). Read by the shop defaults and printed by the reports.
+   */
+  deliveryTerms?: DeliveryTerms;
   overheadPct: number;
   marginPct: number;
   /**

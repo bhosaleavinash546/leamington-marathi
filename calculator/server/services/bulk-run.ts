@@ -60,7 +60,7 @@ import {
   buildRegionalLibrary, resolveManufacturingRegion, supportedRegions, regionalShopDefaults,
 } from '../../src/engine/regional-rates.js';
 import { recomputeMachineRates } from '../../src/engine/rate-library.js';
-import type { RateLibrary } from '../../src/engine/types.js';
+import type { RateLibrary, DeliveryTerms } from '../../src/engine/types.js';
 import type { ManufacturingRegion } from '../../src/engine/regional-rates.js';
 import type { RuleContext } from '../../src/engine/cost-input-rules/types.js';
 
@@ -163,6 +163,8 @@ export interface BulkRunRecord {
 }
 
 export interface BulkRunOptions {
+  /** Delivery terms of the price (default DAP — delivered); 'EXW' prices at the supplier's gate, logistics 0. */
+  deliveryTerms?: DeliveryTerms;
   /** Programme life, years: tooling amortises over annual × years, as CAD Apply writes the form (blank → one year). */
   programmeYears?: number;
   /**
@@ -378,13 +380,14 @@ export async function costMeasuredPart(
   // Overhead, packaging and logistics for the country — the same function the
   // screen's country switch uses (it used to be the UK's 12 % / £0.15 / £0.25 here
   // whatever the region, while the screen scaled them).
-  const shop = regionalShopDefaults(region, { packagingPerPart: mapped.packagingPerPart, logisticsPerPart: mapped.logisticsPerPart });
+  const shop = regionalShopDefaults(region, { packagingPerPart: mapped.packagingPerPart, logisticsPerPart: mapped.logisticsPerPart }, opts.deliveryTerms);
   const cost = executeCalculateCost({
     commodity, params: mapped.params, partName: geo.partName || name,
     rateLibrary: book,
     overheadPct: shop.overheadPct, marginPct: SHOP_DEFAULTS.marginPct,
     packagingPerPart: shop.packagingPerPart,
     logisticsPerPart: shop.logisticsPerPart,
+    ...(opts.deliveryTerms ? { deliveryTerms: opts.deliveryTerms } : {}),
   });
   if (!cost.success) {
     return { ...base, status: 'error', commodity, commoditySource, geometry, code: 'costing_failed',

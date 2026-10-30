@@ -11,8 +11,33 @@
  * have replaced the size-aware estimate if it had.
  */
 import { regionalShopDefaults, REGIONAL_DATA, type ManufacturingRegion } from '../engine/regional-rates.js';
+import type { DeliveryTerms } from '../engine/types.js';
 
 const basis: { packagingPerPart?: number; logisticsPerPart?: number } = {};
+
+/** Delivery terms of the costing: DAP (delivered, the default) or EXW (ex-works — the buyer collects, no freight). */
+let terms: DeliveryTerms = 'DAP';
+export function deliveryTerms(): DeliveryTerms { return terms; }
+export function setDeliveryTerms(t: string): DeliveryTerms { terms = t === 'EXW' ? 'EXW' : 'DAP'; return terms; }
+
+/**
+ * Show the terms on the logistics field: ex-works holds it at 0 and locks it (the price carries no freight); delivered
+ * puts the country's figure back. Both terms selects (the form's and the CAD screen's) show the same value.
+ */
+export function applyDeliveryTermsToForm(region: ManufacturingRegion, doc: Document = document): void {
+  for (const id of ['delivery-terms', 'cad-delivery-terms']) {
+    const sel = doc.getElementById(id) as HTMLSelectElement | null;
+    if (sel && sel.value !== terms) sel.value = terms;
+  }
+  const lg = doc.getElementById('logistics') as HTMLInputElement | null;
+  if (!lg) return;
+  const exw = terms === 'EXW';
+  lg.disabled = exw;
+  lg.title = exw ? 'Ex-works (EXW): the buyer collects at the supplier\'s gate, so the price carries no freight — logistics is 0.'
+    : 'Freight from the supplier to your plant per part (delivered, DAP).';
+  const v = exw ? 0 : Math.round(shopFieldsFor(region).logisticsPerPart * 10_000) / 10_000;
+  if (Number(lg.value) !== v || lg.value === '') lg.value = String(v);
+}
 
 /** Where each figure came from — the cost card's Basis grades it by this (it read a size estimate as "Typed"). */
 export type ShopFigureSource = 'default' | 'size' | 'typed';
@@ -37,7 +62,7 @@ export function shopBasisFromTyped(region: ManufacturingRegion, field: 'packagin
 
 /** The packaging and logistics a region shows for the current basis. */
 export function shopFieldsFor(region: ManufacturingRegion): { overheadPct: number; packagingPerPart: number; logisticsPerPart: number } {
-  return regionalShopDefaults(region, basis);
+  return regionalShopDefaults(region, basis, terms);
 }
 
 /** Write overhead, packaging and logistics for `region` into the form. Returns the overhead % set. */
@@ -54,5 +79,6 @@ export function applyCountryShopFields(region: ManufacturingRegion, doc: Documen
   const changedOverhead = set('overhead-pct', ohPct);
   set('packaging', Math.round(f.packagingPerPart * 10_000) / 10_000);
   set('logistics', Math.round(f.logisticsPerPart * 10_000) / 10_000);
+  applyDeliveryTermsToForm(region, doc);
   return { overheadPct: ohPct, changedOverhead };
 }

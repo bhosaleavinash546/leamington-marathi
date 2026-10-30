@@ -21,6 +21,7 @@ import { INDIA_BOOK } from './country-books/in.js';
 import { CHINA_BOOK } from './country-books/cn.js';
 import { POLAND_BOOK } from './country-books/pl.js';
 import { GERMANY_BOOK } from './country-books/de.js';
+import { HUNGARY_BOOK } from './country-books/hu.js';
 
 export interface CountryMaterialPrice { gbpPerKg: number; scrapGbpPerKg?: number; basis: string; source: string; confidence: Confidence }
 export interface CountryMachineGroup {
@@ -73,7 +74,7 @@ export interface CountryBook {
   materials: Record<string, CountryMaterialPrice>;
 }
 
-export const COUNTRY_BOOKS: Record<string, CountryBook | undefined> = { IN: INDIA_BOOK, CN: CHINA_BOOK, PL: POLAND_BOOK, DE: GERMANY_BOOK };
+export const COUNTRY_BOOKS: Record<string, CountryBook | undefined> = { IN: INDIA_BOOK, CN: CHINA_BOOK, PL: POLAND_BOOK, DE: GERMANY_BOOK, HU: HUNGARY_BOOK };
 
 const r0 = (n: number) => Math.round(n);
 
@@ -127,7 +128,10 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
     };
     // one plain line: the config's long held-basis text carried internal research remarks and a "3.5% of capex"
     // maintenance clause that applies to sourced capex only (Poland live review, 10 Oct 2026)
-    what = `capital HELD — no ${regionName} capex was sourced for this machine, so its capital is the UK book's × ${f} (Low confidence): `
+    what = (f === 1
+      // Hungary (Oct 2026): no unsourced country discount — the same machine costs the same on the EU market
+      ? `capital AT PAR — no ${regionName} capex was sourced for this machine, so its capital is the book's own (×1, the same machine on the EU market — no country factor; Low confidence): `
+      : `capital HELD — no ${regionName} capex was sourced for this machine, so its capital is the UK book's × ${f} (Low confidence): `)
       + `depreciation × ${M.shiftDepreciationFactor.toFixed(3)} (shift pattern), maintenance per running hour as the UK build-up, `
       + `finance re-rated ${(M.ukFinanceRate * 100).toFixed(0)}% → ${(M.financeRate * 100).toFixed(2)}%`;
     confidence = 'Low';

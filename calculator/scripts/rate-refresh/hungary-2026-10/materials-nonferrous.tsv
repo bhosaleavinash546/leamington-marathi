@@ -1,0 +1,113 @@
+id	grade	category	current_HUF_per_kg
+mat-al6061	6061-T6	Aluminium	1513.72
+mat-ti6al4v	Ti-6Al-4V	Titanium	20039.8
+mat-al6082-bar	6082-T6 Aluminium Bar	Aluminium	1483.96
+mat-al2011	2011-T3 Free-Machining Al Bar	Aluminium	1671.05
+mat-brass-cz121	CZ121 / CW614N Free-Machining Brass	Copper Alloy Bar	3603.59
+mat-bronze-pb1	PB1 Phosphor Bronze Bar	Copper Alloy Bar	6133.12
+mat-aa5182	AA5182	Aluminium Sheet	1356.4
+mat-aa5052	AA5052-H32 Sheet	Aluminium Sheet	1356.4
+mat-aa5083	AA5083-H111 Sheet	Aluminium Sheet	1445.69
+mat-aa6082-sheet	AA6082-T6 Sheet	Aluminium Sheet	1513.72
+mat-aa5754-sheet	AA5754-H22 Sheet	Aluminium Sheet	1411.67
+mat-aa6061-sheet	AA6061-T6 Sheet/Plate	Aluminium Sheet	1556.24
+mat-aa6063-sheet	AA6063-T5 Sheet	Aluminium Sheet	1483.96
+mat-aa3003-sheet	AA3003-H14 Sheet	Aluminium Sheet	1271.36
+mat-c110-copper	C110 ETP Copper Sheet	Copper & Brass Sheet	4777.58
+mat-cz108-brass	CZ108 Brass Sheet (70/30)	Copper & Brass Sheet	3580.21
+mat-cu-hairpin	Rectangular Enamelled Hairpin Copper (winding)	Winding Copper (Hairpin)	5910.32
+mat-al-hairpin	Rectangular Enamelled Hairpin Aluminium (winding)	Winding Aluminium (Hairpin)	2015.46
+mat-al-busbar	Aluminium Busbar (EV / battery)	Aluminium Sheet	1590.26
+mat-aa6016-t4	AA6016-T4 Sheet (Auto Skin)	Aluminium Sheet	1483.96
+mat-aa6111-t4	AA6111-T4 Sheet (Auto Skin)	Aluminium Sheet	1547.74
+mat-aa7075-t6	AA7075-T6 Sheet/Plate	Aluminium Sheet	2891.38
+mat-al-recycled-5xxx	Recycled-Content Al 5xxx (Secondary)	Aluminium Sheet	1084.27
+mat-adc12	ADC12 / A383	Die Cast Aluminium	894.63
+mat-a380	A380 / EN AC-46000 (Al-Si Die-Cast Alloy)	Die Cast Aluminium	910.78
+mat-lm25	LM25 / A356	Gravity/Sand Aluminium	1267.1
+mat-bronze-c905	C905 Phosphor Bronze	Copper Alloy	5808.27
+mat-mag-az91	AZ91D Magnesium Die Cast	Magnesium Alloy	1620.02
+mat-adc12-secondary	ADC12 Secondary (recycled)	Die Cast Aluminium	894.63
+mat-alsi10mg	AlSi10Mg / EN AC-43000 (≈ A360)	Die Cast Aluminium	1228.84
+mat-a365	A365 / AlSi7Mg	Die Cast Aluminium	1185.04
+mat-zamak3	Zamak 3 (Zinc Die Cast)	Zinc Die Cast	1356.4
+mat-zamak5	Zamak 5 (Zinc Die Cast, Hi-Strength)	Zinc Die Cast	1377.66
+mat-aural5	Aural-5 (AlSi9MnMg, Rheinfelden)	Structural HPDC Aluminium	1305.37
+mat-silafont36	Silafont-36 (AlSi10MnMg)	Structural HPDC Aluminium	1318.13
+mat-castasil37	Castasil-37 (AlSi9MnMoZr)	Structural HPDC Aluminium	1288.36
+mat-magsimal59	Magsimal-59 (AlMg5Si2Mn)	Structural HPDC Aluminium	1339.39
+mat-al-hpdc-lowco2	Low-CO₂ Recycled HPDC (AlSi10MnMg)	Structural HPDC Aluminium	1275.61
+mat-htf-gigacast	Heat-Treat-Free Giga-Casting Alloy (Xiaomi Titan / Tesla-class)	Structural HPDC Aluminium	1403.17
+mat-a413	A413 / AlSi12 (Eutectic Die Cast)	Die Cast Aluminium	894.63
+mat-a319	A319 / AlSi6Cu4	Die Cast Aluminium	966.06
+mat-a390	A390 / AlSi17Cu (Hypereutectic)	Die Cast Aluminium	1403.17
+mat-a357	A357 / AlSi7Mg0.6 (Premium T6)	Gravity/Sand Aluminium	1360.65
+mat-mag-am60	AM60B Magnesium Die Cast	Magnesium Alloy	1556.24
+mat-mag-am50	AM50A Magnesium Die Cast	Magnesium Alloy	1577.5
+mat-mag-ae44	AE44 Magnesium (Creep-Resistant)	Magnesium Alloy	2134.52
+mat-za8	ZA-8 (Zinc-Aluminium Die Cast)	Zinc Die Cast	1488.21
+mat-za27	ZA-27 (High-Strength Zinc-Aluminium)	Zinc Die Cast	1543.49
+mat-inconel718-cast	Inconel 718 (Investment Cast Superalloy)	Nickel Superalloy Casting	17875.52
+mat-al6061-forge	6061 (Al Forging Stock)	Aluminium Forging Billet	1420.18
+mat-al-billet-1050	EN AW-1050A (99.5% Al) extrusion billet	Aluminium Extrusion Billet	1379.53
+mat-al-billet-1100	AA 1100 (99.0% Al) extrusion billet	Aluminium Extrusion Billet	1385.95
+mat-al-billet-1350	EN AW-1350 (EC, electrical conductor) extrusion billet	Aluminium Extrusion Billet	1398.84
+mat-al-billet-2011	EN AW-2011 (Al-Cu6BiPb, free-machining) extrusion billet	Aluminium Extrusion Billet	1714.73
+mat-al-billet-2014	EN AW-2014 (Al-Cu4SiMg) extrusion billet	Aluminium Extrusion Billet	1779.21
+mat-al-billet-2024	EN AW-2024 (Al-Cu4Mg1) extrusion billet	Aluminium Extrusion Billet	1843.66
+mat-al-billet-3003	EN AW-3003 (Al-Mn1Cu) extrusion billet	Aluminium Extrusion Billet	1405.31
+mat-al-billet-3103	EN AW-3103 (Al-Mn1) extrusion billet	Aluminium Extrusion Billet	1405.31
+mat-al-billet-5083	EN AW-5083 (Al-Mg4.5Mn) extrusion billet	Aluminium Extrusion Billet	1489.11
+mat-al-billet-5086	EN AW-5086 (Al-Mg4) extrusion billet	Aluminium Extrusion Billet	1482.69
+mat-al-billet-5754	EN AW-5754 (Al-Mg3) extrusion billet	Aluminium Extrusion Billet	1456.86
+mat-al-billet-6008	EN AW-6008 (Al-SiMgV) extrusion billet	Aluminium Extrusion Billet	1431.09
+mat-al-billet-6026	EN AW-6026 (free-machining, lead-free) extrusion billet	Aluminium Extrusion Billet	1521.35
+mat-al-billet-6060	EN AW-6060 (Al-MgSi) extrusion billet	Aluminium Extrusion Billet	1385.95
+mat-al-billet-6061	EN AW-6061 (Al-Mg1SiCu) extrusion billet	Aluminium Extrusion Billet	1440.76
+mat-al-billet-6063	EN AW-6063 (Al-Mg0.7Si) extrusion billet	Aluminium Extrusion Billet	1392.42
+mat-al-billet-6082	EN AW-6082 (Al-Si1MgMn) extrusion billet	Aluminium Extrusion Billet	1440.76
+mat-al-billet-6101	EN AW-6101B (electrical) extrusion billet	Aluminium Extrusion Billet	1411.78
+mat-al-billet-6106	EN AW-6106 (Al-MgSiMn) extrusion billet	Aluminium Extrusion Billet	1395.63
+mat-al-billet-6351	EN AW-6351 (Al-Si1Mg0.5Mn) extrusion billet	Aluminium Extrusion Billet	1440.76
+mat-al-billet-7003	EN AW-7003 (Al-Zn6Mg0.8Zr) extrusion billet	Aluminium Extrusion Billet	1505.21
+mat-al-billet-7005	EN AW-7005 (Al-Zn4.5Mg1.5Mn) extrusion billet	Aluminium Extrusion Billet	1514.89
+mat-al-billet-7020	EN AW-7020 (Al-Zn4.5Mg1) extrusion billet	Aluminium Extrusion Billet	1514.89
+mat-al-billet-7046	EN AW-7046 (Al-Zn7Mg1.2) extrusion billet	Aluminium Extrusion Billet	1527.77
+mat-al-billet-7075	EN AW-7075 (Al-Zn5.5MgCu) extrusion billet	Aluminium Extrusion Billet	1779.21
+mat-al-billet-7108	EN AW-7108 (Al-Zn5Mg1Zr) extrusion billet	Aluminium Extrusion Billet	1505.21
+mat-al-billet-1070a	EN AW-1070A (99.7% Al) extrusion billet	Aluminium Extrusion Billet	1382.74
+mat-al-billet-6063a	EN AW-6063A (Al-Mg0.7Si(A)) extrusion billet	Aluminium Extrusion Billet	1398.84
+mat-al-billet-6005a	EN AW-6005A (Al-SiMg(A)) extrusion billet	Aluminium Extrusion Billet	1418.2
+mat-al-billet-2017a	EN AW-2017A (Al-Cu4MgSi) extrusion billet	Aluminium Extrusion Billet	1779.21
+mat-lm6	LM6 / EN AC-44100 (AlSi12, gravity / sand)	Gravity/Sand Aluminium	1241.59
+mat-lm4	LM4 / AlSi5Cu3 (secondary, sand / gravity)	Gravity/Sand Aluminium	946.5
+mat-almg5-cast	EN AC-51300 (AlMg5, marine sand / gravity)	Gravity/Sand Aluminium	1309.62
+mat-a206	A206 / AlCu4.5MgTi (high-strength premium casting)	Gravity/Sand Aluminium	1547.74
+mat-zamak2	Zamak 2 / ZL0430 (ZnAl4Cu3, high strength)	Zinc Die Cast	1458.44
+mat-in713c-cast	Inconel 713C (investment-cast superalloy — turbocharger wheels)	Nickel Superalloy Casting	18534.58
+mat-lg2-gunmetal	LG2 / CC491K (leaded gunmetal CuSn5Zn5Pb5)	Copper Alloy	4864.32
+mat-ab2-cast	AB2 / CC333G (nickel-aluminium bronze CuAl10Fe5Ni5)	Copper Alloy	4056.43
+mat-brass-cast-cb754	CC754S / CuZn39Pb1Al-C (gravity / die-cast brass)	Copper Alloy	3350.6
+mat-al2014-forge	2014 (Al-Cu forging stock — aero and automotive)	Aluminium Forging Billet	1526.48
+mat-ab2-forge	CW307G / CuAl10Ni5Fe4 (nickel-aluminium bronze forging bar)	Copper Alloy Billet	4252.03
+mat-en-ac-46200	EN AC-46200 (AlSi8Cu3, gravity / low-pressure — cylinder heads, housings)	Gravity/Sand Aluminium	927.37
+mat-en-ac-45300	EN AC-45300 (AlSi5Cu1Mg / C355 — cylinder heads, T6)	Gravity/Sand Aluminium	1322.38
+mat-lm13	LM13 / EN AC-48000 (AlSi12CuNiMg — pistons)	Gravity/Sand Aluminium	1309.62
+mat-cusn12-cast	CC483K / CuSn12-C (tin bronze — worm wheels, gear rims, bearings)	Copper Alloy	6135.67
+mat-aa1050-sheet	AA1050A-H14 Sheet (heat shields, reflectors)	Aluminium Sheet	1279.86
+mat-al7075-bar	7075-T6 Aluminium Bar (aerospace, tooling)	Aluminium	2062.23
+mat-c101-bar	C101 / CW004A ETP Copper Bar (busbar, electrodes)	Copper Alloy Bar	4777.58
+mat-al6082-forge	6082 (Al Forging Stock)	Aluminium Forging Billet	1377.66
+mat-al7075-forge	7075 (Al Forging Stock)	Aluminium Forging Billet	1955.93
+mat-al2618-forge	2618 (Al-Cu Piston/Aero)	Aluminium Forging Billet	2202.55
+mat-ti-cp-gr2	CP Titanium Grade 2 (Forging Bar)	Titanium Forging Billet	10880.93
+mat-ti-6al4v-forge	Ti-6Al-4V Grade 5 (Forging Bar)	Titanium Forging Billet	16000.37
+mat-inconel718-forge	Inconel 718 (Forging Bar)	Nickel Superalloy Billet	18725.92
+mat-waspaloy-forge	Waspaloy (Forging Bar)	Nickel Superalloy Billet	29781.19
+mat-inconel625-forge	Inconel 625 (Forging Bar)	Nickel Superalloy Billet	16178.96
+mat-hastelloy-c276-forge	Hastelloy C-276 (Forging Bar)	Nickel Superalloy Billet	23403.15
+mat-monel400-forge	Monel 400 (Forging Bar)	Nickel Alloy Billet	12020.48
+mat-ti-6242-forge	Ti-6Al-2Sn-4Zr-2Mo (Forging Bar)	Titanium Forging Billet	21961.71
+mat-al7050-forge	7050 (Al-Zn Aero Forging Stock)	Aluminium Forging Billet	3614.22
+mat-mg-az31-forge	AZ31B (Mg Forging Bar)	Magnesium Forging Billet	2683.03
+mat-brass-cz122-forge	CZ122 / CW617N (Forging Brass)	Copper Alloy Billet	3603.59
