@@ -72,15 +72,14 @@
   <!-- ===== Header / Navigation ===== -->
   <header id="site-header">
     <div class="header-inner">
-      <a href="#home" class="brand">
-        <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="logo-emblem" width="216" height="216">
+      <a href="#home" class="brand" aria-label="Leamington Marathi, home page">
+        <img src="images/logo-emblem.png" alt="" class="logo-emblem" width="216" height="216">
         <img src="images/logo.png" alt="Leamington Marathi" class="logo" width="444" height="120">
       </a>
       <!-- CSS-only menu toggle: works even where JavaScript is disabled -->
-      <input type="checkbox" id="nav-check" aria-label="Toggle menu">
+      <input type="checkbox" id="nav-check" aria-label="Open the menu">
       <nav id="main-nav" aria-label="Main navigation">
         <ul class="nav-links">
-          <li><a href="#home" class="active">Home</a></li>
           <li><a href="#about">About&nbsp;Us</a></li>
           <li><a href="#events">Events</a></li>
           <li><a href="#dhol">Dhol&nbsp;Tasha</a></li>
@@ -88,9 +87,8 @@
           <li><a href="#gallery">Gallery</a></li>
           <li><a href="calendar.html">Calendar</a></li>
           <li><a href="sponsor.html">Sponsor&nbsp;Us</a></li>
-          <li><a href="#get-involved">Join&nbsp;Us</a></li>
-          <li><a href="member.html">Membership</a></li>
           <li><a href="#contact">Contact</a></li>
+          <li class="nav-cta-item"><a href="#get-involved" class="nav-cta">Join&nbsp;Us</a></li>
         </ul>
       </nav>
       <button id="search-toggle" aria-label="Search the site" aria-expanded="false" aria-controls="search-panel">🔍</button>
