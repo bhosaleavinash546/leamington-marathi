@@ -168,7 +168,37 @@ a defect fixed — none is a tuning. Nothing here has been compared with a price
 
 ## 5. Live three steps — all 14 CAD routes
 
-LIVE_RESULT
+Real server (OCP kernel, no AI key), real browser, the 14 routes' parts through Part & context → Confirm → Cost,
+both reports exported and opened (`scratchpad/final14`; manifest: the five-part and nine-part manifests, gear at ISO
+class 7). **849 PASS · 14 FAIL · 11 INFO** — the 14 FAILs are one harness check per part that still looked for the old
+column name "Tooling investment" (renamed "Tooling over programme" by this audit; the harness is corrected). No product
+check failed.
+
+| Check (each of 14 routes) | Result |
+|---|---|
+| screen = headless (comparison reference row = headline) | 14 of 14 |
+| the workbook's 8 buckets re-add to the headline; the material line re-adds | 14 of 14 |
+| PDF and Excel opened: headline and reproducibility stamp word for word | 14 of 14 |
+| axe WCAG 2.1 AA, every step, both themes | 56 of 56 |
+
+| Route | Part | Headline (live settings) |
+|---|---|---|
+| Forging | hub flange | £17.02 |
+| Cast + machine | stub axle | £41.97 |
+| Injection moulding | ECU cover | £0.89 |
+| Sheet metal | seat bracket | £1.29 |
+| Aluminium extrusion | battery rail | £33.48 |
+| Blow moulding | air duct | £0.99 |
+| Rotational moulding | header tank | £14.59 |
+| Thermoforming | trim cover | £2.18 |
+| Composites | hat stiffener | £73.55 |
+| Polymer extrusion | vent pipe | £0.83 |
+| Rubber | grommet | £0.30 |
+| Gear | m3 z38, ISO 7 | £18.23 |
+| Machining | hydraulic manifold | £21.37 |
+| Casting (as cast) | bracket | £17.53 |
+
+The live settings are the manifests' (mostly 100,000 a year), so these differ from §4 (50,000 a year).
 
 ## 6. Still open — stated, not hidden
 
