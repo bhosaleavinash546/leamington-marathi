@@ -1,0 +1,360 @@
+{
+  "domain": "NEW-machine capital cost (capex), UK / EU market: composites, rotational moulding, thermoforming, injection moulding, blow moulding, polymer extrusion",
+  "researched": "2026-10-30",
+  "items": [
+    {
+      "key": "capex.autoclave-1200mm",
+      "country": "UK/EU",
+      "value": 333765,
+      "unit": "GBP per autoclave moulding facility (ex VAT)",
+      "currency": "GBP",
+      "basis": "UK contract award: University of Bristol, 'autoclave moulding facility', contractor ASC Process Systems, total value GBP 333,765 excluding VAT, 2 tenders received, contract start 28 Jul 2023. Spec in the notice: thermoset work to 250 C and thermoplastic research to 400 C. The Bristol Composites Institute's ASC unit is described elsewhere as an 'Econoclave EC1Mx1.5m' (model name suggests ~1 m dia x 1.5 m long)",
+      "source": "https://www.contractsfinder.service.gov.uk/Notice/0bea66ed-5567-4c6c-b4ae-8e972285c050 ; https://www.find-tender.service.gov.uk/Notice/024083-2023 ; https://compositesuk.co.uk/?p=11014",
+      "date": "2023-07-28 (award; notice published 2023-08-16)",
+      "kind": "public tender award",
+      "scope": "Autoclave + controls as a 'facility' (installation likely included, not itemised). Smaller vessel (~1.0 m x 1.5 m) than the library's 1.2 m x 3 m, but a 400 C / thermoplastic rating, which costs more than a 200 C production vessel. Nearest standard model priced; no pressure stated in the snippet.",
+      "verify": true,
+      "notes": "Pages not opened (find-tender.service.gov.uk does not resolve from this session; WebFetch ENOTFOUND). Value, date and spec are as the search result quoted them; the EC1Mx1.5m identification comes from a separate Composites UK article and is an inference that it is the same unit. Book: annualDepreciation 60,720 x 10 = GBP 607k; financeCost 7,500 / 0.02 = GBP 375k. With this award (GBP 334k for a 400 C research vessel) and the carried QUB estimate (GBP 730k for a 3 m x 6 m vessel, ~10x the volume), the book's depreciation basis (~GBP 0.6m) looks HIGH for a 1.2 m x 3 m 200 C vessel; the finance basis (~GBP 0.375m) is consistent."
+    },
+    {
+      "key": "crosscheck.autoclave-1200mm.qub-3x6m",
+      "country": "UK/EU",
+      "value": 730000,
+      "unit": "GBP ex VAT (tender ESTIMATE, not award) for a 3 m x 6 m composites autoclave",
+      "currency": "GBP",
+      "basis": "Carried from scripts/rate-refresh/uk-2026-10/research/machines-b.json (key 'capex.autoclave (3 m x 6 m research, estimate)'): Queen's University Belfast large 3 m x 6 m composites autoclave, estimated total value GBP 730,000 ex VAT",
+      "source": "https://www.find-tender.service.gov.uk/Notice/037283-2025",
+      "date": "2025",
+      "kind": "public tender (estimated value, not award)",
+      "scope": "3 m diameter x 6 m vessel, ~10x the library vessel's volume; upper bound for a 1.2 m x 3 m unit",
+      "verify": true,
+      "notes": "carried from uk-2026-10/research/machines-b.json"
+    },
+    {
+      "key": "capex.oven-composite-cure",
+      "country": "UK/EU",
+      "value": null,
+      "unit": "GBP per oven",
+      "currency": "GBP",
+      "basis": "Not found for a standard production cure oven. Only a large research-facility oven was found (cross-check below).",
+      "source": "",
+      "date": "",
+      "kind": "not found",
+      "scope": "",
+      "verify": false,
+      "notes": "Book: 18,216 x 10 = GBP 182k; 2,250 / 0.02 = GBP 112.5k. No evidence the book is wrong."
+    },
+    {
+      "key": "crosscheck.oven-composite-cure.compass-large-oven",
+      "country": "UK/EU",
+      "value": 490000,
+      "unit": "GBP per large composites curing oven + oven feed-in table (VAT basis not stated)",
+      "currency": "GBP",
+      "basis": "UK contract award: 'Large composites curing oven and oven feed-in table for COMPASS (Composites at Speed and Scale) facility', supplier Ceramic Drying Systems Ltd, total value GBP 490,000, award 27 Aug 2024; oven to cure large epoxy-based composites",
+      "source": "https://www.stotles.com/explore/notices/bfb090e6-866f-49c5-b2c1-00708ddb2ec1/large-composites-curing-oven-and-oven-feed-in-table-for-compass-composites-at-speed-and-scale-facility ; https://www.contractsfinder.service.gov.uk/Notice/1ff8dc73-6f8d-43bd-8ca0-fc2b39f919d6",
+      "date": "2024-08-27 (award; notice published 2024-08-29)",
+      "kind": "public tender award",
+      "scope": "LARGE oven plus a feed-in table (handling kit), size and temperature not stated in the result; NOT the same scope as a standard fan-assisted production oven - upper-bound cross-check only",
+      "verify": true,
+      "notes": "Whether the GBP 490,000 is ex VAT is not shown in the result (UK Contracts Finder values are normally ex VAT)."
+    },
+    {
+      "key": "capex.rtm-press-std",
+      "country": "UK/EU",
+      "value": 230000,
+      "unit": "GBP per hydraulic composites press (supply, delivery, installation)",
+      "currency": "GBP",
+      "basis": "UK contract award: hydraulic press supply, delivery and installation for a university Composites Research Group facility for composites manufacturing research, sole supplier Langzauner GmbH (Austrian maker), total value GBP 230,000, award 4 Sep 2020. Second Langzauner award: University of Warwick manufacturing group press, GBP 120,745 (2021, purpose and tonnage not stated in the result)",
+      "source": "https://www.contractsfinder.service.gov.uk/Notice/74da2fad-de96-4825-b5a2-9f65e74de163 ; https://www.contractsfinder.service.gov.uk/Notice/15658ed3-7f25-4087-9004-a28d6ac91116",
+      "date": "2020-09-04 (award; notice published 2020-10-21); Warwick 2021-06",
+      "kind": "public tender award",
+      "scope": "Hydraulic PRESS only, installed; tonnage and platen size not stated; no resin injection / metering unit. A standard RTM press cell needs an injection unit on top; an HP-RTM cell (press + high-pressure metering + mixing head) is a different, much larger scope.",
+      "verify": true,
+      "notes": "Pages not opened; figures as quoted by the search result. 2020 price, not escalated. Book: 22,264 x 10 = GBP 223k; 2,750 / 0.02 = GBP 137.5k. Evidence (GBP 121k-230k for the press alone, 2020-21) fits the depreciation basis; the finance basis looks LOW once an injection unit is added. Not found: any HP-RTM price (Schuler / Dieffenbacher / Frimo / KraussMaffei)."
+    },
+    {
+      "key": "crosscheck.rtm-press-std.compass-press",
+      "country": "UK/EU",
+      "value": 3330000,
+      "unit": "GBP per high-rate composites press (contract value)",
+      "currency": "GBP",
+      "basis": "UK contract award: '3785/COMPASS/PRESS/JS/23 - Press for COMPASS (Composites at Speed and Scale) Facility', University of Sheffield, supplier Langzauner GmbH, GBP 3,330,000, contract 20 Oct 2023 - 19 Oct 2026",
+      "source": "https://www.contractsfinder.service.gov.uk/Notice/a6fc4e79-fcb6-4d61-9385-50e798a9b9f3 ; https://bidstats.uk/tenders/2023/W51/812974515",
+      "date": "2023-10-20",
+      "kind": "public tender award",
+      "scope": "A large high-rate composites press for a national facility - NOT a standard RTM press; shows the top of the range only",
+      "verify": true,
+      "notes": "Tonnage and scope not in the result."
+    },
+    {
+      "key": "capex.mach-afp-atl",
+      "country": "UK/EU",
+      "value": 189000,
+      "unit": "GBP per AFP system (6-axis robot + linear track + AFP end effector), contract value",
+      "currency": "GBP",
+      "basis": "UK contract award: University of Strathclyde / NMIS, automated fibre placement system with a 6-axis industrial robot arm, linear track and end effector for thermoset prepreg tows, GBP 189,000, awarded to Accudyne Europe Ltd 29 Sep 2021",
+      "source": "https://www.find-tender.service.gov.uk/Notice/026266-2021 ; https://d3tenders.com/contract/ocds-h6vhtk-02b149.md",
+      "date": "2021-09-29",
+      "kind": "public tender award",
+      "scope": "RESEARCH-scale robot-mounted AFP cell (lower bound). Not a production AFP/ATL cell.",
+      "verify": true,
+      "notes": "Pages not opened. Book: annualDepreciation 425,040 x 10 = GBP 4.25m but financeCost 24,000 / 0.02 = GBP 1.2m - the book is INTERNALLY INCONSISTENT by 3.5x. Evidence: production head alone GBP 0.9m (Electroimpact, below), research robot cell GBP 0.19m, gantry aerospace AFP US$3-6m (carried). The GBP 1.2m finance basis fits a robot-mounted production cell; the GBP 4.25m depreciation basis fits a gantry aerospace machine. One of the two book figures is wrong for whichever cell the library means."
+    },
+    {
+      "key": "crosscheck.mach-afp-atl.electroimpact-head",
+      "country": "UK/EU",
+      "value": 900000,
+      "unit": "GBP ex VAT per AFP machine head with laser heating + inspection system (head only)",
+      "currency": "GBP",
+      "basis": "UK contract award: University of Bristol (National Composites Centre), a single AFP machine head with laser heating and an inspection system to extend the layup capability of the NCC's EXISTING production cell, supplier Electroimpact (Hawarden), GBP 900,000 ex VAT, award 14 Jan 2025",
+      "source": "https://www.find-tender.service.gov.uk/Notice/002047-2025 ; https://bidstats.uk/tenders/2025/W04/839123305",
+      "date": "2025-01-14",
+      "kind": "public tender award",
+      "scope": "Production-grade AFP HEAD only (no robot / gantry / NC) - a production cell costs more than this",
+      "verify": true,
+      "notes": "Page not opened; as quoted by the search result."
+    },
+    {
+      "key": "crosscheck.mach-afp-atl.gantry-range",
+      "country": "UK/EU",
+      "value": [3000000, 6000000],
+      "unit": "USD per machine (range for large gantry aerospace AFP)",
+      "currency": "USD",
+      "basis": "Carried from scripts/rate-refresh/hungary-2026-10/research/machines-plastics-other.json (capex.mach-afp-atl): Addcomposites cost guide, traditional large AFP machines ~US$3m-6m",
+      "source": "https://www.addcomposites.com/post/how-much-does-an-automated-fiber-placement-machine-cost",
+      "date": "page undated",
+      "kind": "maker's published price guide (competitor's examples, not a quote)",
+      "scope": "Large gantry aerospace AFP",
+      "verify": true,
+      "notes": "carried from hungary-2026-10/research/machines-plastics-other.json"
+    },
+    {
+      "key": "capex.rotomould-biaxial",
+      "country": "UK/EU",
+      "value": null,
+      "unit": "GBP per machine",
+      "currency": "GBP",
+      "basis": "Not found. No list price, tender or itemised investment for a new Persico / Rotoline / Ferry / Caccia carousel or shuttle. Results were marketplace listings (Alibaba, Made-in-China, IndiaMART, TradeIndia - not prices under RULES) and a start-up cost blog (financialmodelslab.com: carousel US$450k, shuttle US$280k - an unsourced planning model, not recorded as evidence).",
+      "source": "",
+      "date": "",
+      "kind": "not found",
+      "scope": "",
+      "verify": false,
+      "notes": "Book: biaxial 3-arm 30,360 x 10 = GBP 304k / 3,750 / 0.02 = GBP 187.5k; 4-arm 455k / 281k; shuttle 263k / 162.5k. Only cross-check: Corilla (below)."
+    },
+    {
+      "key": "capex.rotomould-carousel-4arm",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found (see capex.rotomould-biaxial).", "source": "", "date": "", "kind": "not found", "scope": "", "verify": false, "notes": ""
+    },
+    {
+      "key": "capex.rotomould-shuttle",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found (see capex.rotomould-biaxial).", "source": "", "date": "", "kind": "not found", "scope": "", "verify": false, "notes": ""
+    },
+    {
+      "key": "crosscheck.rotomould.corilla",
+      "country": "UK/EU",
+      "value": 400000,
+      "unit": "GBP total investment that INCLUDED a brand-new rotational moulding machine (not itemised)",
+      "currency": "GBP",
+      "basis": "Trade press: Corilla Plastics, a GBP 400,000 machinery investment that included installing a brand-new rotational moulding machine; machine share, make and type not stated in the result",
+      "source": "https://www.bpf.co.uk/article/machinery-investment-enables-corilla-3548.aspx",
+      "date": "2024 (per search summary)",
+      "kind": "trade press (company investment announcement, value not itemised)",
+      "scope": "Upper bound for one new rotomoulding machine; type (carousel / shuttle) unknown",
+      "verify": true,
+      "notes": "Page not opened. Consistent with the book's 3-arm and shuttle figures; proves nothing more."
+    },
+    {
+      "key": "capex.thermoform-large",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found. No list price, tender or investment value for Geiss / Illig / Kiefel / CMS / Frimo machines; results were used-machine listings (machineseeker etc. - not prices under RULES).",
+      "source": "", "date": "", "kind": "not found", "scope": "", "verify": false,
+      "notes": "Book: large 455k / 281k; small 152k / 94k; twin-sheet 607k / 375k; pressure 324k / 200k (dep x 10 / finance / 0.02)."
+    },
+    {
+      "key": "capex.thermoform-small",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found for an industrial single-station former (~800 x 600 mm). Only desktop / workshop vacuum formers were priced (Formech 508DT GBP 5,590 + VAT at a UK retailer, https://tilgear.info/machines-and-power-tools/plastics-machinery/frm508vaf-formech-508dt-vacuum-former) - NOT the same scope, not recorded as evidence.",
+      "source": "", "date": "", "kind": "not found", "scope": "", "verify": false, "notes": ""
+    },
+    {
+      "key": "capex.thermoform-twinsheet",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found.", "source": "", "date": "", "kind": "not found", "scope": "", "verify": false, "notes": ""
+    },
+    {
+      "key": "capex.thermoform-pressure",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found.", "source": "", "date": "", "kind": "not found", "scope": "", "verify": false, "notes": ""
+    },
+    {
+      "key": "capex.imm-100t",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found for a named 100 t machine (European or Chinese make). Fleet-average and size-unknown cross-checks below.",
+      "source": "", "date": "", "kind": "not found", "scope": "", "verify": false,
+      "notes": "Book: 14,168 x 10 = GBP 142k; 1,750 / 0.02 = GBP 87.5k."
+    },
+    {
+      "key": "capex.imm-200t",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found for a named 200 t machine.",
+      "source": "", "date": "", "kind": "not found", "scope": "", "verify": false,
+      "notes": "Book: 22,264 x 10 = GBP 223k; 2,750 / 0.02 = GBP 137.5k."
+    },
+    {
+      "key": "crosscheck.imm.wittmann-cz-award",
+      "country": "UK/EU",
+      "value": 316715,
+      "unit": "EUR ex VAT per new injection moulding machine (clamp force NOT stated)",
+      "currency": "EUR",
+      "basis": "EU procurement notice: one new injection moulding machine, awarded to Wittmann Battenfeld CZ, total final contract value EUR 316,715 excluding VAT (estimated EUR 336,580)",
+      "source": "https://op.europa.eu/en/web/public-procurement/procurement-details/-/procurement/ba2d9ba0-8be3-4551-adb8-7a14957d280e",
+      "date": "not visible in the result",
+      "kind": "public tender award",
+      "scope": "European make (Wittmann), one machine; tonnage, robot / auxiliaries and buyer not stated - cross-check only",
+      "verify": true,
+      "notes": "The Hungary round saw this figure without a URL and did not record it; this round's search tied it to the op.europa.eu notice above. A follow-up Czech search did not find the tonnage."
+    },
+    {
+      "key": "crosscheck.imm.arburg-qub-cell",
+      "country": "UK/EU",
+      "value": 150000,
+      "unit": "GBP ex VAT (turnkey research IM system; clamp force not stated)",
+      "currency": "GBP",
+      "basis": "Carried from scripts/rate-refresh/hungary-2026-10/research/machines-plastics-other.json (crosscheck.imm-arburg-research-cell): Queen's University Belfast, Arburg Ltd, GBP 180,000 incl VAT / 1.20 = GBP 150,000 ex VAT, award 13 Feb 2026",
+      "source": "https://www.find-tender.service.gov.uk/Notice/013328-2026",
+      "date": "2026-02-13",
+      "kind": "public tender award",
+      "scope": "European make, turnkey research system, size unknown",
+      "verify": true,
+      "notes": "carried from hungary-2026-10/research/machines-plastics-other.json"
+    },
+    {
+      "key": "crosscheck.imm.haitian-asp",
+      "country": "UK/EU",
+      "value": 37588,
+      "unit": "EUR per machine (Haitian FY2025 average selling price, all clamp sizes, ex-works)",
+      "currency": "EUR",
+      "basis": "Carried from scripts/rate-refresh/hungary-2026-10/research/machines-plastics-other.json (asp.haitian-imm-2025): IMM revenue RMB 16,897.3m / ~56,800 machines = RMB 297,488 at RMB 7.9145/EUR",
+      "source": "https://eu.haitianinter.com/category/company-en/annual-reports-en/ ; https://macplas.it/en/marketing/international-news/haitian-internationals-revenue-grew-10-2025",
+      "date": "FY2025",
+      "kind": "company annual report (derived ASP)",
+      "scope": "Chinese make, fleet mix weighted to small / medium servo machines; ex-works China, bare machine; floor only",
+      "verify": true,
+      "notes": "carried from hungary-2026-10/research/machines-plastics-other.json"
+    },
+    {
+      "key": "capex.imm-500t",
+      "country": "UK/EU",
+      "value": 500000,
+      "unit": "GBP per machine (scope not itemised)",
+      "currency": "GBP",
+      "basis": "Carried from scripts/rate-refresh/uk-2026-10/research/machines-b.json ('capex.imm-500t (cross-check ...)'): LGG Charlesworth invested GBP 500,000 on a 500 t injection moulding machine from Wittmann Battenfeld UK. Upper-bound check carried from the same file: PFF Packaging GBP 1.5m incl. two 500 t hybrid machines -> <= GBP 0.75m each",
+      "source": "https://www.britishplastics.co.uk/machinery/wittmann-battenfeld-works-for-lgg-charlesworth-expansion/ ; https://packagingeurope.com/pff-packaging-group-invests-15m-in-new-im-technology/1420.article",
+      "date": "date not visible in the search snippet (UK round)",
+      "kind": "trade press (company investment announcement, named machine and value)",
+      "scope": "European make (Wittmann). Whether robot / auxiliaries are included is NOT stated.",
+      "verify": true,
+      "notes": "carried from uk-2026-10/research/machines-b.json. Book: 50,600 x 10 = GBP 506k (consistent); 6,250 / 0.02 = GBP 312.5k (LOW for a European make, ~mid-way to a Chinese make). New this round, Chinese make: RP Technologies bought a Borche 600 t machine in an investment of 'over GBP 130k' (https://www.machinery.co.uk/content/news/rp-technologies-invests-over-130k; date not visible; scope not itemised; verify) - a Chinese 500-600 t machine is roughly a quarter of the European price."
+    },
+    {
+      "key": "crosscheck.imm-500t.borche-600t",
+      "country": "UK/EU",
+      "value": 130000,
+      "unit": "GBP investment (LOWER bound, 'over GBP 130k') for a Borche 600 t machine",
+      "currency": "GBP",
+      "basis": "Trade press: RP Technologies 'invests over GBP 130k', purchase of a Borche 600-tonne injection moulding machine",
+      "source": "https://www.machinery.co.uk/content/news/rp-technologies-invests-over-130k",
+      "date": "not visible in the search result",
+      "kind": "trade press (company investment announcement, named machine and value)",
+      "scope": "Chinese make (Borche), 600 t; whether the GBP 130k is the machine alone not stated",
+      "verify": true,
+      "notes": "Page not opened; as quoted by the search result."
+    },
+    {
+      "key": "capex.imm-1200t",
+      "country": "UK/EU",
+      "value": 500000,
+      "unit": "GBP per production cell (Chinese make, nearest size 1,500 t)",
+      "currency": "GBP",
+      "basis": "Carried from scripts/rate-refresh/uk-2026-10/research/machines-b.json ('capex.imm-1500t (cross-check ...)'): Clarity Plastics spent GBP 500,000 creating a dedicated production cell for a Bole 1,500 t machine",
+      "source": "https://www.expressandstar.com/business/clarity-plastics-builds-for-future-with-ps500000-press-investment-8564834",
+      "date": "2025 or 2026 (publish date not visible)",
+      "kind": "trade press (company investment announcement, named machine and value)",
+      "scope": "CHINESE make (Bole), 1,500 t, cell (robot inclusion not stated). LOWER bound for a European 1,200 t machine; no European 1,200 t price found.",
+      "verify": true,
+      "notes": "carried from uk-2026-10/research/machines-b.json. Book: 101,200 x 10 = GBP 1.01m; 12,500 / 0.02 = GBP 625k. Not evidence the book is wrong for a European make."
+    },
+    {
+      "key": "capex.imm-2000t",
+      "country": "UK/EU",
+      "value": 1000000,
+      "unit": "GBP turnkey (LOWER bound, 'over GBP 1 million'; nearest size 2,200 t)",
+      "currency": "GBP",
+      "basis": "Carried from scripts/rate-refresh/uk-2026-10/research/machines-b.json (capex.imm-2000t): Taylor Engineering & Plastics, 2,200 t Wittmann MacroPower, investment 'worth over GBP 1 million' incl. full material handling, drying and blending package, turnkey",
+      "source": "https://interplasinsights.com/plastics-machinery/injection-moulding-machine-news/tep-invests-big-with-wittmann/ ; https://www.bpf.co.uk/article/tep-wittmann-3794.aspx",
+      "date": "2025 (delivery Aug 2025)",
+      "kind": "trade press (company investment announcement, named machine and value)",
+      "scope": "European make; INCLUDES auxiliaries (material handling, drying, blending); 2,200 t",
+      "verify": true,
+      "notes": "carried from uk-2026-10/research/machines-b.json. Book: 159,896 x 10 = GBP 1.6m; 19,750 / 0.02 = GBP 988k. A turnkey 2,200 t cell 'over GBP 1m' does not show either book figure wrong."
+    },
+    {
+      "key": "capex.blow-ebm-500l",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found. Kautex / Bekum orders are reported without values (e.g. Radius Packaging KBB100D at K 2025); Bekum SmartLine claims '30% lower investment' with no base figure.",
+      "source": "", "date": "", "kind": "not found", "scope": "", "verify": false,
+      "notes": "Book: 500L 455k / 281k; coex3 607k / 375k; SBM 2-stage 911k / 562.5k."
+    },
+    {
+      "key": "capex.blow-ebm-coex3",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found.", "source": "", "date": "", "kind": "not found", "scope": "", "verify": false, "notes": ""
+    },
+    {
+      "key": "capex.blow-sbm-2stage",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per machine", "currency": "GBP",
+      "basis": "Not found. Sidel / Krones / KHS publish no prices; results were Chinese / Indian marketplace listings for small 2-4 cavity machines (not prices under RULES, and not the same scope as a high-speed rotary).",
+      "source": "", "date": "", "kind": "not found", "scope": "", "verify": false, "notes": ""
+    },
+    {
+      "key": "capex.extruder-pipe-line",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per line", "currency": "GBP",
+      "basis": "Not found. battenfeld-cincinnati / KraussMaffei / Reifenhaeuser line orders are reported without values; a Polish EU-funds search found no awarded line value.",
+      "source": "", "date": "", "kind": "not found", "scope": "", "verify": false,
+      "notes": "Book: pipe 455k / 300k; profile 304k / 200k; sheet 911k / 550k."
+    },
+    {
+      "key": "capex.extruder-profile-line",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per line", "currency": "GBP",
+      "basis": "Not found.", "source": "", "date": "", "kind": "not found", "scope": "", "verify": false, "notes": ""
+    },
+    {
+      "key": "capex.extruder-sheet-line",
+      "country": "UK/EU",
+      "value": null, "unit": "GBP per line", "currency": "GBP",
+      "basis": "Not found.", "source": "", "date": "", "kind": "not found", "scope": "", "verify": false, "notes": ""
+    }
+  ],
+  "notes": [
+    "18 of 18 web searches used. WebFetch fails for find-tender.service.gov.uk (ENOTFOUND: host outside this session's allowed network), so every figure is as the search result quoted it for that URL and is marked verify: true.",
+    "Book pattern: for all 22 machines annualDepreciation x 10 is ~1.6x financeCost / 0.02 (e.g. imm-100t 141.7k v 87.5k), i.e. the depreciation implies a ~6-year write-off of the finance-basis capex. The one outlier is mach-afp-atl (GBP 4.25m v GBP 1.2m, 3.5x) - internally inconsistent.",
+    "Confident book issues: (1) autoclave-1200mm depreciation basis (~GBP 0.61m) is high v a GBP 334k award for a 400 C 1 m x 1.5 m vessel and a GBP 730k estimate for a 3 m x 6 m vessel; (2) mach-afp-atl depreciation and finance bases disagree 3.5x; (3) imm-500t finance basis (GBP 312.5k) is low for a European make (Wittmann 500 t GBP 500k) but high for a Chinese one (Borche 600 t > GBP 130k) - the book should state which make it prices.",
+    "Not found: rotational moulding (3 types), thermoforming (4 types), imm-100t / imm-200t by size, EBM (2), SBM 2-stage, extrusion lines (3), HP-RTM, standard composite cure oven. Marketplace and used listings were seen and deliberately not recorded."
+  ]
+}

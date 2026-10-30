@@ -37,28 +37,28 @@
     "research": "labour.electronics.fullyLoadedHufPerHr"
    },
    "inspector": {
-    "localPerHr": 6008.05,
-    "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft6,008.05/h",
-    "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
-    "research": "labour.inspector.fullyLoadedHufPerHr"
+    "localPerHr": 5747.23,
+    "basis": "KSH 2025 FEOR 3135 quality-assurance technician: FEOR 3135 Minőségbiztosítási technikus (quality-assurance technician): 726,656 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 740,906; annual 12 × 740,906 − sick-pay saving 30% × 80 h × (740,906 ÷ 174) = 8,788,678; + szocho 13% ÷ 1,728 productive h = Ft5,747.23/h (KSH total earnings include the allowances paid)",
+    "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+    "research": "labour.inspector.monthlyGross"
    },
    "technician": {
-    "localPerHr": 6008.05,
-    "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft6,008.05/h",
-    "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
-    "research": "labour.technician.fullyLoadedHufPerHr"
+    "localPerHr": 6449.82,
+    "basis": "KSH 2025 FEOR 3116 Gépésztechnikus (mechanical engineering technician): FEOR 3116 Gépésztechnikus (mechanical engineering technician): 815,489 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 831,481; annual 12 × 831,481 − sick-pay saving 30% × 80 h × (831,481 ÷ 174) = 9,863,085; + szocho 13% ÷ 1,728 productive h = Ft6,449.82/h (KSH total earnings include the allowances paid)",
+    "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+    "research": "labour.technician.monthlyGross"
    },
    "supervisor": {
-    "localPerHr": 6008.05,
-    "basis": "3 × 8 h Mon–Fri. Hourly base 774,530 ÷ 174 = 4,451.32. Pay 12 × 774,530 = 9,294,360 − sick-pay saving 30% × 80 h × 4,451.32 = 106,832 → 9,187,528; + shift allowance 30% × 4,451.32 × 50% of hours (18–06 share of 3 × 8) × (1728 worked + 216 leave + 0.7 × 80 sick = 2,000 h; Mt. 148 carries the regular allowance into absence pay) = 1,335,397; taxable 10,522,925 + szocho 13% 1,367,980 = annual cost 11,890,905 ÷ 1728 productive h = 6,881.31. — taken WITHOUT the shift allowance (KSH total earnings already include the allowances paid): Ft6,008.05/h",
-    "source": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
-    "research": "labour.supervisor.fullyLoadedHufPerHr"
+    "localPerHr": 7201.66,
+    "basis": "KSH 2025 FEOR 3212 manufacturing supervisor / foreman (művezető, műszakvezető): FEOR 3212 Feldolgozóipari szakmai irányító, felügyelő (manufacturing foreman / shift leader): 910,549 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 928,405; annual 12 × 928,405 − sick-pay saving 30% × 80 h × (928,405 ÷ 174) = 11,012,804; + szocho 13% ÷ 1,728 productive h = Ft7,201.66/h (KSH total earnings include the allowances paid)",
+    "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+    "research": "labour.supervisor.monthlyGross"
    },
    "engineer": {
-    "localPerHr": 7279.78,
-    "basis": "HELD — no Hungarian engineer pay found this round (KSH FEOR 2141/2143 not reachable): the regional table's £16.63/h at £1 = Ft437.75 (UK × factor — the one labour rate not yet Hungary's own)",
-    "source": "",
-    "research": "labour.engineer (not found)"
+    "localPerHr": 8836.65,
+    "basis": "KSH 2025 FEOR 2118 Gépészmérnök (mechanical engineer): FEOR 2118 Gépészmérnök (mechanical engineer): 1,117,271 (KSH 2025 national) × 1.084 (KSH Aug 2026 y/y wage growth) × 0.9406 (cluster factor) = 1,139,181; annual 12 × 1,139,181 − sick-pay saving 30% × 80 h × (1,139,181 ÷ 174) = 13,513,044; + szocho 13% ÷ 1,728 productive h = Ft8,836.65/h (KSH total earnings include the allowances paid)",
+    "source": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+    "research": "labour.engineer.monthlyGross"
    }
   },
   "grades": {
@@ -101,7 +101,7 @@
   },
   "loadingIncluded": "Fully-loaded hourly cost INCLUDES: KSH total gross earnings (base + bonuses / premiums + allowances, as KSH measures them) for the occupation, 2025 national average indexed +8.4% to 2026 and scaled ×0.9406 to the four clusters; paid annual leave (27 days) and weekday public holidays inside the 12 monthly salaries; employer-paid sick leave at 70% for 10 days; the 30% shift allowance (Mt. 141) on the 50% of hours that fall 18:00–06:00 in rotating 3 × 8 h (shop-floor roles), carried into leave and sick pay; szocho 13% on all of it; divided by 1728 productive hours.",
   "loadingNotIncluded": "NOT included (not shown to be standard by a source, or not verified): 13th-month salary (not statutory in Hungary; any annual bonus is already inside KSH total earnings); cafeteria / SZÉP-card benefits (common but not statutory; their tax would add on top); commuting reimbursement (statutory share of pass / ticket cost, Korm. rendelet 39/2010 — not verified); rehabilitation contribution for employers ≥ 25 staff short of the 5% disabled-employee quota (not verified); work clothing, occupational medicine, training time; overtime, weekend and holiday premiums; child additional leave; agency margins; the vocational-training contribution (believed abolished 2022).",
-  "short": "4-cluster, KSH total earnings + szocho, 1,728 productive h; engineer held"
+  "short": "4-cluster, KSH total earnings by FEOR occupation + szocho, 1,728 productive h"
  },
  "energy": {
   "electricityLocalPerKwh": 55.02,

@@ -14,6 +14,11 @@ R = {}
 for f in ['labour-energy', 'machines-a', 'machines-b', 'materials-ferrous', 'materials-nonferrous', 'materials-polymer']:
     for it in json.load(open(os.path.join(HERE, 'research', f + '.json')))['items']:
         R[it['key']] = it
+# round 30 Oct 2026 (scripts/rate-refresh/round-2026-10-30): UK public-contract awards for machines the book held
+for f in ['eu-capex-metal', 'eu-capex-plastics-composites', 'materials']:
+    for it in json.load(open(os.path.join(HERE, '..', 'round-2026-10-30', 'research', f + '.json')))['items']:
+        if it.get('value') is not None or it['key'] not in R:   # a sourced round figure fills a key the first round left empty
+            R[it['key']] = it
 cur = json.load(open(os.path.join(HERE, 'current-uk-book.json')))
 UK = {m['id']: m['gbpPerKg'] for m in cur['materials']}
 
@@ -51,13 +56,18 @@ fam('316L sheet', SS304 + s316 - s304, f'304 CRC £{SS304:.3f} + (Outokumpu May 
 fam('Ferritic sheet (430 / 409L / 441)', SS304 + s430 - s304, f'304 CRC £{SS304:.3f} + (surcharge 430 £{s430:.2f} − 304 £{s304:.2f}) — same base assumed (derived); 409L / 441 at the book\'s premium over 430',
     [src('ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.430.2026-05')], 'ladder', ['mat-aisi430', 'mat-ss409l-sheet', 'mat-ss441-sheet'], base=UK['mat-aisi430'])
 # Foundry charge (the casting engine adds melt energy, labour, loss, line, fettling, overhead and margin)
-GJS = v('ferrous.charge.GJS-500-7'); GJL = v('ferrous.charge.GJL-250'); WCB = v('ferrous.charge.GS-C25_WCB'); CF8 = v('ferrous.charge.CF8')
-fam('Ductile / CGI / ADI / SiMo iron (charge)', GJS, f'Treated-metal charge for GJS-500-7 £{GJS}/kg: 50% Brazilian pig iron (CFR Italy $520/t) + 50% UK 0A scrap (letsrecycle Jul 2026) + 1.2% FeSiMg (EU import value) + inoculant — + the book\'s grade premium over GJS-500-7 in £/kg (alloy content — Mo, Ni, Cu — and, for ADI, the austempering the casting engine does not add separately)',
+# Melt loss on the charge (round 30 Oct 2026): the casting engine loses metal only on the REMELTED gating (casting.ts
+# metalLostKg); the loss on the part's own metal belongs in the charge price — the Poland, Germany and Hungary books
+# divide by (1 − loss) and the UK did not. Iron 2 %, steel 4 % (the same engineering-typical losses those books use).
+IRON_LOSS, STEEL_LOSS = 0.98, 0.96
+GJS = round(v('ferrous.charge.GJS-500-7') / IRON_LOSS, 4); GJL = round(v('ferrous.charge.GJL-250') / IRON_LOSS, 4)
+WCB = round(v('ferrous.charge.GS-C25_WCB') / STEEL_LOSS, 4); CF8 = v('ferrous.charge.CF8')
+fam('Ductile / CGI / ADI / SiMo iron (charge)', GJS, f'Treated-metal charge for GJS-500-7 £{GJS}/kg: (50% Brazilian pig iron (CFR Italy $520/t) + 50% UK 0A scrap (letsrecycle Jul 2026) + 1.2% FeSiMg (EU import value) + inoculant) ÷ 0.98 melt loss (engineering-typical, as the PL / DE / HU books) — + the book\'s grade premium over GJS-500-7 in £/kg (alloy content — Mo, Ni, Cu — and, for ADI, the austempering the casting engine does not add separately)',
     [src('ferrous.charge.GJS-500-7'), src('ferrous.anchor.pig_iron_brazil_cfr_italy'), src('ferrous.anchor.scrap_uk_0A_plate_girder'), src('ferrous.anchor.fesimg_eu_import_unit_value')], 'ladder-add',
     ['mat-gjs500', 'mat-gjs400', 'mat-gjs450-ssf', 'mat-gjs500-14', 'mat-gjs600', 'mat-gjs700', 'mat-gjs350-lt', 'mat-simo', 'mat-adi', 'mat-gjv450', 'mat-gjv500'], base=UK['mat-gjs500'])
-fam('Grey / malleable iron (charge)', GJL, f'Bought metallics for GJL-250 £{GJL}/kg: 60% cast-iron scrap + 25% steel scrap + 15% pig iron (textbook mix; UK letsrecycle scrap, Brazilian pig iron)',
+fam('Grey / malleable iron (charge)', GJL, f'Bought metallics for GJL-250 £{GJL}/kg: (60% cast-iron scrap + 25% steel scrap + 15% pig iron — textbook mix; UK letsrecycle scrap, Brazilian pig iron) ÷ 0.98 melt loss (engineering-typical)',
     [src('ferrous.charge.GJL-250'), src('ferrous.anchor.scrap_uk_9_10_cast')], 'ladder', ['mat-gjl250', 'mat-gjl150', 'mat-gjl200', 'mat-gjl300', 'mat-gjl350', 'mat-gjmb350'], base=UK['mat-gjl250'])
-fam('Cast carbon / low-alloy steel (charge)', WCB, f'Steel-foundry charge £{WCB}/kg: UK 0A plate & girder scrap £142.5/t (Mn/Si trim not priced) + the book\'s grade premium in £/kg (Cr–Mo content)',
+fam('Cast carbon / low-alloy steel (charge)', WCB, f'Steel-foundry charge £{WCB}/kg: UK 0A plate & girder scrap £142.5/t ÷ 0.96 melt loss (engineering-typical, as the PL / DE / HU books; Mn/Si trim not priced) + the book\'s grade premium in £/kg (Cr–Mo content)',
     [src('ferrous.charge.GS-C25_WCB'), src('ferrous.anchor.scrap_uk_0A_plate_girder')], 'ladder-add', ['mat-gs-c25', 'mat-astm-a216-wcb', 'mat-g20mn5', 'mat-g42crmo4'], base=UK['mat-gs-c25'], scrap=v('ferrous.anchor.scrap_uk_no1_old_steel'))
 fam('Cast stainless (charge)', CF8, f'CF8 virgin-units charge £{CF8}/kg (Ni 9.5% at LME, Cr 19.5% via ferrochrome benchmark, Fe units) — an upper bound (scrap-based melting is cheaper) — + the book\'s grade premium in £/kg (Mo / Ni / Cr content: CF8M is CF8 + the 316-v-304 surcharge)',
     [src('ferrous.charge.CF8'), src('ferrous.anchor.nickel_lme_cash'), src('ferrous.anchor.ferrochrome_eu_benchmark_q3')], 'ladder-add',
@@ -163,6 +173,19 @@ machines = {
         {'id': 'robot-mig', 'match': '^robot-mig-cell$', 'refId': 'robot-mig-cell', 'refCapexGbp': (80000 + 250000) / 2,
          'refKw': None, 'kwBasis': 'no sourced draw — the book\'s own running load kept',
          'basis': 'UK integrator band for a single-robot welding cell £80,000–250,000 (Phoenix Robotic; Robot Store gives £65,000–120,000+ for a full system) — midpoint £165,000', 'research': 'capex.robot-mig-cell', 'source': R['capex.robot-mig-cell']['source'], 'confidence': 'Low'},
+        # round 30 Oct 2026 — UK public-contract awards (find-tender / Contracts Finder, read from search results: verify)
+        {'id': 'press-brake', 'match': '^brake-', 'refId': 'brake-amada-hfe100', 'refCapexGbp': v('capex.brake-amada-hfe100'),
+         'refKw': None, 'kwBasis': 'no sourced draw — the book\'s own running load kept',
+         'basis': 'Amada UK press brake, Ministry of Justice award £120,000 ex-VAT (Feb 2026; a second award £112,500; tonnage not stated) — TRUMPF TruBend 3100 new €136,000 (≈ £116,800) agrees; the other brakes sized by the book\'s relative capital',
+         'research': 'capex.brake-amada-hfe100', 'source': R['capex.brake-amada-hfe100']['source'], 'confidence': 'Medium'},
+        {'id': 'autoclave', 'match': '^autoclave-1200mm$', 'refId': 'autoclave-1200mm', 'refCapexGbp': v('capex.autoclave-1200mm'),
+         'refKw': None, 'kwBasis': 'no sourced draw — the book\'s own running load kept',
+         'basis': 'ASC Process Systems autoclave moulding facility, University of Bristol award £333,765 ex-VAT (Jul 2023) — a smaller (~1.0 × 1.5 m), hotter (400 °C) vessel than the 1.2 × 3 m library unit, installation likely included; a 3 × 6 m vessel was estimated at £730k (QUB, 2025)',
+         'research': 'capex.autoclave-1200mm', 'source': R['capex.autoclave-1200mm']['source'], 'confidence': 'Low'},
+        {'id': 'rtm-press', 'match': '^rtm-press-std$', 'refId': 'rtm-press-std', 'refCapexGbp': round((230000 + 120745) / 2),
+         'refKw': None, 'kwBasis': 'no sourced draw — the book\'s own running load kept',
+         'basis': 'Langzauner hydraulic composites presses, UK university awards £230,000 installed (2020) and £120,745 (2021), tonnage not stated, press only — midpoint £175,373',
+         'research': 'capex.rtm-press-std', 'source': R['capex.rtm-press-std']['source'], 'confidence': 'Low'},
     ],
     'notRebuilt': 'capex not sourced (or the book agrees with the evidence: IMM 800–2,000 t, HPDC 1,600 t, SMT lines): capital held; energy re-priced at the new UK tariff',
 }

@@ -1,0 +1,18 @@
+{
+ "CN": {
+  "medianSourcedPct": 45.9,
+  "heldPct": 31.4
+ },
+ "IN": {
+  "medianSourcedPct": 46.6,
+  "heldPct": 32
+ },
+ "PL": {
+  "medianSourcedPct": 50.1,
+  "heldPct": 31.8
+ },
+ "HU": {
+  "medianSourcedPct": 37.6,
+  "heldPct": 31
+ }
+}

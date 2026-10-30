@@ -23,6 +23,7 @@
 import { activeRates } from './rate-context.js';
 import { computeHeatTreatRate } from './gear-heat-treat-rate.js';
 import { REGIONAL_DATA, SURFACE_REGIONAL_FACTORS, toolroomFactorFor, type ManufacturingRegion } from './regional-rates.js';
+import { sourcedServiceFactor, type ServiceKind } from './country-books.js';
 import { DEFAULT_RATE_LIBRARY } from './rate-library.js';
 
 /** The country of the active rate book (rate-context.ts); the UK when it names none. */
@@ -93,6 +94,8 @@ export function countryFactor(basis: CountryBasis, region: ManufacturingRegion =
     const g = Math.min(1, Math.max(0, basis.globalShare));
     return Math.round((g + (1 - g) * countryFactor(basis.rest, region)) * 10_000) / 10_000;
   }
+  // a service the country's market prices (local v UK, same service) outranks the derived wage-and-machine ratio
+  if (basis !== 'global') { const sourced = sourcedServiceFactor(region, basis as ServiceKind); if (sourced) return sourced.factor; }
   switch (basis) {
     case 'toolroom': return toolroomFactorFor(region);
     case 'engineer': return engineerFactor(region);
@@ -116,5 +119,6 @@ export function countryNote(basis: CountryBasis, region: ManufacturingRegion = a
   const label = typeof basis === 'object'
     ? ('material' in basis ? `${basis.material} price ratio` : `${Math.round(basis.globalShare * 100)}% traded + ${typeof basis.rest === 'string' ? basis.rest : 'mixed'}`)
     : basis === 'process' ? 'process-service' : basis === 'heatTreat' ? 'heat-treat' : basis;
-  return ` × ${REGIONAL_DATA[region].name} ${label} factor ${f}`;
+  const sourced = typeof basis === 'string' && basis !== 'global' ? sourcedServiceFactor(region, basis as ServiceKind) : null;
+  return ` × ${REGIONAL_DATA[region].name} ${label} factor ${f}${sourced ? ` (${sourced.note})` : ' (derived from its wage and machine rates)'}`;
 }

@@ -27,7 +27,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { computeMachineRateFromBuildup } from '../src/engine/rate-library.js';
+import { computeMachineRateFromBuildup, DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import type { MachineRateBuildup } from '../src/engine/types.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -253,6 +253,15 @@ for (const s of SNAP.machines.filter(x => x.region !== 'UK')) {
   lib = lib.slice(0, span[0]) + call + lib.slice(span[1]);
   register.push({ kind: 'machine', id: s.id, name: s.class, current: s.gbpPerHr, next: r2(computeMachineRateFromBuildup(nb)), unit: '£/h (country benchmark)',
     decision: 'held (a country benchmark; energy line restated on the new UK basis, kWh unchanged)', basis: s.source, source: '' });
+}
+
+// Machines added to the library AFTER the frozen snapshot (the pilot's twin-pallet HMC, 30 Oct 2026): their own
+// build-up stands as written (it already follows this book's method); the register lists them so every machine is in it.
+const inSnap = new Set(SNAP.machines.map(m => m.id));
+for (const m of DEFAULT_RATE_LIBRARY.machines) {
+  if (inSnap.has(m.id) || !m.buildup) continue;
+  register.push({ kind: 'machine', id: m.id, name: m.machineClass, current: null, next: r2(computeMachineRateFromBuildup(m.buildup)), unit: '£/h machine only',
+    decision: 'added after the snapshot (its own build-up, this book\'s method)', basis: q(m.sourceNote ?? ''), source: '' });
 }
 
 // ── report ───────────────────────────────────────────────────────────────────

@@ -1,0 +1,43 @@
+/**
+ * The live harness's predicates, each proven able to FAIL (country review, 30 Oct 2026: a crossover check compared a
+ * money string with 0 and never ran). A predicate with no failing case here is not a check.
+ */
+import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { money, samePenny, costedAlternatives, crossoverStated, near } from '../e2e/trace-checks.js';
+
+describe('live-harness predicates', () => {
+  it('money reads every display currency and nothing else', () => {
+    expect(money('£1,234.56')).toBe('1,234.56');
+    expect(money('Ft5,348.85 ± 15%')).toBe('5,348.85');
+    expect(money('zł53.32')).toBe('53.32');
+    expect(money('¥4.53')).toBe('4.53');
+    expect(money('₹853.16')).toBe('853.16');
+    expect(money('no money here 12')).toBe('');
+  });
+  it('samePenny passes the same costing and FAILS a different one — in £, whatever the display currency', () => {
+    expect(samePenny('£1.29', '£1.29')).toBe(true);
+    expect(samePenny('£1.29', '£1.30')).toBe(false);
+    expect(samePenny('Ft5,348.87', 'Ft5,348.85', 437.75)).toBe(true);     // 2 fillér = £0.00005
+    expect(samePenny('Ft5,348.85', 'Ft5,353.85', 437.75)).toBe(false);    // Ft5 = £0.011
+    expect(samePenny('', '£1.29')).toBe(false);
+  });
+  it('the crossover check counts only real routes and FAILS when an alternative states none', () => {
+    const buildUpOnly = '<table><tbody><tr><th>Material</th><td>£2.55</td></tr><tr><th>Process</th><td>£0.13</td></tr></tbody></table>';
+    expect(costedAlternatives(buildUpOnly)).toBe(0);
+    expect(crossoverStated(buildUpOnly)).toBe(true);
+    const altNoCross = '<tr><th>Casting</th><td>£5.09</td></tr><button data-cost-route="casting">Cost this route</button>';
+    expect(costedAlternatives(altNoCross)).toBe(1);
+    expect(crossoverStated(altNoCross)).toBe(false);
+    expect(crossoverStated(altNoCross + '<div class="cad-compare-cross">cheaper at every volume</div>')).toBe(true);
+    // the comparison renderer still marks a costed alternative the way the predicate reads it
+    expect(readFileSync('src/ui/cad-workspace.ts', 'utf8')).toMatch(/data-cost-route="\$\{esc\(r\.route\)\}"/);
+    expect(readFileSync('src/ui/cad-workspace.ts', 'utf8')).toMatch(/class="cad-compare-cross"/);
+  });
+  it('near scales a £ tolerance to the display currency and FAILS beyond it', () => {
+    expect(near(102.9689, 102.9810, 0.0006, 437.75)).toBe(true);
+    expect(near(102.9689, 103.5, 0.0006, 437.75)).toBe(false);
+    expect(near(0.2352, 0.2353)).toBe(true);
+    expect(near(0.2352, 0.2362)).toBe(false);
+  });
+});

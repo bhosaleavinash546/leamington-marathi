@@ -55,7 +55,9 @@ describe('materials: European anchors; a casting is its charge', () => {
     expect(mat('mat-dc01').pricePerKg).toBeLessThanOrEqual(mat('mat-dc04').pricePerKg);
   });
   it('a casting grade is the metal charge (the engine adds melt, loss, line, labour, overhead, margin)', () => {
-    expect(mat('mat-gjs500').pricePerKg).toBeCloseTo(0.287, 3);
+    // ÷ 0.98 melt loss on the part's own metal (round 30 Oct 2026 — the engine loses metal only on the remelted gating)
+    expect(mat('mat-gjs500').pricePerKg).toBeCloseTo(0.287 / 0.98, 3);
+    expect(mat('mat-gs-c25').pricePerKg).toBeCloseTo(0.1425 / 0.96, 3);
     expect(mat('mat-gjs500').sourceNote).toMatch(/charge/i);
     expect(mat('mat-gs-c25').scrapRecoveryPricePerKg).toBeLessThan(mat('mat-gs-c25').pricePerKg);
     expect(mat('mat-adc12').pricePerKg).toBeCloseTo(2.104, 3);

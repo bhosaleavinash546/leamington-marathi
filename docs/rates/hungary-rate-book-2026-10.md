@@ -32,7 +32,7 @@ on the page at the next refresh (`RULES.md`).
 | Semi-skilled | Ft5,202/h | Ft3,213 | KSH group 8 average, same arithmetic (proxy) |
 | Foundry / furnace | Ft4,587/h | Ft2,999 | KSH 7310 pattern maker (proxy) |
 | Forge | Ft4,910/h | Ft2,997 | KSH 7326 smith |
-| Engineer | Ft7,280/h — **held** | same | no Hungarian engineer pay found; the one labour rate still UK × factor |
+| Engineer / technician / supervisor / inspector | Ft8,837 / 6,450 / 7,202 / 5,747 per h | UK × factor | KSH 2025 FEOR 2118 / 3116 / 3212 / 3135 (rate round 30 Oct 2026) |
 | Electricity | Ft55.02/kWh | Ft50.34 | HUPX Cal-26 + E.ON 2026 MV network (MEKH) + energiaadó — derived |
 | Gas | Ft29.73/kWh | Ft30.20 | TTF Oct-26 contract (a floor; distribution not found) |
 | Hours | 6,072 h (253 days × 24) | 4,000 | Hungary's 2026 working calendar, 3 × 8 h |

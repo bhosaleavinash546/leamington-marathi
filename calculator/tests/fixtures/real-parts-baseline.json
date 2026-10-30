@@ -8101,16 +8101,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "composites",
-      "total": 84.02,
+      "total": 79.81,
       "breakdown": {
         "rawMaterial": 14.74,
-        "process": 27.16,
+        "process": 23.68,
         "labour": 11.5,
         "tooling": 15.62,
         "packaging": 0.19,
         "logistics": 0.3,
-        "overhead": 8.28,
-        "margin": 6.22
+        "overhead": 7.87,
+        "margin": 5.91
       },
       "warnings": [
         "material_low_confidence"
@@ -8915,16 +8915,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "composites",
-      "total": 73.55,
+      "total": 69.38,
       "breakdown": {
         "rawMaterial": 13.36,
-        "process": 16.25,
+        "process": 12.8,
         "labour": 5.72,
         "tooling": 25.34,
         "packaging": 0.07,
         "logistics": 0.07,
-        "overhead": 7.28,
-        "margin": 5.45
+        "overhead": 6.87,
+        "margin": 5.14
       },
       "warnings": [
         "material_low_confidence"
@@ -9316,16 +9316,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "composites",
-      "total": 479.83,
+      "total": 438.05,
       "breakdown": {
         "rawMaterial": 181.12,
-        "process": 123.9,
+        "process": 89.36,
         "labour": 36.66,
         "tooling": 54.2,
         "packaging": 0.39,
         "logistics": 0.52,
-        "overhead": 47.5,
-        "margin": 35.54
+        "overhead": 43.36,
+        "margin": 32.45
       },
       "warnings": [
         "material_low_confidence"
@@ -10108,16 +10108,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 20.04,
+      "total": 20.06,
       "breakdown": {
-        "rawMaterial": 4.15,
+        "rawMaterial": 4.17,
         "process": 3.33,
         "labour": 8.14,
         "tooling": 0.56,
         "packaging": 0.15,
         "logistics": 0.27,
-        "overhead": 1.94,
-        "margin": 1.48
+        "overhead": 1.95,
+        "margin": 1.49
       }
     }
   },
@@ -16088,15 +16088,15 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 42.5,
+      "total": 42.56,
       "breakdown": {
-        "rawMaterial": 11.92,
+        "rawMaterial": 11.98,
         "process": 6.99,
         "labour": 14.08,
         "tooling": 1.18,
         "packaging": 0.36,
         "logistics": 0.71,
-        "overhead": 4.1,
+        "overhead": 4.11,
         "margin": 3.15
       }
     }

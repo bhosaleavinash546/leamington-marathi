@@ -61,7 +61,8 @@ describe('1. a laminate can be routed to composites', () => {
 describe('2. headless costs a composite at all', () => {
   it('composites is costable, and all three parts cost (it returned null: "no cost mapping")', async () => {
     expect(COSTABLE_COMMODITIES).toContain('composites');
-    expect((await headless(LID, 'rtm-gf', 5_000)).total).toBeCloseTo(90.89, 2);
+    // £90.89 → £86.68: the RTM press is on UK award capex (Langzauner, £120,745–230,000) — rate round 30 Oct 2026
+    expect((await headless(LID, 'rtm-gf', 5_000)).total).toBeCloseTo(86.68, 2);
     expect((await headless(ROOF, 'prepreg-cf', 5_000)).status).toBe('costed');
     expect((await headless(HAT, 'prepreg-cf', 5_000)).status).toBe('costed');
   });
@@ -115,8 +116,10 @@ describe('6. the rest of the cell is ruled, the same on both paths', () => {
 describe('7. baseline', () => {
   it('records all three at 50,000/yr', () => {
     // Arithmetic audit (30 Oct 2026): prepreg bought at the whole laminate mass (roof +), NDI as a station (hat −£25).
-    expect(baseline.find(b => b.part === ROOF)!.outcome.total).toBe(479.83);
-    expect(baseline.find(b => b.part === LID)!.outcome.total).toBe(84.02);
-    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(73.55);
+    // Rate round (30 Oct 2026): the autoclave (Bristol award £333,765) and RTM press (UK awards £120,745–230,000) moved
+    // from held build-ups to sourced capex — roof £479.83 → £438.05, lid £84.02 → £79.81, hat £73.55 → £69.38.
+    expect(baseline.find(b => b.part === ROOF)!.outcome.total).toBe(438.05);
+    expect(baseline.find(b => b.part === LID)!.outcome.total).toBe(79.81);
+    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(69.38);
   });
 });

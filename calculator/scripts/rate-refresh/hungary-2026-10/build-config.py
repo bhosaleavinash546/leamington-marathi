@@ -207,13 +207,29 @@ def lab(role, std=False):
 ENG_GBP = 16.63   # REGIONAL_DATA.HU.labour.engineer before this book (UK × factor)
 engineer = {'localPerHr': round(ENG_GBP * FX, 2), 'basis': f'HELD — no Hungarian engineer pay found this round (KSH FEOR 2141/2143 not reachable): the regional table\'s £{ENG_GBP}/h at £1 = Ft{FX} (UK × factor — the one labour rate not yet Hungary\'s own)',
             'source': '', 'research': 'labour.engineer (not found)'}
+# Round 30 Oct 2026: engineer, technician, supervisor and inspector from their own KSH 2025 FEOR averages
+# (round-2026-10-30/research/hu-labour.json) — they were the machinist proxy (technician, supervisor, inspector) and a
+# held UK × factor (engineer). Same method as the machinist: KSH total earnings × 1.084 × 0.9406, the sick-pay saving
+# on 10 days at 30%, szocho 13%, ÷ 1,728 productive hours; no extra shift allowance.
+RND = {it['key']: it for it in json.load(open(os.path.join(HERE, '..', 'round-2026-10-30', 'research', 'hu-labour.json')))['items']}
+FEOR = {'engineer': ('2118 Gépészmérnök (mechanical engineer)', 'labour.engineer.monthlyGross'),
+        'technician': ('3116 Gépésztechnikus (mechanical engineering technician)', 'labour.technician.monthlyGross'),
+        'supervisor': ('3212 manufacturing supervisor / foreman (művezető, műszakvezető)', 'labour.supervisor.monthlyGross'),
+        'inspector': ('3135 quality-assurance technician', 'labour.inspector.monthlyGross')}
+def feor(role):
+    name, key = FEOR[role]
+    g = float(RND[key]['value'])
+    pay = 12 * g - 0.30 * 80 * g / 174
+    rate = round(pay * 1.13 / 1728, 2)
+    return {'localPerHr': rate, 'basis': f'KSH 2025 FEOR {name}: {RND[key]["basis"]}; annual 12 × {g:,.0f} − sick-pay saving 30% × 80 h × ({g:,.0f} ÷ 174) = {pay:,.0f}; + szocho 13% ÷ 1,728 productive h = Ft{rate:,.2f}/h (KSH total earnings include the allowances paid)',
+            'source': RND[key]['source'], 'research': key}
 labour = {
-    'categories': {**{c: lab(c) for c in ['skilled', 'semiskilled', 'foundry', 'electronics', 'inspector', 'technician', 'supervisor']},
-                   'engineer': engineer},
+    'categories': {**{c: lab(c) for c in ['skilled', 'semiskilled', 'foundry', 'electronics']},
+                   **{c: feor(c) for c in ['inspector', 'technician', 'supervisor', 'engineer']}},
     'grades': {'forge': lab('forge'), 'furnace': lab('furnace'), 'blow': lab('blow'), 'roto': lab('roto'), 'thermoform': lab('thermoform'), 'trim-router': lab('trimRouter')},
     'loadingIncluded': R['labour.loadingIncluded']['basis'],
     'loadingNotIncluded': R['labour.loadingNotIncluded']['basis'],
-    'short': '4-cluster, KSH total earnings + szocho, 1,728 productive h; engineer held',
+    'short': '4-cluster, KSH total earnings by FEOR occupation + szocho, 1,728 productive h',
 }
 
 # ── ENERGY ────────────────────────────────────────────────────────────────────────────────────────────────────────────

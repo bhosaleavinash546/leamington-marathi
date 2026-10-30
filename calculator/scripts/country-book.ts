@@ -181,8 +181,15 @@ register.push({ kind: 'energy', id: 'gas', name: 'industrial gas', currentInr: r
 const M = cfg.machines;
 const rentGbpPerM2Yr = r4(M.rentLocalPerM2Month !== undefined ? M.rentLocalPerM2Month * 12 / FX : M.rentInrPerSqftMonth * 12 * 10.7639 / FX);
 const labourRatio = r4(labourGbp.skilled / REGIONAL_DATA.UK.labour.skilled);
+// sourced service prices (local v UK, same service) — they replace the derived service factors (round 30 Oct 2026)
+const services = (cfg.services ?? {}) as NonNullable<CountryBook['services']>;
+for (const [kind, sp] of Object.entries(services)) {
+  register.push({ kind: 'service', id: kind, name: sp.what, currentInr: null, newInr: sp.localPerUnit, unit: `${SYM} ${sp.unit}`,
+    decision: `sourced (UK £${sp.ukGbpPerUnit} ${sp.unit}: factor ${(sp.localPerUnit / FX / sp.ukGbpPerUnit).toFixed(4)})`, basis: sp.basis, source: sp.source });
+}
 const book: CountryBook = {
   region: REGION, asOf: cfg.asOf, fxToGBP: FX, ...(REGION !== 'IN' ? { currencySymbol: SYM } : {}), labourGrades, materials,
+  ...(Object.keys(services).length ? { services } : {}),
   machines: {
     hoursPerYear: M.hoursPerYear, shiftDepreciationFactor: r4(M.shiftDepreciationFactor ?? M.scheduleIIShiftFactor), lifeYears: M.lifeYears,
     financeRate: M.financeRate, ukFinanceRate: M.ukFinanceRate, maintenancePctOfCapex: M.maintenancePctOfCapex,
@@ -262,6 +269,12 @@ let newBlock = inBlock[1].replace(/^(?:  \/\/[^\n]*\n)+/, '')
 if (newElec !== undefined || newGas !== undefined) newBlock = newBlock.replace(/energy: \{[^}]*\}/, `energy: { electricityPerKwh: ${elecGbp}, gasPerKwh: ${gasGbp} }`);
 for (const k of ['overhead', 'packaging', 'logistics'] as const) {
   const m = MULTS[k]; if (m) newBlock = newBlock.replace(new RegExp(`${k}Multiplier: [0-9.]+`), `${k}Multiplier: ${m.value}`);
+}
+// where the shop multipliers stand on evidence (round 30 Oct 2026) — printed on every report's basis line
+if (cfg.shopMultipliersBasis) {
+  const line = `shopMultipliersBasis: '${String(cfg.shopMultipliersBasis).replace(/'/g, '’')}',`;
+  newBlock = /shopMultipliersBasis: '[^']*',/.test(newBlock) ? newBlock.replace(/shopMultipliersBasis: '[^']*',/, line)
+    : newBlock.replace(/(logisticsMultiplier: [0-9.]+,)/, `$1\n    ${line}`);
 }
 // held materials at par (Hungary, Oct 2026): a grade with no country evidence is priced at the book's own (European
 // market) price — no unsourced country discount (the 0.97 / resin factors had no source)

@@ -1,6 +1,6 @@
 import type { RateLibrary, MaterialRate, Breakdown8Bucket, DeliveryTerms } from './types.js';
 import { computeMachineRatePerHr } from './rate-library-merge.js';
-import { COUNTRY_BOOKS, countryMachine, countryMaterial } from './country-books.js';
+import { COUNTRY_BOOKS, countryMachine, countryMaterial, sourcedServiceFactor } from './country-books.js';
 import { UK_ELECTRICITY_GBP_PER_KWH } from './uk-energy.js';
 import { AL_ALLOYS, AL_MARKET, BILLET_PREMIUM_USD_PER_T, billetPriceGbpPerKg, type AlAlloy } from './al-extrusion-data.js';
 
@@ -183,7 +183,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     energy: { electricityPerKwh: 0.1378, gasPerKwh: 0.0489 },
     materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
     materialMultiplier: 0.97,
-    machineRateMultiplier: 0.56,
+    machineRateMultiplier: 0.57,
     overheadMultiplier: 0.85,
     packagingMultiplier: 0.90,
     logisticsMultiplier: 1.20,
@@ -214,13 +214,13 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     packagingMultiplier: 0.85,
     logisticsMultiplier: 1.25,
   },
-  // Hungary: labour from the Hungary rate book 2026-10-30 (scripts/country-book.ts; 4-cluster, KSH total earnings + szocho, 1,728 productive h; engineer held);
+  // Hungary: labour from the Hungary rate book 2026-10-30 (scripts/country-book.ts; 4-cluster, KSH total earnings by FEOR occupation + szocho, 1,728 productive h);
   // machineRateMultiplier = median Hungary ÷ UK machine rate in that book (the service factors read it).
   HU: {
     name: 'Hungary',
     currency: 'HUF',
     fxToGBP: 437.75,   // MNB official mid rate 29 Oct 2026 (Hungary rate book, scripts/rate-refresh/hungary-2026-10)
-    labour: { skilled: 13.7248, semiskilled: 11.8831, engineer: 16.63, foundry: 10.4793, electronics: 11.8831, inspector: 13.7248, technician: 13.7248, supervisor: 13.7248 },
+    labour: { skilled: 13.7248, semiskilled: 11.8831, engineer: 20.1865, foundry: 10.4793, electronics: 11.8831, inspector: 13.129, technician: 14.734, supervisor: 16.4515 },
     energy: { electricityPerKwh: 0.1257, gasPerKwh: 0.0679 },
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
@@ -282,6 +282,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     overheadMultiplier: 0.75,
     packagingMultiplier: 0.70,
     logisticsMultiplier: 1.45,
+    shopMultipliersBasis: 'Overhead ×0.75 agrees with automotive-supplier filings: SG&A ÷ cost of sales Tuopu 4.15 %, Huayu 6.04 % v the UK’s TI Fluid Systems 7.68 %, Dowlais ~10.4 % — a ratio of 0.67–0.79 (read from search results; verify); packaging and logistics multipliers held, not researched for China',
   },
   // India: labour from the India rate book 2026-10-10 (scripts/country-book.ts; statutory-loaded, 4-cluster, see the book);
   // machineRateMultiplier = median India ÷ UK machine rate in that book (the service factors read it).
@@ -456,7 +457,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     energy: { electricityPerKwh: 0.136, gasPerKwh: 0.052 },
     materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
     materialMultiplier: 0.97,
-    machineRateMultiplier: 0.56,
+    machineRateMultiplier: 0.57,
     overheadMultiplier: 0.85,
     packagingMultiplier: 0.9,
     logisticsMultiplier: 1.2,
@@ -930,6 +931,9 @@ const PROCESS_LABOUR_CATEGORY: Record<string, keyof RegionalData['labour']> = {
 export function toolroomFactorFor(region: ManufacturingRegion): number {
   const rd = REGIONAL_DATA[region];
   if (!rd || region === 'UK') return 1;
+  // a toolmaker's selling rate sourced in the country and in the UK outranks the derived ratio (round 30 Oct 2026)
+  const sourced = sourcedServiceFactor(region, 'toolroom');
+  if (sourced) return sourced.factor;
   return Math.round((0.5 * rd.labour.skilled / REGIONAL_DATA.UK.labour.skilled + 0.5 * rd.machineRateMultiplier) * 10_000) / 10_000;
 }
 

@@ -1320,6 +1320,24 @@ export const CHINA_BOOK: CountryBook = {
   "heldBasis": "capex not sourced for China: the book's capital (UK × 0.55) is HELD; the China operating model (2 × 12 h hours, straight-line, LPR finance, rent, tariff, support at China wages) is applied",
   "groups": [
    {
+    "id": "fibre-laser-domestic",
+    "match": "^(laser-trumpf-3030|laser-trumpf-5030|laser-bystronic-3015|laser-amada-ensis-3015)$",
+    "refId": "laser-trumpf-3030",
+    "refCapexGbp": 41948.2,
+    "basis": "Han's Laser 2025 high-power laser-cutting average selling price ¥372,500 ex-VAT (revenue ¥25.33亿 ÷ 6,800 units, ~6–30 kW mixed); HSG and Senfeng IPO filings ¥350–530k a machine agree — a Chinese 6 kW fibre laser, not a Trumpf-class import (the held UK × 0.55 figure was ~¥1.83 M)",
+    "source": "https://static.cninfo.com.cn/finalpage/2026-04-17/1225114032.PDF ; https://finance.sina.com.cn/tech/roll/2026-04-17/doc-inhuuyhy2208124.shtml",
+    "confidence": "Low"
+   },
+   {
+    "id": "imm-domestic",
+    "match": "^imm-\\d+t$",
+    "refId": "imm-200t",
+    "refCapexGbp": 34079.95,
+    "basis": "Haitian FY2024 Mars series average selling price ¥302,630 ex-VAT (revenue ¥104.71亿 ÷ ~34,600 units; bare machine) — an UPPER bound for a 200 t machine (Mars spans ~60–3,300 t); the other sizes by the book's relative capital",
+    "source": "https://finance.sina.com.cn/stock/hkstock/hkzmt/2025-03-20/doc-ineqhwiq0600262.shtml ; https://gmg.9fzt.com/report/HKSE/01882/778171497678.html ; https://www.1n9280.com/ndetail/73802.html",
+    "confidence": "Low"
+   },
+   {
     "id": "cnc-vmc-domestic",
     "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
     "refId": "mach-vmc3",

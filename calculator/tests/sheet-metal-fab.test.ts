@@ -372,9 +372,12 @@ describe('Named SM fab machines in DEFAULT_RATE_LIBRARY', () => {
     expectNearBenchmark(m.computedRatePerHr, 29.47);
   });
 
-  it('Amada press brake rate ≈ £55/hr', () => {
+  // Rate round 30 Oct 2026: the held "Target £55/hr" build-up implied a ~£700k brake; the UK MoJ awards (Amada UK,
+  // £112,500–120,000, Feb 2026) and TRUMPF's new TruBend 3100 at €136,000 put it at ~£120k — machine only ≈ £15.8/h
+  it('Amada press brake rate ≈ £15.8/hr on the sourced capex', () => {
     const m = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'brake-amada-hfe100')!;
-    expectNearBenchmark(m.computedRatePerHr, 55);
+    expect(m.sourceNote).toMatch(/Capex £120,000 = Amada UK press brake, Ministry of Justice award/);
+    expectNearBenchmark(m.computedRatePerHr, 15.77);
   });
 
   it('Schuler 400T stamping press rate ≈ £150/hr', () => {

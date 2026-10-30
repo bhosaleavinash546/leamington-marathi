@@ -62,6 +62,26 @@ export interface CountryMachineModel {
   continuousHoursPerYear?: number;
   continuousBasis?: string;
 }
+/**
+ * A bought-in service the country's market prices — the SAME service priced in the UK, both sourced. The factor every
+ * UK-basis £ constant of that kind is moved by is local ÷ UK (round 30 Oct 2026): a market ratio, not the wage-and-
+ * machine ratio the regional table derives.
+ */
+export interface CountryServicePrice {
+  /** What was priced on both sides, e.g. "toolmaker shop selling rate, per hour". */
+  what: string;
+  unit: string;
+  /** The country's price, local currency per unit. */
+  localPerUnit: number;
+  /** The UK price of the same service, £ per unit. */
+  ukGbpPerUnit: number;
+  basis: string;
+  source: string;
+  confidence: Confidence;
+}
+/** The service kinds a sourced price can stand for (regional-services.ts `CountryBasis` strings). */
+export type ServiceKind = 'toolroom' | 'engineer' | 'heatTreat' | 'inspection' | 'process' | 'chemical';
+
 export interface CountryBook {
   region: string;
   asOf: string;
@@ -72,6 +92,21 @@ export interface CountryBook {
   labourGrades: Record<string, { gbpPerHr: number; basis: string; source: string; confidence: Confidence }>;
   machines: CountryMachineModel;
   materials: Record<string, CountryMaterialPrice>;
+  /** Sourced service prices (local v UK, same service) — they replace the derived service factors where present. */
+  services?: Partial<Record<ServiceKind, CountryServicePrice>>;
+}
+
+/** The sourced service factor for a kind in a region (local ÷ UK, 4 dp), or null when the book has none. */
+export function sourcedServiceFactor(region: string, kind: ServiceKind): { factor: number; note: string } | null {
+  const book = COUNTRY_BOOKS[region];
+  const sp = book?.services?.[kind];
+  if (!book || !sp || !(sp.ukGbpPerUnit > 0) || !(sp.localPerUnit > 0)) return null;
+  const localGbp = sp.localPerUnit / book.fxToGBP;
+  const sym = book.currencySymbol ?? '';
+  return {
+    factor: Math.round(localGbp / sp.ukGbpPerUnit * 10_000) / 10_000,
+    note: `sourced: ${sp.what} ${sym}${sp.localPerUnit.toLocaleString('en-GB')} ${sp.unit} v UK £${sp.ukGbpPerUnit.toLocaleString('en-GB')} ${sp.unit}`,
+  };
 }
 
 export const COUNTRY_BOOKS: Record<string, CountryBook | undefined> = { IN: INDIA_BOOK, CN: CHINA_BOOK, PL: POLAND_BOOK, DE: GERMANY_BOOK, HU: HUNGARY_BOOK };

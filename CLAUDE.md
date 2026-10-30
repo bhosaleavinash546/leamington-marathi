@@ -892,6 +892,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   £1 = Ft437.75 (MNB 29 Oct 2026). Hungary has no lab-hu-* library rows (`noLibraryLabourRows`). A machine group needs
   evidence of the SAME scope as the library machine (an IMM "may include auxiliaries", a cobot cell for a robot station,
   machine-only welding sets were rejected). `tests/hungary-rate-book.test.ts`.
+- Rate round (30 Oct 2026, `calculator/docs/review/rate-round-2026-10-30.md`, research in `scripts/rate-refresh/round-2026-10-30/`):
+  a country book's `services` (`CountryServicePrice`: the SAME service priced locally and in the UK, both sourced) sets that
+  service's factor (local ÷ UK) ahead of the derived wage-and-machine ratio (`sourcedServiceFactor`; `countryNote` says which).
+  Never pair two different services (a design bureau's "from" price with a job shop's). The live harness's predicates live in
+  `e2e/trace-checks.ts`, each with a failing case in `tests/trace-checks.test.ts`. `tests/country-provenance-ratchet.test.ts`
+  fails when a country becomes less sourced (re-record with `scripts/country-trace/ratchet.ts --write`, cause in the commit).
+  UK foundry charges carry the melt loss on the part's own metal (÷0.98 iron, ÷0.96 steel — the engine loses metal only on
+  the remelted gating). UK held machine build-ups are internally inconsistent (finance v depreciation): fix by sourcing capex
+  (public-contract awards worked best), never by back-solving.
 - Delivery terms (30 Oct 2026): `UniversalStackInput.deliveryTerms` 'DAP' (default) | 'EXW'. Ex-works = packaging in,
   freight out: `regionalShopDefaults(region, basis, terms)` gives logistics 0, the screen's #delivery-terms /
   #cad-delivery-terms (one state, `country-fields.ts`) lock the field, `getUniversalTail` is the ONE place the stack reads

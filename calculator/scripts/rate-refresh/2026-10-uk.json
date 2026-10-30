@@ -183,6 +183,42 @@
     "research": "capex.robot-mig-cell",
     "source": "https://www.phoenixrobotic.co.uk/welding-robots/",
     "confidence": "Low"
+   },
+   {
+    "id": "press-brake",
+    "match": "^brake-",
+    "refId": "brake-amada-hfe100",
+    "refCapexGbp": 120000,
+    "refKw": null,
+    "kwBasis": "no sourced draw — the book's own running load kept",
+    "basis": "Amada UK press brake, Ministry of Justice award £120,000 ex-VAT (Feb 2026; a second award £112,500; tonnage not stated) — TRUMPF TruBend 3100 new €136,000 (≈ £116,800) agrees; the other brakes sized by the book's relative capital",
+    "research": "capex.brake-amada-hfe100",
+    "source": "https://www.find-tender.service.gov.uk/Notice/012279-2026",
+    "confidence": "Medium"
+   },
+   {
+    "id": "autoclave",
+    "match": "^autoclave-1200mm$",
+    "refId": "autoclave-1200mm",
+    "refCapexGbp": 333765,
+    "refKw": null,
+    "kwBasis": "no sourced draw — the book's own running load kept",
+    "basis": "ASC Process Systems autoclave moulding facility, University of Bristol award £333,765 ex-VAT (Jul 2023) — a smaller (~1.0 × 1.5 m), hotter (400 °C) vessel than the 1.2 × 3 m library unit, installation likely included; a 3 × 6 m vessel was estimated at £730k (QUB, 2025)",
+    "research": "capex.autoclave-1200mm",
+    "source": "https://www.contractsfinder.service.gov.uk/Notice/0bea66ed-5567-4c6c-b4ae-8e972285c050 ; https://www.find-tender.service.gov.uk/Notice/024083-2023 ; https://compositesuk.co.uk/?p=11014",
+    "confidence": "Low"
+   },
+   {
+    "id": "rtm-press",
+    "match": "^rtm-press-std$",
+    "refId": "rtm-press-std",
+    "refCapexGbp": 175372,
+    "refKw": null,
+    "kwBasis": "no sourced draw — the book's own running load kept",
+    "basis": "Langzauner hydraulic composites presses, UK university awards £230,000 installed (2020) and £120,745 (2021), tonnage not stated, press only — midpoint £175,373",
+    "research": "capex.rtm-press-std",
+    "source": "https://www.contractsfinder.service.gov.uk/Notice/74da2fad-de96-4825-b5a2-9f65e74de163 ; https://www.contractsfinder.service.gov.uk/Notice/15658ed3-7f25-4087-9004-a28d6ac91116",
+    "confidence": "Low"
    }
   ],
   "notRebuilt": "capex not sourced (or the book agrees with the evidence: IMM 800–2,000 t, HPDC 1,600 t, SMT lines): capital held; energy re-priced at the new UK tariff"
@@ -371,8 +407,8 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "Ductile / CGI / ADI / SiMo iron (charge)",
-   "anchorGbpPerKg": 0.287,
-   "anchorBasis": "Treated-metal charge for GJS-500-7 £0.287/kg: 50% Brazilian pig iron (CFR Italy $520/t) + 50% UK 0A scrap (letsrecycle Jul 2026) + 1.2% FeSiMg (EU import value) + inoculant — + the book's grade premium over GJS-500-7 in £/kg (alloy content — Mo, Ni, Cu — and, for ADI, the austempering the casting engine does not add separately)",
+   "anchorGbpPerKg": 0.2929,
+   "anchorBasis": "Treated-metal charge for GJS-500-7 £0.2929/kg: (50% Brazilian pig iron (CFR Italy $520/t) + 50% UK 0A scrap (letsrecycle Jul 2026) + 1.2% FeSiMg (EU import value) + inoculant) ÷ 0.98 melt loss (engineering-typical, as the PL / DE / HU books) — + the book's grade premium over GJS-500-7 in £/kg (alloy content — Mo, Ni, Cu — and, for ADI, the austempering the casting engine does not add separately)",
    "sources": [
     {
      "research": "ferrous.charge.GJS-500-7",
@@ -419,8 +455,8 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "Grey / malleable iron (charge)",
-   "anchorGbpPerKg": 0.169,
-   "anchorBasis": "Bought metallics for GJL-250 £0.169/kg: 60% cast-iron scrap + 25% steel scrap + 15% pig iron (textbook mix; UK letsrecycle scrap, Brazilian pig iron)",
+   "anchorGbpPerKg": 0.1724,
+   "anchorBasis": "Bought metallics for GJL-250 £0.1724/kg: (60% cast-iron scrap + 25% steel scrap + 15% pig iron — textbook mix; UK letsrecycle scrap, Brazilian pig iron) ÷ 0.98 melt loss (engineering-typical)",
    "sources": [
     {
      "research": "ferrous.charge.GJL-250",
@@ -452,8 +488,8 @@
    "scrapGbpPerKg": 0.125,
    "scrapBasis": "UK merchant No.1 old steel £125/t (letsrecycle, Jul 2026; turnings were not priced) — the book's £0.28 credit was above the new charge price",
    "family": "Cast carbon / low-alloy steel (charge)",
-   "anchorGbpPerKg": 0.142,
-   "anchorBasis": "Steel-foundry charge £0.142/kg: UK 0A plate & girder scrap £142.5/t (Mn/Si trim not priced) + the book's grade premium in £/kg (Cr–Mo content)",
+   "anchorGbpPerKg": 0.1479,
+   "anchorBasis": "Steel-foundry charge £0.1479/kg: UK 0A plate & girder scrap £142.5/t ÷ 0.96 melt loss (engineering-typical, as the PL / DE / HU books; Mn/Si trim not priced) + the book's grade premium in £/kg (Cr–Mo content)",
    "sources": [
     {
      "research": "ferrous.charge.GS-C25_WCB",
@@ -521,8 +557,8 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "Ni-Resist D-2 (charge)",
-   "anchorGbpPerKg": 2.8184,
-   "anchorBasis": "0.20 × Ni £12.717 + 0.02 × Cr £2.558 (contained) + 0.78 × ductile charge £0.287",
+   "anchorGbpPerKg": 2.823,
+   "anchorBasis": "0.20 × Ni £12.717 + 0.02 × Cr £2.558 (contained) + 0.78 × ductile charge £0.2929",
    "sources": [
     {
      "research": "ferrous.anchor.nickel_lme_cash",
@@ -544,7 +580,7 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "Ni-Resist D-5S (charge)",
-   "anchorGbpPerKg": 4.7147,
+   "anchorGbpPerKg": 4.7182,
    "anchorBasis": "0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 £1.082 + 0.59 × ductile charge",
    "sources": [
     {
@@ -567,8 +603,8 @@
    "scrapGbpPerKg": null,
    "scrapBasis": null,
    "family": "High-Cr white iron (charge)",
-   "anchorGbpPerKg": 0.7185,
-   "anchorBasis": "0.23 × Cr £2.558 (contained) + 0.77 × grey-iron charge £0.169",
+   "anchorGbpPerKg": 0.7211,
+   "anchorBasis": "0.23 × Cr £2.558 (contained) + 0.77 × grey-iron charge £0.1724",
    "sources": [
     {
      "research": "ferrous.anchor.ferrochrome_eu_benchmark_q3",

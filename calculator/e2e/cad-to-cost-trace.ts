@@ -50,18 +50,14 @@ const OUT = process.env.CV_TRACE_OUT ?? join(tmpdir(), 'cad-to-cost-trace');
 mkdirSync(OUT, { recursive: true });
 const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
 const freePort = () => new Promise<number>((res, rej) => { const s = createServer(); s.once('error', rej); s.listen(0, '127.0.0.1', () => { const p = (s.address() as { port: number }).port; s.close(() => res(p)); }); });
-// the amount without its symbol: a country run shows Ft / zł / ¥ / ₹, and the workbook re-add is compared as a number
-const money = (t: string) => (t.match(/(?:£|€|\$|¥|₹|Ft|zł)\s?([\d,]+\.\d{2})/)?.[1] ?? '');
+// the predicates are pure functions in trace-checks.ts, each proven able to fail (tests/trace-checks.test.ts)
+import { money, samePenny as samePennyFx, costedAlternatives, near as nearFx } from './trace-checks.js';
 // Country review (Oct 2026): CV_TRACE_COUNTRY=<code> costs every part in that country's book; CV_TRACE_TERMS=EXW prices ex-works.
 const COUNTRY = process.env.CV_TRACE_COUNTRY ?? '';
 const TERMS = process.env.CV_TRACE_TERMS === 'EXW' ? 'EXW' : '';
 // The page shows the country's currency: a tolerance written in £ is this many display units (Ft 437.75 to the £).
 const FXD = COUNTRY ? (REGIONAL_DATA as Record<string, { fxToGBP: number }>)[COUNTRY]?.fxToGBP ?? 1 : 1;
-/** Two displayed amounts are the same costing to the penny — compared in £, so forint / yuan rounding is not a difference. */
-const samePenny = (a: string, b: string) => {
-  const x = Number(money(a).replace(/,/g, '')), y = Number(money(b).replace(/,/g, ''));
-  return money(a) !== '' && money(b) !== '' && (FXD === 1 ? money(a) === money(b) : Math.abs(x - y) / FXD < 0.006);
-};
+const samePenny = (a: string, b: string) => samePennyFx(a, b, FXD);
 const num = (t: string) => Number(String(t).replace(/[^\d.-]/g, ''));
 
 type Verdict = 'PASS' | 'FAIL' | 'GAP' | 'INFO';
@@ -442,7 +438,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
       sourced: Array.from(h.querySelectorAll('.cad-compare-excluded li')).every(li => /\(.+\)/.test(li.textContent ?? '')),
       crossover: Array.from(h.querySelectorAll('.cad-compare-cross')).map(e => (e.textContent ?? '').trim()).filter(Boolean),
       // a costed alternative carries its "Cost this route" button; the nested build-up rows (Material, Process…) are not routes
-      alternatives: h.querySelectorAll('[data-cost-route]').length,
+      html: h.innerHTML,
       principle: (h.querySelector('p.cad-cost-note')?.textContent ?? '').includes('same material family'),
       header: Array.from(h.querySelectorAll('thead th')).map(t => t.textContent?.trim()),
     };
@@ -454,8 +450,8 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     `${cmpDetail.excluded}: ${cmpDetail.excludedRows} route(s), every one sourced ${cmpDetail.sourced}`);
   check('3', 'CR3', 'the principle (same family, finished scope) and the tooling-over-programme column are on the table', cmpDetail.principle && cmpDetail.header.includes('Tooling over programme'),
     cmpDetail.header.join(' | '));
-  check('3', 'CR4', 'each alternative states its crossover with the costed route from the volume ladder', cmpDetail.alternatives === 0 || cmpDetail.crossover.length > 0,
-    cmpDetail.crossover.join(' / ') || (cmpDetail.alternatives ? `${cmpDetail.alternatives} costed alternative(s), no crossover stated` : 'no costed alternative'));
+  check('3', 'CR4', 'each alternative states its crossover with the costed route from the volume ladder', costedAlternatives(cmpDetail.html) === 0 || cmpDetail.crossover.length > 0,
+    cmpDetail.crossover.join(' / ') || (costedAlternatives(cmpDetail.html) ? `${costedAlternatives(cmpDetail.html)} costed alternative(s), no crossover stated` : 'no costed alternative'));
   await snap('step3-compare');
 
   // #4 end to end: the margin changed on the card re-costs the part (subtotal × 1.10 instead of × 1.08), then back
@@ -526,7 +522,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   // The cost re-added from the workbook
   const rc = recomputeFromWorkbook(xl);
   rec.recompute = rc;
-  const near = (a: number, b: number, tol = 0.0006) => Math.abs(a - b) <= tol * FXD;   // £ tolerances in display units
+  const near = (a: number, b: number, tol = 0.0006) => nearFx(a, b, tol, FXD);   // £ tolerances in display units
   check('arith', 'trace', 'every operation re-priced from its rate, time, OEE, parts a cycle = the sheet',
     rc.opCalc.every(o => near(o.proc, o.sheetProc, 0.0006) && near(o.lab, o.sheetLab, 0.0006)),
     rc.opCalc.map(o => `${o.op}: £${o.proc.toFixed(4)} + £${o.lab.toFixed(4)} (sheet £${o.sheetProc.toFixed(4)} + £${o.sheetLab.toFixed(4)})`).join(' | '));

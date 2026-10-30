@@ -14,6 +14,7 @@ floor (raised to the metal content) / held.
 import json, os
 HERE = os.path.dirname(os.path.abspath(__file__))
 R = {}
+RND = {it['key']: it for f in ['cn-capex', 'overhead-packaging'] for it in json.load(open(os.path.join(HERE, '..', 'round-2026-10-30', 'research', f + '.json')))['items']}
 for f in ['labour-energy', 'machines', 'materials-ferrous', 'materials-nonferrous', 'materials-polymer']:
     for it in json.load(open(os.path.join(HERE, 'research', f + '.json')))['items']:
         R[it['key']] = it
@@ -215,6 +216,14 @@ machines = {
     'ukRentGbpPerM2Yr': 110,
     'capitalHeldFactor': 0.55,
     'groups': [
+        # round 30 Oct 2026 — makers' average selling prices from annual reports (read from search results: verify)
+        {'id': 'fibre-laser-domestic', 'match': '^(laser-trumpf-3030|laser-trumpf-5030|laser-bystronic-3015|laser-amada-ensis-3015)$', 'refId': 'laser-trumpf-3030',
+         'refCapexLocal': RND['capex.laser-trumpf-3030']['value'],
+         'basis': 'Han\'s Laser 2025 high-power laser-cutting average selling price ¥372,500 ex-VAT (revenue ¥25.33亿 ÷ 6,800 units, ~6–30 kW mixed); HSG and Senfeng IPO filings ¥350–530k a machine agree — a Chinese 6 kW fibre laser, not a Trumpf-class import (the held UK × 0.55 figure was ~¥1.83 M)',
+         'source': RND['capex.laser-trumpf-3030']['source'], 'confidence': 'Low'},
+        {'id': 'imm-domestic', 'match': '^imm-\\d+t$', 'refId': 'imm-200t', 'refCapexLocal': RND['capex.imm-200t']['value'],
+         'basis': 'Haitian FY2024 Mars series average selling price ¥302,630 ex-VAT (revenue ¥104.71亿 ÷ ~34,600 units; bare machine) — an UPPER bound for a 200 t machine (Mars spans ~60–3,300 t); the other sizes by the book\'s relative capital',
+         'source': RND['capex.imm-200t']['source'], 'confidence': 'Low'},
         {'id': 'cnc-vmc-domestic', 'match': '^(mach-vmc3|mach-haas-vf2|mach-drill)$', 'refId': 'mach-vmc3', 'refCapexLocal': v('capex.mach-vmc3'),
          'basis': 'Haitian Precision 海天精工 2025 VMC average selling price ¥287,817 ex-VAT (¥841M ÷ 2,922 units); delivery, options and installation not in it',
          'source': R['capex.mach-vmc3']['source'], 'confidence': 'Medium'},
@@ -236,6 +245,8 @@ cfg = {'asOf': '2026-10-10', 'label': 'China rate book — 4-cluster average (Ya
        'region': 'CN', 'currency': 'CNY', 'currencySymbol': '¥', 'dir': 'scripts/rate-refresh/china-2026-10',
        'snapshot': 'scripts/rate-refresh/china-2026-10/current-china-book.json', 'bookFile': 'src/engine/country-books/cn.ts', 'bookConst': 'CHINA_BOOK',
        'fxPerGbp': FX, 'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held,
+       # round 30 Oct 2026: the overhead multiplier checked against supplier filings (it is not changed — the evidence agrees)
+       'shopMultipliersBasis': 'Overhead ×0.75 agrees with automotive-supplier filings: SG&A ÷ cost of sales Tuopu 4.15 %, Huayu 6.04 % v the UK\'s TI Fluid Systems 7.68 %, Dowlais ~10.4 % — a ratio of 0.67–0.79 (read from search results; verify); packaging and logistics multipliers held, not researched for China',
        'alBilletPremiumUsdPerT': {'value': round(billet_usd - LME), 'current': -186,
                                   'basis': f'A00 ¥{A00}/kg (Changjiang Sep 2026 avg) + 6063 billet fee ¥{v("nonferrous.al.billet6063_premium")}/kg (Foshan, Sep 2026), ex-VAT = ${billet_usd:.0f}/t at ¥{cny_per_usd:.3f}/$ — over the library LME ${LME}',
                                   **src('nonferrous.al.billet6063_premium')}}

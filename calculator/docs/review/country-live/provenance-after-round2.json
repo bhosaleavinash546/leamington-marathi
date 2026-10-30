@@ -1,0 +1,3158 @@
+{
+ "CN": {
+  "book": "CN 2026-10-10",
+  "capitalHeldFactor": 0.55,
+  "parts": 40,
+  "totalGbp": 470.98,
+  "sharePct": {
+   "own": 25.1,
+   "parSourced": 0,
+   "heldCap": 6.4,
+   "matFactor": 43,
+   "derived": 9.7,
+   "heldMult": 8.4,
+   "margin": 7.4
+  },
+  "medianPartOwnPct": 47.9,
+  "medianPartSourcedPct": 47.9,
+  "topHeldCapitalMachines": [
+   {
+    "id": "autoclave-1200mm",
+    "gbp": 12.62
+   },
+   {
+    "id": "waterjet-5ax-composite",
+    "gbp": 3.59
+   },
+   {
+    "id": "rotomould-carousel-4arm",
+    "gbp": 3.17
+   },
+   {
+    "id": "rtm-press-std",
+    "gbp": 3.02
+   },
+   {
+    "id": "mach-hmc-400",
+    "gbp": 1.62
+   },
+   {
+    "id": "thermoform-large",
+    "gbp": 1.32
+   },
+   {
+    "id": "al-cnc-profile-centre",
+    "gbp": 0.73
+   },
+   {
+    "id": "gear-grind-generating",
+    "gbp": 0.63
+   },
+   {
+    "id": "al-ext-press-2500t",
+    "gbp": 0.63
+   },
+   {
+    "id": "al-stretch-bender",
+    "gbp": 0.45
+   },
+   {
+    "id": "al-anodise-line",
+    "gbp": 0.32
+   },
+   {
+    "id": "gear-hob-small",
+    "gbp": 0.29
+   }
+  ],
+  "topFactorMaterials": [
+   {
+    "id": "mat-virtual",
+    "gbp": 170.82
+   },
+   {
+    "id": "mat-al6082-bar",
+    "gbp": 23.28
+   },
+   {
+    "id": "mat-hdpe-tf",
+    "gbp": 5.98
+   },
+   {
+    "id": "mat-abs-tf",
+    "gbp": 0.67
+   },
+   {
+    "id": "mat-upvc-pipe",
+    "gbp": 0.54
+   },
+   {
+    "id": "mat-pa66gf30",
+    "gbp": 0.48
+   },
+   {
+    "id": "mat-epdm",
+    "gbp": 0.31
+   },
+   {
+    "id": "mat-pe100-pipe",
+    "gbp": 0.29
+   },
+   {
+    "id": "mat-pa12-ext-tube",
+    "gbp": 0.08
+   }
+  ],
+  "heldLabour": [],
+  "perPart": [
+   {
+    "part": "AL_Battery_Can.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 0.228,
+    "ownPct": 42.7,
+    "sourcedPct": 42.7,
+    "split": {
+     "own": 0.0974,
+     "parSourced": 0,
+     "heldCap": 0.0407,
+     "matFactor": 0,
+     "derived": 0.0331,
+     "heldMult": 0.0399,
+     "margin": 0.0169
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Battery_Rail.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 21.6227,
+    "ownPct": 79.6,
+    "sourcedPct": 79.6,
+    "split": {
+     "own": 17.2086,
+     "parSourced": 0,
+     "heldCap": 0.2412,
+     "matFactor": 0,
+     "derived": 0.6933,
+     "heldMult": 1.8779,
+     "margin": 1.6017
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Bumper_Beam.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 16.0976,
+    "ownPct": 76.1,
+    "sourcedPct": 76.1,
+    "split": {
+     "own": 12.2477,
+     "parSourced": 0,
+     "heldCap": 0.9597,
+     "matFactor": 0,
+     "derived": 0.3194,
+     "heldMult": 1.3784,
+     "margin": 1.1924
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Busbar.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 1.7062,
+    "ownPct": 67.2,
+    "sourcedPct": 67.2,
+    "split": {
+     "own": 1.1458,
+     "parSourced": 0,
+     "heldCap": 0.1654,
+     "matFactor": 0,
+     "derived": 0.1068,
+     "heldMult": 0.1619,
+     "margin": 0.1264
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Crash_Box.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 5.5144,
+    "ownPct": 74.4,
+    "sourcedPct": 74.4,
+    "split": {
+     "own": 4.1024,
+     "parSourced": 0,
+     "heldCap": 0.3688,
+     "matFactor": 0,
+     "derived": 0.1361,
+     "heldMult": 0.4987,
+     "margin": 0.4085
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Heat_Sink.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 2.2188,
+    "ownPct": 71.6,
+    "sourcedPct": 71.6,
+    "split": {
+     "own": 1.5886,
+     "parSourced": 0,
+     "heldCap": 0.1823,
+     "matFactor": 0,
+     "derived": 0.069,
+     "heldMult": 0.2146,
+     "margin": 0.1644
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Machined_Bracket.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 3.4069,
+    "ownPct": 71,
+    "sourcedPct": 71,
+    "split": {
+     "own": 2.4189,
+     "parSourced": 0,
+     "heldCap": 0.3684,
+     "matFactor": 0,
+     "derived": 0.049,
+     "heldMult": 0.3183,
+     "margin": 0.2524
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Seal_Carrier.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 2.2308,
+    "ownPct": 80.1,
+    "sourcedPct": 80.1,
+    "split": {
+     "own": 1.7867,
+     "parSourced": 0,
+     "heldCap": 0.0448,
+     "matFactor": 0,
+     "derived": 0.0122,
+     "heldMult": 0.2219,
+     "margin": 0.1652
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Trim_Channel.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 1.8236,
+    "ownPct": 68.4,
+    "sourcedPct": 68.4,
+    "split": {
+     "own": 1.2469,
+     "parSourced": 0,
+     "heldCap": 0.1955,
+     "matFactor": 0,
+     "derived": 0.0618,
+     "heldMult": 0.1844,
+     "margin": 0.1351
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Floor_Reinforcement.stp",
+    "commodity": "sheet_metal",
+    "total": 2.4596,
+    "ownPct": 46.6,
+    "sourcedPct": 46.6,
+    "split": {
+     "own": 1.145,
+     "parSourced": 0,
+     "heldCap": 0.0703,
+     "matFactor": 0,
+     "derived": 0.7649,
+     "heldMult": 0.2972,
+     "margin": 0.1822
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Inner_Panel.stp",
+    "commodity": "sheet_metal",
+    "total": 8.5384,
+    "ownPct": 45,
+    "sourcedPct": 45,
+    "split": {
+     "own": 3.8423,
+     "parSourced": 0,
+     "heldCap": 0.1211,
+     "matFactor": 0,
+     "derived": 2.93,
+     "heldMult": 1.0124,
+     "margin": 0.6325
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Reinf_Channel.stp",
+    "commodity": "sheet_metal",
+    "total": 0.3705,
+    "ownPct": 54,
+    "sourcedPct": 54,
+    "split": {
+     "own": 0.2,
+     "parSourced": 0,
+     "heldCap": 0.0026,
+     "matFactor": 0,
+     "derived": 0.0672,
+     "heldMult": 0.0733,
+     "margin": 0.0274
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BM_Air_Duct.stp",
+    "commodity": "blow_moulding",
+    "total": 0.5901,
+    "ownPct": 61.6,
+    "sourcedPct": 61.6,
+    "split": {
+     "own": 0.3635,
+     "parSourced": 0,
+     "heldCap": 0.0608,
+     "matFactor": 0,
+     "derived": 0.0256,
+     "heldMult": 0.0965,
+     "margin": 0.0437
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BM_Washer_Reservoir.stp",
+    "commodity": "blow_moulding",
+    "total": 0.7592,
+    "ownPct": 62.7,
+    "sourcedPct": 62.7,
+    "split": {
+     "own": 0.4763,
+     "parSourced": 0,
+     "heldCap": 0.0938,
+     "matFactor": 0,
+     "derived": 0.0298,
+     "heldMult": 0.103,
+     "margin": 0.0562
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Battery_Lid.stp",
+    "commodity": "composites",
+    "total": 26.6133,
+    "ownPct": 16.4,
+    "sourcedPct": 16.4,
+    "split": {
+     "own": 4.3567,
+     "parSourced": 0,
+     "heldCap": 4.2121,
+     "matFactor": 12.2364,
+     "derived": 1.68,
+     "heldMult": 2.1567,
+     "margin": 1.9714
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Hat_Stiffener.stp",
+    "commodity": "composites",
+    "total": 25.2572,
+    "ownPct": 10.8,
+    "sourcedPct": 10.8,
+    "split": {
+     "own": 2.7264,
+     "parSourced": 0,
+     "heldCap": 2.1934,
+     "matFactor": 10.4945,
+     "derived": 5.996,
+     "heldMult": 1.9759,
+     "margin": 1.8709
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Roof_Panel.stp",
+    "commodity": "composites",
+    "total": 228.7768,
+    "ownPct": 8.9,
+    "sourcedPct": 8.9,
+    "split": {
+     "own": 20.2601,
+     "parSourced": 0,
+     "heldCap": 12.9204,
+     "matFactor": 148.0849,
+     "derived": 12.824,
+     "heldMult": 17.741,
+     "margin": 16.9464
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Casting_Braket.stp",
+    "commodity": "cast_and_machine",
+    "total": 6.4752,
+    "ownPct": 48.2,
+    "sourcedPct": 48.2,
+    "split": {
+     "own": 3.1192,
+     "parSourced": 0,
+     "heldCap": 0.0619,
+     "matFactor": 0,
+     "derived": 2.2232,
+     "heldMult": 0.5914,
+     "margin": 0.4796
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Fuel_Line_Tube.stp",
+    "commodity": "extrusion",
+    "total": 0.1305,
+    "ownPct": 7.8,
+    "sourcedPct": 7.8,
+    "split": {
+     "own": 0.0102,
+     "parSourced": 0,
+     "heldCap": 0.0067,
+     "matFactor": 0.0808,
+     "derived": 0.0081,
+     "heldMult": 0.0151,
+     "margin": 0.0097
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Twin_Chamber_Profile.stp",
+    "commodity": "extrusion",
+    "total": 0.841,
+    "ownPct": 7.6,
+    "sourcedPct": 7.6,
+    "split": {
+     "own": 0.0636,
+     "parSourced": 0,
+     "heldCap": 0.036,
+     "matFactor": 0.536,
+     "derived": 0.021,
+     "heldMult": 0.1221,
+     "margin": 0.0623
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Vent_Pipe.stp",
+    "commodity": "extrusion",
+    "total": 0.4702,
+    "ownPct": 7.7,
+    "sourcedPct": 7.7,
+    "split": {
+     "own": 0.0362,
+     "parSourced": 0,
+     "heldCap": 0.0257,
+     "matFactor": 0.2919,
+     "derived": 0.0071,
+     "heldMult": 0.0745,
+     "margin": 0.0348
+    },
+    "reconciles": true
+   },
+   {
+    "part": "FORGE_Control_Arm_Yoke.stp",
+    "commodity": "forging",
+    "total": 7.5426,
+    "ownPct": 37.9,
+    "sourcedPct": 37.9,
+    "split": {
+     "own": 2.8615,
+     "parSourced": 0,
+     "heldCap": 1.0055,
+     "matFactor": 0,
+     "derived": 2.4504,
+     "heldMult": 0.6666,
+     "margin": 0.5587
+    },
+    "reconciles": true
+   },
+   {
+    "part": "FORGE_Hub_Flange.stp",
+    "commodity": "forging",
+    "total": 5.9485,
+    "ownPct": 54.4,
+    "sourcedPct": 54.4,
+    "split": {
+     "own": 3.237,
+     "parSourced": 0,
+     "heldCap": 0.0926,
+     "matFactor": 0,
+     "derived": 1.6143,
+     "heldMult": 0.564,
+     "margin": 0.4406
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_Cable_Clip.stp",
+    "commodity": "injection_moulding",
+    "total": 0.0715,
+    "ownPct": 14.8,
+    "sourcedPct": 14.8,
+    "split": {
+     "own": 0.0106,
+     "parSourced": 0,
+     "heldCap": 0,
+     "matFactor": 0.0208,
+     "derived": 0.0274,
+     "heldMult": 0.0074,
+     "margin": 0.0053
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_ECU_Cover.stp",
+    "commodity": "injection_moulding",
+    "total": 0.7169,
+    "ownPct": 6.9,
+    "sourcedPct": 6.9,
+    "split": {
+     "own": 0.0494,
+     "parSourced": 0,
+     "heldCap": 0,
+     "matFactor": 0.4581,
+     "derived": 0.063,
+     "heldMult": 0.0933,
+     "margin": 0.0531
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_Storage_Tray.stp",
+    "commodity": "injection_moulding",
+    "total": 2.0975,
+    "ownPct": 66.6,
+    "sourcedPct": 66.6,
+    "split": {
+     "own": 1.3975,
+     "parSourced": 0,
+     "heldCap": 0,
+     "matFactor": 0,
+     "derived": 0.3137,
+     "heldMult": 0.231,
+     "margin": 0.1554
+    },
+    "reconciles": true
+   },
+   {
+    "part": "MACH_Hydraulic_Manifold.stp",
+    "commodity": "machining",
+    "total": 10.6864,
+    "ownPct": 18.2,
+    "sourcedPct": 18.2,
+    "split": {
+     "own": 1.9407,
+     "parSourced": 0,
+     "heldCap": 0,
+     "matFactor": 6.2767,
+     "derived": 0.7962,
+     "heldMult": 0.8812,
+     "margin": 0.7916
+    },
+    "reconciles": true
+   },
+   {
+    "part": "MACH_Stepped_Shaft.stp",
+    "commodity": "machining",
+    "total": 2.9328,
+    "ownPct": 55,
+    "sourcedPct": 55,
+    "split": {
+     "own": 1.6141,
+     "parSourced": 0,
+     "heldCap": 0,
+     "matFactor": 0,
+     "derived": 0.8194,
+     "heldMult": 0.282,
+     "margin": 0.2172
+    },
+    "reconciles": true
+   },
+   {
+    "part": "PRCR002.stp",
+    "commodity": "cast_and_machine",
+    "total": 14.929,
+    "ownPct": 49.6,
+    "sourcedPct": 49.6,
+    "split": {
+     "own": 7.4022,
+     "parSourced": 0,
+     "heldCap": 0.1245,
+     "matFactor": 0,
+     "derived": 4.924,
+     "heldMult": 1.3726,
+     "margin": 1.1059
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Part1.stp",
+    "commodity": "machining",
+    "total": 26.6781,
+    "ownPct": 14.9,
+    "sourcedPct": 14.9,
+    "split": {
+     "own": 3.973,
+     "parSourced": 0,
+     "heldCap": 0,
+     "matFactor": 16.9997,
+     "derived": 1.6253,
+     "heldMult": 2.1038,
+     "margin": 1.9762
+    },
+    "reconciles": true
+   },
+   {
+    "part": "ROTO_Coolant_Tank.stp",
+    "commodity": "rotational_moulding",
+    "total": 12.657,
+    "ownPct": 59.1,
+    "sourcedPct": 59.1,
+    "split": {
+     "own": 7.486,
+     "parSourced": 0,
+     "heldCap": 2.2358,
+     "matFactor": 0,
+     "derived": 0.8822,
+     "heldMult": 1.1154,
+     "margin": 0.9376
+    },
+    "reconciles": true
+   },
+   {
+    "part": "ROTO_Header_Tank.stp",
+    "commodity": "rotational_moulding",
+    "total": 4.3034,
+    "ownPct": 54.2,
+    "sourcedPct": 54.2,
+    "split": {
+     "own": 2.3328,
+     "parSourced": 0,
+     "heldCap": 0.9342,
+     "matFactor": 0,
+     "derived": 0.3373,
+     "heldMult": 0.3804,
+     "margin": 0.3188
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_AV_Mount.stp",
+    "commodity": "rubber",
+    "total": 0.6619,
+    "ownPct": 53.2,
+    "sourcedPct": 53.2,
+    "split": {
+     "own": 0.352,
+     "parSourced": 0,
+     "heldCap": 0.1727,
+     "matFactor": 0,
+     "derived": 0.0184,
+     "heldMult": 0.0699,
+     "margin": 0.049
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_Door_Seal.stp",
+    "commodity": "rubber",
+    "total": 0.4168,
+    "ownPct": 5,
+    "sourcedPct": 5,
+    "split": {
+     "own": 0.0208,
+     "parSourced": 0,
+     "heldCap": 0.0089,
+     "matFactor": 0.2831,
+     "derived": 0.0027,
+     "heldMult": 0.0704,
+     "margin": 0.0309
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_Grommet.stp",
+    "commodity": "rubber",
+    "total": 0.1021,
+    "ownPct": 20.6,
+    "sourcedPct": 20.6,
+    "split": {
+     "own": 0.0211,
+     "parSourced": 0,
+     "heldCap": 0.0193,
+     "matFactor": 0.0247,
+     "derived": 0.0173,
+     "heldMult": 0.0123,
+     "margin": 0.0076
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Seat_Locking_Bracket.stp",
+    "commodity": "sheet_metal",
+    "total": 0.6132,
+    "ownPct": 47.9,
+    "sourcedPct": 47.9,
+    "split": {
+     "own": 0.2937,
+     "parSourced": 0,
+     "heldCap": 0.0146,
+     "matFactor": 0,
+     "derived": 0.1677,
+     "heldMult": 0.0918,
+     "margin": 0.0454
+    },
+    "reconciles": true
+   },
+   {
+    "part": "TF_Battery_Box_Lid.stp",
+    "commodity": "thermoforming",
+    "total": 10.3258,
+    "ownPct": 11.9,
+    "sourcedPct": 11.9,
+    "split": {
+     "own": 1.2249,
+     "parSourced": 0,
+     "heldCap": 1.4003,
+     "matFactor": 5.975,
+     "derived": 0.0107,
+     "heldMult": 0.95,
+     "margin": 0.7649
+    },
+    "reconciles": true
+   },
+   {
+    "part": "TF_Trim_Cover.stp",
+    "commodity": "thermoforming",
+    "total": 1.0926,
+    "ownPct": 11.2,
+    "sourcedPct": 11.2,
+    "split": {
+     "own": 0.1228,
+     "parSourced": 0,
+     "heldCap": 0.0904,
+     "matFactor": 0.6699,
+     "derived": 0.013,
+     "heldMult": 0.1156,
+     "margin": 0.0809
+    },
+    "reconciles": true
+   },
+   {
+    "part": "steering_knuckle_RH.stp",
+    "commodity": "forging",
+    "total": 7.3556,
+    "ownPct": 45.9,
+    "sourcedPct": 45.9,
+    "split": {
+     "own": 3.3738,
+     "parSourced": 0,
+     "heldCap": 0.7931,
+     "matFactor": 0,
+     "derived": 1.9595,
+     "heldMult": 0.6844,
+     "margin": 0.5449
+    },
+    "reconciles": true
+   },
+   {
+    "part": "test-gear-m3-z38.step",
+    "commodity": "gear",
+    "total": 5.7217,
+    "ownPct": 34.8,
+    "sourcedPct": 34.8,
+    "split": {
+     "own": 1.991,
+     "parSourced": 0,
+     "heldCap": 1.0769,
+     "matFactor": 0,
+     "derived": 1.709,
+     "heldMult": 0.5209,
+     "margin": 0.4238
+    },
+    "reconciles": true
+   }
+  ]
+ },
+ "IN": {
+  "book": "IN 2026-10-10",
+  "capitalHeldFactor": 0.52,
+  "parts": 40,
+  "totalGbp": 488.98,
+  "sharePct": {
+   "own": 24.5,
+   "parSourced": 0,
+   "heldCap": 7.2,
+   "matFactor": 44,
+   "derived": 8.6,
+   "heldMult": 8.3,
+   "margin": 7.4
+  },
+  "medianPartOwnPct": 50.3,
+  "medianPartSourcedPct": 50.3,
+  "topHeldCapitalMachines": [
+   {
+    "id": "autoclave-1200mm",
+    "gbp": 14.82
+   },
+   {
+    "id": "waterjet-5ax-composite",
+    "gbp": 3.98
+   },
+   {
+    "id": "rtm-press-std",
+    "gbp": 3.52
+   },
+   {
+    "id": "rotomould-carousel-4arm",
+    "gbp": 3.47
+   },
+   {
+    "id": "mach-hmc-400",
+    "gbp": 1.95
+   },
+   {
+    "id": "thermoform-large",
+    "gbp": 1.46
+   },
+   {
+    "id": "al-cnc-profile-centre",
+    "gbp": 0.85
+   },
+   {
+    "id": "al-ext-press-2500t",
+    "gbp": 0.75
+   },
+   {
+    "id": "gear-grind-generating",
+    "gbp": 0.73
+   },
+   {
+    "id": "al-stretch-bender",
+    "gbp": 0.53
+   },
+   {
+    "id": "al-anodise-line",
+    "gbp": 0.38
+   },
+   {
+    "id": "imm-1200t",
+    "gbp": 0.34
+   }
+  ],
+  "topFactorMaterials": [
+   {
+    "id": "mat-virtual",
+    "gbp": 182.81
+   },
+   {
+    "id": "mat-al6082-bar",
+    "gbp": 23.4
+   },
+   {
+    "id": "mat-hdpe-tf",
+    "gbp": 6.64
+   },
+   {
+    "id": "mat-abs-tf",
+    "gbp": 0.74
+   },
+   {
+    "id": "mat-upvc-pipe",
+    "gbp": 0.6
+   },
+   {
+    "id": "mat-pa66gf30",
+    "gbp": 0.49
+   },
+   {
+    "id": "mat-pe100-pipe",
+    "gbp": 0.32
+   },
+   {
+    "id": "mat-epdm",
+    "gbp": 0.31
+   },
+   {
+    "id": "mat-pa12-ext-tube",
+    "gbp": 0.08
+   }
+  ],
+  "heldLabour": [],
+  "perPart": [
+   {
+    "part": "AL_Battery_Can.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 0.2397,
+    "ownPct": 43.2,
+    "sourcedPct": 43.2,
+    "split": {
+     "own": 0.1035,
+     "parSourced": 0,
+     "heldCap": 0.0488,
+     "matFactor": 0,
+     "derived": 0.0304,
+     "heldMult": 0.0392,
+     "margin": 0.0178
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Battery_Rail.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 26.4749,
+    "ownPct": 80.6,
+    "sourcedPct": 80.6,
+    "split": {
+     "own": 21.3469,
+     "parSourced": 0,
+     "heldCap": 0.2886,
+     "matFactor": 0,
+     "derived": 0.6456,
+     "heldMult": 2.2328,
+     "margin": 1.9611
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Bumper_Beam.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 19.1969,
+    "ownPct": 76.8,
+    "sourcedPct": 76.8,
+    "split": {
+     "own": 14.7374,
+     "parSourced": 0,
+     "heldCap": 1.1352,
+     "matFactor": 0,
+     "derived": 0.2975,
+     "heldMult": 1.6048,
+     "margin": 1.422
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Busbar.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 1.9735,
+    "ownPct": 68.3,
+    "sourcedPct": 68.3,
+    "split": {
+     "own": 1.3473,
+     "parSourced": 0,
+     "heldCap": 0.1937,
+     "matFactor": 0,
+     "derived": 0.1061,
+     "heldMult": 0.1801,
+     "margin": 0.1462
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Crash_Box.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 6.5655,
+    "ownPct": 75.3,
+    "sourcedPct": 75.3,
+    "split": {
+     "own": 4.9445,
+     "parSourced": 0,
+     "heldCap": 0.4328,
+     "matFactor": 0,
+     "derived": 0.1284,
+     "heldMult": 0.5735,
+     "margin": 0.4863
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Heat_Sink.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 2.6544,
+    "ownPct": 72.6,
+    "sourcedPct": 72.6,
+    "split": {
+     "own": 1.927,
+     "parSourced": 0,
+     "heldCap": 0.2183,
+     "matFactor": 0,
+     "derived": 0.0678,
+     "heldMult": 0.2447,
+     "margin": 0.1966
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Machined_Bracket.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 4.0235,
+    "ownPct": 71.7,
+    "sourcedPct": 71.7,
+    "split": {
+     "own": 2.8853,
+     "parSourced": 0,
+     "heldCap": 0.4309,
+     "matFactor": 0,
+     "derived": 0.0481,
+     "heldMult": 0.3613,
+     "margin": 0.298
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Seal_Carrier.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 2.7166,
+    "ownPct": 80.8,
+    "sourcedPct": 80.8,
+    "split": {
+     "own": 2.195,
+     "parSourced": 0,
+     "heldCap": 0.0536,
+     "matFactor": 0,
+     "derived": 0.0114,
+     "heldMult": 0.2554,
+     "margin": 0.2012
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Trim_Channel.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 2.0889,
+    "ownPct": 68.8,
+    "sourcedPct": 68.8,
+    "split": {
+     "own": 1.4368,
+     "parSourced": 0,
+     "heldCap": 0.2343,
+     "matFactor": 0,
+     "derived": 0.0616,
+     "heldMult": 0.2014,
+     "margin": 0.1547
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Floor_Reinforcement.stp",
+    "commodity": "sheet_metal",
+    "total": 3.095,
+    "ownPct": 55.4,
+    "sourcedPct": 55.4,
+    "split": {
+     "own": 1.7142,
+     "parSourced": 0,
+     "heldCap": 0.0765,
+     "matFactor": 0,
+     "derived": 0.7371,
+     "heldMult": 0.338,
+     "margin": 0.2293
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Inner_Panel.stp",
+    "commodity": "sheet_metal",
+    "total": 10.8265,
+    "ownPct": 54.4,
+    "sourcedPct": 54.4,
+    "split": {
+     "own": 5.8943,
+     "parSourced": 0,
+     "heldCap": 0.1328,
+     "matFactor": 0,
+     "derived": 2.8358,
+     "heldMult": 1.1617,
+     "margin": 0.802
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Reinf_Channel.stp",
+    "commodity": "sheet_metal",
+    "total": 0.4865,
+    "ownPct": 63.1,
+    "sourcedPct": 63.1,
+    "split": {
+     "own": 0.3071,
+     "parSourced": 0,
+     "heldCap": 0.0028,
+     "matFactor": 0,
+     "derived": 0.0617,
+     "heldMult": 0.0789,
+     "margin": 0.036
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BM_Air_Duct.stp",
+    "commodity": "blow_moulding",
+    "total": 0.5874,
+    "ownPct": 61.2,
+    "sourcedPct": 61.2,
+    "split": {
+     "own": 0.3597,
+     "parSourced": 0,
+     "heldCap": 0.067,
+     "matFactor": 0,
+     "derived": 0.0246,
+     "heldMult": 0.0926,
+     "margin": 0.0435
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BM_Washer_Reservoir.stp",
+    "commodity": "blow_moulding",
+    "total": 0.7539,
+    "ownPct": 61.9,
+    "sourcedPct": 61.9,
+    "split": {
+     "own": 0.4668,
+     "parSourced": 0,
+     "heldCap": 0.1035,
+     "matFactor": 0,
+     "derived": 0.0285,
+     "heldMult": 0.0994,
+     "margin": 0.0558
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Battery_Lid.stp",
+    "commodity": "composites",
+    "total": 26.1135,
+    "ownPct": 10.2,
+    "sourcedPct": 10.2,
+    "split": {
+     "own": 2.6708,
+     "parSourced": 0,
+     "heldCap": 4.8377,
+     "matFactor": 13.121,
+     "derived": 1.44,
+     "heldMult": 2.1097,
+     "margin": 1.9343
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Hat_Stiffener.stp",
+    "commodity": "composites",
+    "total": 24.4066,
+    "ownPct": 7.6,
+    "sourcedPct": 7.6,
+    "split": {
+     "own": 1.8627,
+     "parSourced": 0,
+     "heldCap": 2.5083,
+     "matFactor": 11.1801,
+     "derived": 5.14,
+     "heldMult": 1.9077,
+     "margin": 1.8079
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Roof_Panel.stp",
+    "commodity": "composites",
+    "total": 234.8138,
+    "ownPct": 6.2,
+    "sourcedPct": 6.2,
+    "split": {
+     "own": 14.6557,
+     "parSourced": 0,
+     "heldCap": 15.0767,
+     "matFactor": 158.5111,
+     "derived": 10.992,
+     "heldMult": 18.1847,
+     "margin": 17.3936
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Casting_Braket.stp",
+    "commodity": "cast_and_machine",
+    "total": 5.478,
+    "ownPct": 42.2,
+    "sourcedPct": 42.2,
+    "split": {
+     "own": 2.31,
+     "parSourced": 0,
+     "heldCap": 0.0675,
+     "matFactor": 0,
+     "derived": 2.1865,
+     "heldMult": 0.5083,
+     "margin": 0.4058
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Fuel_Line_Tube.stp",
+    "commodity": "extrusion",
+    "total": 0.1269,
+    "ownPct": 3.5,
+    "sourcedPct": 3.5,
+    "split": {
+     "own": 0.0044,
+     "parSourced": 0,
+     "heldCap": 0.0075,
+     "matFactor": 0.0843,
+     "derived": 0.0068,
+     "heldMult": 0.0145,
+     "margin": 0.0094
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Twin_Chamber_Profile.stp",
+    "commodity": "extrusion",
+    "total": 0.8982,
+    "ownPct": 5.3,
+    "sourcedPct": 5.3,
+    "split": {
+     "own": 0.0476,
+     "parSourced": 0,
+     "heldCap": 0.0408,
+     "matFactor": 0.6029,
+     "derived": 0.018,
+     "heldMult": 0.1223,
+     "margin": 0.0665
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Vent_Pipe.stp",
+    "commodity": "extrusion",
+    "total": 0.4923,
+    "ownPct": 5.1,
+    "sourcedPct": 5.1,
+    "split": {
+     "own": 0.025,
+     "parSourced": 0,
+     "heldCap": 0.0294,
+     "matFactor": 0.3219,
+     "derived": 0.0061,
+     "heldMult": 0.0734,
+     "margin": 0.0365
+    },
+    "reconciles": true
+   },
+   {
+    "part": "FORGE_Control_Arm_Yoke.stp",
+    "commodity": "forging",
+    "total": 7.9855,
+    "ownPct": 39.1,
+    "sourcedPct": 39.1,
+    "split": {
+     "own": 3.1241,
+     "parSourced": 0,
+     "heldCap": 1.2032,
+     "matFactor": 0,
+     "derived": 2.3728,
+     "heldMult": 0.694,
+     "margin": 0.5915
+    },
+    "reconciles": true
+   },
+   {
+    "part": "FORGE_Hub_Flange.stp",
+    "commodity": "forging",
+    "total": 6.7105,
+    "ownPct": 58.3,
+    "sourcedPct": 58.3,
+    "split": {
+     "own": 3.9149,
+     "parSourced": 0,
+     "heldCap": 0.101,
+     "matFactor": 0,
+     "derived": 1.5831,
+     "heldMult": 0.6144,
+     "margin": 0.4971
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_Cable_Clip.stp",
+    "commodity": "injection_moulding",
+    "total": 0.0694,
+    "ownPct": 6.7,
+    "sourcedPct": 6.7,
+    "split": {
+     "own": 0.0047,
+     "parSourced": 0,
+     "heldCap": 0.0055,
+     "matFactor": 0.0213,
+     "derived": 0.0257,
+     "heldMult": 0.0071,
+     "margin": 0.0051
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_ECU_Cover.stp",
+    "commodity": "injection_moulding",
+    "total": 0.7401,
+    "ownPct": 4.1,
+    "sourcedPct": 4.1,
+    "split": {
+     "own": 0.0302,
+     "parSourced": 0,
+     "heldCap": 0.0357,
+     "matFactor": 0.4686,
+     "derived": 0.0584,
+     "heldMult": 0.0924,
+     "margin": 0.0548
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_Storage_Tray.stp",
+    "commodity": "injection_moulding",
+    "total": 2.3515,
+    "ownPct": 55.3,
+    "sourcedPct": 55.3,
+    "split": {
+     "own": 1.2994,
+     "parSourced": 0,
+     "heldCap": 0.3374,
+     "matFactor": 0,
+     "derived": 0.2952,
+     "heldMult": 0.2454,
+     "margin": 0.1742
+    },
+    "reconciles": true
+   },
+   {
+    "part": "MACH_Hydraulic_Manifold.stp",
+    "commodity": "machining",
+    "total": 9.8751,
+    "ownPct": 12.4,
+    "sourcedPct": 12.4,
+    "split": {
+     "own": 1.2254,
+     "parSourced": 0,
+     "heldCap": 0,
+     "matFactor": 6.3091,
+     "derived": 0.7945,
+     "heldMult": 0.8146,
+     "margin": 0.7315
+    },
+    "reconciles": true
+   },
+   {
+    "part": "MACH_Stepped_Shaft.stp",
+    "commodity": "machining",
+    "total": 3.2614,
+    "ownPct": 58.2,
+    "sourcedPct": 58.2,
+    "split": {
+     "own": 1.8979,
+     "parSourced": 0,
+     "heldCap": 0,
+     "matFactor": 0,
+     "derived": 0.8189,
+     "heldMult": 0.303,
+     "margin": 0.2416
+    },
+    "reconciles": true
+   },
+   {
+    "part": "PRCR002.stp",
+    "commodity": "cast_and_machine",
+    "total": 13.2653,
+    "ownPct": 46.7,
+    "sourcedPct": 46.7,
+    "split": {
+     "own": 6.196,
+     "parSourced": 0,
+     "heldCap": 0.1357,
+     "matFactor": 0,
+     "derived": 4.7221,
+     "heldMult": 1.2288,
+     "margin": 0.9826
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Part1.stp",
+    "commodity": "machining",
+    "total": 25.0757,
+    "ownPct": 10.1,
+    "sourcedPct": 10.1,
+    "split": {
+     "own": 2.5306,
+     "parSourced": 0,
+     "heldCap": 0,
+     "matFactor": 17.0874,
+     "derived": 1.6235,
+     "heldMult": 1.9767,
+     "margin": 1.8575
+    },
+    "reconciles": true
+   },
+   {
+    "part": "ROTO_Coolant_Tank.stp",
+    "commodity": "rotational_moulding",
+    "total": 11.8524,
+    "ownPct": 56.8,
+    "sourcedPct": 56.8,
+    "split": {
+     "own": 6.7333,
+     "parSourced": 0,
+     "heldCap": 2.4491,
+     "matFactor": 0,
+     "derived": 0.7488,
+     "heldMult": 1.0433,
+     "margin": 0.878
+    },
+    "reconciles": true
+   },
+   {
+    "part": "ROTO_Header_Tank.stp",
+    "commodity": "rotational_moulding",
+    "total": 3.8417,
+    "ownPct": 49.6,
+    "sourcedPct": 49.6,
+    "split": {
+     "own": 1.905,
+     "parSourced": 0,
+     "heldCap": 1.0233,
+     "matFactor": 0,
+     "derived": 0.2874,
+     "heldMult": 0.3414,
+     "margin": 0.2846
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_AV_Mount.stp",
+    "commodity": "rubber",
+    "total": 0.6477,
+    "ownPct": 50.6,
+    "sourcedPct": 50.6,
+    "split": {
+     "own": 0.3276,
+     "parSourced": 0,
+     "heldCap": 0.189,
+     "matFactor": 0,
+     "derived": 0.0157,
+     "heldMult": 0.0674,
+     "margin": 0.048
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_Door_Seal.stp",
+    "commodity": "rubber",
+    "total": 0.4038,
+    "ownPct": 2.6,
+    "sourcedPct": 2.6,
+    "split": {
+     "own": 0.0104,
+     "parSourced": 0,
+     "heldCap": 0.01,
+     "matFactor": 0.2846,
+     "derived": 0.0023,
+     "heldMult": 0.0667,
+     "margin": 0.0299
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_Grommet.stp",
+    "commodity": "rubber",
+    "total": 0.088,
+    "ownPct": 11.3,
+    "sourcedPct": 11.3,
+    "split": {
+     "own": 0.0099,
+     "parSourced": 0,
+     "heldCap": 0.0211,
+     "matFactor": 0.0248,
+     "derived": 0.0147,
+     "heldMult": 0.0109,
+     "margin": 0.0065
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Seat_Locking_Bracket.stp",
+    "commodity": "sheet_metal",
+    "total": 0.7755,
+    "ownPct": 57.9,
+    "sourcedPct": 57.9,
+    "split": {
+     "own": 0.4492,
+     "parSourced": 0,
+     "heldCap": 0.016,
+     "matFactor": 0,
+     "derived": 0.1519,
+     "heldMult": 0.101,
+     "margin": 0.0574
+    },
+    "reconciles": true
+   },
+   {
+    "part": "TF_Battery_Box_Lid.stp",
+    "commodity": "thermoforming",
+    "total": 10.6939,
+    "ownPct": 6.9,
+    "sourcedPct": 6.9,
+    "split": {
+     "own": 0.7327,
+     "parSourced": 0,
+     "heldCap": 1.5543,
+     "matFactor": 6.6389,
+     "derived": 0.0092,
+     "heldMult": 0.9667,
+     "margin": 0.7921
+    },
+    "reconciles": true
+   },
+   {
+    "part": "TF_Trim_Cover.stp",
+    "commodity": "thermoforming",
+    "total": 1.0982,
+    "ownPct": 5.1,
+    "sourcedPct": 5.1,
+    "split": {
+     "own": 0.0565,
+     "parSourced": 0,
+     "heldCap": 0.1002,
+     "matFactor": 0.7353,
+     "derived": 0.0111,
+     "heldMult": 0.1138,
+     "margin": 0.0813
+    },
+    "reconciles": true
+   },
+   {
+    "part": "steering_knuckle_RH.stp",
+    "commodity": "forging",
+    "total": 8.4088,
+    "ownPct": 50.3,
+    "sourcedPct": 50.3,
+    "split": {
+     "own": 4.2261,
+     "parSourced": 0,
+     "heldCap": 0.9399,
+     "matFactor": 0,
+     "derived": 1.8638,
+     "heldMult": 0.7562,
+     "margin": 0.6229
+    },
+    "reconciles": true
+   },
+   {
+    "part": "test-gear-m3-z38.step",
+    "commodity": "gear",
+    "total": 7.8236,
+    "ownPct": 46.6,
+    "sourcedPct": 46.6,
+    "split": {
+     "own": 3.6496,
+     "parSourced": 0,
+     "heldCap": 1.2502,
+     "matFactor": 0,
+     "derived": 1.6686,
+     "heldMult": 0.6757,
+     "margin": 0.5795
+    },
+    "reconciles": true
+   }
+  ]
+ },
+ "PL": {
+  "book": "PL 2026-10-10",
+  "capitalHeldFactor": 0.72,
+  "parts": 40,
+  "totalGbp": 706.32,
+  "sharePct": {
+   "own": 30.7,
+   "parSourced": 0,
+   "heldCap": 8,
+   "matFactor": 33.8,
+   "derived": 11.1,
+   "heldMult": 9,
+   "margin": 7.4
+  },
+  "medianPartOwnPct": 52.8,
+  "medianPartSourcedPct": 52.8,
+  "topHeldCapitalMachines": [
+   {
+    "id": "autoclave-1200mm",
+    "gbp": 19.98
+   },
+   {
+    "id": "mach-hmc-400",
+    "gbp": 11.01
+   },
+   {
+    "id": "waterjet-5ax-composite",
+    "gbp": 5.26
+   },
+   {
+    "id": "rtm-press-std",
+    "gbp": 4.75
+   },
+   {
+    "id": "rotomould-carousel-4arm",
+    "gbp": 4.61
+   },
+   {
+    "id": "thermoform-large",
+    "gbp": 1.93
+   },
+   {
+    "id": "al-cnc-profile-centre",
+    "gbp": 1.15
+   },
+   {
+    "id": "al-ext-press-2500t",
+    "gbp": 1.02
+   },
+   {
+    "id": "gear-grind-generating",
+    "gbp": 0.97
+   },
+   {
+    "id": "al-stretch-bender",
+    "gbp": 0.72
+   },
+   {
+    "id": "mach-lathe-cnc",
+    "gbp": 0.69
+   },
+   {
+    "id": "al-anodise-line",
+    "gbp": 0.52
+   }
+  ],
+  "topFactorMaterials": [
+   {
+    "id": "mat-virtual",
+    "gbp": 200.76
+   },
+   {
+    "id": "mat-al6082-bar",
+    "gbp": 23.83
+   },
+   {
+    "id": "mat-hdpe-tf",
+    "gbp": 7.06
+   },
+   {
+    "id": "mat-steel-20mncr5",
+    "gbp": 4.71
+   },
+   {
+    "id": "mat-abs-tf",
+    "gbp": 0.78
+   },
+   {
+    "id": "mat-upvc-pipe",
+    "gbp": 0.65
+   },
+   {
+    "id": "mat-pa66gf30",
+    "gbp": 0.53
+   },
+   {
+    "id": "mat-pe100-pipe",
+    "gbp": 0.34
+   },
+   {
+    "id": "mat-epdm",
+    "gbp": 0.32
+   },
+   {
+    "id": "mat-pa12-ext-tube",
+    "gbp": 0.09
+   }
+  ],
+  "heldLabour": [],
+  "perPart": [
+   {
+    "part": "AL_Battery_Can.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 0.3805,
+    "ownPct": 45,
+    "sourcedPct": 45,
+    "split": {
+     "own": 0.1713,
+     "parSourced": 0,
+     "heldCap": 0.0661,
+     "matFactor": 0,
+     "derived": 0.0543,
+     "heldMult": 0.0607,
+     "margin": 0.0282
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Battery_Rail.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 30.7698,
+    "ownPct": 78.4,
+    "sourcedPct": 78.4,
+    "split": {
+     "own": 24.1259,
+     "parSourced": 0,
+     "heldCap": 0.3909,
+     "matFactor": 0,
+     "derived": 1.0973,
+     "heldMult": 2.8764,
+     "margin": 2.2792
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Bumper_Beam.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 23.408,
+    "ownPct": 74.6,
+    "sourcedPct": 74.6,
+    "split": {
+     "own": 17.4706,
+     "parSourced": 0,
+     "heldCap": 1.5392,
+     "matFactor": 0,
+     "derived": 0.5059,
+     "heldMult": 2.1586,
+     "margin": 1.7339
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Busbar.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 2.5619,
+    "ownPct": 68,
+    "sourcedPct": 68,
+    "split": {
+     "own": 1.7411,
+     "parSourced": 0,
+     "heldCap": 0.2629,
+     "matFactor": 0,
+     "derived": 0.1124,
+     "heldMult": 0.2557,
+     "margin": 0.1898
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Crash_Box.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 8.2223,
+    "ownPct": 73.4,
+    "sourcedPct": 73.4,
+    "split": {
+     "own": 6.0344,
+     "parSourced": 0,
+     "heldCap": 0.5872,
+     "matFactor": 0,
+     "derived": 0.2013,
+     "heldMult": 0.7903,
+     "margin": 0.6091
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Heat_Sink.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 3.4788,
+    "ownPct": 71.8,
+    "sourcedPct": 71.8,
+    "split": {
+     "own": 2.4963,
+     "parSourced": 0,
+     "heldCap": 0.2957,
+     "matFactor": 0,
+     "derived": 0.0791,
+     "heldMult": 0.3501,
+     "margin": 0.2577
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Machined_Bracket.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 5.2919,
+    "ownPct": 70.6,
+    "sourcedPct": 70.6,
+    "split": {
+     "own": 3.7384,
+     "parSourced": 0,
+     "heldCap": 0.5847,
+     "matFactor": 0,
+     "derived": 0.0577,
+     "heldMult": 0.5191,
+     "margin": 0.392
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Seal_Carrier.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 3.2485,
+    "ownPct": 79.3,
+    "sourcedPct": 79.3,
+    "split": {
+     "own": 2.5768,
+     "parSourced": 0,
+     "heldCap": 0.0726,
+     "matFactor": 0,
+     "derived": 0.0196,
+     "heldMult": 0.3389,
+     "margin": 0.2406
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Trim_Channel.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 2.8484,
+    "ownPct": 68.8,
+    "sourcedPct": 68.8,
+    "split": {
+     "own": 1.9591,
+     "parSourced": 0,
+     "heldCap": 0.3173,
+     "matFactor": 0,
+     "derived": 0.064,
+     "heldMult": 0.297,
+     "margin": 0.211
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Floor_Reinforcement.stp",
+    "commodity": "sheet_metal",
+    "total": 4.2976,
+    "ownPct": 55.4,
+    "sourcedPct": 55.4,
+    "split": {
+     "own": 2.3803,
+     "parSourced": 0,
+     "heldCap": 0.1016,
+     "matFactor": 0,
+     "derived": 0.9965,
+     "heldMult": 0.5008,
+     "margin": 0.3183
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Inner_Panel.stp",
+    "commodity": "sheet_metal",
+    "total": 14.5178,
+    "ownPct": 54.2,
+    "sourcedPct": 54.2,
+    "split": {
+     "own": 7.8703,
+     "parSourced": 0,
+     "heldCap": 0.1761,
+     "matFactor": 0,
+     "derived": 3.7157,
+     "heldMult": 1.6802,
+     "margin": 1.0754
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Reinf_Channel.stp",
+    "commodity": "sheet_metal",
+    "total": 0.6938,
+    "ownPct": 59,
+    "sourcedPct": 59,
+    "split": {
+     "own": 0.4096,
+     "parSourced": 0,
+     "heldCap": 0.0037,
+     "matFactor": 0,
+     "derived": 0.1134,
+     "heldMult": 0.1157,
+     "margin": 0.0514
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BM_Air_Duct.stp",
+    "commodity": "blow_moulding",
+    "total": 0.7185,
+    "ownPct": 58,
+    "sourcedPct": 58,
+    "split": {
+     "own": 0.417,
+     "parSourced": 0,
+     "heldCap": 0.0887,
+     "matFactor": 0,
+     "derived": 0.0336,
+     "heldMult": 0.1259,
+     "margin": 0.0532
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BM_Washer_Reservoir.stp",
+    "commodity": "blow_moulding",
+    "total": 0.9493,
+    "ownPct": 59.4,
+    "sourcedPct": 59.4,
+    "split": {
+     "own": 0.5641,
+     "parSourced": 0,
+     "heldCap": 0.137,
+     "matFactor": 0,
+     "derived": 0.0406,
+     "heldMult": 0.1372,
+     "margin": 0.0703
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Battery_Lid.stp",
+    "commodity": "composites",
+    "total": 42.3565,
+    "ownPct": 26,
+    "sourcedPct": 26,
+    "split": {
+     "own": 11.0273,
+     "parSourced": 0,
+     "heldCap": 6.4929,
+     "matFactor": 14.3004,
+     "derived": 3.6777,
+     "heldMult": 3.7208,
+     "margin": 3.1375
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Hat_Stiffener.stp",
+    "commodity": "composites",
+    "total": 42.2481,
+    "ownPct": 15.4,
+    "sourcedPct": 15.4,
+    "split": {
+     "own": 6.5272,
+     "parSourced": 0,
+     "heldCap": 3.3515,
+     "matFactor": 12.5004,
+     "derived": 13.126,
+     "heldMult": 3.6135,
+     "margin": 3.1295
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Roof_Panel.stp",
+    "commodity": "composites",
+    "total": 320.6407,
+    "ownPct": 14.7,
+    "sourcedPct": 14.7,
+    "split": {
+     "own": 47.2618,
+     "parSourced": 0,
+     "heldCap": 20.2854,
+     "matFactor": 173.9613,
+     "derived": 28.072,
+     "heldMult": 27.3091,
+     "margin": 23.7512
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Casting_Braket.stp",
+    "commodity": "cast_and_machine",
+    "total": 12.1543,
+    "ownPct": 50.5,
+    "sourcedPct": 50.5,
+    "split": {
+     "own": 6.1405,
+     "parSourced": 0,
+     "heldCap": 1.2246,
+     "matFactor": 0,
+     "derived": 2.7432,
+     "heldMult": 1.1458,
+     "margin": 0.9003
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Fuel_Line_Tube.stp",
+    "commodity": "extrusion",
+    "total": 0.1776,
+    "ownPct": 17.2,
+    "sourcedPct": 17.2,
+    "split": {
+     "own": 0.0306,
+     "parSourced": 0,
+     "heldCap": 0.0098,
+     "matFactor": 0.085,
+     "derived": 0.0175,
+     "heldMult": 0.0215,
+     "margin": 0.0132
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Twin_Chamber_Profile.stp",
+    "commodity": "extrusion",
+    "total": 1.1581,
+    "ownPct": 12.8,
+    "sourcedPct": 12.8,
+    "split": {
+     "own": 0.1483,
+     "parSourced": 0,
+     "heldCap": 0.0537,
+     "matFactor": 0.6532,
+     "derived": 0.046,
+     "heldMult": 0.1711,
+     "margin": 0.0858
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Vent_Pipe.stp",
+    "commodity": "extrusion",
+    "total": 0.6354,
+    "ownPct": 13.8,
+    "sourcedPct": 13.8,
+    "split": {
+     "own": 0.0878,
+     "parSourced": 0,
+     "heldCap": 0.0387,
+     "matFactor": 0.3438,
+     "derived": 0.0155,
+     "heldMult": 0.1026,
+     "margin": 0.0471
+    },
+    "reconciles": true
+   },
+   {
+    "part": "FORGE_Control_Arm_Yoke.stp",
+    "commodity": "forging",
+    "total": 12.8849,
+    "ownPct": 48.5,
+    "sourcedPct": 48.5,
+    "split": {
+     "own": 6.2447,
+     "parSourced": 0,
+     "heldCap": 1.6171,
+     "matFactor": 0,
+     "derived": 2.8696,
+     "heldMult": 1.1991,
+     "margin": 0.9544
+    },
+    "reconciles": true
+   },
+   {
+    "part": "FORGE_Hub_Flange.stp",
+    "commodity": "forging",
+    "total": 10.4826,
+    "ownPct": 61.7,
+    "sourcedPct": 61.7,
+    "split": {
+     "own": 6.4675,
+     "parSourced": 0,
+     "heldCap": 0.3567,
+     "matFactor": 0,
+     "derived": 1.8604,
+     "heldMult": 1.0215,
+     "margin": 0.7765
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_Cable_Clip.stp",
+    "commodity": "injection_moulding",
+    "total": 0.1178,
+    "ownPct": 15.6,
+    "sourcedPct": 15.6,
+    "split": {
+     "own": 0.0184,
+     "parSourced": 0,
+     "heldCap": 0.0045,
+     "matFactor": 0.0229,
+     "derived": 0.0509,
+     "heldMult": 0.0124,
+     "margin": 0.0087
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_ECU_Cover.stp",
+    "commodity": "injection_moulding",
+    "total": 0.9533,
+    "ownPct": 10.5,
+    "sourcedPct": 10.5,
+    "split": {
+     "own": 0.1004,
+     "parSourced": 0,
+     "heldCap": 0.0474,
+     "matFactor": 0.5049,
+     "derived": 0.1007,
+     "heldMult": 0.1293,
+     "margin": 0.0706
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_Storage_Tray.stp",
+    "commodity": "injection_moulding",
+    "total": 3.2044,
+    "ownPct": 52.8,
+    "sourcedPct": 52.8,
+    "split": {
+     "own": 1.693,
+     "parSourced": 0,
+     "heldCap": 0.4469,
+     "matFactor": 0,
+     "derived": 0.4674,
+     "heldMult": 0.3597,
+     "margin": 0.2374
+    },
+    "reconciles": true
+   },
+   {
+    "part": "MACH_Hydraulic_Manifold.stp",
+    "commodity": "machining",
+    "total": 15.5589,
+    "ownPct": 26,
+    "sourcedPct": 26,
+    "split": {
+     "own": 4.0441,
+     "parSourced": 0,
+     "heldCap": 1.7087,
+     "matFactor": 6.4256,
+     "derived": 0.8364,
+     "heldMult": 1.3915,
+     "margin": 1.1525
+    },
+    "reconciles": true
+   },
+   {
+    "part": "MACH_Stepped_Shaft.stp",
+    "commodity": "machining",
+    "total": 5.3389,
+    "ownPct": 63.2,
+    "sourcedPct": 63.2,
+    "split": {
+     "own": 3.3726,
+     "parSourced": 0,
+     "heldCap": 0.2247,
+     "matFactor": 0,
+     "derived": 0.8231,
+     "heldMult": 0.523,
+     "margin": 0.3955
+    },
+    "reconciles": true
+   },
+   {
+    "part": "PRCR002.stp",
+    "commodity": "cast_and_machine",
+    "total": 26.1317,
+    "ownPct": 50.1,
+    "sourcedPct": 50.1,
+    "split": {
+     "own": 13.1049,
+     "parSourced": 0,
+     "heldCap": 2.4028,
+     "matFactor": 0,
+     "derived": 6.1941,
+     "heldMult": 2.4942,
+     "margin": 1.9357
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Part1.stp",
+    "commodity": "machining",
+    "total": 36.5574,
+    "ownPct": 22.3,
+    "sourcedPct": 22.3,
+    "split": {
+     "own": 8.1453,
+     "parSourced": 0,
+     "heldCap": 3.4767,
+     "matFactor": 17.4028,
+     "derived": 1.6657,
+     "heldMult": 3.159,
+     "margin": 2.708
+    },
+    "reconciles": true
+   },
+   {
+    "part": "ROTO_Coolant_Tank.stp",
+    "commodity": "rotational_moulding",
+    "total": 21.6129,
+    "ownPct": 59.3,
+    "sourcedPct": 59.3,
+    "split": {
+     "own": 12.8243,
+     "parSourced": 0,
+     "heldCap": 3.2497,
+     "matFactor": 0,
+     "derived": 1.9305,
+     "heldMult": 2.0074,
+     "margin": 1.601
+    },
+    "reconciles": true
+   },
+   {
+    "part": "ROTO_Header_Tank.stp",
+    "commodity": "rotational_moulding",
+    "total": 7.8538,
+    "ownPct": 56.7,
+    "sourcedPct": 56.7,
+    "split": {
+     "own": 4.4497,
+     "parSourced": 0,
+     "heldCap": 1.3578,
+     "matFactor": 0,
+     "derived": 0.738,
+     "heldMult": 0.7266,
+     "margin": 0.5818
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_AV_Mount.stp",
+    "commodity": "rubber",
+    "total": 1.0567,
+    "ownPct": 54.3,
+    "sourcedPct": 54.3,
+    "split": {
+     "own": 0.5738,
+     "parSourced": 0,
+     "heldCap": 0.2508,
+     "matFactor": 0,
+     "derived": 0.0402,
+     "heldMult": 0.1135,
+     "margin": 0.0783
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_Door_Seal.stp",
+    "commodity": "rubber",
+    "total": 0.495,
+    "ownPct": 11.9,
+    "sourcedPct": 11.9,
+    "split": {
+     "own": 0.0587,
+     "parSourced": 0,
+     "heldCap": 0.0132,
+     "matFactor": 0.2898,
+     "derived": 0.0059,
+     "heldMult": 0.0908,
+     "margin": 0.0367
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_Grommet.stp",
+    "commodity": "rubber",
+    "total": 0.1862,
+    "ownPct": 32.3,
+    "sourcedPct": 32.3,
+    "split": {
+     "own": 0.0602,
+     "parSourced": 0,
+     "heldCap": 0.028,
+     "matFactor": 0.0253,
+     "derived": 0.0376,
+     "heldMult": 0.0214,
+     "margin": 0.0138
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Seat_Locking_Bracket.stp",
+    "commodity": "sheet_metal",
+    "total": 1.1642,
+    "ownPct": 51.7,
+    "sourcedPct": 51.7,
+    "split": {
+     "own": 0.6018,
+     "parSourced": 0,
+     "heldCap": 0.0212,
+     "matFactor": 0,
+     "derived": 0.2998,
+     "heldMult": 0.1553,
+     "margin": 0.0862
+    },
+    "reconciles": true
+   },
+   {
+    "part": "TF_Battery_Box_Lid.stp",
+    "commodity": "thermoforming",
+    "total": 14.6562,
+    "ownPct": 20.4,
+    "sourcedPct": 20.4,
+    "split": {
+     "own": 2.9925,
+     "parSourced": 0,
+     "heldCap": 2.0549,
+     "matFactor": 7.0614,
+     "derived": 0.0236,
+     "heldMult": 1.4382,
+     "margin": 1.0856
+    },
+    "reconciles": true
+   },
+   {
+    "part": "TF_Trim_Cover.stp",
+    "commodity": "thermoforming",
+    "total": 1.5508,
+    "ownPct": 21.1,
+    "sourcedPct": 21.1,
+    "split": {
+     "own": 0.3274,
+     "parSourced": 0,
+     "heldCap": 0.1326,
+     "matFactor": 0.7761,
+     "derived": 0.0283,
+     "heldMult": 0.1714,
+     "margin": 0.1149
+    },
+    "reconciles": true
+   },
+   {
+    "part": "steering_knuckle_RH.stp",
+    "commodity": "forging",
+    "total": 12.7152,
+    "ownPct": 53.2,
+    "sourcedPct": 53.2,
+    "split": {
+     "own": 6.7635,
+     "parSourced": 0,
+     "heldCap": 1.2617,
+     "matFactor": 0,
+     "derived": 2.5224,
+     "heldMult": 1.2258,
+     "margin": 0.9419
+    },
+    "reconciles": true
+   },
+   {
+    "part": "test-gear-m3-z38.step",
+    "commodity": "gear",
+    "total": 13.038,
+    "ownPct": 12,
+    "sourcedPct": 12,
+    "split": {
+     "own": 1.5601,
+     "parSourced": 0,
+     "heldCap": 1.7774,
+     "matFactor": 4.7142,
+     "derived": 2.8167,
+     "heldMult": 1.2038,
+     "margin": 0.9658
+    },
+    "reconciles": true
+   }
+  ]
+ },
+ "HU": {
+  "book": "HU 2026-10-30",
+  "capitalHeldFactor": 1,
+  "parts": 40,
+  "totalGbp": 752.03,
+  "sharePct": {
+   "own": 30.2,
+   "parSourced": 5.7,
+   "heldCap": 2.5,
+   "matFactor": 33.7,
+   "derived": 11.5,
+   "heldMult": 9,
+   "margin": 7.4
+  },
+  "medianPartOwnPct": 48.7,
+  "medianPartSourcedPct": 52.3,
+  "topHeldCapitalMachines": [
+   {
+    "id": "rotomould-carousel-4arm",
+    "gbp": 6.32
+   },
+   {
+    "id": "thermoform-large",
+    "gbp": 2.64
+   },
+   {
+    "id": "al-cnc-profile-centre",
+    "gbp": 1.56
+   },
+   {
+    "id": "gear-grind-generating",
+    "gbp": 1.33
+   },
+   {
+    "id": "al-stretch-bender",
+    "gbp": 0.98
+   },
+   {
+    "id": "al-anodise-line",
+    "gbp": 0.7
+   },
+   {
+    "id": "gear-hob-small",
+    "gbp": 0.62
+   },
+   {
+    "id": "imm-1200t",
+    "gbp": 0.61
+   },
+   {
+    "id": "al-age-oven-batch",
+    "gbp": 0.4
+   },
+   {
+    "id": "transfer-mould-std",
+    "gbp": 0.38
+   },
+   {
+    "id": "sand-cast-line",
+    "gbp": 0.37
+   },
+   {
+    "id": "forge-press-1600t",
+    "gbp": 0.36
+   }
+  ],
+  "topFactorMaterials": [
+   {
+    "id": "mat-virtual",
+    "gbp": 207.14
+   },
+   {
+    "id": "mat-al6082-bar",
+    "gbp": 24
+   },
+   {
+    "id": "mat-steel-38mnvs6",
+    "gbp": 13.48
+   },
+   {
+    "id": "mat-steel-20mncr5",
+    "gbp": 4.86
+   },
+   {
+    "id": "mat-en8",
+    "gbp": 2.12
+   },
+   {
+    "id": "mat-abs-tf",
+    "gbp": 0.79
+   },
+   {
+    "id": "mat-pa66gf30",
+    "gbp": 0.54
+   },
+   {
+    "id": "mat-epdm",
+    "gbp": 0.32
+   },
+   {
+    "id": "mat-pa12-ext-tube",
+    "gbp": 0.09
+   }
+  ],
+  "heldLabour": [],
+  "perPart": [
+   {
+    "part": "AL_Battery_Can.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 0.4124,
+    "ownPct": 41.2,
+    "sourcedPct": 41.2,
+    "split": {
+     "own": 0.1698,
+     "parSourced": 0,
+     "heldCap": 0.0895,
+     "matFactor": 0,
+     "derived": 0.0598,
+     "heldMult": 0.0627,
+     "margin": 0.0305
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Battery_Rail.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 31.9738,
+    "ownPct": 79,
+    "sourcedPct": 79,
+    "split": {
+     "own": 25.2639,
+     "parSourced": 0,
+     "heldCap": 0.1617,
+     "matFactor": 0,
+     "derived": 1.2084,
+     "heldMult": 2.9714,
+     "margin": 2.3684
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Bumper_Beam.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 26.2617,
+    "ownPct": 76.7,
+    "sourcedPct": 76.7,
+    "split": {
+     "own": 20.1377,
+     "parSourced": 0,
+     "heldCap": 1.227,
+     "matFactor": 0,
+     "derived": 0.5572,
+     "heldMult": 2.3946,
+     "margin": 1.9453
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Busbar.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 2.6741,
+    "ownPct": 65.1,
+    "sourcedPct": 65.1,
+    "split": {
+     "own": 1.7407,
+     "parSourced": 0,
+     "heldCap": 0.3572,
+     "matFactor": 0,
+     "derived": 0.114,
+     "heldMult": 0.2643,
+     "margin": 0.1981
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Crash_Box.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 8.8807,
+    "ownPct": 73.4,
+    "sourcedPct": 73.4,
+    "split": {
+     "own": 6.5142,
+     "parSourced": 0,
+     "heldCap": 0.6459,
+     "matFactor": 0,
+     "derived": 0.2192,
+     "heldMult": 0.8435,
+     "margin": 0.6578
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Heat_Sink.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 3.6985,
+    "ownPct": 70.7,
+    "sourcedPct": 70.7,
+    "split": {
+     "own": 2.6152,
+     "parSourced": 0,
+     "heldCap": 0.3602,
+     "matFactor": 0,
+     "derived": 0.0818,
+     "heldMult": 0.3673,
+     "margin": 0.274
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Machined_Bracket.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 5.7279,
+    "ownPct": 69.2,
+    "sourcedPct": 69.2,
+    "split": {
+     "own": 3.9637,
+     "parSourced": 0,
+     "heldCap": 0.7258,
+     "matFactor": 0,
+     "derived": 0.0601,
+     "heldMult": 0.5541,
+     "margin": 0.4243
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Seal_Carrier.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 3.4736,
+    "ownPct": 81.1,
+    "sourcedPct": 81.1,
+    "split": {
+     "own": 2.8173,
+     "parSourced": 0,
+     "heldCap": 0.0211,
+     "matFactor": 0,
+     "derived": 0.0215,
+     "heldMult": 0.3564,
+     "margin": 0.2573
+    },
+    "reconciles": true
+   },
+   {
+    "part": "AL_Trim_Channel.stp",
+    "commodity": "aluminium_extrusion",
+    "total": 3.0776,
+    "ownPct": 67.6,
+    "sourcedPct": 67.6,
+    "split": {
+     "own": 2.0816,
+     "parSourced": 0,
+     "heldCap": 0.3884,
+     "matFactor": 0,
+     "derived": 0.0646,
+     "heldMult": 0.3151,
+     "margin": 0.228
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Floor_Reinforcement.stp",
+    "commodity": "sheet_metal",
+    "total": 4.3458,
+    "ownPct": 53.4,
+    "sourcedPct": 53.4,
+    "split": {
+     "own": 2.3222,
+     "parSourced": 0,
+     "heldCap": 0.1394,
+     "matFactor": 0,
+     "derived": 1.0604,
+     "heldMult": 0.5018,
+     "margin": 0.3219
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Inner_Panel.stp",
+    "commodity": "sheet_metal",
+    "total": 14.6052,
+    "ownPct": 52.5,
+    "sourcedPct": 52.5,
+    "split": {
+     "own": 7.672,
+     "parSourced": 0,
+     "heldCap": 0.2415,
+     "matFactor": 0,
+     "derived": 3.9325,
+     "heldMult": 1.6774,
+     "margin": 1.0819
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BIW_Reinf_Channel.stp",
+    "commodity": "sheet_metal",
+    "total": 0.697,
+    "ownPct": 57.3,
+    "sourcedPct": 57.3,
+    "split": {
+     "own": 0.3994,
+     "parSourced": 0,
+     "heldCap": 0.0051,
+     "matFactor": 0,
+     "derived": 0.1261,
+     "heldMult": 0.1147,
+     "margin": 0.0516
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BM_Air_Duct.stp",
+    "commodity": "blow_moulding",
+    "total": 0.7601,
+    "ownPct": 55,
+    "sourcedPct": 55,
+    "split": {
+     "own": 0.4183,
+     "parSourced": 0,
+     "heldCap": 0.1216,
+     "matFactor": 0,
+     "derived": 0.0358,
+     "heldMult": 0.128,
+     "margin": 0.0563
+    },
+    "reconciles": true
+   },
+   {
+    "part": "BM_Washer_Reservoir.stp",
+    "commodity": "blow_moulding",
+    "total": 1.0062,
+    "ownPct": 55.6,
+    "sourcedPct": 55.6,
+    "split": {
+     "own": 0.5596,
+     "parSourced": 0,
+     "heldCap": 0.1878,
+     "matFactor": 0,
+     "derived": 0.0436,
+     "heldMult": 0.1407,
+     "margin": 0.0745
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Battery_Lid.stp",
+    "commodity": "composites",
+    "total": 44.7458,
+    "ownPct": 27,
+    "sourcedPct": 41.4,
+    "split": {
+     "own": 12.0652,
+     "parSourced": 6.4592,
+     "heldCap": 0.0172,
+     "matFactor": 14.7427,
+     "derived": 4.2286,
+     "heldMult": 3.9185,
+     "margin": 3.3145
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Hat_Stiffener.stp",
+    "commodity": "composites",
+    "total": 45.1184,
+    "ownPct": 16.5,
+    "sourcedPct": 21.9,
+    "split": {
+     "own": 7.424,
+     "parSourced": 2.4687,
+     "heldCap": 0.0112,
+     "matFactor": 12.9266,
+     "derived": 15.092,
+     "heldMult": 3.8538,
+     "margin": 3.3421
+    },
+    "reconciles": true
+   },
+   {
+    "part": "COMP_Roof_Panel.stp",
+    "commodity": "composites",
+    "total": 338.4221,
+    "ownPct": 14.2,
+    "sourcedPct": 21.5,
+    "split": {
+     "own": 47.9592,
+     "parSourced": 24.6866,
+     "heldCap": 0.1601,
+     "matFactor": 179.4713,
+     "derived": 32.278,
+     "heldMult": 28.7987,
+     "margin": 25.0683
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Casting_Braket.stp",
+    "commodity": "cast_and_machine",
+    "total": 12.7847,
+    "ownPct": 47.8,
+    "sourcedPct": 59.9,
+    "split": {
+     "own": 6.1148,
+     "parSourced": 1.5389,
+     "heldCap": 0.1229,
+     "matFactor": 0,
+     "derived": 2.8649,
+     "heldMult": 1.1962,
+     "margin": 0.947
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Fuel_Line_Tube.stp",
+    "commodity": "extrusion",
+    "total": 0.1857,
+    "ownPct": 16.1,
+    "sourcedPct": 16.1,
+    "split": {
+     "own": 0.03,
+     "parSourced": 0,
+     "heldCap": 0.0135,
+     "matFactor": 0.0864,
+     "derived": 0.0201,
+     "heldMult": 0.022,
+     "margin": 0.0138
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Twin_Chamber_Profile.stp",
+    "commodity": "extrusion",
+    "total": 1.2887,
+    "ownPct": 68.8,
+    "sourcedPct": 68.8,
+    "split": {
+     "own": 0.8865,
+     "parSourced": 0,
+     "heldCap": 0.0735,
+     "matFactor": 0,
+     "derived": 0.0529,
+     "heldMult": 0.1805,
+     "margin": 0.0955
+    },
+    "reconciles": true
+   },
+   {
+    "part": "EXT_Vent_Pipe.stp",
+    "commodity": "extrusion",
+    "total": 0.6776,
+    "ownPct": 66.7,
+    "sourcedPct": 66.7,
+    "split": {
+     "own": 0.4517,
+     "parSourced": 0,
+     "heldCap": 0.0529,
+     "matFactor": 0,
+     "derived": 0.0178,
+     "heldMult": 0.105,
+     "margin": 0.0502
+    },
+    "reconciles": true
+   },
+   {
+    "part": "FORGE_Control_Arm_Yoke.stp",
+    "commodity": "forging",
+    "total": 14.9144,
+    "ownPct": 25.6,
+    "sourcedPct": 39.5,
+    "split": {
+     "own": 3.813,
+     "parSourced": 2.0851,
+     "heldCap": 0.1088,
+     "matFactor": 3.4813,
+     "derived": 2.9541,
+     "heldMult": 1.3674,
+     "margin": 1.1048
+    },
+    "reconciles": true
+   },
+   {
+    "part": "FORGE_Hub_Flange.stp",
+    "commodity": "forging",
+    "total": 12.2341,
+    "ownPct": 24.1,
+    "sourcedPct": 27.8,
+    "split": {
+     "own": 2.951,
+     "parSourced": 0.4474,
+     "heldCap": 0.1841,
+     "matFactor": 4.6585,
+     "derived": 1.9211,
+     "heldMult": 1.1658,
+     "margin": 0.9062
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_Cable_Clip.stp",
+    "commodity": "injection_moulding",
+    "total": 0.1267,
+    "ownPct": 14.5,
+    "sourcedPct": 14.5,
+    "split": {
+     "own": 0.0184,
+     "parSourced": 0,
+     "heldCap": 0.0061,
+     "matFactor": 0.0236,
+     "derived": 0.0563,
+     "heldMult": 0.013,
+     "margin": 0.0094
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_ECU_Cover.stp",
+    "commodity": "injection_moulding",
+    "total": 0.999,
+    "ownPct": 9.6,
+    "sourcedPct": 9.6,
+    "split": {
+     "own": 0.0963,
+     "parSourced": 0,
+     "heldCap": 0.0649,
+     "matFactor": 0.5206,
+     "derived": 0.1111,
+     "heldMult": 0.1321,
+     "margin": 0.074
+    },
+    "reconciles": true
+   },
+   {
+    "part": "IM_Storage_Tray.stp",
+    "commodity": "injection_moulding",
+    "total": 3.4076,
+    "ownPct": 48.7,
+    "sourcedPct": 48.7,
+    "split": {
+     "own": 1.6581,
+     "parSourced": 0,
+     "heldCap": 0.6125,
+     "matFactor": 0,
+     "derived": 0.5098,
+     "heldMult": 0.3748,
+     "margin": 0.2524
+    },
+    "reconciles": true
+   },
+   {
+    "part": "MACH_Hydraulic_Manifold.stp",
+    "commodity": "machining",
+    "total": 15.7973,
+    "ownPct": 36.5,
+    "sourcedPct": 37.6,
+    "split": {
+     "own": 5.7686,
+     "parSourced": 0.167,
+     "heldCap": 0,
+     "matFactor": 6.4709,
+     "derived": 0.8109,
+     "heldMult": 1.4097,
+     "margin": 1.1702
+    },
+    "reconciles": true
+   },
+   {
+    "part": "MACH_Stepped_Shaft.stp",
+    "commodity": "machining",
+    "total": 6.4236,
+    "ownPct": 32.4,
+    "sourcedPct": 37.2,
+    "split": {
+     "own": 2.0831,
+     "parSourced": 0.3053,
+     "heldCap": 0,
+     "matFactor": 2.1225,
+     "derived": 0.8242,
+     "heldMult": 0.6127,
+     "margin": 0.4758
+    },
+    "reconciles": true
+   },
+   {
+    "part": "PRCR002.stp",
+    "commodity": "cast_and_machine",
+    "total": 27.3864,
+    "ownPct": 47.6,
+    "sourcedPct": 58.6,
+    "split": {
+     "own": 13.0364,
+     "parSourced": 3.014,
+     "heldCap": 0.2473,
+     "matFactor": 0,
+     "derived": 6.4668,
+     "heldMult": 2.5933,
+     "margin": 2.0286
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Part1.stp",
+    "commodity": "machining",
+    "total": 37.3518,
+    "ownPct": 31.9,
+    "sourcedPct": 32.6,
+    "split": {
+     "own": 11.928,
+     "parSourced": 0.2673,
+     "heldCap": 0,
+     "matFactor": 17.5255,
+     "derived": 1.6401,
+     "heldMult": 3.2241,
+     "margin": 2.7668
+    },
+    "reconciles": true
+   },
+   {
+    "part": "ROTO_Coolant_Tank.stp",
+    "commodity": "rotational_moulding",
+    "total": 23.5497,
+    "ownPct": 55.1,
+    "sourcedPct": 55.1,
+    "split": {
+     "own": 12.9772,
+     "parSourced": 0,
+     "heldCap": 4.4556,
+     "matFactor": 0,
+     "derived": 2.2061,
+     "heldMult": 2.1663,
+     "margin": 1.7444
+    },
+    "reconciles": true
+   },
+   {
+    "part": "ROTO_Header_Tank.stp",
+    "commodity": "rotational_moulding",
+    "total": 8.6811,
+    "ownPct": 52.3,
+    "sourcedPct": 52.3,
+    "split": {
+     "own": 4.5361,
+     "parSourced": 0,
+     "heldCap": 1.8617,
+     "matFactor": 0,
+     "derived": 0.8456,
+     "heldMult": 0.7947,
+     "margin": 0.643
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_AV_Mount.stp",
+    "commodity": "rubber",
+    "total": 1.1577,
+    "ownPct": 48.4,
+    "sourcedPct": 48.4,
+    "split": {
+     "own": 0.5603,
+     "parSourced": 0,
+     "heldCap": 0.344,
+     "matFactor": 0,
+     "derived": 0.0463,
+     "heldMult": 0.1215,
+     "margin": 0.0858
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_Door_Seal.stp",
+    "commodity": "rubber",
+    "total": 0.5016,
+    "ownPct": 11.5,
+    "sourcedPct": 11.5,
+    "split": {
+     "own": 0.0575,
+     "parSourced": 0,
+     "heldCap": 0.0181,
+     "matFactor": 0.2919,
+     "derived": 0.0068,
+     "heldMult": 0.0902,
+     "margin": 0.0372
+    },
+    "reconciles": true
+   },
+   {
+    "part": "RUB_Grommet.stp",
+    "commodity": "rubber",
+    "total": 0.2045,
+    "ownPct": 29.1,
+    "sourcedPct": 29.1,
+    "split": {
+     "own": 0.0594,
+     "parSourced": 0,
+     "heldCap": 0.0384,
+     "matFactor": 0.0254,
+     "derived": 0.0433,
+     "heldMult": 0.0228,
+     "margin": 0.0151
+    },
+    "reconciles": true
+   },
+   {
+    "part": "Seat_Locking_Bracket.stp",
+    "commodity": "sheet_metal",
+    "total": 1.1976,
+    "ownPct": 49,
+    "sourcedPct": 49,
+    "split": {
+     "own": 0.5869,
+     "parSourced": 0,
+     "heldCap": 0.0291,
+     "matFactor": 0,
+     "derived": 0.3361,
+     "heldMult": 0.1568,
+     "margin": 0.0887
+    },
+    "reconciles": true
+   },
+   {
+    "part": "TF_Battery_Box_Lid.stp",
+    "commodity": "thermoforming",
+    "total": 16.2207,
+    "ownPct": 65.4,
+    "sourcedPct": 65.4,
+    "split": {
+     "own": 10.6124,
+     "parSourced": 0,
+     "heldCap": 2.8143,
+     "matFactor": 0,
+     "derived": 0.027,
+     "heldMult": 1.5654,
+     "margin": 1.2015
+    },
+    "reconciles": true
+   },
+   {
+    "part": "TF_Trim_Cover.stp",
+    "commodity": "thermoforming",
+    "total": 1.6571,
+    "ownPct": 21,
+    "sourcedPct": 21,
+    "split": {
+     "own": 0.3483,
+     "parSourced": 0,
+     "heldCap": 0.1815,
+     "matFactor": 0.7924,
+     "derived": 0.0326,
+     "heldMult": 0.1795,
+     "margin": 0.1227
+    },
+    "reconciles": true
+   },
+   {
+    "part": "steering_knuckle_RH.stp",
+    "commodity": "forging",
+    "total": 15.1922,
+    "ownPct": 19.4,
+    "sourcedPct": 29,
+    "split": {
+     "own": 2.9424,
+     "parSourced": 1.4626,
+     "heldCap": 0.251,
+     "matFactor": 5.3364,
+     "derived": 2.6436,
+     "heldMult": 1.4308,
+     "margin": 1.1254
+    },
+    "reconciles": true
+   },
+   {
+    "part": "test-gear-m3-z38.step",
+    "commodity": "gear",
+    "total": 14.2103,
+    "ownPct": 11.2,
+    "sourcedPct": 12.1,
+    "split": {
+     "own": 1.5878,
+     "parSourced": 0.1253,
+     "heldCap": 2.2929,
+     "matFactor": 4.8572,
+     "derived": 2.9943,
+     "heldMult": 1.3002,
+     "margin": 1.0526
+    },
+    "reconciles": true
+   }
+  ]
+ }
+}
