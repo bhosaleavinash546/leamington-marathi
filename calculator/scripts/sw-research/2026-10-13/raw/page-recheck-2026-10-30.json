@@ -1,0 +1,123 @@
+{
+ "about": "Software hub page re-check, 30 Oct 2026 (scripts/rate-refresh/verify-pages/verdicts/sw-hubs.json). Each item: a stored salary whose cited page now shows a different figure (a newer release or a refreshed listing). build-config.py lays these over the raw research when it loads it; the raw files are not edited, so the original reading stays visible.",
+ "updates": [
+  {
+   "f": "A",
+   "hub": "UK",
+   "old": 54615,
+   "new": 55587,
+   "dataYear": 2025,
+   "statistic": "median",
+   "why": "the page now republishes ONS ASHE 2025 (provisional), SOC 2134; 54,615 was ASHE 2024 revised",
+   "source": "ONS ASHE 2025 (provisional) SOC 2134 median, as republished by paychecktaxcalculator.net (page re-check 30 Oct 2026)"
+  },
+  {
+   "f": "A",
+   "hub": "UK",
+   "old": 68750,
+   "new": 65000,
+   "region": "Midlands",
+   "why": "IT Jobs Watch, 6 months to 30 Oct 2026: Midlands median £65,000 from 93 adverts (was £68,750 from 96)",
+   "source": "IT Jobs Watch — Embedded Software Engineer, Midlands, 6 months to 30 Oct 2026 (93 permanent adverts)"
+  },
+  {
+   "f": "A",
+   "hub": "UK",
+   "old": 70000,
+   "new": 70000,
+   "matchSource": "Senior Embedded Software Engineer, UK permanent",
+   "source": "IT Jobs Watch — Senior Embedded Software Engineer, UK permanent adverts (6 months to 30 Oct 2026, 146 salaries)",
+   "why": "value confirmed on the page; the window has rolled to 30 Oct 2026 (146 salaries; p75 £75,000, p90 £85,000)"
+  },
+  {
+   "f": "B",
+   "hub": "PT",
+   "old": 23892,
+   "new": 22650,
+   "why": "PayScale early-career average now €22,650 (2026)"
+  },
+  {
+   "f": "B",
+   "hub": "PT",
+   "old": 36400,
+   "new": 35100,
+   "statistic": "median (p50)",
+   "why": "TalentUp median base now €35,100; the page states it is the p50, gross annual"
+  },
+  {
+   "f": "B",
+   "hub": "PT",
+   "old": 41000,
+   "new": 43000,
+   "statistic": "p90",
+   "why": "PayScale p90 now €43k"
+  },
+  {
+   "f": "B",
+   "hub": "CZ",
+   "old": 80378,
+   "new": 75924,
+   "why": "Pracomat Prague C/C++ offers: average offered now 75,924 Kč a month (7 current offers)"
+  },
+  {
+   "f": "C",
+   "hub": "EG",
+   "old": 197193,
+   "new": 197468,
+   "why": "PayScale Valeo embedded average now E£197,468 (2026)"
+  },
+  {
+   "f": "D",
+   "hub": "JP",
+   "old": 5576000,
+   "new": 5785000,
+   "dataYear": 2025,
+   "why": "MHLW jobtag now shows the 2025 Basic Survey on Wage Structure (令和7年): 578.5万円 national (was 557.6万円, the 2024 survey)",
+   "source": "MHLW jobtag — システムエンジニア（組込み、IoT） 賃金（年収）, 2025 Basic Survey on Wage Structure (read on the page)"
+  },
+  {
+   "f": "E",
+   "hub": "US-MI",
+   "old": 124780,
+   "new": 130760,
+   "dataYear": 2025,
+   "why": "O*NET local wages now OEWS May 2025: Detroit-Warren-Dearborn median $130,760 (May 2024 $124,780)"
+  },
+  {
+   "f": "E",
+   "hub": "US-MI",
+   "old": 135830,
+   "new": 153270,
+   "dataYear": 2025,
+   "why": "OEWS May 2025: Detroit-Warren-Dearborn p75 $153,270"
+  },
+  {
+   "f": "E",
+   "hub": "US-MI",
+   "old": 119310,
+   "new": 125570,
+   "dataYear": 2025,
+   "region": "Michigan (statewide)",
+   "why": "OEWS May 2025: the page no longer shows Ann Arbor's May 2024 figure; Michigan statewide median $125,570 used in its place (a different area, stated)"
+  },
+  {
+   "f": "E",
+   "hub": "US-MI",
+   "old": 138850,
+   "new": 140100,
+   "dataYear": 2025,
+   "region": "Michigan (statewide)",
+   "why": "OEWS May 2025: Michigan statewide p75 $140,100 in place of Ann Arbor's May 2024 p75 (not on the page)"
+  }
+ ],
+ "notApplied": [
+  {
+   "what": "public-holiday counts (DE, SE, PT, HU, RS, TR, IN, JP, KR)",
+   "why": "Wikipedia's 'paid public holidays' column counts differently from the book (state holidays, holidays on weekdays, religious feasts); the book's counts stay with their stated source and the difference is listed here"
+  },
+  {
+   "what": "EG Levels.fyi EGP 610,000",
+   "why": "the page now shows US$12.2K only; consistent at ~50 EGP/US$, kept"
+  }
+ ]
+}

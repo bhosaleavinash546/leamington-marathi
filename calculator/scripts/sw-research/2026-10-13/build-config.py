@@ -23,9 +23,23 @@ RAW = os.path.join(HERE, 'raw')
 OUT = os.path.join(HERE, '..', '..', 'rate-refresh', '2026-10-sw-rates.json')
 
 _cache = {}
+PAGE_UPDATES = json.load(open(os.path.join(RAW, 'page-recheck-2026-10-30.json')))['updates']
+
 def raw(f):
     if f not in _cache:
         _cache[f] = json.load(open(os.path.join(RAW, f + '.json')))
+        for u in (u for u in PAGE_UPDATES if u['f'] == f):   # page re-check, 30 Oct 2026 — laid over, raw files untouched
+            hits = [s for c in _cache[f]['countries'] if c['hub'] == u['hub'] for s in c['salaries'] if abs(float(s['value']) - u['old']) < 0.5
+                    and u.get('matchSource', '') in (s.get('source') or '')]
+            if len(hits) != 1:
+                raise SystemExit(f"page update {f} {u['hub']} {u['old']}: {len(hits)} matches")
+            s = hits[0]
+            s['note'] = (f"PAGE UPDATED 30 Oct 2026 on a re-check: {u['old']:,} → {u['new']:,} ({u['why']}). " if u['new'] != u['old']
+                         else f"Re-checked on the page 30 Oct 2026: {u['why']}. ") + (s.get('note') or '')
+            s['value'] = u['new']
+            s['seenIn'] = 'page'
+            for k in ('dataYear', 'region', 'statistic', 'source'):
+                if k in u: s[k] = u[k]
     return _cache[f]
 
 def hub_of(f, hub):
@@ -34,11 +48,11 @@ def hub_of(f, hub):
             return c
     raise SystemExit(f'{f}: no hub {hub}')
 
-def pick(f, hub, value, factor=1, role=None, level=None, note=None, statistic=None, src=None):
+def pick(f, hub, value, factor=1, role=None, level=None, note=None, statistic=None, src=None, region=None):
     """One sourced observation, annualised by `factor` (12 for monthly)."""
     hits = [s for s in hub_of(f, hub)['salaries'] if abs(float(s['value']) - value) < 0.5
             and (role is None or s.get('role') == role) and (level is None or s.get('level') == level)
-            and (src is None or src in (s.get('source') or ''))]
+            and (src is None or src in (s.get('source') or '')) and (region is None or s.get('region') == region)]
     if len(hits) != 1:
         raise SystemExit(f'{f} {hub} {value}: {len(hits)} matches')
     s = hits[0]
@@ -166,7 +180,7 @@ def net_to_gross(obs, ratio, basis):
 # ── Europe ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 hub(id='UK', label='United Kingdom', country='UK', currency='GBP', cities=['Coventry / Gaydon', 'Warwick', 'Manchester', 'Birmingham'],
     evidence=evidence('A', 'UK'),
-    mid=[pick('A', 'UK', 54615), pick('A', 'UK', 65000), pick('A', 'UK', 68750), pick('A', 'UK', 70000, role='embedded_sw_engineer', level='all')],
+    mid=[pick('A', 'UK', 55587), pick('A', 'UK', 65000, region='UK'), pick('A', 'UK', 65000, region='Midlands'), pick('A', 'UK', 70000, role='embedded_sw_engineer', level='all')],
     senior=[pick('A', 'UK', 70000, level='senior', src='UK perman', note='IT Jobs Watch senior embedded, UK (the reviewer saw £65,000 in the Jan 2026 window)'),
             pick('A', 'UK', 70000, level='senior', src='Midlands'),
             pick('A', 'UK', 76752, statistic='upper end of "most earn between" (≈ p75–p80, percentile not stated)')]
@@ -248,8 +262,8 @@ hub(id='IT', label='Italy', country='IT', currency='EUR', cities=['Turin', 'Mode
 
 hub(id='PT', label='Portugal', country='PT', currency='EUR', cities=['Braga', 'Porto', 'Lisbon'],
     evidence=evidence('B', 'PT'),
-    mid=[pick('B', 'PT', 23892), pick('B', 'PT', 36400)],
-    senior=[pick('B', 'PT', 41000, statistic='top of PayScale range (≈ p90)')],
+    mid=[pick('B', 'PT', 22650), pick('B', 'PT', 35100)],
+    senior=[pick('B', 'PT', 43000, statistic='PayScale p90')],
     seniorBasis='top of the PayScale range (≈ p90) — high for a senior',
     excluded=[{'what': 'nettocalc.com Braga median €36,000', 'why': 'a calculator site with figures for every title (reviewer)'}],
     onCost={'components': [{'name': 'employer social security', 'pct': 23.75}], 'source': 'PwC Worldwide Tax Summaries Portugal', 'url': oncost('PT')['url'],
@@ -274,7 +288,7 @@ hub(id='PL', label='Poland', country='PL', currency='PLN', cities=['Kraków', 'G
 hub(id='CZ', label='Czechia', country='CZ', currency='CZK', cities=['Prague', 'Brno', 'Mladá Boleslav'],
     evidence=evidence('B', 'CZ'),
     mid=[midpoint('B', 'CZ', 65000, 90000, M, label='Grafton AUTOSAR advert', src='Grafton'), midpoint('B', 'CZ', 85000, 105000, M, label='Jenprace embedded advert'),
-         midpoint('B', 'CZ', 50000, 90000, M, label='Pracomat firmware advert', src='Pracomat'), pick('B', 'CZ', 80378, M)]
+         midpoint('B', 'CZ', 50000, 90000, M, label='Pracomat firmware advert', src='Pracomat'), pick('B', 'CZ', 75924, M)]
         + some(rv('CZ', 15, i=1, factor=M, statistic='median, IT section (ČSÚ ISPV 2025)')),
     senior=[pick('B', 'CZ', 90000, M, statistic='advert range top', note='Grafton AUTOSAR advert top', src='Grafton'), pick('B', 'CZ', 90000, M, statistic='advert range top', src='Pracomat'), pick('B', 'CZ', 105000, M, statistic='advert range top')],
     seniorBasis='median of advert range tops — no survey by level',
@@ -335,7 +349,7 @@ hub(id='TR', label='Türkiye', country='TR', currency='TRY', cities=['Istanbul',
 # ── Middle East & Africa ─────────────────────────────────────────────────────────────────────────────────────────────
 hub(id='EG', label='Egypt', country='EG', currency='EGP', cities=['Cairo (Smart Village / New Cairo)'],
     evidence=evidence('C', 'EG'),
-    mid=[pick('C', 'EG', 197193)] + some(rv('EG', 15, i=0, statistic='median total package (Levels.fyi, Valeo embedded)')),
+    mid=[pick('C', 'EG', 197468)] + some(rv('EG', 15, i=0, statistic='median total package (Levels.fyi, Valeo embedded)')),
     senior=[], seniorBasis='no senior figure — the mid rate is used',
     excluded=[{'what': 'Paylab p10–p90', 'why': 'no central figure'},
               {'what': 'CAPMAS 2023 ICT average EGP 19,179 a month', 'why': 'predates the March 2024 devaluation (the pound lost ~40 %); an industry average'}],
@@ -392,7 +406,7 @@ hub(id='VN', label='Vietnam', country='VN', currency='VND', cities=['Hanoi', 'Ho
 
 hub(id='JP', label='Japan', country='JP', currency='JPY', cities=['Tokyo', 'Nagoya / Aichi (Kariya, Toyota City)'],
     evidence=evidence('D', 'JP'),
-    mid=[mhlw_jp(), pick('D', 'JP', 5576000)],
+    mid=[mhlw_jp(), pick('D', 'JP', 5785000)],
     senior=[], seniorBasis='no senior figure — the mid rate is used (Japanese pay rises with age; the survey is all ages)',
     excluded=[{'what': 'en-ambi posting ¥6.0–12.5 M', 'why': 'a single employer\'s advert'}],
     onCost={'components': [{'name': 'welfare pension', 'pct': 9.15, 'ceilingAnnual': 650000 * 12}, {'name': 'health insurance (Tokyo)', 'pct': 4.925},
@@ -422,9 +436,9 @@ us_on = [{'name': 'OASDI', 'pct': 6.2, 'ceilingAnnual': 184500}, {'name': 'Medic
 us_note = 'FUTA / state unemployment and employer health cover / 401(k) not included'
 hub(id='US-MI', label='USA — Michigan', country='US', currency='USD', cities=['Detroit-Warren-Dearborn', 'Ann Arbor'],
     evidence=evidence('E', 'US-MI'),
-    mid=[pick('E', 'US-MI', 124780), pick('E', 'US-MI', 119310), pick('E', 'US-MI', 140344), pick('E', 'US-MI', 135000)]
+    mid=[pick('E', 'US-MI', 130760), pick('E', 'US-MI', 125570), pick('E', 'US-MI', 140344), pick('E', 'US-MI', 135000)]
         + some(rv('US-MI', 3, i=0, statistic='median, May 2025 (Detroit)')),
-    senior=[pick('E', 'US-MI', 135830), pick('E', 'US-MI', 138850), pick('E', 'US-MI', 159000, statistic='top of a Ford AUTOSAR posted band')],
+    senior=[pick('E', 'US-MI', 153270), pick('E', 'US-MI', 140100), pick('E', 'US-MI', 159000, statistic='top of a Ford AUTOSAR posted band')],
     seniorBasis='median of the Detroit and Ann Arbor OEWS p75 and a Ford AUTOSAR band top',
     excluded=[{'what': 'Michigan statewide median $107,820', 'why': 'the hub is the Detroit / Ann Arbor metros'},
               {'what': 'ZipRecruiter functional-safety $91,188', 'why': 'implausibly low against posted bands (researcher)'}],

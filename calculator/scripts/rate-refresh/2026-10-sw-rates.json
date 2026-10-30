@@ -30,18 +30,18 @@
    ],
    "mid": [
     {
-     "value": 54615,
+     "value": 55587,
      "period": "annual",
      "annualFactor": 1,
      "currency": "GBP",
      "statistic": "median",
-     "dataYear": 2024,
-     "source": "ONS ASHE 2024 (revised) SOC 2134 median, as republished by paychecktaxcalculator.net",
+     "dataYear": 2025,
+     "source": "ONS ASHE 2025 (provisional) SOC 2134 median, as republished by paychecktaxcalculator.net (page re-check 30 Oct 2026)",
      "url": "https://paychecktaxcalculator.net/highest-paying-jobs-uk/software-developers",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "software_developer_general",
      "level": "all",
-     "note": "Full-time employee gross pay excluding bonus per that site. The site is a calculator that republishes ASHE for many titles; weight down. Not verified on ons.gov.uk."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 54,615 → 55,587 (the page now republishes ONS ASHE 2025 (provisional), SOC 2134; 54,615 was ASHE 2024 revised). Full-time employee gross pay excluding bonus per that site. The site is a calculator that republishes ASHE for many titles; weight down. Not verified on ons.gov.uk."
     },
     {
      "value": 65000,
@@ -58,18 +58,18 @@
      "note": "Advertised salaries, not paid salaries; all industries (not automotive-only)."
     },
     {
-     "value": 68750,
+     "value": 65000,
      "period": "annual",
      "annualFactor": 1,
      "currency": "GBP",
      "statistic": "median",
      "dataYear": 2026,
-     "source": "IT Jobs Watch — Embedded Software Engineer, Midlands, 6 months to 4 Sep 2026 (96 permanent adverts)",
+     "source": "IT Jobs Watch — Embedded Software Engineer, Midlands, 6 months to 30 Oct 2026 (93 permanent adverts)",
      "url": "https://www.itjobswatch.co.uk/jobs/uk/embedded%20software%20engineer.do",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "embedded_sw_engineer",
      "level": "all",
-     "note": "Advertised salaries; Midlands = JLR / Coventry / Warwick region."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 68,750 → 65,000 (IT Jobs Watch, 6 months to 30 Oct 2026: Midlands median £65,000 from 93 adverts (was £68,750 from 96)). Advertised salaries; Midlands = JLR / Coventry / Warwick region."
     },
     {
      "value": 70000,
@@ -94,9 +94,9 @@
      "currency": "GBP",
      "statistic": "median",
      "dataYear": 2026,
-     "source": "IT Jobs Watch — Senior Embedded Software Engineer, UK permanent adverts (6 months to Sep 2026 per search summary)",
+     "source": "IT Jobs Watch — Senior Embedded Software Engineer, UK permanent adverts (6 months to 30 Oct 2026, 146 salaries)",
      "url": "https://www.itjobswatch.co.uk/jobs/uk/senior%20embedded%20software%20engineer.do",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "embedded_sw_engineer",
      "level": "senior",
      "note": "IT Jobs Watch senior embedded, UK (the reviewer saw £65,000 in the Jan 2026 window)"
@@ -873,7 +873,7 @@
    ],
    "mid": [
     {
-     "value": 23892,
+     "value": 22650,
      "period": "annual",
      "annualFactor": 1,
      "currency": "EUR",
@@ -881,40 +881,40 @@
      "dataYear": null,
      "source": "PayScale — Early-Career Embedded Software Engineer, Portugal",
      "url": "https://www.payscale.com/research/PT/Job=Embedded_Software_Engineer/Salary/741012e6/Early-Career",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "embedded_sw_engineer",
      "level": "junior",
-     "note": "Base; PayScale early career = 1–4 years. One summary said PayScale embedded data are '2026 estimates'; update date not confirmed."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 23,892 → 22,650 (PayScale early-career average now €22,650 (2026)). Base; PayScale early career = 1–4 years. One summary said PayScale embedded data are '2026 estimates'; update date not confirmed."
     },
     {
-     "value": 36400,
+     "value": 35100,
      "period": "annual",
      "annualFactor": 1,
      "currency": "EUR",
-     "statistic": "not stated",
+     "statistic": "median (p50)",
      "dataYear": null,
      "source": "TalentUp — Embedded Engineer salary, Portugal",
      "url": "https://talentup.io/en/salary/Embedded%20Engineer/Portugal",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "embedded_sw_engineer",
      "level": "all",
-     "note": "Base salary; level rows empty; statistic and year not stated. Conflicts with PayScale (~50% higher)."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 36,400 → 35,100 (TalentUp median base now €35,100; the page states it is the p50, gross annual). Base salary; level rows empty; statistic and year not stated. Conflicts with PayScale (~50% higher)."
     }
    ],
    "senior": [
     {
-     "value": 41000,
+     "value": 43000,
      "period": "annual",
      "annualFactor": 1,
      "currency": "EUR",
-     "statistic": "top of PayScale range (≈ p90)",
+     "statistic": "PayScale p90",
      "dataYear": null,
      "source": "PayScale — Embedded Software Engineer, Portugal",
      "url": "https://www.payscale.com/research/PT/Job=Embedded_Software_Engineer/Salary",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "embedded_sw_engineer",
      "level": "all",
-     "note": "Base salary range (~p90)."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 41,000 → 43,000 (PayScale p90 now €43k). Base salary range (~p90)."
     }
    ],
    "seniorBasis": "top of the PayScale range (≈ p90) — high for a senior",
@@ -1124,7 +1124,7 @@
      "note": "(50,000 + 90,000) / 2. Gross per summary; advert open to junior or senior, band not split by level; range high 90,000."
     },
     {
-     "value": 80378,
+     "value": 75924,
      "period": "monthly",
      "annualFactor": 12,
      "currency": "CZK",
@@ -1132,10 +1132,10 @@
      "dataYear": null,
      "source": "Pracomat — C/C++ vývojář offers in Prague",
      "url": "https://www.pracomat.cz/hledam-praci/region-praha/profese-c-c-plus-plus-vyvojar",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "software_developer_general",
      "level": "all",
-     "note": "Average OFFERED gross salary across live C/C++ developer adverts (range 50,000–100,000); live page, year not stated (2025/2026). Not an official statistic and not embedded-only."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 80,378 → 75,924 (Pracomat Prague C/C++ offers: average offered now 75,924 Kč a month (7 current offers)). Average OFFERED gross salary across live C/C++ developer adverts (range 50,000–100,000); live page, year not stated (2025/2026). Not an official statistic and not embedded-only."
     },
     {
      "value": 73483,
@@ -1661,7 +1661,7 @@
    ],
    "mid": [
     {
-     "value": 197193,
+     "value": 197468,
      "period": "annual",
      "annualFactor": 1,
      "currency": "EGP",
@@ -1669,10 +1669,10 @@
      "dataYear": 2026,
      "source": "PayScale — Embedded Software Engineer at Valeo, Egypt",
      "url": "https://www.payscale.com/research/EG/Job=Embedded_Software_Engineer/Salary/6bbe4197/Valeo",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "embedded_sw_engineer",
      "level": "all",
-     "note": "Annual base, labelled '2026'; median EGP 197k. The page's high/low fields show 'EGPNaN', so it is unreliable. PayScale samples likely mix pre- and post-March-2024-devaluation salaries. The Valeo + RTOS-skill page gives an average of 199,925 EGP."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 197,193 → 197,468 (PayScale Valeo embedded average now E£197,468 (2026)). Annual base, labelled '2026'; median EGP 197k. The page's high/low fields show 'EGPNaN', so it is unreliable. PayScale samples likely mix pre- and post-March-2024-devaluation salaries. The Valeo + RTOS-skill page gives an average of 199,925 EGP."
     },
     {
      "value": 610000,
@@ -2112,18 +2112,18 @@
      "note": "MHLW Basic Survey on Wage Structure 2024, ソフトウェア作成者 (all ages); bonus row: https://manabi.benesse.ne.jp/shokugaku/job/list/197/income/"
     },
     {
-     "value": 5576000,
+     "value": 5785000,
      "period": "annual",
      "annualFactor": 1,
      "currency": "JPY",
      "statistic": "mean",
-     "dataYear": null,
-     "source": "MHLW jobtag — システムエンジニア（組込み、IoT） 賃金（年収）, as quoted by a career article",
+     "dataYear": 2025,
+     "source": "MHLW jobtag — システムエンジニア（組込み、IoT） 賃金（年収）, 2025 Basic Survey on Wage Structure (read on the page)",
      "url": "https://shigoto.mhlw.go.jp/User/Occupation/Detail/315",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "embedded_sw_engineer",
      "level": "all",
-     "note": "Figure '557.6万円' seen only in a search snippet of a secondary article quoting jobtag; the jobtag page id (315) was returned by the search but NOT confirmed as this occupation, and the underlying wage-census year was not visible. jobtag annual pay is normally derived from the Wage Structure survey incl. bonus — not confirmed."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 5,576,000 → 5,785,000 (MHLW jobtag now shows the 2025 Basic Survey on Wage Structure (令和7年): 578.5万円 national (was 557.6万円, the 2024 survey)). Figure '557.6万円' seen only in a search snippet of a secondary article quoting jobtag; the jobtag page id (315) was returned by the search but NOT confirmed as this occupation, and the underlying wage-census year was not visible. jobtag annual pay is normally derived from the Wage Structure survey incl. bonus — not confirmed."
     }
    ],
    "senior": [],
@@ -2269,32 +2269,32 @@
    ],
    "mid": [
     {
-     "value": 124780,
+     "value": 130760,
      "period": "annual",
      "annualFactor": 1,
      "currency": "USD",
      "statistic": "median",
-     "dataYear": 2024,
+     "dataYear": 2025,
      "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
      "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=MI",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "software_developer_general",
      "level": "all",
-     "note": "O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries). Hourly median shown $59.99 (x2080 = 124,779, consistent)."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 124,780 → 130,760 (O*NET local wages now OEWS May 2025: Detroit-Warren-Dearborn median $130,760 (May 2024 $124,780)). O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries). Hourly median shown $59.99 (x2080 = 124,779, consistent)."
     },
     {
-     "value": 119310,
+     "value": 125570,
      "period": "annual",
      "annualFactor": 1,
      "currency": "USD",
      "statistic": "median",
-     "dataYear": 2024,
+     "dataYear": 2025,
      "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
      "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=MI",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "software_developer_general",
      "level": "all",
-     "note": "O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries). Hourly median shown $57.36 (x2080 = 119,309, consistent)."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 119,310 → 125,570 (OEWS May 2025: the page no longer shows Ann Arbor's May 2024 figure; Michigan statewide median $125,570 used in its place (a different area, stated)). O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries). Hourly median shown $57.36 (x2080 = 119,309, consistent)."
     },
     {
      "value": 140344,
@@ -2339,32 +2339,32 @@
    ],
    "senior": [
     {
-     "value": 135830,
+     "value": 153270,
      "period": "annual",
      "annualFactor": 1,
      "currency": "USD",
      "statistic": "p75",
-     "dataYear": 2024,
+     "dataYear": 2025,
      "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
      "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=MI",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "software_developer_general",
      "level": "all",
-     "note": "O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries)."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 135,830 → 153,270 (OEWS May 2025: Detroit-Warren-Dearborn p75 $153,270). O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries)."
     },
     {
-     "value": 138850,
+     "value": 140100,
      "period": "annual",
      "annualFactor": 1,
      "currency": "USD",
      "statistic": "p75",
-     "dataYear": 2024,
+     "dataYear": 2025,
      "source": "BLS OEWS via O*NET OnLine local wages (15-1252)",
      "url": "https://www.onetonline.org/link/localwages/15-1252.00?st=MI",
-     "seenIn": "search-snippet",
+     "seenIn": "page",
      "role": "software_developer_general",
      "level": "all",
-     "note": "O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries)."
+     "note": "PAGE UPDATED 30 Oct 2026 on a re-check: 138,850 → 140,100 (OEWS May 2025: Michigan statewide p75 $140,100 in place of Ann Arbor's May 2024 p75 (not on the page)). O*NET local-wage table; search text says source is 'Bureau of Labor Statistics 2024 wage data' (OEWS May 2024). SOC 15-1252 Software Developers (all industries)."
     },
     {
      "value": 159000,

@@ -81,6 +81,24 @@ The important ones:
 - Poland: the capacity fee is charged over 15 hours, not 14 (electricity +1.4%).
 - India: HRPO quoted directly on its page (₹65.2/kg, not ₹71.18 derived); MCX nickel for the Ni-Resist charges.
 
+## 3b. The software hub rates, re-checked
+
+All 23 software hubs' figures (157: salaries, on-costs, hours) were opened on their pages
+(`verify-pages/verdicts/sw-hubs.json`): 89 confirmed, 23 differ, 8 not on the page, 31 unreachable, 6 with no URL.
+- **Two errors corrected:** Japan's employment insurance was the employee's 0.5% — the employer pays 0.85% (MHLW FY2026),
+  and the child-support levy was added; Mexico's CEAV for an engineer's pay is 7.513% (the 3.15% used was the
+  minimum-wage band).
+- **Twelve figures the pages now show newer** are laid over the research by `build-config.py` from
+  `scripts/sw-research/2026-10-13/raw/page-recheck-2026-10-30.json` (the raw readings stay as found; each note says
+  "PAGE UPDATED 30 Oct 2026 … was → now"): UK ONS ASHE 2025 (£55,587) and the IT Jobs Watch Midlands median (£65,000);
+  US-Michigan BLS OEWS May 2025 (Detroit median $130,760, p75 $153,270; Michigan statewide in place of Ann Arbor, which the
+  page no longer shows); Japan's 2025 wage survey (¥5.785M); Portugal, Czechia and Egypt listings.
+  Effect per person-month: UK mid £6,237 → £6,060 (−2.8%); US-MI senior £8,202 → £9,054 (+10%); Japan £2,519 → £2,566;
+  Portugal, Czechia, Egypt under ±4%.
+- **Not applied:** public-holiday counts where Wikipedia's "paid public holidays" column differs from the book (DE, SE, PT,
+  HU, RS, TR, IN, JP, KR) — it counts differently (state holidays, weekday holidays, religious feasts); listed in the same
+  file.
+
 ## 4. What is still weak (stated in each basis line)
 
 - **Machine capital** is AT PAR wherever no country capex was found — every Asian, Brazilian and South African machine,
