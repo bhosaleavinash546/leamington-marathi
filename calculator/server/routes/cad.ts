@@ -228,11 +228,20 @@ async function requeueGeometricDFMWithAnswers(
 // before the routes that use them, so there is no temporal-dead-zone at load.
 // /analyze spawns Python AND calls the paid AI (tightest budget); tessellate
 // spawns Python only; /parse-stl is pure-TS.
-const tessellateLimiter = rateLimit({ windowMs: 10 * 60_000, max: 60, standardHeaders: true, legacyHeaders: false });
-const analyzeLimiter = rateLimit({ windowMs: 10 * 60_000, max: 40, standardHeaders: true, legacyHeaders: false });
-const parseStlLimiter = rateLimit({ windowMs: 10 * 60_000, max: 120, standardHeaders: true, legacyHeaders: false });
+// The refusal is JSON with a reason the screen can print: the default plain-text "Too many requests" made the
+// screen's res.json() throw, so a refused Get cost read as a parse error or nothing (world rate round live run,
+// 30 Oct 2026). CAD_RATE_LIMIT_SCALE raises every budget for a load test (the live harness: 15 parts a server).
+export function cadLimiter(max: number, what: string) {
+  const scale = Number(process.env.CAD_RATE_LIMIT_SCALE) > 0 ? Number(process.env.CAD_RATE_LIMIT_SCALE) : 1;
+  const limit = Math.max(1, Math.round(max * scale));
+  return rateLimit({ windowMs: 10 * 60_000, limit, standardHeaders: true, legacyHeaders: false,
+    message: { error: `Too many ${what} from this address (${limit} per 10 minutes). Wait a few minutes and press Get cost again.`, code: 'CAD_RATE_LIMITED' } });
+}
+const tessellateLimiter = cadLimiter(60, '3D previews');
+const analyzeLimiter = cadLimiter(40, 'CAD analyses');
+const parseStlLimiter = cadLimiter(120, 'STL reads');
 // /reanalyze makes two paid model calls and had no limiter at all.
-const reanalyzeLimiter = rateLimit({ windowMs: 10 * 60_000, max: 40, standardHeaders: true, legacyHeaders: false });
+const reanalyzeLimiter = cadLimiter(40, 're-analyses');
 
 // ─── Specialist system prompts per commodity ─────────────────────────────────
 

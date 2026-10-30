@@ -560,7 +560,9 @@ async function main(): Promise<void> {
   const port = await freePort();
   const dir = mkdtempSync(join(tmpdir(), 'cv-cad2cost-trace-'));
   const secret = 'trace-' + 'x'.repeat(40);
-  const env = { ...process.env, NODE_ENV: 'production', PORT: String(port), HOST: '127.0.0.1', JWT_SECRET: secret, AIR_GAPPED: '0', ANTHROPIC_API_KEY: '', CV_DATA_DIR: dir };
+  const env = { ...process.env, NODE_ENV: 'production', PORT: String(port), HOST: '127.0.0.1', JWT_SECRET: secret, AIR_GAPPED: '0', ANTHROPIC_API_KEY: '', CV_DATA_DIR: dir,
+    // 15 parts through one server in ~15 min is ~40 analyses in 10 min — the per-address budget of ONE engineer
+    CAD_RATE_LIMIT_SCALE: '4' };
   const server: ChildProcess = spawn(join(ROOT, 'node_modules/.bin/tsx'), ['server/index.ts'], { cwd: ROOT, env, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
   const serverLog = join(OUT, 'server.log');
   writeFileSync(serverLog, '');
