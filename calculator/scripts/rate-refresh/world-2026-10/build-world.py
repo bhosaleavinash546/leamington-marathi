@@ -160,11 +160,44 @@ def finance(cc, ccy):
     return None, None, None
 
 
+# Machine life = the country's tax straight-line life for general plant & machinery, the economic-life proxy every
+# country book uses (Germany's AfA 14 yr, Poland 14 %, Hungary 14.5 %, China 10 yr, India Schedule II). Rules, in order:
+#  - a straight-line rate (fixed, or the code's maximum) of at most 20 % a year → life = 100 ÷ rate;
+#  - a RANGE the tax guidance gives (no single rate) → its midpoint (the ranges are copied from the research basis);
+#  - no rate, a declining-balance-only pool, or an accelerated incentive (> 20 % a year: an incentive to invest, not a
+#    life) → the median life of the countries with a straight-line life this round, stated as such.
+LIFE_RANGES = {   # country: (low %, high %, what the guidance says) — from research/tax-fx.json
+    'FR': (10, 15, "BOFiP usual straight-line rates 'Matériel 10 à 15'"),
+    'RO': (8.33, 12.5, 'HG 2139/2004 catalogue 2.1.5.2 machine tools and machining centres 8–12 years'),
+    'VN': (6.67, 14.29, 'Circular 45/2013/TT-BTC B-1 machine tools 7–15 years'),
+    'MA': (10, 15, "administrative guidelines 'Production equipment, tools 10 to 15'"),
+}
+
+
+def _sl_life(it):
+    v = it.get('value')
+    if v is None: return None
+    scope = (it.get('scope') or '').lower()
+    if 'declining' in scope or 'accelerated' in (it.get('basis') or '').lower() and float(v) > 20: return None
+    return None if float(v) > 20 else 100 / float(v)
+
+
 def life(cc):
-    it = find(research('tax-fx.json'), 'tax.depreciation.machinery', cc)
+    items = [i for i in research('tax-fx.json') if i.get('key') == 'tax.depreciation.machinery']
+    it = next((i for i in items if i['country'] == cc), None)
     if not it: return None, None, None
-    rate = float(it['value'])
-    return round(100 / rate, 2), f"tax straight-line {rate}% a year for plant & machinery ({it['basis']})", it['source']
+    l = _sl_life(it)
+    if l:
+        kind = 'maximum ' if 'maximum' in (it.get('scope') or '') else ''
+        return round(l, 2), f"tax straight-line {kind}rate {it['value']}% a year for plant & machinery → {l:.2f} yr ({it['basis'][:240]})", it['source']
+    if cc in LIFE_RANGES:
+        lo, hi, what = LIFE_RANGES[cc]; mid = (lo + hi) / 2
+        return round(100 / mid, 2), f'tax guidance gives a range, {what}: midpoint {mid:.2f}% a year → {100 / mid:.2f} yr', it['source']
+    lives = sorted(l for l in (_sl_life(i) for i in items) if l)
+    med = lives[len(lives) // 2]
+    why = it.get('scope') or 'no straight-line rate'
+    return round(med, 2), (f'{why} ({it["basis"][:160]}) — not a life: the median tax straight-line life of the '
+                           f'{len(lives)} round countries that have one, {med:.2f} yr'), it['source']
 
 
 def rent(cc, ccy, per_eur):

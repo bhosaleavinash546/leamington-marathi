@@ -1,0 +1,712 @@
+[
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 0,
+  "key": "capex.imm-200t",
+  "verdict": "differs",
+  "pageValue": 214000,
+  "quote": "Mars、Jupiter 和Zhafir 电动系列的平均售价分别下降7.9%、7.3%和6.6%至人民币214,000 元、人民币1,736,000 元和人民币521,000 元 (H1 2024); Mars revenue 人民币51.708 亿元, 24,115 台",
+  "url": "https://gmg.9fzt.com/report/HKSE/01882/778171497678.html",
+  "notes": "Neither 104.71亿 nor 约3.46万台 is on any of the three cited pages (sina: FY2024 total only; 1n9280: H1 2025 totals only). The 9fzt broker page gives the Mars ASP directly: RMB 214,000 in H1 2024 (51.708亿 / 24,115 units). The research MISREAD this page: its \"H1 2025 Mars revenue 51.71亿\" is H1 2024 on the page. Since H1 2024 alone sold 24,115 Mars units and FY2024 Mars units grew 37.5% (Founder Securities via search), ~34,600 for the full year is not credible; 302,630 CNY is ~41% above the page ASP. Search confirms FY2024 Mars revenue 104.7亿 (not on the cited pages)."
+ },
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 10,
+  "key": "capex.autoclave-1200mm",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": null,
+  "notes": "No figure is claimed (value null) and no page is cited: nothing to verify. The book must treat this machine as unsourced."
+ },
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 15,
+  "key": "capex.mach-hmc-400",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "主营业务收入构成为：数控龙门加工中心56.25%，数控立式加工中心24.98%，数控卧式加工中心11.88% (2025 revenue 33.68亿元)",
+  "url": "http://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260323/71ad745b243c48e79d848681d7931b2a.PDF",
+  "notes": "The annual-report PDF (the only source that could hold the 271 units) does not resolve (DNS failure on dataclouds.cninfo.com.cn). The sina page opens and supports the revenue half only: 33.68亿 x 11.88% = 4.00亿. No page reached gives 271 units; a search found HMC revenue 4.00亿 (12.11% of sales, -30.25%) but no unit count. ASP unverified."
+ },
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 16,
+  "key": "capex.brake-amada-hfe100",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.cfi.net.cn/p20260420003126.html",
+  "notes": "Page serves only a bot check form (\"我不是机器人，继续→\"); cached render \"upstream request failed\". The item claims no figure (value null)."
+ },
+ {
+  "file": "round-2026-10-30/research/cn-capex.json",
+  "i": 17,
+  "key": "capex.laser-trumpf-3030",
+  "verdict": "confirmed",
+  "pageValue": 2533000000,
+  "quote": "高功率切割业务实现销售台数6800台，同比增长30.47%，实现业务收入25.33亿元，同比增长4.25%",
+  "url": "https://static.cninfo.com.cn/finalpage/2026-04-17/1225114032.PDF",
+  "notes": "Both figures on the annual-report summary PDF (and the sina article: 高功率切割设备销量6800 台). 2,533,000,000 / 6,800 = 372,500 CNY, arithmetic correct. Note it is an ASP across all high-power cutters, not a 3030-size machine."
+ },
+ {
+  "file": "round-2026-10-30/research/eu-capex-plastics-composites.json",
+  "i": 18,
+  "key": "capex.imm-200t",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": null,
+  "notes": "No figure is claimed (value null) and no page is cited: nothing to verify. The book must treat this machine as unsourced."
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 8,
+  "key": "labour.engineer.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": 1117271,
+  "quote": "2118 Gépészmérnök 1 117 271 forint",
+  "url": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "notes": "Base figure on page (bruttó átlagkereset, full-time, Ft/fő/hó). 1,117,271 x 1.084 x 0.9406 = 1,139,181.1 - arithmetic correct; 1.084 and 0.9406 are other items, not on this page. Caveat: the page presents these as the KSH figures \"irányadó\" for 2025 EU-grant settlements (published by NFK), which may be prior-year earnings rather than 2025 earnings."
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 9,
+  "key": "labour.engineer.fullyLoadedHufPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "notes": "12 x 1,139,181 x 1.13 / 1,728 = 8,939.41 - reproduced. Base wage confirmed on the page (item i=8 above). szocho 13% and 1,728 h are not on this page."
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 10,
+  "key": "labour.technician.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": 815489,
+  "quote": "3116 Gépésztechnikus 815 489 forint",
+  "url": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "notes": "Base on page. 815,489 x 1.084 x 0.9406 = 831,481.1 - correct. Same 2025-grant-reference caveat as the engineer row."
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 11,
+  "key": "labour.technician.fullyLoadedHufPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "notes": "12 x 831,481 x 1.13 / 1,728 = 6,524.82 - reproduced."
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 12,
+  "key": "labour.supervisor.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": 910549,
+  "quote": "3212 Feldolgozóipari szakmai irányító, felügyelő 910 549 forint",
+  "url": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "notes": "Base on page. 910,549 x 1.084 x 0.9406 = 928,405.2 - correct."
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 13,
+  "key": "labour.supervisor.fullyLoadedHufPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "notes": "12 x 928,405 x 1.13 / 1,728 = 7,285.40 - reproduced."
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 14,
+  "key": "labour.inspector.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": 726656,
+  "quote": "3135 Minőségbiztosítási technikus 726 656 forint",
+  "url": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "notes": "Base on page. 726,656 x 1.084 x 0.9406 = 740,906.0 - correct."
+ },
+ {
+  "file": "round-2026-10-30/research/hu-labour.json",
+  "i": 15,
+  "key": "labour.inspector.fullyLoadedHufPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista",
+  "notes": "12 x 740,906 x 1.13 / 1,728 = 5,814.05 - reproduced."
+ },
+ {
+  "file": "round-2026-10-30/research/in-capex.json",
+  "i": 10,
+  "key": "capex.autoclave-1200mm",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": null,
+  "notes": "No figure is claimed (value null) and no page is cited: nothing to verify. The book must treat this machine as unsourced."
+ },
+ {
+  "file": "round-2026-10-30/research/in-capex.json",
+  "i": 15,
+  "key": "capex.mach-hmc-400",
+  "verdict": "confirmed",
+  "pageValue": 8740795,
+  "quote": "CNC Horizontal Machining Centre ... Bid End Date 16-Feb-2026, 2:00 pm EMD ₹87,40,795",
+  "url": "https://tenderdekho.com/tender-detail/td-2zLxV2NucX",
+  "notes": "The \"not found\" claim stands: the page gives only the EMD (a deposit, not a price) and says no product specifications are given. Bid end date on the page is 16-Feb-2026, not 09-Feb-2026 as recorded (a corrigendum is listed). BHEL PDF not re-checked (not cached)."
+ },
+ {
+  "file": "round-2026-10-30/research/in-capex.json",
+  "i": 16,
+  "key": "capex.mach-vmc5",
+  "verdict": "confirmed",
+  "pageValue": 3456000,
+  "quote": "Blended realization per machine was ~Rs.34.56 lakhs in Q1 FY27, nearly flat versus Rs.34.41 lakhs in Q1 FY26",
+  "url": "https://compoundingai.in/market-news/jyoticnc-q1-fy27-earnings-call",
+  "notes": "Figure on page. That the blend \"includes some 5-axis\" is the researcher's reading; the page says only that it is blended across the mix."
+ },
+ {
+  "file": "round-2026-10-30b/research/capex-electronics-test.json",
+  "i": 1,
+  "key": "capex.smt-high-speed-line",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line",
+  "notes": "HTTP 403 Cloudflare bot challenge on plain fetch and in the cached browser render. GBP 1.6m unverified; the source date was never seen."
+ },
+ {
+  "file": "round-2026-10-30b/research/capex-forming-casting.json",
+  "i": 34,
+  "key": "capex.heat-treat-furnace",
+  "verdict": "confirmed",
+  "pageValue": 134910,
+  "quote": "This solicitation resulted in an award to PHILLIPS CORPORATION Hanover MD 21076 USA for approximately $134,910 on July 31, 2025.",
+  "url": "https://govcontractfinder.com/contracts/intent-to-sole-source-delta-h-single-chamber-heat-treat-oven-FA487725P0169",
+  "notes": "The item carries no value (null). The cross-check award the basis keeps is on the page: USD 134,910, 31 Jul 2025, Delta H single-chamber heat-treat oven (scope/size not described)."
+ },
+ {
+  "file": "round-2026-10-30b/research/capex-plastics-rubber.json",
+  "i": 5,
+  "key": "capex.imm-200t",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": null,
+  "notes": "No figure claimed (value null), no page cited. The pair figures it names are other items (crosscheck.imm.*), not checked here."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 0,
+  "key": "labour.oncost.employerNicRate",
+  "verdict": "statute-confirmed",
+  "pageValue": 0.15,
+  "quote": "Class 1 National Insurance rates ... A 15% 15% 15% 15% ... Secondary threshold £96 per week £417 per month £5,000 per year",
+  "url": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027",
+  "notes": "HMRC 2026-27 page: employer rate 15% above the GBP 5,000 secondary threshold."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 3,
+  "key": "labour.oncost.pensionTypical",
+  "verdict": "confirmed",
+  "pageValue": 0.051,
+  "quote": "Since the gradual introduction of automatic enrolment in 2012, the mean employer contribution rate has increased, reaching 5.1% in the last year of data. ... contributions rose again, reaching 5.1% in 2024.",
+  "url": "https://ifs.org.uk/sites/default/files/2026-07/IFS%20Report%20-%20Automatic%20enrolment%20trends%20in%20employer%20pension%20contributions%20and%20the%20impact%20of%20potential%20reforms.pdf",
+  "notes": "PDF opens now (was page-failed). 5.1% of total earnings, all private-sector employees, 2024. Unbiased 4.9% not checked (no URL). 5.0% used is a rounding of these."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 5,
+  "key": "labour.oncost.shiftPremium2Shift",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "Website is under maintenance. We'll be back shortly.",
+  "url": "https://www.incomesdataresearch.co.uk/resources/insights/findings-from-the-standby-call-out-and-shift-pay-2025-study",
+  "notes": "Site returns HTTP 200 with a maintenance page only (cached and re-fetched 30 Oct 2026). The 18% two-shift premium is unverified - and it multiplies every UK shop labour rate."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 12,
+  "key": "labour.productiveHoursPerYear",
+  "verdict": "derived-ok",
+  "pageValue": 1773.4,
+  "quote": "",
+  "url": null,
+  "notes": "2028 - 218.4 = 1809.6; x 0.98 = 1773.41 h. Reproduced. 28 days statutory includes bank holidays (WTR); 2.0% sickness from ONS (other item)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 16,
+  "key": "labour.skilled.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 27.95,
+  "quote": "",
+  "url": null,
+  "notes": "GBP 41,759 gross, NIC 5,514, total 49,569 / 1773.4 = 27.951. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance). Skilled base 17.45 is a median of recruiter points, not ASHE."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 19,
+  "key": "labour.semiskilled.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 24.65,
+  "quote": "",
+  "url": null,
+  "notes": "36,901 / 4,785 / 43,715 -> 24.651. 14.64 x 1.053 = 15.416 -> 15.42. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 22,
+  "key": "labour.engineer.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 33.27,
+  "quote": "",
+  "url": null,
+  "notes": "24.46 x 1950 = 47,697; + 6,405 + 2,385 + 238 = 56,725 / 1705.2 = 33.266 (engineer: 37.5 h, no shift premium). 1705.2 h reproduced. 23.23 x 1.053 = 24.461."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 25,
+  "key": "labour.foundry.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 24.6,
+  "quote": "",
+  "url": null,
+  "notes": "36,829 / 4,774 / 43,629 -> 24.602. 14.62 x 1.053 = 15.395 (recorded 15.39). Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 28,
+  "key": "labour.electronics.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 23.41,
+  "quote": "",
+  "url": null,
+  "notes": "35,082 / 4,512 / 41,524 -> 23.415. 13.92 x 1.053 = 14.658. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 31,
+  "key": "labour.inspector.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 28.03,
+  "quote": "",
+  "url": null,
+  "notes": "41,878 / 5,532 / 49,713 -> 28.033. 16.62 x 1.053 = 17.501. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 34,
+  "key": "labour.technician.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 35.17,
+  "quote": "",
+  "url": null,
+  "notes": "52,384 / 7,108 / 62,372 -> 35.171. 20.79 x 1.053 = 21.892. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 37,
+  "key": "labour.supervisor.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 28.86,
+  "quote": "",
+  "url": null,
+  "notes": "43,099 / 5,715 / 51,184 -> 28.862. 17.10 x 1.053 = 18.006. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 38,
+  "key": "labour.forge.hourlyGross",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.totaljobs.com/jobs/foundry-operative/in-wolverhampton",
+  "notes": "Plain fetch fails (HTTP/2 stream error, then empty reply; Cloudflare challenge host refused). Job adverts are transient anyway: the two Halesowen rates GBP 14.69 / 16.76 cannot be re-checked. Midpoint arithmetic (14.69+16.76)/2 = 15.725 -> 15.73 is correct."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 40,
+  "key": "labour.forge.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 25.15,
+  "quote": "",
+  "url": null,
+  "notes": "37,643 / 4,896 / 44,609 -> 25.155. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance). Base 15.73 is from unverifiable job adverts (item i=38)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 43,
+  "key": "labour.furnace.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 24.6,
+  "quote": "",
+  "url": null,
+  "notes": "Same inputs as foundry (15.39): 24.602. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 46,
+  "key": "labour.blow.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 23.07,
+  "quote": "",
+  "url": null,
+  "notes": "34,579 / 4,437 / 40,918 -> 23.073. 13.72 x 1.053 = 14.447. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 49,
+  "key": "labour.roto.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 23.07,
+  "quote": "",
+  "url": null,
+  "notes": "Same inputs as blow (14.45): 23.073. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 52,
+  "key": "labour.thermoform.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 23.07,
+  "quote": "",
+  "url": null,
+  "notes": "Same inputs as blow (14.45): 23.073. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 55,
+  "key": "labour.trimRouter.fullyLoadedGbpPerHr",
+  "verdict": "derived-ok",
+  "pageValue": 24.65,
+  "quote": "",
+  "url": null,
+  "notes": "Same inputs as semi-skilled (15.42): 24.651. Arithmetic re-done: gross = hourly x 2028 h x 1.18; + NIC 15% x (gross - 5,000) + pension 5% + levy 0.5% (levy charged on all pay, a stated simplification - it applies above a GBP 3m paybill); / 1773.4 h. Inputs are other items: hourly rate (labour-energy.json), NIC 15% / GBP 5,000 (HMRC page, confirmed), pension 5% (IFS 5.1%, confirmed), shift 18% (IDR page unreachable - under maintenance)."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 56,
+  "key": "energy.electricity.manufacturingAvg",
+  "verdict": "confirmed",
+  "pageValue": 17.4,
+  "quote": "the average price paid by electricity consumers in the manufacturing industry, in current terms excluding CCL, increased by 4.0% or 0.67 pence per kWh to an average of 17.4 pence per kWh",
+  "url": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+  "notes": "PDF opens now (was page-failed). Q2 2026, +4.0% y/y, -0.4% q/q all match. The page settles the open question in energy.electricity.bookValue: the series EXCLUDES CCL, so adding 0.801 p is right."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 58,
+  "key": "energy.gas.manufacturingAvg",
+  "verdict": "confirmed",
+  "pageValue": 3.8,
+  "quote": "Average gas prices for the same group increased 6.3% compared to quarter 2 2025 to 3.8 pence per kWh",
+  "url": "https://assets.publishing.service.gov.uk/media/6aba2810fe72ed1e2b02f0e7/Quarterly_Energy_Prices_September_2026.pdf",
+  "notes": "Manufacturing gas, Q2 2026, excluding CCL (same section). Provisional, subject to revision."
+ },
+ {
+  "file": "uk-2026-10/research/labour-energy.json",
+  "i": 60,
+  "key": "energy.cclMainRate",
+  "verdict": "statute-confirmed",
+  "pageValue": 0.801,
+  "quote": "Main rates Taxable commodity Rate from 1 April 2026 Electricity £0.00801 per kWh Natural gas £0.00801 per kWh",
+  "url": "https://www.gov.uk/government/publications/climate-change-levy-rates-from-1-april-2026/climate-change-levy-changes-to-rates-from-1-april-2026",
+  "notes": "Confirmed on the HMRC TIIN. The GBP 0.00827 from 1 Apr 2027 aside is not on this page (not used)."
+ },
+ {
+  "file": "uk-2026-10/research/machines-a.json",
+  "i": 2,
+  "key": "capex.mach-haas-vf2",
+  "verdict": "confirmed",
+  "pageValue": 70995,
+  "quote": "Manufacturer list price US$70,995 As published by Haas Automation, verified 2026-10-02. Options, tooling, freight and installation are extra.",
+  "url": "https://machinetoolindex.com/machines/haas-vf-2",
+  "notes": "70,995 / 1.3344 = 53,203.7 - correct (FX is another item)."
+ },
+ {
+  "file": "uk-2026-10/research/machines-a.json",
+  "i": 8,
+  "key": "capex.mach-lathe-cnc",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.haascnc.com/machines/lathes/st/models/standard/st-20.html",
+  "notes": "HTTP 403 Cloudflare bot challenge. Item claims no figure (value null)."
+ },
+ {
+  "file": "uk-2026-10/research/machines-a.json",
+  "i": 9,
+  "key": "capex.laser-trumpf-3030",
+  "verdict": "derived-wrong",
+  "pageValue": 475000,
+  "quote": "Trumpf TruLaser 3030 Fiber Est. $400,000 - $550,000 ... Our best estimate for a cnc laser cutting machine in this class — not a quote from Trumpf.",
+  "url": "https://machinetoolindex.com/machines/trumpf-trulaser-3030-fiber",
+  "notes": "Range confirmed on the page, but the basis calls US$500,000 the \"midpoint\": the midpoint of 400k-550k is US$475,000 -> GBP 355,966, not 374,700 (+5.3% overstated). US$500k is cncmachines.com's \"fully loaded\" figure (not checked, not this page), which would breach the \"machine only\" scope. The page also does not state 6 kW (it lists TruFiber 4000-24001). Range conversion 299,760-412,170 is correct."
+ },
+ {
+  "file": "uk-2026-10/research/machines-a.json",
+  "i": 11,
+  "key": "capex.brake-amada-hfe100",
+  "verdict": "confirmed",
+  "pageValue": null,
+  "quote": "Length 3100 mm Tonnage 100 ton Year 2010 Control Cybelec DNC 880S Price on application",
+  "url": "https://www.quinnbros.co.uk/product-page/bystronic-xact-100-cnc-pressbrake",
+  "notes": "The \"not found\" claim stands: the cited (used Bystronic, not Amada) page prices on application. No value to confirm."
+ },
+ {
+  "file": "uk-2026-10/research/machines-b.json",
+  "i": 28,
+  "key": "capex.grav-die-cast-std",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": null,
+  "notes": "No figure is claimed (value null) and no page is cited: nothing to verify. The book must treat this machine as unsourced."
+ },
+ {
+  "file": "uk-2026-10/research/machines-b.json",
+  "i": 56,
+  "key": "capex.smt-high-speed-line",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line",
+  "notes": "HTTP 403 Cloudflare bot challenge. GBP 1.6m unverified (same source as capex-electronics-test.json i=1)."
+ },
+ {
+  "file": "uk-2026-10/research/machines-b.json",
+  "i": 63,
+  "key": "capex.rtm-press-std",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": null,
+  "notes": "No figure is claimed (value null) and no page is cited: nothing to verify. The book must treat this machine as unsourced."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 69,
+  "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.304.2026-05",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+  "notes": "HTTP 403 Forbidden. 2,247 x 0.859 = 1,930.2 -> 1.93 arithmetic correct; source figure unverified."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 70,
+  "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.316L.2026-05",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+  "notes": "HTTP 403 Forbidden. 3,818 x 0.859 = 3,279.7 -> 3.28 correct; source unverified."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 71,
+  "key": "ferrous.extra.stainless.outokumpu_eu_alloy_surcharge.430.2026-05",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/intel/detail/europe-outokumpu-announces-stainless-steel-flats-surcharges-for-may26-36422",
+  "notes": "HTTP 403 Forbidden. 1,094 x 0.859 = 939.7 -> 0.94 correct; source unverified."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 78,
+  "key": "ferrous.anchor.stainless.crc304_may_deliv_transaction",
+  "verdict": "confirmed",
+  "pageValue": 2560,
+  "quote": "Market indications show CRC deals for May delivery were concluded at around €2,550-2,570/t delivered",
+  "url": "https://news.metal.com/newscontent/103862945-smm-스테인리스-스틸-시장-속보-유럽-철강사들-7월분-crc-공급가격을-도착도-기준-톤당-€2700으로-인상",
+  "notes": "Midpoint 2,560 of the page range; x 0.859 = 2,199.0 correct. The page (SMM, 17 Apr 2026) says \"CRC\" without naming grade 304."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 79,
+  "key": "ferrous.anchor.stainless.crc304_jul_offer",
+  "verdict": "confirmed",
+  "pageValue": 2700,
+  "quote": "July offers have now reached €2,700/t delivered",
+  "url": "https://news.metal.com/newscontent/103862945-smm-스테인리스-스틸-시장-속보-유럽-철강사들-7월분-crc-공급가격을-도착도-기준-톤당-€2700으로-인상",
+  "notes": "x 0.859 = 2,319.3 correct. An OFFER, not a transaction; grade not named on the page."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 80,
+  "key": "ferrous.anchor.stainless.crc304_mill_target_endQ3",
+  "verdict": "confirmed",
+  "pageValue": 2900,
+  "quote": "European mills are targeting cold rolled coil prices of €2,900/t delivered by the end of the third quarter",
+  "url": "https://news.metal.com/en/newscontent/103920057-smm-stainless-steel-market-flash-eu-mills-target-€2900t-crc-by-end-q3-as-buyers-see-no-near-term-price-drop",
+  "notes": "x 0.859 = 2,491.1 correct. A mill TARGET, not a price paid; grade not named."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 96,
+  "key": "ferrous.anchor.fesi75_ddp_nwe",
+  "verdict": "confirmed",
+  "pageValue": 1260,
+  "quote": "Argus last assessed prices at €1,240-1,280/t ddp NWE on 16 June",
+  "url": "https://api.argusmedia.com/articles/2840817",
+  "notes": "Midpoint 1,260 x 0.859 = 1,082.3 correct. Page says \"ferro-silicon\" (75% grade implied, not stated)."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 97,
+  "key": "ferrous.anchor.fesimg_eu_import_unit_value",
+  "verdict": "differs",
+  "pageValue": 2.21,
+  "quote": "NC8 72022910 Jan. 2022 - März 2026 ... Die durchschnittlichen Einfuhrkosten lagen bei €2.21/kg.",
+  "url": "https://www.thetradehub.eu/de/customs/trade/72022910",
+  "notes": "Page now shows EUR 2.21/kg (EUR 280.9M / 127.1M kg) for Jan 2022 - Mar 2026; the research recorded 2.22 with no period - the page has probably been UPDATED with more months. At 2.21 x 0.859 = GBP 1.898/kg (v 1.907, -0.5%). Note it is a 4-year average import unit value, not a current price."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 98,
+  "key": "ferrous.anchor.ferrochrome_eu_benchmark_q3",
+  "verdict": "confirmed",
+  "pageValue": 156,
+  "quote": "Samchrome FZE ... has confirmed 156 US cents per pound as the reference for the European Benchmark Ferrochrome Price for the third quarter of 2026.",
+  "url": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+  "notes": "1.56 x 2204.62 = 3,439.2 USD/t Cr x 0.7437 = 2,557.7 GBP - correct."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 108,
+  "key": "ferrous.charge.GJL-250",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.cliffsnotes.com/study-notes/24588812",
+  "notes": "HTTP 403 Cloudflare challenge; the 60/25/15 charge mix it is cited for cannot be seen (and a study-notes site is a weak source). Arithmetic 75.0 + 35.6 + 58.0 = 168.6 GBP/t is correct from the price items."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 109,
+  "key": "ferrous.charge.GJS-500-7",
+  "verdict": "confirmed",
+  "pageValue": 0.5,
+  "quote": "Table 1. Charge materials ... W6 50%pig iron Pig iron [kg] ... 4.70 Steel scrap [kg] ... 4.70",
+  "url": "https://journals.pan.pl//Content/127177/PDF/AFE%202_2023_10_final%20version.pdf",
+  "notes": "PDF opens now (was page-failed). The 50% pig iron / 50% steel scrap charge is on the page, but for an un-inoculated GREY iron experiment (FeSi75 + carburizer, no Mg). The 1.2% FeSiMg addition is NOT on this page. Arithmetic 193.4 + 71.3 + 22.9 = 287.5 correct."
+ },
+ {
+  "file": "uk-2026-10/research/materials-ferrous.json",
+  "i": 111,
+  "key": "ferrous.charge.CF8",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.astm.org/a0351_a0351m-18.html",
+  "notes": "The ASTM page shows only the scope/abstract; the CF8 chemistry (Cr 18.0-21.0, Ni 8.0-11.0, which would give the 19.5 / 9.5 mid-points) is not on it. Arithmetic 1,208 + 499 + 98 = 1,805 correct."
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 6,
+  "key": "nonferrous.anchor.al_rotterdam_dp_premium",
+  "verdict": "confirmed",
+  "pageValue": 557.5,
+  "quote": "LME Insight assessed duty paid P1020A inwhs Rotterdam at $545-570/t on 1 October, up from $535-560/t on 24 September.",
+  "url": "https://storage.ghost.io/c/a7/38/a7384b33-c2f9-4c7c-85e7-bc1b263c8a1b/content/files/2026/10/Aluminium-Insight-by-LME-Insight-Edition-5-1.pdf",
+  "notes": "PDF opens now (was page-failed). Premium over LME cash official confirmed. 557.5 / 1.32470673 / 1000 = 0.42085 correct."
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 8,
+  "key": "nonferrous.anchor.al_p1020_dp_rotterdam_allin",
+  "verdict": "derived-ok",
+  "pageValue": 2.7867,
+  "quote": "",
+  "url": null,
+  "notes": "(3,134 + 557.5) / 1.32470673 / 1000 = 2.78665 - reproduced. Inputs: dp premium confirmed (i=6); LME cash $3,134 is item al_lme_cash (not in this worklist; its source slug reads \"offer price rises to 3,134.5\", while the basis calls it a BID - worth a look)."
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 20,
+  "key": "nonferrous.anchor.cu_cathode_delivered_derived",
+  "verdict": "derived-ok",
+  "pageValue": 11.2355,
+  "quote": "",
+  "url": null,
+  "notes": "(14,568.72 + 315) / 1.32470673 / 1000 = 11.2355 - reproduced. Inputs are items cu_lme and cu_cathode_premium_europe_2026 (not in this worklist)."
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 21,
+  "key": "nonferrous.anchor.brass_rod_cw614n_cw617n_mill",
+  "verdict": "differs",
+  "pageValue": 10070,
+  "quote": "Brass rod CW614N-CW617N: 10070 €/t Update date: 30-10-2026",
+  "url": "https://www.almagbrass.com/stock-price-brass-copper-zinc.html",
+  "notes": "Live daily page, UPDATED since the research (9 Oct 9,990 is no longer shown). Today 10,070 / 1.17871931 / 1000 = GBP 8.543/kg (+0.8%). Not an error - the page only ever shows today's price."
+ },
+ {
+  "file": "uk-2026-10/research/materials-nonferrous.json",
+  "i": 33,
+  "key": "nonferrous.anchor.sn_lme_spot",
+  "verdict": "differs",
+  "pageValue": 53711.68,
+  "quote": "Tin, LME spot price (IMF) miesięcznie 53 711,68 USD/T ... na 2026-08-31 ... In 2026 the maximum reached 55385.13 USD/ton",
+  "url": "https://cbonds.pl/indexes/181087/",
+  "notes": "This is a MONTHLY IMF series (August 2026 = 53,711.68), so a 12 Aug daily value cannot come from it; and its 2026 maximum is 55,385.13, below the recorded 55,818. Research misread or took the figure from elsewhere. At 53,711.68 -> GBP 40.55/kg (-3.8%); latest tin on the page 49,697 (29 Oct 2026) -> 37.52 (-11%)."
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.anchor.pvc_s_gross_contract_nwe",
+  "verdict": "confirmed",
+  "pageValue": 1277.5,
+  "quote": "In the contract market, PVC Suspension grade prices were assessed at Euro 1275-1280/mt FD NWE France and Germany levels, higher by Euro (+20/mt) from last week.",
+  "url": "https://polymerupdate.com/News/Details/1485733",
+  "notes": "Polymerupdate 08 May 2026. 1,277.5 x 0.858 / 1000 = 1.096 correct."
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.anchor.pvc_index_europe_ba",
+  "verdict": "differs",
+  "pageValue": 1.57,
+  "quote": "PVC price September 2026 and outlook ... Europe:US$1.57/KG, 3.3% up",
+  "url": "https://businessanalytiq.com/?p=2559",
+  "notes": "Same month label (September 2026) but US$1.57 (+3.3%), not 1.53 (-0.6%). The change % also differs, so either the page was revised after the research or the researcher read another month/region. At 1.57 x 0.7394 = GBP 1.161/kg (v 1.131, +2.6%)."
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 20,
+  "key": "polymer.anchor.pa6_index_europe_ba",
+  "verdict": "differs",
+  "pageValue": 3.18,
+  "quote": "PA6 (Nylon 6) price September 2026 and outlook ... Europe:US$3.18/KG, 1.3% up",
+  "url": "https://businessanalytiq.com/?p=2215",
+  "notes": "September 2026 Europe is US$3.18 (+1.3%), not 2.96 (+5.7%). Either revised or misread (the % differs too). At 3.18 x 0.7394 = GBP 2.351/kg v 2.189 recorded (+7.4%) - the largest gap among the polymer items."
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 21,
+  "key": "polymer.anchor.pa66_index_europe_ba",
+  "verdict": "differs",
+  "pageValue": 3.44,
+  "quote": "PA66 (Nylon 66) price September 2026 and outlook ... Europe:US$3.44/KG, -3.6% down",
+  "url": "https://businessanalytiq.com/?p=2623",
+  "notes": "US$3.44 (-3.6%) v recorded 3.45 (-3.9%): small revision or misread. 3.44 x 0.7394 = GBP 2.544/kg (v 2.551, -0.3%)."
+ },
+ {
+  "file": "uk-2026-10/research/materials-polymer.json",
+  "i": 35,
+  "key": "rubber.nr_tsr20_sgx",
+  "verdict": "confirmed",
+  "pageValue": 257.6,
+  "quote": "Hợp đồng TSR20 kỳ hạn tháng 11/2026 ở mức 257,60 Cent/kg, tăng 1,10%.",
+  "url": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-3-10-bien-dong-trai-chieu-a336568.html",
+  "notes": "Article dated 03/10/2026. 2.576 x 0.7394 = 1.9047 correct. FX is the 10 Sep rate, three weeks before the price date."
+ }
+]

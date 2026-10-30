@@ -1,0 +1,912 @@
+[
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 32,
+  "key": "labour.skilled.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3962.65,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 8 3.962,65",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 8 3,962.50; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.962,65 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 4316.89 v the stored 4316.88: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 33,
+  "key": "labour.skilled.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 4316.88: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 52.45 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 34,
+  "key": "labour.semiskilled.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3296.11,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 5 3.296,11",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 5 3,296.00; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.296,11 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 3590.77 v the stored 3590.77: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 35,
+  "key": "labour.semiskilled.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 3590.77: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 43.76 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 36,
+  "key": "labour.foundry.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3703.35,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 7 3.703,35",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 7 3,703.50; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.703,35 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 4034.41 v the stored 4034.72: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 37,
+  "key": "labour.foundry.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 4034.72: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 49.07 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 38,
+  "key": "labour.electronics.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3296.11,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 5 3.296,11",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 5 3,296.00; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.296,11 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 3590.77 v the stored 3590.77: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 39,
+  "key": "labour.electronics.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 3590.77: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 43.76 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 40,
+  "key": "labour.inspector.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3703.35,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 7 3.703,35",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 7 3,703.50; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.703,35 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 4034.41 v the stored 4034.72: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 41,
+  "key": "labour.inspector.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 4034.72: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 49.07 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 42,
+  "key": "labour.technician.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 4221.94,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 9 4.221,94",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 9 4,222.00; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 4.221,94 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 4599.36 v the stored 4599.59: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 43,
+  "key": "labour.technician.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 4599.59: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 55.84 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 44,
+  "key": "labour.supervisor.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 5129.22,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 12 5.129,22",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 12 5,129.00; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 5.129,22 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 5587.75 v the stored 5587.7: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 45,
+  "key": "labour.supervisor.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 5587.7: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 66.87 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 46,
+  "key": "labour.forge.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3481.17,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 6 3.481,17",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 6 3,481.00; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.481,17 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 3792.37 v the stored 3792.32: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 47,
+  "key": "labour.forge.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 3792.32: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 46.17 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 48,
+  "key": "labour.furnace.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3703.35,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 7 3.703,35",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 7 3,703.50; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.703,35 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 4034.41 v the stored 4034.72: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 49,
+  "key": "labour.furnace.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 4034.72: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 49.07 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 50,
+  "key": "labour.blow.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3481.17,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 6 3.481,17",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 6 3,481.00; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.481,17 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 3792.37 v the stored 3792.32: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 51,
+  "key": "labour.blow.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 3792.32: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 46.17 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 52,
+  "key": "labour.roto.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3481.17,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 6 3.481,17",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 6 3,481.00; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.481,17 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 3792.37 v the stored 3792.32: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 53,
+  "key": "labour.roto.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 3792.32: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 46.17 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 54,
+  "key": "labour.thermoform.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3481.17,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 6 3.481,17",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 6 3,481.00; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.481,17 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 3792.37 v the stored 3792.32: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 55,
+  "key": "labour.thermoform.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 3792.32: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 46.17 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 56,
+  "key": "labour.trimRouter.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 3962.65,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 8 3.962,65",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 8 3,962.50; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 3.962,65 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 4316.89 v the stored 4316.88: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 57,
+  "key": "labour.trimRouter.fullyLoadedEurPerHr",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done from monthly 4316.88: 12× + 0.6021× late-shift + (1.7013× + 923.79) special; employer 10.75 % to 101,400 + 10.55 % to 69,750 + 1.08 % + 0.44 % on regular pay; ÷ 1,466.78 h = 52.45 (reproduces to ±1 € in the intermediate sums). Inputs not independently sourced here: 0.9473 cluster factor, 1,466.78 productive h, T-ZUG B 923.79 (the BW page says \"T-ZUG B (ca. 900 €…)\"; 26.5 % × EG 7 3,703.35 × 0.9473 = 929.7, so 923.79 is not reproducible from the page — immaterial, < €0.01/h). The 2026 ceilings RV 101,400 / KV 69,750 €/yr match the published 2026 Rechengrößen."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 58,
+  "key": "labour.engineer.monthlyGross",
+  "verdict": "differs",
+  "pageValue": 5795.77,
+  "quote": "IG Metall ERA Entgelttabelle Baden-Württemberg – Grundentgelte in Euro pro Monat, Stand April 2026 … EG 14 5.795,77",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "Basis quotes BW EG 14 5,795.50; the page (Stand April 2026, ab 01.04.2026 +3,1 %) shows 5.795,77 — research rounded/misread the cents, not an update. Page figure × 1.15 × 0.9473 = 6313.88 v the stored 6313.81: immaterial (< 0.01 %). 15 % average Leistungszulage confirmed on page (\"Die Leistungszulage liegt im Durchschnitt bei 15%\"). The 0.9473 cluster factor is not on this page. Note: this page calls EG 5 the Eckentgelt (\"Das Eckentgelt (EG 5) beträgt 3.296,11 €\"), the research calls EG 7 the Eckentgelt — affects the grade reasoning, not the table figure."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 59,
+  "key": "labour.engineer.fullyLoadedEurPerHrStd",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Re-done: 12 × 6,313.81 = 75,766; + 1.7013 × 6,313.81 + 923.79 = 11,665; gross 87,431; employer 10.75 % × 87,431 + 10.55 % × 69,750 + 1.08 % + 0.44 % × 75,766 = 18,035; 105,466 ÷ 1,466.78 = 71.90. Input monthly 6,313.81 rests on BW EG 14 — the page shows 5.795,77 (basis 5,795.50), see item 26."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 60,
+  "key": "labour.loadingIncluded",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": "T-ZUG A (27,5 % eines Monatsentgelts…), T-ZUG B (ca. 900 €…), Urlaubsgeld (72 %), Weihnachtsgeld (55 %) sowie das Transformationsgeld T-Geld (18,4 %)",
+  "url": "https://tarif-gehalt.de/ig-metall/entgelttabelle/baden-wuerttemberg",
+  "notes": "No figure — a list of what the loaded rate includes. Checked that it agrees with the arithmetic: 0.6923 (30 days × 50 % ÷ 21.67) + 0.55 + 0.275 + 0.184 = 1.7013 = the special-payment factor used. The BW page states Urlaubsgeld as 72 % (v the research 0.69 month) and the table valid to 31 Oct 2026 (matches \"tables valid 1 Apr – 31 Oct 2026\")."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 61,
+  "key": "labour.loadingNotIncluded",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure — a list of exclusions; nothing to recompute. Consistent with the derivations (no night / weekend premium, no bAV, no Nov 2026 tariff round)."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 63,
+  "key": "energy.electricity.energyComponent",
+  "verdict": "confirmed",
+  "pageValue": 88.03,
+  "quote": "Im Verlauf der vergangenen Woche legte das Cal 26 Base im Settlement-Vergleich deutlich um 3,5 %, auf 88,03 €/MWh, zu. … Cal 26 (08.10.25) 88,03",
+  "url": "https://www.ewv.de/fileadmin/user_upload/user_upload/Geschaeftskunden/Marktberichte/2025/EWV-Marktbericht-Nr.41-Strom.pdf",
+  "notes": "Plain fetch now opens the PDF (pymupdf text). Only the 88.03 (8 Oct 2025) point is in this report; 87.16 (22 Oct 2025) and 84.58 (1 Jul 2025) are from other EWV reports not checked. Mean (88.03 + 87.16 + 84.58) ÷ 3 = 86.59 €/MWh = 0.0866 €/kWh — arithmetic right."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 65,
+  "key": "energy.electricity.kwkgLevy",
+  "verdict": "unreachable",
+  "pageValue": 0.446,
+  "quote": "KWKG-Umlage – 2026: 0,446 Cent/kWh (2025: 0,277 Cent/kWh) Quelle: www.netztransparenz.de/KWKG-Umlage",
+  "url": "https://www.vea.de/newsroom/aktuelles/thema/netztransparenzde-meldet-netzentgeltbasierte-umlagen-fuer-2026",
+  "notes": "Cited VEA newsroom URL returns the VEA 404 page (\"404 – Diese Seite ist nicht verfügbar\"). The figure is corroborated (not on the cited page) by a DSO notice citing netztransparenz.de: https://www.sw-bb.de/_Resources/Persistent/4/3/4/f/434f202d4b3daba566d461487094e409a780b281/2026_InformationenStromumlagen_SWBB.pdf."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 66,
+  "key": "energy.electricity.offshoreLevy",
+  "verdict": "unreachable",
+  "pageValue": 0.941,
+  "quote": "Offshore-Netzumlage – 2026: 0,941 Cent/kWh (2025: 0,816 Cent/kWh) Quelle: www.netztransparenz.de/Offshore-Netzumlage",
+  "url": "https://www.vea.de/newsroom/aktuelles/thema/netztransparenzde-meldet-netzentgeltbasierte-umlagen-fuer-2026",
+  "notes": "Cited VEA URL returns a 404 page. Figure corroborated by https://www.sw-bb.de/_Resources/Persistent/4/3/4/f/434f202d4b3daba566d461487094e409a780b281/2026_InformationenStromumlagen_SWBB.pdf (citing netztransparenz.de)."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 71,
+  "key": "energy.electricity.allIn",
+  "verdict": "differs",
+  "pageValue": 0.179,
+  "quote": "Der durchschnittliche Strompreis bei Liefer-verträgen für kleine bis mittlere Industriebetriebe liegt im Jahr 2026 bisher bei 17,9 ct/kWh. Das entspricht einem Anstieg von 0,3 ct/kWh gegenüber dem Vorjahreswert.",
+  "url": "https://www.bdew.de/service/daten-und-grafiken/bdew-strompreisanalyse/",
+  "notes": "Page UPDATED since the research: it is now the \"BDEW-Strompreisanalyse Oktober 2026\" (28.10.2026); the research read an Aug/Sep edition (17.2 ct, −0.4 ct). Same series (small–medium industry). The book uses allIn directly as electricityLocalPerKwh — 0.172 v 0.179 €/kWh, +4 %."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 73,
+  "key": "energy.gas.commodity",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "Erdgas THE 2027 (€/MWh) 81,10 … 29.10.2026 … Die Notierungen erreichten heute neue Jahreshöchststände von etwa 81 €/MWh (Gas THE)",
+  "url": "https://www.mainova.de/resource/blob/57556/119d6c21bb0f872a3ffdde0402f013fc/marktbericht-07102025-data.pdf",
+  "notes": "The Mainova blob URL now serves the 29 Oct 2026 market report (Cal-27 contracts), not the 7 Oct 2025 report; THE Cal-26 33.50 is no longer on it. Context: THE Cal-27 now 81.10 €/MWh (2.4× the Cal-26 basis) and Strom Base 2027 160.50 €/MWh — the 2026 procurement basis is a stated choice, but a 2027 costing would move a lot."
+ },
+ {
+  "file": "germany-2026-10/research/labour-energy.json",
+  "i": 76,
+  "key": "energy.gas.distribution",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure: the research records NOT FOUND (2026 RLM gas network charges). Nothing to recompute — this is a gap, not a verified figure."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 0,
+  "key": "capex.mach-vmc3",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu",
+  "notes": "haascnc.com pages (PL and DE) serve a Cloudflare \"Performing security verification\" bot check to both the plain fetch and the browser pass; not bypassed. The 64,995 EUR special price is unverified today."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 1,
+  "key": "capex.mach-haas-vf2",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "Haas VF-2 List US$70,995 Specs verified 2026-10-02 · haascnc.com",
+  "url": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://machinetoolindex.com/machines/haas-vf-2",
+  "notes": "Primary Haas EU page (the source of the stored 64,995): Cloudflare \"Performing security verification\" bot check to both the plain fetch and the browser pass; not bypassed. The cross-check is confirmed on machinetoolindex.com: US$70,995 × 0.880 = 62,476 EUR, 3.9 % below the stored value."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 2,
+  "key": "capex.mach-vmc5",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "notes": "haascnc.com UMC-500 page: Cloudflare \"Performing security verification\" bot check to both the plain fetch and the browser pass; not bypassed. The basis itself says \"older Haas article\" — US$119,995 × 0.880 = 105,596 (arithmetic right) but the price is unverified and possibly stale."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 3,
+  "key": "capex.mach-haas-umc500",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "notes": "Same page and evidence as capex.mach-vmc5: Cloudflare \"Performing security verification\" bot check to both the plain fetch and the browser pass; not bypassed."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 4,
+  "key": "capex.mach-lathe-cnc",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.haascnc.com/de/machines/compare-machines.ST-20.html ; https://www.haascnc.com/sv/shop/2024_stock/HAE/canceled-orders-master/ST-20-HE-AC_3132431.html",
+  "notes": "No figure claimed (not found). Both haascnc.com pages: Cloudflare \"Performing security verification\" bot check to both the plain fetch and the browser pass; not bypassed."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 16,
+  "key": "capex.laser-trumpf-3030",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.maschinensucher.de/trumpf-trulaser+3030+fiber+%28l81%29+%2B+storemaster/i-20635200",
+  "notes": "HTTP 410 Gone (used listing removed). No figure claimed."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 18,
+  "key": "capex.imm-200t",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure: \"not searched (budget exhausted)\". Nothing to recompute — a gap (capital held)."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 19,
+  "key": "capex.heat-treat-furnace",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure: \"not searched (budget exhausted)\". Nothing to recompute — a gap (capital held)."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 20,
+  "key": "finance.machineryLoan",
+  "verdict": "confirmed",
+  "pageValue": 3.73,
+  "quote": "The interest rate on new loans of over €1 million with an initial rate fixation period of over ten years decreased by 5 basis points to 3.73%. … floating rate and an initial rate fixation period of up to three months decreased by 7 basis points to 3.49%. … over three months and up to one year rose by 17 basis points to 3.84%.",
+  "url": "https://www.ecb.europa.eu/press/stats/mfi/html/ecb.mir260902~d54675e442.en.html",
+  "notes": "The cited Bundesbank PDF fails TLS through the session proxy (\"unable to get local issuer certificate\"); the same ECB release (2 Sep 2026, July 2026 data) was read on ecb.europa.eu — all three quoted rates match. Earlier-2026 months (3.65/3.74/3.60/3.77) not checked."
+ },
+ {
+  "file": "germany-2026-10/research/machines.json",
+  "i": 27,
+  "key": "rent.clusterAvg",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "(8.75 + 11.00 + 6.40 + 8.00) ÷ 4 = 34.15 ÷ 4 = 8.5375 → 8.54. The four rent.* inputs are not in this worklist (not checked here). Basis says prime LOGISTICS rent — production space not found."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 1,
+  "key": "ferrous.anchor.crc",
+  "verdict": "differs",
+  "pageValue": 0.855,
+  "quote": "SteelRadar reports cold-rolled at 855 EUR/t and hot-dip galvanised at 830 EUR/t ex-works in Germany on 19 October, around 80 to 105 EUR/t above HRC.",
+  "url": "https://www.tacto.ai/en/commodities/steel-price",
+  "notes": "Page UPDATED since the research (now 22–23 Oct 2026); the 13 Sep Fastmarkets CRC 850–880 EUR/t is no longer on it. The current figure is a different assessor (SteelRadar, ex-works Germany). 0.855 v stored 0.865 (−1 %). Page also: mills open 2027 annual talks ~100 EUR/t above spot."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 2,
+  "key": "ferrous.anchor.hdg",
+  "verdict": "differs",
+  "pageValue": 0.83,
+  "quote": "SteelRadar reports cold-rolled at 855 EUR/t and hot-dip galvanised at 830 EUR/t ex-works in Germany on 19 October",
+  "url": "https://www.tacto.ai/en/commodities/steel-price",
+  "notes": "Page UPDATED since the research; the 13 Sep Fastmarkets HDG 850–870 EUR/t is gone. Current: HDG 830 EUR/t ex-works Germany (SteelRadar, 19 Oct) v stored 0.860 (−3.5 %). 2027 annual-contract first offers for HDG: 940–960 EUR/t."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 3,
+  "key": "ferrous.anchor.hrpo",
+  "verdict": "confirmed",
+  "pageValue": 0.09,
+  "quote": "“We had lows of €860-870, but only for unpickled coil,” … he sees pickled material starting at €930/t, and reaching €980/t.",
+  "url": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+  "notes": "The pickling-extra figures are on the page (mid 955 − 865 = 90 EUR/t). BUT the article is dated 21 February 2022 (updated 29 July 2023), not \"undated\" — a 2022 spread applied to a 2026 HRC. The HRC anchor 745 EUR/t (6 Oct 2026) is not on this page (Tacto now shows Fastmarkets HRC N. Europe 748 EUR/t on 22 Oct). 745 + 90 = 835 — arithmetic right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 6,
+  "key": "ferrous.bar.C45",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://swisssteel-group.com/content-media/documents/Steeltec/Secure-area-Steeltec/July/Zuschlaege_Surcharges-07_2026.pdf",
+  "notes": "HTTP 403 (secure-area PDF). No price claimed (base price not found); the C45 surcharge EUR 5/t is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 13,
+  "key": "ferrous.stainless.304_CR_2B",
+  "verdict": "confirmed",
+  "pageValue": 2.77,
+  "quote": "Fastmarkets’ monthly price assessment for stainless steel cold-rolled sheet, 2mm, grade 304 transaction domestic, delivered North Europe fell to €2,740-2,800 ($3,186-3,256) per tonne on Monday September 7 … alloy surcharge, domestic Europe rose to €2,178-2,235 per tonne",
+  "url": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+  "notes": "Mid 2,770 → 2.770 €/kg; effective base 2,770 − 2,206.5 = 563.5 — arithmetic right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 16,
+  "key": "ferrous.stainless.430_CR",
+  "verdict": "differs",
+  "pageValue": 1.6485,
+  "quote": "Alloy surcharges – Overview Grade Jun 2026 Jul 2026 Aug 2026 Sept 2026 Oct 2026 Nov 2026 … 1.4016 €/t 1,088 1,101 1,101 1,092 1,085 1,122",
+  "url": "https://legierungszuschlag.info/en/",
+  "notes": "RESEARCH MISREAD: the Oct 2026 1.4016 alloy surcharge on the page is 1,085 €/t, not 985 (985 is the Oct figure of 1.4034, and 1.4021 in Aug). Not an update — Oct is still shown, Nov 2026 (1,122) was added. Corrected: 1,085 + 563.5 = 1,648.5 €/t = 1.6485 €/kg v stored 1.548 (−6 %). Using Nov 2026: 1,122 + 563.5 = 1.6855 €/kg."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 18,
+  "key": "ferrous.stainless.304_bar",
+  "verdict": "confirmed",
+  "pageValue": null,
+  "quote": "EN AISI UNS USD/LB 1.4301 304/304L S30403 1.01",
+  "url": "https://www.alleima.com/siteassets/documents/alloy-surcharges/bar-nafta/surcharge-history-nafta/2026/09-september-2026-asc-bar-nafta.pdf",
+  "notes": "No price claimed (null). The quoted surcharges are on their pages: Alleima NAFTA bar Sep 2026 1.4301 US$1.01/lb (PDF now opens); legierungszuschlag.info Oct 2026 1.4301 2,188 €/t (overview table: \"1.4301 €/t 2,358 2,346 2,228 2,235 2,188 2,193\"). 1.01 × 2.20462 × 0.880 = 1.959 — right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.foundry.steel_scrap_heavy",
+  "verdict": "differs",
+  "pageValue": 0.2816,
+  "quote": "In Germany, the price of E3 scrap fell by $6 over the month to $320/t on an Ex Works basis.",
+  "url": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "notes": "The cited (August) article gives German E3 = US$320/t ex-works for AUGUST (−$6 m/m, so July ≈ $326). The basis's \"July USD 327 (−29 m/m)\" is not on this page ($327 here is US HMS 1&2 East Coast). Research then subtracted €12.5 for August — double-counting the August fall the page already prices into $320. Page: 320 × 0.880 = 281.6 €/t = 0.2816 v stored 0.275 (+2.4 %). The −€10–15/t Germany/Austria fall IS on the page."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 23,
+  "key": "ferrous.foundry.FeSi75",
+  "verdict": "confirmed",
+  "pageValue": 1.26,
+  "quote": "Argus last assessed prices at €1,240-1,280/t ddp NWE on 16 June, after holding rangebound for three weeks on sluggish spot trade.",
+  "url": "https://api.argusmedia.com/articles/2840817",
+  "notes": "Mid 1,260 → 1.260 €/kg. Assessment is June 2026 (four months old at the research date)."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 25,
+  "key": "ferrous.foundry.FeCr_HC",
+  "verdict": "confirmed",
+  "pageValue": 1.513,
+  "quote": "Samchrome Sets the Reference Point: 156 US Cents/lb for Q3 2026 European Ferrochrome Published: Aug 06, 2026",
+  "url": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+  "notes": "1.56 × 2.20462 = 3.439 US$/kg Cr × 0.880 = 3.027 €/kg Cr × 0.5 (50 % Cr) = 1.513 — arithmetic right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 27,
+  "key": "ferrous.charge.GJL-250",
+  "verdict": "differs",
+  "pageValue": 0.3526,
+  "quote": "In Germany, the price of E3 scrap fell by $6 over the month to $320/t on an Ex Works basis.",
+  "url": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "notes": "Inherits the scrap misread (item ferrous.foundry.steel_scrap_heavy). Stored arithmetic is right: (0.25×0.425 + 0.40×0.275)/0.65 + 0.007×1.26 = 0.3415 ÷ 0.98 = 0.349. With the page scrap 0.2816: (0.10625 + 0.11264)/0.65 + 0.00882 = 0.3456 ÷ 0.98 = 0.3526 (+1 %). Pig iron 0.425 not on this page (not checked)."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 28,
+  "key": "ferrous.charge.GS-C25",
+  "verdict": "differs",
+  "pageValue": 0.2999,
+  "quote": "In Germany, the price of E3 scrap fell by $6 over the month to $320/t on an Ex Works basis.",
+  "url": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "notes": "Inherits the scrap misread. Stored: (0.275 + 0.0063)/0.96 = 0.293 (right). With page scrap 0.2816: 0.2879/0.96 = 0.2999 (+2.4 %)."
+ },
+ {
+  "file": "germany-2026-10/research/materials-ferrous.json",
+  "i": 29,
+  "key": "ferrous.charge.CF8",
+  "verdict": "confirmed",
+  "pageValue": 1.25,
+  "quote": "In Europe, 304 scrap was heard at around US$1,420/t CIF Rotterdam and 316 at US$2,800–2,820/t.",
+  "url": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+  "notes": "1,420 × 0.880 = 1,249.6 €/t = 1.250 €/kg (the 304 scrap the basis uses); ÷ 0.97 = 1.288 — right. It is a \"heard\" indication in an SMM India-market flash, Sep 2026."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 0,
+  "key": "nonferrous.al.lme",
+  "verdict": "confirmed",
+  "pageValue": 3055.5,
+  "quote": "09. Oktober 2026 3.055,50 3.070,00",
+  "url": "https://www.westmetall.com/de/markdaten.php?action=table&field=LME_Al_cash",
+  "notes": "The cited markdaten.php shows only the latest day (29 Oct 2026: 3.071,00); the 9 Oct settlement is in Westmetall's own history table for the same series. 3,055.5 × 0.880 / 1000 = 2.69 — right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 1,
+  "key": "nonferrous.al.dutyPaidPremium",
+  "verdict": "confirmed",
+  "pageValue": 574,
+  "quote": "The front-month COMEX European duty-paid aluminium premium EPDc1 … rose to $574 a metric ton on Thursday, up 10% from the previous day and the highest since June 8, LSEG data showed on Friday.",
+  "url": "https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns",
+  "notes": "Figure confirmed, but it is the CME/COMEX duty-paid premium FUTURE (EPDc1), not a price-agency Rotterdam in-warehouse P1020 assessment as the basis labels it. The Fastmarkets P1020A in-whs dp Rotterdam was $460–510/t on 28 Aug (item billet page). 574 × 0.880 = 0.505 → 0.51."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 2,
+  "key": "nonferrous.al.p1020",
+  "verdict": "confirmed",
+  "pageValue": 3.19,
+  "quote": "09. Oktober 2026 3.055,50 (Westmetall LME Al cash) ; rose to $574 a metric ton (Kitco/Reuters)",
+  "url": "https://www.westmetall.com/de/markdaten.php?action=table&field=LME_Al_cash",
+  "notes": "Both inputs on their pages; (3,055.5 + 574) × 0.880 / 1000 = 3.194 → 3.19 — right. Premium caveat as in dutyPaidPremium (futures, not an assessment)."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 4,
+  "key": "nonferrous.al.billet6063",
+  "verdict": "confirmed",
+  "pageValue": 3.66,
+  "quote": "Fastmarkets’ aluminium 6063 extrusion billet premium, ddp North Germany (Ruhr region), $/tonne assessment was at $1,070-1,135 per tonne on Friday August 28",
+  "url": "https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+  "notes": "Mid 1,102.5; LME 3,055.5 (9 Oct, Westmetall history). (3,055.5 + 1,102.5) × 0.880 / 1000 = 3.659 → 3.66 — right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 6,
+  "key": "nonferrous.al.adc12",
+  "verdict": "confirmed",
+  "pageValue": 2.48,
+  "quote": "Aluminium pressure diecasting ingot DIN226/A380, delivered Europe traded slightly higher around €2,430-2,530 ($2,854-2,971) per tonne, up by €10",
+  "url": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+  "notes": "Mid 2,480 → 2.48. Stale (late Jan 2026), as the basis says."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 9,
+  "key": "nonferrous.al.alsi7mg",
+  "verdict": "confirmed",
+  "pageValue": 3.57,
+  "quote": "The Germany and Eastern Europe premiums were incorrectly published at $1,000-1,100 per tonne on May 22. The prices were updated to $950-1,050 per tonne on May 29.",
+  "url": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+  "notes": "Mid 1,000 (29 May); (3,055.5 + 1,000) × 0.880 / 1000 = 3.569 → 3.57 — right. Premium is 4+ months old."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 11,
+  "key": "nonferrous.al.frp_europe_asp",
+  "verdict": "confirmed",
+  "pageValue": 4.16,
+  "quote": "Europe (1) Net sales $ 5,272 $ 4,606 $ 4,426 Total shipments 1,115 1,083 1,081",
+  "url": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+  "notes": "SEC blocked the undeclared-tool fetch; re-fetched with a declared user agent. 5,272 / 1,115 = 4.728 US$/kg × 0.880 = 4.16 — right; FY2025 4,606 / 1,083 = 4.253 also right. Caveat: Europe segment net sales include $300 M intersegment sales and 46 kt non-rolled products."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 13,
+  "key": "nonferrous.cu.spot",
+  "verdict": "confirmed",
+  "pageValue": 14689,
+  "quote": "09. Oktober 2026 14.689,00 14.570,00",
+  "url": "https://www.westmetall.com/de/markdaten.php?action=table&field=LME_Cu_cash",
+  "notes": "14,689 × 0.880 / 1000 = 12.93 — right. Cited page shows only 29 Oct (14.560,00)."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 15,
+  "key": "nonferrous.cu.cathode_delivered",
+  "verdict": "confirmed",
+  "pageValue": 13.2,
+  "quote": "Aurubis will charge European customers a premium of $315 per metric ton for refined copper next year",
+  "url": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+  "notes": "LME 14,689 (Westmetall history) + 315 = 15,004 × 0.880 / 1000 = 13.20 — right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 18,
+  "key": "nonferrous.zn.spot",
+  "verdict": "confirmed",
+  "pageValue": 3840,
+  "quote": "09. Oktober 2026 3.840,00 3.781,50",
+  "url": "https://www.westmetall.com/de/markdaten.php?action=table&field=LME_Zn_cash",
+  "notes": "3,840 × 0.880 / 1000 = 3.379 → 3.38 — right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 19,
+  "key": "nonferrous.zn.shg_premium",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "notes": "HTTP 404 on the Argus assessment page today. The 215–240 US$/t (2 Feb 2026) is unverified and stale."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 20,
+  "key": "nonferrous.zn.shg_delivered",
+  "verdict": "confirmed",
+  "pageValue": 3840,
+  "quote": "09. Oktober 2026 3.840,00 3.781,50",
+  "url": "https://www.westmetall.com/de/markdaten.php?action=table&field=LME_Zn_cash",
+  "notes": "LME leg confirmed; the Argus premium leg (227.5) is unreachable (404). (3,840 + 227.5) × 0.880 / 1000 = 3.579 → 3.58 — right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 21,
+  "key": "nonferrous.sn.spot",
+  "verdict": "confirmed",
+  "pageValue": 52900,
+  "quote": "09. Oktober 2026 52.900,00 53.050,00",
+  "url": "https://www.westmetall.com/de/markdaten.php?action=table&field=LME_Sn_cash",
+  "notes": "52,900 × 0.880 / 1000 = 46.55 — right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-nonferrous.json",
+  "i": 23,
+  "key": "nonferrous.mg.az91d",
+  "verdict": "differs",
+  "pageValue": 2641,
+  "quote": "Magnesium Alloy Ingot Prices Outlook Q2 2026 USA: USD 3143/MT China: USD 3019/MT Germany: USD 2641/MT France: USD 3197/MT Netherlands: USD 2853/MT",
+  "url": "https://www.imarcgroup.com/magnesium-alloy-ingot-pricing-report",
+  "notes": "Page UPDATED (\"Last Updated: July 23, 2026\"): the research says IMARC had only a Dec 2023 Netherlands 3,587 — the page now carries quarterly 2026 prints incl. Germany Q2 2026 US$2,641/t (≈ 2.32 €/kg at 0.880). Generic \"magnesium alloy ingot\", not AZ91D-specific; IMARC is a market-research model, low grade. The stored value is null (not found), so the book holds this grade."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pp_homo",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The W37/2026 myCEPPI figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 1,
+  "key": "polymer.pp_copo",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The W37/2026 myCEPPI figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 2,
+  "key": "polymer.hdpe",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The W37/2026 myCEPPI figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 3,
+  "key": "polymer.ldpe",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The W37/2026 myCEPPI figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 4,
+  "key": "polymer.lldpe",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The W37/2026 myCEPPI figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 5,
+  "key": "polymer.pvc",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The W37/2026 myCEPPI figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.abs",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The W37/2026 myCEPPI figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 7,
+  "key": "polymer.ps",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The W37/2026 myCEPPI figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 8,
+  "key": "polymer.hips",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The W37/2026 myCEPPI figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 9,
+  "key": "polymer.pc",
+  "verdict": "confirmed",
+  "pageValue": 3.0,
+  "quote": "Polycarbonate price September 2026 and outlook … Europe:US$3/KG, -2.9% down",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+  "notes": "3.00 × 0.880 = 2.64 — right."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 10,
+  "key": "polymer.pa6",
+  "verdict": "differs",
+  "pageValue": 3.18,
+  "quote": "PA6 (Nylon 6) price September 2026 and outlook … Europe:US$3.18/KG, 1.3% up",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+  "notes": "Page now shows SEPTEMBER 2026 Europe US$3.18 (+1.3 %), which implies August ≈ US$3.14 — not the US$2.67 the research read for August. So the research both used an older month and (very likely) misread the August value. 3.18 × 0.880 = 2.80 €/kg v stored 2.35 (+19 %)."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 11,
+  "key": "polymer.pa66",
+  "verdict": "differs",
+  "pageValue": 3.44,
+  "quote": "PA66 (Nylon 66) price September 2026 and outlook … Europe:US$3.44/KG, -3.6% down",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+  "notes": "Same month (Sep 2026) on the page: US$3.44 −3.6 % v the research US$3.45 −3.9 % — index revised or misread; 3.44 × 0.880 = 3.03 v stored 3.04, immaterial."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.pbt",
+  "verdict": "differs",
+  "pageValue": 4.24,
+  "quote": "Polybutylene terephthalate (PBT) price September 2026 and outlook … Europe:US$4.24/KG, 4.2% up",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+  "notes": "Same month (Sep 2026) on the page: US$4.24 (+4.2 %) v research US$3.70 (−1.1 %). Not a later month — the research misread (or the index was revised heavily). 4.24 × 0.880 = 3.73 €/kg v stored 3.26 (+14 %)."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.pet_bottle",
+  "verdict": "confirmed",
+  "pageValue": 1.56,
+  "quote": "PET (Polyethylene Terephthalate) price September 2026 and outlook … Europe:US$1.56/KG, 4% up",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+  "notes": "1.56 × 0.880 = 1.373 → 1.37 — right. General PET, not bottle-grade, as the basis says."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 14,
+  "key": "polymer.pmma",
+  "verdict": "differs",
+  "pageValue": 3.59,
+  "quote": "Polymethylmethacrylate (PMMA) price September 2026 and outlook … Europe:US$3.59/KG, -1.1% down",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+  "notes": "Same month (Sep 2026): page US$3.59 (−1.1 %) v research US$3.69 (unchanged) — misread or revised. 3.59 × 0.880 = 3.16 €/kg v stored 3.25 (−3 %)."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 15,
+  "key": "polymer.pom",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/polymer-prices",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to both passes; not bypassed. The Sep 2026 Plastech POM figure is unverified."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 16,
+  "key": "polymer.peek",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets",
+  "notes": "The cited hl.co.uk article returns HTTP 404 (\"SORRY, THE PAGE YOU ARE LOOKING FOR CANNOT BE FOUND\"). A web search finds the 7 Jul 2026 Victrex Q3 trading update (lse.co.uk RNS) with £231.6m / 3,375 t / ASP £68/kg in the extracts, but those hosts could not be opened from this session, so not page-verified. Arithmetic: 68 × 1.165 = 79.22; 231.6 / 3,375 = £68.6/kg — right. Note an all-mix PEEK ASP (incl. high-value medical) is not a moulding-grade price."
+ },
+ {
+  "file": "germany-2026-10/research/materials-polymer.json",
+  "i": 22,
+  "key": "rubber.nr",
+  "verdict": "confirmed",
+  "pageValue": 253.2,
+  "quote": "Tại Singapore, giá cao su TSR20 trên sàn SGX: Hợp đồng TSR20 kỳ hạn tháng 10/2026 ở mức 253,20 Cent/kg, giảm 0,31%",
+  "url": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html",
+  "notes": "253.20 US¢/kg × 0.880 / 100 = 2.228 → 2.23 €/kg FOB — right."
+ }
+]
