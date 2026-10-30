@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { money, samePenny, costedAlternatives, crossoverStated, near } from '../e2e/trace-checks.js';
+import { money, samePenny, costedAlternatives, crossoverStated, near, marginTyped } from '../e2e/trace-checks.js';
 
 describe('live-harness predicates', () => {
   it('money reads every display currency and nothing else', () => {
@@ -49,3 +49,15 @@ describe('live-harness predicates', () => {
     expect(near(0.2352, 0.2362)).toBe(false);
   });
 });
+
+describe('marginTyped', () => {
+  it('reads the typed margin at the end of the Basis row, past the "(% of subtotal)" in its name', () => {
+    // the first fix stopped at that "%" ([^%]*10%) and never matched — SI / LT grommet read nothing
+    expect(marginTyped('Typed Supplier margin (% of subtotal) 10%', 10)).toBe(true);
+    expect(marginTyped('  Typed  Supplier margin (% of subtotal)\n 10% ', 10)).toBe(true);
+    expect(marginTyped('Typed Supplier margin (% of subtotal) 8%', 10)).toBe(false);
+    expect(marginTyped('Typed Supplier margin (% of subtotal) 110%', 10)).toBe(false);
+    expect(marginTyped('Default Supplier margin (% of subtotal) 10%', 10)).toBe(false);
+  });
+});
+

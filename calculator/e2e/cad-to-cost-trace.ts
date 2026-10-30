@@ -51,7 +51,7 @@ mkdirSync(OUT, { recursive: true });
 const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
 const freePort = () => new Promise<number>((res, rej) => { const s = createServer(); s.once('error', rej); s.listen(0, '127.0.0.1', () => { const p = (s.address() as { port: number }).port; s.close(() => res(p)); }); });
 // the predicates are pure functions in trace-checks.ts, each proven able to fail (tests/trace-checks.test.ts)
-import { money, samePenny as samePennyFx, costedAlternatives, near as nearFx } from './trace-checks.js';
+import { money, samePenny as samePennyFx, costedAlternatives, near as nearFx, marginTypedRe } from './trace-checks.js';
 // Country review (Oct 2026): CV_TRACE_COUNTRY=<code> costs every part in that country's book; CV_TRACE_TERMS=EXW prices ex-works.
 const COUNTRY = process.env.CV_TRACE_COUNTRY ?? '';
 const TERMS = process.env.CV_TRACE_TERMS === 'EXW' ? 'EXW' : '';
@@ -474,11 +474,13 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   if (mg && await fillCommercial('margin-pct', '10')) {
     // Wait for the re-cost to land: the headline changes, OR the Basis shows the typed 10 % (a part under ~£0.50 can
     // round to the same pennies at 8 % and 10 % — waiting for a change alone timed out and read nothing, IT / NL grommet).
-    const after = await page.waitForFunction(b => {
+    const typedRe = marginTypedRe(10).source;
+    const after = await page.waitForFunction(([b, typedRe]) => {
       const h = document.querySelector('#cv-result-hero .crh-total')?.textContent ?? '';
-      const typed = Array.from(document.querySelectorAll('#cad-basis .cad-basis-row')).some(r => /Typed Supplier margin[^%]*10%/.test((r.textContent ?? '').replace(/\s+/g, ' ')));
+      const rows = Array.from(document.querySelectorAll('#cad-basis .cad-basis-row')).map(r => (r.textContent ?? '').replace(/\s+/g, ' ').trim());
+      const typed = rows.some(t => new RegExp(typedRe).test(t));
       return h && (!h.includes(b) || typed) ? h : false;
-    }, before, { timeout: 60_000 }).then(h => h.jsonValue() as Promise<string>).catch(() => '');
+    }, [before, typedRe] as const, { timeout: 60_000 }).then(h => h.jsonValue() as Promise<string>).catch(() => '');
     const expect10 = Number(String(before).replace(/[^\d.]/g, '')) / 1.08 * 1.10;
     const graded = await page.evaluate(() => Array.from(document.querySelectorAll('#cad-basis .cad-basis-row')).map(r => (r.textContent ?? '').replace(/\s+/g, ' ').trim()).find(t => /Supplier margin/.test(t)) ?? '');
     check('3', '#4', 'margin 8 % → 10 % on the card re-costs the part (subtotal × 1.10)', Math.abs(num(money(after)) - expect10) <= 0.011,

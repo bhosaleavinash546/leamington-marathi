@@ -38,3 +38,8 @@ export function crossoverStated(html: string): boolean {
 export function near(a: number, b: number, tolGbp = 0.0006, fx = 1): boolean {
   return Math.abs(a - b) <= tolGbp * fx;
 }
+
+/** The Basis row of a supplier margin the engineer TYPED at `pct` % — "Typed Supplier margin (% of subtotal) 10%".
+ *  The "(% of subtotal)" holds a % of its own, so the figure is read at the END of the row. */
+export const marginTypedRe = (pct: number): RegExp => new RegExp(`Typed Supplier margin.*(?<![\\d.])${pct}%$`);
+export const marginTyped = (row: string, pct: number): boolean => marginTypedRe(pct).test(row.replace(/\s+/g, ' ').trim());
