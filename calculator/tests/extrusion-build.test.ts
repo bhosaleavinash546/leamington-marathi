@@ -72,8 +72,9 @@ describe('3. the line, its rate and its scrap', () => {
     expect(p.lineRateKgPerHr).toBe(95);                         // cooling-limited at a 3 mm wall
     expect(ext(PROF, 'mat-upvc-pipe').s.lineRateKgPerHr).toBe(156);   // screw-limited, rigid PVC
   });
-  it('start-up scrap: a quarter-hour of the screw\'s output over a run of at least a shift', () => {
-    expect(ext(TUBE, 'mat-pa12-ext-tube').s.startupScrapFraction).toBeCloseTo(23 / 333, 2);
+  it('start-up scrap: a quarter-hour of the LINE\'s output over a run of at least a shift', () => {
+    // 0.25 h × the 33 kg/h cooling-limited line ÷ 333 kg a run — the screw's 92 kg/h cannot pass the sizing tank (arithmetic audit X3).
+    expect(ext(TUBE, 'mat-pa12-ext-tube').s.startupScrapFraction).toBeCloseTo(8.25 / 333, 3);
   });
 });
 
@@ -100,14 +101,15 @@ describe('5. screen and headless take the same values', () => {
     const r = await costMeasuredPart(geoOf(PIPE), PIPE, { partNumber: PIPE, file: PIPE, annualVolume: 50_000, commodity: 'extrusion' } as never,
       ans('mat-pe100-pipe'), 'UK', { annualVolume: 50_000 } as never, recomputeMachineRates(DEFAULT_RATE_LIBRARY),
       { partNumber: PIPE, file: PIPE, status: 'error' } as never) as { status: string; total: number };
-    expect(r.total).toBeCloseTo(1.05, 2);
+    // 1.05 before the arithmetic audit: the start-up purge was charged at the screw's 432 kg/h, not the line's 95 (X3).
+    expect(r.total).toBeCloseTo(0.998, 2);
   });
 });
 
 describe('6. baseline', () => {
   it('records all three at 50,000/yr', () => {
     expect(baseline.find(b => b.part === TUBE)!.outcome.total).toBe(0.42);
-    expect(baseline.find(b => b.part === PIPE)!.outcome.total).toBe(1.05);
+    expect(baseline.find(b => b.part === PIPE)!.outcome.total).toBe(1);   // start-up purge at the LINE rate, not the screw's (arithmetic audit X3)
     expect(baseline.find(b => b.part === PROF)!.outcome.total).toBe(2.27);
   });
 });

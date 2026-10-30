@@ -1178,6 +1178,14 @@ export interface RegionalComparisonRow {
   exWorks: number; packaging: number; logistics: number; margin: number; total: number;
   vsBasePct: number;   // (baseTotal − total) / baseTotal × 100 — positive = cheaper than base
   isBase: boolean;
+  /**
+   * How the row was made, so a report can say it: 'costed' — the costing itself; 'chain' — the part costed through the
+   * whole chain with that country selected; 'stack-reprice' — the costing's operations and material weight re-priced in
+   * that country's book, per-part services, consumables, a module-priced material and the module's own choices carried
+   * from the costing country (up to ±100 % off the chain on a direct-priced composite; arithmetic audit, 30 Oct 2026);
+   * 'scaled' — the buckets scaled by the country's multipliers (no book at all).
+   */
+  basis?: 'costed' | 'chain' | 'stack-reprice' | 'scaled';
 }
 
 /** Import duty + international shipping as a fraction of Ex-Works, for landed cost. */
@@ -1242,7 +1250,7 @@ export function computeRegionalComparison(
       const exW = bkd.rawMaterial + bkd.process + bkd.labour + bkd.tooling + bkd.overhead;
       const add = opts.landed ? (LANDED_ADDERS[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };
       const tot = exW + bkd.packaging + bkd.logistics + bkd.margin + exW * add.duty + exW * add.shipping;
-      return { code, name: rd.name, currency: rd.currency, material: bkd.rawMaterial, process: bkd.process, labour: bkd.labour, tooling: bkd.tooling, overhead: bkd.overhead, exWorks: exW, packaging: bkd.packaging, logistics: bkd.logistics, margin: bkd.margin, total: tot, vsBasePct: 0, isBase: code === base };
+      return { code, name: rd.name, currency: rd.currency, material: bkd.rawMaterial, process: bkd.process, labour: bkd.labour, tooling: bkd.tooling, overhead: bkd.overhead, exWorks: exW, packaging: bkd.packaging, logistics: bkd.logistics, margin: bkd.margin, total: tot, vsBasePct: 0, isBase: code === base, basis: 'costed' };
     }
     const material = uk.rawMaterial * (opts.materialFactorByRegion?.[code] ?? rd.materialMultiplier);
     const process = uk.process * rd.machineRateMultiplier;
@@ -1264,7 +1272,7 @@ export function computeRegionalComparison(
     const margin = ukMarginBase > 0 ? uk.margin * (marginBase / ukMarginBase) : uk.margin;
     const adder = opts.landed ? (LANDED_ADDERS[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };
     const total = exWorks + packaging + logistics + margin + exWorks * adder.duty + exWorks * adder.shipping;
-    return { code, name: rd.name, currency: rd.currency, material, process, labour, tooling, overhead, exWorks, packaging, logistics, margin, total, vsBasePct: 0, isBase: code === base };
+    return { code, name: rd.name, currency: rd.currency, material, process, labour, tooling, overhead, exWorks, packaging, logistics, margin, total, vsBasePct: 0, isBase: code === base, basis: 'scaled' };
   }).filter((r): r is RegionalComparisonRow => r !== null);
   const baseTotal = rows.find(r => r.code === base)?.total ?? rows[0]?.total ?? 0;
   rows.forEach(r => { r.vsBasePct = baseTotal > 0 ? ((baseTotal - r.total) / baseTotal) * 100 : 0; });

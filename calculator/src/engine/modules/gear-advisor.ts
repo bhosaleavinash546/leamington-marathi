@@ -142,11 +142,14 @@ export const GEAR_PROCESS_REFERENCE: Record<GearProcess, GearProcessReference> =
     note: 'Bought for NVH, not for geometry.',
   },
   case_hardening: {
-    process: 'case_hardening', label: 'Carburise, quench and temper',
+    // The temper is its own step after the post-quench wash (HARDENING_ROUTE_SPEC.needsTemper) and the furnace line
+    // is HT-01 "gas carburise + oil quench" — the label said "and temper", so the route read as tempering twice.
+    process: 'case_hardening', label: 'Carburise and quench',
     bestQualityClass: 99, internalCapable: true, externalCapable: true,
     moduleRangeMm: [0.1, 50],
     source: 'Standard treatment for case-hardening gear steels (20MnCr5, 8620). Distorts the '
-      + 'cut geometry, which is what makes a hard finishing operation necessary.',
+      + 'cut geometry, which is what makes a hard finishing operation necessary. Tempered as a '
+      + 'separate step after the post-quench wash.',
   },
   quench_temper: {
     process: 'quench_temper', label: 'Harden and temper (through-hardening)',
@@ -260,8 +263,10 @@ export const GEAR_PROCESS_REFERENCE: Record<GearProcess, GearProcessReference> =
     process: 'inspection', label: 'Gear inspection',
     bestQualityClass: 99, internalCapable: true, externalCapable: true,
     moduleRangeMm: [0.1, 50],
-    source: 'Profile, lead, pitch and runout on a gear checker. Sampling rate rises as the '
-      + 'class tightens.',
+    // The cost is a flat seconds-per-part from the shop data at every class (100 % checked); the text claimed a
+    // sampling rate that rises with the class, which the costing does not carry (arithmetic audit, Oct 2026).
+    source: 'Profile, lead, pitch and runout on a gear checker. Costed as a flat time per part from '
+      + 'the shop data at every class (every gear checked) — a customer sampling plan is not modelled.',
   },
 };
 
@@ -698,7 +703,7 @@ export function adviseGearRoute(i: GearRouteInputs): GearRouteRecommendation {
         steps.push({
           process: 'grinding', label: GEAR_PROCESS_REFERENCE.grinding.label,
           reason: `${GEAR_PROCESS_REFERENCE[cutting].label} holds class ${asCut} as-cut, and `
-            + `${ref.label.toLowerCase()} distorts at least ${distortion} class — as-hardened this `
+            + `${ref.label.toLowerCase()} distorts at least ${distortion} class${distortion === 1 ? '' : 'es'} — as-hardened this `
             + `gear delivers class ${delivered} at best. ISO class ${i.qualityClass} therefore `
             + 'requires grinding after heat treat: the only operation that corrects both the cut '
             + 'and the distortion.',

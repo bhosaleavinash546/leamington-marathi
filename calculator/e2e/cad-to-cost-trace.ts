@@ -368,7 +368,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
   await page.waitForTimeout(200);
   check('3', 'M4', 'step 3 current', s.step === 'Cost', `current "${s.step}"`);
-  check('3', '#2', 'tooling investment (one-off) with its amortisation basis', card.figs.some(f => /Tooling investment/.test(f) && /a part over 5 years × 100,000/.test(f)), card.figs[0] ?? '(none)');
+  check('3', '#2', 'tooling over the programme with its amortisation basis', card.figs.some(f => /Tooling over the programme/.test(f) && /a part over 5 years × 100,000/.test(f)), card.figs[0] ?? '(none)');
   check('3', 'D6', 'the band says what it covers and that accuracy is not measured', /not the model's error/.test(card.note) && /not yet measured/.test(card.note), card.note);
   check('3', '§3', 'confidence shown beside the band', card.figs.some(f => /confidence (High|Medium|Low)/.test(f)), card.figs[1] ?? '');
   check('3', '§3', 'confidence explained ("why", "what would raise it")', /data points behind this cost/.test(card.why) && /moves it/.test(card.why), card.why);
@@ -433,7 +433,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     `${cmpDetail.detail} detail(s), ${cmpDetail.buckets} mini rows, adds up ${cmpDetail.addsUp}`);
   check('3', 'CR2', 'routes that cannot make the part are listed with the check failed and its source', cmpDetail.excludedRows > 0 && cmpDetail.sourced,
     `${cmpDetail.excluded}: ${cmpDetail.excludedRows} route(s), every one sourced ${cmpDetail.sourced}`);
-  check('3', 'CR3', 'the principle (same family, finished scope) and the tooling investment column are on the table', cmpDetail.principle && cmpDetail.header.includes('Tooling investment'),
+  check('3', 'CR3', 'the principle (same family, finished scope) and the tooling-over-programme column are on the table', cmpDetail.principle && cmpDetail.header.includes('Tooling over programme'),
     cmpDetail.header.join(' | '));
   check('3', 'CR4', 'each alternative states its crossover with the costed route from the volume ladder', routes.filter(r => !r.ref && money(r.cost) > 0).length === 0 || cmpDetail.crossover.length > 0,
     cmpDetail.crossover.join(' / ') || 'no costed alternative');

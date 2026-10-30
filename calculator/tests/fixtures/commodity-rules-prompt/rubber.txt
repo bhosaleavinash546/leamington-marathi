@@ -23,7 +23,7 @@ RUBBER MOULDING COST INPUT RULES:
   labourId=lab-uk-semiskilled  [press / line operative — deterministic, use verbatim]
   manning: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   labourEfficiency=0.92  [the shop convention (the form defaulted 0.90) — deterministic, use verbatim]
-  rejectRate=0.03  [3% (flash defects, porosity, dimensions) — vulcanised scrap cannot be reground — deterministic, use verbatim]
+  rejectRate=0.03  [3% (flash defects, porosity, dimensions) — vulcanised scrap cannot be reground (engineering-typical, not sourced) — deterministic, use verbatim]
   deflashCycleSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   postCureHours: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   setupHoursPerChange: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
@@ -52,7 +52,7 @@ RUBBER MOULDING COST INPUT RULES:
   labourId=lab-uk-semiskilled  [press / line operative — deterministic, use verbatim]
   manning: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   labourEfficiency=0.92  [the shop convention (the form defaulted 0.90) — deterministic, use verbatim]
-  rejectRate=0.03  [3% (flash defects, porosity, dimensions) — vulcanised scrap cannot be reground — deterministic, use verbatim]
+  rejectRate=0.03  [3% (flash defects, porosity, dimensions) — vulcanised scrap cannot be reground (engineering-typical, not sourced) — deterministic, use verbatim]
   deflashCycleSec: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   postCureHours: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)
   setupHoursPerChange: UNDECIDED — needs "Which rubber compound is this?" (EPDM 70 Shore A | NBR 70 Shore A | Natural Rubber SMR20 | SBR 65 Shore A | CR Neoprene 60 Shore A | HCR Silicone 60 Shore A | LSR 40 Shore A | FKM Viton 75 Shore A)

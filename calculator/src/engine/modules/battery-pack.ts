@@ -92,6 +92,8 @@ export function computeBatteryPackDrivers(i: BatteryPackInputs): CommodityDriver
   const part = (p: { gbp: number; basis: CountryBasis }) => inCountry(p.gbp, p.basis);
 
   // ── Cells (bought in) ──
+  // The CELLS line carries the unit price UNROUNDED, so qty × unit on the report IS the bought-in cost (arithmetic
+  // audit E3: rounding the unit to 4 dp put the printed line up to a penny away from the cost).
   const cellUnit = f.cellGbpPerKwh * (f.packKwh / f.cells);
   const cellsCost = cellUnit * f.cells;
 
@@ -126,8 +128,29 @@ export function computeBatteryPackDrivers(i: BatteryPackInputs): CommodityDriver
   add('COOL-C', 'Coolant connector pair', 1, part(PACK_PARTS.coolantConnectors));
   add('SEAL', 'Lid seal + fasteners', 1, part(PACK_PARTS.sealsFasteners));
 
+  // Provenance on every line (the form says lines marked ESTIMATE are engineering typicals — they were not marked; E5).
+  const NOTES: Record<string, string> = {
+    'BB-AL': `${fmt.busbarGPerJoint} g a joint (cell format) and the busbar conversion £/kg are ESTIMATES; the aluminium is the rate book's`,
+    'BB-CU': `${PACK_STRUCTURE.interModuleCopperKgPerModule} kg a module and the conversion £/kg are ESTIMATES; the copper is the rate book's`,
+    CCS: PACK_PARTS.sensingPerChannel.note, 'BMS-M': PACK_PARTS.bmsMaster.note, 'BMS-C': PACK_PARTS.cmuBoard.note,
+    'K-MAIN': PACK_PARTS.mainContactor.note, 'K-PRE': PACK_PARTS.prechargeCircuit.note, PYRO: PACK_PARTS.pyrofuse.note,
+    FUSE: PACK_PARTS.mainFuse.note, ISENS: PACK_PARTS.currentSensor.note, MSD: PACK_PARTS.serviceDisconnect.note,
+    HVC: PACK_PARTS.hvConnectors.note, LVC: PACK_PARTS.lvConnector.note,
+    ENC: `${enc.kgPerM2} kg/m² and the conversion £/kg are ESTIMATES; the metal is the rate book's`,
+    CP: `${cp.kgPerM2} kg/m² and the brazing conversion £/kg are ESTIMATES; the aluminium is the rate book's`,
+    TIM: `${PACK_PARTS.gapFillerKgPerM2} kg/m² of gap filler and its £/kg — ESTIMATE`,
+    MICA: 'mica £/m² a layer, two layers — ESTIMATE',
+    ADH: `${PACK_PARTS.ctpAdhesiveKgPerKwh} kg/kWh of adhesive and its £/kg — ESTIMATE`,
+    'MOD-HW': PACK_PARTS.moduleHardware.note, VENT: PACK_PARTS.ventValve.note, 'COOL-C': PACK_PARTS.coolantConnectors.note,
+    SEAL: PACK_PARTS.sealsFasteners.note,
+  };
+  for (const l of lines) if (NOTES[l.ref]) l.note = NOTES[l.ref];
+
   const integration = lines.reduce((t, l) => t + l.qty * l.unitCost, 0);
-  lines.unshift({ ref: 'CELLS', description: `${i.chemistry} ${fmt.label} cells ${i.cellCapacityAh} Ah — ${f.cellBasis} (bought in)`, qty: f.cells, unitCost: Math.round(cellUnit * 10_000) / 10_000 });
+  lines.unshift({ ref: 'CELLS', description: `${i.chemistry} ${fmt.label} cells ${i.cellCapacityAh} Ah — ${f.cellBasis} (bought in)`, qty: f.cells, unitCost: cellUnit });
+  // The reject allowance is part of the material bucket; itemise it so the lines add up to it (audit E1).
+  if (reject > 1) lines.push({ ref: 'REJ', description: `Reject allowance ${((i.rejectRate ?? 0) * 100).toFixed(1)} % — integration + cells × 1 ÷ (1 − ${i.rejectRate}) − 1`,
+    qty: 1, unitCost: (integration + cellsCost) * (reject - 1) });
 
   const rawMaterial: RawMaterialInput = {
     materialId: 'mat-virtual', netWeightKg: 0, materialUtilization: 1,
@@ -139,26 +162,30 @@ export function computeBatteryPackDrivers(i: BatteryPackInputs): CommodityDriver
   };
 
   // ── Operations (per pack) ──
+  // Every time and crew below is an engineering-typical ESTIMATE (the cell-format seconds are ev-data.ts CELL_FORMAT;
+  // the rest are the module's own) — each operation name states its figures so the report shows them.
   const ops: OperationInput[] = [];
   const op = (name: string, machineId: string, seconds: number, manning: number, labourId = i.labourId) => {
     const hr = seconds / 3600 * reject;
-    if (hr > 0) ops.push({ operationName: name, machineId, labourId, cycleTimeHr: hr, partsPerCycle: 1, oee: i.oee, manning, labourTimeHr: hr, labourEfficiency: i.labourEfficiency });
+    if (hr > 0) ops.push({ operationName: `${name}, crew ${manning} — ESTIMATE`, machineId, labourId, cycleTimeHr: hr, partsPerCycle: 1, oee: i.oee, manning, labourTimeHr: hr, labourEfficiency: i.labourEfficiency });
   };
   op(`Cell incoming OCV / IR test (${f.cells} cells × 2 s)`, 'bat-cell-ocv-tester', f.cells * 2, 0.2, i.testLabourId);
   op(`Cell ${i.architecture === 'module' ? 'stacking into modules' : 'placement into pack'} (${f.cells} × ${fmt.stackSecPerCell} s)`, 'bat-module-stacking', f.cells * fmt.stackSecPerCell, 0.5);
   op(`Busbar laser welding (${f.joints} joints × ${fmt.weldSecPerJoint} s)`, 'bat-laser-weld', f.joints * fmt.weldSecPerJoint, 0.25);
   if (f.modules > 0) op(`Module end-of-line test (${f.modules} × 60 s)`, 'bat-module-eol', f.modules * 60, 0.25, i.testLabourId);
   op(`Gap filler / adhesive dispensing (${f.footprintM2.toFixed(2)} m² × 90 s)`, 'bat-dispense', f.footprintM2 * 90, 0.25);
-  op(`Pack assembly (BMS, HV box, harness, lid${f.modules ? `, ${f.modules} modules` : ''})`, 'bat-pack-assembly', 2400 + f.modules * 45, 2);
-  op('Leak test (enclosure + coolant circuit)', 'bat-leak-test', 300, 0.5, i.testLabourId);
-  op('Pack end-of-line test (HiPot, isolation, BMS, charge / discharge check)', 'bat-pack-eol', 1200, 0.5, i.testLabourId);
+  op(`Pack assembly (BMS, HV box, harness, lid${f.modules ? `, ${f.modules} modules` : ''}; 2,400 s${f.modules ? ` + ${f.modules} × 45 s` : ''})`, 'bat-pack-assembly', 2400 + f.modules * 45, 2);
+  op('Leak test (enclosure + coolant circuit; 300 s)', 'bat-leak-test', 300, 0.5, i.testLabourId);
+  op('Pack end-of-line test (HiPot, isolation, BMS, charge / discharge check; 1,200 s)', 'bat-pack-eol', 1200, 0.5, i.testLabourId);
 
+  const fixtures = inCountry(EV_TOOLING.packFixturesGbp, { globalShare: 0.2, rest: 'toolroom' });
   return {
     rawMaterial,
     operations: ops,
     tooling: {
-      totalToolingCost: inCountry(EV_TOOLING.packFixturesGbp, { globalShare: 0.2, rest: 'toolroom' }),
+      totalToolingCost: fixtures,
       amortizationVolume: Math.max(1, i.amortizationVolume), mode: 'amortized',
+      items: [{ label: 'Pack line fixtures — stacking, welding, EOL adapters for one pack design (ESTIMATE, ev-data.ts)', gbp: fixtures }],
     },
   };
 }

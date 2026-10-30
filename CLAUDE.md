@@ -370,6 +370,18 @@ what is true** — nothing here has been compared with a price JLR paid.
   (`reportCadViews` in main.ts — never inside `buildCadReportMeta`, which runs on every redraw). The CAD workbook is
   SheetJS, which cannot embed a picture: `excel.ts::embedCadViews` re-opens the finished file with ExcelJS and adds
   the two images (every cell and formula round-trips; tested). `scripts/cad2c-review/dump-reports.py` counts images.
+- Arithmetic & hallucination audit (30 Oct 2026, `calculator/docs/review/arithmetic-audit-2026-10-30.md`, one write-up a
+  group in `docs/review/arith-audit/`): a hallucination is any figure or line that is not measured, rate-book (sourced),
+  answered, a VISIBLE labelled assumption, or the arithmetic actually done. 13 independent shadow models
+  (`scripts/arith-audit/<group>.ts <dumpDir>`, dump with `scripts/arith-audit/dump.ts`) recompute every real part without
+  calling the code they check — 4,637 checks, 0 fail; `basis-check.py` evaluates every printed "a × b = c";
+  `constants.py` lists constants with no basis. Rules it left: a constant that moves cost prints its value and class on
+  its basis line ("engineering-typical, not sourced" or the source); the twin-pallet cell's masked load is charged only
+  beyond the operator's share of the cut (never a zero-time bench step); forging MPI is casting's `NDT_STATION.mpi`;
+  composite prepreg is bought at the whole laminate mass and NDI is a station; the cost card says "Tooling over the
+  programme" with `tooling.items` (sets v wear replacements) — never "one-off"; masks go on before pre-treatment; no
+  heuristic feature £ card; AI numbers never fill a form unchecked (`server/utils/ai-number-guard.ts`); the quote teardown
+  takes packaging / logistics / bought-in. A shadow model must be updated with any rule it encodes.
 - Nine-commodity parity sweep (30 Oct 2026, `docs/review/cad2c-parity-sweep-2026-10-30.md`, `tests/cad2c-parity-sweep.test.ts`):
   every CAD route (blow / roto / thermoforming / composites / polymer extrusion / rubber / gear / machining / casting, plus the
   five reviewed on 29 Oct) goes through the SAME three steps and costs screen = headless. While the process question is open

@@ -105,9 +105,13 @@ export function finishLoading(route: string, areaM2: number, massKg: number): Fi
   const byArea = Math.floor(c.areaPerLoadM2 / areaM2);
   const byMass = Math.floor(c.maxLoadKg / massKg);
   const n = Math.max(1, Math.min(byArea, byMass));
+  // The capacities are a conveyor e-coat line's. Every non-barrel route uses them; say so where the line is not one
+  // (a galvanising kettle, a dip-spin line, a vibratory bowl, a blast cell) — arithmetic audit F6.
+  const proxy = route === 'e_coat' || route === 'powder_coat' || route === 'powder_coat_zn' || route === 'anodise' ? ''
+    : ' (an e-coat conveyor line\'s capacity, applied to this route as a proxy — no published figure for its own line)';
   return { partsPerRack: n, racksPerHour: c.loadsPerHour,
     basis: `load bar ${c.areaPerLoadM2} m² ÷ ${areaM2.toFixed(4)} m² = ${byArea}, rack limit ${c.maxLoadKg} kg ÷ ${massKg.toFixed(3)} kg = ${byMass} `
-      + `→ ${n} parts a load, ${c.loadsPerHour} loads/h — ${c.source}; confirm the hanging with the coater` };
+      + `→ ${n} parts a load, ${c.loadsPerHour} loads/h — ${c.source}${proxy}; confirm the hanging with the coater` };
 }
 
 export interface FinishSpecInput {
@@ -130,10 +134,10 @@ export function finishSpec(i: FinishSpecInput): CommodityFinishingInput | undefi
   const stages = SURFACE_FINISH_ROUTES[i.route];
   if (!stages) return undefined;
   const masked = i.maskedFeatures ?? 0;
-  // Masking is per feature: the mask / de-mask pair is added only when the part has masked features.
-  const withMasking = masked > 0
-    ? [...stages.slice(0, -1), 'masking', stages[stages.length - 1], 'demask']
-    : stages;
+  // Masking is per feature: the mask / de-mask pair is added only when the part has masked features. Masks go on at
+  // LOAD — before pre-treatment, so the plugs keep the chemistry and the coat out — and come off at UNLOAD after the
+  // cure; they were listed after the coating, which no line does (arithmetic audit spec F3).
+  const withMasking = masked > 0 ? ['masking', ...stages, 'demask'] : stages;
   return {
     stages: withMasking,
     productForm: i.productForm,

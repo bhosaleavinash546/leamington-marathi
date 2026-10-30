@@ -50,6 +50,25 @@ export function indexCategoryForFamily(family: string | undefined): string | nul
   return null;
 }
 
+/**
+ * The part of the material line an index moves: gross kg × £/kg − scrap credit (the scrap price follows the index too),
+ * or a directly priced material. NOT the consumables and services (descale, tool wear, NDT, cores), the process energy
+ * or bought-in parts the material bucket also holds — feeding the whole bucket made the hub flange's "£ per 1 % steel"
+ * 46 % too high (£0.082 v £0.056 re-costed; arithmetic audit, 30 Oct 2026). Read off the costing's own trace.
+ */
+export function metalCostOf(
+  result: { breakdown: { rawMaterial: number }; traceability: Array<{ field: string; value: number }> },
+  input: { rawMaterial: { directCost?: number; netWeightKg: number; materialUtilization: number; lossIsNotScrap?: boolean } },
+): number {
+  const rm = input.rawMaterial;
+  if (rm.directCost !== undefined) return rm.directCost;
+  const tr = (f: string) => result.traceability.find(t => t.field === f)?.value;
+  const price = tr('material.pricePerKg'), scrap = tr('material.scrapRecoveryPricePerKg') ?? 0;
+  if (price === undefined || !(rm.materialUtilization > 0)) return result.breakdown.rawMaterial;
+  const gross = rm.netWeightKg / rm.materialUtilization;
+  return gross * price - (rm.lossIsNotScrap ? 0 : (gross - rm.netWeightKg) * scrap);
+}
+
 export interface CausalDriver {
   family: string;            // the material family as costed
   indexCategory: string;     // matched commodity index category
@@ -140,7 +159,7 @@ export function coachSentence(model: CausalCostModel, supplierQuote: number | nu
   if (supplierQuote && supplierQuote > model.partTotal) {
     const prem = impliedIndexPremiumPct(model, supplierQuote);
     if (prem !== null && prem > 0) {
-      return `${base} A quote of ${fmt(supplierQuote)} is only justified if ${d.indexCategory} were ~${prem}% above today's index — ask the supplier to show that, or hold at ${fmt(model.partTotal)}.`;
+      return `${base} A quote of ${fmt(supplierQuote)} is only justified if ${d.indexCategory} cost ~${prem}% more than the material price this should-cost uses (its rate book) — ask the supplier to show that, or hold at ${fmt(model.partTotal)}.`;
     }
   }
   return base;

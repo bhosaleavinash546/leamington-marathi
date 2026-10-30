@@ -21,12 +21,12 @@ export function batteryPackChecks(result: PartCostResult, facts: BatteryPackFact
   const nonCellUsdKwh = (result.total - cellsCost) * fx / facts.packKwh;
   const packRef = chemistry === 'LFP' || chemistry === 'LMFP' ? 81 : 128;
   return [
-    { label: 'Pack price', value: `$${packUsdKwh.toFixed(1)}/kWh`, benchmark: `BNEF 2025 ${chemistry === 'LFP' || chemistry === 'LMFP' ? 'LFP' : 'NMC'} pack average $${packRef}/kWh`,
+    { label: 'Pack price', value: `$${packUsdKwh.toFixed(1)}/kWh`, benchmark: `BNEF 2025 ${chemistry === 'LFP' || chemistry === 'LMFP' ? 'LFP' : 'NMC'} pack average $${packRef}/kWh (✓ within ±25 %)`,
       flag: Math.abs(packUsdKwh / packRef - 1) <= 0.25 ? 'ok' : 'check' },
-    { label: 'Cell share of pack', value: pct(share), benchmark: `BNEF 2025 BEV average ${pct(BNEF_CELL_SHARE_OF_PACK)}`,
+    { label: 'Cell share of pack', value: pct(share), benchmark: `BNEF 2025 BEV average ${pct(BNEF_CELL_SHARE_OF_PACK)} (✓ within ±10 points)`,
       flag: Math.abs(share - BNEF_CELL_SHARE_OF_PACK) <= 0.10 ? 'ok' : 'check' },
     { label: 'Everything but the cells', value: `$${nonCellUsdKwh.toFixed(1)}/kWh`,
-      benchmark: `BNEF 2025 BEV pack − cell = $${BNEF_PACK_INTEGRATION_USD_PER_KWH}/kWh (integration; this figure also holds overhead, margin, packaging and freight)`,
+      benchmark: `BNEF 2025 BEV pack − cell = $${BNEF_PACK_INTEGRATION_USD_PER_KWH}/kWh (integration; this figure also holds overhead, margin, packaging and freight — ✓ up to 2 ×)`,
       flag: nonCellUsdKwh <= BNEF_PACK_INTEGRATION_USD_PER_KWH * 2 ? 'ok' : 'check' },
   ];
 }
@@ -35,14 +35,14 @@ export function batteryPackChecks(result: PartCostResult, facts: BatteryPackFact
 export function eMotorChecks(result: PartCostResult, facts: EMotorFacts, motorType: MotorType): EvCheck[] {
   const out: EvCheck[] = [];
   if (motorType === 'pmsm') {
-    out.push({ label: 'Magnet mass', value: `${facts.magnetKg.toFixed(2)} kg`, benchmark: '1–2 kg NdFeB per traction PMSM (industry benchmark)',
+    out.push({ label: 'Magnet mass', value: `${facts.magnetKg.toFixed(2)} kg`, benchmark: '1–2 kg NdFeB per traction PMSM (industry benchmark; ✓ within 0.8–3 kg)',
       flag: facts.magnetKg >= 0.8 && facts.magnetKg <= 3 ? 'ok' : 'check' });
     out.push({ label: 'Rare-earth exposure', value: pct(facts.magnetKg * facts.magnetGbpPerKg / result.total),
       benchmark: 'share of the motor price that moves with NdPr / Tb — a sourcing risk, not a benchmark', flag: 'ok' });
   }
   const net = facts.statorSteelKg + facts.rotorSteelKg;
   out.push({ label: 'Lamination strip utilisation', value: pct(net / facts.grossSteelKg),
-    benchmark: 'square-pitch progressive die with the rotor nested in the stator bore: typically 45–60 % (engineering typical)',
+    benchmark: 'square-pitch progressive die with the rotor nested in the stator bore: typically 45–60 % (engineering typical; ✓ at 40 % or more)',
     flag: net / facts.grossSteelKg >= 0.4 ? 'ok' : 'check' });
   return out;
 }

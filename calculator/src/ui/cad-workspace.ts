@@ -163,6 +163,8 @@ export interface CostCardModel {
   annualVolume: number;
   programmeYears: number | null;
   toolingTotal: number;
+  /** What the tooling total is made of (the module's `tooling.items`), when it says — e.g. sets in service v wear replacements. */
+  toolingItems?: Array<{ label: string; gbp: number }>;
   amortisationVolume: number;
   /** The uncertainty band, when the costing has one. */
   band: { pm: number; p10: number | null; p90: number | null } | null;
@@ -244,9 +246,10 @@ export function cadCostCardHtml(m: CostCardModel): string {
       </div>
       <div class="cad-cost-figs">
         <div class="cad-cost-fig">
-          <span class="cad-cost-k">Tooling investment (one-off)</span>
+          <span class="cad-cost-k">Tooling over the programme</span>
           <span class="cad-cost-v">${m.toolingTotal > 0 ? esc(m.fmt(m.toolingTotal)) : 'none'}</span>
           ${m.toolingTotal > 0 ? `<span class="cad-cost-sub">${esc(m.fmt(perPart))} a part over ${esc(amort)}</span>` : ''}
+          ${m.toolingTotal > 0 && m.toolingItems?.length ? `<span class="cad-cost-sub">${m.toolingItems.map(i => `${esc(i.label)} ${esc(m.fmt(i.gbp))}`).join(' · ')}</span>` : ''}
         </div>
         <div class="cad-cost-fig">
           <span class="cad-cost-k">Band${m.confidence ? ` · confidence ${esc(m.confidence)}` : ''}</span>
@@ -415,6 +418,6 @@ export function routeCompareHtml(x: RouteComparisonExport, o: { fmt: (n: number)
   const prog = x.programme;
   return `<p class="cad-cost-note">${esc(x.principle)} Programme view: ${prog.annualVolume.toLocaleString('en-GB')} a year over ${prog.years} years${prog.yearsAssumed ? ' (5 years assumed — no programme life given)' : ''}. Every costed row is re-added independently from its own rates and times; a row that does not close is marked, never corrected.</p><div class="cad-compare-wrap"><table class="cad-compare-table">
     <caption class="sr-only">Cost per part by manufacturing route and process</caption>
-    <thead><tr><th scope="col">Route · process</th><th scope="col" class="num">Cost / part</th><th scope="col" class="num">vs this costing</th><th scope="col" class="num">Tooling investment</th><th scope="col" class="num">Tooling / part</th><th scope="col" class="num">Programme spend</th></tr></thead>
+    <thead><tr><th scope="col">Route · process</th><th scope="col" class="num">Cost / part</th><th scope="col" class="num">vs this costing</th><th scope="col" class="num">Tooling over programme</th><th scope="col" class="num">Tooling / part</th><th scope="col" class="num">Programme spend</th></tr></thead>
     <tbody>${body}</tbody></table></div>${excluded}`;
 }

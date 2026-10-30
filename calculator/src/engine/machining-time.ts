@@ -75,9 +75,18 @@ export const CUTTING_DATA: Record<MaterialFamily, CuttingData> = {
  * Wall: an end-mill side pass or a face-mill pass — flats, walls, external
  * cylinders, fillets and chamfers cut by the profile tool. Surfacing: a ball
  * nose on a step-over (Ø10, 0.5 mm step, 3 m/min). Turning: a finishing
- * insert (0.15 mm/rev at ~250 m/min), slowed for approach and retract.
+ * insert (0.15 mm/rev at ~250 m/min) covers fn × vc = 0.15 mm × 250 m/min =
+ * 375 cm²/min at the insert (Sandvik Coromant's turning time Tc = lm ÷ (fn × n),
+ * n = vc × 1000 ÷ πD); 120 is that derated ~3× for approach, retract and
+ * spring passes — engineering-typical, NOT sourced and conservative (arith audit,
+ * Oct 2026: an open item, printed on every turning basis as such).
  */
 export const FINISH_RATE_CM2_PER_MIN = { wall: 40, surfacing: 10, turning: 120 } as const;
+
+/** The status every cutting basis prints for the rates above (arith audit, Oct 2026: they were printed without it). */
+export const CUTTING_DATA_STATUS = 'cutting rates engineering-typical for a 15–20 kW machining centre / CNC lathe with carbide, not sourced';
+/** What the turning basis prints for the finish-turning rate. */
+export const TURN_FINISH_STATUS = 'finish-turning rate = 0.15 mm/rev × 250 m/min (375 cm²/min in aluminium) derated to 120 for approach / retract — engineering-typical, not sourced, conservative';
 
 /** Load, clamp, unclamp and unload — every part, every fixturing, minutes (the default). */
 export const HANDLING_MIN_PER_FIXTURING = 0.8;
@@ -96,6 +105,8 @@ export const HANDLING_BY_WEIGHT: ReadonlyArray<{ upToKg: number; min: number }> 
 export function handlingMinPerFixturing(kg: number): number {
   return (HANDLING_BY_WEIGHT.find(h => kg <= h.upToKg) ?? HANDLING_BY_WEIGHT[HANDLING_BY_WEIGHT.length - 1]).min;
 }
+/** What the bases print for the handling, change-over, programming, tool-wear and deburr constants (arith audit, Oct 2026). */
+export const HOURS_STATUS = 'handling, change-over, programming hours and tool £/min engineering-typical, not sourced';
 /** Chip-to-chip tool change on a machining centre or turret, seconds. */
 export const TOOL_CHANGE_SEC = 6;
 /** Fixture change-over, tool offsets and first-off inspection per fixturing, minutes a batch. */
@@ -106,6 +117,19 @@ const WALL_TYPES = new Set(['PLANE', 'CYLINDER', 'CONE', 'TORUS']);
 
 export function cuttingDataFor(family: MaterialFamily): CuttingData {
   return CUTTING_DATA[family] ?? CUTTING_DATA.steel;
+}
+
+/** A wide, shallow "hole" (Ø ≥ 30, depth < ¼ Ø) is a land skimmed by one facing pass, not a bore (feature-machining.ts). */
+const isLand = (r: FeatureRow) => r.diaMm >= 30 && r.depthMm > 0 && r.depthMm < 0.25 * r.diaMm;
+
+/**
+ * Metal inside the drilled, reamed and bored holes, cm³. The hole time (`holeMinutes`) removes it, so the roughing
+ * (stock − part ÷ the removal rate) must not remove it again — it did, and every from-solid part paid twice for the
+ * metal in its holes (arith audit, Oct 2026: 209 cm³ on Part1, 1.7 min). A land's metal is roughed (its time is a skim).
+ */
+export function holeVolumeCm3(rows: FeatureRow[]): number {
+  return rows.filter(r => r.kind === 'hole' && !isLand(r))
+    .reduce((s, r) => s + Math.PI * r.diaMm * r.diaMm / 4 * Math.max(r.depthMm, 0) * r.count, 0) / 1000;
 }
 
 /** Hole wall area, cm² — finished by the hole time, so not finished again as a wall. */
@@ -216,7 +240,8 @@ export function fromSolidMillingTime(p: {
   rows: FeatureRow[];
 }): CuttingTime {
   const cd = cuttingDataFor(p.family);
-  const removed = Math.max(0, p.stockCm3 - p.partCm3);
+  const inHoles = Math.min(holeVolumeCm3(p.rows), Math.max(0, p.stockCm3 - p.partCm3));
+  const removed = Math.max(0, p.stockCm3 - p.partCm3 - inHoles);
   const roughMin = removed / cd.millRoughCm3PerMin;
   const holeWall = holeWallCm2(p.rows);
   let wallCm2: number; let freeCm2: number;
@@ -242,10 +267,13 @@ export function fromSolidMillingTime(p: {
   return {
     roughMin: r2(roughMin), finishMin: r2(finishMin), surfacingMin: r2(surfacingMin), holeMin: r2(holeMin),
     tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(totalMin),
-    basis: `rough ${removed.toFixed(0)} cm³ ÷ ${cd.millRoughCm3PerMin} cm³/min = ${roughMin.toFixed(1)} min; `
+    basis: `rough ${(p.stockCm3 - p.partCm3).toFixed(0)} cm³ stock − part`
+      + (inHoles > 0.05 ? ` − ${inHoles.toFixed(0)} cm³ in the holes (cut by the hole time)` : '')
+      + ` = ${removed.toFixed(0)} cm³ ÷ ${cd.millRoughCm3PerMin} cm³/min = ${roughMin.toFixed(1)} min; `
       + `finish ${wallCm2.toFixed(0)} cm² of flats/walls/fillets ÷ ${(FINISH_RATE_CM2_PER_MIN.wall / cd.timeFactor).toFixed(0)} cm²/min = ${finishMin.toFixed(1)} min; `
       + `surface ${freeCm2.toFixed(0)} cm² free-form ÷ ${(FINISH_RATE_CM2_PER_MIN.surfacing / cd.timeFactor).toFixed(1)} cm²/min = ${surfacingMin.toFixed(1)} min; `
-      + `holes ${holeMin.toFixed(1)} min; ${tools} tools × ${TOOL_CHANGE_SEC} s = ${toolChangeMin.toFixed(1)} min (${p.family}, ×${cd.timeFactor} on aluminium)`,
+      + `holes ${holeMin.toFixed(1)} min; ${tools} tools × ${TOOL_CHANGE_SEC} s = ${toolChangeMin.toFixed(1)} min (${p.family}, ×${cd.timeFactor} on aluminium; `
+      + `${CUTTING_DATA_STATUS})`,
   };
 }
 
@@ -264,7 +292,9 @@ export function fromBarTurningTime(p: {
   rows: FeatureRow[];
 }): { lathe: CuttingTime; mill: CuttingTime } {
   const cd = cuttingDataFor(p.family);
-  const removed = Math.max(0, p.stockCm3 - p.partCm3);
+  // the holes' metal is cut by the hole time on the mill / drill, not turned away (arith audit, Oct 2026)
+  const inHoles = Math.min(holeVolumeCm3(p.rows), Math.max(0, p.stockCm3 - p.partCm3));
+  const removed = Math.max(0, p.stockCm3 - p.partCm3 - inHoles);
   const turnedCm2 = p.totalAreaCm2 * p.turnedFraction;
   const roughMin = removed / cd.turnRoughCm3PerMin;
   const finishMin = turnedCm2 / FINISH_RATE_CM2_PER_MIN.turning * cd.timeFactor;
@@ -273,8 +303,10 @@ export function fromBarTurningTime(p: {
     roughMin: r2(roughMin), finishMin: r2(finishMin), surfacingMin: 0, holeMin: 0,
     tools: latheTools, toolChangeMin: r2(latheTools * TOOL_CHANGE_SEC / 60),
     totalMin: r2(roughMin + finishMin + latheTools * TOOL_CHANGE_SEC / 60),
-    basis: `turn ${removed.toFixed(0)} cm³ ÷ ${cd.turnRoughCm3PerMin} cm³/min = ${roughMin.toFixed(1)} min; `
-      + `finish-turn ${turnedCm2.toFixed(0)} cm² ÷ ${(FINISH_RATE_CM2_PER_MIN.turning / cd.timeFactor).toFixed(0)} cm²/min = ${finishMin.toFixed(1)} min`,
+    basis: `turn ${removed.toFixed(0)} cm³ ÷ ${cd.turnRoughCm3PerMin} cm³/min = ${roughMin.toFixed(1)} min`
+      + (inHoles > 0.05 ? ` (stock − part − ${inHoles.toFixed(1)} cm³ in the holes)` : '') + '; '
+      + `finish-turn ${turnedCm2.toFixed(0)} cm² ÷ ${(FINISH_RATE_CM2_PER_MIN.turning / cd.timeFactor).toFixed(0)} cm²/min = ${finishMin.toFixed(1)} min; `
+      + `${latheTools} tools × ${TOOL_CHANGE_SEC} s (${p.family}, ×${cd.timeFactor} on aluminium; ${TURN_FINISH_STATUS})`,
   };
   const otherCm2 = Math.max(0, p.totalAreaCm2 - turnedCm2 - holeWallCm2(p.rows));
   const millFinish = otherCm2 / FINISH_RATE_CM2_PER_MIN.wall * cd.timeFactor;
@@ -285,7 +317,8 @@ export function fromBarTurningTime(p: {
     roughMin: 0, finishMin: r2(millFinish), surfacingMin: 0, holeMin: r2(holeMin),
     tools: millTools, toolChangeMin: r2(millTools * TOOL_CHANGE_SEC / 60),
     totalMin: r2(millFinish + holeMin + millTools * TOOL_CHANGE_SEC / 60),
-    basis: `mill ${otherCm2.toFixed(0)} cm² not turned (keyways, flats) = ${millFinish.toFixed(1)} min; holes ${holeMin.toFixed(1)} min`,
+    basis: `mill ${otherCm2.toFixed(0)} cm² not turned (keyways, flats) ÷ ${(FINISH_RATE_CM2_PER_MIN.wall / cd.timeFactor).toFixed(0)} cm²/min = ${millFinish.toFixed(1)} min; `
+      + `holes ${holeMin.toFixed(1)} min; ${millTools} tools × ${TOOL_CHANGE_SEC} s (${CUTTING_DATA_STATUS})`,
   };
   return { lathe, mill };
 }
@@ -338,7 +371,8 @@ export function nearNetMachiningTime(rows: FeatureRow[], family: MaterialFamily,
     tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(faceMin + holeMin + toolChangeMin),
     basis: `face ${faces.reduce((s, r) => s + r.count, 0)} machined face(s), ${facedCm2.toFixed(0)} cm² = ${faceMin.toFixed(1)} min; `
       + `holes ${holeMin.toFixed(1)} min (≤ Ø${cored} drilled from solid, larger cored and finish-bored); `
-      + `${tools} tools × ${TOOL_CHANGE_SEC} s (${family}, ×${cd.timeFactor} on aluminium)`,
+      + `${tools} tools × ${TOOL_CHANGE_SEC} s (${family}, ×${cd.timeFactor} on aluminium; facing 0.2 min + area ÷ 8,000 mm²/min a face; `
+      + `${CUTTING_DATA_STATUS})`,
   };
 }
 
@@ -376,7 +410,7 @@ export function nearNetTurningTime(externalAreaCm2: number, family: MaterialFami
     basis: `outside of the turned axis ${externalAreaCm2.toFixed(0)} cm² (journals, taper, fillets; up to Ø${maxDiaMm.toFixed(0)} mm): `
       + `rough ${stockCm3.toFixed(0)} cm³ of ${stockMm} mm-a-side stock at ${cd.turnRoughCm3PerMin} cm³/min = ${roughMin.toFixed(1)} min; `
       + `finish at ${finishRate.toFixed(0)} cm²/min = ${finishMin.toFixed(1)} min; ${tools} tools × ${TOOL_CHANGE_SEC} s `
-      + `(${family}; ground bearing seats, if the drawing calls them, are extra)`,
+      + `(${family}; ground bearing seats, if the drawing calls them, are extra; ${TURN_FINISH_STATUS})`,
   };
 }
 
@@ -419,7 +453,10 @@ export function fixtureCostGBP(millFixturings: number, latheChuckings: number, a
     gbp,
     basis: `${millFixturings} ${kind === 'hydraulic' ? 'dedicated hydraulic (tombstone)' : dedicated ? 'dedicated' : 'modular'} fixture(s) × £${each.toLocaleString('en-GB')}`
       + (latheChuckings ? ` + ${latheChuckings} set(s) of soft jaws × £${FIXTURE_GBP.softJaws}` : '')
-      + ` (${dedicated ? 'dedicated above' : 'modular up to'} ${FIXTURE_GBP.threshold5yParts.toLocaleString('en-GB')} parts over 5 years)`
+      + (kind === 'hydraulic'
+        ? ' (the volume cell\'s dedicated fixture'
+        : ` (${dedicated ? 'dedicated above' : 'modular up to'} ${FIXTURE_GBP.threshold5yParts.toLocaleString('en-GB')} parts over 5 years`)
+      + '; fixture prices engineering-typical toolroom builds, not sourced)'
       + (tf !== 1 ? ` × toolroom factor ${tf}` : ''),
   };
 }
@@ -472,7 +509,10 @@ export function secondaryMachiningCell(p: {
   const asked = Math.max(1, Math.round(p.fixturings));
   const fixturings = volumeCell ? (asked <= HMC_SIDES_PER_CLAMPING ? 1 : 2) : asked;
   const batchSize = Math.round(Math.min(5000, Math.max(50, (p.annualVolume || 10_000) / 20)));
-  const fx = fixtureCostGBP(fixturings, 0, p.annualVolume, volumeCell ? 'hydraulic' : 'auto');
+  // A turned part's two lathe chuckings are soft jaws, as on the from-solid route — they were priced as two dedicated
+  // £2,500 mill fixtures (arith audit, Oct 2026: the hub flange carried 3 × £2,500 for 2 chuckings + 1 drill fixture).
+  const chuckings = p.turned && fixturings > 1 ? 2 : 0;
+  const fx = fixtureCostGBP(fixturings - chuckings, chuckings, p.annualVolume, volumeCell ? 'hydraulic' : 'auto');
   const hrs = programmingHours(fixturings, p.featureRows, false);
   const programming = Math.round(hrs * p.engineerRatePerHr);
   const wear = toolWearPerPart(p.cuttingMin, p.family);
@@ -485,8 +525,11 @@ export function secondaryMachiningCell(p: {
     toolWearPerPart: wear,
     basis: (volumeCell ? `twin-pallet HMC cell at ${p.annualVolume.toLocaleString('en-GB')}/yr (≥ ${VOLUME_CELL_MIN_ANNUAL.toLocaleString('en-GB')}): `
       + `${asked} approach direction(s) in ${fixturings} clamping(s) on a 4th-axis tombstone, load / unload masked by the cut; ` : '')
-      + `${fx.basis}; programming ${hrs} h × £${p.engineerRatePerHr.toFixed(2)}/h = £${programming}; `
-      + `tool wear ${p.cuttingMin.toFixed(1)} min × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(4)}/min = £${wear.toFixed(3)}`,
+      + `${fx.basis}; programming ${hrs} h (${PROGRAMMING_HR.perFixturing} h × ${fixturings} fixturing(s) + ${PROGRAMMING_HR.perFeatureRow} h × ${p.featureRows} feature group(s)) `
+      + `× £${p.engineerRatePerHr.toFixed(2)}/h = £${programming}; `
+      + `tool wear ${p.cuttingMin.toFixed(1)} min × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(4)}/min = £${wear.toFixed(3)}; `
+      + `handling ${handlingMinPerFixturing(p.weightKg)} min a fixturing by weight, ${SETUP_MIN_PER_FIXTURING} min change-over a fixturing a batch of ${batchSize} `
+      + `(${HOURS_STATUS})`,
   };
 }
 

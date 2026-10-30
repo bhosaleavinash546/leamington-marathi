@@ -49,9 +49,9 @@ describe('Composites module', () => {
   it('directCost = grossMatCost + ndiCost with reject uplift', () => {
     const d = computeCompositeDrivers(COMP_INPUTS);
     const rejectUplift = 1 / (1 - 0.04);
-    const fibreMass = 1.80 * 0.60;
-    const resinMass = 1.80 * 0.40;
-    const netMat = fibreMass * 32.00 + resinMass * 0;
+    // Prepreg (resin price 0) is bought at the WHOLE cured laminate mass — it was bought on the fibre's 60 % only
+    // while the line said "prepreg (fibre + resin)" (arithmetic audit C1).
+    const netMat = 1.80 * 32.00;
     const grossMat = netMat / (1 - 0.20);
     const expected = (grossMat + 25.00) * rejectUplift;
     expect(d.rawMaterial.directCost).toBeCloseTo(expected, 3);

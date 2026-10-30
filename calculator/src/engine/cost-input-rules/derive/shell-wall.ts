@@ -29,7 +29,7 @@ export function shellWallMm(geo: OCCTGeometry): ShellWall | null {
     const mm = 2 * v / s;
     return {
       mm, source: 'two-v-over-s',
-      basis: `2·V/S = 2 × ${(v / 1000).toFixed(1)} cm³ ÷ ${(s / 100).toFixed(0)} cm² = ${mm.toFixed(2)} mm, `
+      basis: `2·V/S = 2 × ${(v / 1000).toFixed(1)} cm³ ÷ ${(s / 100).toFixed(0)} cm² × 10 mm/cm = ${mm.toFixed(2)} mm, `
         + 'the area-mean wall of a shell'
         + (ray == null ? ' (the ray-cast found no wall)'
           : Math.abs(ray - mm) > 0.05 * mm ? ` (the ray-cast mean reads ${ray.toFixed(2)} mm: rays cross the cavity and read pinch welds)`

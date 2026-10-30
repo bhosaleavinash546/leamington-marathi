@@ -20,16 +20,19 @@ export type RotoComplexity = 'simple' | 'moderate' | 'complex';
  * through the mould, so time rises with wall thickness and with melt temperature
  * (PA12 ≫ PE). Includes a base soak for the mould mass.
  */
-const ROTO_HEAT_S_PER_MM: Record<RotoMaterialFamily, number> = {
+export const ROTO_HEAT_S_PER_MM: Record<RotoMaterialFamily, number> = {
   pe: 210,
   xlpe: 230,   // cross-link needs a longer bake to complete
   pp: 230,
   pa12: 300,   // higher melt/PIAT
 };
-const ROTO_HEAT_BASE_SEC = 240;
+export const ROTO_HEAT_BASE_SEC = 240;
+/** Every constant in this cycle model (soak, per-mm bake rates, cooling multipliers) is engineering-typical, not
+ *  sourced — the rules print them on the basis line so the reader sees them (arith audit, Oct 2026). */
+export const ROTO_CYCLE_BASIS_LABEL = 'engineering-typical, not sourced';
 
 /** Cooling multiplier on heating time by method. */
-const ROTO_COOL_FACTOR: Record<RotoCoolingMethod, number> = {
+export const ROTO_COOL_FACTOR: Record<RotoCoolingMethod, number> = {
   ambient: 1.9,
   'forced-air': 1.35,
   'water-spray': 0.85,
@@ -75,7 +78,7 @@ export interface RotoMouldCostBreakdown {
 }
 
 /** Mould-type base + per-cm² rate. Cast-Al cheapest, CNC-Al precision, fabricated for large simple tanks. */
-function rotoMouldRates(type: RotoMouldType): { base: number; perCm2: number } {
+export function rotoMouldRates(type: RotoMouldType): { base: number; perCm2: number } {
   switch (type) {
     case 'cnc-al':     return { base: 6000, perCm2: 18 };  // machined from billet — precision, tight tol
     case 'fabricated': return { base: 4000, perCm2: 6 };   // welded sheet steel — big simple tanks
@@ -84,6 +87,12 @@ function rotoMouldRates(type: RotoMouldType): { base: number; perCm2: number } {
   }
 }
 
+/** £ per vent / insert and £ for the mould's insulation — engineering-typical, not sourced. */
+export const ROTO_VENT_GBP = 250;
+export const ROTO_INSULATION_GBP = 500;
+/** Complexity multiplier on the size term — engineering-typical, not sourced. */
+export const ROTO_COMPLEXITY_FACTOR: Record<RotoComplexity, number> = { simple: 0.75, moderate: 1.0, complex: 1.5 };
+
 /**
  * Estimate a roto mould cost (£) from part footprint and construction instead of
  * a bare manual figure. Roto tools are far cheaper than injection/blow moulds.
@@ -91,12 +100,11 @@ function rotoMouldRates(type: RotoMouldType): { base: number; perCm2: number } {
 export function estimateRotoMouldCost(inputs: RotoMouldCostInputs): RotoMouldCostBreakdown {
   const area = Math.max(0, inputs.projectedAreaCm2);
   const rates = rotoMouldRates(inputs.mouldType ?? 'cast-al');
-  const complexityFactor = (inputs.complexity ?? 'moderate') === 'complex' ? 1.5
-    : (inputs.complexity ?? 'moderate') === 'simple' ? 0.75 : 1.0;
+  const complexityFactor = ROTO_COMPLEXITY_FACTOR[inputs.complexity ?? 'moderate'];
 
   const base = rates.base;
   const size = area * rates.perCm2 * complexityFactor;
-  const details = Math.max(0, Math.floor(inputs.ventsAndInserts ?? 0)) * 250 + 500; // insulation + vents
+  const details = Math.max(0, Math.floor(inputs.ventsAndInserts ?? 0)) * ROTO_VENT_GBP + ROTO_INSULATION_GBP; // insulation + vents
 
   // Built where the part is made: × the country's toolroom factor (1 in the UK).
   const tf = activeToolroomFactor();

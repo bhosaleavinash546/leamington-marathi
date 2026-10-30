@@ -188,17 +188,19 @@ describe('8. moulds wear fractionally', () => {
 });
 
 describe('9. the parts reconcile', () => {
-  it('reservoir £1.60 and duct £1.22 at 50,000/yr (£1.62 / £1.24 before the UK rate book; both blocked before; £1.59 / £1.20 on pellet grades before the scope review)', () => {
-    expect(baseline.find(b => b.part === 'BM_Washer_Reservoir.stp')!.outcome.total).toBe(1.6);
-    expect(baseline.find(b => b.part === 'BM_Air_Duct.stp')!.outcome.total).toBe(1.22);
+  // Arithmetic audit (30 Oct 2026): the in-line trim station is charged its OEE and reject uplift (it was at OEE 1, no
+  // rejects — ~22 % under the hours it holds the line): £1.60 / £1.22 → £1.64 / £1.25.
+  it('reservoir £1.64 and duct £1.25 at 50,000/yr (£1.60 / £1.22 before the arithmetic audit; £1.62 / £1.24 before the UK rate book)', () => {
+    expect(baseline.find(b => b.part === 'BM_Washer_Reservoir.stp')!.outcome.total).toBe(1.64);
+    expect(baseline.find(b => b.part === 'BM_Air_Duct.stp')!.outcome.total).toBe(1.25);
   });
-  it('the real fuel tank: £28.69 (£28.91 before the UK rate book; was £32.41; £29.12 on the pellet grade before the scope review)', async () => {
+  it('the real fuel tank: £28.80 (£28.69 before the arithmetic audit\'s trim-station uplift; £28.91 before the UK rate book)', async () => {
     const t = structuredClone(TANK);
     const r = await costMeasuredPart(t, 'Fuel_tank.STEP',
       { partNumber: 'Fuel_tank', file: 'Fuel_tank.STEP', annualVolume: 50_000, commodity: 'blow_moulding' } as never,
       TANK_ANS, 'UK', { annualVolume: 50_000 } as never, recomputeMachineRates(DEFAULT_RATE_LIBRARY),
       { partNumber: 'Fuel_tank', file: 'Fuel_tank.STEP', status: 'error' } as never) as { status: string; total: number };
     expect(r.status).toBe('costed');
-    expect(r.total).toBeCloseTo(28.69, 2);
+    expect(r.total).toBeCloseTo(28.80, 2);
   });
 });

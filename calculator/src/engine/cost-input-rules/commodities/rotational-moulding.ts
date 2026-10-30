@@ -21,10 +21,14 @@
  */
 import { inCountry, countryNote } from '../../regional-services.js';
 import {
-  estimateRotoCycle, estimateRotoMouldCost,
+  estimateRotoCycle, estimateRotoMouldCost, rotoMouldRates,
+  ROTO_HEAT_S_PER_MM, ROTO_HEAT_BASE_SEC, ROTO_COOL_FACTOR, ROTO_CYCLE_BASIS_LABEL,
+  ROTO_VENT_GBP, ROTO_INSULATION_GBP, ROTO_COMPLEXITY_FACTOR,
   type RotoMaterialFamily, type RotoCoolingMethod, type RotoMouldType, type RotoComplexity,
 } from '../../modules/roto-advisor.js';
-import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { ROTO_POWDER_YIELD } from '../../modules/rotational-moulding.js';
+import { activeToolroomFactor } from '../../rate-context.js';
+import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { shellWallMm } from '../derive/shell-wall.js';
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
@@ -57,7 +61,8 @@ export function partsPerArm(ctx: RuleContext): { n: number; basis: string } {
     n,
     basis: `${envelopeL.toFixed(1)} L swept envelope — `
       + (n === 1 ? 'fills an arm on its own'
-        : `${n} fit an arm, so they share the oven and cooling time`),
+        : `${n} fit an arm, so they share the oven and cooling time`)
+      + ' (tiers: ≤ 3 L → 8, ≤ 12 L → 4, ≤ 50 L → 2, larger → 1 an arm — engineering-typical, not sourced)',
   };
 }
 
@@ -147,6 +152,11 @@ export const ROTO_OEE = 0.80;
 /** Grinding pellet to ~35 mesh powder, £/kg — the library's roto grades say "add grinding premium". */
 export const ROTO_GRINDING_GBP_PER_KG = 0.25;
 export const ROTO_REJECT = 0.03;
+/** Load station: arm handling + demould and charge per mould, s — engineering-typical, not sourced. */
+export const ROTO_ARM_HANDLING_SEC = 120;
+export const ROTO_CHARGE_SEC_PER_MOULD = 60;
+/** Roto mould life in cycles by construction — engineering-typical, not sourced. */
+export const ROTO_MOULD_LIFE: Record<RotoMouldType, number> = { fabricated: 20_000, 'cnc-al': 10_000, 'cast-al': 5_000 };
 
 /**
  * Moulds the annual volume needs.
@@ -157,15 +167,20 @@ export const ROTO_REJECT = 0.03;
  * every position of every arm whatever the volume: 8 coolant-tank moulds
  * (£135k) for 5,000 tanks a year, £27 a tank.
  */
-export function rotoMoulds(annualVolume: number, arms: number, perArm: number, indexSec: number):
+export function rotoMoulds(annualVolume: number, arms: number, perArm: number, indexSec: number, reject = ROTO_REJECT):
   { moulds: number; basis: string } {
   const revSec = arms * indexSec;
-  const need = annualVolume * revSec / (ROTO_HOURS * 3600 * ROTO_OEE);
+  // The moulds make the scrapped parts too — the module charges the machine time
+  // for them (÷ (1 − reject)), so the mould count carries them as well (arith audit).
+  const moulded = annualVolume / (1 - reject);
+  const need = moulded * revSec / (ROTO_HOURS * 3600 * ROTO_OEE);
   const moulds = Math.max(perArm, Math.ceil(need / perArm) * perArm);
+  // Index printed in seconds so the arithmetic on the page holds (4 × 22 min ≠ 86 min).
   return {
     moulds,
-    basis: `${annualVolume.toLocaleString('en-GB')}/yr × one part per mould per ${Math.round(revSec / 60)} min revolution `
-      + `(${arms} arms × ${Math.round(indexSec / 60)} min index) ÷ ${ROTO_HOURS} h × ${ROTO_OEE} OEE = ${need.toFixed(2)} moulds `
+    basis: `one part per mould per revolution (${arms} arms × ${indexSec} s index = ${revSec} s); `
+      + `${annualVolume.toLocaleString('en-GB')}/yr ÷ (1 − ${(reject * 100).toFixed(0)}% reject) = ${Math.round(moulded).toLocaleString('en-GB')} moulded; `
+      + `${Math.round(moulded).toLocaleString('en-GB')} × ${revSec} s ÷ (${ROTO_HOURS} h × 3600 s/h × ${ROTO_OEE} OEE) = ${need.toFixed(2)} moulds `
       + `→ ${moulds} (whole arm-loads of ${perArm})`,
   };
 }
@@ -228,7 +243,7 @@ function advise(ctx: RuleContext): { advice: RmAdvice } | { blocked: RuleOutcome
   // A big part needs the swing clearance, so fewer arms fit the carousel.
   const arms = envelopeL > 200 ? 2 : envelopeL > 50 ? 3 : 4;
   // Demould and charge each mould on the arm, plus the arm's own handling.
-  const loadSec = 120 + 60 * perArm.n;
+  const loadSec = ROTO_ARM_HANDLING_SEC + ROTO_CHARGE_SEC_PER_MOULD * perArm.n;
   const index = rotoIndexSec(arms, cycle.heatingSec, cycle.coolingSec, loadSec);
   const m = rotoMoulds(ctx.annualVolume, arms, perArm.n, index.sec);
   const crew = arms >= 3 ? 2 : 1;
@@ -245,9 +260,9 @@ function advise(ctx: RuleContext): { advice: RmAdvice } | { blocked: RuleOutcome
       machineId: rotoMachineFor(arms),
       loadSec, indexSec: index.sec, indexBasis: index.basis,
       moulds: m.moulds, mouldsBasis: m.basis,
-      crew, crewBasis: arms >= 3
+      crew, crewBasis: (arms >= 3
         ? 'two operators at the carousel load station, demoulding and charging'
-        : 'one operator on a shuttle / single-arm machine',
+        : 'one operator on a shuttle / single-arm machine') + ' — engineering-typical crew, not sourced',
     },
   };
 }
@@ -318,9 +333,10 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const a = r.advice;
+        // Print the per-mm rate and the wall as costed, so the line re-adds (arith audit).
         return decided('roto.heatTimeSec', a.cycle.heatingSec, 'advisor',
-          `240 s mould soak + ${fmt(a.wallMm, 1)} mm of ${a.family} at its per-mm bake rate `
-          + `= ${(a.cycle.heatingSec / 60).toFixed(1)} min in the oven`, 0.75);
+          `${ROTO_HEAT_BASE_SEC} s mould soak + ${a.wallMm.toFixed(2)} mm × ${ROTO_HEAT_S_PER_MM[a.family]} s/mm (${a.family} bake rate) `
+          + `= ${a.cycle.heatingSec} s = ${(a.cycle.heatingSec / 60).toFixed(1)} min in the oven — soak and rate ${ROTO_CYCLE_BASIS_LABEL}`, 0.75);
       },
     },
     {
@@ -333,8 +349,8 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const a = r.advice;
         return decided('roto.coolTimeSec', a.cycle.coolingSec, 'advisor',
-          `${a.cooling} at ${(a.cycle.coolingSec / a.cycle.heatingSec).toFixed(2)}× the bake `
-          + `= ${(a.cycle.coolingSec / 60).toFixed(1)} min`, 0.7);
+          `${a.cooling}: ${a.cycle.heatingSec} s bake × ${ROTO_COOL_FACTOR[a.cooling]} `
+          + `= ${a.cycle.coolingSec} s = ${(a.cycle.coolingSec / 60).toFixed(1)} min — cooling multiplier ${ROTO_CYCLE_BASIS_LABEL}`, 0.7);
       },
     },
     {
@@ -358,9 +374,10 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('roto.numArms', r.advice.arms, 'rule',
-          r.advice.arms === 4 ? 'standard four-arm carousel'
+          (r.advice.arms === 4 ? 'standard four-arm carousel'
             : r.advice.arms === 3 ? 'three arms — the part needs the swing clearance'
-            : 'two arms — a large part on a shuttle or rock-and-roll machine', 0.6);
+            : 'two arms — a large part on a shuttle or rock-and-roll machine')
+          + ' (envelope ≤ 50 L → 4 arms, ≤ 200 L → 3, larger → 2 — engineering-typical, not sourced)', 0.6);
       },
     },
     {
@@ -418,9 +435,17 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
           projectedAreaCm2: a.areaCm2, mouldType: a.mouldType,
           complexity: a.complexity, ventsAndInserts: a.vents,
         });
+        // The arithmetic printed in full: the per-cm² rate, the complexity factor and the
+        // vent count were not on the page (arith audit, Oct 2026).
+        const rates = rotoMouldRates(a.mouldType);
+        const tf = activeToolroomFactor();
         return decided('roto.mouldCost', est.total, 'advisor',
-          `${a.mouldType} tool over ${a.areaCm2.toFixed(0)} cm², ${a.complexity}: `
-          + `£${est.base} base + £${est.size} size + £${est.details} vents and insulation`, 0.65);
+          `${a.mouldType} tool, ${a.complexity}: £${est.base.toLocaleString('en-GB')} base`
+          + ` + size (${a.areaCm2.toFixed(1)} cm² × £${rates.perCm2}/cm² × ${ROTO_COMPLEXITY_FACTOR[a.complexity]} ${a.complexity} = £${est.size.toLocaleString('en-GB')})`
+          + ` + details (${a.vents} vent${a.vents === 1 ? '' : 's'} × £${ROTO_VENT_GBP} + £${ROTO_INSULATION_GBP} insulation = £${est.details.toLocaleString('en-GB')})`
+          + (Math.abs(tf - 1) > 1e-9 ? ` (each × toolroom factor ${tf.toFixed(3)})` : '')
+          + ` = £${est.total.toLocaleString('en-GB')} a mould`
+          + ' — build rates engineering-typical, not sourced', 0.65);
       },
     },
     {
@@ -433,11 +458,11 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         // Roto tools see no pressure — they wear from handling and thermal
         // cycling, so aluminium lasts far longer here than it would on a press.
-        const life = r.advice.mouldType === 'fabricated' ? 20_000
-          : r.advice.mouldType === 'cnc-al' ? 10_000 : 5_000;
-        return decided('roto.mouldLife', life, 'library',
-          `${r.advice.mouldType} — roto tools carry no injection pressure, so life is `
-          + 'set by thermal cycling and handling', 0.6);
+        // A rule constant, not a rate-book figure: it was labelled 'library' (arith audit).
+        const life = ROTO_MOULD_LIFE[r.advice.mouldType];
+        return decided('roto.mouldLife', life, 'rule',
+          `${life.toLocaleString('en-GB')} cycles a ${r.advice.mouldType} mould — roto tools carry no injection pressure, so life is `
+          + 'set by thermal cycling and handling; engineering-typical, not sourced', 0.6);
       },
     },
     {
@@ -463,7 +488,8 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('roto.loadUnloadTimeSec', r.advice.loadSec, 'rule',
-          `120 s arm handling + 60 s to demould and charge each of ${r.advice.perArm} mould${r.advice.perArm === 1 ? '' : 's'}`, 0.6);
+          `${ROTO_ARM_HANDLING_SEC} s arm handling + ${ROTO_CHARGE_SEC_PER_MOULD} s to demould and charge each of ${r.advice.perArm} mould${r.advice.perArm === 1 ? '' : 's'}`
+          + ` = ${r.advice.loadSec} s — engineering-typical, not sourced`, 0.6);
       },
     },
     {
@@ -481,7 +507,9 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         // Toll grinding is a bought-in process service — in the costed country (regional-services.ts).
         return decided('roto.powderCostAdderPerKg', inCountry(ROTO_GRINDING_GBP_PER_KG, 'process'), 'rule',
-          `grinding to ~35 mesh powder, £${ROTO_GRINDING_GBP_PER_KG}/kg UK (£0.15–0.40/kg)${countryNote('process')}; the library grades are pellet-priced and say to add it`, 0.6);
+          `grinding to ~35 mesh powder, £${ROTO_GRINDING_GBP_PER_KG}/kg UK (£0.15–0.40/kg, engineering-typical, not sourced)${countryNote('process')}; `
+          + 'the library grades are pellet-priced and say to add it. Charged on the powder charged: part kg ÷ (1 − reject) '
+          + `÷ ${ROTO_POWDER_YIELD} (1% lost to handling and venting — engineering-typical)`, 0.6);
       },
     },
     {
@@ -522,7 +550,7 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('roto.rejectRate', ROTO_REJECT, 'rule',
-          'under-cured, bubbled or warped parts and wall-thickness rejects: 3% (roto had no scrap on either path)', 0.55);
+          `under-cured, bubbled or warped parts and wall-thickness rejects: ${(ROTO_REJECT * 100).toFixed(0)}% — engineering-typical, not sourced`, 0.55);
       },
     },
   ],

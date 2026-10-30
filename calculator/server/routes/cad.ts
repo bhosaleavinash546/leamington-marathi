@@ -27,6 +27,7 @@ import type { STLGeometry } from '../services/stl-parser.js';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
 import { orientationWarning, meshFeatureWarning, runCADSanityChecks, type CADGeometryContext, type CADSanityWarning } from '../utils/cad-sanity.js';
 import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
+import { dropUnruledAINumbers, unruledLimitation, type AIUnruledNumber } from '../utils/ai-number-guard.js';
 import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
 import { specForCommodity, DETERMINISTIC_COMMODITIES } from '../../src/engine/cost-input-rules/index.js';
 import { buildDeterministicAnalysis } from '../../src/engine/cost-input-rules/deterministic.js';
@@ -590,6 +591,16 @@ export function statedFromAnswers(answers: Record<string, unknown>): Record<stri
     ...(Number.isFinite(z) && z > 0 ? { teeth: z, drawingTeeth: z } : {}),
     ...(Number.isFinite(m) && m > 0 ? { normalModuleMm: m } : {}),
   } };
+}
+
+/**
+ * The drawing's tooth count as the model read it, for the gear sanity check. `aiOriginal` (the pre-rules snapshot) is
+ * kept only in mode 'both', so in mode 'ai' a drawing that disagreed with the measured count was never checked
+ * (AI-number leak audit, Oct 2026). `drawingTeeth` is a bounded read the rules never overwrite.
+ */
+export function drawingGearRead(analysis: unknown): Record<string, unknown> | null {
+  const t = (analysis as { costInputSuggestions?: { gear?: { drawingTeeth?: unknown } } })?.costInputSuggestions?.gear?.drawingTeeth;
+  return typeof t === 'number' && t > 0 ? { gear: { drawingTeeth: t } } : null;
 }
 
 /** Every guard, in one place, for every path. The near-net machining cap used
@@ -1158,6 +1169,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // from the response would be the rules compared against themselves.
   let aiOriginal: Record<string, unknown> | null = null;
   let aiSuppressed: AISuppression[] = [];
+  let aiUnruled: AIUnruledNumber[] = [];
   let deterministicAnalysis: CADAnalysisResult | null = null;
 
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
@@ -1330,6 +1342,13 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
         deterministicAnalysis = det.analysis;
       }
     }
+    // The last gate: a model number no rule wrote and no check bounds is removed and listed — the model's £ range,
+    // the off-commodity sub-objects, cycle / set-up times no rule plans, the geometry echo (snapped to the
+    // measurement), £ in its prose (AI-number leak audit, Oct 2026; server/utils/ai-number-guard.ts).
+    aiUnruled = dropUnruledAINumbers(analysis as Record<string, unknown>,
+      { ruleWritten: (ruleOverrides?.overridden ?? []).map(o => o.field), geo });
+    const unruledNote = unruledLimitation(aiUnruled);
+    if (unruledNote) ((analysis as { analysisLimitations: string[] }).analysisLimitations).push(unruledNote);
   } catch (err) {
     respondAIError(res, err);
     return;
@@ -1339,7 +1358,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
   // volume.cm3 or the ground-truth volume check never fires on the STEP/IGES path.
   const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null);
   // Cap near-net (cast/forged) machining time before it drives the cost, then run sanity.
-  const sanityWarnings = runAllGuards(analysis, geo, measuredVol, aiOriginal ?? statedFromAnswers(decisionAnswers), { routeOpen: !!commodityDecision });
+  const sanityWarnings = runAllGuards(analysis, geo, measuredVol, aiOriginal ?? statedFromAnswers(decisionAnswers) ?? drawingGearRead(analysis), { routeOpen: !!commodityDecision });
   if (sanityWarnings.length) console.log(`[CAD] Sanity: ${sanityWarnings.length} warning(s): ${sanityWarnings.map(x => x.code).join(', ')}`);
 
   const aiDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
@@ -1360,6 +1379,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     // AI values cleared because their owning rule is still asking a question —
     // the consumer must treat these fields as UNANSWERED, not zero.
     aiSuppressed,
+    // Model numbers no rule derives, removed (or replaced by the measurement) — what the model said, not used.
+    aiUnruled,
     // Every rule value keyed by form field id. The form is the consumer, so this
     // addresses the form directly rather than going through the model's response
     // schema, which has nowhere to put 54 of the 131 values the rules compute.
@@ -1653,8 +1674,7 @@ export function normalizeCADAnalysis(
     ci.netWeightKg = net;
   }
   ci.estimatedOperations = arr(ci.estimatedOperations);
-  const cr = obj(ci.costRange);
-  ci.costRange = { low: num(cr.low, 0), mid: num(cr.mid, 0), high: num(cr.high, 0), currency: str(cr.currency, 'GBP') };
+  // No default cost range: a model's £ range is never kept (dropUnruledAINumbers removes one the model sent anyway).
   a.costInputSuggestions = ci;
 }
 
@@ -2000,11 +2020,9 @@ List 2–5 DFM issues specific to the ${selectedCommodity} process. Each should 
   impact: cost or quality impact
   fix: actionable design change
 
-COST RANGE:
-Provide a cost range estimate: { "low": number, "mid": number, "high": number, "currency": "GBP" }
-  low = optimistic (ideal tooling amortisation, high volume, simple features)
-  mid = most likely unit cost
-  high = conservative (complex features, low volume, rework allowance)
+PRICES:
+Do NOT estimate a price, a cost or a cost range anywhere — not as a field and not in prose. The CostVision engine
+prices the part from the rules and the measured geometry; AI never sets a price.
 
 Return ONLY this JSON structure (no prose, no markdown fences):
 ${buildJSONSchema(selectedCommodity, geo)}`;
@@ -2531,13 +2549,10 @@ function buildJSONSchema(commodity: string, geo: OCCTGeometry): string {
     },`,
   };
 
-  // Include both the primary commodity sub-object plus the four always-present ones
-  // so front-end can switch commodity without losing data
+  // The selected commodity's sub-object only. Four more (casting, forging, sheet metal, moulding) were asked for on
+  // every part "so the front end can switch commodity" — it re-analyses instead (applyAlternativeProcess) — and the
+  // model's die and mould £ for a MACHINED part were printed in its report (AI-number leak audit, Oct 2026).
   const primarySub = processSubObjects[commodity] ?? '';
-  const alwaysSubs = ['casting', 'forging', 'sheet_metal', 'injection_moulding']
-    .filter(c => c !== commodity && c !== 'cast_and_machine')
-    .map(c => processSubObjects[c] ?? '')
-    .join('\n');
 
   return `{
   "partName": string,
@@ -2572,12 +2587,10 @@ function buildJSONSchema(commodity: string, geo: OCCTGeometry): string {
       {"name": string, "machineId": string, "cycleTimeHr": number, "labourId": "lab-uk-skilled", "oee": 0.85, "manning": 1, "labourEfficiency": 0.92}
     ],
 ${primarySub}
-${alwaysSubs}
     "fieldConfidences": [ {"fieldId": string, "confidence": number} ],
     "dfmIssues": [
       {"severity": "Critical"|"High"|"Medium"|"Low", "area": string, "description": string, "impact": string, "fix": string}
     ],
-    "costRange": {"low": number, "mid": number, "high": number, "currency": "GBP"},
     "stage1Selection": ${JSON.stringify(geo.status === 'success' ? { primary: 'auto', conf: 0.0, alt: [] } : null)}
   },
   "aiExplanation": string,
@@ -3032,6 +3045,7 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
   // from the response would be the rules compared against themselves.
   let aiOriginal: Record<string, unknown> | null = null;
   let aiSuppressed: AISuppression[] = [];
+  let aiUnruled: AIUnruledNumber[] = [];
   let deterministicAnalysis: CADAnalysisResult | null = null;
 
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
@@ -3171,12 +3185,19 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
         deterministicAnalysis = det.analysis;
       }
     }
+    // The last gate: a model number no rule wrote and no check bounds is removed and listed — the model's £ range,
+    // the off-commodity sub-objects, cycle / set-up times no rule plans, the geometry echo (snapped to the
+    // measurement), £ in its prose (AI-number leak audit, Oct 2026; server/utils/ai-number-guard.ts).
+    aiUnruled = dropUnruledAINumbers(analysis as Record<string, unknown>,
+      { ruleWritten: (ruleOverrides?.overridden ?? []).map(o => o.field), geo });
+    const unruledNote = unruledLimitation(aiUnruled);
+    if (unruledNote) ((analysis as { analysisLimitations: string[] }).analysisLimitations).push(unruledNote);
   } catch (err) {
     respondAIError(res, err);
     return;
   }
 
-  const sanityWarnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, aiOriginal ?? statedFromAnswers(decisionAnswers), { routeOpen: !!commodityDecisionRe });
+  const sanityWarnings = runAllGuards(analysis, geo, geo.volume?.cm3 ?? null, aiOriginal ?? statedFromAnswers(decisionAnswers) ?? drawingGearRead(analysis), { routeOpen: !!commodityDecisionRe });
   const reDecisions = [...(unitsDecision ? [unitsDecision] : []), ...pendingDecisions(ruleSpec, ruleCtx, withAIAnswers(ruleCtx, analysis as Record<string, unknown>), ruleOverrides?.undecided.length ?? 0)];
   const payload = {
     // The country whose rate book the rules priced in — read off the book itself,
@@ -3195,6 +3216,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
     // AI values cleared because their owning rule is still asking a question —
     // the consumer must treat these fields as UNANSWERED, not zero.
     aiSuppressed,
+    // Model numbers no rule derives, removed (or replaced by the measurement) — what the model said, not used.
+    aiUnruled,
     // Every rule value keyed by form field id. The form is the consumer, so this
     // addresses the form directly rather than going through the model's response
     // schema, which has nowhere to put 54 of the 131 values the rules compute.

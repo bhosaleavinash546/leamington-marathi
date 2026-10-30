@@ -134,7 +134,9 @@ export function computeCarbon({ input, library, commodity, region }: CarbonInput
   const scrapKg = Math.max(0, grossKg - netKg);
   const recycledCreditFrac = mat && mat.scrapRecoveryPricePerKg > 0 ? 0.85 : 0;   // avoided primary production
   const materialKgCO2e = matFactor * (grossKg - scrapKg * recycledCreditFrac);
-  if (recycledCreditFrac > 0 && scrapKg > 0) notes.push(`Scrap re-melt credit applied to ${(scrapKg).toFixed(3)} kg offcut.`);
+  if (recycledCreditFrac > 0 && scrapKg > 0) {
+    notes.push(`Scrap re-melt credit: 85 % of the ${(scrapKg).toFixed(3)} kg offcut's material factor (engineering estimate, not sourced).`);
+  }
 
   const kwhPerKg = PROCESS_KWH_PER_KG[commodity] ?? 1.2;
   const grid = gridCarbon(region);
@@ -145,8 +147,10 @@ export function computeCarbon({ input, library, commodity, region }: CarbonInput
   const logisticsKgCO2e = logFactor * netKg;
 
   const totalKgCO2e = materialKgCO2e + processKgCO2e + logisticsKgCO2e;
-  notes.push(`${cls} ${matFactor} kgCO₂e/kg · grid ${grid} kgCO₂e/kWh (${(region ?? 'UK').toUpperCase()}) · process ${kwhPerKg} kWh/kg.`);
-  notes.push('Indicative cradle-to-gate estimate — replace with supplier EPDs for reporting.');
+  notes.push(`${cls} ${matFactor} kgCO₂e/kg · grid ${grid} kgCO₂e/kWh (${(region ?? 'UK').toUpperCase()}) · process ${kwhPerKg} kWh/kg of material bought`
+    + `${PROCESS_KWH_PER_KG[commodity] === undefined ? ' (no figure for this commodity — a 1.2 default)' : ''} · logistics ${logFactor} kgCO₂e/kg.`);
+  notes.push('Indicative cradle-to-gate estimate: every factor is a representative engineering figure, not sourced per material or country, '
+    + 'and the process energy is a per-commodity intensity, not the costing\'s own energy line — replace with supplier EPDs for reporting.');
 
   const r2 = (n: number) => Math.round(n * 100) / 100;
   return {

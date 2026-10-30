@@ -136,6 +136,29 @@ export interface UncertaintyOptions {
 }
 
 const LIB_CV: Record<Confidence, number> = CV_BY_CONFIDENCE;
+/** Tooling's spread is this × its source's; packaging and logistics this × (the driver path; the bucket path's factors match). */
+const TOOLING_CV_FACTOR = 1.8, SHOP_CV_FACTOR = 0.6;
+
+/**
+ * What the band is drawn from, in numbers — every report and the screen print this beside the band. The spreads are
+ * CostVision engineering choices, NOT sourced or fitted to actuals (none are logged yet); until this line existed the
+ * reports said only "each driver varied by where it came from" and the 1 % … 25 % spreads that set the band's width
+ * were nowhere on the page (arithmetic audit, 30 Oct 2026).
+ */
+const cvs = (c: Record<Confidence, number>) => `High ${c.High}, Medium ${c.Medium}, Low ${c.Low}`;
+export const UNCERTAINTY_BASIS =
+  'Monte-Carlo through the cost stack (seeded, so it repeats). Each driver is drawn from a lognormal (mean 1) whose 1-sigma '
+  + `spread is set by where it came from: CAD-measured geometry ${DRIVER_CV.geometry_exact} (mesh ${DRIVER_CV.geometry_mesh}, thin mesh `
+  + `${DRIVER_CV.geometry_mesh_thin}), a rule ${DRIVER_CV.rule}, an engineer's answer ${DRIVER_CV.engineer}, a drawing read ${DRIVER_CV.ai}, `
+  + `an unconfirmed default ${DRIVER_CV.default}; each rate, and a material or consumables figure with no stated source, by its `
+  + `library grade (${cvs(LIB_CV)}); tooling × ${TOOLING_CV_FACTOR} and packaging / logistics × ${SHOP_CV_FACTOR} of their source's spread. `
+  + 'These spreads are engineering-typical choices, not sourced or fitted to purchase prices';
+/** The bucket fallback (no driver provenance): the same rate-grade spreads on each bucket. */
+export const UNCERTAINTY_BUCKET_BASIS =
+  'Monte-Carlo over the cost buckets (seeded): each bucket drawn from a lognormal (mean 1) with the 1-sigma spread of the '
+  + `costing's overall data grade (${cvs(CV_BY_CONFIDENCE)}), tooling × ${BUCKET_CV_FACTOR.tooling}, packaging / logistics × `
+  + `${BUCKET_CV_FACTOR.packaging}; overhead and margin re-applied as percentages. These spreads are engineering-typical choices, `
+  + 'not sourced or fitted to purchase prices';
 
 /** Lognormal multiplier with the given CV, mean ≈ 1. */
 function lognormalMult(cv: number, rng: () => number): number {
@@ -192,9 +215,9 @@ function driverTrials(
         const m = lognormalMult(cvOf(prov.cycleTimeHr?.[k]), rng);
         return { ...op, cycleTimeHr: op.cycleTimeHr * m, labourTimeHr: op.labourTimeHr * m };
       }),
-      tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * lognormalMult(cvOf(prov.toolingCost) * 1.8, rng) },
-      packagingPerPart: input.packagingPerPart * lognormalMult(cvOf(prov.packaging) * 0.6, rng),
-      logisticsPerPart: input.logisticsPerPart * lognormalMult(cvOf(prov.logistics) * 0.6, rng),
+      tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * lognormalMult(cvOf(prov.toolingCost) * TOOLING_CV_FACTOR, rng) },
+      packagingPerPart: input.packagingPerPart * lognormalMult(cvOf(prov.packaging) * SHOP_CV_FACTOR, rng),
+      logisticsPerPart: input.logisticsPerPart * lognormalMult(cvOf(prov.logistics) * SHOP_CV_FACTOR, rng),
     };
     try { totals[i] = computeUniversalStack(trial, lib).total; }
     catch { totals[i] = NaN; }

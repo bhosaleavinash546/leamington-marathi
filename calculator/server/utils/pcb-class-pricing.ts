@@ -287,3 +287,18 @@ export function classRange(line: { componentType?: unknown; description?: unknow
 export function classDefaultPrice(r: ClassRange): number {
   return Math.round((r.lo + (r.hi - r.lo) * 0.25) * 100000) / 100000;
 }
+
+/**
+ * The table row behind a class key ("passive_0402.res.automotive", "discrete.SOT-23 / SOD-123 discrete.automotive") —
+ * the table as DATA, for an independent re-add of a line's price (scripts/arith-audit/pcb.ts). Null for an unknown key.
+ */
+export function classRowByKey(key: string): { lo: number; hi: number; label: string } | null {
+  const auto = /\.automotive$/.test(key);
+  const k = key.replace(/\.automotive$/, '');
+  let row: Row | undefined;
+  if (k.startsWith('discrete.')) row = DISCRETE.find(d => d.row.label === k.slice('discrete.'.length))?.row;
+  else { const [ct, kind] = k.split('.'); row = TABLE[ct]?.find(x => x.kind === kind)?.row; }
+  if (!row) return null;
+  const [lo, hi] = auto && row.auto ? row.auto : [row.lo, row.hi];
+  return { lo, hi, label: row.label };
+}

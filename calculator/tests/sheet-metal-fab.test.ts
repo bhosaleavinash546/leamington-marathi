@@ -82,18 +82,21 @@ describe('Sheet Metal Fab — press brake bending', () => {
     expect(bendOp).toBeUndefined();
   });
 
-  it('bending cycle time = (bends × timePerBend + toolChanges × changeTime) / 3600', () => {
+  // Arithmetic audit (30 Oct 2026): the brake set-up is its own operation at OEE 1 / efficiency 1 — inside the
+  // bend cycle it was divided by the OEE that already carries change-over losses and uplifted for rejects.
+  it('bending cycle time = bends × timePerBend / 3600; the set-up is its own op', () => {
     const d = computeSheetMetalFabDrivers({ ...BASE_FAB, toleranceMm: undefined });
-    const expected = (3 * 45 + 1 * 300) / 3600;
     const bendOp = d.operations.find(o => o.operationName === 'Press Brake Bending')!;
-    expect(bendOp.cycleTimeHr).toBeCloseTo(expected, 8);
+    expect(bendOp.cycleTimeHr).toBeCloseTo((3 * 45) / 3600, 8);
+    const setup = d.operations.find(o => o.operationName === 'Press brake set-up (amortised over the batch)')!;
+    expect(setup.cycleTimeHr).toBeCloseTo((1 * 300) / 3600, 8);
+    expect(setup.oee).toBe(1);
   });
 
   it('tool-change time is amortized over batchSize', () => {
     const d = computeSheetMetalFabDrivers({ ...BASE_FAB, toleranceMm: undefined, batchSize: 50 });
-    const expected = (3 * 45 + (1 * 300) / 50) / 3600;
-    const bendOp = d.operations.find(o => o.operationName === 'Press Brake Bending')!;
-    expect(bendOp.cycleTimeHr).toBeCloseTo(expected, 8);
+    const setup = d.operations.find(o => o.operationName === 'Press brake set-up (amortised over the batch)')!;
+    expect(setup.cycleTimeHr).toBeCloseTo((1 * 300) / 50 / 3600, 8);
   });
 
   it('batchSize below 1 is clamped to 1 (no amplification of setup time)', () => {

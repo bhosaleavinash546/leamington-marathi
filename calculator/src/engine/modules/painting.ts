@@ -1,4 +1,4 @@
-import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import type { CommodityDrivers, MaterialLineItem, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import {
   computeSurfaceTreatment, consumablesPerPartFrom, type SurfaceTreatmentBreakdown,
 } from '../surface-treatment-rate.js';
@@ -134,9 +134,10 @@ export function analysePainting(inputs: PaintingInputs): PaintingAnalysis {
     warnings.push(
       'Line costed from a single parts-per-hour figure. That number bundles three separate '
       + 'drivers — how many parts hang on a rack, how fast the line runs, and how much of the '
-      + 'rack this part\'s size lets you use — and it is the largest lever in the commodity: '
-      + 'halving it moves the part 55%. Supply the stage list with parts-per-rack and racks-per-'
-      + 'hour to cost it properly, and to see the bath chemistry and masking it currently hides.');
+      + 'rack this part\'s size lets you use — and it is the largest lever in the commodity (on '
+      + 'the reference part it was measured on, halving it moved the cost 55 %; this part\'s own '
+      + 'sensitivity is in the levers). Supply the stage list with parts-per-rack and racks-per-'
+      + 'hour to cost it properly; the bath chemistry and masking are not costed on this path.');
     return { surface: null, legacyLineRate: true, warnings };
   }
 
@@ -208,11 +209,20 @@ function surfaceLineName(stageIds: string[]): string {
 export function computePaintingDrivers(inputs: PaintingInputs): CommodityDrivers {
   // Paint film build. This part of the old model was right and is untouched:
   // area x dry film thickness / (solids x transfer efficiency) x price per litre.
+  // Solids are VOLUME solids: the dry film is a volume (area × thickness), so the
+  // wet volume that leaves it is that ÷ the volume fraction that stays.
   let totalPaintCostPerPart = 0;
-  for (const coat of inputs.coats) {
+  const lines: MaterialLineItem[] = [];
+  inputs.coats.forEach((coat, i) => {
     const wetVolL = coatWetVolumeLitres(coat, inputs.surfaceAreaM2);
     totalPaintCostPerPart += wetVolL * coat.pricePerL;
-  }
+    lines.push({
+      ref: `C${i + 1}`,
+      description: `${coat.coatType.replace('_', '-')} wet paint (L): ${inputs.surfaceAreaM2} m² × ${coat.dftMicrons} µm `
+        + `÷ (${coat.solidsPct} volume solids × ${coat.transferEfficiency} transfer efficiency)`,
+      qty: wetVolL, unitCost: coat.pricePerL, value: coat.materialId,
+    });
+  });
 
   const { surface } = analysePainting(inputs);
 
@@ -223,15 +233,27 @@ export function computePaintingDrivers(inputs: PaintingInputs): CommodityDrivers
   // metal and effluent were added to the engine a zinc-plated part costed on
   // this form silently lost its zinc.
   const consumables = surface ? consumablesPerPartFrom(surface) : 0;
+  if (surface && consumables > 0) {
+    lines.push({ ref: 'BATH', description: 'Bath chemistry + effluent'
+      + (surface.depositedMetalPerPart > 0 ? ' + deposited metal' : '')
+      + (surface.colourChangePerPart > 0 ? ' + colour change' : '')
+      + ` (${surface.stageIds.length}-stage route, per part — representative surface-treatment data)`,
+      qty: 1, unitCost: consumables });
+  }
 
   // Rework uplift applies to everything consumed on a part that is then redone.
   const reworkUplift = 1 + inputs.rejectReworkPct;
+  if (inputs.rejectReworkPct > 0 && totalPaintCostPerPart + consumables > 0) {
+    lines.push({ ref: 'RWK', description: `Rework ${(inputs.rejectReworkPct * 100).toFixed(1)} % on paint and bath consumables`,
+      qty: 1, unitCost: (totalPaintCostPerPart + consumables) * inputs.rejectReworkPct });
+  }
   const rawMaterial: RawMaterialInput = {
     materialId: 'mat-virtual',      // bypasses the weight-based material path
     netWeightKg: 0,
     materialUtilization: 1,
     directCost: totalPaintCostPerPart * reworkUplift,
     ...(consumables > 0 ? { consumablesCostPerPart: consumables * reworkUplift } : {}),
+    lines,
   };
 
   // Line time. With stages, throughput comes from rack density x racks per hour

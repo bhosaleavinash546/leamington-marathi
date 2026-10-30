@@ -189,7 +189,7 @@ export function volumeScaleFrom10k(qty: number): number {
 // Category median caps (GBP) — the most an UNCONFIRMED part of this class may
 // contribute per unit. Stops a conservative AI guess (e.g. "automotive MCU BGA")
 // from entering the BOM at 3–4× market when the exact part can't be read.
-const CLASS_MEDIAN: Record<string, number> = {
+export const CLASS_MEDIAN: Record<string, number> = {
   ic_bga: 18.00, ic_tqfp: 6.00, ic_qfp: 6.00, ic_qfn: 4.00, ic_soic: 3.50,
   ic_sot: 1.20, ic: 4.00,
   connector_smt: 6.00, through_hole: 3.50, connector: 6.00,

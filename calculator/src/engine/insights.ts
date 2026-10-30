@@ -624,8 +624,8 @@ export function generateInsights(
       type: 'opportunity',
       category: 'commercial',
       lever: 'supplier',
-      title: 'Packaging & logistics cost is above average',
-      finding: `Packaging + logistics at ${pcts.pkg.toFixed(1)}% of total cost. For high-volume parts this should be under 2%.`,
+      title: 'Packaging & logistics are a large share of this cost',
+      finding: `Packaging + logistics at ${pcts.pkg.toFixed(1)}% of total cost — above the CostVision heuristic threshold of 5 % (not a sourced benchmark).`,
       impact: 'Low',
       potentialSavingPct: Math.min(3, (pcts.pkg - 2) * 0.3),
       actions: [

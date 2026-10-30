@@ -9,6 +9,30 @@ import {
   hardwarePurchaseCostPerPart,
 } from './sheet-metal-hardware.js';
 import { moduleEnergy } from '../module-energy.js';
+import {
+  pickStampingPressId, stampingPressFacts, N_PER_TONNE_FORCE, STAMPING_PRESS_SAFETY, SINGLE_DIE_ALLOWANCE_MM,
+} from '../machine-sizing.js';
+
+/**
+ * The press a transfer / tandem line's blanks are cut on, sized like every other press here: force on the
+ * blank RECTANGLE's perimeter (an upper bound on the outline it cuts) × gauge × shear, × the safety factor, on a
+ * bolster that takes one single-operation die (blank + SINGLE_DIE_ALLOWANCE_MM). It was a fixed 200 t press,
+ * whose 1,800 mm bed cannot take the 1,428 mm inner panel's blanking die (arithmetic audit, 30 Oct 2026).
+ */
+export function blankingPressFor(lengthMm: number, widthMm: number, thicknessMm: number, shearMPa: number):
+  { pressId: string; tonnes: number; bolsterMm: number; basis: string } {
+  const cutMm = 2 * (lengthMm + widthMm);
+  const tonnes = cutMm * thicknessMm * shearMPa / N_PER_TONNE_FORCE;
+  const bolsterMm = Math.round(Math.max(lengthMm, widthMm) + SINGLE_DIE_ALLOWANCE_MM);
+  const pressId = pickStampingPressId(tonnes, STAMPING_PRESS_SAFETY, { bolsterMm });
+  const pf = stampingPressFacts(pressId);
+  return {
+    pressId, tonnes, bolsterMm,
+    basis: `blanking die: 2 × (${Math.round(lengthMm)} + ${Math.round(widthMm)}) mm blank rectangle × ${thicknessMm} mm × ${shearMPa} MPa `
+      + `÷ ${N_PER_TONNE_FORCE.toLocaleString('en-GB')} N/t = ${Math.round(tonnes)} t, × ${STAMPING_PRESS_SAFETY} safety = ${Math.round(tonnes * STAMPING_PRESS_SAFETY)} t; `
+      + `die ${bolsterMm} mm (blank + ${SINGLE_DIE_ALLOWANCE_MM} mm) — ${pressId} (${pf.bolsterMm} mm bolster, typical)`,
+  };
+}
 
 export type DieType = 'single_stage' | 'progressive' | 'transfer' | 'fine_blanking';
 
@@ -273,12 +297,15 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   // Blanks cut before a transfer or tandem line. A blanking press runs from
   // coil at its own rate; a laser blanking line needs no die at all.
   const pressLine = inputs.pressLine ?? 'coil-fed';
-  if (pressLine !== 'coil-fed' && inputs.blanking && inputs.blanking.blanksPerMin > 0) {
-    const bl = inputs.blanking;
+  const blankingOn = pressLine !== 'coil-fed' && !!inputs.blanking && inputs.blanking.blanksPerMin > 0;
+  const blankingMachineId = !blankingOn ? '' : inputs.blanking!.machineId ?? (inputs.blanking!.method === 'laser' ? 'laser-trumpf-5030'
+    : blankingPressFor(inputs.blankLengthMm, inputs.blankWidthMm, inputs.thicknessMm, inputs.shearStrengthMPa).pressId);
+  if (blankingOn) {
+    const bl = inputs.blanking!;
     const blankCycleHr = (1 / (bl.blanksPerMin * 60)) * rejectUplift;
     operations.push({
       operationName: bl.method === 'laser' ? 'Laser blanking line' : 'Blanking press (coil → blanks)',
-      machineId: bl.machineId ?? (bl.method === 'laser' ? 'laser-trumpf-5030' : 'press-200t'),
+      machineId: blankingMachineId,
       labourId: bl.labourId ?? inputs.labourId,
       cycleTimeHr: blankCycleHr,
       partsPerCycle: inputs.partsPerStroke,
@@ -364,6 +391,16 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
       cycleTimeHr: hr * presses, partsPerCycle: 1, oee: 1, manning: 1,
       labourTimeHr: hr * presses, labourEfficiency: 1,
     });
+    // The blanking press runs a die of its own, changed once a batch too (a laser blanking line has none).
+    if (blankingOn && inputs.blanking!.method === 'die') {
+      operations.push({
+        operationName: 'Blanking die change (amortised over the batch)',
+        machineId: blankingMachineId,
+        labourId: inputs.setup.setterLabourId,
+        cycleTimeHr: hr, partsPerCycle: 1, oee: 1, manning: 1,
+        labourTimeHr: hr, labourEfficiency: 1,
+      });
+    }
   }
 
   // Die life: use the given value, else predict from material hardness / thickness / die type.

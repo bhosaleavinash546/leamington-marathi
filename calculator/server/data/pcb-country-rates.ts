@@ -46,10 +46,9 @@ export interface PCBFabRates {
 export interface SMTAssemblyRates {
   /** Fully-loaded SMT machine line rate £/hr (machine + overhead + indirect labour) */
   smtLineRatePerHr: number;
-  /** Direct operator labour £/hr — actual country-specific figure (IPC/CBRE).
-   *  INFORMATIONAL in the cost model: direct labour is bundled into
-   *  smtLineRatePerHr / per-joint rates; this field documents the underlying
-   *  country labour rate those bundled figures were built from. */
+  /** Electronics operator labour £/hr. Overwritten from REGIONAL_DATA[country].labour.electronics at load (one country
+   *  source). It IS costed: AOI, X-ray and ICT at volume are station time × 2 × this rate (operator + tester), and it is
+   *  the basis the bundled placement / joint prices were built from. (It said "informational" — arith audit, Oct 2026.) */
   labourRatePerHr: number;
   /** Through-hole wave solder cost per joint (£) */
   thRatePerJoint: number;
@@ -1065,7 +1064,25 @@ export interface PCBCountryCostBreakdown {
   panelInfo: { boardsPerPanel: number; utilisation: number; panelW: number; panelH: number };
   /** Set when the automotive premiums are in this breakdown's totals. */
   automotiveGrade?: { asil: string; fabPremiumGBP: number; assemblyPremiumGBP: number };
+  /**
+   * The arithmetic behind every £ item, as done, with the class of each figure it uses (arith audit, Oct 2026): the
+   * country table (29 Sep 2026 rates, no per-figure citation — header sources and docs/pcb/rate-cross-check-2026-10.md),
+   * REGIONAL_DATA (the tool's one country source for labour / power), or a CostVision engineering figure (not sourced).
+   * The screen and both reports should print these lines — see docs/review/arith-audit/pcb.md.
+   */
+  basis?: PCBBasisLine[];
 }
+
+/** One line of a PCB cost basis: what, the arithmetic done, the £ it gives, and where each figure in it comes from. */
+export interface PCBBasisLine { item: string; formula: string; gbp: number; source: string }
+
+/** Basis labels for the figures the PCB country cost uses. */
+export const PCB_BASIS_SOURCE = {
+  table: 'PCB country table, rates as of 29 Sep 2026 (no per-figure citation; cross-checked in docs/pcb/rate-cross-check-2026-10.md)',
+  regional: 'REGIONAL_DATA (the tool\'s country labour / electricity figures)',
+  engineering: 'CostVision engineering figure — not sourced',
+  measured: 'the board figures as costed (measured, typed or estimated — see the board spec)',
+} as const;
 
 // ─── Panelisation optimiser (Feature 3) ────────────────────────────────────
 // Standard panel sizes by region (mm)
@@ -1084,7 +1101,7 @@ export interface PanelFit {
 export function bestPanelFit(boardW: number, boardH: number, panels = STANDARD_PANELS.default): PanelFit {
   let best: PanelFit = { boardsPerPanel: 1, utilisation: 0, panelW: panels[0].w, panelH: panels[0].h };
   for (const p of panels) {
-    const marginW = 10, marginH = 10; // 5mm edge clearance each side
+    const marginW = 10, marginH = 10; // 10 mm panel border each side (CostVision engineering figure)
     const usableW = p.w - marginW * 2;
     const usableH = p.h - marginH * 2;
     const gapX = 3, gapY = 3; // routing gap between boards
@@ -1228,8 +1245,9 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const freight = Math.max(l.minAirFreightGBP / Math.max(input.orderQuantity, 1),
     estWeightKg * freightRate);
   // Duty base includes the BOM (audit fix): customs value of a populated
-  // assembly = components + fab + assembly, not fab + assembly alone.
-  const dutiableValue = pcbFabPerBoard + assemblyPerBoard + bomSourced;
+  // assembly = components + fab + assembly, not fab + assembly alone. The UK customs value is CIF — the goods AND the
+  // freight to the UK border (arith audit, Oct 2026; 360 review open item: "the base leaves out freight").
+  const dutiableValue = pcbFabPerBoard + assemblyPerBoard + bomSourced + freight;
   const importDuty = dutiableValue * l.importDutyFraction;
   const logisticsPerBoard = freight + importDuty;
 
@@ -1256,6 +1274,47 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
 
   const totalPerBoard = pcbFabPerBoard + assemblyPerBoard + logisticsPerBoard + bomSourced
     + energyCost + packagingCost + yieldLossCost;
+
+  // ── The basis, as done (arith audit, Oct 2026): every £ item with its arithmetic and the class of its figures.
+  const f = (v: number, dp = 4) => `£${(Math.round(v * 10 ** dp) / 10 ** dp).toFixed(dp)}`;
+  const q = Math.max(input.orderQuantity, 1);
+  const T = PCB_BASIS_SOURCE;
+  const ictTime = (input.ictTimeSec / 3600) * 2 * a.labourRatePerHr;
+  const basis: PCBBasisLine[] = [
+    { item: 'Board area and panel', gbp: 0, source: `${T.measured}; panel sizes 480×350 / 380×280 / 250×330 mm, 10 mm border, 3 mm gap — ${T.engineering}`,
+      formula: `${input.widthMm} × ${input.heightMm} mm = ${boardAreaDm2.toFixed(4)} dm²; ${panel.boardsPerPanel}-up on ${panel.panelW}×${panel.panelH} mm, utilisation ${(panel.utilisation * 100).toFixed(1)} % → waste factor 1 ÷ max(0.4, ${panel.utilisation.toFixed(3)}) = ${wasteFactor.toFixed(4)}` },
+    { item: 'Bare board — 2-layer base', gbp: pcbBase, source: T.table, formula: `${boardAreaDm2.toFixed(4)} dm² × ${f(r.baseCostPerDm2_2L)}/dm² × waste ${wasteFactor.toFixed(4)} = ${f(pcbBase)}` },
+    { item: 'Bare board — layers above 2', gbp: pcbLayers, source: T.table, formula: `${boardAreaDm2.toFixed(4)} dm² × ${f(r.layerAdderPerDm2, 5)}/dm²/layer × ${extraLayers} × waste ${wasteFactor.toFixed(4)} = ${f(pcbLayers)}` },
+    { item: `Bare board — finish (${finishKey})`, gbp: pcbSurface, source: T.table, formula: `(base + layers) × (${finishMult} − 1) = ${f(pcbSurface)}` },
+    { item: 'Bare board — vias', gbp: pcbVias, source: T.table, formula: `${input.throughVias}/100 × ${f(r.viaAdderPer100Through)} + ${input.blindVias}/10 × ${f(r.viaAdderPer10Blind)} + ${input.microVias}/10 × ${f(r.viaAdderPer10Micro)} = ${f(pcbVias)}` },
+    ...(pcbHDI > 0 ? [{ item: 'Bare board — HDI uplift', gbp: pcbHDI, source: T.table, formula: `(base + layers) × ${r.hdiUpliftPct} % = ${f(pcbHDI)}` }] : []),
+    ...(pcbImpedance > 0 ? [{ item: 'Bare board — controlled impedance', gbp: pcbImpedance, source: T.table, formula: `(base + layers) × ${r.impedanceUpliftPct} % = ${f(pcbImpedance)}` }] : []),
+    { item: 'Bare board — tooling set-up', gbp: pcbSetup, source: `${T.table}; spread over the order quantity`, formula: `${f(r.setupCostGBP, 2)} ÷ ${q.toLocaleString('en-GB')} boards = ${f(pcbSetup)}` },
+    ...(pcbCopper > 0 ? [{ item: 'Bare board — heavy copper', gbp: pcbCopper, source: 'Queen EMS / AIVON 2026 copper-weight guides (25 CNY/m² per layer per ½ oz), CNY 8.88/£, scaled by the country\'s 2-layer base v China\'s',
+      formula: `${halfOzSteps} half-oz steps × 25/8.88 £/m² × ${(boardAreaDm2 / 100).toFixed(6)} m² × waste ${wasteFactor.toFixed(4)} × ${(r.baseCostPerDm2_2L / cnBase).toFixed(4)} = ${f(pcbCopper)}` }] : []),
+    { item: 'SMT placement', gbp: smtAssembly, source: `line rate: ${T.table}; 3,600 placements an hour (one a second) per line-hour and one batch set-up over the order: ${T.engineering}`,
+      formula: `${input.smtPlacements} placements ÷ 3,600 /h × ${f(a.smtLineRatePerHr, 2)}/h + ${f(a.batchSetupGBP, 2)} ÷ ${q.toLocaleString('en-GB')} = ${f(smtAssembly)}` },
+    ...(thAssembly + manualAssembly > 0 ? [{ item: 'Through-hole and hand-soldered joints', gbp: thAssembly + manualAssembly, source: T.table, formula: `${input.throughHoleJoints} × ${f(a.thRatePerJoint, 6)} + ${input.manualJoints} × ${f(a.manualSolderPerJoint, 5)} = ${f(thAssembly + manualAssembly)}` }] : []),
+    ...(aoiCost > 0 ? [{ item: 'AOI', gbp: aoiCost, source: `ceiling: ${T.table}; ${AOI_SECONDS_PER_BOARD} s a board, station = 2 × labour (operator + tester), £${AOI_PROGRAM_GBP} programme: ${T.engineering}; labour: ${T.regional}`,
+      formula: `min(table ${f(a.aoiPerBoard)}, ${AOI_SECONDS_PER_BOARD}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${AOI_PROGRAM_GBP} ÷ ${q.toLocaleString('en-GB')}) = ${f(aoiCost)}` }] : []),
+    ...(xrayCost > 0 ? [{ item: 'X-ray (BGA / CSP)', gbp: xrayCost, source: `ceiling: ${T.table}; ${XRAY_SECONDS_PER_BOARD} s a board, station = 2 × labour, £${XRAY_SETUP_GBP} programme: ${T.engineering}; labour: ${T.regional}`,
+      formula: `min(table ${f(a.xrayPerBoard)}, ${XRAY_SECONDS_PER_BOARD}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${XRAY_SETUP_GBP} ÷ ${q.toLocaleString('en-GB')}) = ${f(xrayCost)}` }] : []),
+    ...(ictCost > 0 ? [{ item: 'In-circuit test', gbp: ictCost, source: `ceiling: ${T.table}; station = 2 × labour, £${ICT_FIXTURE_GBP} fixture: ${T.engineering}; test time: the board spec (estimated unless typed); labour: ${T.regional}`,
+      formula: `min(table ${f(a.ictPerBoard)}, ${input.ictTimeSec}/3600 h × 2 × ${f(a.labourRatePerHr, 2)}/h + £${ICT_FIXTURE_GBP} ÷ ${q.toLocaleString('en-GB')} = ${f(ictTime + ICT_FIXTURE_GBP / q)}) = ${f(ictCost)}` }] : []),
+    ...(confCost > 0 ? [{ item: 'Conformal coating', gbp: confCost, source: T.table, formula: `${input.conformalCoatAreaCm2.toFixed(1)} cm² × ${f(a.conformalCoatPerCm2, 6)}/cm² = ${f(confCost)}` }] : []),
+    { item: 'Components', gbp: bomAtCost, source: 'the BOM lines, each priced at its own parts-bought quantity (see each line\'s price note)', formula: `Σ qty × unit price = ${f(bomAtCost)}` },
+    { item: 'EMS material burden', gbp: materialBurden, source: `${T.engineering} (cost-plus EMS practice; 10 % ≤ 1k, 7 % at 10k, 5 % ≥ 100k boards, log-linear between)`,
+      formula: `${f(bomAtCost)} × ${(materialBurdenPct * 100).toFixed(3)} % = ${f(materialBurden)}` },
+    { item: `Freight (${useSea ? 'sea' : 'air'})`, gbp: freight, source: `freight rates: ${T.table}; ${input.weightKg && input.weightKg > 0 ? 'weight measured' : `weight estimated as area × layers × 28 g/dm² (at least 20 g) — ${T.engineering}; it over-states a bare board, which is about 30 g/dm² at 1.6 mm whatever the layer count`}; sea at ≥ 2,500 boards: ${T.engineering}`,
+      formula: `max(${f(l.minAirFreightGBP, 2)} minimum ÷ ${q.toLocaleString('en-GB')}, ${estWeightKg.toFixed(4)} kg × ${f(freightRate, 2)}/kg) = ${f(freight)}` },
+    { item: 'UK import duty', gbp: importDuty, source: `duty rate: ${T.table} — an assumption, the HS line for this assembly is not confirmed; customs value = CIF (goods + freight)`,
+      formula: `(fab ${f(pcbFabPerBoard)} + assembly ${f(assemblyPerBoard)} + components ${f(bomSourced)} + freight ${f(freight)}) × ${(l.importDutyFraction * 100).toFixed(1)} % = ${f(importDuty)}` },
+    { item: 'Energy', gbp: energyCost, source: `tariff: ${T.regional}; 0.9 kWh/dm² (2 layers) + 0.15 kWh/dm² a further layer, 0.06 kWh a board + 0.0008 kWh a placement: ${T.engineering}`,
+      formula: `(${boardAreaDm2.toFixed(4)} × (0.9 + 0.15 × ${extraLayers}) + 0.06 + 0.0008 × ${input.smtPlacements}) kWh = ${(fabKWh + asmKWh).toFixed(4)} kWh × ${f(rate.energyCostPerKWh ?? 0.15, 3)}/kWh = ${f(energyCost)}` },
+    { item: 'ESD packaging', gbp: packagingCost, source: `${T.engineering} (country figure per board, no citation)`, formula: `${f(packagingCost)} a board` },
+    { item: 'Cost of quality', gbp: yieldLossCost, source: `dppm: ${T.table}; λ capped at 0.30, 95 % of defects reworked at 20 % of assembly + half an ICT, 5 % scrapped at fab + assembly + components: ${T.engineering}`,
+      formula: `λ = min(0.30, ${input.smtPlacements} × ${a.dppm}/10⁶) = ${lambda.toFixed(4)}; ${lambda.toFixed(4)} × (0.95 × ${f(reworkCost)} + 0.05 × ${f(scrapCost)}) = ${f(yieldLossCost)}` },
+  ];
 
   return {
     countryId,
@@ -1290,6 +1349,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
       packaging: Math.round(packagingCost * 100) / 100,
       yieldLoss: Math.round(yieldLossCost * 100) / 100,
     },
+    basis,
     panelInfo: {
       boardsPerPanel: panel.boardsPerPanel,
       utilisation: Math.round(panel.utilisation * 1000) / 1000,

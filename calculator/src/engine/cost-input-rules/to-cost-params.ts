@@ -748,6 +748,13 @@ export function toCostParams(
       const cav = num(m.cavities, 1);
       const pressure = num(m.cavityPressureMPa, 30);
       if (m.regrindFraction === undefined) assumed.push('regrindFraction 0.2 (no rule decided it)');
+      // Every fallback below moves the cost; name the ones taken (only the regrind was listed — arithmetic audit, Oct 2026).
+      for (const [v, what] of [
+        [m.projectedAreaCm2, 'projectedAreaCm2 100 cm²'], [m.wallThicknessMm, 'wallThicknessMm 3 mm'],
+        [m.cavities, 'cavities 1'], [m.cavityPressureMPa, 'cavityPressureMPa 30'],
+        [m.coolTimeFactorSPerMm2, 'coolTimeFactorSPerMm2 3.16 (PP)'], [m.fillTimeSec, 'fillTimeSec 2 s'],
+        [m.packTimeSec, 'packTimeSec 6 s'], [m.ejectTimeSec, 'ejectTimeSec 3 s'], [m.mouldLife, 'mouldLife 1,000,000 shots'],
+      ] as const) if (!(num(v) > 0)) assumed.push(`${what} (no rule decided it)`);
       return {
         commodity, assumed: [...assumed, ...(m.machineId ? [] : ['machineId (sized from clamp force)'])],
         params: {

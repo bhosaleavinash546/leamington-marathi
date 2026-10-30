@@ -344,7 +344,7 @@ export async function exportToExcelBlob(
       [x.principle],
       [`Programme view: ${x.programme.annualVolume.toLocaleString('en-GB')} a year over ${x.programme.years} years${x.programme.yearsAssumed ? ' (5 years assumed — no programme life given)' : ''}.`],
       [],
-      ['Route · process', 'Status', 'Cost / part', 'Band P10', 'Band P90', '± %', 'vs reference', 'Material', 'Process', 'Labour', 'Tooling', 'Packaging', 'Logistics', 'Overhead', 'Margin', 'Buckets add up', 'Independent re-add', 'Grade costed', 'Net kg', 'Bought kg', 'Utilisation', 'Tooling investment', 'Amortised over', 'Programme spend', 'Basis'],
+      ['Route · process', 'Status', 'Cost / part', 'Band P10', 'Band P90', '± %', 'vs reference', 'Material', 'Process', 'Labour', 'Tooling', 'Packaging', 'Logistics', 'Overhead', 'Margin', 'Buckets add up', 'Independent re-add', 'Grade costed', 'Net kg', 'Bought kg', 'Utilisation', 'Tooling over programme', 'Amortised over', 'Programme spend', 'Basis'],
       ...x.rows.map(r => [
         `${name(r)}${r === refRow ? ' (this costing)' : ''}`, r.status,
         r.total != null ? m(r.total) : '—',

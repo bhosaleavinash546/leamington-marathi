@@ -26,16 +26,17 @@
  * obediently answered "infusion" was returning a value nothing downstream could
  * use. See `derive/laminate.ts`.
  */
-import { inCountry, countryNote } from '../../regional-services.js';
-import { activeToolroomFactor } from '../../rate-context.js';
-import type { CompositeProcess } from '../../modules/composites.js';
+import { countryFactor, countryNote } from '../../regional-services.js';
+import { activeToolroomFactor, activeLabourRate } from '../../rate-context.js';
+import { CURE_ATTENDANCE, type CompositeProcess } from '../../modules/composites.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { laminateFacts, type LaminateSystem } from '../derive/laminate.js';
 import { planAreaCm2, bboxSortedMm } from '../derive/envelope.js';
 import { shellWallMm } from '../derive/shell-wall.js';
 
-/** Tool cost per m² of moulding surface, by process — the ranges the prompt carried. */
-const TOOL_RATE_PER_M2: Record<CompositeProcess, { base: number; perM2: number; life: number }> = {
+/** Tool cost per m² of moulding surface, by process — the ranges the prompt carried. Engineering-typical, NOT
+ *  sourced, and printed as such in the tool cost and tool life bases (arithmetic audit, Oct 2026). */
+export const TOOL_RATE_PER_M2: Record<CompositeProcess, { base: number; perM2: number; life: number }> = {
   prepreg_layup:    { base: 12_000, perM2: 14_000, life: 500 },   // autoclave-capable, invar or tooling prepreg
   vartm:            { base: 4_000,  perM2: 5_000,  life: 300 },   // one-sided infusion tool
   rtm:              { base: 25_000, perM2: 30_000, life: 5_000 }, // matched steel die, both faces
@@ -86,20 +87,56 @@ const TOOL_MARGIN_M = 0.05;
 /** Hours a year a layup tool can work: two shifts. */
 export const COMP_TOOL_HOURS = 4000;
 export const COMP_OEE = 0.80;
-/** Debag, demould, clean and release-coat a tool between parts, hr. */
+/** Debag, demould, clean and release-coat a tool between parts, hr — sizes the tools in service only (the
+ *  labour of it is NOT costed: see the arithmetic audit, composites-rubber.md, finding C7). */
 const TOOL_TURNAROUND_HR = 0.5;
-/** Waterjet trim: load and fixture, then the outline at a cutting speed. */
+/** Waterjet trim: load and fixture, then the outline at a cutting speed. Engineering-typical, not sourced. */
 const TRIM_LOAD_HR = 0.1;
 const TRIM_M_PER_MIN = 1.5;
+/** Most tools one autoclave / oven load is costed with (the bed can fit more of a small part). */
+export const MAX_PARTS_PER_CURE = 20;
+
+/**
+ * Ultrasonic C-scan of structural carbon as a STATION — time × rates — not a flat £ (arithmetic audit, Oct 2026).
+ * It was "£25 a part (UK)", unsourced: £26.04 of the hat stiffener's £34.15 material bucket, on a 0.08 m² part. An
+ * automated scan costs the time the part spends in the cell: load, register and unload, then the laminate area at a
+ * scan rate. Every figure is ENGINEERING-TYPICAL and printed as such: research robotic phased-array cells report scan
+ * rates of the order of 25 m²/h with conventional beamforming (not verified against a paper here); the cell's £/h is a
+ * ~£400k robot PAUT cell over 10 yr at 4,000 h (£10/h) + 50 % for maintenance, couplant and power. The inspector is
+ * the costed country's `lab-uk-inspector` role; the cell's £/h is UK basis × the country's inspection factor.
+ */
+export const NDI_STATION = { scanM2PerHr: 25, loadUnloadSec: 60, manning: 1, cellGbpPerHrUk: 15 } as const;
+
+/** The C-scan station's £ a part on `areaM2` of laminate, in the costed country, with its arithmetic. */
+export function ndiStationCost(areaM2: number): { gbp: number; basis: string } {
+  const st = NDI_STATION;
+  const inspector = activeLabourRate('lab-uk-inspector');
+  const cell = st.cellGbpPerHrUk * countryFactor('inspection');
+  const loadHr = st.loadUnloadSec / 3600, scanHr = areaM2 / st.scanM2PerHr;
+  const hr = loadHr + scanHr;
+  const perHr = inspector * st.manning + cell;
+  const gbp = Math.round(hr * perHr * 100) / 100;
+  return {
+    gbp,
+    basis: `structural carbon: ultrasonic C-scan station — ${st.loadUnloadSec} s load and unload (${loadHr.toFixed(4)} h) `
+      + `+ ${fmt(areaM2, 3)} m² scanned at ${st.scanM2PerHr} m²/h (${scanHr.toFixed(4)} h) = ${hr.toFixed(4)} h, at `
+      + `£${perHr.toFixed(2)}/h (inspector £${inspector.toFixed(2)}/h × ${st.manning} + cell £${cell.toFixed(2)}/h) `
+      + `= £${gbp.toFixed(2)} (engineering-typical station figures, not sourced; `
+      + `charged in the material bucket as a per-part service, as casting NDT is)${countryNote('inspection')}`,
+  };
+}
 
 /** Parts on one cure load: tools (plan + flange) across the bed. */
 export function partsPerCure(lM: number, wM: number, bed: [number, number] | null): { n: number; basis: string } {
   if (!bed) return { n: 1, basis: 'cures in its own die, one part a press cycle' };
   const a = lM + 2 * TOOL_MARGIN_M, b = wM + 2 * TOOL_MARGIN_M;
   const fit = (x: number, y: number) => Math.floor(bed[0] / x) * Math.floor(bed[1] / y);
-  const n = Math.min(20, Math.max(fit(a, b), fit(b, a)));
+  const fits = Math.max(fit(a, b), fit(b, a));
+  const n = Math.min(MAX_PARTS_PER_CURE, fits);
   if (n < 1) return { n: 1, basis: `a ${a.toFixed(2)} × ${b.toFixed(2)} m tool does not fit the ${bed[0]} × ${bed[1]} m bed — costed one to a load; a larger cure cell is needed` };
-  return { n, basis: `${n} tools of ${a.toFixed(2)} × ${b.toFixed(2)} m on the ${bed[0]} × ${bed[1]} m bed — each part carries 1/${n} of the cure` };
+  return { n, basis: `${n} tools of ${a.toFixed(2)} × ${b.toFixed(2)} m on the ${bed[0]} × ${bed[1]} m bed`
+    + (fits > n ? ` (${fits} fit; capped at ${MAX_PARTS_PER_CURE} a load — engineering-typical, not sourced)` : '')
+    + ` — each part carries 1/${n} of the cure` };
 }
 
 interface CompAdvice {
@@ -125,6 +162,7 @@ interface CompAdvice {
   trimHr: number;
   trimBasis: string;
   ndi: number;
+  ndiBasis: string;
 }
 
 function envelopeAsk(): RuleOutcome<never> {
@@ -165,12 +203,16 @@ function advise(ctx: RuleContext): { advice: CompAdvice } | { blocked: RuleOutco
   const needed = ctx.annualVolume * toolCycleHr / (COMP_TOOL_HOURS * COMP_OEE);
   const tools = Math.max(1, Math.ceil(needed));
   const toolsBasis = `${ctx.annualVolume.toLocaleString('en-GB')}/yr × ${toolCycleHr.toFixed(2)} h a tool is tied up `
-    + `(layup ${layupHr.toFixed(2)} + cure ${s.cureHr} + turnaround ${TOOL_TURNAROUND_HR}) ÷ ${COMP_TOOL_HOURS} h × ${COMP_OEE} OEE `
+    + `(layup ${layupHr.toFixed(2)} + cure ${s.cureHr} + turnaround ${TOOL_TURNAROUND_HR}) ÷ (${COMP_TOOL_HOURS} h × ${COMP_OEE} OEE) `
     + `= ${needed.toFixed(2)} → ${tools} tool${tools === 1 ? '' : 's'}`;
 
   const perimM = 2 * (d[0] + d[1]) / 1000;
   const trimHr = Math.round((TRIM_LOAD_HR + perimM / TRIM_M_PER_MIN / 60) * 1000) / 1000;
-  const trimBasis = `5-axis waterjet: ${TRIM_LOAD_HR} h load and fixture + ${perimM.toFixed(2)} m of edge at ${TRIM_M_PER_MIN} m/min`;
+  const trimBasis = `5-axis waterjet: ${TRIM_LOAD_HR} h load and fixture + ${perimM.toFixed(2)} m bounding-box perimeter `
+    + `2(L+W) at ${TRIM_M_PER_MIN} m/min = ${trimHr} h (engineering-typical, not sourced)`;
+  // Structural carbon is ultrasonically scanned; glass covers are not.
+  const ndi = s.value === 'prepreg-cf' ? ndiStationCost(areaM2)
+    : { gbp: 0, basis: 'glass laminate: no ultrasonic scan costed (a visual check is not costed separately)' };
 
   return {
     advice: {
@@ -183,8 +225,7 @@ function advise(ctx: RuleContext): { advice: CompAdvice } | { blocked: RuleOutco
       cureMachineId: cell.machineId, cureLabel: cell.label,
       perCure: cure.n, perCureBasis: cure.basis,
       tools, toolsBasis, trimHr, trimBasis,
-      // Structural carbon is ultrasonically scanned; glass covers are not.
-      ndi: s.value === 'prepreg-cf' ? inCountry(25, 'inspection') : 0,   // £25 UK C-scan, in the costed country
+      ndi: ndi.gbp, ndiBasis: ndi.basis,
     },
   };
 }
@@ -326,7 +367,8 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         const a = r.advice;
         return decided('composites.layupTimeHrPerPart', a.layupHr, 'rule',
           `${fmt(a.areaM2, 3)} m² × ${a.plies} plies × ${a.system.layupHrPerM2PerPly} hr/m²/ply `
-          + `for ${a.system.label}`, 0.6);
+          + `for ${a.system.label} = ${a.layupHr} h (rate engineering-typical, not sourced: it lays `
+          + `${fmt(a.system.plyThicknessMm * a.system.densityKgPerM3 / 1000 / a.system.layupHrPerM2PerPly, 1)} kg of laminate an hour)`, 0.6);
       },
     },
     {
@@ -338,7 +380,8 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('composites.cureTimeHr', r.advice.system.cureHr, 'library',
-          `${r.advice.system.label} cure cycle including ramp and dwell`, 0.7);
+          `${r.advice.system.label} cure cycle including ramp and dwell (engineering-typical, not sourced); the cure `
+          + `operator is charged ${CURE_ATTENDANCE * 100} % of each part's share of it — load, check, unload`, 0.7);
       },
     },
     {
@@ -360,7 +403,8 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         return decided('composites.toolingCost', total, 'rule',
           `${a.system.process} tool: £${rate.base.toLocaleString('en-GB')} base + `
           + `${fmt(footprintM2, 3)} m² plan (${a.planBasis}) × £${rate.perM2.toLocaleString('en-GB')}/m²`
-          + (tf !== 1 ? ` × toolroom factor ${tf}` : ''), 0.55);
+          + (tf !== 1 ? ` × toolroom factor ${tf}` : '') + ` = £${total.toLocaleString('en-GB')} a tool `
+          + '(engineering-typical rates, not sourced)', 0.55);
       },
     },
     {
@@ -372,10 +416,12 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const rate = TOOL_RATE_PER_M2[r.advice.system.process];
-        return decided('composites.toolingLife', rate.life, 'library',
-          r.advice.system.process === 'rtm'
+        return decided('composites.toolingLife', rate.life, 'rule',
+          (r.advice.system.process === 'rtm'
             ? 'matched steel die — the only composite tool that runs like a press tool'
-            : 'composite/invar tool — life is set by thermal cycling and surface degradation',
+            : 'layup tool — life is set by thermal cycling and surface degradation')
+          + ` — ${rate.life.toLocaleString('en-GB')} parts a tool, engineering-typical, not sourced; the costing buys `
+          + 'the larger of the tools in service and programme parts ÷ this life',
           0.6);
       },
     },
@@ -391,11 +437,11 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
       value: a.trimHr, source: 'rule', confidence: 0.55, basis: a.trimBasis })),
     fromAdvice('composites.ndiCostPerPart', 'comp-ndi', 'ndiCostPerPart', a => ({
       value: a.ndi, source: 'rule', confidence: 0.5,
-      basis: a.ndi > 0 ? `structural carbon: ultrasonic C-scan, £25 a part (UK)${countryNote('inspection')}` : 'glass laminate: visual and tap test, no scan' })),
+      basis: a.ndiBasis })),
     fromAdvice('composites.layupLabourId', 'comp-layup-lab', 'layupLabourId', () => ({
       value: 'lab-uk-skilled', source: 'library', confidence: 0.7, basis: 'skilled laminator' })),
     fromAdvice('composites.cureLabourId', 'comp-cure-lab', 'cureLabourId', () => ({
-      value: 'lab-uk-semiskilled', source: 'library', confidence: 0.7, basis: 'loads, bags and monitors the cure' })),
+      value: 'lab-uk-semiskilled', source: 'library', confidence: 0.7, basis: 'loads, checks and unloads the cure' })),
     fromAdvice('composites.trimLabourId', 'comp-trim-lab', 'trimLabourId', () => ({
       value: 'lab-uk-semiskilled', source: 'library', confidence: 0.7, basis: 'waterjet operator' })),
     fromAdvice('composites.manning', 'comp-manning', 'manning', () => ({
@@ -405,6 +451,6 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
     fromAdvice('composites.labourEfficiency', 'comp-lab-eff', 'labourEfficiency', () => ({
       value: 0.92, source: 'rule', confidence: 0.6, basis: 'shop labour efficiency, as every route' })),
     fromAdvice('composites.rejectRate', 'comp-reject', 'rejectRate', () => ({
-      value: 0.04, source: 'rule', confidence: 0.55, basis: 'porosity, delamination, dimensional: 4%' })),
+      value: 0.04, source: 'rule', confidence: 0.55, basis: 'porosity, delamination, dimensional: 4% (engineering-typical, not sourced)' })),
   ],
 };

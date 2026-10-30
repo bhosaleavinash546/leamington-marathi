@@ -135,7 +135,7 @@ describe('step 3 — the cost card', () => {
     basis, notIncluded: notIncludedFor('forging'), stamp: 'United Kingdom rate book v2.2.0 · rules v7 · kernel 374f8cebdccb · 28 Oct 2026', fmt,
   });
   it('tooling investment beside its per-part amortisation and basis', () => {
-    expect(card).toMatch(/Tooling investment \(one-off\)[^]*£436549\.69[^]*£0\.87 a part over 5 years × 100,000 a year/);
+    expect(card).toMatch(/Tooling over the programme[^]*£436549\.69[^]*£0\.87 a part over 5 years × 100,000 a year/);
   });
   it('D6 — the band says what it is and is not', () => {
     expect(card).toMatch(/± 8\.8%/);

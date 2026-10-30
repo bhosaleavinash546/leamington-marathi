@@ -167,6 +167,8 @@ export interface GearAnalysis {
   metalRemovedMm3: number;
   totalCycleSec: number;
   toolingCostPerPart: number;
+  /** What `toolingCostPerPart` is made of — one line per perishable tool, £ per part cut, with its arithmetic. */
+  toolingLines: Array<{ item: string; perPart: number; basis: string }>;
   /** One-time programme cost, £. Amortised over `amortizationVolume`, not per part. */
   nreCostGBP: number;
   /** Itemised, so the report can show what the NRE is made of. */
@@ -208,6 +210,14 @@ const DEFAULT_LABOUR = 'lab-uk-skilled';
 export const GEAR_MACHINE_CREW = 0.5;
 /** The shop's labour efficiency (SHOP_DEFAULTS); the module had its own 0.90. */
 export const GEAR_LABOUR_EFFICIENCY = 0.92;
+/**
+ * OEE on every gear operation — the shop default (`SHOP_DEFAULTS.oee` in to-cost-params.ts), engineering-typical and
+ * NOT sourced. It was a bare 0.80 literal on each operation; the rule pack prints it in the set-up basis so the reader
+ * sees what divides every machine hour (arithmetic audit, Oct 2026).
+ */
+export const GEAR_OEE = 0.80;
+/** Default hob when the form gives none: Ø max(70, 12 × module) mm, 2 starts — engineering-typical, NOT sourced. */
+export const GEAR_DEFAULT_HOB = { minDiameterMm: 70, diameterPerModule: 12, starts: 2 } as const;
 
 /**
  * ISO 1328-1 flank tolerance classes actually defined by the standard.
@@ -436,7 +446,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     return {
       route: { cuttingProcess: 'hobbing', steps: [], achievableQualityClass: 99, warnings: [] },
       operations: [], pitchDiameterMm: 0, outerDiameterMm: 0, metalRemovedMm3: 0,
-      totalCycleSec: 0, toolingCostPerPart: 0, nreCostGBP: 0, nreLines: [],
+      totalCycleSec: 0, toolingCostPerPart: 0, toolingLines: [], nreCostGBP: 0, nreLines: [],
       heatTreatCostPerPart: 0, heatTreatBreakdown: [],
       dataWarning: gearDataWarning(data), warnings,
       blocked: `The gear definition is not costable: ${invalid.join(' ')}`,
@@ -493,7 +503,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
   const base = {
     route, operations: [] as GearOperationDetail[],
     pitchDiameterMm: pitchDia, outerDiameterMm: outerDia, metalRemovedMm3: metalRemoved,
-    totalCycleSec: 0, toolingCostPerPart: 0, nreCostGBP: 0, nreLines: [],
+    totalCycleSec: 0, toolingCostPerPart: 0, toolingLines: [] as GearAnalysis['toolingLines'], nreCostGBP: 0, nreLines: [],
     heatTreatCostPerPart: 0, heatTreatBreakdown: [],
     dataWarning: gearDataWarning(data), warnings,
   };
@@ -546,16 +556,38 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
       // An unknown process must stop the costing, not fall back to a neighbour.
       throw new Error(`Gear heat treat: ${(e as Error).message}`);
     }
-    const cost = r.ratePerKg * inputs.netWeightKg;
+    // ONE round trip to the heat-treater per gear: the whole package (wash, furnace, wash, temper, and any peen or
+    // straighten) is one sub-contract job. Every by-weight step carried the full sub-contract freight, so a carburised
+    // gear paid the round trip four times (arithmetic audit, Oct 2026). The furnace step keeps it (the first by-weight
+    // step when the route has no furnace); the washes, temper and the rest drop it and say so. A captive line has no
+    // freight, so nothing changes there.
+    const carriesFreight = !freightCharged && (furnaceInRoute ? FURNACE_STEPS.has(step) : true);
+    const dropFreight = r.logistics > 0 && !carriesFreight;
+    if (r.logistics > 0 && carriesFreight) freightCharged = true;
+    const ratePerKg = dropFreight ? r.ratePerKg - r.logistics : r.ratePerKg;
+    const basis = dropFreight
+      ? `${r.basis}; less freight ${r.logistics.toFixed(4)} = ${ratePerKg.toFixed(4)} GBP/kg — one round trip `
+        + 'to the heat-treater per package, charged on the furnace step'
+      : r.basis;
+    const cost = ratePerKg * inputs.netWeightKg;
     heatTreatBreakdown.push({
-      step: r.label, ratePerKg: r.ratePerKg, costPerPart: cost, basis: r.basis,
+      step: r.label, ratePerKg, costPerPart: cost, basis,
     });
-    heatTreatStepBasis.set(step, r.basis);
+    heatTreatStepBasis.set(step, basis);
     return cost;
   };
+  let freightCharged = false;
+  const FURNACE_STEPS = new Set<GearProcess>(['case_hardening', 'lpc_carburising', 'carbonitriding', 'quench_temper',
+    'martempering', 'austempering', 'nitriding', 'fnc']);
+  const furnaceInRoute = route.steps.some(st => FURNACE_STEPS.has(st.process));
   const heatTreatStepBasis = new Map<GearProcess, string>();
   const nreLines: Array<{ item: string; costGBP: number; reason: string }> = [];
   let toolingPerPart = 0;
+  const toolingLines: GearAnalysis['toolingLines'] = [];
+  const addTool = (item: string, t: { perPart: number; basis: string }): void => {
+    toolingPerPart += t.perPart;
+    toolingLines.push({ item, perPart: t.perPart, basis: t.basis });
+  };
   let heatTreat = 0;
   const A = data.ancillary;
   const F = data.finishing;
@@ -578,19 +610,20 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
         cycle = hobbingCycleSec({
           teeth: inputs.teeth, normalModuleMm: inputs.normalModuleMm,
           helixAngleDeg: inputs.helixAngleDeg, faceWidthMm: inputs.faceWidthMm,
-          hobDiameterMm: inputs.hobDiameterMm ?? Math.max(70, 12 * inputs.normalModuleMm),
-          hobStarts: inputs.hobStarts ?? 2,
+          hobDiameterMm: inputs.hobDiameterMm
+            ?? Math.max(GEAR_DEFAULT_HOB.minDiameterMm, GEAR_DEFAULT_HOB.diameterPerModule * inputs.normalModuleMm),
+          hobStarts: inputs.hobStarts ?? GEAR_DEFAULT_HOB.starts,
           cuttingSpeedMPerMin: c.hobSpeedMPerMin.value,
           axialFeedMmPerRev: c.hobFeedMmPerRev.value,
           cuts: c.hobCuts.value,
           loadUnloadSec: A.loadUnloadSec.value,
         });
-        toolingPerPart += toolCostPerPart({
+        addTool('Hob wear', toolCostPerPart({
           toolCostGBP: T.hobCostGBP.value,
           partsBetweenRegrinds: T.hobPartsBetweenRegrinds.value,
           regrindCostGBP: inCountry(T.hobRegrindCostGBP.value, 'process'),   // regrind: a bought-in service; the cutter itself is a traded tool
           regrindsBeforeScrap: T.hobRegrindsBeforeScrap.value,
-        }).perPart;
+        }));
         break;
       }
       case 'shaping': {
@@ -603,12 +636,12 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
           roughingPasses: c.shaperPasses.value,
           loadUnloadSec: A.loadUnloadSec.value,
         });
-        toolingPerPart += toolCostPerPart({
+        addTool('Shaper cutter wear', toolCostPerPart({
           toolCostGBP: T.shaperCutterCostGBP.value,
           partsBetweenRegrinds: T.shaperCutterPartsBetweenRegrinds.value,
           regrindCostGBP: inCountry(T.shaperCutterRegrindCostGBP.value, 'process'),   // regrind: a bought-in service; the cutter itself is a traded tool
           regrindsBeforeScrap: T.shaperCutterRegrindsBeforeScrap.value,
-        }).perPart;
+        }));
         break;
       }
       case 'skiving': {
@@ -624,12 +657,12 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
           cuts: c.skiveCuts.value,
           loadUnloadSec: A.loadUnloadSec.value,
         });
-        toolingPerPart += toolCostPerPart({
+        addTool('Skiving cutter wear', toolCostPerPart({
           toolCostGBP: T.skivingCutterCostGBP.value,
           partsBetweenRegrinds: T.skivingCutterPartsBetweenRegrinds.value,
           regrindCostGBP: inCountry(T.skivingCutterRegrindCostGBP.value, 'process'),   // regrind: a bought-in service; the cutter itself is a traded tool
           regrindsBeforeScrap: T.skivingCutterRegrindsBeforeScrap.value,
-        }).perPart;
+        }));
         break;
       }
       case 'grinding': {
@@ -651,8 +684,10 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
           dressingSecPerPart: F.gearGrindDressingSecPerPart.value,
           loadUnloadSec: A.loadUnloadSec.value,
         });
-        toolingPerPart += T.grindingWheelCostGBP.value
-          / Math.max(1, T.grindingWheelPartsPerWheel.value);
+        addTool('Grinding wheel wear', {
+          perPart: T.grindingWheelCostGBP.value / Math.max(1, T.grindingWheelPartsPerWheel.value),
+          basis: `£${T.grindingWheelCostGBP.value} wheel ÷ ${T.grindingWheelPartsPerWheel.value.toLocaleString()} parts a wheel`,
+        });
         break;
       }
       case 'shaving':  flatSec = F.shavingSecPerPart.value + A.loadUnloadSec.value; break;
@@ -800,6 +835,7 @@ export function analyseGear(inputs: GearInputs): GearAnalysis {
     operations: ops,
     totalCycleSec,
     toolingCostPerPart: toolingPerPart,
+    toolingLines,
     nreCostGBP,
     nreLines,
     heatTreatCostPerPart: heatTreat,
@@ -827,13 +863,23 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
   // The blank is a pass-through with its own provenance; heat treat is a
   // per-part consumable bought by weight, which is exactly what
   // `consumablesCostPerPart` is for.
+  // The heat-treat package is itemised step by step (rate × weight, ÷ (1 − reject)), so the cost trace and both
+  // reports print what the £ is made of — it printed "the commodity does not itemise them" over a £3.17 package the
+  // module had already itemised (arithmetic audit, Oct 2026).
+  const rejectNote = rejectUplift !== 1 ? ` ÷ (1 − ${+((inputs.rejectRate ?? 0) * 100).toFixed(2)}% reject)` : '';
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
     netWeightKg: inputs.netWeightKg,
     materialUtilization: 1,
     directCost: inputs.blankCostPerPart * rejectUplift,
     ...(a.heatTreatCostPerPart > 0
-      ? { consumablesCostPerPart: a.heatTreatCostPerPart * rejectUplift }
+      ? {
+          consumablesCostPerPart: a.heatTreatCostPerPart * rejectUplift,
+          consumablesItems: a.heatTreatBreakdown.map(h => ({
+            label: `${h.step} — £${h.ratePerKg.toFixed(4)}/kg × ${+inputs.netWeightKg.toFixed(3)} kg${rejectNote}`,
+            gbp: h.costPerPart * rejectUplift,
+          })),
+        }
       : {}),
   };
 
@@ -851,7 +897,7 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
           labourId: inputs.labourId ?? DEFAULT_LABOUR,
           cycleTimeHr: cycleHr,
           partsPerCycle: 1,
-          oee: 0.80,
+          oee: GEAR_OEE,
           manning: GEAR_MACHINE_CREW,
           labourTimeHr: cycleHr,
           labourEfficiency: GEAR_LABOUR_EFFICIENCY,
@@ -872,7 +918,7 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
         labourId: inputs.labourId ?? LABOUR_BY_PROCESS[o.process] ?? DEFAULT_LABOUR,
         cycleTimeHr: cycleHr,
         partsPerCycle: 1,
-        oee: 0.80,
+        oee: GEAR_OEE,
         // Gear machines on auto-loaders are tended two to an operator; the deburr
         // cell and the gear checker take a whole one (gear review, Oct 2026).
         manning: o.process === 'deburr' || o.process === 'inspection' ? 1 : GEAR_MACHINE_CREW,
@@ -891,10 +937,24 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
   // NRE (fixture, programming, broach) is a fixed programme cost, so it is added
   // once and genuinely divides down as volume rises. Before this, only the first
   // term existed and the piece price was identical at 1k/yr and 1M/yr.
+  //
+  // Perishable wear is grossed up by the reject rate like every other per-part line: a gear scrapped at final
+  // inspection was hobbed and ground, so it wore the hob and the wheel (arithmetic audit, Oct 2026 — the blank,
+  // heat treat and every operation carried ÷ (1 − reject), the tool wear did not). Itemised so the reports print
+  // what the tooling total is made of; the items sum to the total.
+  const amort = inputs.amortizationVolume;
+  const items: Array<{ label: string; gbp: number }> = [
+    ...a.toolingLines.map(t => ({
+      label: `${t.item}: ${t.basis} = £${t.perPart.toFixed(4)}/part${rejectNote} × ${amort.toLocaleString()} parts`,
+      gbp: t.perPart * rejectUplift * amort,
+    })),
+    ...a.nreLines.map(l => ({ label: l.item, gbp: l.costGBP })),
+  ];
   const tooling: ToolingInput = {
-    totalToolingCost: a.toolingCostPerPart * inputs.amortizationVolume + a.nreCostGBP,
-    amortizationVolume: inputs.amortizationVolume,
+    totalToolingCost: items.reduce((s, i) => s + i.gbp, 0),
+    amortizationVolume: amort,
     mode: 'amortized',
+    items,
   };
 
   return { rawMaterial, operations, tooling };

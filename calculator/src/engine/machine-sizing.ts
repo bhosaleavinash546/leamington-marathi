@@ -64,6 +64,14 @@ export const STAMPING_PRESSES: ReadonlyArray<{ id: string; tonnes: number; bolst
   { id: 'press-1000t', tonnes: 1000, bolsterMm: 4200, maxSpm: 20 },
   { id: 'press-1250t', tonnes: 1250, bolsterMm: 4800, maxSpm: 18 },
 ];
+/** Newtons in one tonne-force: force (N) = cut length (mm) × gauge (mm) × shear (MPa); ÷ this gives tonnes. */
+export const N_PER_TONNE_FORCE = 9807;
+/** Press sized at the calculated force × this (snap-through, friction, tolerance; engineering-typical 1.25–1.5). */
+export const STAMPING_PRESS_SAFETY = 1.25;
+/** Die length beyond its stations on a progressive / transfer die — die ends, stock guides, lifters, mm (engineering-typical, not sourced). */
+export const DIE_END_ALLOWANCE_MM = 400;
+/** A single-operation die (tandem line, blanking die) over the blank it cuts or forms: binder, shoes, guides, mm (engineering-typical, not sourced). */
+export const SINGLE_DIE_ALLOWANCE_MM = 600;
 export function stampingPressFacts(id: string) {
   return STAMPING_PRESSES.find(p => p.id === id) ?? STAMPING_PRESSES[STAMPING_PRESSES.length - 1];
 }

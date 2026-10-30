@@ -31,17 +31,24 @@ export function estimateLaminationJoinCostPerStack(inputs: LaminationJoinInputs)
   return inCountry(joinCostUK(inputs), 'process');
 }
 
+/**
+ * UK £ per stack by joining method: a fixed part + a part per lamination (or per mm of stack). Engineering-typical
+ * reference figures, NOT sourced — `estimateLaminationFinishing` prints them on its basis (arithmetic audit L2).
+ */
+export const LAMINATION_JOIN_UK: Record<StackMethod, { fixed: number; per: number; by: 'lamination' | 'mm' }> = {
+  interlock: { fixed: 0.02, per: 0.0008, by: 'lamination' },        // in-die cleats — marginal handling only
+  'cleat-rivet': { fixed: 0.15, per: 0.004, by: 'lamination' },     // mechanical cleats / rivets
+  'loose-endplate': { fixed: 0.25, per: 0.010, by: 'mm' },          // end-plates + through-bolts, more assembly
+  'laser-weld': { fixed: 0.40, per: 0.030, by: 'mm' },              // OD stack welds, ~£/mm of weld
+  backlack: { fixed: 0.60, per: 0.006, by: 'lamination' },          // self-bonding varnish cure (oven time + varnish)
+};
+
 function joinCostUK(inputs: LaminationJoinInputs): number {
   const n = Math.max(1, Math.floor(inputs.laminationCount || 1));
   const h = Math.max(1, inputs.stackHeightMm ?? n * 0.35);
-  switch (inputs.stackMethod) {
-    case 'interlock':      return 0.02 + n * 0.0008;          // in-die cleats — marginal handling only
-    case 'cleat-rivet':    return 0.15 + n * 0.004;           // mechanical cleats / rivets
-    case 'loose-endplate': return 0.25 + h * 0.010;           // end-plates + through-bolts, more assembly
-    case 'laser-weld':     return 0.40 + h * 0.030;           // OD stack welds, ~£/mm of weld
-    case 'backlack':       return 0.60 + n * 0.006;           // self-bonding varnish cure (oven time + varnish)
-    default:               return 0.20;
-  }
+  const j = LAMINATION_JOIN_UK[inputs.stackMethod];
+  if (!j) return 0.20;
+  return j.fixed + (j.by === 'mm' ? h : n) * j.per;
 }
 
 // ─── Anneal + coating reference ───────────────────────────────────────────────
@@ -67,6 +74,8 @@ export interface LaminationFinishingBreakdown {
   coatingPerPart: number;
   /** Total per-part finishing consumable to feed extraConsumablesPerPart. */
   totalPerPart: number;
+  /** The arithmetic and its constants, for the report — every figure is an engineering-typical reference value. */
+  basis: string;
 }
 
 /**
@@ -81,13 +90,25 @@ export function estimateLaminationFinishing(inputs: LaminationFinishingInputs): 
   const annealEnergyPerPart = inputs.stressReliefAnneal
     ? LAMINATION_ANNEAL_KWH_PER_KG * Math.max(0, inputs.partWeightKg) * (inputs.annealEnergyPricePerKwh ?? tariffElectricityPerKwh())
     : 0;
-  const coatingPerPart = inputs.reCoat ? LAMINATION_COATING_GBP_PER_KG * Math.max(0, inputs.partWeightKg) : 0;
+  // The re-coat is a process service: priced in the costed country like the join (it was a bare UK £ — audit L1).
+  const coatPerKg = inCountry(LAMINATION_COATING_GBP_PER_KG, 'process');
+  const coatingPerPart = inputs.reCoat ? coatPerKg * Math.max(0, inputs.partWeightKg) : 0;
   const totalPerPart = joinPerPart + annealEnergyPerPart + coatingPerPart;
+  const j = LAMINATION_JOIN_UK[inputs.stackMethod];
+  const h = Math.max(1, inputs.stackHeightMm ?? n * 0.35);
+  const tariff = inputs.annealEnergyPricePerKwh ?? tariffElectricityPerKwh();
+  const basis = [
+    j ? `join ${inputs.stackMethod}: UK £${j.fixed} + ${j.by === 'mm' ? `${h} mm` : `${n} laminations`} × £${j.per} a stack, `
+      + `in the costed country, ÷ ${n} laminations` : `join: £0.20 a stack ÷ ${n}`,
+    ...(inputs.stressReliefAnneal ? [`anneal ${LAMINATION_ANNEAL_KWH_PER_KG} kWh/kg × ${inputs.partWeightKg} kg × £${tariff}/kWh`] : []),
+    ...(inputs.reCoat ? [`re-coat £${coatPerKg}/kg × ${inputs.partWeightKg} kg`] : []),
+  ].join(' + ') + ' — engineering-typical reference figures, not sourced';
   return {
     joinPerStack: Math.round(joinPerStack * 1000) / 1000,
     annealEnergyPerPart: Math.round(annealEnergyPerPart * 1000) / 1000,
     coatingPerPart: Math.round(coatingPerPart * 1000) / 1000,
     totalPerPart: Math.round(totalPerPart * 1000) / 1000,
+    basis,
   };
 }
 

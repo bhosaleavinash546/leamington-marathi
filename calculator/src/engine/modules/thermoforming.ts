@@ -2,6 +2,7 @@ import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput }
 import {
   thermoformFamilyOf, estimateHeatTimeSec, estimateCoolTimeSec,
   estimateThermoformSpecificEnergy, estimateThermoformToolCost,
+  thermoformFamilyData, AMBIENT_C, OVEN_EFFICIENCY, TF_FORMING_AIR_KWH_PER_KG,
   type ThermoformFamily, type ThermoformMethod, type MouldMaterial,
   type ToolCooling, type FormComplexity,
 } from './thermoforming-advisor.js';
@@ -118,8 +119,15 @@ export function computeThermoformingDrivers(inputs: ThermoformingInputs): Commod
   // with sheet mass ÷ parts, driven by material cp·ΔT and the forming method.
   const specificEnergy = estimateThermoformSpecificEnergy(family, method);   // kWh/kg of sheet
   // kWh for the core to price at the costing book's tariff; £ only when a tariff was typed (module-energy.ts).
-  const ovenEnergy = moduleEnergy(specificEnergy * inputs.sheetWeightKg / Math.max(1, inputs.partsPerSheet) * rejectUplift,
-    'electricity', inputs.energyPricePerKwh, 'sheet heating and forming energy');
+  // The basis prints the arithmetic and its constants (arith audit, Oct 2026).
+  const fd = thermoformFamilyData(family);
+  const pps = Math.max(1, inputs.partsPerSheet);
+  const energyBasis = `sheet heating and forming energy: ${inputs.sheetWeightKg} kg sheet × ${specificEnergy} kWh/kg `
+    + `(${fd.cpKJ} kJ/kg·K × (${fd.formTempC} − ${AMBIENT_C}) K ÷ 3600 ÷ ${OVEN_EFFICIENCY} oven coupling + ${TF_FORMING_AIR_KWH_PER_KG[method]} ${method} air`
+    + `${method === 'twin_sheet' ? ', twin sheet heats two webs' : ''} — engineering-typical, not sourced)`
+    + ` ÷ ${pps} part${pps === 1 ? '' : 's'} × ${rejectUplift.toFixed(4)} reject uplift`;
+  const ovenEnergy = moduleEnergy(specificEnergy * inputs.sheetWeightKg / pps * rejectUplift,
+    'electricity', inputs.energyPricePerKwh, energyBasis);
   const energyCostPerPart = ovenEnergy.gbp;
 
   // ── Additive / masterbatch (UV, anti-static, FR, impact modifier) ──

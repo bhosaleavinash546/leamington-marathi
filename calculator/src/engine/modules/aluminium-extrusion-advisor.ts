@@ -151,11 +151,13 @@ export function dieCost(type: AlDieType, ccdMm: number, holes: number, s: AlSect
   const cf = countryFactor(AL_TOOL_BASIS);
   let gbp = (d.baseGbp + d.perMmGbp * ccdMm) * (1 + 0.45 * (holes - 1)) * cf;
   const notes = [`£${d.baseGbp} + £${d.perMmGbp}/mm × ${ccdMm.toFixed(0)} mm circle (UK)${countryNote(AL_TOOL_BASIS)}`];
-  if (holes > 1) notes.push(`× ${(1 + 0.45 * (holes - 1)).toFixed(2)} for ${holes} openings`);
+  if (holes > 1) notes.push(`× ${(1 + 0.45 * (holes - 1)).toFixed(2)} for ${holes} openings (+45% an opening)`);
   if (s.voids > 2) { gbp *= 1.3; notes.push('×1.3 multi-void'); }
   const intricacy = s.perimeterMm * Math.max(0.5, s.minWallMm) / (2 * s.areaMm2);
   if (intricacy > 1.3) { gbp *= 1.3; notes.push('×1.3 intricate outline'); }
-  return { gbp: Math.round(gbp), lifeKg: d.lifeT * 1000, basis: `${d.label}: ${notes.join(' ')}; life ${d.lifeT} t (H13 30–80 t published), nitrided every ${AL_DIE_NITRIDE.everyT} t` };
+  return { gbp: Math.round(gbp), lifeKg: d.lifeT * 1000, basis: `${d.label}: ${notes.join(' ')} = £${Math.round(gbp).toLocaleString('en-GB')} a die — ESTIMATE `
+    + `(European die-maker figures above the published Asian $300–10,000; the opening / void / intricacy multipliers engineering-typical); `
+    + `life ${d.lifeT} t (H13 30–80 t published), nitrided every ${AL_DIE_NITRIDE.everyT} t at £${AL_DIE_NITRIDE.gbp}` };
 }
 
 /** The full press plan for a profile. */
@@ -265,7 +267,9 @@ export function planAlExtrusion(inp: AlPlanInput): AlPressPlan {
   basis.push(`billet ${billetMm.toFixed(0)} mm (${billetKg.toFixed(1)} kg) → ${holes} × ${strandM.toFixed(1)} m strand = ${mills} mill length${mills === 1 ? '' : 's'} `
     + `of ${(millLengthMm / 1000).toFixed(2)} m × ${partsPerMill} part${partsPerMill === 1 ? '' : 's'} → ${partsPerPush} parts a push; `
     + `butt ${buttMm} mm, strand ends ${AL_LINE.endScrapM} m, trims 2 × ${trim} mm a mill length, kerf ${kerf} mm → recovery ${(extrudedKgPerPart / billetKgPerPart * 100).toFixed(1)}%`);
-  basis.push(`exit ${sp.v} m/min (${sp.basis}); push ${pushSec.toFixed(0)} s + dead cycle ${press.deadCycleSec} s`);
+  basis.push(`exit ${sp.v} m/min (${sp.basis}); push ${strandM.toFixed(2)} m ÷ ${sp.v} m/min = ${pushSec.toFixed(1)} s + dead cycle ${press.deadCycleSec} s = ${cycle.toFixed(1)} s a push`
+    + ` — ${(billetKg / (cycle / 3600) / 1000).toFixed(2)} t/h of billet while pushing; the speed factors, the ${press.maxRamMmPerSec} mm/s ram ceiling and the dead cycle are`
+    + ` engineering-typical, not sourced (two published press specifications: 14 s dead cycle, 20–30 mm/s maximum ram — these are on the slow side)`);
 
   // Runs: monthly, but never shorter than a few press hours (a die change each).
   const pressHrsPerYear = inp.annualVolume / partsPerPush * cycle / 3600;

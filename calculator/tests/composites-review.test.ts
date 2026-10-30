@@ -107,14 +107,16 @@ describe('6. the rest of the cell is ruled, the same on both paths', () => {
     const p = toCostParams('composites', analysis.costInputSuggestions as never, 5_000, null, c.geo)!.params;
     expect(p).toMatchObject({ trimMachineId: 'waterjet-5ax-composite', manning: 1, oee: 0.8, labourEfficiency: 0.92,
       rejectRate: 0.04, ndiCostPerPart: 0, cureMachineId: 'rtm-press-std', toolsInService: 3 });
-    expect(comp(HAT, 'prepreg-cf').ndiCostPerPart).toBe(25);
+    // The C-scan is a station (load + area ÷ scan rate) × (inspector + cell), not a flat £25 (arithmetic audit C2).
+    expect(comp(HAT, 'prepreg-cf').ndiCostPerPart).toBeCloseTo(0.86, 2);
   });
 });
 
 describe('7. baseline', () => {
   it('records all three at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === ROOF)!.outcome.total).toBe(432.02);
+    // Arithmetic audit (30 Oct 2026): prepreg bought at the whole laminate mass (roof +), NDI as a station (hat −£25).
+    expect(baseline.find(b => b.part === ROOF)!.outcome.total).toBe(479.83);
     expect(baseline.find(b => b.part === LID)!.outcome.total).toBe(84.02);
-    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(98.69);
+    expect(baseline.find(b => b.part === HAT)!.outcome.total).toBe(73.55);
   });
 });

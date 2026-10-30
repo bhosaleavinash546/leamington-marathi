@@ -124,7 +124,7 @@ import {
 } from '../engine/modules/rubber-advisor.js';
 import { computeCompositeDrivers } from '../engine/modules/composites.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
-import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
+import { computeWiringHarnessDrivers, harnessCrimpCheck } from '../engine/modules/wiring-harness.js';
 import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison, alBilletMaterialFactors, DEFAULT_RC_REGIONS, regionalShopDefaults } from '../engine/regional-rates.js';
 import type { AlAlloy } from '../engine/al-extrusion-data.js';
 import { featureToOperation } from '../engine/feature-ops.js';
@@ -208,7 +208,6 @@ import {
 import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { computeFeatureCosting } from '../engine/feature-costing.js';
 import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../engine/machining-time.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { generateInsights, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
@@ -672,6 +671,11 @@ function buildPartDetail(result: PartCostResult, input: UniversalStackInput): Pa
     amortVolume: input.tooling.amortizationVolume,
     overheadPct: input.overheadPct,
     marginPct: input.marginPct,
+    // The costing's own packaging, logistics and bought-in parts: without them the margin base and "our total" were
+    // short and a quote identical to the should-cost showed a margin gap (arithmetic audit features F1 / P1).
+    packagingPerPart: input.packagingPerPart,
+    logisticsPerPart: input.logisticsPerPart,
+    ...(input.rawMaterial.boughtIn ? { boughtInGBP: input.rawMaterial.boughtIn.cost, boughtInHandlingPct: input.rawMaterial.boughtIn.handlingPct } : {}),
     annualVolume: input.annualVolume,
     total: result.total,
   };
@@ -3011,8 +3015,8 @@ function _fillAgentParams(commodity: CommodityType, params: Record<string, unkno
       setVal('mach-mat', params.materialId);
       if (typeof params.netWeightKg === 'number') {
         setVal('mach-net-wt', params.netWeightKg.toFixed(3));
-        const util = typeof params.materialUtilization === 'number' ? params.materialUtilization : 0.65;
-        setVal('mach-stock-wt', (params.netWeightKg / util).toFixed(3));
+        // Stock only from a stated utilisation — an assumed 0.65 was a number nobody gave (arithmetic audit AI-16).
+        if (typeof params.materialUtilization === 'number' && params.materialUtilization > 0) setVal('mach-stock-wt', (params.netWeightKg / params.materialUtilization).toFixed(3));
       }
       setVal('mach-tooling', params.toolingCost);
       setVal('mach-amort', params.amortizationVolume);
@@ -3021,14 +3025,17 @@ function _fillAgentParams(commodity: CommodityType, params: Record<string, unkno
         if (container) container.innerHTML = '';
         machOpCount = 0;
         for (const op of params.operations as Record<string, unknown>[]) {
+          // An operation the server sent without a cycle time is skipped, never filled with an assumed 0.08 h; the
+          // other fields fall back to the FORM's own defaults (shop OEE / efficiency), not to new numbers (AI-16).
+          if (typeof op.cycleTimeHr !== 'number' || !(op.cycleTimeHr > 0)) continue;
           addMachOp({
             machineId: String(op.machineId ?? 'mach-vmc3'),
             labourId: String(op.labourId ?? 'lab-uk-skilled'),
-            cycleTimeHr: Number(op.cycleTimeHr ?? 0.08),
-            oee: Number(op.oee ?? 0.85),
-            manning: Number(op.manning ?? 1),
-            labourTimeHr: Number(op.labourTimeHr ?? op.cycleTimeHr ?? 0.08),
-            labourEfficiency: Number(op.labourEfficiency ?? 0.92),
+            cycleTimeHr: op.cycleTimeHr,
+            ...(typeof op.oee === 'number' ? { oee: op.oee } : {}),
+            ...(typeof op.manning === 'number' ? { manning: op.manning } : {}),
+            labourTimeHr: Number(op.labourTimeHr ?? op.cycleTimeHr),
+            ...(typeof op.labourEfficiency === 'number' ? { labourEfficiency: op.labourEfficiency } : {}),
           });
         }
       }
@@ -3042,8 +3049,8 @@ function _fillAgentParams(commodity: CommodityType, params: Record<string, unkno
       setVal('smf-blank-ct', params.blankingCycleTimeSec);
       setVal('smf-bends', params.bendCount);
       setVal('smf-bend-t', params.timePerBendSec);
-      setVal('smf-tool-chg', params.toolChangeCount ?? 1);
-      setVal('smf-tool-chg-t', params.toolChangeTimeSec ?? 300);
+      setVal('smf-tool-chg', params.toolChangeCount);
+      setVal('smf-tool-chg-t', params.toolChangeTimeSec);
       setVal('smf-tolerance', params.toleranceMm);
       setVal('smf-tooling', params.toolingCost);
       setVal('smf-amort', params.amortizationVolume);
@@ -3058,13 +3065,14 @@ function _fillAgentParams(commodity: CommodityType, params: Record<string, unkno
     case 'injection_moulding': {
       setVal('imm-mat', params.materialId);
       setVal('imm-part-wt', params.partWeightKg);
-      setVal('imm-runner-wt', params.runnerWeightKg ?? 0.01);
-      setVal('imm-wall', params.wallThicknessMm ?? 2.0);
-      setVal('imm-cav', params.cavities ?? 4);
-      setVal('imm-mould-cost', params.mouldCost ?? Math.round(25000 * countryFactor({ globalShare: 0.2, rest: 'toolroom' })));
-      setVal('imm-mould-life', params.mouldLife ?? 500000);
+      // Absent → the form keeps its own value; never a new unlabelled number (arithmetic audit AI-16).
+      setVal('imm-runner-wt', params.runnerWeightKg);
+      setVal('imm-wall', params.wallThicknessMm);
+      setVal('imm-cav', params.cavities);
+      setVal('imm-mould-cost', params.mouldCost);
+      setVal('imm-mould-life', params.mouldLife);
       setVal('imm-amort', params.amortizationVolume);
-      setVal('imm-tolerance', params.toleranceMm ?? 0.2);
+      setVal('imm-tolerance', params.toleranceMm);
       setVal('imm-finish', params.surfaceFinishGrade ?? 'standard');
       if (params.runnerSystem) setVal('imm-runner-sys', params.runnerSystem);
       setTimeout(() => setVal('imm-mach', params.machineId ?? 'imm-160t'), 50);
@@ -3079,8 +3087,8 @@ function _fillAgentParams(commodity: CommodityType, params: Record<string, unkno
       }
       setVal('cast-amort', params.amortizationVolume);
       if ((params.subtype ?? 'hpdc') === 'hpdc') {
-        setVal('cast-hpdc-cav', params.cavitiesPerMould ?? 2);
-        setVal('cast-hpdc-die-cost', params.toolingCost ?? Math.round(80000 * countryFactor({ globalShare: 0.2, rest: 'toolroom' })));
+        setVal('cast-hpdc-cav', params.cavitiesPerMould);
+        setVal('cast-hpdc-die-cost', params.toolingCost);
       }
       break;
     }
@@ -6564,67 +6572,16 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
 }
 
 /**
- * #3 Feature-based costing card — turns OCCT feature recognition (holes, threads,
- * planar vs free-form faces, undercuts, setups) into a per-feature cost breakdown
- * + DFM, so the designer sees exactly which features drive machining cost.
+ * #3 Feature-based costing card — REMOVED (arithmetic audit, 30 Oct 2026, machining H1).
+ *
+ * It printed a £ and minutes figure from its own heuristic (0.85 min a planar face, 2.6 min a free-form face, tapped
+ * threads guessed at 30 % of holes, 30 min of set-up charged on EVERY part, a material factor guessed from the AI's
+ * material id) at the VMC rate: Part1 showed £45.60 · 247 min beside a costing of £21.70 · 39.6 min. A £ on screen
+ * that is neither measured, the rate book, an answer nor arithmetic on them. The costed operation lines, the DFM
+ * findings (dfmFindingAmounts) and the viewer's £ per face are the feature costs the reader needs.
  */
 function buildFeatureCostCard(): string {
-  // A CNC build-up is a machining figure: on a moulding, casting-only or pressing route it printed "£26.50 · 143.5 min"
-  // of milling next to a part that is never milled (ECU cover, CAD to COST 360 live run, Oct 2026).
-  const route = cadAnalysisResult?.costInputSuggestions?.recommendedCommodity;
-  if (route && route !== 'machining' && route !== 'cast_and_machine') return '';
-  const f = cadOCCTGeometry?.features;
-  if (!f || (f.estimatedHoleCount + f.planarFaceCount + f.freeFormFaceCount) === 0) return '';
-  const undercuts = cadOCCTGeometry?.draftAnalysis?.undercutFaceCount ?? 0;
-  const setups = cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? 1;
-  const threadCount = f.threadFeaturesDetected ? Math.max(1, Math.round(f.estimatedHoleCount * 0.3)) : 0;
-  // Material factor from the AI-suggested material (harder alloys machine slower).
-  const matStr = `${cadAnalysisResult?.costInputSuggestions?.materialId ?? ''}`.toLowerCase();
-  const matFactor = /ti|titan/.test(matStr) ? 2.5 : /inconel|nickel|superalloy/.test(matStr) ? 3.0
-    : /steel|stainless|iron/.test(matStr) ? 1.5 : /alum/.test(matStr) ? 1.0 : 1.2;
-
-  // Physical envelope for the small-part cap + a region-consistent CNC rate.
-  const bb = cadOCCTGeometry?.boundingBox;
-  const stockVolumeCm3 = bb ? (bb.xMm * bb.yMm * bb.zMm) / 1000 : undefined;
-  const maxDimMm = bb ? Math.max(bb.xMm, bb.yMm, bb.zMm) : undefined;
-  const cncRate = library.machines.find(m => m.id === resolveMachineIdForOp('mach-vmc3', 'CNC Milling'))?.computedRatePerHr;
-
-  const fc = computeFeatureCosting({
-    holeCount: f.estimatedHoleCount, holeRadiiMm: f.holeRadiiMm ?? [],
-    threadCount, planarFaceCount: f.planarFaceCount, freeFormFaceCount: f.freeFormFaceCount,
-    undercutFaceCount: undercuts, setupCount: setups,
-  }, {
-    materialFactor: matFactor,
-    machineRateGBPPerHr: cncRate,
-    partVolumeCm3: cadOCCTGeometry?.volume?.cm3,
-    stockVolumeCm3,
-    surfaceAreaCm2: cadOCCTGeometry?.surfaceArea?.cm2,
-    maxDimMm,
-  });
-
-  const rows = fc.lines.map(l => `
-    <tr>
-      <td style="padding:3px 8px">${escHtml(l.feature)}</td>
-      <td style="padding:3px 8px;text-align:right">${l.count}</td>
-      <td style="padding:3px 8px;text-align:right">${l.totalMinutes} min</td>
-      <td style="padding:3px 8px;text-align:right;font-weight:600">${_currFmt(l.costGBP)}</td>
-      <td style="padding:3px 8px;text-align:right;color:var(--text-muted)">${l.pctOfCost}%</td>
-    </tr>`).join('');
-  const dfm = fc.dfm.map(d => `<div style="font-size:0.72rem;color:${d.severity === 'major' ? 'var(--amber, #d97706)' : 'var(--text-secondary)'};margin-top:3px">• ${escHtml(d.title)} — ${escHtml(d.recommendation)}</div>`).join('');
-
-  return `
-    <div style="margin-bottom:12px;border:1px solid var(--border);border-left:4px solid #0891b2;border-radius:8px;padding:10px 12px;background:var(--surface-elevated)">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-        <div class="panel-title" style="margin:0">Feature-based cost breakdown <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(from CAD geometry)</span></div>
-        <div style="font-size:0.95rem;font-weight:700;color:#0891b2">${_currFmt(fc.machiningCostGBP)} <span style="font-size:0.72rem;color:var(--text-muted)">· ${fc.totalCycleMin} min</span></div>
-      </div>
-      <table style="width:100%;border-collapse:collapse;font-size:0.76rem;margin-top:8px">
-        <tr style="color:var(--text-muted);text-align:left"><th style="padding:2px 8px;font-weight:600">Feature</th><th style="padding:2px 8px;text-align:right">Count</th><th style="padding:2px 8px;text-align:right">Time</th><th style="padding:2px 8px;text-align:right">Cost</th><th style="padding:2px 8px;text-align:right">%</th></tr>
-        ${rows}
-      </table>
-      <div style="margin-top:6px;font-size:0.72rem;color:var(--text-secondary)">Cost driver: <strong>${escHtml(fc.costliestFeature)}</strong></div>
-      ${dfm ? `<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:5px">${dfm}</div>` : ''}
-    </div>`;
+  return '';
 }
 
 /**
@@ -12412,8 +12369,16 @@ function switchCommodity(type: CommodityType): void {
         const lineEl = el<HTMLSelectElement>('paint-line');
         if (lineEl) { const opt = Array.from(lineEl.options).find(o => o.value.includes('paint-line')); if (opt) lineEl.value = opt.value; }
       }, 0);
-      addCoatRow({ coatType: 'e_coat',   materialId: 'mat-paint-ecoat',    dftMicrons: 20, solidsPct: 0.20, transferEfficiency: 0.95, paintDensityKgPerL: 1.3,  pricePerL: 4.55 });
-      addCoatRow({ coatType: 'basecoat', materialId: 'mat-paint-basecoat', dftMicrons: 15, solidsPct: 0.35, transferEfficiency: 0.70, paintDensityKgPerL: 1.25, pricePerL: 10.25 });
+      {
+        // Price the default coats from the library grade they name (£/kg × kg/L) — a typed £4.55 / £10.25 a litre was
+        // an older book's figure beside the grade id it claimed (arithmetic audit spec P2).
+        const perL = (id: string, kgPerL: number, fallback: number) => {
+          const m = library.materials.find(x => x.id === id);
+          return m ? Math.round(m.pricePerKg * kgPerL * 1000) / 1000 : fallback;
+        };
+        addCoatRow({ coatType: 'e_coat',   materialId: 'mat-paint-ecoat',    dftMicrons: 20, solidsPct: 0.20, transferEfficiency: 0.95, paintDensityKgPerL: 1.3,  pricePerL: perL('mat-paint-ecoat', 1.3, 4.55) });
+        addCoatRow({ coatType: 'basecoat', materialId: 'mat-paint-basecoat', dftMicrons: 15, solidsPct: 0.35, transferEfficiency: 0.70, paintDensityKgPerL: 1.25, pricePerL: perL('mat-paint-basecoat', 1.25, 10.25) });
+      }
       break;
 
     case 'biw_assembly':
@@ -13815,7 +13780,10 @@ const SURFACE_FORMS: Record<string, Array<[string, string]>> = {
  * serves three forms and they cannot drift apart.
  */
 function renderSurfaceFinishingSection(prefix: string, family: 'sheet' | 'casting' | 'forging'): string {
-  const routes = Object.entries(SURFACE_ROUTE_LABELS)
+  // A casting / forging form already charges its shot blast (and a forging its descale): a route that starts with a
+  // blast would charge it twice — the CAD screen never offers them there (arithmetic audit spec F7).
+  const repeatsCharged = new Set(family === 'sheet' ? [] : ['blast_only', 'blast_zinc', 'cast_ecoat']);
+  const routes = Object.entries(SURFACE_ROUTE_LABELS).filter(([v]) => !repeatsCharged.has(v))
     .map(([v, l]) => `<option value="${v}"${v === '' ? ' selected' : ''}>${escHtml(l)}</option>`).join('');
   const forms = SURFACE_FORMS[family]
     .map(([v, l], i) => `<option value="${v}"${i === 0 ? ' selected' : ''}>${escHtml(l)}</option>`).join('');
@@ -14832,6 +14800,10 @@ function collectWiringHarnessInput(): UniversalStackInput {
     }))
     .filter(c => c.count > 0);
 
+  // The per-terminal crimp times are a cross-check, not a cost: say so when they exceed the assembly time that IS
+  // costed (arithmetic audit spec A2 — the form claimed they "drive crimping labour").
+  const crimp = harnessCrimpCheck({ connectors, assemblyTimeHr: num('harn-asm-time') || 0.45 });
+  if (crimp) _smExtraWarnings.push(crimp);
   const drivers = computeWiringHarnessDrivers({
     wires,
     connectors,
@@ -15509,9 +15481,11 @@ function handleAIAutofill(): void {
         };
         const setF = (id: string, v: unknown) => {
           if (v == null) return;
-          if (typeof v === 'number' && !stated(v)) { refused++; return; }
+          // A number sent as a string ("0.15") is still a number the model supplied — check it too (arithmetic audit AI-15).
+          const n = typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v.replace(/,/g, ''))) ? Number(v.replace(/,/g, '')) : v;
+          if (typeof n === 'number' && !stated(n)) { refused++; return; }
           const e = document.getElementById(id) as HTMLInputElement | null;
-          if (e) { e.value = String(v); filled++; }
+          if (e) { e.value = String(n); filled++; }
         };
         if (p.partName)     setF('part-name', p.partName);
         if (p.annualVolume) setF('annual-volume', p.annualVolume);
@@ -15764,7 +15738,7 @@ tr:not(:last-child) td{border-bottom:1px solid #f1f5f9}
   </table>
   <div class="footer">
     <span>Generated by CostVision • ${date}</span>
-    <span>Indicative only — based on published 2025 Q2 rate benchmarks</span>
+    <span>Indicative only — costed in the rate book shown on the costing (each figure with its source)</span>
   </div>
 </div>
 <script>window.print();<\/script>
@@ -16961,15 +16935,17 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
       })()}
 
       ${insights.length === 0
-        ? '<div class="placeholder">Cost structure is within industry benchmarks. No significant optimisation opportunities identified.</div>'
+        ? '<div class="placeholder">No insight rule fired on this costing. (The rules are CostVision heuristics, not industry benchmarks.)</div>'
         : insightCards}
 
       <div style="margin-top:16px">
         <div class="detail-section-title">Regional Cost Comparison — Full Breakdown</div>
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
           <span style="font-size:0.72rem;color:var(--text-muted)">
-            Per-region should-cost using 2025 Q2 labour, energy and rate benchmarks.
-            Green = cheapest per column, Red = highest. Tooling fixed. Indicative — confirm with RFQ.
+            Per-region should-cost: the part re-costed in each country's own rate book (labour, energy, machines, materials,
+            services and tool build-ups in that country). Rows marked † are scaled from this costing instead and carry its
+            services and consumables. Landed adds an indicative duty and freight % per country (CostVision estimate, not sourced).
+            Green = cheapest per column, Red = highest. Indicative — confirm with RFQ.
           </span>
           <button id="landed-cost-toggle" class="btn ${_landedCostMode ? 'btn-primary' : 'btn-secondary'} btn-sm" style="flex-shrink:0">
             ${_landedCostMode ? 'Landed: ON' : 'Landed Cost'}
@@ -19171,6 +19147,9 @@ function loadSUVDemo(commodity: string, slot: number): void {
           const paintLab3 = el<HTMLSelectElement>('paint-lab');
           if (paintLab3) { const o = Array.from(paintLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) paintLab3.value = o.value; }
           (el<HTMLInputElement>('paint-line-rate')).value = '18';
+          // The demo STATES 18 parts an hour: cost it at that rate, not the stage model's default 6 a rack × 20 racks (arithmetic audit spec P1).
+          (el<HTMLInputElement>('paint-parts-per-rack')).value = '1';
+          (el<HTMLInputElement>('paint-racks-per-hr')).value = '18';
           (el<HTMLInputElement>('paint-oee')).value = '0.85';
           (el<HTMLInputElement>('paint-manning')).value = '5';
           (el<HTMLInputElement>('paint-lab-eff')).value = '0.92';
@@ -19189,6 +19168,8 @@ function loadSUVDemo(commodity: string, slot: number): void {
           const paintLab = el<HTMLSelectElement>('paint-lab');
           if (paintLab) { const o = Array.from(paintLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) paintLab.value = o.value; }
           (el<HTMLInputElement>('paint-line-rate')).value = slot === 1 ? '15' : '60';
+          (el<HTMLInputElement>('paint-parts-per-rack')).value = '1';
+          (el<HTMLInputElement>('paint-racks-per-hr')).value = slot === 1 ? '15' : '60';
           (el<HTMLInputElement>('paint-oee')).value = slot === 1 ? '0.85' : '0.88';
           (el<HTMLInputElement>('paint-manning')).value = slot === 1 ? '6' : '4';
           (el<HTMLInputElement>('paint-lab-eff')).value = slot === 1 ? '0.92' : '0.95';
@@ -19214,6 +19195,10 @@ function loadSUVDemo(commodity: string, slot: number): void {
           (el<HTMLInputElement>('biw-amort')).value = '60000';
           addBIWStation({ stationName: 'Robot Framing Jig', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
           addBIWStation({ stationName: 'Robot Spot Weld Array (28 welds)', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1.8/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
+          // The station says 28 welds: cost 28 welds' consumables, not the form's 120 (arithmetic audit spec B2).
+          el('join-body').innerHTML = ''; joinCount = 0;
+          addJoinRow({ type: 'spot_weld', count: 28, costPerJoint: 0.05 });
+          addJoinRow({ type: 'adhesive_m', count: 0.8, costPerJoint: 1.20 });
           addBIWStation({ stationName: 'MIG Seam Weld — Inner Frame', machineId: 'mig-welder-manual', labourId: 'lab-uk-skilled', cycleTimeHr: 1.5/60, oee: 0.80, manning: 1, labourEfficiency: 0.90 });
           addBIWStation({ stationName: 'Quality Inspection Station', machineId: 'bench-assembly', labourId: 'lab-uk-inspector', cycleTimeHr: 0.5/60, oee: 0.90, manning: 1, labourEfficiency: 0.95 });
           (el<HTMLInputElement>('packaging')).value = '1.80';
@@ -21349,6 +21334,7 @@ function renderCADCostCard(): void {
     annualVolume: input.annualVolume ?? 0,
     programmeYears: input.programmeYears ?? null,
     toolingTotal: input.tooling.totalToolingCost,
+    ...(input.tooling.items?.length ? { toolingItems: input.tooling.items } : {}),
     amortisationVolume: input.tooling.amortizationVolume,
     band: _lastBandInfo ? { pm: _lastBandInfo.pm, p10: _lastBandInfo.p10 ?? null, p90: _lastBandInfo.p90 ?? null } : null,
     confidence: _lastBandInfo?.conf ?? null,

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { resolveApiKey } from '../utils/api-key.js';
 import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
+import { labelModelFigures } from '../utils/agent-grounding.js';
 
 const router = Router();
 
@@ -53,7 +54,12 @@ router.post('/', async (req, res): Promise<void> => {
       messages: [{ role: 'user', content: message.trim() }],
     });
     const text = msg.content.map(b => b.type === 'text' ? b.text : '').join('');
-    res.json(text ? { reply: text } : { reply: 'No response.', aiUnavailable: true });
+    if (!text) { res.json({ reply: 'No response.', aiUnavailable: true }); return; }
+    // A £ / % in the reply that is not in the message (the costing figures the screen sent, or the user's words) is
+    // labelled as the model's under the reply — the cost commentary and the software panel print this text beside
+    // engine figures (AI-number leak audit, Oct 2026).
+    const labelled = labelModelFigures(text, [message]);
+    res.json(labelled.ungrounded.length ? { reply: labelled.text, modelFigures: labelled.ungrounded } : { reply: text });
   } catch (err) {
     const msg2 = err instanceof Error ? err.message : String(err);
     console.error('[AiChat] Error:', msg2);

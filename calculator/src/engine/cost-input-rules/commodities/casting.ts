@@ -45,9 +45,10 @@ import {
   PRESSURE_TIGHT_DECISION_ID, SAFETY_CRITICAL_DECISION_ID, TOLERANCE_CLASS_DECISION_ID,
 } from '../derive/service-context.js';
 
-/** Midpoint of a reference band — the honest single number to cost at. */
-function bandMid(band: readonly [number, number]): number {
-  return Math.round(((band[0] + band[1]) / 2) * 100) / 100;
+/** Midpoint of a reference band — the honest single number to cost at. Kept to 3 dp: the basis prints "midpoint",
+ *  and 0.45–0.60 rounded to 2 dp costed 0.53, not 0.525 (arithmetic audit, Oct 2026). */
+export function bandMid(band: readonly [number, number]): number {
+  return Math.round(((band[0] + band[1]) / 2) * 1000) / 1000;
 }
 
 /**
@@ -242,6 +243,26 @@ export function sandImpressions(footprint: [number, number]): number {
 }
 
 /** Minimum wall, guarding the known ray-cast artefact on sparse shells. */
+/**
+ * Shot blast of the CASTING, by the mass blasted. The casting route blasts the part as cast; cast + machine blasts the
+ * as-cast casting (finished + machining stock) before it is machined, so it passes that mass (arithmetic audit, Oct
+ * 2026: it blasted the finished mass, 7.36 kg of a 9.08 kg stub-axle casting).
+ */
+export function shotBlastOutcome(subtype: CastingSubtype, massKg: number, massLabel: string): RuleOutcome<number> {
+  const rate = libraryMachineRate('blast-machine');
+  const lab = activeLabourRate('lab-uk-foundry');   // the costed country's (rate-context.ts)
+  // The minimum charge is a UK £ figure: it follows the country like any bought-in process service (casting 360
+  // review X40 — the UK £0.10 bound in India, where the blast itself costs less).
+  const floor = Math.round(BLAST_MIN_CHARGE_UK * processServiceFactor() * 10_000) / 10_000;
+  const v = Math.max(floor, Math.round(massKg / BLAST_KG_PER_HR * (rate + lab) * 100) / 100);
+  return decided('casting.shotBlastCostPerPart', v, 'library',
+    `${subtype} castings are blasted to remove sand / scale / flash — ${massKg.toFixed(2)} ${massLabel} ÷ `
+    + `${BLAST_KG_PER_HR} kg/h (the low end of a 0.5–2 t/h tumble / hanger blast; engineering-typical, not sourced) × `
+    + `(blast machine £${rate.toFixed(2)}/h + operator £${lab.toFixed(2)}/h), `
+    + `min £${floor === BLAST_MIN_CHARGE_UK ? floor.toFixed(2) : `${floor.toFixed(3)} (UK £${BLAST_MIN_CHARGE_UK.toFixed(2)}${countryNote('process')})`}`
+    + ' (CostVision engineering heuristic)', 0.5);
+}
+
 export function minWallMm(ctx: RuleContext): number {
   const g = ctx.geo;
   const measured = g.wallThickness?.minMm;
@@ -350,8 +371,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const y = bandMid(band);
         return decided('casting.yieldFraction', y, 'library',
           byAlloy
-            ? `${r.advice.process} ${r.advice.alloy} yield band ${band[0]}–${band[1]}, midpoint (feeding scales with the alloy's shrinkage)`
-            : `${r.advice.process} yield band ${band[0]}–${band[1]}, midpoint`, 0.8);
+            ? `${r.advice.process} ${r.advice.alloy} yield band ${band[0]}–${band[1]}, midpoint (feeding scales with the alloy's shrinkage; engineering-typical band, not sourced — the foundry's method yield replaces it)`
+            : `${r.advice.process} yield band ${band[0]}–${band[1]}, midpoint (engineering-typical band, not sourced)`, 0.8);
       },
     },
     {
@@ -384,7 +405,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
           : n >= 1 ? [0.75, `${n} undercut face(s) — a small core or loose piece (£0.50–2)`]
           : [0, 'no undercut along the best pull — the pattern draws cleanly, no core'];
         return decided('casting.coreCostPerPart', countryGbp(cost, CORE_BASIS), 'geometry',
-          `${band}; per-part core (sand, binder, labour), material consumable — a default band (UK)${countryNote(CORE_BASIS)}, not a core-shop quote`, 0.55);
+          `${band}; per-part core (sand, binder, labour), material consumable — a default band (UK, engineering-typical, not sourced)${countryNote(CORE_BASIS)}, not a core-shop quote`, 0.55);
       },
     },
     {
@@ -418,7 +439,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
             'no measured volume / surface — HPDC band default', 0.3);
         }
         return decided('casting.cycleTimeHpdcSec', Math.round(45 + 3 * wall), 'rule',
-          `45 s dry cycle + 3 s/mm × ${wall.toFixed(1)} mm casting section (2·V/S, the modulus freezing time scales with)`, 0.7);
+          `45 s dry cycle + 3 s/mm × ${wall.toFixed(1)} mm casting section (2·V/S, the modulus freezing time scales with; CostVision engineering heuristic, not sourced)`, 0.7);
       },
     },
     {
@@ -467,8 +488,12 @@ export const CASTING_RULES: CommodityRuleSpec = {
           const kernel = pick[r.advice.subtype];
           return decided('casting.dieMouldCostGBP', est.total, 'advisor',
             `${r.advice.subtype} toolmaker shop model: ${est.detail.labourHours.toLocaleString()} toolroom hours `
-            + `+ steel + bought-outs from a ${Math.round(area)} cm² parting footprint${imps > 1 ? ` × ${imps} impressions on the plate` : ''}, ${complexity} `
-            + `(${under} undercut face(s) ≈ ${slides} slide(s)${r.advice.subtype === 'sand' || r.advice.subtype === 'investment' ? `, ${cores} core box(es)` : ''})`
+            + `+ ${r.advice.subtype === 'sand' ? 'aluminium plate' : 'steel'} + bought-outs from a ${Math.round(area)} cm² parting footprint${imps > 1 ? ` × ${imps} impressions on the plate` : ''}, `
+            // A sand pattern has no slides and the sand model takes no complexity: it printed "complex (32 undercut
+            // face(s) ≈ 6 slide(s))" on a pattern costed with core boxes only (arithmetic audit, Oct 2026).
+            + (r.advice.subtype === 'sand'
+              ? `${cores} core box(es) (${under} undercut face(s))`
+              : `${complexity} (${under} undercut face(s) ≈ ${slides} slide(s)${r.advice.subtype === 'investment' ? `, ${cores} core box(es)` : ''})`)
             + (kernel != null ? `; the kernel's face-count parametric (UK basis, not country-adjusted) said £${Math.round(kernel).toLocaleString()} (not used)` : '')
             + ' — a quotation overrides this', 0.6);
         }
@@ -504,10 +529,12 @@ export const CASTING_RULES: CommodityRuleSpec = {
         if (r.advice.subtype === 'sand') {
           const imps = Math.max(1, sandImpressions(mouldFootprintMm(ctx) ?? [1e9, 1e9]));
           return decided('casting.dieMouldLife', life.sand * imps, 'library',
-            `sand pattern life band ${life.sand.toLocaleString()} moulds × ${imps} impression(s) a mould`, 0.55);
+            `sand pattern life band ${life.sand.toLocaleString()} moulds × ${imps} impression(s) a mould = ${(life.sand * imps).toLocaleString()} castings `
+            + '(engineering-typical, not sourced — the wood-pattern band; the pattern priced is an aluminium match plate, which '
+            + 'usually lasts longer, so the pattern sets and tooling per part may be overstated: a foundry\'s pattern life replaces it)', 0.55);
         }
         return decided('casting.dieMouldLife', life[r.advice.subtype], 'library',
-          `${r.advice.subtype} tool life band`, 0.6);
+          `${r.advice.subtype} tool life band ${life[r.advice.subtype].toLocaleString()} ${r.advice.subtype === 'hpdc' ? 'shots' : 'castings'} (engineering-typical, not sourced)`, 0.6);
       },
     },
     {
@@ -662,7 +689,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const fNote = hf !== 1 ? ` × country heat-treat factor ${hf}` : '';
         if (steel) {
           return decided('casting.heatTreatCostPerKg', inCountry(HEAT_TREAT_COST_PER_KG['stress-relieve']), 'library',
-            `cast steel is normalised to refine the as-cast grain — £${HEAT_TREAT_COST_PER_KG['stress-relieve']}/kg (advisor rate, UK)${fNote}`, 0.6);
+            `cast steel is normalised to refine the as-cast grain — £${HEAT_TREAT_COST_PER_KG['stress-relieve']}/kg × the as-cast kg (the advisor's stress-relieve / normalise rate, UK; engineering-typical, not sourced — a heat treater's quote replaces it)${fNote}`, 0.6);
         }
         if (iron) {
           // Pilot rule pack (30 Oct 2026): grey and ductile iron are supplied as-cast — EN 1561 / EN 1563 grades are
@@ -677,7 +704,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
         if (al && r.advice.process !== 'hpdc') {
           const t = r.advice.process === 'megacasting' ? 'T7 (priced at the T6 rate)' : 'T6';
           return decided('casting.heatTreatCostPerKg', inCountry(HEAT_TREAT_COST_PER_KG.t6), 'library',
-            `${r.advice.process} aluminium is solution treated and aged, ${t} — £${HEAT_TREAT_COST_PER_KG.t6}/kg (advisor rate, UK)${fNote}`, 0.55);
+            `${r.advice.process} aluminium is solution treated and aged, ${t} — £${HEAT_TREAT_COST_PER_KG.t6}/kg × the as-cast kg (advisor rate, UK; engineering-typical, not sourced)${fNote}`, 0.55);
         }
         return decided('casting.heatTreatCostPerKg', 0, 'rule',
           al ? 'conventional HPDC is not solution treated (entrapped gas blisters) — none; enter a T5 age if specified'
@@ -692,16 +719,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const rate = libraryMachineRate('blast-machine');
-        const lab = activeLabourRate('lab-uk-foundry');   // the costed country's (rate-context.ts)
-        // The minimum charge is a UK £ figure: it follows the country like any bought-in process service (casting 360
-        // review X40 — the UK £0.10 bound in India, where the blast itself costs less).
-        const floor = Math.round(BLAST_MIN_CHARGE_UK * processServiceFactor() * 10_000) / 10_000;
-        const v = Math.max(floor, Math.round(r.advice.massKg / BLAST_KG_PER_HR * (rate + lab) * 100) / 100);
-        return decided('casting.shotBlastCostPerPart', v, 'library',
-          `${r.advice.subtype} castings are blasted to remove sand / scale / flash — ${r.advice.massKg.toFixed(2)} kg ÷ `
-          + `${BLAST_KG_PER_HR} kg/h × (blast machine £${rate.toFixed(2)}/h + operator £${lab.toFixed(2)}/h), `
-          + `min £${floor === BLAST_MIN_CHARGE_UK ? floor.toFixed(2) : `${floor.toFixed(3)} (UK £${BLAST_MIN_CHARGE_UK.toFixed(2)}${countryNote('process')})`}`, 0.5);
+        return shotBlastOutcome(r.advice.subtype, r.advice.massKg, 'kg');
       },
     },
     {
@@ -715,7 +733,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const needs = r.advice.pressureTight && (r.advice.subtype === 'hpdc' || r.advice.alloy === 'aluminium');
         const sf = processServiceFactor();   // a bought-in process service: labour + equipment, in the costed country
         return decided('casting.impregnationCostPerPart', needs ? Math.round(0.9 * sf * 100) / 100 : 0, 'rule',
-          needs ? `pressure-tight non-ferrous casting — vacuum resin impregnation seals porosity, £0.90 a part (advisor rate, UK)${sf !== 1 ? ` × country process-service factor ${sf}` : ''}`
+          needs ? `pressure-tight non-ferrous casting — vacuum resin impregnation seals porosity, £0.90 a part (advisor rate, UK; engineering-typical, not sourced)${sf !== 1 ? ` × country process-service factor ${sf}` : ''}`
             : 'not pressure-tight (or ferrous) — no impregnation', 0.6,
           [PRESSURE_TIGHT_DECISION_ID]);
       },
@@ -736,7 +754,7 @@ export const CASTING_RULES: CommodityRuleSpec = {
         if (a === 'superalloy') {
           const nf = ndtServiceFactor();   // inspector + CT cell, in the costed country
           return decided('casting.ndtCostPerPart', Math.round(NDT_COST_PER_PART.ct * nf * 100) / 100, 'library',
-            `safety-critical — industrial CT at £${NDT_COST_PER_PART.ct} a part (advisor rate, UK)${nf !== 1 ? ` × country service factor ${nf}` : ''}`, 0.55,
+            `safety-critical — industrial CT at £${NDT_COST_PER_PART.ct} a part (advisor rate, UK; engineering-typical, not sourced)${nf !== 1 ? ` × country service factor ${nf}` : ''}`, 0.55,
             [SAFETY_CRITICAL_DECISION_ID]);
         }
         // Pilot rule pack (30 Oct 2026): a safety-critical ferrous casting is 100 % magnetic-particle inspected with a
@@ -792,8 +810,9 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         if (r.advice.subtype === 'sand') {
+          // The crew is the line's, cored or not: on a coreless part the fourth hand closes and handles moulds.
           return decided('casting.manning', 4, 'rule',
-            'semi-automatic sand line crew: moulder, core setter, pourer, knockout (engineering-typical — enter the line\'s own)', 0.5);
+            'semi-automatic sand line crew of 4: moulder, core setter / mould closer, pourer, knockout (engineering-typical, not sourced — enter the line\'s own)', 0.5);
         }
         return decided('casting.manning', 1, 'rule',
           `one operator to a ${r.advice.subtype} cell`, 0.6);

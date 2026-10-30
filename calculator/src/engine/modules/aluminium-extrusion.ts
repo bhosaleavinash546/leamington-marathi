@@ -127,17 +127,26 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
   const finishCons = i.finish && i.finish !== 'mill' && i.finishAreaM2 ? (i.finishConsumablesGbpPerM2 ?? 0) * i.finishAreaM2 : 0;
   const consumables = (feedAdder + nitride + finishCons + (i.fabConsumablesGbp ?? 0)) * up;
   // Gas: billet heating on the billet bought, solution treatment and ageing on the profile.
-  const gasKwh = (i.billetHeatKwhPerKg * billetKg
-    + (i.shtFurnaceId ? (i.shtKwhPerKg ?? 0) * i.extrudedKgPerPart : 0)
-    + (i.ageOvenId && i.ageHours ? (i.heatTreatKwhPerKg ?? 0) * i.extrudedKgPerPart : 0)) * up;
+  const gasParts: Array<[string, number, number]> = [
+    ['billet heating', i.billetHeatKwhPerKg, billetKg],
+    ['solution treatment', i.shtFurnaceId ? (i.shtKwhPerKg ?? 0) : 0, i.extrudedKgPerPart],
+    ['ageing', i.ageOvenId && i.ageHours ? (i.heatTreatKwhPerKg ?? 0) : 0, i.extrudedKgPerPart],
+  ];
+  const gasKwh = gasParts.reduce((s, [, k, kg]) => s + k * kg, 0) * up;
+  const gasBasis = gasParts.filter(([, k]) => k > 0).map(([n, k, kg]) => `${n} ${k} kWh/kg × ${kg.toFixed(3)} kg`).join(' + ')
+    + (up > 1 ? ` × ${up.toFixed(4)} for ${(reject * 100).toFixed(1)}% rejects` : '')
+    + ' (billet heating DERIVED: cp·ΔT ≈ 0.115 kWh/kg to 480 °C at ~40% furnace efficiency; furnace figures ESTIMATE)';
+  // The billet bought makes the good part AND its share of rejects; a rejected extrusion is clean process scrap,
+  // credited like the butt and the ends (arithmetic audit X2: the net weight carried the rejects, so they were bought at
+  // the billet price with no credit — the old casting model the casting review removed).
   const rawMaterial: RawMaterialInput = {
     materialId: i.materialId,
-    netWeightKg: i.partWeightKg * up,
-    materialUtilization: Math.min(1, i.partWeightKg / billetKg),
+    netWeightKg: i.partWeightKg,
+    materialUtilization: Math.min(1, i.partWeightKg / (billetKg * up)),
     ...(consumables > 0 ? { consumablesCostPerPart: consumables,
       consumablesItems: ([['billet feed adder', feedAdder * up], ['die nitriding', nitride * up], ['finish consumables', finishCons * up],
         ['fabrication tool wear', (i.fabConsumablesGbp ?? 0) * up]] as Array<[string, number]>).filter(([, v]) => v > 0).map(([label, gbp]) => ({ label, gbp })) } : {}),
-    ...(gasKwh > 0 ? { energyKwh: { gas: gasKwh, basis: 'billet log heating, solution treatment and ageing furnaces' } } : {}),
+    ...(gasKwh > 0 ? { energyKwh: { gas: gasKwh, basis: gasBasis } } : {}),
   };
 
   const ops: OperationInput[] = [];
@@ -163,39 +172,50 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
   if (i.shtFurnaceId && i.shtCycleHr && i.shtLoadKg) {
     const n = Math.max(1, Math.floor(i.shtLoadKg / i.extrudedKgPerPart));
     ops.push({
-      operationName: 'Solution heat treatment and quench (off-line)', machineId: i.shtFurnaceId, labourId: i.inspectLabourId ?? i.labourId,
+      operationName: `Solution heat treatment and quench (off-line, ${i.shtCycleHr} h a ${i.shtLoadKg.toLocaleString('en-GB')} kg load, 0.5 h attended — ESTIMATE)`,
+      machineId: i.shtFurnaceId, labourId: i.inspectLabourId ?? i.labourId,
       cycleTimeHr: i.shtCycleHr * up, partsPerCycle: n, oee: i.oee, manning: 1, labourTimeHr: 0.5 * up, labourEfficiency: i.labourEfficiency,
     });
   }
+  let ageOp: OperationInput | null = null;
   if (i.ageOvenId && i.ageHours && i.ageHours > 0 && i.ageLoadKg) {
     const n = Math.max(1, Math.floor(i.ageLoadKg / i.extrudedKgPerPart));
     const handling = i.ageHandlingHr ?? 0.75;
-    ops.push({
-      operationName: `Artificial ageing (${i.ageHours} h a load)`, machineId: i.ageOvenId, labourId: i.labourId,
+    ageOp = {
+      operationName: `Artificial ageing (${i.ageHours} h a load + ${handling} h load / unload, ${i.ageLoadKg.toLocaleString('en-GB')} kg a load — ESTIMATE)`,
+      machineId: i.ageOvenId, labourId: i.labourId,
       cycleTimeHr: (i.ageHours + handling) * up, partsPerCycle: n, oee: 1, manning: 1, labourTimeHr: handling * up, labourEfficiency: i.labourEfficiency,
-    });
+    };
   }
+  let ctlOp: OperationInput | null = null;
   if (i.ctlSawId && i.ctlSecPerPart && i.ctlSecPerPart > 0) {
     const hr = i.ctlSecPerPart / 3600 * up;
-    ops.push({
+    ctlOp = {
       operationName: 'Precision cut-to-length and deburr (cold saw, end trims)', machineId: i.ctlSawId, labourId: i.labourId,
       cycleTimeHr: hr, partsPerCycle: 1, oee: i.oee, manning: 1, labourTimeHr: hr, labourEfficiency: i.labourEfficiency,
-    });
+    };
   }
-
+  let bendOp: OperationInput | null = null;
   if (i.bends && i.bends > 0 && i.benderId) {
-    const hr = (AL_DOWNSTREAM.bender.loadSec + i.bends * (i.secPerBend ?? AL_DOWNSTREAM.bender.secPerBend)) / 3600 * up;
-    ops.push({
-      operationName: `Stretch bending (${i.bends} bend${i.bends === 1 ? '' : 's'})`, machineId: i.benderId, labourId: i.labourId,
+    const per = i.secPerBend ?? AL_DOWNSTREAM.bender.secPerBend;
+    const hr = (AL_DOWNSTREAM.bender.loadSec + i.bends * per) / 3600 * up;
+    bendOp = {
+      operationName: `Stretch bending (${i.bends} bend${i.bends === 1 ? '' : 's'}: ${AL_DOWNSTREAM.bender.loadSec} s load + ${per} s a bend — ESTIMATE)`,
+      machineId: i.benderId, labourId: i.labourId,
       cycleTimeHr: hr, partsPerCycle: 1, oee: i.oee, manning: 1, labourTimeHr: hr, labourEfficiency: i.labourEfficiency,
-    });
+    };
   }
+  // Process order (arithmetic audit X5). Straight: the mill lengths are aged, then cut to length cold. Bent: the
+  // part is cut to length and stretch-bent in the as-quenched (W / T4) temper, THEN aged — a T6 profile cracks on
+  // the bender. The cost is the same either way; the route printed was not.
+  for (const op of bendOp ? [ctlOp, bendOp, ageOp] : [ageOp, ctlOp]) if (op) ops.push(op);
   for (const op of i.fabOps ?? []) ops.push({ ...op, cycleTimeHr: op.cycleTimeHr * up, labourTimeHr: op.labourTimeHr * up });
 
   if (i.finish && i.finish !== 'mill' && i.finishLineId && i.finishAreaM2 && i.finishM2PerHr) {
     const hr = i.finishAreaM2 / i.finishM2PerHr * up;
     ops.push({
-      operationName: i.finish === 'anodise' ? 'Anodise and seal' : i.finish === 'powder' ? 'Pretreat and powder coat' : 'E-coat / conversion coat',
+      operationName: `${i.finish === 'anodise' ? 'Anodise and seal' : i.finish === 'powder' ? 'Pretreat and powder coat' : 'E-coat / conversion coat'}`
+        + ` (${i.finishAreaM2.toFixed(3)} m² at ${i.finishM2PerHr} m²/h, crew ${i.finishCrew ?? 3} — ESTIMATE)`,
       machineId: i.finishLineId, labourId: i.labourId, cycleTimeHr: hr, partsPerCycle: 1, oee: i.oee,
       manning: i.finishCrew ?? 3, labourTimeHr: hr, labourEfficiency: i.labourEfficiency,
     });
@@ -204,18 +224,30 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
   if (i.packSecPerPart && i.packSecPerPart > 0) {
     const hr = i.packSecPerPart / 3600 * up;
     ops.push({
-      operationName: 'Inspect, interleave and pack', machineId: 'bench-assembly', labourId: i.inspectLabourId ?? i.labourId,
+      operationName: `Inspect, interleave and pack (${i.packSecPerPart} s — 6 s + 4 s a metre, engineering-typical, not sourced)`, machineId: 'bench-assembly', labourId: i.inspectLabourId ?? i.labourId,
       cycleTimeHr: 0, partsPerCycle: 1, oee: 1, manning: 1, labourTimeHr: hr, labourEfficiency: i.labourEfficiency, benchOperation: true,
     });
   }
 
   // ── Tooling: dies wear by the tonne — fractional sets, never fewer than one ──
-  const annualKg = i.amortizationVolume * i.extrudedKgPerPart;
-  const sets = i.dieLifeKg > 0 ? Math.max(1, annualKg / i.dieLifeKg) : 1;
+  // The total is the dies CONSUMED over the amortisation volume, not an up-front investment: one die costs
+  // `dieCostGbp`; a programme that extrudes more than its life wears out (and buys) several (arithmetic audit X4 —
+  // the battery rail's "£437k tooling investment" is 43.7 porthole dies at £10k each over 1,747 t).
+  const programmeKg = i.amortizationVolume * i.extrudedKgPerPart;
+  const sets = i.dieLifeKg > 0 ? Math.max(1, programmeKg / i.dieLifeKg) : 1;
+  const dieLabel = i.route === 'impact' ? 'Impact tool set (punch, die, ejector)' : i.route === 'conform' ? 'Conform die (tooling)' : 'Extrusion die';
+  const items: Array<{ label: string; gbp: number }> = [{
+    label: `${dieLabel}: £${Math.round(i.dieCostGbp).toLocaleString('en-GB')} a set (the up-front investment) × ${sets.toFixed(2)} set${sets === 1 ? '' : 's'} worn out over the programme`
+      + (i.dieLifeKg > 0 ? ` (${(programmeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t extruded ÷ ${(i.dieLifeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t life a set)` : ''),
+    gbp: i.dieCostGbp * sets,
+  }];
+  if (i.fabToolingGbp) items.push({ label: 'Fabrication fixtures and CNC programming (one-off)', gbp: i.fabToolingGbp });
+  if (i.bendToolingGbp) items.push({ label: 'Stretch-bend form tooling (one-off)', gbp: i.bendToolingGbp });
   const tooling: ToolingInput = {
     totalToolingCost: i.dieCostGbp * sets + (i.fabToolingGbp ?? 0) + (i.bendToolingGbp ?? 0),
     amortizationVolume: i.amortizationVolume,
     mode: 'amortized',
+    items,
   };
 
   return { rawMaterial, operations: ops, tooling };
@@ -301,9 +333,12 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
   if (spec.route === 'impact') {
     const ip = planImpact(spec.partWeightKg, spec.impactOuterDiaMm ?? s.ccdMm);
     pressId = AL_IMPACT.id; crew = AL_IMPACT.crew; cycleSec = ip.secPerPart; perPush = 1;
-    billetKgPerPart = ip.slugKg; dieGbp = ip.toolGbp; dieLifeKg = ip.toolLifeHits * extrudedKg;
+    // One part a hit: the tool's life in kg is its hits × the PART (the section-based extruded kg is 0 on a cup — it
+    // left the tool never wearing out: 250,000 cans on a 150,000-hit tool; arithmetic audit X1).
+    billetKgPerPart = ip.slugKg; dieGbp = ip.toolGbp; dieLifeKg = ip.toolLifeHits * spec.partWeightKg;
     heatKwh = 0; feedAdder = inCountry(AL_IMPACT.slugPrepGbpPerKg, 'process'); runs = 12; dieChangeHr = 1;   // slug prep: a process service
-    notes.push(`impact: ${ip.basis}; slug prep (saw / punch, anneal, lubricate) £${AL_IMPACT.slugPrepGbpPerKg}/kg UK${countryNote('process')}; tool £${ip.toolGbp} for ${ip.toolLifeHits.toLocaleString('en-GB')} hits`);
+    notes.push(`impact: ${ip.basis}; slug prep (saw / punch, anneal, lubricate) £${AL_IMPACT.slugPrepGbpPerKg}/kg UK${countryNote('process')}; tool £${ip.toolGbp} for ${ip.toolLifeHits.toLocaleString('en-GB')} hits; `
+      + `12 runs a year with a 1 h tool change each — ESTIMATE (engineering-typical, not sourced)`);
   } else if (spec.route === 'conform') {
     const cp = planConform(s, spec.alloy);
     if (!cp.feasible) warnings.push(cp.basis);
@@ -313,7 +348,8 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     heatKwh = 0; feedAdder = AL_CONFORM.rodAdderUsdPerT / AL_MARKET.usdPerGbp / 1000;
     const d = AL_DIES[s.voids > 0 ? 'hollow-porthole' : 'solid'];
     dieGbp = Math.round((d.baseGbp + d.perMmGbp * s.ccdMm) * 0.6 * countryFactor(AL_TOOL_BASIS)); dieLifeKg = 30_000; runs = 12;
-    notes.push(`${cp.basis}; 3% start and cut-off scrap; rod premium $${AL_CONFORM.rodAdderUsdPerT}/t over billet`);
+    notes.push(`${cp.basis}; 3% start and cut-off scrap; rod premium $${AL_CONFORM.rodAdderUsdPerT}/t over billet; `
+      + `die £${dieGbp.toLocaleString('en-GB')} = 0.6 × the ${d.label} price, life 30 t; 12 runs a year, ${AL_LINE.dieChangeHr} h a change — ESTIMATES (engineering-typical, not sourced)`);
   } else {
     plan = planAlExtrusion({ ...s, alloy: spec.alloy, annualVolume: spec.annualVolume, route: spec.route, dieType: spec.dieType });
     warnings.push(...plan.warnings); notes.push(...plan.basis);
@@ -323,6 +359,10 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
   }
   // The finished part can only weigh less than the extruded length (machining).
   const partKg = Math.min(spec.partWeightKg, spec.route === 'impact' ? spec.partWeightKg : extrudedKg);
+  const rejectRate = spec.rejectRate ?? AL_LINE.rejectRate;
+  notes.push(`line: OEE ${Math.round(oee * 100)}%, ${(rejectRate * 100).toFixed(1)}% rejects (re-made, credited as scrap), labour efficiency ${Math.round(eff * 100)}%, `
+    + `${runs} run${runs === 1 ? '' : 's'} a year × ${dieChangeHr} h ${spec.route === 'impact' ? 'tool' : 'die'} change`
+    + (plan ? ` (monthly, but no run under ${AL_LINE.minRunHr} press hours)` : '') + ' — ESTIMATES (engineering-typical, not sourced)');
 
   const need = temperNeeds(spec.alloy, spec.temper);
   if (need.sht) notes.push(`${spec.alloy} cannot be press-quenched to ${spec.temper}: off-line solution heat treatment and drop quench`);
@@ -345,7 +385,8 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
       { operationName: 'CNC load / unload and change-over', machineId: AL_DOWNSTREAM.cnc.id, labourId: 'lab-uk-skilled',
         cycleTimeHr: handle, partsPerCycle: 1, oee: 0.80, manning: 1, labourTimeHr: handle, labourEfficiency: eff },
     ];
-    notes.push(`fabrication: ${spec.cncMinutes.toFixed(1)} min cutting; ${cell.basis}`);
+    notes.push(`fabrication: ${spec.cncMinutes.toFixed(1)} min cutting at 80% OEE with ½ an operator, then load / unload `
+      + `${(handle * 60).toFixed(2)} min with one (OEE and manning engineering-typical, not sourced); ${cell.basis}`);
   }
 
   const finishLine = spec.finish === 'anodise' ? AL_DOWNSTREAM.anodise : spec.finish === 'powder' ? AL_DOWNSTREAM.powder
@@ -365,7 +406,7 @@ export function buildAlExtrusionInputs(spec: AlExtrusionSpec): AlExtrusionBuild 
     materialId: alBilletId(spec.alloy), alloy: spec.alloy, route: spec.route,
     partWeightKg: partKg, extrudedKgPerPart: spec.route === 'impact' ? partKg : extrudedKg, billetKgPerPart,
     pressId, labourId: 'lab-uk-semiskilled', crew, cycleSecPerPush: cycleSec, partsPerPush: perPush,
-    runsPerYear: runs, dieChangeHr, oee, labourEfficiency: eff, rejectRate: spec.rejectRate ?? AL_LINE.rejectRate,
+    runsPerYear: runs, dieChangeHr, oee, labourEfficiency: eff, rejectRate,
     billetHeatKwhPerKg: heatKwh, feedAdderGbpPerKg: feedAdder,
     ...(need.sht ? { shtFurnaceId: AL_DOWNSTREAM.sht.id, shtCycleHr: AL_DOWNSTREAM.sht.cycleHr, shtLoadKg: AL_DOWNSTREAM.sht.loadKg } : {}),
     ...(need.age ? { ageOvenId: AL_DOWNSTREAM.ageOven.id, ageHours: a.ageHours, ageLoadKg: AL_DOWNSTREAM.ageOven.loadKg, ageHandlingHr: AL_DOWNSTREAM.ageOven.handlingHr } : {}),

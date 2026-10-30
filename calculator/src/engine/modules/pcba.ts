@@ -241,6 +241,11 @@ export interface PCBAInputs {
   bom: BOMLine[];
   smtMachineId: string;
   smtLabourId: string;
+  /**
+   * Parallel SMT lines — CAPACITY only. A board takes the same time on whichever line builds it, and each line costs its
+   * own machine rate, so the per-board time (and £) does not fall with more lines. It used to divide the placement time
+   * by this count: two lines halved the SMT cost of every board (arith audit, Oct 2026).
+   */
   smtLines: number;
   smtLineRatePerHr: number;           // informational; actual rate read from library
   smtOee: number;
@@ -328,7 +333,7 @@ export function getPCBAInputSchema(): Record<string, string> {
     bomPriceRefQty: 'number? — default quote quantity for lines with no priceRefQty',
     smtMachineId: 'string — SMT pick-and-place machine ID',
     smtLabourId: 'string — SMT operator labour rate ID',
-    smtLines: 'number — parallel SMT lines',
+    smtLines: 'number — parallel SMT lines (capacity only: does not change the time or cost per board)',
     smtOee: 'number 0–1 — SMT line OEE',
     smtSides: '1 | 2 — single or double-sided assembly (adds a second line pass, not a second set of placements)',
     throughHoleCount: 'number — TH pads/joints per board',
@@ -406,14 +411,14 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
       smtPlacementTimeHr += line.qty / cph;
     }
   }
-  smtPlacementTimeHr /= inputs.smtLines;
+  // Not divided by inputs.smtLines: parallel lines add capacity, not speed per board (see PCBAInputs.smtLines).
   smtPlacementTimeHr *= complexityMult;
 
   // A second side is a second pass down the line, not a second set of placements.
   // The pass overhead is fixed handling, so the complexity multiplier — which
   // scales placement difficulty — does not apply to it.
   if ((inputs.smtSides ?? 1) === 2) {
-    smtPlacementTimeHr += SECOND_SIDE_PASS_OVERHEAD_SEC / 3600 / inputs.smtLines;
+    smtPlacementTimeHr += SECOND_SIDE_PASS_OVERHEAD_SEC / 3600;
   }
 
   // 6. Through-hole + manual solder time

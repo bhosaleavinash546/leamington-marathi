@@ -79,7 +79,8 @@ describe('geometry drivers in the tornado', () => {
     expect(names).toContain('rawMaterial.netWeightKg');
     expect(names).toContain('rawMaterial.materialUtilization');
     const nw = s.drivers.find(d => d.parameter === 'rawMaterial.netWeightKg')!;
-    expect(nw.driver).toMatch(/measured volume/);   // casting 360 X11: the costed weight adds the stated stock
+    // arithmetic audit F12: it said "measured volume + stated stock" on typed-form costings too — it is the costed kg
+    expect(nw.driver).toMatch(/Costed net weight/);
     expect(nw.range).toBeGreaterThan(0);
   });
 });

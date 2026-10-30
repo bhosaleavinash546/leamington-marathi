@@ -131,13 +131,16 @@ export function computeRubberDrivers(inputs: RubberInputs): CommodityDrivers {
     },
   ];
 
-  // Optional offline cure oven operation
+  // Optional cure oven operation. On an extrusion line it is the in-line tunnel behind the extruder: the line's crew
+  // (extruder operator + cut-off / packer) is already charged on the extrusion operation, so the tunnel has no crew
+  // of its own — it charged the same two people a second time (arithmetic audit, Oct 2026).
   if (
     inputs.cureOvenMachineId &&
     inputs.cureTimeSec !== undefined &&
     inputs.cureTimeSec > 0
   ) {
     const cureHr = (inputs.cureTimeSec / 3600) * rejectUplift;
+    const inLine = inputs.process === 'extrusion_vulcanise';
     operations.push({
       operationName: 'Vulcanisation Cure',
       machineId: inputs.cureOvenMachineId,
@@ -146,8 +149,9 @@ export function computeRubberDrivers(inputs: RubberInputs): CommodityDrivers {
       partsPerCycle: inputs.cavities,
       oee: inputs.oee,
       manning: inputs.manning,
-      labourTimeHr: cureHr,
+      labourTimeHr: inLine ? 0 : cureHr,
       labourEfficiency: inputs.labourEfficiency,
+      ...(inLine ? { untended: true } : {}),
     });
   }
 
@@ -194,7 +198,7 @@ export function computeRubberDrivers(inputs: RubberInputs): CommodityDrivers {
   if (inputs.setup && inputs.setup.hoursPerChange > 0 && inputs.setup.batchSize > 0) {
     const hr = inputs.setup.hoursPerChange / inputs.setup.batchSize;
     operations.push({
-      operationName: `Mould change + heat-up (${inputs.setup.hoursPerChange} h ÷ ${inputs.setup.batchSize} batch)`,
+      operationName: `${inputs.process === 'extrusion_vulcanise' ? 'Die' : 'Mould'} change + heat-up (${inputs.setup.hoursPerChange} h ÷ ${inputs.setup.batchSize} batch)`,
       machineId: inputs.machineId,
       labourId: inputs.setup.labourId ?? inputs.labourId,
       cycleTimeHr: hr,
@@ -226,10 +230,18 @@ export function computeRubberDrivers(inputs: RubberInputs): CommodityDrivers {
     ? Math.max(1, inputs.amortizationVolume / (inputs.mouldLife * inputs.cavities))
     : 1;
 
+  const tool = inputs.process === 'extrusion_vulcanise' ? 'die' : 'mould';
   const tooling: ToolingInput = {
     totalToolingCost: baseMouldCost * numMoulds,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // The first tool is the investment; anything above one is wear replacement over the amortised parts.
+    items: [
+      { label: `1 ${inputs.cavities}-cavity ${tool}`.replace(`1 1-cavity ${tool}`, `1 ${tool}`), gbp: baseMouldCost },
+      ...(numMoulds > 1 ? [{ label: `${(numMoulds - 1).toLocaleString('en-GB', { maximumFractionDigits: 2 })} of a ${tool} replaced as it wears `
+        + `(${inputs.amortizationVolume.toLocaleString('en-GB')} parts ÷ (${inputs.mouldLife.toLocaleString('en-GB')} cycles × ${inputs.cavities}) `
+        + `= ${numMoulds.toLocaleString('en-GB', { maximumFractionDigits: 2 })} ${tool}s)`, gbp: baseMouldCost * (numMoulds - 1) }] : []),
+    ],
   };
 
   return { rawMaterial, operations, tooling };

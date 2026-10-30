@@ -76,7 +76,13 @@ const GROUP_MACHINE: Record<SurfaceLineGroup, { machineId: string; name: string 
 export function coatingMachineFor(stages: SurfaceStage[]): { machineId: string; name: string } {
   const coating = stages.filter(s => lineGroupFor(s) === 'coating');
   const plating = coating.find(s => s.kind === 'plating');
-  if (!plating) return { machineId: 'paint-line-std', name: 'Paint Line' };
+  if (!plating) {
+    // The library has one organic-coating line (an e-coat + topcoat paint line). A powder booth or a zinc-flake
+    // dip-spin runs on its rate as a stated proxy — the operation says so (arithmetic audit F6).
+    if (coating.some(s => s.id === 'SF-20')) return { machineId: 'paint-line-std', name: 'Zinc Flake Dip-Spin + Cure (paint-line rate as proxy)' };
+    if (coating.some(s => s.id === 'SF-23')) return { machineId: 'paint-line-std', name: 'Powder Coat Line (paint-line rate as proxy)' };
+    return { machineId: 'paint-line-std', name: 'Paint Line' };
+  }
   if (/anodis/i.test(plating.label)) {
     return { machineId: 'plating-line-rack', name: 'Anodising Line' };
   }
@@ -147,6 +153,13 @@ export interface SurfaceFinishingResult {
 /** Roughly what a rejected plated part costs against a first-pass one. */
 export const PLATING_REWORK_MULTIPLE = 4.5;
 
+/**
+ * The finishing line's OEE and labour efficiency when the caller gives none (the CAD finish question and the commodity
+ * forms' surface block never do). Engineering-typical, NOT sourced — printed on the basis so a reader sees them.
+ * (`DEFAULT_SURFACE_LINE.oee` is a reference-only figure for the line-economics block, which this model does not build.)
+ */
+export const FINISH_LINE_DEFAULTS = { oee: 0.85, labourEfficiency: 0.95 } as const;
+
 export function computeSurfaceFinishing(
   inputs: SurfaceFinishingInputs,
 ): SurfaceFinishingResult {
@@ -205,39 +218,58 @@ export function computeSurfaceFinishing(
   }
 
   // ── One operation per physical line ──────────────────────────────────────
-  // The cycle time is split across groups in proportion to dwell, because that
-  // is what each machine is actually occupied for. Lumping it onto one machine
-  // would charge blast time at coating-line rates or the reverse.
+  // The route's LINE (the coating / plating line, or the one machine of a single-machine route) is occupied for one
+  // line takt a part — 1 ÷ (parts a load × loads an hour), after any plating-dwell cap. Every OTHER machine in the
+  // route (shot blast, mass-finish bowl, impregnation vessel) is a batch cell in front of the line: it holds one load
+  // of the line's parts for its own dwell, so a part carries dwell ÷ parts a load.
+  //
+  // It used to split the LINE's takt across the machines in proportion to dwell. That made the coating line cheaper
+  // when a blast and an impregnation stage were added in front of it on other machines (cast_ecoat charged the paint
+  // line 69 % of the e-coat route's line time for the same parts an hour) and put a blast cell at 1.6 s a casting
+  // (arithmetic audit F1, 30 Oct 2026). A galvanise route's wet pre-treatment runs in the galvanising plant — its rate
+  // carries "flux and pickle tanks" (rate-library.ts) — not on a paint line (F2).
   const coatingMachine = inputs.coatingMachineId
     ? { machineId: inputs.coatingMachineId, name: 'Coating Line' }
     : coatingMachineFor(stages);
 
+  const hotDip = stages.some(s => lineGroupFor(s) === 'galvanise');
+  const groupOf = (s: SurfaceStage): SurfaceLineGroup =>
+    hotDip && s.kind === 'bath' && lineGroupFor(s) === 'coating' ? 'galvanise' : lineGroupFor(s);
   const groups = new Map<SurfaceLineGroup, SurfaceStage[]>();
   for (const s of stages) {
-    const g = lineGroupFor(s);
+    if (s.kind === 'manual') continue;          // masking is a bench operation (below), not a machine
+    const g = groupOf(s);
     groups.set(g, [...(groups.get(g) ?? []), s]);
   }
+  const lineGroup: SurfaceLineGroup | undefined = groups.has('coating') ? 'coating' : [...groups.keys()].pop();
 
   const dwellOf = (list: SurfaceStage[]): number =>
     list.reduce((sum, s) => sum + (surface.perStage.find(x => x.id === s.id)?.dwellMinutes ?? 0), 0);
-  const totalDwell = dwellOf(stages);
 
+  const oee = inputs.oee ?? FINISH_LINE_DEFAULTS.oee;
+  const labourEfficiency = inputs.labourEfficiency ?? FINISH_LINE_DEFAULTS.labourEfficiency;
+  const manning = inputs.manning ?? DEFAULT_SURFACE_LINE.lineManning.value;
   const operations: OperationInput[] = [];
+  const lineNotes: string[] = [];
   for (const [group, list] of groups) {
-    const share = totalDwell > 0 ? dwellOf(list) / totalDwell : 1 / groups.size;
-    const cycleHr = surface.cycleTimeHr * share;
-    if (!(cycleHr > 0)) continue;
     const m = group === 'coating' ? coatingMachine : GROUP_MACHINE[group];
+    const dwell = dwellOf(list);
+    const cycleHr = group === lineGroup ? surface.cycleTimeHr : dwell / 60 / surface.partsPerRack;
+    if (!(cycleHr > 0)) continue;
+    lineNotes.push(group === lineGroup
+      ? `${m.name} one line takt a part (1 ÷ ${surface.partsPerHour.toFixed(1)} parts/h = ${(cycleHr * 3600).toFixed(1)} s)`
+      : `${m.name} one load of ${surface.partsPerRack} parts for its ${dwell.toFixed(0)} min dwell `
+        + `(${(cycleHr * 3600).toFixed(1)} s a part — the line's load is assumed for this batch cell; confirm its own)`);
     operations.push({
       operationName: m.name,
       machineId: m.machineId,
       labourId: inputs.labourId,
       cycleTimeHr: cycleHr,
       partsPerCycle: 1,
-      oee: inputs.oee ?? 0.85,
-      manning: inputs.manning ?? DEFAULT_SURFACE_LINE.lineManning.value,
+      oee,
+      manning,
       labourTimeHr: cycleHr,
-      labourEfficiency: inputs.labourEfficiency ?? 0.95,
+      labourEfficiency,
     });
   }
 
@@ -254,7 +286,7 @@ export function computeSurfaceFinishing(
       oee: 1,
       manning: 1,
       labourTimeHr: surface.maskingSeconds / 3600,
-      labourEfficiency: inputs.labourEfficiency ?? 0.95,
+      labourEfficiency,
       benchOperation: true,
     });
   }
@@ -266,9 +298,15 @@ export function computeSurfaceFinishing(
   warnings.push(...routeWarnings(stages, inputs, surface, area));
 
   const basis =
-    `${area.basis}. ${surface.basis} Lines: `
-    + [...groups.keys()].map(g => (g === 'coating' ? coatingMachine.name : GROUP_MACHINE[g].name))
-      .join(' + ') + '.';
+    `${area.basis}. ${surface.basis} Lines: ${lineNotes.join('; ')}. `
+    + `Line OEE ${oee}${inputs.oee === undefined ? ' and' : ','} labour efficiency ${labourEfficiency}`
+    + `${inputs.labourEfficiency === undefined ? ' (engineering-typical defaults, not sourced)' : ''}, `
+    + `${manning} operator${manning === 1 ? '' : 's'} a line${inputs.manning === undefined ? ' (loader + unloader — representative, not plant data)' : ''}`
+    + (surface.maskingSeconds > 0
+      ? `; masking ${surface.maskingSeconds.toFixed(0)} s a part is costed as a bench operation at the costing's labour grade `
+        + '(the masking £ in the line above is at the regional semi-skilled rate and is NOT the figure charged)'
+      : '')
+    + '.';
 
   return { operations, consumablesPerPart, areaM2: area.areaM2, area, surface, warnings, basis };
 }
@@ -431,7 +469,8 @@ function routeWarnings(
       `A ${(reject * 100).toFixed(1)}% plating reject is nearer a ${(uplift * 100).toFixed(1)}% `
       + 'cost adder, not 1x: a rejected part must be chemically stripped and re-plated, which '
       + `costs roughly ${PLATING_REWORK_MULTIPLE}x a first-pass part (strip cycle plus the full `
-      + 'original plating again). Budget it as rework, not as scrap.');
+      + 'original plating again — the workbook\'s strip-and-re-plate note, an estimate). This adder is NOT in the '
+      + 'cost above: budget it as rework, not as scrap.');
   }
 
   // 6. A legacy flat cost the route now does properly — counted twice.

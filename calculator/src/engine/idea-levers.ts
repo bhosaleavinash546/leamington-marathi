@@ -478,9 +478,9 @@ export function generateIdeaLevers(
       description: `Packaging is ${pkgPct.toFixed(1)}% of part cost.`
         + (pkgLogEstimated
           ? ' This figure is tool-estimated from size and weight — confirm the quoted packaging spec first, then evaluate a returnable loop.'
-          : ' A returnable tote/dunnage loop typically pays back inside a year against expendable packaging at this share.'),
+          : ' Evaluate a returnable tote / dunnage loop against expendable packaging at this share — its payback depends on the fleet size and return freight, which this costing does not hold.'),
       expectedSavingPct: Math.min(4, pkgPct * 0.5),
-      technicalJustification: 'Returnables convert a per-part consumable into an amortised asset: typical automotive experience is 40–70% packaging cost reduction on stable volume routes, plus damage-rate and waste-stream benefits.',
+      technicalJustification: 'Returnables convert a per-part consumable into an amortised asset, with damage-rate and waste-stream benefits. The saving % shown is a CostVision heuristic (half the packaging share, capped at 4 %), not a sourced figure — cost the loop before quoting it.',
       risk: 'Low', timeframe: 'Quick Win',
     });
   }

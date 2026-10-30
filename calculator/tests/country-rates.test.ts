@@ -5,6 +5,7 @@
  * bulk run and in the comparison table alike.
  * docs/rates/2026-10-country-rates-review.md lists the errors these pin.
  */
+import * as AL from '../src/engine/al-extrusion-data.js';
 import { describe, it, expect } from 'vitest';
 import { COUNTRY_BOOKS } from '../src/engine/country-books.js';
 import { readFileSync } from 'node:fs';
@@ -610,7 +611,12 @@ describe('13. all 39 countries × every real part: each costing is priced in its
       const f = [rd.labour.semiskilled / uk.labour.semiskilled, rd.labour.skilled / uk.labour.skilled, rd.machineRateMultiplier, rd.materialMultiplier,
         rd.materialFactors.commodityResin, rd.materialFactors.engineeringResin, rd.materialFactors.highPerfResin,
         rd.energy.electricityPerKwh / uk.energy.electricityPerKwh, S.countryFactor('toolroom', X), S.countryFactor('process', X),
-        S.countryFactor('heatTreat', X), rd.logisticsMultiplier, rd.packagingMultiplier, 1];
+        S.countryFactor('heatTreat', X), rd.logisticsMultiplier, rd.packagingMultiplier, 1,
+        // aluminium billet = LME + the region's all-in premium (sourced or labelled): metal is ~70 % of an extrusion, so
+        // the US Section 232 premium (US$2,960/t v the UK's US$1,100) moves the battery rail by ×1.38 — a real factor
+        // this envelope did not hold (arithmetic audit, Oct 2026).
+        (AL.AL_MARKET.lmeUsdPerT + AL.BILLET_PREMIUM_USD_PER_T[X as keyof typeof AL.BILLET_PREMIUM_USD_PER_T].usdPerT)
+          / (AL.AL_MARKET.lmeUsdPerT + AL.BILLET_PREMIUM_USD_PER_T.UK.usdPerT)];
       const lo = Math.min(...f) * 0.9, hi = Math.max(...f) * 1.1;
       for (const p of parts) {
         const r = await costMeasuredPart(p.geometry, p.part,

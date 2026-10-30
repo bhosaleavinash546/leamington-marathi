@@ -20,6 +20,12 @@
  *   processCost = machineRate * cycleTimeHr / partsPerCycle / oee
  *   labourCost  = labourRate  * manning * labourTimeHr / partsPerCycle / labourEfficiency
  *   materialCost(weight) = gross*pricePerKg − (gross−net)*scrapRecovery,  gross = net/util
+ *   overhead = overhead% × (material + process + labour + tooling − bought-in) + bought-in × handling%
+ *   margin   = margin% × (that + packaging + logistics + overhead − bought-in)
+ * Packaging and logistics are in the margin base (core.ts); they were left out here, so a supplier quoting our own
+ * figures line for line showed a margin "gap" of margin% × (packaging + logistics) and our total fell short of the
+ * should-cost by packaging + logistics (arithmetic audit, 30 Oct 2026). A PartDetail saved before these fields existed
+ * has no packaging / logistics: it is costed as before and `shopBasis` says so.
  */
 
 // ─── Our should-cost detail (distilled from PartCostResult + input) ───────────
@@ -59,6 +65,12 @@ export interface PartDetail {
   marginPct: number;        // 0–1
   annualVolume?: number;
   total: number;
+  /** Packaging and logistics £/part as costed — in the margin base and the total (core.ts). */
+  packagingPerPart?: number;
+  logisticsPerPart?: number;
+  /** Bought-in content inside the material line: it takes handling, not overhead, and no margin (core.ts). */
+  boughtInGBP?: number;
+  boughtInHandlingPct?: number;
 }
 
 // ─── Supplier's filled detail (all fields optional — a partial quote) ─────────
@@ -106,6 +118,9 @@ export interface DetailedTeardown {
   overhead: { ourPct: number; theirPct: number | null; ourGBP: number; theirGBP: number | null; gapGBP: number };
   margin: { ourPct: number; theirPct: number | null; ourGBP: number; theirGBP: number | null; gapGBP: number };
   ourTotal: number;
+  /** 'costed': packaging, logistics and bought-in were on the detail and the stack is mirrored exactly; 'missing': an
+   *  older detail without them — margin is on the factory cost + overhead only and our total omits packaging / logistics. */
+  shopBasis: 'costed' | 'missing';
   theirTotalModelled: number;   // sum of modelled supplier lines (where provided)
   topDrivers: string[];         // ranked human sentences
   unmatchedSupplierOps: string[];
@@ -224,17 +239,21 @@ export function analyzeDetailedQuote(our: PartDetail, sup: SupplierDetail): Deta
     ? { ourGBP: r2(our.toolingPerPart), theirGBP: r2(sup.toolingPerPart), gapGBP: r2(sup.toolingPerPart - our.toolingPerPart), drivers: [] }
     : { ourGBP: r2(our.toolingPerPart), theirGBP: null, gapGBP: 0, drivers: [] };
 
-  // ── Commercial (overhead / margin) — applied to the factory cost base ───────
+  // ── Commercial (overhead / margin) — applied exactly as core.ts applies them ───────
   const factoryBase = our.material.materialCost + our.operations.reduce((s, o) => s + o.processCost + o.labourCost, 0) + our.toolingPerPart;
+  const shopBasis: DetailedTeardown['shopBasis'] = our.packagingPerPart != null || our.logisticsPerPart != null ? 'costed' : 'missing';
+  const shop = Math.max(0, our.packagingPerPart ?? 0) + Math.max(0, our.logisticsPerPart ?? 0);
+  const boughtIn = Math.max(0, our.boughtInGBP ?? 0);
+  const handling = boughtIn * Math.max(0, our.boughtInHandlingPct ?? 0);
   const overhead = (() => {
-    const ourGBP = factoryBase * our.overheadPct;
+    const ourGBP = (factoryBase - boughtIn) * our.overheadPct + handling;
     if (sup.overheadPct == null) return { ourPct: r2(our.overheadPct * 100), theirPct: null, ourGBP: r2(ourGBP), theirGBP: null, gapGBP: 0 };
-    const theirGBP = factoryBase * sup.overheadPct;
+    const theirGBP = (factoryBase - boughtIn) * sup.overheadPct + handling;
     return { ourPct: r2(our.overheadPct * 100), theirPct: r2(sup.overheadPct * 100), ourGBP: r2(ourGBP), theirGBP: r2(theirGBP), gapGBP: r2(theirGBP - ourGBP) };
   })();
-  const marginBase = factoryBase + (overhead.theirGBP ?? overhead.ourGBP);
+  const marginBase = factoryBase + shop + (overhead.theirGBP ?? overhead.ourGBP) - boughtIn;
   const margin = (() => {
-    const ourGBP = (factoryBase + overhead.ourGBP) * our.marginPct;
+    const ourGBP = (factoryBase + shop + overhead.ourGBP - boughtIn) * our.marginPct;
     if (sup.marginPct == null) return { ourPct: r2(our.marginPct * 100), theirPct: null, ourGBP: r2(ourGBP), theirGBP: null, gapGBP: 0 };
     const theirGBP = marginBase * sup.marginPct;
     return { ourPct: r2(our.marginPct * 100), theirPct: r2(sup.marginPct * 100), ourGBP: r2(ourGBP), theirGBP: r2(theirGBP), gapGBP: r2(theirGBP - ourGBP) };
@@ -250,7 +269,7 @@ export function analyzeDetailedQuote(our: PartDetail, sup: SupplierDetail): Deta
   ];
   const provided = lines.filter(l => l.their != null);
   const theirTotalModelled = r2(provided.reduce((s, l) => s + (l.their as number), 0));
-  const ourTotal = r2(lines.reduce((s, l) => s + l.our, 0));
+  const ourTotal = r2(lines.reduce((s, l) => s + l.our, 0) + shop);
   const coverage = lines.length ? provided.length / lines.length : 0;
 
   // Top drivers across every block, ranked by £ impact.
@@ -268,5 +287,5 @@ export function analyzeDetailedQuote(our: PartDetail, sup: SupplierDetail): Deta
 
   const unmatchedSupplierOps = supOps.filter((_, k) => !usedSup.has(k)).map(s => s.name);
 
-  return { material: matBlock, operations, tooling, overhead, margin, ourTotal, theirTotalModelled, topDrivers, unmatchedSupplierOps, coverage };
+  return { material: matBlock, operations, tooling, overhead, margin, ourTotal, shopBasis, theirTotalModelled, topDrivers, unmatchedSupplierOps, coverage };
 }

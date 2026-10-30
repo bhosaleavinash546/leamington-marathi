@@ -300,22 +300,26 @@ export function estimateStampingDieCost(inputs: StampingDieCostInputs): Stamping
   const stationSteelKg = blank * 0.85 * 5 * 2 * 1.2 * 7.85e-3;
   const stationHrs = (70 + 0.11 * blank) * hardnessFactor * typeF;
 
+  // Every figure below is a CostVision engineering heuristic (calibrated as stated above, not sourced); each line's
+  // basis prints the arithmetic it does. The bases used to say "(45 + 0.075 × blank cm²) h" and "× 4 cm × 2" while the
+  // code ran 0.45 × (70 + 0.11 × blank) h and 5 cm × 2 × 1.2 (arithmetic audit, 30 Oct 2026).
+  const stationBasis = `station hours (70 + 0.11 × ${Math.round(blank)} cm²) × hardness ${hardnessFactor.toFixed(2)} × ${inputs.dieType} ${typeF} = ${stationHrs.toFixed(1)} h a station`;
   const lines: ToolCostLine[] = [
     labourLine('Strip layout & die design', 'design', nre / TOOLROOM_RATES_UK.design, TOOLROOM_RATES.design,
       `${inputs.dieType} method design: £${nre.toLocaleString('en-GB')} of UK design time at the country's design rate`),
     { item: 'Die set (plates, guides, bolster)', kind: 'boughtOut',
-      cost: Math.round(2900 + 3.2 * blank), basis: `£2,900 + £3.20/cm² of blank footprint` },
+      cost: Math.round(2900 + 3.2 * blank), basis: `£2,900 + £3.20/cm² × ${Math.round(blank)} cm² of blank footprint` },
     labourLine('Die-set machining & fitting', 'machining', 25 + 0.02 * blank, TOOLROOM_RATES.cnc,
-      'squaring, pockets, dowels'),
+      `squaring, pockets, dowels: 25 h + 0.02 h/cm² × ${Math.round(blank)} cm²`),
     materialLine(`Punch + die tool steel × ${stations} station(s)`, stationSteelKg * stations, 'h13',
-      `${Math.round(blank * 0.85)} cm² section × 4 cm × 2 per station`),
+      `${Math.round(blank * 0.85)} cm² section (85% of the blank) × 5 cm × 2 (punch + die) × 1.2 stock allowance × 7.85 g/cm³ per station`),
     labourLine(`Wire-EDM cutting edges × ${stations}`, 'edm', 0.35 * stationHrs * stations, TOOLROOM_RATES.edm,
-      '35% of station hours — profiles and clearances'),
+      `35% of the ${stationBasis} — profiles and clearances`),
     labourLine(`Station CNC machining × ${stations}`, 'machining', 0.45 * stationHrs * stations, TOOLROOM_RATES.cnc,
-      `(45 + 0.075 × blank cm²) h × hardness ${hardnessFactor.toFixed(2)} × ${inputs.dieType}`),
+      `45% of the ${stationBasis}`),
     labourLine(`Bench fitting & try-in × ${stations}`, 'fitting', 0.20 * stationHrs * stations, TOOLROOM_RATES.fitting,
-      '20% of station hours'),
-    labourLine('Die tryout — 4 strip runs', 'tryout', 32, TOOLROOM_RATES.tryoutPress, 'press time + strip inspection'),
+      `20% of the ${stationBasis}`),
+    labourLine('Die tryout — 4 strip runs', 'tryout', 32, TOOLROOM_RATES.tryoutPress, '32 h of press time + strip inspection'),
   ];
   const detail = composeTool(lines);
   const raw = (pred: (l: ToolCostLine) => boolean) => lines.filter(pred).reduce((sum, l) => sum + l.cost, 0);
@@ -323,6 +327,23 @@ export function estimateStampingDieCost(inputs: StampingDieCostInputs): Stamping
   const scale = subtotal > 0 ? detail.total / subtotal : 1;
   const stationCost = Math.round(raw(l => /station|Wire-EDM|Punch \+ die/.test(l.item)) * scale);
   return { base: detail.total - stationCost, stations: stationCost, total: detail.total, detail };
+}
+
+/** One line the reader can add up: each build-up line's £, the toolmaker's overhead + profit, = the die. */
+export function stampingDieBuildUp(b: StampingDieCostBreakdown): string {
+  const gbp = (v: number) => `£${Math.round(v).toLocaleString('en-GB')}`;
+  return b.detail.lines.map(l => `${l.item}${l.hours != null ? ` ${l.hours} h × £${l.ratePerHr}/h` : ''} ${gbp(l.cost)}`).join(' + ')
+    + ` = ${gbp(b.total)} (CostVision engineering heuristic; toolroom £/h from the active book)`;
+}
+
+/** The die-life model in words, with the part's numbers — it is a CostVision engineering heuristic, not a source. */
+export function stampingDieLifeBasis(inputs: StampingDieLifeInputs): string {
+  const shear = Math.max(150, inputs.shearStrengthMPa);
+  const tf = inputs.thicknessMm <= 1.5 ? 1 : Math.max(0.5, 1.5 / inputs.thicknessMm);
+  return `1,000,000 × (300 ÷ ${shear} MPa)^1.3`
+    + (inputs.thicknessMm <= 1.5 ? ' (gauge ≤ 1.5 mm: no gauge factor)' : ` × ${tf.toFixed(3)} (1.5 ÷ ${inputs.thicknessMm} mm gauge, ≥ 0.5)`)
+    + `${inputs.dieType === 'fine_blanking' ? ' × 0.6 fine-blanking' : ''}, 50k–3M, to the nearest 10k = `
+    + `${estimateStampingDieLife(inputs).toLocaleString('en-GB')} hits (CostVision engineering heuristic, not sourced)`;
 }
 
 export interface StampingDieLifeInputs {

@@ -133,7 +133,7 @@ describe('stock weight', () => {
     // thickness). 13.6 cm³ = 37 g. The bounding box alone (7.2 cm³) is a block
     // nobody can buy; the old browser net × 1.4 (4.2 g) a quarter of even that.
     expect(s.stockKg).toBe(0.037);
-    expect(s.utilisation).toBe(0.082);
+    expect(s.utilisation).toBe(0.0817);   // 4 dp, so the stock bought is the stock printed (arithmetic audit L1)
     expect(s.clamped).toBe(false);
     expect(s.basis).toContain('cut from 8 mm plate');
   });
@@ -161,7 +161,8 @@ describe('cutting time — the measured build-up, not the kernel\'s area rate', 
     // surface 10 cm² at 10 cm²/min, 12 micro-holes, 5 tools.
     expect(c.rawHours).toBeCloseTo(0.836, 3);
     expect(c.hours).toBe(0.0605);
-    expect(c.cut!.detail.basis).toContain('rough 13 cm³ ÷ 120 cm³/min');
+    // the metal in the holes is drilled, not roughed (arithmetic audit M1)
+    expect(c.cut!.detail.basis).toContain('= 12 cm³ ÷ 120 cm³/min');
   });
 
   it('a large part removes a lot of metal, and that takes time', () => {
@@ -169,7 +170,7 @@ describe('cutting time — the measured build-up, not the kernel\'s area rate', 
     // rough out. The kernel's 0.9 hr never looked at it.
     const c = cuttingHours({ ...ctx(KNUCKLE), commodity: 'machining' }, 'aluminium');
     expect(c.hours).toBeCloseTo(1.41, 2);
-    expect(c.cut!.detail.roughMin).toBeCloseTo(44.1, 1);
+    expect(c.cut!.detail.roughMin).toBeCloseTo(43.8, 1);   // 10.5 cm³ in its holes is drilled, not roughed (M1)
   });
 
   it('a harder metal cuts slower', () => {
@@ -247,7 +248,7 @@ describe('machining end to end', () => {
     const m = r.suggestions.machining as Record<string, number | string>;
     expect(m.netWeightKg).toBe(0.003);
     expect(m.stockWeightKg).toBe(0.037);
-    expect(m.materialUtilization).toBe(0.082);
+    expect(m.materialUtilization).toBe(0.0817);
     expect(m.estimatedCycleTimeHr).toBe(0.0804);          // cutting + handling, machine time
     // Setups follow the chosen split routing: 3 milling fixturings (one per
     // approach direction) + 1 drill-press fixturing for the drilling op.

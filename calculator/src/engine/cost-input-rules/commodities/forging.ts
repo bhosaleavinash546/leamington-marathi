@@ -39,12 +39,15 @@ import { representativeMaterialId } from '../derive/material.js';
 import type { MaterialFamily } from '../../material-family.js';
 import {
   adviseForgingProcess, estimateForgingTonnage, estimateForgingDieCost,
-  estimateForgingDieLife, estimateForgingSecondaryAdders, forgingHeatKwhPerKg,
+  estimateForgingSecondaryAdders, forgingHeatKwhPerKg, forgingDieLifeFactors, shapeConstraintFactor,
   FORGING_PROCESS_REFERENCE, FORGING_FLOW_STRESS_MPA,
   type ForgingProcess, type ForgingAlloyFamily, type ShapeComplexity,
   type DieSteel, type ComplexityLevel,
 } from '../../modules/forging-advisor.js';
-import { pickForgePressId, pickStampingPressId } from '../../machine-sizing.js';
+import { pickForgePressId, pickStampingPressId, FORGE_PRESS_TIERS } from '../../machine-sizing.js';
+import { NDT_STATION } from '../../modules/casting-advisor.js';
+import { activeLabourRate } from '../../rate-context.js';
+import { countryFactor } from '../../regional-services.js';
 import { nearNetStockCm3, CORED_ABOVE_MM } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
@@ -139,6 +142,31 @@ export function shapeComplexity(ctx: RuleContext): ShapeComplexity {
   // alone misses it (277×223 is not "square"), so both signals are used.
   if (raw === 'complex' && (isAxisymmetric(ctx) || isRevolutionDominant(ctx))) return 'moderate';
   return raw;
+}
+
+/**
+ * The score and the demotion, printed (arith audit, Oct 2026): the knuckle's basis read "24 free-form face(s), 1
+ * undercut face(s), 310 faces total" — by its own thresholds a complex shape — and the value said moderate, because
+ * the revolution-share demotion was not printed.
+ */
+export function shapeComplexityBasis(ctx: RuleContext, s: ShapeComplexity): string {
+  const freeForm = ctx.geo.features?.freeFormFaceCount ?? 0;
+  const undercuts = ctx.geo.draftAnalysis?.undercutFaceCount ?? 0;
+  const faces = bRepFaceCount(ctx) ?? 0;
+  const a = freeForm >= 8 ? 2 : freeForm >= 3 ? 1 : 0, b = undercuts >= 4 ? 1 : 0, c = faces >= 120 ? 1 : 0;
+  const score = a + b + c;
+  const raw: ShapeComplexity = score >= 3 ? 'complex' : score >= 1 ? 'moderate' : 'simple';
+  const by = (ctx.geo.faces?.byType ?? {}) as Record<string, number>;
+  const total = ctx.geo.faces?.total ?? 0;
+  const rev = (by['CYLINDER'] ?? 0) + (by['CONE'] ?? 0) + (by['TORUS'] ?? 0);
+  let text = `score ${a} + ${b} + ${c} = ${score} → ${raw} — ${a} for ${freeForm} free-form face(s), ${b} for ${undercuts}`
+    + ` undercut face(s), ${c} for ${faces} faces (≥ 3 complex, ≥ 1 moderate; free-form ≥ 3 / ≥ 8, undercuts ≥ 4,`
+    + ' faces ≥ 120 — CostVision heuristic)';
+  if (raw !== s) {
+    text += `; ${isAxisymmetric(ctx) ? 'a square, axisymmetric envelope' : `${rev} of ${total} faces are cylinders, cones or tori`
+      + ` (${Math.round(rev / Math.max(1, total) * 100)}%, ≥ 55%)`} — formed in round dies, so ${s}`;
+  }
+  return text;
 }
 
 /** The advisor grades complexity on a three-point scale of its own. */
@@ -240,11 +268,13 @@ export function forgeLine(a: { process: ForgingProcess; impressions: number; sha
   const hits = a.impressions + extra;
   const hitSec = isHydraulic(a.forgeId) ? FORGE_LINE.hitSec.hydraulic : FORGE_LINE.hitSec.mechanical;
   const cycleSec = FORGE_LINE.loadSec + hits * hitSec;
+  // Printed so the arithmetic reads left to right (arith audit, Oct 2026): "takt = 3 s + 2 × 4 s = 11 s".
   return {
     hits, hitSec, cycleSec,
-    basis: `${FORGE_LINE.loadSec} s billet from the heater + ${hits} hit(s) (${a.impressions} impression(s)`
-      + `${extra ? ` + ${extra} extra finisher hit(s), ${a.shape} shape` : ''}) × ${hitSec} s `
-      + `${isHydraulic(a.forgeId) ? 'hydraulic' : 'mechanical'} press hit + transfer = ${cycleSec} s takt`,
+    basis: `${hits} hit(s): ${a.impressions} impression(s)`
+      + `${extra ? ` + ${extra} extra finisher hit(s), ${a.shape} shape` : ''}; takt = ${FORGE_LINE.loadSec} s billet from the heater`
+      + ` + ${hits} × ${hitSec} s ${isHydraulic(a.forgeId) ? 'hydraulic' : 'mechanical'} press hit + transfer = ${cycleSec} s`
+      + ' (load and hit times CostVision engineering-typical, not sourced)',
   };
 }
 
@@ -268,11 +298,17 @@ export function trimPress(areaCm2: number, alloy: ForgingAlloyFamily): { pressId
   const f = flashGeometry(areaCm2);
   const flow = FORGING_FLOW_STRESS_MPA[alloy];
   const tonnes = f.perimeterMm * f.thicknessMm * flow / 9806.65;
+  const pressId = pickStampingPressId(tonnes);
+  const t1 = Math.round(tonnes * 10) / 10;
+  // Every factor printed, and the margin applied as the picker applies it (arith audit, Oct 2026).
   return {
-    pressId: pickStampingPressId(tonnes),
-    tonnes: Math.round(tonnes * 10) / 10,
-    basis: `${f.perimeterMm.toFixed(0)} mm flash line × ${f.thicknessMm.toFixed(1)} mm flash × ${flow} MPa hot flow stress `
-      + `= ${(tonnes).toFixed(1)} t → the smallest mechanical press with 1.25× margin`,
+    pressId,
+    tonnes: t1,
+    basis: `flash line 4.4 √A = ${f.perimeterMm.toFixed(0)} mm and flash 0.015 √A = ${f.thicknessMm.toFixed(2)} mm`
+      + ` over A = ${Math.round(areaCm2 * 100).toLocaleString('en-GB')} mm² (outline and thickness after ASM closed-die practice);`
+      + ` ${f.perimeterMm.toFixed(0)} mm × ${f.thicknessMm.toFixed(2)} mm × ${flow} MPa hot flow stress ÷ 9,806.65 N/t = ${t1.toFixed(1)} t`
+      + ` × 1.25 margin = ${(t1 * 1.25).toFixed(2)} t → the ${pressId.replace(/^press-(\d+)t$/, '$1 t')} press, the smallest mechanical press in the library at or above it`
+      + ` (flow stress CostVision engineering-typical, not sourced; a pierce in the same stroke is not added to the force)`,
   };
 }
 
@@ -538,10 +574,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
       label: 'shapeComplexity',
       evaluate: (ctx) => {
         const s = shapeComplexity(ctx);
-        return decided('forging.shapeComplexity', s, 'geometry',
-          `${ctx.geo.features?.freeFormFaceCount ?? 0} free-form face(s), `
-          + `${ctx.geo.draftAnalysis?.undercutFaceCount ?? 0} undercut face(s), `
-          + `${ctx.geo.faces?.total ?? 0} faces total`, 0.65);
+        return decided('forging.shapeComplexity', s, 'geometry', shapeComplexityBasis(ctx, s), 0.65);
       },
     },
     {
@@ -554,11 +587,21 @@ export const FORGING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const [lo, hi] = FORGING_PROCESS_REFERENCE[r.advice.process].yieldBand;
-        return decided('forging.yieldFraction', r.advice.yieldFraction, 'library',
-          `${r.advice.process} stock yield band ${lo}–${hi}, midpoint ${r.advice.yieldBandMid.toFixed(3)}`
-          + (r.advice.flashFrac > 0
-            ? `, scaled by the ${(r.advice.flashFrac * 100).toFixed(0)}% flash so the billet lands at part ÷ ${r.advice.yieldBandMid.toFixed(3)}`
-            : ' — this route makes no flash'),
+        const a = r.advice;
+        const charged = Math.round((a.forgedKg + a.flashKg) * 1000) / 1000;
+        const billet = charged / a.yieldFraction;
+        // Every figure the billet is built from, as the module computes it (arith audit, Oct 2026). The band is
+        // applied to the AS-FORGED weight — it says so — and the overall finished ÷ billet is printed beside it.
+        return decided('forging.yieldFraction', a.yieldFraction, 'library',
+          `${a.process} stock yield band ${lo}–${hi}, midpoint ${a.yieldBandMid.toFixed(3)} — as-forged weight ÷ billet,`
+          + ' CostVision engineering-typical, not sourced'
+          + (a.flashFrac > 0
+            ? `; the ${(a.flashFrac * 100).toFixed(0)}% flash is itemised, so yieldFraction = ${a.yieldBandMid.toFixed(3)} × ${(1 + a.flashFrac).toFixed(2)}`
+              + ` = ${a.yieldFraction.toFixed(3)}; billet = ${fmt(a.forgedKg, 3)} kg forging + ${fmt(a.flashKg, 3)} kg flash = ${fmt(charged, 3)} kg`
+              + ` ÷ ${a.yieldFraction.toFixed(3)} = ${fmt(billet, 3)} kg`
+            : ` — this route makes no flash; billet = ${fmt(a.forgedKg, 3)} kg forging ÷ ${a.yieldFraction.toFixed(3)} = ${fmt(billet, 3)} kg`)
+          + `; finished ÷ billet = ${fmt(a.partKg, 3)} kg ÷ ${fmt(billet, 3)} kg = ${(a.partKg / billet).toFixed(2)}`
+          + `; ${fmt(billet, 3)} − ${fmt(charged, 3)} = ${fmt(billet - charged, 3)} kg is scale, crop and any pierced wad (not itemised)`,
           0.75);
       },
     },
@@ -576,7 +619,9 @@ export const FORGING_RULES: CommodityRuleSpec = {
             + 'the stock loss is inside the yield band', 0.8);
         }
         return decided('forging.flashAndScaleKg', r.advice.flashKg, 'rule',
-          `${(r.advice.flashFrac * 100).toFixed(0)}% of part weight squeezed out at the flash land`, 0.6);
+          `${(r.advice.flashFrac * 100).toFixed(0)}% of the ${fmt(r.advice.forgedKg, 3)} kg forging, squeezed out at the flash land`
+          + ' (CostVision engineering-typical, not sourced) — cost-neutral: the yield is scaled by the same fraction, so the'
+          + ` billet stays forging ÷ ${r.advice.yieldBandMid.toFixed(3)}`, 0.6);
       },
     },
     {
@@ -596,12 +641,23 @@ export const FORGING_RULES: CommodityRuleSpec = {
           return decided('forging.forgeId', 'forge-ring-mill', 'advisor',
             'seamless ring: upset and punched, then rolled on the ring mill', 0.8);
         }
-        return decided('forging.forgeId', pickForgePressId(r.advice.tonnes), 'advisor',
-          `F = Kt × σflow × A: ${r.advice.shape} shape in ${r.advice.alloy} over `
-          + `${r.advice.areaCm2} cm²${r.advice.flashFrac > 0 ? ` + ${fmt(flashGeometry(r.advice.areaCm2).landAreaCm2, 0)} cm² flash land` : ''}`
-          // the force is the die-fill force; the 1.2 is applied by the picker — "446 t (1.2 safety)" read as if it was in
-          // the 446 and a 500 t press would do (Germany live review)
-          + ` = ${r.advice.tonnes} t × 1.2 safety = ${Math.round(r.advice.tonnes * 1.2)} t → the smallest forge press at or above it`, 0.85);
+        // the force is the die-fill force; the 1.2 is applied by the picker — "446 t (1.2 safety)" read as if it was in
+        // the 446 and a 500 t press would do (Germany live review). Kt and σflow are printed with their values so the
+        // tonnage can be re-added (arith audit, Oct 2026: "324 t" could not be checked).
+        const id = pickForgePressId(r.advice.tonnes);
+        const kt = shapeConstraintFactor(r.advice.shape);
+        const flow = FORGING_FLOW_STRESS_MPA[r.advice.alloy];
+        const land = r.advice.flashFrac > 0 ? flashGeometry(r.advice.areaCm2).landAreaCm2 : 0;
+        const aMm2 = Math.round((r.advice.areaCm2 + land) * 100);
+        const ladder = FORGE_PRESS_TIERS.map(([t]) => t.toLocaleString('en-GB')).join(', ');
+        const cap = FORGE_PRESS_TIERS.find(([, pid]) => pid === id)?.[0];
+        return decided('forging.forgeId', id, 'advisor',
+          `Kt ${kt} for a ${r.advice.shape} shape, σflow ${flow} MPa hot flow stress for ${r.advice.alloy}`
+          + ` (both CostVision engineering-typical, not sourced); A = ${r.advice.areaCm2} cm² silhouette`
+          + (land > 0 ? ` + ${land.toFixed(2)} cm² flash land = ${(r.advice.areaCm2 + land).toFixed(2)} cm²` : '')
+          + `; F = Kt × σflow × A = ${kt} × ${flow} MPa × ${aMm2.toLocaleString('en-GB')} mm² ÷ 9,806.65 N/t`
+          + ` = ${r.advice.tonnes} t × 1.2 safety = ${Math.round(r.advice.tonnes * 1.2)} t → the smallest forge press at or above it`
+          + `: the ${cap ? cap.toLocaleString('en-GB') : '?'} t press (library presses ${ladder} t)`, 0.85);
       },
     },
     {
@@ -640,7 +696,9 @@ export const FORGING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const l = forgeLine({ ...r.advice, forgeId: pickForgePressId(r.advice.tonnes) });
-        return decided('forging.cycleTimeHr', Math.round(l.cycleSec / 3600 * 1e6) / 1e6, 'rule', l.basis, 0.6);
+        return decided('forging.cycleTimeHr', Math.round(l.cycleSec / 3600 * 1e6) / 1e6, 'rule', l.basis
+          + '. Not costed: billet cut-off (saw / shear) and the billet heater\'s capital — the rate book has no billet saw,'
+          + ' bar shear or induction heater (the heating energy is costed)', 0.6);
       },
     },
     {
@@ -778,10 +836,19 @@ export const FORGING_RULES: CommodityRuleSpec = {
           complexity: r.advice.shape,
         });
         const occt = ctx.geo.toolingCostEstimates?.forgeDieCostGBP;
+        // The toolmaker's lines themselves. It printed "£6713 block" for a residual that held the design, tryout and
+        // the toolmaker's overhead (the H13 itself was £1,514) — arith audit, Oct 2026.
+        const lines = est.detail.lines.filter(l => l.kind !== 'overheadProfit');
+        const ohp = est.detail.lines.find(l => l.kind === 'overheadProfit');
+        const sub = lines.reduce((s2, l) => s2 + l.cost, 0);
+        const gbp = (v: number) => `£${Math.round(v).toLocaleString('en-GB')}`;
         return decided('forging.dieCost', est.total, 'advisor',
           `${r.advice.impressions}-impression ${r.advice.dieSteel} die over ${r.advice.areaCm2} cm²: `
-          + `£${est.block} block + £${est.machining} sinking + £${est.heatTreat} HT + £${est.polish} polish`
-          + (occt ? `; OCCT parametric says £${occt.toFixed(0)}` : ''), 0.65);
+          + lines.map(l => `${l.item} ${l.hours != null ? `${l.hours} h` : l.kg != null ? `${l.kg} kg` : ''} ${gbp(l.cost)}`.replace(/\s+/g, ' ')).join(' + ')
+          + ` = ${gbp(sub)}; toolmaker overhead + profit at ${ohp ? ohp.basis.replace(/^(\d+)%.*/, '$1%') : '22%'} of it = ${gbp(ohp?.cost ?? 0)}`
+          + `; die set ${gbp(sub)} + ${gbp(ohp?.cost ?? 0)} = ${gbp(est.total)}`
+          + ' (toolroom hours and the die-block rules are CostVision engineering-typical, not sourced; rates from the toolroom book)'
+          + (occt ? `; the kernel's face-count die £${occt.toFixed(0)} is not used` : ''), 0.65);
       },
     },
     {
@@ -793,13 +860,12 @@ export const FORGING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const life = estimateForgingDieLife({
+        const life = forgingDieLifeFactors({
           alloyFamily: r.advice.alloy,
           projectedAreaCm2: r.advice.areaCm2,
           complexity: r.advice.shape,
         });
-        return decided('forging.dieLife', life, 'advisor',
-          `${r.advice.alloy} at ${r.advice.areaCm2} cm², ${r.advice.shape} impression`, 0.6);
+        return decided('forging.dieLife', life.life, 'advisor', life.basis, 0.6);
       },
     },
     {
@@ -814,8 +880,13 @@ export const FORGING_RULES: CommodityRuleSpec = {
           return decided('forging.heatingEnergyKwhPerKg', 0, 'rule',
             'cold forming — the billet is never heated', 0.9);
         }
-        return decided('forging.heatingEnergyKwhPerKg', forgingHeatKwhPerKg(r.advice.alloy), 'library',
-          `energy to bring ${r.advice.alloy} to forging temperature`, 0.7);
+        const kwhKg = forgingHeatKwhPerKg(r.advice.alloy);
+        const billet = (r.advice.forgedKg + r.advice.flashKg) / r.advice.yieldFraction;
+        return decided('forging.heatingEnergyKwhPerKg', kwhKg, 'library',
+          `energy to bring ${r.advice.alloy} to forging temperature, wall-plug at an induction heater — CostVision`
+          + ` engineering-typical, not sourced; charged on every billet heated: ${kwhKg} kWh/kg × ${fmt(billet, 3)} kg billet`
+          + ` ÷ 0.98 for the ${FORGING_REJECT * 100}% scrap = ${fmt(kwhKg * billet / (1 - FORGING_REJECT), 3)} kWh a good part,`
+          + ' priced at the costing book\'s tariff (gas furnace × 2.4 kWh of gas)', 0.7);
       },
     },
     {
@@ -829,7 +900,9 @@ export const FORGING_RULES: CommodityRuleSpec = {
         return decided('forging.heatTreatCostPerKg', adderUnit(r.advice, /Heat treat/), 'library',
           HEAT_TREAT[r.advice.alloy] === 'none'
             ? `none — a ${r.advice.alloy} forging is controlled-cooled from the forge heat (no separate heat treatment)`
-            : `${HEAT_TREAT[r.advice.alloy]} for a ${r.advice.alloy} forging`, 0.6);
+            : `${HEAT_TREAT[r.advice.alloy]} for a ${r.advice.alloy} forging: £${adderUnit(r.advice, /Heat treat/)}/kg × the`
+              + ` ${fmt(r.advice.forgedKg, 3)} kg forging, bought-in (UK price × the country's heat-treat factor —`
+              + ' CostVision engineering-typical, not sourced)', 0.6);
       },
     },
     {
@@ -843,7 +916,9 @@ export const FORGING_RULES: CommodityRuleSpec = {
         return decided('forging.descaleCostPerKg', adderUnit(r.advice, /Descale/), 'library',
           r.advice.process === 'cold-forming'
             ? 'cold formed — no scale to remove'
-            : 'forge scale pickled off before machining', 0.6);
+            : `forge scale removed after the trim, before MPI and machining (shot blast or pickle): £${adderUnit(r.advice, /Descale/)}/kg`
+              + ` × the ${fmt(r.advice.forgedKg, 3)} kg forging — the flash is off by then — UK price × the country's`
+              + ' process-service factor, CostVision engineering-typical, not sourced', 0.6);
       },
     },
     {
@@ -858,7 +933,10 @@ export const FORGING_RULES: CommodityRuleSpec = {
         return decided('forging.ndtCostPerPart', adderPerPart(r.advice, /NDT/), 'library',
           ndt === 'none'
             ? 'not safety-critical — no NDT'
-            : `${ndt.toUpperCase()} on a safety-critical ${r.advice.process} forging`, 0.65);
+            : ndt === 'mpi'
+              ? `100% magnetic-particle inspection on a safety-critical ${r.advice.process} forging, as a station: ${NDT_STATION.mpi.secPerPart} s a part × (inspector £${activeLabourRate('lab-uk-inspector').toFixed(2)}/h × ${NDT_STATION.mpi.manning} + bench £${(NDT_STATION.mpi.equipmentGbpPerHrUk * countryFactor('inspection')).toFixed(2)}/h) = £${adderPerPart(r.advice, /NDT/).toFixed(2)} a part — the casting route's MPI station (75 s and the bench engineering-typical, not sourced)`
+              : `${ndt.toUpperCase()} on a safety-critical ${r.advice.process} forging: £${adderPerPart(r.advice, /NDT/).toFixed(2)} a part`
+                + ' (UK price × the country\'s inspection factor — CostVision engineering-typical, not sourced)', 0.65);
       },
     },
     // The finish question (CAD to COST D4) — asked last: a coating follows the process and the metal.

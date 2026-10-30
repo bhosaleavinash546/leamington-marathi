@@ -279,9 +279,10 @@ export const ANSWERS: Record<string, {
     // bulk run refused it. The two now share one predicate, and this entry is
     // what proves the bulk path reaches the gear commodity on its own.
     note: 'Module 3, 38 teeth counted off the tip circle — routed by metrology, '
-        + 'not by a stated commodity. ISO class 8, case-hardening steel.',
+        + 'not by a stated commodity. ISO class 7 — read off its drawing (cad-audit/parts/gear-drawing-m3-z38.pdf; the answer '
+        + 'was class 8 until the arithmetic audit of 30 Oct 2026 compared it with the drawing) — case-hardening steel.',
     answers: { 'material.family': 'steel', 'gear.helix': 'spur',
-               'gear.qualityClass': '8', 'gear.materialClass': 'case_hardening_steel' },
+               'gear.qualityClass': '7', 'gear.materialClass': 'case_hardening_steel' },
   },
 };
 

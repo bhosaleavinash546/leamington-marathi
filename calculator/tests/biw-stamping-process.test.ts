@@ -34,7 +34,9 @@ describe('the module: press line, blanking and the tailor-welded blank', () => {
     const d = computeSheetMetalDrivers({ ...BASE, pressLine: 'tandem', pressesInLine: 5, blanking: { method: 'die', blanksPerMin: 45 } });
     const names = d.operations.map(o => o.operationName);
     expect(names).toEqual(['Blanking press (coil → blanks)', 'Tandem press line (5 presses)']);
-    expect(d.operations[0].machineId).toBe('press-200t');
+    // Sized on the blank (arithmetic audit, 30 Oct 2026): 2 × (600 + 400) × 0.8 × 280 ÷ 9,807 = 46 t × 1.25 on a
+    // 1,200 mm die (blank + 600) — a 100 t press; it was a fixed 200 t press whatever the blank.
+    expect(d.operations[0].machineId).toBe('press-100t');
     expect(d.operations[0].cycleTimeHr).toBeCloseTo(1 / (45 * 60), 9);
     expect(d.operations[1].cycleTimeHr).toBeCloseTo(5 / (12 * 60), 9);
     expect(d.operations[1].labourTimeHr).toBeCloseTo(5 / (12 * 60), 9);

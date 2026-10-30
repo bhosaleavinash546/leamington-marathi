@@ -262,7 +262,7 @@ describe('sheet-metal rules end to end', () => {
     expect(sm.shearStrengthMPa).toBe(280);
     expect(sm.numOps).toBe(4);                        // pierce + 2 forming (4 bends, ~3 a station) + cut-off
     expect(sm.dieType).toBe('progressive');
-    expect(sm.process).toBe('Progressive Stamping');  // 120k/yr at 1.5 mm
+    expect(sm.process).toBe('Progressive stamping (4 stations)');  // what the costing runs (arithmetic audit, 30 Oct 2026)
   });
 
   it('feeds the die-cost estimator the derived blank, stations and hardness', () => {
@@ -300,7 +300,9 @@ describe('sheet-metal rules end to end', () => {
   it('routes a hole-dense medium-volume bracket to turret punching', () => {
     const r = runCostInputRules(SHEET_METAL_RULES, ctx(PUNCHED_BRACKET, STEEL, { annualVolume: 20_000 }));
     const sm = r.suggestions.sheetMetal as Record<string, string>;
-    expect(sm.process).toBe('Turret Punching');
+    // The prose follows the route costed — the fab module has no turret punch; it said "Turret Punching" over a
+    // laser costing (arithmetic audit, 30 Oct 2026).
+    expect(sm.process).toBe(sm.route === 'fab' ? 'Laser cutting + press brake' : expect.stringMatching(/stamping|press/i));
     // The die type now follows the press plan, and the route is priced: at
     // 20,000/yr laser + brake vs the die decides (sheet-metal review).
     expect(['stamping', 'fab']).toContain(sm.route);
@@ -313,7 +315,7 @@ describe('sheet-metal rules end to end', () => {
       { annualVolume: 800 },
     ));
     const sm = r.suggestions.sheetMetal as Record<string, string | number>;
-    expect(sm.process).toBe('Laser Cutting');
+    expect(sm.process).toBe('Laser cutting + press brake');
     expect(sm.shearStrengthMPa).toBe(170);
     expect(sm.thicknessMm).toBe(1.9);   // no bends → the ray-cast fallback
     expect(sm.materialId).toBe('mat-aa5754-sheet');

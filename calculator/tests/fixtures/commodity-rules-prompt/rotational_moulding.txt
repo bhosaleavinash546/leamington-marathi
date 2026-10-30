@@ -8,7 +8,7 @@ ROTATIONAL MOULDING COST INPUT RULES:
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
   materialId: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
   materialFamily: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
-  wallThicknessMm=17  [2·V/S = 2 × 1037.0 cm³ ÷ 1220 cm² = 17.00 mm, the area-mean wall of a shell (the ray-cast mean reads 3.00 mm: rays cross the cavity and read pinch welds) — deterministic, use verbatim]
+  wallThicknessMm=17  [2·V/S = 2 × 1037.0 cm³ ÷ 1220 cm² × 10 mm/cm = 17.00 mm, the area-mean wall of a shell (the ray-cast mean reads 3.00 mm: rays cross the cavity and read pinch welds) — deterministic, use verbatim]
   partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
   heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
   coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
@@ -36,7 +36,7 @@ ROTATIONAL MOULDING COST INPUT RULES:
   Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
   materialId: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
   materialFamily: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
-  wallThicknessMm=17  [2·V/S = 2 × 1037.0 cm³ ÷ 1220 cm² = 17.00 mm, the area-mean wall of a shell (the ray-cast found no wall) — deterministic, use verbatim]
+  wallThicknessMm=17  [2·V/S = 2 × 1037.0 cm³ ÷ 1220 cm² × 10 mm/cm = 17.00 mm, the area-mean wall of a shell (the ray-cast found no wall) — deterministic, use verbatim]
   partWeightKg: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
   heatTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)
   coolTimeSec: UNDECIDED — needs "Which resin is this moulded in?" (LLDPE Roto Powder (natural) | HDPE Roto Powder | Cross-Linked PE (XLPE) Roto | PP Roto Powder | PA12 Roto Powder)

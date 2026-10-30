@@ -113,7 +113,7 @@ describe('4. the route the screen printed is now the route that is costed', () =
     const c = r.suggestions.casting as Record<string, number>;
     expect(c.fettlingMinutes).toBe(6);
     expect(c.heatTreatCostPerKg).toBe(0.35);
-    expect(c.shotBlastCostPerPart).toBe(0.21);   // 2.5 kg ÷ 600 kg/h × (blast + operator) — £0.19 before the UK rate book's foundry wage (£18.63 → £24.60/h)
+    expect(c.shotBlastCostPerPart).toBe(0.25);   // blasted AS CAST, 3.04 kg (arithmetic audit C2; it was sized on the 2.5 kg finished part) ÷ 600 kg/h × (blast + operator)
     expect(c.ndtCostPerPart).toBe(0);
   });
 
@@ -168,9 +168,9 @@ describe('7. tooling from the toolmaker build-up, not £10,000 per undercut face
 });
 
 describe('8. alloy-specific yield', () => {
-  it('a steel sand casting yields 0.53, not the process midpoint 0.65', () => {
+  it('a steel sand casting yields 0.525 (the band midpoint printed), not the process midpoint 0.65', () => {
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('Casting_Braket.stp', ANSWERS));
-    expect((r.suggestions.casting as Record<string, number>).yieldFraction).toBe(0.53);
+    expect((r.suggestions.casting as Record<string, number>).yieldFraction).toBe(0.525);
   });
 });
 

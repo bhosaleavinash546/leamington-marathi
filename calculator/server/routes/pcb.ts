@@ -18,6 +18,7 @@ import {
   type PCBCostInput,
   type VolumeCurvePoint,
   type PCBCountryCostBreakdown,
+  PCB_BASIS_SOURCE,
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
@@ -86,6 +87,8 @@ interface PCBConfidenceBand {
   fabConfidenceLabel: 'High' | 'Medium' | 'Low';
   overallLabel: 'High' | 'Medium' | 'Low';
   volumeMultiplier: number;
+  /** How the band is built, as done — its ratios are CostVision engineering figures (arith audit, Oct 2026). */
+  basis?: string;
 }
 
 // Widened (accuracy pass): reading the exact MPN of an unconfirmed high-value IC is
@@ -160,6 +163,8 @@ function computeConfidenceBand(
     weightedBOMConfidence: Math.round(wConf * 100) / 100,
     bomConfidenceLabel: bomCL, fabConfidenceLabel: fabCL, overallLabel: overall,
     volumeMultiplier,
+    basis: `Components ×0.80 to ×${bomHighMult.toFixed(2)} (the high side follows the BOM's quantity-weighted line confidence ${wConf.toFixed(2)}: ≥ 0.85 → ×1.15, ≥ 0.70 → ×1.30, else ×1.50); `
+      + 'fab + assembly ×0.70 to ×1.40; freight, duty, energy, packaging and cost of quality as costed. CostVision engineering ratios — not sourced, not a measured accuracy.',
   };
 }
 
@@ -386,6 +391,24 @@ export function applyAutomotiveGrade(
   bd.breakdown.automotiveAssembly = r(asmPremium);
   bd.breakdown.importDuty = r(bd.breakdown.importDuty + dutyDelta);
   bd.automotiveGrade = { asil, fabPremiumGBP: r(fabPremium), assemblyPremiumGBP: r(asmPremium) };
+  // The premiums' arithmetic, as done (arith audit, Oct 2026). Every % and £ below is a CostVision engineering figure.
+  if (bd.basis) {
+    const E = PCB_BASIS_SOURCE.engineering, g = (v: number) => `£${v.toFixed(4)}`;
+    const insp = countryFactor('inspection', pcbRegionOf(bd.countryId)), proc = countryFactor('process', pcbRegionOf(bd.countryId));
+    const layers = Number(boardSpec.estimatedLayers) || 2;
+    const burnShifts = asil === 'ASIL-D' ? 6 : asil === 'ASIL-C' ? 4 : 0;
+    bd.basis.push(
+      { item: 'Automotive fab grade', gbp: fabPremium, source: `${E}; UK lab £ figures × the country's inspection factor ${insp.toFixed(3)}`,
+        formula: `IATF 18 % × ${g(fab.standardFabGBP)} = ${g(fab.iatfFabPremiumGBP)}; laminate: fab × 40 % (laminate share) × ${layers >= 8 ? 50 : 35} % (automotive v standard FR4) = ${g(fab.automotiveLaminatePremiumGBP)}; `
+          + `class-3 microsection min(45, max(8, area cm² × 0.08)) × ${insp.toFixed(3)} ÷ ${bd.panelInfo?.boardsPerPanel ?? 1} boards a panel = ${g(fab.ipcClass3InspectionGBP)}; coupons min(35, max(5, ${layers} layers × 2.5)) × ${insp.toFixed(3)} ÷ ${bd.panelInfo?.boardsPerPanel ?? 1} = ${g(fab.couponTestingGBP)}; total ${g(fabPremium)} (each item rounded to the penny; the premium is the rounded graded fab less the rounded standard fab)` },
+      { item: 'Automotive assembly grade', gbp: asmPremium, source: `${E}; flat £ figures × the country's process / inspection factor (${proc.toFixed(3)} / ${insp.toFixed(3)})`,
+        formula: `IATF line 20 % × ${g(assembly.standardAssemblyGBP)} = ${g(assembly.iatfPremiumGBP)}; class-3 workmanship 5 % = ${g(assembly.ipcClass3GBP)}; serialisation £${orderQty >= 1000 ? '0.05' : '0.80'} × ${proc.toFixed(3)} = ${g(assembly.serialisationGBP)}`
+          + (burnShifts ? `; burn-in ${asil}: ${burnShifts} shifts × £180 × ${insp.toFixed(3)} ÷ ${orderQty >= 1000 ? 500 : Math.max(1, Math.min(200, orderQty))} boards a shift = ${g(assembly.burnInGBP)}` : '; no burn-in below ASIL-C')
+          + (assembly.axiCostGBP > 0 ? `; X-ray ${g(assembly.axiCostGBP)}` : '') + `; total ${g(asmPremium)}` },
+      { item: 'UK import duty on the grade', gbp: dutyDelta, source: 'the country table\'s duty rate (an assumption — HS line not confirmed)',
+        formula: `(${g(fabPremium)} + ${g(asmPremium)}) × ${(duty * 100).toFixed(1)} % = ${g(dutyDelta)}` },
+    );
+  }
   return { assembly, fab };
 }
 
@@ -418,7 +441,9 @@ export function setDeterministicCostEstimates(a: Record<string, unknown>, bd: PC
   const fab = bd ? bd.pcbFabPerBoard : Number((prev.pcbFabGBP as { mid?: number } | undefined)?.mid) || 0;
   a.costEstimates = {
     ...prev,
-    pcbFabGBP: { min: r(fab * 0.8), mid: r(fab), max: r(fab * 1.3) },
+    // The same spread as the confidence band's fab + assembly (×0.70 / ×1.40, engineering ratios): the screen showed a
+    // ×0.8 / ×1.3 "PCB fab est." beside a band built on ×0.7 / ×1.4 for the same board (arith audit, Oct 2026).
+    pcbFabGBP: { min: r(fab * 0.7), mid: r(fab), max: r(fab * 1.4) },
     totalBOMCostGBP: r(bomTotal),
     smtAssemblyCostGBP: bd ? bd.assemblyPerBoard : Number(prev.smtAssemblyCostGBP) || 0,
     basis: bd ? `deterministic — ${bd.countryName}` : 'deterministic',
@@ -640,19 +665,32 @@ interface NPIBreakdown {
   unitCostNPI: number;    // cost at 50 units (NPI run)
   unitCostProd: number;   // cost at orderQty
   setupPerUnit50: number; // NRE amortised over 50 units
+  /** The arithmetic of the NPI figure, as done. */
+  basis?: string;
 }
-function computeNPIBreakdown(bomTotal: number, fabMid: number, smtPlacements: number, _orderQty: number, headlinePerBoard?: number): NPIBreakdown {
+/** Boards in the NPI / prototype run the NPI panel prices. */
+export const NPI_RUN_QTY = 50;
+/**
+ * NPI v production. The 50-board figure is the tool's OWN costing of the board at 50 boards (the country's rates, the
+ * BOM at 50 × qty parts bought, set-up and fixtures over 50, automotive grade) — the same arithmetic as the volume
+ * curve — plus a stencil and a first-article inspection over the run. It was the 250k headline × 1.38 (an unsourced
+ * "prototype surcharge"), which put the radar board's 50-board run at £92 beside a volume curve reading £221 at 100
+ * boards (arith audit, Oct 2026; open item of the 360 review). Stencil and first article are CostVision engineering
+ * figures (UK £), not sourced.
+ */
+export function computeNPIBreakdown(bomTotal: number, fabMid: number, smtPlacements: number, _orderQty: number, headlinePerBoard?: number, costAtNpiQty?: number): NPIBreakdown {
   const stencilCost = smtPlacements > 300 ? 220 : smtPlacements > 100 ? 160 : 120;
   const firstArticleCost = 280; // first-article inspection
   const toolingTotal = stencilCost + firstArticleCost;
-  const prototypeSurcharge = 0.38; // fab and assembly premium for small runs
   // "Production" is the headline (BOM, fab, assembly, logistics, energy, yield for the
   // selected country). It was BOM + a fab estimate — £72.93 next to a £70.89 headline.
   const unitCostBase = headlinePerBoard && headlinePerBoard > 0 ? headlinePerBoard : bomTotal + fabMid;
   const unitCostProd = unitCostBase;
-  const unitCostNPI = unitCostBase * (1 + prototypeSurcharge) + toolingTotal / 50;
-  const setupPerUnit50 = toolingTotal / 50;
-  return { stencilCost, firstArticleCost, toolingTotal, unitCostNPI: Math.round(unitCostNPI*100)/100, unitCostProd: Math.round(unitCostProd*100)/100, setupPerUnit50: Math.round(setupPerUnit50*100)/100 };
+  const setupPerUnit50 = toolingTotal / NPI_RUN_QTY;
+  // Without the costing at 50 boards (a caller that has none) the NPI figure is not stated rather than guessed.
+  const unitCostNPI = costAtNpiQty && costAtNpiQty > 0 ? costAtNpiQty + setupPerUnit50 : 0;
+  return { stencilCost, firstArticleCost, toolingTotal, unitCostNPI: Math.round(unitCostNPI*100)/100, unitCostProd: Math.round(unitCostProd*100)/100, setupPerUnit50: Math.round(setupPerUnit50*100)/100,
+    basis: `NPI = the board costed at ${NPI_RUN_QTY} boards in the same country (component breaks at ${NPI_RUN_QTY} × qty, set-up and fixtures over ${NPI_RUN_QTY}, the automotive grade where the headline carries it) £${(costAtNpiQty ?? 0).toFixed(2)} + (stencil £${stencilCost} + first article £${firstArticleCost}) ÷ ${NPI_RUN_QTY} = £${unitCostNPI.toFixed(2)}; stencil and first article are CostVision engineering figures (UK £), not sourced` };
 }
 
 // ── Post-analysis automotive grade enforcement ────────────────────────────────
@@ -764,6 +802,8 @@ interface AutomotiveNRE {
   asilAuditCost: number;
   totalNRE: number;
   asilLevel: ASILLevel;
+  /** How the figures are made, as done — CostVision engineering figures (arith audit, Oct 2026). */
+  basis?: string;
 }
 function computeAutomotiveNRE(asilLevel: ASILLevel, bomTotal: number, countryId = 'gb'): AutomotiveNRE {
   // PPAP, FMEA, DVP&R and the ASIL audit are the supplier's engineering — UK £ figures
@@ -773,7 +813,8 @@ function computeAutomotiveNRE(asilLevel: ASILLevel, bomTotal: number, countryId 
   if (tier === 0) {
     // QM / Unknown — minimal automotive paperwork
     const ppap = Math.round(1500 * eng); const fmea = Math.round(2500 * eng); const dvpr = Math.round(3000 * eng); const audit = 0;
-    return { ppapCost: ppap, fmeaCost: fmea, dvprCost: dvpr, asilAuditCost: audit, totalNRE: ppap + fmea + dvpr + audit, asilLevel };
+    return { ppapCost: ppap, fmeaCost: fmea, dvprCost: dvpr, asilAuditCost: audit, totalNRE: ppap + fmea + dvpr + audit, asilLevel,
+      basis: `QM / unknown: PPAP £1,500 + FMEA £2,500 + DVP&R £3,000 (UK £) × the country's engineer factor ${eng.toFixed(3)} — CostVision engineering figures, not sourced` };
   }
   const ppapCost  = [0, 3000,  6000, 10000, 18000][tier];
   const fmeaCost  = [0, 5000, 10000, 18000, 32000][tier];
@@ -789,6 +830,7 @@ function computeAutomotiveNRE(asilLevel: ASILLevel, bomTotal: number, countryId 
     dvprCost: r(dvprCost), asilAuditCost: r(asilAudit),
     totalNRE: r(ppapCost) + r(fmeaCost) + r(dvprCost) + r(asilAudit),
     asilLevel,
+    basis: `${asilLevel}: PPAP £${ppapCost.toLocaleString('en-GB')}, FMEA £${fmeaCost.toLocaleString('en-GB')}, DVP&R £${dvprCost.toLocaleString('en-GB')}, ASIL audit £${asilAudit.toLocaleString('en-GB')} (UK £) × (1 + min(0.5, BOM £${bomTotal.toFixed(2)} ÷ 800)) × the country's engineer factor ${eng.toFixed(3)} = ×${scale.toFixed(4)}, each to the nearest £100 — CostVision engineering figures, not sourced; one-time, not in the unit cost`,
   };
 }
 
@@ -1877,12 +1919,14 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // The coating the headline charges (country rate × area), not a second model of it.
     if (auto) out.conformalCoatingCost = Math.round(costInput.conformalCoatAreaCm2 * (PCB_COUNTRY_RATES[resolved]?.assembly.conformalCoatPerCm2 ?? 0) * 100) / 100;
 
-    out.confidenceBand = computeConfidenceBand(bom as unknown as BOMLineForBand[], fabCostMid, ocrResult.extractionQuality, volumeMultiplier);
+    // With no model fab figure to stabilise (costEstimates.pcbFabGBP absent — the camera fixture) the fab band had a mid
+    // of 0 and collapsed to a single point after anchoring: "fab + assembly £0.75–0.75" (arith audit, Oct 2026). Only
+    // the band's RATIOS survive anchoring, so the country's own fab + assembly is the mid when there is no other.
+    out.confidenceBand = computeConfidenceBand(bom as unknown as BOMLineForBand[], fabCostMid > 0 ? fabCostMid : bd.pcbFabPerBoard + bd.assemblyPerBoard, ocrResult.extractionQuality, volumeMultiplier);
     out.confidenceBand = anchorBandToHeadline(out.confidenceBand, bd) ?? out.confidenceBand;
     setDeterministicCostEstimates(a, bd, bomTotal);
     // Panels that quote a "production" or "programme" figure start from the headline.
     out.bomCompleteness = estimateMissingPassives(bom, Number(assemblyData.smtPlacements) || 0, a.bomSource === 'file' || a.bomSource === 'image');
-    out.npiBreakdown = computeNPIBreakdown(bd.bomCostPerBoard, bd.totalPerBoard - bd.bomCostPerBoard, Number(assemblyData.smtPlacements) || 0, orderQty, bd.totalPerBoard);
 
     // Volume curves: include the analysed quantity, so the curve passes through the headline.
     const sorted = [...out.countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
@@ -1892,6 +1936,11 @@ export async function runStage4(inp: Stage4Input): Promise<Stage4Output> {
     // Component prices follow each point's quantity (parts bought per line); edited lines stay as typed.
     const bomAt = (q: number) => bomAtQty(bom, q, orderQty);
     const curve = (id: string) => gradeVolumeCurve(computeVolumeCurve(costInput, id, qtys, bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, id);
+    // The NPI run is the same costing at NPI_RUN_QTY boards (the volume curve's arithmetic), not the headline × 1.38.
+    const npiPoint = gradeVolumeCurve(computeVolumeCurve(costInput, resolved, [NPI_RUN_QTY], bomAt), boardSpec, assemblyData, asilLevel, domain, bpp, resolved)[0];
+    out.npiBreakdown = computeNPIBreakdown(bd.bomCostPerBoard, bd.totalPerBoard - bd.bomCostPerBoard, Number(assemblyData.smtPlacements) || 0, orderQty, bd.totalPerBoard, npiPoint?.totalPerBoard);
+    // The basis lines are printed for the selected country only; the other rows carry their figures, not 14 copies.
+    for (const c of out.countryComparison) if (c.countryId !== bd.countryId) delete c.basis;
     out.volumeCurves = { [cheapestId]: curve(cheapestId), [resolved]: curve(resolved), gb: curve('gb') };
     out.complexityScore = computeComplexityScore(boardSpec, assemblyData);
 

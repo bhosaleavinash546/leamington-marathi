@@ -316,7 +316,7 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 0.75,
+      "total": 0.74,
       "breakdown": {
         "rawMaterial": 0.11,
         "process": 0.15,
@@ -715,16 +715,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 33.94,
+      "total": 33.52,
       "breakdown": {
-        "rawMaterial": 23.93,
+        "rawMaterial": 23.57,
         "process": 1.03,
         "labour": 0.44,
         "tooling": 1.75,
         "packaging": 0.35,
         "logistics": 0.68,
-        "overhead": 3.26,
-        "margin": 2.51
+        "overhead": 3.21,
+        "margin": 2.48
       }
     }
   },
@@ -1087,16 +1087,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 27.86,
+      "total": 27.63,
       "breakdown": {
-        "rawMaterial": 16.07,
+        "rawMaterial": 15.88,
         "process": 4.13,
         "labour": 1.21,
         "tooling": 1.04,
         "packaging": 0.23,
         "logistics": 0.42,
-        "overhead": 2.69,
-        "margin": 2.06
+        "overhead": 2.67,
+        "margin": 2.05
       }
     }
   },
@@ -1439,9 +1439,9 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 3.38,
+      "total": 3.35,
       "breakdown": {
-        "rawMaterial": 1.53,
+        "rawMaterial": 1.51,
         "process": 0.76,
         "labour": 0.35,
         "tooling": 0.06,
@@ -1862,15 +1862,15 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 10.16,
+      "total": 10.07,
       "breakdown": {
-        "rawMaterial": 5.42,
+        "rawMaterial": 5.35,
         "process": 1.65,
         "labour": 0.74,
         "tooling": 0.32,
         "packaging": 0.12,
         "logistics": 0.18,
-        "overhead": 0.98,
+        "overhead": 0.97,
         "margin": 0.75
       }
     }
@@ -2383,16 +2383,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 4.28,
+      "total": 4.24,
       "breakdown": {
-        "rawMaterial": 2.11,
+        "rawMaterial": 2.08,
         "process": 0.85,
         "labour": 0.37,
         "tooling": 0.07,
         "packaging": 0.07,
         "logistics": 0.09,
-        "overhead": 0.41,
-        "margin": 0.32
+        "overhead": 0.4,
+        "margin": 0.31
       }
     }
   },
@@ -2779,9 +2779,9 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 7.01,
+      "total": 6.95,
       "breakdown": {
-        "rawMaterial": 3.14,
+        "rawMaterial": 3.09,
         "process": 1.67,
         "labour": 0.72,
         "tooling": 0.08,
@@ -3168,16 +3168,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 3.72,
+      "total": 3.67,
       "breakdown": {
-        "rawMaterial": 2.44,
+        "rawMaterial": 2.41,
         "process": 0.22,
         "labour": 0.2,
         "tooling": 0.04,
         "packaging": 0.08,
         "logistics": 0.11,
-        "overhead": 0.35,
-        "margin": 0.28
+        "overhead": 0.34,
+        "margin": 0.27
       }
     }
   },
@@ -3530,9 +3530,9 @@
     "outcome": {
       "status": "costed",
       "commodity": "aluminium_extrusion",
-      "total": 3.63,
+      "total": 3.61,
       "breakdown": {
-        "rawMaterial": 1.52,
+        "rawMaterial": 1.5,
         "process": 0.92,
         "labour": 0.4,
         "tooling": 0.02,
@@ -4332,16 +4332,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "sheet_metal",
-      "total": 9.76,
+      "total": 10.95,
       "breakdown": {
         "rawMaterial": 2.26,
         "process": 0.27,
-        "labour": 0.26,
-        "tooling": 4.88,
+        "labour": 0.27,
+        "tooling": 5.85,
         "packaging": 0.17,
         "logistics": 0.28,
-        "overhead": 0.92,
-        "margin": 0.72
+        "overhead": 1.04,
+        "margin": 0.81
       }
     }
   },
@@ -5070,16 +5070,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "sheet_metal",
-      "total": 33.35,
+      "total": 37.67,
       "breakdown": {
         "rawMaterial": 7.83,
-        "process": 0.43,
-        "labour": 0.26,
-        "tooling": 17.72,
+        "process": 0.44,
+        "labour": 0.27,
+        "tooling": 21.26,
         "packaging": 0.56,
         "logistics": 0.93,
-        "overhead": 3.15,
-        "margin": 2.47
+        "overhead": 3.58,
+        "margin": 2.79
       }
     }
   },
@@ -7039,15 +7039,15 @@
     "outcome": {
       "status": "costed",
       "commodity": "blow_moulding",
-      "total": 1.22,
+      "total": 1.25,
       "breakdown": {
         "rawMaterial": 0.33,
-        "process": 0.23,
+        "process": 0.25,
         "labour": 0.08,
         "tooling": 0.24,
         "packaging": 0.08,
         "logistics": 0.08,
-        "overhead": 0.1,
+        "overhead": 0.11,
         "margin": 0.09
       }
     }
@@ -7484,15 +7484,15 @@
     "outcome": {
       "status": "costed",
       "commodity": "blow_moulding",
-      "total": 1.6,
+      "total": 1.64,
       "breakdown": {
         "rawMaterial": 0.42,
-        "process": 0.35,
+        "process": 0.38,
         "labour": 0.12,
         "tooling": 0.3,
         "packaging": 0.07,
         "logistics": 0.08,
-        "overhead": 0.14,
+        "overhead": 0.15,
         "margin": 0.12
       }
     }
@@ -8915,16 +8915,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "composites",
-      "total": 98.69,
+      "total": 73.55,
       "breakdown": {
-        "rawMaterial": 34.15,
+        "rawMaterial": 13.36,
         "process": 16.25,
         "labour": 5.72,
         "tooling": 25.34,
         "packaging": 0.07,
         "logistics": 0.07,
-        "overhead": 9.78,
-        "margin": 7.31
+        "overhead": 7.28,
+        "margin": 5.45
       },
       "warnings": [
         "material_low_confidence"
@@ -9316,16 +9316,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "composites",
-      "total": 432.02,
+      "total": 479.83,
       "breakdown": {
-        "rawMaterial": 141.59,
+        "rawMaterial": 181.12,
         "process": 123.9,
         "labour": 36.66,
         "tooling": 54.2,
         "packaging": 0.39,
         "logistics": 0.52,
-        "overhead": 42.76,
-        "margin": 32
+        "overhead": 47.5,
+        "margin": 35.54
       },
       "warnings": [
         "material_low_confidence"
@@ -10108,16 +10108,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 20.34,
+      "total": 20.04,
       "breakdown": {
-        "rawMaterial": 4.1,
+        "rawMaterial": 4.15,
         "process": 3.33,
-        "labour": 8.44,
+        "labour": 8.14,
         "tooling": 0.56,
         "packaging": 0.15,
         "logistics": 0.27,
-        "overhead": 1.97,
-        "margin": 1.51
+        "overhead": 1.94,
+        "margin": 1.48
       }
     }
   },
@@ -11313,16 +11313,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "extrusion",
-      "total": 1.05,
+      "total": 1,
       "breakdown": {
-        "rawMaterial": 0.42,
-        "process": 0.11,
-        "labour": 0.09,
+        "rawMaterial": 0.39,
+        "process": 0.1,
+        "labour": 0.08,
         "tooling": 0.15,
         "packaging": 0.06,
         "logistics": 0.06,
         "overhead": 0.09,
-        "margin": 0.08
+        "margin": 0.07
       }
     }
   },
@@ -11769,16 +11769,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 23.18,
+      "total": 20.48,
       "breakdown": {
-        "rawMaterial": 8.7,
+        "rawMaterial": 6.77,
         "process": 4.34,
-        "labour": 5.09,
+        "labour": 4.78,
         "tooling": 0.71,
         "packaging": 0.14,
         "logistics": 0.23,
-        "overhead": 2.26,
-        "margin": 1.72
+        "overhead": 1.99,
+        "margin": 1.52
       }
     }
   },
@@ -12139,16 +12139,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 17.4,
+      "total": 17.11,
       "breakdown": {
-        "rawMaterial": 6.79,
+        "rawMaterial": 6.64,
         "process": 2.43,
         "labour": 4.06,
-        "tooling": 0.68,
+        "tooling": 0.6,
         "packaging": 0.17,
         "logistics": 0.3,
-        "overhead": 1.68,
-        "margin": 1.29
+        "overhead": 1.65,
+        "margin": 1.27
       }
     }
   },
@@ -12499,12 +12499,12 @@
     "outcome": {
       "status": "costed",
       "commodity": "injection_moulding",
-      "total": 0.48,
+      "total": 0.47,
       "breakdown": {
         "rawMaterial": 0.02,
-        "process": 0.02,
-        "labour": 0.04,
-        "tooling": 0.3,
+        "process": 0.04,
+        "labour": 0.07,
+        "tooling": 0.25,
         "packaging": 0,
         "logistics": 0,
         "overhead": 0.05,
@@ -14552,16 +14552,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "machining",
-      "total": 22.99,
+      "total": 21.91,
       "breakdown": {
-        "rawMaterial": 7.28,
-        "process": 4.65,
-        "labour": 6.36,
+        "rawMaterial": 7.26,
+        "process": 4.54,
+        "labour": 5.61,
         "tooling": 0.48,
         "packaging": 0.1,
         "logistics": 0.16,
-        "overhead": 2.25,
-        "margin": 1.7
+        "overhead": 2.15,
+        "margin": 1.62
       }
     }
   },
@@ -14982,7 +14982,7 @@
     "outcome": {
       "status": "costed",
       "commodity": "machining",
-      "total": 9.41,
+      "total": 9.42,
       "breakdown": {
         "rawMaterial": 2.94,
         "process": 1.43,
@@ -16088,16 +16088,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "cast_and_machine",
-      "total": 42.81,
+      "total": 42.5,
       "breakdown": {
-        "rawMaterial": 11.89,
+        "rawMaterial": 11.92,
         "process": 6.99,
-        "labour": 14.38,
+        "labour": 14.08,
         "tooling": 1.18,
         "packaging": 0.36,
         "logistics": 0.71,
-        "overhead": 4.13,
-        "margin": 3.17
+        "overhead": 4.1,
+        "margin": 3.15
       }
     }
   },
@@ -16891,16 +16891,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "machining",
-      "total": 51.28,
+      "total": 48.76,
       "breakdown": {
-        "rawMaterial": 19.18,
-        "process": 9.61,
-        "labour": 12.9,
+        "rawMaterial": 19.14,
+        "process": 9.23,
+        "labour": 11.24,
         "tooling": 0.49,
         "packaging": 0.1,
         "logistics": 0.15,
-        "overhead": 5.06,
-        "margin": 3.8
+        "overhead": 4.81,
+        "margin": 3.61
       }
     }
   },
@@ -17343,16 +17343,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "rotational_moulding",
-      "total": 50.97,
+      "total": 52.28,
       "breakdown": {
-        "rawMaterial": 5.22,
+        "rawMaterial": 5.25,
         "process": 13.46,
         "labour": 9.26,
-        "tooling": 13.68,
+        "tooling": 14.73,
         "packaging": 0.23,
         "logistics": 0.34,
-        "overhead": 5,
-        "margin": 3.78
+        "overhead": 5.13,
+        "margin": 3.87
       }
     }
   },
@@ -17793,7 +17793,7 @@
       "commodity": "rotational_moulding",
       "total": 20.13,
       "breakdown": {
-        "rawMaterial": 1.14,
+        "rawMaterial": 1.15,
         "process": 5.63,
         "labour": 3.87,
         "tooling": 5.84,
@@ -18586,16 +18586,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "rubber",
-      "total": 0.78,
+      "total": 0.69,
       "breakdown": {
         "rawMaterial": 0.29,
         "process": 0.04,
-        "labour": 0.17,
+        "labour": 0.09,
         "tooling": 0.05,
         "packaging": 0.06,
         "logistics": 0.05,
-        "overhead": 0.07,
-        "margin": 0.06
+        "overhead": 0.06,
+        "margin": 0.05
       },
       "warnings": [
         "material_low_confidence"
@@ -21515,16 +21515,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "sheet_metal",
-      "total": 3.38,
+      "total": 3.66,
       "breakdown": {
         "rawMaterial": 0.6,
         "process": 0.05,
         "labour": 0.03,
-        "tooling": 1.97,
+        "tooling": 2.21,
         "packaging": 0.07,
         "logistics": 0.09,
-        "overhead": 0.32,
-        "margin": 0.25
+        "overhead": 0.35,
+        "margin": 0.27
       }
     }
   },
@@ -23797,27 +23797,27 @@
     "outcome": {
       "status": "costed",
       "commodity": "forging",
-      "total": 23.03,
+      "total": 20.26,
       "breakdown": {
-        "rawMaterial": 10.22,
+        "rawMaterial": 8.23,
         "process": 3.43,
-        "labour": 3.82,
+        "labour": 3.51,
         "tooling": 1.1,
         "packaging": 0.19,
         "logistics": 0.34,
-        "overhead": 2.23,
-        "margin": 1.71
+        "overhead": 1.95,
+        "margin": 1.5
       }
     }
   },
   {
     "part": "test-gear-m3-z38.step",
     "sha256": "9a73f0a268c4189b",
-    "note": "Module 3, 38 teeth counted off the tip circle — routed by metrology, not by a stated commodity. ISO class 8, case-hardening steel.",
+    "note": "Module 3, 38 teeth counted off the tip circle — routed by metrology, not by a stated commodity. ISO class 7 — read off its drawing (cad-audit/parts/gear-drawing-m3-z38.pdf; the answer was class 8 until the arithmetic audit of 30 Oct 2026 compared it with the drawing) — case-hardening steel.",
     "answers": {
       "material.family": "steel",
       "gear.helix": "spur",
-      "gear.qualityClass": "8",
+      "gear.qualityClass": "7",
       "gear.materialClass": "case_hardening_steel"
     },
     "geometry": {
@@ -24290,16 +24290,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "gear",
-      "total": 18.52,
+      "total": 18.68,
       "breakdown": {
-        "rawMaterial": 8.03,
-        "process": 4.36,
-        "labour": 1.64,
-        "tooling": 0.96,
+        "rawMaterial": 7.86,
+        "process": 4.63,
+        "labour": 1.66,
+        "tooling": 0.98,
         "packaging": 0.13,
         "logistics": 0.23,
-        "overhead": 1.8,
-        "margin": 1.37
+        "overhead": 1.81,
+        "margin": 1.38
       }
     }
   }

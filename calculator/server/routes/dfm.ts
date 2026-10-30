@@ -5,6 +5,7 @@ import type { Request, Response } from 'express';
 import { tmpdir } from 'node:os';
 import { basename, dirname, resolve } from 'node:path';
 import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
+import { labelModelFigures } from '../utils/agent-grounding.js';
 import { queueDFMJob, getDFMJob, requeueOrphans } from '../utils/dfm-job-runner.js';
 import { GEOMETRIC_DFM_COMMODITIES } from '../../src/engine/dfm-geometry/index.js';
 import type { CommodityType } from '../../src/engine/types.js';
@@ -15,7 +16,7 @@ router.post('/analyze', aiLimit('dfm'), async (req: Request, res: Response) => {
   // The rule-based DFM result is computed in the browser; only this commentary needs AI.
   if (isAirGapped()) { res.status(503).json(aiDisabledBody('Expert DFM commentary')); return; }
   try {
-    const { result, input, commodity, dfmResult } = req.body as {
+    const { commodity, dfmResult } = req.body as {   // the body also carries result / input; unused here
       result: unknown;
       input: unknown;
       commodity: string;
@@ -86,9 +87,12 @@ HARD RULE — numbers: do not state ANY figure (money, percentage, time, rate, q
     });
 
     const textBlock = message.content.find(c => c.type === 'text');
-    const analysis = textBlock && textBlock.type === 'text' ? textBlock.text : 'No analysis returned.';
+    const raw = textBlock && textBlock.type === 'text' ? textBlock.text : 'No analysis returned.';
+    // The prompt forbids any figure not in it; this checks it: a £ / % that is not in the prompt (the rule-based
+    // findings and the re-costed levers) is labelled as the model's under the commentary (AI-number leak audit, Oct 2026).
+    const labelled = labelModelFigures(raw, [prompt]);
 
-    res.json({ analysis });
+    res.json({ analysis: labelled.text, ...(labelled.ungrounded.length ? { modelFigures: labelled.ungrounded } : {}) });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[DFM] AI analysis error:', msg);

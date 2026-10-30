@@ -11,7 +11,7 @@ import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/
 import { generateInsights, currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
-import { computeCostUncertainty, overallConfidence } from '../engine/uncertainty.js';
+import { computeCostUncertainty, overallConfidence, UNCERTAINTY_BASIS, UNCERTAINTY_BUCKET_BASIS } from '../engine/uncertainty.js';
 import { measureLabel, measureAgainstLimit } from '../engine/dfm-geometry/measure-format.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
@@ -1539,7 +1539,12 @@ export function renderShouldCostSections(
     });
     y = lastFinalY(doc) + 3;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...GREY);
-    const basis = cadMeta.uncertaintyBasis ?? 'Monte-Carlo over the cost buckets, each spread by its rate-data confidence (High / Medium / Low)';
+    // The spreads that set the band's width are printed with it (arithmetic audit, 30 Oct 2026): the band the screen
+    // hands over is the driver Monte-Carlo unless it was calibrated on logged prices; one computed here is the bucket path.
+    const handed = cadMeta.uncertaintyBasis;
+    const basis = !geomEstimated && cadMeta.uncertainty
+      ? (handed && /calibrated/i.test(handed) ? handed : UNCERTAINTY_BASIS)
+      : `${UNCERTAINTY_BUCKET_BASIS}${geomEstimated ? ' — widened to a 0.28 base spread because the geometry was estimated, not measured' : ''}`;
     const note = doc.splitTextToSize(`Basis: ${basis}. P10 / P90 are the 10th / 90th percentile of the simulated totals. `
       + (geomEstimated ? 'Measuring the geometry (a STEP or STL) tightens it most. ' : '')
       + 'Confirming the Low-confidence rates or logging an actual purchase price tightens it.', CW);
@@ -1641,7 +1646,7 @@ export function renderShouldCostSections(
       // figures that are all in the report's currency ("India (INR)" sat over £; uploaded-parts review, Oct 2026).
       head: [['Region', 'Material', 'Process', 'Labour', 'Tooling', 'Overhead', 'Packaging', 'Logistics', 'Margin', 'Total', `vs ${baseName}`]],
       body: rc.map(r => [
-        r.name, c(r.material), c(r.process), c(r.labour), c(r.tooling), c(r.overhead), c(r.packaging), c(r.logistics), c(r.margin), c(r.total),
+        `${r.name}${r.basis === 'stack-reprice' ? ' \u2020' : ''}`, c(r.material), c(r.process), c(r.labour), c(r.tooling), c(r.overhead), c(r.packaging), c(r.logistics), c(r.margin), c(r.total),
         r.isBase ? 'Base' : `${r.vsBasePct >= 0 ? '-' : '+'}${Math.abs(r.vsBasePct).toFixed(0)}%`,
       ]),
       headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 6.5 },
@@ -1657,11 +1662,19 @@ export function renderShouldCostSections(
     });
     y = lastFinalY(doc) + 3;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
-    doc.text((regionalRows?.length || baseLibrary
-      ? 'Each row is the part re-costed with that country\'s labour, machine, energy and material rates; tooling scaled by its toolroom rate; overhead, packaging and logistics by its shop factors.'
-      : 'Each row scales this costing\'s buckets by that country\'s rate factors (no rate book was available to re-cost it).')
-      + ' Each row carries that country\'s packaging and delivery allowance (bucket 6) and excludes import duty and cross-border freight to the buyer. Indicative — confirm with an RFQ.', MG, y + 3, { maxWidth: CW });
-    y += 12;
+    // Say which rows are the part costed in that country and which only re-price this costing's operations — the
+    // re-price carries the costing country's services, consumables and any module-priced material (arithmetic audit,
+    // 30 Oct 2026: up to ±100 % off the country's own costing on a direct-priced composite, 31 % on a sand casting).
+    const repriced = rc.filter(r => r.basis === 'stack-reprice');
+    const scaled = rc.some(r => r.basis === 'scaled');
+    const rcNote = (scaled
+      ? 'Each row scales this costing\'s buckets by that country\'s rate factors (no rate book was available to re-cost it).'
+      : 'A row without a mark is the part costed with that country selected (its rules, rates, tooling and services).'
+        + (repriced.length ? ` Rows marked \u2020 (${repriced.map(r => r.name).join(', ')}) re-price this costing's operations and material weight in that country's book, tooling by its toolroom rate, overhead, packaging and logistics by its shop factors; per-part services and consumables, a material the module priced directly and the module's own choices (machine, cavities, tool life) are carried from the costing country, so they are an approximation.` : ''))
+      + ' Each row carries that country\'s packaging and delivery allowance (bucket 6) and excludes import duty and cross-border freight to the buyer. Indicative — confirm with an RFQ.';
+    const rcLines = doc.splitTextToSize(rcNote, CW);
+    doc.text(rcLines, MG, y + 3);
+    y += rcLines.length * 3.2 + 6;
   }
 
   // ════════════════════════════════════════════════════════════════════════

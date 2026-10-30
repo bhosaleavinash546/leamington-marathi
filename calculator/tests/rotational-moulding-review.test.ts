@@ -152,12 +152,13 @@ describe('8. the parts reconcile', () => {
   // £19.80 / £48.51 since the two-half release test (Oct 2026, docs/cad/dfm-cost-drivers-2026-10.md): the tanks' inside
   // skins (11 faces each) are cavity faces, not undercuts, so `rotoComplexity` no longer scores them "complex" and the
   // mould is priced as the shape it is. Before: £20.63 / £51.62 (and £35.57 / £50.64 before the roto review).
-  it('header tank £19.43 and coolant tank £47.63 at 5,000/yr (£19.80 / £48.51 before the UK rate book)', async () => {
-    expect((await headless('ROTO_Header_Tank.stp', geoOf('ROTO_Header_Tank.stp'), 5_000)).total).toBeCloseTo(19.43, 2);
-    expect((await headless('ROTO_Coolant_Tank.stp', geoOf('ROTO_Coolant_Tank.stp'), 5_000)).total).toBeCloseTo(47.63, 2);
+  // Arithmetic audit (30 Oct 2026): moulds sized for parts moulded, grinding and wear on parts moulded: +£0.01 / +£0.04.
+  it('header tank £19.44 and coolant tank £47.67 at 5,000/yr (£19.43 / £47.63 before the arithmetic audit)', async () => {
+    expect((await headless('ROTO_Header_Tank.stp', geoOf('ROTO_Header_Tank.stp'), 5_000)).total).toBeCloseTo(19.44, 2);
+    expect((await headless('ROTO_Coolant_Tank.stp', geoOf('ROTO_Coolant_Tank.stp'), 5_000)).total).toBeCloseTo(47.67, 2);
   });
   it('baseline (50,000/yr) records both', () => {
     expect(baseline.find(b => b.part === 'ROTO_Header_Tank.stp')!.outcome.total).toBe(20.13);
-    expect(baseline.find(b => b.part === 'ROTO_Coolant_Tank.stp')!.outcome.total).toBe(50.97);
+    expect(baseline.find(b => b.part === 'ROTO_Coolant_Tank.stp')!.outcome.total).toBe(52.28);   // 28 moulds, not 26 (moulds sized for parts moulded)
   });
 });

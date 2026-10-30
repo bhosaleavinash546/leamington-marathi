@@ -4,7 +4,7 @@
  * The agent ingests a supplier quote, runs a parameter-level comparison against
  * the should-cost, and produces a deep, DEFENSIBLE negotiation report:
  *   • gap teardown       — where the money is, ranked in £
- *   • benchmark flags     — cost elements above their normal industry range
+ *   • reference flags     — overhead / margin above a stated CostVision heuristic range (not a sourced survey)
  *   • causal diagnosis    — "the gap implies aluminium ~14% above spot"
  *   • negotiation levers  — the precise move to pull for each gap
  *   • supplier questions  — targeted, per detected discrepancy
@@ -42,7 +42,7 @@ export interface TeardownInput {
   supplierBreakdown?: QuoteBreakdown; // supplier's line items, if disclosed (Case A)
   annualVolume?: number;              // to annualise the opportunity
   materialFamily?: string;
-  /** Optional causal signal: how far above today's index the total gap implies (%). */
+  /** Optional causal signal: how far above the costed material price the total gap implies (%). */
   impliedIndexPremiumPct?: number | null;
   indexCategory?: string | null;      // e.g. 'Aluminium'
   /** Optional empirical band: ± half-width % from the conformal model. */
@@ -82,12 +82,15 @@ export interface NegotiationReport {
   headline: string;                   // one-line summary for cards
 }
 
-// Universal commercial benchmark ranges (share of total). These are sector norms
-// that hold regardless of commodity — the most defensible flags.
+// Reference ranges for the commercial buckets (share of the quote). NOT a sourced survey: CostVision engineering
+// heuristics, the same for every commodity, and every flag that uses them says so (arithmetic audit, 30 Oct 2026 —
+// the flags printed "above the 8–18% norm" as if the range were published).
 const COMMERCIAL_BENCHMARK: Partial<Record<Bucket, { lo: number; hi: number }>> = {
   overhead: { lo: 0.08, hi: 0.18 },
   margin:   { lo: 0.05, hi: 0.12 },
 };
+/** How every flag names the ranges above. */
+export const COMMERCIAL_RANGE_BASIS = 'CostVision heuristic range, not a sourced benchmark';
 
 // Deterministic negotiation playbook keyed by bucket — precise, defensible.
 const PLAYBOOK: Record<Bucket, { lever: string; question: string; closing: string }> = {
@@ -122,14 +125,14 @@ const PLAYBOOK: Record<Bucket, { lever: string; question: string; closing: strin
     closing: 'Re-base freight on our carrier rate for the lane; consolidate to cut per-part cost.',
   },
   overhead: {
-    lever: 'Benchmark SG&A against sector norms; request open-book or a volume-based overhead rebate.',
+    lever: 'Ask for the overhead rate and its base (this should-cost applies its own stated %); request open-book or a volume-based overhead rebate.',
     question: 'What overhead rate is applied, and on what base? Can we move to open-book above a volume threshold?',
-    closing: 'Cap overhead at the sector benchmark; step it down against volume commitments.',
+    closing: 'Agree an overhead % on a stated base; step it down against volume commitments.',
   },
   margin: {
-    lever: 'Negotiate margin toward the sector norm in exchange for a volume commitment or a multi-year LTA.',
-    question: 'What margin is included, and what volume or contract term would move it toward benchmark?',
-    closing: 'Trade a longer term / higher volume for a margin step-down into the benchmark band.',
+    lever: 'Negotiate margin toward the should-cost\'s stated margin % in exchange for a volume commitment or a multi-year LTA.',
+    question: 'What margin is included, and what volume or contract term would move it toward the should-cost margin?',
+    closing: 'Trade a longer term / higher volume for a margin step-down.',
   },
 };
 
@@ -176,7 +179,7 @@ export function analyzeQuote(input: TeardownInput): NegotiationReport {
       if (bm) {
         const over = sharePct > bm.hi * 100;
         benchmark = { loPct: bm.lo * 100, hiPct: bm.hi * 100, sharePct, over };
-        if (over) benchmarkFlags.push(`${BUCKET_LABEL[b]} is ${sharePct}% of the quote — above the ${bm.lo * 100}–${bm.hi * 100}% norm.`);
+        if (over) benchmarkFlags.push(`${BUCKET_LABEL[b]} is ${sharePct}% of the quote — above the ${bm.lo * 100}–${bm.hi * 100}% ${COMMERCIAL_RANGE_BASIS}.`);
       }
       gaps.push({ bucket: b, label: BUCKET_LABEL[b], shouldGBP: round2(should), quoteGBP: round2(quote), gapGBP, gapPct, benchmark, severity: severityFor(gapPct) });
     }
@@ -202,7 +205,7 @@ export function analyzeQuote(input: TeardownInput): NegotiationReport {
   // ── Causal diagnosis ────────────────────────────────────────────────────
   let causalDiagnosis: string | null = null;
   if (ppvGBP > 0 && input.impliedIndexPremiumPct != null && input.impliedIndexPremiumPct > 0 && input.indexCategory) {
-    causalDiagnosis = `The £${ppvGBP.toLocaleString()} gap is only justified if ${input.indexCategory} were ~${input.impliedIndexPremiumPct}% above today's index. Ask the supplier to evidence that, or the premium is margin.`;
+    causalDiagnosis = `The £${ppvGBP.toLocaleString()} gap is only justified if ${input.indexCategory} cost ~${input.impliedIndexPremiumPct}% more than the material price this should-cost uses (its rate book). Ask the supplier to evidence that, or the premium is margin.`;
   }
 
   // ── Levers, questions, closing plays for the buckets that matter ─────────
@@ -231,7 +234,12 @@ export function analyzeQuote(input: TeardownInput): NegotiationReport {
     else if (ppvGBP > 0 && shouldCost > 0) recoveryPerPart = round2(ppvGBP * (g.shouldGBP / shouldCost));
     const expectedRecoveryGBP = round0(recoveryPerPart * vol);
     if (expectedRecoveryGBP > 0 || g.benchmark?.over) {
-      levers.push({ area: g.label, lever: pb.lever, expectedRecoveryGBP });
+      // Total-only quote: the £ is the gap apportioned by this bucket's share of the should-cost — an attribution, not a
+      // line the supplier disclosed; the lever says so (arithmetic audit, 30 Oct 2026).
+      const apportioned = !hasBreakdown && expectedRecoveryGBP > 0
+        ? ` (Recovery shown is the quote gap apportioned by this bucket's ${round1(g.shouldGBP / shouldCost * 100)}% share of the should-cost — an attribution, not a disclosed line.)`
+        : '';
+      levers.push({ area: g.label, lever: pb.lever + apportioned, expectedRecoveryGBP });
       supplierQuestions.push(pb.question);
       closingPlays.push({ gap: g.label, play: pb.closing });
     }
@@ -251,7 +259,11 @@ export function analyzeQuote(input: TeardownInput): NegotiationReport {
   const grossOpportunityGBP = round0(levers.reduce((s, l) => s + l.expectedRecoveryGBP, 0));
   const totalOpportunityGBP = Math.min(grossOpportunityGBP, Math.max(0, annualImpactGBP)) || Math.max(0, annualImpactGBP);
 
-  const headline = ppvPct <= 5
+  // A quote well BELOW the should-cost is not "competitive; hold": the RAG already reads it red, and the headline
+  // said the opposite (arithmetic audit, 30 Oct 2026). Below by more than the green band, the scope is checked.
+  const headline = ppvPct < -5
+    ? `Quote is ${Math.abs(ppvPct)}% below should-cost (£${Math.abs(ppvGBP).toLocaleString()}/part) — check the scope, specification and volume it was priced on before accepting.`
+    : ppvPct <= 5
     ? `Quote is within ${Math.abs(ppvPct)}% of should-cost — competitive; hold and confirm.`
     : `Quote is ${ppvPct}% above should-cost (£${ppvGBP.toLocaleString()}/part). Opportunity ≈ £${totalOpportunityGBP.toLocaleString()}/yr across ${levers.length} lever${levers.length === 1 ? '' : 's'}.`;
 

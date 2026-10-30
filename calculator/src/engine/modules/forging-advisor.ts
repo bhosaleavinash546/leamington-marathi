@@ -5,6 +5,8 @@
  * indicative and override with real quotes via the admin Rate Library.
  */
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, countryFactor, countryNote } from '../regional-services.js';
+import { activeLabourRate } from '../rate-context.js';
+import { NDT_STATION } from './casting-advisor.js';
 import {
   TOOLROOM_RATES, composeTool, labourLine, materialLine, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
 } from '../toolmaking.js';
@@ -25,7 +27,11 @@ export type ToleranceClass = 'loose' | 'standard' | 'tight';
 export interface ForgingProcessReference {
   process: ForgingProcess;
   label: string;
-  yieldBand: [number, number];        // finished weight / input stock weight
+  /** Stock yield band. AS COSTED (rules/forging.ts) it is the AS-FORGED weight ÷ billet: the rules apply it to the
+   *  forging, which already carries its machining stock and drilled holes. It was labelled "finished weight / input
+   *  stock" — read that way, the stock would be charged twice (arith audit, Oct 2026, docs/review/arith-audit/forging.md
+   *  F7). CostVision engineering-typical bands — not sourced. */
+  yieldBand: [number, number];
   toolingBand: string;                // £ band for die/tooling NRE
   toleranceMm: string;                // as-forged dimensional capability
   weightRangeKg: [number, number];    // practical forging weight window
@@ -180,7 +186,7 @@ export function adviseForgingProcess(inputs: ForgingAdvisorInputs): ForgingProce
     if (p === 'precision') return build(p, chosen, ['Preform', 'Isothermal/precision forge', 'Solution + age', ...(inputs.safetyCritical ? ['CT / UT NDT'] : []), 'Finish machine'], ['Heat treat', ...(inputs.safetyCritical ? ['CT/UT NDT'] : []), 'Near-net machining']);
     if (p === 'cold-forming') return build(p, chosen, ['Wire/slug cut', 'Multi-station cold form', 'Trim', ...(inputs.alloyFamily === 'aluminium' ? ['Age (T6)'] : ['Optional Q&T'])], ['Phosphate/lube prep', 'Optional heat treat']);
     if (p === 'open-die') return build(p, chosen, ['Ingot/billet heat', 'Open-die forge (draw/upset)', 'Rough machine', 'Heat treat', 'Finish machine'], ['Q&T heat treat', ...(inputs.safetyCritical ? ['UT NDT'] : []), 'Stress relieve']);
-    return build('closed-die', chosen, ['Billet shear + heat', 'Block/finish impressions', 'Flash trim', 'Heat treat', 'Shot blast'], ['Flash trim', 'Heat treat', 'Shot blast', ...(inputs.safetyCritical ? ['MPI NDT'] : [])]);
+    return build('closed-die', chosen, closedDieRoute(inputs), closedDieSecondary(inputs));
   }
 
   // 1. Ring/flange/gear-blank geometry → seamless ring rolling.
@@ -221,8 +227,20 @@ export function adviseForgingProcess(inputs: ForgingAdvisorInputs): ForgingProce
   // 5. Default: closed-die (impression) forging.
   return build('closed-die',
     `${alloy} at ${inputs.annualVolume.toLocaleString()}/yr — closed-die impression forging is the volume workhorse: net-shape grain flow, good tolerance, lowest piece cost once dies amortise`,
-    ['Billet shear + heat', 'Block/finish impressions', 'Flash trim', 'Heat treat', 'Shot blast'],
-    ['Flash trim', 'Heat treat', 'Shot blast', ...(inputs.safetyCritical ? ['MPI NDT'] : [])]);
+    closedDieRoute(inputs), closedDieSecondary(inputs));
+}
+
+/** A microalloyed (V / Nb) steel is controlled-cooled off the forge heat — the costing charges no heat treatment for it
+ *  (rules/forging.ts HEAT_TREAT), so the route must not print one (arith audit, Oct 2026). */
+function closedDieCool(inputs: ForgingAdvisorInputs): string {
+  return inputs.alloyFamily === 'microalloyed-steel' ? 'Controlled cool from the forge heat' : 'Heat treat';
+}
+function closedDieRoute(inputs: ForgingAdvisorInputs): string[] {
+  return ['Billet shear + heat', 'Block/finish impressions', 'Flash trim (+ pierce)', closedDieCool(inputs),
+    'Shot blast (descale)', ...(inputs.safetyCritical ? ['MPI NDT'] : [])];
+}
+function closedDieSecondary(inputs: ForgingAdvisorInputs): string[] {
+  return ['Flash trim', closedDieCool(inputs), 'Shot blast', ...(inputs.safetyCritical ? ['MPI NDT'] : [])];
 }
 
 // ─── DFM rules (draft / web / fillet / grain flow / near-net) ──────────────────
@@ -382,18 +400,23 @@ export interface ForgingSecondaryResult {
   totalPerPartGbp: number;
 }
 
-const HEAT_TREAT_COST_PER_KG: Record<'normalise' | 'quench-temper' | 'anneal' | 'solution-age', number> = {
+/** UK £/kg of forging, bought-in heat treatment — CostVision engineering-typical, not sourced (printed on the rule). */
+export const HEAT_TREAT_COST_PER_KG: Record<'normalise' | 'quench-temper' | 'anneal' | 'solution-age', number> = {
   normalise: 0.30,
   'quench-temper': 0.65,     // Q&T — furnace + quench + temper
   anneal: 0.35,
   'solution-age': 1.20,      // Ti/superalloy/PH — solution + age
 };
 
-const NDT_COST_PER_PART: Record<'mpi' | 'ut' | 'ct', number> = {
+/** UK £ a part — CostVision engineering-typical, not sourced (printed on the rule). */
+export const NDT_COST_PER_PART: Record<'mpi' | 'ut' | 'ct', number> = {
   mpi: 2.5,             // magnetic particle (ferrous surface)
   ut: 6.0,             // ultrasonic (sub-surface)
   ct: 32.0,            // industrial CT (safety-critical)
 };
+
+/** Scale removal (shot blast or pickle), UK £ per kg of FORGING — CostVision engineering-typical, not sourced. */
+export const FORGING_DESCALE_GBP_PER_KG_UK = 0.12;
 
 export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): ForgingSecondaryResult {
   const adders: ForgingSecondaryAdder[] = [];
@@ -420,7 +443,7 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   if (inputs.descale) {
     adders.push({
       label: 'Descale / pickle',
-      basis: 'per-kg', unitCostGbp: svc(0.12), costPerPartGbp: svc(0.12) * wt,
+      basis: 'per-kg', unitCostGbp: svc(FORGING_DESCALE_GBP_PER_KG_UK), costPerPartGbp: svc(FORGING_DESCALE_GBP_PER_KG_UK) * wt,
       note: 'Remove forge scale before machining/inspection; per kg of forging.',
     });
   }
@@ -442,7 +465,14 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   }
 
   if (inputs.ndt && inputs.ndt !== 'none') {
-    const unit = Math.round(NDT_COST_PER_PART[inputs.ndt] * ndtServiceFactor() * 100) / 100;   // in the costed country (regional-services.ts)
+    // 100 % MPI is the SAME station on a forging as on a casting (75 s a part, one inspector, a bench) — it was a flat
+    // £2.50 here against ≈ £0.6 on the cast knuckle: two figures for one step (arithmetic audit forging F14). No
+    // radiograph sample on a forging (its internal soundness is the forging's; UT where the drawing asks for it).
+    const st = NDT_STATION.mpi;
+    const mpiStation = Math.round(st.secPerPart / 3600 * (activeLabourRate('lab-uk-inspector') * st.manning
+      + st.equipmentGbpPerHrUk * countryFactor('inspection')) * 100) / 100;
+    const unit = inputs.ndt === 'mpi' ? mpiStation
+      : Math.round(NDT_COST_PER_PART[inputs.ndt] * ndtServiceFactor() * 100) / 100;   // in the costed country (regional-services.ts)
     adders.push({
       label: `NDT (${inputs.ndt.toUpperCase()})`,
       basis: 'per-part', unitCostGbp: unit, costPerPartGbp: unit,
@@ -492,6 +522,7 @@ export type ShapeComplexity = 'simple' | 'moderate' | 'complex';
  * family. These are order-of-magnitude die-fill pressures, not room-temperature
  * yield: superalloys and titanium stay strong hot; aluminium is soft.
  */
+// CostVision engineering-typical, not sourced — printed on the press and trim bases.
 export const FORGING_FLOW_STRESS_MPA: Record<ForgingAlloyFamily, number> = {
   aluminium: 55,
   copper: 70,
@@ -505,9 +536,14 @@ export const FORGING_FLOW_STRESS_MPA: Record<ForgingAlloyFamily, number> = {
 
 /**
  * Shape/constraint multiplier (Kt) applied to flow stress — closed impressions
- * and thin ribs need many times the flow stress to fill.
+ * and thin ribs need many times the flow stress to fill. CostVision
+ * engineering-typical, not sourced; printed on the press basis. For comparison,
+ * Kalpakjian & Schmid's pressure-multiplying factor k_p (F = k_p · Y_f · A, A incl.
+ * flash) is 3–5 for simple shapes without flash, 5–8 simple with flash, 8–12
+ * complex with flash — this table sits at the bottom of those ranges (arith audit
+ * F13, a proposal, not applied).
  */
-function shapeConstraintFactor(shape: ShapeComplexity): number {
+export function shapeConstraintFactor(shape: ShapeComplexity): number {
   return shape === 'complex' ? 8 : shape === 'moderate' ? 5 : 3;
 }
 
@@ -629,6 +665,7 @@ export function estimateForgingDieCost(inputs: ForgingDieCostInputs): ForgingDie
  * aluminium; steel sits in between. These are impression-die order-of-magnitude
  * figures for a moderate part.
  */
+// CostVision engineering-typical, not sourced — printed on the die-life basis with its factors.
 export const FORGING_DIE_LIFE_BASE: Record<ForgingAlloyFamily, number> = {
   aluminium: 80000,
   copper: 60000,
@@ -653,13 +690,26 @@ export interface ForgingDieLifeInputs {
  * upsets extend it.
  */
 export function estimateForgingDieLife(inputs: ForgingDieLifeInputs): number {
+  return forgingDieLifeFactors(inputs).life;
+}
+
+/** The die-life arithmetic, factor by factor, so the rule can print it (arith audit, Oct 2026). */
+export function forgingDieLifeFactors(inputs: ForgingDieLifeInputs): {
+  base: number; complexityFactor: number; sizeFactor: number; life: number; basis: string;
+} {
   const base = FORGING_DIE_LIFE_BASE[inputs.alloyFamily];
-  const complexityFactor = (inputs.complexity ?? 'moderate') === 'complex' ? 0.6
-    : (inputs.complexity ?? 'moderate') === 'simple' ? 1.3 : 1.0;
+  const complexity = inputs.complexity ?? 'moderate';
+  const complexityFactor = complexity === 'complex' ? 0.6 : complexity === 'simple' ? 1.3 : 1.0;
   // Size penalty: parts ≤ 100 cm² keep full life; larger dies see more wear per hit.
   const area = Math.max(1, inputs.projectedAreaCm2 ?? 100);
   const sizeFactor = area <= 100 ? 1.0 : Math.pow(100 / area, 0.2);
-  return Math.max(250, Math.round(base * complexityFactor * sizeFactor));
+  const life = Math.max(250, Math.round(base * complexityFactor * sizeFactor));
+  const sf = sizeFactor.toFixed(6);
+  const basis = `size factor ${area <= 100 ? '1 (plan ≤ 100 cm²)' : `(100 ÷ ${area} cm²)^0.2 = ${sf}`}; `
+    + `${base.toLocaleString('en-GB')} forgings a die set for ${ALLOY_LABEL[inputs.alloyFamily]} × ${complexityFactor} ${complexity} impression`
+    + ` × ${sf} size = ${life.toLocaleString('en-GB')} forgings — CostVision engineering-typical figures, not sourced;`
+    + ' die sets are charged fractionally over the programme';
+  return { base, complexityFactor, sizeFactor, life, basis };
 }
 
 // ─── Alloy-aware forging heating energy (F2-C) ────────────────────────────────
@@ -674,6 +724,7 @@ export function estimateForgingDieLife(inputs: ForgingDieLifeInputs): number {
  * are deliberately conservative — override with a measured furnace figure when
  * one is known.
  */
+// CostVision engineering-typical, not sourced — printed on the heating-energy basis.
 export const FORGING_HEAT_KWH_PER_KG: Record<ForgingAlloyFamily, number> = {
   aluminium: 0.18,
   copper: 0.22,

@@ -300,7 +300,8 @@ describe('Casting module — Sand', () => {
     const r = computeUniversalStack({ partName: 'Sand Test', ...d, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
     // Pattern replacement: ceil(10000 / 10000) = 1 set → tooling = 5000/10000 = 0.50
     // Core cost (£1.50/part) is now a material consumable, not tooling
-    const expectedTooling = (5000 * Math.ceil(sandInputs.amortizationVolume / sandInputs.sand!.patternLife)) / sandInputs.amortizationVolume;
+    // Pattern sets wear by castings POURED, rejects included (arithmetic audit).
+    const expectedTooling = (5000 * Math.ceil(sandInputs.amortizationVolume / (1 - sandInputs.rejectRate) / sandInputs.sand!.patternLife - 1e-9)) / sandInputs.amortizationVolume;
     expect(r.breakdown.tooling).toBeCloseTo(expectedTooling, 4);
     // Core cost appears in rawMaterial instead
     expect(r.breakdown.rawMaterial).toBeGreaterThan(0);

@@ -104,6 +104,12 @@ export function estimateExtrusionLineRate(inp: LineRateInputs): LineRatePredicti
   };
 }
 
+/** The coefficients above and below, for the rule bases to print (arithmetic audit: shown, not hidden). */
+export const EXTRUSION_RATE_COEFS = {
+  outputCoef: OUTPUT_COEF, outputFactor: OUTPUT_FACTOR, coolSpeed: COOL_SPEED_COEF,
+  get meltKwhPerKg() { return SPECIFIC_ENERGY_KWH_KG; }, get chillKwhPerKg() { return CHILL_ENERGY_KWH_KG; },
+};
+
 // ─── Specific-energy model (kWh/kg) ───────────────────────────────────────────
 
 /** Melt + drive specific energy by family; higher melt-temp polymers cost more. */
@@ -160,6 +166,18 @@ function dieRates(p: ExtrusionProcess): { base: number; perMm: number; calBase: 
     case 'coex':           return { base: 8000,  perMm: 35,  calBase: 4000, calPerMm: 30 };
     default:               return { base: 5000,  perMm: 25,  calBase: 2500, calPerMm: 20 };
   }
+}
+
+/** The die arithmetic in words: "(£4,000 + 32 mm × £22) × 0.75 simple + calibration £3,000 + 32 mm × £30". */
+export function extrusionDieBasis(inp: ExtrusionDieInputs): string {
+  const size = Math.max(2, inp.sizeMm ?? 50);
+  const r = dieRates(inp.process);
+  const cxName = inp.complexity ?? 'moderate';
+  const cx = cxName === 'complex' ? 1.5 : cxName === 'simple' ? 0.75 : 1.0;
+  const layers = Math.max(1, Math.floor(inp.layers ?? 1));
+  const tf = activeToolroomFactor();
+  return `(£${r.base.toLocaleString('en-GB')} + ${size} mm × £${r.perMm}) × ${cx} ${cxName} + calibration £${r.calBase.toLocaleString('en-GB')} + ${size} mm × £${r.calPerMm}`
+    + (layers > 1 ? ` + ${layers - 1} co-ex layer${layers > 2 ? 's' : ''} × £3,500` : '') + (tf !== 1 ? `, × ${tf.toFixed(3)} toolroom factor` : '');
 }
 
 /** Estimate an extrusion die + calibration/sizing tool set (£) from process, size and layers. */

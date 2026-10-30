@@ -106,7 +106,8 @@ export function computeExtrusionDrivers(inputs: ExtrusionInputs): CommodityDrive
   // ── Variable process energy (melt + drive + chill) and additive/masterbatch ──
   const specificEnergy = estimateExtrusionSpecificEnergy(family, screwType); // kWh/kg
   // kWh for the core to price at the costing book's tariff; £ only when a tariff was typed (module-energy.ts).
-  const lineEnergy = moduleEnergy(specificEnergy * grossWeightKg, 'electricity', inputs.energyPricePerKwh, 'extrusion melt, drive and chill energy');
+  const lineEnergy = moduleEnergy(specificEnergy * grossWeightKg, 'electricity', inputs.energyPricePerKwh,
+    `extrusion melt, drive and chill: ${specificEnergy} kWh/kg × ${grossWeightKg.toFixed(4)} kg extruded (engineering-typical, not sourced)`);
   const energyCostPerPart = lineEnergy.gbp;
   const additiveFrac = Math.max(0, Math.min(0.3, inputs.additiveFraction ?? 0));
   const additiveCostPerPart = additiveFrac * grossWeightKg * Math.max(0, inputs.additivePricePerKg ?? 0);
@@ -139,8 +140,12 @@ export function computeExtrusionDrivers(inputs: ExtrusionInputs): CommodityDrive
   if (inputs.includeFinishing !== false) {
     const finSec = inputs.finishTimeSecPerPart ?? 4;
     const qaSec = inputs.qaTimeSecPerPart ?? 6;
+    // The line's own saw cuts the part (it is in the line's rate); this station inspects and bundles — or
+    // coils, on a coiled product. It was named "Cut-off, Coil & Inspect" on a cut tube (arithmetic audit X7).
+    const coiled = inputs.process === 'cable' || inputs.process === 'sheet';
+    const defaults = inputs.finishTimeSecPerPart == null && inputs.qaTimeSecPerPart == null;
     operations.push({
-      operationName: 'Cut-off, Coil & Inspect',
+      operationName: `${coiled ? 'Coil and inspect' : 'Inspect and bundle'} (station ${finSec} s, operator ${qaSec} s${defaults ? ' — engineering-typical, not sourced' : ''})`,
       machineId: inputs.finishMachineId ?? 'extrusion-finish-qa',
       labourId: inputs.labourId,
       cycleTimeHr: finSec / 3600,

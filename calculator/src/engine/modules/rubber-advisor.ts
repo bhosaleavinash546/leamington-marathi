@@ -80,7 +80,7 @@ export const RUBBER_CURE_BASE_SEC: Record<RubberCompoundFamily, number> = {
 };
 
 /** Default cure/mould temperature (°C) by family — LSR/peroxide run hotter, thick sulphur cooler. */
-function defaultCureTempC(f: RubberCompoundFamily): number {
+export function defaultCureTempC(f: RubberCompoundFamily): number {
   if (f === 'silicone-lsr') return 180;
   if (f === 'silicone-hcr') return 175;
   if (f === 'fkm' || f === 'ffkm') return 180;
@@ -116,15 +116,30 @@ export function estimateRubberCureTimeSec(inputs: RubberCureInputs): number {
   const heatPenetrationSec = thickness * thickness / (4 * RUBBER_THERMAL_DIFFUSIVITY_MM2_S);
   const cureSec = base * tempFactor + heatPenetrationSec;
 
-  // Handling overhead (load/close/open/eject) by process.
-  const handling =
-    inputs.process === 'injection_mould_lsr' ? 12 :
-    inputs.process === 'transfer_mould' ? 25 :
-    inputs.process === 'die_cut' ? 4 :
-    inputs.process === 'extrusion_vulcanise' ? 0 :
-    inputs.process === 'calendering' ? 0 :
+  return Math.round(cureSec + rubberHandlingSec(inputs.process));
+}
+
+/** Handling a shot (load / close / open / eject), s, by process — engineering-typical, not sourced. */
+export function rubberHandlingSec(process?: RubberProc): number {
+  return process === 'injection_mould_lsr' ? 12 :
+    process === 'transfer_mould' ? 25 :
+    process === 'die_cut' ? 4 :
+    process === 'extrusion_vulcanise' ? 0 :
+    process === 'calendering' ? 0 :
     30; // compression
-  return Math.round(cureSec + handling);
+}
+
+/** Each line of `estimateRubberCureTimeSec`, for a basis that prints the arithmetic the cycle carries. */
+export function rubberCureBreakdown(inputs: RubberCureInputs): { baseSec: number; tempC: number; tempFactor: number; heatSec: number; handlingSec: number; totalSec: number } {
+  const T = inputs.moldTempC ?? defaultCureTempC(inputs.compoundFamily);
+  const tempFactor = Math.pow(2, (170 - T) / 10);
+  const thickness = Math.max(0.3, inputs.thicknessMm);
+  return {
+    baseSec: RUBBER_CURE_BASE_SEC[inputs.compoundFamily], tempC: T, tempFactor,
+    heatSec: thickness * thickness / (4 * RUBBER_THERMAL_DIFFUSIVITY_MM2_S),
+    handlingSec: rubberHandlingSec(inputs.process),
+    totalSec: estimateRubberCureTimeSec(inputs),
+  };
 }
 
 // ─── Compound-cost recipe helper (RB1 / Part 1.2) ─────────────────────────────
@@ -178,12 +193,20 @@ export interface RubberMouldCostBreakdown {
   total: number;
 }
 
+/** Parametric cavity build-up (UK toolroom £) — engineering-typical, not sourced: £ a cavity = (fixed + cm² × perCm2)
+ *  × steel × complexity, × cavities^exponent for the block; £ an insert nest. */
+export const RUBBER_CAVITY_GBP = { fixed: 900, perCm2: 35, exponent: 0.9, insertNest: 1200 } as const;
+/** Complexity factor on the cavity block. */
+export function rubberComplexityFactor(c: RubberComplexity | undefined): number {
+  return (c ?? 'moderate') === 'complex' ? 1.5 : (c ?? 'moderate') === 'simple' ? 0.8 : 1.0;
+}
+
 /** Steel factor: rubber tools are often aluminium/P20 (low pressure vs plastics). */
 export function rubberMouldSteelFactor(s: RubberMouldSteel | undefined): number {
   return s === 'h13' ? 1.3 : s === 'aluminium' ? 0.7 : 1.0;
 }
 
-function rubberMouldBase(process: RubberProc): number {
+export function rubberMouldBase(process: RubberProc): number {
   switch (process) {
     case 'injection_mould_lsr': return 12000;   // hardened, precision, cold-runner
     case 'transfer_mould':      return 6000;
@@ -203,13 +226,12 @@ export function estimateRubberMouldCost(inputs: RubberMouldCostInputs): RubberMo
   const cavities = Math.max(1, Math.floor(inputs.cavities || 1));
   const areaCm2 = Math.max(0, inputs.projectedAreaCm2 ?? 0);
   const steel = rubberMouldSteelFactor(inputs.moldSteel);
-  const cplx = (inputs.complexity ?? 'moderate') === 'complex' ? 1.5
-    : (inputs.complexity ?? 'moderate') === 'simple' ? 0.8 : 1.0;
+  const cplx = rubberComplexityFactor(inputs.complexity);
 
   const base = rubberMouldBase(inputs.process) * steel;
-  const perCavity = (900 + areaCm2 * 35) * steel * cplx;
-  const cavityBlock = perCavity * Math.pow(cavities, 0.9);   // mild multi-cavity economy
-  const inserts = Math.max(0, Math.floor(inputs.metalInserts ?? 0)) * 1200;
+  const perCavity = (RUBBER_CAVITY_GBP.fixed + areaCm2 * RUBBER_CAVITY_GBP.perCm2) * steel * cplx;
+  const cavityBlock = perCavity * Math.pow(cavities, RUBBER_CAVITY_GBP.exponent);   // mild multi-cavity economy
+  const inserts = Math.max(0, Math.floor(inputs.metalInserts ?? 0)) * RUBBER_CAVITY_GBP.insertNest;
 
   // Built where the part is made: × the country's toolroom factor (1 in the UK).
   const tf = activeToolroomFactor();

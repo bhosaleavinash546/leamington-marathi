@@ -49,7 +49,7 @@ export function thermoformFamilyOf(idOrGrade: string): ThermoformFamily {
  *   coolCoef    — tool-contact cooling: t_cool ≈ coolCoef · thickness² (s)
  *   sagCoef     — inverse melt-modulus; higher = sags more under self weight
  */
-interface FamilyData { formTempC: number; cpKJ: number; heatCoef: number; coolCoef: number; sagCoef: number; }
+export interface FamilyData { formTempC: number; cpKJ: number; heatCoef: number; coolCoef: number; sagCoef: number; }
 const FAMILY: Record<ThermoformFamily, FamilyData> = {
   hips:        { formTempC: 145, cpKJ: 1.90, heatCoef: 9.9,  coolCoef: 3.5, sagCoef: 1.00 },
   abs:         { formTempC: 150, cpKJ: 2.05, heatCoef: 10.6, coolCoef: 3.8, sagCoef: 1.10 },
@@ -65,8 +65,15 @@ const FAMILY: Record<ThermoformFamily, FamilyData> = {
   tpo:         { formTempC: 150, cpKJ: 2.30, heatCoef: 11.5, coolCoef: 4.2, sagCoef: 2.00 },
 };
 
-const AMBIENT_C = 23;
-const OVEN_EFFICIENCY = 0.40;   // radiant ovens couple ~40% of input into the sheet
+export const AMBIENT_C = 23;
+export const OVEN_EFFICIENCY = 0.40;   // radiant ovens couple ~40% of input into the sheet — engineering-typical, not sourced
+/** The family's reference data, for basis lines that print the arithmetic (arith audit, Oct 2026).
+ *  Every coefficient is engineering-typical, not sourced. */
+export function thermoformFamilyData(family: ThermoformFamily): Readonly<FamilyData> { return FAMILY[family]; }
+/** Tool-contact cooling multiplier by tool cooling — engineering-typical, not sourced. */
+export const TF_TOOL_COOL_MULT: Record<ToolCooling, number> = { water: 0.65, air: 1.0, ambient: 1.35 };
+/** Forming-air work, kWh per kg of sheet, by method — engineering-typical, not sourced. */
+export const TF_FORMING_AIR_KWH_PER_KG: Record<ThermoformMethod, number> = { vacuum: 0.02, pressure: 0.05, twin_sheet: 0.03 };
 
 // ─── Heating: time + part-level oven energy ───────────────────────────────────
 
@@ -84,7 +91,7 @@ export function estimateHeatTimeSec(family: ThermoformFamily, thicknessMm: numbe
 export function estimateThermoformSpecificEnergy(family: ThermoformFamily, method: ThermoformMethod = 'vacuum'): number {
   const d = FAMILY[family];
   const heat = (d.cpKJ * (d.formTempC - AMBIENT_C)) / 3600 / OVEN_EFFICIENCY;   // kWh/kg
-  const formingAir = method === 'pressure' ? 0.05 : method === 'twin_sheet' ? 0.03 : 0.02; // compressor/vacuum work
+  const formingAir = TF_FORMING_AIR_KWH_PER_KG[method]; // compressor/vacuum work
   const twinHeat = method === 'twin_sheet' ? heat : 0;   // twin-sheet heats two webs
   return Math.round((heat + twinHeat + formingAir) * 1000) / 1000;
 }
@@ -117,7 +124,7 @@ export function estimateSagRisk(family: ThermoformFamily, thicknessMm: number, u
 /** Tool-contact cooling time (s) ≈ coolCoef · t², scaled by how the tool is cooled. */
 export function estimateCoolTimeSec(family: ThermoformFamily, thicknessMm: number, toolCooling: ToolCooling = 'water'): number {
   const t = Math.max(0.2, thicknessMm);
-  const coolMult = toolCooling === 'water' ? 0.65 : toolCooling === 'air' ? 1.0 : 1.35; // ambient tool holds heat
+  const coolMult = TF_TOOL_COOL_MULT[toolCooling]; // ambient tool holds heat
   return Math.round(FAMILY[family].coolCoef * t * t * coolMult);
 }
 
@@ -183,7 +190,8 @@ export interface ThermoformToolBreakdown {
 }
 
 interface MouldRate { base: number; perCm2: number; life: number; maint: number; }
-const MOULD_RATE: Record<MouldMaterial, MouldRate> = {
+/** Tool build rates and lives — engineering-typical, not sourced. */
+export const MOULD_RATE: Record<MouldMaterial, MouldRate> = {
   epoxy:    { base: 1500,  perCm2: 0.8, life: 5000,     maint: 0.010 }, // prototype / low-vol
   'cast-al':{ base: 3500,  perCm2: 1.2, life: 250000,   maint: 0.004 },
   'cnc-al': { base: 6000,  perCm2: 2.2, life: 1000000,  maint: 0.003 }, // production standard

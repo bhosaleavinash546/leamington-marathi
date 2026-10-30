@@ -102,7 +102,9 @@ export function estimateSandPatternCost(p: CastingToolInputs & { coreCount?: num
   const H = cavityCncHours(area) * 0.30;
   const lines: ToolCostLine[] = [
     labourLine('Pattern design', 'design', 12 + 0.1 * H, TOOLROOM_RATES.design, 'match-plate layout + shrink allowance'),
-    materialLine('Pattern plate aluminium', cavitySteelKg(area) * 0.35, 'al-7075', 'one-sided plate, half the block'),
+    // 0.35 ≈ aluminium's density over steel's (2.70 / 7.85 = 0.34) on the steel-block mass the cavity law gives; the
+    // basis said "half the block", which 0.35 is not (arithmetic audit, Oct 2026). Engineering-typical, not sourced.
+    materialLine('Pattern plate aluminium', cavitySteelKg(area) * 0.35, 'al-7075', 'the cavity block\'s steel kg × 0.35 (aluminium ≈ 0.34 of steel\'s density; engineering-typical)'),
     labourLine('Pattern machining', 'machining', H, TOOLROOM_RATES.cnc, '0.30× the cavity law — open one-sided cutting'),
     ...(cores > 0 ? [labourLine(`Corebox machining × ${cores}`, 'machining', cores * (10 + 0.08 * H), TOOLROOM_RATES.cnc, 'per corebox')] : []),
     labourLine('Fit + tryout moulds', 'tryout', 8, TOOLROOM_RATES.tryoutPress, 'sample moulds + gauge check'),

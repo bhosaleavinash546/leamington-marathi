@@ -44,7 +44,7 @@ export interface ForgingInputs {
   /** Cutting tools worn in the secondary machining, £/part. */
   secondaryMachiningConsumablesPerPart?: number;
   heatTreatCostPerKg?: number;  // external heat treat cost £/kg of part
-  descaleCostPerKg?: number;    // descaling / shot blast cost £/kg of billet
+  descaleCostPerKg?: number;    // descaling / shot blast cost £/kg of FORGING (the flash is trimmed off first)
   coiningCostPerPart?: number;  // coining / sizing / straightening cost £/part
   ndtCostPerPart?: number;      // NDT (MPI/UT/CT) cost £/part for safety-critical forgings
   rejectRate?: number;          // forging scrap fraction 0–1
@@ -87,7 +87,7 @@ export function getForgingInputSchema(): Record<string, string> {
     trimmingLabourId: 'string? — trimming labour rate ID',
     trimmingCycleHr: 'number? — trimming cycle time hr',
     heatTreatCostPerKg: 'number? — external heat treatment cost £/kg of part',
-    descaleCostPerKg: 'number? — descaling/shot blast cost £/kg of billet',
+    descaleCostPerKg: 'number? — descaling/shot blast cost £/kg of forging (after the trim; the flash is not blasted)',
     coiningCostPerPart: 'number? — coining/sizing/straightening cost £/part',
     ndtCostPerPart: 'number? — NDT (MPI/UT/CT) cost £/part for safety-critical forgings',
     rejectRate: 'number 0–1 (optional) — forging scrap fraction; uplifts material and cycle time',
@@ -201,17 +201,25 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   // kWh of the furnace's fuel for the core to price at the costing book's tariff
   // (module-energy.ts); £ only when a tariff was typed.
   const furnace = FURNACE_FUEL[inputs.furnaceType ?? 'induction'] ?? FURNACE_FUEL.induction;
-  const heating = moduleEnergy((inputs.heatingEnergyKwhPerKg ?? 0) * billetWeightKg * furnace.perKwhDelivered,
+  // Every billet heated is charged, the ones that become scrap too — as the material and the press time are
+  // (rejectUplift). It was charged on the good parts only (arith audit, Oct 2026).
+  const heating = moduleEnergy((inputs.heatingEnergyKwhPerKg ?? 0) * billetWeightKg * rejectUplift * furnace.perKwhDelivered,
     furnace.fuel, inputs.heatingEnergyPricePerKwh != null ? inputs.heatingEnergyPricePerKwh / furnace.perKwhDelivered : undefined,
     `billet heating (${inputs.furnaceType ?? 'induction'} furnace)`);
   const heatingCostPerPart = heating.gbp;
 
-  // Heat treat and descale are recurring per-part costs → rawMaterial.consumablesCostPerPart
-  const heatTreatCostPerPart = (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg;
-  const descaleCostPerPart = (inputs.descaleCostPerKg ?? 0) * billetWeightKg;
+  // Heat treat, descale, coining and NDT are recurring per-part costs → rawMaterial.consumablesCostPerPart.
+  // Arith audit (Oct 2026): descale is charged on the FORGING, not the billet — the flash is trimmed off and the crop
+  // and scale never reach the blast (the adder is "per kg of forging"; on the billet the hub flange paid 48% more).
+  // Each is done to every forging made, the scrap among them (inspection finds the scrap), so each carries the same
+  // rejectUplift as the material and the press time.
+  const heatTreatCostPerPart = (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg * rejectUplift;
+  const descaleCostPerPart = (inputs.descaleCostPerKg ?? 0) * inputs.partWeightKg * rejectUplift;
+  const coiningCostPerPart = (inputs.coiningCostPerPart ?? 0) * rejectUplift;
+  const ndtCostPerPart = (inputs.ndtCostPerPart ?? 0) * rejectUplift;
   const consumablesCostPerPart =
     heatingCostPerPart + heatTreatCostPerPart + descaleCostPerPart +
-    (inputs.coiningCostPerPart ?? 0) + (inputs.ndtCostPerPart ?? 0) +
+    coiningCostPerPart + ndtCostPerPart +
     (inputs.secondaryMachiningConsumablesPerPart ?? 0);
 
   // Feature-based secondary machining (geometry-driven) — appended on top of
@@ -253,7 +261,7 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   // Germany live review, Oct 2026).
   const consumablesItems = ([
     ['billet heating (typed tariff)', heatingCostPerPart], ['heat treatment', heatTreatCostPerPart], ['descale', descaleCostPerPart],
-    ['coining', inputs.coiningCostPerPart ?? 0], ['NDT', inputs.ndtCostPerPart ?? 0],
+    ['coining', coiningCostPerPart], ['NDT', ndtCostPerPart],
     ['machining tool wear and cell consumables', inputs.secondaryMachiningConsumablesPerPart ?? 0],
     ['surface finishing consumables', finishing?.consumablesPerPart ?? 0],
   ] as Array<[string, number]>).filter(([, v]) => v > 0).map(([label, gbp]) => ({ label, gbp }));

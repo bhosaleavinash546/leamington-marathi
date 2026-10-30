@@ -63,9 +63,9 @@ describe('1. a safety-critical cast-iron part is ductile iron', () => {
 
   it('the process plan is the iron that is priced (ductile yield band, not grey)', () => {
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctx(ALL));
-    expect((r.suggestions.casting as Record<string, number>).yieldFraction).toBe(0.63);
+    expect((r.suggestions.casting as Record<string, number>).yieldFraction).toBe(0.625);   // the band midpoint as printed (arithmetic audit)
     const grey = runCostInputRules(CAST_AND_MACHINE_RULES, ctx({ ...ALL, 'service.safetyCritical': 'no' }));
-    expect((grey.suggestions.casting as Record<string, number>).yieldFraction).toBe(0.73);
+    expect((grey.suggestions.casting as Record<string, number>).yieldFraction).toBe(0.725);   // band midpoint as printed
   });
 });
 
@@ -98,7 +98,11 @@ describe('2. the spindle is turned, and its stock is cast', () => {
     const turn = m.operations.find(o => /Turning — spindle/.test(o.name))!;
     expect(turn.machineId).toBe('mach-lathe-cnc');
     expect(turn.type).toBe('turning');
-    expect(turn.cycleTimeHr * 60).toBeCloseTo(3.99 + 1.2, 1);   // + loading the casting
+    expect(turn.cycleTimeHr * 60).toBeCloseTo(3.99, 1);
+    // the 1.2 min load is its own operation at a whole operator (it rode in the turning op at crew 0.5 — arithmetic audit M3)
+    const load = m.operations.find(o => /Load \/ clamp \/ unload — lathe fixture/.test(o.name))!;
+    expect(load.machineId).toBe('mach-lathe-cnc');
+    expect(load.cycleTimeHr * 60).toBeCloseTo(1.2, 1);
     expect(m.setupCount).toBe(2);   // one clamping on the twin-pallet cell (3 sides on the tombstone, drilling in the same clamping) + the lathe
     // Near-net names do not claim every face is machined.
     expect(m.operations.some(o => /\(\d+ faces\)/.test(o.name))).toBe(false);

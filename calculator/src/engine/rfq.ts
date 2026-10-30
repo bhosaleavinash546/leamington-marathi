@@ -89,7 +89,9 @@ export function analyzeRfq(items: RfqLineItem[]): RfqAnalysis {
   const withTarget = lines.filter(l => l.costed && l.targetPricePerPart && l.targetPricePerPart > 0);
   const totalTarget = withTarget.length ? round2(withTarget.reduce((s, l) => s + l.targetPricePerPart! * Math.max(1, l.quantity), 0)) : null;
   const headroomOpportunity = round2(lines.reduce((s, l) => {
-    if (l.targetPricePerPart && l.targetPricePerPart > l.shouldCostPerPart) return s + (l.targetPricePerPart - l.shouldCostPerPart) * Math.max(1, l.quantity);
+    // Only a COSTED line has a should-cost to negotiate from: an uncosted line (should-cost 0) added its whole target
+    // — one 500-off line at £9 printed "£4500 of negotiation headroom" with nothing costed (arithmetic audit AI-14).
+    if (l.costed && l.targetPricePerPart && l.targetPricePerPart > l.shouldCostPerPart) return s + (l.targetPricePerPart - l.shouldCostPerPart) * Math.max(1, l.quantity);
     return s;
   }, 0));
   const aggressiveExposure = round2(lines.reduce((s, l) => {

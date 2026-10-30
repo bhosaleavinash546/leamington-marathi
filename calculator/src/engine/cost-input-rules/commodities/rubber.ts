@@ -25,7 +25,8 @@
  */
 import { activeMachineRate, activeLabourRate } from '../../rate-context.js';
 import {
-  estimateRubberCureTimeSec, estimateRubberMouldCost, RUBBER_CURE_BASE_SEC,
+  estimateRubberCureTimeSec, estimateRubberMouldCost, rubberCureBreakdown, rubberMouldBase, rubberMouldSteelFactor,
+  rubberComplexityFactor, RUBBER_CAVITY_GBP, RUBBER_THERMAL_DIFFUSIVITY_MM2_S,
   type RubberProc, type RubberMouldSteel, type RubberComplexity, type RubberCompoundFamily,
 } from '../../modules/rubber-advisor.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
@@ -53,9 +54,10 @@ export function cureSectionMm(ctx: RuleContext): { mm: number; basis: string } |
   if (ray && mean) {
     const mm = Math.min(ray, 2 * mean);
     return { mm: Math.round(mm * 10) / 10,
-      basis: `95th-percentile ray-cast section ${fmt(ray, 1)} mm, capped at 2 × the mean section 2·V/S (${fmt(mean, 1)} mm)` };
+      basis: `95th-percentile ray-cast section ${fmt(ray, 2)} mm, capped at 2 × the mean section 2·V/S (${fmt(mean, 1)} mm)` };
   }
-  if (mean) return { mm: Math.round(1.5 * mean * 10) / 10, basis: `no ray-cast reading: 1.5 × the mean section 2·V/S (${fmt(mean, 1)} mm)` };
+  if (mean) return { mm: Math.round(1.5 * mean * 10) / 10, basis: `no ray-cast reading: 1.5 × the mean section 2·V/S (${fmt(mean, 1)} mm) `
+    + '(1.5 = a moulded part\'s thickest section against its mean — engineering-typical, not sourced)' };
   if (ray) return { mm: ray, basis: 'ray-cast section' };
   return null;
 }
@@ -170,7 +172,9 @@ export function cavitiesFor(
     }
   }
   return { n, basis: `${n}-up: at least ${lo} to make ${annualVolume.toLocaleString('en-GB')}/yr on one press `
-    + `(${Math.round(cycleSec)} s cure, ${PRESS_HOURS_A_YEAR} h × ${PRESS_OEE} OEE), at most ${fit} on the platen; `
+    + `(${Math.round(cycleSec)} s cure, ${PRESS_HOURS_A_YEAR} h × ${PRESS_OEE} OEE), at most ${fit} on the platen `
+    + `(${platen} cm² usable ÷ (${areaCm2.toFixed(1)} cm² × 2.5 for runner and land), capped at ${MAX_RUBBER_CAVITIES} — `
+    + 'platen, 2.5 and cap engineering-typical, not sourced); '
     + (cost ? `${n} is the cheapest — press time ÷ cavities against the tool amortised over ${cost.amortParts ? `${cost.amortParts.toLocaleString('en-GB')} parts` : 'the year'} (£${best.toFixed(3)} a part)` : 'the capacity minimum') };
 }
 
@@ -336,7 +340,8 @@ export const RUBBER_RULES: CommodityRuleSpec = {
         const a = r.advice;
         if (a.process === 'extrusion_vulcanise' && a.lineSec) {
           return decided('rubber.cureTimeSec', a.lineSec, 'rule',
-            'in-line cure tunnel (hot air / UHF) at the line takt — the profile cures as it travels', 0.6);
+            'in-line cure tunnel (hot air / UHF) at the line takt — the profile cures as it travels; the line crew '
+            + 'tends it (no crew of its own)', 0.6);
         }
         return decided('rubber.cureTimeSec', 0, 'rule', 'cured in the mould — the cure is the moulding cycle', 0.8);
       },
@@ -365,12 +370,17 @@ export const RUBBER_RULES: CommodityRuleSpec = {
         if (a.process === 'extrusion_vulcanise' && a.lineSec && a.profile) {
           return decided('rubber.cycleTimeSec', a.lineSec, 'rule',
             `${fmt(a.profile.lengthMm / 1000, 2)} m ÷ ${extrusionLineSpeedMPerMin(a.profile.sectionCm2)} m/min line speed `
-            + `(${fmt(a.profile.sectionCm2, 2)} cm² section) = ${fmt(a.lineSec, 1)} s a part`, 0.6);
+            + `(${fmt(a.profile.sectionCm2, 2)} cm² section; 12 m/min up to 2 cm², 8 up to 6 cm², 4 above — engineering-typical, `
+            + `not sourced) = ${fmt(a.lineSec, 1)} s a part`, 0.6);
         }
+        const b = rubberCureBreakdown({ compoundFamily: a.family, thicknessMm: a.thicknessMm, process: a.process });
+        const baseAtT = b.baseSec * b.tempFactor;
         return decided('rubber.cycleTimeSec', a.cureSec, 'advisor',
-          `${a.family} cures in ${RUBBER_CURE_BASE_SEC[a.family]} s thin-section, plus `
-          + `(${fmt(a.thicknessMm, 1)} mm)² ÷ (4 × 0.1 mm²/s) = ${fmt(a.thicknessMm ** 2 / 0.4, 0)} s for heat to reach the centre `
-          + `(slab conduction from both faces), plus ${a.process.replace(/_/g, ' ')} handling — the cure IS the cycle, `
+          `${a.family} cures in ${b.baseSec} s thin-section at 170 °C`
+          + (b.tempFactor !== 1 ? ` × 2^((170 − ${b.tempC}) / 10) = ${fmt(baseAtT, 0)} s at ${b.tempC} °C` : '')
+          + ` (t90 engineering-typical, not sourced), plus `
+          + `(${fmt(a.thicknessMm, 1)} mm)² ÷ (4 × ${RUBBER_THERMAL_DIFFUSIVITY_MM2_S} mm²/s) = ${fmt(b.heatSec, 0)} s for heat to reach the centre `
+          + `(slab conduction from both faces), plus ${b.handlingSec} s ${a.process.replace(/_/g, ' ')} handling = ${a.cureSec} s — the cure IS the cycle, `
           + `${(a.cureSec / 60).toFixed(1)} min a shot over ${a.cavities} cavities`, 0.7);
       },
     },
@@ -421,7 +431,9 @@ export const RUBBER_RULES: CommodityRuleSpec = {
           frac === 0 ? (r.advice.process === 'extrusion_vulcanise' ? 'an extrusion makes no flash; start-up and cut-off waste is in the scrap rate'
             : 'die cutting makes no flash — the skeleton is a nesting loss')
             : `${(frac * 100).toFixed(0)}% of part weight — `
-              + (frac === 0.08 ? 'compression overfills by design' : 'a metered shot flashes little'),
+              + (frac === 0.08 ? 'compression overfills by design' : 'a metered shot flashes little')
+              + (r.advice.process === 'transfer_mould' ? '; the transfer pot pad and sprue are not modelled separately' : '')
+              + ' (engineering-typical, not sourced)',
           0.6);
       },
     },
@@ -433,10 +445,13 @@ export const RUBBER_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
+        const die = r.advice.process === 'extrusion_vulcanise';
         return decided('rubber.mouldSteel', r.advice.steel, 'rule',
-          r.advice.steel === 'aluminium'
-            ? 'rubber sees low mould pressure, so aluminium is enough at this volume'
-            : `${r.advice.steel} — ${ctx.annualVolume.toLocaleString('en-GB')}/yr through the tool`,
+          (r.advice.steel === 'aluminium'
+            ? (die ? 'extrusion die costed at the aluminium tool factor (the steel is chosen by volume: below 100,000/yr)'
+              : 'rubber sees low mould pressure, so aluminium is enough at this volume')
+            : `${r.advice.steel} — ${ctx.annualVolume.toLocaleString('en-GB')}/yr through the tool`)
+          + ` — tool factor ${rubberMouldSteelFactor(r.advice.steel)} (engineering-typical, not sourced)`,
           0.7);
       },
     },
@@ -455,10 +470,15 @@ export const RUBBER_RULES: CommodityRuleSpec = {
           projectedAreaCm2: a.profile ? a.profile.sectionCm2 : a.areaCm2,
           moldSteel: a.steel, complexity: a.complexity, metalInserts: a.inserts,
         });
+        const area = a.profile ? a.profile.sectionCm2 : a.areaCm2;
+        const C = RUBBER_CAVITY_GBP;
         return decided('rubber.mouldCost', est.total, 'advisor',
           `${a.cavities}-cavity ${a.process.replace(/_/g, ' ')} tool in ${a.steel}, ${a.complexity}: `
-          + `£${est.base} base + £${est.cavityBlock} cavities`
-          + (est.inserts ? ` + £${est.inserts} insert nests` : ''), 0.65);
+          + `£${est.base} base (£${rubberMouldBase(a.process).toLocaleString('en-GB')} × ${rubberMouldSteelFactor(a.steel)} steel) `
+          + `+ £${est.cavityBlock} cavities ((£${C.fixed} + ${fmt(area, 1)} cm² × £${C.perCm2}) × ${rubberMouldSteelFactor(a.steel)} steel `
+          + `× ${rubberComplexityFactor(a.complexity)} ${a.complexity} × ${a.cavities}^${C.exponent})`
+          + (est.inserts ? ` + £${est.inserts} insert nests (${a.inserts} × £${C.insertNest})` : '')
+          + ` = £${est.total.toLocaleString('en-GB')} (UK toolroom build-up, engineering-typical, not sourced)`, 0.65);
       },
     },
     {
@@ -473,9 +493,12 @@ export const RUBBER_RULES: CommodityRuleSpec = {
         // flash-land wear and cleaning, not of the metal being pushed.
         const life = r.advice.steel === 'h13' ? 1_000_000
           : r.advice.steel === 'p20' ? 500_000 : 200_000;
-        return decided('rubber.mouldLife', life, 'library',
-          `${r.advice.steel} rubber tool — life is set by flash-land wear and cleaning, `
-          + 'not by injection pressure', 0.6);
+        return decided('rubber.mouldLife', life, 'rule',
+          (r.advice.process === 'extrusion_vulcanise'
+            ? `extrusion die — ${life.toLocaleString('en-GB')} parts before it is re-cut`
+            : `${r.advice.steel} rubber tool — ${life.toLocaleString('en-GB')} cycles; life is set by flash-land wear and cleaning, `
+              + 'not by injection pressure')
+          + ' (engineering-typical, not sourced)', 0.6);
       },
     },
     {
@@ -487,7 +510,7 @@ export const RUBBER_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('rubber.machineId', RUBBER_MACHINE_FOR[r.advice.process], 'rule',
-          `the ${r.advice.process.replace(/_/g, ' ')} route's machine (the screen took its first drop-down option)`, 0.75);
+          `the ${r.advice.process.replace(/_/g, ' ')} route's machine`, 0.75);
       },
     },
     {
@@ -506,9 +529,9 @@ export const RUBBER_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('rubber.manning', RUBBER_CREW[r.advice.process], 'rule',
-          r.advice.process === 'extrusion_vulcanise' ? 'extrusion line: extruder operator + cut-off / packer'
+          (r.advice.process === 'extrusion_vulcanise' ? 'extrusion line: extruder operator + cut-off / packer'
             : r.advice.process === 'injection_mould_lsr' ? 'automatic LSR cell, one setter to four'
-            : 'hand-loaded presses, two to an operator', 0.55);
+            : 'hand-loaded presses, two to an operator') + ' (engineering-typical, not sourced)', 0.55);
       },
     },
     {
@@ -524,7 +547,7 @@ export const RUBBER_RULES: CommodityRuleSpec = {
       fieldId: 'rub-reject',
       label: 'rejectRate',
       evaluate: () => decided('rubber.rejectRate', RUBBER_REJECT, 'rule',
-        `${RUBBER_REJECT * 100}% (flash defects, porosity, dimensions) — vulcanised scrap cannot be reground`, 0.5),
+        `${RUBBER_REJECT * 100}% (flash defects, porosity, dimensions) — vulcanised scrap cannot be reground (engineering-typical, not sourced)`, 0.5),
     },
     {
       id: 'rubber.deflashCycleSec',
@@ -536,7 +559,7 @@ export const RUBBER_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const sec = RUBBER_DEFLASH_SEC[r.advice.process];
         return decided('rubber.deflashCycleSec', sec, 'rule',
-          sec ? `${sec} s a part to trim the flash and check it by eye at a bench` : 'no flash to trim', 0.5);
+          sec ? `${sec} s a part to trim the flash and check it by eye at a bench (engineering-typical, not sourced)` : 'no flash to trim', 0.5);
       },
     },
     {
@@ -549,7 +572,8 @@ export const RUBBER_RULES: CommodityRuleSpec = {
         if ('blocked' in r) return r.blocked;
         const h = POST_CURE_HOURS[r.advice.family] ?? 0;
         return decided('rubber.postCureHours', h, 'rule',
-          h ? `${r.advice.family} is post-cured ${h} h in a batch oven (${POST_CURE_LOAD_KG} kg a load) to drive off volatiles and set compression set`
+          h ? `${r.advice.family} is post-cured ${h} h in a batch oven (${POST_CURE_LOAD_KG} kg a load; the oven is loaded and unloaded, `
+            + `0.1 of an operator over its hours) to drive off volatiles and set compression set (engineering-typical, not sourced)`
             : `${r.advice.family} needs no post-cure`, 0.6);
       },
     },
@@ -562,7 +586,8 @@ export const RUBBER_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('rubber.setupHoursPerChange', RUBBER_SETUP_HR[r.advice.process], 'rule',
-          `${RUBBER_SETUP_HR[r.advice.process]} h to change and heat the ${r.advice.process === 'extrusion_vulcanise' ? 'die' : 'mould'}`, 0.5);
+          `${RUBBER_SETUP_HR[r.advice.process]} h to change and heat the ${r.advice.process === 'extrusion_vulcanise' ? 'die' : 'mould'}, `
+          + 'press and setter, shared over the batch (engineering-typical, not sourced)', 0.5);
       },
     },
     {

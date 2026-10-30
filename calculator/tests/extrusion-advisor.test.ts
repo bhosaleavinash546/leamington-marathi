@@ -102,7 +102,8 @@ describe('extrusion engine — integration', () => {
 
   it('finishing op on by default; leak test opt-in', () => {
     const d1 = computeExtrusionDrivers(base());
-    expect(d1.operations.some(o => o.operationName.includes('Cut-off'))).toBe(true);
+    // The part is cut on the line's own saw; this station inspects and bundles (arithmetic audit X7).
+    expect(d1.operations.some(o => o.operationName.startsWith('Inspect and bundle'))).toBe(true);
     expect(d1.operations.some(o => o.operationName.includes('Leak'))).toBe(false);
     const d2 = computeExtrusionDrivers({ ...base(), includeLeakTest: true });
     expect(d2.operations.some(o => o.operationName.includes('Leak'))).toBe(true);

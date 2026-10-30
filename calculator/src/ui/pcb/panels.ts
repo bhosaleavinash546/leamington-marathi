@@ -184,13 +184,13 @@ export function buildSingleSourceWarnings(r: PCBImageAnalysis): string {
   </tr>`).join('');
   return `<div style="margin-top:8px;padding:10px 12px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.3);border-radius:8px">
     <div style="font-size:0.72rem;font-weight:600;color:#dc2626;margin-bottom:6px">⚠ Single-Source Risk Components (${warns.length})</div>
-    <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:6px">These ICs have limited qualified alternatives. Supply risk premium applied to unit prices:</div>
+    <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:6px">These ICs have limited qualified alternatives. The premium is a supply-risk indicator (CostVision engineering judgement, not sourced) — it is <strong>not</strong> in the unit cost or the headline:</div>
     <table style="width:100%;border-collapse:collapse">
       <thead><tr>
         <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Ref</th>
         <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Sole vendor / rationale</th>
         <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">Premium</th>
-        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">Cost add</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">If it applied</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
@@ -437,7 +437,15 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
         <div style="font-size:0.68rem;color:var(--text-muted)">Breakdown: PCB base £${sel.breakdown.pcbBase.toFixed(2)} + layers £${sel.breakdown.pcbLayers.toFixed(2)} + surface £${sel.breakdown.pcbSurface.toFixed(2)} + vias £${sel.breakdown.pcbVias.toFixed(2)} + HDI £${sel.breakdown.pcbHDI.toFixed(2)} + setup £${sel.breakdown.pcbSetup.toFixed(2)} + impedance £${(sel.breakdown.pcbImpedance ?? 0).toFixed(2)}${sel.breakdown.pcbCopper ? ` + copper £${sel.breakdown.pcbCopper.toFixed(2)}` : ''}${sel.breakdown.automotiveFab ? ` + automotive grade £${sel.breakdown.automotiveFab.toFixed(2)}` : ''} | assembly £${sel.breakdown.smtAssembly.toFixed(2)} | test £${sel.breakdown.aoi.toFixed(2)}${sel.breakdown.automotiveAssembly ? ` | automotive grade £${sel.breakdown.automotiveAssembly.toFixed(2)}` : ''} | logistics £${sel.breakdown.logistics.toFixed(2)} + duty £${sel.breakdown.importDuty.toFixed(2)} | energy £${(sel.breakdown.energy ?? 0).toFixed(2)} + packaging £${(sel.breakdown.packaging ?? 0).toFixed(2)} + yield £${(sel.breakdown.yieldLoss ?? 0).toFixed(2)}</div>
       </div>
       ${sel.panelInfo ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">Panelisation: <strong style="color:var(--text-secondary)">${sel.panelInfo.boardsPerPanel}-up</strong> on ${sel.panelInfo.panelW}×${sel.panelInfo.panelH}mm panel · utilisation <strong style="color:var(--text-secondary)">${Math.round(sel.panelInfo.utilisation * 100)}%</strong> (waste amortised into PCB base cost)</div>` : ''}
-      ${pcbNREEnabled && PCB_COUNTRY_META[selectedCountryId]?.nre ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">Automotive NRE (one-time/programme): PPAP £${PCB_COUNTRY_META[selectedCountryId].nre.ppapGBP.toLocaleString()} + FMEA £${PCB_COUNTRY_META[selectedCountryId].nre.fmeaGBP.toLocaleString()} + DVP&amp;R £${PCB_COUNTRY_META[selectedCountryId].nre.dvprGBP.toLocaleString()} + FAI £${PCB_COUNTRY_META[selectedCountryId].nre.firstArticleGBP.toLocaleString()} + IATF £${PCB_COUNTRY_META[selectedCountryId].nre.iatfAuditGBP.toLocaleString()} = <strong style="color:var(--text-secondary)">£${PCB_COUNTRY_META[selectedCountryId].nre.totalGBP.toLocaleString()}</strong></div>` : ''}
+      ${(() => {
+        // ONE automotive NRE on screen (arithmetic audit PCB P8): the board's own model (by ASIL — the NRE section) when
+        // it exists; the country table only when there is no board model, and then labelled as the country table.
+        if (!pcbNREEnabled) return '';
+        const boardNre = r._automotiveNRE && r._automotiveNRE.totalNRE > 0 ? r._automotiveNRE : null;
+        if (boardNre) return `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">Automotive NRE (one-time/programme, this board at ${escHtml(String(boardNre.asilLevel))}): <strong style="color:var(--text-secondary)">£${Math.round(boardNre.totalNRE).toLocaleString()}</strong> — see the Automotive NRE section for its build-up</div>`;
+        const m = PCB_COUNTRY_META[selectedCountryId]?.nre;
+        return m ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">Automotive NRE (one-time/programme, country table — CostVision estimate): PPAP £${m.ppapGBP.toLocaleString()} + FMEA £${m.fmeaGBP.toLocaleString()} + DVP&amp;R £${m.dvprGBP.toLocaleString()} + FAI £${m.firstArticleGBP.toLocaleString()} + IATF £${m.iatfAuditGBP.toLocaleString()} = <strong style="color:var(--text-secondary)">£${m.totalGBP.toLocaleString()}</strong></div>` : '';
+      })()}
       <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted)">Best for: ${escHtml(sel.bestFor)}</div>
     </div>` : '';
 
@@ -458,7 +466,7 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
       return `<td style="color:${colour};white-space:nowrap" title="${escHtml(trend.note)}">${arrow} ${sign}${trend.pctChange6m}%</td>`;
     })() : '<td>—</td>';
     const nreCell = pcbNREEnabled
-      ? `<td style="white-space:nowrap" title="One-time programme NRE">£${((meta?.nre?.totalGBP ?? 0) / 1000).toFixed(1)}k</td>`
+      ? `<td style="white-space:nowrap" title="One-time programme NRE — country table (CostVision estimate by country labour); the selected board\'s own NRE is in its Automotive NRE section">£${((meta?.nre?.totalGBP ?? 0) / 1000).toFixed(1)}k</td>`
       : '';
     const delta = r._costDeltas?.[c.countryId];
     const deltaCell = delta !== undefined
@@ -515,7 +523,7 @@ export function buildCountryBreakdownSection(r: PCBImageAnalysis, pcbNREEnabled:
       </div>
       <div style="margin-top:4px;font-size:0.65rem;color:var(--text-muted)">
         Prices include PCB fabrication + SMT/THT assembly + logistics/import duty to UK. BOM component cost (£${(comparison[0]?.bomCostPerBoard ?? 0).toFixed(2)}) is the same for all countries. Country fab and assembly rates as of 29 Sep 2026 (each with its source in the rate table).
-        ${pcbNREEnabled ? `<br/>NRE costs are one-time per programme. At ${(nreQty / 1000).toFixed(nreQty % 1000 === 0 ? 0 : 1)}k units, ${selectedCountryId.toUpperCase()} NRE adds £${(((PCB_COUNTRY_META[selectedCountryId]?.nre?.totalGBP ?? 0) / nreQty)).toFixed(2)}/board.` : ''}
+        ${pcbNREEnabled ? `<br/>NRE costs are one-time per programme. At ${(nreQty / 1000).toFixed(nreQty % 1000 === 0 ? 0 : 1)}k units, ${selectedCountryId.toUpperCase()} NRE adds £${((((r._automotiveNRE && r._automotiveNRE.totalNRE > 0 ? r._automotiveNRE.totalNRE : PCB_COUNTRY_META[selectedCountryId]?.nre?.totalGBP) ?? 0) / nreQty)).toFixed(2)}/board.` : ''}
       </div>
     </div>`;
 }

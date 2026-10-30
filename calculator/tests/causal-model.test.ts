@@ -56,7 +56,7 @@ describe('causal cost model', () => {
     const m = buildCausalModel({ partTotal: 100, materialCostGBP: 40, materialFamily: 'Aluminium', overheadPct: 0.12, marginPct: 0.08, indices });
     const s = coachSentence(m, 110, fmt)!;
     expect(s).toContain('Aluminium');
-    expect(s).toContain('above today');
+    expect(s).toContain('more than the material price this should-cost uses');
     expect(coachSentence(m, null, fmt)).toContain('Every 1% move');
   });
 

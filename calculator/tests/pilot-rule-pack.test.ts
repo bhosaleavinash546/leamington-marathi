@@ -64,7 +64,8 @@ describe('1. the volume machining cell', () => {
     // machine: cutting + set-up / batch + pallet change; operator: cutting at the shared manning + handling at one
     const hmc = R(HMC_MACHINE_ID);
     expect(cell.costPerPart).toBeCloseTo(0.40 * hmc + 0.75 * hmc / 2500 + PALLET_CHANGE_SEC / 3600 * hmc, 3);
-    expect(cell.labourPerPart).toBeCloseTo(27.95 * (0.40 * CUTTING_MANNING + 0.8 / 60), 3);
+    // the load happens during the cut, inside the operator's share of it — only what the cut cannot cover is extra (M4)
+    expect(cell.labourPerPart).toBeCloseTo(27.95 * (0.40 * CUTTING_MANNING + Math.max(0, 0.8 / 60 - 0.40 * CUTTING_MANNING)), 3);
     for (const a of high.alternatives) expect(a.labourPerPart).toBeGreaterThan(0);
     expect(high.basis).toMatch(/machine \+ operator/);
     // a turned part stays on the lathe
@@ -88,9 +89,8 @@ describe('1. the volume machining cell', () => {
     expect(m.setupCount).toBe(2);
     const names = m.operations.map(o => o.name);
     expect(names.some(n => n.startsWith('Pallet change — 1 fixturing'))).toBe(true);
-    const load = m.operations.find(o => o.name.startsWith('Load / unload on the pallet'))!;
-    expect(load.benchOperation).toBe(true);
-    expect(load.manning).toBe(1);
+    // the load is paid inside the operator's half of the cut (arithmetic audit M4) — no extra labour step
+    expect(m.operations.some(o => o.name.startsWith('Load / unload on the pallet'))).toBe(false);
     expect(m.operations.find(o => o.name.startsWith('Drilling'))!.machineId).toBe(HMC_MACHINE_ID);
     expect(m.operations.find(o => o.name.startsWith('Turning — spindle'))!.machineId).toBe('mach-lathe-cnc');
     expect(m.toolingCost).toBe(FIXTURE_GBP.hydraulic + FIXTURE_GBP.dedicated);   // 1 hydraulic tombstone fixture + the lathe's dedicated fixture
@@ -134,8 +134,8 @@ describe('1. the volume machining cell', () => {
     const ops = p.secondaryMachiningOps as Array<{ operationName: string; machineId: string; benchOperation?: boolean; untended?: boolean; manning: number; labourTimeHr: number }>;
     expect(ops[0].machineId).toBe(HMC_MACHINE_ID);
     expect(ops[1]).toMatchObject({ untended: true, labourTimeHr: 0 });
-    expect(ops[2]).toMatchObject({ benchOperation: true, manning: 1 });
-    expect(ops[2].labourTimeHr).toBeGreaterThan(0);
+    // the masked load is covered by the operator's share of the 12-minute cut (arithmetic audit M4): no load step
+    expect(ops.some(o => /load \/ unload on the pallet/.test(o.operationName))).toBe(false);
   });
 
   it('a hydraulic fixture is a stated toolroom build', () => {

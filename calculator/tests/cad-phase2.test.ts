@@ -76,7 +76,8 @@ describe('D4 — the load is sized from the measured part, from published line f
     const bare = finishSpec({ route: 'e_coat', productForm: 'cast_hpdc', annualVolume: 1, region: 'UK' })!;
     expect(bare.stages).not.toContain('masking');
     const masked = finishSpec({ route: 'e_coat', productForm: 'cast_hpdc', maskedFeatures: 2, annualVolume: 1, region: 'UK' })!;
-    expect(masked.stages.slice(-3)).toEqual(['masking', 'cure_oven', 'demask']);
+    expect(masked.stages[0]).toBe('masking');                 // masks go on at load, before pre-treatment
+    expect(masked.stages.slice(-2)).toEqual(['cure_oven', 'demask']);   // and come off at unload, after the cure
     expect(finishSpec({ route: '', productForm: 'cast_hpdc', annualVolume: 1, region: 'UK' })).toBeUndefined();
   });
 });

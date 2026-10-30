@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import { createAnthropic, isAirGapped, aiDisabledBody } from '../utils/ai-client.js';
 import { aiLimit } from '../middleware/ai-limit.js';
 import { analyzeRfq, type RfqLineItem } from '../../src/engine/rfq.js';
-import { numbersIn, isGrounded } from '../utils/agent-grounding.js';
+import { numbersIn, isGroundedFor } from '../utils/agent-grounding.js';
 
 /**
  * A line the model read from RFQ text keeps only the numbers that are IN that text, and never a should-cost: the model
@@ -19,7 +19,7 @@ export function groundRfqItems(items: RfqLineItem[], text: string): Array<RfqLin
     if (typeof l.shouldCostPerPart === 'number') dropped.push(`shouldCostPerPart = ${l.shouldCostPerPart} (the model never sets a cost)`);
     for (const f of FIELDS) {
       const v = out[f];
-      if (typeof v === 'number' && !isGrounded(v, given)) { delete out[f]; dropped.push(`${f} = ${v} (not in the RFQ text)`); }
+      if (typeof v === 'number' && !isGroundedFor(f, v, given)) { delete out[f]; dropped.push(`${f} = ${v} (not in the RFQ text)`); }
     }
     if (dropped.length) out.droppedByGrounding = dropped;
     return out;

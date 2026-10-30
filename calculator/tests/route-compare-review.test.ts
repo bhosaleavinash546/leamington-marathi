@@ -117,13 +117,16 @@ describe('3. The arithmetic on a row', () => {
       for (const op of r.operations!) expect(op.machine).not.toMatch(/^(mach|press|forge|hpdc|lab)-/);
     }
     const ref = cmp.rows[0];
-    expect(ref.total).toBe(22.7563);   // pilot rule pack (30 Oct 2026): the knuckle's secondary machining on the twin-pallet cell (was 24.0215)
+    // arithmetic audit (30 Oct 2026): forging MPI as the casting station (£2.50 → £0.67), descale per kg of forging, the
+    // cell's masked load inside the operator's share of the cut: 22.7563 → 19.9838 (24.0215 before the pilot rule pack)
+    expect(ref.total).toBe(19.9838);
     expect(ref.tooling!.investment).toBe(440949.69);   // one hydraulic tombstone fixture (£12,000) in place of three dedicated ones
     expect(ref.tooling!.amortisedOver).toBe(500_000);
     expect(ref.material).toMatchObject({ netKg: 3.321, boughtKg: 4.918 });
     const mach = cmp.rows.find(r => r.route === 'machining')!;
     expect(mach.material!.netKg).toBe(2.852);
-    expect(mach.material!.boughtKg).toBeCloseTo(50.929, 2);
+    // utilisation to 4 dp: the kg bought is the stock the basis prints (it was 3 dp, 0.45 kg off — arithmetic audit L1)
+    expect(mach.material!.boughtKg).toBeCloseTo(50.479, 2);
     expect(mach.caveats.join(' ')).toMatch(/buy-to-fly/);
     // The ladder: every costed row at every volume, the costing's own volume on it.
     expect(cmp.ladder).toEqual([...VOLUME_LADDER]);
@@ -189,7 +192,7 @@ describe('5. The screen', () => {
     expect(html).toContain('Not feasible for this part');
     expect(html).toContain('cheaper than the costed route above');
     expect(html).toContain('5,000 / yr');
-    expect(html).toContain('Tooling investment');
+    expect(html).toContain('Tooling over programme');
     expect(html).not.toMatch(/mat-[a-z0-9-]+</);   // no library id as a label
     expect(html).toContain('Boothroyd');
   }, 60_000);

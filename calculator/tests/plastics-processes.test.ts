@@ -228,7 +228,8 @@ describe('Rotational Moulding module', () => {
 
   it('powder cost adder appears in consumablesCostPerPart', () => {
     const d = computeRotationalMouldingDrivers(RM_INPUTS);
-    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.25 * 5.0, 4);
+    // grinding is charged on every kg of powder CHARGED — the part ÷ the 99 % powder yield (arithmetic audit, hollow forming)
+    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.25 * 5.0 / d.rawMaterial.materialUtilization, 4);
   });
 
   it('partsPerCycle = partsPerArm', () => {

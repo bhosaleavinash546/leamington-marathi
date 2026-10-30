@@ -126,7 +126,8 @@ describe('Cast + Machine module', () => {
     const drivers = computeCastAndMachineDrivers(SAND_INPUTS);
     // Core cost is now a rawMaterial consumable, not tooling.
     // Pattern tooling = patternCost × ceil(amortVol / patternLife)
-    const patternSets = Math.ceil(SAND_INPUTS.amortizationVolume / SAND_INPUTS.sand!.patternLife);
+    // Pattern sets wear by castings POURED, rejects included (arithmetic audit C-sets).
+    const patternSets = Math.ceil(SAND_INPUTS.amortizationVolume / (1 - SAND_INPUTS.rejectRate) / SAND_INPUTS.sand!.patternLife - 1e-9);
     const sandPatternTooling = SAND_INPUTS.sand!.patternCost * patternSets;
     const expectedTotal =
       sandPatternTooling +

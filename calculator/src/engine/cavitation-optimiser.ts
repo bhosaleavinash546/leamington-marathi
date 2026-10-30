@@ -11,19 +11,21 @@
  * the tool does the arithmetic (the routing-optimiser principle applied to the
  * moulder's side of the quote).
  *
- * Conventions deliberately mirror what the mapper will actually charge
- * (SHOP_DEFAULTS + core.ts): reject uplift on the cycle, OEE on machine time,
- * labour at the semi-skilled UK rate with the shop's manning and efficiency.
+ * Conventions mirror what the mapper will actually charge (core.ts + the
+ * values the rules pass): reject uplift on the cycle, OEE on machine time,
+ * labour at the moulding labour rate with the press's crew and efficiency.
  * Unlike the machining routing optimiser — which excludes labour because labour
  * follows the operation whatever machine runs it — labour is IN this ranking:
  * every per-hour cost divides by n here, and excluding it would systematically
  * understate the multi-cavity win. Material is OUT: runner waste per part is
  * n-invariant (the runner rule ships the whole shot's runner), so it cancels.
  *
- * Ranked on UK base rates like the routing optimiser: regional factors scale
- * the moulding family together, so the RANKING is region-stable while the
- * estimate's pounds still come from the regional engine run. Deterministic:
- * same inputs, same choice, same words.
+ * Ranked on the costed country's book (`activeRates()`), at the OEE, labour
+ * efficiency, crew per press and mould maintenance the costing itself charges
+ * (passed by the rules) — so the chosen row's £/part is the costing's moulding
+ * machine + labour + tooling (arithmetic audit, Oct 2026: it ranked at 0.80 /
+ * 0.92, one crew for every press and no maintenance, and printed figures the
+ * costing did not carry). Deterministic: same inputs, same choice, same words.
  */
 import { activeRates } from './rate-context.js';
 import {
@@ -31,6 +33,7 @@ import {
   type MouldSteelClass,
 } from './modules/injection-moulding.js';
 import type { RateLibrary } from './types.js';
+import type { ToolCostDetail } from './toolmaking.js';
 
 export interface CavitationInputs {
   /** projected area of ONE cavity, cm². */
@@ -65,7 +68,11 @@ export interface CavitationInputs {
   maxClampTonnes?: number;
   oee?: number;
   manning?: number;
+  /** Operators per press for the press n cavities need — the costing mans a big press differently (overrides `manning`). */
+  manningFor?: (pressId: string) => number;
   labourEfficiency?: number;
+  /** Multiplier the costing applies to the mould (maintenance for every year amortised: 1 + fraction × years). Default 1. */
+  toolingFactor?: number;
   rejectRate?: number;
   labourId?: string;
   library?: RateLibrary;
@@ -80,7 +87,11 @@ export interface CavitationCandidate {
   steelClass: MouldSteelClass;
   mouldLife: number;
   mouldCostGBP: number;
-  /** machine + labour, £/part at UK base rates. */
+  /** the toolmaker build-up behind `mouldCostGBP` (lines sum to it). */
+  mouldDetail: ToolCostDetail;
+  /** operators per press charged in the ranking. */
+  manning: number;
+  /** machine + labour, £/part at the costed country's rates. */
   machineLabourPerPart: number;
   /** amortised mould NRE, £/part. */
   toolingPerPart: number;
@@ -123,12 +134,13 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
   // £8,000 per undercut face, capped at £200k, and the scaling dragged the one
   // tool we hold a quotation for (the bumper, £420k; build-up £424k) towards the
   // cap. (Injection-moulding review, 2 Oct 2026.)
+  const toolingFactor = Math.max(1, p.toolingFactor ?? 1);
   const mould = (n: number, cls: MouldSteelClass) => estimateMouldCost({
     cavities: n, projectedAreaCm2: p.areaPerCavityCm2 * n, steelClass: cls,
     sideActionsLifters: p.sideActionsLifters, runnerSystem: p.runnerSystem ?? 'cold',
     ...(p.runnerSystem === 'hot' ? { hotRunnerDrops: n * Math.max(1, p.dropsPerCavity ?? 1) } : {}),
     ...(p.depthCm ? { depthCm: p.depthCm } : {}),
-  }).total;
+  });
   const all: CavitationCandidate[] = [];
   const infeasible: Array<{ n: number; clampTonnes: number }> = [];
 
@@ -146,22 +158,24 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
     });
     const rate = library.machines.find(m => m.id === pressId)?.computedRatePerHr ?? 0;
     const steel = steelClassFor((p.annualVolume * years) / n);
-    const mouldCostGBP = Math.round(mould(n, steel.cls));
+    const tool = mould(n, steel.cls);
+    const mouldCostGBP = Math.round(tool.total);
+    const crew = p.manningFor ? p.manningFor(pressId) : manning;
     const shotSec = p.cycleSecondsFor ? p.cycleSecondsFor(pressId, n) : p.shotSeconds;
     const shotHr = (shotSec / 3600) / (1 - reject);
     const numMoulds = Math.max(1, Math.ceil((amortVol / n) / steel.life));
-    const toolingPerPart = mouldCostGBP * numMoulds / amortVol;
-    const machineLabourPerPart = shotHr * (rate / oee + labourRate * manning / labourEff) / n;
+    const toolingPerPart = mouldCostGBP * numMoulds * toolingFactor / amortVol;
+    const machineLabourPerPart = shotHr * (rate / oee + labourRate * crew / labourEff) / n;
     const costPerPart = Math.round((machineLabourPerPart + toolingPerPart) * 10_000) / 10_000;
 
     all.push({
       n, feasible: true, clampTonnes, pressId, pressRatePerHr: rate,
-      steelClass: steel.cls, mouldLife: steel.life, mouldCostGBP,
+      steelClass: steel.cls, mouldLife: steel.life, mouldCostGBP, mouldDetail: tool.detail, manning: crew,
       machineLabourPerPart: Math.round(machineLabourPerPart * 10_000) / 10_000,
       toolingPerPart: Math.round(toolingPerPart * 10_000) / 10_000,
       costPerPart,
       detail: `${pressId} £${rate.toFixed(2)}/hr, ${shotSec.toFixed(1)} s shot, ${steel.cls} tool `
-        + `£${mouldCostGBP.toLocaleString()} → ${fmtGBP(toolingPerPart, 4)}/part NRE`
+        + `£${mouldCostGBP.toLocaleString()}${numMoulds > 1 ? ` × ${numMoulds} moulds` : ''}${toolingFactor > 1 ? ` × ${toolingFactor.toFixed(4).replace(/\.?0+$/, '')} with maintenance` : ''} ÷ ${Math.round(amortVol).toLocaleString()} parts → ${fmtGBP(toolingPerPart, 4)}/part NRE`
         + (clampTonnes > maxClamp ? ` (${clampTonnes} t exceeds the largest press — costed on it regardless)` : ''),
     });
   }
@@ -179,7 +193,8 @@ export function optimiseCavitation(p: CavitationInputs): CavitationChoice {
     + (infeasible.length
       ? `; ${infeasible.map(i => `${i.n}-up infeasible (${i.clampTonnes.toLocaleString()} t > ${maxClamp.toLocaleString()} t largest press)`).join(', ')}`
       : '')
-    + ' — machine+labour+tool NRE; material cancels (runner is per-shot)';
+    + ` — machine ÷ OEE ${oee} + labour × ${p.manningFor ? 'the press\'s crew' : manning} ÷ efficiency ${labourEff}, reject ${(reject * 100).toFixed(0)}%, `
+    + `+ tool NRE over ${Math.round(amortVol).toLocaleString()} parts; material cancels (runner is per-shot); mould change and purge not ranked`;
 
   return { chosen, alternatives: all, infeasible, savingVsNext, basis };
 }

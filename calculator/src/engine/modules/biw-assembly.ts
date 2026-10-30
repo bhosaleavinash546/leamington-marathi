@@ -1,4 +1,4 @@
-import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import type { CommodityDrivers, MaterialLineItem, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 
 export type JoiningType =
   | 'spot_weld'
@@ -34,6 +34,18 @@ export interface BIWAssemblyInputs {
   subPartHandlingPct?: number;
 }
 
+/** The handling charge on bought-in sub-parts when none is typed — engineering-typical (2–5 %), not sourced. */
+export const BIW_SUBPART_HANDLING_DEFAULT = 0.03;
+
+const JOIN_LABEL: Record<JoiningType, { label: string; unit: string }> = {
+  spot_weld: { label: 'Spot welds — electrode wear, energy', unit: 'each' },
+  spr_rivet: { label: 'Self-piercing rivets', unit: 'each' },
+  adhesive_m: { label: 'Structural adhesive bead', unit: 'm' },
+  sealer_m: { label: 'Sealer bead', unit: 'm' },
+  mig_weld_m: { label: 'MIG weld — wire and gas', unit: 'm' },
+  clinch: { label: 'Clinch joints — tool wear', unit: 'each' },
+};
+
 export function getBIWAssemblyInputSchema(): Record<string, string> {
   return {
     subPartTotalCost:
@@ -65,13 +77,29 @@ export function computeBIWDrivers(inputs: BIWAssemblyInputs): CommodityDrivers {
   // Joining consumables are the assembler's own material; the stamped sub-parts
   // are bought in at their should-cost, which already carries their makers'
   // overhead and margin — so they pass through with a handling charge only.
+  const handlingPct = inputs.subPartHandlingPct ?? BIW_SUBPART_HANDLING_DEFAULT;
+  // What the material bucket is made of — display only, adds up to it (arithmetic audit B1, 30 Oct 2026).
+  const lines: MaterialLineItem[] = [];
+  if (inputs.subPartTotalCost > 0) {
+    lines.push({ ref: 'SUB', description: 'Stamped / formed sub-parts, bought in at their should-cost (their makers\' overhead and margin included)',
+      qty: 1, unitCost: inputs.subPartTotalCost,
+      note: `handling ${(handlingPct * 100).toFixed(1)} % charged as overhead, no second overhead or margin`
+        + (inputs.subPartHandlingPct === undefined ? ' — engineering-typical 2–5 %, not sourced' : '') });
+  }
+  inputs.joining.forEach((j, i) => {
+    if (j.count > 0 && j.costPerJoint > 0) {
+      const t = JOIN_LABEL[j.type] ?? { label: j.type, unit: 'each' };
+      lines.push({ ref: `J${i + 1}`, description: `${t.label} (${t.unit})`, qty: j.count, unitCost: j.costPerJoint });
+    }
+  });
   const rawMaterial: RawMaterialInput = {
     materialId: 'mat-virtual',
     netWeightKg: 0,
     materialUtilization: 1,
     directCost: joiningCostPerPart,
     ...(inputs.subPartTotalCost > 0
-      ? { boughtIn: { cost: inputs.subPartTotalCost, handlingPct: inputs.subPartHandlingPct ?? 0.03 } } : {}),
+      ? { boughtIn: { cost: inputs.subPartTotalCost, handlingPct } } : {}),
+    lines,
   };
 
   const operations: OperationInput[] = inputs.stations.map(s => ({

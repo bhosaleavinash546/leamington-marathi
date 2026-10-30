@@ -48,9 +48,13 @@ export function standardLayers(raw: number): number {
 }
 
 /** Deterministic laminate technology from board features (not the model's free text). */
-export function deriveTechnology(layers: number, microVias: number, hdi: string, impedance: boolean, bga: boolean, automotive: boolean): string {
+export function deriveTechnology(layers: number, microVias: number, hdi: string, _impedance: boolean, bga: boolean, automotive: boolean, rfLaminate = false): string {
   if (microVias > 0 || (hdi && hdi !== 'none') || layers >= 10) return 'HDI_RIGID';
-  if (impedance && layers >= 6 && !automotive) return 'RF_MICRO';       // RF unless it's an automotive digital board
+  // RF / microwave laminate only on evidence of one (Rogers / PTFE named in the spec). Impedance control on 6+ layers
+  // is ordinary on digital boards (a camera serializer link): it used to make a plain FR4 camera board "RF_MICRO", which
+  // printed "RF MICRO" in the report and raised "an RF laminate is not costed" for a laminate nobody saw (arith audit,
+  // Oct 2026). The fab price never depended on it.
+  if (rfLaminate) return 'RF_MICRO';
   if (layers >= 6 && (bga || automotive)) return 'FR4_HTg';             // automotive/BGA thermal → high-Tg laminate
   return 'FR4_STD';
 }
@@ -188,7 +192,8 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
   // ── 4. Technology + finish: deterministic from features ──────────────────────
   spec.technologyType = deriveTechnology(
     layers, n(spec.microVias), String(spec.hdiStructure ?? 'none'),
-    Boolean(spec.impedanceControlRequired), bgaCount > 0 || Boolean(spec.bgaDetected), automotive);
+    Boolean(spec.impedanceControlRequired), bgaCount > 0 || Boolean(spec.bgaDetected), automotive,
+    /rogers|ptfe|ro4\d{3}|ro3\d{3}|teflon|taconic|megtron/i.test(String(spec.laminate ?? '')));
   // HASL is not flat enough for fine-pitch BGA — move those to ENIG. A stated
   // flat finish (immersion silver, OSP, ENEPIG, ENIG) is kept: this used to force
   // ENIG onto every BGA board, overwriting a board's real immersion-silver finish.

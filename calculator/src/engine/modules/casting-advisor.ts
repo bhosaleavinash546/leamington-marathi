@@ -448,12 +448,15 @@ export const HIP_COST_PER_KG: Record<AlloyFamily, number> = {
   'stainless-steel': 4.5, superalloy: 9.0,
 };
 
+/** UK £/kg of charge — engineering-typical, NOT sourced (arithmetic audit, Oct 2026): the rules print that wherever they
+ *  charge one. 'stress-relieve' is also the rate the casting rules charge for normalising cast steel. */
 export const HEAT_TREAT_COST_PER_KG: Record<'t5' | 't6' | 'stress-relieve', number> = {
   t5: 0.55,             // age only
   t6: 1.10,             // solution + quench + age
   'stress-relieve': 0.35,
 };
 
+/** UK £ a part — engineering-typical, NOT sourced (arithmetic audit, Oct 2026). */
 export const NDT_COST_PER_PART: Record<'xray' | 'ct', number> = {
   xray: 5.0,            // 2D radiography, sampling/100%
   ct: 32.0,            // industrial CT, safety-critical

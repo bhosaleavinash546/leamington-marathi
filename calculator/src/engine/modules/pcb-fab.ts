@@ -1,4 +1,4 @@
-import type { CommodityDrivers, RawMaterialInput, ToolingInput } from '../types.js';
+import type { CommodityDrivers, MaterialLineItem, RawMaterialInput, ToolingInput } from '../types.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -14,7 +14,7 @@ export type PCBTechnology =
 
 export type PCBQualityGrade =
   | 'consumer'     // IPC Class 1 — £×1.0
-  | 'industrial'   // IPC Class 2 — £×1.25
+  | 'industrial'   // IPC Class 2 — £×1.20 (PCB_QUALITY_MULTIPLIER; this comment said 1.25)
   | 'auto_grade2'  // AEC-Q Grade 2, PPAP — £×1.50
   | 'auto_grade1'  // AEC-Q Grade 1, IATF 16949 — £×1.80
   | 'aerospace';   // IPC Class 3, AS9100 — £×2.20
@@ -48,7 +48,11 @@ export type PCBRegion = 'uk' | 'eu' | 'china' | 'india' | 'na';
 
 // ─── Lookup tables ────────────────────────────────────────────────────────────
 
-/** Layer count → cost factor relative to 2L baseline. IPC-2221 complexity model. */
+/**
+ * Layer count → cost factor relative to 2L baseline. CostVision engineering figures, not sourced. (This said "IPC-2221
+ * complexity model": IPC-2221 is the generic board DESIGN standard and holds no cost factors — arith audit, Oct 2026.)
+ * A count between two listed ones is interpolated (see layerFactorFor).
+ */
 export const LAYER_FACTOR: Record<number, number> = {
   1:  0.65,
   2:  1.00,
@@ -62,7 +66,7 @@ export const LAYER_FACTOR: Record<number, number> = {
   24: 16.00,
 };
 
-/** Base panel price (£) for 500×600 mm 2-layer FR4-STD panel by sourcing region. */
+/** Base panel price (£) for 500×600 mm 2-layer FR4-STD panel by sourcing region. CostVision engineering figures, not sourced. */
 export const BASE_PANEL_PRICE_2L: Record<PCBRegion, number> = {
   uk:    15.00,
   eu:    13.00,
@@ -132,6 +136,24 @@ export const TEST_COST_PER_BOARD: Record<TestMethod, number> = {
   ict_fixture:     4.20,
   ict_xray:       12.00,
 };
+
+/**
+ * The layer factor for any count: the table's figure, linear between two listed counts, and beyond 24 layers the
+ * 20 → 24 slope continued. It was `layers × 0.65` for an unlisted count, which priced 3 layers (1.95) above 4 (1.85) and
+ * 5 (3.25) above 6 (2.80) — arith audit, Oct 2026.
+ */
+export function layerFactorFor(layers: number): number {
+  const n = Math.max(1, Number(layers) || 1);
+  if (LAYER_FACTOR[n] != null) return LAYER_FACTOR[n];
+  const keys = Object.keys(LAYER_FACTOR).map(Number).sort((x, y) => x - y);
+  const hi = keys.find(k => k > n);
+  if (hi == null) {
+    const [a, b] = keys.slice(-2);
+    return LAYER_FACTOR[b] + (n - b) * (LAYER_FACTOR[b] - LAYER_FACTOR[a]) / (b - a);
+  }
+  const lo = [...keys].reverse().find(k => k < n)!;
+  return LAYER_FACTOR[lo] + (n - lo) * (LAYER_FACTOR[hi] - LAYER_FACTOR[lo]) / (hi - lo);
+}
 
 // ─── Yield model ─────────────────────────────────────────────────────────────
 
@@ -267,7 +289,7 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
   const panelSizeFactor = panelAreaCm2 / REF_PANEL_AREA;
 
   // 3. Layer complexity
-  const layerFactor = LAYER_FACTOR[inputs.layers] ?? inputs.layers * 0.65;
+  const layerFactor = layerFactorFor(inputs.layers);
 
   // 4. Material Tg factor
   const materialFactor =
@@ -354,11 +376,31 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
   const costPerBoard =
     (costPerBoardPanel + finishAdder + silkAdder + testAdder) * qualMult;
 
+  // The build-up, printed by the screen and both reports (rawMaterial.lines): every figure and its class. The lines sum
+  // to directCost exactly (arith audit, Oct 2026 — the module returned one number with ~70 unlabelled constants behind it).
+  const E = 'CostVision engineering figure, not sourced';
+  const fx = (v: number, dp = 2) => v.toFixed(dp);
+  const panelPart = (rawPanelCost - viaAdderPerPanel) / boardsPerPanel / fabYield;
+  const viaPart = viaAdderPerPanel / boardsPerPanel / fabYield;
+  const subtotal = costPerBoardPanel + finishAdder + silkAdder + testAdder;
+  const yieldNote = inputs.fabYieldOverride != null ? 'typed' : `suggested by the yield model (98.5 % less deductions for layers, vias, BGA, trace, technology, size — ${E})`;
+  const lines: MaterialLineItem[] = [
+    { ref: 'PANEL', qty: 1, unitCost: panelPart, note: E,
+      description: `Panel share: base £${fx(BASE_PANEL_PRICE_2L[inputs.region])} (${inputs.region}, 500×600 mm 2L) × panel ${fx(panelSizeFactor, 3)} × layers ${fx(layerFactor)} × Tg ${fx(materialFactor)} × ${inputs.technology} ${fx(techMult)} × copper ${fx(cuFactor, 3)} × HDI ${fx(hdiMult)} × trace ${fx(finePitchFactor)} × impedance ${fx(impedanceFactor)} × mask ${fx(smPremium)} = £${fx(rawPanelCost - viaAdderPerPanel, 3)} a panel ÷ ${boardsPerPanel} boards ÷ yield ${fx(fabYield * 100, 1)} % (${yieldNote}) — every factor a ${E}` },
+    { ref: 'VIAS', qty: 1, unitCost: viaPart, note: E,
+      description: `Vias: (${inputs.throughViaCount} × £0.002 + ${inputs.blindViaCount} × £0.008 + ${inputs.buriedViaCount} × £0.015 + ${inputs.microViaCount} × £0.012) × market ${fx(market, 3)} ÷ yield — ${E}` },
+    { ref: 'FINISH', qty: 1, unitCost: finishAdder, note: E, description: `Surface finish ${inputs.surfaceFinish}: £${fx(FINISH_ADDER_GBP[inputs.surfaceFinish])} × market ${fx(market, 3)} — ${E}` },
+    { ref: 'SILK', qty: 1, unitCost: silkAdder, note: E, description: `Silkscreen: ${inputs.silkscreenSides} side(s) × £0.06 × market ${fx(market, 3)} — ${E}` },
+    { ref: 'TEST', qty: 1, unitCost: testAdder, note: E, description: `Electrical test ${inputs.testMethod}: £${fx(TEST_COST_PER_BOARD[inputs.testMethod])} × market ${fx(market, 3)} — ${E}` },
+    { ref: 'GRADE', qty: 1, unitCost: subtotal * (qualMult - 1), note: E, description: `Quality grade ${inputs.qualityGrade}: £${fx(subtotal, 4)} × (${fx(qualMult)} − 1) — ${E}` },
+  ];
+
   const rawMaterial: RawMaterialInput = {
     materialId: 'mat-virtual',
     netWeightKg: 0,
     materialUtilization: 1,
     directCost: costPerBoard,
+    lines,
   };
 
   const tooling: ToolingInput = {

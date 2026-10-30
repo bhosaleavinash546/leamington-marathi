@@ -76,12 +76,14 @@ describe('smtSides adds a line pass, not a second set of placements', () => {
       .toBeGreaterThan(placementHrOf({ ...DENSE, smtSides: 1 }));
   });
 
-  it('splits the second pass across parallel lines, as placement time is', () => {
+  // Arithmetic audit (PCB P1): a board is placed on ONE line — parallel lines add capacity, not speed per board, so the
+  // second pass costs the same whatever the line count (dividing by lines halved the SMT £ of every board).
+  it('the second pass costs the same per board on one line or two', () => {
     const oneLine = placementHrOf({ ...DENSE, smtSides: 2, smtLines: 1 })
       - placementHrOf({ ...DENSE, smtSides: 1, smtLines: 1 });
     const twoLines = placementHrOf({ ...DENSE, smtSides: 2, smtLines: 2 })
       - placementHrOf({ ...DENSE, smtSides: 1, smtLines: 2 });
-    expect(twoLines).toBeCloseTo(oneLine / 2, 10);
+    expect(twoLines).toBeCloseTo(oneLine, 10);
   });
 
   it('placement time still reconciles to the BOM, one placement per component', () => {

@@ -186,7 +186,8 @@ export function processFor(
   return { formValue: 'ebm_2head', process: 'ebm', reason: '250 ml – 20 L — 2-head extrusion blow' };
 }
 
-/** Mould life in cycles by mould material. Aluminium is the EBM workhorse. */
+/** Mould life in cycles by mould material. Aluminium is the EBM workhorse.
+ *  Engineering-typical, NOT sourced — the basis said "documented" (arith audit, Oct 2026). */
 const MOULD_LIFE: Record<BlowMouldMaterial, number> = {
   aluminium: 500_000,
   'steel-p20': 1_000_000,
@@ -225,12 +226,13 @@ const PREFORM_MACHINE: Record<string, string> = {
 export function blowMachineFor(formValue: string, shotKg: number, barrier: boolean): { id: string; basis: string } {
   if (PREFORM_MACHINE[formValue]) return { id: PREFORM_MACHINE[formValue], basis: `${formValue.replace('_', ' ').toUpperCase()} — preform process` };
   if (barrier) return { id: 'blow-ebm-coex5', basis: 'co-extruded EVOH barrier wall — multi-layer head' };
-  return { id: pickEBMMachineId(shotKg), basis: `${shotKg.toFixed(3)} kg shot a cycle (part + flash × cavities)` };
+  return { id: pickEBMMachineId(shotKg), basis: `${shotKg.toFixed(3)} kg shot a cycle (part + flash × cavities); `
+    + 'machine by shot: < 0.3 kg 2-head, 0.3–1.5 kg up-to-5 L, 1.5–6 kg 5–100 L, ≥ 6 kg large accumulator — shot bands engineering-typical, not sourced' };
 }
 
-/** Operators per machine. */
+/** Operators per machine — engineering-typical, not sourced. */
 export const BLOW_CREW = { continuous: 0.5, accumulator: 1, preform: 0.5 } as const;
-/** Scrap after leak / wall-thickness checks. */
+/** Scrap after leak / wall-thickness checks — engineering-typical, not sourced. */
 export const BLOW_REJECT = { ebm: 0.025, barrier: 0.03, preform: 0.015 } as const;
 
 interface BmAdvice {
@@ -349,12 +351,16 @@ function advise(ctx: RuleContext): { advice: BmAdvice } | { blocked: RuleOutcome
   // Cooling: transient conduction where the resin has a thermal reference.
   const thermo = thermodynamicCoolFactor(resin.materialId ?? '');
   const coolFactor = thermo ? thermo.factorSPerMm2 : resin.coolFactorSPerMm2!;
+  // α_eff is BACK-CALCULATED from the curated injection-moulding factor (thermodynamicCoolFactor
+  // returns the curated figure at the reference temperatures), so the factor is the curated
+  // constant, not a derivation from material data — the basis said "transient conduction →"
+  // as if it were (arith audit, Oct 2026).
   const coolBasis = thermo
-    ? `transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: `
-      + `α_eff ${thermo.alphaEffMm2S} mm²/s, melt ${thermo.meltC}°C / mould ${thermo.mouldC}°C / eject ${thermo.ejectC}°C `
-      + `→ ${coolFactor} s/mm²; cool ≈ ${(coolFactor * wallMm ** 2).toFixed(1)} s at ${wallMm.toFixed(2)} mm`
-    : `${resin.grade}: curated ${coolFactor} s/mm² (no thermal reference for this resin); `
-      + `cool = ${(coolFactor * wallMm ** 2).toFixed(1)} s at ${wallMm.toFixed(2)} mm`;
+    ? `${coolFactor} s/mm², the curated cooling factor for ${resin.grade ?? resin.materialId} (engineering-typical, not sourced); `
+      + `read as transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)] at melt ${thermo.meltC}°C / mould ${thermo.mouldC}°C / eject ${thermo.ejectC}°C `
+      + `it implies α_eff ${thermo.alphaEffMm2S} mm²/s; cool = ${coolFactor} × ${wallMm.toFixed(2)}² = ${(coolFactor * wallMm ** 2).toFixed(1)} s`
+    : `${resin.grade}: curated ${coolFactor} s/mm² (no thermal reference for this resin; engineering-typical, not sourced); `
+      + `cool = ${coolFactor} × ${wallMm.toFixed(2)}² = ${(coolFactor * wallMm ** 2).toFixed(1)} s`;
   const blowSec = Math.round(Math.min(20, Math.max(3, 3 + cap.litres * 0.8)) * 10) / 10;
   const openCloseSec = Math.round(Math.min(8, Math.max(4, 4 + cap.litres * 0.1)) * 10) / 10;
   const mouldSeq = blowSec + coolFactor * wallMm ** 2 + openCloseSec;
@@ -382,6 +388,7 @@ function advise(ctx: RuleContext): { advice: BmAdvice } | { blocked: RuleOutcome
       : `continuous head: the next ${shotKg.toFixed(2)} kg parison extrudes in ${extrudeSec.toFixed(0)} s at ${head.extruderKgPerH} kg/h `
         + `while the mould runs (${mouldSeq.toFixed(0)} s)`
         + (parisonSec > 0 ? ` — the extruder sets the pace, +${parisonSec} s` : ' — nothing in series');
+    parisonBasis += ' (extruder output engineering-typical, not sourced)';
     crew = head.head === 'accumulator' ? BLOW_CREW.accumulator : BLOW_CREW.continuous;
     crewBasis = head.head === 'accumulator'
       ? 'one operator on a large-part line (take-out, trim and check)'
@@ -452,15 +459,16 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
       ? { value: 0, source: 'rule', confidence: 0.8,
           basis: `${a.process.toUpperCase()} blows an injected preform — there is no pinch-off to trim` }
       : { value: a.flashKg, source: 'rule', confidence: 0.6,
-          basis: `${a.partKg > 3 ? 22 : 12}% of part weight — pinch-off and neck trim`
-            + (a.partKg > 3 ? '; a large accumulator parison sheds more than a bottle' : '') }),
+          basis: `${a.partKg > 3 ? 22 : 12}% of part weight = ${a.partKg} × ${a.partKg > 3 ? 0.22 : 0.12} = ${a.flashKg} kg — pinch-off and neck trim`
+            + (a.partKg > 3 ? '; a large accumulator parison sheds more than a bottle' : '')
+            + '; flash share engineering-typical, not sourced (it sizes the shot and the machine, and is reground — no material £)' }),
     // Extrusion-blow flash is granulated at the machine and fed back into the
     // wall (into the regrind layer of a co-ex tank). It was bought as virgin
     // resin and credited at scrap value — £3.20 of resin on every fuel tank.
     fromAdvice('blowMoulding.flashRegrindFraction', 'bm-flash-regrind', 'flashRegrindFraction', a => a.process !== 'ebm'
       ? { value: 0, source: 'rule', confidence: 0.8, basis: 'no flash' }
       : { value: 1, source: 'rule', confidence: 0.75,
-          basis: `all pinch-off flash granulated in line and fed back — ${a.partKg > 3 ? 22 : 12}% of the shot is within the ~30% a blown wall takes`
+          basis: `all pinch-off flash granulated in line and fed back — ${a.partKg > 3 ? 22 : 12}% of the shot is within the ~30% regrind a blown wall takes (engineering-typical, not sourced)`
             + (a.barrier ? ' (into the co-ex regrind layer)' : '') }),
     fromAdvice('blowMoulding.process', 'bm-process', 'process', a => ({
       value: a.formValue, source: 'rule', confidence: 0.8, basis: a.processReason,
@@ -478,22 +486,24 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
     })),
     fromAdvice('blowMoulding.cavities', 'bm-cav', 'cavities', a => ({
       value: a.cavities, source: 'rule', confidence: 0.7,
-      basis: `${a.capacityL} L: under 250 ml -> 4, up to 2 L -> 2, above -> 1`,
+      basis: `${a.capacityL} L: under 250 ml -> 4, up to 2 L -> 2, above -> 1 (engineering-typical, not sourced)`,
     })),
     fromAdvice('blowMoulding.machineId', 'bm-mach', 'machineId', a => ({
       value: a.machineId, source: 'advisor', confidence: 0.85, basis: a.machineBasis,
     })),
     fromAdvice('blowMoulding.coolTimeFactorSPerMm2', 'bm-cool-f', 'coolTimeFactorSPerMm2', a => ({
-      value: a.coolFactor, source: 'library', confidence: 0.8, basis: a.coolBasis,
+      value: a.coolFactor, source: 'rule', confidence: 0.8, basis: a.coolBasis,
     })),
     // Pressurise-and-hold scales with the volume of air to move and the wall to
     // set against the mould: "3–8 s for bottles, 8–20 s for large industrial
     // parts", made continuous.
     fromAdvice('blowMoulding.blowTimeSec', 'bm-blow-t', 'blowTimeSec', a => ({
-      value: a.blowSec, source: 'rule', confidence: 0.6, basis: `3 s + 0.8 s per litre at ${a.capacityL} L, capped at 20 s`,
+      value: a.blowSec, source: 'rule', confidence: 0.6,
+      basis: `3 s + 0.8 s per litre × ${a.capacityL} L = ${a.blowSec} s (3–20 s) — engineering-typical, not sourced`,
     })),
     fromAdvice('blowMoulding.openCloseSec', 'bm-open-close', 'openCloseSec', a => ({
-      value: a.openCloseSec, source: 'rule', confidence: 0.6, basis: `4 s + 0.1 s per litre at ${a.capacityL} L, capped at 8 s`,
+      value: a.openCloseSec, source: 'rule', confidence: 0.6,
+      basis: `4 s + 0.1 s per litre × ${a.capacityL} L = ${a.openCloseSec} s (4–8 s) — engineering-typical, not sourced`,
     })),
     fromAdvice('blowMoulding.parisonExtrusionTimeSec', 'bm-parison-t', 'parisonExtrusionTimeSec', a => ({
       value: a.parisonSec, source: 'rule', confidence: 0.6,
@@ -503,7 +513,7 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
       value: 'lab-uk-blow', source: 'library', confidence: 0.8, basis: 'blow-moulding machine operator',
     })),
     fromAdvice('blowMoulding.manning', 'bm-manning', 'manning', a => ({
-      value: a.crew, source: 'rule', confidence: 0.6, basis: a.crewBasis,
+      value: a.crew, source: 'rule', confidence: 0.6, basis: `${a.crewBasis} — crew engineering-typical, not sourced`,
     })),
     fromAdvice('blowMoulding.oee', 'bm-oee', 'oee', () => ({
       value: 0.80, source: 'rule', confidence: 0.6, basis: 'shop OEE, as every moulding route',
@@ -513,8 +523,9 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
     })),
     fromAdvice('blowMoulding.rejectRate', 'bm-reject', 'rejectRate', a => ({
       value: a.reject, source: 'rule', confidence: 0.6,
-      basis: a.process !== 'ebm' ? 'preform process: 1.5% (no pinch-off, tool-formed neck)'
-        : a.barrier ? 'co-ex barrier tank: 3% after leak and layer checks' : 'extrusion blow: 2.5% after leak and wall checks',
+      basis: (a.process !== 'ebm' ? 'preform process: 1.5% (no pinch-off, tool-formed neck)'
+        : a.barrier ? 'co-ex barrier tank: 3% leak and layer failures' : 'extrusion blow: 2.5% leak and wall-thickness failures')
+        + ' — engineering-typical, not sourced; the leak-test station itself is not costed',
     })),
     // Trimming: every EBM part leaves the mould with its pinch-off, neck and
     // tail flash on. The station runs in line, dedicated to the blow machine,
@@ -531,7 +542,8 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
     fromAdvice('blowMoulding.deflashCycleSec', 'bm-deflash-ct', 'deflashCycleSec', a => {
       const v = a.process === 'ebm' ? Math.round(a.cycleSec / a.cavities * 10) / 10 : 0;
       return { value: v, source: 'rule', confidence: 0.6,
-        basis: a.process === 'ebm' ? `in line at the blow takt: ${a.cycleSec} s ÷ ${a.cavities} cavit${a.cavities === 1 ? 'y' : 'ies'}` : 'no flash to trim' };
+        basis: a.process === 'ebm' ? `in line at the blow takt: ${a.cycleSec} s ÷ ${a.cavities} cavit${a.cavities === 1 ? 'y' : 'ies'}; `
+          + `charged, like the blow machine, ÷ (1 − ${(a.reject * 100).toFixed(1)}% reject) and at the line's OEE — it stops when the line stops` : 'no flash to trim' };
     }),
     fromAdvice('blowMoulding.deflashManning', 'bm-deflash-man', 'deflashManning', a => ({
       value: 0, source: 'rule', confidence: 0.6,
@@ -544,15 +556,18 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
         : `${a.process.toUpperCase()} injects the preform, so the tool carries injection pressure — P20 steel`,
     })),
     fromAdvice('blowMoulding.mouldLife', 'bm-mould-life', 'mouldLife', a => ({
-      value: MOULD_LIFE[a.mouldMaterial], source: 'library', confidence: 0.7,
-      basis: `documented cycle life for a ${a.mouldMaterial} blow mould`,
+      value: MOULD_LIFE[a.mouldMaterial], source: 'rule', confidence: 0.7,
+      basis: `${MOULD_LIFE[a.mouldMaterial].toLocaleString('en-GB')} cycles for a ${a.mouldMaterial} blow mould — engineering-typical, not sourced`,
     })),
     fromAdvice('blowMoulding.mouldCostGBP', 'bm-mould-cost', 'mouldCostGBP', a => {
       const est = estimateBlowMouldCost({
         process: a.process, cavities: a.cavities, partVolumeL: a.capacityL, mouldMaterial: a.mouldMaterial,
       });
+      // The toolmaker build-up line by line, so the £ re-adds on the page (arith audit, Oct 2026).
+      const lines = est.detail.lines.map(l => `${l.item} ${l.hours != null ? `${l.hours} h × £${l.ratePerHr}/h ` : l.kg != null ? `${l.kg} kg ` : ''}£${l.cost.toLocaleString('en-GB')}`);
       return { value: est.total, source: 'advisor', confidence: 0.6,
-        basis: `${a.cavities}-cavity ${a.process.toUpperCase()} ${a.mouldMaterial} tool at ${a.capacityL} L` };
+        basis: `${a.cavities}-cavity ${a.process.toUpperCase()} ${a.mouldMaterial} tool at ${a.capacityL} L — toolmaker build-up: `
+          + `${lines.join('; ')} = £${est.total.toLocaleString('en-GB')} (hours and kg scale with litres — engineering-typical; toolroom £/h from the library)` };
     }),
   ],
 };

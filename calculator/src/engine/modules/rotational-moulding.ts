@@ -73,6 +73,10 @@ export function getRotationalMouldingInputSchema(): Record<string, string> {
   };
 }
 
+/** Share of the charged powder that ends in the part (1% lost to handling and venting) —
+ *  engineering-typical, not sourced; the powder-adder rule prints it. */
+export const ROTO_POWDER_YIELD = 0.99;
+
 export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInputs): CommodityDrivers {
   // Predict heating/cooling from wall × material × cooling method when not given.
   const predicted = (inputs.heatingTimeSec > 0 && inputs.coolingTimeSec > 0)
@@ -94,11 +98,14 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
   const cycleTimeHr = cycleTimeSec / 3600 * rejectUplift;
 
   // Virtually no material waste in rotomoulding; all powder sinters onto mould walls
-  const materialUtilization = 0.99;
+  const materialUtilization = ROTO_POWDER_YIELD;
 
-  // Powder grinding premium + optional masterbatch are per-part consumables on material.
+  // Powder grinding premium + optional masterbatch are per-part consumables on material —
+  // on every kg of powder CHARGED (the scrapped parts' and the 1% handling loss too), the
+  // kg the material line buys. It was charged on the good part only (arith audit, Oct 2026).
+  const powderChargedKg = inputs.partWeightKg * rejectUplift / materialUtilization;
   const consumablesCostPerPart =
-    (inputs.powderCostAdderPerKg + (inputs.masterbatchCostPerKg ?? 0)) * inputs.partWeightKg;
+    (inputs.powderCostAdderPerKg + (inputs.masterbatchCostPerKg ?? 0)) * powderChargedKg;
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
@@ -128,8 +135,9 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
   // stated, else one per position on every arm (legacy). Fractional above one
   // set: a mould wears into next year's parts, it is not bought twice.
   const moulds = (inputs.mouldsInService ?? 0) > 0 ? inputs.mouldsInService! : totalMouldCount;
+  // A mould cycles for the scrapped parts too: its wear is counted on parts moulded, not good parts.
   const numMouldSets = inputs.mouldLife > 0
-    ? Math.max(1, inputs.amortizationVolume / (inputs.mouldLife * moulds))
+    ? Math.max(1, inputs.amortizationVolume * rejectUplift / (inputs.mouldLife * moulds))
     : 1;
 
   // Per-mould cost: manual figure, else estimated parametrically.

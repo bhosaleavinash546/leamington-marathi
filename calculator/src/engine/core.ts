@@ -320,7 +320,7 @@ export function computeUniversalStack(
 
   // 7. Overhead — base is all factory costs except outbound packaging/logistics.
   // Note: this includes raw material and tooling (not "conversion cost only").
-  // Calibrate overheadPct accordingly — industry benchmark of 10–15% is on this broader base.
+  // Calibrate overheadPct accordingly (the 12 % default is a stated CostVision default, not a sourced benchmark).
   const factoryCostBase = rawMaterialCost + processTotal + labourTotal + toolingPerPart;
   // Bought-in content takes handling, not the assembler's overhead (zero when unused).
   const overhead = input.overheadPct * (factoryCostBase - boughtInCost) + boughtInHandling;

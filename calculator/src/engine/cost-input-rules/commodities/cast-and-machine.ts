@@ -27,7 +27,7 @@ import {
 } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import { decided, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef } from '../types.js';
-import { CASTING_RULES, castingSubtypeFor } from './casting.js';
+import { CASTING_RULES, castingSubtypeFor, shotBlastOutcome } from './casting.js';
 import { machiningRuleDefs, nearNetCut } from './machining.js';
 // The GRADED facts: the cast weight starts from the same finished mass (the grade's density) the
 // finished-weight rule states — it used the family's mid density, 0.7% off on ductile iron.
@@ -124,6 +124,13 @@ export function drilledStockCm3(ctx: RuleContext): { cm3: number; holes: number 
   return { cm3: Math.round(mm3 / 10) / 100, holes };
 }
 
+/** The as-cast weight, kg (finished + the metal machining removes), or null while the material is unanswered. */
+export function asCastWeightKg(ctx: RuleContext): number | null {
+  const o = CAST_WEIGHT_RULE.evaluate(ctx);
+  const v = o.ok ? Number(o.decided.value) : 0;
+  return v > 0 ? v : null;
+}
+
 const CAST_WEIGHT_RULE: RuleDef = {
   id: 'castAndMachine.castPartWeightKg',
   path: 'casting.castPartWeightKg',
@@ -159,11 +166,30 @@ const NEAR_NET_MACHINING_RULES = machiningRuleDefs(
   (ctx, family) => nearNetCut(ctx, family, castingSubtypeFor(ctx)),
 ).filter(r => !DROPPED_MACHINING_RULES.has(r.id)).map(repath);
 
+/**
+ * The casting is blasted as cast — before it is machined — so the blast is sized on the AS-CAST weight here, not the
+ * finished one the casting rule reads (arithmetic audit, Oct 2026: the stub axle's 9.08 kg casting was blasted as
+ * 7.36 kg). Heat treatment already charges the as-cast weight (cast-and-machine.ts module).
+ */
+function asCastBlast(rule: RuleDef): RuleDef {
+  if (rule.id !== 'casting.shotBlastCostPerPart') return rule;
+  return {
+    ...rule,
+    evaluate: (ctx) => {
+      const o = rule.evaluate(ctx);
+      const kg = asCastWeightKg(ctx);
+      const sub = castingSubtypeFor(ctx);
+      if (!o.ok || kg === null || sub === null) return o;
+      return shotBlastOutcome(sub, kg, 'kg as cast (finished + machining stock)');
+    },
+  };
+}
+
 export const CAST_AND_MACHINE_RULES: CommodityRuleSpec = {
   commodity: 'cast_and_machine',
   header: 'CAST + MACHINE COST INPUT RULES:',
   rules: [
-    ...CASTING_RULES.rules.map(repath),
+    ...CASTING_RULES.rules.map(asCastBlast).map(repath),
     CAST_WEIGHT_RULE,
     ...NEAR_NET_MACHINING_RULES,
   ],

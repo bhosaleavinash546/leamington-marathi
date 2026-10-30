@@ -34,7 +34,8 @@ export const RESIN_DECISION_ID = 'material.resin';
  * `autoCoolFactorForMaterial`, which this deliberately mirrors.
  */
 const CAVITY_PRESSURE_MPA: Array<[RegExp, number]> = [
-  [/peek|pei|ultem|pps|ppa/, 70],
+  // \bpps: 'mat-gpps' (crystal polystyrene) took PPS's 70 MPa (arithmetic audit, Oct 2026)
+  [/peek|pei|ultem|\bpps|ppa/, 70],
   [/\bpc\b|pc-abs|pc-pbt|lexan/, 65],
   [/pa6|pa66|nylon|pbt|\bpet\b|pet-/, 55],
   [/pom|acetal|delrin/, 55],
@@ -49,6 +50,15 @@ export function cavityPressureMPaFor(materialId: string): number {
   const id = (materialId || '').toLowerCase();
   const base = CAVITY_PRESSURE_MPA.find(([re]) => re.test(id))?.[1] ?? 50;
   return FILLED.test(id) ? base + 10 : base;
+}
+
+/** How `cavityPressureMPaFor` got its figure, as arithmetic the reader can repeat. */
+export function cavityPressureBasis(materialId: string): string {
+  const id = (materialId || '').toLowerCase();
+  const hit = CAVITY_PRESSURE_MPA.find(([re]) => re.test(id))?.[1];
+  const base = hit ?? 50;
+  const head = hit === undefined ? `${base} MPa (no entry for this resin — the default)` : `${base} MPa for the base resin`;
+  return FILLED.test(id) ? `${head} + 10 MPa for glass / mineral fill = ${base + 10} MPa` : head;
 }
 
 /**

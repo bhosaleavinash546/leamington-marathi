@@ -36,7 +36,6 @@ import { specForCommodity } from '../../src/engine/cost-input-rules/index.js';
 import { inMaterialScope } from '../../src/engine/material-scope.js';
 import { POLYMER_TAXONOMIES } from '../../src/engine/polymer-material-taxonomy.js';
 import { computeCostUncertainty, type DriverProvenance, type DriverSource } from '../../src/engine/uncertainty.js';
-import { overheadBaseOf } from '../../src/engine/core.js';
 import { shortOperationName } from '../../src/engine/operation-names.js';
 import { FINISH_PREFIX_BY_COMMODITY } from '../../src/engine/surface-finish-routes.js';
 import {
@@ -135,7 +134,7 @@ export interface RouteSpecItem {
 
 export interface RouteBand {
   p10: number; p50: number; p90: number;
-  /** Half the P10–P90 spread as a percentage of the median. */
+  /** Half the P10–P90 spread as a percentage of the row's point estimate (its total), as `computeCostUncertainty` gives it. */
   plusMinusPct: number;
   confidence: string;
 }
@@ -177,7 +176,8 @@ export interface RouteRow {
   refusal: string | null;
   /** The same route at each ladder volume with its band (null where it needed an answer or was refused there). */
   byVolume: Array<{ volume: number; total: number | null; p10: number | null; p90: number | null; note: string | null }>;
-  /** Programme view at the costing's volume and life: parts, piece cost without tooling, tooling, the total spend. */
+  /** Programme view at the costing's volume and life: parts, piece cost without tooling (and without the overhead and
+   *  margin the stack puts on it), tooling, the total spend. */
   programme: { parts: number; years: number; pieceExTooling: number; pieceSpend: number; tooling: number; total: number } | null;
 }
 
@@ -373,7 +373,9 @@ export function auditRow(r: BulkPartResult): { lines: AuditLine[]; closes: boole
   }
   const lc = res.learningCurveApplied;
   line('Process (machines)', `Σ over ${res.operationDetails.length} operations of machine £/hr × cycle h ÷ OEE ÷ parts a cycle`, proc, bd.process);
-  line('Labour', `Σ of labour £/hr × crew × labour h ÷ efficiency ÷ parts a cycle${lc ? ` − learning-curve saving ${f(lc.labourSaving)}` : ''}`, lab - (lc?.labourSaving ?? 0), bd.labour);
+  // `labourSaving` is signed (core.ts: adjusted − base, negative = a saving), so it is ADDED; subtracting it doubled
+  // the saving the wrong way and a learning-curve row could never close (arithmetic audit, 30 Oct 2026).
+  line('Labour', `Σ of labour £/hr × crew × labour h ÷ efficiency ÷ parts a cycle${lc ? ` ${lc.labourSaving <= 0 ? '−' : '+'} learning-curve effect ${f(Math.abs(lc.labourSaving))}` : ''}`, lab + (lc?.labourSaving ?? 0), bd.labour);
 
   // Material: gross kg × £/kg − scrap credit + energy + consumables + direct + bought-in.
   const rm = si.rawMaterial;
@@ -402,7 +404,8 @@ export function auditRow(r: BulkPartResult): { lines: AuditLine[]; closes: boole
   line('Logistics', 'the logistics figure handed to the stack', si.logisticsPerPart, bd.logistics);
 
   // Overhead and margin, as the core applies them (bought-in content takes handling, not overhead, and no margin).
-  const base = overheadBaseOf(res);
+  // The base from the buckets themselves, not the engine's own `overheadBase` (the re-add must not read the figure it checks).
+  const base = bd.rawMaterial + bd.process + bd.labour + bd.tooling - boughtIn;
   const handling = boughtIn * Math.max(0, rm.boughtIn?.handlingPct ?? 0);
   const overhead = si.overheadPct * base + handling;
   line('Overhead', `${(si.overheadPct * 100).toFixed(1)}% × £${base.toFixed(4)} (material + process + labour + tooling${boughtIn ? ', bought-in excluded' : ''})${handling ? ` + bought-in handling ${f(handling)}` : ''}`, overhead, bd.overhead);
@@ -605,6 +608,12 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
     const tooling = costed && r ? toolingOf(r) : null;
     const total = costed && r?.total != null ? round(r.total) : null;
     const toolingPerPart = costed && r?.breakdown?.tooling != null ? round(Number(r.breakdown.tooling)) : null;
+    // The piece price WITHOUT tooling takes out the tooling's overhead and margin too: the stack charges overhead on the
+    // amortised tooling and margin on that, so total − tooling/part left (1+OH)(1+margin) − 1 ≈ 21 % of it in the "piece
+    // ex-tooling" and the programme spend counted it on top of the tool investment (arithmetic audit, 30 Oct 2026:
+    // £0.12 a part, £29k over the hub flange's programme). Bought-in content does not touch the tooling line.
+    const si = r?.trace?.stackInput;
+    const toolingThroughStack = toolingPerPart != null && si ? toolingPerPart * (1 + si.overheadPct) * (1 + si.marginPct) : toolingPerPart;
     const parts = i.annualVolume * years;
     const processLabel = process ? (CASTING_PROCESS_LABEL[process] ?? FORGING_PROCESS_LABEL[process] ?? process) : null;
     rows.push({
@@ -628,10 +637,10 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
       notes,
       refusal: r && (r.status === 'refused' || r.status === 'error') ? (r.error ?? r.code ?? 'refused') : null,
       byVolume,
-      programme: total != null && tooling && toolingPerPart != null ? {
-        parts, years, pieceExTooling: round(total - toolingPerPart),
-        pieceSpend: round((total - toolingPerPart) * parts, 2), tooling: tooling.investment,
-        total: round((total - toolingPerPart) * parts + tooling.investment, 2),
+      programme: total != null && tooling && toolingThroughStack != null ? {
+        parts, years, pieceExTooling: round(total - toolingThroughStack),
+        pieceSpend: round(round(total - toolingThroughStack) * parts, 2), tooling: tooling.investment,
+        total: round(round(total - toolingThroughStack) * parts + tooling.investment, 2),
       } : null,
     });
   }
@@ -700,9 +709,10 @@ export function crossovers(rows: RouteRow[], ref: RouteRow, ladder: number[], an
     const indistinguishable = overlap.length ? { from: overlap[0].v, to: overlap[overlap.length - 1].v } : null;
     // Payback at the costing's volume: more tooling, lower piece price.
     let payback: RouteCrossover['payback'] = null;
-    if (row.tooling && ref.tooling && row.toolingPerPart != null && ref.toolingPerPart != null && ref.total != null) {
+    if (row.tooling && ref.tooling && row.programme && ref.programme) {
       const extra = row.tooling.investment - ref.tooling.investment;
-      const saving = (ref.total - ref.toolingPerPart) - (row.total - row.toolingPerPart);
+      // piece prices without tooling AND its overhead and margin (the programme view's own figure)
+      const saving = ref.programme.pieceExTooling - row.programme.pieceExTooling;
       if (extra > 0 && saving > 0) {
         const parts = extra / saving;
         payback = { extraTooling: round(extra, 2), pieceSaving: round(saving), parts: Math.round(parts), months: round(parts / annualVolume * 12, 1) };

@@ -41,5 +41,9 @@ export function toolingAmortisationBasis(input: UniversalStackInput): string {
   if (yrs > 0 && ann > 0 && Math.abs(vol - ann * yrs) <= 0.5) return `the programme: ${yrs} years × ${ann.toLocaleString('en-GB')} a year`;
   if (ann > 0 && Math.abs(vol - ann) <= 0.5) return 'ONE year\u2019s volume: no programme life was entered. Enter it to spread the tooling over the programme '
     + '(tooling per part falls in proportion).';
-  return 'the amortisation volume typed on the form';
+  // Neither annual × programme nor one year: the costing carries a volume it was not told the origin of — a headless /
+  // CAD costing's input holds no annual volume, and "typed on the form" was printed beside a 250,000 that was 50,000 a
+  // year × 5 years (arithmetic audit, 30 Oct 2026). Say what is known.
+  if (!(ann > 0)) return `${vol.toLocaleString('en-GB')} parts, as the costing carries it (the annual volume and programme life are not on this costing's input)`;
+  return `${vol.toLocaleString('en-GB')} parts — not ${yrs > 0 ? `${yrs} years × ` : ''}${ann.toLocaleString('en-GB')} a year: an amortisation volume set on the form or by the commodity's rules`;
 }

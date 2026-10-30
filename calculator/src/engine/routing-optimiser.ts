@@ -222,7 +222,10 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
       oversize: primary.oversize,
       envelopeMm: MACHINE_CATALOGUE.find(m => m.id === primary.id)?.envelopeMm ?? null,
       costPerPart: Math.round(cost * 10_000) / 10_000,
-      labourPerPart: labourOf(p.millingHr + p.drillHr, setups * handlingHrEach),
+      // A masked load is paid inside the operator's share of the cut; only what the cut cannot cover is extra (M4).
+      labourPerPart: labourOf(p.millingHr + p.drillHr, masked
+        ? Math.max(0, setups * handlingHrEach - (p.millingHr + p.drillHr) * CUTTING_MANNING)
+        : setups * handlingHrEach),
       ...(masked ? { masked: true } : {}),
       detail: `${detailPrefix}: ${primary.id} £${primary.ratePerHr.toFixed(2)}/hr`
         + (drill && drill.id !== primary.id ? ` + ${drill.id} £${drill.ratePerHr.toFixed(2)}/hr` : '')

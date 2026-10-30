@@ -35,13 +35,15 @@ import type { MachiningOpType } from '../../modules/machining.js';
 import type { MaterialFamily } from '../../material-family.js';
 import {
   stockSize, fromSolidMillingTime, fromBarTurningTime, nearNetMachiningTime, nearNetTurningTime, nearNetTurnedAreaCm2, castMachiningStockMm, deburrInspectMinutes,
-  holeMinutes, CORED_ABOVE_MM,
+  holeMinutes, CORED_ABOVE_MM, HOURS_STATUS, CUTTING_DATA_STATUS, nearNetHoleMinutes, BORE_FINISH_MM_PER_MIN,
   fixtureCostGBP, programmingHours, toolWearPerPart, cuttingDataFor,
   handlingMinPerFixturing, SETUP_MIN_PER_FIXTURING, PROGRAMMING_HR, turnedPartFacts, type CuttingTime,
 } from '../../machining-time.js';
 import {
   optimiseMachiningRouting, standardBatchSize, type RoutingChoice, CUTTING_MANNING, PALLET_CHANGE_SEC,
 } from '../../routing-optimiser.js';
+import { tappedThread, featureToOperation } from '../../feature-ops.js';
+import { DRILL_FEED_MM_PER_MIN, TAP_FEED_MM_PER_MIN } from '../../feature-machining.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef, type RuleOutcome } from '../types.js';
 import { holeRows, bRepFaceCount, MESH_DEBURR_FACE_ALLOWANCE } from '../derive/facts.js';
 import { materialFacts, DENSITY_KG_PER_CM3, representativeMaterialId } from '../derive/material.js';
@@ -119,7 +121,9 @@ export function stockFacts(
   const stockKg = Math.round(netKg / utilisation * 1000) / 1000;
   return {
     stockKg, stockCm3: st.cm3, form: st.form,
-    utilisation: Math.round(utilisation * 1000) / 1000,
+    // 4 dp: at 3 dp the gross the costing buys (net ÷ utilisation) missed the stock weight printed beside it by up to
+    // 0.25 % (Part1: 5.599 kg costed v 5.611 kg stated — arith audit, Oct 2026).
+    utilisation: Math.round(utilisation * 10_000) / 10_000,
     clamped,
     basis: clamped
       ? `${st.basis} implies only ${(rawUtil * 100).toFixed(1)}% utilisation — too low to be a machined billet, `
@@ -133,6 +137,9 @@ export interface MachiningCut {
   /** A turned near-net part: its faces are turned with the outside (nearNetCut), so no per-direction milling op. */
   turnedPart?: boolean;
   kind: 'from-solid' | 'near-net';
+  /** The metal cut — its cutting-time factor scales the hole times the drilling basis itemises. Optional for callers
+   *  that build a cut by hand; the plan then reads the steel factor, as `cuttingDataFor` does for an unknown family. */
+  family?: MaterialFamily;
   /** Machining-centre content (rough + finish + surfacing + tool changes), min. */
   millMin: number;
   /** Drilling content (on the routing's drill machine), min. */
@@ -184,7 +191,7 @@ export function solidCut(ctx: RuleContext, family: MaterialFamily): MachiningCut
     : null;
   const handledKg = stock.cm3 * DENSITY_KG_PER_CM3[family];
   return {
-    kind: 'from-solid', handledKg, handlingMin: handlingMinPerFixturing(handledKg),
+    kind: 'from-solid', family, handledKg, handlingMin: handlingMinPerFixturing(handledKg),
     millMin: mill.totalMin - mill.holeMin,
     holeMin: mill.holeMin,
     turned: t ? { lathe: t.lathe, secondary: t.mill } : null,
@@ -212,7 +219,7 @@ export function nearNetCut(ctx: RuleContext, family: MaterialFamily, subtype: st
   const cored = CORED_ABOVE_MM[subtype ?? ''] ?? 20;
   const boreMin = Math.round(holeMinutes(rows.filter(r => r.kind === 'hole' && r.diaMm > cored), family, cored) * 100) / 100;
   return {
-    kind: 'near-net', handledKg, handlingMin: handlingMinPerFixturing(handledKg),
+    kind: 'near-net', family, handledKg, handlingMin: handlingMinPerFixturing(handledKg),
     // a turned part's faces are in the lathe's time; its tool changes are the lathe's three
     millMin: tp ? 0 : nn.finishMin + nn.toolChangeMin,
     holeMin: Math.max(0, Math.round((nn.holeMin - boreMin) * 100) / 100), boreMin, coredAboveMm: cored,
@@ -359,11 +366,22 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
     const drillRows = holeRowsAll.filter(r => !boreRows.includes(r));
     const summary = (rs: FeatureRow[]) => rs.map(r => `${r.count}×Ø${r.diaMm.toFixed(1)}×${r.depthMm.toFixed(0)}`).join(', ');
     const count = (rs: FeatureRow[]) => rs.reduce((s, r) => s + r.count, 0);
+    // The arithmetic behind the drilling minutes, row by row (arith audit, Oct 2026: the basis printed only the total,
+    // and an inferred tapping — a hole at a tapping-drill size, ≥ 1.5 Ø deep — was charged without being stated).
+    const tf = cuttingDataFor(cut.family ?? 'steel').timeFactor;
+    const perRow = (rs: FeatureRow[]) => rs.map(r => {
+      const each = nearNetHoleMinutes(r, cut.coredAboveMm) * tf;
+      const tap = tappedThread(r);
+      return `${r.count}×Ø${r.diaMm.toFixed(1)}×${r.depthMm.toFixed(0)} ${tap ? `drill + tap ${tap} (inferred from the tapping-drill size)` : featureToOperation(r).toLowerCase()} `
+        + `${fmt(each, 2)} min`;
+    }).join('; ');
     if (cut.holeMin > 0) {
       const rs = boreRows.length ? drillRows : holeRowsAll;
       ops.push({ ...machine, name: `Drilling — ${count(rs)} holes (${boreRows.length ? summary(rs) : holeSummary}) [geometry-measured]`, type: 'drilling',
         machineId: chosen.drillMachineId, cycleTimeHr: hr4(cut.holeMin),
-        basis: `${count(rs)} holes measured off the B-rep, ${fmt(cut.holeMin, 1)} min`
+        basis: `${count(rs)} holes measured off the B-rep, ${fmt(cut.holeMin, 1)} min: ${perRow(rs)} `
+          + `(drill feed ${DRILL_FEED_MM_PER_MIN} mm/min + 0.15 min approach, a ream pass on blind / deep Ø13–26, helical mill above Ø26, `
+          + `tap ${TAP_FEED_MM_PER_MIN} mm/min in and out, × ${tf} for the metal — ${CUTTING_DATA_STATUS})`
           + (chosen.drillMachineId === chosen.primaryMachineId ? ' — drilled in the same clamping' : ''),
         faceIds: rs.flatMap(r => r.faceIds ?? []) });
     }
@@ -371,31 +389,45 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
       ops.push({ ...machine, name: `Finish boring — ${count(boreRows)} cored bore(s) (${summary(boreRows)}) [geometry-measured]`, type: 'milling_3ax',
         machineId: chosen.primaryMachineId, cycleTimeHr: hr4(cut.boreMin!),
         basis: `${count(boreRows)} bore(s) above Ø${coredAbove} mm are cored in the casting and finish-bored on the machining centre `
-          + `(not drilled), ${fmt(cut.boreMin!, 1)} min`,
+          + `(not drilled), ${fmt(cut.boreMin!, 1)} min: ${perRow(boreRows)} (one boring pass at ${BORE_FINISH_MM_PER_MIN} mm/min + 0.25 min; `
+          + `a land shallower than ¼ Ø is spot-faced, 0.2 min + 0.004 min/mm Ø — ${CUTTING_DATA_STATUS})`,
         faceIds: boreRows.flatMap(r => r.faceIds ?? []) });
     }
   }
   // Near-net with a turned axis: the spindle on the CNC lathe, in its own fixture, loaded once.
   if (cut.kind === 'near-net' && cut.spindle) {
     ops.push({ ...machine, name: cut.turnedPart ? 'Turning — outside and faces on the CNC lathe, op 10 / op 20' : `Turning — spindle on the CNC lathe (journals, taper, shoulders)`, type: 'turning', machineId: 'mach-lathe-cnc',
-      cycleTimeHr: hr4(cut.spindle.totalMin + cut.handlingMin),
-      basis: `${cut.spindle.basis}; + ${cut.handlingMin} min to load the casting into the lathe fixture` });
+      cycleTimeHr: hr4(cut.spindle.totalMin), basis: cut.spindle.basis });
+    // The load is its own operation: a whole operator while the lathe stands (it rode in the turning op at the cutting
+    // crew of 0.5, and paid tool wear on the handling minutes — arith audit, Oct 2026).
+    ops.push({ ...machine, manning: 1, name: 'Load / clamp / unload — lathe fixture, 1 fixturing', type: 'turning', machineId: 'mach-lathe-cnc',
+      cycleTimeHr: hr4(cut.handlingMin),
+      basis: `1 fixturing × ${cut.handlingMin} min to load, clamp and unload ${fmt(cut.handledKg, 2)} kg in the lathe fixture — a whole operator, the lathe stands (${HOURS_STATUS})` });
   }
   if (chosen.masked) {
     // A twin-pallet cell: the spindle pays only the pallet change; the operator loads the other pallet while it cuts.
     ops.push({ ...machine, name: `Pallet change — ${chosen.setups} fixturing(s)`, type: 'milling_3ax',
       machineId: chosen.primaryMachineId, cycleTimeHr: hr4(chosen.setups * PALLET_CHANGE_SEC / 60),
       basis: `${chosen.setups} fixturing(s) × ${PALLET_CHANGE_SEC} s pallet change on the twin-pallet HMC — the only machine time the handling costs` });
-    ops.push({ name: `Load / unload on the pallet while the spindle cuts — ${chosen.setups} fixturing(s)`, type: 'milling_3ax',
-      machineId: chosen.primaryMachineId, cycleTimeHr: hr4(chosen.setups * cut.handlingMin), partsPerCycle: 1,
+    // The operator already pays CUTTING_MANNING of the cut (one operator tends two cells) and loads the other pallet IN
+    // that time: only the load the cut cannot cover is charged again (arithmetic audit machining M4 — the pilot pack
+    // charged the whole load on top, 1.11 operators on two machines).
+    const loadMin = chosen.setups * cut.handlingMin;
+    const coveredMin = CUTTING_MANNING * cuttingMinutesOf(ops);
+    const extraMin = Math.max(0, loadMin - coveredMin);
+    if (extraMin > 0) ops.push({ name: `Load / unload on the pallet while the spindle cuts — ${chosen.setups} fixturing(s)`, type: 'milling_3ax',
+      machineId: chosen.primaryMachineId, cycleTimeHr: hr4(extraMin), partsPerCycle: 1,
       labourId: 'lab-uk-skilled', manning: 1, oee: 1, benchOperation: true,
-      basis: `${chosen.setups} fixturing(s) × ${cut.handlingMin} min to load, clamp (hydraulic fixture) and unload `
-        + `${fmt(cut.handledKg, 2)} kg on the second pallet — masked by the cut, so labour only (the routing was ranked with it)` });
+      basis: `${chosen.setups} fixturing(s) × ${cut.handlingMin} min = ${fmt(loadMin, 2)} min to load, clamp (hydraulic fixture) and unload `
+        + `${fmt(cut.handledKg, 2)} kg on the second pallet, while the spindle cuts; the operator's ${CUTTING_MANNING} share of the `
+        + `${fmt(cuttingMinutesOf(ops), 1)} min cut (${fmt(coveredMin, 2)} min) already pays for it`
+        + (extraMin > 0 ? ` — the ${fmt(extraMin, 2)} min it does not cover is charged here` : ' — nothing more to charge')
+        + ` (${HOURS_STATUS})` });
   } else {
     ops.push({ ...machine, manning: 1, name: `Load / clamp / unload — ${chosen.setups} fixturing(s)`, type: 'milling_3ax',
       machineId: chosen.primaryMachineId, cycleTimeHr: hr4(chosen.setups * cut.handlingMin),
       basis: `${chosen.setups} fixturing(s) × ${cut.handlingMin} min every part to load, clamp and unload `
-        + `${fmt(cut.handledKg, 2)} kg — the handling the routing was ranked with` });
+        + `${fmt(cut.handledKg, 2)} kg — the handling the routing was ranked with (by weight: ≤ 0.5 kg 0.3, ≤ 5 kg 0.6, ≤ 20 kg 1.2, else 2.5 min; ${HOURS_STATUS})` });
   }
   const bRepFaces = bRepFaceCount(ctx);
   const deburr = deburrInspectMinutes(bRepFaces ?? MESH_DEBURR_FACE_ALLOWANCE);
@@ -403,7 +435,7 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
     cycleTimeHr: hr4(deburr), partsPerCycle: 1, labourId: 'lab-uk-semiskilled', manning: 1, oee: 1, benchOperation: true,
     basis: bRepFaces === null
       ? `mesh upload — no B-rep faces to count (its triangles are not faces): 0.5 min deburr + 0.004 min × ${MESH_DEBURR_FACE_ALLOWANCE} faces allowed + 0.5 min gauge check = ${fmt(deburr, 2)} min (assumed)`
-      : `0.5 min deburr + 0.004 min × ${bRepFaces} B-rep faces of edges + 0.5 min gauge check = ${fmt(deburr, 2)} min` });
+      : `0.5 min deburr + 0.004 min × ${bRepFaces} B-rep faces of edges + 0.5 min gauge check = ${fmt(deburr, 2)} min (engineering-typical, not sourced)` });
   return ops;
 }
 
@@ -439,7 +471,7 @@ export function machiningNRE(ctx: RuleContext, cut: MachiningCut, routing: Routi
     programmingGBP: Math.round(hrs * rate),
     programmingBasis: `CAM programming and prove-out ${fmt(hrs, 2)} h (${PROGRAMMING_HR.perFixturing} h × ${routing.chosen.setups + lathe} fixturing(s)${lathe ? ' incl. the lathe' : ''} `
       + `+ ${PROGRAMMING_HR.perFeatureRow} h × ${rows} feature group(s)${cut.surfaced ? ` + ${PROGRAMMING_HR.surfacing} h surfacing` : ''}) `
-      + `× £${rate.toFixed(2)}/h manufacturing engineer`,
+      + `× £${rate.toFixed(2)}/h manufacturing engineer (hours engineering-typical, not sourced)`,
   };
 }
 
@@ -648,7 +680,7 @@ export function machiningRuleDefs(cutFor: CutFor): RuleDef<any>[] {
         return decided('machining.setupTimeHr', Math.round(setups * SETUP_MIN_PER_FIXTURING / 60 * 1000) / 1000, 'rule',
           `${setups} fixturing(s)${'blocked' in r ? '' : ` of the ${r.advice.routing.chosen.label} routing`} × `
           + `${SETUP_MIN_PER_FIXTURING} min change-over (fixture swap, tool offsets, first-off inspection) a batch — `
-          + 'not the kernel\'s 15 min, which is a per-part allowance', 0.7);
+          + 'not the kernel\'s 15 min, which is a per-part allowance (45 min engineering-typical, not sourced)', 0.7);
       },
     },
     {
@@ -751,7 +783,7 @@ export function machiningRuleDefs(cutFor: CutFor): RuleDef<any>[] {
         const cd = cuttingDataFor(r.advice.family);
         return decided('machining.toolWearCostPerPart', toolWearPerPart(r.advice.cuttingMin, r.advice.family), 'rule',
           `${fmt(r.advice.cuttingMin, 1)} min of cutting × £${cd.toolCostPerCutMin.toFixed(4)}/min inserts, end mills and drills `
-          + `(${r.advice.family}) — not in the machine rate`, 0.5);
+          + `(${r.advice.family}) — not in the machine rate (£/min engineering-typical, not sourced)`, 0.5);
       },
     },
   ];

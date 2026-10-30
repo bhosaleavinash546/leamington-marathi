@@ -332,7 +332,8 @@ export function autoCoolFactorForMaterial(materialId: string): number {
     [/pc-abs/, 2.2],
     [/pc-pbt/, 2.3],
     [/pom|acetal|delrin/, 2.8],
-    [/pps|ppa/, 2.4],
+    // \bpps: 'mat-gpps' (crystal polystyrene) read as PPS — 2.4 s/mm² and 330 °C melt (arithmetic audit, Oct 2026)
+    [/\bpps|ppa/, 2.4],
     [/peek|pei|ultem/, 2.5],
     [/pbt/, 2.5],
     [/pa12/, 2.2],
@@ -341,7 +342,8 @@ export function autoCoolFactorForMaterial(materialId: string): number {
     [/hips|gpps|\bps\b/, 2.0],
     [/mppe|ppe|ppo|noryl/, 2.2],
     [/abs/, 2.0],
-    [/pc|lexan|glazing/, 2.5],
+    // \bpc\b: 'mat-pcr-pp' (recycled PP) read as PC — the comment on /pp/ below says PCR is polypropylene
+    [/\bpc\b|lexan|glazing/, 2.5],
     [/pet/, id.includes('gf') ? 2.5 : 3.0],
     [/tpo/, 3.2],
     [/pp-(gf|lgf|t20|t30)/, 3.0],
@@ -382,7 +384,7 @@ const RESIN_THERMAL_REFERENCE: Array<[RegExp, ResinThermalReference]> = [
   [/pc-abs/,            { meltC: 260, mouldC: 70,  ejectC: 105 }],
   [/pc-pbt/,            { meltC: 260, mouldC: 75,  ejectC: 110 }],
   [/pom|acetal|delrin/, { meltC: 205, mouldC: 90,  ejectC: 125 }],
-  [/pps|ppa/,           { meltC: 330, mouldC: 140, ejectC: 180 }],
+  [/\bpps|ppa/,         { meltC: 330, mouldC: 140, ejectC: 180 }],
   [/peek|pei|ultem/,    { meltC: 380, mouldC: 180, ejectC: 220 }],
   [/pbt/,               { meltC: 255, mouldC: 80,  ejectC: 125 }],
   [/pa12/,              { meltC: 250, mouldC: 60,  ejectC: 105 }],
@@ -391,7 +393,7 @@ const RESIN_THERMAL_REFERENCE: Array<[RegExp, ResinThermalReference]> = [
   [/hips|gpps|\bps\b/,  { meltC: 220, mouldC: 45,  ejectC: 85  }],
   [/mppe|ppe|ppo|noryl/,{ meltC: 280, mouldC: 90,  ejectC: 130 }],
   [/abs/,               { meltC: 240, mouldC: 60,  ejectC: 95  }],
-  [/pc|lexan|glazing/,  { meltC: 300, mouldC: 90,  ejectC: 130 }],
+  [/\bpc\b|lexan|glazing/, { meltC: 300, mouldC: 90,  ejectC: 130 }],
   [/pet/,               { meltC: 280, mouldC: 90,  ejectC: 135 }],
   [/tpo/,               { meltC: 220, mouldC: 35,  ejectC: 80  }],
   [/hdpe|ldpe|lldpe/,   { meltC: 210, mouldC: 30,  ejectC: 75  }],
@@ -537,12 +539,15 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   // Purge and start-up resin at each mould change, shared over the batch.
   const purgePerPart = inputs.setup && inputs.setup.batchSize > 0
     ? Math.max(0, inputs.setup.purgeKg ?? 0) / inputs.setup.batchSize : 0;
-  const grossPerPart = inputs.partWeightKg + runnerWastePerCavity + purgePerPart;
-  const materialUtilization = inputs.partWeightKg / grossPerPart;
+  // Per GOOD part: every shot made (rejects included) buys its part + runner waste; the purge is per mould change and
+  // the batch is counted in good parts, so it is NOT scaled by the reject uplift (it was — arithmetic audit, Oct 2026).
+  const netWeightKg = inputs.partWeightKg * rejectUplift;
+  const grossPerGoodPart = (inputs.partWeightKg + runnerWastePerCavity) * rejectUplift + purgePerPart;
+  const materialUtilization = netWeightKg / grossPerGoodPart;
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
-    netWeightKg: inputs.partWeightKg * rejectUplift,
+    netWeightKg,
     materialUtilization,
   };
 

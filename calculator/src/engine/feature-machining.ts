@@ -311,16 +311,30 @@ export function computeFeatureMachining(
       manning: 1,
       labourTimeHr: 0,
       untended: true,
-    }, {
+    },
+    // Only the load the operator's share of the cut does not already cover (arithmetic audit machining M4); when the
+    // cut covers it all there is nothing more to charge, and no zero-time bench step is listed.
+    ...(Math.max(0, cell.fixturings * cell.handlingMin - (opts.manning ?? 1) * millMinutes) > 1e-9 ? [{
       ...common,
-      operationName: `Machining load / unload on the pallet while the spindle cuts (${cell.fixturings} fixturing(s): `
-        + `${cell.handlingMin} min each + ${cell.setupMinPerFixturing} min ÷ batch ${cell.batchSize})`,
+      operationName: `Machining load / unload on the pallet while the spindle cuts (${cell.fixturings} fixturing(s) × `
+        + `${cell.handlingMin} min, less the operator's share of the cut)`,
       machineId: opts.machineId,
       cycleTimeHr: 0,
       oee: 1,
       manning: 1,
-      labourTimeHr: cellMin / 60,
+      labourTimeHr: Math.max(0, cell.fixturings * cell.handlingMin - (opts.manning ?? 1) * millMinutes) / 60,
       benchOperation: true,
+    }] : []), {
+      // The batch change-over stops the spindle — the pallet masks the load, not the fixture swap, offsets and first-off.
+      // It rode in the labour-only load above, so the machine was never charged for it (arith audit, Oct 2026). Charged
+      // like the from-solid route's amortised set-up: machine and setter, OEE 1.
+      ...common,
+      operationName: `Machining change-over, amortised (${cell.fixturings} fixturing(s) × ${cell.setupMinPerFixturing} min ÷ batch ${cell.batchSize})`,
+      machineId: opts.machineId,
+      cycleTimeHr: cell.fixturings * cell.setupMinPerFixturing / Math.max(1, cell.batchSize) / 60,
+      oee: 1,
+      manning: 1,
+      labourTimeHr: cell.fixturings * cell.setupMinPerFixturing / Math.max(1, cell.batchSize) / 60,
     }] : cell ? [{
       ...common,
       operationName: `Machining load / unload + change-over (${cell.fixturings} fixturing(s): `

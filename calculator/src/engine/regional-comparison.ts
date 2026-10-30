@@ -12,13 +12,17 @@
  *
  * What the input carries as £ rather than as a rate is moved explicitly:
  * tooling by the toolroom factor (a tool is built where the part is made),
- * overhead %, packaging and logistics by the region's shop multipliers — the
- * same `regionalShopDefaults` the country switch applies.
+ * overhead % (the default to that country's default, a typed rate by the ratio),
+ * packaging and logistics by the region's shop multipliers — the same
+ * `regionalShopDefaults` the country switch applies. What it does NOT move:
+ * per-part services and consumables, a module-priced (direct) material, and the
+ * module's own choices (machine, cavities, tool life) — those need the whole
+ * chain (`resultFor`), and each row says which it is (`basis`).
  */
 import type { RateLibrary, UniversalStackInput } from './types.js';
 import { computeUniversalStack } from './core.js';
 import {
-  REGIONAL_DATA, DEFAULT_RC_REGIONS, LANDED_ADDERS, buildRegionalLibrary, toolroomFactorFor,
+  REGIONAL_DATA, DEFAULT_RC_REGIONS, LANDED_ADDERS, buildRegionalLibrary, toolroomFactorFor, regionalShopDefaults,
   type ManufacturingRegion, type RegionalComparisonRow,
 } from './regional-rates.js';
 import { withRates } from './rate-context.js';
@@ -48,15 +52,21 @@ export function computeRegionalComparisonExact(
     const rd = REGIONAL_DATA[code];
     if (!rd) return null;
     const lib = code === 'UK' ? baseLibrary : buildRegionalLibrary(baseLibrary, code);
+    // The overhead DEFAULT goes to that country's default — `regionalShopDefaults` rounds 12 % × the multiplier to a
+    // whole per cent, the figure the country switch and headless costing use; scaling the source's 12 % by the ratio
+    // gave India 8.64 % against the 9 % its own costing carries (arithmetic audit, 30 Oct 2026). A typed rate is scaled.
+    const ohDefault = Math.abs(input.overheadPct - regionalShopDefaults(source).overheadPct) < 1e-9;
     const inR: UniversalStackInput = {
       ...input,
       tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * toolroomFactorFor(code) / (toolroomFactorFor(source) || 1) },
-      overheadPct: input.overheadPct * rd.overheadMultiplier / (src.overheadMultiplier || 1),
+      overheadPct: ohDefault ? regionalShopDefaults(code).overheadPct : input.overheadPct * rd.overheadMultiplier / (src.overheadMultiplier || 1),
       packagingPerPart: input.packagingPerPart * rd.packagingMultiplier / (src.packagingMultiplier || 1),
       logisticsPerPart: input.logisticsPerPart * rd.logisticsMultiplier / (src.logisticsMultiplier || 1),
     };
-    const r = code === source && opts.sourceResult ? opts.sourceResult
-      : opts.resultFor?.(code) ?? withRates(lib, () => computeUniversalStack(inR, lib));
+    const own = code === source && opts.sourceResult ? opts.sourceResult : null;
+    const chain = own ? null : opts.resultFor?.(code) ?? null;
+    const r = own ?? chain ?? withRates(lib, () => computeUniversalStack(inR, lib));
+    const basis: RegionalComparisonRow['basis'] = own || code === source ? 'costed' : chain ? 'chain' : 'stack-reprice';
     const b = r.breakdown;
     const exWorks = b.rawMaterial + b.process + b.labour + b.tooling + b.overhead;
     const add = opts.landed ? (LANDED_ADDERS[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };
@@ -65,7 +75,7 @@ export function computeRegionalComparisonExact(
       code, name: rd.name, currency: rd.currency,
       material: b.rawMaterial, process: b.process, labour: b.labour, tooling: b.tooling, overhead: b.overhead,
       exWorks, packaging: b.packaging, logistics: b.logistics, margin: b.margin,
-      total, vsBasePct: 0, isBase: code === base,
+      total, vsBasePct: 0, isBase: code === base, basis,
     };
   }).filter((x): x is RegionalComparisonRow => x !== null);
   const baseTotal = rows.find(r => r.code === base)?.total ?? rows[0]?.total ?? 0;

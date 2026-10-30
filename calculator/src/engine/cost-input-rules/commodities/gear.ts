@@ -23,13 +23,12 @@
  * material model.
  */
 import { activeRates } from '../../rate-context.js';
-import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import { CUTTING_DATA, stockSize, fromBarTurningTime } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import type { MaterialFamily } from '../../material-family.js';
-import { analyseGear } from '../../modules/gear.js';
-import { HARDENING_ROUTE_UNSUITABLE, type HardeningRoute } from '../../modules/gear-advisor.js';
-import type { GearMaterialClass } from '../../gear-shop-data.js';
+import { analyseGear, GEAR_OEE, GEAR_LABOUR_EFFICIENCY, GEAR_MACHINE_CREW } from '../../modules/gear.js';
+import { HARDENING_ROUTE_UNSUITABLE, adviseGearRoute, type HardeningRoute } from '../../modules/gear-advisor.js';
+import { gearDataCoverage, type GearMaterialClass } from '../../gear-shop-data.js';
 import {
   decided, ask, fmt,
   type CommodityRuleSpec, type Decision, type DecisionOption, type RuleContext, type RuleOutcome,
@@ -64,10 +63,16 @@ const GEAR_CLASS_FAMILY: Record<GearMaterialClass, MaterialFamily> = {
 };
 
 /** Set-up per gear operation, hours a batch: change the hob / wheel and
- *  work-holding, tram, cut and check a first-off on the gear checker. */
+ *  work-holding, tram, cut and check a first-off on the gear checker. Engineering-typical, NOT sourced. */
 export const GEAR_SETUP_HR_PER_OPERATION = 0.75;
-/** Scrap after heat treat and final inspection. */
+/** Scrap after heat treat and final inspection. Engineering-typical, NOT sourced. */
 export const GEAR_REJECT = 0.02;
+/**
+ * The bar slice a disc gear is turned from: tip Ø + 4 mm (2 mm a side to clean up the OD), face + 6 mm (saw kerf and
+ * facing stock), and 1.5 min a part to load the slice and set the datum on the lathe. Engineering-typical, NOT
+ * sourced — printed in the blank bases (arithmetic audit, Oct 2026; they were bare literals).
+ */
+export const GEAR_BLANK = { odAllowanceMm: 4, lengthAllowanceMm: 6, loadDatumMin: 1.5 } as const;
 
 interface GearGeo {
   teeth: number;
@@ -159,13 +164,13 @@ function hardeningDecision(mc: GearMaterialClass): Decision {
     opt('case_hardening', 'Carburise, quench and temper',
       'deep case; distorts 2 ISO classes, so anything tighter than class 9 buys grinding after'),
     opt('lpc_carburising', 'Low-pressure (vacuum) carburise',
-      'EV/NVH route — half the distortion of oil quenching and no post-wash, at ~2x the rate'),
+      'EV/NVH route — half the distortion of oil quenching and no wash before or after, at ~2x the furnace rate'),
     opt('carbonitriding', 'Carbonitride',
       'the cheapest case route, for small gears at case depths under 0.4 mm'),
     opt('quench_temper', 'Harden and temper (through)',
-      'core strength; distorts 1 ISO class, grinding after for a tight class'),
+      'core strength; distorts 1 ISO class, so class 7 and tighter buys grinding after'),
     opt('martempering', 'Martemper (hot-oil quench)',
-      'buys back distortion on thin sections at a small premium over plain Q&T'),
+      'buys back distortion on thin sections, at a premium over plain Q&T (its own temper step)'),
     opt('austempering', 'Austemper (bainitic)',
       'toughness with very low distortion — the ADI route'),
     opt('nitriding', 'Nitride',
@@ -175,7 +180,7 @@ function hardeningDecision(mc: GearMaterialClass): Decision {
     opt('induction_hardening', 'Induction harden',
       'seconds on a coil rather than furnace hours; geometry-specific coil as NRE'),
     opt('none', 'Leave soft — no hardening',
-      'no furnace pass; a tight class is met by shaving rather than grinding'),
+      'no furnace pass; class 6 is met by shaving, tighter than 6 by grinding'),
   ].filter((o): o is DecisionOption => o !== null);
 
   return {
@@ -241,16 +246,22 @@ function qualityDecision(): Decision {
   return {
     id: GEAR_QUALITY_DECISION_ID, kind: 'tolerance_class',
     question: 'ISO 1328 flank tolerance class?',
+    // The option texts said class 7 is "skive/shave after heat treat", class 8 "cut-and-harden, light finish" and a
+    // ground class 6 "roughly twice a hobbed-and-shaved class-8". The costing does none of that: hobbing holds class 7,
+    // carburising loses 2 classes, so a carburised gear at class 8 or tighter is GROUND after the furnace (spark-out
+    // passes rising as the class tightens) and nothing is ever shaved after hardening (arithmetic audit, Oct 2026).
     why: 'Quality is written on the drawing, not in the solid — and it decides the '
-      + 'whole finishing route. A ground class-6 flank costs roughly twice a '
-      + 'hobbed-and-shaved class-8.',
+      + 'finishing route. Hobbing holds class 7; carburising then costs 2 classes and '
+      + 'through-hardening 1, so a hardened gear tighter than it can deliver is ground '
+      + 'after the furnace, with more spark-out passes the tighter the class.',
     options: [
       { value: '6', label: 'Class 6 — ground, EV/NVH-critical',
-        consequence: 'adds a grinding operation after heat treat' },
+        consequence: 'hardened: ground after heat treat, 1 spark-out pass; unhardened: shaved' },
       { value: '7', label: 'Class 7 — finished automotive transmission', leaning: true,
-        consequence: 'hard-finish (skive/shave) after heat treat' },
+        consequence: 'hardened: ground after heat treat, 1 spark-out pass; unhardened: as-hobbed' },
       { value: '8', label: 'Class 8 — commercial automotive / industrial',
-        consequence: 'cut-and-harden, light finish' },
+        consequence: 'carburised: still ground after heat treat (hobbed 7 + 2 classes of distortion = 9), '
+          + 'no spark-out; through-hardened or unhardened: as-hobbed' },
       { value: '9', label: 'Class 9–10 — agricultural / low-speed industrial',
         consequence: 'as-hobbed flanks, no finishing pass' },
     ],
@@ -258,6 +269,10 @@ function qualityDecision(): Decision {
     blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
   };
 }
+
+/** Pre-hardened, stainless, bronze and plastic have no cutting band in the shop data (gear-shop-data.ts), so the module
+ *  BLOCKS them; their options claimed "slower feeds" / "free cutting" the costing never applies (arithmetic audit). */
+const NO_CUTTING_BAND = 'the shop data has no cutting feeds for it yet, so the costing stops and asks for them';
 
 function materialClassDecision(): Decision {
   return {
@@ -268,19 +283,20 @@ function materialClassDecision(): Decision {
       + 'heat-treat route, the finishing route and the feeds the teeth are cut at.',
     options: [
       { value: 'case_hardening_steel', label: 'Case-hardening steel (20MnCr5 / 8620)', leaning: true,
-        consequence: 'carburise + quench after cutting; hard finishing needed above class 8' },
+        consequence: 'carburise, quench and temper after cutting; ground after heat treat at class 8 and tighter' },
       { value: 'through_hardening_steel', label: 'Through-hardening steel (42CrMo4 / EN19)',
-        consequence: 'quench + temper; distortion lower than carburising' },
+        consequence: 'quench + temper; 1 class of distortion against carburising’s 2, so ground only at class 7 and tighter' },
       { value: 'alloy_steel_prehardened', label: 'Pre-hardened alloy steel (~30 HRC)',
-        consequence: 'no post-cut heat treat; slower cutting feeds' },
+        consequence: `no post-cut heat treat; ${NO_CUTTING_BAND}` },
       { value: 'cast_iron', label: 'Cast iron / ADI',
-        consequence: 'cast blank, austempered; no carburise' },
+        consequence: 'ADI bought at its £/kg (austempering included), sliced and turned like bar — a cast-blank '
+          + 'quote goes in the blank field; no carburise' },
       { value: 'stainless', label: 'Stainless steel',
-        consequence: 'slower feeds, no case hardening' },
+        consequence: `no case hardening; ${NO_CUTTING_BAND}` },
       { value: 'bronze', label: 'Bronze (worm wheels)',
-        consequence: 'free cutting, no heat treat' },
+        consequence: `no heat treat; ${NO_CUTTING_BAND}` },
       { value: 'plastic', label: 'Engineering plastic (POM / PA)',
-        consequence: 'cut soft or moulded; no heat treat' },
+        consequence: `no heat treat; ${NO_CUTTING_BAND}` },
     ],
     blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
   };
@@ -423,7 +439,7 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
     const gapCm3 = Math.PI / 4 * (od.od * od.od - rootOd * rootOd) * face / 1000 * 0.5;
     const cut = fromBarTurningTime({ family: fam, partCm3: partCm3 + gapCm3, stockCm3: shaft.stock.cm3,
       totalAreaCm2: ctx.geo.surfaceArea?.cm2 ?? 0, turnedFraction: shaft.turnedFraction, rows });
-    const prepMinS = 1.5 + cut.lathe.totalMin + cut.mill.totalMin;
+    const prepMinS = GEAR_BLANK.loadDatumMin + cut.lathe.totalMin + cut.mill.totalMin;
     const materialCostS = Math.round((stockKgS * mat.pricePerKg
       - Math.max(stockKgS - netKg, 0) * (mat.scrapRecoveryPricePerKg ?? 0)) * 100) / 100;
     return {
@@ -437,39 +453,51 @@ function deriveBlank(ctx: RuleContext, matClass: GearMaterialClass): BlankDeriva
         + 'cycle) when one exists.',
       prepBasis: `shaft turned from bar on the CNC lathe (live tooling for holes and flats), the machining route's own `
         + `build-up: ${cut.lathe.basis}; ${cut.mill.basis}; tooth spaces (${fmt(gapCm3, 1)} cm³) left to the hob; `
-        + `+ 1.5 min load/datum = ${fmt(prepMinS, 1)} min — a process operation with machine rate, labour and OEE.`,
+        + `+ ${GEAR_BLANK.loadDatumMin} min load/datum (engineering-typical, not sourced) = ${fmt(prepMinS, 2)} min `
+        + `= ${Math.round(prepMinS * 60)} s — a process operation with machine rate, labour and OEE.`,
     };
   }
 
-  const stockOd = od.od + 4, stockLen = face + 6;
+  const stockOd = od.od + GEAR_BLANK.odAllowanceMm, stockLen = face + GEAR_BLANK.lengthAllowanceMm;
   const stockCm3 = Math.PI / 4 * stockOd * stockOd * stockLen / 1000;
   const stockKg = stockCm3 * rho / 1e6;
   // Blank profile the lathe leaves: full cylinder at tip Ø, bored.
   const blankCm3 = Math.PI / 4 * (od.od * od.od - bore * bore) * face / 1000;
   const removalCm3 = Math.max(stockCm3 - blankCm3, 0);
 
+  const chipKg = Math.max(stockKg - netKg, 0);
   const materialCost = Math.round((stockKg * mat.pricePerKg
-    - Math.max(stockKg - netKg, 0) * (mat.scrapRecoveryPricePerKg ?? 0)) * 100) / 100;
+    - chipKg * (mat.scrapRecoveryPricePerKg ?? 0)) * 100) / 100;
 
   // Turning removal rate from the shared machining cutting data (machining
   // review): this rule had its own 40 cm³/min for steel, half the 80 the
   // machining model turns the same steel at (gear review, Oct 2026).
   const MRR = CUTTING_DATA[GEAR_CLASS_FAMILY[matClass]].turnRoughCm3PerMin;
-  const prepMin = 1.5 + removalCm3 / MRR;
+  const prepMin = GEAR_BLANK.loadDatumMin + removalCm3 / MRR;
   const prepCycleSec = Math.round(prepMin * 60);
 
+  // Every figure the value is made of is printed, so "a × b − c × d = value" can be re-added from the basis alone
+  // (it printed "3.41 kg × £1.48/kg − chips × £0.22/kg" over £4.76 with the chip weight missing; arithmetic audit).
+  const g2 = (n: number): string => n.toFixed(2);
   return {
     materialCost,
     prepCycleSec,
     stockKg: Math.round(stockKg * 1000) / 1000,
     netKg: Math.round(netKg * 1000) / 1000,
-    materialBasis: `bar slice Ø${fmt(stockOd, 0)}×${fmt(stockLen, 0)} mm = ${fmt(stockKg, 2)} kg `
-      + `${mat.grade} × £${fmt(mat.pricePerKg)}/kg − chips × £${fmt(mat.scrapRecoveryPricePerKg ?? 0)}/kg. `
-      + 'MATERIAL only — turning is costed as an operation. '
+    materialBasis: `bar slice Ø${fmt(stockOd, 0)} × ${fmt(stockLen, 0)} mm (tip Ø ${fmt(od.od, 1)} + `
+      + `${GEAR_BLANK.odAllowanceMm} mm OD clean-up, face ${fmt(face, 1)} + ${GEAR_BLANK.lengthAllowanceMm} mm kerf and facing — `
+      + `engineering-typical allowances, not sourced) = ${fmt(stockCm3, 1)} cm³ × ${(rho / 1000).toFixed(2)} g/cm³ = `
+      + `${fmt(stockKg, 3)} kg ${mat.grade} × £${g2(mat.pricePerKg)}/kg = £${g2(stockKg * mat.pricePerKg)}, less chips `
+      + `(${fmt(stockKg, 3)} − ${fmt(netKg, 3)} kg net) = ${fmt(chipKg, 3)} kg × £${g2(mat.scrapRecoveryPricePerKg ?? 0)}/kg `
+      + `= £${g2(chipKg * (mat.scrapRecoveryPricePerKg ?? 0))} → £${g2(materialCost)}. `
+      + 'MATERIAL only — turning is costed as an operation; the saw cut-off itself is not costed. '
       + 'Replace with the forged-blank quote (and zero the turning cycle) when one exists.',
-    prepBasis: `face/turn/bore: ${fmt(removalCm3, 0)} cm³ off the bar @ ${MRR} cm³/min `
-      + `+ 1.5 min load/datum = ${fmt(prepMin, 1)} min on the CNC lathe — costed as a process `
-      + 'operation with machine rate, labour and OEE, not folded into material.',
+    prepBasis: `face/turn/bore: bar ${fmt(stockCm3, 1)} cm³ − turned blank ${fmt(blankCm3, 1)} cm³ `
+      + `(Ø${fmt(od.od, 1)}${bore > 0 ? ` bored Ø${fmt(bore, 1)}` : ''} × ${fmt(face, 1)} mm) = ${fmt(removalCm3, 1)} cm³ `
+      + `@ ${MRR} cm³/min = ${fmt(removalCm3 / MRR, 2)} min + ${GEAR_BLANK.loadDatumMin} min load/datum `
+      + `(engineering-typical, not sourced) = ${fmt(prepMin, 2)} min = ${prepCycleSec} s on the CNC lathe — costed `
+      + 'as a process operation with machine rate, labour and OEE, not folded into material. Soft turning only: '
+      + 'hard turning or grinding of the bore and faces after heat treat is not costed.',
   };
 }
 
@@ -497,6 +525,35 @@ export function shaftBlank(ctx: RuleContext, tipOd: number, faceMm: number):
     turnedFraction: t.fraction ?? 0.6,
     basis: `${fmt(lengthMm, 0)} mm long against a ${fmt(faceMm, 1)} mm gear face, ${Math.round((t.fraction ?? 0) * 100)}% of the area turned`,
   };
+}
+
+/**
+ * The route the answered class buys, as the costing will run it — printed on the quality-class basis so the reader
+ * sees WHY a grinding pass is (or is not) on the operation list. Empty until the material class is answered.
+ */
+function routeLine(ctx: RuleContext, q: number): string {
+  const mc = answeredMaterialClass(ctx);
+  const t = teethOf(ctx);
+  const beta = answeredHelix(ctx);
+  const m = moduleOf(ctx);
+  const face = gearGeo(ctx)?.faceWidthMm ?? answeredEntry(ctx, GEAR_FACE_DECISION_ID);
+  if (mc === null || !t || beta === null || !m.ok || !face) return '';
+  const hardening = answeredHardening(ctx) ?? defaultHardening(mc);
+  const r = adviseGearRoute({
+    normalModuleMm: m.decided.value, teeth: t.z, helixAngleDeg: beta, faceWidthMm: face,
+    internal: gearGeo(ctx)?.internal ?? false, qualityClass: q, caseHardened: hardening === 'case_hardening',
+    hardeningRoute: hardening, annualVolume: ctx.annualVolume,
+  });
+  if (r.blocked) return '';
+  // The module's data warning reached only the screen's route note; headless and both reports printed cycle times
+  // and tool lives with no word that they rest on representative shop data (arithmetic audit, Oct 2026).
+  const cov = gearDataCoverage();
+  const data = cov.hasUnverified
+    ? `. Feeds, speeds, handling / deburr / inspection times, tool lives and heat-treat process data are `
+      + `representative values (${cov.unverified} of ${cov.total} gear shop parameters, "${cov.shop}"), not a plant's — `
+      + 'not quotable until replaced'
+    : '';
+  return ` — costed route: ${r.steps.map(st => st.label.toLowerCase()).join(' → ')}${data}`;
 }
 
 // ── the rules ────────────────────────────────────────────────────────────────
@@ -580,7 +637,7 @@ export const GEAR_RULES: CommodityRuleSpec = {
         if (q === null) return ask(qualityDecision());
         const p = answerProvenance(ctx, GEAR_QUALITY_DECISION_ID);
         return decided('gear.qualityClass', q, p.source,
-          `ISO 1328 class ${q}${p.note}${assumed(ctx, GEAR_QUALITY_DECISION_ID)}`,
+          `ISO 1328 class ${q}${p.note}${assumed(ctx, GEAR_QUALITY_DECISION_ID)}${routeLine(ctx, q)}`,
           p.conf, [GEAR_QUALITY_DECISION_ID]);
       },
     },
@@ -697,7 +754,8 @@ export const GEAR_RULES: CommodityRuleSpec = {
         const vol = ctx.geo.volume?.cm3;
         if (!vol) return ask(entryDecision('gear.netWeight', 'net gear weight', 'kg',
           'No volume was measured, so the weight cannot be derived.'));
-        const mat = DEFAULT_RATE_LIBRARY.materials.find(m => m.id === GRADE_BY_CLASS[mc].id);
+        // The costed country's book, as the blank reads it — the two read different books.
+        const mat = activeRates().materials.find(m => m.id === GRADE_BY_CLASS[mc].id);
         const kg = Math.round(vol * (mat?.densityKgPerM3 ?? 7850) / 1e6 * 1000) / 1000;
         return decided('gear.netWeightKg', kg, 'geometry',
           `${fmt(vol, 0)} cm³ × ${((mat?.densityKgPerM3 ?? 7850) / 1000).toFixed(2)} g/cm³ `
@@ -759,10 +817,13 @@ export const GEAR_RULES: CommodityRuleSpec = {
         const face = g?.faceWidthMm ?? answeredEntry(ctx, GEAR_FACE_DECISION_ID);
         if (!face) return ask(entryDecision(GEAR_FACE_DECISION_ID, 'face width', 'mm',
           'No gear-like tip pattern was measured, so the toothed face width is unknown.'));
+        // The hardening route the costing runs (answered, else the class default) — it passed only
+        // `caseHardened` off the class, so an answered nitride / none listed a different route (arithmetic audit).
+        const hardening = answeredHardening(ctx) ?? defaultHardening(mc);
         const a = analyseGear({
           normalModuleMm: m.decided.value, teeth: t.z, helixAngleDeg: beta, faceWidthMm: face,
           internal: g?.internal ?? false, qualityClass: q, materialClass: mc,
-          caseHardened: mc === 'case_hardening_steel',
+          caseHardened: hardening === 'case_hardening', hardeningRoute: hardening,
           blankCostPerPart: 0, netWeightKg: 1,           // cycle only — no money read here
           materialId: GRADE_BY_CLASS[mc].id,
           annualVolume: ctx.annualVolume,
@@ -775,7 +836,8 @@ export const GEAR_RULES: CommodityRuleSpec = {
         const hr = Math.round(a.totalCycleSec / 3600 * 10000) / 10000;
         return decided('gear.cycleTimeHr', hr, 'rule',
           `${a.operations.map(o => `${o.label} ${o.cycleSec.toFixed(0)}s`).join(' + ')} `
-          + `= ${a.totalCycleSec.toFixed(0)} s — generating kinematics, same arithmetic as the costing`,
+          + `= ${a.totalCycleSec.toFixed(0)} s — the gear operations as costed (generating kinematics; blank turning `
+          + 'is its own rule; furnace steps are bought by weight, 0 s)',
           0.7, [GEAR_HELIX_DECISION_ID, GEAR_QUALITY_DECISION_ID, GEAR_MATERIAL_DECISION_ID]);
       },
     },
@@ -786,9 +848,16 @@ export const GEAR_RULES: CommodityRuleSpec = {
       path: 'gear.setupTimeHrPerOperation',
       fieldId: 'gear-setup',
       label: 'setupTimeHrPerOperation',
+      // The basis said "per cutting / finishing operation"; the module charges it on EVERY machine operation (blank
+      // turning, deburr and the gear checker too). It also states the shop figures every operation is costed at,
+      // which were bare literals in the module (arithmetic audit, Oct 2026).
       evaluate: () => decided('gear.setupTimeHrPerOperation', GEAR_SETUP_HR_PER_OPERATION, 'rule',
-        `${GEAR_SETUP_HR_PER_OPERATION} h per cutting / finishing operation a batch — change the hob or wheel and the `
-        + 'work-holding, tram and check a first-off. Engineering typical; replace with the plant figure.', 0.5),
+        `${GEAR_SETUP_HR_PER_OPERATION} h a batch on every machine operation (blank turning, tooth cutting, deburr, `
+        + 'finishing and the gear checker) — change the hob or wheel and the work-holding, tram and check a first-off — '
+        + '÷ the batch, then ÷ (1 − reject). Engineering-typical, not sourced; replace with the plant figure. Each '
+        + `operation is costed at OEE ${GEAR_OEE} and labour efficiency ${GEAR_LABOUR_EFFICIENCY} (the shop defaults), `
+        + `crew ${GEAR_MACHINE_CREW} on the lathe, hobber and grinder (one operator tends two auto-loaded machines) and `
+        + `1 on the deburr cell and gear checker — engineering-typical, not sourced.`, 0.5),
     },
     {
       id: 'gear.rejectRate',
@@ -796,7 +865,8 @@ export const GEAR_RULES: CommodityRuleSpec = {
       fieldId: 'gear-reject',
       label: 'rejectRate',
       evaluate: () => decided('gear.rejectRate', GEAR_REJECT, 'rule',
-        `${GEAR_REJECT * 100}% scrap after heat treat and final inspection (screen said 2%, headless 3%)`, 0.5),
+        `${GEAR_REJECT * 100}% scrap after heat treat and final inspection — engineering-typical, not sourced. `
+        + `Blank, heat treat, every operation and the perishable tool wear are ÷ (1 − ${GEAR_REJECT * 100}%).`, 0.5),
     },
     {
       id: 'gear.batchSize',

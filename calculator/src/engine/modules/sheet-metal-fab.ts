@@ -290,12 +290,7 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
   ];
 
   if (inputs.bendCount > 0) {
-    // Tool-change (setup) time is a per-batch cost — amortize over the batch size
-    const effectiveBatch = Math.max(1, inputs.batchSize ?? 1);
-    const bendingCycleTimeSec =
-      inputs.bendCount * inputs.timePerBendSec +
-      (inputs.toolChangeCount * inputs.toolChangeTimeSec) / effectiveBatch;
-    const bendingCycleHr = (bendingCycleTimeSec / 3600) * toleranceFactor * rejectUplift;
+    const bendingCycleHr = (inputs.bendCount * inputs.timePerBendSec / 3600) * toleranceFactor * rejectUplift;
     operations.push({
       operationName: 'Press Brake Bending',
       machineId: inputs.bendMachineId,
@@ -307,6 +302,25 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
       labourTimeHr: bendingCycleHr,
       labourEfficiency: inputs.labourEfficiency,
     });
+    // Tool-change (set-up) time is a per-batch cost, amortised over the batch. Its own operation at OEE 1 and
+    // efficiency 1, as the stamping die change: inside the bend cycle it was divided by the OEE that already
+    // carries change-over losses, scaled by the tolerance factor and uplifted for rejects (a scrapped part
+    // does not cause a second set-up) — arithmetic audit, 30 Oct 2026.
+    const effectiveBatch = Math.max(1, inputs.batchSize ?? 1);
+    const setupHr = (inputs.toolChangeCount * inputs.toolChangeTimeSec) / effectiveBatch / 3600;
+    if (setupHr > 0) {
+      operations.push({
+        operationName: 'Press brake set-up (amortised over the batch)',
+        machineId: inputs.bendMachineId,
+        labourId: inputs.bendLabourId,
+        cycleTimeHr: setupHr,
+        partsPerCycle: 1,
+        oee: 1,
+        manning: 1,
+        labourTimeHr: setupHr,
+        labourEfficiency: 1,
+      });
+    }
   }
 
   if (

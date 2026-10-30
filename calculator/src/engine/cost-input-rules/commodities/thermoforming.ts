@@ -27,9 +27,10 @@
 import {
   thermoformFamilyOf, estimateHeatTimeSec, estimateCoolTimeSec, estimateSagRisk,
   estimateWallThinning, estimateThermoformToolCost, estimateThermoformSpecificEnergy,
-  formingPressureBar,
+  formingPressureBar, thermoformFamilyData, TF_TOOL_COOL_MULT, MOULD_RATE,
   type ThermoformMethod, type FormComplexity, type MouldMaterial,
 } from '../../modules/thermoforming-advisor.js';
+import { activeToolroomFactor } from '../../rate-context.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { bboxSortedMm, planAreaCm2 } from '../derive/envelope.js';
@@ -104,6 +105,17 @@ export const TF_CLAMP_MARGIN_MM = 50;
 const TF_ROTATE_SEC = 5;
 /** Multi-up tools pay back above this; below it one part a sheet. */
 const TF_MULTI_UP_FROM = 10_000;
+/** Forming stroke, s, by method — engineering-typical, not sourced. */
+const TF_FORM_SEC = { vacuum: 6, pressure: 12, twin_sheet: 18 } as const;
+/** Router trim: load + feed along the trim path — engineering-typical, not sourced. */
+const TF_ROUTER_LOAD_SEC = 20;
+const TF_ROUTER_SEC_PER_M = 12;
+/** Thermoforming scrap — engineering-typical, not sourced. */
+const TF_REJECT_PCT = 3;
+/** Parts the tool makes over the costing's amortisation: annual × the typed programme years (one year when blank) —
+ *  the same volume `toCostParams` amortises over. */
+const tfAmortisationParts = (ctx: RuleContext): number =>
+  Math.max(1, ctx.annualVolume * (ctx.programmeYears && ctx.programmeYears > 0 ? ctx.programmeYears : 1));
 
 /** Parts on one sheet: the formed outlines with a web gap of max(25 mm, depth). */
 export function nestOnSheet(L: number, W: number, depth: number, window: [number, number], annualVolume: number):
@@ -111,7 +123,7 @@ export function nestOnSheet(L: number, W: number, depth: number, window: [number
   const m = TF_CLAMP_MARGIN_MM;
   const one: [number, number] = [L + 2 * m, W + 2 * m];
   if (annualVolume < TF_MULTI_UP_FROM) {
-    return { n: 1, sheetMm: one, basis: `one up below ${TF_MULTI_UP_FROM.toLocaleString('en-GB')}/yr — a single-cavity tool` };
+    return { n: 1, sheetMm: one, basis: `one up below ${TF_MULTI_UP_FROM.toLocaleString('en-GB')}/yr — a single-cavity tool (threshold engineering-typical, not sourced)` };
   }
   const gap = Math.max(25, depth);
   const fit = (a: number, b: number) =>
@@ -123,7 +135,8 @@ export function nestOnSheet(L: number, W: number, depth: number, window: [number
   const nx = Math.max(1, Math.floor((window[0] - 2 * m + gap) / (a + gap)));
   const ny = Math.ceil(n / nx);
   const sheetMm: [number, number] = [nx * a + (nx - 1) * gap + 2 * m, ny * b + (ny - 1) * gap + 2 * m];
-  return { n, sheetMm, basis: `${n} up on a ${sheetMm[0].toFixed(0)} × ${sheetMm[1].toFixed(0)} mm sheet, ${gap.toFixed(0)} mm web between cavities` };
+  return { n, sheetMm, basis: `${n} up on a ${sheetMm[0].toFixed(0)} × ${sheetMm[1].toFixed(0)} mm sheet, ${gap.toFixed(0)} mm web between cavities `
+    + `(web = the larger of 25 mm and the draw depth, ${m} mm clamp margin, at most 8 up — engineering-typical, not sourced)` };
 }
 
 interface TfAdvice {
@@ -188,7 +201,7 @@ function advise(ctx: RuleContext): { advice: TfAdvice } | { blocked: RuleOutcome
   const sheets = m.method === 'twin_sheet' ? 2 : 1;
   const sheetMm = Math.round(vCm3 / sheets / plan.cm2 * 10 * 100) / 100;
   const sheetBasis = `${vCm3.toFixed(0)} cm³ of part ÷ ${plan.cm2.toFixed(0)} cm² plan`
-    + (sheets === 2 ? ' ÷ 2 sheets' : '') + ` = ${sheetMm.toFixed(2)} mm sheet (mass balance); `
+    + (sheets === 2 ? ' ÷ 2 sheets' : '') + ` × 10 mm/cm = ${sheetMm.toFixed(2)} mm sheet (mass balance); `
     + `the formed wall averages ${wallMm.toFixed(2)} mm (2·V/S), an areal stretch of ${(sheetMm / wallMm).toFixed(2)}`;
 
   const d = bboxSortedMm(ctx)!;
@@ -204,14 +217,14 @@ function advise(ctx: RuleContext): { advice: TfAdvice } | { blocked: RuleOutcome
   // Cycle. A single-station former heats, forms, cools and unloads in series;
   // a rotary has its oven at another station, so the slowest station paces it.
   const heatSec = estimateHeatTimeSec(family, sheetMm);
-  const formSec = m.method === 'vacuum' ? 6 : m.method === 'pressure' ? 12 : 18;
+  const formSec = TF_FORM_SEC[m.method];
   const coolSec = estimateCoolTimeSec(family, sheetMm, 'water');
   const loadSec = mach.loadSec;
   const cycleSec = mach.rotary
     ? Math.max(heatSec, formSec + coolSec, loadSec) + TF_ROTATE_SEC
     : heatSec + formSec + coolSec + loadSec;
   const cycleBasis = mach.rotary
-    ? `rotary: oven ${heatSec} s / form + cool ${formSec + coolSec} s / load ${loadSec} s in parallel + ${TF_ROTATE_SEC} s index = ${cycleSec} s`
+    ? `rotary, stations in parallel: max(oven ${heatSec}, form + cool ${formSec + coolSec}, load ${loadSec}) s + ${TF_ROTATE_SEC} s index = ${cycleSec} s`
     : `single station: heat ${heatSec} + form ${formSec} + cool ${coolSec} + load ${loadSec} s in series = ${cycleSec} s`;
 
   // Trim. Heavy gauge (≥ 1.5 mm) is trimmed off the former on a 5-axis
@@ -219,9 +232,10 @@ function advise(ctx: RuleContext): { advice: TfAdvice } | { blocked: RuleOutcome
   // cut in the machine (steel rule), inside the cycle.
   const routerTrim = sheetMm >= 1.5;
   const perimM = 2 * (d[0] + d[1]) / 1000;
-  const trimSec = routerTrim ? Math.round(20 + perimM * 12) : 0;
+  const trimSec = routerTrim ? Math.round(TF_ROUTER_LOAD_SEC + perimM * TF_ROUTER_SEC_PER_M) : 0;
   const trimBasis = routerTrim
-    ? `5-axis router: 20 s load + ${perimM.toFixed(2)} m of trim path at ~12 s/m, per part, off the former`
+    ? `5-axis router: ${TF_ROUTER_LOAD_SEC} s load + ${perimM.toFixed(2)} m of trim path (the bounding-box perimeter) × ${TF_ROUTER_SEC_PER_M} s/m = ${trimSec} s, `
+      + 'per part, off the former — load and feed engineering-typical, not sourced'
     : 'thin gauge — cut in the machine inside the forming cycle';
 
   return {
@@ -283,7 +297,7 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
       const web = 1 - a.partKg * a.perSheet / a.sheetKg;
       return { value: a.sheetKg, source: 'rule', confidence: 0.65,
         basis: `the sheet for ${a.perSheet} part${a.perSheet === 1 ? '' : 's'} at ${fmt(a.sheetMm, 2)} mm, `
-          + `${TF_CLAMP_MARGIN_MM} mm clamp and trim margin each side = ${fmt(a.sheetKg, 3)} kg; `
+          + `${TF_CLAMP_MARGIN_MM} mm clamp and trim margin each side (engineering-typical, not sourced) = ${fmt(a.sheetKg, 3)} kg; `
           + `${(web * 100).toFixed(0)}% becomes web and trim (credited at its scrap value)` };
     }),
     fromAdvice('thermoforming.machineId', 'tf-mach', 'machineId', a => ({
@@ -291,20 +305,26 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
       basis: a.machineId === 'thermoform-small' ? 'the sheet fits an 800 × 600 mm single-station former'
         : a.machineId === 'thermoform-large' ? 'beyond 800 × 600 mm — a rotary former'
         : `${a.method} forming` })),
+    // The coefficients printed, so the line re-adds (arith audit, Oct 2026).
     fromAdvice('thermoforming.heatTimeSec', 'tf-heat', 'heatTimeSec', a => ({
       value: a.heatSec, source: 'advisor', confidence: 0.75,
-      basis: `${a.family} sheet at ${fmt(a.sheetMm, 2)} mm — radiant soak goes as gauge^1.6` })),
+      basis: `${a.family} sheet at ${a.sheetMm.toFixed(2)} mm — radiant soak goes as gauge^1.6: `
+        + `${thermoformFamilyData(a.family).heatCoef} × ${a.sheetMm.toFixed(2)}^1.6 = ${a.heatSec} s (coefficient engineering-typical, not sourced)` })),
     fromAdvice('thermoforming.coolTimeSec', 'tf-cool', 'coolTimeSec', a => ({
       value: a.coolSec, source: 'advisor', confidence: 0.75,
-      basis: `${a.family} on a water-cooled tool — contact cooling goes as gauge²` })),
+      basis: `${a.family} on a water-cooled tool — contact cooling goes as gauge²: `
+        + `${thermoformFamilyData(a.family).coolCoef} × ${a.sheetMm.toFixed(2)}² × ${TF_TOOL_COOL_MULT.water} (water-cooled) = ${a.coolSec} s `
+        + '(coefficients engineering-typical, not sourced)' })),
     fromAdvice('thermoforming.toolCooling', 'tf-tool-cool', 'toolCooling', () => ({
       value: 'water', source: 'rule', confidence: 0.7, basis: 'water-cooled production tool, as the cool time assumes' })),
     // The stroke is the time to move the air: higher pressure forms faster
     // but takes longer to charge.
     fromAdvice('thermoforming.formTimeSec', 'tf-form', 'formTimeSec', a => ({
-      value: a.formSec, source: 'rule', confidence: 0.55, basis: `${a.method} forming at ${formingPressureBar(a.method)} bar` })),
+      value: a.formSec, source: 'rule', confidence: 0.55,
+      basis: `${a.method} forming at ${formingPressureBar(a.method)} bar: ${a.formSec} s stroke (engineering-typical, not sourced)` })),
     fromAdvice('thermoforming.indexTimeSec', 'tf-index', 'indexTimeSec', a => ({
-      value: a.loadSec, source: 'rule', confidence: 0.55, basis: `load the sheet and unload the forming — ${a.cycleBasis}` })),
+      value: a.loadSec, source: 'rule', confidence: 0.55,
+      basis: `load the sheet and unload the forming — ${a.cycleBasis} (load / unload${TF_MACHINES[a.machineId].rotary ? ` and the ${TF_ROTATE_SEC} s table index` : ''} engineering-typical, not sourced)` })),
     fromAdvice('thermoforming.rotaryIndex', 'tf-rotary', 'rotaryIndex', a => ({
       value: TF_MACHINES[a.machineId].rotary, source: 'rule', confidence: 0.6,
       basis: TF_MACHINES[a.machineId].rotary ? 'oven at its own station — the slowest station paces the machine' : 'single station — heat, form, cool and load in series' })),
@@ -326,14 +346,34 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
           + (a.mouldMaterial === 'epoxy' ? 'epoxy is enough below 2,000/yr'
             : a.mouldMaterial === 'cnc-al' ? 'machined aluminium at high volume'
             : 'cast aluminium — the production workhorse') })),
-    fromAdvice('thermoforming.toolCost', 'tf-tool-cost', 'toolCostGBP', a => {
+    fromAdvice('thermoforming.toolCost', 'tf-tool-cost', 'toolCostGBP', (a, ctx) => {
       const est = estimateThermoformToolCost({
         projectedAreaCm2: a.areaCm2, mouldMaterial: a.mouldMaterial,
         method: a.method, complexity: a.complexity, cavities: a.perSheet, trim: a.routerTrim ? 'cnc-router' : 'steel-rule',
       });
-      return { value: est.total, source: 'advisor', confidence: 0.65,
-        basis: `${a.perSheet}-up ${a.mouldMaterial} ${a.method} tool over ${a.areaCm2.toFixed(0)} cm², ${a.complexity} form: `
-          + `£${est.mould} mould + £${est.vacuumHoles} vacuum holes; ${est.lifeCycles.toLocaleString('en-GB')} cycle life` };
+      // The life was printed but never applied: a tool that wears out inside the
+      // programme was bought once. Sets over the amortised parts, fractional (a tool
+      // wears into the next year's parts) — as the blow and roto moulds (arith audit).
+      const cycles = tfAmortisationParts(ctx) / a.perSheet;
+      const sets = Math.max(1, cycles / est.lifeCycles);
+      const r = MOULD_RATE[a.mouldMaterial];
+      const cx = a.complexity === 'complex' ? 1.6 : a.complexity === 'simple' ? 0.7 : 1.0;
+      const methodMult = a.method === 'pressure' ? 1.6 : a.method === 'twin_sheet' ? 2.2 : 1.0;
+      const cavMult = 1 + (a.perSheet - 1) * 0.7;
+      const value = Math.round(est.total * sets);
+      return { value, source: 'advisor', confidence: 0.65,
+        basis: `${a.perSheet}-up ${a.mouldMaterial} ${a.method} tool over ${a.areaCm2.toFixed(1)} cm², ${a.complexity} form: `
+          + `(£${r.base.toLocaleString('en-GB')} + ${a.areaCm2.toFixed(1)} cm² × £${r.perCm2}/cm²) × ${cx} ${a.complexity}`
+          + (methodMult !== 1 ? ` × ${methodMult} ${a.method}` : '')
+          + (a.perSheet > 1 ? ` × ${cavMult.toFixed(1)} for ${a.perSheet} up (each further cavity +70%)` : '')
+          + ` = £${est.mould.toLocaleString('en-GB')} mould`
+          + (est.vacuumHoles > 0 ? ` + ${a.areaCm2.toFixed(1)} cm² × £0.25 × ${a.perSheet} = £${est.vacuumHoles.toLocaleString('en-GB')} vacuum holes` : '')
+          + (est.trim > 0 ? ` + £${est.trim.toLocaleString('en-GB')} trim tool` : '')
+          + (Math.abs(activeToolroomFactor() - 1) > 1e-9 ? ` (each × toolroom factor ${activeToolroomFactor().toFixed(3)})` : '')
+          + ` = £${est.total.toLocaleString('en-GB')}; ${est.lifeCycles.toLocaleString('en-GB')} cycle life against `
+          + `${Math.round(cycles).toLocaleString('en-GB')} cycles amortised`
+          + (sets > 1 ? ` = ${sets.toFixed(2)} tool sets → £${value.toLocaleString('en-GB')}` : ' — one tool lasts')
+          + ' (build rates and life engineering-typical, not sourced)' };
     }),
     // Display: the module derives the specific energy itself from family and method.
     fromAdvice('thermoforming.energyKwhPerKg', undefined, 'energyKwhPerKg', a => ({
@@ -345,13 +385,13 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
     fromAdvice('thermoforming.labourId', 'tf-lab', 'labourId', () => ({
       value: 'lab-uk-thermoform', source: 'library', confidence: 0.8, basis: 'thermoforming operator' })),
     fromAdvice('thermoforming.manning', 'tf-manning', 'manning', () => ({
-      value: 1, source: 'rule', confidence: 0.6, basis: 'one operator loads the former and stacks the parts' })),
+      value: 1, source: 'rule', confidence: 0.6, basis: 'one operator loads the former and stacks the parts — engineering-typical crew, not sourced' })),
     fromAdvice('thermoforming.oee', 'tf-oee', 'oee', () => ({
       value: 0.80, source: 'rule', confidence: 0.6, basis: 'shop OEE, as every moulding route' })),
     fromAdvice('thermoforming.labourEfficiency', 'tf-lab-eff', 'labourEfficiency', () => ({
       value: 0.92, source: 'rule', confidence: 0.6, basis: 'shop labour efficiency, as every route' })),
     fromAdvice('thermoforming.rejectRatePct', 'tf-reject', 'rejectRatePct', () => ({
-      value: 3, source: 'rule', confidence: 0.55, basis: 'webbing, thin corners, sag marks: 3%' })),
+      value: TF_REJECT_PCT, source: 'rule', confidence: 0.55, basis: `webbing, thin corners, sag marks: ${TF_REJECT_PCT}% — engineering-typical, not sourced` })),
     // Advisory, not a cost input: it tells the engineer whether the part can
     // be formed at all before anyone argues about the price.
     fromAdvice('thermoforming.formability', undefined, 'formability', (a, ctx) => {

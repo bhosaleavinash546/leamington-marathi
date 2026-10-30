@@ -146,14 +146,20 @@ export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): Commodit
     inputs.deflashCycleTimeSec !== undefined &&
     inputs.deflashCycleTimeSec > 0
   ) {
-    const deflashCycleTimeHr = inputs.deflashCycleTimeSec / 3600;
+    // The scrapped parts are trimmed too (leak / wall checks come after the trim), so the
+    // station's time carries the same reject uplift as the blow. An IN-LINE station (no crew
+    // of its own, deflashManning 0) is chained to the blow machine: it stops when the line
+    // stops, so it runs at the line's OEE — it was charged at OEE 1 and the bare takt, 22%
+    // below the hours it is tied up (arith audit, Oct 2026). A separate manned station keeps 1.
+    const inLine = inputs.deflashManning === 0;
+    const deflashCycleTimeHr = inputs.deflashCycleTimeSec / 3600 * rejectUplift;
     operations.push({
       operationName: 'Deflashing',
       machineId: inputs.deflashMachineId,
       labourId: inputs.deflashLabourId,
       cycleTimeHr: deflashCycleTimeHr,
       partsPerCycle: 1,
-      oee: 1.0,
+      oee: inLine ? inputs.oee : 1.0,
       // A crew of 0 (tended by the blow crew, counted there) is no labour time
       // on this op rather than a zero crew, which the validator rejects.
       manning: inputs.deflashManning && inputs.deflashManning > 0 ? inputs.deflashManning : 1,
@@ -166,8 +172,9 @@ export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): Commodit
   // mouldLife is in cycles; one cycle produces `cavities` parts. Fractional
   // above one mould: the mould wears into the next year's parts, it is not
   // bought twice inside the amortisation (as forging die sets).
+  // Wear counted on parts moulded (the scrapped ones too), as the cycle time is.
   const numMoulds = inputs.mouldLife > 0
-    ? Math.max(1, inputs.amortizationVolume / (inputs.mouldLife * inputs.cavities))
+    ? Math.max(1, inputs.amortizationVolume * rejectUplift / (inputs.mouldLife * inputs.cavities))
     : 1;
 
   // Mould cost: manual figure, else estimate parametrically from process/cavities/size.

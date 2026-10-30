@@ -15,7 +15,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { runCostInputRules } from '../src/engine/cost-input-rules/engine.js';
 import {
-  MACHINING_RULES, solidCut, stockFacts, turnedFacts, routingFor, machiningOperationPlan,
+  MACHINING_RULES, solidCut, stockFacts, turnedFacts, routingFor, machiningOperationPlan, cuttingMinutesOf,
 } from '../src/engine/cost-input-rules/commodities/machining.js';
 import { CAST_AND_MACHINE_RULES } from '../src/engine/cost-input-rules/commodities/cast-and-machine.js';
 import { buildDeterministicAnalysis } from '../src/engine/cost-input-rules/deterministic.js';
@@ -134,9 +134,9 @@ describe('6–8. handling, crew and change-over are charged as the routing was r
     const ops = machiningOperationPlan(c, 'aluminium');
     const routing = routingFor(c, solidCut(c, 'aluminium')!);
     expect(routing.chosen.label).toBe('volume-cell');
-    const load = ops.find(o => o.name.startsWith('Load / unload on the pallet'))!;
-    expect(load.benchOperation).toBe(true);
-    expect(load.cycleTimeHr * 60).toBeCloseTo(routing.chosen.setups * handlingMinPerFixturing(1.9), 2);
+    // the load / unload happens during the cut: the operator's 0.5 share of it already pays for it (arithmetic audit M4)
+    expect(routing.chosen.setups * handlingMinPerFixturing(1.9)).toBeLessThan(0.5 * cuttingMinutesOf(ops));
+    expect(ops.some(o => o.name.startsWith('Load / unload on the pallet'))).toBe(false);
     const pallet = ops.find(o => o.name.startsWith('Pallet change'))!;
     expect(pallet.cycleTimeHr * 3600).toBeCloseTo(routing.chosen.setups * 10, 0);   // hours are kept to 4 dp
   });

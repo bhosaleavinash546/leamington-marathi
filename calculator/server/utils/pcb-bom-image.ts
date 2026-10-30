@@ -81,6 +81,12 @@ export function cleanBomImageRows(rows: RawRow[]): { lines: (ParsedBOMLine & { f
       const was = s(r.qty) || 'none';
       qty = refs.length > 0 ? refs.length : Math.max(1, Math.round(Number.isFinite(qty) && qty > 0 ? qty : 1));
       qtyFixed.push(`${refDes || partNumber || description} (${was} → ${qty})`);
+    } else if (refs.length > 1 && qty !== refs.length) {
+      // The row names its designators and the read quantity disagrees with them: one of the two was misread, and the
+      // counted designators are the one the CSV path already trusts (pcb-bom-parser.ts: one part per designator). A
+      // model-read "100" against C1–C10 used to price 100 parts (AI-number leak audit, Oct 2026).
+      qtyFixed.push(`${refDes} (read ${qty}, ${refs.length} designators → ${refs.length})`);
+      qty = refs.length;
     }
     lines.push({ refDes, partNumber, description, value, pkg: s(r.pkg), qty, manufacturer: s(r.manufacturer) || undefined, fromImage: true });
   }

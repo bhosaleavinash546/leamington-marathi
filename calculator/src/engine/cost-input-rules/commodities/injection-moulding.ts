@@ -24,14 +24,15 @@
  *    can close.
  */
 import {
-  estimateClampingTonnage, pickIMMPressId, steelClassFor,
+  estimateClampingTonnage, steelClassFor,
   thermodynamicCoolFactor, dryCycleSeconds, injectionRateCm3PerSec, TAKE_OUT_S,
   mouldShortSideMm, IMM_PRESSES, SHOT_USE_MAX,
   type MouldSteelClass,
 } from '../../modules/injection-moulding.js';
 import { optimiseCavitation, type CavitationChoice } from '../../cavitation-optimiser.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
-import { resinFacts, type ResinFacts } from '../derive/resin.js';
+import { resinFacts, cavityPressureBasis, type ResinFacts } from '../derive/resin.js';
+import { FORM_EFFICIENCY_DEFAULTS } from '../to-cost-params.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
 import { projectedAreaCm2, projectedAreaBasis, governingWallMm } from '../derive/envelope.js';
 import { standardBatchSize } from '../../routing-optimiser.js';
@@ -45,6 +46,15 @@ const PROGRAMME_YEARS = 5;
 /** Parts the tooling is amortised over on the costing: annual × the TYPED programme years (one year when blank). */
 export const amortisationParts = (ctx: RuleContext): number => Math.max(1, ctx.annualVolume * (ctx.programmeYears && ctx.programmeYears > 0 ? ctx.programmeYears : 1));
 const programmeYearsOf = (ctx: RuleContext): number => (ctx.programmeYears && ctx.programmeYears > 0 ? ctx.programmeYears : PROGRAMME_YEARS);
+
+/** Mould maintenance a year, as a share of the tool (engineering-typical 2–5%). */
+export const MOULD_MAINTENANCE_PER_YEAR = 0.03;
+/** Years the costing amortises the tool over — and maintains it for: the typed programme life, else one (to-cost-params
+ *  `maintenanceYears` = amortisation ÷ annual). The basis used to print "5 years on a 5-year programme" whatever was typed. */
+export const maintenanceYearsOf = (ctx: RuleContext): number =>
+  Math.max(1, amortisationParts(ctx) / Math.max(1, ctx.annualVolume));
+/** OEE and labour efficiency the costing charges a moulding at (the form's defaults; to-cost-params). */
+const IM_EFFICIENCY = FORM_EFFICIENCY_DEFAULTS.injection_moulding;
 
 /**
  * Projected area of one cavity, cm² — the two largest bounding-box dimensions.
@@ -96,8 +106,13 @@ export function cavitationChoiceFor(ctx: RuleContext, resin: ResinFacts): Cavita
     runnerAreaFactor: runner.system === 'cold' ? COLD_RUNNER_AREA_FACTOR : 1,
     shotCm3For: (n) => shotCm3(ctx, resin, n),
     mouldShortSideFor: (n) => mouldShortSideFor(ctx, n) ?? 0,
-    manning: mouldManning(pickIMMPressId(estimateClampingTonnage({
-      projectedAreaCm2: areaCm2, cavityPressureMPa: resin.cavityPressureMPa ?? 50 }))).n,
+    // the costing's own conventions, so the £/part the basis prints for the chosen row IS the costing's moulding
+    // machine + labour + tooling (arithmetic audit, Oct 2026: it ranked at OEE 0.80 / efficiency 0.92, the 1-up press's
+    // crew for every n, and the mould without the maintenance the costing adds)
+    oee: IM_EFFICIENCY.oee,
+    labourEfficiency: IM_EFFICIENCY.labourEfficiency,
+    manningFor: (pressId) => mouldManning(pressId).n,
+    toolingFactor: 1 + MOULD_MAINTENANCE_PER_YEAR * maintenanceYearsOf(ctx),
     rejectRate: MOULDING_REJECT,
     // Depth is NOT passed: the build-up's depth law was calibrated with its own
     // footprint-derived depth against the one quoted tool (the bumper, £420k), and
@@ -137,7 +152,7 @@ export function mouldWall(ctx: RuleContext): { mm: number; basis: string } | nul
   return gw;
 }
 
-/** A cold runner's own projected area adds to the clamp force: ~10% (engineering-typical). */
+/** A cold runner's own projected area adds to the clamp force: ~10% (engineering-typical, not sourced). */
 export const COLD_RUNNER_AREA_FACTOR = 1.1;
 
 /** The mould's short side for n cavities, from the part's footprint across the draw. */
@@ -162,7 +177,8 @@ export function purgeKgPerChange(pressId: string): number {
   return t <= 200 ? 2 : t <= 800 ? 5 : 10;
 }
 /** Resins that must be dried before moulding, and the dryer energy, kWh per kg processed. */
-const HYGROSCOPIC = /pa6|pa66|pa12|nylon|ppa|\bpc\b|pc-|lexan|pbt|\bpet|abs|asa|san|pmma|pei|peek|tpu/;
+// PSU / PPSU / PLA added (arithmetic audit, Oct 2026): every maker's datasheet dries them before moulding.
+const HYGROSCOPIC = /pa6|pa66|pa12|nylon|ppa|\bpc\b|pc-|lexan|pbt|\bpet|abs|asa|san|pmma|pei|peek|tpu|\bpsu|ppsu|\bpla\b/;
 export const DRYING_KWH_PER_KG = 0.15;
 
 /** Part depth along the draw, cm — the cavity block depth in the tool build-up. */
@@ -233,14 +249,17 @@ export function runnerChoice(ctx: RuleContext, resin: ResinFacts, areaCm2: numbe
   const drops = Math.max(1, Math.ceil(areaCm2 / 1500));
   if (kg >= 0.25) {
     return { system: 'hot', dropsPerCavity: drops,
-      basis: `${(kg * 1000).toFixed(0)} g part — hot runner, ${drops} drop(s) a cavity (one per ~1,500 cm² of ${areaCm2.toFixed(0)} cm²)` };
+      basis: `${(kg * 1000).toFixed(0)} g part, at or above 250 g — hot runner, ${drops} drop(s) a cavity (one per ~1,500 cm² of `
+        + `${areaCm2.toFixed(0)} cm², rounded up); the 250 g and 1,500 cm² thresholds are engineering-typical, not sourced` };
   }
   if (ctx.annualVolume >= 1_000_000) {
     return { system: 'hot', dropsPerCavity: 1,
-      basis: `${ctx.annualVolume.toLocaleString('en-GB')}/yr — hot runner: the runner's material and cooling time outweigh the manifold at this volume` };
+      basis: `${ctx.annualVolume.toLocaleString('en-GB')}/yr, at or above 1,000,000/yr — hot runner: the runner's material and cooling `
+        + 'time outweigh the manifold at this volume (threshold engineering-typical, not sourced)' };
   }
   return { system: 'cold', dropsPerCavity: 0,
-    basis: `${(kg * 1000).toFixed(0)} g part at ${ctx.annualVolume.toLocaleString('en-GB')}/yr — cold runner and sprue` };
+    basis: `${(kg * 1000).toFixed(0)} g part (under 250 g) at ${ctx.annualVolume.toLocaleString('en-GB')}/yr (under 1,000,000/yr) — `
+      + 'cold runner and sprue (hot-runner thresholds engineering-typical, not sourced)' };
 }
 
 /**
@@ -269,7 +288,9 @@ export function sideActions(ctx: RuleContext): { n: number; basis: string } {
   const faces = ctx.geo.draftAnalysis?.undercutFaceCount ?? 0;
   if (faces === 0) return { n: 0, basis: 'no undercut faces — straight-pull tool' };
   const n = Math.min(6, Math.ceil(faces / 6));
-  return { n, basis: `${faces} undercut face(s) -> ${n} slide/lifter(s) at ~6 faces each` };
+  return { n, basis: `${faces} undercut face(s) ÷ ~6 faces a slide, rounded up → ${n} slide/lifter(s)`
+    + `${Math.ceil(faces / 6) > 6 ? ' (capped at 6)' : ''} — the kernel counts faces, not mechanisms; 6 faces a slide is `
+    + 'engineering-typical, not sourced' };
 }
 
 // steelClassFor now lives beside `mouldSteelClassFactor` in the module so the
@@ -424,8 +445,9 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        return decided('injectionMoulding.cavityPressureMPa', r.advice.resin.cavityPressureMPa!, 'library',
-          `peak cavity pressure for ${r.advice.resin.grade}`, 0.7);
+        return decided('injectionMoulding.cavityPressureMPa', r.advice.resin.cavityPressureMPa!, 'rule',
+          `peak cavity pressure for ${r.advice.resin.grade}: ${cavityPressureBasis(r.advice.resin.materialId ?? '')} `
+          + '(engineering-typical: easy-flow polyolefins pack at ~30–35 MPa, engineering and filled resins higher — not sourced)', 0.7);
       },
     },
     {
@@ -439,10 +461,12 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         return decided('injectionMoulding.machineId', r.advice.pressId, 'advisor',
           `${r.advice.areaCm2} cm² x ${r.advice.cavities} cavity`
           + `${runnerChoice(ctx, r.advice.resin, r.advice.areaCm2).system === 'cold' ? ` x ${COLD_RUNNER_AREA_FACTOR} (cold runner area)` : ''}`
-          + ` at ${r.advice.resin.cavityPressureMPa} MPa = ${r.advice.clampTonnes} t clamp (1.15 safety); `
+          + ` at ${r.advice.resin.cavityPressureMPa} MPa = ${r.advice.clampTonnes} t clamp (1.15 safety`
+          + `${runnerChoice(ctx, r.advice.resin, r.advice.areaCm2).system === 'cold' ? '; the runner\'s 10% is engineering-typical' : ''}); `
           + `the smallest press that also shoots ${shotCm3(ctx, r.advice.resin, r.advice.cavities).toFixed(0)} cm³ within `
           + `${SHOT_USE_MAX * 100}% of its barrel and takes a ${mouldShortSideFor(ctx, r.advice.cavities)?.toFixed(0) ?? '?'} mm mould `
-          + `between its tie bars (${IMM_PRESSES.find(p => p.id === r.advice.pressId)?.tieBarMm ?? '?'} mm)`, 0.8);
+          + `between its tie bars (${IMM_PRESSES.find(p => p.id === r.advice.pressId)?.tieBarMm ?? '?'} mm) — press barrel and tie-bar `
+          + 'figures engineering-typical from press datasheets, not the moulder\'s own presses', 0.8);
       },
     },
     {
@@ -459,15 +483,19 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         const thermo = thermodynamicCoolFactor(r.advice.resin.materialId ?? '');
         if (thermo) {
           const f = thermo.factorSPerMm2;
-          return decided('injectionMoulding.coolTimeFactorSPerMm2', f, 'library',
-            `transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)]: `
-            + `α_eff ${thermo.alphaEffMm2S} mm²/s, melt ${thermo.meltC}°C / mould ${thermo.mouldC}°C / eject ${thermo.ejectC}°C `
-            + `→ ${f} s/mm²; cool ≈ ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm`, 0.8);
+          // α_eff is not a measured property: it is back-calculated so the law returns the curated factor at these
+          // temperatures (thermodynamicCoolFactor). Say so — it read as a material constant (arithmetic audit, Oct 2026).
+          return decided('injectionMoulding.coolTimeFactorSPerMm2', f, 'rule',
+            `transient conduction t = wall²/(π²·α)·ln[(4/π)(Tm−Tw)/(Te−Tw)], melt ${thermo.meltC}°C, mould ${thermo.mouldC}°C, `
+            + `eject ${thermo.ejectC}°C, with α_eff ${thermo.alphaEffMm2S} mm²/s back-calculated so the law returns the curated `
+            + `${thermo.curatedFactorSPerMm2} s/mm² for ${r.advice.resin.grade} at these temperatures (curated factor and temperatures `
+            + `engineering-typical, not sourced) → ${f} s/mm²; cool ≈ ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm `
+            + `(${f} × ${wall.toFixed(1)} × ${wall.toFixed(1)})`, 0.8);
         }
         const f = r.advice.resin.coolFactorSPerMm2!;
-        return decided('injectionMoulding.coolTimeFactorSPerMm2', f, 'library',
-          `${r.advice.resin.grade}: curated ${f} s/mm² (no thermal reference for this resin); `
-          + `cool = ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm`, 0.8);
+        return decided('injectionMoulding.coolTimeFactorSPerMm2', f, 'rule',
+          `${r.advice.resin.grade}: curated ${f} s/mm² (engineering-typical, not sourced; no thermal reference for this resin); `
+          + `cool ≈ ${(f * wall ** 2).toFixed(1)} s at ${wall.toFixed(1)} mm (${f} × ${wall.toFixed(1)} × ${wall.toFixed(1)})`, 0.8);
       },
     },
     {
@@ -496,8 +524,10 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const v = packSeconds(r.advice.wallMm);
+        const raw = Math.round(r.advice.wallMm * 0.8 * 10) / 10;
         return decided('injectionMoulding.packTimeSec', v, 'rule',
-          `hold to gate freeze, 0.8 s per mm of wall (${r.advice.wallMm.toFixed(1)} mm), floored at 2.0 s`, 0.55);
+          `hold to gate freeze: 0.8 s/mm × ${r.advice.wallMm.toFixed(1)} mm wall → ${raw.toFixed(1)} s`
+          + `${raw < 2 ? ', floored at 2.0 s' : ''} (0.8 s/mm and the 2 s floor engineering-typical, not sourced)`, 0.55);
       },
     },
     {
@@ -532,10 +562,13 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           return decided('injectionMoulding.runnerWeightKg', 0, 'rule',
             'hot runner — the melt stays in the manifold, no runner waste', 0.6);
         }
-        const v = coldRunnerKgPerShot(r.advice.resin.massKg!, r.advice.cavities);
+        const n = r.advice.cavities;
+        const v = coldRunnerKgPerShot(r.advice.resin.massKg!, n);
+        // it is 15% of the PARTS' mass (n × part), not of the shot (which includes the runner)
         return decided('injectionMoulding.runnerWeightKg', v, 'rule',
-          `cold runner and sprue per SHOT: 15% of the ${r.advice.cavities}-cavity shot, min 3 g a cavity `
-          + '(the cost model allocates it per cavity)', 0.55);
+          `cold runner and sprue per SHOT, ${(v * 1000).toFixed(1)} g: the larger of 15% of the ${n} part(s) `
+          + `(${(0.15 * r.advice.resin.massKg! * n * 1000).toFixed(1)} g) and 3 g a cavity (${(3 * n).toFixed(0)} g) — `
+          + 'engineering-typical, not sourced; the cost model allocates it per cavity', 0.55);
       },
     },
     {
@@ -561,7 +594,9 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         return decided('injectionMoulding.steelClass', r.advice.steel.cls, 'rule',
           `${ctx.annualVolume.toLocaleString('en-GB')}/yr over ${programmeYearsOf(ctx)} years`
           + `${ctx.programmeYears && ctx.programmeYears > 0 ? ' (programme life)' : ' (assumed — no programme life given)'} in `
-          + `${r.advice.cavities} cavity = ${r.advice.shots.toLocaleString('en-GB')} shots`, 0.7);
+          + `${r.advice.cavities} cavity = ${r.advice.shots.toLocaleString('en-GB')} shots; `
+          + `ladder: up to 25,000 shots prototype (7075 aluminium), up to 100,000 standard (P20), up to 1,000,000 production `
+          + `(pre-hardened), above that high-volume (H13 + coating) — engineering-typical, not sourced`, 0.7);
       },
     },
     {
@@ -572,8 +607,9 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        return decided('injectionMoulding.mouldLife', r.advice.steel.life, 'library',
-          `documented life for a ${r.advice.steel.cls} tool`, 0.7);
+        return decided('injectionMoulding.mouldLife', r.advice.steel.life, 'rule',
+          `life the steel-class ladder assigns a ${r.advice.steel.cls} tool, in shots (prototype 50,000, standard 500,000, `
+          + 'production 1,000,000, high-volume 5,000,000 — engineering-typical, not sourced)', 0.7);
       },
     },
     {
@@ -590,10 +626,15 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
         // pulled the one quoted tool — the bumper, £420k — about 30% low.
         const tool = r.advice.choice.chosen.mouldCostGBP;
         const rc = runnerChoice(ctx, r.advice.resin, r.advice.areaCm2);
+        // the build-up's own lines, so the reader can add them up (they sum to the value, rounding per line)
+        const lines = r.advice.choice.chosen.mouldDetail.lines.map(l =>
+          `${l.item}${l.hours ? ` ${l.hours} h` : l.kg ? ` ${l.kg} kg` : ''} £${l.cost.toLocaleString('en-GB')}`).join(' · ');
         return decided('injectionMoulding.mouldCostGBP', tool, 'advisor',
           `toolmaker build-up: ${r.advice.cavities}-cavity ${r.advice.steel.cls} tool, ${r.advice.areaCm2} cm²/cavity, `
           + `${r.advice.slides} slide(s), ${rc.system} runner`
-          + `${rc.system === 'hot' ? ` (${rc.dropsPerCavity * r.advice.cavities} drop(s))` : ''}`
+          + `${rc.system === 'hot' ? ` (${rc.dropsPerCavity * r.advice.cavities} drop(s))` : ''} — ${lines}; `
+          + 'toolroom rates, steel and bought-outs are UK benchmarks (Jun 2026, toolmaking.ts) and the hour laws are anchored to one '
+          + 'quotation (a £420k bumper mould): an engineering estimate at this size, replace with a toolmaker\'s quote'
           + (occt ? `; the kernel's face-count parametric (UK basis, not country-adjusted) said £${Math.round(occt).toLocaleString()} (not used)` : ''),
           0.65);
       },
@@ -672,8 +713,14 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       path: 'injectionMoulding.batchSize',
       fieldId: 'imm-batch',
       label: 'batchSize',
-      evaluate: (ctx) => decided('injectionMoulding.batchSize', standardBatchSize(ctx.annualVolume), 'rule',
-        `${ctx.annualVolume.toLocaleString('en-GB')}/yr ÷ 20 runs a year, 50–5,000 — the shop's standard batch`, 0.5),
+      evaluate: (ctx) => {
+        const b = standardBatchSize(ctx.annualVolume);
+        const raw = Math.round((ctx.annualVolume || 10_000) / 20);
+        return decided('injectionMoulding.batchSize', b, 'rule',
+          `${(ctx.annualVolume || 10_000).toLocaleString('en-GB')}/yr ÷ 20 runs a year = ${raw.toLocaleString('en-GB')}`
+          + `${raw !== b ? `, held at ${b.toLocaleString('en-GB')} (batch kept within 50–5,000)` : ''} — the shop's standard batch `
+          + '(20 runs a year engineering-typical, not sourced)', 0.5);
+      },
     },
     {
       id: 'injectionMoulding.purgeKg',
@@ -693,8 +740,13 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       path: 'injectionMoulding.mouldMaintenanceFraction',
       fieldId: 'imm-maint',
       label: 'mouldMaintenanceFraction',
-      evaluate: () => decided('injectionMoulding.mouldMaintenanceFraction', 0.03, 'rule',
-        'mould maintenance 3% of the tool a year (engineering-typical 2–5%), charged for every year of the amortisation (5 years on a 5-year programme)', 0.5),
+      evaluate: (ctx) => {
+        const y = maintenanceYearsOf(ctx);
+        const typed = !!(ctx.programmeYears && ctx.programmeYears > 0);
+        return decided('injectionMoulding.mouldMaintenanceFraction', MOULD_MAINTENANCE_PER_YEAR, 'rule',
+          `mould maintenance ${MOULD_MAINTENANCE_PER_YEAR * 100}% of the tool a year (engineering-typical 2–5%, not sourced), charged for `
+          + `each of the ${y} year(s) the tool is amortised over (${typed ? 'the programme life' : 'no programme life given — one year'})`, 0.5);
+      },
     },
     {
       id: 'injectionMoulding.dryingKwhPerKg',

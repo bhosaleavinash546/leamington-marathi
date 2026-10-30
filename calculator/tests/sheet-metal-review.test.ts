@@ -38,8 +38,10 @@ describe('1. one stamping plan: die type, press line, stations, die cost and pre
     expect(s.pressLine).toBe('coil-fed');
     expect(s.dieType).toBe('progressive');
   });
-  it('stations from forming content: 15 bends at ~3 a station + pierce + cut-off + restrike = 7 (was 12)', () => {
-    expect(sm('Seat_Locking_Bracket.stp').numOps).toBe(7);
+  it('stations from forming content: 15 bends at ~3 a station + pierce + cut-off + restrike = 8 (was 12)', () => {
+    // 8 since the arithmetic audit (30 Oct 2026): the 21 cut-outs on the unfolded blank now earn the pierce station
+    // the name always claimed (the feature table lists no round holes, so it was 7).
+    expect(sm('Seat_Locking_Bracket.stp').numOps).toBe(8);
   });
   it('a tandem line is priced as its dies, not as a progressive die', () => {
     const p = stampingPlan(ctx('BIW_Floor_Reinforcement.stp'))!;
@@ -120,7 +122,9 @@ describe('6. soft tooling for a short programme', () => {
     expect(dieClassFor(ctx('BIW_Floor_Reinforcement.stp', 2000)).soft).toBe(true);
     const lo = sm('BIW_Floor_Reinforcement.stp', 2000);
     const hi = sm('BIW_Floor_Reinforcement.stp', 50_000);
-    expect(Number(lo.dieCostGBP)).toBeCloseTo(Number(hi.dieCostGBP) * SOFT_TOOL.costFactor, -2);
+    // At 50,000/yr the blanks are cut on a press, whose blanking die (one more single-stage die, the same size as each
+    // of the five line dies) is in the set; at 2,000/yr they are laser-cut and there is none (arithmetic audit, 30 Oct 2026).
+    expect(Number(lo.dieCostGBP)).toBeCloseTo(Number(hi.dieCostGBP) * (5 / 6) * SOFT_TOOL.costFactor, -2);
     expect(lo.dieLife).toBe(SOFT_TOOL.life);
   });
 });

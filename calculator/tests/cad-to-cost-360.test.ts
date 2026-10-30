@@ -121,8 +121,13 @@ describe('live-run findings (ECU cover)', () => {
     expect(panel).not.toMatch(/if \(!open\.length && !advisory\.length\) return '';/);
   });
 
-  it('the CNC feature build-up is shown only on a machined route', () => {
-    expect(fnBody('buildFeatureCostCard')).toMatch(/if \(route && route !== 'machining' && route !== 'cast_and_machine'\) return '';/);
+  // Arithmetic audit (30 Oct 2026, machining H1): the card printed its own heuristic £ and minutes (Part1 £45.60 ·
+  // 247 min beside a costing of £21.70 · 39.6 min) — it is gone on every route.
+  it('the heuristic feature build-up card prints nothing on any route', () => {
+    const body = fnBody('buildFeatureCostCard');
+    expect(body).toContain("return '';");
+    expect(body).not.toContain('_currFmt');
+    expect(body).not.toContain('computeFeatureCosting');
   });
 });
 

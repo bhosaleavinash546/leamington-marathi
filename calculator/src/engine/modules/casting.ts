@@ -147,8 +147,14 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   };
   // Melt energy on every kg poured — kWh for the core to price at the costing
   // book's tariff (module-energy.ts); £ only when a tariff was typed.
-  const meltEnergy = moduleEnergy(pourKg * (inputs.melt?.energyKwhPerKg ?? meltDefault?.energyKwhPerKg ?? 0),
-    'electricity', inputs.melt?.energyPricePerKwh, 'melt energy on every kg poured');
+  // The melt shop's figures are printed where the reader sees them (the energy line's basis in the trace and both
+  // reports): kWh/kg and loss were constants nobody could read (arithmetic audit, Oct 2026).
+  const kwhPerKg = inputs.melt?.energyKwhPerKg ?? meltDefault?.energyKwhPerKg ?? 0;
+  const meltBasis = `melt energy on every kg poured: ${pourKg.toFixed(3)} kg poured a good casting `
+    + `(${inputs.partWeightKg.toFixed(3)} kg ÷ (1 − ${inputs.rejectRate} reject) ÷ ${inputs.castingYield} yield) × ${kwhPerKg} kWh/kg`
+    + (lossFraction < 1 ? `; runners, risers and rejects remelted, ${(lossFraction * 100).toFixed(0)}% of them lost (${metalLostKg.toFixed(3)} kg bought and lost)` : '')
+    + (meltDefault && inputs.melt?.energyKwhPerKg == null ? ` — ${meltDefault.basis}` : '');
+  const meltEnergy = moduleEnergy(pourKg * kwhPerKg, 'electricity', inputs.melt?.energyPricePerKwh, meltBasis);
   const meltEnergyCostPerPart = meltEnergy.gbp;
 
   const operations: OperationInput[] = [];
@@ -173,8 +179,9 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
       });
       // Die replacement: number of die sets = ceil(volume / (dieLife × cavities))
       const hpdcPartsPerDieSet = inputs.hpdc.dieLife * inputs.hpdc.cavities;
+      // Shots wear the die whether the casting is good or rejected: sets = castings POURED ÷ life (arithmetic audit).
       const hpdcNumDieSets = hpdcPartsPerDieSet > 0
-        ? Math.ceil(inputs.amortizationVolume / hpdcPartsPerDieSet)
+        ? Math.ceil(inputs.amortizationVolume * rejectUplift / hpdcPartsPerDieSet - 1e-9)
         : 1;
       tooling = {
         items: [{ label: `HPDC die sets: ${hpdcNumDieSets} (life ${inputs.hpdc.dieLife.toLocaleString('en-GB')} shots × ${inputs.hpdc.cavities} cavit${inputs.hpdc.cavities > 1 ? 'ies' : 'y'} each)`, gbp: inputs.hpdc.dieCost * hpdcNumDieSets }],
@@ -200,13 +207,14 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
         labourEfficiency: inputs.labourEfficiency,
       });
       // Pattern replacement based on pattern life
+      // A pattern wears per mould rammed, rejected castings included: sets = castings POURED ÷ life (arithmetic audit).
       const sandNumPatterns = inputs.sand.patternLife > 0
-        ? Math.ceil(inputs.amortizationVolume / inputs.sand.patternLife)
+        ? Math.ceil(inputs.amortizationVolume * rejectUplift / inputs.sand.patternLife - 1e-9)
         : 1;
       tooling = {
         items: [{ label: `Pattern equipment: ${sandNumPatterns} set(s)`
           // the life is in CASTINGS (sets = parts ÷ life): "16,000 moulds" was 8,000 moulds × 2 impressions (Poland review)
-          + (inputs.sand.patternLife > 0 ? ` (life ${inputs.sand.patternLife.toLocaleString('en-GB')} castings each)` : ''), gbp: inputs.sand.patternCost * sandNumPatterns }],
+          + (inputs.sand.patternLife > 0 ? ` (life ${inputs.sand.patternLife.toLocaleString('en-GB')} castings each; ${Math.round(inputs.amortizationVolume * rejectUplift).toLocaleString('en-GB')} poured incl. ${(inputs.rejectRate * 100).toFixed(0)}% rejects)` : ''), gbp: inputs.sand.patternCost * sandNumPatterns }],
         totalToolingCost: inputs.sand.patternCost * sandNumPatterns,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
@@ -229,8 +237,9 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
         labourEfficiency: inputs.labourEfficiency,
       });
       // Mould replacement based on mould life
+      // Castings POURED wear the mould, rejects included (arithmetic audit).
       const gravNumMoulds = inputs.gravity.mouldLife > 0
-        ? Math.ceil(inputs.amortizationVolume / inputs.gravity.mouldLife)
+        ? Math.ceil(inputs.amortizationVolume * rejectUplift / inputs.gravity.mouldLife - 1e-9)
         : 1;
       tooling = {
         items: [{ label: `Permanent moulds: ${gravNumMoulds}`
@@ -285,6 +294,23 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   }
   item('melt energy (typed tariff)', meltEnergyCostPerPart);
 
+  // The melt shop's labour, on every kg poured — skipped when the melt shop is
+  // switched off (a bought-in liquid-metal price carries it). Listed before
+  // fettling: melt → mould / pour → knock-out → fettle (it followed fettling;
+  // arithmetic audit, Oct 2026). Its figures are in its name — the only text
+  // an operation carries to the trace and the reports.
+  if (meltDefault && lossFraction < 1 && pourKg > 0) {
+    const hr = pourKg / 1000 * MELT_SHOP.labourHrPerTonnePoured;
+    operations.push({
+      operationName: `Melt shop (charge, melt, treat, ladle) — ${pourKg.toFixed(2)} kg poured × ${MELT_SHOP.labourHrPerTonnePoured} operator-h/t (engineering-typical)`,
+      machineId: operations[0].machineId,
+      labourId: inputs.melt?.labourId ?? MELT_SHOP.labourId,
+      cycleTimeHr: 0, partsPerCycle: 1, oee: 1, manning: 1,
+      labourTimeHr: hr, labourEfficiency: inputs.labourEfficiency,
+      benchOperation: true,
+    });
+  }
+
   // Post-cast: fettling is an operator at a grinder, so it is labour; heat
   // treatment, blast, impregnation and NDT are priced per kg / per part as the
   // forging module prices its heat treat and NDT.
@@ -303,21 +329,8 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
       benchOperation: true,
     });
   }
-  // The melt shop's labour, on every kg poured — skipped when the melt shop is
-  // switched off (a bought-in liquid-metal price carries it).
-  if (meltDefault && lossFraction < 1 && pourKg > 0) {
-    const hr = pourKg / 1000 * MELT_SHOP.labourHrPerTonnePoured;
-    operations.push({
-      operationName: 'Melt shop (charge, melt, treat, ladle)',
-      machineId: operations[0].machineId,
-      labourId: inputs.melt?.labourId ?? MELT_SHOP.labourId,
-      cycleTimeHr: 0, partsPerCycle: 1, oee: 1, manning: 1,
-      labourTimeHr: hr, labourEfficiency: inputs.labourEfficiency,
-      benchOperation: true,
-    });
-  }
   if (inputs.subtype === 'sand' && lossFraction < 1) {
-    item('green-sand additions', pourKg * MELT_SHOP.greenSandAdditionsPerKgPoured);
+    item(`green-sand additions (${pourKg.toFixed(2)} kg poured × £${MELT_SHOP.greenSandAdditionsPerKgPoured}/kg, engineering-typical)`, pourKg * MELT_SHOP.greenSandAdditionsPerKgPoured);
   }
   if (inputs.leakTestSec && inputs.leakTestSec > 0) {
     const hr = inputs.leakTestSec / 3600;

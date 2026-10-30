@@ -26,7 +26,7 @@
  * this route is asked to move there rather than priced on a polymer line.
  */
 import {
-  extrusionFamilyOf, estimateExtrusionLineRate, estimateExtrusionDieCost, estimateExtrusionSpecificEnergy,
+  extrusionFamilyOf, estimateExtrusionLineRate, estimateExtrusionDieCost, estimateExtrusionSpecificEnergy, extrusionDieBasis, EXTRUSION_RATE_COEFS,
   type ExtrusionProcess, type ExtrusionCooling, type DieComplexity,
 } from '../../modules/extrusion-advisor.js';
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
@@ -165,16 +165,20 @@ function advise(ctx: RuleContext): { advice: ExtAdvice } | { blocked: RuleOutcom
     wallThicknessMm: wallMm, profileKgPerM: kgPerM, cooling: line.cooling,
   });
 
-  // Start-up purge per run — a quarter-hour of the screw's rated output while
-  // the section comes to size — spread over the run. Runs are monthly, but
-  // never shorter than a shift: a small tube's month is under two hours.
+  // Start-up purge per run — a quarter-hour of the LINE's output while the
+  // section comes to size — spread over the run. The size-up runs through the
+  // same sizing tank and haul-off as the product, so it is made at the line rate
+  // (the lesser of screw and cooling), not the screw's: a cooling-limited pipe
+  // was charged 108 kg of purge at a 432 kg/h screw while its line makes 95 kg/h
+  // (arithmetic audit X3). Runs are monthly, but never shorter than a shift.
   const annualKg = ctx.annualVolume * partKg;
   const runs = Math.max(1, Math.min(MAX_RUNS_PER_YEAR, Math.floor(annualKg / rate.lineRateKgHr / MIN_RUN_HR)));
   const runKg = Math.max(1, annualKg / runs);
-  const purgeKg = rate.outputLimitedKgHr * STARTUP_HR;
+  const purgeKg = rate.lineRateKgHr * STARTUP_HR;
   const startupScrap = Math.round(Math.min(0.3, purgeKg / runKg) * 10_000) / 10_000;
-  const startupBasis = `${fmt(purgeKg, 0)} kg purge and size-up (${STARTUP_HR} h at the screw's ${rate.outputLimitedKgHr} kg/h) `
-    + `÷ ${fmt(runKg, 0)} kg a run (${runs} run${runs === 1 ? '' : 's'} a year, each at least a shift)`;
+  const startupBasis = `${fmt(purgeKg, 0)} kg purge and size-up (${STARTUP_HR} h at the line's ${rate.lineRateKgHr} kg/h) `
+    + `÷ ${fmt(runKg, 0)} kg a run (${fmt(annualKg, 0)} kg a year in ${runs} run${runs === 1 ? '' : 's'}: monthly, each at least a ${MIN_RUN_HR} h shift) = `
+    + `${(startupScrap * 100).toFixed(2)}%; ${STARTUP_HR} h, the shift and monthly runs are engineering-typical, not sourced`;
 
   const dieSizeMm = Math.round(cross[0]);
   const die = estimateExtrusionDieCost({ process, sizeMm: dieSizeMm, layers: 1, complexity });
@@ -233,13 +237,13 @@ export const EXTRUSION_RULES: CommodityRuleSpec = {
     // 90 mm screw when none was set, the module to a 75 mm one).
     fromAdvice('extrusion.lineRateKgPerHr', 'ext-rate', 'lineRateKgPerHr', a => ({
       value: a.rate.lineRateKgHr, source: 'advisor', confidence: 0.65,
-      basis: `the lesser of the screw's ${a.rate.outputLimitedKgHr} kg/h and the cooling-limited `
-        + `${a.rate.coolingLimitedKgHr ?? '—'} kg/h (${a.rate.lineSpeedMPerMin ?? '—'} m/min at ${fmt(a.wallMm, 2)} mm wall) — `
-        + `limited by ${a.rate.limitedBy === 'cooling' ? 'cooling' : 'the screw'}` })),
+      basis: `the lesser of the screw's ${a.rate.outputLimitedKgHr} kg/h (${EXTRUSION_RATE_COEFS.outputCoef} × ${a.line.screwMm}² mm × ${EXTRUSION_RATE_COEFS.outputFactor[a.family]} for ${a.family}) `
+        + `and the cooling-limited ${a.rate.coolingLimitedKgHr ?? '—'} kg/h (${EXTRUSION_RATE_COEFS.coolSpeed[a.line.cooling]} ÷ ${fmt(a.wallMm, 2)} mm wall^1.4 = ${a.rate.lineSpeedMPerMin ?? '—'} m/min `
+        + `× 60 × ${a.kgPerM} kg/m) — limited by ${a.rate.limitedBy === 'cooling' ? 'cooling' : 'the screw'}; the coefficients are engineering-typical (75 mm PE ≈ 300 kg/h), not sourced` })),
     fromAdvice('extrusion.startupScrapFraction', 'ext-scrap', 'startupScrapFraction', a => ({
       value: a.startupScrap, source: 'rule', confidence: 0.55, basis: a.startupBasis })),
     fromAdvice('extrusion.steadyScrapFraction', 'ext-steady-scrap', 'steadyScrapFraction', () => ({
-      value: STEADY_SCRAP, source: 'rule', confidence: 0.55, basis: 'sampling, gauge drift and saw ends: 2%' })),
+      value: STEADY_SCRAP, source: 'rule', confidence: 0.55, basis: `sampling, gauge drift and saw ends: ${STEADY_SCRAP * 100}% — engineering-typical, not sourced` })),
     fromAdvice('extrusion.colourChangesPerDay', 'ext-colour-chg', 'colourChangesPerDay', () => ({
       value: 0, source: 'rule', confidence: 0.5, basis: 'the run is one colour — the change-over purge is the start-up scrap' })),
     fromAdvice('extrusion.dieChangesPerDay', 'ext-die-chg', 'dieChangesPerDay', () => ({
@@ -253,17 +257,18 @@ export const EXTRUSION_RULES: CommodityRuleSpec = {
     fromAdvice('extrusion.dieCostGBP', 'ext-die-cost', 'dieCostGBP', a => ({
       value: a.die.total, source: 'advisor', confidence: 0.6,
       basis: `${a.process} die £${a.die.die.toLocaleString('en-GB')} + calibration £${a.die.calibration.toLocaleString('en-GB')} `
-        + `at ${a.dieSizeMm} mm, ${a.complexity}` })),
+        + `at ${a.dieSizeMm} mm, ${a.complexity} (${extrusionDieBasis({ process: a.process, sizeMm: a.dieSizeMm, layers: 1, complexity: a.complexity })}) — `
+        + `parametric die-maker figures, engineering-typical, not sourced` })),
     // No tariff rule: the line's kWh go to the engine, which prices them at the
     // costing country's tariff (module-energy.ts). Copying the tariff into the
     // form fixed it at the country of the analysis.
     fromAdvice('extrusion.specificEnergyKwhPerKg', undefined, 'specificEnergyKwhPerKg', a => ({
       value: estimateExtrusionSpecificEnergy(a.family, 'single'), source: 'advisor', confidence: 0.7,
-      basis: `melt + drive + chilling for ${a.family} (the module derives it)` })),
+      basis: `${EXTRUSION_RATE_COEFS.meltKwhPerKg[a.family]} kWh/kg melt + drive for ${a.family} + ${EXTRUSION_RATE_COEFS.chillKwhPerKg} kWh/kg chilling — engineering-typical, not sourced (the module derives the same)` })),
     fromAdvice('extrusion.labourId', 'ext-lab', 'labourId', () => ({
       value: 'lab-uk-semiskilled', source: 'library', confidence: 0.7, basis: 'extrusion line operator' })),
     fromAdvice('extrusion.manning', 'ext-manning', 'manning', () => ({
-      value: 0.5, source: 'rule', confidence: 0.55, basis: 'one operator across two running lines (in-line saw and stacker)' })),
+      value: 0.5, source: 'rule', confidence: 0.55, basis: 'one operator across two running lines (in-line saw and stacker) — engineering-typical, not sourced' })),
     fromAdvice('extrusion.oee', 'ext-oee', 'oee', () => ({
       value: 0.80, source: 'rule', confidence: 0.6, basis: 'shop OEE, as every route' })),
     fromAdvice('extrusion.labourEfficiency', 'ext-lab-eff', 'labourEfficiency', () => ({

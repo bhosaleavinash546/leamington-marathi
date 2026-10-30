@@ -88,6 +88,10 @@ export function getCompositeInputSchema(): Record<string, string> {
   };
 }
 
+/** Share of each part's cure time the cure operator is charged (load, check, unload) — engineering-typical,
+ *  not sourced; the rules print it in the cure-time basis. */
+export const CURE_ATTENDANCE = 0.25;
+
 export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrivers {
   const rejectUplift = inputs.rejectRate && inputs.rejectRate > 0
     ? 1 / (1 - inputs.rejectRate)
@@ -96,7 +100,14 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
   // ── Material cost (fibre + resin, gross for waste) ────────────────────────
   const fibreMassNet = inputs.partWeightKg * inputs.fibreWeightFraction;
   const resinMassNet = inputs.partWeightKg * (1 - inputs.fibreWeightFraction);
-  const netMatCost = fibreMassNet * inputs.fibrePricePerKg + resinMassNet * inputs.resinPricePerKg;
+  // Prepreg is bought as fibre AND resin: its £/kg is a kg of prepreg, and the cured laminate is that prepreg. With
+  // no separate resin buy (resin £0) the whole laminate mass is bought at the prepreg price — it used to buy only the
+  // fibre's 65 %, while the line said "Prepreg (fibre + resin)" (arithmetic audit, Oct 2026).
+  const prepreg = inputs.process === 'prepreg_layup' && !(inputs.resinPricePerKg > 0);
+  const boughtNet = prepreg ? inputs.partWeightKg : fibreMassNet;
+  const netMatCost = prepreg
+    ? inputs.partWeightKg * inputs.fibrePricePerKg
+    : fibreMassNet * inputs.fibrePricePerKg + resinMassNet * inputs.resinPricePerKg;
   // Gross material purchased = net / (1 - waste) to account for offcuts/trim
   const grossMatCost = netMatCost / (1 - Math.min(inputs.wasteFraction, 0.60));
   const ndiCost = inputs.ndiCostPerPart ?? 0;
@@ -108,11 +119,13 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
   const grossFactor = rejectUplift / (1 - waste);
   const basisNote = `net ÷ (1 − waste ${(waste * 100).toFixed(0)} %)${rejectUplift > 1 ? ` × reject uplift ${rejectUplift.toFixed(3)}` : ''}`;
   const lines: MaterialLineItem[] = [
-    { ref: 'Fibre', description: inputs.resinPricePerKg > 0 ? 'Dry fibre fabric' : 'Prepreg (fibre + resin)',
-      qty: Math.round(fibreMassNet * grossFactor * 1e4) / 1e4, unitCost: inputs.fibrePricePerKg, pkg: 'kg bought',
-      note: `${fibreMassNet.toFixed(4)} kg net (${(inputs.fibreWeightFraction * 100).toFixed(0)} % fibre by weight); ${basisNote}` },
+    { ref: prepreg ? 'Prepreg' : 'Fibre', description: prepreg ? 'Prepreg (fibre + resin)' : 'Dry fibre fabric',
+      qty: Math.round(boughtNet * grossFactor * 1e4) / 1e4, unitCost: inputs.fibrePricePerKg, pkg: 'kg bought',
+      note: prepreg
+        ? `${boughtNet.toFixed(4)} kg net — the cured laminate, fibre + resin (${(inputs.fibreWeightFraction * 100).toFixed(0)} % fibre by weight); ${basisNote}`
+        : `${fibreMassNet.toFixed(4)} kg net (${(inputs.fibreWeightFraction * 100).toFixed(0)} % fibre by weight); ${basisNote}` },
   ];
-  if (inputs.resinPricePerKg > 0) {
+  if (!prepreg && inputs.resinPricePerKg > 0) {
     lines.push({ ref: 'Resin', description: 'Infusion / RTM resin', qty: Math.round(resinMassNet * grossFactor * 1e4) / 1e4,
       unitCost: inputs.resinPricePerKg, pkg: 'kg bought', note: `${resinMassNet.toFixed(4)} kg net; ${basisNote}` });
   }
@@ -156,7 +169,7 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
     partsPerCycle: 1,
     oee: inputs.oee,
     manning: 1,
-    labourTimeHr: cureCyclePerPart * 0.25 * rejectUplift,
+    labourTimeHr: cureCyclePerPart * CURE_ATTENDANCE * rejectUplift,
     labourEfficiency: inputs.labourEfficiency,
   });
 
@@ -184,10 +197,22 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
     ? Math.max(inService, inputs.amortizationVolume / inputs.toolingLife)
     : inService;
 
+  // What the total is: the set the volume needs in service, then the replacements as they wear out over the
+  // amortised parts. The total is NOT a one-off investment when tools wear out — the reports print the split.
+  const replacements = numTools - inService;
+  const each = `£${Math.round(inputs.toolingCost).toLocaleString('en-GB')}`;
+  const items = [
+    { label: `${inService} tool${inService === 1 ? '' : 's'} in service (the set the volume needs) × ${each}`, gbp: inputs.toolingCost * inService },
+    ...(replacements > 1e-9 ? [{ label: `${replacements.toLocaleString('en-GB', { maximumFractionDigits: 2 })} replacement tools as they wear out `
+      + `(${inputs.amortizationVolume.toLocaleString('en-GB')} parts ÷ ${inputs.toolingLife.toLocaleString('en-GB')} a tool `
+      + `= ${numTools.toLocaleString('en-GB', { maximumFractionDigits: 2 })} tools, less ${inService} in service) × ${each}`,
+      gbp: inputs.toolingCost * replacements }] : []),
+  ];
   const tooling: ToolingInput = {
     totalToolingCost: inputs.toolingCost * numTools,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    items,
   };
 
   return { rawMaterial, operations, tooling };

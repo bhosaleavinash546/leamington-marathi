@@ -9,7 +9,7 @@ import { executeCalculateCost, type CostToolInput } from '../services/cost-execu
 import { regionOf, rateBookForRegion, regionalShopDefaults } from '../services/rate-book.js';
 import type { RateLibrary } from '../../src/engine/types.js';
 import { REGIONAL_DATA } from '../../src/engine/regional-rates.js';
-import { groundToolInput, ungroundedRefusal, numbersIn, isGrounded } from '../utils/agent-grounding.js';
+import { groundToolInput, ungroundedRefusal, numbersIn, isGroundedFor, numbersUnder, labelModelFigures } from '../utils/agent-grounding.js';
 
 const router = Router();
 
@@ -97,6 +97,20 @@ function userSuppliedTexts(message: string, history: AgentRequest['history'], co
     ...(costResult ? [JSON.stringify(costResult)] : [])];
 }
 
+/**
+ * What the engine and the rate book put in front of the model this turn: the user-side messages (the RAG rate block,
+ * the shared costing, every calculate_cost result) and the country's library rates. Image data is left out — base64
+ * is full of digits and would "ground" any figure.
+ */
+export function engineSuppliedTexts(messages: Anthropic.MessageParam[], region: string | undefined): string[] {
+  const out = messages.filter(m => m.role === 'user').map(m => typeof m.content === 'string' ? m.content
+    : JSON.stringify((m.content as Array<{ type: string }>).filter(b => b.type !== 'image')));
+  const book = rateBookForRegion(regionOf(region));
+  out.push([...book.machines.map(m => m.computedRatePerHr), ...book.labour.map(l => l.fullyLoadedRatePerHr),
+    ...book.materials.map(m => m.pricePerKg)].join(' '));
+  return out;
+}
+
 // ─── Robust JSON extractor ───────────────────────────────────────────────────
 
 function extractJSON(text: string): Record<string, unknown> {
@@ -180,7 +194,7 @@ const ID_FIELDS = {
   forgeId:    VALID_MACHINE_IDS,
 };
 
-function validateAgentResponse(raw: Record<string, unknown>, userTexts: string[] = []): {
+export function validateAgentResponse(raw: Record<string, unknown>, userTexts: string[] = [], suppliedTexts: string[] = []): {
   response: Record<string, unknown>;
   idWarnings: string[];
 } {
@@ -195,13 +209,19 @@ function validateAgentResponse(raw: Record<string, unknown>, userTexts: string[]
   const parsed = AgentResponseSchema.safeParse(raw);
   if (!parsed.success) {
     console.warn('[agent] Response failed schema validation:', parsed.error.issues.map(i => i.message).join('; '));
-    return {
-      response: { chat: typeof raw.chat === 'string' ? raw.chat : 'I had trouble formatting my response. Please try again.', needsInput: null, action: null, confidence: 0.5 },
-      idWarnings: [],
-    };
+    const chat = typeof raw.chat === 'string'
+      ? labelModelFigures(raw.chat, [...userTexts, ...suppliedTexts]).text
+      : 'I had trouble formatting my response. Please try again.';
+    return { response: { chat, needsInput: null, action: null, confidence: 0.5 }, idWarnings: [] };
   }
 
   const response = parsed.data as Record<string, unknown>;
+
+  // Money and percentages in the reply that are not the user's, the costing's, a tool result's or the rate book's are
+  // labelled as the model's under the reply (agent-grounding.ts::labelModelFigures) — never shown as a tool figure.
+  const labelled = labelModelFigures(response.chat as string, [...userTexts, ...suppliedTexts]);
+  response.chat = labelled.text;
+  if (labelled.ungrounded.length) response.modelFigures = labelled.ungrounded;
 
   // Validate IDs in action.data against rate library
   const actionData = (response.action as { data?: Record<string, unknown> } | null | undefined)?.data;
@@ -216,10 +236,18 @@ function validateAgentResponse(raw: Record<string, unknown>, userTexts: string[]
     }
 
     // A number the user never gave does not reach the form (agent-grounding.ts): the field keeps the form's own value.
+    // Every number counts: one written as a string ("0.45") and one inside a list or object — the operation list's
+    // cycle times went into the machining form unchecked (AI-number leak audit, Oct 2026). A list or object with any
+    // ungrounded number is dropped whole: half an operation is not one.
     const given = numbersIn(userTexts);
     const dropped: string[] = [];
     for (const [field, val] of Object.entries(actionData)) {
-      if (typeof val === 'number' && !isGrounded(val, given)) { dropped.push(`${field} = ${val}`); delete actionData[field]; }
+      const bad = numbersUnder(val, field).filter(n => !isGroundedFor(n.path, n.value, given));
+      if (!bad.length) continue;
+      dropped.push(typeof val === 'object' && val !== null
+        ? `${field} (${bad.map(b => `${b.path} = ${b.value}`).join(', ')})`
+        : `${field} = ${String(val)}`);
+      delete actionData[field];
     }
     if (dropped.length) {
       response.chat = (response.chat as string)
@@ -1116,7 +1144,8 @@ router.post('/chat', async (req, res): Promise<void> => {
         // end_turn — extract the final text response
         const textBlock = apiResp.content.find(b => b.type === 'text') as Anthropic.TextBlock | undefined;
         const rawText = textBlock?.text ?? '{}';
-        const { response: validated } = validateAgentResponse(extractJSON(rawText), userSuppliedTexts(message, history, costResult));
+        const { response: validated } = validateAgentResponse(extractJSON(rawText), userSuppliedTexts(message, history, costResult),
+          engineSuppliedTexts(messages, region));
         finalResponse = validated;
         break;
       }
@@ -1210,12 +1239,13 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
         const textBlock = apiResp.content.find(b => b.type === 'text') as Anthropic.TextBlock | undefined;
         const rawText = textBlock?.text ?? '{}';
 
-        // Emit the final text as a single delta so clients see it
+        const { response: validated, idWarnings } = validateAgentResponse(extractJSON(rawText), userSuppliedTexts(message, history, costResult),
+          engineSuppliedTexts(messages, region));
+        // Emit the VALIDATED reply as the delta: the raw text went out first, before its unsupplied figures were
+        // labelled and its ungrounded form numbers dropped (AI-number leak audit, Oct 2026).
         if (rawText) {
-          res.write(`data: ${JSON.stringify({ type: 'delta', text: rawText })}\n\n`);
+          res.write(`data: ${JSON.stringify({ type: 'delta', text: String(validated.chat ?? '') })}\n\n`);
         }
-
-        const { response: validated, idWarnings } = validateAgentResponse(extractJSON(rawText), userSuppliedTexts(message, history, costResult));
         res.write(`data: ${JSON.stringify({ type: 'done', response: validated, idWarnings })}\n\n`);
         res.end();
         needsFinalStream = false;
@@ -1246,7 +1276,8 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
         }
       }
 
-      const { response: validated, idWarnings } = validateAgentResponse(extractJSON(fullText), userSuppliedTexts(message, history, costResult));
+      const { response: validated, idWarnings } = validateAgentResponse(extractJSON(fullText), userSuppliedTexts(message, history, costResult),
+        engineSuppliedTexts(messages, region));
       res.write(`data: ${JSON.stringify({ type: 'done', response: validated, idWarnings })}\n\n`);
       res.end();
     }

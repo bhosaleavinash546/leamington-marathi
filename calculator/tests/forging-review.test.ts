@@ -132,8 +132,9 @@ describe('8. secondary machining is a cell, priced alike on both paths (castings
     expect(ops[0].manning).toBe(0.5);
     // 50,000/yr: the twin-pallet cell (pilot rule pack) — the spindle pays a pallet change, the load / unload is masked
     expect(ops[1].operationName).toContain('Pallet change');
-    expect(ops[2].operationName).toContain('load / unload on the pallet while the spindle cuts');
-    expect(ops[2].benchOperation).toBe(true);
+    // Arithmetic audit M4: the load is paid inside the operator's half of the 12-minute cut — no extra labour step
+    expect(ops.some(o => /load \/ unload on the pallet/.test(o.operationName))).toBe(false);
+    expect(ops[2].operationName).toContain('change-over');
   });
 });
 
@@ -158,7 +159,9 @@ describe('10. the hub flange reconciles by hand', () => {
   // is no longer charged: £18.48 → £17.45.
   // Pilot rule pack (30 Oct 2026): a turned part — outside and faces on the lathe, holes on the drill, two chuckings +
   // one fixturing (was 10.5 min of face milling on a VMC in two fixturings): £17.45 → £17.40.
-  it('£17.40 at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(17.40);
+  // Arithmetic audit (30 Oct 2026): descale per kg of FORGING, not billet (the flash is trimmed first); the scrap
+  // uplift on heating, descale and NDT; the lathe chuckings are soft jaws, not £2,500 fixtures: £17.40 → £17.11.
+  it('£17.11 at 50,000/yr', () => {
+    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(17.11);
   });
 });
