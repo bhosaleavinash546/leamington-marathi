@@ -110,6 +110,6 @@ describe('6. baseline', () => {
   it('records all three at 50,000/yr', () => {
     expect(baseline.find(b => b.part === TUBE)!.outcome.total).toBe(0.42);
     expect(baseline.find(b => b.part === PIPE)!.outcome.total).toBe(1);   // start-up purge at the LINE rate, not the screw's (arithmetic audit X3)
-    expect(baseline.find(b => b.part === PROF)!.outcome.total).toBe(2.27);
+    expect(baseline.find(b => b.part === PROF)!.outcome.total).toBe(2.29);   // UK PVC index corrected on its page (30 Oct 2026: US$1.53 → 1.57)
   });
 });
