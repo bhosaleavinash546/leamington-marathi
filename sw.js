@@ -3,7 +3,7 @@
    (or offline.html) when there is no signal. Everything else: cached copy first,
    refreshed in the background. Videos are never cached (too big).
    Bump VERSION when this file changes so old caches are cleared. */
-const VERSION = 'lm-2026-10-30b';
+const VERSION = 'lm-2026-10-30c';
 const CORE = [
   '/', '/index.html', '/style.css', '/script.js', '/culture-data.js', '/kal.js',
   '/calendar.html', '/sponsor.html',

@@ -1633,7 +1633,7 @@ footer {
 .footer-bottom p { margin: 0; }
 .footer-privacy { line-height: 1.5; opacity: 0.85; }
 .footer-privacy a { color: var(--gold); }
-.footer-credit { opacity: 0.75; white-space: nowrap; }
+.footer-credit { color: var(--white); font-size: 0.95rem; font-weight: 600; white-space: nowrap; }
 @media (max-width: 960px) {
   .footer-main { grid-template-columns: 1fr 1fr; gap: 34px 28px; }
   .footer-brand { grid-column: 1 / -1; }
