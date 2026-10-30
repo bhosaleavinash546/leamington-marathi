@@ -35,7 +35,8 @@ The basket shares are dominated by one composite roof panel (~45% of the £), so
 **The honest answer is no — not yet for everything.**
 
 What IS the country's own, in every country:
-- labour, all categories and process grades (Hungary's engineer is the one held rate);
+- labour, all categories and process grades (Hungary's engineer, technician, supervisor and inspector were sourced
+  from KSH FEOR data in the rate round — see `rate-round-2026-10-30.md`);
 - the energy tariff;
 - every machine's running costs — hours, energy, floor, finance, support staff at local wages;
 - the sourced machine capex groups;
@@ -145,12 +146,15 @@ Headlines in each country's currency (100,000 a year, 5 years, ex-works):
 
 ## 5. What remains
 
+The shares in §1 are from before the rate round; the updated figures are in `rate-round-2026-10-30.md`.
+
+
 1. **Machine capex.** 196 of 215 Hungarian machines (and most in CN / IN / PL) have no sourced capex. Hungary holds
    them at par; the others hold them at an unsourced factor. The next research round should cover the machines that
    carry the cost: autoclave, RTM press, HMC, rotomoulding, thermoformer, IMM by size, HPDC, presses, forging presses.
 2. **Materials.** No country prices CFRP prepreg, alloy / stainless bar, filled compounds or rubber compounds yet.
 3. **Overhead and packaging multipliers.** These are held in every country.
-4. **Hungary's engineer rate** is held.
+4. ~~Hungary's engineer rate is held.~~ Sourced in the rate round (KSH FEOR 2118).
 5. **Network.** This session could not open MNB, KSH, Eurostat or Hungarian supplier pages. Every Hungarian figure was
    read from search extracts and should be re-opened on its page.
 6. **Accuracy against prices paid** is still unmeasured: 0 actuals.
