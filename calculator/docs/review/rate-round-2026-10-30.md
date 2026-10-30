@@ -137,3 +137,22 @@ Their fix is a sourced price, not a back-solve.
 
 No real part in the baseline uses these machines, so it does not move. A China gravity-cast stub-axle band moved by its
 reason: landed £11.77, against a lower bound that was £12.
+
+## UK live check on the final rates (15 parts, delivered, 100,000 a year × 5 years)
+
+927 checks passed, 0 failed. On every part:
+- the screen equals the headless costing to the penny;
+- the workbook re-adds to the headline;
+- the PDF and Excel carry the headline and stamp;
+- accessibility (WCAG 2.1 AA) passes at every step.
+
+Changes against the pre-round UK run (14 routes): the parts on re-sourced machines and charges moved, every other
+headline is unchanged to the penny.
+
+| Part | Before | After | Why |
+|---|---|---|---|
+| Hat stiffener (composites) | £73.55 | £69.38 | autoclave on the Bristol award |
+| Stub axle (cast + machine) | £41.97 | £42.04 | melt loss on the iron charge |
+| Casting bracket | £17.53 | £17.55 | melt loss on the steel charge |
+| Steering knuckle (forging, new 15th part) | — | £19.98 | |
+| Hub flange, ECU cover, seat bracket, battery rail, air duct, header tank, trim cover, vent pipe, grommet, gear, manifold | — | — | unchanged |
