@@ -441,6 +441,8 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
       excludedRows: h.querySelectorAll('.cad-compare-excluded li').length,
       sourced: Array.from(h.querySelectorAll('.cad-compare-excluded li')).every(li => /\(.+\)/.test(li.textContent ?? '')),
       crossover: Array.from(h.querySelectorAll('.cad-compare-cross')).map(e => (e.textContent ?? '').trim()).filter(Boolean),
+      // a costed alternative carries its "Cost this route" button; the nested build-up rows (Material, Process…) are not routes
+      alternatives: h.querySelectorAll('[data-cost-route]').length,
       principle: (h.querySelector('p.cad-cost-note')?.textContent ?? '').includes('same material family'),
       header: Array.from(h.querySelectorAll('thead th')).map(t => t.textContent?.trim()),
     };
@@ -452,8 +454,8 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     `${cmpDetail.excluded}: ${cmpDetail.excludedRows} route(s), every one sourced ${cmpDetail.sourced}`);
   check('3', 'CR3', 'the principle (same family, finished scope) and the tooling-over-programme column are on the table', cmpDetail.principle && cmpDetail.header.includes('Tooling over programme'),
     cmpDetail.header.join(' | '));
-  check('3', 'CR4', 'each alternative states its crossover with the costed route from the volume ladder', routes.filter(r => !r.ref && money(r.cost) > 0).length === 0 || cmpDetail.crossover.length > 0,
-    cmpDetail.crossover.join(' / ') || 'no costed alternative');
+  check('3', 'CR4', 'each alternative states its crossover with the costed route from the volume ladder', cmpDetail.alternatives === 0 || cmpDetail.crossover.length > 0,
+    cmpDetail.crossover.join(' / ') || (cmpDetail.alternatives ? `${cmpDetail.alternatives} costed alternative(s), no crossover stated` : 'no costed alternative'));
   await snap('step3-compare');
 
   // #4 end to end: the margin changed on the card re-costs the part (subtotal × 1.10 instead of × 1.08), then back
