@@ -49,6 +49,162 @@ export const CZECH_REPUBLIC_BOOK: CountryBook = {
   }
  },
  "materials": {
+  "mat-dc01": {
+   "gbpPerKg": 0.7146,
+   "basis": "CR coil (DC01 / DC04): European market (as the German book): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; direct",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Medium"
+  },
+  "mat-dc04": {
+   "gbpPerKg": 0.7146,
+   "basis": "CR coil (DC01 / DC04): European market (as the German book): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; direct",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Medium"
+  },
+  "mat-dc05": {
+   "gbpPerKg": 0.7146,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; the anchor grade itself",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dc06": {
+   "gbpPerKg": 0.7231,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.012 (book £0.85 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-if-dx56": {
+   "gbpPerKg": 0.8507,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.190 (book £1 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-if-hs260": {
+   "gbpPerKg": 0.9613,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.345 (book £1.13 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-bh260": {
+   "gbpPerKg": 0.9358,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-greensteel-dc01": {
+   "gbpPerKg": 0.9358,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-hsla340": {
+   "gbpPerKg": 1.0123,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.417 (book £1.19 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-hsla420": {
+   "gbpPerKg": 1.0974,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.536 (book £1.29 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-hsla550": {
+   "gbpPerKg": 1.1825,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.655 (book £1.39 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dp600": {
+   "gbpPerKg": 1.1059,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.548 (book £1.3 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dp780": {
+   "gbpPerKg": 1.1655,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.631 (book £1.37 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dp980": {
+   "gbpPerKg": 1.2761,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.786 (book £1.5 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dp1000": {
+   "gbpPerKg": 1.3356,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.869 (book £1.57 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-trip780": {
+   "gbpPerKg": 1.2335,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.726 (book £1.45 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-cp800": {
+   "gbpPerKg": 1.2165,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.702 (book £1.43 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-ms1200": {
+   "gbpPerKg": 1.3611,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-ms1300": {
+   "gbpPerKg": 1.4207,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.988 (book £1.67 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-ms1500": {
+   "gbpPerKg": 1.5057,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×2.107 (book £1.77 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-qp980": {
+   "gbpPerKg": 1.4717,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×2.060 (book £1.73 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-medmn1180": {
+   "gbpPerKg": 1.5313,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×2.143 (book £1.8 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-22mnb5": {
+   "gbpPerKg": 1.5228,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×2.131 (book £1.79 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-usibor1500": {
+   "gbpPerKg": 1.7014,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×2.381 (book £2 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-usibor2000": {
+   "gbpPerKg": 2.0417,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×2.857 (book £2.4 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-c67s-spring": {
+   "gbpPerKg": 1.3611,
+   "basis": "CR automotive grades: European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč20.8073/kg; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
   "mat-s355mc": {
    "gbpPerKg": 0.6469,
    "basis": "HR structural: European market (as the German book): NW Europe HRC €745/t ex-works (Fastmarkets, 6 Oct 2026) = €0.745/kg × the book's premium over HRPO; S355MC / S420MC extras not found — at €1 = 24.336 CZK (ECB 2026-10-29): Kč18.1303/kg; ladder ×1.039 (book £0.8 ÷ base £0.77)",
@@ -463,6 +619,42 @@ export const CZECH_REPUBLIC_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.2382,
+   "basis": "Aluminium forging stock (floor): European market (as the German book): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 24.336 CZK (ECB 2026-10-29): Kč89.0698/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.1414,
+   "basis": "Aluminium forging stock (floor): European market (as the German book): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 24.336 CZK (ECB 2026-10-29): Kč89.0698/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.4807,
+   "basis": "Aluminium forging stock (floor): European market (as the German book): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 24.336 CZK (ECB 2026-10-29): Kč89.0698/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.4598,
+   "basis": "Aluminium forging stock (floor): European market (as the German book): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 24.336 CZK (ECB 2026-10-29): Kč89.0698/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 5.0224,
+   "basis": "Aluminium forging stock (floor): European market (as the German book): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 24.336 CZK (ECB 2026-10-29): Kč89.0698/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.241,
+   "basis": "Aluminium forging stock (floor): European market (as the German book): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 24.336 CZK (ECB 2026-10-29): Kč89.0698/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): European market (as the German book): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 24.336 CZK (ECB 2026-10-29): Kč101.2378/kg; floor (raised to metal content)",
@@ -493,6 +685,12 @@ export const CZECH_REPUBLIC_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-aa6061-sheet": {
+   "gbpPerKg": 3.5487,
+   "basis": "Aluminium sheet and plate (floor): European market (as the German book): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 24.336 CZK (ECB 2026-10-29): Kč101.2378/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa6063-sheet": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): European market (as the German book): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 24.336 CZK (ECB 2026-10-29): Kč101.2378/kg; floor (raised to metal content)",
@@ -505,9 +703,27 @@ export const CZECH_REPUBLIC_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-al-busbar": {
+   "gbpPerKg": 3.626,
+   "basis": "Aluminium sheet and plate (floor): European market (as the German book): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 24.336 CZK (ECB 2026-10-29): Kč101.2378/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa6016-t4": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): European market (as the German book): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 24.336 CZK (ECB 2026-10-29): Kč101.2378/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa6111-t4": {
+   "gbpPerKg": 3.5291,
+   "basis": "Aluminium sheet and plate (floor): European market (as the German book): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 24.336 CZK (ECB 2026-10-29): Kč101.2378/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.5929,
+   "basis": "Aluminium sheet and plate (floor): European market (as the German book): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 24.336 CZK (ECB 2026-10-29): Kč101.2378/kg; held (already above the metal it contains)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
@@ -529,6 +745,12 @@ export const CZECH_REPUBLIC_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
    "confidence": "Medium"
   },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.4767,
+   "basis": "ETP copper bar / sheet (floor): European market (as the German book): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 24.336 CZK (ECB 2026-10-29): Kč321.2352/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
   "mat-brass-cz121": {
    "gbpPerKg": 9.3357,
    "basis": "Free-machining / forging brass rod (floor): European market (as the German book): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 24.336 CZK (ECB 2026-10-29): Kč271.8331/kg; floor (raised to metal content)",
@@ -547,10 +769,34 @@ export const CZECH_REPUBLIC_BOOK: CountryBook = {
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
+  "mat-bronze-pb1": {
+   "gbpPerKg": 13.9846,
+   "basis": "Phosphor / tin bronze (floor): European market (as the German book): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 24.336 CZK (ECB 2026-10-29): Kč404.8464/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-bronze-c905": {
    "gbpPerKg": 13.9038,
    "basis": "Phosphor / tin bronze (floor): European market (as the German book): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 24.336 CZK (ECB 2026-10-29): Kč404.8464/kg; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-cusn12-cast": {
+   "gbpPerKg": 13.9905,
+   "basis": "Phosphor / tin bronze (floor): European market (as the German book): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 24.336 CZK (ECB 2026-10-29): Kč404.8464/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak3": {
+   "gbpPerKg": 3.093,
+   "basis": "Zamak 3 (floor): European market (as the German book): Metal content 0.96 × SHG zinc €3.58 (LME + Rotterdam premium) + 0.04 × Al €3.19 — at €1 = 24.336 CZK (ECB 2026-10-29): Kč86.7432/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09) ; https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns (2026-10-01 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak5": {
+   "gbpPerKg": 3.1414,
+   "basis": "Zamak 5 (floor): European market (as the German book): Metal content 0.95 × zinc €3.58 + 0.04 × Al + 0.01 × Cu €13.2 — at €1 = 24.336 CZK (ECB 2026-10-29): Kč89.0844/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-pp-homo": {
@@ -775,6 +1021,36 @@ export const CZECH_REPUBLIC_BOOK: CountryBook = {
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
+  "mat-abs": {
+   "gbpPerKg": 1.5378,
+   "basis": "ABS family: European market (as the German book): ABS €1.84/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over ABS — at €1 = 24.336 CZK (ECB 2026-10-29): Kč44.7782/kg; the anchor grade itself",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-abs-ext-sheet": {
+   "gbpPerKg": 1.6992,
+   "basis": "ABS family: European market (as the German book): ABS €1.84/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over ABS — at €1 = 24.336 CZK (ECB 2026-10-29): Kč44.7782/kg; ladder ×1.105 (book £1.79 ÷ base £1.62)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-abs-tf": {
+   "gbpPerKg": 1.8416,
+   "basis": "ABS family: European market (as the German book): ABS €1.84/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over ABS — at €1 = 24.336 CZK (ECB 2026-10-29): Kč44.7782/kg; ladder ×1.198 (book £1.94 ÷ base £1.62)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-abs-fr": {
+   "gbpPerKg": 1.9081,
+   "basis": "ABS family: European market (as the German book): ABS €1.84/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over ABS — at €1 = 24.336 CZK (ECB 2026-10-29): Kč44.7782/kg; ladder ×1.241 (book £2.01 ÷ base £1.62)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-gpps": {
+   "gbpPerKg": 1.2787,
+   "basis": "GPPS: European market (as the German book): GPPS €1.53/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over GPPS — at €1 = 24.336 CZK (ECB 2026-10-29): Kč37.2341/kg; the anchor grade itself",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
   "mat-gpps-ext": {
    "gbpPerKg": 1.5588,
    "basis": "GPPS: European market (as the German book): GPPS €1.53/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over GPPS — at €1 = 24.336 CZK (ECB 2026-10-29): Kč37.2341/kg; ladder ×1.219 (book £1.67 ÷ base £1.37)",
@@ -850,6 +1126,18 @@ export const CZECH_REPUBLIC_BOOK: CountryBook = {
   "mat-pet-bg": {
    "gbpPerKg": 1.145,
    "basis": "PET family: European market (as the German book): PET €1.37/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; a general PET index, not bottle grade) × the book's premium over PET bottle grade — at €1 = 24.336 CZK (ECB 2026-10-29): Kč33.3403/kg; the anchor grade itself",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/ (2026-09)",
+   "confidence": "Low"
+  },
+  "mat-pet-preform": {
+   "gbpPerKg": 1.1829,
+   "basis": "PET family: European market (as the German book): PET €1.37/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; a general PET index, not bottle grade) × the book's premium over PET bottle grade — at €1 = 24.336 CZK (ECB 2026-10-29): Kč33.3403/kg; ladder ×1.033 (book £1.25 ÷ base £1.21)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/ (2026-09)",
+   "confidence": "Low"
+  },
+  "mat-apet-tf": {
+   "gbpPerKg": 1.4668,
+   "basis": "PET family: European market (as the German book): PET €1.37/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; a general PET index, not bottle grade) × the book's premium over PET bottle grade — at €1 = 24.336 CZK (ECB 2026-10-29): Kč33.3403/kg; ladder ×1.281 (book £1.55 ÷ base £1.21)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/ (2026-09)",
    "confidence": "Low"
   },

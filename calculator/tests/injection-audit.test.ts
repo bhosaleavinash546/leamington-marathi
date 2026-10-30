@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { WORLD_BOOKS } from '../src/engine/country-books/world.js';
+import { COUNTRY_BOOKS } from '../src/engine/country-books.js';
 
 import {
   estimateMouldCost,
@@ -283,14 +284,14 @@ describe('C1 — family-aware country resin pricing', () => {
     expect(classifyMaterialFamily({ id: 'mat-al6061', category: 'Aluminium' })).toBe('exchangeMetal');
   });
 
-  it('commodity resins carry a wider country spread than high-performance ones', () => {
-    // the family factors of a SCALED country (China prices PP and PEEK from its own market since its rate book, Oct 2026)
+  it('a commodity resin takes the country market price; a high-performance resin is its one global price', () => {
+    // world round (30 Oct 2026): Turkey prices PP from its own market (ChemOrbis CIF Türkiye); PEEK (Victrex ASP) is global
     const tr = buildRegionalLibrary(lib, 'TR');
-    const ppRatio = matPrice(tr, 'mat-pp') / matPrice(lib, 'mat-pp');
-    const peekRatio = matPrice(tr, 'mat-peek') / matPrice(lib, 'mat-peek');
-    expect(ppRatio).toBeLessThan(peekRatio);          // PP moves further from UK than PEEK
-    expect(peekRatio).toBeGreaterThan(0.95);          // high-perf ~globally flat
-    expect(ppRatio).toBeLessThan(0.9);                // commodity clearly discounted
+    expect(COUNTRY_BOOKS.TR!.materials['mat-pp']).toBeDefined();
+    expect(matPrice(tr, 'mat-pp')).toBeCloseTo(COUNTRY_BOOKS.TR!.materials['mat-pp'].gbpPerKg, 6);
+    // PEEK is the one global price (Victrex's average selling price) — the same anchor in every European-market book
+    expect(COUNTRY_BOOKS.TR!.materials['mat-peek'].basis).toMatch(/Victrex/);
+    expect(COUNTRY_BOOKS.TR!.materials['mat-peek'].gbpPerKg).toBeCloseTo(COUNTRY_BOOKS.FR!.materials['mat-peek'].gbpPerKg, 2);   // one € price at each book's FX rounding
   });
 
   it('UK material prices are unchanged (identity)', () => {

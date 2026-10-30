@@ -380,6 +380,16 @@ def usd_local(ccy, pe):
     return pe / FX['perEur']['USD']
 
 
+def _ses_manual_gap():
+    ses = ES['ses']['values']
+    rs = sorted(max(ses[f'{g}|OC7|GE10'], ses[f'{g}|OC8|GE10']) / min(ses[f'{g}|OC7|GE10'], ses[f'{g}|OC8|GE10'])
+                for g in REGIONS if ses.get(f'{g}|OC7|GE10') and ses.get(f'{g}|OC8|GE10'))
+    return rs[len(rs) // 2]
+
+
+SES_MANUAL_GAP = _ses_manual_gap()   # 1.034: the median, over the EU countries, of the higher manual group ÷ the lower
+
+
 def ilo_ratios(cc):
     """ILOSTAT mean monthly earnings by ISCO major group (all economy, latest year with groups 2/3/7/8) → {oc: ratio to total}."""
     rows = OFF('ilo.json')['values'].get(cc, {}).get('rows') or []
@@ -460,11 +470,19 @@ def labour_world(cc, ccy, pe):
         yr = int(str(it.get('date') or '2025')[:4])
         src.add(it.get('source', ''))
         return a, f"{it['key'].split('.')[-1]} earnings ({it.get('unit')}, {it.get('scope', '')[:90]}, {it.get('date')}): {how}", yr
+    for r in ROLE_OC:   # one all-occupations average offered for several roles (Japan) is the average, not each role's wage
+        it = g.get(f'labour.earnings.{r}')
+        if it and 'ALL OCCUPATIONS' in (it.get('scope') or '').upper():
+            g.setdefault('labour.earnings.all', it)
+            g.pop(f'labour.earnings.{r}')
     base = {r: from_item(r) for r in ROLE_OC}
     # anchors for roles not found: another role of the same country × the occupation-group ratio
     def fill(role):
         if base[role]: return base[role]
         oc = ROLE_OC[role]
+        if g.get('labour.earnings.all', {}).get('value') is not None and not base.get('skilled') and not base.get('semiskilled'):
+            it = g['labour.earnings.all']; a, how = annual(it, cc, hours, bonus_m if 'month' in (it.get('unit') or '') else 0); yr = int(str(it.get('date'))[:4]); src.add(it.get('source', ''))
+            return a * ratios[oc], f"no occupation figure: the all-employee average × ISCO {oc} ratio {ratios[oc]:.3f} ({rsrc}) — {how}", yr
         for other in ('skilled', 'semiskilled', 'technician', 'engineer', 'supervisor', 'electronics'):
             if base.get(other):
                 a, how, yr = base[other]
@@ -509,6 +527,13 @@ def labour_world(cc, ccy, pe):
                      'basis': (f"{how} × wage growth {(growth * 100):.1f}%/yr over {n} yr = ×{up:.4f} × employer contributions {emp * 100:.2f}% "
                                f"({emp_note}) ÷ {hours:g} h worked a year ({h_note}) = {v:.2f}/h")}
     # the role order the costing relies on: a setter is not paid below the operators he sets up (as Europe)
+    if abs(out['skilled']['localPerHr'] - out['semiskilled']['localPerHr']) < 1e-9:
+        k = SES_MANUAL_GAP
+        v = round(out['semiskilled']['localPerHr'] * k, 2)
+        out['skilled'] = {**out['skilled'], 'localPerHr': v,
+                          'basis': out['skilled']['basis'] + f" — the country's figures put the setter level with the operator: × {k:.4f}, the EU manufacturing median gap between the two manual groups (SES 2022) = {v:.2f}/h"}
+        for r in ('foundry', 'inspector'):
+            if abs(out[r]['localPerHr'] - out['semiskilled']['localPerHr']) < 1e-9: out[r] = {**out[r], 'localPerHr': v, 'basis': out['skilled']['basis']}
     if out['skilled']['localPerHr'] < out['semiskilled']['localPerHr']:
         out['skilled'], out['semiskilled'] = out['semiskilled'], out['skilled']
         for k, w in (('skilled', 'the higher'), ('semiskilled', 'the lower')):
@@ -718,9 +743,10 @@ def build_world(cc):
                                        'statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer\'s statutory '
                                        'social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked)'
                                        if cc != 'TR' else 'Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios'),
-                   'loadingNotIncluded': ('NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and '
-                                          'retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; '
-                                          'overtime; agency margins'),
+                   'loadingNotIncluded': (('Japan: the annual bonus (scheduled cash earnings only — MHLW special earnings for manufacturing '
+                                           'were not read), so Japan\'s labour is a FLOOR; ' if cc == 'JP' else '')
+                                          + 'NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses '
+                                          'BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins'),
                    'short': 'national / ILO occupation earnings + statutory employer contributions ÷ hours worked' if cc != 'TR' else 'Eurostat labour cost × ILO occupation ratio'},
         'energy': energy,
         'machines': {

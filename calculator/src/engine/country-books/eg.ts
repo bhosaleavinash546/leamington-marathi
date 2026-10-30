@@ -13,37 +13,37 @@ export const EGYPT_BOOK: CountryBook = {
  "labourGrades": {
   "forge": {
    "gbpPerHr": 0.6525,
-   "basis": "paid as skilled: skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5260.37 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 48.79/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5260.37 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 48.79/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/EGY.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 0.6244,
-   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/EGY.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 0.6244,
-   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/EGY.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 0.6244,
-   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/EGY.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 0.6244,
-   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/EGY.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 0.6244,
-   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2024): 5033.51 a month × 12 × wage growth 28.2%/yr over 2 yr = ×1.6435 × employer contributions 18.75% (employer, capped) ÷ 2525 h worked a year (hours/year actually worked) = 46.69/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/EGY.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   }
@@ -631,6 +631,30 @@ export const EGYPT_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
    "confidence": "Low"
   },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.2255,
+   "basis": "Aluminium forging stock (floor): no EG or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 62.4985 EGP (ECB 2026-10-29): E£228.7445/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.133,
+   "basis": "Aluminium forging stock (floor): no EG or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 62.4985 EGP (ECB 2026-10-29): E£228.7445/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 4.6541,
+   "basis": "Aluminium forging stock (floor): no EG or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 62.4985 EGP (ECB 2026-10-29): E£228.7445/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 7.6371,
+   "basis": "Aluminium forging stock (floor): no EG or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 62.4985 EGP (ECB 2026-10-29): E£228.7445/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no EG or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 62.4985 EGP (ECB 2026-10-29): E£259.9938/kg; floor (raised to metal content)",
@@ -697,6 +721,12 @@ export const EGYPT_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.1096,
+   "basis": "Aluminium sheet and plate (floor): no EG or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 62.4985 EGP (ECB 2026-10-29): E£259.9938/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa1050-sheet": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no EG or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 62.4985 EGP (ECB 2026-10-29): E£259.9938/kg; floor (raised to metal content)",
@@ -712,6 +742,12 @@ export const EGYPT_BOOK: CountryBook = {
   "mat-c110-copper": {
    "gbpPerKg": 11.0323,
    "basis": "ETP copper bar / sheet (floor): no EG or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 62.4985 EGP (ECB 2026-10-29): E£824.9802/kg; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 12.4889,
+   "basis": "ETP copper bar / sheet (floor): no EG or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 62.4985 EGP (ECB 2026-10-29): E£824.9802/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
    "confidence": "Medium"
   },

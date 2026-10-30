@@ -13,37 +13,37 @@ export const MOROCCO_BOOK: CountryBook = {
  "labourGrades": {
   "forge": {
    "gbpPerHr": 3.2542,
-   "basis": "paid as skilled: not found for this role: semiskilled × ISCO 7 ÷ ISCO 8 = 1.026 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 42.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: not found for this role: semiskilled × ISCO 7 ÷ ISCO 8 = 1.026 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 42.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://investintunisia.tn/wp-content/uploads/2025/01/Couts-des-facteurs-FIPA-FR-Janvier-2025-1.pdf",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 3.1711,
-   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://investintunisia.tn/wp-content/uploads/2025/01/Couts-des-facteurs-FIPA-FR-Janvier-2025-1.pdf",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 3.1711,
-   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://investintunisia.tn/wp-content/uploads/2025/01/Couts-des-facteurs-FIPA-FR-Janvier-2025-1.pdf",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 3.1711,
-   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://investintunisia.tn/wp-content/uploads/2025/01/Couts-des-facteurs-FIPA-FR-Janvier-2025-1.pdf",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 3.1711,
-   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://investintunisia.tn/wp-content/uploads/2025/01/Couts-des-facteurs-FIPA-FR-Janvier-2025-1.pdf",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 3.1711,
-   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (gross salary per year, production operator, country level, 2025-01): 6828.0 a year EUR × 10.9614 MAD/EUR (ECB 2026-10-29) × wage growth 5.0%/yr over 1 yr = ×1.0500 × employer contributions 21.09% (employer total below the MAD 6,000 cap) ÷ 2288 h worked a year (normal hours/year (statutory, gross of leave and holidays)) = 41.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://investintunisia.tn/wp-content/uploads/2025/01/Couts-des-facteurs-FIPA-FR-Janvier-2025-1.pdf",
    "confidence": "Medium"
   }
@@ -619,6 +619,42 @@ export const MOROCCO_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.1711,
+   "basis": "Aluminium forging stock (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 10.9614 MAD (ECB 2026-10-29): DH40.1187/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.0758,
+   "basis": "Aluminium forging stock (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 10.9614 MAD (ECB 2026-10-29): DH40.1187/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.4083,
+   "basis": "Aluminium forging stock (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 10.9614 MAD (ECB 2026-10-29): DH40.1187/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.3667,
+   "basis": "Aluminium forging stock (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 10.9614 MAD (ECB 2026-10-29): DH40.1187/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 4.9172,
+   "basis": "Aluminium forging stock (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 10.9614 MAD (ECB 2026-10-29): DH40.1187/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.0693,
+   "basis": "Aluminium forging stock (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 10.9614 MAD (ECB 2026-10-29): DH40.1187/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 10.9614 MAD (ECB 2026-10-29): DH45.5994/kg; floor (raised to metal content)",
@@ -649,6 +685,12 @@ export const MOROCCO_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-aa6061-sheet": {
+   "gbpPerKg": 3.4768,
+   "basis": "Aluminium sheet and plate (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 10.9614 MAD (ECB 2026-10-29): DH45.5994/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa6063-sheet": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 10.9614 MAD (ECB 2026-10-29): DH45.5994/kg; floor (raised to metal content)",
@@ -661,6 +703,12 @@ export const MOROCCO_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-al-busbar": {
+   "gbpPerKg": 3.5508,
+   "basis": "Aluminium sheet and plate (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 10.9614 MAD (ECB 2026-10-29): DH45.5994/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa6016-t4": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 10.9614 MAD (ECB 2026-10-29): DH45.5994/kg; floor (raised to metal content)",
@@ -670,6 +718,12 @@ export const MOROCCO_BOOK: CountryBook = {
   "mat-aa6111-t4": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 10.9614 MAD (ECB 2026-10-29): DH45.5994/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.4559,
+   "basis": "Aluminium sheet and plate (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 10.9614 MAD (ECB 2026-10-29): DH45.5994/kg; held (already above the metal it contains)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
@@ -688,6 +742,12 @@ export const MOROCCO_BOOK: CountryBook = {
   "mat-c110-copper": {
    "gbpPerKg": 11.0323,
    "basis": "ETP copper bar / sheet (floor): no MA or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 10.9614 MAD (ECB 2026-10-29): DH144.6905/kg; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.1961,
+   "basis": "ETP copper bar / sheet (floor): no MA or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 10.9614 MAD (ECB 2026-10-29): DH144.6905/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
    "confidence": "Medium"
   },
@@ -725,6 +785,18 @@ export const MOROCCO_BOOK: CountryBook = {
    "gbpPerKg": 13.9038,
    "basis": "Phosphor / tin bronze (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 10.9614 MAD (ECB 2026-10-29): DH182.3506/kg; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak3": {
+   "gbpPerKg": 3.0285,
+   "basis": "Zamak 3 (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.96 × SHG zinc €3.58 (LME + Rotterdam premium) + 0.04 × Al €3.19 — at €1 = 10.9614 MAD (ECB 2026-10-29): DH39.0708/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09) ; https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns (2026-10-01 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak5": {
+   "gbpPerKg": 3.0758,
+   "basis": "Zamak 5 (floor): no MA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.95 × zinc €3.58 + 0.04 × Al + 0.01 × Cu €13.2 — at €1 = 10.9614 MAD (ECB 2026-10-29): DH40.1253/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-pp-homo": {
@@ -989,6 +1061,36 @@ export const MOROCCO_BOOK: CountryBook = {
    "gbpPerKg": 1.4041,
    "basis": "HIPS: no MA or regional price found — the European market price at par (traded material, no country factor): HIPS €1.68/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) — the book had HIPS at the GPPS price — at €1 = 10.9614 MAD (ECB 2026-10-29): DH18.4152/kg; direct",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-pc": {
+   "gbpPerKg": 2.2065,
+   "basis": "PC family: no MA or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 10.9614 MAD (ECB 2026-10-29): DH28.9381/kg; the anchor grade itself",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
+   "confidence": "Medium"
+  },
+  "mat-pc-glazing": {
+   "gbpPerKg": 3.6774,
+   "basis": "PC family: no MA or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 10.9614 MAD (ECB 2026-10-29): DH28.9381/kg; ladder ×1.667 (book £4.2 ÷ base £2.52)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
+   "confidence": "Medium"
+  },
+  "mat-pc-bm": {
+   "gbpPerKg": 3.4148,
+   "basis": "PC family: no MA or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 10.9614 MAD (ECB 2026-10-29): DH28.9381/kg; ladder ×1.548 (book £3.9 ÷ base £2.52)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
+   "confidence": "Medium"
+  },
+  "mat-pc-ext-sheet": {
+   "gbpPerKg": 2.8018,
+   "basis": "PC family: no MA or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 10.9614 MAD (ECB 2026-10-29): DH28.9381/kg; ladder ×1.270 (book £3.2 ÷ base £2.52)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
+   "confidence": "Medium"
+  },
+  "mat-pc-tf": {
+   "gbpPerKg": 2.977,
+   "basis": "PC family: no MA or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 10.9614 MAD (ECB 2026-10-29): DH28.9381/kg; ladder ×1.349 (book £3.4 ÷ base £2.52)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pa6": {

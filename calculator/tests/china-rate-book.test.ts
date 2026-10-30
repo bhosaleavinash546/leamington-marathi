@@ -22,8 +22,9 @@ const lab = (id: string) => CN.labour.find(l => l.id === id)!;
 describe('materials: Chinese market anchors, not UK × a factor', () => {
   it('CR sheet at the Shanghai spot (Mysteel, Oct 2026), ex-VAT; the note says ¥', () => {
     expect(COUNTRY_BOOKS.CN).toBe(CHINA_BOOK);
-    expect(cny(mat('mat-dc01').pricePerKg)).toBeCloseTo(3.24, 1);
-    expect(mat('mat-dc01').sourceNote).toMatch(/China book .*¥3\.24\/kg/);
+    // the page re-check (30 Oct 2026): Benxi 1.0 mm CRC Shanghai ¥3,610/t (27–28 Oct) ÷ 1.13 = ¥3.195/kg
+    expect(cny(mat('mat-dc01').pricePerKg)).toBeCloseTo(3.2, 1);
+    expect(mat('mat-dc01').sourceNote).toMatch(/China book .*¥3\.20\/kg/);
   });
   it('bars are the GB grades\' own spot: 45#, 40Cr, 42CrMo, 20CrMnTi', () => {
     expect(cny(mat('mat-steel-c45').pricePerKg)).toBeCloseTo(3.26, 1);
@@ -82,8 +83,8 @@ describe('machines: the 2 × 12 h operating model; Chinese capex for CNC', () =>
     expect(cny(v.computedRatePerHr)).toBeGreaterThan(15);
     expect(cny(v.computedRatePerHr)).toBeLessThan(40);
   });
-  it('a machine without capex evidence says its capital is HELD', () => {
-    expect(mach('press-400t').sourceNote).toMatch(/HELD/);
+  it('a machine without capex evidence says its capital is AT PAR (world round, 30 Oct 2026: no unsourced UK × 0.55)', () => {
+    expect(mach('press-400t').sourceNote).toMatch(/AT PAR/);
     expect(mach('press-400t').confidence).toBe('Low');
   });
 });

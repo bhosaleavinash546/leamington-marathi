@@ -13,37 +13,37 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
  "labourGrades": {
   "forge": {
    "gbpPerHr": 6.9139,
-   "basis": "paid as skilled: no occupation figure: all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 6.7375,
-   "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 6.7375,
-   "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 6.7375,
-   "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 6.7375,
-   "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 6.7375,
-   "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
    "confidence": "Medium"
   }
@@ -481,6 +481,48 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
    "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome (2026-Q3)",
    "confidence": "Low"
   },
+  "mat-adc12": {
+   "gbpPerKg": 2.0727,
+   "basis": "Secondary cast aluminium (ingot): no ZA or regional price found — the European market price at par (traded material, no country factor): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R45.9341/kg; the anchor grade itself",
+   "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ (2026-01-23)",
+   "confidence": "Low"
+  },
+  "mat-a380": {
+   "gbpPerKg": 2.1104,
+   "basis": "Secondary cast aluminium (ingot): no ZA or regional price found — the European market price at par (traded material, no country factor): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R45.9341/kg; ladder ×1.018 (book £2.8 ÷ base £2.75)",
+   "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ (2026-01-23)",
+   "confidence": "Low"
+  },
+  "mat-a413": {
+   "gbpPerKg": 2.0727,
+   "basis": "Secondary cast aluminium (ingot): no ZA or regional price found — the European market price at par (traded material, no country factor): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R45.9341/kg; the anchor grade itself",
+   "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ (2026-01-23)",
+   "confidence": "Low"
+  },
+  "mat-a319": {
+   "gbpPerKg": 2.2386,
+   "basis": "Secondary cast aluminium (ingot): no ZA or regional price found — the European market price at par (traded material, no country factor): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R45.9341/kg; ladder ×1.080 (book £2.97 ÷ base £2.75)",
+   "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ (2026-01-23)",
+   "confidence": "Low"
+  },
+  "mat-lm4": {
+   "gbpPerKg": 2.1933,
+   "basis": "Secondary cast aluminium (ingot): no ZA or regional price found — the European market price at par (traded material, no country factor): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R45.9341/kg; ladder ×1.058 (book £2.91 ÷ base £2.75)",
+   "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ (2026-01-23)",
+   "confidence": "Low"
+  },
+  "mat-en-ac-46200": {
+   "gbpPerKg": 2.1481,
+   "basis": "Secondary cast aluminium (ingot): no ZA or regional price found — the European market price at par (traded material, no country factor): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R45.9341/kg; ladder ×1.036 (book £2.85 ÷ base £2.75)",
+   "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ (2026-01-23)",
+   "confidence": "Low"
+  },
+  "mat-adc12-secondary": {
+   "gbpPerKg": 2.0727,
+   "basis": "Secondary ADC12: no ZA or regional price found — the European market price at par (traded material, no country factor): DIN226 €2.48 (Jan 2026, stale) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R45.9341/kg; direct",
+   "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ (2026-01-23)",
+   "confidence": "Low"
+  },
   "mat-lm25": {
    "gbpPerKg": 2.9837,
    "basis": "Primary-based cast aluminium: no ZA or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R66.1228/kg; the anchor grade itself",
@@ -577,6 +619,42 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.2959,
+   "basis": "Aluminium forging stock (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 18.5218 ZAR (ECB 2026-10-29): R67.7898/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.197,
+   "basis": "Aluminium forging stock (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 18.5218 ZAR (ECB 2026-10-29): R67.7898/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.5427,
+   "basis": "Aluminium forging stock (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 18.5218 ZAR (ECB 2026-10-29): R67.7898/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.5395,
+   "basis": "Aluminium forging stock (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 18.5218 ZAR (ECB 2026-10-29): R67.7898/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 5.1117,
+   "basis": "Aluminium forging stock (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 18.5218 ZAR (ECB 2026-10-29): R67.7898/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.3877,
+   "basis": "Aluminium forging stock (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 18.5218 ZAR (ECB 2026-10-29): R67.7898/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg; floor (raised to metal content)",
@@ -595,9 +673,21 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-aa6082-sheet": {
+   "gbpPerKg": 3.5129,
+   "basis": "Aluminium sheet and plate (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa5754-sheet": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa6061-sheet": {
+   "gbpPerKg": 3.6117,
+   "basis": "Aluminium sheet and plate (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg; held (already above the metal it contains)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
@@ -613,9 +703,27 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-al-busbar": {
+   "gbpPerKg": 3.6907,
+   "basis": "Aluminium sheet and plate (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa6016-t4": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa6111-t4": {
+   "gbpPerKg": 3.5919,
+   "basis": "Aluminium sheet and plate (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.7104,
+   "basis": "Aluminium sheet and plate (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg; held (already above the metal it contains)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
@@ -624,6 +732,24 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
    "basis": "Aluminium sheet and plate (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 18.5218 ZAR (ECB 2026-10-29): R77.0507/kg; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
+  },
+  "mat-c101-bar": {
+   "gbpPerKg": 11.0879,
+   "basis": "ETP copper bar / sheet (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 18.5218 ZAR (ECB 2026-10-29): R244.4878/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-c110-copper": {
+   "gbpPerKg": 11.0879,
+   "basis": "ETP copper bar / sheet (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 18.5218 ZAR (ECB 2026-10-29): R244.4878/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.7168,
+   "basis": "ETP copper bar / sheet (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 18.5218 ZAR (ECB 2026-10-29): R244.4878/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
   },
   "mat-brass-cz121": {
    "gbpPerKg": 9.3357,
@@ -643,10 +769,34 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
+  "mat-bronze-pb1": {
+   "gbpPerKg": 14.234,
+   "basis": "Phosphor / tin bronze (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R308.1231/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-bronze-c905": {
    "gbpPerKg": 13.9038,
    "basis": "Phosphor / tin bronze (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R308.1231/kg; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-cusn12-cast": {
+   "gbpPerKg": 14.2398,
+   "basis": "Phosphor / tin bronze (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 18.5218 ZAR (ECB 2026-10-29): R308.1231/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak3": {
+   "gbpPerKg": 3.1479,
+   "basis": "Zamak 3 (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.96 × SHG zinc €3.58 (LME + Rotterdam premium) + 0.04 × Al €3.19 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R66.0191/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09) ; https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns (2026-10-01 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak5": {
+   "gbpPerKg": 3.197,
+   "basis": "Zamak 5 (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.95 × zinc €3.58 + 0.04 × Al + 0.01 × Cu €13.2 — at €1 = 18.5218 ZAR (ECB 2026-10-29): R67.8009/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-pp-homo": {
@@ -1037,6 +1187,12 @@ export const SOUTH_AFRICA_BOOK: CountryBook = {
    "gbpPerKg": 2.0059,
    "basis": "PC/ABS (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 18.5218 ZAR (ECB 2026-10-29): R44.4523/kg; floor (raised to metal content)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09) ; https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Low"
+  },
+  "mat-cf-dry-3k": {
+   "gbpPerKg": 25.2388,
+   "basis": "Carbon fabric (floor): no ZA or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 18.5218 ZAR (ECB 2026-10-29): R554.1723/kg; held (already above the metal it contains)",
+   "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report (2026-03)",
    "confidence": "Low"
   },
   "mat-nr": {

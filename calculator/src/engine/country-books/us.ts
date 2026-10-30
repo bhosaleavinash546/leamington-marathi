@@ -13,37 +13,37 @@ export const UNITED_STATES_BOOK: CountryBook = {
  "labourGrades": {
   "forge": {
    "gbpPerHr": 32.8002,
-   "basis": "paid as skilled: skilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 28.24 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 43.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: skilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 28.24 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 43.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 24.7653,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 24.7653,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 24.7653,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 24.7653,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 24.7653,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (median), ALL INDUSTRIES (cross-industry national median) — the NAICS 31-33 manufacturing page could, 2025-05): 21.32 an hour × 2105.0 paid h × wage growth 3.4%/yr over 1 yr = ×1.0339 × employer contributions 49.60% (BLS ECEC June 2026, manufacturing: total compensation $48.62 ÷ wages $32.5 per hour worked = ×1.496 — every benefit the employer pays (health insurance, retirement, paid leave, legally required), not only FICA) ÷ 2105 h worked a year (hours/year actually worked) = 32.98/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://fraser.stlouisfed.org/files/text/releases/ecec/ecec_20260909.txt ; https://www.onetonline.org/link/summary/17-2141.00 ; https://www.onetonline.org/link/summary/17-3026.00 ; https://www.onetonline.org/link/summary/51-1011.00 ; https://www.onetonline.org/link/summary/51-2022.00 ; https://www.onetonline.org/link/summary/51-4041.00 ; https://www.onetonline.org/link/summary/51-4071.00 ; https://www.onetonline.org/link/summary/51-4072.00 ; https://www.onetonline.org/link/summary/51-9061.00",
    "confidence": "Medium"
   }
@@ -270,6 +270,12 @@ export const UNITED_STATES_BOOK: CountryBook = {
    "basis": "409L / 441 ferritic sheet: no US or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 1.113 USD (ECB 2026-10-29): $1.6495/kg; ladder ×1.109 (book £3.16 ÷ base £2.85)",
    "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429 (2026-07-01)",
    "confidence": "Low"
+  },
+  "mat-ss304-sheet": {
+   "gbpPerKg": 2.3151,
+   "basis": "304 sheet: no US or regional price found — the European market price at par (traded material, no country factor): 304 CR 2B €2,770/t delivered N. Europe incl. alloy surcharge (Fastmarkets, 7 Sep 2026) = €2.77/kg; the October 1.4301 surcharge is €2,188/t — at €1 = 1.113 USD (ECB 2026-10-29): $3.083/kg; direct",
+   "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/ (2026-09-07) ; https://legierungszuschlag.info/en/ (2026-10-01)",
+   "confidence": "Medium"
   },
   "mat-ss301-spring": {
    "gbpPerKg": 3.005,
@@ -613,6 +619,42 @@ export const UNITED_STATES_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.3191,
+   "basis": "Aluminium forging stock (floor): no US or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.113 USD (ECB 2026-10-29): $4.0736/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.2214,
+   "basis": "Aluminium forging stock (floor): no US or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.113 USD (ECB 2026-10-29): $4.0736/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.5669,
+   "basis": "Aluminium forging stock (floor): no US or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.113 USD (ECB 2026-10-29): $4.0736/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.5731,
+   "basis": "Aluminium forging stock (floor): no US or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.113 USD (ECB 2026-10-29): $4.0736/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 5.1513,
+   "basis": "Aluminium forging stock (floor): no US or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.113 USD (ECB 2026-10-29): $4.0736/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.4478,
+   "basis": "Aluminium forging stock (floor): no US or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.113 USD (ECB 2026-10-29): $4.0736/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 4.3161,
    "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — US's market: DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = $5.7478/kg; floor (raised to metal content)",
@@ -679,10 +721,34 @@ export const UNITED_STATES_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
    "confidence": "Medium"
   },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.7583,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — US's market: DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = $5.7478/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
   "mat-aa1050-sheet": {
    "gbpPerKg": 4.3161,
    "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — US's market: DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = $5.7478/kg; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-c101-bar": {
+   "gbpPerKg": 11.1737,
+   "basis": "ETP copper bar / sheet (floor): no US or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 1.113 USD (ECB 2026-10-29): $14.6916/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-c110-copper": {
+   "gbpPerKg": 11.1737,
+   "basis": "ETP copper bar / sheet (floor): no US or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 1.113 USD (ECB 2026-10-29): $14.6916/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.8169,
+   "basis": "ETP copper bar / sheet (floor): no US or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 1.113 USD (ECB 2026-10-29): $14.6916/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
    "confidence": "Medium"
   },
   "mat-brass-cz121": {
@@ -703,9 +769,21 @@ export const UNITED_STATES_BOOK: CountryBook = {
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
+  "mat-bronze-pb1": {
+   "gbpPerKg": 14.3426,
+   "basis": "Phosphor / tin bronze (floor): no US or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 1.113 USD (ECB 2026-10-29): $18.5155/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-bronze-c905": {
    "gbpPerKg": 13.9037,
    "basis": "Phosphor / tin bronze (floor): no US or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 1.113 USD (ECB 2026-10-29): $18.5155/kg; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-cusn12-cast": {
+   "gbpPerKg": 14.3501,
+   "basis": "Phosphor / tin bronze (floor): no US or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 1.113 USD (ECB 2026-10-29): $18.5155/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
    "confidence": "Low"
   },
@@ -883,6 +961,12 @@ export const UNITED_STATES_BOOK: CountryBook = {
    "source": "https://businessanalytiq.com/procurementanalytics/index/pvc-price-index/ (2026-09)",
    "confidence": "Low"
   },
+  "mat-abs": {
+   "gbpPerKg": 1.5995,
+   "basis": "ABS family: ABS family — US's market: businessanalytiq ABS price index, North America, September 2026: US$2.13/kg (4.4% up m/m) = 96.6 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis n = 2.13 USD/kg (2026-09) = $2.1300/kg × the book's grade premium over its base; the anchor grade itself",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/abs-price-index/ (2026-09)",
+   "confidence": "Low"
+  },
   "mat-abs-fr": {
    "gbpPerKg": 1.9845,
    "basis": "ABS family: ABS family — US's market: businessanalytiq ABS price index, North America, September 2026: US$2.13/kg (4.4% up m/m) = 96.6 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis n = 2.13 USD/kg (2026-09) = $2.1300/kg × the book's grade premium over its base; ladder ×1.241 (book £2.01 ÷ base £1.62)",
@@ -995,6 +1079,12 @@ export const UNITED_STATES_BOOK: CountryBook = {
    "gbpPerKg": 2.0059,
    "basis": "PC/ABS (floor): no US or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 1.113 USD (ECB 2026-10-29): $2.6712/kg; floor (raised to metal content)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09) ; https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Low"
+  },
+  "mat-cf-dry-3k": {
+   "gbpPerKg": 25.0507,
+   "basis": "Carbon fabric (floor): no US or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 1.113 USD (ECB 2026-10-29): $33.301/kg; held (already above the metal it contains)",
+   "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report (2026-03)",
    "confidence": "Low"
   },
   "mat-nr": {

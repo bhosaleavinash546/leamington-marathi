@@ -75,15 +75,16 @@ describe('machines: the 3-shift operating model; Indian capex for CNC machining'
     expect(mach('mach-vmc3').buildup.annualAvailableHours).toBe(7200);
     expect(mach('mach-vmc3').sourceNote).toMatch(/Jyoti/);
   });
-  it('no India machine rate went up, and a machine without capex evidence says its capital is HELD', () => {
+  it('a machine on the India operating model at its UK capital AT PAR (world round: the UK × 0.52 factor had no source) says so', () => {
     // the frozen India book before this change (UK × the regional factors)
     const snap = JSON.parse(readFileSync('scripts/rate-refresh/india-2026-10/current-india-book.json', 'utf8')) as { machines: Array<{ id: string; inrPerHr: number }> };
+    // capital at par can raise a rate above the old UK × factor figure; a machine on SOURCED Indian capex never rises
     for (const m of IN.machines) {
       const was = snap.machines.find(x => x.id === m.id);
-      if (!was) continue;   // a machine added after the snapshot (mach-hmc-400, pilot rule pack 30 Oct 2026) has no pre-book figure
+      if (!was || /AT PAR/.test(m.sourceNote)) continue;
       expect(inr(m.computedRatePerHr), m.id).toBeLessThanOrEqual(was.inrPerHr + 0.01);
     }
-    expect(mach('press-400t').sourceNote).toMatch(/HELD/);
+    expect(mach('press-400t').sourceNote).toMatch(/AT PAR/);
     expect(mach('press-400t').confidence).toBe('Low');
   });
 });

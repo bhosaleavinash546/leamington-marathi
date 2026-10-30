@@ -13,37 +13,37 @@ export const TURKEY_BOOK: CountryBook = {
  "labourGrades": {
   "forge": {
    "gbpPerHr": 6.4169,
-   "basis": "paid as skilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 8 mean earnings ÷ all occupations (2025) = 0.8321 → 425.88/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 8 mean earnings ÷ all occupations (2025) = 0.8321 → 425.88/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/TUR.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 6.0196,
-   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/TUR.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 6.0196,
-   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/TUR.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 6.0196,
-   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/TUR.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 6.0196,
-   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/TUR.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 6.0196,
-   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: Eurostat labour cost per hour worked, manufacturing, 2025: 369.7 TRY × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 1.3844 × ILOSTAT ISCO 7 mean earnings ÷ all occupations (2025) = 0.7806 → 399.51/h. Included: Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios. NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/TUR.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   }
@@ -457,6 +457,12 @@ export const TURKEY_BOOK: CountryBook = {
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
+  "mat-17-4ph-cast": {
+   "gbpPerKg": 5.5065,
+   "basis": "Cast stainless (charge): no TR or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺71.4442/kg; ladder +₺294.01/kg (the book's premium: £9.6 - base £5.17)",
+   "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
+   "confidence": "Low"
+  },
   "mat-ni-resist-d2": {
    "gbpPerKg": 2.5961,
    "basis": "Ni-Resist D-2 (charge): no TR or regional price found — the European market price at par (traded material, no country factor): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397 — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺172.2981/kg; direct",
@@ -613,6 +619,42 @@ export const TURKEY_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.1826,
+   "basis": "Aluminium forging stock (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺203.0169/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.0872,
+   "basis": "Aluminium forging stock (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺203.0169/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.4208,
+   "basis": "Aluminium forging stock (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺203.0169/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.3831,
+   "basis": "Aluminium forging stock (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺203.0169/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 4.9358,
+   "basis": "Aluminium forging stock (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺203.0169/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.0992,
+   "basis": "Aluminium forging stock (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺203.0169/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺230.7515/kg; floor (raised to metal content)",
@@ -643,6 +685,12 @@ export const TURKEY_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-aa6061-sheet": {
+   "gbpPerKg": 3.4874,
+   "basis": "Aluminium sheet and plate (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺230.7515/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa6063-sheet": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺230.7515/kg; floor (raised to metal content)",
@@ -655,9 +703,27 @@ export const TURKEY_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-al-busbar": {
+   "gbpPerKg": 3.5636,
+   "basis": "Aluminium sheet and plate (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺230.7515/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa6016-t4": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺230.7515/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa6111-t4": {
+   "gbpPerKg": 3.4768,
+   "basis": "Aluminium sheet and plate (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺230.7515/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.4793,
+   "basis": "Aluminium sheet and plate (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺230.7515/kg; held (already above the metal it contains)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
@@ -676,6 +742,12 @@ export const TURKEY_BOOK: CountryBook = {
   "mat-c110-copper": {
    "gbpPerKg": 11.0323,
    "basis": "ETP copper bar / sheet (floor): no TR or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺732.1921/kg; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.2446,
+   "basis": "ETP copper bar / sheet (floor): no TR or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺732.1921/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
    "confidence": "Medium"
   },
@@ -713,6 +785,18 @@ export const TURKEY_BOOK: CountryBook = {
    "gbpPerKg": 13.9038,
    "basis": "Phosphor / tin bronze (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺922.7673/kg; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak3": {
+   "gbpPerKg": 3.0396,
+   "basis": "Zamak 3 (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Metal content 0.96 × SHG zinc €3.58 (LME + Rotterdam premium) + 0.04 × Al €3.19 — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺197.7141/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09) ; https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns (2026-10-01 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak5": {
+   "gbpPerKg": 3.0872,
+   "basis": "Zamak 5 (floor): no TR or regional price found — the European market price at par (traded material, no country factor): Metal content 0.95 × zinc €3.58 + 0.04 × Al + 0.01 × Cu €13.2 — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺203.0502/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-pp-homo": {
@@ -977,6 +1061,36 @@ export const TURKEY_BOOK: CountryBook = {
    "gbpPerKg": 1.4041,
    "basis": "HIPS: no TR or regional price found — the European market price at par (traded material, no country factor): HIPS €1.68/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) — the book had HIPS at the GPPS price — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺93.1881/kg; direct",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-pc": {
+   "gbpPerKg": 2.2065,
+   "basis": "PC family: no TR or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺146.4384/kg; the anchor grade itself",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
+   "confidence": "Medium"
+  },
+  "mat-pc-glazing": {
+   "gbpPerKg": 3.6774,
+   "basis": "PC family: no TR or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺146.4384/kg; ladder ×1.667 (book £4.2 ÷ base £2.52)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
+   "confidence": "Medium"
+  },
+  "mat-pc-bm": {
+   "gbpPerKg": 3.4148,
+   "basis": "PC family: no TR or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺146.4384/kg; ladder ×1.548 (book £3.9 ÷ base £2.52)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
+   "confidence": "Medium"
+  },
+  "mat-pc-ext-sheet": {
+   "gbpPerKg": 2.8019,
+   "basis": "PC family: no TR or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺146.4384/kg; ladder ×1.270 (book £3.2 ÷ base £2.52)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
+   "confidence": "Medium"
+  },
+  "mat-pc-tf": {
+   "gbpPerKg": 2.977,
+   "basis": "PC family: no TR or regional price found — the European market price at par (traded material, no country factor): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC — at €1 = 55.4691 TRY (ECB 2026-10-29): ₺146.4384/kg; ladder ×1.349 (book £3.4 ÷ base £2.52)",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pa6": {

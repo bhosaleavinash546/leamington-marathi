@@ -14,34 +14,34 @@
  "labour": {
   "categories": {
    "skilled": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2178.96,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "skilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2178.96/h"
    },
    "semiskilled": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2123.36,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h"
    },
    "foundry": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2178.96,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "foundry earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2178.96/h"
    },
    "electronics": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2123.36,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "electronics earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h"
    },
    "inspector": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2178.96,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "inspector earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2178.96/h"
    },
    "technician": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2908.8,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "technician earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 3 ratio 1.150 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2908.80/h"
    },
    "supervisor": {
     "localPerHr": 3060.69,
@@ -49,45 +49,45 @@
     "basis": "supervisor earnings (scheduled cash earnings per month (mean), ALL INDUSTRIES, position grade (not ISCO 3122), 2025-06): 399200.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 3060.69/h"
    },
    "engineer": {
-    "localPerHr": 4319.93,
+    "localPerHr": 3720.34,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "not found for this role: skilled × ISCO 2 ÷ ISCO 7 = 1.707 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — skilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 4319.93/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 2 ratio 1.470 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 3720.34/h"
    }
   },
   "grades": {
    "forge": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2178.96,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "paid as skilled: skilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "paid as skilled: no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2178.96/h"
    },
    "furnace": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2123.36,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h"
    },
    "blow": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2123.36,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h"
    },
    "roto": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2123.36,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h"
    },
    "thermoform": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2123.36,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h"
    },
    "trim-router": {
-    "localPerHr": 2530.13,
+    "localPerHr": 2123.36,
     "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
-    "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h"
    }
   },
   "loadingIncluded": "Fully-loaded hourly cost INCLUDES: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked)",
-  "loadingNotIncluded": "NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+  "loadingNotIncluded": "Japan: the annual bonus (scheduled cash earnings only — MHLW special earnings for manufacturing were not read), so Japan's labour is a FLOOR; NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
   "short": "national / ILO occupation earnings + statutory employer contributions ÷ hours worked"
  },
  "energy": {

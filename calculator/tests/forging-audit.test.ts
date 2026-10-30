@@ -130,14 +130,12 @@ describe('F-H4 — exchange vs mill metal pricing', () => {
     expect(classifyMaterialFamily({ id: 'mat-ss316l-bar', category: 'Stainless Steel Billet' })).toBe('millSteel');
   });
 
-  it('exchange-traded alloys stay near-flat by country; mill steel spreads wider', () => {
-    // the regional SCALING (a country without its own book — China and India now price 4340 from their own markets)
+  it('an exchange-traded alloy and an unpriced mill steel are both AT PAR — no unsourced country discount', () => {
+    // world round (30 Oct 2026): every country has a book; what it did not price is the book's own price ×1
     const tr = buildRegionalLibrary(lib, 'TR');
-    const inconelRatio = matPrice(tr, 'mat-inconel718-forge') / matPrice(lib, 'mat-inconel718-forge');
-    const steelRatio = matPrice(tr, 'mat-steel4340') / matPrice(lib, 'mat-steel4340');
-    expect(inconelRatio).toBeGreaterThan(0.95);   // global nickel market ~flat
-    expect(steelRatio).toBeLessThan(inconelRatio); // mill steel discounts more
-    expect(steelRatio).toBeCloseTo(REGIONAL_DATA.TR.materialMultiplier, 2);
+    expect(matPrice(tr, 'mat-inconel718-forge') / matPrice(lib, 'mat-inconel718-forge')).toBeCloseTo(1, 6);
+    expect(matPrice(tr, 'mat-steel4340') / matPrice(lib, 'mat-steel4340')).toBeCloseTo(1, 6);
+    expect(REGIONAL_DATA.TR.materialMultiplier).toBe(1);
   });
 
   it('UK metal prices are unchanged (identity)', () => {

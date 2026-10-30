@@ -13,37 +13,37 @@ export const MALAYSIA_BOOK: CountryBook = {
  "labourGrades": {
   "forge": {
    "gbpPerHr": 2.9634,
-   "basis": "paid as skilled: the worker burden × ISCO 7 ÷ ISCO 8 = 1.026 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 16.02/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: the worker burden × ISCO 7 ÷ ISCO 8 = 1.026 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 16.02/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://storage.dosm.gov.my/labour/wages_occupation.csv ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 2.8875,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://storage.dosm.gov.my/labour/wages_occupation.csv ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 2.8875,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://storage.dosm.gov.my/labour/wages_occupation.csv ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 2.8875,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://storage.dosm.gov.my/labour/wages_occupation.csv ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 2.8875,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://storage.dosm.gov.my/labour/wages_occupation.csv ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 2.8875,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$9,081 (base + allowances + social security + overtime + bonus) × 4.0595 MYR/US$ × wage growth 2.4%/yr over 1 yr = ×1.0241 ÷ 2418 h worked a year (hours/year actually worked) = 15.61/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://storage.dosm.gov.my/labour/wages_occupation.csv ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   }
@@ -619,6 +619,42 @@ export const MALAYSIA_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.2834,
+   "basis": "Aluminium forging stock (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 4.5182 MYR (ECB 2026-10-29): RM16.5366/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.1835,
+   "basis": "Aluminium forging stock (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 4.5182 MYR (ECB 2026-10-29): RM16.5366/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.5276,
+   "basis": "Aluminium forging stock (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 4.5182 MYR (ECB 2026-10-29): RM16.5366/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.5209,
+   "basis": "Aluminium forging stock (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 4.5182 MYR (ECB 2026-10-29): RM16.5366/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 5.0906,
+   "basis": "Aluminium forging stock (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 4.5182 MYR (ECB 2026-10-29): RM16.5366/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.3537,
+   "basis": "Aluminium forging stock (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 4.5182 MYR (ECB 2026-10-29): RM16.5366/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 4.5182 MYR (ECB 2026-10-29): RM18.7957/kg; floor (raised to metal content)",
@@ -637,9 +673,21 @@ export const MALAYSIA_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-aa6082-sheet": {
+   "gbpPerKg": 3.498,
+   "basis": "Aluminium sheet and plate (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 4.5182 MYR (ECB 2026-10-29): RM18.7957/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa5754-sheet": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 4.5182 MYR (ECB 2026-10-29): RM18.7957/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa6061-sheet": {
+   "gbpPerKg": 3.5979,
+   "basis": "Aluminium sheet and plate (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 4.5182 MYR (ECB 2026-10-29): RM18.7957/kg; held (already above the metal it contains)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
@@ -655,9 +703,27 @@ export const MALAYSIA_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
+  "mat-al-busbar": {
+   "gbpPerKg": 3.6755,
+   "basis": "Aluminium sheet and plate (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 4.5182 MYR (ECB 2026-10-29): RM18.7957/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
   "mat-aa6016-t4": {
    "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 4.5182 MYR (ECB 2026-10-29): RM18.7957/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa6111-t4": {
+   "gbpPerKg": 3.5775,
+   "basis": "Aluminium sheet and plate (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 4.5182 MYR (ECB 2026-10-29): RM18.7957/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "confidence": "Low"
+  },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.6833,
+   "basis": "Aluminium sheet and plate (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 4.5182 MYR (ECB 2026-10-29): RM18.7957/kg; held (already above the metal it contains)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
@@ -666,6 +732,24 @@ export const MALAYSIA_BOOK: CountryBook = {
    "basis": "Aluminium sheet and plate (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 4.5182 MYR (ECB 2026-10-29): RM18.7957/kg; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
+  },
+  "mat-c101-bar": {
+   "gbpPerKg": 11.0433,
+   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + SG cathode premium $134.0/t = RM59.6500/kg — no bar or sheet below the copper it contains; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Copper (2026-10-30)",
+   "confidence": "Medium"
+  },
+  "mat-c110-copper": {
+   "gbpPerKg": 11.0433,
+   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + SG cathode premium $134.0/t = RM59.6500/kg — no bar or sheet below the copper it contains; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Copper (2026-10-30)",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.6607,
+   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + SG cathode premium $134.0/t = RM59.6500/kg — no bar or sheet below the copper it contains; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Copper (2026-10-30)",
+   "confidence": "Medium"
   },
   "mat-brass-cz121": {
    "gbpPerKg": 9.3356,
@@ -685,10 +769,34 @@ export const MALAYSIA_BOOK: CountryBook = {
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
+  "mat-bronze-pb1": {
+   "gbpPerKg": 14.1768,
+   "basis": "Phosphor / tin bronze (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 4.5182 MYR (ECB 2026-10-29): RM75.1634/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-bronze-c905": {
    "gbpPerKg": 13.9037,
    "basis": "Phosphor / tin bronze (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 4.5182 MYR (ECB 2026-10-29): RM75.1634/kg; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-cusn12-cast": {
+   "gbpPerKg": 14.1824,
+   "basis": "Phosphor / tin bronze (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 4.5182 MYR (ECB 2026-10-29): RM75.1634/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak3": {
+   "gbpPerKg": 3.1354,
+   "basis": "Zamak 3 (floor): metal content: LME zinc $3980/t + SG SHG premium $112/t, LME Al, Cu (29. October 2026) = RM16.4475/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Zinc (2026-10-30)",
+   "confidence": "Low"
+  },
+  "mat-zamak5": {
+   "gbpPerKg": 3.1835,
+   "basis": "Zamak 5 (floor): metal content: LME zinc $3980/t + SG SHG premium $112/t, LME Al, Cu (29. October 2026) = RM16.8725/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Zinc (2026-10-30)",
    "confidence": "Low"
   },
   "mat-pp-homo": {
@@ -1086,6 +1194,12 @@ export const MALAYSIA_BOOK: CountryBook = {
    "basis": "Carbon fabric (floor): no MY or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 4.5182 MYR (ECB 2026-10-29): RM135.1845/kg; floor (raised to metal content)",
    "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report (2026-03)",
    "confidence": "Low"
+  },
+  "mat-nr": {
+   "gbpPerKg": 1.8743,
+   "basis": "Natural rubber (raw): Natural rubber (raw) — the SEA market (SG figure): SGX TSR20 November-2026 contract 249.60 US¢/kg (−2.27%); Dec-26 248.20, Jan-27 246.80 — session of 29 Oct 2026 as reported 06:33 30 Oct 2026 = 249.6 US cents/kg (2026-10-29) = RM10.1325/kg; direct",
+   "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-30-10-dong-loat-giam-tren-cac-san-giao-dich-a339991.html (2026-10-29)",
+   "confidence": "Medium"
   }
  },
  "machines": {

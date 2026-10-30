@@ -24,7 +24,7 @@
  * base) — the India level, the book's grade premium (floored at the anchor where the family says so); floor = the
  * book's India price raised to the metal it contains; anything not in a family is HELD and says why.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-library.js';
@@ -82,6 +82,19 @@ const register: Row[] = [];
 
 // ── materials ────────────────────────────────────────────────────────────────
 const materials: CountryBook['materials'] = {};
+// research items a page re-check corrected (scripts/rate-refresh/verify-pages/apply-corrections.py): every note built on
+// one says so, with the old and new figure — a family's own text may still quote the figure it was first written with
+const CORRECTED = new Map<string, { was: unknown; value: unknown; why: string }>();
+for (const d of [resolve(ROOT, DIR, 'research'), resolve(ROOT, 'scripts/rate-refresh/round-2026-10-30/research'), resolve(ROOT, 'scripts/rate-refresh/round-2026-10-30b/research')]) {
+  let files: string[] = [];
+  try { files = readdirSync(d).filter(f => f.endsWith('.json')); } catch { continue; }
+  for (const f of files) for (const it of (JSON.parse(readFileSync(resolve(d, f), 'utf8')).items ?? []) as Array<{ key: string; value: unknown; corrected?: { was: unknown; why: string } }>)
+    if (it.corrected) CORRECTED.set(it.key, { was: it.corrected.was, value: it.value, why: it.corrected.why });
+}
+const correctionNote = (keys: string[]) => keys.filter(k => CORRECTED.has(k)).map(k => {
+  const c = CORRECTED.get(k)!;
+  return ` — CORRECTED 30 Oct 2026 on a page re-check: ${k} ${c.was} → ${c.value} (${c.why})`;
+}).join('');
 // A ladder applies the UK book's grade premium as it stood when the India families were defined (the frozen UK
 // snapshot, scripts/rate-refresh/uk-2026-10/current-uk-book.json) — the UK book 2026-10 re-based castings to their
 // charge, and `f.base` in the India config is that snapshot's figure, so the live UK price would break the ratio.
@@ -124,8 +137,9 @@ for (const f of cfg.materialFamilies) {
       how = curInr >= anchor ? 'held (already above the metal it contains)' : 'floor (raised to metal content)';
     } else throw new Error(`method ${f.method}`);
     const decision = Math.abs(inr - curInr) < 0.005 * curInr ? 'held (evidence agrees)' : how.startsWith('held') ? 'held' : 'updated';
-    if (!decision.startsWith('held')) {
-      materials[id] = { gbpPerKg: gbp(inr), basis: `${f.family}: ${f.anchorBasis}; ${how}`, source: srcText, confidence: f.confidence as Confidence };
+    // a book with unpriced items AT PAR has no country factor to fall back on: an agreeing figure is still the book's
+    if (!decision.startsWith('held') || (cfg.heldMaterialsAtPar && decision === 'held (evidence agrees)')) {
+      materials[id] = { gbpPerKg: gbp(inr), basis: `${f.family}: ${f.anchorBasis}; ${how}${correctionNote((f.sources as Array<{ research?: string }>).map(x => x.research ?? ''))}`, source: srcText, confidence: f.confidence as Confidence };
     }
     register.push({ kind: 'material', id, name: uk.grade, currentInr: r2(curInr), newInr: r2(decision.startsWith('held') ? curInr : inr), unit: `${SYM}/kg`,
       decision, basis: `${f.family} — ${how}`, source: srcText });

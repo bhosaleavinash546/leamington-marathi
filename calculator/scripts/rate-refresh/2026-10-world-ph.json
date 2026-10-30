@@ -14,9 +14,9 @@
  "labour": {
   "categories": {
    "skilled": {
-    "localPerHr": 142.56,
+    "localPerHr": 147.43,
     "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/PHL.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
-    "basis": "the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added)"
+    "basis": "the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added) — the country's figures put the setter level with the operator: × 1.0341, the EU manufacturing median gap between the two manual groups (SES 2022) = 147.43/h"
    },
    "semiskilled": {
     "localPerHr": 142.56,
@@ -24,9 +24,9 @@
     "basis": "JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added)"
    },
    "foundry": {
-    "localPerHr": 142.56,
+    "localPerHr": 147.43,
     "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/PHL.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
-    "basis": "as skilled — the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added)"
+    "basis": "the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added) — the country's figures put the setter level with the operator: × 1.0341, the EU manufacturing median gap between the two manual groups (SES 2022) = 147.43/h"
    },
    "electronics": {
     "localPerHr": 142.56,
@@ -34,9 +34,9 @@
     "basis": "as semiskilled — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added)"
    },
    "inspector": {
-    "localPerHr": 142.56,
+    "localPerHr": 147.43,
     "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/PHL.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
-    "basis": "as skilled — the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added)"
+    "basis": "the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added) — the country's figures put the setter level with the operator: × 1.0341, the EU manufacturing median gap between the two manual groups (SES 2022) = 147.43/h"
    },
    "technician": {
     "localPerHr": 158.43,
@@ -56,9 +56,9 @@
   },
   "grades": {
    "forge": {
-    "localPerHr": 142.56,
+    "localPerHr": 147.43,
     "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/PHL.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
-    "basis": "paid as skilled: the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added)"
+    "basis": "paid as skilled: the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$4,858 (base + allowances + social security + overtime + bonus) × 63.8383 PHP/US$ × wage growth 4.9%/yr over 1 yr = ×1.0490 ÷ 2282 h worked a year (hours/year actually worked) = 142.56/h (fully loaded — no contributions added) — the country's figures put the setter level with the operator: × 1.0341, the EU manufacturing median gap between the two manual groups (SES 2022) = 147.43/h"
    },
    "furnace": {
     "localPerHr": 142.56,
@@ -87,7 +87,7 @@
    }
   },
   "loadingIncluded": "Fully-loaded hourly cost INCLUDES: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked)",
-  "loadingNotIncluded": "NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+  "loadingNotIncluded": "NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
   "short": "national / ILO occupation earnings + statutory employer contributions ÷ hours worked"
  },
  "energy": {

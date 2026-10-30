@@ -16,78 +16,78 @@
    "skilled": {
     "localPerHr": 153.22,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "no occupation figure: all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
    },
    "semiskilled": {
     "localPerHr": 149.31,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
    },
    "foundry": {
     "localPerHr": 153.22,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "no occupation figure: all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
    },
    "electronics": {
     "localPerHr": 149.31,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
    },
    "inspector": {
     "localPerHr": 153.22,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "no occupation figure: all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
    },
    "technician": {
     "localPerHr": 204.54,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "no occupation figure: all-employee average × ISCO 3 ratio 1.150 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 204.54/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 3 ratio 1.150 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 204.54/h"
    },
    "supervisor": {
     "localPerHr": 204.54,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "no occupation figure: all-employee average × ISCO 3 ratio 1.150 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 204.54/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 3 ratio 1.150 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 204.54/h"
    },
    "engineer": {
     "localPerHr": 261.6,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "no occupation figure: all-employee average × ISCO 2 ratio 1.470 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 261.60/h"
+    "basis": "no occupation figure: the all-employee average × ISCO 2 ratio 1.470 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 261.60/h"
    }
   },
   "grades": {
    "forge": {
     "localPerHr": 153.22,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "paid as skilled: no occupation figure: all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
+    "basis": "paid as skilled: no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 153.22/h"
    },
    "furnace": {
     "localPerHr": 149.31,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
    },
    "blow": {
     "localPerHr": 149.31,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
    },
    "roto": {
     "localPerHr": 149.31,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
    },
    "thermoform": {
     "localPerHr": 149.31,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
    },
    "trim-router": {
     "localPerHr": 149.31,
     "source": "https://www.statssa.gov.za/publications/P0277/Media_20Release_20QES_202026_20Q2.pdf",
-    "basis": "paid as semiskilled: no occupation figure: all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
+    "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 30611.0 a month × 12 × wage growth 4.1%/yr over 0 yr = ×1.0000 × employer contributions 2.00% (employer UIF + SDL) ÷ 2106 h worked a year (normal hours/year (statutory)) = 149.31/h"
    }
   },
   "loadingIncluded": "Fully-loaded hourly cost INCLUDES: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked)",
-  "loadingNotIncluded": "NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+  "loadingNotIncluded": "NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
   "short": "national / ILO occupation earnings + statutory employer contributions ÷ hours worked"
  },
  "energy": {

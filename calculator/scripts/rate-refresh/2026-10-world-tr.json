@@ -87,7 +87,7 @@
    }
   },
   "loadingIncluded": "Eurostat labour cost per hour worked (as Europe) × ILOSTAT occupation ratios",
-  "loadingNotIncluded": "NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+  "loadingNotIncluded": "NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
   "short": "Eurostat labour cost × ILO occupation ratio"
  },
  "energy": {

@@ -24,11 +24,24 @@
  * depreciation = capex ÷ life, maintenance and indirect support a % of capex, finance on half the capex, floor,
  * hours and utilisation held.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { computeMachineRateFromBuildup, DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import type { MachineRateBuildup } from '../src/engine/types.js';
+
+// research items a page re-check corrected (verify-pages/apply-corrections.py, 30 Oct 2026): the note says so
+const ROOT_CB = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const CORRECTED = new Map<string, { was: unknown; value: unknown; why: string }>();
+for (const d of ['scripts/rate-refresh/uk-2026-10/research', 'scripts/rate-refresh/round-2026-10-30/research', 'scripts/rate-refresh/round-2026-10-30b/research']) {
+  for (const f of readdirSync(resolve(ROOT_CB, d)).filter(x => x.endsWith('.json')))
+    for (const it of (JSON.parse(readFileSync(resolve(ROOT_CB, d, f), 'utf8')).items ?? []) as Array<{ key: string; value: unknown; corrected?: { was: unknown; why: string } }>)
+      if (it.corrected) CORRECTED.set(it.key, { was: it.corrected.was, value: it.value, why: it.corrected.why });
+}
+const correctionNote = (keys: string[]) => keys.filter(k => CORRECTED.has(k)).map(k => {
+  const c = CORRECTED.get(k)!;
+  return ` — CORRECTED 30 Oct 2026 on a page re-check: ${k} ${c.was} → ${c.value} (${c.why})`;
+}).join('');
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const cfgPath = process.argv[2];
@@ -77,6 +90,7 @@ function setField(obj: string, field: string, literal: string): string {
 const snapMat = new Map(SNAP.materials.map(m => [m.id, m]));
 for (const f of cfg.materialFamilies) {
   const srcText = [...new Set((f.sources as Array<{ source: string; date?: string }>).map(s => `${s.source}${s.date ? ` (${s.date})` : ''}`))].join(' ; ');
+  const fixNote = correctionNote((f.sources as Array<{ research?: string }>).map(x => x.research ?? ''));
   for (const id of f.members as string[]) {
     const cur = snapMat.get(id);
     if (!cur) throw new Error(`material ${id} is not in the snapshot`);
@@ -113,7 +127,7 @@ for (const f of cfg.materialFamilies) {
     // are history, the price basis is the first sentence
     const live = /sourceNote:\s*'((?:[^'\\]|\\.)*)'/.exec(obj)![1];
     const earlier = (live.startsWith('UK book') ? live.replace(/^.*?Earlier note: /, '') : live).replace(/ \| Refresh \d{4}-\d{2}:.*$/, '');
-    obj = setField(obj, 'sourceNote', `'${q(`${TAG}: ${f.family} — ${f.anchorBasis}; ${how}. Was £${cur.gbpPerKg}/kg. Source: ${srcText}. Earlier note: ${earlier}`)}'`);
+    obj = setField(obj, 'sourceNote', `'${q(`${TAG}: ${f.family} — ${f.anchorBasis}; ${how}${fixNote}. Was £${cur.gbpPerKg}/kg. Source: ${srcText}. Earlier note: ${earlier}`)}'`);
     obj = setField(obj, 'confidence', `'${f.confidence}'`);
     lib = lib.slice(0, a) + obj + lib.slice(b);
   }

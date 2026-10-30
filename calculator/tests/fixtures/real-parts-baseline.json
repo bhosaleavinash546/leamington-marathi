@@ -10991,15 +10991,15 @@
     "outcome": {
       "status": "costed",
       "commodity": "extrusion",
-      "total": 2.27,
+      "total": 2.29,
       "breakdown": {
-        "rawMaterial": 0.99,
+        "rawMaterial": 1,
         "process": 0.15,
         "labour": 0.12,
         "tooling": 0.44,
         "packaging": 0.09,
         "logistics": 0.11,
-        "overhead": 0.2,
+        "overhead": 0.21,
         "margin": 0.17
       }
     }

@@ -58,7 +58,7 @@ describe('report text carries no internals', () => {
   });
   it('a GBP hub\'s rate build-up has no "÷ 1"; a foreign hub keeps its FX step', () => {
     expect(SW_HUB_RATES.UK.build).not.toMatch(/÷ 1 =/);
-    expect(SW_HUB_RATES.DE.build).toMatch(/÷ 1\.165 EUR per £ = £/);
+    expect(SW_HUB_RATES.DE.build).toMatch(/÷ 1\.1965 EUR per £ = £/);
   });
   it('the lifecycle step says the service years run past the last build', () => {
     const r = computeSWProgram(inputs());

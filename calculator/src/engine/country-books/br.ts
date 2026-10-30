@@ -13,37 +13,37 @@ export const BRAZIL_BOOK: CountryBook = {
  "labourGrades": {
   "forge": {
    "gbpPerHr": 3.4084,
-   "basis": "paid as skilled: the higher of the two manual figures (craft v operator) — semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2809.37 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 24.29/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: the higher of the two manual figures (craft v operator) — semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2809.37 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 24.29/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/BRA.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 3.2063,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/BRA.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 3.2063,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/BRA.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 3.2063,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/BRA.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 3.2063,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/BRA.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 3.2063,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 2642.7 a month × 13.3333 (incl. 1.33333 months bonus) × wage growth 6.4%/yr over 1 yr = ×1.0644 × employer contributions 28.00% (employer INSS + FGTS only) ÷ 2101 h worked a year (hours/year actually worked) = 22.85/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/BRA.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   }
@@ -270,6 +270,12 @@ export const BRAZIL_BOOK: CountryBook = {
    "basis": "409L / 441 ferritic sheet: no BR or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 5.9563 BRL (ECB 2026-10-29): R$8.8272/kg; ladder ×1.109 (book £3.16 ÷ base £2.85)",
    "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429 (2026-07-01)",
    "confidence": "Low"
+  },
+  "mat-ss304-sheet": {
+   "gbpPerKg": 2.3151,
+   "basis": "304 sheet: no BR or regional price found — the European market price at par (traded material, no country factor): 304 CR 2B €2,770/t delivered N. Europe incl. alloy surcharge (Fastmarkets, 7 Sep 2026) = €2.77/kg; the October 1.4301 surcharge is €2,188/t — at €1 = 5.9563 BRL (ECB 2026-10-29): R$16.499/kg; direct",
+   "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/ (2026-09-07) ; https://legierungszuschlag.info/en/ (2026-10-01)",
+   "confidence": "Medium"
   },
   "mat-ss301-spring": {
    "gbpPerKg": 3.005,
@@ -613,6 +619,120 @@ export const BRAZIL_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.2568,
+   "basis": "Aluminium forging stock (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 5.9563 BRL (ECB 2026-10-29): R$21.8001/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.16,
+   "basis": "Aluminium forging stock (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 5.9563 BRL (ECB 2026-10-29): R$21.8001/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.501,
+   "basis": "Aluminium forging stock (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 5.9563 BRL (ECB 2026-10-29): R$21.8001/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.486,
+   "basis": "Aluminium forging stock (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 5.9563 BRL (ECB 2026-10-29): R$21.8001/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 5.0515,
+   "basis": "Aluminium forging stock (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 5.9563 BRL (ECB 2026-10-29): R$21.8001/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.2901,
+   "basis": "Aluminium forging stock (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 5.9563 BRL (ECB 2026-10-29): R$21.8001/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-aa5182": {
+   "gbpPerKg": 3.1109,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa5052": {
+   "gbpPerKg": 3.1109,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa5083": {
+   "gbpPerKg": 3.3157,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6082-sheet": {
+   "gbpPerKg": 3.4715,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa5754-sheet": {
+   "gbpPerKg": 3.2386,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6061-sheet": {
+   "gbpPerKg": 3.5697,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6063-sheet": {
+   "gbpPerKg": 3.4041,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa3003-sheet": {
+   "gbpPerKg": 2.9158,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-al-busbar": {
+   "gbpPerKg": 3.6483,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6016-t4": {
+   "gbpPerKg": 3.4041,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6111-t4": {
+   "gbpPerKg": 3.5501,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.6315,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa1050-sheet": {
+   "gbpPerKg": 2.9355,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — BR's market: DERIVED: Novelis South America segment FY2026 net sales 2,861 MUSD / shipments 761 kt = 3,759.5 USD/t (Pindamonhangaba, Brazil; mostly can sheet). = 3759.5 USD/t (2025-04-01 to 2026-03-31) = R$20.1192/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
   "mat-c101-bar": {
    "gbpPerKg": 11.0324,
    "basis": "ETP copper bar / sheet (floor): no BR or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 5.9563 BRL (ECB 2026-10-29): R$78.6232/kg; floor (raised to metal content)",
@@ -622,6 +742,12 @@ export const BRAZIL_BOOK: CountryBook = {
   "mat-c110-copper": {
    "gbpPerKg": 11.0324,
    "basis": "ETP copper bar / sheet (floor): no BR or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 5.9563 BRL (ECB 2026-10-29): R$78.6232/kg; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.5563,
+   "basis": "ETP copper bar / sheet (floor): no BR or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 5.9563 BRL (ECB 2026-10-29): R$78.6232/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
    "confidence": "Medium"
   },
@@ -643,10 +769,34 @@ export const BRAZIL_BOOK: CountryBook = {
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
+  "mat-bronze-pb1": {
+   "gbpPerKg": 14.0684,
+   "basis": "Phosphor / tin bronze (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 5.9563 BRL (ECB 2026-10-29): R$99.0872/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-bronze-c905": {
    "gbpPerKg": 13.9039,
    "basis": "Phosphor / tin bronze (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 5.9563 BRL (ECB 2026-10-29): R$99.0872/kg; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-cusn12-cast": {
+   "gbpPerKg": 14.074,
+   "basis": "Phosphor / tin bronze (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 5.9563 BRL (ECB 2026-10-29): R$99.0872/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak3": {
+   "gbpPerKg": 3.1109,
+   "basis": "Zamak 3 (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Metal content 0.96 × SHG zinc €3.58 (LME + Rotterdam premium) + 0.04 × Al €3.19 — at €1 = 5.9563 BRL (ECB 2026-10-29): R$21.2306/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09) ; https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns (2026-10-01 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak5": {
+   "gbpPerKg": 3.16,
+   "basis": "Zamak 5 (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Metal content 0.95 × zinc €3.58 + 0.04 × Al + 0.01 × Cu €13.2 — at €1 = 5.9563 BRL (ECB 2026-10-29): R$21.8036/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-pp-homo": {
@@ -673,9 +823,27 @@ export const BRAZIL_BOOK: CountryBook = {
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
+  "mat-pp-ext-sheet": {
+   "gbpPerKg": 1.1655,
+   "basis": "PP family: no BR or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 5.9563 BRL (ECB 2026-10-29): R$6.9689/kg; ladder ×1.192 (book £1.18 ÷ base £0.99)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-ppr-pipe": {
+   "gbpPerKg": 1.1557,
+   "basis": "PP family: no BR or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 5.9563 BRL (ECB 2026-10-29): R$6.9689/kg; ladder ×1.182 (book £1.17 ÷ base £0.99)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
   "mat-pp-roto": {
    "gbpPerKg": 1.4619,
    "basis": "PP family: no BR or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 5.9563 BRL (ECB 2026-10-29): R$6.9689/kg; ladder ×1.495 (book £1.48 ÷ base £0.99)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-pp-tf": {
+   "gbpPerKg": 1.3137,
+   "basis": "PP family: no BR or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 5.9563 BRL (ECB 2026-10-29): R$6.9689/kg; ladder ×1.343 (book £1.33 ÷ base £0.99)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
@@ -780,6 +948,24 @@ export const BRAZIL_BOOK: CountryBook = {
    "basis": "LDPE family: LDPE family — BR's market: businessanalytiq LDPE index, SOUTH AMERICA region, September 2026: US$1.88/kg (3.3% up). Method not published; not Brazil-specific (region), tax basis not stated. = 1.88 USD/kg (2026-09) = R$10.0610/kg × the book's grade premium over its base; ladder ×1.394 (book £1.52 ÷ base £1.09)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/ldpe-price-index/ (2026-09)",
    "confidence": "Low"
+  },
+  "mat-lldpe": {
+   "gbpPerKg": 1.0447,
+   "basis": "LLDPE family: no BR or regional price found — the European market price at par (traded material, no country factor): LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE — at €1 = 5.9563 BRL (ECB 2026-10-29): R$7.4454/kg; the anchor grade itself",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-lldpe-bm": {
+   "gbpPerKg": 1.1641,
+   "basis": "LLDPE family: no BR or regional price found — the European market price at par (traded material, no country factor): LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE — at €1 = 5.9563 BRL (ECB 2026-10-29): R$7.4454/kg; ladder ×1.114 (book £1.17 ÷ base £1.05)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
+  },
+  "mat-lldpe-roto": {
+   "gbpPerKg": 1.4626,
+   "basis": "LLDPE family: no BR or regional price found — the European market price at par (traded material, no country factor): LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE — at €1 = 5.9563 BRL (ECB 2026-10-29): R$7.4454/kg; ladder ×1.400 (book £1.47 ÷ base £1.05)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Medium"
   },
   "mat-upvc": {
    "gbpPerKg": 0.6458,
@@ -925,6 +1111,12 @@ export const BRAZIL_BOOK: CountryBook = {
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
+  "mat-pa66": {
+   "gbpPerKg": 2.5324,
+   "basis": "PA66: no BR or regional price found — the European market price at par (traded material, no country factor): PA66 €3.03/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; an August reading was €3.72 — the two extracts conflict) — at €1 = 5.9563 BRL (ECB 2026-10-29): R$18.0476/kg; direct",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/ (2026-09)",
+   "confidence": "Low"
+  },
   "mat-pbt": {
    "gbpPerKg": 3.1175,
    "basis": "PBT: no BR or regional price found — the European market price at par (traded material, no country factor): PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) — at €1 = 5.9563 BRL (ECB 2026-10-29): R$22.217/kg; direct",
@@ -995,6 +1187,18 @@ export const BRAZIL_BOOK: CountryBook = {
    "gbpPerKg": 2.0059,
    "basis": "PC/ABS (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 5.9563 BRL (ECB 2026-10-29): R$14.2951/kg; floor (raised to metal content)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09) ; https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Low"
+  },
+  "mat-cf-dry-3k": {
+   "gbpPerKg": 25.0067,
+   "basis": "Carbon fabric (floor): no BR or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 5.9563 BRL (ECB 2026-10-29): R$178.2125/kg; floor (raised to metal content)",
+   "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report (2026-03)",
+   "confidence": "Low"
+  },
+  "mat-nr": {
+   "gbpPerKg": 1.8638,
+   "basis": "Natural rubber (raw): no BR or regional price found — the European market price at par (traded material, no country factor): TSR20 benchmark €2.23/kg (SGX, 28 Sep 2026, as reported) — FOB Asia, freight to Germany NOT added; for the book's raw NR line; compounds held — at €1 = 5.9563 BRL (ECB 2026-10-29): R$13.2825/kg; direct",
+   "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html (2026-09-28)",
    "confidence": "Low"
   }
  },

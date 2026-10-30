@@ -49,6 +49,162 @@ export const HUNGARY_BOOK: CountryBook = {
   }
  },
  "materials": {
+  "mat-dc01": {
+   "gbpPerKg": 0.7152,
+   "basis": "CR coil (DC01 / DC04): NW Europe CRC €0.855/kg ex-works (13 Sep 2026) = Ft313.1/kg at €1 = Ft366.16; freight to a Hungarian plant not added; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Medium"
+  },
+  "mat-dc04": {
+   "gbpPerKg": 0.7152,
+   "basis": "CR coil (DC01 / DC04): NW Europe CRC €0.855/kg ex-works (13 Sep 2026) = Ft313.1/kg at €1 = Ft366.16; freight to a Hungarian plant not added; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Medium"
+  },
+  "mat-dc05": {
+   "gbpPerKg": 0.7152,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dc06": {
+   "gbpPerKg": 0.7237,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.012 (book £0.85 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-if-dx56": {
+   "gbpPerKg": 0.8514,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.190 (book £1 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-if-hs260": {
+   "gbpPerKg": 0.9621,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.345 (book £1.13 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-bh260": {
+   "gbpPerKg": 0.9365,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-greensteel-dc01": {
+   "gbpPerKg": 0.9365,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-hsla340": {
+   "gbpPerKg": 1.0132,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.417 (book £1.19 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-hsla420": {
+   "gbpPerKg": 1.0983,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.536 (book £1.29 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-hsla550": {
+   "gbpPerKg": 1.1834,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.655 (book £1.39 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dp600": {
+   "gbpPerKg": 1.1068,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.548 (book £1.3 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dp780": {
+   "gbpPerKg": 1.1664,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.631 (book £1.37 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dp980": {
+   "gbpPerKg": 1.2771,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.786 (book £1.5 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-dp1000": {
+   "gbpPerKg": 1.3367,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.869 (book £1.57 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-trip780": {
+   "gbpPerKg": 1.2345,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.726 (book £1.45 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-cp800": {
+   "gbpPerKg": 1.2175,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.702 (book £1.43 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-ms1200": {
+   "gbpPerKg": 1.3622,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-ms1300": {
+   "gbpPerKg": 1.4218,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.988 (book £1.67 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-ms1500": {
+   "gbpPerKg": 1.507,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.107 (book £1.77 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-qp980": {
+   "gbpPerKg": 1.4729,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.060 (book £1.73 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-medmn1180": {
+   "gbpPerKg": 1.5325,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.143 (book £1.8 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-22mnb5": {
+   "gbpPerKg": 1.524,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.131 (book £1.79 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-usibor1500": {
+   "gbpPerKg": 1.7028,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.381 (book £2 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-usibor2000": {
+   "gbpPerKg": 2.0434,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.857 (book £2.4 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-c67s-spring": {
+   "gbpPerKg": 1.3622,
+   "basis": "CR automotive grades: CR coil Ft313.1 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe CRC €855/t (SteelRadar, 19 Oct 2026))",
+   "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
   "mat-s355mc": {
    "gbpPerKg": 0.6448,
    "basis": "HR structural: Fastmarkets N. Europe HRC €0.742/kg (12 Oct 2026) = Ft271.7/kg × the book's premium over HRPO; S355MC / S420MC extras not found; ladder ×1.039 (book £0.8 ÷ base £0.77)",
@@ -63,37 +219,37 @@ export const HUNGARY_BOOK: CountryBook = {
   },
   "mat-dc01-gi": {
    "gbpPerKg": 0.6943,
-   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; the anchor grade itself",
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: HDG €830/t (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dc03-ga": {
    "gbpPerKg": 0.7193,
-   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11)",
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: HDG €830/t (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dc01-ze": {
    "gbpPerKg": 0.6943,
-   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; the anchor grade itself",
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: HDG €830/t (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-znni-eg": {
    "gbpPerKg": 0.7693,
-   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11)",
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: HDG €830/t (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-zm-coated": {
    "gbpPerKg": 0.7506,
-   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11)",
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: HDG €830/t (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-tinplate-etp": {
    "gbpPerKg": 0.8444,
-   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11)",
+   "basis": "Coated sheet: NW Europe HDG €0.83/kg ex-works (13 Sep 2026) = Ft303.9/kg × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: HDG €830/t (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
@@ -141,7 +297,7 @@ export const HUNGARY_BOOK: CountryBook = {
   },
   "mat-aisi430": {
    "gbpPerKg": 1.3789,
-   "basis": "430 ferritic sheet: 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base assumed equal to 304's; direct",
+   "basis": "430 ferritic sheet: 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base assumed equal to 304's; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.stainless.430_CR 1.548 → 1.6485 (October 2026 1.4016 (430) surcharge is €1,085/t on the page (not 985): 1,085 + 563.5 = €1.6485/kg)",
    "source": "https://legierungszuschlag.info/en/ (2026-10-01)",
    "confidence": "Low"
   },
@@ -307,6 +463,12 @@ export const HUNGARY_BOOK: CountryBook = {
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
+  "mat-ni-resist-d2": {
+   "gbpPerKg": 2.6734,
+   "basis": "Ni-Resist D-2 (charge): 0.20 × Ni Ft5161.1 (LME, 23 Oct 2026) + 0.02 × Cr Ft1108.0 (HC FeCr) + 0.78 × ductile charge Ft148.6; direct",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome (2026-Q3)",
+   "confidence": "Low"
+  },
   "mat-ni-resist-d5s": {
    "gbpPerKg": 4.4196,
    "basis": "Ni-Resist D-5S (charge): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 Ft461.4 + 0.59 × ductile charge; direct",
@@ -457,57 +619,117 @@ export const HUNGARY_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.2443,
+   "basis": "Aluminium forging stock (floor): Delivered 6063 billet Ft1363.2/kg (LME $3043 + 6063 billet premium $1102.5/t, Fastmarkets 28 Aug 2026) — forging stock is never below the billet it is cut from; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.1471,
+   "basis": "Aluminium forging stock (floor): Delivered 6063 billet Ft1363.2/kg (LME $3043 + 6063 billet premium $1102.5/t, Fastmarkets 28 Aug 2026) — forging stock is never below the billet it is cut from; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.4871,
+   "basis": "Aluminium forging stock (floor): Delivered 6063 billet Ft1363.2/kg (LME $3043 + 6063 billet premium $1102.5/t, Fastmarkets 28 Aug 2026) — forging stock is never below the billet it is cut from; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.4681,
+   "basis": "Aluminium forging stock (floor): Delivered 6063 billet Ft1363.2/kg (LME $3043 + 6063 billet premium $1102.5/t, Fastmarkets 28 Aug 2026) — forging stock is never below the billet it is cut from; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 5.0315,
+   "basis": "Aluminium forging stock (floor): Delivered 6063 billet Ft1363.2/kg (LME $3043 + 6063 billet premium $1102.5/t, Fastmarkets 28 Aug 2026) — forging stock is never below the billet it is cut from; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.2564,
+   "basis": "Aluminium forging stock (floor): Delivered 6063 billet Ft1363.2/kg (LME $3043 + 6063 billet premium $1102.5/t, Fastmarkets 28 Aug 2026) — forging stock is never below the billet it is cut from; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 3.5517,
-   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content)",
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
    "confidence": "Low"
   },
   "mat-aa5052": {
    "gbpPerKg": 3.5517,
-   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content)",
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
    "confidence": "Low"
   },
   "mat-aa5083": {
    "gbpPerKg": 3.5517,
-   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content)",
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
    "confidence": "Low"
   },
   "mat-aa6082-sheet": {
    "gbpPerKg": 3.5517,
-   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content)",
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
    "confidence": "Low"
   },
   "mat-aa5754-sheet": {
    "gbpPerKg": 3.5517,
-   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content)",
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
+   "confidence": "Low"
+  },
+  "mat-aa6061-sheet": {
+   "gbpPerKg": 3.5551,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); held (already above the metal it contains) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
    "confidence": "Low"
   },
   "mat-aa6063-sheet": {
    "gbpPerKg": 3.5517,
-   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content)",
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
    "confidence": "Low"
   },
   "mat-aa3003-sheet": {
    "gbpPerKg": 3.5517,
-   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content)",
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
+   "confidence": "Low"
+  },
+  "mat-al-busbar": {
+   "gbpPerKg": 3.6328,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); held (already above the metal it contains) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
    "confidence": "Low"
   },
   "mat-aa6016-t4": {
    "gbpPerKg": 3.5517,
-   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content)",
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
+   "confidence": "Low"
+  },
+  "mat-aa6111-t4": {
+   "gbpPerKg": 3.5517,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
+   "confidence": "Low"
+  },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.6051,
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); held (already above the metal it contains) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
    "confidence": "Low"
   },
   "mat-aa1050-sheet": {
    "gbpPerKg": 3.5517,
-   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content)",
+   "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $4728.0/t = Ft1554.8/kg (all rolled products — a floor, not a price; AMAG's 2025 rolling average ~€5.9/kg is the specialty-heavy upper reference); floor (raised to metal content) — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.al.amag_rolling_asp 5.885 → 5.867 (AMAG revenue is stated on the page (€1,198.1 M ÷ 204.2 kt = €5.867/kg); the research back-solved it from a rounded margin)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488 (2025 (calendar year))",
    "confidence": "Low"
   },
@@ -520,6 +742,12 @@ export const HUNGARY_BOOK: CountryBook = {
   "mat-c110-copper": {
    "gbpPerKg": 11.0652,
    "basis": "ETP copper bar / sheet (floor): LME copper $14415 (23 Oct 2026) + Aurubis 2026 cathode premium $315.0 = Ft4843.8/kg delivered — bar and sheet are never below the copper they contain; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.5016,
+   "basis": "ETP copper bar / sheet (floor): LME copper $14415 (23 Oct 2026) + Aurubis 2026 cathode premium $315.0 = Ft4843.8/kg delivered — bar and sheet are never below the copper they contain; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
    "confidence": "Medium"
   },
@@ -541,9 +769,33 @@ export const HUNGARY_BOOK: CountryBook = {
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
+  "mat-bronze-pb1": {
+   "gbpPerKg": 14.0106,
+   "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu Ft4843.8 + 0.105 × Sn Ft16723.2 (LME, 23 Oct 2026); held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23)",
+   "confidence": "Low"
+  },
   "mat-bronze-c905": {
    "gbpPerKg": 13.8593,
    "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu Ft4843.8 + 0.105 × Sn Ft16723.2 (LME, 23 Oct 2026); floor (raised to metal content)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23)",
+   "confidence": "Low"
+  },
+  "mat-cusn12-cast": {
+   "gbpPerKg": 14.0164,
+   "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu Ft4843.8 + 0.105 × Sn Ft16723.2 (LME, 23 Oct 2026); held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23)",
+   "confidence": "Low"
+  },
+  "mat-zamak3": {
+   "gbpPerKg": 3.0986,
+   "basis": "Zamak 3 (floor): Metal content 0.96 × SHG zinc Ft1321.1 (LME $3790 + Argus Rotterdam premium) + 0.04 × Al Ft1189.4; a Zamak premium was not found; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23) ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02) ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns (2026-10-01)",
+   "confidence": "Low"
+  },
+  "mat-zamak5": {
+   "gbpPerKg": 3.1471,
+   "basis": "Zamak 5 (floor): Metal content 0.95 × zinc Ft1321.1 + 0.04 × Al + 0.01 × Cu Ft4843.8; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/en/markdaten.php?action=showtable (2026-10-23)",
    "confidence": "Low"
   },
@@ -769,6 +1021,36 @@ export const HUNGARY_BOOK: CountryBook = {
    "source": "https://www.plasticportal.eu/price-reports (2026-W38)",
    "confidence": "Medium"
   },
+  "mat-abs": {
+   "gbpPerKg": 1.5408,
+   "basis": "ABS family: ABS Ft674.5/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over ABS; the anchor grade itself",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W38)",
+   "confidence": "Medium"
+  },
+  "mat-abs-ext-sheet": {
+   "gbpPerKg": 1.7024,
+   "basis": "ABS family: ABS Ft674.5/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over ABS; ladder ×1.105 (book £1.79 ÷ base £1.62)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W38)",
+   "confidence": "Medium"
+  },
+  "mat-abs-tf": {
+   "gbpPerKg": 1.8451,
+   "basis": "ABS family: ABS Ft674.5/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over ABS; ladder ×1.198 (book £1.94 ÷ base £1.62)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W38)",
+   "confidence": "Medium"
+  },
+  "mat-abs-fr": {
+   "gbpPerKg": 1.9117,
+   "basis": "ABS family: ABS Ft674.5/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over ABS; ladder ×1.241 (book £2.01 ÷ base £1.62)",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W38)",
+   "confidence": "Medium"
+  },
+  "mat-gpps": {
+   "gbpPerKg": 1.2831,
+   "basis": "GPPS: GPPS Ft561.7/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over GPPS; the anchor grade itself",
+   "source": "https://www.plasticportal.eu/price-reports (2026-W38)",
+   "confidence": "Medium"
+  },
   "mat-gpps-ext": {
    "gbpPerKg": 1.5641,
    "basis": "GPPS: GPPS Ft561.7/kg ex-VAT (myCEPPI Central & Eastern Europe market price (wk 37–38 2026)) × the book's premium over GPPS; ladder ×1.219 (book £1.67 ÷ base £1.37)",
@@ -813,19 +1095,19 @@ export const HUNGARY_BOOK: CountryBook = {
   },
   "mat-pa6": {
    "gbpPerKg": 2.3888,
-   "basis": "PA6 family: PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
+   "basis": "PA6 family: PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: polymer.pa6 2.67 → 3.18 (businessanalytiq Europe PA6 September 2026 US$3.18 (+1.3%) — the August US$2.67 read is inconsistent with it)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-bm": {
    "gbpPerKg": 4.408,
-   "basis": "PA6 family: PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; ladder ×1.845 (book £3.1 ÷ base £1.68)",
+   "basis": "PA6 family: PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; ladder ×1.845 (book £3.1 ÷ base £1.68) — CORRECTED 30 Oct 2026 on a page re-check: polymer.pa6 2.67 → 3.18 (businessanalytiq Europe PA6 September 2026 US$3.18 (+1.3%) — the August US$2.67 read is inconsistent with it)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-ext-tube": {
    "gbpPerKg": 2.3888,
-   "basis": "PA6 family: PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
+   "basis": "PA6 family: PA6 Ft1045.7/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: polymer.pa6 2.67 → 3.18 (businessanalytiq Europe PA6 September 2026 US$3.18 (+1.3%) — the August US$2.67 read is inconsistent with it)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
@@ -837,25 +1119,25 @@ export const HUNGARY_BOOK: CountryBook = {
   },
   "mat-pbt": {
    "gbpPerKg": 3.1851,
-   "basis": "PBT: PBT Ft1394.3/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026); direct",
+   "basis": "PBT: PBT Ft1394.3/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026); direct — CORRECTED 30 Oct 2026 on a page re-check: polymer.pbt 3.7 → 4.24 (businessanalytiq Europe PBT September 2026 US$4.24 — the same month the research read as US$3.70)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pmma": {
    "gbpPerKg": 2.6968,
-   "basis": "PMMA family: PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; the anchor grade itself",
+   "basis": "PMMA family: PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: polymer.pmma 3.69 → 3.59 (businessanalytiq Europe PMMA September 2026 US$3.59 (research US$3.69))",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pmma-ext-sheet": {
    "gbpPerKg": 2.9216,
-   "basis": "PMMA family: PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; ladder ×1.083 (book £2.6 ÷ base £2.4)",
+   "basis": "PMMA family: PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; ladder ×1.083 (book £2.6 ÷ base £2.4) — CORRECTED 30 Oct 2026 on a page re-check: polymer.pmma 3.69 → 3.59 (businessanalytiq Europe PMMA September 2026 US$3.59 (research US$3.69))",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pmma-tf": {
    "gbpPerKg": 3.2587,
-   "basis": "PMMA family: PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; ladder ×1.208 (book £2.9 ÷ base £2.4)",
+   "basis": "PMMA family: PMMA Ft1180.5/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; Trinseo +€250/t from 1 Oct not added) × the book's premium over PMMA; ladder ×1.208 (book £2.9 ÷ base £2.4) — CORRECTED 30 Oct 2026 on a page re-check: polymer.pmma 3.69 → 3.59 (businessanalytiq Europe PMMA September 2026 US$3.59 (research US$3.69))",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Medium"
   },

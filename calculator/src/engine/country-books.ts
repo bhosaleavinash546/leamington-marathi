@@ -167,7 +167,7 @@ export function countryMachine(book: CountryBook, ukMachine: MachineRate, ukLibr
     // maintenance clause that applies to sourced capex only (Poland live review, 10 Oct 2026)
     what = (f === 1
       // Hungary (Oct 2026): no unsourced country discount — the same machine costs the same on the EU market
-      ? `capital AT PAR — no ${regionName} capex was sourced for this machine, so its capital is the book's own (×1, the same machine on the EU market — no country factor; Low confidence): `
+      ? `capital AT PAR — no ${regionName} capex was sourced for this machine, so its capital is the book's own (×1, the same traded machine at its market price — no country factor; Low confidence): `
       : `capital HELD — no ${regionName} capex was sourced for this machine, so its capital is the UK book's × ${f} (Low confidence): `)
       + `depreciation × ${M.shiftDepreciationFactor.toFixed(3)} (shift pattern), maintenance per running hour as the UK build-up, `
       + `finance re-rated ${(M.ukFinanceRate * 100).toFixed(0)}% → ${(M.financeRate * 100).toFixed(2)}%`;

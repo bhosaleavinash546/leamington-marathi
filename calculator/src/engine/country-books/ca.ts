@@ -13,37 +13,37 @@ export const CANADA_BOOK: CountryBook = {
  "labourGrades": {
   "forge": {
    "gbpPerHr": 23.9242,
-   "basis": "paid as skilled: skilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 38.45 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 44.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: skilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 38.45 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 44.59/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410041701",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 16.7239,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410041701",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 16.7239,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410041701",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 16.7239,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410041701",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 16.7239,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410041701",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 16.7239,
-   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: semiskilled earnings (hourly (mean), ALL INDUSTRIES, broad NOC group (the table has no industry split and no 5-digit NOC), 2025): 26.88 an hour × 2080 paid h × wage growth 3.2%/yr over 1 yr = ×1.0324 × employer contributions 8.23% (federal CPP + EI, outside Quebec, below the YMPE) ÷ 2004 h worked a year (hours/year actually worked) = 31.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410041701",
    "confidence": "Medium"
   }
@@ -619,6 +619,42 @@ export const CANADA_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.3641,
+   "basis": "Aluminium forging stock (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.5577 CAD (ECB 2026-10-29): C$5.7012/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.2622,
+   "basis": "Aluminium forging stock (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.5577 CAD (ECB 2026-10-29): C$5.7012/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.6163,
+   "basis": "Aluminium forging stock (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.5577 CAD (ECB 2026-10-29): C$5.7012/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.6357,
+   "basis": "Aluminium forging stock (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.5577 CAD (ECB 2026-10-29): C$5.7012/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 5.2205,
+   "basis": "Aluminium forging stock (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.5577 CAD (ECB 2026-10-29): C$5.7012/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.5632,
+   "basis": "Aluminium forging stock (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 1.5577 CAD (ECB 2026-10-29): C$5.7012/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 4.3161,
    "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NA market (US figure): DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = C$8.0443/kg; floor (raised to metal content)",
@@ -685,10 +721,34 @@ export const CANADA_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
    "confidence": "Medium"
   },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.8516,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NA market (US figure): DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = C$8.0443/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
   "mat-aa1050-sheet": {
    "gbpPerKg": 4.3161,
    "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NA market (US figure): DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = C$8.0443/kg; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-c101-bar": {
+   "gbpPerKg": 11.321,
+   "basis": "ETP copper bar / sheet (floor): no CA or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 1.5577 CAD (ECB 2026-10-29): C$20.5616/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-c110-copper": {
+   "gbpPerKg": 11.321,
+   "basis": "ETP copper bar / sheet (floor): no CA or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 1.5577 CAD (ECB 2026-10-29): C$20.5616/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 14.0036,
+   "basis": "ETP copper bar / sheet (floor): no CA or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 1.5577 CAD (ECB 2026-10-29): C$20.5616/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
    "confidence": "Medium"
   },
   "mat-brass-cz121": {
@@ -709,9 +769,21 @@ export const CANADA_BOOK: CountryBook = {
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
+  "mat-bronze-pb1": {
+   "gbpPerKg": 14.5348,
+   "basis": "Phosphor / tin bronze (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 1.5577 CAD (ECB 2026-10-29): C$25.9134/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-bronze-c905": {
    "gbpPerKg": 13.9035,
    "basis": "Phosphor / tin bronze (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 1.5577 CAD (ECB 2026-10-29): C$25.9134/kg; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-cusn12-cast": {
+   "gbpPerKg": 14.5402,
+   "basis": "Phosphor / tin bronze (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 1.5577 CAD (ECB 2026-10-29): C$25.9134/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
    "confidence": "Low"
   },
@@ -1115,6 +1187,12 @@ export const CANADA_BOOK: CountryBook = {
    "gbpPerKg": 2.0058,
    "basis": "PC/ABS (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 1.5577 CAD (ECB 2026-10-29): C$3.7385/kg; floor (raised to metal content)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09) ; https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
+   "confidence": "Low"
+  },
+  "mat-cf-dry-3k": {
+   "gbpPerKg": 25.3944,
+   "basis": "Carbon fabric (floor): no CA or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 1.5577 CAD (ECB 2026-10-29): C$46.6064/kg; held (already above the metal it contains)",
+   "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report (2026-03)",
    "confidence": "Low"
   },
   "mat-nr": {

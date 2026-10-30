@@ -79,10 +79,9 @@ describe('a held grade in a book country is Low confidence', () => {
     expect(m.sourceNote).toMatch(/^Poland: no Poland price/);
     expect(m.confidence).toBe('Low');
   });
-  it('a country with no book keeps the grading it had (everything there is UK × factor)', () => {
+  it('every country now has a book (world round, 30 Oct 2026): a grade held at par in it is Low, like Poland\'s', () => {
     const TR = buildRegionalLibrary(UK, 'TR' as never);
-    const uk = UK.materials.find(x => x.id === 'mat-pa66gf30')!;
-    expect(TR.materials.find(x => x.id === 'mat-pa66gf30')!.confidence).toBe(uk.confidence);
+    expect(TR.materials.find(x => x.id === 'mat-pa66gf30')!.confidence).toBe('Low');
   });
 });
 
@@ -90,7 +89,7 @@ describe('held machine capital reads plainly', () => {
   it('one line, Low, no research remarks and no "3.5% of capex" maintenance clause', () => {
     const PL = buildRegionalLibrary(UK, 'PL');
     const p = PL.machines.find(m => m.id === 'press-400t')!;
-    expect(p.sourceNote).toMatch(/capital HELD — no Poland capex was sourced for this machine/);
+    expect(p.sourceNote).toMatch(/capital AT PAR — no Poland capex was sourced for this machine/);
     expect(p.sourceNote).not.toMatch(/round-2|press brakes ~4×|3\.5% of capex|h hours/);
   });
 });

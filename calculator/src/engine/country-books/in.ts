@@ -206,7 +206,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-hrpo": {
    "gbpPerKg": 0.5126,
-   "basis": "HR pickled & oiled: HR coil JPC Sep 2026 ₹64.48 + HRPO extra ₹6.70 (Tata Nexarc Mumbai HRPO May 2026 − BigMint HRC May 2026); direct",
+   "basis": "HR pickled & oiled: HR coil JPC Sep 2026 ₹64.48 + HRPO extra ₹6.70 (Tata Nexarc Mumbai HRPO May 2026 − BigMint HRC May 2026); direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hrpo_derived 71.18 → 65.2 (the cited Tata Nexarc page quotes Mumbai HRPO 2.0 mm directly at ₹65,200/t ex-yard ex-GST; the derived 71.18 added a trade spread to a retail anchor)",
    "source": "https://www.tatanexarc.com/steel/steel-prices-in-india/ (2026-09 (derived)) ; https://www.tatanexarc.com/steel/steel-prices-in-india/ (2026-05)",
    "confidence": "Medium"
   },
@@ -488,13 +488,13 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-ss304-sheet": {
    "gbpPerKg": 1.7256,
-   "basis": "304L sheet: 304 CR coil narrow Mumbai ₹215/kg (Nexizo, 1 Jul 2026) and a stockist ₹224/kg — mean; aggregator evidence, low confidence; direct",
+   "basis": "304L sheet: 304 CR coil narrow Mumbai ₹215/kg (Nexizo, 1 Jul 2026) and a stockist ₹224/kg — mean; aggregator evidence, low confidence; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.ss304_crc_narrow_mumbai 215 → 218 (the cited page has been updated: SS CRC 304 narrow, Mumbai, ₹2,18,000/t (01/10/2026))",
    "source": "https://nexizo.ai/stainless-steel-category (2026-07-01)",
    "confidence": "Low"
   },
   "mat-ss301-spring": {
    "gbpPerKg": 2.2399,
-   "basis": "301 spring strip: 304L sheet ₹219.5 × the book's premium of 301 spring strip over 304L sheet; ladder ×1.298 (book £4.53 ÷ base £3.49)",
+   "basis": "301 spring strip: 304L sheet ₹219.5 × the book's premium of 301 spring strip over 304L sheet; ladder ×1.298 (book £4.53 ÷ base £3.49) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.ss304_crc_narrow_mumbai 215 → 218 (the cited page has been updated: SS CRC 304 narrow, Mumbai, ₹2,18,000/t (01/10/2026))",
    "source": "https://nexizo.ai/stainless-steel-category (2026-07-01)",
    "confidence": "Low"
   },
@@ -656,13 +656,13 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-ni-resist-d2": {
    "gbpPerKg": 2.6714,
-   "basis": "Ni-Resist D-2 (charge): 20% Ni at MCX nickel ₹1,625.5 + 2% Cr + iron units; direct",
+   "basis": "Ni-Resist D-2 (charge): 20% Ni at MCX nickel ₹1,625.5 + 2% Cr + iron units; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.ni_resist_d2 364.4 → 339.8 (MCX nickel is ₹1,502.2/kg on the cited page (28 Oct 2026; research 1,625.5 on 17 Aug): the same arithmetic gives ₹339.8/kg)",
    "source": "https://cbonds.com/indexes/221359/ (2026-08)",
    "confidence": "Low"
   },
   "mat-ni-resist-d5s": {
    "gbpPerKg": 4.4049,
-   "basis": "Ni-Resist D-5S (charge): 35% Ni at MCX nickel + Cr + Si + iron units; direct",
+   "basis": "Ni-Resist D-5S (charge): 35% Ni at MCX nickel + Cr + Si + iron units; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.ni_resist_d5s 603.5 → 560.3 (MCX nickel ₹1,502.2/kg (28 Oct 2026): the same arithmetic gives ₹560.3/kg)",
    "source": "https://cbonds.com/indexes/221359/ (2026-08)",
    "confidence": "Low"
   },
@@ -855,6 +855,12 @@ export const INDIA_BOOK: CountryBook = {
   "mat-ab2-cast": {
    "gbpPerKg": 9.6305,
    "basis": "Aluminium bronze AB2 (floor): Metal content of CuAl10Ni5Fe5 ≈ ₹1,225/kg (Cu + Al + Ni + Fe at the anchors) — the book's AB2 casting ₹1,183 was below it; floor (raised to metal content)",
+   "source": "https://cbonds.com/indexes/181085/ (2026-10)",
+   "confidence": "Low"
+  },
+  "mat-ab2-forge": {
+   "gbpPerKg": 9.75,
+   "basis": "Aluminium bronze AB2 (floor): Metal content of CuAl10Ni5Fe5 ≈ ₹1,225/kg (Cu + Al + Ni + Fe at the anchors) — the book's AB2 casting ₹1,183 was below it; held (already above the metal it contains)",
    "source": "https://cbonds.com/indexes/181085/ (2026-10)",
    "confidence": "Low"
   },
@@ -1082,7 +1088,7 @@ export const INDIA_BOOK: CountryBook = {
   },
   "mat-pbt": {
    "gbpPerKg": 2.0763,
-   "basis": "PBT family: PBT India index ₹248.6 (Business Analytiq, Sep 2026); moderate confidence; the anchor grade itself",
+   "basis": "PBT family: PBT India index ₹248.6 (Business Analytiq, Sep 2026); moderate confidence; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: polymer.anchor.pbt.india_index.2026-09 248.6 → 264.1 (businessanalytiq India PBT September 2026 is US$2.73/kg on the page (research US$2.57) × 96.73 = ₹264.1/kg)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/ (2026-09)",
    "confidence": "Low"
   },

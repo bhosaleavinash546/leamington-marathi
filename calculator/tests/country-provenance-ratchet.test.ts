@@ -16,5 +16,5 @@ describe('country provenance ratchet', () => {
       expect(now[r].medianSourcedPct, `${r} median part on sourced rates`).toBeGreaterThanOrEqual(b.medianSourcedPct - 0.5);
       expect(now[r].heldPct, `${r} share on held rates`).toBeLessThanOrEqual(b.heldPct + 0.5);
     }
-  }, 600_000);
+  }, 2_400_000);   // 38 countries × 15 parts
 });

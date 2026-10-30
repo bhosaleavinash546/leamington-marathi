@@ -50,12 +50,10 @@ describe('1. the China book carries China rates, every line', () => {
     for (const g of ['forge', 'furnace', 'blow', 'roto', 'thermoform', 'trim-router'] as const) {
       expect(CN.labour.find(l => l.id === `lab-uk-${g}`)!.fullyLoadedRatePerHr, g).toBe(COUNTRY_BOOKS.CN!.labourGrades[g].gbpPerHr);
     }
-    // a country without a book still moves a process grade by ITS category, not by "skilled"
+    // every country now has a book (world round, 30 Oct 2026): a process grade is the book's own grade, never "skilled"
     const TR = buildRegionalLibrary(UK, 'TR');
-    const ukForge = UK.labour.find(l => l.id === 'lab-uk-forge')!.fullyLoadedRatePerHr;
-    expect(TR.labour.find(l => l.id === 'lab-uk-forge')!.fullyLoadedRatePerHr).toBeCloseTo(ukForge * R.TR.labour.foundry / R.UK.labour.foundry, 2);
-    const ukBlow = UK.labour.find(l => l.id === 'lab-uk-blow')!.fullyLoadedRatePerHr;
-    expect(TR.labour.find(l => l.id === 'lab-uk-blow')!.fullyLoadedRatePerHr).toBeCloseTo(ukBlow * R.TR.labour.semiskilled / R.UK.labour.semiskilled, 2);
+    expect(TR.labour.find(l => l.id === 'lab-uk-forge')!.fullyLoadedRatePerHr).toBe(COUNTRY_BOOKS.TR!.labourGrades.forge.gbpPerHr);
+    expect(TR.labour.find(l => l.id === 'lab-uk-blow')!.fullyLoadedRatePerHr).toBe(COUNTRY_BOOKS.TR!.labourGrades.blow.gbpPerHr);
   });
   it('energy is China\'s, and every machine is re-priced', () => {
     expect(CN.energy).toHaveLength(1);

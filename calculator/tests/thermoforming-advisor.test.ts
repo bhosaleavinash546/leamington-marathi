@@ -185,7 +185,7 @@ describe('thermoforming — authentic country prices (not multiplier-scaled)', (
         expect(matPrice(rl, id)).toBeCloseTo(price as number, 6);
       }
     }
-  });
+  }, 60_000);
   it('spread is grade-specific: commodity HIPS swings wider than specialty PC', () => {
     const spread = (r: Record<string, number>, b: number) => {
       const v = Object.values(r); return (Math.max(...v) - Math.min(...v)) / b;

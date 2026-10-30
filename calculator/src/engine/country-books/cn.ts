@@ -51,157 +51,157 @@ export const CHINA_BOOK: CountryBook = {
  "materials": {
   "mat-dc01": {
    "gbpPerKg": 0.3598,
-   "basis": "CR coil (DC01 / DC04): Shanghai 1.0 mm SPCC cold-rolled spot ¥3,239/t ex-VAT (Mysteel, 9 Oct 2026); direct",
+   "basis": "CR coil (DC01 / DC04): Shanghai 1.0 mm SPCC cold-rolled spot ¥3,239/t ex-VAT (Mysteel, 9 Oct 2026); direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09)",
    "confidence": "Medium"
   },
   "mat-dc04": {
    "gbpPerKg": 0.3598,
-   "basis": "CR coil (DC01 / DC04): Shanghai 1.0 mm SPCC cold-rolled spot ¥3,239/t ex-VAT (Mysteel, 9 Oct 2026); direct",
+   "basis": "CR coil (DC01 / DC04): Shanghai 1.0 mm SPCC cold-rolled spot ¥3,239/t ex-VAT (Mysteel, 9 Oct 2026); direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09)",
    "confidence": "Medium"
   },
   "mat-dc05": {
    "gbpPerKg": 0.3598,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; the anchor grade itself",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dc06": {
    "gbpPerKg": 0.3641,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.012 (book £0.85 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.012 (book £0.85 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-if-dx56": {
    "gbpPerKg": 0.4283,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.190 (book £1 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.190 (book £1 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-if-hs260": {
    "gbpPerKg": 0.484,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.345 (book £1.13 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.345 (book £1.13 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-bh260": {
    "gbpPerKg": 0.4712,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.310 (book £1.1 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-greensteel-dc01": {
    "gbpPerKg": 0.4712,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.310 (book £1.1 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-hsla340": {
    "gbpPerKg": 0.5097,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.417 (book £1.19 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.417 (book £1.19 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-hsla420": {
    "gbpPerKg": 0.5525,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.536 (book £1.29 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.536 (book £1.29 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-hsla550": {
    "gbpPerKg": 0.5954,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.655 (book £1.39 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.655 (book £1.39 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dp600": {
    "gbpPerKg": 0.5568,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.548 (book £1.3 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.548 (book £1.3 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dp780": {
    "gbpPerKg": 0.5868,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.631 (book £1.37 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.631 (book £1.37 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dp980": {
    "gbpPerKg": 0.6425,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.786 (book £1.5 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.786 (book £1.5 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-dp1000": {
    "gbpPerKg": 0.6725,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.869 (book £1.57 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.869 (book £1.57 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-trip780": {
    "gbpPerKg": 0.6211,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.726 (book £1.45 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.726 (book £1.45 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-cp800": {
    "gbpPerKg": 0.6125,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.702 (book £1.43 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.702 (book £1.43 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-ms1200": {
    "gbpPerKg": 0.6853,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.905 (book £1.6 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-ms1300": {
    "gbpPerKg": 0.7153,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.988 (book £1.67 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.988 (book £1.67 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-ms1500": {
    "gbpPerKg": 0.7581,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.107 (book £1.77 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.107 (book £1.77 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-qp980": {
    "gbpPerKg": 0.741,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.060 (book £1.73 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.060 (book £1.73 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-medmn1180": {
    "gbpPerKg": 0.771,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.143 (book £1.8 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.143 (book £1.8 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-22mnb5": {
    "gbpPerKg": 0.7667,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.131 (book £1.79 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.131 (book £1.79 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-usibor1500": {
    "gbpPerKg": 0.8567,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.381 (book £2 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.381 (book £2 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-usibor2000": {
    "gbpPerKg": 1.028,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.857 (book £2.4 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×2.857 (book £2.4 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
   "mat-c67s-spring": {
    "gbpPerKg": 0.6853,
-   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR spot ¥3.24 × the book's grade premium over its DC01/DC04 mean (£0.84); Baosteel automotive extras (DP, 22MnB5, GA, ZnMg) not found; ladder ×1.905 (book £1.6 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 3.239 → 3.195 (the cited rolling page has been updated: Benxi 1.0 mm CRC Shanghai 3,610 CNY/t (27–28 Oct) ÷ 1.13 VAT = 3.195 CNY/kg)",
    "source": "https://www.mysteel.com/hot/563511.html (2026-10-09) ; https://m.mysteel.com/hot/426801.html (2026-10-10)",
    "confidence": "Low"
   },
@@ -225,37 +225,37 @@ export const CHINA_BOOK: CountryBook = {
   },
   "mat-dc01-gi": {
    "gbpPerKg": 0.3886,
-   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; the anchor grade itself",
+   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 3.496 → 3.451 (the cited rolling page has been updated: Benxi 1.0 mm HDG 3,900 CNY/t (27–28 Oct) ÷ 1.13 = 3.451 CNY/kg)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-dc03-ga": {
    "gbpPerKg": 0.4026,
-   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11)",
+   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 3.496 → 3.451 (the cited rolling page has been updated: Benxi 1.0 mm HDG 3,900 CNY/t (27–28 Oct) ÷ 1.13 = 3.451 CNY/kg)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-dc01-ze": {
    "gbpPerKg": 0.3886,
-   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; the anchor grade itself",
+   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 3.496 → 3.451 (the cited rolling page has been updated: Benxi 1.0 mm HDG 3,900 CNY/t (27–28 Oct) ÷ 1.13 = 3.451 CNY/kg)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-znni-eg": {
    "gbpPerKg": 0.4306,
-   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11)",
+   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 3.496 → 3.451 (the cited rolling page has been updated: Benxi 1.0 mm HDG 3,900 CNY/t (27–28 Oct) ÷ 1.13 = 3.451 CNY/kg)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-zm-coated": {
    "gbpPerKg": 0.4201,
-   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11)",
+   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 3.496 → 3.451 (the cited rolling page has been updated: Benxi 1.0 mm HDG 3,900 CNY/t (27–28 Oct) ÷ 1.13 = 3.451 CNY/kg)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
   "mat-tinplate-etp": {
    "gbpPerKg": 0.4727,
-   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11)",
+   "basis": "Coated sheet: Shanghai 1.0 mm DX51D+Z galvanised spot ¥3,496/t ex-VAT (29 Sep 2026) × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 3.496 → 3.451 (the cited rolling page has been updated: Benxi 1.0 mm HDG 3,900 CNY/t (27–28 Oct) ÷ 1.13 = 3.451 CNY/kg)",
    "source": "https://m.mysteel.com/hot/39907.html (2026-09-29)",
    "confidence": "Medium"
   },
@@ -501,67 +501,67 @@ export const CHINA_BOOK: CountryBook = {
   },
   "mat-nogo-m270-35a": {
    "gbpPerKg": 0.588,
-   "basis": "NO electrical steel 0.35 mm: 35W300 non-oriented ¥4.89–5.18/kg ex-VAT (Sep 2026; upper end used) — for M270-35A / M330-35A; direct",
+   "basis": "NO electrical steel 0.35 mm: 35W300 non-oriented ¥4.89–5.18/kg ex-VAT (Sep 2026; upper end used) — for M270-35A / M330-35A; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-m330-35a": {
    "gbpPerKg": 0.588,
-   "basis": "NO electrical steel 0.35 mm: 35W300 non-oriented ¥4.89–5.18/kg ex-VAT (Sep 2026; upper end used) — for M270-35A / M330-35A; direct",
+   "basis": "NO electrical steel 0.35 mm: 35W300 non-oriented ¥4.89–5.18/kg ex-VAT (Sep 2026; upper end used) — for M270-35A / M330-35A; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-m235-35a": {
    "gbpPerKg": 0.6724,
-   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.144 (book £1.99 ÷ base £1.74)",
+   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.144 (book £1.99 ÷ base £1.74) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no27-27a": {
    "gbpPerKg": 0.8245,
-   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.402 (book £2.44 ÷ base £1.74)",
+   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.402 (book £2.44 ÷ base £1.74) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no25-25a": {
    "gbpPerKg": 0.9259,
-   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.575 (book £2.74 ÷ base £1.74)",
+   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.575 (book £2.74 ÷ base £1.74) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no20-20a": {
    "gbpPerKg": 1.1624,
-   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.977 (book £3.44 ÷ base £1.74)",
+   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.977 (book £3.44 ÷ base £1.74) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no15-15a": {
    "gbpPerKg": 1.3313,
-   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×2.264 (book £3.94 ÷ base £1.74)",
+   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×2.264 (book £3.94 ÷ base £1.74) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-no10-10a": {
    "gbpPerKg": 1.872,
-   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×3.184 (book £5.54 ÷ base £1.74)",
+   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×3.184 (book £5.54 ÷ base £1.74) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-hsno-rotor-700": {
    "gbpPerKg": 0.8921,
-   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.517 (book £2.64 ÷ base £1.74)",
+   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.517 (book £2.64 ÷ base £1.74) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-hsno-rotor-960": {
    "gbpPerKg": 1.0948,
-   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.862 (book £3.24 ÷ base £1.74)",
+   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×1.862 (book £3.24 ÷ base £1.74) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
   "mat-uhsno-1100": {
    "gbpPerKg": 1.23,
-   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×2.092 (book £3.64 ÷ base £1.74)",
+   "basis": "NO electrical steel, premium / thin / high-strength: 35W300 ¥5.18 × the book's premium over M330-35A (Chinese 0.27–0.10 mm and HS rotor grade prices not found); ladder ×2.092 (book £3.64 ÷ base £1.74) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.electrical.35W300 5.177 → 5.221 (the cited rolling page has been updated: Baosteel 300-grade Qingdao 5,900 CNY/t (28 Oct) ÷ 1.13 = 5.221 CNY/kg)",
    "source": "https://m.mysteel.com/hot/3849.html (2026-09-20)",
    "confidence": "Low"
   },
@@ -603,103 +603,103 @@ export const CHINA_BOOK: CountryBook = {
   },
   "mat-gjs500": {
    "gbpPerKg": 0.3007,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); the anchor grade itself",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs400": {
    "gbpPerKg": 0.2607,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.36/kg (the book's premium: £0.82 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.36/kg (the book's premium: £0.82 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs450-ssf": {
    "gbpPerKg": 0.2707,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.27/kg (the book's premium: £0.83 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.27/kg (the book's premium: £0.83 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs500-14": {
    "gbpPerKg": 0.2807,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.18/kg (the book's premium: £0.84 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥-0.18/kg (the book's premium: £0.84 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs600": {
    "gbpPerKg": 0.3407,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.36/kg (the book's premium: £0.9 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.36/kg (the book's premium: £0.9 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs700": {
    "gbpPerKg": 0.3907,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.80/kg (the book's premium: £0.95 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.80/kg (the book's premium: £0.95 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjs350-lt": {
    "gbpPerKg": 0.3107,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.09/kg (the book's premium: £0.87 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥0.09/kg (the book's premium: £0.87 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-simo": {
    "gbpPerKg": 0.7907,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥4.35/kg (the book's premium: £1.35 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥4.35/kg (the book's premium: £1.35 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-adi": {
    "gbpPerKg": 1.0207,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥6.39/kg (the book's premium: £1.58 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥6.39/kg (the book's premium: £1.58 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjv450": {
    "gbpPerKg": 0.5607,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥2.31/kg (the book's premium: £1.12 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥2.31/kg (the book's premium: £1.12 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjv500": {
    "gbpPerKg": 0.5907,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥2.58/kg (the book's premium: £1.15 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge ¥2.67/kg (Q10 nodular pig ¥2.80 + heavy scrap ¥2.05 + returns, RE-FeSi nodulariser + inoculant; the mix is an engineering assumption, arithmetic in research) + the book's grade premium in £/kg at ¥8.88/£ (alloy content; ADI's austempering, which the casting engine does not add); ladder +¥2.58/kg (the book's premium: £1.15 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 2.69 → 2.67 (the same mix on the updated inputs: (0.45 × 2.761 + 0.30 × 2.045) / 0.75 = 2.475 + FeSiMg 0.118 + inoculant 0.004 × 5.376 = 2.614 / 0.98 = 2.67 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_nodular_Q10 2.796 → 2.761 (the cited rolling page has been updated: Q10 East China 2,950–3,290 (mid 3,120, 29 Oct) ÷ 1.13 = 2.761 CNY/kg)",
    "source": "https://m.mysteel.com/hot/1487195.html (2026-09-30) ; https://news.mysteel.com/a/26100711/92F88C485B219078.html (2026-10-07)",
    "confidence": "Low"
   },
   "mat-gjl250": {
    "gbpPerKg": 0.2613,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; the anchor grade itself",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 2.35 → 2.32 (the same mix on the updated inputs: (0.25 × 2.549 + 0.40 × 2.045) / 0.65 = 2.239 + 0.007 × 5.376 = 2.276 / 0.98 = 2.32 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_casting_Z18 2.611 → 2.549 (the cited rolling page has been updated: Z18 Linyi 2,880 CNY/t (29 Oct) ÷ 1.13 = 2.549 CNY/kg)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjl150": {
    "gbpPerKg": 0.2286,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 2.35 → 2.32 (the same mix on the updated inputs: (0.25 × 2.549 + 0.40 × 2.045) / 0.65 = 2.239 + 0.007 × 5.376 = 2.276 / 0.98 = 2.32 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_casting_Z18 2.611 → 2.549 (the cited rolling page has been updated: Z18 Linyi 2,880 CNY/t (29 Oct) ÷ 1.13 = 2.549 CNY/kg)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjl200": {
    "gbpPerKg": 0.2449,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 2.35 → 2.32 (the same mix on the updated inputs: (0.25 × 2.549 + 0.40 × 2.045) / 0.65 = 2.239 + 0.007 × 5.376 = 2.276 / 0.98 = 2.32 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_casting_Z18 2.611 → 2.549 (the cited rolling page has been updated: Z18 Linyi 2,880 CNY/t (29 Oct) ÷ 1.13 = 2.549 CNY/kg)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjl300": {
    "gbpPerKg": 0.2858,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 2.35 → 2.32 (the same mix on the updated inputs: (0.25 × 2.549 + 0.40 × 2.045) / 0.65 = 2.239 + 0.007 × 5.376 = 2.276 / 0.98 = 2.32 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_casting_Z18 2.611 → 2.549 (the cited rolling page has been updated: Z18 Linyi 2,880 CNY/t (29 Oct) ÷ 1.13 = 2.549 CNY/kg)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjl350": {
    "gbpPerKg": 0.3021,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 2.35 → 2.32 (the same mix on the updated inputs: (0.25 × 2.549 + 0.40 × 2.045) / 0.65 = 2.239 + 0.007 × 5.376 = 2.276 / 0.98 = 2.32 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_casting_Z18 2.611 → 2.549 (the cited rolling page has been updated: Z18 Linyi 2,880 CNY/t (29 Oct) ÷ 1.13 = 2.549 CNY/kg)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
   "mat-gjmb350": {
    "gbpPerKg": 0.2694,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge ¥2.32/kg (Z18 casting pig ¥2.61 + heavy scrap + returns; engineering-assumption mix) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 2.35 → 2.32 (the same mix on the updated inputs: (0.25 × 2.549 + 0.40 × 2.045) / 0.65 = 2.239 + 0.007 × 5.376 = 2.276 / 0.98 = 2.32 CNY/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.pig_iron_casting_Z18 2.611 → 2.549 (the cited rolling page has been updated: Z18 Linyi 2,880 CNY/t (29 Oct) ÷ 1.13 = 2.549 CNY/kg)",
    "source": "https://www.mysteel.com/hot/1486014.html (2026-09-30)",
    "confidence": "Low"
   },
@@ -765,7 +765,7 @@ export const CHINA_BOOK: CountryBook = {
   },
   "mat-ni-resist-d2": {
    "gbpPerKg": 2.6885,
-   "basis": "Ni-Resist D-2 (charge): 0.20 × Ni ¥107.65 (Changjiang, 9 Oct) + 0.02 × Cr ¥13.09 (HC FeCr) + 0.78 × ductile charge ¥2.67; direct",
+   "basis": "Ni-Resist D-2 (charge): 0.20 × Ni ¥107.65 (Changjiang, 9 Oct) + 0.02 × Cr ¥13.09 (HC FeCr) + 0.78 × ductile charge ¥2.67; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.FeCr_HC 6.898 → 6.544 (the cited rolling page has been updated: Tisco November tender 7,395 CNY per 50%-Cr t ÷ 1.13 = 6.544 CNY/kg)",
    "source": "http://news.10jqka.com.cn/20261009/c680512152.shtml (2026-10-09) ; https://m.mysteel.com/zta/gaotangetie/ (2026-09)",
    "confidence": "Low"
   },
@@ -777,7 +777,7 @@ export const CHINA_BOOK: CountryBook = {
   },
   "mat-hicr-white": {
    "gbpPerKg": 0.5402,
-   "basis": "High-Cr white iron (charge): 0.23 × Cr ¥13.09 + 0.77 × grey charge ¥2.32; direct",
+   "basis": "High-Cr white iron (charge): 0.23 × Cr ¥13.09 + 0.77 × grey charge ¥2.32; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.FeCr_HC 6.898 → 6.544 (the cited rolling page has been updated: Tisco November tender 7,395 CNY per 50%-Cr t ÷ 1.13 = 6.544 CNY/kg)",
    "source": "https://m.mysteel.com/zta/gaotangetie/ (2026-09)",
    "confidence": "Low"
   },
@@ -931,6 +931,12 @@ export const CHINA_BOOK: CountryBook = {
    "source": "https://m.ccmn.cn/ (2026-09-30)",
    "confidence": "Medium"
   },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.4831,
+   "basis": "ETP copper bar / sheet (floor): Changjiang 1# copper ¥98,710/t ex-VAT (30 Sep 2026) — the book's bar and sheet ¥96.78 were below the copper they contain; held (already above the metal it contains)",
+   "source": "https://m.ccmn.cn/ (2026-09-30)",
+   "confidence": "Medium"
+  },
   "mat-brass-cz121": {
    "gbpPerKg": 7.4538,
    "basis": "Free-machining / forging brass rod: HPb59-1 brass rod ¥66,190/t ex-VAT (Ningbo, 29 Sep 2026) — CW614N / CW617N equivalent; direct",
@@ -945,13 +951,25 @@ export const CHINA_BOOK: CountryBook = {
   },
   "mat-cz108-brass": {
    "gbpPerKg": 8.4809,
-   "basis": "70/30 and 63/37 brass sheet: H62 brass rod ¥74,340/t ex-VAT (Ningbo, 29 Sep) × the book's premium of CZ108 sheet — H62 is the nearest priced CuZn37; direct",
+   "basis": "70/30 and 63/37 brass sheet: H62 brass rod ¥74,340/t ex-VAT (Ningbo, 29 Sep) × the book's premium of CZ108 sheet — H62 is the nearest priced CuZn37; direct — CORRECTED 30 Oct 2026 on a page re-check: nonferrous.brass.H62_rod 74.34 → 75.31 (the cited rolling page has been updated: Ningbo H62 Φ14 85,100 CNY/t (VAT incl.) ÷ 1.13 = 75.31 CNY/kg)",
    "source": "https://list1.mysteel.com/zhishi/nbtbjgzxxq.html (2026-09-29)",
+   "confidence": "Low"
+  },
+  "mat-bronze-pb1": {
+   "gbpPerKg": 13.991,
+   "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu ¥98.71 + 0.105 × Sn ¥345.13; held (already above the metal it contains)",
+   "source": "https://m.ccmn.cn/ (2026-09-30) ; https://news.metal.com/newscontent/104146823 (2026-10-09)",
    "confidence": "Low"
   },
   "mat-bronze-c905": {
    "gbpPerKg": 13.9742,
    "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu ¥98.71 + 0.105 × Sn ¥345.13; floor (raised to metal content)",
+   "source": "https://m.ccmn.cn/ (2026-09-30) ; https://news.metal.com/newscontent/104146823 (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-cusn12-cast": {
+   "gbpPerKg": 13.9966,
+   "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu ¥98.71 + 0.105 × Sn ¥345.13; held (already above the metal it contains)",
    "source": "https://m.ccmn.cn/ (2026-09-30) ; https://news.metal.com/newscontent/104146823 (2026-10-09)",
    "confidence": "Low"
   },
@@ -1143,31 +1161,31 @@ export const CHINA_BOOK: CountryBook = {
   },
   "mat-upvc": {
    "gbpPerKg": 0.5222,
-   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; the anchor grade itself",
+   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: polymer.pvc_sg5 4.31 → 4.637 (the cited rolling page has been updated: SunSirs PVC 5,240 CNY/t (30 Oct 2026) ÷ 1.13 = 4.637 CNY/kg)",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
   },
   "mat-fpvc": {
    "gbpPerKg": 0.7627,
-   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×1.461 (book £1.11 ÷ base £0.76)",
+   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×1.461 (book £1.11 ÷ base £0.76) — CORRECTED 30 Oct 2026 on a page re-check: polymer.pvc_sg5 4.31 → 4.637 (the cited rolling page has been updated: SunSirs PVC 5,240 CNY/t (30 Oct 2026) ÷ 1.13 = 4.637 CNY/kg)",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
   },
   "mat-pvc-bm": {
    "gbpPerKg": 0.584,
-   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×1.118 (book £0.85 ÷ base £0.76)",
+   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×1.118 (book £0.85 ÷ base £0.76) — CORRECTED 30 Oct 2026 on a page re-check: polymer.pvc_sg5 4.31 → 4.637 (the cited rolling page has been updated: SunSirs PVC 5,240 CNY/t (30 Oct 2026) ÷ 1.13 = 4.637 CNY/kg)",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
   },
   "mat-upvc-window-profile": {
    "gbpPerKg": 0.8863,
-   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×1.697 (book £1.29 ÷ base £0.76)",
+   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×1.697 (book £1.29 ÷ base £0.76) — CORRECTED 30 Oct 2026 on a page re-check: polymer.pvc_sg5 4.31 → 4.637 (the cited rolling page has been updated: SunSirs PVC 5,240 CNY/t (30 Oct 2026) ÷ 1.13 = 4.637 CNY/kg)",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
   },
   "mat-pvcp-profile": {
    "gbpPerKg": 1.0581,
-   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×2.026 (book £1.54 ÷ base £0.76)",
+   "basis": "PVC family: PVC SG-5 resin ¥4.31/kg ex-VAT (5 Oct 2026) × the book's premium of each compound over uPVC; ladder ×2.026 (book £1.54 ÷ base £0.76) — CORRECTED 30 Oct 2026 on a page re-check: polymer.pvc_sg5 4.31 → 4.637 (the cited rolling page has been updated: SunSirs PVC 5,240 CNY/t (30 Oct 2026) ÷ 1.13 = 4.637 CNY/kg)",
    "source": "https://pvc.100ppi.com/news/list---1.html (2026-10-05)",
    "confidence": "Medium"
   },

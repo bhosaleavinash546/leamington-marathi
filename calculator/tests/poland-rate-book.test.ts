@@ -23,7 +23,7 @@ const lab = (id: string) => PL.labour.find(l => l.id === id)!;
 describe('materials: European market anchors at the book FX, not UK × a factor', () => {
   it('CR sheet at the NW Europe price; the note says zł', () => {
     expect(COUNTRY_BOOKS.PL).toBe(POLAND_BOOK);
-    expect(pln(mat('mat-dc01').pricePerKg)).toBeCloseTo(3.78, 1);
+    expect(pln(mat('mat-dc01').pricePerKg)).toBeCloseTo(3.74, 1);   // page re-check 30 Oct 2026: NW Europe CRC €855/t
     expect(mat('mat-dc01').sourceNote).toMatch(/Poland book .*zł3\.78\/kg/);
   });
   it('a casting grade is the metal CHARGE — never below the scrap it is melted from', () => {
@@ -34,14 +34,14 @@ describe('materials: European market anchors at the book FX, not UK × a factor'
     expect(mat('mat-gjs500').sourceNote).toMatch(/charge/i);
   });
   it('no grade below the metal it contains: copper bar ≥ LME + premium; Zamak ≥ its zinc', () => {
-    expect(pln(mat('mat-c101-bar').pricePerKg)).toBeGreaterThanOrEqual(57.9);
-    expect(pln(mat('mat-zamak3').pricePerKg)).toBeGreaterThanOrEqual(16.6);
+    expect(pln(mat('mat-c101-bar').pricePerKg)).toBeGreaterThanOrEqual(56.7);   // LME 14,415 + 315 (page re-check)
+    expect(pln(mat('mat-zamak3').pricePerKg)).toBeGreaterThanOrEqual(16.1);   // 0.96 × SHG zinc zł16.19 (page re-check) + 0.04 × Al
     expect(pln(mat('mat-lm25').pricePerKg)).toBeGreaterThanOrEqual(14.5);   // primary foundry alloy ≥ P1020
   });
   it('resins at the Central & Eastern Europe market; HIPS is no longer the GPPS price', () => {
     expect(pln(mat('mat-pp-homo').pricePerKg)).toBeCloseTo(5.11, 1);
     expect(mat('mat-pp-impact').pricePerKg).toBeGreaterThanOrEqual(mat('mat-pp-homo').pricePerKg);
-    expect(pln(mat('mat-pa66').pricePerKg)).toBeCloseTo(16.28, 1);
+    expect(pln(mat('mat-pa66').pricePerKg)).toBeCloseTo(13.24, 1);   // businessanalytiq Sep 2026 US$3.44 (page re-check)
     expect(pln(mat('mat-hips').pricePerKg)).toBeCloseTo(7.33, 1);
     expect(mat('mat-hips').pricePerKg).toBeGreaterThan(mat('mat-gpps').pricePerKg);
   });
@@ -71,7 +71,7 @@ describe('labour and energy', () => {
   });
   it('gas at the exchange + distribution (zł0.249, was zł0.408); electricity at the 2026 build-up', () => {
     expect(pln(REGIONAL_DATA.PL.energy.gasPerKwh)).toBeCloseTo(0.249, 2);
-    expect(pln(REGIONAL_DATA.PL.energy.electricityPerKwh)).toBeCloseTo(0.702, 2);
+    expect(pln(REGIONAL_DATA.PL.energy.electricityPerKwh)).toBeCloseTo(0.712, 2);   // capacity fee over 15 h (page re-check)
     const e = DEFAULT_RATE_LIBRARY.energy.find(x => x.id === 'energy-pl')!;
     expect(e.gasPerKwh).toBe(REGIONAL_DATA.PL.energy.gasPerKwh);
     expect(e.sourceNote).toMatch(/^Poland rate book/);
@@ -86,8 +86,8 @@ describe('machines: the 3 × 8 h operating model; EU capex for CNC', () => {
     expect(pln(v.computedRatePerHr)).toBeGreaterThan(20);
     expect(pln(v.computedRatePerHr)).toBeLessThan(45);
   });
-  it('a machine without capex evidence says its capital is HELD', () => {
-    expect(mach('press-400t').sourceNote).toMatch(/HELD/);
+  it('a machine without capex evidence says its capital is AT PAR (world round, 30 Oct 2026)', () => {
+    expect(mach('press-400t').sourceNote).toMatch(/AT PAR/);
     expect(mach('press-400t').confidence).toBe('Low');
   });
 });
@@ -104,7 +104,7 @@ describe('round 2 (10 Oct 2026): what round 1 left held', () => {
     expect(pln(mat('mat-cf-dry-3k').pricePerKg)).toBeGreaterThanOrEqual(130.8);
   });
   it('POM at the European index; HRPO and 409L derived and labelled', () => {
-    expect(pln(mat('mat-pom').pricePerKg)).toBeCloseTo(11.70, 1);
+    expect(pln(mat('mat-pom').pricePerKg)).toBeCloseTo(10.08, 1);   // businessanalytiq Sep 2026 US$2.62 (page re-check)
     expect(mat('mat-hrpo').sourceNote).toMatch(/DERIVED/);
     expect(pln(mat('mat-ss409l-sheet').pricePerKg)).toBeCloseTo(6.48, 1);
   });

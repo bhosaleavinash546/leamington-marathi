@@ -12,38 +12,38 @@ export const JAPAN_BOOK: CountryBook = {
  "currencySymbol": "JP¥",
  "labourGrades": {
   "forge": {
-   "gbpPerHr": 12.0204,
-   "basis": "paid as skilled: skilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "gbpPerHr": 10.352,
+   "basis": "paid as skilled: no occupation figure: the all-employee average × ISCO 7 ratio 0.861 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2178.96/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: Japan: the annual bonus (scheduled cash earnings only — MHLW special earnings for manufacturing were not read), so Japan's labour is a FLOOR; NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
    "confidence": "Medium"
   },
   "furnace": {
-   "gbpPerHr": 12.0204,
-   "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "gbpPerHr": 10.0879,
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: Japan: the annual bonus (scheduled cash earnings only — MHLW special earnings for manufacturing were not read), so Japan's labour is a FLOOR; NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
    "confidence": "Medium"
   },
   "blow": {
-   "gbpPerHr": 12.0204,
-   "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "gbpPerHr": 10.0879,
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: Japan: the annual bonus (scheduled cash earnings only — MHLW special earnings for manufacturing were not read), so Japan's labour is a FLOOR; NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
    "confidence": "Medium"
   },
   "roto": {
-   "gbpPerHr": 12.0204,
-   "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "gbpPerHr": 10.0879,
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: Japan: the annual bonus (scheduled cash earnings only — MHLW special earnings for manufacturing were not read), so Japan's labour is a FLOOR; NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
    "confidence": "Medium"
   },
   "thermoform": {
-   "gbpPerHr": 12.0204,
-   "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "gbpPerHr": 10.0879,
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: Japan: the annual bonus (scheduled cash earnings only — MHLW special earnings for manufacturing were not read), so Japan's labour is a FLOOR; NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
    "confidence": "Medium"
   },
   "trim-router": {
-   "gbpPerHr": 12.0204,
-   "basis": "paid as semiskilled: semiskilled earnings (scheduled cash earnings per month (mean), MANUFACTURING, ALL OCCUPATIONS — no occupation split read, 2025-06): 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2530.13/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "gbpPerHr": 10.0879,
+   "basis": "paid as semiskilled: no occupation figure: the all-employee average × ISCO 8 ratio 0.839 (the EU manufacturing structure (SES 2022 median ratios) — no ILOSTAT occupation split for this country) — 330000.0 a month × 12 × wage growth 3.6%/yr over 1 yr = ×1.0360 × employer contributions 15.45% (employer total excl. workers' accident insurance, age < 40) ÷ 1872 h worked a year (statutory 40 h × 52 = 2,080 − 16 public holidays × 8 − 10 days annual leave (Labour Standards Act art. 39 minimum) × 8 = 1,872 h — the survey figure was not read) = 2123.36/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: Japan: the annual bonus (scheduled cash earnings only — MHLW special earnings for manufacturing were not read), so Japan's labour is a FLOOR; NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://www.mhlw.go.jp/toukei/itiran/roudou/chingin/kouzou/z2025/xls/zuhyo.xlsx",
    "confidence": "Medium"
   }
@@ -619,6 +619,138 @@ export const JAPAN_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.3085,
+   "basis": "Aluminium forging stock (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥643.8672/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.2094,
+   "basis": "Aluminium forging stock (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥643.8672/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.5562,
+   "basis": "Aluminium forging stock (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥643.8672/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.5566,
+   "basis": "Aluminium forging stock (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥643.8672/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 5.1311,
+   "basis": "Aluminium forging stock (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥643.8672/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.4198,
+   "basis": "Aluminium forging stock (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥643.8672/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-aa5182": {
+   "gbpPerKg": 3.1599,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa5052": {
+   "gbpPerKg": 3.1599,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa5083": {
+   "gbpPerKg": 3.3679,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6082-sheet": {
+   "gbpPerKg": 3.5264,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa5754-sheet": {
+   "gbpPerKg": 3.2887,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6061-sheet": {
+   "gbpPerKg": 3.6255,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6063-sheet": {
+   "gbpPerKg": 3.4571,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa3003-sheet": {
+   "gbpPerKg": 2.9744,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; floor (raised to metal content)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-al-busbar": {
+   "gbpPerKg": 3.7047,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6016-t4": {
+   "gbpPerKg": 3.4571,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa6111-t4": {
+   "gbpPerKg": 3.6057,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.7358,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-aa1050-sheet": {
+   "gbpPerKg": 2.9816,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NEA market (KR figure): DERIVED: Novelis Asia segment FY2026 (Apr 2025–Mar 2026) net sales US$3,430 M ÷ total shipments 866 kt = US$3,961/t (rolled 856 kt incl. 240 kt intersegment; non-rolled 10 kt) = 3961 USD/t (2025-04-01 to 2026-03-31) = JP¥626.0729/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
+  "mat-c101-bar": {
+   "gbpPerKg": 11.1813,
+   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + KR cathode premium $330.0/t = JP¥2353.5030/kg — no bar or sheet below the copper it contains; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://news.metal.com/newscontent/103631465/Codelco-Sets-2026-CIF-Korea-Copper-Cathode-Contract-at-USD-330mt-Up-Sharply-from-2025 (2025-11-20 (applies calendar 2026))",
+   "confidence": "Medium"
+  },
+  "mat-c110-copper": {
+   "gbpPerKg": 11.1813,
+   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + KR cathode premium $330.0/t = JP¥2353.5030/kg — no bar or sheet below the copper it contains; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://news.metal.com/newscontent/103631465/Codelco-Sets-2026-CIF-Korea-Copper-Cathode-Contract-at-USD-330mt-Up-Sharply-from-2025 (2025-11-20 (applies calendar 2026))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.7688,
+   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + KR cathode premium $330.0/t = JP¥2353.5030/kg — no bar or sheet below the copper it contains; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://news.metal.com/newscontent/103631465/Codelco-Sets-2026-CIF-Korea-Copper-Cathode-Contract-at-USD-330mt-Up-Sharply-from-2025 (2025-11-20 (applies calendar 2026))",
+   "confidence": "Medium"
+  },
   "mat-brass-cz121": {
    "gbpPerKg": 9.3357,
    "basis": "Free-machining / forging brass rod (floor): no JP or regional price found — the European market price at par (traded material, no country factor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥1965.0264/kg; floor (raised to metal content)",
@@ -637,10 +769,34 @@ export const JAPAN_BOOK: CountryBook = {
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
+  "mat-bronze-pb1": {
+   "gbpPerKg": 14.2879,
+   "basis": "Phosphor / tin bronze (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥2926.5523/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-bronze-c905": {
    "gbpPerKg": 13.9038,
    "basis": "Phosphor / tin bronze (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥2926.5523/kg; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-cusn12-cast": {
+   "gbpPerKg": 14.2939,
+   "basis": "Phosphor / tin bronze (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥2926.5523/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak3": {
+   "gbpPerKg": 3.1599,
+   "basis": "Zamak 3 (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Metal content 0.96 × SHG zinc €3.58 (LME + Rotterdam premium) + 0.04 × Al €3.19 — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥627.0492/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09) ; https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns (2026-10-01 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-zamak5": {
+   "gbpPerKg": 3.2094,
+   "basis": "Zamak 5 (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Metal content 0.95 × zinc €3.58 + 0.04 × Al + 0.01 × Cu €13.2 — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥643.9728/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000 (2026-02-02 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-pp-homo": {
@@ -1033,6 +1189,12 @@ export const JAPAN_BOOK: CountryBook = {
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09) ; https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Low"
   },
+  "mat-cf-dry-3k": {
+   "gbpPerKg": 25.0065,
+   "basis": "Carbon fabric (floor): no JP or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥5263.5264/kg; floor (raised to metal content)",
+   "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report (2026-03)",
+   "confidence": "Low"
+  },
   "mat-nr": {
    "gbpPerKg": 1.8638,
    "basis": "Natural rubber (raw): no JP or regional price found — the European market price at par (traded material, no country factor): TSR20 benchmark €2.23/kg (SGX, 28 Sep 2026, as reported) — FOB Asia, freight to Germany NOT added; for the book's raw NR line; compounds held — at €1 = 175.92 JPY (ECB 2026-10-29): JP¥392.3016/kg; direct",
@@ -1050,7 +1212,7 @@ export const JAPAN_BOOK: CountryBook = {
   "rentGbpPerM2Yr": 64.4793,
   "ukRentGbpPerM2Yr": 110,
   "ukElectricityGbpPerKwh": 0.182,
-  "labourRatio": 0.4301,
+  "labourRatio": 0.3704,
   "capitalHeldFactor": 1,
   "basis": "3 × 8 h, Monday–Friday, Japan's 2026 working calendar: 5880 h (245 days × 24 h; 16 weekday national public holidays removed — https://date.nager.at/api/v3/PublicHolidays/2026/JP); Japan straight-line tax depreciation — no shift uplift on capital; BOJ API, Aug 2026 latest (updated 2026-10-05) (2026-08); rent JP¥1131/m²/month (CBRE Japan Logistics MarketView Q2 2026 as reported by LNEWS (18 Aug 2026): Chubu (Greater Nagoya) LMT effective rent ¥3,740/tsubo (flat q/q); 3,740 ÷ 3.30579 m²/tsubo = 1,131 JPY/m²/month. (AVERAGE effective rent, large multi-tenant logistics facilities, Chubu / Greater Nagoya (Toyota cluster), 2026-Q2)); maintenance the library's own line build-up rule (3.5% of capex); no Japan norm found",
   "heldBasis": "capex not found for Japan: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Japan's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Japan wages)",

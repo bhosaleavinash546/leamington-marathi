@@ -368,7 +368,7 @@ describe('Named SM fab machines in DEFAULT_RATE_LIBRARY', () => {
     // UK rate book, Oct 2026: £374,700 (6 kW, third-party estimate), 22 kW, 13-yr life — the operator, overhead and
     // margin are added by the costing
     const m = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'laser-trumpf-3030')!;
-    expect(m.sourceNote).toMatch(/Capex £374,700/);
+    expect(m.sourceNote).toMatch(/Capex £355,966/);
     expectNearBenchmark(m.computedRatePerHr, 29.47);
   });
 

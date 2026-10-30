@@ -51,157 +51,157 @@ export const GERMANY_BOOK: CountryBook = {
  "materials": {
   "mat-dc01": {
    "gbpPerKg": 0.7146,
-   "basis": "CR coil (DC01 / DC04): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added; direct",
+   "basis": "CR coil (DC01 / DC04): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Medium"
   },
   "mat-dc04": {
    "gbpPerKg": 0.7146,
-   "basis": "CR coil (DC01 / DC04): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added; direct",
+   "basis": "CR coil (DC01 / DC04): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added; direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Medium"
   },
   "mat-dc05": {
    "gbpPerKg": 0.7146,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; the anchor grade itself",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dc06": {
    "gbpPerKg": 0.7231,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.012 (book £0.85 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.012 (book £0.85 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-if-dx56": {
    "gbpPerKg": 0.8507,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.190 (book £1 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.190 (book £1 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-if-hs260": {
    "gbpPerKg": 0.9613,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.345 (book £1.13 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.345 (book £1.13 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-bh260": {
    "gbpPerKg": 0.9358,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-greensteel-dc01": {
    "gbpPerKg": 0.9358,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-hsla340": {
    "gbpPerKg": 1.0123,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.417 (book £1.19 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.417 (book £1.19 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-hsla420": {
    "gbpPerKg": 1.0974,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.536 (book £1.29 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.536 (book £1.29 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-hsla550": {
    "gbpPerKg": 1.1825,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.655 (book £1.39 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.655 (book £1.39 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dp600": {
    "gbpPerKg": 1.1059,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.548 (book £1.3 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.548 (book £1.3 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dp780": {
    "gbpPerKg": 1.1655,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.631 (book £1.37 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.631 (book £1.37 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dp980": {
    "gbpPerKg": 1.276,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.786 (book £1.5 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.786 (book £1.5 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dp1000": {
    "gbpPerKg": 1.3356,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.869 (book £1.57 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.869 (book £1.57 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-trip780": {
    "gbpPerKg": 1.2335,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.726 (book £1.45 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.726 (book £1.45 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-cp800": {
    "gbpPerKg": 1.2165,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.702 (book £1.43 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.702 (book £1.43 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-ms1200": {
    "gbpPerKg": 1.3611,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-ms1300": {
    "gbpPerKg": 1.4207,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.988 (book £1.67 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.988 (book £1.67 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-ms1500": {
    "gbpPerKg": 1.5057,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.107 (book £1.77 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.107 (book £1.77 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-qp980": {
    "gbpPerKg": 1.4717,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.060 (book £1.73 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.060 (book £1.73 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-medmn1180": {
    "gbpPerKg": 1.5313,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.143 (book £1.8 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.143 (book £1.8 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-22mnb5": {
    "gbpPerKg": 1.5227,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.131 (book £1.79 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.131 (book £1.79 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-usibor1500": {
    "gbpPerKg": 1.7014,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.381 (book £2 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.381 (book £2 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-usibor2000": {
    "gbpPerKg": 2.0417,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.857 (book £2.4 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.857 (book £2.4 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-c67s-spring": {
    "gbpPerKg": 1.3611,
-   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.crc 0.865 → 0.855 (the cited Tacto page has been updated: NW Europe cold-rolled coil €855/t ex-works (19–23 Oct 2026; the 13 Sep €850–880 print is no longer on it))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
@@ -219,37 +219,37 @@ export const GERMANY_BOOK: CountryBook = {
   },
   "mat-dc01-gi": {
    "gbpPerKg": 0.6937,
-   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; the anchor grade itself",
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: hot-dip galvanised €830/t ex-works Germany (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dc03-ga": {
    "gbpPerKg": 0.7187,
-   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11)",
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: hot-dip galvanised €830/t ex-works Germany (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dc01-ze": {
    "gbpPerKg": 0.6937,
-   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; the anchor grade itself",
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: hot-dip galvanised €830/t ex-works Germany (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-znni-eg": {
    "gbpPerKg": 0.7687,
-   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11)",
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: hot-dip galvanised €830/t ex-works Germany (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-zm-coated": {
    "gbpPerKg": 0.7499,
-   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11)",
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: hot-dip galvanised €830/t ex-works Germany (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-tinplate-etp": {
    "gbpPerKg": 0.8437,
-   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11)",
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.anchor.hdg 0.86 → 0.83 (the cited Tacto page has been updated: hot-dip galvanised €830/t ex-works Germany (SteelRadar, 19 Oct 2026))",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
@@ -297,133 +297,133 @@ export const GERMANY_BOOK: CountryBook = {
   },
   "mat-aisi430": {
    "gbpPerKg": 1.3778,
-   "basis": "430 ferritic sheet: 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found); direct",
+   "basis": "430 ferritic sheet: 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found); direct — CORRECTED 30 Oct 2026 on a page re-check: ferrous.stainless.430_CR 1.548 → 1.6485 (the October 2026 1.4016 (430) alloy surcharge on legierungszuschlag.info is €1,085/t, not €985 (that is 1.4034): €1,085 + base €563.5 = €1.6485/kg)",
    "source": "https://legierungszuschlag.info/en/ (2026-10-01)",
    "confidence": "Low"
   },
   "mat-gjs500": {
    "gbpPerKg": 0.3318,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); the anchor grade itself",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs400": {
    "gbpPerKg": 0.2918,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€-0.05/kg (the book's premium: £0.82 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€-0.05/kg (the book's premium: £0.82 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs450-ssf": {
    "gbpPerKg": 0.3018,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€-0.04/kg (the book's premium: £0.83 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€-0.04/kg (the book's premium: £0.83 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs500-14": {
    "gbpPerKg": 0.3118,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€-0.02/kg (the book's premium: £0.84 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€-0.02/kg (the book's premium: £0.84 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs600": {
    "gbpPerKg": 0.3718,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.05/kg (the book's premium: £0.9 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.05/kg (the book's premium: £0.9 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs700": {
    "gbpPerKg": 0.4218,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.11/kg (the book's premium: £0.95 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.11/kg (the book's premium: £0.95 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs350-lt": {
    "gbpPerKg": 0.3418,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.01/kg (the book's premium: £0.87 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.01/kg (the book's premium: £0.87 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-simo": {
    "gbpPerKg": 0.8218,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.59/kg (the book's premium: £1.35 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.59/kg (the book's premium: £1.35 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-adi": {
    "gbpPerKg": 1.0518,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.86/kg (the book's premium: £1.58 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.86/kg (the book's premium: £1.58 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjv450": {
    "gbpPerKg": 0.5918,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.31/kg (the book's premium: £1.12 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.31/kg (the book's premium: £1.12 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjv500": {
    "gbpPerKg": 0.6218,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.35/kg (the book's premium: £1.15 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.35/kg (the book's premium: £1.15 - base £0.86) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJS-500-7 0.394 → 0.397 (the same mix on the corrected scrap: (0.45 × 0.425 + 0.30 × 0.2816) / 0.75 = 0.3676 + FeSiMg 0.0164 + inoculant 0.0050 = 0.3890 / 0.98 = €0.397/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjl250": {
    "gbpPerKg": 0.2947,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; the anchor grade itself",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 0.349 → 0.3526 (the same mix on the corrected scrap: (0.25 × 0.425 + 0.40 × 0.2816) / 0.65 = 0.3368 + FeSi 0.0088 = 0.3456 / 0.98 = €0.3526/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl150": {
    "gbpPerKg": 0.2579,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 0.349 → 0.3526 (the same mix on the corrected scrap: (0.25 × 0.425 + 0.40 × 0.2816) / 0.65 = 0.3368 + FeSi 0.0088 = 0.3456 / 0.98 = €0.3526/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl200": {
    "gbpPerKg": 0.2763,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 0.349 → 0.3526 (the same mix on the corrected scrap: (0.25 × 0.425 + 0.40 × 0.2816) / 0.65 = 0.3368 + FeSi 0.0088 = 0.3456 / 0.98 = €0.3526/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl300": {
    "gbpPerKg": 0.3223,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 0.349 → 0.3526 (the same mix on the corrected scrap: (0.25 × 0.425 + 0.40 × 0.2816) / 0.65 = 0.3368 + FeSi 0.0088 = 0.3456 / 0.98 = €0.3526/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl350": {
    "gbpPerKg": 0.3407,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 0.349 → 0.3526 (the same mix on the corrected scrap: (0.25 × 0.425 + 0.40 × 0.2816) / 0.65 = 0.3368 + FeSi 0.0088 = 0.3456 / 0.98 = €0.3526/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjmb350": {
    "gbpPerKg": 0.3039,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GJL-250 0.349 → 0.3526 (the same mix on the corrected scrap: (0.25 × 0.425 + 0.40 × 0.2816) / 0.65 = 0.3368 + FeSi 0.0088 = 0.3456 / 0.98 = €0.3526/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gs-c25": {
    "gbpPerKg": 0.2506,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GS-C25 0.293 → 0.2999 (the same arithmetic on the corrected scrap: (0.2816 + 0.0063) / 0.96 = €0.2999/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-astm-a216-wcb": {
    "gbpPerKg": 0.2506,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GS-C25 0.293 → 0.2999 (the same arithmetic on the corrected scrap: (0.2816 + 0.0063) / 0.96 = €0.2999/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-g20mn5": {
    "gbpPerKg": 0.2506,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GS-C25 0.293 → 0.2999 (the same arithmetic on the corrected scrap: (0.2816 + 0.0063) / 0.96 = €0.2999/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
    "gbpPerKg": 0.3906,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); ladder +€0.17/kg (the book's premium: £2.24 - base £2.1)",
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); ladder +€0.17/kg (the book's premium: £2.24 - base £2.1) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.charge.GS-C25 0.293 → 0.2999 (the same arithmetic on the corrected scrap: (0.2816 + 0.0063) / 0.96 = €0.2999/kg) — CORRECTED 30 Oct 2026 on a page re-check: ferrous.foundry.steel_scrap_heavy 0.275 → 0.2816 (the cited GMK page gives German E3 heavy scrap at US$320/t ex-works for AUGUST (the US$327 read was the US East Coast HMS figure; the August fall is already inside $320): 320 × 0.880 = €0.2816/kg)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
@@ -861,31 +861,31 @@ export const GERMANY_BOOK: CountryBook = {
   },
   "mat-pa6": {
    "gbpPerKg": 2.3402,
-   "basis": "PA6 family: PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
+   "basis": "PA6 family: PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: polymer.pa6 2.35 → 2.8 (businessanalytiq Europe PA6 shows September 2026 US$3.18/kg (+1.3%, so August was ≈ US$3.14, not the US$2.67 read): 3.18 × 0.880 = €2.80/kg)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-bm": {
    "gbpPerKg": 4.3182,
-   "basis": "PA6 family: PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; ladder ×1.845 (book £3.1 ÷ base £1.68)",
+   "basis": "PA6 family: PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; ladder ×1.845 (book £3.1 ÷ base £1.68) — CORRECTED 30 Oct 2026 on a page re-check: polymer.pa6 2.35 → 2.8 (businessanalytiq Europe PA6 shows September 2026 US$3.18/kg (+1.3%, so August was ≈ US$3.14, not the US$2.67 read): 3.18 × 0.880 = €2.80/kg)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-ext-tube": {
    "gbpPerKg": 2.3402,
-   "basis": "PA6 family: PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
+   "basis": "PA6 family: PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: polymer.pa6 2.35 → 2.8 (businessanalytiq Europe PA6 shows September 2026 US$3.18/kg (+1.3%, so August was ≈ US$3.14, not the US$2.67 read): 3.18 × 0.880 = €2.80/kg)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa66": {
    "gbpPerKg": 2.5324,
-   "basis": "PA66: PA66 €3.03/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; an August reading was €3.72 — the two extracts conflict); direct",
+   "basis": "PA66: PA66 €3.03/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; an August reading was €3.72 — the two extracts conflict); direct — CORRECTED 30 Oct 2026 on a page re-check: polymer.pa66 3.04 → 3.03 (businessanalytiq Europe PA66, September 2026, is US$3.44/kg on the page (research US$3.45): 3.44 × 0.880 = €3.03/kg)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pbt": {
    "gbpPerKg": 3.1174,
-   "basis": "PBT: PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026); direct",
+   "basis": "PBT: PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026); direct — CORRECTED 30 Oct 2026 on a page re-check: polymer.pbt 3.26 → 3.73 (businessanalytiq Europe PBT, September 2026, is US$4.24/kg on the page (the research read US$3.70 for the same month): 4.24 × 0.880 = €3.73/kg)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/ (2026-09)",
    "confidence": "Medium"
   },
@@ -903,7 +903,7 @@ export const GERMANY_BOOK: CountryBook = {
   },
   "mat-pmma": {
    "gbpPerKg": 2.641,
-   "basis": "PMMA family: PMMA €3.16/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PMMA; the anchor grade itself",
+   "basis": "PMMA family: PMMA €3.16/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PMMA; the anchor grade itself — CORRECTED 30 Oct 2026 on a page re-check: polymer.pmma 3.25 → 3.16 (businessanalytiq Europe PMMA, September 2026, is US$3.59/kg on the page (research US$3.69): 3.59 × 0.880 = €3.16/kg)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Medium"
   },

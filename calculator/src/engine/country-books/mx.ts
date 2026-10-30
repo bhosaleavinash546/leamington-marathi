@@ -13,37 +13,37 @@ export const MEXICO_BOOK: CountryBook = {
  "labourGrades": {
   "forge": {
    "gbpPerHr": 3.1419,
-   "basis": "paid as skilled: the higher of the two manual figures (craft v operator) — semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11185.46 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 78.44/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: the higher of the two manual figures (craft v operator) — semiskilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11185.46 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 78.44/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/MEX.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 3.1114,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/MEX.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 3.1114,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/MEX.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 3.1114,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/MEX.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 3.1114,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/MEX.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 3.1114,
-   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: employer-paid benefits that are not statutory (in the United States, health insurance and retirement plans — the US figure is a floor); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: the lower of the two manual figures (craft v operator) — skilled earnings (gross per month (mean), ALL-ECONOMY major occupation group — not manufacturing, not the detailed occupation, 2025): 11075.98 a month × 12.5 (incl. 0.5 months bonus) × wage growth 8.8%/yr over 1 yr = ×1.0884 × employer contributions 21.24% (employer effective rate at the cap, low risk class) ÷ 2352 h worked a year (normal hours/year (statutory)) = 77.68/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/MEX.A.....?startPeriod=2018&format=csvfilewithlabels",
    "confidence": "Medium"
   }
@@ -251,6 +251,12 @@ export const MEXICO_BOOK: CountryBook = {
    "gbpPerKg": 0.8437,
    "basis": "Coated sheet: no MX or regional price found — the European market price at par (traded material, no country factor): NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI — at €1 = 20.8661 MXN (ECB 2026-10-29): $M17.3189/kg; ladder ×1.216 (book £1.35 ÷ base £1.11)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
+   "confidence": "Low"
+  },
+  "mat-hrpo": {
+   "gbpPerKg": 0.6979,
+   "basis": "HR pickled & oiled: no MX or regional price found — the European market price at par (traded material, no country factor): HRC €745/t + a service-centre pickling extra ~€90/t (undated) = €0.835/kg — DERIVED — at €1 = 20.8661 MXN (ECB 2026-10-29): $M17.4232/kg; direct",
+   "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/ (undated extra; HRC 2026-10-06)",
    "confidence": "Low"
   },
   "mat-ss409l-sheet": {
@@ -463,6 +469,12 @@ export const MEXICO_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php (2026-10-09) ; https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome (2026-Q3)",
    "confidence": "Low"
   },
+  "mat-ni-resist-d5s": {
+   "gbpPerKg": 4.2901,
+   "basis": "Ni-Resist D-5S (charge): no MX or regional price found — the European market price at par (traded material, no country factor): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge — at €1 = 20.8661 MXN (ECB 2026-10-29): $M107.1078/kg; direct",
+   "source": "https://www.westmetall.com/de/markdaten.php (2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-hicr-white": {
    "gbpPerKg": 0.8086,
    "basis": "High-Cr white iron (charge): no MX or regional price found — the European market price at par (traded material, no country factor): 0.23 × Cr €3.03 + 0.77 × grey charge €0.3526 — at €1 = 20.8661 MXN (ECB 2026-10-29): $M20.188/kg; direct",
@@ -607,6 +619,42 @@ export const MEXICO_BOOK: CountryBook = {
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
+  "mat-al6061-forge": {
+   "gbpPerKg": 3.1511,
+   "basis": "Aluminium forging stock (floor): no MX or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 20.8661 MXN (ECB 2026-10-29): $M76.3699/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al6082-forge": {
+   "gbpPerKg": 3.059,
+   "basis": "Aluminium forging stock (floor): no MX or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 20.8661 MXN (ECB 2026-10-29): $M76.3699/kg; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2014-forge": {
+   "gbpPerKg": 3.387,
+   "basis": "Aluminium forging stock (floor): no MX or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 20.8661 MXN (ECB 2026-10-29): $M76.3699/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7075-forge": {
+   "gbpPerKg": 4.3399,
+   "basis": "Aluminium forging stock (floor): no MX or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 20.8661 MXN (ECB 2026-10-29): $M76.3699/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al2618-forge": {
+   "gbpPerKg": 4.887,
+   "basis": "Aluminium forging stock (floor): no MX or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 20.8661 MXN (ECB 2026-10-29): $M76.3699/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
+  "mat-al7050-forge": {
+   "gbpPerKg": 8.0193,
+   "basis": "Aluminium forging stock (floor): no MX or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 20.8661 MXN (ECB 2026-10-29): $M76.3699/kg; held (already above the metal it contains)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
+   "confidence": "Low"
+  },
   "mat-aa5182": {
    "gbpPerKg": 4.3162,
    "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NA market (US figure): DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = $M107.7576/kg; floor (raised to metal content)",
@@ -673,6 +721,12 @@ export const MEXICO_BOOK: CountryBook = {
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
    "confidence": "Medium"
   },
+  "mat-aa7075-t6": {
+   "gbpPerKg": 6.4155,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NA market (US figure): DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = $M107.7576/kg; held (already above the metal it contains)",
+   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31)",
+   "confidence": "Medium"
+  },
   "mat-aa1050-sheet": {
    "gbpPerKg": 4.3162,
    "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — the NA market (US figure): DERIVED average selling price: Novelis North America segment FY2026 (1 Apr 2025 - 31 Mar 2026) net sales 7,932 MUSD / total shipments 1,380 kt = 5,747.8 USD/t (FY2025: 7,033 / 1,534 = 4,584.7 USD/t).  = 5747.8 USD/t (2025-04-01 to 2026-03-31) = $M107.7576/kg; floor (raised to metal content)",
@@ -688,6 +742,12 @@ export const MEXICO_BOOK: CountryBook = {
   "mat-c110-copper": {
    "gbpPerKg": 11.0323,
    "basis": "ETP copper bar / sheet (floor): no MX or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 20.8661 MXN (ECB 2026-10-29): $M275.4325/kg; floor (raised to metal content)",
+   "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
+   "confidence": "Medium"
+  },
+  "mat-cu-hairpin": {
+   "gbpPerKg": 13.1138,
+   "basis": "ETP copper bar / sheet (floor): no MX or regional price found — the European market price at par (traded material, no country factor): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains — at €1 = 20.8661 MXN (ECB 2026-10-29): $M275.4325/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026 contract year (announced 2025-10-07))",
    "confidence": "Medium"
   },
@@ -874,6 +934,12 @@ export const MEXICO_BOOK: CountryBook = {
   "mat-upvc": {
    "gbpPerKg": 0.6758,
    "basis": "PVC family: PVC family — the NA market (US figure): businessanalytiq PVC price index, North America, September 2026: US$0.9/kg (2.3% up m/m) = 40.8 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis no = 0.9 USD/kg (2026-09) = $M16.8729/kg × the book's grade premium over its base; the anchor grade itself",
+   "source": "https://businessanalytiq.com/procurementanalytics/index/pvc-price-index/ (2026-09)",
+   "confidence": "Low"
+  },
+  "mat-fpvc": {
+   "gbpPerKg": 0.9871,
+   "basis": "PVC family: PVC family — the NA market (US figure): businessanalytiq PVC price index, North America, September 2026: US$0.9/kg (2.3% up m/m) = 40.8 c/lb. Method not published (blend of 'multiple separate sources'); contract v spot and delivery basis no = 0.9 USD/kg (2026-09) = $M16.8729/kg × the book's grade premium over its base; ladder ×1.461 (book £1.11 ÷ base £0.76)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pvc-price-index/ (2026-09)",
    "confidence": "Low"
   },
