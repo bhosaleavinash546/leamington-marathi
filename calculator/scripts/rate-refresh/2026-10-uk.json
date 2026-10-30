@@ -209,6 +209,30 @@
     "confidence": "Low"
    },
    {
+    "id": "turret-punch",
+    "match": "^punch-",
+    "refId": "punch-amada-emz3610",
+    "refCapexGbp": 230000,
+    "refKw": null,
+    "kwBasis": "no sourced draw — the book's own running load kept",
+    "basis": "Amada UK CNC punch press, HM Prison & Probation Service framework award £230,000 (Jan 2020; model not named — a 30 t-class turret; delivery / installation may be included); the TruPunch sized by the book's relative capital",
+    "research": "capex.punch-amada-emz3610",
+    "source": "https://www.contractsfinder.service.gov.uk/Notice/5e104c49-5ebc-4fb9-b4d0-e36745970215",
+    "confidence": "Low"
+   },
+   {
+    "id": "gravity-die",
+    "match": "^grav-die-cast-std$",
+    "refId": "grav-die-cast-std",
+    "refCapexGbp": 82769,
+    "refKw": null,
+    "kwBasis": "no sourced draw — the book's own running load kept",
+    "basis": "Tecnofond tilting gravity die-casting system for aluminium, Brunel University award £82,769 (Mar 2017; a research cell, no escalation applied; die / furnace inclusions not shown)",
+    "research": "capex.grav-die-cast-std",
+    "source": "https://www.stotles.com/explore/notices/9d8505fc-6899-4f53-876f-3ddf5911e8d2/tilting-gravity-casting-cell ; https://www.contractsfinder.service.gov.uk/Notice/9b42012e-46a4-4a89-9435-ce8bfd854aeb",
+    "confidence": "Low"
+   },
+   {
     "id": "rtm-press",
     "match": "^rtm-press-std$",
     "refId": "rtm-press-std",

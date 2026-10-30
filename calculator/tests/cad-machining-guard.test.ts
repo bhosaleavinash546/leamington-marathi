@@ -138,7 +138,8 @@ describe('gravity die-cast stub axle — should-cost after the cap', () => {
     const t = totalWith(capped);
     expect(t.uk).toBeLessThan(35);       // was ~£117; £30.72 on the UK rate book (Oct 2026)
     expect(t.cnLanded).toBeLessThan(25); // China landed for a machined Al casting: £16.17 on the UK rate book
-    expect(t.cnLanded).toBeGreaterThan(12);
+    // £11.77 since the gravity die-casting machine is on a sourced UK award (£82,769, rate round 30 Oct 2026 (b))
+    expect(t.cnLanded).toBeGreaterThan(11);
   });
 
   it('bare casting alone is already sensible (~£11 landed in China on the UK rate book, Oct 2026)', () => {

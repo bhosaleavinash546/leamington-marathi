@@ -15,8 +15,9 @@ for f in ['labour-energy', 'machines-a', 'machines-b', 'materials-ferrous', 'mat
     for it in json.load(open(os.path.join(HERE, 'research', f + '.json')))['items']:
         R[it['key']] = it
 # round 30 Oct 2026 (scripts/rate-refresh/round-2026-10-30): UK public-contract awards for machines the book held
-for f in ['eu-capex-metal', 'eu-capex-plastics-composites', 'materials']:
-    for it in json.load(open(os.path.join(HERE, '..', 'round-2026-10-30', 'research', f + '.json')))['items']:
+for rnd, f in [('round-2026-10-30', 'eu-capex-metal'), ('round-2026-10-30', 'eu-capex-plastics-composites'), ('round-2026-10-30', 'materials'),
+               ('round-2026-10-30b', 'capex-machining-finishing'), ('round-2026-10-30b', 'capex-forming-casting')]:
+    for it in json.load(open(os.path.join(HERE, '..', rnd, 'research', f + '.json')))['items']:
         if it.get('value') is not None or it['key'] not in R:   # a sourced round figure fills a key the first round left empty
             R[it['key']] = it
 cur = json.load(open(os.path.join(HERE, 'current-uk-book.json')))
@@ -182,6 +183,15 @@ machines = {
          'refKw': None, 'kwBasis': 'no sourced draw — the book\'s own running load kept',
          'basis': 'ASC Process Systems autoclave moulding facility, University of Bristol award £333,765 ex-VAT (Jul 2023) — a smaller (~1.0 × 1.5 m), hotter (400 °C) vessel than the 1.2 × 3 m library unit, installation likely included; a 3 × 6 m vessel was estimated at £730k (QUB, 2025)',
          'research': 'capex.autoclave-1200mm', 'source': R['capex.autoclave-1200mm']['source'], 'confidence': 'Low'},
+        # round 30 Oct 2026 (b) — UK public-contract awards for two more held families (read from search results: verify)
+        {'id': 'turret-punch', 'match': '^punch-', 'refId': 'punch-amada-emz3610', 'refCapexGbp': v('capex.punch-amada-emz3610'),
+         'refKw': None, 'kwBasis': 'no sourced draw — the book\'s own running load kept',
+         'basis': 'Amada UK CNC punch press, HM Prison & Probation Service framework award £230,000 (Jan 2020; model not named — a 30 t-class turret; delivery / installation may be included); the TruPunch sized by the book\'s relative capital',
+         'research': 'capex.punch-amada-emz3610', 'source': R['capex.punch-amada-emz3610']['source'], 'confidence': 'Low'},
+        {'id': 'gravity-die', 'match': '^grav-die-cast-std$', 'refId': 'grav-die-cast-std', 'refCapexGbp': v('capex.grav-die-cast-std'),
+         'refKw': None, 'kwBasis': 'no sourced draw — the book\'s own running load kept',
+         'basis': 'Tecnofond tilting gravity die-casting system for aluminium, Brunel University award £82,769 (Mar 2017; a research cell, no escalation applied; die / furnace inclusions not shown)',
+         'research': 'capex.grav-die-cast-std', 'source': R['capex.grav-die-cast-std']['source'], 'confidence': 'Low'},
         {'id': 'rtm-press', 'match': '^rtm-press-std$', 'refId': 'rtm-press-std', 'refCapexGbp': round((230000 + 120745) / 2),
          'refKw': None, 'kwBasis': 'no sourced draw — the book\'s own running load kept',
          'basis': 'Langzauner hydraulic composites presses, UK university awards £230,000 installed (2020) and £120,745 (2021), tonnage not stated, press only — midpoint £175,373',

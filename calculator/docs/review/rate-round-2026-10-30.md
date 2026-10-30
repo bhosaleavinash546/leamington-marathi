@@ -108,3 +108,32 @@ What moved, in each country's currency:
 | ECU cover (domestic moulding machine) | 4.13 → 3.86 | — | — | — |
 
 Hungarian parts moved by up to 0.2 % (the occupation-level engineer / supervisor rates).
+
+## Round (b): UK held machines, public-contract awards (30 Oct 2026)
+
+Four researchers searched UK and EU public-contract awards and makers' prices for the 172 UK machines still on held
+build-ups (`round-2026-10-30b/`, all `verify: true`). Same-scope evidence was found for two more families:
+
+| Machine | Evidence | Rate (machine only) |
+|---|---|---|
+| Turret punches (`^punch-`) | Amada UK CNC punch, HM Prison & Probation Service framework award £230,000 (Jan 2020; model not named) | Amada £66.81 → £23.45/h; TruPunch £78.87 → £27.55/h |
+| Gravity die-casting | Tecnofond tilting gravity cell, Brunel University award £82,769 (Mar 2017) | £39.13 → £15.32/h |
+
+Not applied — a different scope from the library machine (kept as cross-checks):
+- a vertical Desma LSR press;
+- a universal (non-CNC) grinder;
+- welding power sources against welding stations;
+- a galvanising bath against a whole galvanising plant;
+- hot-stamp / sand-casting / megacasting lines against a single machine;
+- research forging presses.
+
+The 900 t KraussMaffei at £530k agrees with the book, so moulding machines stay as they are.
+
+Book rows found in contradiction with each other:
+- the named Schuler 400 t and AIDA 200t presses are 6–10× the generic presses of the same force;
+- the high-speed SMT line's finance line implies £2.35M against its own depreciation of ~£1.3M.
+
+Their fix is a sourced price, not a back-solve.
+
+No real part in the baseline uses these machines, so it does not move. A China gravity-cast stub-axle band moved by its
+reason: landed £11.77, against a lower bound that was £12.
