@@ -5,8 +5,13 @@
  */
 
 /** The amount of the first displayed money figure, without its symbol (£ € $ ¥ ₹ Ft zł); '' when none. */
+// every display symbol the tool prints (insights.ts CURRENCY_SYMBOL), longest first so "JP¥" wins over "¥" and "R$" over
+// "R"; a letter symbol ("R", "kr", "lei", "din") must not be the tail of a word (world round, 30 Oct 2026: Kč was missed)
+const SYMBOLS = ['JP¥', 'NT$', 'R$', 'C$', 'S$', 'E£', '$M', 'Kč', 'zł', 'Ft', 'kr', 'lei', 'din', 'DH', 'DT', 'RM', 'Rp', '£', '€', '$', '¥', '₹', '฿', '₫', '₩', '₺', '₱', 'R']
+  .sort((a, b) => b.length - a.length).map(x => x.replace(/[$]/g, '\\$&'));
+const MONEY_RE = new RegExp(`(?<![A-Za-zÀ-ž])(?:${SYMBOLS.join('|')})\\s?([\\d,]+\\.\\d{2})`);
 export function money(t: string): string {
-  return t.match(/(?:£|€|\$|¥|₹|Ft|zł)\s?([\d,]+\.\d{2})/)?.[1] ?? '';
+  return t.match(MONEY_RE)?.[1] ?? '';
 }
 
 /** Two displayed amounts are the same costing to the penny — compared in £ (display units ÷ fx), so a forint or

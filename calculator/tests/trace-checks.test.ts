@@ -10,6 +10,14 @@ describe('live-harness predicates', () => {
   it('money reads every display currency and nothing else', () => {
     expect(money('£1,234.56')).toBe('1,234.56');
     expect(money('Ft5,348.85 ± 15%')).toBe('5,348.85');
+    // the world round's currencies (Czech Kč was read as nothing, failing 30 checks a country)
+    expect(money('Kč374.31± 15%')).toBe('374.31');
+    expect(money('lei56.14')).toBe('56.14');
+    expect(money('JP¥2,178.96')).toBe('2,178.96');
+    expect(money('R$21.86')).toBe('21.86');
+    expect(money('₫60,509.17')).toBe('60,509.17');
+    expect(money('kr445.26')).toBe('445.26');
+    expect(money('Standard 12.30')).toBe('');   // no symbol, no amount
     expect(money('zł53.32')).toBe('53.32');
     expect(money('¥4.53')).toBe('4.53');
     expect(money('₹853.16')).toBe('853.16');
