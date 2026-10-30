@@ -129,6 +129,16 @@ img { max-width: 100%; display: block; }
 }
 .logo-emblem { height: 54px; width: auto; }
 .logo { height: 40px; width: auto; }
+/* The name in the header: same font, colour and shadow as the big home page title.
+   lang="hi" so Yatra One joins ग्ट properly (see .name-join below). */
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1.2;
+  color: var(--red);
+  text-shadow: 1px 2px 0 rgba(244, 164, 18, 0.35);
+  white-space: nowrap;
+}
 
 .nav-links {
   list-style: none;
@@ -2422,7 +2432,7 @@ footer {
 @media (max-width: 560px) {
   .header-inner { gap: 6px; padding: 8px 14px; }
   .logo-emblem { height: 46px; }
-  .logo { height: 30px; } /* keep the name beside the emblem on phones */
+  .brand-name { font-size: 1.3rem; } /* keep the name beside the emblem on phones */
   .brand { gap: 8px; }
 }
 
