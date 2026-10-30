@@ -51,8 +51,9 @@ def fetch(url):
         data = open(raw, 'rb').read()
         try:
             if data[:5] == b'%PDF-' or 'pdf' in ctype:
-                from pdfminer.high_level import extract_text
-                text = extract_text(raw) or ''
+                # poppler's pdftotext (pdfminer failed silently in this environment: every PDF read as empty)
+                r2 = subprocess.run(['pdftotext', '-layout', raw, '-'], capture_output=True, timeout=120)
+                text = r2.stdout.decode('utf-8', errors='replace')
             else:
                 from bs4 import BeautifulSoup
                 html = data.decode('utf-8', errors='replace')
