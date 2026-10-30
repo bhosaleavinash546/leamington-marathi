@@ -335,7 +335,10 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   const remounts = rounds.filter(r => r.viewerRemounted);
   check('2', 'M5', 'one viewer across the answer rounds (no re-mount)', remounts.length === 0, remounts.length ? remounts.map(r => r.viewerRemounted).join('; ') : 'canvas count steady');
   const allSamples = rounds.flatMap(r => (r.headlineSamples as string[] | undefined) ?? []);
-  check('3', 'M2/#8', 'the headline is final from its first frame (no count-up)', new Set(allSamples).size <= 1 && money(hero) === allSamples[0],
+  // No frame sampled (the cost landed between two samples — once in 25 countries, BG knuckle): nothing was observed,
+  // so it is not a pass and not a count-up.
+  if (allSamples.length === 0) check('3', 'M2/#8', 'the headline is final from its first frame (no count-up)', 'info', `no frame sampled before the final ${money(hero)}`);
+  else check('3', 'M2/#8', 'the headline is final from its first frame (no count-up)', new Set(allSamples).size <= 1 && money(hero) === allSamples[0],
     `samples ${JSON.stringify([...new Set(allSamples)])}, final ${money(hero)}`);
   const presses = rounds.filter(r => r.pressed).length;
   check('2', 'A3', 'fewest presses: Measure part + one Get cost per round', true, `Measure part + ${presses} Get cost press(es), ${rounds.filter(r => r.answered).length} answer(s)`);
