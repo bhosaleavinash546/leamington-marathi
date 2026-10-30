@@ -14,10 +14,14 @@ import { ORIGIN_PREFERENCES } from '../src/engine/landed-cost-data.js';
 import { gridCarbon } from '../src/engine/carbon.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { regionOptionsHtml, currencyOptionsHtml, REGION_GROUP } from '../src/ui/region-options.js';
+import { COUNTRY_BOOKS } from '../src/engine/country-books.js';
 
 const CFG = JSON.parse(readFileSync('scripts/rate-refresh/2026-10-countries.json', 'utf8'));
 const ALL = Object.keys(REGION_NAMES) as ManufacturingRegion[];
 const NEW: string[] = CFG.countries.map((c: { code: string }) => c.code);
+// A country with its OWN rate book (world round, Oct 2026) is no longer "analogue × ratio" — its rates are tested in
+// tests/world-rate-books.test.ts; the checks below hold for the countries still generated from an analogue.
+const GENERATED = CFG.countries.filter((c: { code: string }) => !COUNTRY_BOOKS[c.code]);
 
 describe('1. 39 countries, each complete in every table', () => {
   it('19 new countries on top of the 20', () => {
@@ -48,7 +52,7 @@ describe('1. 39 countries, each complete in every table', () => {
 describe('2. the arithmetic is the config\'s, and nothing else', () => {
   const fx = (ccy?: string) => (ccy ? CFG.fx[ccy] : 1);
   it('labour = analogue × (measure ÷ analogue measure), every category', () => {
-    for (const c of CFG.countries) {
+    for (const c of GENERATED) {
       const k = (c.labour.value / fx(c.labour.valueCcy)) / (c.labour.analogueValue / fx(c.labour.analogueCcy));
       const an = REGIONAL_DATA[c.analogue as ManufacturingRegion].labour;
       const me = REGIONAL_DATA[c.code as ManufacturingRegion].labour;
@@ -56,14 +60,14 @@ describe('2. the arithmetic is the config\'s, and nothing else', () => {
     }
   });
   it('electricity is the published tariff in £', () => {
-    for (const c of CFG.countries) {
+    for (const c of GENERATED) {
       const e = c.electricity;
       const gbp = e.unit === 'EUR c/kWh' ? e.value / 100 / CFG.fx.EUR : e.unit === 'USD/kWh' ? e.value / CFG.fx.USD : e.value / CFG.fx[e.unit.slice(0, 3)];
       expect(REGIONAL_DATA[c.code as ManufacturingRegion].energy.electricityPerKwh, c.code).toBeCloseTo(gbp, 3);
     }
   });
   it('the multipliers are the analogue\'s (or the stated multipliersFrom country\'s), held', () => {
-    for (const c of CFG.countries) {
+    for (const c of GENERATED) {
       const a = REGIONAL_DATA[(c.multipliersFrom ?? c.analogue) as ManufacturingRegion], me = REGIONAL_DATA[c.code as ManufacturingRegion];
       if (c.multipliersFrom) expect(c.multipliersNote, c.code).toBeTruthy();
       expect(me.machineRateMultiplier).toBe(a.machineRateMultiplier);
@@ -77,13 +81,16 @@ describe('2. the arithmetic is the config\'s, and nothing else', () => {
     expect(src).toContain('⟪region-expand 2026-10');
   });
   it('a few anchors a reviewer can check by hand', () => {
+    // (each anchor holds only while that country is still generated from its analogue)
     // Austria = Germany × 44.5 / 43.4 (Eurostat 2024): the Germany rate book's 45.0215 (€52.45) × 1.0253 = 46.16
-    expect(REGIONAL_DATA.AT.labour.skilled).toBeCloseTo(46.16, 2);
-    expect(REGIONAL_DATA.AT.labour.skilled / REGIONAL_DATA.DE.labour.skilled).toBeCloseTo(44.5 / 43.4, 3);
+    if (!COUNTRY_BOOKS.AT) {
+      expect(REGIONAL_DATA.AT.labour.skilled).toBeCloseTo(46.16, 2);
+      expect(REGIONAL_DATA.AT.labour.skilled / REGIONAL_DATA.DE.labour.skilled).toBeCloseTo(44.5 / 43.4, 3);
+    }
     // Malaysia = Thailand × 490 / 437 (JETRO): 4.15 × 1.1213 = 4.65
-    expect(REGIONAL_DATA.MY.labour.semiskilled).toBeCloseTo(4.65, 2);
+    if (!COUNTRY_BOOKS.MY && !COUNTRY_BOOKS.TH) expect(REGIONAL_DATA.MY.labour.semiskilled).toBeCloseTo(4.65, 2);
     // Portugal electricity: €11.33 / 100 / 1.16526 = £0.097
-    expect(REGIONAL_DATA.PT.energy.electricityPerKwh).toBe(0.097);
+    if (!COUNTRY_BOOKS.PT) expect(REGIONAL_DATA.PT.energy.electricityPerKwh).toBe(0.097);
   });
 });
 

@@ -1,0 +1,32 @@
+{
+ "source": "https://www.westmetall.com/en/markdaten.php",
+ "publisher": "London Metal Exchange official prices, as published by Westmetall",
+ "day": "29. October 2026",
+ "read": "2026-10-30T13:43:47.782Z",
+ "metals": {
+  "copper": {
+   "cashUsdPerT": 14560,
+   "threeMonthUsdPerT": 14350
+  },
+  "tin": {
+   "cashUsdPerT": 50400,
+   "threeMonthUsdPerT": 50475
+  },
+  "lead": {
+   "cashUsdPerT": 1878,
+   "threeMonthUsdPerT": 1909
+  },
+  "zinc": {
+   "cashUsdPerT": 3980,
+   "threeMonthUsdPerT": 3880
+  },
+  "aluminium": {
+   "cashUsdPerT": 3071,
+   "threeMonthUsdPerT": 3064
+  },
+  "nickel": {
+   "cashUsdPerT": 15360,
+   "threeMonthUsdPerT": 15550
+  }
+ }
+}
