@@ -82,3 +82,29 @@ moulding in China.
 2. **UK capex for the rest of the held machines,** by public-contract award. This round shows UK awards are the
    strongest evidence.
 3. **Actual prices paid** in `scripts/actuals/cad-actuals-input.csv` — the only measure of accuracy.
+
+## Live re-run after the round (15 parts × 4 countries, ex-works)
+
+| Country | Checks passed | Failures |
+|---|---|---|
+| China | 1,019 | 0 |
+| India | 1,019 | 0 |
+| Poland | 1,019 | 0 |
+| Hungary | 1,019 | 0 |
+| **All four** | **4,076** | **0** |
+
+The crossover check (now a tested predicate) passes in all four countries. On every costing:
+- the screen equals the headless costing to the penny;
+- the workbook re-adds to the headline;
+- both reports carry the country's stamp and the ex-works terms.
+
+A scan of the 120 reports found 0 stray £ and 0 NaN. Headlines are in `country-live/live-summary-after-round2.md`.
+
+What moved, in each country's currency:
+
+| Part | China | India | Poland | Hungary |
+|---|---|---|---|---|
+| Hat stiffener (autoclave on sourced capex) | 239.35 → 224.28 | 3,333.25 → 3,104.52 | 226.36 → 215.30 | 21,165.26 → 19,750.57 |
+| ECU cover (domestic moulding machine) | 4.13 → 3.86 | — | — | — |
+
+Hungarian parts moved by up to 0.2 % (the occupation-level engineer / supervisor rates).
