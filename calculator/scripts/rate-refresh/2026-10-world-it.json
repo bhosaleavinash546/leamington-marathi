@@ -1,0 +1,1399 @@
+{
+ "asOf": "2026-10-30",
+ "label": "Italy rate book — world round, one method for every European country (Eurostat, ECB, sourced research), 3 × 8 h",
+ "region": "IT",
+ "currency": "EUR",
+ "currencySymbol": "€",
+ "dir": "scripts/rate-refresh/world-2026-10/books/it",
+ "snapshot": "scripts/rate-refresh/world-2026-10/books/it/current-book.json",
+ "bookFile": "src/engine/country-books/it.ts",
+ "bookConst": "ITALY_BOOK",
+ "writeFx": true,
+ "fxPerGbp": 1.1965,
+ "fxBasis": "ECB euro reference rates 2026-10-29: €1 = 1.0 EUR, €1 = £0.83578 → £1 = 1.1965 EUR",
+ "labour": {
+  "categories": {
+   "skilled": {
+    "localPerHr": 28.74,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × the higher manual major group — ISCO 8 (the survey's craft group ISCO 7 earns less than its operators ISCO 8 here, its mean pulled down by food / garment trades): SES 2022 mean hourly earnings €13.07 ÷ all occupations €15.28 = 0.8554 → 28.74/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "semiskilled": {
+    "localPerHr": 28.12,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × the lower manual major group — ISCO 7 (here below ISCO 8; a semi-skilled operator is not paid above the setter): SES 2022 mean hourly earnings €12.79 ÷ all occupations €15.28 = 0.8370 → 28.12/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "foundry": {
+    "localPerHr": 28.12,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × craft and related trades (ISCO 7: moulders and coremakers 7211): SES 2022 mean hourly earnings €12.79 ÷ all occupations €15.28 = 0.8370 → 28.12/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "electronics": {
+    "localPerHr": 28.74,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × plant and machine operators and assemblers (ISCO 8: electronic equipment assemblers 8212): SES 2022 mean hourly earnings €13.07 ÷ all occupations €15.28 = 0.8554 → 28.74/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "inspector": {
+    "localPerHr": 28.12,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × craft and related trades (ISCO 7: product graders and testers 7543): SES 2022 mean hourly earnings €12.79 ÷ all occupations €15.28 = 0.8370 → 28.12/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "technician": {
+    "localPerHr": 38.28,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × technicians and associate professionals (ISCO 3: engineering technicians 311): SES 2022 mean hourly earnings €17.41 ÷ all occupations €15.28 = 1.1394 → 38.28/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "supervisor": {
+    "localPerHr": 38.28,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × technicians and associate professionals (ISCO 3: manufacturing supervisors 3122 — the survey has no finer split, so a supervisor costs as a technician): SES 2022 mean hourly earnings €17.41 ÷ all occupations €15.28 = 1.1394 → 38.28/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "engineer": {
+    "localPerHr": 46.16,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × professionals (ISCO 2: engineering professionals 214): SES 2022 mean hourly earnings €20.99 ÷ all occupations €15.28 = 1.3737 → 46.16/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   }
+  },
+  "grades": {
+   "forge": {
+    "localPerHr": 28.12,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × craft and related trades (ISCO 7: forging-press workers 7221): SES 2022 mean hourly earnings €12.79 ÷ all occupations €15.28 = 0.8370 → 28.12/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "furnace": {
+    "localPerHr": 28.74,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × plant and machine operators (ISCO 8: metal processing plant operators 8121): SES 2022 mean hourly earnings €13.07 ÷ all occupations €15.28 = 0.8554 → 28.74/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "blow": {
+    "localPerHr": 28.74,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × plant and machine operators (ISCO 8: plastic products machine operators 8142): SES 2022 mean hourly earnings €13.07 ÷ all occupations €15.28 = 0.8554 → 28.74/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "roto": {
+    "localPerHr": 28.74,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × plant and machine operators (ISCO 8: plastic products machine operators 8142): SES 2022 mean hourly earnings €13.07 ÷ all occupations €15.28 = 0.8554 → 28.74/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "thermoform": {
+    "localPerHr": 28.74,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × plant and machine operators (ISCO 8: plastic products machine operators 8142): SES 2022 mean hourly earnings €13.07 ÷ all occupations €15.28 = 0.8554 → 28.74/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   },
+   "trim-router": {
+    "localPerHr": 28.74,
+    "basis": "Eurostat labour cost per hour worked, manufacturing, 2025: 32.8 (national currency, compensation of employees + taxes − subsidies: employer contributions and paid leave inside) × labour cost index 2026-Q1+2026-Q2 ÷ 2025-Q1+2025-Q2 = 214.3 ÷ 209.2 = 1.0244 × plant and machine operators (ISCO 8): SES 2022 mean hourly earnings €13.07 ÷ all occupations €15.28 = 0.8554 → 28.74/h",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_lev?nace_r2=C&lcstruct=D1_D4_MD5&unit=NAC&sinceTimePeriod=2023&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lc_lci_r2_q?nace_r2=C&lcstruct=D1_D4_MD5&unit=I20&s_adj=NSA&sinceTimePeriod=2024-Q1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en ; https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_47?sex=T&nace_r2=C&indic_se=ERN&unit=EUR&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en"
+   }
+  },
+  "loadingIncluded": "Fully-loaded hourly cost INCLUDES: everything Eurostat counts as labour cost in manufacturing — wages and salaries, bonuses, paid leave and public holidays, employer social contributions, vocational training and other labour taxes, less subsidies — per hour ACTUALLY WORKED (2025, carried to 2026 by the labour cost index); the role's level is its ISCO major group's mean hourly earnings relative to all occupations in manufacturing (SES 2022)",
+  "loadingNotIncluded": "NOT included: a 3-shift premium beyond what the average manufacturing employee is paid (the average already holds the shift allowances actually paid); overtime; agency margins; work clothing and training time outside the survey",
+  "short": "Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio"
+ },
+ "energy": {
+  "electricityLocalPerKwh": 0.1991,
+  "gasLocalPerKwh": 0.0588,
+  "basis": "Eurostat non-household prices excl. VAT and recoverable levies, national currency: electricity band ID (2–20 GWh/yr) 2026-S1 = 0.1991/kWh (nrg_pc_205); gas band I3 (10–100 TJ/yr) 2026-S1 = 0.0588/kWh (nrg_pc_203)",
+  "sources": [
+   {
+    "research": "eurostat.nrg_pc_205",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_pc_205?nrg_cons=MWH2000-19999&tax=X_VAT&currency=NAC&unit=KWH&sinceTimePeriod=2025-S1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en",
+    "date": "2026-S1"
+   },
+   {
+    "research": "eurostat.nrg_pc_203",
+    "source": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_pc_203?nrg_cons=GJ10000-99999&tax=X_VAT&currency=NAC&unit=KWH&sinceTimePeriod=2025-S1&geo=AT&geo=BE&geo=BG&geo=BR&geo=CA&geo=CN&geo=CZ&geo=DE&geo=EG&geo=ES&geo=FR&geo=HU&geo=ID&geo=IN&geo=IT&geo=JP&geo=KR&geo=LT&geo=MA&geo=MX&geo=MY&geo=NL&geo=PH&geo=PL&geo=PT&geo=RO&geo=RS&geo=SE&geo=SG&geo=SI&geo=SK&geo=TH&geo=TN&geo=TR&geo=TW&geo=UK&geo=US&geo=VN&geo=ZA&format=JSON&lang=en",
+    "date": "2026-S1"
+   }
+  ]
+ },
+ "machines": {
+  "hoursPerYear": 6096,
+  "hoursBasis": "3 × 8 h, Monday–Friday, Italy's 2026 working calendar: 6096 h (254 days × 24 h; 7 weekday national public holidays removed — https://date.nager.at/api/v3/PublicHolidays/2026/IT)",
+  "shiftDepreciationFactor": 1.0,
+  "shiftBasis": "Italy straight-line tax depreciation — no shift uplift on capital",
+  "lifeYears": 6.45,
+  "financeRate": 0.0385,
+  "financeBasis": "ECB composite cost of borrowing, new loans to non-financial corporations, IT, 2026-08: 3.85%",
+  "ukFinanceRate": 0.04,
+  "maintenancePctOfCapex": 0.035,
+  "maintenanceBasis": "the library's own line build-up rule (3.5% of capex); no Italy norm found",
+  "rentLocalPerM2Month": 4.33,
+  "rentBasis": "C&W Italy Logistics/Industrial MarketBeat Q3 2026 submarket table: Turin prime rent (logistics warehouse) €52/sqm/year; 52 ÷ 12 = 4.33 €/m²/month. (PRIME logistics warehouse rent, Turin (Piedmont automotive cluster), 2026-Q3)",
+  "ukRentGbpPerM2Yr": 110,
+  "capitalHeldFactor": 1.0,
+  "groups": [
+   {
+    "id": "cnc-vmc-eu",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
+    "refId": "mach-haas-vf2",
+    "refCapexLocal": 64995.0,
+    "basis": "Haas VF-2SSYT-EU EU-series list €64,995 (one EUR price across the EU; machine only — delivery, installation and tooling not included)",
+    "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu",
+    "confidence": "Medium"
+   },
+   {
+    "id": "cnc-5axis-eu",
+    "match": "^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$",
+    "refId": "mach-vmc5",
+    "refCapexLocal": 105596.0,
+    "basis": "Haas UMC-500 \"from $119,995\" (US list, older article) = €105,596 — no EU price found",
+    "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+    "confidence": "Low"
+   },
+   {
+    "id": "al-extrusion-line-eu",
+    "match": "^al-ext-(press|indirect|hydrostatic)-",
+    "refId": "al-ext-press-1800t",
+    "refCapexLocal": 10000000.0,
+    "basis": "a complete automatic 7-inch extrusion line incl. automation, Presezzi, about €10 M (Vimetco Extrusion, Romania, 2021–22, ALRO release); Hydro Rackwitz added an 8-inch line on a SECOND-HAND 22 MN press for €11 M (2022–23) — a floor that agrees; other press sizes scale by the book's own capital ratio",
+    "source": "https://www.alro.ro/en/news-resources/news/vimetco-extrusion-alro-s-downstream-subsidiary-1st-billet-extruded-on-a-new-automatic-line-for-aluminium-profiles-following-a-eur-10-million-investment ; https://www.alcircle.com/news/vimetco-extrusion-to-expand-aluminium-profiles-extrusion-line-with-eur-10-million-investments-63714",
+    "confidence": "Low"
+   },
+   {
+    "id": "press-brake-eu",
+    "match": "^brake-",
+    "refId": "brake-trumpf-trubend3100",
+    "refCapexLocal": 136000.0,
+    "basis": "TRUMPF TruBend 3100 (100 t × 3 m) NEW, offered at €136,000 FCA ex-VAT (Jul 2026) — one EU single-market price",
+    "source": "https://www.machineseeker.com/trumpf-trubend+3100/i-22233802",
+    "confidence": "Low"
+   }
+  ],
+  "notRebuiltBasis": "capex not found for Italy: the machine's capital is the book's AT PAR (×1 — the same machine costs the same on the EU single market; no unsourced country discount), under Italy's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Italy wages)"
+ },
+ "materialFamilies": [
+  {
+   "family": "CR coil (DC01 / DC04)",
+   "anchorLocalPerKg": 0.855,
+   "anchorBasis": "European market (as the German book): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-dc01",
+    "mat-dc04"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "CR automotive grades",
+   "anchorLocalPerKg": 0.855,
+   "anchorBasis": "European market (as the German book): CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.crc",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.84,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc05",
+    "mat-dc06",
+    "mat-if-dx56",
+    "mat-if-hs260",
+    "mat-bh260",
+    "mat-greensteel-dc01",
+    "mat-hsla340",
+    "mat-hsla420",
+    "mat-hsla550",
+    "mat-dp600",
+    "mat-dp780",
+    "mat-dp980",
+    "mat-dp1000",
+    "mat-trip780",
+    "mat-cp800",
+    "mat-ms1200",
+    "mat-ms1300",
+    "mat-ms1500",
+    "mat-qp980",
+    "mat-medmn1180",
+    "mat-22mnb5",
+    "mat-usibor1500",
+    "mat-usibor2000",
+    "mat-c67s-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR structural",
+   "anchorLocalPerKg": 0.745,
+   "anchorBasis": "European market (as the German book): NW Europe HRC €745/t ex-works (Fastmarkets, 6 Oct 2026) = €0.745/kg × the book's premium over HRPO; S355MC / S420MC extras not found",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrc",
+     "source": "https://eurometal.net/european-hrc-prices-edge-higher-despite-sluggish-demand/",
+     "date": "2026-10-06"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.77,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-s355mc",
+    "mat-s420mc"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Coated sheet",
+   "anchorLocalPerKg": 0.83,
+   "anchorBasis": "European market (as the German book): NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hdg",
+     "source": "https://www.tacto.ai/en/commodities/steel-price",
+     "date": "2026-09-13"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.11,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-dc01-gi",
+    "mat-dc03-ga",
+    "mat-dc01-ze",
+    "mat-znni-eg",
+    "mat-zm-coated",
+    "mat-tinplate-etp"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HR pickled & oiled",
+   "anchorLocalPerKg": 0.835,
+   "anchorBasis": "European market (as the German book): HRC €745/t + a service-centre pickling extra ~€90/t (undated) = €0.835/kg — DERIVED",
+   "sources": [
+    {
+     "research": "ferrous.anchor.hrpo",
+     "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+     "date": "undated extra; HRC 2026-10-06"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hrpo"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "409L / 441 ferritic sheet",
+   "anchorLocalPerKg": 1.482,
+   "anchorBasis": "European market (as the German book): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L",
+   "sources": [
+    {
+     "research": "ferrous.stainless.409L_CR",
+     "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429",
+     "date": "2026-07-01"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.85,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss409l-sheet",
+    "mat-ss441-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "304 sheet",
+   "anchorLocalPerKg": 2.77,
+   "anchorBasis": "European market (as the German book): 304 CR 2B €2,770/t delivered N. Europe incl. alloy surcharge (Fastmarkets, 7 Sep 2026) = €2.77/kg; the October 1.4301 surcharge is €2,188/t",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    },
+    {
+     "research": "ferrous.stainless.alloy_surcharge_1.4301_oct2026",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-sheet"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "301 spring strip",
+   "anchorLocalPerKg": 2.77,
+   "anchorBasis": "European market (as the German book): 304 sheet €2.77 × the book's premium of 301 over 304 sheet",
+   "sources": [
+    {
+     "research": "ferrous.stainless.304_CR_2B",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "ladder",
+   "base": 3.49,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss301-spring"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "316L sheet",
+   "anchorLocalPerKg": 4.225,
+   "anchorBasis": "European market (as the German book): 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor)",
+   "sources": [
+    {
+     "research": "ferrous.stainless.316L_CR",
+     "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+     "date": "2026-09-07"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss316-sheet",
+    "mat-ss316l"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "430 ferritic sheet",
+   "anchorLocalPerKg": 1.6485,
+   "anchorBasis": "European market (as the German book): 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found)",
+   "sources": [
+    {
+     "research": "ferrous.stainless.430_CR",
+     "source": "https://legierungszuschlag.info/en/",
+     "date": "2026-10-01"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aisi430"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ductile / CGI / ADI / SiMo iron (charge)",
+   "anchorLocalPerKg": 0.397,
+   "anchorBasis": "European market (as the German book): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJS-500-7",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    },
+    {
+     "research": "ferrous.foundry.FeSi75",
+     "source": "https://api.argusmedia.com/articles/2840817",
+     "date": "2026-06-16"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 0.86,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjs500",
+    "mat-gjs400",
+    "mat-gjs450-ssf",
+    "mat-gjs500-14",
+    "mat-gjs600",
+    "mat-gjs700",
+    "mat-gjs350-lt",
+    "mat-simo",
+    "mat-adi",
+    "mat-gjv450",
+    "mat-gjv500"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Grey / malleable iron (charge)",
+   "anchorLocalPerKg": 0.3526,
+   "anchorBasis": "European market (as the German book): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250",
+   "sources": [
+    {
+     "research": "ferrous.charge.GJL-250",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.pig_iron",
+     "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.64,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gjl250",
+    "mat-gjl150",
+    "mat-gjl200",
+    "mat-gjl300",
+    "mat-gjl350",
+    "mat-gjmb350"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast carbon / low-alloy steel (charge)",
+   "anchorLocalPerKg": 0.2999,
+   "anchorBasis": "European market (as the German book): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo)",
+   "sources": [
+    {
+     "research": "ferrous.charge.GS-C25",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08"
+    },
+    {
+     "research": "ferrous.foundry.steel_scrap_heavy",
+     "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+     "date": "2026-08 (published 2026-09-16)"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 2.1,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gs-c25",
+    "mat-astm-a216-wcb",
+    "mat-g20mn5",
+    "mat-g42crmo4"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Cast stainless (charge)",
+   "anchorLocalPerKg": 1.288,
+   "anchorBasis": "European market (as the German book): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr)",
+   "sources": [
+    {
+     "research": "ferrous.charge.CF8",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    },
+    {
+     "research": "ferrous.stainless.304_scrap",
+     "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+     "date": "2026-09-18"
+    }
+   ],
+   "method": "ladder-add",
+   "base": 5.17,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ss304-cast",
+    "mat-cf8m-cast",
+    "mat-ca6nm-cast",
+    "mat-cd4mcun-cast",
+    "mat-gx40crnisi25-20",
+    "mat-17-4ph-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-2 (charge)",
+   "anchorLocalPerKg": 3.1062,
+   "anchorBasis": "European market (as the German book): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d2"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Ni-Resist D-5S (charge)",
+   "anchorLocalPerKg": 5.1331,
+   "anchorBasis": "European market (as the German book): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge",
+   "sources": [
+    {
+     "research": "nonferrous.ni.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ni-resist-d5s"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "High-Cr white iron (charge)",
+   "anchorLocalPerKg": 0.9675,
+   "anchorBasis": "European market (as the German book): 0.23 × Cr €3.03 + 0.77 × grey charge €0.3526",
+   "sources": [
+    {
+     "research": "ferrous.foundry.FeCr_HC",
+     "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+     "date": "2026-Q3"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hicr-white"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary cast aluminium (ingot)",
+   "anchorLocalPerKg": 2.48,
+   "anchorBasis": "European market (as the German book): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.75,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12",
+    "mat-a380",
+    "mat-a413",
+    "mat-a319",
+    "mat-lm4",
+    "mat-en-ac-46200"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Secondary ADC12",
+   "anchorLocalPerKg": 2.48,
+   "anchorBasis": "European market (as the German book): DIN226 €2.48 (Jan 2026, stale)",
+   "sources": [
+    {
+     "research": "nonferrous.al.adc12",
+     "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+     "date": "2026-01-23"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-adc12-secondary"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Primary-based cast aluminium",
+   "anchorLocalPerKg": 3.57,
+   "anchorBasis": "European market (as the German book): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356",
+   "sources": [
+    {
+     "research": "nonferrous.al.alsi7mg",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29 / 2026-10-09"
+    },
+    {
+     "research": "nonferrous.al.a356_premium",
+     "source": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+     "date": "2026-05-29"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.98,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-lm25",
+    "mat-a365",
+    "mat-alsi10mg",
+    "mat-a390",
+    "mat-a357",
+    "mat-lm6",
+    "mat-almg5-cast",
+    "mat-a206",
+    "mat-en-ac-45300",
+    "mat-lm13",
+    "mat-aural5",
+    "mat-silafont36",
+    "mat-castasil37",
+    "mat-magsimal59",
+    "mat-al-hpdc-lowco2",
+    "mat-htf-gigacast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium forging stock (floor)",
+   "anchorLocalPerKg": 3.66,
+   "anchorBasis": "European market (as the German book): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from",
+   "sources": [
+    {
+     "research": "nonferrous.al.billet6063",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+     "date": "2026-08-28 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-al6061-forge",
+    "mat-al6082-forge",
+    "mat-al2014-forge",
+    "mat-al7075-forge",
+    "mat-al2618-forge",
+    "mat-al7050-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Aluminium sheet and plate (floor)",
+   "anchorLocalPerKg": 4.16,
+   "anchorBasis": "European market (as the German book): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling",
+   "sources": [
+    {
+     "research": "nonferrous.al.frp_europe_asp",
+     "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+     "date": "2025-04-01 to 2026-03-31"
+    },
+    {
+     "research": "nonferrous.al.sheet_5754",
+     "source": "https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840",
+     "date": "page read via search Oct 2026 (price undated)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-aa5182",
+    "mat-aa5052",
+    "mat-aa5083",
+    "mat-aa6082-sheet",
+    "mat-aa5754-sheet",
+    "mat-aa6061-sheet",
+    "mat-aa6063-sheet",
+    "mat-aa3003-sheet",
+    "mat-al-busbar",
+    "mat-aa6016-t4",
+    "mat-aa6111-t4",
+    "mat-aa7075-t6",
+    "mat-aa1050-sheet"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ETP copper bar / sheet (floor)",
+   "anchorLocalPerKg": 13.2,
+   "anchorBasis": "European market (as the German book): LME copper (9 Oct 2026) + Aurubis 2026 cathode premium $315/t = €13.2/kg delivered — no bar or sheet may sit below the copper it contains",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "nonferrous.cu.cathode_premium",
+     "source": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026 contract year (announced 2025-10-07)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-c101-bar",
+    "mat-c110-copper",
+    "mat-cu-hairpin"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Free-machining / forging brass rod (floor)",
+   "anchorLocalPerKg": 11.17,
+   "anchorBasis": "European market (as the German book): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW614N_rod",
+     "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-brass-cz121",
+    "mat-brass-cz122-forge"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "70/30 and 63/37 brass sheet (floor)",
+   "anchorLocalPerKg": 11.56,
+   "anchorBasis": "European market (as the German book): CuZn37 metal basis €11.56/kg (5 Oct 2026) — metal value before rolling",
+   "sources": [
+    {
+     "research": "nonferrous.brass.CW508L_sheet",
+     "source": "https://www.messingwerk.de/de/rohstoffpreise.html",
+     "date": "2026-10-05"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cz108-brass"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Phosphor / tin bronze (floor)",
+   "anchorLocalPerKg": 16.6357,
+   "anchorBasis": "European market (as the German book): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct)",
+   "sources": [
+    {
+     "research": "nonferrous.cu.cathode_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+     "date": "2026-10-09"
+    },
+    {
+     "research": "nonferrous.sn.spot",
+     "source": "https://www.westmetall.com/de/markdaten.php",
+     "date": "2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-bronze-pb1",
+    "mat-bronze-c905",
+    "mat-cusn12-cast"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 3 (floor)",
+   "anchorLocalPerKg": 3.5644,
+   "anchorBasis": "European market (as the German book): Metal content 0.96 × SHG zinc €3.58 (LME + Rotterdam premium) + 0.04 × Al €3.19",
+   "sources": [
+    {
+     "research": "nonferrous.zn.shg_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+     "date": "2026-02-02 / 2026-10-09"
+    },
+    {
+     "research": "nonferrous.al.p1020",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns",
+     "date": "2026-10-01 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak3"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Zamak 5 (floor)",
+   "anchorLocalPerKg": 3.6606,
+   "anchorBasis": "European market (as the German book): Metal content 0.95 × zinc €3.58 + 0.04 × Al + 0.01 × Cu €13.2",
+   "sources": [
+    {
+     "research": "nonferrous.zn.shg_delivered",
+     "source": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+     "date": "2026-02-02 / 2026-10-09"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-zamak5"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PP family",
+   "anchorLocalPerKg": 1.17,
+   "anchorBasis": "European market (as the German book): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer",
+   "sources": [
+    {
+     "research": "polymer.pp_homo",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.99,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-pp-homo",
+    "mat-pp",
+    "mat-pp-impact",
+    "mat-pp-bm",
+    "mat-pp-ext-sheet",
+    "mat-ppr-pipe",
+    "mat-pp-roto",
+    "mat-pp-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PE family",
+   "anchorLocalPerKg": 1.25,
+   "anchorBasis": "European market (as the German book): HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE",
+   "sources": [
+    {
+     "research": "polymer.hdpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hdpe",
+    "mat-hdpe-bm",
+    "mat-hdpe-fuel-coex",
+    "mat-pe100-pipe",
+    "mat-pe80-pipe",
+    "mat-hdpe-profile",
+    "mat-hdpe-roto",
+    "mat-xlpe-roto",
+    "mat-fr-pe-roto",
+    "mat-foam-pe-roto",
+    "mat-cond-pe-roto",
+    "mat-hdpe-tf",
+    "mat-pex-pipe"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LDPE family",
+   "anchorLocalPerKg": 1.28,
+   "anchorBasis": "European market (as the German book): LDPE €1.28/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LDPE",
+   "sources": [
+    {
+     "research": "polymer.ldpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.09,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-ldpe",
+    "mat-ldpe-bm",
+    "mat-ldpe-tube",
+    "mat-ldpe-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "LLDPE family",
+   "anchorLocalPerKg": 1.25,
+   "anchorBasis": "European market (as the German book): LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE",
+   "sources": [
+    {
+     "research": "polymer.lldpe",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-lldpe",
+    "mat-lldpe-bm",
+    "mat-lldpe-roto"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PVC family",
+   "anchorLocalPerKg": 0.99,
+   "anchorBasis": "European market (as the German book): S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin",
+   "sources": [
+    {
+     "research": "polymer.pvc",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 0.76,
+   "floorAtAnchor": true,
+   "members": [
+    "mat-upvc",
+    "mat-fpvc",
+    "mat-pvc-bm",
+    "mat-upvc-pipe",
+    "mat-pvc-cable",
+    "mat-upvc-window-profile",
+    "mat-pvcp-profile",
+    "mat-pvc-foam",
+    "mat-rpvc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "ABS family",
+   "anchorLocalPerKg": 1.84,
+   "anchorBasis": "European market (as the German book): ABS €1.84/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over ABS",
+   "sources": [
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.62,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-abs",
+    "mat-abs-ext-sheet",
+    "mat-abs-tf",
+    "mat-abs-fr"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "GPPS",
+   "anchorLocalPerKg": 1.53,
+   "anchorBasis": "European market (as the German book): GPPS €1.53/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over GPPS",
+   "sources": [
+    {
+     "research": "polymer.ps",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.37,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-gpps",
+    "mat-gpps-ext"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "HIPS",
+   "anchorLocalPerKg": 1.68,
+   "anchorBasis": "European market (as the German book): HIPS €1.68/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) — the book had HIPS at the GPPS price",
+   "sources": [
+    {
+     "research": "polymer.hips",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-hips"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC family",
+   "anchorLocalPerKg": 2.64,
+   "anchorBasis": "European market (as the German book): PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.52,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc",
+    "mat-pc-glazing",
+    "mat-pc-bm",
+    "mat-pc-ext-sheet",
+    "mat-pc-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA6 family",
+   "anchorLocalPerKg": 2.8,
+   "anchorBasis": "European market (as the German book): PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6",
+   "sources": [
+    {
+     "research": "polymer.pa6",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+     "date": "2026-08"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.68,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa6",
+    "mat-pa6-bm",
+    "mat-pa6-ext-tube"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PA66",
+   "anchorLocalPerKg": 3.03,
+   "anchorBasis": "European market (as the German book): PA66 €3.03/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; an August reading was €3.72 — the two extracts conflict)",
+   "sources": [
+    {
+     "research": "polymer.pa66",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pa66"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PBT",
+   "anchorLocalPerKg": 3.73,
+   "anchorBasis": "European market (as the German book): PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026)",
+   "sources": [
+    {
+     "research": "polymer.pbt",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pbt"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PET family",
+   "anchorLocalPerKg": 1.37,
+   "anchorBasis": "European market (as the German book): PET €1.37/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; a general PET index, not bottle grade) × the book's premium over PET bottle grade",
+   "sources": [
+    {
+     "research": "polymer.pet_bottle",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 1.21,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pet-bg",
+    "mat-pet-preform",
+    "mat-apet-tf"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PMMA family",
+   "anchorLocalPerKg": 3.16,
+   "anchorBasis": "European market (as the German book): PMMA €3.16/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PMMA",
+   "sources": [
+    {
+     "research": "polymer.pmma",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.4,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pmma",
+    "mat-pmma-ext-sheet",
+    "mat-pmma-tf"
+   ],
+   "confidence": "Medium",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PEEK family",
+   "anchorLocalPerKg": 79.22,
+   "anchorBasis": "European market (as the German book): PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin)",
+   "sources": [
+    {
+     "research": "polymer.peek",
+     "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets",
+     "date": "2026-06-30 (9M); H1 to 2026-03-31"
+    }
+   ],
+   "method": "ladder",
+   "base": 76,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-peek",
+    "mat-peek-ext"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "POM",
+   "anchorLocalPerKg": 2.7,
+   "anchorBasis": "European market (as the German book): POM €2.7/kg ex-VAT (Plastech monthly offer price, Sep 2026 — a distributor level) × the book's premium over POM",
+   "sources": [
+    {
+     "research": "polymer.pom",
+     "source": "https://www.plasticportal.eu/polymer-prices",
+     "date": "2026-09"
+    }
+   ],
+   "method": "ladder",
+   "base": 2.05,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pom",
+    "mat-pom-rod"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "PC/ABS (floor)",
+   "anchorLocalPerKg": 2.4,
+   "anchorBasis": "European market (as the German book): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg",
+   "sources": [
+    {
+     "research": "polymer.pc",
+     "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+     "date": "2026-09"
+    },
+    {
+     "research": "polymer.abs",
+     "source": "https://www.plasticportal.eu/price-reports",
+     "date": "2026-W37 (page updated 2026-10-01)"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-pc-abs"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Carbon fabric (floor)",
+   "anchorLocalPerKg": 29.92,
+   "anchorBasis": "European market (as the German book): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from",
+   "sources": [
+    {
+     "research": "composite.cf_t700_12k",
+     "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+     "date": "2026-03"
+    }
+   ],
+   "method": "floor",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-cf-dry-3k"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  },
+  {
+   "family": "Natural rubber (raw)",
+   "anchorLocalPerKg": 2.23,
+   "anchorBasis": "European market (as the German book): TSR20 benchmark €2.23/kg (SGX, 28 Sep 2026, as reported) — FOB Asia, freight to Germany NOT added; for the book's raw NR line; compounds held",
+   "sources": [
+    {
+     "research": "rubber.nr",
+     "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html",
+     "date": "2026-09-28"
+    }
+   ],
+   "method": "direct",
+   "base": null,
+   "floorAtAnchor": false,
+   "members": [
+    "mat-nr"
+   ],
+   "confidence": "Low",
+   "note": "",
+   "proxies": {}
+  }
+ ],
+ "held": {
+  "engineering bar (C45, 42CrMo4, 38MnVS6, 16MnCr5, 20MnCr5, 100Cr6, 11SMnPb30, 4140 / 4340), forging stock": "No German mill or stockholder BASE price published; only 2026 alloy / scrap surcharges found (Frankstahl Feb 2026, Swiss Steel Steeltec) — held",
+  "stainless bar (304, 316, 303, martensitic, PH, duplex)": "Not found (surcharges only) — held",
+  "electrical steel (NO / GO / CoFe / NiFe / amorphous)": "EU minimum import price for GO only; NO grades not priced — held",
+  "aluminium extrusion / machining bar and plate (6082-T6 bar, 6061 …)": "No German bar or plate price found (the sheet floor is a rolled-products average) — held",
+  "magnesium alloys (AZ91D, AM60 …)": "No European transaction price found — held",
+  "titanium, nickel superalloys, aluminium bronze, gunmetal": "Not found — held",
+  "filled / FR / blended compounds (PA66-GF30, PA6-GF30, PP-GF30, PP-TD20, TPE …), TPU, PPS, PEI, LCP, PA12": "No compound market price found (KI compound prices are subscriber-only) — held",
+  "rubber compounds (EPDM / NBR / CR / FKM / silicone …)": "Raw polymers found (EPDM €2.83, NBR €1.93) but a compound is not its polymer — held",
+  "composites (prepreg, fabrics, SMC), paint, foam cores": "Not found — held"
+ },
+ "heldMaterialsAtPar": {
+  "basis": "no European anchor this round (the German book's held list: engineering and stainless bar, electrical steel, wrought Al bar / plate, magnesium, titanium / nickel, filled / FR compounds, TPE / TPU, rubber compounds, composites) — the book's European-market price at par, no Italy factor"
+ },
+ "alBilletPremiumUsdPerT": {
+  "value": 1102,
+  "current": 1100,
+  "basis": "European 6063 billet premium DDP North Germany (Ruhr) $1,070–1,135/t (Fastmarkets, 28 Aug 2026 — the latest public print) — mid-point $1102/t over the library LME $3240",
+  "research": "nonferrous.al.billet6063_premium",
+  "source": "https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+  "date": "2026-08-28"
+ },
+ "shopMultipliersBasis": "Overhead and packaging: the UK basis × Italy's held multipliers — not researched this round (no Italy overhead share or packaging comparator found)",
+ "sources": {
+  "finance": "https://data-api.ecb.europa.eu/service/data/MIR/M.IT.B.A2I.AM.R.A.2240.EUR.N?lastNObservations=6&format=csvdata",
+  "life": "https://www.agenziaentrate.gov.it/portale/documents/20143/1704562/Decreto+del+31_12_1988+-+Min.+Finanze+coefficienti+di+ammortamento.pdf/f7d5c11d-cc79-ecf7-efc8-f1fc90cc00a3; https://taxsummaries.pwc.com/italy/corporate/deductions",
+  "rent": "https://assets.cushmanwakefield.com/-/media/cw/marketbeat-pdfs/2026/q3/emea/italy-marketbeat-logistics_industrial-q3-2026.pdf?rev=adbab9eca91c41ababc84d369e850f1a",
+  "holidays": "https://date.nager.at/api/v3/PublicHolidays/2026/IT"
+ },
+ "noLibraryLabourRows": true
+}

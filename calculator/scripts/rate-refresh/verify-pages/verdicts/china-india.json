@@ -1,0 +1,1172 @@
+[
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 20,
+  "key": "labour.skilled.monthlyGross.clusterAvg",
+  "verdict": "derived-ok",
+  "pageValue": "6543",
+  "quote": "",
+  "url": "",
+  "notes": "(7,000 + 7,171 + 6,000 + 6,000) / 4 = 6,542.75 -> 6,543; x 13 = 85,059. Inputs are research items labour.skilled.monthlyGross.YRD/PRD/Chongqing/Wuhan (zhihu/job5156 pages, not in this worklist). The 13th month is an assumption (labour.bonus, postings only)."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 83,
+  "key": "labour.semiskilled.fullyLoadedCnyPerHr",
+  "verdict": "confirmed",
+  "pageValue": "82365 / 72893 / 85044",
+  "quote": "表6 … 生产制造及有关人员 80739 (合计) | 82365 (东部) | 72893 (中部) | 85044 (西部) | 80204 (东北)",
+  "url": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "notes": "PDF opened today (1 page, NBS 2025 wage bulletin, table of above-size enterprises by region and position). Arithmetic re-done: (82,365 x 2 + 85,044 + 72,893) / 4 = 80,666.75; SI+HPF at floor 12 x (1,369.67 + 124.63) = 17,931.6; (80,667 + 17,932) / 3,113 = 31.67. Note the NBS figure is an annual total (incl. bonus/OT) for ALL production workers at the national survey standard hours, here spread over the assumed 3,113 h of a 2x12 h pattern; foundry/forge/furnace/blow/roto/thermoform use it as a stated PROXY (no trade-specific wage found)."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 85,
+  "key": "labour.skilled.fullyLoadedCnyPerHr",
+  "verdict": "derived-ok",
+  "pageValue": "33.08",
+  "quote": "",
+  "url": "",
+  "notes": "(85,059 + 17,932) / 3,113 = 33.084. 85,059 = 6,543 x 13 (item 0, derived-ok); 17,932 = 12 x (1,369.67 + 124.63) re-done. The 3,113 h pattern is an assumption (labour.hours.twoShift12h)."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 87,
+  "key": "labour.supervisor.fullyLoadedCnyPerHr",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.jobui.com/salary/quanguo-shengchanzuchang/",
+  "notes": "jobui.com returns a captcha wall (title 验证码验证, \"系统检测到访问异常\") to curl and to headless Chromium via the proxy; the 7.7K / 9.4K / 8.1K / 6.6K figures cannot be read. Arithmetic checked: supervisor (7,700+9,400)/2 = 8,550 x 13 = 111,150, (111,150+17,932)/3,113 = 41.47; technician 8,100 x 13 = 105,300 -> 39.59; SMT 6,600 x 13 = 85,800 -> 33.32 (all correct). The supervisor average uses 2 of 4 clusters only."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 89,
+  "key": "labour.technician.fullyLoadedCnyPerHr",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.jobui.com/salary/quanguo-shebeiweixiugong/",
+  "notes": "jobui.com returns a captcha wall (title 验证码验证, \"系统检测到访问异常\") to curl and to headless Chromium via the proxy; the 7.7K / 9.4K / 8.1K / 6.6K figures cannot be read. Arithmetic checked: supervisor (7,700+9,400)/2 = 8,550 x 13 = 111,150, (111,150+17,932)/3,113 = 41.47; technician 8,100 x 13 = 105,300 -> 39.59; SMT 6,600 x 13 = 85,800 -> 33.32 (all correct). The supervisor average uses 2 of 4 clusters only."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 91,
+  "key": "labour.electronics.fullyLoadedCnyPerHr",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.jobui.com/salary/quanguo-smttiepianjicaozuoyuan/",
+  "notes": "jobui.com returns a captcha wall (title 验证码验证, \"系统检测到访问异常\") to curl and to headless Chromium via the proxy; the 7.7K / 9.4K / 8.1K / 6.6K figures cannot be read. Arithmetic checked: supervisor (7,700+9,400)/2 = 8,550 x 13 = 111,150, (111,150+17,932)/3,113 = 41.47; technician 8,100 x 13 = 105,300 -> 39.59; SMT 6,600 x 13 = 85,800 -> 33.32 (all correct). The supervisor average uses 2 of 4 clusters only."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 95,
+  "key": "labour.foundry.fullyLoadedCnyPerHr",
+  "verdict": "confirmed",
+  "pageValue": "82365 / 72893 / 85044",
+  "quote": "表6 … 生产制造及有关人员 80739 (合计) | 82365 (东部) | 72893 (中部) | 85044 (西部) | 80204 (东北)",
+  "url": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "notes": "PDF opened today (1 page, NBS 2025 wage bulletin, table of above-size enterprises by region and position). Arithmetic re-done: (82,365 x 2 + 85,044 + 72,893) / 4 = 80,666.75; SI+HPF at floor 12 x (1,369.67 + 124.63) = 17,931.6; (80,667 + 17,932) / 3,113 = 31.67. Note the NBS figure is an annual total (incl. bonus/OT) for ALL production workers at the national survey standard hours, here spread over the assumed 3,113 h of a 2x12 h pattern; foundry/forge/furnace/blow/roto/thermoform use it as a stated PROXY (no trade-specific wage found)."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 97,
+  "key": "labour.forge.fullyLoadedCnyPerHr",
+  "verdict": "confirmed",
+  "pageValue": "82365 / 72893 / 85044",
+  "quote": "表6 … 生产制造及有关人员 80739 (合计) | 82365 (东部) | 72893 (中部) | 85044 (西部) | 80204 (东北)",
+  "url": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "notes": "PDF opened today (1 page, NBS 2025 wage bulletin, table of above-size enterprises by region and position). Arithmetic re-done: (82,365 x 2 + 85,044 + 72,893) / 4 = 80,666.75; SI+HPF at floor 12 x (1,369.67 + 124.63) = 17,931.6; (80,667 + 17,932) / 3,113 = 31.67. Note the NBS figure is an annual total (incl. bonus/OT) for ALL production workers at the national survey standard hours, here spread over the assumed 3,113 h of a 2x12 h pattern; foundry/forge/furnace/blow/roto/thermoform use it as a stated PROXY (no trade-specific wage found)."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 99,
+  "key": "labour.furnace.fullyLoadedCnyPerHr",
+  "verdict": "confirmed",
+  "pageValue": "82365 / 72893 / 85044",
+  "quote": "表6 … 生产制造及有关人员 80739 (合计) | 82365 (东部) | 72893 (中部) | 85044 (西部) | 80204 (东北)",
+  "url": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "notes": "PDF opened today (1 page, NBS 2025 wage bulletin, table of above-size enterprises by region and position). Arithmetic re-done: (82,365 x 2 + 85,044 + 72,893) / 4 = 80,666.75; SI+HPF at floor 12 x (1,369.67 + 124.63) = 17,931.6; (80,667 + 17,932) / 3,113 = 31.67. Note the NBS figure is an annual total (incl. bonus/OT) for ALL production workers at the national survey standard hours, here spread over the assumed 3,113 h of a 2x12 h pattern; foundry/forge/furnace/blow/roto/thermoform use it as a stated PROXY (no trade-specific wage found)."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 101,
+  "key": "labour.blow.fullyLoadedCnyPerHr",
+  "verdict": "confirmed",
+  "pageValue": "82365 / 72893 / 85044",
+  "quote": "表6 … 生产制造及有关人员 80739 (合计) | 82365 (东部) | 72893 (中部) | 85044 (西部) | 80204 (东北)",
+  "url": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "notes": "PDF opened today (1 page, NBS 2025 wage bulletin, table of above-size enterprises by region and position). Arithmetic re-done: (82,365 x 2 + 85,044 + 72,893) / 4 = 80,666.75; SI+HPF at floor 12 x (1,369.67 + 124.63) = 17,931.6; (80,667 + 17,932) / 3,113 = 31.67. Note the NBS figure is an annual total (incl. bonus/OT) for ALL production workers at the national survey standard hours, here spread over the assumed 3,113 h of a 2x12 h pattern; foundry/forge/furnace/blow/roto/thermoform use it as a stated PROXY (no trade-specific wage found)."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 103,
+  "key": "labour.roto.fullyLoadedCnyPerHr",
+  "verdict": "confirmed",
+  "pageValue": "82365 / 72893 / 85044",
+  "quote": "表6 … 生产制造及有关人员 80739 (合计) | 82365 (东部) | 72893 (中部) | 85044 (西部) | 80204 (东北)",
+  "url": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "notes": "PDF opened today (1 page, NBS 2025 wage bulletin, table of above-size enterprises by region and position). Arithmetic re-done: (82,365 x 2 + 85,044 + 72,893) / 4 = 80,666.75; SI+HPF at floor 12 x (1,369.67 + 124.63) = 17,931.6; (80,667 + 17,932) / 3,113 = 31.67. Note the NBS figure is an annual total (incl. bonus/OT) for ALL production workers at the national survey standard hours, here spread over the assumed 3,113 h of a 2x12 h pattern; foundry/forge/furnace/blow/roto/thermoform use it as a stated PROXY (no trade-specific wage found)."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 105,
+  "key": "labour.thermoform.fullyLoadedCnyPerHr",
+  "verdict": "confirmed",
+  "pageValue": "82365 / 72893 / 85044",
+  "quote": "表6 … 生产制造及有关人员 80739 (合计) | 82365 (东部) | 72893 (中部) | 85044 (西部) | 80204 (东北)",
+  "url": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "notes": "PDF opened today (1 page, NBS 2025 wage bulletin, table of above-size enterprises by region and position). Arithmetic re-done: (82,365 x 2 + 85,044 + 72,893) / 4 = 80,666.75; SI+HPF at floor 12 x (1,369.67 + 124.63) = 17,931.6; (80,667 + 17,932) / 3,113 = 31.67. Note the NBS figure is an annual total (incl. bonus/OT) for ALL production workers at the national survey standard hours, here spread over the assumed 3,113 h of a 2x12 h pattern; foundry/forge/furnace/blow/roto/thermoform use it as a stated PROXY (no trade-specific wage found)."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 107,
+  "key": "labour.trimRouter.fullyLoadedCnyPerHr",
+  "verdict": "derived-ok",
+  "pageValue": "33.08",
+  "quote": "",
+  "url": "",
+  "notes": "Same arithmetic as labour.skilled.fullyLoadedCnyPerHr: (85,059 + 17,932) / 3,113 = 33.08. Trim-router operator uses the skilled CNC wage as a stated PROXY."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 109,
+  "key": "labour.engineer.fullyLoadedCnyPerHrStd",
+  "verdict": "confirmed",
+  "pageValue": "178144 / 109327 / 127950",
+  "quote": "表6 … 专业技术人员 155491 (合计) | 178144 (东部) | 109327 (中部) | 127950 (西部) | 114053 (东北)",
+  "url": "https://www.stats.gov.cn/zs/tjwh/tjkw/tjqk/zgxxb/202605/P020260519307748967261.pdf",
+  "notes": "PDF opened today. Arithmetic re-done: (178,144 x 2 + 127,950 + 109,327) / 4 = 148,391.25; / 12 = 12,366; 24.8% x 12,366 = 3,066.8 + 5% HPF 618.3 = 3,685.1/month x 12 = 44,221; (148,391 + 44,221) / 1,944 = 99.08. 24.8% is the mean of the cluster employer rates (26.3 / 23.3 / 24.8 proxy / 24.8 proxy) - two of four are proxies."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 111,
+  "key": "energy.electricity.Chongqing",
+  "verdict": "confirmed",
+  "pageValue": "0.8146 (Chongqing flat, single-part); 0.6691 (national flat mean)",
+  "quote": "平段电价全国均值 0.6691 元 /kWh，重庆平段电价全国最高 0.8146 元 /kWh",
+  "url": "https://finance.sina.com.cn/wm/2026-07-06/doc-inifwscq1812919.shtml",
+  "notes": "Both quoted figures on the page (Jul 2026 agency purchase prices). 0.6717 is not on this page: it equals (0.934 + 0.669 + 0.412) / 3 from the research item energy.electricity.nationalTOU.sep2026 (sohu). Arithmetic: 0.8146 x 0.6717 / 0.669 = 0.8179 / 1.13 = 0.724 (correct). Caveats: mixes a July provincial flat price with a September national ratio; the page also gives the TWO-PART (large industry) Chongqing flat price 0.7554 (平段电价，重庆 0.7554 元 /kWh 位居全国首位) - a factory on two-part tariff would pay ~7% less energy charge plus a capacity charge."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 122,
+  "key": "energy.gas.national36CityIndustrial",
+  "verdict": "differs",
+  "pageValue": "3.580 CNY/m3 (Sep 2026); 3.590 (Aug 2026)",
+  "quote": "使用价格:36个城市:月平均:天然气:工业用在09-01-2026达3.580人民币/立方米，相较于08-01-2026的3.590人民币/立方米有所下降",
+  "url": "https://www.ceicdata.com/zh-hans/china/price-monitoring-center-ndrc-36-city-monthly-avg-transaction-price-production-material/cn-usage-price-36-city-avg-natural-gas-natural-gas-for-industry",
+  "notes": "Page UPDATED since the research: it now shows only the latest month (Sep 2026 3.580); the Apr 2026 3.570 and Feb 3.62 points are not shown (history behind login). Not a misreading. 3.580 / 1.09 / 10 = 0.3284 -> 0.328, so the rate-book value is unchanged at 3 d.p."
+ },
+ {
+  "file": "china-2026-10/research/labour-energy.json",
+  "i": 123,
+  "key": "energy.gas.clusterAvg",
+  "verdict": "derived-ok",
+  "pageValue": "0.356",
+  "quote": "",
+  "url": "",
+  "notes": "(4.12 + 3.86) / 2 = 3.99; (3.99 + 4.47 + 3.365 + 3.71) / 4 = 3.884; / 1.09 = 3.563; / 10 = 0.356 (correct). Inputs are the city research items energy.gas.Shanghai / Jiangsu / Guangdong / Chongqing / Hubei (not in this worklist). Caveats in those items: Guangzhou 4.47 is a Jul 2025-Jan 2026 maximum; Wuhan 3.71 category (industrial v public service) unclear; 10 kWh/m3 GCV is a standard value."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 0,
+  "key": "capex.mach-vmc3",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "主营业务收入构成为：数控龙门加工中心56.25%，数控立式加工中心24.98% … 公司2025年营业收入为33.68亿元",
+  "url": "http://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260323/71ad745b243c48e79d848681d7931b2a.PDF",
+  "notes": "Two sources. (1) sina page opens: 8.41亿 is not printed but follows from it: 33.68亿 x 24.98% = 8.413亿 (note 24.98% is a share of MAIN-business revenue applied to TOTAL revenue - small overstatement). (2) The unit count 2,922 is only in the cninfo annual-report PDF, whose host does not resolve from here (curl: Could not resolve host dataclouds.cninfo.com.cn). The ASP 841,000,000 / 2,922 = 287,817 is arithmetically right but its denominator is unverified."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 1,
+  "key": "capex.mach-haas-vf2",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "数控立式加工中心24.98% … 营业收入为33.68亿元",
+  "url": "http://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260323/71ad745b243c48e79d848681d7931b2a.PDF",
+  "notes": "Same evidence as capex.mach-vmc3: revenue share confirmed on the sina page, unit count 2,922 not checkable (cninfo host unresolvable). Using the mix ASP for a VF-2-class machine is a judgement (the research itself says VF-2 is at the small end of the mix, so 287,817 likely overstates it)."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 7,
+  "key": "capex.mach-vmc5",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://stcn.com/article/detail/1725042.html",
+  "notes": "stcn.com and www.stcn.com: TLS connection reset to curl (SSL_ERROR_SYSCALL) and 502 upstream request failed via headless Chromium. 242.51万元 (KEDE 2024 five-axis average transaction price) not checkable. FY2024 figure (2025 not found)."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 9,
+  "key": "capex.mach-haas-umc500",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No URL and no value: research recorded \"not found\" (no China price for a UMC-500-class machine); the book holds this capital. Nothing to verify."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 11,
+  "key": "capex.laser-trumpf-3030",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "2019年邦德激光光纤激光切割机实现产销量2672台，销售收入达到11.5亿元，平均售价43万元",
+  "url": "https://laser.ofweek.com/2020-05/ART-240015-8120-30439186.html",
+  "notes": "Value is null (\"not found for a 6 kW 3015 in 2025-2026\"). The cited page (OFweek, 2020-05-09) opens and only gives Bodor 2019 fibre-laser ASP 43万元 across all models - consistent with the research not using it. No 2025-26 figure."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 12,
+  "key": "capex.brake-amada-hfe100",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No URL and no value (research: \"not found\"); capital held. Nothing to verify."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 16,
+  "key": "capex.imm-200t",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No URL and no value (research: \"not found\", no tonnage-specific price); capital held. Nothing to verify."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 26,
+  "key": "capex.robot-mig-cell",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://finance.sina.com.cn/stock/aigc/stockfs/2026-04-14/doc-inhunicw1595579.shtml",
+  "notes": "Value null (\"not found\"). The cited sina page (Efort 2025 annual-report digest) opens; it gives robot revenue (整机收入63,865.20万元) but no welding-cell or unit price - consistent with \"not found\"."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 29,
+  "key": "rent.shanghaiSuzhou",
+  "verdict": "confirmed",
+  "pageValue": "RMB 1.05 /sqm/day (Q2 2026)",
+  "quote": "Overall rents decreased by 2.9% q-o-q on a like-for-like basis, settling at RMB 1.05 per sqm per day in Q2 2026",
+  "url": "https://research.jllapsites.com/?p=37261",
+  "notes": "1.05 x 365 / 12 = 31.94 (correct). Caveat: this is JLL Shanghai LOGISTICS (warehouse) rent, used as a proxy for factory space in Shanghai/Suzhou."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 33,
+  "key": "rent.clusterAvg",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No URL and no value (research: \"not derivable\"). Nothing to verify."
+ },
+ {
+  "file": "china-2026-10/research/machines.json",
+  "i": 36,
+  "key": "hours.annual",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No URL and no value (research: \"not found\" for 2x12 h annual hours). Nothing to verify; note the labour items do use an assumed 3,113 h (labour.hours.twoShift12h) - an assumption, not a source."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 1,
+  "key": "ferrous.anchor.crc",
+  "verdict": "differs",
+  "pageValue": "3,610 CNY/t (1.0 mm Benxi CRC, Shanghai, 27-28 Oct 2026)",
+  "quote": "10月28日上海冷轧、镀锌及彩涂板卷价格暂稳，其中1.0mm本钢冷轧3610元/吨，镀锌3900元/吨",
+  "url": "https://www.mysteel.com/hot/563511.html",
+  "notes": "Rolling price page UPDATED since the 9 Oct reading (3,660 no longer shown; also 16 Oct: 上海冷轧板卷价格3650元/吨, near-month average 3,695). 3,610 / 1.13 / 1000 = 3.195 CNY/kg, -1.4% v 3.239. Not a misreading."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 2,
+  "key": "ferrous.anchor.hdg",
+  "verdict": "differs",
+  "pageValue": "3,900 CNY/t (1.0 mm Benxi HDG, 27-28 Oct 2026)",
+  "quote": "10月28日上海冷轧、镀锌及彩涂板卷价格暂稳，其中1.0mm本钢冷轧3610元/吨，镀锌3900元/吨 … 截至2026年10月16日 … 镀锌板卷3940元/吨；近一个月冷轧均价3695元/吨，镀锌均价3950元/吨",
+  "url": "https://m.mysteel.com/hot/39907.html",
+  "notes": "Page UPDATED (rolling feed). The research 3,950 matches the page near-month HDG average to 16 Oct; the latest Benxi 1.0 mm print is 3,900 -> 3.451 CNY/kg (-1.3%)."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 6,
+  "key": "ferrous.anchor.baosteel.auto_grades",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://m.mysteel.com/hot/426801.html",
+  "notes": "Value null (research: Baosteel automotive grade extras not public). The Mysteel Baosteel hub page opens and indeed has no automotive-grade (DP/HSLA etc.) price - consistent with the research."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 7,
+  "key": "ferrous.bar.45",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://m.mysteel.com/hot/78153.html",
+  "notes": "m.mysteel.com/hot/78153.html is now a rolling 42CrMo hot-rolled-round hub (headlines 10月28日淮钢特钢汽车用钢销售价格 …); the 24 Sep Huaigang 45# 3,680 table is not on the page (detail behind links / login). Context on another Mysteel page (hot/13792): 10月21日中天钢铁 … 20-45#碳结钢 … 出厂挂牌现款价 3780元/吨 - a different producer and an ex-works list price, not the same thing."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 8,
+  "key": "ferrous.bar.40Cr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "9月11日莱钢特钢钢厂圆钢挂牌价（莱芜地区）上调100，Φ30-119指导价：45#4548，40Cr4769 … 8月11日东方特钢 … 40Cr3830",
+  "url": "https://m.mysteel.com/hot/13617.html",
+  "notes": "The 40Cr hub page opens but shows only mill list-price flashes (Laigang 4,769, Dongfang 3,830); the 24 Sep Shanghai Huaigang 40Cr 3,900 is not on it."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 9,
+  "key": "ferrous.bar.42CrMo",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://m.mysteel.com/hot/78153.html",
+  "notes": "Same 42CrMo hub page as ferrous.bar.45 - no 4,840 (Xiangtan 42CrMo) print today; only Oct headlines. Context: Zhongtian 20CrMo-42CrMo(A) ex-works list 4,760 (10月21日, Mysteel hot/13792) - different producer/basis."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 10,
+  "key": "ferrous.bar.20CrMnTi",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://m.mysteel.com/hot/78153.html",
+  "notes": "Same hub page - no 20CrMnTi 4,120 print today (detail behind links). Laigang list 20CrMnTi(H) 4,876 (11 Sep) appears on the 40Cr hub - a mill list price, not comparable."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 11,
+  "key": "ferrous.bar.GCr15",
+  "verdict": "confirmed",
+  "pageValue": "5,900-6,000 CNY/t (GCr15 Xingcheng)",
+  "quote": "10月28日国内轴承钢出厂价格稳，GCr15兴澄报5900~6000，中天报4500，南钢报4830。（单位：元/吨）",
+  "url": "https://m.mysteel.com/hot/13792.html",
+  "notes": "Page failed to the plain fetch but opens in a browser; same Xingcheng range on 23-28 Oct (stable). Mid 5,950 / 1.13 / 1000 = 5.265 (correct). VAT-inclusive is an assumption (the flash does not say). Note other mills on the same line quote far lower (Zhongtian 4,500, Nanjing 4,830) - Xingcheng is the premium bearing-steel producer."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 17,
+  "key": "ferrous.stainless.304_CR_2B_tisco",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.ccmn.cn/bxg/304/",
+  "notes": "ccmn.cn/bxg/304/ is an index of daily article links (10月30日无锡太钢不锈钢304/2B卷板价格行情参考 …); the price itself is inside the linked articles, not on this page. 15,100 not shown."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.stainless.409L_CR",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://hq.smm.cn/h5/sus-400sus-price",
+  "notes": "SMM 400-series page opens in a browser (cached copy was undecoded gzip) but the 409L/2B Wuxi/Foshan price cells are blank without login (409L/2B卷无锡不锈钢价格 元/吨 2026-10-30). 7,500-7,600 not visible."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 23,
+  "key": "ferrous.stainless.304_scrap",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "10月20日至29日，高镍铁市场价格总体持稳于1010-1020元/镍（到厂含税）",
+  "url": "https://list1.mysteel.com/zhishi/ntjgzst25884.html",
+  "notes": "The cited page is Mysteel NPI chart page; no 304 industrial scrap (304工业料) price on it today. Its NPI context has moved: 1,010-1,020 CNY/Ni point (20-29 Oct) v 1,040-1,065 in the basis."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 24,
+  "key": "ferrous.foundry.pig_iron_casting_Z18",
+  "verdict": "differs",
+  "pageValue": "2,880 CNY/t (Z18 Linyi, 29 Oct 2026)",
+  "quote": "10月29日华东铸造生铁报价稳，Z18临沂2880常州3020三明3050日照2880，现款含税",
+  "url": "https://www.mysteel.com/hot/1486014.html",
+  "notes": "Page UPDATED (rolling flash). Research 30 Sep Linyi 2,950 not shown any more. 2,880 / 1.13 / 1000 = 2.549 CNY/kg (-2.4% v 2.611)."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 25,
+  "key": "ferrous.foundry.pig_iron_nodular_Q10",
+  "verdict": "differs",
+  "pageValue": "2,950-3,290 CNY/t (Q10 East China, 29 Oct 2026)",
+  "quote": "10月29日华东市场球墨铸铁价格稳，Q10主流报价2950-3290元/吨，现款含税，一单一议",
+  "url": "https://m.mysteel.com/hot/1487195.html",
+  "notes": "Page UPDATED. Research 30 Sep 2,970-3,350 (mid 3,160). Today mid 3,120 / 1.13 / 1000 = 2.761 (-1.3% v 2.796)."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 29,
+  "key": "ferrous.foundry.FeSi75",
+  "verdict": "differs",
+  "pageValue": "6,050-6,100 CNY/t (75 FeSi)",
+  "quote": "现货72硅铁出厂5550-5600元/吨，75硅铁6050-6100元/吨",
+  "url": "https://m.mysteel.com/hot/47879.html",
+  "notes": "Page UPDATED since end-Sep (research 6,100-6,200; 72 FeSi 5,700-5,750). Mid 6,075 / 1.13 / 1000 = 5.376 (-1.2% v 5.442)."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 30,
+  "key": "ferrous.foundry.FeCr_HC",
+  "verdict": "differs",
+  "pageValue": "7,395 CNY per 50%-Cr base t (Tisco Nov 2026 tender)",
+  "quote": "山西太钢2026年11月高碳铬铁采购价格7395元/50基吨(现金含税到厂)，环比10月价格下调200元/50基吨 … 青山集团2026年11月高碳铬铁长协采购价7595元/50基吨",
+  "url": "https://m.mysteel.com/zta/gaotangetie/",
+  "notes": "Page UPDATED: shows the November tender (implying October 7,595); September 7,795 consistent with that chain but no longer on the page. 7,395 / 1.13 / 1000 = 6.544 (-5.1% v 6.898). Ex-works 26 Oct 7,450-7,700."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 34,
+  "key": "ferrous.charge.GJS-500-7",
+  "verdict": "differs",
+  "pageValue": "Q10 East China 2,950-3,290 (29 Oct) v 2,970-3,350 used",
+  "quote": "10月29日华东市场球墨铸铁价格稳，Q10主流报价2950-3290元/吨",
+  "url": "https://m.mysteel.com/hot/1487195.html",
+  "notes": "Value is an ENGINEERING-ASSUMPTION mix, not a page figure. Arithmetic re-done and correct: (0.45 x 2.796 + 0.30 x 2.045) / 0.75 = 2.4956; + 0.013 x 9.071 = 0.118; + 0.004 x 5.442 = 0.022; / 0.98 = 2.689. Input pages have moved (Q10 mid now 2.761, FeSi75 5.376): re-computed 2.67 (-0.8%). FeSiMg is a rare-earth FeSi PROXY."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 35,
+  "key": "ferrous.charge.GJL-250",
+  "verdict": "differs",
+  "pageValue": "Z18 Linyi 2,880 (29 Oct) v 2,950 used",
+  "quote": "10月29日华东铸造生铁报价稳，Z18临沂2880常州3020三明3050日照2880",
+  "url": "https://www.mysteel.com/hot/1486014.html",
+  "notes": "Engineering-assumption mix. Arithmetic correct: (0.25 x 2.611 + 0.40 x 2.045) / 0.65 = 2.2627; + 0.007 x 5.442 = 0.038; / 0.98 = 2.348. With todays Z18 (2.549) and FeSi75 (5.376): 2.32 (-1.1%)."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 36,
+  "key": "ferrous.charge.GS-C25",
+  "verdict": "confirmed",
+  "pageValue": "2,045 CNY/t (45-city 6-8 mm heavy scrap)",
+  "quote": "截止10月7日，国内主要城市废钢价格以稳为主，现45城市6-8mm重废均价为2045元/吨，较节前基本持平",
+  "url": "https://news.mysteel.com/a/26100711/92F88C485B219078.html",
+  "notes": "Scrap input confirmed; the same article quotes the city markets 不含税 (ex-VAT), so 2,045 / 1000 without ÷1.13 is consistent. Mix is an engineering assumption; arithmetic correct: (2.045 + 0.005 x 5.442) / 0.96 = 2.159."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 37,
+  "key": "ferrous.charge.CF8",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://list1.mysteel.com/zhishi/ntjgzst25884.html",
+  "notes": "Engineering-assumption scrap route; its input (304 industrial scrap 9,450, item ferrous.stainless.304_scrap) is not on the cited NPI page today. Arithmetic correct: 8.363 / 0.97 = 8.622."
+ },
+ {
+  "file": "china-2026-10/research/materials-ferrous.json",
+  "i": 38,
+  "key": "ferrous.electrical.35W300",
+  "verdict": "differs",
+  "pageValue": "5,900 CNY/t (Baosteel 300-grade, Qingdao, 28 Oct 2026)",
+  "quote": "10月28日青岛无取向硅钢价格暂稳，宝钢800报4500武钢报4400 … 宝钢300报5900，首钢300报5570",
+  "url": "https://m.mysteel.com/hot/3849.html",
+  "notes": "Page UPDATED (research 20 Sep 5,850; Shougang 5,530 then, 5,570 now). 5,900 / 1.13 / 1000 = 5.221 (+0.9%)."
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 0,
+  "key": "nonferrous.al.a00",
+  "verdict": "confirmed",
+  "pageValue": "24,259.52 CNY/t (Sep 2026 monthly average, Changjiang A00)",
+  "quote": "国内现货长江A00铝锭月均24259.52元/吨，同比大涨16.82%",
+  "url": "https://finance.sina.com.cn/money/future/indu/2026-09-30/doc-initqzmc2066184.shtml",
+  "notes": "24,259.52 / 1.13 / 1000 = 21.47 (correct)."
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 12,
+  "key": "nonferrous.brass.H62_rod",
+  "verdict": "differs",
+  "pageValue": "85,100 CNY/t (Ningbo H62 Φ14, latest table ~19 Oct 2026)",
+  "quote": "宁波铜棒价格最新行情 … 黄铜棒 H62 Φ14 85100 … 以上价格为当地厂家含税自提价",
+  "url": "https://list1.mysteel.com/zhishi/nbtbjgzxxq.html",
+  "notes": "Page UPDATED (rolling; 16 Oct H62 84,900). The 29 Sep 84,000 is no longer shown. The page states these are 含税 (VAT-incl.) ex-works prices, so the research VAT assumption is right. 85,100 / 1.13 / 1000 = 75.31 (+1.3% v 74.34)."
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 15,
+  "key": "nonferrous.zn.spot",
+  "verdict": "confirmed",
+  "pageValue": "25,910 CNY/t",
+  "quote": "Today, SMM #0 zinc ingot (Guangdong) fell 390 yuan/mt to 25,910 yuan/mt.",
+  "url": "https://news.metal.com/newscontent/104147388",
+  "notes": "Confirmed in the rendered page (news.metal.com, 9 Oct 2026). 25,910 / 1.13 / 1000 = 22.93 (correct)."
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 18,
+  "key": "nonferrous.mg.ingot",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.sohu.com/a/1085524211_121123889",
+  "notes": "www.sohu.com answers HTTP 302 -> http://www.sohu.com/404.html (article removed / not found); headless Chromium got 405. The 15,500 CNY/t Mg ingot figure cannot be checked here."
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 19,
+  "key": "nonferrous.mg.az91d",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://hq.91jinshu.com/zd91dmeihejin/202607/52846.html",
+  "notes": "hq.91jinshu.com: plain fetch failed and headless Chromium gets 502 \"upstream request failed\". AZ91D 18,100 not checkable; note the research itself flags it as July-dated and stale."
+ },
+ {
+  "file": "china-2026-10/research/materials-nonferrous.json",
+  "i": 21,
+  "key": "nonferrous.ni.spot",
+  "verdict": "confirmed",
+  "pageValue": "121,650 CNY/t",
+  "quote": "品名及规格 地区 现货均价 涨跌 1#电解镍(Ni99.90) 上海 121650 -550",
+  "url": "https://news.10jqka.com.cn/20261009/c680512152.shtml",
+  "notes": "The http:// URL does not resolve through the proxy; the https:// page opens and shows the 10 Oct 9 table. 121,650 / 1.13 / 1000 = 107.65 (correct)."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pp_homo",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.chemrp.com/info/detail-20261001-6294429.html",
+  "notes": "http://www.chemrp.com refused (plain-HTTP not allowed by the proxy; curl code 000) and the https:// form returns 502 upstream request failed. PP 9,933.33 not checkable."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 2,
+  "key": "polymer.hdpe",
+  "verdict": "confirmed",
+  "pageValue": "10,475 CNY/t (1 Oct 2026); now 11,150 (30 Oct)",
+  "quote": "[HDPE]10月30日，HDPE参考价为11150.00，与10月1日(10475.00)相比，上涨了6.44%",
+  "url": "https://hdpe.100ppi.com/",
+  "notes": "The 1 Oct reference price 10,475 is on the page (in the 30 Oct flash). 10,475 / 1.13 = 9,270 (correct). Note the price has since risen 6.4% to 11,150 (-> 9.87 CNY/kg ex-VAT)."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 4,
+  "key": "polymer.ldpe",
+  "verdict": "confirmed",
+  "pageValue": "10,350 CNY/t (13 Aug 2026)",
+  "quote": "8月13日，生意社LDPE基准价为10350.00元/吨，与本月初(10383.33元/吨)相比，下降了0.32%",
+  "url": "https://www.100ppi.com/news/detail-20260813-6060907.html",
+  "notes": "10,350 / 1.13 = 9,159 (correct). The figure is dated 13 Aug 2026 (older than the other polymers, which are 1 Oct)."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 5,
+  "key": "polymer.lldpe",
+  "verdict": "confirmed",
+  "pageValue": "9,390 CNY/t (1 Oct 2026)",
+  "quote": "10月1日，生意社LLDPE基准价为9390.00元/吨，与上月初(8661.67元/吨)相比，上涨了8.41%",
+  "url": "https://m.10jqka.com.cn/20261001/c680427759.shtml",
+  "notes": "Opens in a browser. 9,390 / 1.13 = 8,309.7 (correct). Note: the 100ppi HDPE hub (hdpe.100ppi.com) today says LLDPE(7042) 10月29日均价10250元/吨 (+9.2% in October)."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.pvc_sg5",
+  "verdict": "differs",
+  "pageValue": "5,240 CNY/t (SunSirs PVC benchmark, 30 Oct 2026)",
+  "quote": "[基准价] 10月30日生意社PVC基准价为5240.00元/吨 10-30 … 10月29日生意社PVC基准价为5200.00元/吨",
+  "url": "https://pvc.100ppi.com/news/list---1.html",
+  "notes": "The cited page is a rolling news list, UPDATED since 5 Oct (4,865 no longer shown). 5,240 / 1.13 = 4.637 CNY/kg, +7.7% v 4.31 - a material move."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 8,
+  "key": "polymer.ps",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.chemrp.com/info/detail-20260902-6155369.html",
+  "notes": "chemrp.com: plain HTTP refused by the proxy, https 502 upstream. PS 11,133.33 not checkable. (Note the URL is dated 2026-09-02 while the item date says 2026-10-05.)"
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 9,
+  "key": "polymer.pc",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.chemrp.com/info/detail-20260709-5896771.html",
+  "notes": "chemrp.com unreachable (as above). PC 12,566.67 (9 Jul 2026 - three months old) not checkable."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 11,
+  "key": "polymer.pa66_chips",
+  "verdict": "confirmed",
+  "pageValue": "19,000 / 19,500 / 18,800 CNY/t",
+  "quote": "安徽昊源…AHY4800报价19000元/吨 … 浙江华峰…EP158报价19500元/吨 … 神马…EPR27报价18800元/吨，较上周下调500元/吨，现货实单商谈",
+  "url": "https://stock.10jqka.com.cn/20260922/c680178557.shtml",
+  "notes": "All three producer offers on the page (22 Sep 2026). Mean 19,100 / 1.13 = 16,903 (correct). These are producer list offers (\"实单商谈\" - transactions negotiated), VAT inclusion not stated on the page."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.pbt",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://plas.oilchem.net/plastic/pbt.shtml",
+  "notes": "OilChem PBT channel opens (hub page: price centre links, 隆众聚焦 headlines); the quoted sentence (\"mainstream transactions lost the 10,000 CNY/t mark\") is not on it today. The value is only a stated CEILING in the research."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 14,
+  "key": "polymer.pet_bottle",
+  "verdict": "confirmed",
+  "pageValue": "8,750 CNY/t (1 Oct 2026)",
+  "quote": "10月1日，生意社PET基准价为8750.00元/吨，与上月初(7854.84元/吨)相比，上涨了11.40%",
+  "url": "https://m.10jqka.com.cn/20261001/c680427815.shtml",
+  "notes": "Opens in a browser. 8,750 / 1.13 = 7,743 (correct). Caveat: the SunSirs \"PET\" benchmark is not labelled bottle-chip on the page."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 19,
+  "key": "polymer.peek",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "公司2025年实现营业收入3.09亿元 … PEEK纯树脂颗粒出货量稳步提升，该类产品收入占比达58.49%，与复合增强颗粒合计贡献86.42%的营收",
+  "url": "https://news.qq.com/rain/a/20260429A0934U00",
+  "notes": "Revenue 3.09亿 and the 86.42% share are on the page (309 x 0.8642 = 267.04 M CNY, correct), but the denominator 1,079.84 t PEEK sold is NOT on this page (would be in the annual report). ASP 247.3 CNY/kg therefore not verifiable here. Also: compound pellets (part of the 86.42%) are not pure PEEK, so the ASP mixes resin and compound."
+ },
+ {
+  "file": "china-2026-10/research/materials-polymer.json",
+  "i": 32,
+  "key": "composite.cf_t700_12k",
+  "verdict": "not-on-page",
+  "pageValue": "2026-10-30 carbon-fibre market average 85.5 CNY/kg (all grades)",
+  "quote": "2026年10月30日，碳纤维市场均价为85.5元/千克，较上一工作日价格持平",
+  "url": "https://www.baiinfo.com/xianweicailiao/tanxianwei",
+  "notes": "Baiinfo page (browser gets a slider captcha; the plain fetch has text) now shows only todays all-grade market average 85.5 CNY/kg; the Aug-2025 T700 12K 90-120 range is not on it. Research figure is 14 months old; the current all-grade average is 19% below its 105 midpoint (not the same product, so not a like-for-like differs)."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 21,
+  "key": "labour.skilledMachinist.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "₹4,00,000/yr median (33,333/mo); P25-P75 ₹2.8-6 L",
+  "quote": "Median annual salary ₹4,00,000 annual INR CTC estimate 25th percentile ₹2,80,000 Lower market anchor 75th percentile ₹6,00,000",
+  "url": "https://hyring.com/jobseeker-toolkit/salary/cnc-operator-salary-in-pune",
+  "notes": "Hyring Pune figure on the page. Pune mid = (18,500 + 33,333)/2 = 25,917 -> 26,000; India avg (26+25+27+30)/4 = 27,000 (correct). Other cited postings (Payscale, TN portal, Jobhai, AmbitionBox) not opened here. Caveat: Hyring states a CTC (may already include employer PF), and the next item adds employer statutory on top - a possible small double count."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 22,
+  "key": "labour.skilledMachinist.fullyLoadedInrPerHr",
+  "verdict": "confirmed",
+  "pageValue": "₹4,00,000/yr median (wage input)",
+  "quote": "Median annual salary ₹4,00,000 annual INR CTC estimate",
+  "url": "https://hyring.com/jobseeker-toolkit/salary/cnc-operator-salary-in-pune",
+  "notes": "Statutory build-up re-done and correct: basic 13,500; PF 13% = 1,755; ESI 0 (G > 21,000); bonus 8.33% x 13,500 = 1,125; gratuity 4.81% = 649; 30,529 x 12 = 366,348 / 2,264 h = 161.8. 2,264 h is a stated assumption (holidays, casual/sick leave assumed)."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 23,
+  "key": "labour.semiskilledOperator.monthlyGross",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-jay-bharat-maruti-sector-3-imt-manesar-gurgaon-0-to-0-years-1783940761-7949162-jid",
+  "notes": "jobhai.com: plain fetch fails (HTTP/2 stream INTERNAL_ERROR) and headless Chromium gets 502. The 19-20k Jay Bharat Maruti posting cannot be checked. Average (19.5 + 19.5 + 17 + 18)/4 = 18.5k is arithmetically right."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 24,
+  "key": "labour.semiskilledOperator.fullyLoadedInrPerHr",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-jay-bharat-maruti-sector-3-imt-manesar-gurgaon-0-to-0-years-1783940761-7949162-jid",
+  "notes": "jobhai.com unreachable (as above). Statutory build-up re-done and correct: basic 9,250; PF 1,202.5; ESI 3.25% x 18,500 = 601; bonus 771; gratuity 445; 21,519 x 12 = 258,230 / 2,264 = 114.1."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 25,
+  "key": "labour.foundryOperative.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "₹16,844-₹35,914 per month (2026)",
+  "quote": "Salary range for the majority of workers in Metal moulders and coremakers - from ₹16,844 to ₹35,914 per month - 2026.",
+  "url": "https://wageindicator.org/en-in/work-in-india/role-and-pay/india-metal-moulders-and-coremakers",
+  "notes": "The prd.wageindicator.org host returns 502, but the same page on wageindicator.org opens with the quoted range (labelled 2026; research said 2025). 21,000 is a judgement inside the range (low third), not a source figure."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 26,
+  "key": "labour.foundryOperative.fullyLoadedInrPerHr",
+  "verdict": "confirmed",
+  "pageValue": "₹16,844-₹35,914 per month (wage input)",
+  "quote": "Salary range for the majority of workers in Metal moulders and coremakers - from ₹16,844 to ₹35,914 per month - 2026.",
+  "url": "https://wageindicator.org/en-in/work-in-india/role-and-pay/india-metal-moulders-and-coremakers",
+  "notes": "Statutory build-up re-done and correct: basic 10,500; PF 1,365; ESI 3.25% x 21,000 = 682.5 (G = 21,000 is at the ESI ceiling, so ESI applies); bonus 875; gratuity 505; 24,427 x 12 = 293,126 / 2,264 = 129.5."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 28,
+  "key": "labour.forgeOperator.fullyLoadedInrPerHr",
+  "verdict": "confirmed",
+  "pageValue": "₹15,972-₹32,049 per month (2026)",
+  "quote": "Salary range for the majority of workers in Blacksmiths, hammersmiths and forging press workers - from ₹15,972 to ₹32,049 per month - 2026.",
+  "url": "https://wageindicator.org/en-in/work-in-india/role-and-pay/india-blacksmiths-hammersmiths-and-forging-press",
+  "notes": "Range on the page. 22,000 is a judgement inside it. Statutory build-up re-done and correct: basic 11,000; PF 1,430; ESI 0; bonus 916; gratuity 529; 24,875 x 12 = 298,505 / 2,264 = 131.8."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 29,
+  "key": "labour.furnaceOperator.monthlyGross",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division",
+  "notes": "in.indeed.com answers 401 / Cloudflare \"Additional Verification Required\" to both fetch and browser. The 25-30k Coimbatore posting cannot be checked. 23,000 is labelled a low-confidence PROXY in the research."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 30,
+  "key": "labour.furnaceOperator.fullyLoadedInrPerHr",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://in.indeed.com/cmp/Marks-Engineering-Works---Foundry-Division",
+  "notes": "Indeed behind Cloudflare verification (401). Statutory build-up re-done and correct: G 23,000 -> 26,006 x 12 = 312,073 / 2,264 = 137.8."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 31,
+  "key": "labour.pressShopOperator.monthlyGross",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.jobhai.com/hi/manufacturing-machine-operator-job-in-rv-exhaust-system-imt-manesar-gurgaon-0-to-0-years-1785741657-8094970-jid",
+  "notes": "jobhai.com: HTTP/2 INTERNAL_ERROR to curl, 502 to headless Chromium. RV Exhaust 20-22k posting not checkable; 20,500 is a stated proxy (NCR only)."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 33,
+  "key": "labour.plasticsOperator.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "₹1.8L-₹4L per year (0-2 yrs)",
+  "quote": "Entry-level Injection Moulding Operator salary in India (0-2 years experience): ₹1.8L – ₹4L per year.",
+  "url": "https://corpready.in/salary/injection-moulding-operator",
+  "notes": "Band on the page. CorpReady says the band is an \"AI-adapting\" NCO-2015 + AmbitionBox/Naukri overlay - a weak source. 18,000/mo (2.16 L/yr) is a judgement in the lower part of the band."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 34,
+  "key": "labour.plasticsOperator.fullyLoadedInrPerHr",
+  "verdict": "confirmed",
+  "pageValue": "₹1.8L-₹4L per year (wage input)",
+  "quote": "ENTRY-LEVEL ₹1.8L – ₹4L 0-2 years",
+  "url": "https://corpready.in/salary/injection-moulding-operator",
+  "notes": "Statutory build-up re-done and correct: basic 9,000; PF 1,170; ESI 585; bonus 750; gratuity 433; 20,938 x 12 = 251,251 / 2,264 = 111.0."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 35,
+  "key": "labour.smtOperator.monthlyGross",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://in.indeed.com/Smt-jobs-in-South-India",
+  "notes": "in.indeed.com behind Cloudflare verification (cached render: \"Additional Verification Required\"). SMT postings (3.5-5.5 LPA, Southern Chips 336,000/yr) not checkable. Research marks 23,000 low confidence."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 36,
+  "key": "labour.smtOperator.fullyLoadedInrPerHr",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://in.indeed.com/Smt-jobs-in-South-India",
+  "notes": "Indeed behind Cloudflare verification. Statutory build-up re-done and correct (same as furnace operator, G 23,000): 137.8."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 37,
+  "key": "labour.qualityInspector.monthlyGross",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.ambitionbox.com/salaries/tata-motors-salaries/quality-inspector",
+  "notes": "ambitionbox.com: HTTP/2 INTERNAL_ERROR to curl, 502 to headless Chromium. Tata Motors quality-inspector CTC 1-4.5 L not checkable."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 38,
+  "key": "labour.qualityInspector.fullyLoadedInrPerHr",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.ambitionbox.com/salaries/tata-motors-salaries/quality-inspector",
+  "notes": "AmbitionBox unreachable. Statutory build-up re-done and correct: basic 10,000; PF 1,300; ESI 650; bonus 833; gratuity 481; 23,264 x 12 = 279,168 / 2,264 = 123.3."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 39,
+  "key": "labour.maintenanceTechnician.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "₹2.5L-₹6L (0-2 yrs); ₹6L-₹15L (3-7 yrs)",
+  "quote": "Maintenance Technician Electrical pay by experience ENTRY-LEVEL ₹2.5L – ₹6L 0-2 years MID-CAREER ₹6L – ₹15L 3-7 years",
+  "url": "https://corpready.in/salary/maintenance-technician-electrical",
+  "notes": "CorpReady band on the page (same \"AI-adapting\" overlay caveat). 24,000/mo = 2.88 L/yr sits in the ENTRY band although the research calls it \"experienced\" - it is below the 3-7 yr band floor of 6 L."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 40,
+  "key": "labour.maintenanceTechnician.fullyLoadedInrPerHr",
+  "verdict": "confirmed",
+  "pageValue": "₹2.5L-₹6L (wage input)",
+  "quote": "ENTRY-LEVEL ₹2.5L – ₹6L 0-2 years",
+  "url": "https://corpready.in/salary/maintenance-technician-electrical",
+  "notes": "Statutory build-up re-done and correct: basic 12,000; PF 1,560; ESI 0; bonus 1,000; gratuity 577; 27,137 x 12 = 325,642 / 2,264 = 143.8."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 42,
+  "key": "labour.productionSupervisor.fullyLoadedInrPerHr",
+  "verdict": "confirmed",
+  "pageValue": "₹311,538/yr avg; mid-career ₹478,895",
+  "quote": "₹311,538 / year Avg. Base Salary … A mid-career Production Supervisor, Manufacturing with 5-9 years of experience earns an average total compensation of ₹478,895",
+  "url": "https://www.payscale.com/research/IN/Job=Production_Supervisor%2C_Manufacturing/Salary/febb9359/Pune",
+  "notes": "(311,538 + 478,895)/2/12 = 32,935 -> 33,000 (correct; mixes base salary and total compensation). Statutory build-up re-done and correct: basic 16,500; PF on 15,000 cap = 1,950; bonus 1,374; gratuity 794; 37,118 x 12 = 445,417 / 2,264 = 196.7."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 43,
+  "key": "labour.processEngineer.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "₹530,000/yr (44,167/mo)",
+  "quote": "Find market worth ₹530,000 / year Avg. Base Salary (INR) 10% ₹352k MEDIAN ₹530k 90% ₹2m",
+  "url": "https://www.payscale.com/research/IN/Job=Process_Engineer/Salary/2a531e0b/Mid-Career-Pune-Manufacturing-Process-Engineering",
+  "notes": "Payscale mid-career Pune figure on the page; 45,000 rounds it up with the AmbitionBox n=4 cross-check (not opened)."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 44,
+  "key": "labour.processEngineer.fullyLoadedInrPerHr",
+  "verdict": "confirmed",
+  "pageValue": "₹530,000/yr (wage input)",
+  "quote": "The average salary for a Process Engineer is ₹530,000 in 2026",
+  "url": "https://www.payscale.com/research/IN/Job=Process_Engineer/Salary/2a531e0b/Mid-Career-Pune-Manufacturing-Process-Engineering",
+  "notes": "Statutory build-up re-done and correct: basic 22,500; PF 1,950 (capped); bonus 0 (basic > 21,000); gratuity 1,082; 48,032 x 12 = 576,387 / 2,264 = 254.6."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 52,
+  "key": "energy.electricity.tamilnadu.allInInrPerKwh",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "The Tamil Nadu Electricity Regulatory Commission (TNERC) has increased the retail supply tariff for commercial and industrial consumers by approximately 3.16%.",
+  "url": "https://mercomindia.com/tamil-nadu-hikes-fy-2026-electricity-tariffs-by-3-16",
+  "notes": "Mercom article is paywalled: only the lead paragraph is visible; 7.50 INR/kWh and 608 INR/kVA/month are not shown. Arithmetic correct: 465 = 0.65 x 0.98 x 730; 7.50 + 608/465 = 8.81 (load factor 0.65 and PF 0.98 are assumptions)."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 58,
+  "key": "energy.electricity.haryana.allInInrPerKwh",
+  "verdict": "confirmed",
+  "pageValue": "6.95 INR/kVAh; 290 INR/kVA/month",
+  "quote": "the rate has been revised in the category of supply at 11 kVAh from Rs 6.65 per kVAh … to Rs 6.95 per kVAh. Besides, the fixed charge … revised upward from Rs 165 per kva … per month to Rs 290 per kva per month",
+  "url": "https://www.tribuneindia.com/news/haryana/power-shock-consumers-to-pay-30-paise-more-per-unit",
+  "notes": "Both on the page, but the article is dated 3 Apr 2025 (HERC FY2025-26 order) while the item says FY2026-27 - a FY2026-27 order may have changed them. Arithmetic: 6.95/0.98 + 290/465 = 7.092 + 0.624 = 7.72 (correct)."
+ },
+ {
+  "file": "india-2026-10/research/labour-energy.json",
+  "i": 63,
+  "key": "energy.gas.industrialPNG.inrPerKwh",
+  "verdict": "confirmed",
+  "pageValue": "Rs 44.68 per scm (Morbi, from 4 Jul 2024)",
+  "quote": "Gujarat Gas Limited has increased the price of industrial piped natural gas (PNG) supply by Rs 2 per standard cubic meters (scm) to Rs 44.68 per scm in Morbi, Gujarat with effect from July 4, 2024.",
+  "url": "https://indianinfrastructure.com/2024/07/05/gujarat-gas-increases-industrial-png-price-in-morbi-gujarat/",
+  "notes": "Figure confirmed but it is 27 months old and for Morbi (ceramics cluster, not one of the four costing clusters). 44.68 / 11.63 = 3.84 at an assumed 10,000 kcal/SCM GCV; at 8,600 kcal it is 4.47 (+16%) - the GCV choice matters."
+ },
+ {
+  "file": "india-2026-10/research/machines.json",
+  "i": 0,
+  "key": "capex.vmc3.domestic",
+  "verdict": "confirmed",
+  "pageValue": "~Rs 34.56 lakh per machine (Q1 FY27)",
+  "quote": "Blended realization per machine was ~Rs.34.56 lakhs in Q1 FY27, nearly flat versus Rs.34.41 lakhs in Q1 FY26",
+  "url": "https://compoundingai.in/market-news/jyoticnc-q1-fy27-earnings-call",
+  "notes": "On the page. Caveat: blended across Jyotis range INCLUDING its Huron (France) high-end subsidiary, so an upper-side proxy for a standard 3-axis VMC, as the research says."
+ },
+ {
+  "file": "india-2026-10/research/machines.json",
+  "i": 28,
+  "key": "finance.rate",
+  "verdict": "confirmed",
+  "pageValue": "8.75% (BoB 1-year MCLR)",
+  "quote": "MCLR Tenors … One Year 8.75 8.75 (existing / w.e.f. 12th September 2026)",
+  "url": "https://nsearchives.nseindia.com/corporate/BANKBARODA_10092026170139_SEMCLR.pdf",
+  "notes": "PDF opened today (plain fetch had failed). Bank of Baroda MCLR review dated 10.09.2026, w.e.f. 12 Sep 2026: one-year 8.75%."
+ },
+ {
+  "file": "india-2026-10/research/machines.json",
+  "i": 37,
+  "key": "rent.fourClusterAverage",
+  "verdict": "derived-ok",
+  "pageValue": "25.05",
+  "quote": "",
+  "url": "",
+  "notes": "(28.7 + 25.7 + 23.5 + 22.3)/4 = 25.05; x 12 = 300.6/sq ft/yr; x 10.764 = 3,235.7/m2/yr (correct). Inputs are research items rent.pune / chennai / bengaluru / ncr (not in this worklist); mixed city-average and prime bases, as the research states."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 7,
+  "key": "ferrous.extra.flat.hrpo_over_hrc",
+  "verdict": "confirmed",
+  "pageValue": "HRPO 2.0x1250x2500 Mumbai 65,200/MT (labelled Oct-26); same page HR coil E250 2.0 mm Mumbai 56,550/MT",
+  "quote": "Mumbai Flats-HRPO Sheet - Thick: 2.0 Wid: 1250 Len: 2500 Dia: NA 65200/MT Oct-26 JSW / TATA … Mumbai Flats-HR Coil E250 A Thick: 2.0 Wid: 1250 Len: Coil Dia: NA 56550/MT Oct-26",
+  "url": "https://www.tatanexarc.com/steel/steel-prices-in-india/",
+  "notes": "The 65,200 is on the page (now dated Oct-26, research says May 2026). The 58,500 BigMint trade HRC is from another source (BigMint, unreachable). LIKE-FOR-LIKE on this page (same city, gauge, date, ex-yard ex-GST): 65,200 - 56,550 = 8,650/t, i.e. the HRPO extra is 8.65 INR/kg, not 6.7 (-23%). Cross-source subtraction understates the extra."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 8,
+  "key": "ferrous.anchor.hrpo_derived",
+  "verdict": "differs",
+  "pageValue": "Mumbai HRPO 2.0 mm 65,200/MT ex-yard ex-GST (65.2 INR/kg)",
+  "quote": "Mumbai Flats-HRPO Sheet - Thick: 2.0 Wid: 1250 Len: 2500 Dia: NA 65200/MT Oct-26 JSW / TATA … Price: Ex- yard GST, Packaging, Loading, Freight charges are not included.",
+  "url": "https://www.tatanexarc.com/steel/steel-prices-in-india/",
+  "notes": "Arithmetic 64.48 + 6.7 = 71.18 is right, but it adds a TRADE spread to a JPC 4-metro RETAIL HR anchor. The cited page quotes HRPO itself at 65.2 INR/kg ex-GST - the derived 71.18 is 9.2% above the pages own HRPO price. With the pages like-for-like spread (8.65) on the JPC anchor it would be 73.13. Basis inconsistency, not a misread."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 9,
+  "key": "ferrous.extra.flat.automotive_grades",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "JSW Steel … and Tata Iron and Steel Company (Tisco) have roughly 15-20 percent of the sales skewed towards auto contracts.",
+  "url": "https://www.hellenicshippingnews.com/explained-steel-firms-renegotiating-auto-contracts-and-the-impact-on-stocks-consumers/",
+  "notes": "Value null (no Indian automotive grade extras found). The cited page is a March 2022 article; it supports only the 15-20% auto-contract share context, no price."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 12,
+  "key": "ferrous.anchor.en8_c45_round_bar_black",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/intel/detail/india-alloy-steel-round-bar-prices-remain-stable-w-o-w-36412",
+  "notes": "bigmint.co: 403 to headless Chromium; host not resolvable for WebFetch. EN-8/C45 round bar 72,750 not checkable (and dated 22 Apr 2026 - six months old)."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 14,
+  "key": "ferrous.anchor.ss316_hrc_mumbai",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/insights/detail/india-stainless-steel-finished-prices-ease-w-o-w-on-weak-demand-softening-nickel-prices-765276",
+  "notes": "bigmint.co 403. SS 316 HRC 395,000 not checkable. Context: the Nexizo page (item ss304_crc) shows 316L HRC Delhi 4,23,000 updated 01/10/2026."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 15,
+  "key": "ferrous.anchor.ss316l_black_round_bar_mumbai",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/insights/detail/india-stainless-steel-finished-prices-ease-w-o-w-on-weak-demand-softening-nickel-prices-765276",
+  "notes": "bigmint.co 403. SS 316L black bar 340,000 not checkable."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 16,
+  "key": "ferrous.anchor.ss304_crc_narrow_mumbai",
+  "verdict": "differs",
+  "pageValue": "2,18,000 INR/MT (SS CRC 304 Narrow, Mumbai, updated 01/10/2026)",
+  "quote": "SS Cold Rolled Coils 304 Narrow Mumbai 2,18,000 01/10/2026",
+  "url": "https://nexizo.ai/stainless-steel-category",
+  "notes": "Page UPDATED: the 01/07/2026 2,15,000 row has been replaced by the 01/10/2026 2,18,000 row. 218.0 v 215.0 INR/kg (+1.4%)."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 22,
+  "key": "ferrous.anchor.pig_iron_foundry_grade",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/insights/detail/india-pig-iron-prices-rise-in-september-as-exports-input-costs-hurt-availability-796063",
+  "notes": "bigmint.co 403 to headless Chromium (plain fetch failed; WebFetch: host not resolvable). Ludhiana foundry pig iron 47,050 not checkable."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 24,
+  "key": "ferrous.anchor.scrap_cr_busheling_lowmn",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/insights/detail/india-foundry-scrap-market-remains-under-pressure-low-manganese-cr-busheling-sees-sharper-correction-758327",
+  "notes": "bigmint.co 403. Arithmetic correct: (43.0 + 37.4 + 39.0)/3 = 39.8 - but it averages prints from three months (Apr, Jun, Jul 2026) and three bases (market, two exw auctions)."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 34,
+  "key": "ferrous.charge.gjs500_7",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://matsc.ktu.lt/index.php/MatSc/article/view/26589/13665",
+  "notes": "matsc.ktu.lt article URL returns 404 (moved/removed); the mix source cannot be read. Arithmetic correct: Mix A (0.60 x 47.05 + 0.10 x 39.8)/0.70 = 46.01; Mix B (0.20 x 47.05 + 0.50 x 39.8)/0.70 = 41.87. Inputs (47.05, 39.8) are BigMint items, also unreachable."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 35,
+  "key": "ferrous.charge.gjl250",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/insights/detail/india-pig-iron-prices-rise-in-september-as-exports-input-costs-hurt-availability-796063",
+  "notes": "bigmint.co 403. Mix is a stated CostVision assumption; arithmetic correct: (0.40 x 39.8 + 0.20 x 47.05)/0.60 = 42.22; + 0.005 x (95.1 - 42.22) + 0.003 x (79.2 - 42.22) = 42.59 -> 42.6."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 36,
+  "key": "ferrous.charge.wcb_gs_c25",
+  "verdict": "confirmed",
+  "pageValue": "INR 36,500/t (Alang HMS 80:20, 5 Sep 2026)",
+  "quote": "Ship-breaking melting scrap (HMS 80:20) prices in Alang, Gujarat, remained stable d-o-d at INR 36,500/t ($387/t) ex-yard on 5 September 2026.",
+  "url": "https://www.mysteel.net/news/5139931-india-alang-melting-scrap-prices-hold-steady-amid-subdued-post-festival-buying",
+  "notes": "Alang input on the page (the research date says Sep; page date 5 Sep). Chennai foundry plate 38.6 is BigMint (unreachable). Arithmetic correct: 37.55 + 0.01 x (79.2 - 37.55) + 0.005 x (95.1 - 37.55) = 38.25; addition rates are stated assumptions."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 38,
+  "key": "ferrous.charge.ni_resist_d2",
+  "verdict": "differs",
+  "pageValue": "MCX nickel 1,502.2 INR/kg (28 Oct 2026); Sep 2026 average 1,600.45",
+  "quote": "Nickel (MCX India) … daily 1,502.2 INR/kgs … In September 2026 the maximum reached 1617.70 INR/kg, the minimum was 1563.60 INR/kg and the average level stood at 1600.45 INR/kg.",
+  "url": "https://cbonds.com/indexes/221359/",
+  "notes": "Page UPDATED (research 1,625.5 on 17 Aug). Arithmetic correct at 1,625.5: 0.20 x 1625.5 + 0.0333 x 122.2 + 0.7667 x 46.01 = 364.4. At todays 1,502.2: 339.8 (-6.8%); at the Sep average 1,600.45: 359.4."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 39,
+  "key": "ferrous.charge.ni_resist_d5s",
+  "verdict": "differs",
+  "pageValue": "MCX nickel 1,502.2 INR/kg (28 Oct 2026)",
+  "quote": "Nickel (MCX India) … daily 1,502.2 INR/kgs",
+  "url": "https://cbonds.com/indexes/221359/",
+  "notes": "Page UPDATED. Arithmetic correct at 1,625.5: 0.35 x 1625.5 + 0.0333 x 122.2 + 0.0429 x 95.1 + 0.5738 x 46.01 = 603.5. At 1,502.2: 560.3 (-7.2%)."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 40,
+  "key": "ferrous.charge.hadfield_mn12",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/insights/detail/weekly-round-up-indian-ferro-alloys-prices-witness-mixed-trends-w-o-w-764117",
+  "notes": "bigmint.co 403 (FeMn 79.2 not checkable). Arithmetic correct: 0.1714 x 79.2 + 0.8286 x 37.55 = 13.58 + 31.11 = 44.7."
+ },
+ {
+  "file": "india-2026-10/research/materials-ferrous.json",
+  "i": 41,
+  "key": "ferrous.charge.hicr_white_iron",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.bigmint.co/insights/detail/india-ferro-chrome-prices-rise-slightly-w-o-w-as-sellers-quote-firm-offers-759134",
+  "notes": "bigmint.co 403 (HC FeCr 122.2 not checkable). Arithmetic correct: 0.3833 x 122.2 + 0.6167 x 42.22 = 46.84 + 26.04 = 72.9."
+ },
+ {
+  "file": "india-2026-10/research/materials-nonferrous.json",
+  "i": 11,
+  "key": "nonferrous.anchor.aluminium.billet6063.premiumOverLme3m",
+  "verdict": "confirmed",
+  "pageValue": "billet adder 17,600 INR/t = 3,90,850 (AA6063 7-9\") - 3,73,250 (P1020) on 14 Aug 2026",
+  "quote": "Primary Aluminium Products' Price Ready Reckoner w.e.f. 14.08.2026 … P0610 /P1020/ EC Grade Ingot & Sow … 3,73,250 … Billets (AA6063) Dia 7\", 8\" & 9\" … 3,90,850",
+  "url": "https://www.hindalco.com/Upload/PDF/primary-ready-reckoner-14-august-2026.pdf",
+  "notes": "PDF opened today (plain fetch had failed). 390,850 - 373,250 = 17,600 (confirmed). The Oct P1020 352,477 is a separate derivation (not on this page). Arithmetic: (352,477 + 17,600)/96.79 - 3,114 = 709.5 -> 710 (correct). Note Hindalco P1020 was 373,250 in Aug; the derived Oct P1020 is 5.6% lower."
+ },
+ {
+  "file": "india-2026-10/research/materials-nonferrous.json",
+  "i": 18,
+  "key": "nonferrous.anchor.copper.oct2026Derived",
+  "verdict": "confirmed",
+  "pageValue": "USD 6.49/lb (2 Oct 2026)",
+  "quote": "Copper traded at \\$6.49 USD/Lbs on October 2, 2026, up 0.15% from the previous trading day",
+  "url": "https://www.alpha-maven.com/story/venture-capital/commodity-update-copper-sourcebenchmarkmineralscom",
+  "notes": "6.49 x 2,204.62 x 96.79 / 1000 = 1,384.9 -> 1,385 (correct). Note the India files use three different INR/USD rates (96.04 ferrous, 96.72 polymer, 96.79 non-ferrous)."
+ },
+ {
+  "file": "india-2026-10/research/materials-nonferrous.json",
+  "i": 27,
+  "key": "nonferrous.check.AB2_CuAl10Ni5Fe5.metalContent",
+  "verdict": "differs",
+  "pageValue": "LME nickel (IMF monthly) 16,323.82 USD/t (31/08/2026); 2026 average 16,558.82",
+  "quote": "Nickel, LME spot price (IMF) … monthly 16,323.82 USD/T … In 2026 the maximum reached 18879.23 USD/ton, the minimum was 14670.77 USD/ton and the average level stood at 16558.82 USD/ton.",
+  "url": "https://cbonds.com/indexes/181085/",
+  "notes": "16,790 USD/t is not on the page; the latest value shown is 16,323.82 (Aug 2026). Effect is small (Ni is 5%): 0.80 x 1385 + 0.05 x 1580.0 + 0.10 x 352.5 = 1,222.3 v 1,224.5 (-0.2%). Research arithmetic gives 1,224.5, printed as 1,225.0."
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 3,
+  "key": "polymer.anchor.pp.india_index.2026-09",
+  "verdict": "confirmed",
+  "pageValue": "India PP 1.32 USD/kg (Sep 2026, +11.9%)",
+  "quote": "Polypropylene Prices September 2026 Region Price (USD/Kg) Latest Movement … India 1.32 11.9% ↑ Up",
+  "url": "https://www.imarcgroup.com/polypropylene-pricing-report",
+  "notes": "1.32 x 96.72 = 127.7 (correct)."
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.anchor.pvc_k67.delhi_exgodown.2026-09-25",
+  "verdict": "differs",
+  "pageValue": "CGPC / DCM PVC K67 ₹105.50; Hygain PVC K67 ₹104.50 (30 Oct 2026)",
+  "quote": "CGPC PVC K67 ₹105.50 · DCM PVC K67 ₹105.50 · Hygain PVC K67 HYGAIN ₹104.50 · PVC K67 CHINA SG5 ₹104.50",
+  "url": "https://credcosourcing.com/prices",
+  "notes": "Live indicative ex-godown page, UPDATED since 25 Sep (108.00 / 96.50 then). Generic K67 -2.3%; Hygain +8.3%. Not a misread."
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 7,
+  "key": "polymer.anchor.pet_bottle.india_index.2026-09",
+  "verdict": "confirmed",
+  "pageValue": "India USD 1.08/kg, Steady (-0.9%)",
+  "quote": "India \\$1.08 Steady (-0.9%) Balanced domestic supply meeting steady bottling demand",
+  "url": "https://www.polyestertime.com/pet-bottle-grade-chip-price-trends/",
+  "notes": "1.08 x 96.72 = 104.46 -> 104.5 (correct)."
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.anchor.pbt.india_index.2026-09",
+  "verdict": "differs",
+  "pageValue": "India US$2.73/KG, 4.6% up (September 2026)",
+  "quote": "Polybutylene terephthalate (PBT) price September 2026 … India:US\\$2.73/KG, 4.6% up",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+  "notes": "The page labels US$2.73 (+4.6%) as the September 2026 India price; research has US$2.57 (+1.2%) for the same month - either the page has been revised/rolled or the research read another month. 2.73 x 96.72 = 264.0 INR/kg, +6.2% v 248.6."
+ },
+ {
+  "file": "india-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.import_duty.chapter39",
+  "verdict": "confirmed",
+  "pageValue": "BCD nil on 40+ items till 30 Jun 2026 (Notification 12/2026-Customs)",
+  "quote": "CBIC has reduced import duty to nil on over 40 chemicals and plastic raw materials till June 30, 2026 … Under Notification No. 12/2026-Customs, the government has reduced the basic customs duty to Nil on over 40 imported items.",
+  "url": "https://www.taxscan.in/top-stories/cbic-slashes-import-duty-on-40-chemicals-plastics-raw-materials-1444480",
+  "notes": "Notification number and expiry confirmed on this news page (not the official gazette text; the item list naming PP/PE/PVC etc. was not checked). The standard 7.5-10% Chapter 39 BCD is NOT on this page and no extension check is possible here."
+ }
+]

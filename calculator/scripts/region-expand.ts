@@ -76,7 +76,7 @@ const entries: string[] = [], names: string[] = [], surf: string[] = [], billet:
 const regSrc = readFileSync(REG, 'utf8'), alSrc = readFileSync(AL, 'utf8');
 const booked = (code: string) => existsSync(resolve(ROOT, `src/engine/country-books/${code.toLowerCase()}.ts`));
 const keptEntry = (code: string, name: string): string => {
-  const m = new RegExp(`(?:  \\/\\/ ${name}:[^\\n]*\\n)*  ${code}: \\{\\n    name: '${name}',[\\s\\S]*?\\n  \\},`).exec(regSrc);
+  const m = new RegExp(`(?:  \\/\\/ (?!⟪)[^\\n]*\\n)*  ${code}: \\{\\n    name: '${name}',[\\s\\S]*?\\n  \\},`).exec(regSrc);
   if (!m) throw new Error(`${code}: booked, but its REGIONAL_DATA entry was not found`);
   return m[0];
 };

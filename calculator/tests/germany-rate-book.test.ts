@@ -30,14 +30,15 @@ describe('labour: IG Metall ERA pay, 2026 employer contributions, 2 × 8 h', () 
   it('a Gießereimechaniker is a skilled ERA grade — foundry is no longer below semi-skilled', () => {
     expect(REGIONAL_DATA.DE.labour.foundry).toBeGreaterThan(REGIONAL_DATA.DE.labour.semiskilled);
   });
-  it('Austria still follows Germany by the Eurostat ratio (it is generated from the German table)', () => {
-    expect(REGIONAL_DATA.AT.labour.skilled / REGIONAL_DATA.DE.labour.skilled).toBeCloseTo(44.5 / 43.4, 3);
+  it('Austria has its OWN rate book (world round, 30 Oct 2026) — it no longer follows Germany by a ratio', () => {
+    expect(COUNTRY_BOOKS.AT).toBeDefined();
+    expect(REGIONAL_DATA.AT.labour.skilled / REGIONAL_DATA.DE.labour.skilled).not.toBeCloseTo(44.5 / 43.4, 3);
   });
 });
 
 describe('energy', () => {
-  it('electricity at the BDEW 2026 industry price €0.172/kWh (was €0.232); gas at the Destatis non-household average', () => {
-    expect(eur(REGIONAL_DATA.DE.energy.electricityPerKwh)).toBeCloseTo(0.172, 2);
+  it('electricity at the BDEW industry price €0.179/kWh (October 2026 edition — the page re-check corrected €0.172); gas at the Destatis non-household average', () => {
+    expect(eur(REGIONAL_DATA.DE.energy.electricityPerKwh)).toBeCloseTo(0.179, 2);
     expect(eur(REGIONAL_DATA.DE.energy.gasPerKwh)).toBeCloseTo(0.0629, 2);
     const e = DEFAULT_RATE_LIBRARY.energy.find(x => x.id === 'energy-de')!;
     expect(e.electricityPerKwh).toBe(REGIONAL_DATA.DE.energy.electricityPerKwh);
@@ -74,8 +75,9 @@ describe('machines: the 2 × 8 h operating model; continuous lines on three shif
 
 describe('materials: European market anchors in EUR', () => {
   it('CR sheet at the NW Europe price; HRC; the note says €', () => {
-    expect(mat('mat-dc01').pricePerKg * FX).toBeCloseTo(0.865, 3);
-    expect(mat('mat-dc01').sourceNote).toMatch(/Germany book .*€0\.865\/kg/);
+    // the page re-check (30 Oct 2026): the cited page now shows NW Europe CRC €855/t (19–23 Oct)
+    expect(mat('mat-dc01').pricePerKg * FX).toBeCloseTo(0.855, 3);
+    expect(mat('mat-dc01').sourceNote).toMatch(/Germany book .*€0\.855\/kg/);
   });
   it('a casting grade is the metal CHARGE — never below the scrap it is melted from (the UK × factor sat below it)', () => {
     const scrap = 0.275;

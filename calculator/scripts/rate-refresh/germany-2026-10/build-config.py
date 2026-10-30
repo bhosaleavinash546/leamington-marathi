@@ -27,7 +27,9 @@ for f in ['labour-energy', 'machines', 'materials-ferrous', 'materials-nonferrou
         R[it['key']] = it
 # ladder bases are the FROZEN UK snapshot (the generator reads the same file)
 UK = {m['id']: m['gbpPerKg'] for m in json.load(open(os.path.join(HERE, '..', 'uk-2026-10', 'current-uk-book.json')))['materials']}
-FX = 1.165   # £1 = €1.165 (REGIONAL_DATA.DE.fxToGBP), asserted by the generator; $1 = €0.880 in the research
+# £1 = €1.1965: the ECB reference rate of 29 Oct 2026 (€1 = £0.83578) — the ONE euro rate every euro country's book uses
+# (world round, 30 Oct 2026; the book was first written at €1.165 on 12 Oct). $1 = €0.880 in the research.
+FX = 1.1965
 
 def src(key):
     it = R[key]
@@ -229,10 +231,11 @@ machines = {
 # Al extrusion billet = LME + the DDP North Germany 6063 billet premium, over the library's LME (al-extrusion-data AL_MARKET)
 LME = 3240
 prem_usd = round((1070 + 1135) / 2)
-cfg = {'asOf': '2026-10-12', 'label': 'Germany rate book — 4-cluster average (Baden-Württemberg, Bavaria, Lower Saxony, North Rhine-Westphalia), 2 × 8 h',
+cfg = {'asOf': '2026-10-30', 'label': 'Germany rate book — 4-cluster average (Baden-Württemberg, Bavaria, Lower Saxony, North Rhine-Westphalia), 2 × 8 h',
        'region': 'DE', 'currency': 'EUR', 'currencySymbol': '€', 'dir': 'scripts/rate-refresh/germany-2026-10',
        'snapshot': 'scripts/rate-refresh/germany-2026-10/current-germany-book.json', 'bookFile': 'src/engine/country-books/de.ts', 'bookConst': 'GERMANY_BOOK',
-       'fxPerGbp': FX, 'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held,
+       'fxPerGbp': FX, 'writeFx': True, 'fxBasis': 'ECB euro reference rates 2026-10-29: €1 = £0.83578 → £1 = €1.1965 (the one euro rate of the world round)',
+       'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held,
        'alBilletPremiumUsdPerT': {'value': prem_usd, 'current': 1100,
                                   'basis': f'6063 billet premium DDP North Germany (Ruhr) $1,070–1,135/t (Fastmarkets, 28 Aug 2026 — the latest public print) — mid-point ${prem_usd}/t over the library LME ${LME}',
                                   **src('nonferrous.al.billet6063_premium')}}

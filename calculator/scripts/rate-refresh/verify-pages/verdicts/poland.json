@@ -1,0 +1,1122 @@
+[
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 27,
+  "key": "labour.loadingIncluded",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "Description of the loading, no URL. Employer rate 21.98% = emerytalne 9.76 + rentowe 6.50 + wypadkowe 1.67 + FP 2.45 + FGŚP 0.10 + PPK 1.50 — sums correctly. Night allowance 5.744 PLN/h = 20% × 4,806 PLN (2026 minimum wage) ÷ ~167.3 h/month — consistent, but the statutory texts were not opened. Every fully-loaded labour item reproduces with this method."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 28,
+  "key": "labour.loadingNotIncluded",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "List of exclusions, no figure to recompute. Note: the SMT ad (item labour.electronics) states pay = base + discretionary bonus + shift allowance, so the 'shift allowances above statutory' exclusion is real money the book omits."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 29,
+  "key": "labour.skilled.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 7,340 PLN could not be checked anywhere; 7,340 × 1.056 × 0.9838 = 7,625 matches the value 7,625."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 30,
+  "key": "labour.skilled.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 31,
+  "key": "labour.semiskilled.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-maszyn-i-urzadzen-produkcyjnych",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 6,780 PLN could not be checked anywhere; 6,780 × 1.056 × 0.9838 = 7,044 matches the value 7,044."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 32,
+  "key": "labour.semiskilled.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-maszyn-i-urzadzen-produkcyjnych",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 33,
+  "key": "labour.foundry.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 6,220 PLN could not be checked anywhere; 6,220 × 1.056 × 0.9838 = 6,462 matches the value 6,462."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 34,
+  "key": "labour.foundry.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 35,
+  "key": "labour.electronics.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": 6250,
+  "quote": "Operator/ka maszyn SMT ... ogłoszenie wygasło 3 miesiące temu 6 000 – 6 500 zł brutto / mies. | umowa o pracę ... System wynagrodzeń: stała podstawa wynagrodzenia + premia uznaniowa + dodatek zmianowy",
+  "url": "https://www.pracuj.pl/praca/operator-ka-maszyn-smt-krakow-christo-botewa-6,oferta,1004966189",
+  "notes": "Plain fetch 403; opened in a headless browser (rendered text). Ad has expired (3 months ago). The range is the base rate: the ad adds a discretionary bonus and a shift allowance, so 6,250 understates total pay; one employer's ad, not a survey."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 36,
+  "key": "labour.electronics.fullyLoadedPlnPerHr",
+  "verdict": "confirmed",
+  "pageValue": 6250,
+  "quote": "Operator/ka maszyn SMT ... ogłoszenie wygasło 3 miesiące temu 6 000 – 6 500 zł brutto / mies. | umowa o pracę ... System wynagrodzeń: stała podstawa wynagrodzenia + premia uznaniowa + dodatek zmianowy",
+  "url": "https://www.pracuj.pl/praca/operator-ka-maszyn-smt-krakow-christo-botewa-6,oferta,1004966189",
+  "notes": "Source figure (6,000–6,500 zł gross/month) confirmed in the rendered ad. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). Same caveat: base pay only (bonus + shift allowance on top)."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 37,
+  "key": "labour.inspector.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-kontroler-jakosci",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 6,800 PLN could not be checked anywhere; 6,800 × 1.056 × 0.9838 = 7,064 matches the value 7,064."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 38,
+  "key": "labour.inspector.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-kontroler-jakosci",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 39,
+  "key": "labour.technician.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-technik-utrzymania-ruchu",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 8,070 PLN could not be checked anywhere; 8,070 × 1.056 × 0.9838 = 8,384 matches the value 8,384."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 40,
+  "key": "labour.technician.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-technik-utrzymania-ruchu",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 41,
+  "key": "labour.supervisor.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-mistrz-zmiany",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 8,570 PLN could not be checked anywhere; 8,570 × 1.056 × 0.9838 = 8,903 matches the value 8,903."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 42,
+  "key": "labour.supervisor.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-mistrz-zmiany",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 43,
+  "key": "labour.forge.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-pras",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 6,610 PLN could not be checked anywhere; 6,610 × 1.056 × 0.9838 = 6,867 matches the value 6,867."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 44,
+  "key": "labour.forge.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-pras",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 45,
+  "key": "labour.furnace.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 6,220 PLN could not be checked anywhere; 6,220 × 1.056 × 0.9838 = 6,462 matches the value 6,462."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 46,
+  "key": "labour.furnace.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-formierz",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 47,
+  "key": "labour.blow.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 6,050 PLN could not be checked anywhere; 6,050 × 1.056 × 0.9838 = 6,285 matches the value 6,285."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 48,
+  "key": "labour.blow.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 49,
+  "key": "labour.roto.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 6,050 PLN could not be checked anywhere; 6,050 × 1.056 × 0.9838 = 6,285 matches the value 6,285."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 50,
+  "key": "labour.roto.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 51,
+  "key": "labour.thermoform.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 6,050 PLN could not be checked anywhere; 6,050 × 1.056 × 0.9838 = 6,285 matches the value 6,285."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 52,
+  "key": "labour.thermoform.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-wtryskarki",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 53,
+  "key": "labour.trimRouter.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 7,340 PLN could not be checked anywhere; 7,340 × 1.056 × 0.9838 = 7,625 matches the value 7,625."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 54,
+  "key": "labour.trimRouter.fullyLoadedPlnPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-operator-cnc",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 55,
+  "key": "labour.engineer.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-inzynier-procesu",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. The national median 9,750 PLN could not be checked anywhere; 9,750 × 1.056 × 0.9838 = 10,129 matches the value 10,129."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 56,
+  "key": "labour.engineer.fullyLoadedPlnPerHrStd",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://wynagrodzenia.pl/moja-placa/ile-zarabia-inzynier-procesu",
+  "notes": "Page opens but Sedlak & Sedlak discontinued the public OBW survey: 'Sedlak & Sedlak nie prowadzi już internetowego Ogólnopolskiego Badania Wynagrodzeń (OBW)'; the page now shows no salary figures (plain fetch and rendered text). Wayback archive refused by the proxy. Arithmetic of the build-up re-done from the monthly figure and reproduces the value to the cent (method: sick-day pay removed from the ZUS base, 21.98% on-cost, 1,720 h). The monthly input itself is unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 57,
+  "key": "energy.electricity.energyComponent",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://tge.pl/pub/TGE/komunikaty/2026/01/2026.01.07_podsumowanie dzialalnosci tge w 2025 roku.pdf",
+  "notes": "tge.pl refuses every request (curl: 'Empty reply from server', also with --http1.1; root page too). The headless browser opened the PDF URL (HTTP 200) but a PDF viewer gives no text. 430.50 PLN/MWh unverified."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 59,
+  "key": "energy.electricity.capacityFee",
+  "verdict": "differs",
+  "pageValue": 0.137,
+  "quote": "0,2194 zł/kWh – w odniesieniu do odbiorców nieryczałtowych ... wybranymi godzinami doby ... jest piętnaście kolejnych godzin każdej doby przypadającej na dzień roboczy ... pierwsza z tych godzin każdego dnia rozpoczyna się o 7:00, a piętnasta – o 21:00.",
+  "url": "https://www.gramwzielone.pl/?p=20339842",
+  "notes": "The rate 0.2194 PLN/kWh IS on the page. The window is MISREAD: it is FIFTEEN hours (the 15th hour starts at 21:00, i.e. 07:00–22:00), not 14 (07:00–21:00). Share = 15/24 = 0.625; 0.2194 × 0.625 = 0.1371 PLN/kWh, not 0.128 (research misread, page dated 4 Nov 2025, not changed since)."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 60,
+  "key": "energy.electricity.networkCharges",
+  "verdict": "confirmed",
+  "pageValue": 0.1286,
+  "quote": "końcowa cena energii elektrycznej dla przemysłu energochłonnego ... wysokiej ceny energii elektrycznej (128,8 euro/MWh) oraz jednej z najwyższych cen za jej przesył i dystrybucję (29,4 euro/MWh). Reszta opłat to 8,6 euro/MWh, w skład których wchodzi m.in. opłata mocowa",
+  "url": "https://www.forum-energii.eu/download/pobierz/rachunek-za-konkurencyjnosc",
+  "notes": "Plain fetch of the PDF now works (HTTP 200). 29.4 €/MWh × 4.374 = 128.6 PLN/MWh. Caveat: a 2024 figure for ENERGY-INTENSIVE industry (which pays reduced network/other charges), used as a proxy for a general engineering plant."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 65,
+  "key": "energy.electricity.allIn",
+  "verdict": "derived-wrong",
+  "pageValue": 0.712,
+  "quote": null,
+  "url": null,
+  "notes": "Arithmetic as written is right (0.4305 + 0.128 + 0.1286 + 0.0073 + 0.003 + 0.005 = 0.7024), but its capacity-fee input is misread (item energy.electricity.capacityFee: 15-hour window → 0.1371). Corrected: 0.4305 + 0.1371 + 0.1286 + 0.0073 + 0.003 + 0.005 = 0.7115 PLN/kWh. Energy component (TGE) unreachable; OZE 0.0073 and cogeneration 0.003 are not in any item and were not checked; excise 5 PLN/MWh is the statutory rate."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 66,
+  "key": "energy.gas.commodity",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://tge.pl/pub/TGE/komunikaty/2026/05/2026.05.06_podsumowanie dzialalnosci tge w kwietniu 2026.pdf",
+  "notes": "tge.pl refuses every request (curl: 'Empty reply from server'). March 234.05 / April 213.25 PLN/MWh unverified; (234.05 + 213.25)/2 = 223.65 is arithmetically right."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 67,
+  "key": "energy.gas.distribution",
+  "verdict": "confirmed",
+  "pageValue": 0.0251,
+  "quote": "W-5.1_GD ... 0,565 0,695 2,416 2,972 | W-6A.1_GD ... 0,684 0,841 2,405 2,958 | W-5.1_TA ... 0,505 0,621 2,605 3,204 (stawka opłaty zmiennej, gr/kWh netto/brutto)",
+  "url": "https://pgnig.pl/documents/10184/45904/Informacja+w+zakresie+stawek+op%C5%82at+obowi%C4%85zuj%C4%85cych+w+okresie+I-VI+2024+r.+w+rozliczeniach+z+odbiorcami+uprawnionymi+do+ochrony+taryfowej+przy%C5%82%C4%85czonych+do+sieci+PSG/6eb476a2-88d4-4672-a10f-3e7cac239245",
+  "notes": "PDF opens (HTTP 200). Figures confirmed. Caveat: this table is for customers ENTITLED TO TARIFF PROTECTION (households etc.), who in H1 2024 were billed at the rates in force on 31 Dec 2022 — it is not the current industrial PSG tariff. W-5.1/W-6A.1 also carry a capacity charge (0.505–0.684 gr/(kWh/h) per h) that the all-in leaves out. (2.416 + 2.605)/2 = 2.51 gr/kWh."
+ },
+ {
+  "file": "poland-2026-10/research/labour-energy.json",
+  "i": 68,
+  "key": "energy.gas.allIn",
+  "verdict": "derived-ok",
+  "pageValue": 0.249,
+  "quote": null,
+  "url": null,
+  "notes": "0.2237 + 0.0251 = 0.2488 → 0.249. Inputs: commodity page unreachable (TGE); distribution confirmed but from the tariff-protected (2022-rate) table, and the capacity charge is excluded."
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 0,
+  "key": "capex.mach-vmc3",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html",
+  "notes": "Plain fetch HTTP 403 and the rendered pass hit a Cloudflare bot check ('Performing security verification'); not bypassed. EUR 64,995 unverified."
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 1,
+  "key": "capex.mach-haas-vf2",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "Haas VF-2 List US$70,995 Specs verified 2026-10-02 · haascnc.com",
+  "url": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html",
+  "notes": "Plain fetch HTTP 403 and the rendered pass hit a Cloudflare bot check ('Performing security verification'); not bypassed. The book's figure (EUR 64,995 × 4.374) is unverified. The cross-check on machinetoolindex.com IS confirmed: 'Haas VF-2 List US$70,995'."
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 2,
+  "key": "capex.mach-lathe-cnc",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.haascnc.com/machines/lathes/st/models/standard/st-20.html",
+  "notes": "Plain fetch HTTP 403 and the rendered pass hit a Cloudflare bot check ('Performing security verification'); not bypassed. No figure claimed (null) — nothing to verify."
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 3,
+  "key": "capex.mach-vmc5",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "notes": "Plain fetch HTTP 403 and the rendered pass hit a Cloudflare bot check ('Performing security verification'); not bypassed. US$119,995 unverified (research itself calls it 'an older Haas article quoted by the search')."
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 4,
+  "key": "capex.mach-haas-umc500",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "notes": "Plain fetch HTTP 403 and the rendered pass hit a Cloudflare bot check ('Performing security verification'); not bypassed. Same evidence as capex.mach-vmc5."
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 10,
+  "key": "capex.imm-200t",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure (null): the research records that nothing was found, so there is nothing to recompute; listed derived-ok only because no-url items allow no other verdict."
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 15,
+  "key": "capex.robot-mig-cell",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure (null): the research records that nothing was found, so there is nothing to recompute; listed derived-ok only because no-url items allow no other verdict."
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 18,
+  "key": "finance.machineryLoan",
+  "verdict": "differs",
+  "pageValue": 7.82,
+  "quote": "Produkty kredytowe dla Klientów Instytucjonalnych ... Kredyt inwestycyjny ... 8,50% / WIBOR 3M + marża 4,00 p.p. ... do 240 miesięcy — PRODUKTY WYCOFANE Z OFERTY, Obowiązuje do umów zawartych do dnia 04.11.2018 r.",
+  "url": "https://bsr.krakow.pl/assets/public/dokumenty/oprocentowanie/77-produkt-kredytowe-wycofane-z-oferty-oddzial-w-debicy-od-5-marca-2026.pdf",
+  "notes": "PDF opens (HTTP 200, 'Aktualizacja na dzień 05.03.2026'). No 'Kredyt inwestycyjny Unia Biznes' and no 'WIBOR 3M + 3,90 – 4,90 p.p.' anywhere on it. The only institutional investment loan is WIBOR 3M + 4.00 pp (≈7.82% at the research's WIBOR 3.82%) or 8.50%, and it is a WITHDRAWN product for contracts signed before 4 Nov 2018. WIBOR 3.82% is not on the page. Research cited the wrong document or misread it."
+ },
+ {
+  "file": "poland-2026-10/research/machines.json",
+  "i": 23,
+  "key": "rent.clusterAvg",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://ceo.com.pl/en/poland-warehouse-sector-rents-demand-and-regional-differences-56298/ ; https://mktgdocs.cbre.com/2299/afd5dde1-5a40-46be-a412-88753ce4fc8b-707339420/CBRE_Poland_Industrial_and_Log.pdf",
+  "notes": "ceo.com.pl: Cloudflare bot check (rendered) and HTTP 403 (plain). CBRE PDF (mktgdocs.cbre.com): HTTP 403. (4.600 + 4.325 + 4.825)/3 × 4.374 = 20.05 is arithmetically right; inputs unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 1,
+  "key": "ferrous.anchor.hrc.poland_distributor_St3S",
+  "verdict": "differs",
+  "pageValue": 3.559,
+  "quote": "Blacha GW St3S Tydzień Aktualna cena Poprzednia cena ... Cena minimalna 43 3 484 PLN 3 462 PLN ... Cena maksymalna 43 3 633 PLN 3 616 PLN",
+  "url": "https://www.wnp.pl/rynki/gielda-i-notowania/indeks-cen-stali-puds/",
+  "notes": "Page UPDATED since the research: it now shows week 43 (3,484–3,633 PLN/t, mid 3,558.5) and week 42 (3,462–3,616); week 39 (3,348–3,506) is no longer shown. +3.8% on the research value."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 2,
+  "key": "ferrous.anchor.crc",
+  "verdict": "differs",
+  "pageValue": 3.74,
+  "quote": "SteelRadar reports cold-rolled at 855 EUR/t and hot-dip galvanised at 830 EUR/t ex-works in Germany on 19 October",
+  "url": "https://www.tacto.ai/en/commodities/steel-price",
+  "notes": "Page UPDATED (26 Oct 2026); the 13 Sep Fastmarkets 850–880 EUR/t is no longer on it. Current CRC 855 EUR/t (SteelRadar, ex-works Germany, 19 Oct) × 4.374 = 3.740 PLN/kg. Page also gives HRC Northern Europe 748 €/t on 26.10.2026."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 4,
+  "key": "ferrous.anchor.pickled",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://gmk.center/en/news/the-global-hot-rolled-coil-market-remained-stable-in-july-against-a-backdrop-of-a-seasonal-lull/",
+  "notes": "No pickled/HRPO price on the page; consistent with the research's 'not found' (null)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 6,
+  "key": "ferrous.bar.C45",
+  "verdict": "confirmed",
+  "pageValue": 3.173,
+  "quote": "Pręt gładki C45 fi 24, długość: 6000 (paczka 2 tony) Cena za tonę: 3 173,44 PLN netto ... 6 346,89 zł za paczkę 2 tony Netto",
+  "url": "https://24metal.com/pl/prety-okragle-gladkie/419-pret-gladki-c45-fi-24-dlugosc-6000-paczka-2-tony.html",
+  "notes": "On the page ('Ostatnie sztuki w magazynie' — last items in stock). Sceptical note: a C45 bar at 3,173 PLN/t is BELOW the PUDS St3S sheet price (3,484–3,633 PLN/t week 43); one web-shop clearance listing is a weak basis for engineering-steel bar."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 12,
+  "key": "ferrous.stainless.alloy_surcharge_1.4301_oct2026",
+  "verdict": "confirmed",
+  "pageValue": 9.57,
+  "quote": "Alloy surcharges – Overview Grade Jun 2026 Jul 2026 Aug 2026 Sept 2026 Oct 2026 Nov 2026 ... 1.4301 €/t 2,358 2,346 2,228 2,235 2,188 2,193",
+  "url": "https://legierungszuschlag.info/en/",
+  "notes": "October 2026 = 2,188 €/t is in the overview table. Page now updated to November (2,193, 'Last update 2026/11/1')."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 13,
+  "key": "ferrous.stainless.316L_CR",
+  "verdict": "confirmed",
+  "pageValue": 18.48,
+  "quote": "Fastmarkets' monthly price assessment for stainless steel cold-rolled sheet, 2mm, grade 316 transaction domestic, delivered North Europe narrowed downward to €4,150-4,300 per tonne",
+  "url": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+  "notes": "Also on this page and used by the 430/409 derivations: 304 CR €2,740-2,800 (mid 2,770) and 304 surcharge €2,178-2,235 (mid 2,206.5) — both confirmed."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 14,
+  "key": "ferrous.stainless.430_CR",
+  "verdict": "differs",
+  "pageValue": 7.211,
+  "quote": "Grade Jun 2026 Jul 2026 Aug 2026 Sept 2026 Oct 2026 Nov 2026 ... 1.4016 €/t 1,088 1,101 1,101 1,092 1,085 1,122 ... 1.4034 €/t 992 1,002 999 991 985 1,022",
+  "url": "https://legierungszuschlag.info/en/",
+  "notes": "Research MISREAD the table: October 1.4016 (430) = 1,085 €/t, not 985 (985 is the 1.4034 row). Base 563.5 confirmed on the Eurometal page. Corrected: (1,085 + 563.5) × 4.374/1000 = 7.211 PLN/kg (+6.5%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 15,
+  "key": "ferrous.stainless.304_bar",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://legierungszuschlag.info/en/",
+  "notes": "Only alloy surcharges on the page (no 304 bar base/transaction price); consistent with the research's 'not found' (null)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 17,
+  "key": "ferrous.foundry.steel_scrap_heavy",
+  "verdict": "differs",
+  "pageValue": 1.232,
+  "quote": "In Germany, the price of E3 scrap fell by $6 over the month to $320/t on an Ex Works basis. ... in Germany and Austria, prices fell by €10–15/t",
+  "url": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "notes": "The page (August 2026) gives German E3 ex-works directly: $320/t (so July ≈ $326). $327/t on this page is the US East Coast HMS 1&2 80:20 price, not German E3. The research took 327 as July and subtracted the August €10–15 fall on top; the page's own August figure is 320 × 3.849 = 1,231.7 PLN/t = 1.232 PLN/kg (+2.3%). Research misread."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 18,
+  "key": "ferrous.foundry.pig_iron",
+  "verdict": "not-on-page",
+  "pageValue": 1.828,
+  "quote": "According to Kallanish, prices for Brazilian pig iron on FOB terms stabilised at $475/t in August",
+  "url": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+  "notes": "No 'exports to Italy 103 kt at USD 483/t' on this page. The page's figure is Brazilian pig iron FOB $475/t (Aug 2026) = 1.828 PLN/kg — FOB, so not the same basis as a delivered/customs value. Research's 483 may come from another GMK article."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.foundry.FeSi75",
+  "verdict": "confirmed",
+  "pageValue": 5.511,
+  "quote": "Argus last assessed prices at €1,240-1,280/t ddp NWE on 16 June, after holding rangebound for three weeks on sluggish spot trade.",
+  "url": "https://api.argusmedia.com/articles/2840817",
+  "notes": "Article dated 17 Jun 2026 (ferro-silicon; grade 75 not stated in the sentence)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 22,
+  "key": "ferrous.foundry.FeCr_HC",
+  "verdict": "confirmed",
+  "pageValue": 6.619,
+  "quote": "Samchrome FZE ... has confirmed 156 US cents per pound as the reference for the European Benchmark Ferrochrome Price for the third quarter of 2026.",
+  "url": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+  "notes": "1.56 × 2.20462 × 3.849 = 13.24 PLN/kg Cr; × 0.5 = 6.619 — arithmetic right (50% Cr basis is the research's assumption)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 23,
+  "key": "ferrous.charge.GJS-500-7",
+  "verdict": "not-on-page",
+  "pageValue": 1.718,
+  "quote": null,
+  "url": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+  "notes": "Engineering-assumption charge mix; the cited page does not carry the pig-iron input (USD 483) — it shows Brazilian FOB $475. Arithmetic as written reproduces 1.725. Re-done with the page figures (pig 1.828, German E3 scrap 1.232): 1.718 PLN/kg — immaterial."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 24,
+  "key": "ferrous.charge.GJL-250",
+  "verdict": "differs",
+  "pageValue": 1.543,
+  "quote": "In Germany, the price of E3 scrap fell by $6 over the month to $320/t on an Ex Works basis.",
+  "url": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "notes": "Charge arithmetic as written reproduces 1.525. Its scrap input differs on the cited page (German E3 $320/t → 1.232, not 1.204). Re-done: ((0.25×1.859 + 0.40×1.232)/0.65 + 0.007×5.511)/0.98 = 1.543 PLN/kg."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 25,
+  "key": "ferrous.charge.GS-C25",
+  "verdict": "differs",
+  "pageValue": 1.312,
+  "quote": "In Germany, the price of E3 scrap fell by $6 over the month to $320/t on an Ex Works basis.",
+  "url": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "notes": "Arithmetic as written reproduces 1.283. With the page's scrap figure: (1.232 + 0.005×5.511)/0.96 = 1.312 PLN/kg (+2.3%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-ferrous.json",
+  "i": 26,
+  "key": "ferrous.charge.CF8",
+  "verdict": "confirmed",
+  "pageValue": 5.635,
+  "quote": "In Europe, 304 scrap was heard at around US$1,420/t CIF Rotterdam and 316 at US$2,800–2,820/t.",
+  "url": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+  "notes": "US$1,420 × 3.849 = 5.466 PLN/kg; ÷ 0.97 = 5.635 — reproduces. 80/20 mix and 3% loss are engineering assumptions."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 0,
+  "key": "nonferrous.al.lme",
+  "verdict": "confirmed",
+  "pageValue": 12.5,
+  "quote": "LME aluminium cash bid slips to $3,248 as live warrants fall 4.5% on September 28",
+  "url": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346",
+  "notes": ""
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 1,
+  "key": "nonferrous.al.dutyPaidPremium",
+  "verdict": "confirmed",
+  "pageValue": 2.0,
+  "quote": "The rationale said “the premium was assessed at $510-530 per tonne on Tuesday September 15 ...” ... The published price is unaffected by this change.",
+  "url": "https://www.fastmarkets.com/insights/correction-to-rationale-of-aluminium-p1020a-premium-in-whs-dp-rotterdam-index/",
+  "notes": "Correction notice changed only wording ('widened upward'); the $510-530 assessment stands."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 3,
+  "key": "nonferrous.al.adc12",
+  "verdict": "confirmed",
+  "pageValue": 10.85,
+  "quote": "Aluminium pressure diecasting ingot DIN226/A380, delivered Europe traded slightly higher around €2,430-2,530 ($2,854-2,971) per tonne, up by €10",
+  "url": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+  "notes": "Article dated 26 Jan 2026 (prices of Fri 23 Jan) — stale, as the research says."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 5,
+  "key": "nonferrous.al.a356",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure (null): the research records that nothing was found, so there is nothing to recompute; listed derived-ok only because no-url items allow no other verdict."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 6,
+  "key": "nonferrous.al.billet6063_premium",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.fastmarkets.com/insights/final-decision-on-open-consultation-on-methodology-review-for-aluminium-extrusion-billet-premiums-ddp-italy-ddp-north-germany-ddp-spain-in-relation-to-cbam/",
+  "notes": "The page is the March 2025 methodology decision on CBAM in billet premiums; it carries no premium assessment (no 1,070-1,135 USD/t)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 7,
+  "key": "nonferrous.al.billet6063",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.alcircle.com/news/lme-aluminium-cash-bid-slips-to-3-248-as-live-warrants-fall-4-5-on-september-28-121346 ; https://www.fastmarkets.com/insights/final-decision-on-open-consultation-on-methodology-review-for-aluminium-extrusion-billet-premiums-ddp-italy-ddp-north-germany-ddp-spain-in-relation-to-cbam/",
+  "notes": "LME cash 3,248 confirmed (AlCircle); the billet premium 1,102.5 is not on the cited Fastmarkets page (methodology notice). Arithmetic (3,248 + 1,102.5) × 3.849 = 16.75 is right."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 9,
+  "key": "nonferrous.cu.spot",
+  "verdict": "differs",
+  "pageValue": 55.48,
+  "quote": "Current copper price on an LME cash basis (14,415.00 USD/t as of 23 October, 435 USD/t below the year high).",
+  "url": "https://www.tacto.ai/en/commodities/copper-price",
+  "notes": "Page UPDATED (26 Oct 2026); the 25 Sep 14,740 print is no longer shown. 14,415 × 3.849 = 55.48 PLN/kg (−2.2%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 10,
+  "key": "nonferrous.cu.cathode_premium",
+  "verdict": "confirmed",
+  "pageValue": 1.21,
+  "quote": "Aurubis will charge European customers a premium of $315 per metric ton for refined copper next year ... up 38% from $228 a ton in 2025",
+  "url": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+  "notes": "Reuters, 7 Oct 2025. The Codelco US$325 cross-check is not on this page."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 11,
+  "key": "nonferrous.cu.cathode_delivered",
+  "verdict": "differs",
+  "pageValue": 56.7,
+  "quote": null,
+  "url": "https://www.tacto.ai/en/commodities/copper-price ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+  "notes": "Premium 315 confirmed; LME cash on the cited Tacto page is now 14,415 (23 Oct). (14,415 + 315) × 3.849 = 56.70 PLN/kg. Arithmetic of the original (15,055 × 3.849 = 57.95) is right."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 13,
+  "key": "nonferrous.brass.CW614N_rod",
+  "verdict": "differs",
+  "pageValue": 49.73,
+  "quote": "Deutsche Metallnotierungen 29. Oktober 2026 ... Metallbasis MS 58 1. V. Stufe 1.129,00 / 1.145,00",
+  "url": "https://www.westmetall.com/de/markdaten.php",
+  "notes": "Page UPDATED (daily table, now Westmetall (29. Oktober 2026)); the 9 Sep 1,088–1,110 is no longer shown. Mid 1,137 EUR/100 kg = 11.37 EUR/kg × 4.374 = 49.73 PLN/kg (+3.5%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 15,
+  "key": "nonferrous.zn.spot",
+  "verdict": "differs",
+  "pageValue": 15.32,
+  "quote": "offizielle LME-Notierungen in US-Dollar 29. Oktober 2026 ... Zink 3.980,00 3.880,00",
+  "url": "https://www.westmetall.com/de/markdaten.php",
+  "notes": "Page UPDATED (Westmetall (29. Oktober 2026)). 3,980 × 3.849 = 15.32 PLN/kg (−3.2%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 16,
+  "key": "nonferrous.zn.shg_premium",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "notes": "Argus assessment page returns HTTP 404 (moved/removed). 227.5 USD/t unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 17,
+  "key": "nonferrous.zn.shg_delivered",
+  "verdict": "differs",
+  "pageValue": 16.19,
+  "quote": "Zink 3.980,00",
+  "url": "https://www.westmetall.com/de/markdaten.php ; https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "notes": "Zinc cash UPDATED on Westmetall (3,980 on 29 Oct); Argus premium page 404 (unverified). (3,980 + 227.5) × 3.849 = 16.19 PLN/kg. Original arithmetic (4,337.5 × 3.849 = 16.70) is right."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 18,
+  "key": "nonferrous.zn.zamak3",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "0.96 × 4,337.5 + 0.04 × 3,768 = 4,314.7 USD/t × 3.849 = 16.61 PLN/kg — reproduces (P1020 3,768 = LME 3,248 + premium 520, both confirmed). Book value null (floor only). Zinc input has since moved (LME 3,980 on 29 Oct)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 19,
+  "key": "nonferrous.zn.zamak5",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "0.95 × 4,337.5 + 0.04 × 3,768 + 0.01 × 14,740 = 4,418.8 USD/t × 3.849 = 17.01 PLN/kg — reproduces. Book value null (floor only)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 20,
+  "key": "nonferrous.mg.ingot",
+  "verdict": "not-on-page",
+  "pageValue": 14.73,
+  "quote": "Magnesium Prices Outlook Q2 2026 India: USD 2973/MT China: USD 2562/MT Japan: USD 2810/MT France: USD 3828/MT Thailand: USD 1922/MT",
+  "url": "https://www.imarcgroup.com/magnesium-pricing-report",
+  "notes": "No Netherlands figure (no 2,853) on the page; the only European quarterly figure shown is France USD 3,828/MT (= 14.73 PLN/kg, 34% above the research value)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 21,
+  "key": "nonferrous.mg.az91d",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure (null): the research records that nothing was found, so there is nothing to recompute; listed derived-ok only because no-url items allow no other verdict."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 22,
+  "key": "nonferrous.sn.spot",
+  "verdict": "differs",
+  "pageValue": 193.99,
+  "quote": "Zinn 50.400,00 50.475,00",
+  "url": "https://www.westmetall.com/de/markdaten.php",
+  "notes": "Page UPDATED (Westmetall (29. Oktober 2026)). 50,400 × 3.849 = 193.99 PLN/kg (−8.2%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-nonferrous.json",
+  "i": 23,
+  "key": "nonferrous.ni.spot",
+  "verdict": "differs",
+  "pageValue": 59.12,
+  "quote": "Nickel 15.360,00 15.550,00",
+  "url": "https://www.westmetall.com/de/markdaten.php",
+  "notes": "Page UPDATED (Westmetall (29. Oktober 2026)). 15,360 × 3.849 = 59.12 PLN/kg (−7.9%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pp_homo",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu: Cloudflare bot check on the rendered pass and HTTP 403 on a plain fetch; not bypassed. Figure unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 2,
+  "key": "polymer.hdpe",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu: Cloudflare bot check on the rendered pass and HTTP 403 on a plain fetch; not bypassed. Figure unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 4,
+  "key": "polymer.ldpe",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu: Cloudflare bot check on the rendered pass and HTTP 403 on a plain fetch; not bypassed. Figure unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 5,
+  "key": "polymer.lldpe",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu: Cloudflare bot check on the rendered pass and HTTP 403 on a plain fetch; not bypassed. Figure unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.pvc",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu: Cloudflare bot check on the rendered pass and HTTP 403 on a plain fetch; not bypassed. Figure unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 7,
+  "key": "polymer.abs",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu: Cloudflare bot check on the rendered pass and HTTP 403 on a plain fetch; not bypassed. Figure unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 8,
+  "key": "polymer.ps",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu: Cloudflare bot check on the rendered pass and HTTP 403 on a plain fetch; not bypassed. Figure unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 9,
+  "key": "polymer.hips",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu: Cloudflare bot check on the rendered pass and HTTP 403 on a plain fetch; not bypassed. Figure unverified."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 10,
+  "key": "polymer.pc",
+  "verdict": "confirmed",
+  "pageValue": 11.55,
+  "quote": "Polycarbonate price September 2026 ... Europe:US$3/KG, -2.9% down",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+  "notes": ""
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 11,
+  "key": "polymer.pa6",
+  "verdict": "differs",
+  "pageValue": 12.24,
+  "quote": "PA6 (Nylon 6) price September 2026 ... Europe:US$3.18/KG, 1.3% up",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+  "notes": "businessanalytiq shows only the latest month; September is 3.18 US$/kg, +1.3% m/m — which puts August at ≈3.14, not the research's 2.67. Either misread or the index was revised. 3.18 × 3.849 = 12.24 PLN/kg (+19%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.pa66",
+  "verdict": "differs",
+  "pageValue": 13.24,
+  "quote": "PA66 (Nylon 66) price September 2026 ... Europe:US$3.44/KG, -3.6% down",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/",
+  "notes": "businessanalytiq shows only the latest month; September 3.44, −3.6% m/m → August ≈3.57, not 4.23 (+14.6%). 3.44 × 3.849 = 13.24 PLN/kg (−19%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 14,
+  "key": "polymer.pbt",
+  "verdict": "differs",
+  "pageValue": 16.32,
+  "quote": "Polybutylene terephthalate (PBT) price September 2026 ... Europe:US$4.24/KG, 4.2% up",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+  "notes": "businessanalytiq shows only the latest month; SAME month (Sep 2026) shows 4.24 (+4.2%), not 3.70 (−1.1%): research misread or the index was revised. 4.24 × 3.849 = 16.32 PLN/kg (+15%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 15,
+  "key": "polymer.pet_bottle",
+  "verdict": "differs",
+  "pageValue": 6.0,
+  "quote": "PET (Polyethylene Terephthalate) price September 2026 ... Europe:US$1.56/KG, 4% up",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+  "notes": "businessanalytiq shows only the latest month; SAME month shows 1.56 (+4%), not 1.29 (+1.6%). 1.56 × 3.849 = 6.00 PLN/kg (+21%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 16,
+  "key": "polymer.pmma",
+  "verdict": "differs",
+  "pageValue": 13.82,
+  "quote": "Polymethylmethacrylate (PMMA) price September 2026 ... Europe:US$3.59/KG, -1.1% down",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+  "notes": "businessanalytiq shows only the latest month; SAME month shows 3.59 (−1.1%), not 3.69 (unchanged). 3.59 × 3.849 = 13.82 PLN/kg (−2.7%)."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 17,
+  "key": "polymer.tpu",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure (null): the research records that nothing was found, so there is nothing to recompute; listed derived-ok only because no-url items allow no other verdict."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 18,
+  "key": "polymer.peek",
+  "verdict": "confirmed",
+  "pageValue": 346.5,
+  "quote": "Average selling price (ASP) of £68/kg was in line with the prior year (Q3 2025: £68/kg). ... Revenue (£m) 84.5 71.5 +18% 231.6 217.3 +7% Sales volume (tonnes) 1,238 1,057 +17% 3,375 3,075 +10%",
+  "url": "https://www.investegate.co.uk/announcement/rns/victrex-plc--vct/trading-statement/9654844",
+  "notes": "£68 × 5.096 = 346.5. Group ASP across all Victrex products (PEEK + PAEK), not a PEEK-grade price."
+ },
+ {
+  "file": "poland-2026-10/research/materials-polymer.json",
+  "i": 26,
+  "key": "composite.cf_t700_12k",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure (null): the research records that nothing was found, so there is nothing to recompute; listed derived-ok only because no-url items allow no other verdict."
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 0,
+  "key": "capex.brake-trumpf-trubend3100",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.machineseeker.com/trumpf-trubend+3100/i-22233802",
+  "notes": "The machineseeker listing (TRUMPF TruBend 3100, new, Johann-Maus-Straße 2, Ditzingen) is there, but the price is hidden behind 'Price info — request'; EUR 136,000 / FCA / 'fixed price plus VAT' are not in the page text (plain or rendered)."
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 1,
+  "key": "capex.brake-amada-hfe100",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://resale.info/en/amada-hfe-100-3-prensa-plegadora/No-166672578",
+  "notes": "resale.info listing no longer exists (page shows only site navigation). No figure claimed (null)."
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 2,
+  "key": "capex.laser-trumpf-3030",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://resale.info/en/trumpf-trulaser-3030-laser-cutting-machines/No-165417843",
+  "notes": "resale.info listing no longer exists. No figure claimed (null)."
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 13,
+  "key": "capex.grav-die-cast-std",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure (null): the research records that nothing was found, so there is nothing to recompute; listed derived-ok only because no-url items allow no other verdict."
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 14,
+  "key": "capex.heat-treat-furnace",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure (null): the research records that nothing was found, so there is nothing to recompute; listed derived-ok only because no-url items allow no other verdict."
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-forming.json",
+  "i": 29,
+  "key": "capex.robot-mig-cell",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://fortacogroup.com/wp-content/uploads/2026/04/Zapytanie_ofertowe-nr-2_2023_Zrobotyzowane-stanowisko-spawalnicze.pdf",
+  "notes": "PDF opens (HTTP 200): Fortaco 'Zapytanie ofertowe nr 2/2023' of 13.09.2023 for a robotic welding station — an inquiry with no value; consistent with the research's 'not found' (null)."
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-plastics.json",
+  "i": 2,
+  "key": "capex.imm-200t",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://bazakonkurencyjnosci.funduszeeuropejskie.gov.pl/api/files/1975317",
+  "notes": "DOCX opens (HTTP 200): Improdex 'Zapytanie ofertowe nr 6/10.03' of 11.04.2025 — no value. It is for a hybrid IMM of MINIMUM 400 t with a 3-axis robot (Part I) and 650 t with a 6-axis robot (Part II), not ≥200 t as the research says. Null figure, so nothing in the book moves."
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-plastics.json",
+  "i": 16,
+  "key": "capex.mach-lathe-cnc",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": null,
+  "url": "https://www.haascnc.com/pl/machines/Special-Series/eu-series.html",
+  "notes": "Plain fetch HTTP 403 and the rendered pass hit a Cloudflare bot check ('Performing security verification'); not bypassed. No figure claimed (null)."
+ },
+ {
+  "file": "poland-2026-10/research/r2-machines-plastics.json",
+  "i": 27,
+  "key": "capex.al-ext-press-1800t",
+  "verdict": "confirmed",
+  "pageValue": 43740000,
+  "quote": "Vimetco Extrusion, a downstream subsidiary of ALRO, will expand its production capacity with a new EUR 10 investment project. The investment involves the acquisition and installation of an automated extrusion line, supplied by Presezzi Extrusion spa. ... The new and complete 7” extrusion line",
+  "url": "https://www.alcircle.com/news/vimetco-extrusion-to-expand-aluminium-profiles-extrusion-line-with-eur-10-million-investments-63714 ; https://www.thediplomat.ro/?p=10490 ; https://www.alro.ro/en/article/vimetco-extrusion-announces-new-press ; https://www.lightmetalage.com/news/industry-news/extrusion/vimetco-extrudes-first-billet-on-new-press-line/",
+  "notes": "AlCircle, 11 March 2021 — a 2021 Romanian figure, not indexed; the page does not give the press tonnage (1,800 t for a 7\" press is the research's mapping)."
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-ferrous.json",
+  "i": 13,
+  "key": "ferrous.stainless.409L_CR",
+  "verdict": "confirmed",
+  "pageValue": 6.484,
+  "quote": "Ferritic grade 409 edged up slightly to EUR 919/ton from EUR 917/ton.",
+  "url": "https://news.metal.com/en/newscontent/104001715-smm-stainless-steel-flash-aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026",
+  "notes": "SMM on Aperam's July 2026 surcharges. Base 563.5 confirmed on the Eurometal page. (919 + 563.5) × 4.374 = 6.484. Note legierungszuschlag.info lists 1.4512 at 914 (Oct) / 951 (Nov) — the book uses July."
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.anchor.hrpo",
+  "verdict": "confirmed",
+  "pageValue": 3.652,
+  "quote": "“We had lows of €860-870, but only for unpickled coil,” ... he sees pickled material starting at €930/t, and reaching €980/t.",
+  "url": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+  "notes": "Figures confirmed, but the article is DATED 21 February 2022 (research called it undated) — a 2022 price-spike spread applied to 2026. HRC 745 (round 1) is not on this page; Tacto shows HRC N. Europe 748 €/t on 26 Oct 2026."
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pom",
+  "verdict": "differs",
+  "pageValue": 10.08,
+  "quote": "Polyoxymethylene (POM) price September 2026 ... Europe:US$2.62/KG, 0.4% up",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/",
+  "notes": "businessanalytiq shows only the latest month; now September 2.62 (+0.4%); research had July 3.04 (−2.9%). The July value cannot be checked. 2.62 × 3.849 = 10.08 PLN/kg (−14%)."
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-polymer.json",
+  "i": 8,
+  "key": "polymer.tpu",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": null,
+  "url": null,
+  "notes": "No figure (null): the research records that nothing was found, so there is nothing to recompute; listed derived-ok only because no-url items allow no other verdict."
+ },
+ {
+  "file": "poland-2026-10/research/r2-materials-polymer.json",
+  "i": 18,
+  "key": "composite.cf_t700_12k",
+  "verdict": "confirmed",
+  "pageValue": 130.87,
+  "quote": "Carbon Fibre Prices Outlook Q1 2026 Germany: USD 34/KG United Kingdom: USD 35/KG ... the carbon fibre prices in Germany reached 34 USD/KG in March.",
+  "url": "https://www.imarcgroup.com/carbon-fibre-pricing-report",
+  "notes": "Q1 figure confirmed. Page now also shows Q3 2026 Germany USD 40.2/kg (Sept) = 154.7 PLN/kg (+18%) and Q2 USD 39/kg."
+ }
+]

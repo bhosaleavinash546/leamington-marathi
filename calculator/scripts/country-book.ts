@@ -316,7 +316,7 @@ writeFileSync(LIB, lib);
 if (billet) {
   const ALD = resolve(ROOT, 'src/engine/al-extrusion-data.ts');
   let ald = readFileSync(ALD, 'utf8');
-  const billetRe = new RegExp(`  ${REGION}: \\{ usdPerT: -?[0-9_]+, sourced: (true|false), basis: '[^']*' \\},`);
+  const billetRe = new RegExp(`  ${REGION}: \\{ usdPerT: (?:-?[0-9_]+|[A-Z_]+), sourced: (true|false), basis: '[^']*' \\},`);
   if (!billetRe.test(ald)) throw new Error(`BILLET_PREMIUM_USD_PER_T.${REGION} not found`);
   // a function replacer: the basis carries '$1,070', which a replacement string reads as capture group 1
   ald = ald.replace(billetRe, () => `  ${REGION}: { usdPerT: ${billet.value}, sourced: true, basis: '${String(billet.basis).replace(/'/g, '’')} (${NAME} rate book ${cfg.asOf})' },`);

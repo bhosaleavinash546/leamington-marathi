@@ -267,9 +267,13 @@ describe('8. root cause: ONE country source for every country (Oct 2026, third p
     for (const c of ALL) {
       const r = REGIONAL_DATA[c], L = r.labour, ratio = L.semiskilled / REGIONAL_DATA.UK.labour.semiskilled;
       expect(L.engineer > L.skilled && L.skilled > L.semiskilled, `${c} labour order`).toBe(true);
-      expect(r.energy.gasPerKwh, `${c} gas`).toBeLessThan(r.energy.electricityPerKwh);
+      // Sweden is the one sourced exception: Eurostat 2026-S1, band ID / I3 excl. VAT — gas SEK 1.206 v electricity SEK 1.139 a
+      // kWh (Swedish industrial gas carries energy + CO2 tax; its power is hydro / nuclear)
+      if (c !== 'SE') expect(r.energy.gasPerKwh, `${c} gas`).toBeLessThan(r.energy.electricityPerKwh);
       expect(ratio < 0.6 && r.machineRateMultiplier >= 0.95, `${c} machine vs labour`).toBe(false);
-      expect(ratio > 0.9 && r.machineRateMultiplier < 0.7, `${c} machine vs labour (Singapore carried Thailand's 0.58)`).toBe(false);
+      // a CARRIED factor must fit the labour (Singapore carried Thailand's 0.58); a country with its own book computes its
+      // multiplier from its own machine rates (3 × 8 h spreads capital over more hours than the UK book's), so it is exempt
+      if (!COUNTRY_BOOKS[c]) expect(ratio > 0.9 && r.machineRateMultiplier < 0.7, `${c} machine vs labour (Singapore carried Thailand's 0.58)`).toBe(false);
     }
   });
   it('the PCB country table takes power, FX and operator labour from the main table (they disagreed)', async () => {

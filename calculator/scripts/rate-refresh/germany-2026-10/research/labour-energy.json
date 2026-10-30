@@ -643,12 +643,19 @@
   },
   {
    "key": "energy.electricity.allIn",
-   "value": 0.172,
+   "value": 0.179,
    "unit": "EUR/kWh ex-VAT",
-   "basis": "BDEW Strompreisanalyse (autumn 2026): average electricity price for small–medium industry (160 MWh – 20 GWh/yr, medium-voltage supply, incl. reduced Stromsteuer, excl. VAT) in 2026 to date = 17.2 ct/kWh (−0.4 ct v 2025; rising at the margin after the Iran war). Consistent with the sourced build-up 0.149 + profile/margin",
+   "basis": "CORRECTED 30 Oct 2026 on a page re-check (was 0.172): BDEW Strompreisanalyse, October 2026 edition (28 Oct 2026): small and medium industry 17.9 ct/kWh (the research read the previous edition's 17.2 ct) — original basis: BDEW Strompreisanalyse (autumn 2026): average electricity price for small–medium industry (160 MWh – 20 GWh/yr, medium-voltage supply, incl. reduced Stromsteuer, excl. VAT) in 2026 to date = 17.2 ct/kWh (−0.4 ct v 2025; rising at the margin after the Iran war). Consistent with the sourced build-up 0.149 + profile/margin",
    "source": "https://www.bdew.de/service/daten-und-grafiken/bdew-strompreisanalyse/",
    "date": "2026 (published Aug/Sep 2026)",
-   "notes": "Industry association survey. Same class 2025: 16.0 (Jan 2026 edition); 20–70 GWh class 2025: 15.9; 70–150 GWh: 14.4. = £0.148/kWh at 1.165."
+   "notes": "Industry association survey. Same class 2025: 16.0 (Jan 2026 edition); 20–70 GWh class 2025: 15.9; 70–150 GWh: 14.4. = £0.148/kWh at 1.165.",
+   "corrected": {
+    "was": 0.172,
+    "on": "2026-10-30",
+    "why": "BDEW Strompreisanalyse, October 2026 edition (28 Oct 2026): small and medium industry 17.9 ct/kWh (the research read the previous edition's 17.2 ct)",
+    "verdicts": "verdicts/germany.json"
+   },
+   "verify": false
   },
   {
    "key": "energy.electricity.crossCheck.destatis",

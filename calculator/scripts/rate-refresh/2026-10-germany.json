@@ -1,5 +1,5 @@
 {
- "asOf": "2026-10-12",
+ "asOf": "2026-10-30",
  "label": "Germany rate book — 4-cluster average (Baden-Württemberg, Bavaria, Lower Saxony, North Rhine-Westphalia), 2 × 8 h",
  "region": "DE",
  "currency": "EUR",
@@ -8,7 +8,9 @@
  "snapshot": "scripts/rate-refresh/germany-2026-10/current-germany-book.json",
  "bookFile": "src/engine/country-books/de.ts",
  "bookConst": "GERMANY_BOOK",
- "fxPerGbp": 1.165,
+ "fxPerGbp": 1.1965,
+ "writeFx": true,
+ "fxBasis": "ECB euro reference rates 2026-10-29: €1 = £0.83578 → £1 = €1.1965 (the one euro rate of the world round)",
  "labour": {
   "categories": {
    "skilled": {
@@ -103,9 +105,9 @@
   "short": "4-cluster, 2 × 8 h, IG Metall ERA + employer social contributions"
  },
  "energy": {
-  "electricityLocalPerKwh": 0.172,
+  "electricityLocalPerKwh": 0.179,
   "gasLocalPerKwh": 0.0629,
-  "basis": "Electricity €0.172/kWh ex-VAT: BDEW Strompreisanalyse (autumn 2026): average electricity price for small–medium industry (160 MWh – 20 GWh/yr, medium-voltage supply, incl. reduced Stromsteuer, excl. VAT) in 2026 to date = 17.2 ct/kWh (−0.4 ct v 2025; rising at the margin after the Iran war). Consistent with the sourced build-up 0.149 + profile/margin. Gas €0.0629/kWh ex-VAT: Destatis non-household natural gas, H1 2026 average 6.29 ct/kWh excl. VAT and recoverable taxes (H2 2025: 6.18). Volume-weighted over all sizes; band 1,000–10,000 GJ (≈ 0.3–2.8 GWh, Eurostat I2) was 8.60 in H2 2025 and > 4 million GJ 4.52. A mid-size 2-shift supplier plant (I2–I3) sits around 6.3–8.6",
+  "basis": "Electricity €0.179/kWh ex-VAT: CORRECTED 30 Oct 2026 on a page re-check (was 0.172): BDEW Strompreisanalyse, October 2026 edition (28 Oct 2026): small and medium industry 17.9 ct/kWh (the research read the previous edition's 17.2 ct) — original basis: BDEW Strompreisanalyse (autumn 2026): average electricity price for small–medium industry (160 MWh – 20 GWh/yr, medium-voltage supply, incl. reduced Stromsteuer, excl. VAT) in 2026 to date = 17.2 ct/kWh (−0.4 ct v 2025; rising at the margin after the Iran war). Consistent with the sourced build-up 0.149 + profile/margin. Gas €0.0629/kWh ex-VAT: Destatis non-household natural gas, H1 2026 average 6.29 ct/kWh excl. VAT and recoverable taxes (H2 2025: 6.18). Volume-weighted over all sizes; band 1,000–10,000 GJ (≈ 0.3–2.8 GWh, Eurostat I2) was 8.60 in H2 2025 and > 4 million GJ 4.52. A mid-size 2-shift supplier plant (I2–I3) sits around 6.3–8.6",
   "sources": [
    {
     "research": "energy.electricity.allIn",
@@ -200,8 +202,8 @@
  "materialFamilies": [
   {
    "family": "CR coil (DC01 / DC04)",
-   "anchorLocalPerKg": 0.865,
-   "anchorBasis": "NW Europe CRC €865/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.865/kg; freight to the plant not added",
+   "anchorLocalPerKg": 0.855,
+   "anchorBasis": "NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added",
    "sources": [
     {
      "research": "ferrous.anchor.crc",
@@ -222,8 +224,8 @@
   },
   {
    "family": "CR automotive grades",
-   "anchorLocalPerKg": 0.865,
-   "anchorBasis": "CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found",
+   "anchorLocalPerKg": 0.855,
+   "anchorBasis": "CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found",
    "sources": [
     {
      "research": "ferrous.anchor.crc",
@@ -288,8 +290,8 @@
   },
   {
    "family": "Coated sheet",
-   "anchorLocalPerKg": 0.86,
-   "anchorBasis": "NW Europe HDG €860/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.86/kg × the book's premium over DC01 GI",
+   "anchorLocalPerKg": 0.83,
+   "anchorBasis": "NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI",
    "sources": [
     {
      "research": "ferrous.anchor.hdg",
@@ -426,8 +428,8 @@
   },
   {
    "family": "430 ferritic sheet",
-   "anchorLocalPerKg": 1.548,
-   "anchorBasis": "430 CR €1.548/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found)",
+   "anchorLocalPerKg": 1.6485,
+   "anchorBasis": "430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found)",
    "sources": [
     {
      "research": "ferrous.stainless.430_CR",
@@ -447,8 +449,8 @@
   },
   {
    "family": "Ductile / CGI / ADI / SiMo iron (charge)",
-   "anchorLocalPerKg": 0.394,
-   "anchorBasis": "Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content)",
+   "anchorLocalPerKg": 0.397,
+   "anchorBasis": "Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content)",
    "sources": [
     {
      "research": "ferrous.charge.GJS-500-7",
@@ -493,8 +495,8 @@
   },
   {
    "family": "Grey / malleable iron (charge)",
-   "anchorLocalPerKg": 0.349,
-   "anchorBasis": "Grey-iron charge €0.349/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250",
+   "anchorLocalPerKg": 0.3526,
+   "anchorBasis": "Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250",
    "sources": [
     {
      "research": "ferrous.charge.GJL-250",
@@ -524,8 +526,8 @@
   },
   {
    "family": "Cast carbon / low-alloy steel (charge)",
-   "anchorLocalPerKg": 0.293,
-   "anchorBasis": "Steel-foundry charge €0.293/kg (heavy melting scrap €0.275 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo)",
+   "anchorLocalPerKg": 0.2999,
+   "anchorBasis": "Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo)",
    "sources": [
     {
      "research": "ferrous.charge.GS-C25",
@@ -584,8 +586,8 @@
   },
   {
    "family": "Ni-Resist D-2 (charge)",
-   "anchorLocalPerKg": 3.1038,
-   "anchorBasis": "0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.394",
+   "anchorLocalPerKg": 3.1062,
+   "anchorBasis": "0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397",
    "sources": [
     {
      "research": "nonferrous.ni.spot",
@@ -610,7 +612,7 @@
   },
   {
    "family": "Ni-Resist D-5S (charge)",
-   "anchorLocalPerKg": 5.1314,
+   "anchorLocalPerKg": 5.1331,
    "anchorBasis": "0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge",
    "sources": [
     {
@@ -631,8 +633,8 @@
   },
   {
    "family": "High-Cr white iron (charge)",
-   "anchorLocalPerKg": 0.9647,
-   "anchorBasis": "0.23 × Cr €3.03 + 0.77 × grey charge €0.349",
+   "anchorLocalPerKg": 0.9675,
+   "anchorBasis": "0.23 × Cr €3.03 + 0.77 × grey charge €0.3526",
    "sources": [
     {
      "research": "ferrous.foundry.FeCr_HC",
@@ -1179,8 +1181,8 @@
   },
   {
    "family": "PA6 family",
-   "anchorLocalPerKg": 2.35,
-   "anchorBasis": "PA6 €2.35/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6",
+   "anchorLocalPerKg": 2.8,
+   "anchorBasis": "PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6",
    "sources": [
     {
      "research": "polymer.pa6",
@@ -1202,8 +1204,8 @@
   },
   {
    "family": "PA66",
-   "anchorLocalPerKg": 3.04,
-   "anchorBasis": "PA66 €3.04/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; an August reading was €3.72 — the two extracts conflict)",
+   "anchorLocalPerKg": 3.03,
+   "anchorBasis": "PA66 €3.03/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; an August reading was €3.72 — the two extracts conflict)",
    "sources": [
     {
      "research": "polymer.pa66",
@@ -1223,8 +1225,8 @@
   },
   {
    "family": "PBT",
-   "anchorLocalPerKg": 3.26,
-   "anchorBasis": "PBT €3.26/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026)",
+   "anchorLocalPerKg": 3.73,
+   "anchorBasis": "PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026)",
    "sources": [
     {
      "research": "polymer.pbt",
@@ -1267,8 +1269,8 @@
   },
   {
    "family": "PMMA family",
-   "anchorLocalPerKg": 3.25,
-   "anchorBasis": "PMMA €3.25/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PMMA",
+   "anchorLocalPerKg": 3.16,
+   "anchorBasis": "PMMA €3.16/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PMMA",
    "sources": [
     {
      "research": "polymer.pmma",

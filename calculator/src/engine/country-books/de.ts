@@ -7,42 +7,42 @@ import type { CountryBook } from '../country-books.js';
 
 export const GERMANY_BOOK: CountryBook = {
  "region": "DE",
- "asOf": "2026-10-12",
- "fxToGBP": 1.165,
+ "asOf": "2026-10-30",
+ "fxToGBP": 1.1965,
  "currencySymbol": "€",
  "labourGrades": {
   "forge": {
-   "gbpPerHr": 39.6309,
+   "gbpPerHr": 38.5875,
    "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17. Included: ERA monthly Grundentgelt (tables valid 1 Apr – 31 Oct 2026, incl. the +3.1% step) + average Leistungszulage, 4-cluster average; 30 days' paid leave and paid public holidays (inside 12 monthly pays); Entgeltfortzahlung for 13.2 sickness working days; Urlaubsgeld (0.69 month), tarifliche Sonderzahlung 55%, T-ZUG A 27.5%, T-Geld 18.4%, T-ZUG B (26.5% of Eckentgelt); late-shift premium 20% on 14:00–19:00 (shop-floor roles); employer RV, AV, KV incl. half Zusatzbeitrag, PV, accident (DGUV average), Insolvenzgeldumlage, U2 — with the 2026 ceilings; divided by 1,466.78 productive hours. NOT included: night premiums for any late-shift hours after 19:00/20:00 (regional night definition not confirmed); third shift / weekend / overtime premiums; Erschwernis- / hot-work allowances; occupational pension (tarifliche Altersvorsorge AVWL, company bAV) and vermögenswirksame Leistungen; Bildungsurlaub; training time; works-council and meeting time; protective clothing, canteen subsidy; recruitment; agency-worker mark-ups; the Nov 2026 tariff round (tables expire 31 Oct 2026); AT (above-tariff) pay; U1 (n/a > 30 staff)",
    "source": "derived",
    "confidence": "Medium"
   },
   "furnace": {
-   "gbpPerHr": 42.1202,
+   "gbpPerHr": 41.0113,
    "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4034.72 = 48417; + late-shift premium 2429 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7788; annual gross 58634; + employer social contributions 13346 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 71980 ÷ 1466.78 productive h = 49.07. Included: ERA monthly Grundentgelt (tables valid 1 Apr – 31 Oct 2026, incl. the +3.1% step) + average Leistungszulage, 4-cluster average; 30 days' paid leave and paid public holidays (inside 12 monthly pays); Entgeltfortzahlung for 13.2 sickness working days; Urlaubsgeld (0.69 month), tarifliche Sonderzahlung 55%, T-ZUG A 27.5%, T-Geld 18.4%, T-ZUG B (26.5% of Eckentgelt); late-shift premium 20% on 14:00–19:00 (shop-floor roles); employer RV, AV, KV incl. half Zusatzbeitrag, PV, accident (DGUV average), Insolvenzgeldumlage, U2 — with the 2026 ceilings; divided by 1,466.78 productive hours. NOT included: night premiums for any late-shift hours after 19:00/20:00 (regional night definition not confirmed); third shift / weekend / overtime premiums; Erschwernis- / hot-work allowances; occupational pension (tarifliche Altersvorsorge AVWL, company bAV) and vermögenswirksame Leistungen; Bildungsurlaub; training time; works-council and meeting time; protective clothing, canteen subsidy; recruitment; agency-worker mark-ups; the Nov 2026 tariff round (tables expire 31 Oct 2026); AT (above-tariff) pay; U1 (n/a > 30 staff)",
    "source": "derived",
    "confidence": "Medium"
   },
   "blow": {
-   "gbpPerHr": 39.6309,
+   "gbpPerHr": 38.5875,
    "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17. Included: ERA monthly Grundentgelt (tables valid 1 Apr – 31 Oct 2026, incl. the +3.1% step) + average Leistungszulage, 4-cluster average; 30 days' paid leave and paid public holidays (inside 12 monthly pays); Entgeltfortzahlung for 13.2 sickness working days; Urlaubsgeld (0.69 month), tarifliche Sonderzahlung 55%, T-ZUG A 27.5%, T-Geld 18.4%, T-ZUG B (26.5% of Eckentgelt); late-shift premium 20% on 14:00–19:00 (shop-floor roles); employer RV, AV, KV incl. half Zusatzbeitrag, PV, accident (DGUV average), Insolvenzgeldumlage, U2 — with the 2026 ceilings; divided by 1,466.78 productive hours. NOT included: night premiums for any late-shift hours after 19:00/20:00 (regional night definition not confirmed); third shift / weekend / overtime premiums; Erschwernis- / hot-work allowances; occupational pension (tarifliche Altersvorsorge AVWL, company bAV) and vermögenswirksame Leistungen; Bildungsurlaub; training time; works-council and meeting time; protective clothing, canteen subsidy; recruitment; agency-worker mark-ups; the Nov 2026 tariff round (tables expire 31 Oct 2026); AT (above-tariff) pay; U1 (n/a > 30 staff)",
    "source": "derived",
    "confidence": "Medium"
   },
   "roto": {
-   "gbpPerHr": 39.6309,
+   "gbpPerHr": 38.5875,
    "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17. Included: ERA monthly Grundentgelt (tables valid 1 Apr – 31 Oct 2026, incl. the +3.1% step) + average Leistungszulage, 4-cluster average; 30 days' paid leave and paid public holidays (inside 12 monthly pays); Entgeltfortzahlung for 13.2 sickness working days; Urlaubsgeld (0.69 month), tarifliche Sonderzahlung 55%, T-ZUG A 27.5%, T-Geld 18.4%, T-ZUG B (26.5% of Eckentgelt); late-shift premium 20% on 14:00–19:00 (shop-floor roles); employer RV, AV, KV incl. half Zusatzbeitrag, PV, accident (DGUV average), Insolvenzgeldumlage, U2 — with the 2026 ceilings; divided by 1,466.78 productive hours. NOT included: night premiums for any late-shift hours after 19:00/20:00 (regional night definition not confirmed); third shift / weekend / overtime premiums; Erschwernis- / hot-work allowances; occupational pension (tarifliche Altersvorsorge AVWL, company bAV) and vermögenswirksame Leistungen; Bildungsurlaub; training time; works-council and meeting time; protective clothing, canteen subsidy; recruitment; agency-worker mark-ups; the Nov 2026 tariff round (tables expire 31 Oct 2026); AT (above-tariff) pay; U1 (n/a > 30 staff)",
    "source": "derived",
    "confidence": "Medium"
   },
   "thermoform": {
-   "gbpPerHr": 39.6309,
+   "gbpPerHr": 38.5875,
    "basis": "2 × 8 h Mon–Fri. Pay: 12 × 3792.32 = 45508; + late-shift premium 2283 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 7376; annual gross 55167; + employer social contributions 12557 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 67724 ÷ 1466.78 productive h = 46.17. Included: ERA monthly Grundentgelt (tables valid 1 Apr – 31 Oct 2026, incl. the +3.1% step) + average Leistungszulage, 4-cluster average; 30 days' paid leave and paid public holidays (inside 12 monthly pays); Entgeltfortzahlung for 13.2 sickness working days; Urlaubsgeld (0.69 month), tarifliche Sonderzahlung 55%, T-ZUG A 27.5%, T-Geld 18.4%, T-ZUG B (26.5% of Eckentgelt); late-shift premium 20% on 14:00–19:00 (shop-floor roles); employer RV, AV, KV incl. half Zusatzbeitrag, PV, accident (DGUV average), Insolvenzgeldumlage, U2 — with the 2026 ceilings; divided by 1,466.78 productive hours. NOT included: night premiums for any late-shift hours after 19:00/20:00 (regional night definition not confirmed); third shift / weekend / overtime premiums; Erschwernis- / hot-work allowances; occupational pension (tarifliche Altersvorsorge AVWL, company bAV) and vermögenswirksame Leistungen; Bildungsurlaub; training time; works-council and meeting time; protective clothing, canteen subsidy; recruitment; agency-worker mark-ups; the Nov 2026 tariff round (tables expire 31 Oct 2026); AT (above-tariff) pay; U1 (n/a > 30 staff)",
    "source": "derived",
    "confidence": "Medium"
   },
   "trim-router": {
-   "gbpPerHr": 45.0215,
+   "gbpPerHr": 43.8362,
    "basis": "2 × 8 h Mon–Fri. Pay: 12 × 4316.88 = 51803; + late-shift premium 2599 (0.6021 × monthly); + special payments 1.7013 × monthly + T-ZUG B 923.79 = 8268; annual gross 62670; + employer social contributions 14265 (RV/AV/insolvency 10.75% to 101,400; KV+Zusatz/PV 10.55% to 69,750; accident 1.08%; U2 0.44% on regular pay); total 76935 ÷ 1466.78 productive h = 52.45. Included: ERA monthly Grundentgelt (tables valid 1 Apr – 31 Oct 2026, incl. the +3.1% step) + average Leistungszulage, 4-cluster average; 30 days' paid leave and paid public holidays (inside 12 monthly pays); Entgeltfortzahlung for 13.2 sickness working days; Urlaubsgeld (0.69 month), tarifliche Sonderzahlung 55%, T-ZUG A 27.5%, T-Geld 18.4%, T-ZUG B (26.5% of Eckentgelt); late-shift premium 20% on 14:00–19:00 (shop-floor roles); employer RV, AV, KV incl. half Zusatzbeitrag, PV, accident (DGUV average), Insolvenzgeldumlage, U2 — with the 2026 ceilings; divided by 1,466.78 productive hours. NOT included: night premiums for any late-shift hours after 19:00/20:00 (regional night definition not confirmed); third shift / weekend / overtime premiums; Erschwernis- / hot-work allowances; occupational pension (tarifliche Altersvorsorge AVWL, company bAV) and vermögenswirksame Leistungen; Bildungsurlaub; training time; works-council and meeting time; protective clothing, canteen subsidy; recruitment; agency-worker mark-ups; the Nov 2026 tariff round (tables expire 31 Oct 2026); AT (above-tariff) pay; U1 (n/a > 30 staff)",
    "source": "derived",
    "confidence": "Medium"
@@ -50,889 +50,889 @@ export const GERMANY_BOOK: CountryBook = {
  },
  "materials": {
   "mat-dc01": {
-   "gbpPerKg": 0.7425,
-   "basis": "CR coil (DC01 / DC04): NW Europe CRC €865/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.865/kg; freight to the plant not added; direct",
+   "gbpPerKg": 0.7146,
+   "basis": "CR coil (DC01 / DC04): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added; direct",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Medium"
   },
   "mat-dc04": {
-   "gbpPerKg": 0.7425,
-   "basis": "CR coil (DC01 / DC04): NW Europe CRC €865/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.865/kg; freight to the plant not added; direct",
+   "gbpPerKg": 0.7146,
+   "basis": "CR coil (DC01 / DC04): NW Europe CRC €855/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.855/kg; freight to the plant not added; direct",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Medium"
   },
   "mat-dc05": {
-   "gbpPerKg": 0.7425,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; the anchor grade itself",
+   "gbpPerKg": 0.7146,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; the anchor grade itself",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dc06": {
-   "gbpPerKg": 0.7513,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.012 (book £0.85 ÷ base £0.84)",
+   "gbpPerKg": 0.7231,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.012 (book £0.85 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-if-dx56": {
-   "gbpPerKg": 0.8839,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.190 (book £1 ÷ base £0.84)",
+   "gbpPerKg": 0.8507,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.190 (book £1 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-if-hs260": {
-   "gbpPerKg": 0.9988,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.345 (book £1.13 ÷ base £0.84)",
+   "gbpPerKg": 0.9613,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.345 (book £1.13 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-bh260": {
-   "gbpPerKg": 0.9723,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "gbpPerKg": 0.9358,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-greensteel-dc01": {
-   "gbpPerKg": 0.9723,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "gbpPerKg": 0.9358,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.310 (book £1.1 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-hsla340": {
-   "gbpPerKg": 1.0519,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.417 (book £1.19 ÷ base £0.84)",
+   "gbpPerKg": 1.0123,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.417 (book £1.19 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-hsla420": {
-   "gbpPerKg": 1.1403,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.536 (book £1.29 ÷ base £0.84)",
+   "gbpPerKg": 1.0974,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.536 (book £1.29 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-hsla550": {
-   "gbpPerKg": 1.2286,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.655 (book £1.39 ÷ base £0.84)",
+   "gbpPerKg": 1.1825,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.655 (book £1.39 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dp600": {
-   "gbpPerKg": 1.1491,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.548 (book £1.3 ÷ base £0.84)",
+   "gbpPerKg": 1.1059,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.548 (book £1.3 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dp780": {
-   "gbpPerKg": 1.211,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.631 (book £1.37 ÷ base £0.84)",
+   "gbpPerKg": 1.1655,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.631 (book £1.37 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dp980": {
-   "gbpPerKg": 1.3259,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.786 (book £1.5 ÷ base £0.84)",
+   "gbpPerKg": 1.276,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.786 (book £1.5 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dp1000": {
-   "gbpPerKg": 1.3877,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.869 (book £1.57 ÷ base £0.84)",
+   "gbpPerKg": 1.3356,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.869 (book £1.57 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-trip780": {
-   "gbpPerKg": 1.2817,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.726 (book £1.45 ÷ base £0.84)",
+   "gbpPerKg": 1.2335,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.726 (book £1.45 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-cp800": {
-   "gbpPerKg": 1.264,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.702 (book £1.43 ÷ base £0.84)",
+   "gbpPerKg": 1.2165,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.702 (book £1.43 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-ms1200": {
-   "gbpPerKg": 1.4143,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "gbpPerKg": 1.3611,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-ms1300": {
-   "gbpPerKg": 1.4761,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.988 (book £1.67 ÷ base £0.84)",
+   "gbpPerKg": 1.4207,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.988 (book £1.67 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-ms1500": {
-   "gbpPerKg": 1.5645,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.107 (book £1.77 ÷ base £0.84)",
+   "gbpPerKg": 1.5057,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.107 (book £1.77 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-qp980": {
-   "gbpPerKg": 1.5292,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.060 (book £1.73 ÷ base £0.84)",
+   "gbpPerKg": 1.4717,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.060 (book £1.73 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-medmn1180": {
-   "gbpPerKg": 1.591,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.143 (book £1.8 ÷ base £0.84)",
+   "gbpPerKg": 1.5313,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.143 (book £1.8 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-22mnb5": {
-   "gbpPerKg": 1.5822,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.131 (book £1.79 ÷ base £0.84)",
+   "gbpPerKg": 1.5227,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.131 (book £1.79 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-usibor1500": {
-   "gbpPerKg": 1.7678,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.381 (book £2 ÷ base £0.84)",
+   "gbpPerKg": 1.7014,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.381 (book £2 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-usibor2000": {
-   "gbpPerKg": 2.1214,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.857 (book £2.4 ÷ base £0.84)",
+   "gbpPerKg": 2.0417,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×2.857 (book £2.4 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-c67s-spring": {
-   "gbpPerKg": 1.4143,
-   "basis": "CR automotive grades: CR coil €0.865 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "gbpPerKg": 1.3611,
+   "basis": "CR automotive grades: CR coil €0.855 × the book's grade premium over its DC01/DC04 mean (£0.84); European AHSS / press-hardening extras not found; ladder ×1.905 (book £1.6 ÷ base £0.84)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-s355mc": {
-   "gbpPerKg": 0.6644,
+   "gbpPerKg": 0.6469,
    "basis": "HR structural: NW Europe HRC €745/t ex-works (Fastmarkets, 6 Oct 2026) = €0.745/kg × the book's premium over HRPO; S355MC / S420MC extras not found; ladder ×1.039 (book £0.8 ÷ base £0.77)",
    "source": "https://eurometal.net/european-hrc-prices-edge-higher-despite-sluggish-demand/ (2026-10-06)",
    "confidence": "Low"
   },
   "mat-s420mc": {
-   "gbpPerKg": 0.681,
+   "gbpPerKg": 0.6631,
    "basis": "HR structural: NW Europe HRC €745/t ex-works (Fastmarkets, 6 Oct 2026) = €0.745/kg × the book's premium over HRPO; S355MC / S420MC extras not found; ladder ×1.065 (book £0.82 ÷ base £0.77)",
    "source": "https://eurometal.net/european-hrc-prices-edge-higher-despite-sluggish-demand/ (2026-10-06)",
    "confidence": "Low"
   },
   "mat-dc01-gi": {
-   "gbpPerKg": 0.7382,
-   "basis": "Coated sheet: NW Europe HDG €860/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.86/kg × the book's premium over DC01 GI; the anchor grade itself",
+   "gbpPerKg": 0.6937,
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; the anchor grade itself",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dc03-ga": {
-   "gbpPerKg": 0.7648,
-   "basis": "Coated sheet: NW Europe HDG €860/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.86/kg × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11)",
+   "gbpPerKg": 0.7187,
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.036 (book £1.15 ÷ base £1.11)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-dc01-ze": {
-   "gbpPerKg": 0.7382,
-   "basis": "Coated sheet: NW Europe HDG €860/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.86/kg × the book's premium over DC01 GI; the anchor grade itself",
+   "gbpPerKg": 0.6937,
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; the anchor grade itself",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-znni-eg": {
-   "gbpPerKg": 0.818,
-   "basis": "Coated sheet: NW Europe HDG €860/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.86/kg × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11)",
+   "gbpPerKg": 0.7687,
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.108 (book £1.23 ÷ base £1.11)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-zm-coated": {
-   "gbpPerKg": 0.7981,
-   "basis": "Coated sheet: NW Europe HDG €860/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.86/kg × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11)",
+   "gbpPerKg": 0.7499,
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.081 (book £1.2 ÷ base £1.11)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-tinplate-etp": {
-   "gbpPerKg": 0.8978,
-   "basis": "Coated sheet: NW Europe HDG €860/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.86/kg × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11)",
+   "gbpPerKg": 0.8437,
+   "basis": "Coated sheet: NW Europe HDG €830/t ex-works (Fastmarkets via Tacto, 13 Sep 2026) = €0.83/kg × the book's premium over DC01 GI; ladder ×1.216 (book £1.35 ÷ base £1.11)",
    "source": "https://www.tacto.ai/en/commodities/steel-price (2026-09-13)",
    "confidence": "Low"
   },
   "mat-hrpo": {
-   "gbpPerKg": 0.7167,
+   "gbpPerKg": 0.6979,
    "basis": "HR pickled & oiled: HRC €745/t + a service-centre pickling extra ~€90/t (undated) = €0.835/kg — DERIVED; direct",
    "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/ (undated extra; HRC 2026-10-06)",
    "confidence": "Low"
   },
   "mat-ss409l-sheet": {
-   "gbpPerKg": 1.2721,
+   "gbpPerKg": 1.2386,
    "basis": "409L / 441 ferritic sheet: 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L; the anchor grade itself",
    "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429 (2026-07-01)",
    "confidence": "Low"
   },
   "mat-ss441-sheet": {
-   "gbpPerKg": 1.4105,
+   "gbpPerKg": 1.3733,
    "basis": "409L / 441 ferritic sheet: 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L; ladder ×1.109 (book £3.16 ÷ base £2.85)",
    "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429 (2026-07-01)",
    "confidence": "Low"
   },
   "mat-ss304-sheet": {
-   "gbpPerKg": 2.3777,
+   "gbpPerKg": 2.3151,
    "basis": "304 sheet: 304 CR 2B €2,770/t delivered N. Europe incl. alloy surcharge (Fastmarkets, 7 Sep 2026) = €2.77/kg; the October 1.4301 surcharge is €2,188/t; direct",
    "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/ (2026-09-07) ; https://legierungszuschlag.info/en/ (2026-10-01)",
    "confidence": "Medium"
   },
   "mat-ss301-spring": {
-   "gbpPerKg": 3.0862,
+   "gbpPerKg": 3.005,
    "basis": "301 spring strip: 304 sheet €2.77 × the book's premium of 301 over 304 sheet; ladder ×1.298 (book £4.53 ÷ base £3.49)",
    "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/ (2026-09-07)",
    "confidence": "Low"
   },
   "mat-ss316-sheet": {
-   "gbpPerKg": 3.6266,
+   "gbpPerKg": 3.5311,
    "basis": "316L sheet: 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor); direct",
    "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/ (2026-09-07)",
    "confidence": "Medium"
   },
   "mat-ss316l": {
-   "gbpPerKg": 3.6266,
+   "gbpPerKg": 3.5311,
    "basis": "316L sheet: 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor); direct",
    "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/ (2026-09-07)",
    "confidence": "Medium"
   },
   "mat-aisi430": {
-   "gbpPerKg": 1.3288,
-   "basis": "430 ferritic sheet: 430 CR €1.548/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found); direct",
+   "gbpPerKg": 1.3778,
+   "basis": "430 ferritic sheet: 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found); direct",
    "source": "https://legierungszuschlag.info/en/ (2026-10-01)",
    "confidence": "Low"
   },
   "mat-gjs500": {
-   "gbpPerKg": 0.3382,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); the anchor grade itself",
+   "gbpPerKg": 0.3318,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); the anchor grade itself",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs400": {
-   "gbpPerKg": 0.2982,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€-0.05/kg (the book's premium: £0.82 - base £0.86)",
+   "gbpPerKg": 0.2918,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€-0.05/kg (the book's premium: £0.82 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs450-ssf": {
-   "gbpPerKg": 0.3082,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€-0.03/kg (the book's premium: £0.83 - base £0.86)",
+   "gbpPerKg": 0.3018,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€-0.04/kg (the book's premium: £0.83 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs500-14": {
-   "gbpPerKg": 0.3182,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€-0.02/kg (the book's premium: £0.84 - base £0.86)",
+   "gbpPerKg": 0.3118,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€-0.02/kg (the book's premium: £0.84 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs600": {
-   "gbpPerKg": 0.3782,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€0.05/kg (the book's premium: £0.9 - base £0.86)",
+   "gbpPerKg": 0.3718,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.05/kg (the book's premium: £0.9 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs700": {
-   "gbpPerKg": 0.4282,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€0.10/kg (the book's premium: £0.95 - base £0.86)",
+   "gbpPerKg": 0.4218,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.11/kg (the book's premium: £0.95 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs350-lt": {
-   "gbpPerKg": 0.3482,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€0.01/kg (the book's premium: £0.87 - base £0.86)",
+   "gbpPerKg": 0.3418,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.01/kg (the book's premium: £0.87 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-simo": {
-   "gbpPerKg": 0.8282,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€0.57/kg (the book's premium: £1.35 - base £0.86)",
+   "gbpPerKg": 0.8218,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.59/kg (the book's premium: £1.35 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-adi": {
-   "gbpPerKg": 1.0582,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€0.84/kg (the book's premium: £1.58 - base £0.86)",
+   "gbpPerKg": 1.0518,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.86/kg (the book's premium: £1.58 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjv450": {
-   "gbpPerKg": 0.5982,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€0.30/kg (the book's premium: £1.12 - base £0.86)",
+   "gbpPerKg": 0.5918,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.31/kg (the book's premium: £1.12 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjv500": {
-   "gbpPerKg": 0.6282,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.394/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.275 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.165/£ (alloy content); ladder +€0.34/kg (the book's premium: £1.15 - base £0.86)",
+   "gbpPerKg": 0.6218,
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content); ladder +€0.35/kg (the book's premium: £1.15 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjl250": {
-   "gbpPerKg": 0.2996,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.349/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; the anchor grade itself",
+   "gbpPerKg": 0.2947,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; the anchor grade itself",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl150": {
-   "gbpPerKg": 0.2621,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.349/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64)",
+   "gbpPerKg": 0.2579,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.875 (book £0.56 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl200": {
-   "gbpPerKg": 0.2808,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.349/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64)",
+   "gbpPerKg": 0.2763,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×0.938 (book £0.6 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl300": {
-   "gbpPerKg": 0.3277,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.349/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64)",
+   "gbpPerKg": 0.3223,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.094 (book £0.7 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl350": {
-   "gbpPerKg": 0.3464,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.349/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64)",
+   "gbpPerKg": 0.3407,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.156 (book £0.74 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjmb350": {
-   "gbpPerKg": 0.3089,
-   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.349/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64)",
+   "gbpPerKg": 0.3039,
+   "basis": "Grey / malleable iron (charge): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250; ladder ×1.031 (book £0.66 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gs-c25": {
-   "gbpPerKg": 0.2515,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.293/kg (heavy melting scrap €0.275 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
+   "gbpPerKg": 0.2506,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-astm-a216-wcb": {
-   "gbpPerKg": 0.2515,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.293/kg (heavy melting scrap €0.275 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
+   "gbpPerKg": 0.2506,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-g20mn5": {
-   "gbpPerKg": 0.2515,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.293/kg (heavy melting scrap €0.275 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
+   "gbpPerKg": 0.2506,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); the anchor grade itself",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
-   "gbpPerKg": 0.3915,
-   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.293/kg (heavy melting scrap €0.275 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); ladder +€0.16/kg (the book's premium: £2.24 - base £2.1)",
+   "gbpPerKg": 0.3906,
+   "basis": "Cast carbon / low-alloy steel (charge): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo); ladder +€0.17/kg (the book's premium: £2.24 - base £2.1)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
    "confidence": "Low"
   },
   "mat-ss304-cast": {
-   "gbpPerKg": 1.1056,
+   "gbpPerKg": 1.0765,
    "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); the anchor grade itself",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-cf8m-cast": {
-   "gbpPerKg": 2.1956,
-   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€1.27/kg (the book's premium: £6.26 - base £5.17)",
+   "gbpPerKg": 2.1665,
+   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€1.30/kg (the book's premium: £6.26 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-ca6nm-cast": {
-   "gbpPerKg": 0.9256,
-   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€-0.21/kg (the book's premium: £4.99 - base £5.17)",
+   "gbpPerKg": 0.8965,
+   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€-0.22/kg (the book's premium: £4.99 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-cd4mcun-cast": {
-   "gbpPerKg": 2.4456,
-   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€1.56/kg (the book's premium: £6.51 - base £5.17)",
+   "gbpPerKg": 2.4165,
+   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€1.60/kg (the book's premium: £6.51 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-gx40crnisi25-20": {
-   "gbpPerKg": 2.5856,
-   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€1.72/kg (the book's premium: £6.65 - base £5.17)",
+   "gbpPerKg": 2.5565,
+   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€1.77/kg (the book's premium: £6.65 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-17-4ph-cast": {
-   "gbpPerKg": 5.5356,
-   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€5.16/kg (the book's premium: £9.6 - base £5.17)",
+   "gbpPerKg": 5.5065,
+   "basis": "Cast stainless (charge): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr); ladder +€5.30/kg (the book's premium: £9.6 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-ni-resist-d2": {
-   "gbpPerKg": 2.6642,
-   "basis": "Ni-Resist D-2 (charge): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.394; direct",
+   "gbpPerKg": 2.5961,
+   "basis": "Ni-Resist D-2 (charge): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397; direct",
    "source": "https://www.westmetall.com/de/markdaten.php (2026-10-09) ; https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome (2026-Q3)",
    "confidence": "Low"
   },
   "mat-ni-resist-d5s": {
-   "gbpPerKg": 4.4046,
+   "gbpPerKg": 4.2901,
    "basis": "Ni-Resist D-5S (charge): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge; direct",
    "source": "https://www.westmetall.com/de/markdaten.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-hicr-white": {
-   "gbpPerKg": 0.8281,
-   "basis": "High-Cr white iron (charge): 0.23 × Cr €3.03 + 0.77 × grey charge €0.349; direct",
+   "gbpPerKg": 0.8086,
+   "basis": "High-Cr white iron (charge): 0.23 × Cr €3.03 + 0.77 × grey charge €0.3526; direct",
    "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome (2026-Q3)",
    "confidence": "Low"
   },
   "mat-lm4": {
-   "gbpPerKg": 2.2526,
+   "gbpPerKg": 2.1933,
    "basis": "Secondary cast aluminium (ingot): Fastmarkets DIN226 / A380 pressure-diecasting ingot €2,430–2,530/t delivered Europe = €2.48/kg — the latest public print is 23 Jan 2026 (STALE) × the book's premium over ADC12; ladder ×1.058 (book £2.91 ÷ base £2.75)",
    "source": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/ (2026-01-23)",
    "confidence": "Low"
   },
   "mat-lm25": {
-   "gbpPerKg": 3.0644,
+   "gbpPerKg": 2.9837,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; the anchor grade itself",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-a365": {
-   "gbpPerKg": 3.0644,
+   "gbpPerKg": 2.9837,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; the anchor grade itself",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-alsi10mg": {
-   "gbpPerKg": 3.0644,
+   "gbpPerKg": 2.9837,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; the anchor grade itself",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-a390": {
-   "gbpPerKg": 3.3934,
+   "gbpPerKg": 3.3041,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.107 (book £3.3 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-a357": {
-   "gbpPerKg": 3.2906,
+   "gbpPerKg": 3.204,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.074 (book £3.2 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-lm6": {
-   "gbpPerKg": 3.0644,
+   "gbpPerKg": 2.9837,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; the anchor grade itself",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-almg5-cast": {
-   "gbpPerKg": 3.1672,
+   "gbpPerKg": 3.0838,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.034 (book £3.08 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-a206": {
-   "gbpPerKg": 3.7431,
+   "gbpPerKg": 3.6445,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.221 (book £3.64 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-en-ac-45300": {
-   "gbpPerKg": 3.1981,
+   "gbpPerKg": 3.1139,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.044 (book £3.11 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-lm13": {
-   "gbpPerKg": 3.1672,
+   "gbpPerKg": 3.0838,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.034 (book £3.08 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-aural5": {
-   "gbpPerKg": 3.1569,
+   "gbpPerKg": 3.0738,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.030 (book £3.07 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-silafont36": {
-   "gbpPerKg": 3.1878,
+   "gbpPerKg": 3.1039,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.040 (book £3.1 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-castasil37": {
-   "gbpPerKg": 3.1158,
+   "gbpPerKg": 3.0338,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.017 (book £3.03 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-magsimal59": {
-   "gbpPerKg": 3.2392,
+   "gbpPerKg": 3.1539,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.057 (book £3.15 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-al-hpdc-lowco2": {
-   "gbpPerKg": 3.0849,
+   "gbpPerKg": 3.0037,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.007 (book £3 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-htf-gigacast": {
-   "gbpPerKg": 3.3934,
+   "gbpPerKg": 3.3041,
    "basis": "Primary-based cast aluminium: AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356; ladder ×1.107 (book £3.3 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-aa5182": {
-   "gbpPerKg": 3.5708,
+   "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
   "mat-aa5052": {
-   "gbpPerKg": 3.5708,
+   "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
   "mat-aa5083": {
-   "gbpPerKg": 3.5708,
+   "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
   "mat-aa5754-sheet": {
-   "gbpPerKg": 3.5708,
+   "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
   "mat-aa6063-sheet": {
-   "gbpPerKg": 3.5708,
+   "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
   "mat-aa3003-sheet": {
-   "gbpPerKg": 3.5708,
+   "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
   "mat-aa6016-t4": {
-   "gbpPerKg": 3.5708,
+   "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
   "mat-aa1050-sheet": {
-   "gbpPerKg": 3.5708,
+   "gbpPerKg": 3.4768,
    "basis": "Aluminium sheet and plate (floor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling; floor (raised to metal content)",
    "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
    "confidence": "Low"
   },
   "mat-brass-cz121": {
-   "gbpPerKg": 9.588,
+   "gbpPerKg": 9.3356,
    "basis": "Free-machining / forging brass rod (floor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication; floor (raised to metal content)",
    "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-brass-cz122-forge": {
-   "gbpPerKg": 9.588,
+   "gbpPerKg": 9.3356,
    "basis": "Free-machining / forging brass rod (floor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication; floor (raised to metal content)",
    "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-cz108-brass": {
-   "gbpPerKg": 9.9227,
+   "gbpPerKg": 9.6615,
    "basis": "70/30 and 63/37 brass sheet (floor): CuZn37 metal basis €11.56/kg (5 Oct 2026) — metal value before rolling; floor (raised to metal content)",
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
   "mat-bronze-c905": {
-   "gbpPerKg": 14.2796,
+   "gbpPerKg": 13.9036,
    "basis": "Phosphor / tin bronze (floor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct); floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-pp-homo": {
-   "gbpPerKg": 1.0043,
+   "gbpPerKg": 0.9779,
    "basis": "PP family: PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer; the anchor grade itself",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-pp": {
-   "gbpPerKg": 1.1666,
+   "gbpPerKg": 1.1359,
    "basis": "PP family: PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer; ladder ×1.162 (book £1.15 ÷ base £0.99)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-pp-impact": {
-   "gbpPerKg": 1.055,
+   "gbpPerKg": 1.0272,
    "basis": "PP family: PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer; ladder ×1.051 (book £1.04 ÷ base £0.99)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-pp-bm": {
-   "gbpPerKg": 1.126,
+   "gbpPerKg": 1.0964,
    "basis": "PP family: PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer; ladder ×1.121 (book £1.11 ÷ base £0.99)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-ppr-pipe": {
-   "gbpPerKg": 1.1869,
+   "gbpPerKg": 1.1556,
    "basis": "PP family: PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer; ladder ×1.182 (book £1.17 ÷ base £0.99)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-pp-roto": {
-   "gbpPerKg": 1.5014,
+   "gbpPerKg": 1.4618,
    "basis": "PP family: PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer; ladder ×1.495 (book £1.48 ÷ base £0.99)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-hdpe": {
-   "gbpPerKg": 1.073,
+   "gbpPerKg": 1.0447,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; the anchor grade itself",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-hdpe-bm": {
-   "gbpPerKg": 1.1649,
+   "gbpPerKg": 1.1343,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; ladder ×1.086 (book £1.14 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-hdpe-fuel-coex": {
-   "gbpPerKg": 1.5737,
+   "gbpPerKg": 1.5322,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; ladder ×1.467 (book £1.54 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-hdpe-profile": {
-   "gbpPerKg": 1.073,
+   "gbpPerKg": 1.0447,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; the anchor grade itself",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-hdpe-roto": {
-   "gbpPerKg": 1.3182,
+   "gbpPerKg": 1.2835,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; ladder ×1.229 (book £1.29 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-xlpe-roto": {
-   "gbpPerKg": 1.7781,
+   "gbpPerKg": 1.7312,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; ladder ×1.657 (book £1.74 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-fr-pe-roto": {
-   "gbpPerKg": 2.7386,
+   "gbpPerKg": 2.6665,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; ladder ×2.552 (book £2.68 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-foam-pe-roto": {
-   "gbpPerKg": 2.0335,
+   "gbpPerKg": 1.98,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; ladder ×1.895 (book £1.99 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-cond-pe-roto": {
-   "gbpPerKg": 2.5445,
+   "gbpPerKg": 2.4775,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; ladder ×2.371 (book £2.49 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-pex-pipe": {
-   "gbpPerKg": 1.6452,
+   "gbpPerKg": 1.6019,
    "basis": "PE family: HDPE €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over HDPE; ladder ×1.533 (book £1.61 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-ldpe": {
-   "gbpPerKg": 1.0987,
+   "gbpPerKg": 1.0698,
    "basis": "LDPE family: LDPE €1.28/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LDPE; the anchor grade itself",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-ldpe-bm": {
-   "gbpPerKg": 1.2096,
+   "gbpPerKg": 1.1777,
    "basis": "LDPE family: LDPE €1.28/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LDPE; ladder ×1.101 (book £1.2 ÷ base £1.09)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-ldpe-tube": {
-   "gbpPerKg": 1.0987,
+   "gbpPerKg": 1.0698,
    "basis": "LDPE family: LDPE €1.28/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LDPE; the anchor grade itself",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-lldpe": {
-   "gbpPerKg": 1.073,
+   "gbpPerKg": 1.0447,
    "basis": "LLDPE family: LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE; the anchor grade itself",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-lldpe-bm": {
-   "gbpPerKg": 1.1956,
+   "gbpPerKg": 1.1641,
    "basis": "LLDPE family: LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE; ladder ×1.114 (book £1.17 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-lldpe-roto": {
-   "gbpPerKg": 1.5021,
+   "gbpPerKg": 1.4626,
    "basis": "LLDPE family: LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE; ladder ×1.400 (book £1.47 ÷ base £1.05)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-upvc": {
-   "gbpPerKg": 0.8498,
+   "gbpPerKg": 0.8274,
    "basis": "PVC family: S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin; the anchor grade itself",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-fpvc": {
-   "gbpPerKg": 1.2411,
+   "gbpPerKg": 1.2085,
    "basis": "PVC family: S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin; ladder ×1.461 (book £1.11 ÷ base £0.76)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-pvc-bm": {
-   "gbpPerKg": 0.9504,
+   "gbpPerKg": 0.9254,
    "basis": "PVC family: S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin; ladder ×1.118 (book £0.85 ÷ base £0.76)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-upvc-window-profile": {
-   "gbpPerKg": 1.4424,
+   "gbpPerKg": 1.4044,
    "basis": "PVC family: S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin; ladder ×1.697 (book £1.29 ÷ base £0.76)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-pvcp-profile": {
-   "gbpPerKg": 1.7219,
+   "gbpPerKg": 1.6766,
    "basis": "PVC family: S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin; ladder ×2.026 (book £1.54 ÷ base £0.76)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-abs": {
-   "gbpPerKg": 1.5794,
+   "gbpPerKg": 1.5378,
    "basis": "ABS family: ABS €1.84/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over ABS; the anchor grade itself",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-abs-fr": {
-   "gbpPerKg": 1.9596,
+   "gbpPerKg": 1.908,
    "basis": "ABS family: ABS €1.84/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over ABS; ladder ×1.241 (book £2.01 ÷ base £1.62)",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-gpps": {
-   "gbpPerKg": 1.3133,
+   "gbpPerKg": 1.2787,
    "basis": "GPPS: GPPS €1.53/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over GPPS; the anchor grade itself",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-hips": {
-   "gbpPerKg": 1.4421,
+   "gbpPerKg": 1.4041,
    "basis": "HIPS: HIPS €1.68/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) — the book had HIPS at the GPPS price; direct",
    "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Medium"
   },
   "mat-pc": {
-   "gbpPerKg": 2.2661,
+   "gbpPerKg": 2.2064,
    "basis": "PC family: PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pc-glazing": {
-   "gbpPerKg": 3.7768,
+   "gbpPerKg": 3.6774,
    "basis": "PC family: PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC; ladder ×1.667 (book £4.2 ÷ base £2.52)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pc-bm": {
-   "gbpPerKg": 3.5071,
+   "gbpPerKg": 3.4147,
    "basis": "PC family: PC €2.64/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PC; ladder ×1.548 (book £3.9 ÷ base £2.52)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pa6": {
-   "gbpPerKg": 2.0172,
-   "basis": "PA6 family: PA6 €2.35/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
+   "gbpPerKg": 2.3402,
+   "basis": "PA6 family: PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-bm": {
-   "gbpPerKg": 3.7222,
-   "basis": "PA6 family: PA6 €2.35/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; ladder ×1.845 (book £3.1 ÷ base £1.68)",
+   "gbpPerKg": 4.3182,
+   "basis": "PA6 family: PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; ladder ×1.845 (book £3.1 ÷ base £1.68)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa6-ext-tube": {
-   "gbpPerKg": 2.0172,
-   "basis": "PA6 family: PA6 €2.35/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
+   "gbpPerKg": 2.3402,
+   "basis": "PA6 family: PA6 €2.8/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Aug 2026) × the book's premium over PA6; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-08)",
    "confidence": "Medium"
   },
   "mat-pa66": {
-   "gbpPerKg": 2.6094,
-   "basis": "PA66: PA66 €3.04/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; an August reading was €3.72 — the two extracts conflict); direct",
+   "gbpPerKg": 2.5324,
+   "basis": "PA66: PA66 €3.03/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; an August reading was €3.72 — the two extracts conflict); direct",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pbt": {
-   "gbpPerKg": 2.7983,
-   "basis": "PBT: PBT €3.26/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026); direct",
+   "gbpPerKg": 3.1174,
+   "basis": "PBT: PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026); direct",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pet-bg": {
-   "gbpPerKg": 1.176,
+   "gbpPerKg": 1.145,
    "basis": "PET family: PET €1.37/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; a general PET index, not bottle grade) × the book's premium over PET bottle grade; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pet-preform": {
-   "gbpPerKg": 1.2148,
+   "gbpPerKg": 1.1829,
    "basis": "PET family: PET €1.37/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026; a general PET index, not bottle grade) × the book's premium over PET bottle grade; ladder ×1.033 (book £1.25 ÷ base £1.21)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pmma": {
-   "gbpPerKg": 2.7897,
-   "basis": "PMMA family: PMMA €3.25/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PMMA; the anchor grade itself",
+   "gbpPerKg": 2.641,
+   "basis": "PMMA family: PMMA €3.16/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) × the book's premium over PMMA; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-peek": {
-   "gbpPerKg": 68,
+   "gbpPerKg": 66.2098,
    "basis": "PEEK family: PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin); the anchor grade itself",
    "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets (2026-06-30 (9M); H1 to 2026-03-31)",
    "confidence": "Low"
   },
   "mat-peek-ext": {
-   "gbpPerKg": 68,
+   "gbpPerKg": 66.2098,
    "basis": "PEEK family: PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin); the anchor grade itself",
    "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets (2026-06-30 (9M); H1 to 2026-03-31)",
    "confidence": "Low"
   },
   "mat-pom": {
-   "gbpPerKg": 2.3176,
+   "gbpPerKg": 2.2566,
    "basis": "POM: POM €2.7/kg ex-VAT (Plastech monthly offer price, Sep 2026 — a distributor level) × the book's premium over POM; the anchor grade itself",
    "source": "https://www.plasticportal.eu/polymer-prices (2026-09)",
    "confidence": "Low"
   },
   "mat-pom-rod": {
-   "gbpPerKg": 2.6228,
+   "gbpPerKg": 2.5538,
    "basis": "POM: POM €2.7/kg ex-VAT (Plastech monthly offer price, Sep 2026 — a distributor level) × the book's premium over POM; ladder ×1.132 (book £2.32 ÷ base £2.05)",
    "source": "https://www.plasticportal.eu/polymer-prices (2026-09)",
    "confidence": "Low"
   },
   "mat-pc-abs": {
-   "gbpPerKg": 2.0601,
+   "gbpPerKg": 2.0059,
    "basis": "PC/ABS (floor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg; floor (raised to metal content)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09) ; https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Low"
@@ -945,10 +945,10 @@ export const GERMANY_BOOK: CountryBook = {
   "financeRate": 0.0373,
   "ukFinanceRate": 0.04,
   "maintenancePctOfCapex": 0.035,
-  "rentGbpPerM2Yr": 87.9657,
+  "rentGbpPerM2Yr": 85.6498,
   "ukRentGbpPerM2Yr": 110,
   "ukElectricityGbpPerKwh": 0.182,
-  "labourRatio": 1.6108,
+  "labourRatio": 1.5684,
   "capitalHeldFactor": 1.049,
   "continuousHoursPerYear": 6066,
   "continuousBasis": "three 8-hour shifts Monday–Friday, 252.75 days × 24 h = 6,066 h — for lines the UK book itself runs ≥ 6,000 h (extrusion presses, furnaces, ageing ovens, compounding lines); the plant pattern is 2 × 8 h",
@@ -959,7 +959,7 @@ export const GERMANY_BOOK: CountryBook = {
     "id": "cnc-vmc-eu",
     "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
     "refId": "mach-haas-vf2",
-    "refCapexGbp": 55789.7,
+    "refCapexGbp": 54320.94,
     "basis": "Haas VF-2SSYT-EU EU-series list €64,995 (one EUR price across the EU; machine only — delivery, installation and tooling not included)",
     "source": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html ; https://haascnc.com/de/machines/vertical-mills/vf-series/models/small/vf-2ssyt-eu",
     "confidence": "Medium"
@@ -968,7 +968,7 @@ export const GERMANY_BOOK: CountryBook = {
     "id": "cnc-5axis-eu",
     "match": "^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$",
     "refId": "mach-vmc5",
-    "refCapexGbp": 90640.34,
+    "refCapexGbp": 88254.07,
     "basis": "Haas UMC-500 \"from $119,995\" (US list, older article) = €105,596 — no EU price found",
     "source": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
     "confidence": "Low"
@@ -977,7 +977,7 @@ export const GERMANY_BOOK: CountryBook = {
     "id": "al-extrusion-line-eu",
     "match": "^al-ext-(press|indirect|hydrostatic)-",
     "refId": "al-ext-press-1800t",
-    "refCapexGbp": 8583690.99,
+    "refCapexGbp": 8357709.99,
     "basis": "a complete automatic 7-inch extrusion line incl. automation, Presezzi, about €10 M (Vimetco Extrusion, Romania, 2021–22, ALRO release); Hydro Rackwitz added an 8-inch line on a SECOND-HAND 22 MN press for €11 M (2022–23) — a floor that agrees; other press sizes scale by the book's own capital ratio",
     "source": "https://www.alro.ro/en/news-resources/news/vimetco-extrusion-alro-s-downstream-subsidiary-1st-billet-extruded-on-a-new-automatic-line-for-aluminium-profiles-following-a-eur-10-million-investment ; https://www.alcircle.com/news/vimetco-extrusion-to-expand-aluminium-profiles-extrusion-line-with-eur-10-million-investments-63714",
     "confidence": "Low"

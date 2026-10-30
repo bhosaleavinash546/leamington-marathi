@@ -1,0 +1,1002 @@
+[
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 2,
+  "key": "energy.electricity.networkCharges",
+  "verdict": "confirmed",
+  "pageValue": "216,504 Ft/conn.point/yr; 15,924 Ft/kW/yr; 8.39 Ft/kWh; 3.95 Ft/kVArh",
+  "quote": "c) Középfeszültségű csatlakozás 216 504 | 15 924 | 8,39 | 3,95 under headers Elosztói alapdíj Ft/csatlakozási pont/év | Elosztói lekötött teljesítménydíj Ft/kW/év | Elosztói forgalmi díj Ft/kWh | meddő Ft/kVArh (MEKH H2995/2025, from 2026-01-01)",
+  "url": "https://www.eon.hu/content/dam/eon/eon-hungary/documents/hatarozatok-szabalyzatok-aram/arak-tarifak/Aram_RHD_EON_20260101.pdf",
+  "notes": "PDF opens with curl (200). The column headers settle the \"conditional reading\": capacity fee is per kW per YEAR, volumetric per kWh. 15,924/(6,072×0.70)=3.746 → +8.39 = 12.14 reproduces. The 70% draw is an assumption. The same sheet prints an átviteli forgalmi díj (transmission volumetric) of 3.39 Ft/kWh with a 100% discount under MEKH rendelet 10/2024 — whether that discount applies to a factory was not checked; if not, the network term is 3.39 Ft/kWh low."
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 4,
+  "key": "energy.electricity.allIn",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": "",
+  "url": "derived",
+  "notes": "42.47 (= EUR 117/MWh × 363/1000) + 12.14 + 0.415 = 55.025 → 55.02 (half-cent rounding); floor 42.885 → 42.89; spot variant 46.11+12.14+0.415 = 58.665 → 58.67; 55.02/363 = 0.1516 EUR. HUPX Cal-26 and energiaadó inputs are not in this worklist and were not checked. 12.14 confirmed on the E.ON PDF."
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 7,
+  "key": "energy.gas.distribution",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No figure and no page cited — research records NOT FOUND; nothing to verify."
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 8,
+  "key": "energy.gas.allIn",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": "",
+  "url": "derived",
+  "notes": "Floor = commodity 29.73 only; the sum of the sourced components is trivially 29.73. TTF input not in this worklist (unchecked)."
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 10,
+  "key": "hours.annual",
+  "verdict": "differs",
+  "pageValue": "6,048 h (252 days)",
+  "quote": "pénzcentrum: \"Friss! Mivel december 24-ét munkaszüneti nappá nyilvánítják, azt mégsem kell majd december 12-én ledolgozni\" (Dec 24 becomes a public holiday, Saturday 12 Dec is no longer worked)",
+  "url": "https://www.penzcentrum.hu/karrier/20250524/ledolgozos-szombatok-2026-ban-itt-van-minden-athelyezett-munkanap-1179148",
+  "notes": "UPDATED since research. Holidays, Jan 2 / Aug 21 rest days and Jan 10 / Aug 8 working Saturdays all confirmed on both pages (financera still lists the old Dec 24 rest day / Dec 12 working Saturday swap). With the update a Mon–Fri plant loses one day: 261 − 9 − 2 + 2 = 252 days × 24 = 6,048 h (−0.4%). Caution: the consolidated Mt. 102 § on net.jogtar.hu still lists only Dec 25–26 — confirm the amending act is in force before changing the book (6,072 is used as hoursPerYear and inside the 12.14 Ft/kWh network term)."
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 11,
+  "key": "life.machinery",
+  "verdict": "statute-confirmed",
+  "pageValue": "14.5 % → 6.9 yr",
+  "quote": "Tao. tv. 2. számú melléklet IV. c) \"14,5 százalékos kulcs alá tartozó tárgyi eszközök: Minden egyéb - az a)-b) pontban és d)-e) pontban fel nem sorolt - tárgyi eszköz.\"",
+  "url": "https://net.jogtar.hu/jogszabaly?docid=99600081.tv",
+  "notes": "Cited adozona.hu page returns 403 / bot check; checked on the official consolidated Act instead. 100/14.5 = 6.90."
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 15,
+  "key": "finance.machineryLoan",
+  "verdict": "confirmed",
+  "pageValue": "8.6 % at a 2.2 pp spread",
+  "quote": "\"a legfeljebb 1 millió euró összegű forinthitelek esetében 2,2 százalékpontos felár mellett 8,6 százalékos átlagos kamatlábbal ... kerültek szerződésre\"",
+  "url": "https://www.mnb.hu/letoltes/hitelezesi-folyamatok-flyer-2026q1.pdf",
+  "notes": "PDF opens (200). The page states the 2.2 pp spread itself — over the interbank reference rate (BUBOR), not the base rate as the research back-solved; same number. 5.50 + 2.2 = 7.7 reproduces; base-rate input not in this worklist."
+ },
+ {
+  "file": "hungary-2026-10/research/energy-operating.json",
+  "i": 20,
+  "key": "rent.clusterAvg",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://mktgdocs.cbre.com/2299/e69a5ac8-bba5-4401-baa9-3f964f410621-1323972446/HU_Industrial_Figures_Q1_2026.pdf",
+  "notes": "PDF returns HTTP 403; the cbre.com insights URL redirects to a search listing without figures (headless browser too). EUR 5.5 × 363 = 1,996.5 arithmetic ok. Not confirmed on a page."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 2,
+  "key": "fx.mnb.USDHUF",
+  "verdict": "confirmed",
+  "pageValue": "328.84",
+  "quote": "MNB árfolyam-táblázat, USD: \"2026. október 29., csütörtök 328,84\"",
+  "url": "https://www.mnb.hu/arfolyam-tablazat?deviza=rbCurrencyActual&devizaSelected=USD&datefrom=2026.10.15.&datetill=2026.10.30.&order=1",
+  "notes": "The cited /arfolyamok page now shows 30 Oct (326.64); the MNB archive table shows 29 Oct = 328.84 exactly."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 35,
+  "key": "labour.skilled.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": "759,633 (on another page)",
+  "quote": "uzletem.hu (KSH list): \"7323 Forgácsoló 759 633 forint\"",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "The cited Deloitte article contains no occupation figures (only the 2027 Blue Card threshold 1,091,244). The figure IS on https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista (cached as 0f4f6b3028f21ae8). 759,633 × 1.084 × 0.9406 = 774,529.7 → 774,530 reproduces; growth / cluster factors not in this worklist. Fix the citation."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 36,
+  "key": "labour.skilled.fullyLoadedHufPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "Base wage not on the cited Deloitte page (on uzletem.hu instead, see the monthlyGross item). Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 6,008.05 also reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 37,
+  "key": "labour.semiskilled.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "657,696",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "657,696 × 1.084 × 0.9406 = 670,593.7 → 670,594 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 38,
+  "key": "labour.semiskilled.fullyLoadedHufPerHr",
+  "verdict": "confirmed",
+  "pageValue": "657,696 (base)",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "Base on page; Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 5,201.81 reproduces (that is what the book uses)."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 39,
+  "key": "labour.foundry.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "580 e Ft (rounded)",
+  "quote": "\"FEOR 7310 Fémöntőminta-készítő 580 e Ft\"",
+  "url": "https://berindex.hu/fizetes/",
+  "notes": "Page rounds; the exact KSH figure is 580,234 (uzletem.hu: \"7310 Fémöntőminta-készítő 580 234 forint\") → 591,612.6, +0.04% — immaterial. 580,000 × 1.084 × 0.9406 = 591,374 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 41,
+  "key": "labour.electronics.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "657,696",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "657,696 × 1.084 × 0.9406 = 670,593.7 → 670,594 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 42,
+  "key": "labour.electronics.fullyLoadedHufPerHr",
+  "verdict": "confirmed",
+  "pageValue": "657,696 (base)",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "Base on page; Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 5,201.81 reproduces (that is what the book uses)."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 43,
+  "key": "labour.inspector.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": "759,633 (on another page)",
+  "quote": "uzletem.hu (KSH list): \"7323 Forgácsoló 759 633 forint\"",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "The cited Deloitte article contains no occupation figures (only the 2027 Blue Card threshold 1,091,244). The figure IS on https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista (cached as 0f4f6b3028f21ae8). 759,633 × 1.084 × 0.9406 = 774,529.7 → 774,530 reproduces; growth / cluster factors not in this worklist. Fix the citation."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 44,
+  "key": "labour.inspector.fullyLoadedHufPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "Base wage not on the cited Deloitte page (on uzletem.hu instead, see the monthlyGross item). Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 6,008.05 also reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 45,
+  "key": "labour.technician.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": "759,633 (on another page)",
+  "quote": "uzletem.hu (KSH list): \"7323 Forgácsoló 759 633 forint\"",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "The cited Deloitte article contains no occupation figures (only the 2027 Blue Card threshold 1,091,244). The figure IS on https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista (cached as 0f4f6b3028f21ae8). 759,633 × 1.084 × 0.9406 = 774,529.7 → 774,530 reproduces; growth / cluster factors not in this worklist. Fix the citation."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 46,
+  "key": "labour.technician.fullyLoadedHufPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "Base wage not on the cited Deloitte page (on uzletem.hu instead, see the monthlyGross item). Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 6,008.05 also reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 47,
+  "key": "labour.supervisor.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": "759,633 (on another page)",
+  "quote": "uzletem.hu (KSH list): \"7323 Forgácsoló 759 633 forint\"",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "The cited Deloitte article contains no occupation figures (only the 2027 Blue Card threshold 1,091,244). The figure IS on https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista (cached as 0f4f6b3028f21ae8). 759,633 × 1.084 × 0.9406 = 774,529.7 → 774,530 reproduces; growth / cluster factors not in this worklist. Fix the citation."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 48,
+  "key": "labour.supervisor.fullyLoadedHufPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "Base wage not on the cited Deloitte page (on uzletem.hu instead, see the monthlyGross item). Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 6,008.05 also reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 49,
+  "key": "labour.forge.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "621 e Ft (rounded)",
+  "quote": "\"7326 Kovács 621 e Ft\"",
+  "url": "https://mennyitkeres-info.hu/feor-kodok/",
+  "notes": "Page rounds 620,753 to 621 e Ft; the exact \"7326 Kovács 620 753 forint\" is on uzletem.hu. 620,753 × 1.084 × 0.9406 = 632,926 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 50,
+  "key": "labour.forge.fullyLoadedHufPerHr",
+  "verdict": "confirmed",
+  "pageValue": "621 e Ft (base, rounded)",
+  "quote": "\"7326 Kovács 621 e Ft\"",
+  "url": "https://mennyitkeres-info.hu/feor-kodok/",
+  "notes": "Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 4,909.62 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 51,
+  "key": "labour.furnace.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "580 e Ft (rounded)",
+  "quote": "\"FEOR 7310 Fémöntőminta-készítő 580 e Ft\"",
+  "url": "https://berindex.hu/fizetes/",
+  "notes": "Page rounds; the exact KSH figure is 580,234 (uzletem.hu: \"7310 Fémöntőminta-készítő 580 234 forint\") → 591,612.6, +0.04% — immaterial. 580,000 × 1.084 × 0.9406 = 591,374 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 53,
+  "key": "labour.blow.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "657,696",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "657,696 × 1.084 × 0.9406 = 670,593.7 → 670,594 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 54,
+  "key": "labour.blow.fullyLoadedHufPerHr",
+  "verdict": "confirmed",
+  "pageValue": "657,696 (base)",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "Base on page; Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 5,201.81 reproduces (that is what the book uses)."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 55,
+  "key": "labour.roto.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "657,696",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "657,696 × 1.084 × 0.9406 = 670,593.7 → 670,594 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 56,
+  "key": "labour.roto.fullyLoadedHufPerHr",
+  "verdict": "confirmed",
+  "pageValue": "657,696 (base)",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "Base on page; Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 5,201.81 reproduces (that is what the book uses)."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 57,
+  "key": "labour.thermoform.monthlyGross",
+  "verdict": "confirmed",
+  "pageValue": "657,696",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "657,696 × 1.084 × 0.9406 = 670,593.7 → 670,594 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 58,
+  "key": "labour.thermoform.fullyLoadedHufPerHr",
+  "verdict": "confirmed",
+  "pageValue": "657,696 (base)",
+  "quote": "\"Gépkezelők, összeszerelők, járművezetők 49 foglalkozás · átlag 657 696 Ft bruttó\"",
+  "url": "https://magyarfizetesek.hu/",
+  "notes": "Base on page; Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 5,201.81 reproduces (that is what the book uses)."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 59,
+  "key": "labour.trimRouter.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": "759,633 (on another page)",
+  "quote": "uzletem.hu (KSH list): \"7323 Forgácsoló 759 633 forint\"",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "The cited Deloitte article contains no occupation figures (only the 2027 Blue Card threshold 1,091,244). The figure IS on https://uzletem.hu/munkaeropiac/atlagkeresetek-magyarorszagon-szakmak-szerint-itt-a-teljes-lista (cached as 0f4f6b3028f21ae8). 759,633 × 1.084 × 0.9406 = 774,529.7 → 774,530 reproduces; growth / cluster factors not in this worklist. Fix the citation."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 60,
+  "key": "labour.trimRouter.fullyLoadedHufPerHr",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.deloitte.com/hu/hu/services/tax/perspectives/ksh-kozlemeny-a-2025-os-brutto-atlagberekrol-foglalkozas-szerint.html",
+  "notes": "Base wage not on the cited Deloitte page (on uzletem.hu instead, see the monthlyGross item). Arithmetic re-done and reproduces exactly (hourly ÷174, sick saving 30%×80h, shift 30%×50%×2,000h, szocho 13%, ÷1,728h). Headline includes the 30% shift allowance on top of KSH TOTAL earnings (which already contain allowances paid); the book (2026-10-hungary.json) correctly takes the without-shift figure instead. Without shift 6,008.05 also reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 61,
+  "key": "labour.engineer.monthlyGross",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No figure and no page cited — NOT FOUND in research; nothing to verify."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 63,
+  "key": "labour.loadingIncluded",
+  "verdict": "derived-wrong",
+  "pageValue": null,
+  "quote": "Mt. 126. § (1) \"naptári évenként tizenöt munkanap betegszabadságot ad ki\"; Mt. 141. § (1) \"harminc százalék bérpótlék (műszakpótlék) jár\"",
+  "url": "https://net.jogtar.hu/jogszabaly?docid=a1200001.tv",
+  "notes": "The description adds the 30% Mt. 141 shift allowance ON TOP OF KSH total earnings that it itself says already contain \"premiums + allowances\" — a double count; the book already rejects it (takes the without-shift figure). 30% rate and szocho logic otherwise right. Sick leave: the statutory entitlement is 15 working days (Mt. 126 (1)), not 10 — 10 days (80 h) can stand only as an assumed average USE, and should say so; at 15 days the productive hours would be 1,688 and the without-shift skilled rate ~+2%."
+ },
+ {
+  "file": "hungary-2026-10/research/labour.json",
+  "i": 64,
+  "key": "labour.loadingNotIncluded",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": "",
+  "url": "derived",
+  "notes": "A list of exclusions, no arithmetic. Nothing on the checked statute pages contradicts it (13th month not statutory; vocational contribution abolished 2022 unverified)."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 0,
+  "key": "capex.mach-vmc3",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html",
+  "notes": "haascnc.com serves a Cloudflare \"Performing security verification\" page to curl and to headless Chromium (15 s wait); host not resolvable to WebFetch. Arithmetic (119,995 × 0.880 = 105,595.6) ok where applicable."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 1,
+  "key": "capex.mach-haas-vf2",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "machinetoolindex: \"Haas VF-2 List US$70,995 ... verified 2026-10-02\"",
+  "url": "https://www.haascnc.com/pl/machines/Special-Series/eu-series/vf-2ssyt-eu.html",
+  "notes": "Both Haas pages are Cloudflare-blocked. The third source (machinetoolindex) opens but shows only the US list for a plain VF-2 (US$70,995), not the EU VF-2SSYT-EU EUR 64,995."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 2,
+  "key": "capex.mach-vmc5",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "notes": "haascnc.com serves a Cloudflare \"Performing security verification\" page to curl and to headless Chromium (15 s wait); host not resolvable to WebFetch. Arithmetic (119,995 × 0.880 = 105,595.6) ok where applicable."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 3,
+  "key": "capex.mach-haas-umc500",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.haascnc.com/machines/vertical-mills/universal-machine/models/umc-500.html",
+  "notes": "haascnc.com serves a Cloudflare \"Performing security verification\" page to curl and to headless Chromium (15 s wait); host not resolvable to WebFetch. Arithmetic (119,995 × 0.880 = 105,595.6) ok where applicable."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 5,
+  "key": "capex.mach-lathe-cnc",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.machineseeker.fr/dn+solutions-lynx+2100ga/i-21582813",
+  "notes": "All three listing URLs (machineseeker.fr, maschinensucher.de, werktuigen.com) now return \"Page not found (Error 404)\" — listing removed. EUR 26,500 not confirmable."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 26,
+  "key": "capex.laser-trumpf-3030",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.maschinensucher.de/trumpf-trulaser+3030+fiber+%28l81%29+%2B+storemaster/i-20635200",
+  "notes": "HTTP 410 Gone. No value claimed (NOT FOUND)."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 31,
+  "key": "capex.punch-amada-emz3610",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No figure and no page cited — NOT FOUND; nothing to verify."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-cutting-sheet.json",
+  "i": 32,
+  "key": "capex.brake-amada-hfe100",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://resale.info/en/amada-hfe-100-3-prensa-plegadora/No-166672578",
+  "notes": "\"This listing was not found\" (removed). No value claimed."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-forming-casting.json",
+  "i": 33,
+  "key": "capex.grav-die-cast-std",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No figure and no page cited — not searched; nothing to verify."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-forming-casting.json",
+  "i": 38,
+  "key": "capex.al-ext-press-1800t",
+  "verdict": "confirmed",
+  "pageValue": "EUR 10 million, 7\" press, +11,000 t/yr",
+  "quote": "ALRO 27 Jun 2022: \"completed the installation of a new state-of-the-art 7” press extrusion line, following an investment of approximately EUR 10 million since the start of this project in March 2021\"",
+  "url": "https://www.alro.ro/en/news-resources/news/vimetco-extrusion-alro-s-downstream-subsidiary-1st-billet-extruded-on-a-new-automatic-line-for-aluminium-profiles-following-a-eur-10-million-investment",
+  "notes": "Page dates the first billet 27 June 2022 (research says commissioned Sept 2022 — minor). 10 M × 364.42 = 3,644.2 M Ft ok. A 7\" press is not an 1,800 t-class match by itself — the mapping is a judgement."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-forming-casting.json",
+  "i": 41,
+  "key": "capex.al-ext-press-5500t",
+  "verdict": "confirmed",
+  "pageValue": "EUR 35.7 million (HUF 14.6 bn)",
+  "quote": "D&T 15 Dec 2022: \"with a EUR 35.7 million (HUF 14.6 ... this will be the seventh aluminum extrusion line ... The new press will be located in an existing building\"",
+  "url": "https://dteurope.com/?p=59103",
+  "notes": "Also on industryinsider.eu (14 Dec 2022). hydro.com is a cookie wall. 35.7 M × 364.42 = 13,009.8 M Ft ok."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-plastics-other.json",
+  "i": 2,
+  "key": "capex.imm-200t",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "\"Część III: Zakup, dostawa i montaż ... wtryskarki minimum 200 ton hybrydowa z robotem 3 osiowym – 1 szt.\"",
+  "url": "https://bazakonkurencyjnosci.funduszeeuropejskie.gov.pl/api/files/1975317",
+  "notes": "Document (an enquiry dated 11.04.2025, Czechowice-Dziedzice) has the 200 t lot but no price/award value — consistent with the research's NOT FOUND. (The cached .txt is a mangled .docx; re-fetched.)"
+ },
+ {
+  "file": "hungary-2026-10/research/machines-plastics-other.json",
+  "i": 53,
+  "key": "capex.autoclave-1200mm",
+  "verdict": "not-on-page",
+  "pageValue": "£730,000 ex-VAT (different item)",
+  "quote": "\"Queen's University of Belfast wishes to procure a large (3m x 6m) autoclave ... Total value (estimated) £730,000 excluding VAT\"",
+  "url": "https://www.find-tender.service.gov.uk/Notice/037283-2025",
+  "notes": "Page is a 3 × 6 m research autoclave estimate, not a 1.2 m production unit — consistent with NOT FOUND."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-plastics-other.json",
+  "i": 55,
+  "key": "capex.rtm-press-std",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "No figure and no page cited — NOT FOUND; nothing to verify."
+ },
+ {
+  "file": "hungary-2026-10/research/machines-plastics-other.json",
+  "i": 65,
+  "key": "capex.smt-high-speed-line",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://newelectronics.co.uk/content/news/plexus-invests-in-state-of-the-art-smt-line",
+  "notes": "Cloudflare security-verification page to curl and headless Chromium. GBP 1.6 m not confirmed."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 1,
+  "key": "ferrous.anchor.crc",
+  "verdict": "differs",
+  "pageValue": "0.855 EUR/kg (SteelRadar CR, Germany, 19 Oct)",
+  "quote": "\"SteelRadar reports cold-rolled at 855 EUR/t and hot-dip galvanised at 830 EUR/t ex-works in Germany on 19 October\"",
+  "url": "https://www.tacto.ai/en/commodities/steel-price",
+  "notes": "UPDATED: the page (dated 26.10.2026) no longer carries the 13 Sep Fastmarkets CRC 850–880; it now cites SteelRadar 855 EUR/t (another source, close to the research 865)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 2,
+  "key": "ferrous.anchor.hdg",
+  "verdict": "differs",
+  "pageValue": "0.830 EUR/kg (SteelRadar HDG, Germany, 19 Oct)",
+  "quote": "\"... hot-dip galvanised at 830 EUR/t ex-works in Germany on 19 October\"",
+  "url": "https://www.tacto.ai/en/commodities/steel-price",
+  "notes": "UPDATED: the 13 Sep Fastmarkets HDG 850–870 is gone; page now 830 EUR/t (SteelRadar), 3.5% below the research 860. Mill 2027 opening offers for HDG are 940–960."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 3,
+  "key": "ferrous.anchor.hrpo",
+  "verdict": "confirmed",
+  "pageValue": "930–980 pickled v 860–870 unpickled (EUR/t)",
+  "quote": "\"We had lows of €860-870, but only for unpickled coil\" ... \"he sees pickled material starting at €930/t, and reaching €980/t\"",
+  "url": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/",
+  "notes": "Figures are on the page, but the article is DATED 21 February 2022 (updated 29 Jul 2023), not undated — the EUR 90/t pickling extra is a 2022 market spread. HRC 741.67 (12 Oct) is confirmed on the Tacto page (\"since 12 October it has moved between 741.67 and 748.00 EUR/t\"). 741.67 + 90 = 831.67 ok."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 6,
+  "key": "ferrous.bar.C45",
+  "verdict": "confirmed",
+  "pageValue": "C45 alloy surcharge 5 €/t (07/2026)",
+  "quote": "Swiss Steel Steeltec Zuschläge 07/2026: \"1.0503 C45 5 5\"",
+  "url": "https://swisssteel-group.com/content-media/documents/Steeltec/Secure-area-Steeltec/July/Zuschlaege_Surcharges-07_2026.pdf",
+  "notes": "No value claimed (NOT FOUND for the full price). The July sheet shows a scrap surcharge of 284 €/t, not the Feb 253 €/t the basis quotes (that is a different month)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 16,
+  "key": "ferrous.stainless.304_CR_2B",
+  "verdict": "confirmed",
+  "pageValue": "2,740–2,800 EUR/t (7 Sep 2026)",
+  "quote": "\"grade 304 transaction domestic, delivered North Europe fell to €2,740-2,800 ($3,186-3,256) per tonne on Monday September 7\"",
+  "url": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/",
+  "notes": "Mid 2,770 ok. Same page: September 304 alloy surcharge €2,178-2,235 (mid 2,206.5, used by the 430/409L items)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 19,
+  "key": "ferrous.stainless.430_CR",
+  "verdict": "differs",
+  "pageValue": "Oct 2026 1.4016 surcharge 1,085 €/t → 430 CR ≈ 1.649 EUR/kg",
+  "quote": "legierungszuschlag.info chart for 1.4016: Oct 2026 = 1085, Nov 2026 = 1,122.00 €/t (+37.00)",
+  "url": "https://legierungszuschlag.info/en/",
+  "notes": "Research MISREAD (or typo): the page gives 1,085 €/t for October 2026, not 985. 1,085 + 563.5 = 1,648.5 €/t = 1.649 EUR/kg (+6.5% v 1.548). Effective base 563.5 = 2,770 − 2,206.5 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 20,
+  "key": "ferrous.stainless.409L_CR",
+  "verdict": "confirmed",
+  "pageValue": "919 EUR/t (Jul 2026)",
+  "quote": "\"that of ferritic stainless steel 409 (1.4512) was dropped to EUR 919/ton from the previous month’s EUR 917/ton. The new surcharge will be applicable on July 1, 2026.\"",
+  "url": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429",
+  "notes": "919 + 563.5 = 1,482.5 ok. Mixes a July surcharge with a September 304 base; legierungszuschlag shows ferritic surcharges rising since (1.4016 +8% Jul→Oct), so 1.482 is likely low for Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 21,
+  "key": "ferrous.stainless.304_bar",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://ucpcdn.thyssenkrupp.com/_binary/UCPthyssenkruppBAMXHungary/53d055db-9414-4bd9-b053-13b01f9c91a5/thyssenkrupp_Rozsdamentes_rud.pdf",
+  "notes": "Catalogue opens (200); kg/m only, no Ft/kg — consistent with NOT FOUND."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 27,
+  "key": "ferrous.stainless.304_scrap",
+  "verdict": "confirmed",
+  "pageValue": "US$1,420/t CIF Rotterdam",
+  "quote": "\"In Europe, 304 scrap was heard at around US$1,420/t CIF Rotterdam and 316 at US$2,800–2,820/t.\"",
+  "url": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives",
+  "notes": "1,420 × 0.880 = 1,249.6 ok."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 36,
+  "key": "ferrous.foundry.steel_scrap_heavy",
+  "verdict": "differs",
+  "pageValue": "German E3 Aug 2026 US$320/t EXW → 0.282 EUR/kg",
+  "quote": "\"In Germany, the price of E3 scrap fell by $6 over the month to $320/t on an Ex Works basis.\"",
+  "url": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/",
+  "notes": "Research MISREAD: the $327/t on the page is US HMS 1&2 80:20 East Coast, not German E3. Page: E3 August = $320/t (July $326). 320 × 0.880 = 281.6 EUR/t = 0.282 EUR/kg (+2.4% v 0.275); the extra −€10–15 deduction is already inside the $320."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 37,
+  "key": "ferrous.hu.steel_scrap_7204",
+  "verdict": "confirmed",
+  "pageValue": "110 Ft/kg; 3,160,081 kg; 347,608,910 Ft",
+  "quote": "\"acélhulladék (VTSZ: 7204 Vas) becsült mennyisége 3.160.081 kg ... Becsértéke: 110 forint/kg, becsült mennyiség ára: 347.608.910 forint\"",
+  "url": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf",
+  "notes": "PDF opens with curl. A liquidation appraisal value (not a market transaction), non-chargeable-size scrap."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 43,
+  "key": "ferrous.foundry.FeCr_HC",
+  "verdict": "confirmed",
+  "pageValue": "156 USc/lb Cr (Q3 2026)",
+  "quote": "\"has confirmed 156 US cents per pound as the reference for the European Benchmark Ferrochrome Price for the third quarter of 2026\"",
+  "url": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome",
+  "notes": "1.56 × 2.20462 = 3.439 USD/kg Cr × 0.880 = 3.027 × 0.5 = 1.513 ok."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 45,
+  "key": "ferrous.charge.GS-C25",
+  "verdict": "confirmed",
+  "pageValue": "110 Ft/kg (scrap input)",
+  "quote": "\"Becsértéke: 110 forint/kg\"",
+  "url": "https://static-eer.sztfh.hu/offer/9b/52/1612626-DoB0WXvvZP.pdf",
+  "notes": "Source figure on page; (110 + 0.005 × 463.2) / 0.96 = 116.996 → 117.0 reproduces. Mix and FeSi price (463.2) are assumptions / other items."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 46,
+  "key": "ferrous.charge.GJL-250",
+  "verdict": "confirmed",
+  "pageValue": "US$475/t FOB Brazil (Aug 2026)",
+  "quote": "\"prices for Brazilian pig iron on FOB terms stabilised at $475/t in August\"",
+  "url": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+  "notes": "475 × 328.84/1000 = 156.2 Ft/kg ok (FOB Brazil — no freight to Hungary). (0.25×156.2 + 0.40×110)/0.65 = 127.8; + 3.24; / 0.98 = 133.7 reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-ferrous.json",
+  "i": 47,
+  "key": "ferrous.charge.GJS-500-7",
+  "verdict": "confirmed",
+  "pageValue": "US$475/t FOB Brazil (Aug 2026)",
+  "quote": "\"prices for Brazilian pig iron on FOB terms stabilised at $475/t in August\"",
+  "url": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/",
+  "notes": "(0.45×156.2 + 0.30×110)/0.75 = 137.7; + 6.02 + 1.85; / 0.98 = 148.6 reproduces. FOB, no freight; FeSiMg priced as FeSi75 (stated proxy)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 0,
+  "key": "nonferrous.al.lme",
+  "verdict": "confirmed",
+  "pageValue": "3,043.00",
+  "quote": "Westmetall LME Al cash-settlement table: \"23. October 2026 3,043.00\"",
+  "url": "https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Al_cash",
+  "notes": "The cited showtable page now shows 29 Oct; the history table on the same site has 23 Oct exactly. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 1,
+  "key": "nonferrous.cu.spot",
+  "verdict": "confirmed",
+  "pageValue": "14,415.00",
+  "quote": "Westmetall LME Cu cash-settlement table: \"23. October 2026 14,415.00\"",
+  "url": "https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Cu_cash",
+  "notes": "The cited showtable page now shows 29 Oct; the history table on the same site has 23 Oct exactly. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 2,
+  "key": "nonferrous.zn.spot",
+  "verdict": "confirmed",
+  "pageValue": "3,790.00",
+  "quote": "Westmetall LME Zn cash-settlement table: \"23. October 2026 3,790.00\"",
+  "url": "https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Zn_cash",
+  "notes": "The cited showtable page now shows 29 Oct; the history table on the same site has 23 Oct exactly. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 3,
+  "key": "nonferrous.ni.spot",
+  "verdict": "confirmed",
+  "pageValue": "15,695.00",
+  "quote": "Westmetall LME Ni cash-settlement table: \"23. October 2026 15,695.00\"",
+  "url": "https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Ni_cash",
+  "notes": "The cited showtable page now shows 29 Oct; the history table on the same site has 23 Oct exactly. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 4,
+  "key": "nonferrous.sn.spot",
+  "verdict": "confirmed",
+  "pageValue": "50,855.00",
+  "quote": "Westmetall LME Sn cash-settlement table: \"23. October 2026 50,855.00\"",
+  "url": "https://www.westmetall.com/en/markdaten.php?action=table&field=LME_Sn_cash",
+  "notes": "The cited showtable page now shows 29 Oct; the history table on the same site has 23 Oct exactly. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 7,
+  "key": "nonferrous.al.p1020",
+  "verdict": "confirmed",
+  "pageValue": "LME 3,043 + EPDc1 $574",
+  "quote": "Kitco/Reuters 2 Oct 2026: \"COMEX European duty-paid aluminium premium EPDc1 ... rose to $574 a metric ton on Thursday\"; Westmetall 23 Oct Al cash 3,043.00",
+  "url": "https://www.kitco.com/news/off-the-wire/2026-10-02/european-aluminum-premium-hits-highest-june-supply-concerns",
+  "notes": "3,617 × 324.37/1000 = 1,173.2 reproduces. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct. At 328.84: 1,189.4 Ft/kg."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 9,
+  "key": "nonferrous.al.billet6063",
+  "verdict": "confirmed",
+  "pageValue": "Ruhr 6063 billet premium $1,070–1,135 (28 Aug)",
+  "quote": "\"aluminium 6063 extrusion billet premium, ddp North Germany (Ruhr region), $/tonne assessment was at $1,070-1,135 per tonne on Friday August 28\"",
+  "url": "https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
+  "notes": "Mid 1,102.5; 4,145.5 × 324.37/1000 = 1,344.7 reproduces. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 11,
+  "key": "nonferrous.al.alsi7mg",
+  "verdict": "confirmed",
+  "pageValue": "PFA Si7 ddp Eastern Europe $950–1,050 (29 May)",
+  "quote": "\"The Germany and Eastern Europe premiums were incorrectly published at $1,000-1,100 per tonne on May 22. The prices were updated to $950-1,050 per tonne on May 29.\"",
+  "url": "https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/",
+  "notes": "Mid 1,000; 4,043 × 324.37/1000 = 1,311.4 reproduces. Premium is 5 months stale. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 12,
+  "key": "nonferrous.al.adc12",
+  "verdict": "confirmed",
+  "pageValue": "€2,430–2,530/t (23 Jan 2026)",
+  "quote": "\"Aluminium pressure diecasting ingot DIN226/A380, delivered Europe traded slightly higher around €2,430-2,530 ($2,854-2,971) per tonne\"",
+  "url": "https://www.fastmarkets.com/insights/eu-secondary-aluminium-prices-firm-as-scrap-shortages-bite/",
+  "notes": "Article dated January 26, 2026 (trade sources Friday January 23). STALE as labelled."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 16,
+  "key": "nonferrous.al.frp_europe_asp",
+  "verdict": "confirmed",
+  "pageValue": "Europe net sales $5,272 m / shipments 1,115 kt",
+  "quote": "Novelis 10-K FY2026: \"Europe (1) Net sales $ 5,272 ... Total shipments 1,115\"",
+  "url": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm",
+  "notes": "Opened with a declared User-Agent (SEC blocks undeclared tools). 5,272/1,115 = 4,728 ok; includes intersegment sales and non-rolled shipments."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 17,
+  "key": "nonferrous.al.amag_rolling_asp",
+  "verdict": "differs",
+  "pageValue": "5.867 EUR/kg (revenue stated on page)",
+  "quote": "\"Revenue increased 2.2 per cent to EUR 1,198.1 million ... Shipments remained stable at 204,200 tonnes. EBITDA declined 30.0 per cent to EUR 67.3 million, and the margin fell to 5.6 per cent\"",
+  "url": "https://www.alcircle.com/news/amag-financials-2025-revenue-rises-on-aluminium-price-strength-earnings-impacted-by-volume-and-margin-pressure-117488",
+  "notes": "Research back-solved revenue from the ROUNDED margin (67.3/0.056 = 1,202) while the page states it: 1,198.1/204.2 = 5.867 EUR/kg (−0.3%). Revenue includes EUR 173.4 m internal. Immaterial but the stated figure should be used."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 23,
+  "key": "nonferrous.cu.cathode_delivered",
+  "verdict": "confirmed",
+  "pageValue": "LME 14,415 + Aurubis $315",
+  "quote": "Kitco/Reuters 7 Oct 2025: \"Aurubis will charge European customers a premium of $315 per metric ton for refined copper next year\"",
+  "url": "https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record",
+  "notes": "14,730 × 324.37/1000 = 4,778.0 reproduces. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 24,
+  "key": "nonferrous.zn.shg_premium",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "notes": "HTTP 503. Not confirmed; also stale (Feb 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 25,
+  "key": "nonferrous.zn.shg_delivered",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "Westmetall 23 Oct Zn cash 3,790.00 (confirmed)",
+  "url": "https://www.argusmedia.com/metals-platform/price/assessment/zinc-special-high-grade-in-warehouse-rotterdam-premium-prices-PA00191000000",
+  "notes": "LME leg confirmed; the Argus premium leg (227.5) returns 503 and is unverified. 4,017.5 × 324.37/1000 = 1,303.2 reproduces. FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 26,
+  "key": "nonferrous.zn.zamak3",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "\"SMM 0# Zinc Ingot 3,868.44 USD/tonne\"",
+  "url": "https://www.metal.com/price/Base-Metals/Zinc",
+  "notes": "No value claimed; page shows only SMM 0# zinc, no Zamak. Floor arithmetic 0.96×4,017.5 + 0.04×3,617 = 4,001.5 → 1,298.0 Ft/kg reproduces."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 27,
+  "key": "nonferrous.zn.zamak5",
+  "verdict": "derived-ok",
+  "pageValue": null,
+  "quote": "",
+  "url": "",
+  "notes": "0.95×4,017.5 + 0.04×3,617 + 0.01×14,730 = 4,108.6 USD/t × 324.37/1000 = 1,332.7 Ft/kg reproduces (a floor; Zn premium input unverified). FX note: 324.37 HUF/USD is not an MNB fixing on any day 25 Aug–30 Oct 2026 (MNB 22 Oct 326.23, 29 Oct 328.84 — the rate the book states); the Ft/kg conversion is ~1.4% low against 29 Oct."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-nonferrous.json",
+  "i": 35,
+  "key": "nonferrous.mg.az91d",
+  "verdict": "not-on-page",
+  "pageValue": null,
+  "quote": "\"Magnesium Raw Material / Wutai 1-3 Material Dolomite 25.46 USD/tonne\"",
+  "url": "https://www.metal.com/price/Minor%20Metals/Magnesium",
+  "notes": "Page (public view) shows only dolomite; no AZ91D row. 2,885 not confirmable (research read it from a search extract)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 0,
+  "key": "polymer.pp_homo",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to curl and headless Chromium (15 s); host not resolvable to WebFetch. EUR/t ÷ 1000 × 364.42 arithmetic ok (364.42 = MNB EUR fixing of late Sep 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 1,
+  "key": "polymer.pp_copo",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to curl and headless Chromium (15 s); host not resolvable to WebFetch. EUR/t ÷ 1000 × 364.42 arithmetic ok (364.42 = MNB EUR fixing of late Sep 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 2,
+  "key": "polymer.hdpe",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to curl and headless Chromium (15 s); host not resolvable to WebFetch. EUR/t ÷ 1000 × 364.42 arithmetic ok (364.42 = MNB EUR fixing of late Sep 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 3,
+  "key": "polymer.ldpe",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to curl and headless Chromium (15 s); host not resolvable to WebFetch. EUR/t ÷ 1000 × 364.42 arithmetic ok (364.42 = MNB EUR fixing of late Sep 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 4,
+  "key": "polymer.lldpe",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to curl and headless Chromium (15 s); host not resolvable to WebFetch. EUR/t ÷ 1000 × 364.42 arithmetic ok (364.42 = MNB EUR fixing of late Sep 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 5,
+  "key": "polymer.pvc",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to curl and headless Chromium (15 s); host not resolvable to WebFetch. EUR/t ÷ 1000 × 364.42 arithmetic ok (364.42 = MNB EUR fixing of late Sep 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 6,
+  "key": "polymer.abs",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to curl and headless Chromium (15 s); host not resolvable to WebFetch. EUR/t ÷ 1000 × 364.42 arithmetic ok (364.42 = MNB EUR fixing of late Sep 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 7,
+  "key": "polymer.ps",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to curl and headless Chromium (15 s); host not resolvable to WebFetch. EUR/t ÷ 1000 × 364.42 arithmetic ok (364.42 = MNB EUR fixing of late Sep 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 8,
+  "key": "polymer.hips",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/price-reports",
+  "notes": "plasticportal.eu serves a Cloudflare \"Performing security verification\" page to curl and headless Chromium (15 s); host not resolvable to WebFetch. EUR/t ÷ 1000 × 364.42 arithmetic ok (364.42 = MNB EUR fixing of late Sep 2026)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 9,
+  "key": "polymer.pc",
+  "verdict": "confirmed",
+  "pageValue": "US$3.00/kg Europe, Sep 2026, −2.9%",
+  "quote": "\"Polycarbonate price September 2026 ... Europe:US$3/KG, -2.9% down\"",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/",
+  "notes": "3.00 × 319.89 = 959.7 ok (319.89 = an MNB USD fixing of late Sep)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 10,
+  "key": "polymer.pa6",
+  "verdict": "differs",
+  "pageValue": "US$3.18/kg Europe, Sep 2026, +1.3%",
+  "quote": "\"PA6 (Nylon 6) price September 2026 ... Europe:US$3.18/KG, 1.3% up\"",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/",
+  "notes": "Page now shows September. +1.3% implies August ≈ US$3.14, so the research's August 2.67 is not consistent with the page — likely a misread (no region on the page reads 2.67). Value should be ~3.18 (+19%)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 12,
+  "key": "polymer.pbt",
+  "verdict": "differs",
+  "pageValue": "US$4.24/kg Europe, Sep 2026, +4.2%",
+  "quote": "\"Polybutylene terephthalate (PBT) price September 2026 ... Europe:US$4.24/KG, 4.2% up\"",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/",
+  "notes": "Same month, different figure: research 3.70 (−1.1%) v page 4.24 (+4.2%) — +15%. Misread or the page revised; either way the page now says 4.24."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 13,
+  "key": "polymer.pet_bottle",
+  "verdict": "confirmed",
+  "pageValue": "US$1.56/kg Europe, Sep 2026, +4%",
+  "quote": "\"PET (Polyethylene Terephthalate) price September 2026 ... Europe:US$1.56/KG, 4% up\"",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/",
+  "notes": "Resolves the conflict: the germany-2026-10 reading (1.56, +4%) is right; the poland reading (1.29) is wrong. 1.56 × 319.89 = 499.0 Ft/kg."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 14,
+  "key": "polymer.pmma",
+  "verdict": "differs",
+  "pageValue": "US$3.59/kg Europe, Sep 2026, −1.1%",
+  "quote": "\"Polymethylmethacrylate (PMMA) price September 2026 ... Europe:US$3.59/KG, -1.1% down\"",
+  "url": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/",
+  "notes": "Research 3.69 (unchanged) v page 3.59 (−1.1%) for the same month (−2.7%)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 15,
+  "key": "polymer.pom",
+  "verdict": "unreachable",
+  "pageValue": null,
+  "quote": "",
+  "url": "https://www.plasticportal.eu/polymer-prices",
+  "notes": "Cloudflare security-verification page (curl and headless Chromium)."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 16,
+  "key": "polymer.peek",
+  "verdict": "confirmed",
+  "pageValue": "ASP £68/kg; 9M revenue £231.6m; 3,375 t",
+  "quote": "RTTNews: \"Average selling price of 68 pounds/kg was in line with the prior year ... the revenue went 7 percent up year-over-year to 231.6 million pounds, and sales volume climbed 10 percent to 3375 tonnes\"",
+  "url": "https://www.rttnews.com/3665040/victrex-q3-revenue-volume-climb-backs-fy26-view-sees-profit-growth-in-mid-term-shares-climb.aspx",
+  "notes": "Cited hl.co.uk page is now 404; figures found at RTTNews (one web search). 231.6/3,375 = 68.6 ok. FX: the cross 1.165 × 364.42 = 424.55 Ft/£ is ~3% below the MNB GBP fixing the book states (437.75 on 29 Oct) → 29,767 Ft/kg at 437.75."
+ },
+ {
+  "file": "hungary-2026-10/research/materials-polymer.json",
+  "i": 29,
+  "key": "rubber.nr",
+  "verdict": "confirmed",
+  "pageValue": "253.20 US c/kg (TSR20 Oct-26, 28 Sep)",
+  "quote": "\"Hợp đồng TSR20 kỳ hạn tháng 10/2026 ở mức 253,20 Cent/kg, giảm 0,31%\"",
+  "url": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-28-9-da-tang-chiem-uu-the-a335945.html",
+  "notes": "2.532 × 319.89 = 810.0 ok. FOB, not delivered (as labelled)."
+ }
+]

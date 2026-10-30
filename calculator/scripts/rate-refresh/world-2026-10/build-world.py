@@ -112,7 +112,18 @@ def labour_europe(cc):
     tot = ses.get(f'{geo}|TOTAL|GE10')
     cats, grades = {}, {}
     src = f"{ES['lcLevelNAC']['source']} ; {ES['lci']['source']} ; {ES['ses']['source']}"
+    # The survey's major groups mix trades: ISCO 7 in manufacturing also holds food, garment and printing trades, and in
+    # some countries (FR, ES, IT, BE, NL) its mean sits below ISCO 8's. A setter-machinist is not paid below the
+    # operators he sets up, so the skilled role takes the HIGHER of the two manual groups and the semi-skilled the lower.
+    o7, o8 = ses.get(f'{geo}|OC7|GE10'), ses.get(f'{geo}|OC8|GE10')
+    hi, lo = ('OC7', 'OC8') if o7 >= o8 else ('OC8', 'OC7')
+    swap = {'skilled': hi, 'semiskilled': lo}
     for role, (oc, why) in list(ISCO.items()) + [(g, v) for g, v in GRADES.items()]:
+        if role in swap and swap[role] != oc:
+            oc = swap[role]
+            why = (f'the higher manual major group — ISCO {oc[2:]} (the survey\'s craft group ISCO 7 earns less than its operators ISCO 8 '
+                   f'here, its mean pulled down by food / garment trades)' if role == 'skilled' else
+                   f'the lower manual major group — ISCO {oc[2:]} (here below ISCO 8; a semi-skilled operator is not paid above the setter)')
         e = ses.get(f'{geo}|{oc}|GE10')
         ratio = e / tot
         v = level * up * ratio
@@ -155,6 +166,11 @@ def finance(cc, ccy):
         m, v = MIR['values'][cc]['obs'][-1]
         return v / 100, (f'ECB composite cost of borrowing, new loans to non-financial corporations, {cc}, {m}: {v}%'), MIR['values'][cc]['source']
     it = find(research('finance.json'), 'finance.corporate_loan', cc)
+    wb = OFF('worldbank.json')['values'].get(cc, {}).get('obs') or []
+    if it and re.search(r'policy|money-market|overnight', (it.get('scope') or '') + it['basis'], re.I) and wb and int(wb[0][0]) >= 2024:
+        y, v = wb[0]
+        return v / 100, (f'World Bank lending interest rate {y} {v:.2f}% (FR.INR.LEND) — the central bank\'s own company-loan rate was not '
+                         f'found; its policy / money-market rate {it["value"]}% would understate what a manufacturer pays'), OFF('worldbank.json')['values'][cc]['source']
     if it:
         return float(it['value']) / 100, f"{it['basis']} ({it.get('date', '')})", it['source']
     return None, None, None
@@ -202,7 +218,13 @@ def life(cc):
 
 def rent(cc, ccy, per_eur):
     it = find(research('rent.json'), 'rent.industrial', cc)
-    if not it: return None, None, None
+    if not it:
+        nf = next((i for i in research('rent.json') if i.get('key') == 'rent.industrial' and i.get('country') == cc), None)
+        if nf is None: return None, None, None
+        per_gbp = per_eur / FX['perEur']['GBP']
+        v = round(110 / 12 * per_gbp, 2)
+        return v, (f'no {cc} broker rent found (only property listings, which are not a price) — the UK book\'s rent £110/m²/yr AT PAR '
+                   f'= {v} {ccy}/m²/month (no country factor)'), nf.get('source') or ''
     v, cur = float(it['value']), it.get('currency', ccy)
     if cur == 'EUR' and ccy != 'EUR':
         v = v * per_eur
