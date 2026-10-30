@@ -1,0 +1,2773 @@
+{
+ "read": "2026-10-30T13:23Z",
+ "publisher": "Nager.Date public-holiday API (compiled from each country’s official calendar)",
+ "year": 2026,
+ "values": {
+  "UK": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/GB",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": false
+    },
+    {
+     "date": "2026-01-02",
+     "name": "2 January",
+     "national": false
+    },
+    {
+     "date": "2026-03-17",
+     "name": "Saint Patrick's Day",
+     "national": false
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": false
+    },
+    {
+     "date": "2026-05-04",
+     "name": "Early May Bank Holiday",
+     "national": true
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Spring Bank Holiday",
+     "national": true
+    },
+    {
+     "date": "2026-06-15",
+     "name": "World Cup Bank Holiday",
+     "national": false
+    },
+    {
+     "date": "2026-07-13",
+     "name": "Battle of the Boyne",
+     "national": false
+    },
+    {
+     "date": "2026-08-03",
+     "name": "Summer Bank Holiday",
+     "national": false
+    },
+    {
+     "date": "2026-08-31",
+     "name": "Summer Bank Holiday",
+     "national": false
+    },
+    {
+     "date": "2026-11-30",
+     "name": "Saint Andrew's Day",
+     "national": false
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-28",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "DE": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/DE",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-06",
+     "name": "Epiphany",
+     "national": false
+    },
+    {
+     "date": "2026-03-08",
+     "name": "International Women's Day",
+     "national": false
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": false
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-14",
+     "name": "Ascension Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-24",
+     "name": "Pentecost",
+     "national": false
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Whit Monday",
+     "national": true
+    },
+    {
+     "date": "2026-06-04",
+     "name": "Corpus Christi",
+     "national": false
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption Day",
+     "national": false
+    },
+    {
+     "date": "2026-09-20",
+     "name": "World Children's Day",
+     "national": false
+    },
+    {
+     "date": "2026-10-03",
+     "name": "German Unity Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-31",
+     "name": "Reformation Day",
+     "national": false
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints' Day",
+     "national": false
+    },
+    {
+     "date": "2026-11-18",
+     "name": "Repentance and Prayer Day",
+     "national": false
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "FR": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/FR",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-08",
+     "name": "Victory in Europe Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-14",
+     "name": "Ascension Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Whit Monday",
+     "national": true
+    },
+    {
+     "date": "2026-07-14",
+     "name": "Bastille Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints' Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-11",
+     "name": "Armistice Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    }
+   ]
+  },
+  "IT": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/IT",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-06",
+     "name": "Epiphany",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-04-25",
+     "name": "Liberation Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "International Workers Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Whit Monday",
+     "national": false
+    },
+    {
+     "date": "2026-06-02",
+     "name": "Republic Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-04",
+     "name": "St. Francis of Assisi's Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-08",
+     "name": "Immaculate Conception",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "ES": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/ES",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-06",
+     "name": "Epiphany",
+     "national": true
+    },
+    {
+     "date": "2026-02-28",
+     "name": "Day of Andalucía",
+     "national": false
+    },
+    {
+     "date": "2026-03-01",
+     "name": "Day of the Balearic Islands",
+     "national": false
+    },
+    {
+     "date": "2026-04-02",
+     "name": "Maundy Thursday",
+     "national": false
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": false
+    },
+    {
+     "date": "2026-04-23",
+     "name": "Castile and León Day",
+     "national": false
+    },
+    {
+     "date": "2026-04-23",
+     "name": "Day of Aragón",
+     "national": false
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-02",
+     "name": "Day of Madrid",
+     "national": false
+    },
+    {
+     "date": "2026-05-17",
+     "name": "Galician Literature Day",
+     "national": false
+    },
+    {
+     "date": "2026-05-30",
+     "name": "Day of the Canary Islands",
+     "national": false
+    },
+    {
+     "date": "2026-05-31",
+     "name": "Day of Castilla-La Mancha",
+     "national": false
+    },
+    {
+     "date": "2026-06-04",
+     "name": "Corpus Christi",
+     "national": false
+    },
+    {
+     "date": "2026-06-09",
+     "name": "Day of La Rioja",
+     "national": false
+    },
+    {
+     "date": "2026-06-09",
+     "name": "Day of Murcia",
+     "national": false
+    },
+    {
+     "date": "2026-06-24",
+     "name": "St. John's Day",
+     "national": false
+    },
+    {
+     "date": "2026-07-25",
+     "name": "Santiago Apóstol",
+     "national": false
+    },
+    {
+     "date": "2026-07-28",
+     "name": "Day of the Cantabrian Institutions",
+     "national": false
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption",
+     "national": true
+    },
+    {
+     "date": "2026-09-08",
+     "name": "Day of Asturias",
+     "national": false
+    },
+    {
+     "date": "2026-09-08",
+     "name": "Day of Extremadura",
+     "national": false
+    },
+    {
+     "date": "2026-09-11",
+     "name": "National Day of Catalonia",
+     "national": false
+    },
+    {
+     "date": "2026-09-15",
+     "name": "Feast of Our Lady of Bien Aparecida",
+     "national": false
+    },
+    {
+     "date": "2026-10-09",
+     "name": "Day of the Valencian Community",
+     "national": false
+    },
+    {
+     "date": "2026-10-12",
+     "name": "National Day of Spain",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-06",
+     "name": "Constitution Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-08",
+     "name": "Immaculate Conception",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": false
+    }
+   ]
+  },
+  "PL": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/PL",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-06",
+     "name": "Epiphany",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "May Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-03",
+     "name": "Constitution Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-24",
+     "name": "Pentecost",
+     "national": true
+    },
+    {
+     "date": "2026-06-04",
+     "name": "Corpus Christi",
+     "national": true
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints' Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-11",
+     "name": "Independence Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-24",
+     "name": "Christmas Eve",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "CZ": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/CZ",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-08",
+     "name": "Liberation Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-05",
+     "name": "Saints Cyril and Methodius Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-06",
+     "name": "Jan Hus Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-28",
+     "name": "St. Wenceslas Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-28",
+     "name": "Independent Czechoslovak State Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-17",
+     "name": "Struggle for Freedom and Democracy Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-24",
+     "name": "Christmas Eve",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "RO": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/RO",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-02",
+     "name": "Day after New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-06",
+     "name": "Epiphany",
+     "national": true
+    },
+    {
+     "date": "2026-01-07",
+     "name": "Saint John the Baptist",
+     "national": true
+    },
+    {
+     "date": "2026-01-24",
+     "name": "Union Day/Small Union",
+     "national": true
+    },
+    {
+     "date": "2026-04-10",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-12",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-13",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-31",
+     "name": "Pentecost",
+     "national": true
+    },
+    {
+     "date": "2026-06-01",
+     "name": "Children's Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-01",
+     "name": "Whit Monday",
+     "national": true
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Dormition of the Theotokos",
+     "national": true
+    },
+    {
+     "date": "2026-11-30",
+     "name": "St. Andrew's Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-01",
+     "name": "National Day/Great Union",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "HU": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/HU",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-03-15",
+     "name": "1848 Revolution Memorial Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour day",
+     "national": true
+    },
+    {
+     "date": "2026-05-24",
+     "name": "Pentecost",
+     "national": true
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Whit Monday",
+     "national": true
+    },
+    {
+     "date": "2026-08-20",
+     "name": "State Foundation Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-23",
+     "name": "1956 Revolution Memorial Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "SE": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/SE",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-06",
+     "name": "Epiphany",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "International Workers' Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-14",
+     "name": "Ascension Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-24",
+     "name": "Pentecost",
+     "national": true
+    },
+    {
+     "date": "2026-06-06",
+     "name": "National Day of Sweden",
+     "national": true
+    },
+    {
+     "date": "2026-06-19",
+     "name": "Midsummer Eve",
+     "national": true
+    },
+    {
+     "date": "2026-06-20",
+     "name": "Midsummer Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-31",
+     "name": "All Saints' Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-24",
+     "name": "Christmas Eve",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-31",
+     "name": "New Year's Eve",
+     "national": true
+    }
+   ]
+  },
+  "NL": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/NL",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-04-27",
+     "name": "King's Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-05",
+     "name": "Liberation Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-14",
+     "name": "Ascension Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-24",
+     "name": "Pentecost",
+     "national": true
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Whit Monday",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "TR": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/TR",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-03-20",
+     "name": "Eid al-Fitr First Day",
+     "national": true
+    },
+    {
+     "date": "2026-03-21",
+     "name": "Eid al-Fitr Second Day",
+     "national": true
+    },
+    {
+     "date": "2026-03-22",
+     "name": "Eid al-Fitr Third Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-23",
+     "name": "National Independence & Children's Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-19",
+     "name": "Atatürk Commemoration & Youth Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-27",
+     "name": "Eid al-Adha First Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-28",
+     "name": "Eid al-Adha Second Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-29",
+     "name": "Eid al-Adha Third Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-30",
+     "name": "Eid al-Adha Fourth Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-15",
+     "name": "Democracy and National Unity Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-30",
+     "name": "Victory Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-29",
+     "name": "Republic Day",
+     "national": true
+    }
+   ]
+  },
+  "CN": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/CN",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-17",
+     "name": "Chinese New Year (Spring Festival)",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-19",
+     "name": "Dragon Boat Festival",
+     "national": true
+    },
+    {
+     "date": "2026-09-25",
+     "name": "Mid-Autumn Festival",
+     "national": true
+    },
+    {
+     "date": "2026-10-01",
+     "name": "National Day",
+     "national": true
+    }
+   ]
+  },
+  "IN": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/IN",
+   "error": "Expecting value: line 1 column 1 (char 0)"
+  },
+  "MX": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/MX",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-02",
+     "name": "Constitution Day",
+     "national": true
+    },
+    {
+     "date": "2026-03-16",
+     "name": "Benito Juárez's birthday",
+     "national": true
+    },
+    {
+     "date": "2026-04-02",
+     "name": "Maundy Thursday",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-16",
+     "name": "Independence Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-16",
+     "name": "Revolution Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    }
+   ]
+  },
+  "US": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/US",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-19",
+     "name": "Martin Luther King, Jr. Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-12",
+     "name": "Lincoln's Birthday",
+     "national": false
+    },
+    {
+     "date": "2026-02-16",
+     "name": "Presidents Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": false
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": false
+    },
+    {
+     "date": "2026-05-08",
+     "name": "Truman Day",
+     "national": false
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Memorial Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-19",
+     "name": "Juneteenth National Independence Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-03",
+     "name": "Independence Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-07",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-12",
+     "name": "Columbus Day",
+     "national": false
+    },
+    {
+     "date": "2026-10-12",
+     "name": "Columbus Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-12",
+     "name": "Indigenous Peoples' Day",
+     "national": false
+    },
+    {
+     "date": "2026-11-11",
+     "name": "Veterans Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-26",
+     "name": "Thanksgiving Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    }
+   ]
+  },
+  "TH": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/TH",
+   "error": "Expecting value: line 1 column 1 (char 0)"
+  },
+  "VN": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/VN",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-30",
+     "name": "Reunification Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-02",
+     "name": "National Day",
+     "national": true
+    }
+   ]
+  },
+  "BR": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/BR",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-16",
+     "name": "Carnival",
+     "national": true
+    },
+    {
+     "date": "2026-02-17",
+     "name": "Carnival",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-21",
+     "name": "Tiradentes",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-04",
+     "name": "Corpus Christi",
+     "national": true
+    },
+    {
+     "date": "2026-07-09",
+     "name": "Constitutionalist Revolution of 1932",
+     "national": false
+    },
+    {
+     "date": "2026-09-07",
+     "name": "Independence Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-12",
+     "name": "Our Lady of Aparecida",
+     "national": true
+    },
+    {
+     "date": "2026-11-02",
+     "name": "All Souls' Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-15",
+     "name": "Republic Proclamation Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-20",
+     "name": "Black Awareness Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    }
+   ]
+  },
+  "KR": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/KR",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-16",
+     "name": "Lunar New Year",
+     "national": true
+    },
+    {
+     "date": "2026-02-17",
+     "name": "Lunar New Year",
+     "national": true
+    },
+    {
+     "date": "2026-02-18",
+     "name": "Lunar New Year",
+     "national": true
+    },
+    {
+     "date": "2026-03-02",
+     "name": "Independence Movement Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-05",
+     "name": "Children's Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Buddha's Birthday",
+     "national": true
+    },
+    {
+     "date": "2026-06-03",
+     "name": "Local Election Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-06",
+     "name": "Memorial Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-17",
+     "name": "Constitution Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-17",
+     "name": "Liberation Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-24",
+     "name": "Chuseok",
+     "national": true
+    },
+    {
+     "date": "2026-09-25",
+     "name": "Chuseok",
+     "national": true
+    },
+    {
+     "date": "2026-09-26",
+     "name": "Chuseok",
+     "national": true
+    },
+    {
+     "date": "2026-10-05",
+     "name": "National Foundation Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-09",
+     "name": "Hangul Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    }
+   ]
+  },
+  "AT": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/AT",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-06",
+     "name": "Epiphany",
+     "national": true
+    },
+    {
+     "date": "2026-03-19",
+     "name": "Saint Joseph's Day",
+     "national": false
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "National Holiday",
+     "national": true
+    },
+    {
+     "date": "2026-05-04",
+     "name": "Saint Florian's Day",
+     "national": false
+    },
+    {
+     "date": "2026-05-14",
+     "name": "Ascension Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-24",
+     "name": "Pentecost",
+     "national": true
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Whit Monday",
+     "national": true
+    },
+    {
+     "date": "2026-06-04",
+     "name": "Corpus Christi",
+     "national": true
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-24",
+     "name": "Saint Rupert's Day",
+     "national": false
+    },
+    {
+     "date": "2026-10-26",
+     "name": "National Holiday",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints' Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-11",
+     "name": "Saint Martin's Day",
+     "national": false
+    },
+    {
+     "date": "2026-11-15",
+     "name": "Saint Leopold's Day",
+     "national": false
+    },
+    {
+     "date": "2026-12-08",
+     "name": "Immaculate Conception",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "BE": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/BE",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-14",
+     "name": "Ascension Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-15",
+     "name": "Day after Ascension Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Whit Monday",
+     "national": true
+    },
+    {
+     "date": "2026-07-21",
+     "name": "Belgian National Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints' Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-11",
+     "name": "Armistice Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "PT": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/PT",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-17",
+     "name": "Carnival",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-25",
+     "name": "Freedom Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-01",
+     "name": "Azores Day",
+     "national": false
+    },
+    {
+     "date": "2026-06-04",
+     "name": "Corpus Christi",
+     "national": true
+    },
+    {
+     "date": "2026-06-10",
+     "name": "National Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-01",
+     "name": "Madeira Day",
+     "national": false
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-05",
+     "name": "Republic Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-01",
+     "name": "Restoration of Independence",
+     "national": true
+    },
+    {
+     "date": "2026-12-08",
+     "name": "Immaculate Conception",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": false
+    }
+   ]
+  },
+  "SK": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/SK",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "Day of the Establishment of the Slovak Republic",
+     "national": true
+    },
+    {
+     "date": "2026-01-06",
+     "name": "Epiphany",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "International Workers' Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-08",
+     "name": "Day of victory over fascism",
+     "national": true
+    },
+    {
+     "date": "2026-07-05",
+     "name": "St. Cyril and Methodius Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-29",
+     "name": "Slovak National Uprising anniversary",
+     "national": true
+    },
+    {
+     "date": "2026-09-01",
+     "name": "Day of the Constitution of the Slovak Republic",
+     "national": true
+    },
+    {
+     "date": "2026-09-15",
+     "name": "Day of Our Lady of the Seven Sorrows",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints’ Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-17",
+     "name": "Struggle for Freedom and Democracy Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-24",
+     "name": "Christmas Eve",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "SI": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/SI",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-02",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-08",
+     "name": "Prešeren Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-04-27",
+     "name": "Day of Uprising Against Occupation",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-02",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-02",
+     "name": "Primož Trubar Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-24",
+     "name": "Pentecost",
+     "national": true
+    },
+    {
+     "date": "2026-06-25",
+     "name": "Statehood Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-14",
+     "name": "Sovereignty Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Unification of Prekmurje Slovenes with the Mother Nation",
+     "national": true
+    },
+    {
+     "date": "2026-09-15",
+     "name": "Integration of Primorska into the Homeland",
+     "national": true
+    },
+    {
+     "date": "2026-09-23",
+     "name": "Slovenian Sports Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-31",
+     "name": "Reformation Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "Day of the Dead",
+     "national": true
+    },
+    {
+     "date": "2026-11-23",
+     "name": "Rudolf Maister Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "Independence and Unity Day",
+     "national": true
+    }
+   ]
+  },
+  "LT": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/LT",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-16",
+     "name": "The Day of Restoration of the State of Lithuania",
+     "national": true
+    },
+    {
+     "date": "2026-03-11",
+     "name": "Day of Restoration of Independence of Lithuania",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "International Working Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-24",
+     "name": "St. John's Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-06",
+     "name": "Statehood Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-15",
+     "name": "Assumption Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints' Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-02",
+     "name": "All Souls' Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-24",
+     "name": "Christmas Eve",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": true
+    }
+   ]
+  },
+  "BG": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/BG",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-02",
+     "name": "Currency change day",
+     "national": true
+    },
+    {
+     "date": "2026-03-03",
+     "name": "Liberation Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-10",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-11",
+     "name": "Holy Saturday",
+     "national": true
+    },
+    {
+     "date": "2026-04-12",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-13",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "International Workers' Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-06",
+     "name": "Saint George's Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-25",
+     "name": "Saints Cyril and Methodius Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-07",
+     "name": "Unification Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-22",
+     "name": "Independence Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-24",
+     "name": "Christmas Eve",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "Second day of Christmas",
+     "national": true
+    }
+   ]
+  },
+  "RS": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/RS",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-02",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-07",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-16",
+     "name": "Statehood Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-17",
+     "name": "Statehood Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-10",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-12",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-04-13",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-02",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-11",
+     "name": "Armistice Day",
+     "national": true
+    }
+   ]
+  },
+  "MA": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/MA",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-11",
+     "name": "Proclamation of Independence",
+     "national": true
+    },
+    {
+     "date": "2026-01-14",
+     "name": "Amazigh New Year",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-30",
+     "name": "Enthronement",
+     "national": true
+    },
+    {
+     "date": "2026-08-14",
+     "name": "Zikra Oued Ed-Dahab",
+     "national": true
+    },
+    {
+     "date": "2026-08-20",
+     "name": "Revolution of the King and the People",
+     "national": true
+    },
+    {
+     "date": "2026-08-21",
+     "name": "Youth Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-31",
+     "name": "Unity Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-06",
+     "name": "Green March",
+     "national": true
+    },
+    {
+     "date": "2026-11-18",
+     "name": "Independence Day",
+     "national": true
+    }
+   ]
+  },
+  "TN": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/TN",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-03-20",
+     "name": "Independence Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-09",
+     "name": "Martyrs' Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-25",
+     "name": "Republic Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-13",
+     "name": "Women's Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-15",
+     "name": "Evacuation Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-17",
+     "name": "Revolution Day",
+     "national": true
+    }
+   ]
+  },
+  "EG": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/EG",
+   "holidays": [
+    {
+     "date": "2026-01-07",
+     "name": "Christmas Day (Orthodox)",
+     "national": true
+    },
+    {
+     "date": "2026-01-29",
+     "name": "Revolution Day 2011 / National Police Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-13",
+     "name": "Easter Monday",
+     "national": true
+    },
+    {
+     "date": "2026-04-25",
+     "name": "Sinai Liberation Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-07",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-27",
+     "name": "Eid Al-Adha",
+     "national": true
+    },
+    {
+     "date": "2026-05-28",
+     "name": "Eid Al-Adha",
+     "national": true
+    },
+    {
+     "date": "2026-05-29",
+     "name": "Eid Al-Adha",
+     "national": true
+    },
+    {
+     "date": "2026-05-30",
+     "name": "Eid Al-Adha",
+     "national": true
+    },
+    {
+     "date": "2026-05-31",
+     "name": "Eid Al-Adha",
+     "national": true
+    },
+    {
+     "date": "2026-06-18",
+     "name": "Islamic New Year",
+     "national": true
+    },
+    {
+     "date": "2026-07-02",
+     "name": "June 30 Revolution",
+     "national": true
+    },
+    {
+     "date": "2026-07-23",
+     "name": "Revolution Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-26",
+     "name": "Prophet Muhammad's Birthday",
+     "national": true
+    },
+    {
+     "date": "2026-10-06",
+     "name": "Armed Forces Day",
+     "national": true
+    }
+   ]
+  },
+  "ZA": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/ZA",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-03-21",
+     "name": "Human Rights Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Family Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-27",
+     "name": "Freedom Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Workers' Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-16",
+     "name": "Youth Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-10",
+     "name": "National Women's Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-24",
+     "name": "Heritage Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-04",
+     "name": "Election Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-16",
+     "name": "Day of Reconciliation",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "Day of Goodwill",
+     "national": true
+    }
+   ]
+  },
+  "JP": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/JP",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-01-12",
+     "name": "Coming of Age Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-11",
+     "name": "Foundation Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-23",
+     "name": "The Emperor's Birthday",
+     "national": true
+    },
+    {
+     "date": "2026-03-20",
+     "name": "Vernal Equinox Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-29",
+     "name": "Shōwa Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-06",
+     "name": "Constitution Memorial Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-04",
+     "name": "Greenery Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-05",
+     "name": "Children's Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-20",
+     "name": "Marine Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-11",
+     "name": "Mountain Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-21",
+     "name": "Respect for the Aged Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-23",
+     "name": "Autumnal Equinox Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-12",
+     "name": "Sports Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-03",
+     "name": "Culture Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-23",
+     "name": "Labour Thanksgiving Day",
+     "national": true
+    }
+   ]
+  },
+  "TW": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/TW",
+   "error": "Expecting value: line 1 column 1 (char 0)"
+  },
+  "MY": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/MY",
+   "error": "Expecting value: line 1 column 1 (char 0)"
+  },
+  "ID": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/ID",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-05",
+     "name": "Easter Sunday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-14",
+     "name": "Ascension Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-01",
+     "name": "Pancasila Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-17",
+     "name": "Independence Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    }
+   ]
+  },
+  "PH": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/PH",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-17",
+     "name": "Chinese New Year",
+     "national": true
+    },
+    {
+     "date": "2026-04-02",
+     "name": "Maundy Thursday",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-04",
+     "name": "Holy Saturday",
+     "national": true
+    },
+    {
+     "date": "2026-04-09",
+     "name": "Day of Valor",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-12",
+     "name": "Independence Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-21",
+     "name": "Ninoy Aquino Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-31",
+     "name": "National Heroes Day",
+     "national": true
+    },
+    {
+     "date": "2026-10-31",
+     "name": "All Saints' Day Eve",
+     "national": true
+    },
+    {
+     "date": "2026-11-01",
+     "name": "All Saints' Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-30",
+     "name": "Bonifacio Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-08",
+     "name": "Feast of the Immaculate Conception of Mary",
+     "national": true
+    },
+    {
+     "date": "2026-12-24",
+     "name": "Christmas Eve",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-30",
+     "name": "Rizal Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-31",
+     "name": "Last Day of The Year",
+     "national": true
+    }
+   ]
+  },
+  "SG": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/SG",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-17",
+     "name": "Chinese New Year",
+     "national": true
+    },
+    {
+     "date": "2026-02-18",
+     "name": "Chinese New Year",
+     "national": true
+    },
+    {
+     "date": "2026-03-21",
+     "name": "Hari Raya Puasa",
+     "national": true
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-05-01",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-05-27",
+     "name": "Hari Raya Haji",
+     "national": true
+    },
+    {
+     "date": "2026-06-01",
+     "name": "Vesak Day",
+     "national": true
+    },
+    {
+     "date": "2026-08-10",
+     "name": "National Day",
+     "national": true
+    },
+    {
+     "date": "2026-11-09",
+     "name": "Deepavali",
+     "national": true
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    }
+   ]
+  },
+  "CA": {
+   "source": "https://date.nager.at/api/v3/PublicHolidays/2026/CA",
+   "holidays": [
+    {
+     "date": "2026-01-01",
+     "name": "New Year's Day",
+     "national": true
+    },
+    {
+     "date": "2026-02-16",
+     "name": "Louis Riel Day",
+     "national": false
+    },
+    {
+     "date": "2026-02-16",
+     "name": "Islander Day",
+     "national": false
+    },
+    {
+     "date": "2026-02-16",
+     "name": "Heritage Day",
+     "national": false
+    },
+    {
+     "date": "2026-02-16",
+     "name": "Family Day",
+     "national": false
+    },
+    {
+     "date": "2026-03-17",
+     "name": "Saint Patrick's Day",
+     "national": false
+    },
+    {
+     "date": "2026-04-03",
+     "name": "Good Friday",
+     "national": true
+    },
+    {
+     "date": "2026-04-06",
+     "name": "Easter Monday",
+     "national": false
+    },
+    {
+     "date": "2026-04-23",
+     "name": "Saint George's Day",
+     "national": false
+    },
+    {
+     "date": "2026-05-18",
+     "name": "National Patriots' Day",
+     "national": false
+    },
+    {
+     "date": "2026-05-18",
+     "name": "Victoria Day",
+     "national": true
+    },
+    {
+     "date": "2026-06-21",
+     "name": "National Aboriginal Day",
+     "national": false
+    },
+    {
+     "date": "2026-06-24",
+     "name": "Discovery Day",
+     "national": false
+    },
+    {
+     "date": "2026-06-24",
+     "name": "National Holiday",
+     "national": false
+    },
+    {
+     "date": "2026-07-01",
+     "name": "Canada Day",
+     "national": true
+    },
+    {
+     "date": "2026-07-12",
+     "name": "Orangemen's Day",
+     "national": false
+    },
+    {
+     "date": "2026-08-03",
+     "name": "Civic Holiday",
+     "national": false
+    },
+    {
+     "date": "2026-08-03",
+     "name": "British Columbia Day",
+     "national": false
+    },
+    {
+     "date": "2026-08-03",
+     "name": "Heritage Day",
+     "national": false
+    },
+    {
+     "date": "2026-08-03",
+     "name": "New Brunswick Day",
+     "national": false
+    },
+    {
+     "date": "2026-08-03",
+     "name": "Natal Day",
+     "national": false
+    },
+    {
+     "date": "2026-08-03",
+     "name": "Saskatchewan Day",
+     "national": false
+    },
+    {
+     "date": "2026-08-17",
+     "name": "Gold Cup Parade Day",
+     "national": false
+    },
+    {
+     "date": "2026-08-17",
+     "name": "Discovery Day",
+     "national": false
+    },
+    {
+     "date": "2026-09-07",
+     "name": "Labour Day",
+     "national": true
+    },
+    {
+     "date": "2026-09-30",
+     "name": "National Day for Truth and Reconciliation",
+     "national": true
+    },
+    {
+     "date": "2026-10-12",
+     "name": "Thanksgiving",
+     "national": true
+    },
+    {
+     "date": "2026-11-11",
+     "name": "Armistice Day",
+     "national": false
+    },
+    {
+     "date": "2026-11-11",
+     "name": "Remembrance Day",
+     "national": false
+    },
+    {
+     "date": "2026-12-25",
+     "name": "Christmas Day",
+     "national": true
+    },
+    {
+     "date": "2026-12-26",
+     "name": "St. Stephen's Day",
+     "national": false
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,688 @@
+{
+ "read": "2026-10-30T13:23Z",
+ "publisher": "World Bank, World Development Indicators",
+ "indicator": "FR.INR.LEND",
+ "values": {
+  "UK": {
+   "source": "https://api.worldbank.org/v2/country/GBR/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2014",
+     0.5
+    ],
+    [
+     "2013",
+     0.5
+    ],
+    [
+     "2012",
+     0.5
+    ],
+    [
+     "2011",
+     0.5
+    ],
+    [
+     "2010",
+     0.5
+    ]
+   ]
+  },
+  "DE": {
+   "source": "https://api.worldbank.org/v2/country/DEU/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "FR": {
+   "source": "https://api.worldbank.org/v2/country/FRA/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "IT": {
+   "source": "https://api.worldbank.org/v2/country/ITA/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2023",
+     4.89248125
+    ],
+    [
+     "2022",
+     2.264455
+    ],
+    [
+     "2021",
+     2.02591666666666
+    ],
+    [
+     "2020",
+     2.32833333333333
+    ],
+    [
+     "2019",
+     2.6025
+    ]
+   ]
+  },
+  "ES": {
+   "source": "https://api.worldbank.org/v2/country/ESP/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "PL": {
+   "source": "https://api.worldbank.org/v2/country/POL/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "CZ": {
+   "source": "https://api.worldbank.org/v2/country/CZE/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     4.66837231799845
+    ],
+    [
+     "2024",
+     4.71398151729159
+    ],
+    [
+     "2023",
+     4.68277500627328
+    ],
+    [
+     "2022",
+     4.22500917823384
+    ],
+    [
+     "2021",
+     3.20212533339961
+    ]
+   ]
+  },
+  "RO": {
+   "source": "https://api.worldbank.org/v2/country/ROU/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     8.52155041563582
+    ],
+    [
+     "2024",
+     8.76207529347297
+    ],
+    [
+     "2023",
+     9.32096121452692
+    ],
+    [
+     "2022",
+     7.75709430926467
+    ],
+    [
+     "2021",
+     5.6134990571872
+    ]
+   ]
+  },
+  "HU": {
+   "source": "https://api.worldbank.org/v2/country/HUN/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     8.01151582250833
+    ],
+    [
+     "2024",
+     9.12671515640833
+    ],
+    [
+     "2023",
+     15.3020823180166
+    ],
+    [
+     "2022",
+     10.6554314535916
+    ],
+    [
+     "2021",
+     2.9645376181
+    ]
+   ]
+  },
+  "SE": {
+   "source": "https://api.worldbank.org/v2/country/SWE/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2006",
+     3.67803333333333
+    ],
+    [
+     "2005",
+     3.532
+    ],
+    [
+     "2004",
+     4.1825
+    ],
+    [
+     "2003",
+     5.0175
+    ],
+    [
+     "2002",
+     5.7925
+    ]
+   ]
+  },
+  "NL": {
+   "source": "https://api.worldbank.org/v2/country/NLD/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2013",
+     1.5
+    ],
+    [
+     "2012",
+     1.625
+    ],
+    [
+     "2011",
+     2
+    ],
+    [
+     "2010",
+     1.75
+    ],
+    [
+     "2009",
+     1.98333333333333
+    ]
+   ]
+  },
+  "TR": {
+   "source": "https://api.worldbank.org/v2/country/TUR/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "CN": {
+   "source": "https://api.worldbank.org/v2/country/CHN/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2024",
+     4.35
+    ],
+    [
+     "2023",
+     4.35
+    ],
+    [
+     "2022",
+     4.35
+    ],
+    [
+     "2021",
+     4.35
+    ],
+    [
+     "2020",
+     4.35
+    ]
+   ]
+  },
+  "IN": {
+   "source": "https://api.worldbank.org/v2/country/IND/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2022",
+     8.56714285714286
+    ],
+    [
+     "2021",
+     8.69833333333333
+    ],
+    [
+     "2020",
+     9.15
+    ],
+    [
+     "2019",
+     9.46625
+    ],
+    [
+     "2018",
+     9.45416666666667
+    ]
+   ]
+  },
+  "MX": {
+   "source": "https://api.worldbank.org/v2/country/MEX/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     8.78583333333333
+    ],
+    [
+     "2024",
+     11.2233333333333
+    ],
+    [
+     "2023",
+     11.5916666666666
+    ],
+    [
+     "2022",
+     8.17916666666666
+    ],
+    [
+     "2021",
+     4.89166666666666
+    ]
+   ]
+  },
+  "US": {
+   "source": "https://api.worldbank.org/v2/country/USA/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2021",
+     3.25
+    ],
+    [
+     "2020",
+     3.54416666666666
+    ],
+    [
+     "2019",
+     5.2825
+    ],
+    [
+     "2018",
+     4.90416666666666
+    ],
+    [
+     "2017",
+     4.09666666666666
+    ]
+   ]
+  },
+  "TH": {
+   "source": "https://api.worldbank.org/v2/country/THA/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     4.9875
+    ],
+    [
+     "2024",
+     4.51416666666666
+    ],
+    [
+     "2023",
+     4.28583333333333
+    ],
+    [
+     "2022",
+     3.13833333333333
+    ],
+    [
+     "2021",
+     3.06
+    ]
+   ]
+  },
+  "VN": {
+   "source": "https://api.worldbank.org/v2/country/VNM/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2023",
+     9.323
+    ],
+    [
+     "2022",
+     8.01333333333333
+    ],
+    [
+     "2021",
+     7.811
+    ],
+    [
+     "2020",
+     7.6475
+    ],
+    [
+     "2019",
+     7.7075
+    ]
+   ]
+  },
+  "BR": {
+   "source": "https://api.worldbank.org/v2/country/BRA/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     45.3333333333333
+    ],
+    [
+     "2024",
+     40.225
+    ],
+    [
+     "2023",
+     43.6
+    ],
+    [
+     "2022",
+     39.4
+    ],
+    [
+     "2021",
+     30.0166666666666
+    ]
+   ]
+  },
+  "KR": {
+   "source": "https://api.worldbank.org/v2/country/KOR/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     4.1925
+    ],
+    [
+     "2024",
+     4.72666666666666
+    ],
+    [
+     "2023",
+     5.18916666666666
+    ],
+    [
+     "2022",
+     4.2925
+    ],
+    [
+     "2021",
+     2.88416666666666
+    ]
+   ]
+  },
+  "AT": {
+   "source": "https://api.worldbank.org/v2/country/AUT/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "BE": {
+   "source": "https://api.worldbank.org/v2/country/BEL/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "PT": {
+   "source": "https://api.worldbank.org/v2/country/PRT/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "SK": {
+   "source": "https://api.worldbank.org/v2/country/SVK/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "SI": {
+   "source": "https://api.worldbank.org/v2/country/SVN/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "LT": {
+   "source": "https://api.worldbank.org/v2/country/LTU/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "BG": {
+   "source": "https://api.worldbank.org/v2/country/BGR/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     4.23581666666666
+    ],
+    [
+     "2024",
+     4.53578333333333
+    ],
+    [
+     "2023",
+     4.42983333333333
+    ],
+    [
+     "2022",
+     3.74595833333333
+    ],
+    [
+     "2021",
+     4.11618333333333
+    ]
+   ]
+  },
+  "RS": {
+   "source": "https://api.worldbank.org/v2/country/SRB/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2010",
+     4.75888888888889
+    ],
+    [
+     "2009",
+     6.87059315987913
+    ],
+    [
+     "2008",
+     6.03196632437249
+    ],
+    [
+     "2007",
+     4.39333333333333
+    ],
+    [
+     "2006",
+     5.11561220809171
+    ]
+   ]
+  },
+  "MA": {
+   "source": "https://api.worldbank.org/v2/country/MAR/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "TN": {
+   "source": "https://api.worldbank.org/v2/country/TUN/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "EG": {
+   "source": "https://api.worldbank.org/v2/country/EGY/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2024",
+     24.2916666666666
+    ],
+    [
+     "2023",
+     17.7583333333333
+    ],
+    [
+     "2022",
+     10.5833333333333
+    ],
+    [
+     "2021",
+     9.425
+    ],
+    [
+     "2020",
+     11.3666666666666
+    ]
+   ]
+  },
+  "ZA": {
+   "source": "https://api.worldbank.org/v2/country/ZAF/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     10.6875
+    ],
+    [
+     "2024",
+     11.625
+    ],
+    [
+     "2023",
+     11.5
+    ],
+    [
+     "2022",
+     8.79166666666666
+    ],
+    [
+     "2021",
+     7.04166666666666
+    ]
+   ]
+  },
+  "JP": {
+   "source": "https://api.worldbank.org/v2/country/JPN/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2017",
+     0.994
+    ],
+    [
+     "2016",
+     1.04475
+    ],
+    [
+     "2015",
+     1.14283333333333
+    ],
+    [
+     "2014",
+     1.21916666666666
+    ],
+    [
+     "2013",
+     1.30375
+    ]
+   ]
+  },
+  "TW": {
+   "source": "https://api.worldbank.org/v2/country/TWN/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": []
+  },
+  "MY": {
+   "source": "https://api.worldbank.org/v2/country/MYS/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     4.82472886111111
+    ],
+    [
+     "2024",
+     5.282681
+    ],
+    [
+     "2023",
+     5.31737500641025
+    ],
+    [
+     "2022",
+     3.90802666666666
+    ],
+    [
+     "2021",
+     3.44410640384615
+    ]
+   ]
+  },
+  "ID": {
+   "source": "https://api.worldbank.org/v2/country/IDN/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2025",
+     8.50158323159016
+    ],
+    [
+     "2024",
+     8.79568784927158
+    ],
+    [
+     "2023",
+     8.92666666666666
+    ],
+    [
+     "2022",
+     8.51999999999999
+    ],
+    [
+     "2021",
+     8.9225
+    ]
+   ]
+  },
+  "PH": {
+   "source": "https://api.worldbank.org/v2/country/PHL/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2019",
+     7.09583333333333
+    ],
+    [
+     "2018",
+     6.1185
+    ],
+    [
+     "2017",
+     5.62724999999999
+    ],
+    [
+     "2016",
+     5.642
+    ],
+    [
+     "2015",
+     5.57825
+    ]
+   ]
+  },
+  "SG": {
+   "source": "https://api.worldbank.org/v2/country/SGP/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2021",
+     5.25
+    ],
+    [
+     "2020",
+     5.25
+    ],
+    [
+     "2019",
+     5.25
+    ],
+    [
+     "2018",
+     5.33
+    ],
+    [
+     "2017",
+     5.28
+    ]
+   ]
+  },
+  "CA": {
+   "source": "https://api.worldbank.org/v2/country/CAN/indicator/FR.INR.LEND?format=json&mrv=5",
+   "obs": [
+    [
+     "2017",
+     2.7
+    ],
+    [
+     "2016",
+     2.7
+    ],
+    [
+     "2015",
+     2.775
+    ],
+    [
+     "2014",
+     3
+    ],
+    [
+     "2013",
+     3
+    ]
+   ]
+  }
+ }
+}
