@@ -34,6 +34,16 @@ folder. You almost never need to touch `style.css` or `script.js`.
 | Sponsor packages and prices | `package` in `sponsor.html` |
 | Social media links | `socials` |
 
+## Privacy, photos and credits (privacy.html)
+
+- When you add a photo, video or map that someone outside the group made, add their name to the
+  **Photos, videos and credits** list in `privacy.html` (and next to the photo where the page allows,
+  e.g. the `credit:` field in `maharashtra-data.js`).
+- If someone asks for a photo or their details to be removed, do it within 7 days (the footer and
+  the privacy page promise this).
+- If the way we collect details changes (a new form, membership going live, a new service),
+  update the matching section of `privacy.html` and its "Last updated" date.
+
 ## Marathi Calendar corner
 
 - **Festival dates**: `LM_FESTIVALS` at the end of `culture-data.js`. Each line has a `date`

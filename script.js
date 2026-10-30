@@ -348,6 +348,12 @@ document.addEventListener('DOMContentLoaded', () => {
       section: 'Sponsor',
     });
     searchIndex.push({
+      label: 'Privacy, Photos and Credits',
+      text: 'privacy gdpr data protection personal details delete remove photo takedown credits copyright cookies ico rights',
+      href: 'privacy.html',
+      section: 'Privacy',
+    });
+    searchIndex.push({
       label: 'दिवाळी अंक २०२६ | Diwali Ank',
       text: 'diwali ank magazine articles poems recipes editorial दिवाळी अंक लेख कविता पाककृती बालविभाग संपादकीय',
       href: 'ank.html',

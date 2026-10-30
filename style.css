@@ -1631,8 +1631,12 @@ footer {
   color: #d9bba2;
 }
 .footer-bottom p { margin: 0; }
-.footer-privacy { line-height: 1.5; opacity: 0.85; }
-.footer-privacy a { color: var(--gold); }
+.footer-legal p { line-height: 1.55; }
+.footer-legal strong { color: #f6dfc8; }
+.footer-legal a { color: var(--gold); }
+.footer-legal-links { margin-top: 6px !important; font-weight: 700; }
+.footer-legal-links a { display: inline-block; padding: 6px 0; text-decoration: none; }
+.footer-legal-links a:hover { text-decoration: underline; }
 .footer-credit { color: var(--white); font-size: 0.95rem; font-weight: 600; white-space: nowrap; }
 @media (max-width: 960px) {
   .footer-main { grid-template-columns: 1fr 1fr; gap: 34px 28px; }
@@ -2621,3 +2625,23 @@ footer {
 .event-feature-actions .btn, .event-feature-actions a { min-height: 44px; }
 /* Text for screen readers only */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- Privacy, Photos and Credits page ---------- */
+.legal { max-width: 780px; margin: 0 auto; padding: 46px 22px 70px; }
+.legal .section-head { margin-bottom: 26px; }
+.legal-updated { margin: 10px 0 0; font-size: 0.88rem; color: #6b544b; }
+.legal-toc { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 0 0 34px; }
+.legal-toc a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 20px; background: var(--white); border: 1px solid #f0dcc3; color: var(--red-dark); font-size: 0.88rem; font-weight: 700; text-decoration: none; }
+.legal-toc a:hover { border-color: var(--saffron); }
+.legal section { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px 26px; margin: 0 0 18px; scroll-margin-top: 90px; }
+.legal h2 { margin: 0 0 10px; font-size: 1.25rem; color: var(--red-dark); }
+.legal p, .legal li { font-size: 1rem; line-height: 1.65; }
+.legal p { margin: 0 0 10px; }
+.legal ul { margin: 0 0 10px; padding-left: 22px; }
+.legal li { margin-bottom: 4px; }
+.legal a { color: var(--red-dark); font-weight: 600; }
+/* one line under each form */
+.form-privacy { margin: 0; font-size: 0.85rem; line-height: 1.5; opacity: 0.85; }
+.form-privacy a { color: inherit; font-weight: 700; }
+.involved-form .form-privacy { color: #6b544b; text-align: center; opacity: 1; }
+.contact-form .form-privacy { color: #6b544b; opacity: 1; }
