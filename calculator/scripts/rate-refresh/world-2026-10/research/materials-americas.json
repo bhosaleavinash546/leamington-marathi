@@ -830,7 +830,7 @@
   }
  ],
  "notes": [
-  "Search budget: 24 of 25 web searches used. steelbenchmarker.com, barchart.com and spglobal.com could not be reached with WebFetch (DNS refused) - curl through the proxy reached steelbenchmarker.com; spglobal.com, plasticsnews.com, kallanish.com, northamericanstainless.com returned 403.",
+  "Search budget: 19 of 25 web searches used. steelbenchmarker.com, barchart.com and spglobal.com could not be reached with WebFetch (DNS refused) - curl through the proxy reached steelbenchmarker.com; spglobal.com, plasticsnews.com, kallanish.com, northamericanstainless.com returned 403.",
   "US anchors are SPOT, East-of-Mississippi / Midwest, FOB mill, in a tariff-driven squeeze (US HRC ~1,357 $/t v W. Europe 828 $/t and China 418 $/t on the same SteelBenchmarker date). OEM annual contracts may sit below spot; say so on any US book.",
   "Canada and Mexico differ materially from the US: Section 232 (50%) split the Canadian market (Fastmarkets Canada index) and Mexico's domestic HRC (~US$985/t, Aug 2026) was ~30% below US spot. Their Al premiums differ too (Mexico cif ~$335/t v Midwest ~$2,315/t).",
   "Polymer values are businessanalytiq regional indices (method not published) - treat as Low confidence; no US contract (Plastics News/CDI) or Brazilian domestic resin price was readable.",
