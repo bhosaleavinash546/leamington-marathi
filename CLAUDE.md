@@ -888,7 +888,8 @@ what is true** — nothing here has been compared with a price JLR paid.
   `scripts/rate-refresh/2026-10-hungary.json` (`hungary-2026-10/build-config.py`, nine research files). NO UK MULTIPLIER:
   what the research priced is Hungary's; what it could not price is AT PAR — `heldMaterialsAtPar` (materialMultiplier /
   resin factors 1, note "at par (no country factor)") and `capitalHeldFactor` 1 (note "capital AT PAR"). Labour = KSH
-  total earnings + szocho over 1,728 h (KSH totals already hold the allowances — no extra shift premium); engineer held.
+  total earnings by FEOR occupation + szocho over 1,728 h (KSH totals already hold the allowances — no extra shift premium);
+  engineer / technician / supervisor / inspector from their own FEOR codes (2118 / 3116 / 3212 / 3135) — no category held.
   £1 = Ft437.75 (MNB 29 Oct 2026). Hungary has no lab-hu-* library rows (`noLibraryLabourRows`). A machine group needs
   evidence of the SAME scope as the library machine (an IMM "may include auxiliaries", a cobot cell for a robot station,
   machine-only welding sets were rejected). `tests/hungary-rate-book.test.ts`.
