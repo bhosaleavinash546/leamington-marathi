@@ -884,6 +884,20 @@ what is true** — nothing here has been compared with a price JLR paid.
   ops) and the PDF prints each priced lever's re-cost assumption; overhead / packaging / logistics print their basis
   (`shopDefaultsBasis` — UK basis × the country multipliers, held); book labour rows carry the book's date; an answered
   grade / Al alloy confirms the material (no "0% confident"); Al Extrusion has its own tab and picker tile.
+- Hungary rate book (30 Oct 2026, `docs/rates/hungary-rate-book-2026-10.md`): `country-books/hu.ts`, GENERATED from
+  `scripts/rate-refresh/2026-10-hungary.json` (`hungary-2026-10/build-config.py`, nine research files). NO UK MULTIPLIER:
+  what the research priced is Hungary's; what it could not price is AT PAR — `heldMaterialsAtPar` (materialMultiplier /
+  resin factors 1, note "at par (no country factor)") and `capitalHeldFactor` 1 (note "capital AT PAR"). Labour = KSH
+  total earnings + szocho over 1,728 h (KSH totals already hold the allowances — no extra shift premium); engineer held.
+  £1 = Ft437.75 (MNB 29 Oct 2026). Hungary has no lab-hu-* library rows (`noLibraryLabourRows`). A machine group needs
+  evidence of the SAME scope as the library machine (an IMM "may include auxiliaries", a cobot cell for a robot station,
+  machine-only welding sets were rejected). `tests/hungary-rate-book.test.ts`.
+- Delivery terms (30 Oct 2026): `UniversalStackInput.deliveryTerms` 'DAP' (default) | 'EXW'. Ex-works = packaging in,
+  freight out: `regionalShopDefaults(region, basis, terms)` gives logistics 0, the screen's #delivery-terms /
+  #cad-delivery-terms (one state, `country-fields.ts`) lock the field, `getUniversalTail` is the ONE place the stack reads
+  it, headless takes `BulkRunOptions.deliveryTerms`, compare-routes sends it, both reports print `deliveryTermsLine`.
+  `tests/delivery-terms.test.ts`. Country provenance (where every £ of a costing's rates comes from: own / held capital /
+  material factor / derived service factor / held multiplier / margin): `scripts/country-trace/provenance.ts`.
 - UK rate book (Oct 2026, `docs/rates/uk-rate-book-2026-10.md`): the BASE library's UK literals are written by
   `scripts/uk-book.ts` from `scripts/rate-refresh/2026-10-uk.json` (`uk-2026-10/build-config.py` from sourced research;
   `uk-2026-10/register.csv`; idempotent — never hand-edit a rebuilt rate). Machine rates are MACHINE ONLY (the costing adds

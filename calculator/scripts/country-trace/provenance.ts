@@ -87,11 +87,14 @@ for (const region of REGIONS) {
       split: Object.fromEntries(CLASSES.map(k => [k, Math.round(c[k] * 10_000) / 10_000])), reconciles: Math.abs(sum - r.total!) < 0.01 });
   }
   const pct = Object.fromEntries(CLASSES.map(k => [k, Math.round(tot[k] / grand * 1000) / 10]));
+  // the composite roof panel alone is ~45% of the basket's £ — the median part says more about a typical costing
+  const owns = parts.map(x => x.ownPct as number).sort((a, b) => a - b);
+  const medianOwnPct = owns.length ? owns[Math.floor(owns.length / 2)] : 0;
   const top = (m: Map<string, number>) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([id, gbp]) => ({ id, gbp: Math.round(gbp * 100) / 100 }));
   out[region] = { book: book ? `${book.region} ${book.asOf}` : 'none (UK × factors)', capitalHeldFactor: book?.machines.capitalHeldFactor ?? null,
-    parts: parts.length, totalGbp: Math.round(grand * 100) / 100, sharePct: pct,
+    parts: parts.length, totalGbp: Math.round(grand * 100) / 100, sharePct: pct, medianPartOwnPct: medianOwnPct,
     topHeldCapitalMachines: top(heldMachines), topFactorMaterials: top(factorMaterials), heldLabour: top(heldLabour), perPart: parts };
-  console.log(`${region}: ${parts.length} parts £${grand.toFixed(2)} — own ${pct.own}% · held machine capital ${pct.heldCap}% · material ×factor ${pct.matFactor}% · derived ${pct.derived}% · held multipliers ${pct.heldMult}% · margin ${pct.margin}%`
+  console.log(`${region}: ${parts.length} parts £${grand.toFixed(2)} — median part ${medianOwnPct}% own; basket: own ${pct.own}% · held machine capital ${pct.heldCap}% · material ×factor ${pct.matFactor}% · derived ${pct.derived}% · held multipliers ${pct.heldMult}% · margin ${pct.margin}%`
     + `${parts.every(x => x.reconciles) ? '' : ' (SOME PARTS DO NOT RECONCILE)'}`);
 }
 writeFileSync(OUT, JSON.stringify(out, null, 1));
