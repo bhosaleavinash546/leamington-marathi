@@ -100,3 +100,28 @@ Screens saved are for a phone, measured against the 27.4-screen page from 1 Nove
 **Total: about 8.6 screens saved, so 27.4 becomes about 19 phone screens (30% shorter), with no change to the look.**
 
 To reach half (about 14 screens) within these rules, one more option is to move Sponsor and the Marathi Calendar onto their own pages. The home page would keep a 1-line link to each. This saves about 4.5 more screens. It is still small work, but it moves content, so it needs your OK separately.
+
+## After the fixes (30 October 2026)
+
+All 10 fixes were made. Sponsor amounts were left blank, as asked. Sponsor and the Marathi Calendar now have their own pages (`sponsor.html`, `calendar.html`). Both are in the top menu and the footer, and the home page keeps a visible card for each, in the same place as before.
+
+| Phone home page | Before | After |
+|---|---|---|
+| Today (with Diwali Bhet block) | 32.7 screens | 23.1 screens |
+| From 1 Nov | 27.4 screens | **17.9 screens** (35% shorter) |
+| Swipes to Get Involved form (from 1 Nov) | 18.5 | 12.3 |
+| Swipes to Contact (from 1 Nov) | 24 | 15.3 |
+
+Desktop from 1 Nov: 18.0 → 13.8 screens.
+
+| Lighthouse mobile (local test) | Before | After |
+|---|---|---|
+| Home: Performance | 30 | 65 |
+| Home: blocking time | 2,800 ms | 0 ms |
+| Home: Accessibility / SEO / Best practices | 100 / 100 / 100 | 100 / 100 / 100 |
+| calendar.html | – | 77 / 100 / 100 / 100 |
+| sponsor.html | – | 83 / 100 / 100 / 100 |
+
+Half the length (about 14 screens) was not reached without hiding whole sections. The longest parts left on a phone are Dhol Tasha (1.9), Contact (1.8), Get Involved (1.6), About (1.6), the Calendar card (1.5) and आपला महाराष्ट्र (1.5).
+
+Full-page phone screenshot after the fixes (as from 1 Nov): `review/home-phone-full-after.jpg`.

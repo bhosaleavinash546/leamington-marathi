@@ -230,38 +230,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const processionReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let roadLength = 0;
     let waypointLengths = [];
+    let shown = stones; // milestones on screen (the rest wait behind "Show the full story")
 
     const buildRoad = () => {
       const width = procession.offsetWidth;
+      shown = stones.filter(stone => stone.offsetParent !== null);
       // waypoint beside each stone, on the side facing the road
-      const pts = stones.map((stone, i) => ({
+      const pts = shown.map((stone, i) => ({
         x: i % 2 === 0 ? stone.offsetLeft + stone.offsetWidth + 28 : stone.offsetLeft - 28,
         y: stone.offsetTop + stone.offsetHeight / 2,
       }));
       const start = { x: width / 2, y: -10 };
       const end = { x: width / 2, y: procession.offsetHeight + 10 };
       const all = [start, ...pts, end];
+      // the road is one curve per stretch, so the distance to each waypoint is the
+      // length of the road drawn up to it (a handful of measurements, cheap on phones)
       let d = `M ${all[0].x} ${all[0].y}`;
+      const upTo = [];
       for (let i = 1; i < all.length; i++) {
         const prev = all[i - 1];
         const curr = all[i];
         const midY = (prev.y + curr.y) / 2;
         d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`;
+        upTo.push(d);
       }
       roadBase.setAttribute('d', d);
       roadLine.setAttribute('d', d);
       roadLength = roadBase.getTotalLength();
-      // map each waypoint to its distance along the road
-      waypointLengths = pts.map(pt => {
-        let best = 0, bestDist = Infinity;
-        for (let s = 0; s <= 300; s++) {
-          const len = (roadLength * s) / 300;
-          const p = roadBase.getPointAtLength(len);
-          const dist = (p.x - pt.x) ** 2 + (p.y - pt.y) ** 2;
-          if (dist < bestDist) { bestDist = dist; best = len; }
-        }
-        return best;
+      waypointLengths = pts.map((pt, i) => {
+        roadLine.setAttribute('d', upTo[i]);
+        return roadLine.getTotalLength();
       });
+      roadLine.setAttribute('d', d);
       roadBase.style.strokeDasharray = roadLength;
       roadLine.style.strokeDasharray = roadLength;
       paint();
@@ -279,23 +279,39 @@ document.addEventListener('DOMContentLoaded', () => {
       roadLine.style.strokeDashoffset = roadLength - travelled;
       const pos = roadBase.getPointAtLength(travelled);
       marker.style.transform = `translate(${pos.x - 23}px, ${pos.y - 23}px)`;
-      stones.forEach((stone, i) => stone.classList.toggle('passed', travelled >= waypointLengths[i] - 12));
+      shown.forEach((stone, i) => stone.classList.toggle('passed', travelled >= waypointLengths[i] - 12));
     };
 
     let ticking = false;
     window.addEventListener('scroll', () => {
-      if (ticking) return;
+      if (ticking || !roadLength) return;
       ticking = true;
       requestAnimationFrame(() => { paint(); ticking = false; });
     }, { passive: true });
     let resizeDebounce;
     window.addEventListener('resize', () => {
       clearTimeout(resizeDebounce);
-      resizeDebounce = setTimeout(buildRoad, 200);
+      resizeDebounce = setTimeout(() => { if (roadBuilt) buildRoad(); }, 200);
     });
-    buildRoad();
+    // "Show the full story": the first two milestones show, the rest open on a tap
+    const moreBtn = document.getElementById('journey-more');
+    if (moreBtn) moreBtn.addEventListener('click', () => {
+      const open = procession.classList.toggle('collapsed') === false;
+      moreBtn.setAttribute('aria-expanded', String(open));
+      moreBtn.textContent = open ? 'Show less · कमी दाखवा' : 'Show the full story · पूर्ण वाटचाल';
+      buildRoad();
+    });
+    // build the road only when the section comes near the screen: measuring it forces
+    // a full page layout, which on a phone held up the first paint
+    let roadBuilt = false;
+    new IntersectionObserver((entries, obs) => {
+      if (!entries.some(e => e.isIntersecting)) return;
+      obs.disconnect();
+      roadBuilt = true;
+      buildRoad();
+    }, { rootMargin: '600px 0px' }).observe(procession);
     // rebuild once fonts/images have settled the layout
-    window.addEventListener('load', buildRoad, { once: true });
+    window.addEventListener('load', () => { if (roadBuilt) buildRoad(); }, { once: true });
   }
 
   // ---- Site search: index every section and card, jump-and-highlight on pick ----
@@ -318,6 +334,18 @@ document.addEventListener('DOMContentLoaded', () => {
           section: secTitle,
         });
       });
+    });
+    searchIndex.push({
+      label: 'Marathi Calendar | मराठी दिनदर्शिका',
+      text: 'marathi calendar festival dates diwali sankranti holi gudhi padwa shiv jayanti proverb word of the day add to calendar दिनदर्शिका सण म्हण शब्द',
+      href: 'calendar.html',
+      section: 'Calendar',
+    });
+    searchIndex.push({
+      label: 'Sponsor Us | प्रायोजक व्हा',
+      text: 'sponsor sponsorship packages bronze silver gold business advertise stall logo supporters प्रायोजक',
+      href: 'sponsor.html',
+      section: 'Sponsor',
     });
     searchIndex.push({
       label: 'दिवाळी अंक २०२६ | Diwali Ank',
@@ -437,6 +465,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // The contact form sits in a <details>; any link to #contact-message opens it first
+  const contactMore = document.getElementById('contact-message');
+  const openContact = () => { if (contactMore) contactMore.open = true; };
+  document.querySelectorAll('a[href="#contact-message"]').forEach(a => a.addEventListener('click', openContact));
+  if (location.hash === '#contact-message') openContact();
+
   // "Register interest" links pre-fill the contact form for that event
   document.querySelectorAll('.rsvp-link').forEach(link => {
     link.addEventListener('click', () => {
@@ -494,85 +528,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, { threshold: 0.6 });
   document.querySelectorAll('.divider').forEach(el => dividerObserver.observe(el));
-
-  // ---- Marathi calendar corner ----
-  const MR_DIGITS = '०१२३४५६७८९';
-  const toMarathiDigits = n => String(n).replace(/\d/g, d => MR_DIGITS[d]);
-  const MR_DAYS = ['रविवार', 'सोमवार', 'मंगळवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
-  const MR_MONTHS = ['जानेवारी', 'फेब्रुवारी', 'मार्च', 'एप्रिल', 'मे', 'जून', 'जुलै', 'ऑगस्ट', 'सप्टेंबर', 'ऑक्टोबर', 'नोव्हेंबर', 'डिसेंबर'];
-  const kalDate = document.getElementById('kal-date');
-  if (kalDate) {
-    const now = new Date();
-    kalDate.textContent = `${MR_DAYS[now.getDay()]}, ${toMarathiDigits(now.getDate())} ${MR_MONTHS[now.getMonth()]} ${toMarathiDigits(now.getFullYear())}`;
-
-    // Festival list: hide past dates, show the next six, add "in N days" and a calendar file
-    const dayMs = 86400000;
-    const items = [...document.querySelectorAll('#kal-list li[data-date]')];
-    let shown = 0;
-    let first = null;
-    items.forEach(li => {
-      const when = new Date(`${li.dataset.date}T00:00:00`);
-      const days = Math.round((when - todayStart) / dayMs);
-      if (days < 0 || shown >= 6) { li.hidden = true; return; }
-      shown++;
-      if (!first) first = { li, days };
-      const actions = document.createElement('span');
-      actions.className = 'kal-actions';
-      const inSpan = document.createElement('span');
-      inSpan.className = 'kal-in';
-      inSpan.textContent = days === 0 ? 'आज!' : days === 1 ? 'उद्या' : `${days} days`;
-      actions.appendChild(inSpan);
-      // one day, all day .ics file the phone or laptop calendar can open
-      const ymd = li.dataset.date.replace(/-/g, '');
-      const next = new Date(when.getTime() + dayMs);
-      const ymdNext = `${next.getFullYear()}${String(next.getMonth() + 1).padStart(2, '0')}${String(next.getDate()).padStart(2, '0')}`;
-      const title = li.dataset.title || li.querySelector('strong').textContent;
-      const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Leamington Marathi//EN', 'BEGIN:VEVENT',
-        `UID:${ymd}-${title.replace(/\W+/g, '')}@leamingtonmarathi.com`,
-        `DTSTAMP:${ymd}T000000Z`, `DTSTART;VALUE=DATE:${ymd}`, `DTEND;VALUE=DATE:${ymdNext}`,
-        `SUMMARY:${title}`, 'DESCRIPTION:Leamington Marathi calendar. leamingtonmarathi.com',
-        'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
-      const add = document.createElement('a');
-      add.className = 'kal-add';
-      add.href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
-      add.download = `${title.replace(/[^\w]+/g, '-').toLowerCase()}.ics`;
-      add.textContent = '📅 Add to calendar';
-      actions.appendChild(document.createElement('br'));
-      actions.appendChild(add);
-      li.appendChild(actions);
-    });
-    const kalNext = document.getElementById('kal-next');
-    if (first) {
-      const name = first.li.querySelector('strong').textContent;
-      kalNext.textContent = first.days === 0 ? `आज ${name}!` : first.days === 1 ? `उद्या ${name}` : `${name} in ${first.days} days`;
-    } else {
-      kalNext.textContent = 'New dates will be added soon.';
-    }
-
-    // Proverb and word of the day, chosen by the day of the year
-    const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / dayMs);
-    const mhani = window.LM_MHANI || [];
-    const shabda = window.LM_SHABDA || [];
-    if (mhani.length) {
-      const m = mhani[dayOfYear % mhani.length];
-      document.getElementById('mhan-text').textContent = m.m;
-      document.getElementById('mhan-meaning').textContent = m.a;
-    }
-    if (shabda.length) {
-      const s = shabda[dayOfYear % shabda.length];
-      document.getElementById('shabda-text').textContent = s.s;
-      const meaning = document.getElementById('shabda-meaning');
-      meaning.textContent = '';
-      const strong = document.createElement('strong');
-      strong.textContent = s.r;
-      meaning.append(strong, `: ${s.e}. `);
-      const ex = document.createElement('span');
-      ex.className = 'marathi';
-      ex.lang = 'mr';
-      ex.textContent = s.ex;
-      meaning.appendChild(ex);
-    }
-  }
 
   // ---- Flyer tilt: cards lean towards the pointer (or the phone's tilt) ----
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

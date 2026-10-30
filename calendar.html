@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marathi Calendar | Leamington Marathi | मराठी दिनदर्शिका</title>
+  <meta name="description" content="Marathi festival dates for families in Leamington Spa and Warwick, UK, with a Marathi proverb and a word for every day.">
+  <link rel="icon" type="image/png" href="images/logo-emblem.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#d92a1c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Leamington Marathi">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <script>if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js'));</script>
+  <link rel="canonical" href="https://leamingtonmarathi.com/calendar.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Marathi Calendar | Leamington Marathi | मराठी दिनदर्शिका">
+  <meta property="og:description" content="Marathi festival dates for families in Leamington Spa and Warwick, UK, with a Marathi proverb and a word for every day.">
+  <meta property="og:url" content="https://leamingtonmarathi.com/calendar.html">
+  <meta property="og:image" content="https://leamingtonmarathi.com/images/share-banner.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="culture-data.js" defer></script>
+  <script src="kal.js" defer></script>
+</head>
+<body class="subpage">
+
+  <!-- Slim header: emblem + wordmark, back to the main site -->
+  <header id="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="brand">
+        <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="logo-emblem" width="216" height="216">
+        <img src="images/logo.png" alt="Leamington Marathi" class="logo" width="444" height="120">
+      </a>
+      <a href="index.html" class="member-back">← Back to website</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="section kalnirnay">
+      <div class="section-head">
+        <p class="section-kicker marathi" lang="mr">मराठी दिनदर्शिका</p>
+        <h1>Marathi Calendar</h1>
+        <p class="section-sub">Festival dates for your UK diary, plus a proverb and a word for the day. Tap “Add to calendar” to put a date on your phone.</p>
+      </div>
+      <h2 class="sr-only">Festival dates, proverb and word of the day</h2>
+      <div class="kal-grid">
+        <div class="kal-card kal-today">
+          <p class="kal-label marathi" lang="mr">आज</p>
+          <p class="kal-date marathi" lang="mr" id="kal-date"></p>
+          <p class="kal-next" id="kal-next"></p>
+          <h3 class="kal-heading marathi" lang="mr">येणारे सण</h3>
+          <ul class="kal-list" id="kal-list" data-show="12" data-add="1"></ul>
+          <p class="kal-note">Dates that follow the moon are checked against the panchang each January.</p>
+        </div>
+        <div class="kal-side">
+          <div class="kal-card">
+            <p class="kal-label marathi" lang="mr">आजची म्हण</p>
+            <p class="kal-mhan marathi" lang="mr" id="mhan-text">थेंबे थेंबे तळे साचे</p>
+            <p class="kal-meaning" id="mhan-meaning">Drop by drop, a pond fills up. Small things add up.</p>
+          </div>
+          <div class="kal-card">
+            <p class="kal-label marathi" lang="mr">आजचा शब्द</p>
+            <p class="kal-shabda marathi" lang="mr" id="shabda-text">आकाश</p>
+            <p class="kal-meaning" id="shabda-meaning"><strong>aakaash</strong>: sky. <span class="marathi" lang="mr">आज आकाश निळं आहे.</span></p>
+            <p class="kal-note">A new word every day. Try it at home with the children.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="footer-links"><a href="index.html">Home</a> · <a href="index.html#events">Events</a> · <a href="calendar.html">Marathi Calendar</a> · <a href="sponsor.html">Sponsor Us</a> · <a href="index.html#get-involved">Join Us</a> · <a href="index.html#contact">Contact</a></p>
+    <p class="footer-copy">© 2026 Leamington Marathi | <span class="marathi" lang="mr">जय महाराष्ट्र 🚩</span></p>
+    <p class="footer-credit">Designed &amp; Developed by Avinash Bhosale</p>
+  </footer>
+
+</body>
+</html>

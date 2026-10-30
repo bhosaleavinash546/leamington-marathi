@@ -49,6 +49,7 @@
   <link rel="stylesheet" href="style.css">
   <script>document.documentElement.classList.add('js');</script>
   <script src="culture-data.js" defer></script>
+  <script src="kal.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -85,7 +86,8 @@
           <li><a href="#dhol">Dhol&nbsp;Tasha</a></li>
           <li><a href="maharashtra.html" class="nav-mh"><span class="marathi" lang="mr">आपला&nbsp;महाराष्ट्र</span></a></li>
           <li><a href="#gallery">Gallery</a></li>
-          <li><a href="#sponsor">Sponsor&nbsp;Us</a></li>
+          <li><a href="calendar.html">Calendar</a></li>
+          <li><a href="sponsor.html">Sponsor&nbsp;Us</a></li>
           <li><a href="#get-involved">Join&nbsp;Us</a></li>
           <li><a href="member.html">Membership</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -128,8 +130,8 @@
         Leamington Spa and Warwick. We meet for festivals, food, music and a bit of gappa.
       </p>
       <div class="hero-actions">
-        <a href="#contact" class="btn btn-primary">Join Our Community</a>
-        <a href="#sponsor" class="btn btn-outline">Become a Sponsor</a>
+        <a href="#get-involved" class="btn btn-primary">Join Our Community</a>
+        <a href="sponsor.html" class="btn btn-outline">Become a Sponsor</a>
       </div>
     </div>
 
@@ -139,7 +141,7 @@
          the links and both dates. The small .hero-next chip style is still in style.css if
          you ever want a quieter version. -->
     <a href="#diwali-bhet-2026" class="hero-spot" data-event-date="2026-10-31" data-until="2026-10-31" aria-label="Diwali Bhet 2026, Saturday 31 October, North Leamington School. Tickets £5, under 12 free. See the full details">
-      <img src="images/flyers/diwali-bhet-2026.jpg" alt="" class="hero-spot-flyer" width="960" height="1200">
+      <img src="images/flyers/diwali-bhet-2026-thumb.jpg" alt="" class="hero-spot-flyer" width="240" height="300">
       <span class="hero-spot-body">
         <span class="hero-spot-kicker">🪔 Next event <span class="marathi" lang="mr">| आपला पुढचा कार्यक्रम</span></span>
         <span class="hero-spot-title"><span class="marathi" lang="mr">दिवाळी भेट २०२६</span> <span class="hero-spot-en">Diwali Bhet with live Sugam Sangeet</span></span>
@@ -267,7 +269,7 @@
     </div>
     <!-- Procession path: winding road drawn behind the milestones; a dhol marker
          travels along it as you scroll (script.js), lighting each milestone up -->
-    <div class="procession" id="procession">
+    <div class="procession collapsed" id="procession">
       <svg class="procession-road" aria-hidden="true">
         <path class="road-base" fill="none"/>
         <path class="road-line" fill="none"/>
@@ -288,21 +290,21 @@
           <p>We celebrated Ganeshotsav at Shree Krishna Mandir and held our first <strong>Diwali Bhet</strong>. Hundreds of people came. That is when we knew Leamington needed its own Marathi mandal.</p>
         </div>
       </li>
-      <li class="p-stone reveal">
+      <li class="p-stone p-more reveal">
         <div class="timeline-month">2024</div>
         <div class="timeline-card">
           <h3>We start our Dhol Tasha Pathak <span class="marathi" lang="mr">| ढोल-ताशा पथक</span></h3>
           <p>The drums came from India, weekend practice started in a local hall, and the pathak played in public for the first time.</p>
         </div>
       </li>
-      <li class="p-stone reveal">
+      <li class="p-stone p-more reveal">
         <div class="timeline-month">2025</div>
         <div class="timeline-card">
           <h3>400 families and counting <span class="marathi" lang="mr">| ४००+ कुटुंबे</span></h3>
           <p>More than 280 people came to Shivrajyotsav, and the pathak led the town's Diwali lights switch on in front of a crowd of 700 or more. The group crossed 400 families.</p>
         </div>
       </li>
-      <li class="p-stone reveal">
+      <li class="p-stone p-more reveal">
         <div class="timeline-month">6 June 2026</div>
         <div class="timeline-card">
           <h3>World Book of Records <span class="marathi" lang="mr">| विश्वविक्रम</span></h3>
@@ -310,7 +312,7 @@
           <span class="timeline-badge">🏆 13 pathaks · 270 players</span>
         </div>
       </li>
-      <li class="p-stone reveal">
+      <li class="p-stone p-more reveal">
         <div class="timeline-month">Today</div>
         <div class="timeline-card">
           <h3>What's next <span class="marathi" lang="mr">| पुढे</span></h3>
@@ -319,6 +321,7 @@
       </li>
       </ol>
     </div>
+    <p class="journey-more-row"><button type="button" class="btn btn-outline" id="journey-more" aria-expanded="false" aria-controls="procession">Show the full story · पूर्ण वाटचाल</button></p>
   </section>
 
   <!-- ===== Events / Annual Calendar ===== -->
@@ -414,14 +417,15 @@
       </div>
     </div>
 
-    <div class="timeline">
+    <p class="swipe-hint" aria-hidden="true">Swipe for more →</p>
+    <div class="timeline" tabindex="0" aria-label="Our annual events, scroll sideways for more">
       <div class="timeline-item reveal">
         <div class="timeline-month">January <span class="marathi" lang="mr">| जानेवारी</span></div>
         <div class="timeline-card">
           <h3>Haldi Kunku <span class="marathi" lang="mr">| हळदी-कुंकू</span></h3>
           <p>Our ladies get together for <strong>Makar Sankranti</strong>, with tilgul, saris and plenty of chat. <em>तिळगूळ घ्या, गोड गोड बोला!</em></p>
           <span class="timeline-badge">70+ participants</span>
-          <a class="rsvp-link" href="#contact" data-event="Haldi Kunku">Register interest →</a>
+          <a class="rsvp-link" href="#contact-message" data-event="Haldi Kunku">Register interest →</a>
         </div>
       </div>
       <div class="timeline-item reveal">
@@ -430,7 +434,7 @@
           <h3>Gudhi Padwa <span class="marathi" lang="mr">| गुढीपाडवा</span></h3>
           <p>We raise the gudhi, share a meal and welcome the <strong>Marathi New Year</strong> together.</p>
           <span class="timeline-badge">200+ participants</span>
-          <a class="rsvp-link" href="#contact" data-event="Gudhi Padwa">Register interest →</a>
+          <a class="rsvp-link" href="#contact-message" data-event="Gudhi Padwa">Register interest →</a>
         </div>
       </div>
       <div class="timeline-item reveal">
@@ -443,7 +447,7 @@
                <a class="ticket-link" href="TICKET-URL" target="_blank" rel="noopener"
                   data-until="EVENT-DATE" data-expired-text="📸 See the photos →" data-expired-href="#gallery">🎟 Book tickets</a>
                and it will retire itself the day after the event. -->
-          <a class="rsvp-link" href="#contact" data-event="Shivrajyotsav">Register interest →</a>
+          <a class="rsvp-link" href="#contact-message" data-event="Shivrajyotsav">Register interest →</a>
         </div>
       </div>
       <div class="timeline-item reveal">
@@ -452,33 +456,31 @@
           <h3>Ganeshotsav <span class="marathi" lang="mr">| गणेशोत्सव</span></h3>
           <p>We cook and serve Maharashtrian food at the <strong>Shree Krishna Mandir Ganesh festival</strong>, and our pathak leads the procession. <em>गणपती बाप्पा मोरया!</em></p>
           <span class="timeline-badge">700+ participants</span>
-          <a class="rsvp-link" href="#contact" data-event="Ganeshotsav">Register interest →</a>
+          <a class="rsvp-link" href="#contact-message" data-event="Ganeshotsav">Register interest →</a>
         </div>
       </div>
       <div class="timeline-item reveal">
         <div class="timeline-month">October <span class="marathi" lang="mr">| ऑक्टोबर, दिवाळी</span></div>
         <div class="timeline-card">
           <h3>Diwali Bhet <span class="marathi" lang="mr">| दिवाळी भेट</span></h3>
-          <p>Our Diwali get together for the whole family: music, faraal, stalls and gappa. <strong>This year: Saturday 31 October 2026, 10 am to 3 pm, North Leamington School</strong>, with live Sugam Sangeet. Tickets £5, under 12 free. Our pathak also plays at the town's <strong>Diwali lights switch on</strong>. <em>दिवाळीच्या हार्दिक शुभेच्छा!</em></p>
+          <p>Our Diwali get together for the whole family: music, faraal, stalls and gappa. Our pathak also plays at the town's <strong>Diwali lights switch on</strong>. <em>दिवाळीच्या हार्दिक शुभेच्छा!</em></p>
           <span class="timeline-badge">280+ &amp; 700+ participants</span>
           <a class="ticket-link" href="https://wa.me/447405282055?text=Namaskar%21%20I%20would%20like%20to%20book%20tickets%20for%20Diwali%20Bhet%202026%20%2831%20October%29.%20Adults%20%2812%2B%29%3A%20__%20%20Children%20under%2012%3A%20__%20%20Name%3A%20__" target="_blank" rel="noopener" data-until="2026-10-31" data-expired-text="📸 See the photos →" data-expired-href="#gallery">🎟 Book tickets</a>
-          <a class="rsvp-link" href="#contact" data-event="Diwali Bhet 2026">Register interest →</a>
+          <a class="rsvp-link" href="#contact-message" data-event="Diwali Bhet">Register interest →</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== Marathi Calendar corner =====
-       Festival dates live in the list below (data-date="YYYY-MM-DD"). Past dates hide
-       themselves and the next six show. Dates that follow the moon (Sankranti, Holi,
-       Padwa, Ganesh, Diwali) must be checked against a panchang every January.
-       The proverb and the word of the day come from culture-data.js. -->
+  <!-- ===== Marathi Calendar (home card) =====
+       Today's date, the next three festivals and the proverb of the day. The full
+       calendar is on calendar.html; the dates live in culture-data.js (kal.js builds the list). -->
   <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
   <section id="kalnirnay" class="section kalnirnay">
     <div class="section-head reveal">
       <p class="section-kicker marathi" lang="mr">आजचा दिवस</p>
       <h2>Marathi Calendar</h2>
-      <p class="section-sub">Festival dates for your UK diary, plus a proverb and a word for the day.</p>
+      <p class="section-sub">The next festivals and today's proverb. The full calendar has every date and a word for the day.</p>
     </div>
     <div class="kal-grid">
       <div class="kal-card kal-today reveal">
@@ -486,20 +488,7 @@
         <p class="kal-date marathi" lang="mr" id="kal-date"></p>
         <p class="kal-next" id="kal-next"></p>
         <h3 class="kal-heading marathi" lang="mr">येणारे सण</h3>
-        <ul class="kal-list" id="kal-list">
-          <li data-date="2026-10-31" data-title="Diwali Bhet 2026, North Leamington School, 10 am to 3 pm"><span class="kal-day marathi" lang="mr">३१ ऑक्टो</span><span class="kal-name"><strong class="marathi" lang="mr">दिवाळी भेट २०२६</strong>Our Diwali Bhet with Sugam Sangeet, North Leamington School, 10 am to 3 pm</span></li>
-          <li data-date="2026-11-06" data-title="Dhantrayodashi (Diwali begins)"><span class="kal-day marathi" lang="mr">६ नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">धनत्रयोदशी</strong>Dhanteras, the first day of Diwali</span></li>
-          <li data-date="2026-11-07" data-title="Narak Chaturdashi"><span class="kal-day marathi" lang="mr">७ नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">नरक चतुर्दशी</strong>Abhyangasnan and faraal</span></li>
-          <li data-date="2026-11-08" data-title="Lakshmi Pujan"><span class="kal-day marathi" lang="mr">८ नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">लक्ष्मीपूजन</strong>Lakshmi Pujan, the main Diwali evening</span></li>
-          <li data-date="2026-11-09" data-title="Diwali Padwa"><span class="kal-day marathi" lang="mr">९ नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">दिवाळी पाडवा</strong>Balipratipada, Marathi new year of the merchants</span></li>
-          <li data-date="2026-11-10" data-title="Bhaubeej"><span class="kal-day marathi" lang="mr">१० नोव्हें</span><span class="kal-name"><strong class="marathi" lang="mr">भाऊबीज</strong>Bhaubeej, brothers and sisters</span></li>
-          <li data-date="2027-01-14" data-title="Makar Sankranti"><span class="kal-day marathi" lang="mr">१४ जाने</span><span class="kal-name"><strong class="marathi" lang="mr">मकर संक्रांत</strong>Makar Sankranti, tilgul time</span></li>
-          <li data-date="2027-02-19" data-title="Shiv Jayanti"><span class="kal-day marathi" lang="mr">१९ फेब्रु</span><span class="kal-name"><strong class="marathi" lang="mr">शिवजयंती</strong>Chhatrapati Shivaji Maharaj Jayanti</span></li>
-          <li data-date="2027-03-22" data-title="Holi"><span class="kal-day marathi" lang="mr">२२ मार्च</span><span class="kal-name"><strong class="marathi" lang="mr">होळी</strong>Holi, Dhulivandan the next day</span></li>
-          <li data-date="2027-04-07" data-title="Gudhi Padwa"><span class="kal-day marathi" lang="mr">७ एप्रिल</span><span class="kal-name"><strong class="marathi" lang="mr">गुढीपाडवा</strong>Gudhi Padwa, Marathi New Year</span></li>
-          <li data-date="2027-05-01" data-title="Maharashtra Din"><span class="kal-day marathi" lang="mr">१ मे</span><span class="kal-name"><strong class="marathi" lang="mr">महाराष्ट्र दिन</strong>Maharashtra Din</span></li>
-        </ul>
-        <p class="kal-note">Dates that follow the moon are checked against the panchang each January.</p>
+        <ul class="kal-list" id="kal-list" data-show="3"></ul>
       </div>
       <div class="kal-side">
         <div class="kal-card reveal">
@@ -507,12 +496,12 @@
           <p class="kal-mhan marathi" lang="mr" id="mhan-text">थेंबे थेंबे तळे साचे</p>
           <p class="kal-meaning" id="mhan-meaning">Drop by drop, a pond fills up. Small things add up.</p>
         </div>
-        <div class="kal-card reveal">
-          <p class="kal-label marathi" lang="mr">आजचा शब्द</p>
-          <p class="kal-shabda marathi" lang="mr" id="shabda-text">आकाश</p>
-          <p class="kal-meaning" id="shabda-meaning"><strong>aakaash</strong>: sky. <span class="marathi" lang="mr">आज आकाश निळं आहे.</span></p>
-          <p class="kal-note">A new word every day. Try it at home with the children.</p>
-        </div>
+        <a class="page-card reveal" href="calendar.html">
+          <span class="page-card-icon" aria-hidden="true">📅</span>
+          <span class="page-card-text"><strong><span class="marathi" lang="mr">पूर्ण दिनदर्शिका</span> · Full calendar</strong>
+            Every festival date, the word of the day, and add any date to your phone.</span>
+          <span class="page-card-go" aria-hidden="true">→</span>
+        </a>
       </div>
     </div>
   </section>
@@ -601,12 +590,12 @@
         <p class="marathi dhol-marathi" lang="mr">
           ढोल-ताशाचा आवाज ऐकला की इथेही घरची आठवण येते.
         </p>
-        <a href="#contact" class="btn btn-light">Would you like us to play at your event?</a>
+        <a href="#contact-message" class="btn btn-light">Would you like us to play at your event?</a>
       </div>
       <!-- Photo grid: four tiles; script.js rotates the spare photos through them one tile at a time -->
       <div class="dhol-grid" id="dhol-grid" aria-label="Photos of the Dhol Tasha Pathak">
         <figure class="dhol-tile">
-          <img src="images/dhol-pathak.jpg" alt="Pathak performing in full costume at the racecourse" width="1000" height="563">
+          <img src="images/dhol-pathak-720.jpg" alt="Pathak performing in full costume at the racecourse" width="720" height="405">
         </figure>
         <figure class="dhol-tile">
           <img src="images/diwali-lights.jpg" alt="Pathak at the Diwali Lights Switch-On in Leamington" loading="lazy" width="533" height="400">
@@ -667,16 +656,19 @@
       </figure>
     </div>
 
-    <!-- Ganpati Visarjan video (loads only when played) -->
-    <div class="gallery-video reveal">
+    <!-- Ganpati Visarjan video (opens from the button, loads only when played) -->
+    <details class="gallery-video-wrap reveal">
+      <summary class="btn btn-outline">🎥 Watch: Ganpati Visarjan video</summary>
+    <div class="gallery-video">
       <video controls playsinline preload="none" poster="images/ganpati-visarjan-poster.jpg" width="720" height="1280">
         <source src="videos/ganpati-visarjan.mp4" type="video/mp4">
         Your browser can't play this video. <a href="videos/ganpati-visarjan.mp4">Download it instead</a>.
       </video>
       <p class="gallery-video-caption">🎥 Ganpati Visarjan, Leamington Ka Raja. <span class="marathi" lang="mr">गणपती बाप्पा मोरया, पुढच्या वर्षी लवकर या! 🙏</span></p>
     </div>
+    </details>
     <p class="gallery-more reveal">
-      <a href="https://www.instagram.com/leamington_marathi/" target="_blank" rel="noopener">More photos on our Instagram →</a>
+      <a href="https://www.instagram.com/leamington_marathi/" target="_blank" rel="noopener">See all photos on our Instagram →</a>
     </p>
   </section>
 
@@ -734,6 +726,7 @@
       <h2>What Our Families Say</h2>
     </div>
     <!-- TODO: these are sample quotes — replace with real words from your members -->
+    <p class="swipe-hint" aria-hidden="true">Swipe for more →</p>
     <div class="testimonial-grid">
       <blockquote class="testimonial reveal">
         <p>“When we moved to Leamington we did not know anyone. Within a month of joining the group it felt like we had family here.”</p>
@@ -750,76 +743,39 @@
     </div>
   </section>
 
-  <!-- ===== Sponsorship ===== -->
+  <!-- ===== Sponsorship (home card) — packages, benefits and the full supporters wall are on sponsor.html ===== -->
   <svg class="divider" aria-hidden="true" focusable="false"><use href="#paithani"/></svg>
   <section id="sponsor" class="section sponsor">
     <div class="section-head reveal">
       <p class="section-kicker marathi" lang="mr">प्रायोजक व्हा</p>
       <h2>Sponsor Us</h2>
       <p class="section-sub">
-        Sponsoring us puts your business in front of more than 400 Marathi families in
-        Leamington Spa and Warwick, and helps us pay for the halls, food and stage for our events.
+        Put your business in front of more than 400 Marathi families in Leamington Spa and Warwick,
+        and help us pay for the halls, food and stage for our events.
       </p>
     </div>
-    <div class="package-cards reveal">
-      <div class="package">
-        <h3 class="package-name">Bronze</h3>
-        <p class="package-price">£<span> / event</span></p>
-        <ul>
-          <li>✔ A stall or table at the event</li>
-          <li>✔ Your leaflets handed out to guests</li>
-          <li>✔ Your name on the lucky draw</li>
-        </ul>
-        <a href="mailto:leamingtonmarathi@gmail.com?subject=Bronze%20Sponsorship%20Enquiry" class="btn btn-outline">Enquire</a>
+    <div class="sponsor-home reveal">
+      <div class="supporters">
+        <h3>Our Supporters</h3>
+        <div class="supporters-grid">
+          <a href="https://www.freedomcircle.co.uk" target="_blank" rel="noopener" class="supporter-logo" title="Freedom Circle, Mortgage and Insurance">
+            <img src="images/sponsors/freedom-circle.png" alt="Freedom Circle, Mortgage and Insurance" width="440" height="162" loading="lazy">
+          </a>
+          <a href="https://maps.app.goo.gl/NcFKFPHVevG5xKnm7" target="_blank" rel="noopener" class="supporter-logo dark" title="The Falcon at Hatton on Google Maps">
+            <img src="images/sponsors/falcon-hatton.jpg" alt="The Falcon at Hatton" width="440" height="215" loading="lazy">
+          </a>
+          <a href="https://sbiuk.statebank" target="_blank" rel="noopener" class="supporter-logo" title="SBI UK">
+            <img src="images/sponsors/sbi-uk.jpg" alt="SBI UK (State Bank of India UK)" width="440" height="87" loading="lazy">
+          </a>
+          <a href="mailto:leamingtonmarathi@gmail.com?subject=Sponsorship%20Enquiry" class="supporter-slot">Your logo<br>here</a>
+        </div>
       </div>
-      <div class="package featured">
-        <span class="package-ribbon">Popular</span>
-        <h3 class="package-name">Silver</h3>
-        <p class="package-price">£<span> / event</span></p>
-        <ul>
-          <li>✔ Everything in Bronze</li>
-          <li>✔ Your logo and message at events and in our emails</li>
-        </ul>
-        <a href="mailto:leamingtonmarathi@gmail.com?subject=Silver%20Sponsorship%20Enquiry" class="btn btn-primary">Enquire</a>
-      </div>
-      <div class="package">
-        <h3 class="package-name">Gold</h3>
-        <p class="package-price">£<span> / year (6 events)</span></p>
-        <ul>
-          <li>✔ Everything in Silver</li>
-          <li>✔ Logo display on stage</li>
-          <li>✔ Reserved VIP seating at events</li>
-          <li>✔ Posts about you on our WhatsApp, Instagram and Facebook</li>
-        </ul>
-        <a href="mailto:leamingtonmarathi@gmail.com?subject=Gold%20Sponsorship%20Enquiry" class="btn btn-outline">Enquire</a>
-      </div>
-    </div>
-    <div class="sponsor-benefits reveal">
-      <h3>Why sponsor us?</h3>
-      <div class="benefits-grid">
-        <div class="benefit"><strong>Local customers.</strong> Your name in front of hundreds of families who live and shop locally.</div>
-        <div class="benefit"><strong>Be part of the festivals.</strong> Your business becomes part of Diwali, Ganeshotsav and Shivrajyotsav in Leamington.</div>
-        <div class="benefit"><strong>Meet people.</strong> Our events are a good place to get to know the community.</div>
-        <div class="benefit"><strong>Support a local group.</strong> We are run by volunteers and every pound goes back into community events.</div>
-      </div>
-    </div>
-
-    <!-- Supporters wall — add each new sponsor as a .supporter-logo tile -->
-    <div class="supporters reveal">
-      <h3>Our Supporters</h3>
-      <p>Thank you to the local businesses who support us.</p>
-      <div class="supporters-grid">
-        <a href="https://www.freedomcircle.co.uk" target="_blank" rel="noopener" class="supporter-logo" title="Freedom Circle, Mortgage and Insurance">
-          <img src="images/sponsors/freedom-circle.png" alt="Freedom Circle, Mortgage and Insurance" width="440" height="162" loading="lazy">
-        </a>
-        <a href="https://maps.app.goo.gl/NcFKFPHVevG5xKnm7" target="_blank" rel="noopener" class="supporter-logo dark" title="The Falcon at Hatton on Google Maps">
-          <img src="images/sponsors/falcon-hatton.jpg" alt="The Falcon at Hatton" width="440" height="215" loading="lazy">
-        </a>
-        <a href="https://sbiuk.statebank" target="_blank" rel="noopener" class="supporter-logo" title="SBI UK">
-          <img src="images/sponsors/sbi-uk.jpg" alt="SBI UK (State Bank of India UK)" width="440" height="87" loading="lazy">
-        </a>
-        <a href="mailto:leamingtonmarathi@gmail.com?subject=Sponsorship%20Enquiry" class="supporter-slot">Your logo<br>here</a>
-      </div>
+      <a class="page-card" href="sponsor.html">
+        <span class="page-card-icon" aria-hidden="true">🤝</span>
+        <span class="page-card-text"><strong>Sponsor packages · <span class="marathi" lang="mr">प्रायोजकत्व</span></strong>
+          Bronze, Silver and Gold, what each one includes, and why businesses sponsor us.</span>
+        <span class="page-card-go" aria-hidden="true">→</span>
+      </a>
     </div>
   </section>
 
@@ -854,7 +810,11 @@
           </a>
         </div>
       </div>
-      <form id="contact-form" class="contact-form reveal" action="https://formsubmit.co/leamingtonmarathi@gmail.com" method="POST">
+      <!-- The message form opens from this button; "Register interest" and other links to
+           #contact-message open it too (script.js) -->
+      <details class="contact-more reveal" id="contact-message">
+        <summary class="btn btn-primary">✉️ Send us a message <span class="marathi" lang="mr">· संदेश पाठवा</span></summary>
+      <form id="contact-form" class="contact-form" action="https://formsubmit.co/leamingtonmarathi@gmail.com" method="POST">
         <input type="text" name="_honey" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
         <input type="hidden" name="_subject" value="Website enquiry, Leamington Marathi">
         <label>
@@ -872,6 +832,7 @@
         <button type="submit" class="btn btn-primary">Send Message</button>
         <p class="form-note" role="status" aria-live="polite">We usually reply within a couple of days.</p>
       </form>
+      </details>
     </div>
   
     <!-- Stay connected: one card per channel. The QR codes live in images/qr/ and were
@@ -929,6 +890,7 @@
       We only publish photos with our members' permission. Messages sent through this website go to
       our group inbox and nowhere else. If you would like a photo or your details taken down, email <a href="mailto:leamingtonmarathi@gmail.com">leamingtonmarathi@gmail.com</a>.
     </p>
+    <p class="footer-links"><a href="#events">Events</a> · <a href="calendar.html">Marathi Calendar</a> · <a href="maharashtra.html"><span class="marathi" lang="mr">आपला महाराष्ट्र</span></a> · <a href="ank.html"><span class="marathi" lang="mr">दिवाळी अंक</span></a> · <a href="sponsor.html">Sponsor Us</a> · <a href="member.html">Membership</a> · <a href="#contact">Contact</a></p>
     <p class="footer-copy">© <span id="year">2026</span> Leamington Marathi. All rights reserved. | <span class="marathi" lang="mr">जय महाराष्ट्र 🚩</span></p>
     <p class="footer-socials"><a href="https://www.instagram.com/leamington_marathi" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.facebook.com/share/19DLg1N8L6/" target="_blank" rel="noopener">Facebook</a> · <a href="https://chat.whatsapp.com/IrafIIW9VRd6Iwp1rcu6c1" target="_blank" rel="noopener">WhatsApp</a> · <a href="https://www.youtube.com/@leamingtonmarathi" target="_blank" rel="noopener">YouTube</a></p>
     <p class="footer-install"><button type="button" class="linklike" id="pwa-footer">📲 Add this site to your phone</button></p>
@@ -937,7 +899,7 @@
 
   <!-- Add-to-phone banner: shown by script.js when the browser offers to install, or on iPhone with a hint -->
   <div id="pwa-banner" class="pwa-banner" role="dialog" aria-label="Add Leamington Marathi to your phone" hidden>
-    <img src="images/icons/icon-192.png" alt="" width="44" height="44">
+    <img src="images/icons/icon-88.png" alt="" width="44" height="44">
     <div class="pwa-text">
       <strong>Add us to your phone</strong>
       <span id="pwa-hint">Opens like an app, works even with a poor signal. <span class="marathi" lang="mr">अ‍ॅपसारखं वापरा.</span></span>
