@@ -477,7 +477,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
     const expect10 = Number(String(before).replace(/[^\d.]/g, '')) / 1.08 * 1.10;
     const graded = await page.evaluate(() => Array.from(document.querySelectorAll('#cad-basis .cad-basis-row')).map(r => (r.textContent ?? '').replace(/\s+/g, ' ').trim()).find(t => /Supplier margin/.test(t)) ?? '');
     check('3', '#4', 'margin 8 % → 10 % on the card re-costs the part (subtotal × 1.10)', Math.abs(num(money(after)) - expect10) <= 0.011,
-      `${before} → ${money(after)} (expected £${expect10.toFixed(2)}); Basis now "${graded}"`);
+      `${before} → ${money(after)} (expected ${expect10.toFixed(2)}); Basis now "${graded}"`);
     await fillCommercial('margin-pct', '8');
     const back = await page.waitForFunction(b => { const h = document.querySelector('#cv-result-hero .crh-total')?.textContent ?? ''; return h.includes(b) ? h : false; },
       before, { timeout: 60_000 }).then(h => h.jsonValue() as Promise<string>).catch(() => '');
@@ -525,20 +525,20 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   const near = (a: number, b: number, tol = 0.0006) => nearFx(a, b, tol, FXD);   // £ tolerances in display units
   check('arith', 'trace', 'every operation re-priced from its rate, time, OEE, parts a cycle = the sheet',
     rc.opCalc.every(o => near(o.proc, o.sheetProc, 0.0006) && near(o.lab, o.sheetLab, 0.0006)),
-    rc.opCalc.map(o => `${o.op}: £${o.proc.toFixed(4)} + £${o.lab.toFixed(4)} (sheet £${o.sheetProc.toFixed(4)} + £${o.sheetLab.toFixed(4)})`).join(' | '));
+    rc.opCalc.map(o => `${o.op}: ${o.proc.toFixed(4)} + ${o.lab.toFixed(4)} (sheet ${o.sheetProc.toFixed(4)} + ${o.sheetLab.toFixed(4)})`).join(' | '));
   check('arith', 'trace', 'Σ operations = buckets 2 and 3', near(rc.procSum, rc.b.process) && near(rc.labSum, rc.b.labour),
-    `process £${rc.procSum.toFixed(4)} v £${rc.b.process.toFixed(4)}; labour £${rc.labSum.toFixed(4)} v £${rc.b.labour.toFixed(4)}`);
+    `process ${rc.procSum.toFixed(4)} v ${rc.b.process.toFixed(4)}; labour ${rc.labSum.toFixed(4)} v ${rc.b.labour.toFixed(4)}`);
   check('arith', 'trace', 'material = gross × £/kg + scrap credit + energy (+ listed extras) = bucket 1', near(rc.matCalc, rc.b.material, 0.002),
-    `${rc.gross} kg × £${rc.price}/kg + ${rc.scrap} + ${rc.energy} = £${rc.matCalc.toFixed(4)} v £${rc.b.material.toFixed(4)}`);
+    `${rc.gross} kg × ${rc.price}/kg + ${rc.scrap} + ${rc.energy} = ${rc.matCalc.toFixed(4)} v ${rc.b.material.toFixed(4)}`);
   check('arith', 'trace', 'tooling = tool cost ÷ amortisation volume = bucket 4', near(rc.toolTotal / rc.amortVol, rc.b.tooling),
-    `£${rc.toolTotal} ÷ ${rc.amortVol} = £${(rc.toolTotal / rc.amortVol).toFixed(4)} v £${rc.b.tooling.toFixed(4)}`);
+    `${rc.toolTotal} ÷ ${rc.amortVol} = ${(rc.toolTotal / rc.amortVol).toFixed(4)} v ${rc.b.tooling.toFixed(4)}`);
   check('arith', 'trace', `overhead = ${(rc.ohPct * 100).toFixed(0)}% of material + process + labour + tooling`, near(rc.ohCalc, rc.b.overhead),
-    `£${rc.base.toFixed(4)} × ${rc.ohPct} = £${rc.ohCalc.toFixed(4)} v £${rc.b.overhead.toFixed(4)}`);
+    `${rc.base.toFixed(4)} × ${rc.ohPct} = ${rc.ohCalc.toFixed(4)} v ${rc.b.overhead.toFixed(4)}`);
   check('arith', 'trace', `margin = ${(rc.mgPct * 100).toFixed(0)}% of the subtotal`, near(rc.mgCalc, rc.b.margin),
-    `£${rc.subtotal.toFixed(4)} × ${rc.mgPct} = £${rc.mgCalc.toFixed(4)} v £${rc.b.margin.toFixed(4)}`);
+    `${rc.subtotal.toFixed(4)} × ${rc.mgPct} = ${rc.mgCalc.toFixed(4)} v ${rc.b.margin.toFixed(4)}`);
   if (TERMS === 'EXW') check('arith', 'EXW', 'logistics bucket is 0 ex-works', rc.b.logistics === 0, `logistics ${rc.b.logistics}`);
   check('arith', 'trace', 'buckets re-added = the headline', samePenny(`£${rc.totalCalc.toFixed(2)}`, hero),
-    `£${rc.totalCalc.toFixed(4)} v headline ${money(hero)}`);
+    `${rc.totalCalc.toFixed(4)} v headline ${money(hero)}`);
   rec.totalMs = Date.now() - t0;
   rec.headline = money(hero);
   return rec;
