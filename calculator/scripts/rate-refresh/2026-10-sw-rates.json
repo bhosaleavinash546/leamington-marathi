@@ -94,7 +94,7 @@
      "currency": "GBP",
      "statistic": "median",
      "dataYear": 2026,
-     "source": "IT Jobs Watch — Senior Embedded Software Engineer, UK permanent adverts (6 months to Sep 2026)",
+     "source": "IT Jobs Watch — Senior Embedded Software Engineer, UK permanent adverts (6 months to Sep 2026 per search summary)",
      "url": "https://www.itjobswatch.co.uk/jobs/uk/senior%20embedded%20software%20engineer.do",
      "seenIn": "search-snippet",
      "role": "embedded_sw_engineer",
@@ -2146,13 +2146,21 @@
       "pct": 4.925
      },
      {
-      "name": "employment insurance",
-      "pct": 0.5
+      "name": "employment insurance (employer, MHLW FY2026)",
+      "pct": 0.85
+     },
+     {
+      "name": "child and childcare support (employer half, from April 2026)",
+      "pct": 0.115
+     },
+     {
+      "name": "child allowance levy (employer only)",
+      "pct": 0.36
      }
     ],
-    "source": "PwC Worldwide Tax Summaries Japan 2026",
+    "source": "PwC Worldwide Tax Summaries Japan 2026; MHLW FY2026 employment-insurance rates (https://www.mhlw.go.jp/content/001692566.pdf)",
     "url": "https://taxsummaries.pwc.com/japan/individual/other-taxes",
-    "note": "nursing-care (40+), child-support levy and accident insurance not included",
+    "note": "page re-check 30 Oct 2026: the employment-insurance rate was the employee's 0.5% — corrected to the employer's 0.85% and the child-support items added; nursing-care (40+) and accident insurance not included",
     "inSalary": false
    },
    "hours": {
@@ -2808,8 +2816,8 @@
       "pct": 2
      },
      {
-      "name": "CEAV (lowest band, 2026)",
-      "pct": 3.15
+      "name": "CEAV (2026, band above 4.01 UMA — an engineer's pay; page re-check 30 Oct 2026: the 3.15% used before is the 1.00-minimum-wage band; 7.513% read in secondary 2026 tables, elcontribuyente.mx / idconline.mx, verify on the DOF)",
+      "pct": 7.513
      }
     ],
     "source": "vendor payroll guides (F.json / reviewer) — no big-four source",

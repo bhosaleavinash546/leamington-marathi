@@ -396,8 +396,12 @@ hub(id='JP', label='Japan', country='JP', currency='JPY', cities=['Tokyo', 'Nago
     senior=[], seniorBasis='no senior figure — the mid rate is used (Japanese pay rises with age; the survey is all ages)',
     excluded=[{'what': 'en-ambi posting ¥6.0–12.5 M', 'why': 'a single employer\'s advert'}],
     onCost={'components': [{'name': 'welfare pension', 'pct': 9.15, 'ceilingAnnual': 650000 * 12}, {'name': 'health insurance (Tokyo)', 'pct': 4.925},
-                           {'name': 'employment insurance', 'pct': 0.5}], 'source': 'PwC Worldwide Tax Summaries Japan 2026', 'url': oncost('JP')['url'],
-            'note': 'nursing-care (40+), child-support levy and accident insurance not included'},
+                           # page re-check (30 Oct 2026): PwC's 0.5% is the EMPLOYEE share; MHLW FY2026 general business: employer 8.5/1,000
+                           {'name': 'employment insurance (employer, MHLW FY2026)', 'pct': 0.85},
+                           {'name': 'child and childcare support (employer half, from April 2026)', 'pct': 0.115},
+                           {'name': 'child allowance levy (employer only)', 'pct': 0.36}],
+            'source': 'PwC Worldwide Tax Summaries Japan 2026; MHLW FY2026 employment-insurance rates (https://www.mhlw.go.jp/content/001692566.pdf)', 'url': oncost('JP')['url'],
+            'note': 'page re-check 30 Oct 2026: the employment-insurance rate was the employee\'s 0.5% — corrected to the employer\'s 0.85% and the child-support items added; nursing-care (40+) and accident insurance not included'},
     hours=hrs(40, 10, 16, f'40-hour week (Labour Standards Act, reviewer); 10 days leave (first year) — {WIKI_LEAVE}; 16 public holidays {NS}'),
     confidence='Medium', legacy=legacy('Japan', 0.90),
     notes='MHLW wage-structure survey (official) incl. bonus; jobtag figure year unconfirmed.')
@@ -463,7 +467,7 @@ hub(id='MX', label='Mexico', country='MX', currency='MXN', cities=['Guadalajara'
     excluded=[{'what': 'DataMéxico MXN 11k', 'why': 'rounded, all software developers incl. informal work'},
               {'what': 'Indeed / Computrabajo general developer pay', 'why': 'general software, not embedded'},
               {'what': 'Levels.fyi Guadalajara total comp MXN 730k', 'why': 'total compensation, international employers'}],
-    onCost={'components': [{'name': 'INFONAVIT', 'pct': 5}, {'name': 'SAR retirement', 'pct': 2}, {'name': 'CEAV (lowest band, 2026)', 'pct': 3.15}],
+    onCost={'components': [{'name': 'INFONAVIT', 'pct': 5}, {'name': 'SAR retirement', 'pct': 2}, {'name': 'CEAV (2026, band above 4.01 UMA — an engineer\'s pay; page re-check 30 Oct 2026: the 3.15% used before is the 1.00-minimum-wage band; 7.513% read in secondary 2026 tables, elcontribuyente.mx / idconline.mx, verify on the DOF)', 'pct': 7.513}],
             'source': 'vendor payroll guides (F.json / reviewer) — no big-four source', 'url': oncost('MX')['url'],
             'note': 'PARTIAL: the IMSS sickness, disability, work-risk and childcare branches, the state payroll tax (3–4 %), the aguinaldo (15 days) and the vacation premium are not included'},
     hours=hrs(40, 12, 7, f'12 days leave (first year) — {WIKI_LEAVE}; 7 mandatory rest days {NS}'),
