@@ -28,11 +28,28 @@
   <!-- Slim header: emblem + wordmark, back to the main site -->
   <header id="site-header">
     <div class="header-inner">
-      <a href="index.html" class="brand">
-        <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="logo-emblem" width="216" height="216">
+      <a href="index.html" class="brand" aria-label="Leamington Marathi, home page">
+        <img src="images/logo-emblem.png" alt="" class="logo-emblem" width="216" height="216">
         <img src="images/logo.png" alt="Leamington Marathi" class="logo" width="444" height="120">
       </a>
-      <a href="index.html" class="member-back">← Back to website</a>
+      <!-- CSS-only menu toggle: works even where JavaScript is disabled -->
+      <input type="checkbox" id="nav-check" aria-label="Open the menu">
+      <nav id="main-nav" aria-label="Main navigation">
+        <ul class="nav-links">
+          <li><a href="index.html#about">About&nbsp;Us</a></li>
+          <li><a href="index.html#events">Events</a></li>
+          <li><a href="index.html#dhol">Dhol&nbsp;Tasha</a></li>
+          <li><a href="maharashtra.html" class="nav-mh"><span class="marathi" lang="mr">आपला&nbsp;महाराष्ट्र</span></a></li>
+          <li><a href="index.html#gallery">Gallery</a></li>
+          <li><a href="calendar.html">Calendar</a></li>
+          <li><a href="sponsor.html" class="active" aria-current="page">Sponsor&nbsp;Us</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+          <li class="nav-cta-item"><a href="index.html#get-involved" class="nav-cta">Join&nbsp;Us</a></li>
+        </ul>
+      </nav>
+      <label for="nav-check" id="nav-toggle" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </label>
     </div>
   </header>
 

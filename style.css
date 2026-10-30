@@ -111,18 +111,21 @@ img { max-width: 100%; display: block; }
 #site-header.scrolled { box-shadow: 0 4px 18px rgba(74, 19, 11, 0.12); }
 
 .header-inner {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 18px;
   padding: 10px 24px;
 }
+/* the logo never shrinks, so the menu can never run over it */
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  flex-shrink: 0;
+  margin-right: auto;
 }
 .logo-emblem { height: 54px; width: auto; }
 .logo { height: 40px; width: auto; }
@@ -130,7 +133,8 @@ img { max-width: 100%; display: block; }
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 26px;
+  align-items: center;
+  gap: 22px;
   margin: 0;
   padding: 0;
 }
@@ -145,6 +149,21 @@ img { max-width: 100%; display: block; }
 }
 .nav-links a:hover,
 .nav-links a.active { color: var(--red); border-bottom-color: var(--saffron); }
+/* "Join Us": the one highlighted action in the menu */
+.nav-links a.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 30px;
+  background: linear-gradient(135deg, var(--red), var(--saffron));
+  color: var(--white);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(217, 42, 28, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.nav-links a.nav-cta:hover { color: var(--white); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(217, 42, 28, 0.32); }
 
 #nav-check { display: none; }
 #nav-toggle {
@@ -2173,8 +2192,6 @@ footer {
 .mh-q-line { margin: 4px 0 0; text-align: center; font-size: 1.2rem; font-weight: 700; color: var(--maroon); }
 .mh-quiz .mh-q-en { text-align: center; }
 .mh-quiz .mh-q-again { display: block; margin: 16px auto 0; }
-.member-back { color: var(--red-dark); font-weight: 700; text-decoration: none; font-size: 0.95rem; }
-.member-back:hover { text-decoration: underline; }
 .member-wrap { max-width: 560px; margin: 0 auto; padding: 46px 20px 80px; }
 .member-head { text-align: center; margin-bottom: 30px; }
 .member-head h1 {
@@ -2350,9 +2367,9 @@ footer {
   .dhol-grid { max-width: 520px; width: 100%; margin: 0 auto; }
 }
 
-/* Eleven nav items no longer fit inline below ~1060px, so the hamburger
-   takes over earlier than the other mobile styles (768px) */
-@media (max-width: 1080px) {
+/* The eight links, the Join Us button and search need about 1115px, so the
+   hamburger takes over below 1160px (earlier than the other mobile styles) */
+@media (max-width: 1160px) {
   #nav-toggle { display: flex; }
   #main-nav {
     position: absolute;
@@ -2368,7 +2385,7 @@ footer {
     overflow: hidden;
     transition: max-height 0.3s ease;
   }
-  #nav-check:checked ~ #main-nav { max-height: 480px; }
+  #nav-check:checked ~ #main-nav { max-height: 640px; }
   /* Keep the checkbox keyboard-operable but invisible, over the hamburger */
   #nav-check {
     display: inline-block;
@@ -2392,14 +2409,21 @@ footer {
     padding: 10px 24px 18px;
   }
   .nav-links a { display: block; padding: 12px 4px; }
+  .nav-links { align-items: stretch; }
+  .nav-cta-item { margin-top: 10px; }
+  .nav-links a.nav-cta { display: flex; justify-content: center; min-height: 48px; }
+  .nav-links a.active { border-bottom-color: transparent; box-shadow: inset 4px 0 0 var(--saffron); padding-left: 14px; }
 }
 
 @media (max-width: 768px) {
   .section { padding: 60px 20px; }
 }
 
-@media (max-width: 440px) {
-  .logo { display: none; } /* emblem only on narrow phones */
+@media (max-width: 560px) {
+  .header-inner { gap: 6px; padding: 8px 14px; }
+  .logo-emblem { height: 46px; }
+  .logo { height: 30px; } /* keep the name beside the emblem on phones */
+  .brand { gap: 8px; }
 }
 
 /* लेमिंग्टन: the name is tagged lang="hi" because Yatra One's Marathi rules draw
