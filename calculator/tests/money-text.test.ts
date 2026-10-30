@@ -30,3 +30,15 @@ describe('money inside report text follows the report currency', () => {
     expect(localiseRuleValue('Die Cost (£)', '3056', 1, '£')).toEqual({ label: 'Die Cost (£)', value: '3056' });
   });
 });
+
+describe('a £ inside a currency symbol is not a pound amount (Egypt, E£)', () => {
+  const FX = 74.7786;
+  it('converts £ text once and leaves text already in E£ alone', () => {
+    // the Egypt PDF re-converted its own figures: "E£724.30" → "EE£54,162.14", bucket rows a third time
+    expect(localiseGbpText('Total E£724.30', FX, 'E£')).toBe('Total E£724.30');
+    expect(localiseGbpText('die E£3,056 · E£/kg 74.20', FX, 'E£')).toBe('die E£3,056 · E£/kg 74.20');
+    expect(localiseGbpText('die £100', FX, 'E£')).toBe('die E£7,478');
+    const once = localiseGbpText('blast £8.61/h + £5/kg', FX, 'E£');
+    expect(localiseGbpText(once, FX, 'E£')).toBe(once);   // idempotent
+  });
+});

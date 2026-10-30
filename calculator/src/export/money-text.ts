@@ -8,7 +8,10 @@
  * returned unchanged.
  */
 
-const AMOUNT = /£(\d[\d,]*(?:\.\d+)?)(?:([–-])(\d[\d,]*(?:\.\d+)?))?/g;
+// A £ that is part of a currency symbol is not a pound: the Egyptian pound prints "E£", and an Egypt PDF converted its
+// own "E£724.30" again ("EE£54,162.14", × 74.78) — the bucket rows a third time (world rate round live run, 30 Oct 2026).
+const NOT_IN_SYMBOL = '(?<![A-Za-z])';
+const AMOUNT = new RegExp(`${NOT_IN_SYMBOL}£(\\d[\\d,]*(?:\\.\\d+)?)(?:([–-])(\\d[\\d,]*(?:\\.\\d+)?))?`, 'g');
 
 function fmtLike(src: string, value: number, single = false): string {
   const dp = (src.split('.')[1] ?? '').length;
@@ -49,7 +52,7 @@ export function localiseGbpText(text: string, fx: number, sym: string): string {
       const conv = (s: string) => fmtLike(s, Number(s.replace(/,/g, '')) * fx, !b);
       return `${sym}${conv(a)}${b ? `${dash}${conv(b)}` : ''}`;
     })
-    .replace(/£\//g, `${sym}/`)
+    .replace(new RegExp(`${NOT_IN_SYMBOL}£/`, 'g'), `${sym}/`)
     .replace(/\(£\)/g, `(${sym})`);
 }
 
@@ -75,7 +78,7 @@ export function localiseReportText(text: string, fx: number, sym: string): strin
   // A stated conversion ("÷ 1.165 EUR per £ = £6,206 / £6,940") stays in GBP as a whole — both figures (review: the
   // second was converted, printing "GBP 6,206 / €8,085").
   return localiseGbpText(text.replace(/(per £ = )£(\d[\d,.]*)(?: \/ £(\d[\d,.]*))?/g, (_m, a: string, x: string, y?: string) => `${a}GBP ${x}${y ? ` / ${y}` : ''}`), fx, sym)
-    .replace(/£(?= \(no discounting)/g, sym)
-    .replace(/£ (?=\/|per |a |an )/g, `${sym} `)
-    .replace(/£(?=M\b|k\b)/g, sym);
+    .replace(new RegExp(`${NOT_IN_SYMBOL}£(?= \\(no discounting)`, 'g'), sym)
+    .replace(new RegExp(`${NOT_IN_SYMBOL}£ (?=/|per |a |an )`, 'g'), `${sym} `)
+    .replace(new RegExp(`${NOT_IN_SYMBOL}£(?=M\\b|k\\b)`, 'g'), sym);
 }
