@@ -260,14 +260,14 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
   },
   "HU": {
     id: "HU", label: "Hungary", country: "HU", cities: ["Budapest","Veszprém","Szeged"], currency: "HUF",
-    fxToGBP: 428.2, confidence: "Low",
+    fxToGBP: 437.75, confidence: "Low",
     midAnnualSalary: 13800000, seniorAnnualSalary: 22200000, seniorBasis: "median of the Hays 2024 and Grafton 2025 senior developer bands", onCostInSalary: false,
     employerOnCostPctAtMid: 13.00, onCostBasis: "social contribution tax 13% — PwC Worldwide Tax Summaries Hungary 2026",
     onCostUrl: "https://taxsummaries.pwc.com/hungary/individual/other-taxes",
     productiveHours: 1824, hoursBasis: "(260 − 20 leave − 12 public holidays) × 40 h ÷ 5 — 20 days leave (ILO table), 11–13 public holidays — Wikipedia",
     midPerPMLocal: 1299500, seniorPerPMLocal: 2090500,
-    midPerPMGBP: 3035, seniorPerPMGBP: 4882,
-    build: "HUF 13,800,000 mid / 22,200,000 senior gross a year + employer on-cost 13.0% at mid = 15,594,000 / 25,086,000; ÷ 1,824 productive h × 152 h = HUF 1,299,500 / 2,090,500 per person-month ÷ 428.2 HUF per £ = £3,035 / £4,882",
+    midPerPMGBP: 2969, seniorPerPMGBP: 4776,
+    build: "HUF 13,800,000 mid / 22,200,000 senior gross a year + employer on-cost 13.0% at mid = 15,594,000 / 25,086,000; ÷ 1,824 productive h × 152 h = HUF 1,299,500 / 2,090,500 per person-month ÷ 437.75 HUF per £ = £2,969 / £4,776",
     evidence: ["thyssenkrupp Components Technology Hungary operates a steering-software development centre in Budapest with some 500 software engineers on electro-mechanical steering (2018 release; about 400 in 2016).","thyssenkrupp's Budapest site has more than 1,200 colleagues in its E/E development centre for software and hardware (current company page). Szeged works with Budapest and Veszprém on steering electronics and software.","Bosch Budapest Engineering Center: more than 2,400 employees in 24+ departments (2018), Bosch's second-largest European R&D site, taking on self-driving systems and a large share of e-mobility R&D. This is a whole-centre headcount, not software only."],
     mid: [
       { value: 1150000, period: "monthly", annualFactor: 12, statistic: "midpoint of Hays 2024 mid-level developer (gross) 900,000–1,400,000", dataYear: 2024, source: "Hays Salary Guide (via Economx, Aug 2024)", url: "https://www.economx.hu/gazdasag/fejlesztok-berezes-millios-fizetes.795467.html", seenIn: "search-snippet" },

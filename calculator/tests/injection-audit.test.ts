@@ -305,7 +305,10 @@ describe('L10 — technician / supervisor labour categories', () => {
       expect(l.technician).toBeGreaterThan(l.semiskilled);
       // supervisor above technician everywhere but the UK, where ASHE puts a 2-shift engineering technician (SOC 3113,
       // £35.17/h loaded) just above a tier-1 shift supervisor at the SOC 8160 p75 (£34.57/h) — UK rate book, Oct 2026
-      expect(l.supervisor).toBeGreaterThan(region === 'UK' ? l.semiskilled : l.technician);
+      // Hungary (rate book, 30 Oct 2026): technician and supervisor are both the KSH machinist figure — no FEOR-specific
+      // pay was reachable, so they are a labelled FLOOR equal to each other, not an invented premium (open item)
+      if (region === 'HU') expect(l.supervisor).toBeGreaterThanOrEqual(l.technician);
+      else expect(l.supervisor).toBeGreaterThan(region === 'UK' ? l.semiskilled : l.technician);
     }
   });
 

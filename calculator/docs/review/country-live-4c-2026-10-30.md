@@ -86,7 +86,62 @@ the freight and its margin less, and every other bucket is unchanged.
 
 ## 4. Live run — 15 parts × 4 countries, ex-works
 
-LIVE4C
+A real server (OCP kernel, no AI key) and a real browser ran every part through Part & context → Confirm → Cost.
+Settings: 100,000 a year over 5 years, ex-works, the country chosen in the header. Both reports were exported and
+opened for every costing (`e2e/cad-to-cost-trace.ts` with `CV_TRACE_COUNTRY` / `CV_TRACE_TERMS=EXW`; summary in
+`country-live/live-summary-2026-10-30.md`).
+
+| Country | Checks passed | Product failures | Harness failures |
+|---|---|---|---|
+| China | 1,013 | 0 | 6 |
+| India | 1,013 | 0 | 6 |
+| Poland | 1,019 | 0 | 0 |
+| Hungary | 1,019 | 0 | 0 |
+| **All four** | **4,064** | **0** | 12 |
+
+**The 12 harness failures.** The crossover check ("each alternative states its crossover") had compared a money string
+with 0, so it never ran. Once the parser returned the bare amount, it counted the comparison's nested build-up rows as
+alternatives, on the 6 parts where no alternative route is feasible. Fixed (it counts "Cost this route" rows) before
+Poland and Hungary ran, and those passed it on all 30 parts.
+
+On every one of the 60 costings:
+- **Screen = headless** to the penny (the comparison's reference row is the headline). Compared in £, so forint and
+  yuan rounding is not a difference.
+- **The workbook re-adds to the headline**: every operation re-priced, the material line, tooling, overhead and margin.
+- **The PDF and Excel** carry the headline, the stamp naming the country's rate book (`v2.2.0-CN / -IN / -PL / -HU`),
+  and "Delivery terms: Ex-works (EXW)". The logistics bucket is 0.
+- **The cost card's Not-included list** names freight to your plant.
+- **axe WCAG 2.1 AA** passes at every step.
+
+**INFO, not failures:**
+- On 9 parts a country, the DFM panel was still waiting for its job when the step was read.
+- The "Updating…" round did not occur where every question was pre-leaned.
+
+**Reports scanned for leaks** (`leak-scan.py`, all 120 PDF + Excel files):
+- 0 stray £ figures, 0 NaN / undefined.
+- Every remaining UK-based figure is a stated disclosure: "capital HELD … the UK book's × 0.55" (CN), "Held, not
+  researched for China" on the overhead / packaging basis. Hungary prints "at par (no country factor)" and "capital AT
+  PAR" instead.
+
+Headlines in each country's currency (100,000 a year, 5 years, ex-works):
+
+| Part | CN | IN | PL | HU |
+|---|---|---|---|---|
+| hub-flange-forging | 52.78 | 853.16 | 53.32 | 5,348.85 |
+| stub-axle-cast-machine | 132.39 | 1,685.38 | 132.88 | 11,973.74 |
+| ecu-cover-moulding | 4.13 | 58.01 | 3.38 | 299.62 |
+| seat-bracket-sheet | 4.53 | 86.85 | 4.98 | 432.63 |
+| battery-rail-al-extrusion | 191.92 | 3,366.39 | 156.66 | 13,974.92 |
+| blow-moulding-air-duct | 5.11 | 72.93 | 3.56 | 323.65 |
+| roto-header-tank | 38.21 | 488.67 | 39.98 | 3,800.17 |
+| thermoforming-trim-cover | 9.63 | 138.86 | 7.82 | 716.91 |
+| composites-hat-stiffener | 239.35 | 3,333.25 | 226.36 | 21,165.26 |
+| extrusion-vent-pipe | 4.10 | 61.60 | 3.16 | 289.37 |
+| rubber-grommet | 0.82 | 10.20 | 0.84 | 78.59 |
+| gear-m3-z38 | 50.58 | 992.62 | 66.15 | 6,197.16 |
+| machining-manifold | 94.81 | 1,255.19 | 79.10 | 6,902.56 |
+| casting-bracket | 54.26 | 696.86 | 54.83 | 4,973.26 |
+| knuckle-forging | 65.24 | 1,068.74 | 64.66 | 6,651.59 |
 
 ## 5. What remains
 
@@ -99,3 +154,21 @@ LIVE4C
 5. **Network.** This session could not open MNB, KSH, Eurostat or Hungarian supplier pages. Every Hungarian figure was
    read from search extracts and should be re-opened on its page.
 6. **Accuracy against prices paid** is still unmeasured: 0 actuals.
+
+## 6. Scorecard — before and after (this audit, 30 Oct 2026)
+
+| Dimension | Before | After | State |
+|---|---|---|---|
+| Arithmetic, recomputed independently on every real part | not checked | 4,637 checks, 0 fail (13 shadow models) | green |
+| Hallucination findings (figures with no source, no rule, not shown) | 236 found (52 high) | ~170 fixed; the rest labelled, or rate proposals | green / amber |
+| Screen = headless, live | UK, 14 routes | UK 14 + CN / IN / PL / HU 15 parts each = 74 costings, 0 differences | green |
+| Reports (stamp, headline, re-add, terms) | UK, 14 / 14 | + 60 / 60 country costings | green |
+| Accessibility (axe WCAG 2.1 AA) | 56 / 56 | every step of 60 more costings, 0 violations | green |
+| Ex-works pricing | not available (freight always in) | built: screen, headless, comparison, both reports; tested | green |
+| Hungary on its own rates (median part) | 0 % — everything UK × factor | 48.6 %; no unsourced factor — unpriced items at par and labelled | amber |
+| China / India / Poland on their own rates (median part) | not measured | 47.9 / 50.3 / 52.9 % — the rest UK × held factors, disclosed in the reports | amber |
+| Accuracy against prices actually paid | 0 actuals | 0 actuals | **not measured** |
+
+Of 9 dimensions: 6 green, 2 amber (country rate coverage), 1 not measured. The arithmetic is proven. Whether the rates
+are the market's is proven only where a source exists. That is about half of a typical part's cost in each of the four
+countries.
