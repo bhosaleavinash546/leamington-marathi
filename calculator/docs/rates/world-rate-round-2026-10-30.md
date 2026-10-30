@@ -113,6 +113,35 @@ All 23 software hubs' figures (157: salaries, on-costs, hours) were opened on th
 - Several tariffs and resin prices are commercial averages or unpublished-method indices, flagged `verify`.
 - Accuracy against prices actually paid is still unmeasured: 0 actuals.
 
+## 4b. Live check in every country
+
+15 real CAD parts (forging × 2, cast + machine, injection moulding, sheet metal, aluminium and polymer extrusion,
+blow and rotational moulding, thermoforming, composites, rubber, gear, machining, casting) were taken through the
+three CAD-to-COST steps in a browser against a real server, ex-works, in **all 39 countries**, with both reports
+(PDF, Excel) opened for every part (`e2e/cad-to-cost-trace.ts`, `CV_TRACE_COUNTRY`, `CV_TRACE_TERMS=EXW`). Each
+costing is checked ~68 ways: screen = headless to the penny, the eight buckets re-added from the exported workbook,
+every operation re-priced from its rate, every rate from that country's book, logistics 0 ex-works, the PDF and
+Excel headline, the stamp, WCAG 2.1 AA on every step.
+
+**585 costings, 39,765 checks passed, 0 failed** (409 INFO — observations, e.g. a DFM job still running).
+Per country: `scripts/rate-refresh/world-2026-10/live/summary.md` (+ `summary.json`, `parts15.json`); summarised by
+`scripts/country-trace/live-summary.py`.
+
+What the run found on the way, and what was done:
+- **Egypt reports re-converted their own figures** (product defect): the £ inside the Egyptian pound's symbol "E£"
+  matched the report-text converter, so a PDF printed E£724.30 as "EE£54,162.14" (× 74.78) and some bucket rows a
+  third time. `money-text.ts` now ignores a £ that follows a letter (`tests/money-text.test.ts`); Egypt re-run clean.
+- **A rate-limited Get cost said nothing useful** (product defect): the CAD limiters answered 429 in plain text, so the
+  screen's JSON read threw. `cadLimiter` refuses in JSON with the budget and what to do (`tests/cad-rate-limit.test.ts`);
+  `CAD_RATE_LIMIT_SCALE` raises the budget for a load test only (the harness: 15 parts through one server in 10 min).
+- Harness fixes, each with a failing case in `tests/trace-checks.test.ts`: every display currency's symbol (Kč, kr,
+  lei, JP¥, R$, ₫ …), the typed margin read off the Basis row (a part under £0.50 shows the same pennies at 8 % and
+  10 %), the UK stamp is the base book (no suffix), an unsampled headline is "not observed", not a failed count-up.
+
+The spread is what the rates say, not a market check: on every part the cheapest country is China or India (Vietnam on
+the blow-moulded duct) and the dearest Germany or the United States, the UK between (e.g. the knuckle forging £8.27 CN · £19.62 UK ·
+£23.18 DE, ex-works, 100k/yr). No price actually paid has been entered, so none of these is a measured accuracy.
+
 ## 5. Proof
 
 - `tests/world-rate-books.test.ts` — every country's book, and every rate of real parts costed there (171 tests).
@@ -120,3 +149,4 @@ All 23 software hubs' figures (157: salaries, on-costs, hours) were opened on th
 - `scripts/rate-refresh/world-2026-10/summary.ts` → `summary.json` — the row per country (sources, key rates, sourced
   share).
 - Each book's register: `scripts/rate-refresh/world-2026-10/books/<cc>/register.csv` (every rate, current v new).
+- The live run in all 39 countries: `scripts/rate-refresh/world-2026-10/live/summary.md` (585 costings, 0 failed checks).

@@ -1,0 +1,175 @@
+[
+ {
+  "label": "hub-flange-forging",
+  "file": "FORGE_Hub_Flange.stp",
+  "programmeYears": 5,
+  "annual": 100000,
+  "answers": {
+   "commodity.route": "forging",
+   "material.family": "steel",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "no",
+   "service.pressureTight": "no"
+  }
+ },
+ {
+  "label": "stub-axle-cast-machine",
+  "file": "PRCR002.stp",
+  "programmeYears": 5,
+  "annual": 100000,
+  "answers": {
+   "commodity.route": "cast_and_machine",
+   "material.family": "cast iron",
+   "service.pressureTight": "no",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "yes"
+  }
+ },
+ {
+  "label": "ecu-cover-moulding",
+  "file": "IM_ECU_Cover.stp",
+  "programmeYears": 5,
+  "annual": 100000,
+  "answers": {
+   "commodity.route": "injection_moulding",
+   "material.family": "plastic",
+   "material.resin": "mat-pc-abs"
+  }
+ },
+ {
+  "label": "seat-bracket-sheet",
+  "file": "Seat_Locking_Bracket.stp",
+  "programmeYears": 5,
+  "annual": 100000,
+  "answers": {
+   "commodity.route": "sheet_metal",
+   "commodity.thinWallRoute": "sheet_metal",
+   "material.family": "steel"
+  }
+ },
+ {
+  "label": "battery-rail-al-extrusion",
+  "file": "AL_Battery_Rail.stp",
+  "programmeYears": 5,
+  "annual": 100000,
+  "answers": {
+   "commodity.route": "aluminium_extrusion",
+   "material.family": "aluminium",
+   "material.alAlloy": "6063"
+  }
+ },
+ {
+  "label": "blow-moulding-air-duct",
+  "file": "BM_Air_Duct.stp",
+  "answers": {
+   "commodity.route": "blow_moulding",
+   "material.family": "plastic",
+   "material.resin": "mat-pp-bm",
+   "blow.capacityL": "exact",
+   "blow.capacityExactL": "2.5"
+  },
+  "programmeYears": 5,
+  "annual": 100000
+ },
+ {
+  "label": "roto-header-tank",
+  "file": "ROTO_Header_Tank.stp",
+  "answers": {
+   "commodity.route": "rotational_moulding",
+   "material.family": "plastic",
+   "material.resin": "mat-lldpe-roto"
+  },
+  "programmeYears": 5,
+  "annual": 100000
+ },
+ {
+  "label": "thermoforming-trim-cover",
+  "file": "TF_Trim_Cover.stp",
+  "answers": {
+   "commodity.route": "thermoforming",
+   "material.family": "plastic",
+   "material.resin": "mat-abs-tf"
+  },
+  "programmeYears": 5,
+  "annual": 100000
+ },
+ {
+  "label": "composites-hat-stiffener",
+  "file": "COMP_Hat_Stiffener.stp",
+  "answers": {
+   "commodity.route": "composites",
+   "material.laminate": "prepreg-cf"
+  },
+  "programmeYears": 5,
+  "annual": 100000
+ },
+ {
+  "label": "extrusion-vent-pipe",
+  "file": "EXT_Vent_Pipe.stp",
+  "answers": {
+   "commodity.route": "extrusion",
+   "material.resin": "mat-pe100-pipe"
+  },
+  "programmeYears": 5,
+  "annual": 100000
+ },
+ {
+  "label": "rubber-grommet",
+  "file": "RUB_Grommet.stp",
+  "answers": {
+   "commodity.route": "rubber",
+   "material.elastomer": "mat-epdm"
+  },
+  "programmeYears": 5,
+  "annual": 100000
+ },
+ {
+  "label": "gear-m3-z38",
+  "file": "test-gear-m3-z38.step",
+  "answers": {
+   "commodity.route": "gear",
+   "material.family": "steel",
+   "gear.helix": "0",
+   "gear.qualityClass": "7",
+   "gear.materialClass": "case_hardening_steel"
+  },
+  "programmeYears": 5,
+  "annual": 100000
+ },
+ {
+  "label": "machining-manifold",
+  "file": "MACH_Hydraulic_Manifold.stp",
+  "answers": {
+   "commodity.route": "machining",
+   "material.family": "aluminium"
+  },
+  "programmeYears": 5,
+  "annual": 100000
+ },
+ {
+  "label": "casting-bracket",
+  "file": "Casting_Braket.stp",
+  "answers": {
+   "commodity.route": "casting",
+   "material.family": "steel",
+   "service.pressureTight": "no",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "no"
+  },
+  "programmeYears": 5,
+  "annual": 100000
+ },
+ {
+  "label": "knuckle-forging",
+  "file": "steering_knuckle_RH.stp",
+  "programmeYears": 5,
+  "annual": 100000,
+  "answers": {
+   "commodity.route": "forging",
+   "material.family": "steel",
+   "service.toleranceClass": "standard",
+   "service.safetyCritical": "yes",
+   "service.pressureTight": "no"
+  }
+ }
+]
