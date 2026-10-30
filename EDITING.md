@@ -30,15 +30,18 @@ folder. You almost never need to touch `style.css` or `script.js`.
 | Featured event block (big card at the top of Events, with flyer, programme, stalls and videos) | `event-feature` — the whole block has a `data-until` date and hides itself the day after the event. For the next big event, copy it, change the words, flyer, videos and dates |
 | Stats (400+ families etc.) | `data-count` — change both the attribute and the visible number |
 | Testimonial quotes | `testimonial` — replace the sample quotes with real ones |
-| Sponsor logos | `supporter-slot` — swap a placeholder for `<img src="images/sponsor-name.png" alt="Sponsor Name">` |
+| Sponsor logos | `supporter-slot` — swap a placeholder for `<img src="images/sponsor-name.png" alt="Sponsor Name">`. The logos appear twice: the home page card (`index.html`) and `sponsor.html`. Change both |
+| Sponsor packages and prices | `package` in `sponsor.html` |
 | Social media links | `socials` |
 
 ## Marathi Calendar corner
 
-- **Festival dates**: search `kal-list` in `index.html`. Each `<li>` has a `data-date="YYYY-MM-DD"`,
-  a short Marathi date badge, a Marathi name and an English line. Past dates hide themselves and
-  the next six show, so you can add a whole year at once. Every January, check the dates that
-  follow the moon (Sankranti, Holi, Padwa, Ganesh, Diwali) against a panchang and add the new year.
+- **Festival dates**: `LM_FESTIVALS` at the end of `culture-data.js`. Each line has a `date`
+  (YYYY-MM-DD), a short Marathi date (`day`), a Marathi name, an English line and a calendar title.
+  Past dates hide themselves. The home page card shows the next three; the full calendar page
+  (`calendar.html`) shows the rest with "Add to calendar". You can add a whole year at once.
+  Every January, check the dates that follow the moon (Sankranti, Holi, Padwa, Ganesh, Diwali)
+  against a panchang and add the new year.
 - **Proverb and word of the day**: both lists live in `culture-data.js`. Copy any line, change the
   words, keep the quotes and commas. The more entries, the longer before they repeat.
 

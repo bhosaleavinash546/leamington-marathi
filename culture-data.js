@@ -94,3 +94,22 @@ window.LM_SHABDA = [
   { s: 'थंडी', r: 'thandi', e: 'cold weather', ex: 'आज खूप थंडी आहे.' },
   { s: 'गरम', r: 'garam', e: 'hot', ex: 'चहा गरम आहे.' },
 ];
+
+/* Festival and event dates for the Marathi Calendar (home page card and calendar.html).
+   Past dates hide themselves. Dates that follow the moon (Sankranti, Holi, Padwa,
+   Ganesh, Diwali) must be checked against a panchang every January.
+   date: YYYY-MM-DD, day: short Marathi date, mr: Marathi name, en: one English line,
+   title: the name that goes into the phone's calendar. */
+window.LM_FESTIVALS = [
+  { date: '2026-10-31', day: '३१ ऑक्टो', mr: 'दिवाळी भेट २०२६', en: 'Our Diwali Bhet with Sugam Sangeet, North Leamington School, 10 am to 3 pm', title: 'Diwali Bhet 2026, North Leamington School, 10 am to 3 pm' },
+  { date: '2026-11-06', day: '६ नोव्हें', mr: 'धनत्रयोदशी', en: 'Dhanteras, the first day of Diwali', title: 'Dhantrayodashi (Diwali begins)' },
+  { date: '2026-11-07', day: '७ नोव्हें', mr: 'नरक चतुर्दशी', en: 'Abhyangasnan and faraal', title: 'Narak Chaturdashi' },
+  { date: '2026-11-08', day: '८ नोव्हें', mr: 'लक्ष्मीपूजन', en: 'Lakshmi Pujan, the main Diwali evening', title: 'Lakshmi Pujan' },
+  { date: '2026-11-09', day: '९ नोव्हें', mr: 'दिवाळी पाडवा', en: 'Balipratipada, Marathi new year of the merchants', title: 'Diwali Padwa' },
+  { date: '2026-11-10', day: '१० नोव्हें', mr: 'भाऊबीज', en: 'Bhaubeej, brothers and sisters', title: 'Bhaubeej' },
+  { date: '2027-01-14', day: '१४ जाने', mr: 'मकर संक्रांत', en: 'Makar Sankranti, tilgul time', title: 'Makar Sankranti' },
+  { date: '2027-02-19', day: '१९ फेब्रु', mr: 'शिवजयंती', en: 'Chhatrapati Shivaji Maharaj Jayanti', title: 'Shiv Jayanti' },
+  { date: '2027-03-22', day: '२२ मार्च', mr: 'होळी', en: 'Holi, Dhulivandan the next day', title: 'Holi' },
+  { date: '2027-04-07', day: '७ एप्रिल', mr: 'गुढीपाडवा', en: 'Gudhi Padwa, Marathi New Year', title: 'Gudhi Padwa' },
+  { date: '2027-05-01', day: '१ मे', mr: 'महाराष्ट्र दिन', en: 'Maharashtra Din', title: 'Maharashtra Din' },
+];
