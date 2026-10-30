@@ -51,7 +51,7 @@ mkdirSync(OUT, { recursive: true });
 const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
 const freePort = () => new Promise<number>((res, rej) => { const s = createServer(); s.once('error', rej); s.listen(0, '127.0.0.1', () => { const p = (s.address() as { port: number }).port; s.close(() => res(p)); }); });
 // the predicates are pure functions in trace-checks.ts, each proven able to fail (tests/trace-checks.test.ts)
-import { money, samePenny as samePennyFx, costedAlternatives, near as nearFx, marginTypedRe } from './trace-checks.js';
+import { money, samePenny as samePennyFx, costedAlternatives, near as nearFx, marginTypedRe, stampNamesBook } from './trace-checks.js';
 // Country review (Oct 2026): CV_TRACE_COUNTRY=<code> costs every part in that country's book; CV_TRACE_TERMS=EXW prices ex-works.
 const COUNTRY = process.env.CV_TRACE_COUNTRY ?? '';
 const TERMS = process.env.CV_TRACE_TERMS === 'EXW' ? 'EXW' : '';
@@ -518,7 +518,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   check('export', 'A6', 'PDF opened: the headline', text.includes(money(hero)), `${money(hero)} ${text.includes(money(hero)) ? 'found' : 'NOT found'}`);
   if (COUNTRY) {
     const countryName = (await page.evaluate(() => (document.getElementById('costing-country-sel') as HTMLSelectElement | null)?.selectedOptions[0]?.textContent ?? '')).trim();
-    check('export', 'country', 'the stamp names the country\'s rate book', new RegExp(`-${COUNTRY}\\b`).test(stamp), stamp);
+    check('export', 'country', 'the stamp names the country\'s rate book', stampNamesBook(stamp, COUNTRY), stamp);
     check('export', 'country', 'the PDF names the country', !!countryName && text.includes(countryName.replace(/\s*\(.*$/, '')), countryName);
   }
   if (TERMS === 'EXW') {

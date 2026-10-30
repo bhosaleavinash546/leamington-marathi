@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { money, samePenny, costedAlternatives, crossoverStated, near, marginTyped } from '../e2e/trace-checks.js';
+import { money, samePenny, costedAlternatives, crossoverStated, near, marginTyped, stampNamesBook } from '../e2e/trace-checks.js';
 
 describe('live-harness predicates', () => {
   it('money reads every display currency and nothing else', () => {
@@ -61,3 +61,13 @@ describe('marginTyped', () => {
   });
 });
 
+
+describe('stampNamesBook', () => {
+  it('a country book carries its suffix; the UK is the base book with none', () => {
+    expect(stampNamesBook('France rate book v2.2.0-FR · rules v8 · kernel 374f8cebdccb', 'FR')).toBe(true);
+    expect(stampNamesBook('United Kingdom rate book v2.2.0 · rules v8 · kernel 374f8cebdccb', 'UK')).toBe(true);
+    expect(stampNamesBook('United Kingdom rate book v2.2.0 · rules v8', 'FR')).toBe(false);   // UK book in a France costing
+    expect(stampNamesBook('Germany rate book v2.2.0-DE · rules v8', 'UK')).toBe(false);
+    expect(stampNamesBook('United Kingdom rate book v2.2.0-DE · rules v8', 'UK')).toBe(false);
+  });
+});

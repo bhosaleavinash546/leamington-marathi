@@ -43,3 +43,10 @@ export function near(a: number, b: number, tolGbp = 0.0006, fx = 1): boolean {
  *  The "(% of subtotal)" holds a % of its own, so the figure is read at the END of the row. */
 export const marginTypedRe = (pct: number): RegExp => new RegExp(`Typed Supplier margin.*(?<![\\d.])${pct}%$`);
 export const marginTyped = (row: string, pct: number): boolean => marginTypedRe(pct).test(row.replace(/\s+/g, ' ').trim());
+
+/** The reproducibility stamp names the country's own rate book: "France rate book v2.2.0-FR". The UK is the BASE book,
+ *  stamped without a suffix ("United Kingdom rate book v2.2.0") — the check once required "-UK" and failed 15 UK parts. */
+export function stampNamesBook(stamp: string, cc: string): boolean {
+  if (cc === 'UK') return /\bUnited Kingdom rate book v\d+(?:\.\d+)*(?![-\w.])/.test(stamp);
+  return new RegExp(`rate book v\\d+(?:\\.\\d+)*-${cc}\\b`).test(stamp);
+}
