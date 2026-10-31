@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diwali Bhet 2026 Photo Booth</title>
+<meta name="description" content="Make your own Leamington Marathi Diwali Bhet 2026 photo booth picture in about two minutes.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;800&family=Rozha+One&display=swap">
+<style>
+:root{--bg:#fff7ec;--fg:#3a1410;--muted:#7a5a4e;--accent:#e8650a;--accent-fg:#fff;--panel:#ffe9cf;--line:#f1cfa6;--maroon:#7a1f14;
+--display:"Rozha One",Georgia,serif;--body:"Mukta","Noto Sans Devanagari",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1f0d0a;--fg:#fbe9d6;--muted:#caa992;--accent:#ff8a3d;--accent-fg:#2a0e07;--panel:#33170f;--line:#5a2c1c;--maroon:#ffb98a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.55;padding:24px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+main{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,8vw,40px);line-height:1.1;margin:0;color:var(--maroon)}
+.lead{margin:0;color:var(--muted)}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.head{display:flex;gap:12px;align-items:center}
+.n{flex:none;font-weight:800;background:var(--accent);color:var(--accent-fg);width:34px;height:34px;border-radius:50%;display:grid;place-items:center}
+.head strong{font-size:19px}
+.step p{margin:0}
+.btn,button{font:inherit;font-weight:800;font-size:18px;border-radius:12px;padding:14px 16px;border:2px solid var(--accent);cursor:pointer;text-align:center;text-decoration:none;display:block;background:var(--accent);color:var(--accent-fg)}
+.btn.alt{background:transparent;color:var(--accent)}
+.logo{display:flex;gap:14px;align-items:center}
+.logo img{width:96px;height:auto;border-radius:8px;background:#fff;padding:6px;flex:none}
+.logo div{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.status{min-height:1.4em;margin:0;font-weight:600;color:var(--maroon)}
+.hint{color:var(--muted);font-size:15px}
+h2{font-size:15px;letter-spacing:.08em;text-transform:uppercase;margin:6px 0 0;color:var(--muted)}
+textarea{width:100%;height:240px;font:14px/1.5 var(--body);background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:12px}
+a:focus-visible,button:focus-visible,textarea:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<h1>Diwali Bhet 2026 Photo Booth</h1>
+<p class="lead">Leamington Marathi. Turn your photo into a Diwali photo booth picture in about two minutes. You need a ChatGPT account.</p>
+
+<section class="step">
+<div class="head"><span class="n">1</span><strong>Save the LM logo</strong></div>
+<div class="logo">
+<img src="lm-logo.jpg" alt="Leamington Marathi logo">
+<div>
+<a class="btn" href="lm-logo.jpg" download="LM-Logo.jpg">Save logo</a>
+<span class="hint">If nothing downloads, press and hold the logo and choose Save image.</span>
+</div>
+</div>
+</section>
+
+<section class="step">
+<div class="head"><span class="n">2</span><strong>Copy the prompt</strong></div>
+<button id="copy" type="button">Copy prompt</button>
+<p id="status" class="status" role="status" aria-live="polite"></p>
+</section>
+
+<section class="step">
+<div class="head"><span class="n">3</span><strong>Open ChatGPT</strong></div>
+<p>Start a new chat. Tap <strong>+</strong> and choose <strong>Create image</strong> (or Images).</p>
+<a class="btn alt" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT</a>
+</section>
+
+<section class="step">
+<div class="head"><span class="n">4</span><strong>Upload, paste, send</strong></div>
+<p>Upload <strong>your photo first</strong>, then the <strong>LM logo</strong>. Paste the prompt and send. Your Diwali photo appears in about a minute. Tap it and use the download option to save it in full quality.</p>
+<p class="hint">Best results: use a sharp, well-lit original photo where faces are large, not a screenshot.</p>
+</section>
+
+<h2>Full prompt</h2>
+<textarea id="p" readonly aria-label="Full prompt text">Edit the guest photo (Image 1) into a premium, photorealistic Diwali photo booth picture for "Leamington Marathi Diwali Bhet 2026", a Marathi community celebration in a UK community hall.
+
+INPUT IMAGES
+- Image 1: a real photograph of the guest or guests.
+- Image 2: the official Leamington Marathi logo. Use this exact artwork. Do not redraw, restyle, retype or translate any part of it.
+
+PRIORITY 1: THE PEOPLE MUST NOT CHANGE
+Treat Image 1 as a photo edit, not a new image. Keep every person exactly as they appear in Image 1: the same faces, facial features, expressions, apparent age, skin tone, skin texture, hair, body shape, clothing, accessories, pose, size and position in the frame. Do not regenerate, beautify, smooth, retouch, slim, age or restyle anyone. Cut the people out cleanly with natural edges, including hair, and keep them fully sharp. Keep the people at exactly the same scale, crop and position as in Image 1, and build the backdrop around them. Do not zoom out or reposition anyone. Only the background, floor and the colour of the light falling on them may change, so they look naturally lit by the new scene.
+
+BACKDROP AND LOGO
+A rich burgundy fabric backdrop with subtle natural texture, soft folds and restrained antique-gold trim. At the top centre, the logo from Image 2 is printed on an ivory fabric banner hung on the backdrop, as a professional event decorator would install it. The banner shares the backdrop's fabric texture, gentle folds, matte finish and the hall's lighting and shadows, so the logo looks like part of the set and not a sticker. Keep the logo's colours, spelling, proportions and all its text, including the Marathi tagline, sharp and undistorted.
+
+EVENT TITLE
+Below the banner, in elegant gold Devanagari lettering with a gold-embroidered look, write exactly: दिवाळी भेट
+Below it, write exactly: 2026
+Leave clear space between the banner and the title.
+
+DECORATION
+Realistic orange and yellow marigold garlands, brass diyas with believable flames, a few brass lamps and lanterns, and tasteful flower arrangements, all towards the edges of the frame. A lightly polished wooden floor and subtle community-hall details in the background.
+
+PHOTOGRAPHIC LOOK
+Natural indoor lighting with warm light from the diyas, accurate textures, natural shadows, subtle reflections and restrained professional colour grading. It should look like a real photograph from an event photographer, not an illustration or 3D render.
+
+QUALITY
+Output at the highest resolution and quality available. Portrait orientation, 2:3. Crisp, high-detail, sharp focus on all faces, no blur, no noise, no compression artefacts, no watermark.
+
+COMPOSITION
+Logo and title above the guests' heads. Centre and lower areas uncluttered for the guests. No bright lamps behind faces.
+
+AVOID
+A second logo, extra symbols or extra text, repeating the tagline elsewhere, a palace setting, glossy 3D surfaces, excessive glow, changing anyone's face.</textarea>
+</main>
+<script>
+(function(){
+var ta=document.getElementById('p'),st=document.getElementById('status');
+var msg='Copied. Now open ChatGPT and paste it.';
+function fallback(){ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);var d=false;try{d=document.execCommand('copy')}catch(e){}
+ st.textContent=d?msg:'Text selected below. Press and hold it, then choose Copy.'}
+document.getElementById('copy').addEventListener('click',function(){
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value).then(function(){st.textContent=msg},fallback)}else{fallback()}
+});
+})();
+</script>
+</body>
+</html>
