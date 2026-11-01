@@ -1,0 +1,5 @@
+# Merge this section into your Supabase CLI project's config.toml.
+# The handler independently verifies the user's JWT with auth.getUser and
+# enforces active membership for every request. Keep gateway JWT verification on.
+[functions.finance-invoices]
+verify_jwt = true
