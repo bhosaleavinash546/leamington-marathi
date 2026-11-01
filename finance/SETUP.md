@@ -13,7 +13,8 @@ Implementation is prepared; live Supabase and Drive configuration is required be
 - Income: tickets, sponsorship, stall fees, donations and other income; distinguish expected money from received money.
 - Pending → approved/rejected → paid workflow. Another administrator/treasurer approves a person's own claim. Paid records are immutable through the app.
 - Separate received income, approved/paid expense commitments, pending claims, cash balance, payables and expected income.
-- Budget comparisons, category doughnut, income source bars and monthly cash movement.
+- Budget comparisons, category doughnut, income source bars, and 3/6/12-month cash flow charts with empty months included.
+- Dynamic budget-health indicators, income-target progress, receipt coverage, category variances and attention tasks that drill into filtered transaction lists. Dashboard data refreshes after writes, event changes and manual refresh, plus every 60 seconds while signed in with the dashboard visible and no dialog open. An update failure is labelled; no artificial growth figures or sample data are shown.
 - Search/filter ledger, invoice downloads through an authenticated handler, CSV export with spreadsheet-formula protection, and an audit log.
 - Roles: administrator/treasurer manage finances; contributor submits expense claims; viewer is read-only. All approved users can read all event records and invoices. If access needs to be restricted by event, add event-specific membership before deployment.
 
