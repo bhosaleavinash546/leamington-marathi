@@ -176,6 +176,8 @@ carousel, large thermoformer, aluminium profile centre and extrusion press, gear
 price for any of them; nor does the UK book hold a sourced one ("capex ESTIMATE", "Target £/hr"). They are the next
 research target, best priced from makers' quotes.
 
+**Live check after the change** (the six countries, 15 parts each, both reports opened): 6 × 1,020 checks passed, 0 failed (`scripts/rate-refresh/world-2026-10/live/asia-machines-2026-11-02.md`). The first pass of four of them failed only the accessibility check on the cost step: the harness switched back to the dark theme and ran axe while the colour transition was still running (a newer Chromium in this container); `themeSettled()` now waits for it, and each axe violation records its elements and colours.
+
 The provenance ratchet was re-recorded: Vietnam's median part on sourced rates fell 19.8 → 16 % only because its
 sourced VMC price (£26k) is half the at-par UK price it replaced — the unsourced capital is the same on every part.
 
