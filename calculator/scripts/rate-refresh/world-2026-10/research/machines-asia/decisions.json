@@ -195,6 +195,53 @@
      "vn-id-ph#6": "T-V650 spec not on the price page",
      "vn-id-ph#7": "EMCO award read only in a search snippet; may be a package"
     }
+   },
+   "pressBrake": {
+    "use": [
+     "vn-machines#0",
+     "vn-machines#2"
+    ],
+    "confidence": "Low",
+    "why": "Accurpress Absolute 310032 (100 t × 3,200 mm, new, dealer list) and NVD PBC 100T/3200 (Chinese, VNTECH table May 2026, 550–650 M — midpoint): a premium and a Chinese machine of the class — the median of the two",
+    "rejected": {
+     "vn-machines#1": "Accurpress 2,500 mm — shorter, priced above the 3,200 mm",
+     "vn-machines#3": "search snippet only (page 404)"
+    }
+   },
+   "laser": {
+    "use": [
+     "vn-machines#4"
+    ],
+    "confidence": "Low",
+    "why": "VNTECH fibre laser, 1,500 × 3,000 mm single table, 4 kW (dealer table, May 2026; 660–780 M — midpoint); maker not named"
+   },
+   "lathe": {
+    "use": [
+     "vn-machines#5"
+    ],
+    "confidence": "Low",
+    "why": "Borui CK6150-1000 with FANUC 0i-TF Plus, 10\" chuck (CNC24H, June 2026) — a FLAT-bed CNC lathe, the class's work but not a slant bed",
+    "rejected": {
+     "vn-machines#6": "one price for two sizes, marked 'being updated'"
+    }
+   },
+   "waterjet5": {
+    "use": [
+     "vn-machines#11"
+    ],
+    "confidence": "Low",
+    "why": "Flow Mach 500 4020, new, 5-axis dynamic head (dealer list, undated) — the first sourced price for this class anywhere in the tool",
+    "rejected": {
+     "vn-machines#12": "Mach 500 2020: spec table copied from the 4020, smaller yet dearer",
+     "vn-machines#13/#14": "Chinese 5-axis STONE-cutting waterjets (340 MPa) — not a composite-trimming machine"
+    }
+   },
+   "notUsed": {
+    "vmc3": "vn-machines#7 used; #8 marketplace listing (2023, one price for every size)",
+    "vmc5": "vn-machines#9 marketplace listing",
+    "imm200": "vn-machines#10 a used 1994 machine",
+    "gearHob": "vn-machines#15 used, a mechanical ~600 mm hobber",
+    "alExtPress": "vn-machines#16 a foreclosure auction of a whole plant"
    }
   },
   "MY": {

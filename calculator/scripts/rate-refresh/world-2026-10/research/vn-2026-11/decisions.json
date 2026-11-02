@@ -1,0 +1,26 @@
+{
+ "about": "Vietnam detailed round (2 Nov 2026): which researched figures the book uses and why; every unused item with its reason. build-world.py does the arithmetic (VAT-inclusive ÷ 1.10 — vat.json VN; a range → its midpoint; several items → median). Machine decisions live in ../machines-asia/decisions.json (VN), refs 'vn-machines#i'.",
+ "fx": {"use": "fx-labour#0", "cross": "official/fx.json (ECB 29 Oct 2026: €1 = US$1.113, €1 = £0.83578)", "check": "fx-labour#2", "why": "the State Bank of Vietnam central rate (its own newspaper; a second paper agrees) crossed with the ECB US$/£ — the same method as every central-bank book; Vietcombank's published GBP transfer-buy 34,093 / sell 35,186 brackets it"},
+ "labour": {"keep": "JETRO FY2025 burden (manufacturing, Japanese affiliates, fully loaded)", "check": ["fx-labour#4", "fx-labour#20"], "why": "GSO 2024 machine-operator income 8,715.7 thousand VND/month × 12 × 1.215 employer contributions = 127.1 M VND/yr ≈ US$4,960 at the 2024 level v JETRO's US$5,270 (base + allowances + bonus) — within 6 %, so JETRO stays; GSO has no manufacturing-only split by occupation"},
+ "rent": {"use": ["fx-labour#29", "fx-labour#30"], "why": "Cushman & Wakefield Q2 2026 ready-built factory asking rents, Northern 5.0 and Southern 4.9 US$/m²/month (incl. service charge, ex-VAT) — the mean of the two industrial regions"},
+ "materials": {
+  "mat.pp": {"use": ["polymers#16", "polymers#17"], "why": "PP homopolymer: a recorded Vietnamese deal (PPH-T03, 19 Oct 2026, VAT not stated) and a Vietnamese-made BSR T3034 offer (VAT-inclusive)", "rejected": {"polymers#20": "March 2026 blog figure — older", "polymers#18/#19": "copolymer (the family's base is the homopolymer)"}},
+  "mat.lldpe": {"use": ["polymers#21", "polymers#22"], "why": "LLDPE C4 film grade: a recorded deal (20 Oct) and an offer (VAT-inclusive)"},
+  "mat.hips": {"use": ["polymers#23"], "why": "HIPS 476L recorded deal, 10 Sep 2026 (VAT not stated)", "rejected": {"polymers#24": "regional index, grade not stated"}},
+  "mat.abs": {"use": ["polymers#12", "polymers#13"], "why": "ABS ZA0211: a recorded 15 t deal (29 Oct) and an offer (VAT-inclusive)", "rejected": {"polymers#14/#15": "regional indices"}},
+  "mat.hdpe": {"use": ["polymers#5", "polymers#6", "polymers#7"], "why": "HDPE in Vietnam: a recorded deal (43,000), an offer (VAT-inclusive) and a domestic market survey (29,500–34,500 ex-VAT) — the sources disagree, so the median", "rejected": {"polymers#8..#11": "regional CFR / index figures"}},
+  "mat.pvc": {"use": ["polymers#25"], "why": "S-PVC offers into Vietnam, Thai and Indonesian, US$750–760/t CFR (26 Aug 2026 — no later open figure)", "rejected": {"polymers#26": "a CFR SE Asia range, not Vietnam"}},
+  "mat.nr_tsr20": {"use": ["polymers#42"], "why": "SVR 10 (the TSR10/20 class) Vietnam average export price, June 2026 (MOIT / Customs) — an export FOB price, what the grade fetches at the border", "rejected": {"polymers#44": "search snippet only", "polymers#41": "SVR 3L — a premium latex grade", "polymers#43": "all rubber types mixed"}},
+  "mat.scrap_hms": {"use": ["metals#15"], "why": "US HMS 80:20 bulk scrap CFR Vietnam, 21 Sep 2026 (BigMint) — the steel-foundry charge's melt stock"},
+  "mat.cu_premium": {"use": ["metals#16"], "why": "8 mm copper rod premium CIF Vietnam (SMM, 30 Oct) over LME — a rod premium, a little above a cathode premium; Low"},
+  "mat.al_sheet_asp": {"use": ["metals#6"], "why": "6061 plate / sheet, Vietnamese average mid-2026 (VAT not stated) — the floor of the aluminium sheet family; Low"},
+  "notUsed": {
+   "bar steels (C45, 42CrMo4, 38MnVS6, 20MnCr5)": "metals#0–#4 are undated dealer pages (one auto-dates itself); 38MnVS6 / 20MnCr5 not found anywhere — need a Mysteel subscription or a supplier quote",
+   "stainless": "304 / 316L sheet are stockist cut-sheet prices, conflicting (316L 115,000 v ~150,000); the family's base is mill coil",
+   "aluminium bar / billet / ADC12": "6061 bar undated; billet only a processing fee; ADC12 undated (the SEA TH figure stays)",
+   "pipe and sheet products": "Bình Minh pipe lists and cut-sheet HDPE / ABS dealers price PRODUCTS (per metre, cut sheet), not the compound or mill sheet the library buys",
+   "PA66 GF30, PBT, PA12": "undated CIF listings with a unit error; one deal without a maker",
+   "CRC / HDG": "FOB China export references — the CFR SE Asia (TH) figures stay"
+  }
+ }
+}
