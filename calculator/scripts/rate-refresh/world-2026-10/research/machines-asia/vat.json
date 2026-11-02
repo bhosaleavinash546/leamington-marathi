@@ -1,0 +1,14 @@
+{
+ "about": "Standard VAT / GST on a machine bought by a manufacturer — read on PwC Worldwide Tax Summaries, Corporate > Other taxes (fetched 2 Nov 2026). A manufacturer recovers it, so a price quoted VAT-inclusive is divided by (1 + rate) before it is a capex.",
+ "rates": {
+  "JP": {"rate": 0.10, "url": "https://taxsummaries.pwc.com/japan/corporate/other-taxes", "reviewed": "2026-08-07", "quote": "The general rate is 10%; however, a lower rate of 8% applies to food and beverages"},
+  "KR": {"rate": 0.10, "url": "https://taxsummaries.pwc.com/republic-of-korea/corporate/other-taxes", "reviewed": "2026-06-04", "quote": "VAT is generally levied at a rate of 10% on the supply of goods and services in Korea."},
+  "TW": {"rate": 0.05, "url": "https://taxsummaries.pwc.com/taiwan/corporate/other-taxes", "reviewed": "2026-08-20", "quote": "VAT is applicable to general industries, and the VAT rate is 5%."},
+  "TH": {"rate": 0.07, "url": "https://taxsummaries.pwc.com/thailand/corporate/other-taxes", "reviewed": "2026-08-24", "quote": "The standard rate of VAT is 10%, but the rate is currently reduced to 7% until 30 September 2027"},
+  "MY": {"rate": null, "url": "https://taxsummaries.pwc.com/malaysia/corporate/other-taxes", "reviewed": "2026-06-16", "quote": "Sales tax ... The ad valorem rates are 5% or 10% depending on the class of goods. ... machinery ... generally non-dutiable or subject to duties at lower rates", "note": "Malaysia has a single-stage sales tax, not VAT; manufacturing machinery is commonly exempt — a Malaysian price quoted with SST is treated case by case, never by a blanket rate"},
+  "SG": {"rate": 0.09, "url": "https://taxsummaries.pwc.com/singapore/corporate/other-taxes", "reviewed": "2026-07-02", "quote": "GST is charged at 9% on the supply of goods and services made in Singapore"},
+  "VN": {"rate": 0.10, "url": "https://taxsummaries.pwc.com/vietnam/corporate/other-taxes", "reviewed": "2026-09-23", "quote": "The VAT rates are 0%, 5%, 10%, and exempt, depending on the category of goods ... Import VAT typically ranges from 5% to 10% (maybe reduced to 8%)", "note": "machinery is at the 10% standard rate; a temporary 8% reduction may apply — a VAT-inclusive price is divided by 1.10 and the note says 8% would give +1.9%"},
+  "ID": {"rate": 0.11, "url": "https://taxsummaries.pwc.com/indonesia/corporate/other-taxes", "reviewed": "2026-06-11", "quote": "The VAT rate is currently 12%. However, the government has decided to implement the 12% rate by using Other Value as Tax Base ... of 11/12, resulting in an 'effective' VAT rate of 11% for most taxable goods"},
+  "PH": {"rate": 0.12, "url": "https://taxsummaries.pwc.com/philippines/corporate/other-taxes", "reviewed": "2026-08-01", "quote": "The tax is equivalent to a uniform rate of 12%"}
+ }
+}
