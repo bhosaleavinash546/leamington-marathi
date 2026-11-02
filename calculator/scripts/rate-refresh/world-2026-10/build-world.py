@@ -40,6 +40,62 @@ def research(name):
     return json.load(open(p))['items'] if os.path.exists(p) else []
 
 
+# Vietnam detailed round (2 Nov 2026, research/vn-2026-11/): decisions.json says which researched figure stands for
+# what; verdicts.json is the independent page re-check — a figure is used only when confirmed (or its page could not be
+# reached by the checker, said so). A range is its midpoint; a VAT-inclusive price ÷ (1 + the PwC rate, machines-asia/vat.json).
+VN_DIR = os.path.join(HERE, 'research', 'vn-2026-11')
+
+
+def vn_dec():
+    return json.load(open(os.path.join(VN_DIR, 'decisions.json')))
+
+
+def vn_item(ref):
+    f, i = ref.split('#')
+    it = json.load(open(os.path.join(VN_DIR, {'vn-machines': 'machines'}.get(f, f) + '.json')))['items'][int(i)]
+    v = {x['ref']: x for x in json.load(open(os.path.join(VN_DIR, 'verdicts.json')))}.get(ref, {})
+    if v.get('verdict') not in ('confirmed', 'unreachable'):
+        raise SystemExit(f'VN {ref}: re-check verdict {v.get("verdict")!r} — settle it in decisions.json first')
+    return it, v
+
+
+def vn_point(it):
+    """(value in the item's own unit, text): a range → midpoint; VAT-inclusive ÷ (1 + VN VAT)."""
+    lo, hi = float(it.get('value', it.get('price'))), it.get('valueHigh', it.get('priceHigh'))
+    x = (lo + float(hi)) / 2 if hi else lo
+    rng = f'{lo:,.0f}–{float(hi):,.0f} → midpoint {x:,.0f}' if hi else f'{x:,.2f}'.rstrip('0').rstrip('.')
+    if str(it.get('vat', '')).startswith('incl'):
+        r = json.load(open(os.path.join(HERE, 'research', 'machines-asia', 'vat.json')))['rates']['VN']['rate']
+        return x / (1 + r), f'{rng} incl. VAT ÷ {1 + r:.2f} = {x / (1 + r):,.0f}'
+    return x, rng + (' ex-VAT' if str(it.get('vat', '')).startswith('ex') else ' (VAT not stated — used as stated)')
+
+
+def vn_materials():
+    """The Vietnamese market items decisions.json admits, as research items keyed like materials-asia.json (country VN)."""
+    out = {}
+    for key, d in vn_dec()['materials'].items():
+        if key == 'notUsed':
+            continue
+        pts, units, parts, dates, urls = [], set(), [], [], []
+        for ref in d['use']:
+            it, v = vn_item(ref)
+            x, txt = vn_point(it)
+            pts.append(x); units.add((it['unit'], it.get('currency')))
+            parts.append(f"{it.get('what', '')[:90]}: {txt} {it['unit']} ({it.get('date')}; "
+                         + ('confirmed on its page' if v['verdict'] == 'confirmed' else 'page unreachable at re-check') + ')')
+            dates.append(str(it.get('date'))); urls.append(it['url'])
+        if len(units) != 1:
+            raise SystemExit(f'VN {key}: mixed units {units}')
+        pts.sort(); n = len(pts)
+        med = pts[n // 2] if n % 2 else (pts[n // 2 - 1] + pts[n // 2]) / 2
+        (unit, cur), = units
+        out[('VN', key)] = {'key': key, 'country': 'VN', 'value': round(med, 4), 'unit': unit, 'currency': cur,
+                            'basis': '; '.join(parts) + (f' — median of {n}' if n > 1 else '') + f'. {d["why"]}',
+                            'source': urls[0], 'date': max(dates),
+                            'verify': key not in ('mat.nr_tsr20', 'mat.scrap_hms')}   # Low unless an official / dated trade figure
+    return out
+
+
 DE = json.load(open(os.path.join(RR, '2026-10-germany.json')))
 PL = json.load(open(os.path.join(RR, '2026-10-poland.json')))
 
@@ -217,6 +273,11 @@ def life(cc):
 
 
 def rent(cc, ccy, per_eur):
+    if cc == 'VN':   # the two industrial regions (vn-2026-11): Cushman & Wakefield Q2 2026 ready-built factories
+        its = [vn_item(r)[0] for r in vn_dec()['rent']['use']]
+        usd = sum(float(i['value']) for i in its) / len(its); k = per_eur / FX['perEur']['USD']
+        return (round(usd * k, 2), ' + '.join(f"{i['what'][:80]} US${i['value']}" for i in its)
+                + f" — mean US${usd:.2f}/m²/month = {usd * k:,.2f} VND at US$1 = {k:,.2f} VND (incl. service charge, ex-VAT, {its[0]['date']})", its[0]['url'])
     it = find(research('rent.json'), 'rent.industrial', cc)
     if not it:
         nf = next((i for i in research('rent.json') if i.get('key') == 'rent.industrial' and i.get('country') == cc), None)
@@ -358,9 +419,14 @@ NEA = {'JP', 'KR', 'TW'}
 
 
 def fx_world(cc, ccy):
-    if ccy == 'VND':   # the State Bank of Vietnam refuses automated access; the ECB and IMF do not publish the dong
-        cfg = json.load(open(os.path.join(RR, '2026-10-countries.json')))
-        return None, None, f"held: £1 = {cfg['fx'].get('VND')} VND (scripts/rate-refresh/2026-10-countries.json, {cfg.get('fxSource', '')}) — sbv.gov.vn refuses automated access and neither the ECB nor the IMF publishes the dong"
+    if ccy == 'VND':   # the ECB and IMF do not publish the dong: the State Bank's central rate (vn-2026-11) × the ECB US$/£
+        d = vn_dec()['fx']
+        it, v = vn_item(d['use']); chk, _ = vn_item(d['check'])
+        usd_gbp = FX['perEur']['USD'] / FX['perEur']['GBP']
+        fx = round(float(it['value']) * usd_gbp, 2)
+        return fx, fx * FX['perEur']['GBP'], (f"State Bank of Vietnam central rate {float(it['value']):,.0f} VND per US$ ({it['date']}, "
+                    f"{it['url']}) × ECB US$/£ {usd_gbp:.5f} ({FX['day']}) → £1 = {fx:,.2f} VND; Vietcombank's published GBP "
+                    f"transfer-buy {float(chk['value']):,.2f} the same day brackets it")
     if ccy in FX['perEur']:
         fx, pe = fx_per_gbp(ccy)
         return fx, pe, f"ECB euro reference rates {FX['day']}: €1 = {pe} {ccy}, €1 = £{FX['perEur']['GBP']} → £1 = {fx} {ccy}"
@@ -601,6 +667,8 @@ ASIA_CLASSES = [
     ('imm200', 'imm', '^imm-\\d+t$', 'imm-200t'),
     ('pressBrake', 'press-brake', '^brake-', 'brake-trumpf-trubend3100'),
     ('gearHob', 'gear-hob', '^gear-hob-', 'gear-hob-small'),
+    ('laser', 'fibre-laser', '^(laser-trumpf-3030|laser-trumpf-5030|laser-bystronic-3015|laser-amada-ensis-3015)$', 'laser-trumpf-3030'),
+    ('waterjet5', 'waterjet-5ax', '^waterjet-5ax-composite$', 'waterjet-5ax-composite'),
 ]
 MA_DIR = os.path.join(HERE, 'research', 'machines-asia')
 
@@ -611,7 +679,9 @@ def groups_asia(cc, ccy, sym):
     dec = json.load(open(os.path.join(MA_DIR, 'decisions.json')))['countries'].get(cc, {})
     vat = json.load(open(os.path.join(MA_DIR, 'vat.json')))['rates'].get(cc, {})
     verd = {v['ref']: v for v in json.load(open(os.path.join(MA_DIR, 'verdicts.json')))}
+    verd.update({v['ref']: v for v in json.load(open(os.path.join(VN_DIR, 'verdicts.json')))})
     files = {f: json.load(open(os.path.join(MA_DIR, f + '.json')))['items'] for f in ('jp', 'kr-tw', 'th-my-sg', 'vn-id-ph')}
+    files['vn-machines'] = json.load(open(os.path.join(VN_DIR, 'machines.json')))['items']
     out = []
     for cls, gid, match, ref in ASIA_CLASSES:
         d = dec.get(cls)
@@ -628,12 +698,14 @@ def groups_asia(cc, ccy, sym):
             inc = str(it.get('vat', '')).startswith('inc')
             if inc and not vat.get('rate'):
                 raise SystemExit(f'{cc} {cls} {r}: VAT-inclusive with no sourced rate')
-            x = it['price'] / (1 + vat['rate']) if inc else it['price']
+            p0 = (it['price'] + it['priceHigh']) / 2 if it.get('priceHigh') else it['price']   # a dealer's range → its midpoint
+            x = p0 / (1 + vat['rate']) if inc else p0
             vals.append(x)
             vtxt = f"VAT-inclusive ÷ {1 + vat['rate']:.2f} (PwC: {vat['rate'] * 100:g}%)" if inc else (
                 'ex-VAT' if str(it.get('vat', '')).startswith('ex') else 'VAT not stated — used as stated')
             chk = 'confirmed on its page' if v['verdict'] == 'confirmed' else 'the re-check could not reach the page'
-            parts.append(f"{it.get('model') or 'unnamed'} — {sym}{it['price']:,.0f} ({it['priceType']}, {it.get('date', '')}; "
+            pr = f"{sym}{it['price']:,.0f}–{it['priceHigh']:,.0f} (midpoint)" if it.get('priceHigh') else f"{sym}{it['price']:,.0f}"
+            parts.append(f"{it.get('model') or 'unnamed'} — {pr} ({it['priceType']}, {it.get('date', '')}; "
                          f"{it.get('scope', '')}; {vtxt}; {chk})")
         vals.sort()
         n = len(vals)
@@ -662,6 +734,7 @@ def mat_items():
     for f in ('materials-americas.json', 'materials-asia.json', 'materials-emea.json'):
         for i in research(f):
             if i.get('value') is not None: out[(i['country'], i['key'])] = i
+    out.update(vn_materials())   # Vietnam's own market (vn-2026-11) ahead of the regional figures
     return out
 
 
