@@ -142,6 +142,43 @@ The spread is what the rates say, not a market check: on every part the cheapest
 the blow-moulded duct) and the dearest Germany or the United States, the UK between (e.g. the knuckle forging £8.27 CN · £19.62 UK ·
 £23.18 DE, ex-works, 100k/yr). No price actually paid has been entered, so none of these is a measured accuracy.
 
+## 4c. Machine prices in Asia (2 Nov 2026)
+
+Four researchers looked for the price a manufacturer in each Asian country pays for the machines that carry the most
+capital in the real parts (`world-2026-10/research/machines-asia/`, brief in `BRIEF.md`): public procurement awards,
+maker / dealer list prices, the Indonesian education ministry's school shop (SIPLah). 117 prices came back; most
+awards name neither model nor size, so a strict rule decided which may stand for a library machine
+(`decisions.json`: R1 same class by model or spec sheet, R2 one machine a price, R3 no bundles — robots, CAM,
+training, works, transformers, classroom tooling sets — R4 ex-VAT by the PwC rate in `vat.json`, R6 median). An
+independent checker opened every page used (`verdicts.json`): 24 opened, 20 confirmed, 4 differed on scope or size —
+the Korean 5-axis (compressor, monitor, IoT, CAM in the price), both Korean lathes (transformer, tooling, training,
+foundation works) and an 850 t press recorded as 900 t; those were refused, as was a Thai dealer's 5-axis "machine
+only" figure printed under two different models.
+
+**What is priced now** (capex in £ at each book's FX; the UK figure it replaces):
+
+| | VMC 3-axis (UK £53k) | 5-axis (£126k) | CNC lathe (£56k) | IMM 200 t | IMM 1,200 t | Press brake (£113k) | Small hobber |
+|---|---|---|---|---|---|---|---|
+| Japan | £41k Brother list | £62k Brother list | — | — | — | £99k Amada list (2019) | £200k MHI list (2020) |
+| Korea | £50k (2 awards) | — | — | £57k (2 awards) | £337k (1,400 t award) | £48k award | — |
+| Taiwan | — | — | £35k award (2021) | — | — | — | — |
+| Thailand | — | — | £36k (2 dealer prices) | — | — | — | — |
+| Indonesia | £64k SIPLah | — | £39k (2 SIPLah) | — | — | £42k SIPLah | — |
+| Vietnam | £26k dealer | — | — | — | — | — | — |
+
+Malaysia, Singapore and the Philippines: no award named a model or size, so their machines stay at par.
+Every price is Low confidence except the Korean VMC pair (Medium).
+
+**What it moved.** In the six countries 0.1–1.2 points of all costs moved from "at par on a UK price" to "this
+country's own price" (e.g. Indonesia 19.1 → 20.3 % own, Vietnam 17.7 → 18.4 %). The capital that has NO sourced
+price anywhere — 3.4–4.9 % of all costs in these countries — is unchanged: the 5-axis waterjet, rotomoulding
+carousel, large thermoformer, aluminium profile centre and extrusion press, gear grinder. No researcher found an Asian
+price for any of them; nor does the UK book hold a sourced one ("capex ESTIMATE", "Target £/hr"). They are the next
+research target, best priced from makers' quotes.
+
+The provenance ratchet was re-recorded: Vietnam's median part on sourced rates fell 19.8 → 16 % only because its
+sourced VMC price (£26k) is half the at-par UK price it replaced — the unsourced capital is the same on every part.
+
 ## 5. Proof
 
 - `tests/world-rate-books.test.ts` — every country's book, and every rate of real parts costed there (171 tests).
