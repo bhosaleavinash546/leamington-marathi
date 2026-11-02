@@ -1,0 +1,236 @@
+{
+  "researchedBy": "vn-id-ph",
+  "date": "2026-11-02",
+  "items": [
+    {
+      "country": "ID",
+      "machineClass": "vmc3",
+      "model": "TIMEWAY CNC Vertical Machine Center (Siemens 808D)",
+      "spec": "Table 1000x420 mm; X/Y/Z 700/450/450 mm; BT-40 8,000 rpm; 7.5/11 kW; 16T carousel ATC; linear guides; incl. chip conveyor, CTS 20 bar, panel A/C",
+      "price": 1728973400,
+      "currency": "IDR",
+      "priceType": "list",
+      "scope": "machine with standard accessories as listed (chip conveyor + trolley, coolant, tools & toolbox); delivery/installation not stated",
+      "vat": "incl",
+      "date": "2026-11 (page read; listing priced 2025+)",
+      "url": "https://siplahgramedia.id/main/detail/62e00a53207343faafff973820078d5c",
+      "quote": "CNC Vertical Machine Centers | Pre-Order | PT. LAKES UTAMA SAKTI | Harga | Rp. 1.728.973.400 | (Harga Termasuk Pajak) | ... PPN 12% | Rp. 171.339.707",
+      "seenIn": "page",
+      "notes": "Seller PT Lakes Utama Sakti (Jakarta), brand TIMEWAY (Chinese), 'Buatan Indonesia: Tidak'. Travel 700x450x450 is close to VF-2 class. SIPLah Gramedia is the Kemendikbud (Ministry of Education) school-procurement marketplace operated by PT Mitra Edukasi Nusantara; the listed price is what an SMK pays before any cart negotiation ('Negosiasi harga dapat dilakukan di Keranjang Belanja'). Listing date not shown; PPN shown at 12% under PMK 131/2024, so the listing is priced 2025 or later. School-catalogue prices for Chinese training-grade machines look high against industrial market prices; treat as upper-bound / public-sector price."
+    },
+    {
+      "country": "ID",
+      "machineClass": "vmc3",
+      "model": "TIMEWAY CNC Vertical Milling / Machining Center 320 (Siemens 808D)",
+      "spec": "Table 320x920 mm; X/Y/Z 620/350/500 mm; BT40 60-6,000 rpm; 5.5 kW servo spindle; 16-tool umbrella ATC",
+      "price": 1329460000,
+      "currency": "IDR",
+      "priceType": "list",
+      "scope": "machine; delivery/installation not stated",
+      "vat": "incl",
+      "date": "2026-11 (page read; listing priced 2025+)",
+      "url": "https://siplahgramedia.id/main/detail/e96d51a33dd340d88551187e1cc10cb4",
+      "quote": "CNC VERTICAL MILLING / MACHINING CENTER 320 - SIEMENS CONTROLLER | Pre-Order | IMTeknologi | Harga | Rp. 1.329.460.000 | (Harga Termasuk Pajak) | ... PPN 12% | Rp. 131.748.289",
+      "seenIn": "page",
+      "notes": "Smaller than the VF-2 class (620x350x500, 5.5 kW). The identical product at the identical price is also listed by PT Lakes Utama Sakti (https://siplahgramedia.id/main/detail/2f552d37a127442faba033826860b923), so the two listings are NOT independent. SIPLah Gramedia is the Kemendikbud (Ministry of Education) school-procurement marketplace operated by PT Mitra Edukasi Nusantara; the listed price is what an SMK pays before any cart negotiation ('Negosiasi harga dapat dilakukan di Keranjang Belanja'). Listing date not shown; PPN shown at 12% under PMK 131/2024, so the listing is priced 2025 or later. School-catalogue prices for Chinese training-grade machines look high against industrial market prices; treat as upper-bound / public-sector price."
+    },
+    {
+      "country": "ID",
+      "machineClass": "lathe",
+      "model": "WHITE EAGLE CK30 slant-bed CNC lathe",
+      "spec": "Swing over bed 500 mm; max turning dia 400 mm; 200 mm (8\") hydraulic chuck, A2-5; 7.5 kW; 4,200 rpm; bore 56 mm; X/Z 250/415 mm; 8-station turret; tailstock; 3,000 kg",
+      "price": 1128744100,
+      "currency": "IDR",
+      "priceType": "list",
+      "scope": "machine; delivery/installation not stated",
+      "vat": "incl",
+      "date": "2026-11 (page read; listing priced 2025+)",
+      "url": "https://siplahgramedia.id/main/detail/f1ef5822a7b347d58389e5c5339a7057",
+      "quote": "Mesin Bubut CNC Slant Bed (Slant Bed CNC Lathe Machine) | Pre-Order | PT. LAKES UTAMA SAKTI | Harga | Rp. 1.128.744.100 | (Harga Termasuk Pajak) | ... PPN 12% | Rp. 111.857.524",
+      "seenIn": "page",
+      "notes": "Chinese CK30-type slant-bed lathe (controller not named on this listing). 8\" chuck matches the class. SIPLah Gramedia is the Kemendikbud (Ministry of Education) school-procurement marketplace operated by PT Mitra Edukasi Nusantara; the listed price is what an SMK pays before any cart negotiation ('Negosiasi harga dapat dilakukan di Keranjang Belanja'). Listing date not shown; PPN shown at 12% under PMK 131/2024, so the listing is priced 2025 or later. School-catalogue prices for Chinese training-grade machines look high against industrial market prices; treat as upper-bound / public-sector price."
+    },
+    {
+      "country": "ID",
+      "machineClass": "lathe",
+      "model": "WHITE EAGLE CK30 slant-bed CNC lathe (Mitsubishi controller)",
+      "spec": "Same CK30 data sheet: swing 500 mm; 200 mm hydraulic chuck; 7.5 kW; 4,200 rpm; X/Z 250/415 mm; T8 turret; Mitsubishi control",
+      "price": 975227900,
+      "currency": "IDR",
+      "priceType": "list",
+      "scope": "machine; delivery/installation not stated",
+      "vat": "incl",
+      "date": "2026-11 (page read; listing priced 2025+)",
+      "url": "https://siplahgramedia.id/main/detail/b9430b18be1c4b3fb05630aefa056db2",
+      "quote": "Slant Bed CNC Lathe Machine - MITSHUBISHI Controller | Pre-Order | IMTeknologi | Harga | Rp. 975.227.900 | (Harga Termasuk Pajak) | ... PPN 12% | Rp. 96.644.207",
+      "seenIn": "page",
+      "notes": "Same base machine as the PT Lakes Utama Sakti listing but a different seller (IMTeknologi) and controller, so the two lathe prices are semi-independent (two resellers of one Chinese model). Listing says 'Buatan Indonesia: Ya' although the machine is the Chinese CK30. SIPLah Gramedia is the Kemendikbud (Ministry of Education) school-procurement marketplace operated by PT Mitra Edukasi Nusantara; the listed price is what an SMK pays before any cart negotiation ('Negosiasi harga dapat dilakukan di Keranjang Belanja'). Listing date not shown; PPN shown at 12% under PMK 131/2024, so the listing is priced 2025 or later. School-catalogue prices for Chinese training-grade machines look high against industrial market prices; treat as upper-bound / public-sector price."
+    },
+    {
+      "country": "ID",
+      "machineClass": "pressBrake",
+      "model": "TIMEWAY hydraulic press brake 100 t x 3200 mm",
+      "spec": "Nominal pressure 1000 kN; table length 3200 mm; distance between columns 2600 mm; throat 320 mm; stroke 150 mm; 7.5 kW; TP10 control (other listing: 'ES10 CNC system')",
+      "price": 1138500000,
+      "currency": "IDR",
+      "priceType": "list",
+      "scope": "machine with standard accessories (worktable compensation, overload protection); delivery/installation not stated",
+      "vat": "incl",
+      "date": "2026-11 (page read; listing priced 2025+)",
+      "url": "https://siplahgramedia.id/main/detail/4ad6fd9e5fe24500af56bb867073c367",
+      "quote": "Mesin tekuk bending Hydraulic Press Brake | Pre-Order | IMTeknologi | Harga | Rp. 1.138.500.000 | (Harga Termasuk Pajak)",
+      "seenIn": "page",
+      "notes": "Tonnage and length match the class. Control is TP10/ES10, which is a basic NC/2-axis Chinese controller, not a full Y1/Y2 CNC like a TruBend 3100 (DOUBT). The same product at the same price is listed by PT Lakes Utama Sakti (https://siplahgramedia.id/main/detail/aa7436126b8240e3a6b2d120be52d291), so this is not two independent prices. SIPLah Gramedia is the Kemendikbud (Ministry of Education) school-procurement marketplace operated by PT Mitra Edukasi Nusantara; the listed price is what an SMK pays before any cart negotiation ('Negosiasi harga dapat dilakukan di Keranjang Belanja'). Listing date not shown; PPN shown at 12% under PMK 131/2024, so the listing is priced 2025 or later. School-catalogue prices for Chinese training-grade machines look high against industrial market prices; treat as upper-bound / public-sector price."
+    },
+    {
+      "country": "VN",
+      "machineClass": "vmc3",
+      "model": "Taikan T-V856S",
+      "spec": "X/Y/Z 800/550/600 mm, table 1000x500 mm, BT40 (spec from Taikan distributor page g-tech.com.tr, not on the price page)",
+      "price": 900000000,
+      "currency": "VND",
+      "priceType": "list",
+      "scope": "not stated (indicative dealer price)",
+      "vat": "unknown",
+      "date": "2024-09",
+      "url": "https://tuloctechnology.com/bang-gia-may-phay-cnc/",
+      "quote": "– Máy CNC Taikan T-V856S: giao động trong tầm khoảng 900 triệu VNĐ",
+      "seenIn": "page",
+      "notes": "TULOCTECH (Vietnamese Taikan dealer) price table, published 2024-09-16. 'khoảng' = approximately, so this is an indicative dealer price, not a firm quote. Chinese (Taikan) VMC slightly larger than VF-2."
+    },
+    {
+      "country": "VN",
+      "machineClass": "vmc3",
+      "model": "Taikan T-V650",
+      "spec": "Not given on the price page (Taikan T-V6xx series, smaller than T-V856S); not verified",
+      "price": 650000000,
+      "currency": "VND",
+      "priceType": "list",
+      "scope": "not stated (indicative dealer price)",
+      "vat": "unknown",
+      "date": "2024-09",
+      "url": "https://tuloctechnology.com/bang-gia-may-phay-cnc/",
+      "quote": "– Máy CNC Taikan T-V650: giao động trong tầm khoảng 650 triệu VNĐ",
+      "seenIn": "page",
+      "notes": "Same TULOCTECH page as the T-V856S (same source, not independent). Travel not confirmed. Likely below VF-2 size. Approximate price ('khoảng')."
+    },
+    {
+      "country": "VN",
+      "machineClass": "vmc3",
+      "model": "EMCO EMCOMILL 750 (Trung tâm gia công phay CNC)",
+      "spec": "1 system, origin Italy; X/Y/Z approx 750/550/500 mm, 12,000 rpm (from a used-machine listing, not from the award)",
+      "price": 8032500000,
+      "currency": "VND",
+      "priceType": "procurement-award",
+      "scope": "training-equipment package line (likely incl. delivery, installation, training; not confirmed)",
+      "vat": "unknown",
+      "date": "2023-08",
+      "url": "https://dauthau.asia/en/result/awarded-contractor/gt10-training-equipment-1288725.html",
+      "quote": "(search summary) 'Trung tâm gia công phay CNC', 1 hệ thống, xuất xứ Italy, model EMCOMILL 750 ... Giá dự thầu/trúng thầu ghi trong bảng là 8.032.500.000 VND; ngày phê duyệt 08/08/2023; IB2300150947-00",
+      "seenIn": "search-snippet",
+      "notes": "DOUBTFUL. Package GT10-Training Equipment, Trường Cao đẳng Cơ giới và Thủy lợi (vocational college). dauthau.asia returned a WAF block (403), so it was not read on the page. It is unclear whether 8.03 bn VND is this line alone or a wider total. If it is the line alone, it is high for one VMC; it may include tooling, CAM and training. Verify before use."
+    }
+  ],
+  "notFound": [
+    {
+      "country": "VN",
+      "machineClass": "vmc5",
+      "tried": "muasamcong.mof.gov.vn (moved from mpi): JS app, and its search API returns an error page; dauthau.asia/dauthau.info: WAF 403; bidwinner.info: results JS-loaded/login. Web searches (VN and EN) for 'trung tâm gia công 5 trục' award or dealer prices found only ranges (e.g. TULOCTECH '2 tỷ đến 4.5 tỷ VND' for 5-axis, no model)."
+    },
+    {
+      "country": "VN",
+      "machineClass": "lathe",
+      "tried": "Same award portals blocked. Dealer pages give only ranges: megamt.com.vn 2026-05 '600 triệu đến 1.5 tỷ VNĐ' (TW/CN new), congngheasiacnc.vn gang-type lathes '580 - 660 triệu VNĐ' (Máy tiện CNC 52 kho dao sau), neither a named 8-10\" slant-bed model with a single price."
+    },
+    {
+      "country": "VN",
+      "machineClass": "imm200",
+      "tried": "Searched 'máy ép nhựa' award results (trường cao đẳng), Haitian/TAB Plastic dealer prices, chotot. No VND price for a named ~200 t machine. Yuasa/Saigon Industry Corp 2017 award (USD 3.17 m) was a multi-machine lot with no tonnage, so it was rejected."
+    },
+    {
+      "country": "VN",
+      "machineClass": "laser",
+      "tried": "Dealer pages (goldenmicronvn.com, hancatemc.com, thietbivntech.vn (503), maycatmev, automech, weldcom) give only ranges, e.g. goldenmicronvn 'Máy cắt laser fiber 1500W – 3000W | 300.000.000đ – 600.000.000đ'. daisan.vn listing (275,000,000 đ, 1500W/3000W unclear) blocked 403. No award found."
+    },
+    {
+      "country": "VN",
+      "machineClass": "pressBrake",
+      "tried": "Searched 'máy chấn tôn CNC 100 tấn 3200 giá' and award results. Only EUR/USD foreign listings; no VND price."
+    },
+    {
+      "country": "ID",
+      "machineClass": "vmc5",
+      "tried": "SIPLah Gramedia keyword '5 axis'/'5 sumbu' found only hobby CNC 3020 routers. LKPP e-katalog (e-katalog.lkpp.go.id: proxy 502; katalog.inaproc.id: 403); spse.inaproc.id / LPSE sites: 403 or 502."
+    },
+    {
+      "country": "ID",
+      "machineClass": "imm200",
+      "tried": "SIPLah Gramedia 'injection', 'injection molding machine', 'mesin injeksi plastik', 'moulding': no machines. e-katalog/INAPROC blocked. Web search for IDR dealer prices (Haitian 200 t) found none; Tokopedia/Indotrading blocked (503/403)."
+    },
+    {
+      "country": "ID",
+      "machineClass": "imm1200",
+      "tried": "As imm200; nothing found."
+    },
+    {
+      "country": "ID",
+      "machineClass": "laser",
+      "tried": "SIPLah Gramedia lists only a 1000 W fibre laser, 1300x2500 mm (Rp 835.849.072 and Rp 828.318.900 incl. PPN, Kencana Wira Sakti / Manikam Mega Persada). That is well below the 4-6 kW, 3x1.5 m class, so it was not recorded. No IDR price for a 3-6 kW 3015 found."
+    },
+    {
+      "country": "ID",
+      "machineClass": "gearHob",
+      "tried": "SIPLah 'Hobbing Machine' listings (Rp 158.400.000 / 159.840.000) have no spec ('mesin hobbing kondisi siap kerja') and an implausible 42 kg weight, so they were not recorded."
+    },
+    {
+      "country": "ID",
+      "machineClass": "lathe",
+      "tried": "Note: a Pindad (BUMN) award of Rp 5.108.000.000 ex PPN covered 1 CNC milling + 2 CNC EDM (no split), and was rejected."
+    },
+    {
+      "country": "PH",
+      "machineClass": "vmc3",
+      "tried": "Modernized PhilGEPS award search (philgeps.gov.ph/Indexes/getAwardNotices) by title: 'CNC', 'Machining', 'Milling', 'Vertical', 'Lathe' found only mis-coded small-value items (e.g. PUP 'Multi-tasking or universal machining center' = MIG welders, PHP 11,978). Old PhilGEPS notices are not searchable without login. TSU 2025 'Universal Milling Machine' award (MESCO, Php7,850,000.00, Ref 11355172) is a MANUAL universal mill with DRO per bidding docs, so it was not recorded. TESDA 2017 Lot 7 (CNC lathe + milling, Gaylan, Php25,947,000) is a multi-machine lot and was rejected. MIRDC site: 403."
+    },
+    {
+      "country": "PH",
+      "machineClass": "vmc5",
+      "tried": "Same PhilGEPS searches; DOST-MIRDC contracts-awarded PDFs blocked (403); nothing found."
+    },
+    {
+      "country": "PH",
+      "machineClass": "lathe",
+      "tried": "PhilGEPS 'Lathe' search found only PUP 'Turret lathe' = Lot 2 technical & scientific equipment (PHP 12,670,286, lot, no split). The DOST-MIRDC 2013 CNC lathe ITB has an ABC of Php 13,400,000 (budget, not award, 2013), which was not recorded. Dealer searches (PHP) found none."
+    },
+    {
+      "country": "PH",
+      "machineClass": "imm200",
+      "tried": "PhilGEPS 'Injection'/'Molding'/'Plastic' searches found only tire patches, molds and pharma items. DOST STII/ITDI NOAs found nothing. No PHP dealer price."
+    },
+    {
+      "country": "PH",
+      "machineClass": "laser",
+      "tried": "PhilGEPS 'Laser' found UP Diliman 'Laser Cutter and Accessories' PHP 450,000 (UNSPSC CO2 laser, Sparklab, small-value), which is not a fibre sheet cutter and was not recorded. No PHP price for a 3015 fibre laser."
+    },
+    {
+      "country": "PH",
+      "machineClass": "pressBrake",
+      "tried": "PhilGEPS 'Brake'/'Bending'/'Press Brake' found nothing relevant; no dealer PHP price."
+    },
+    {
+      "country": "VN",
+      "machineClass": "specialist (waterjet5, rotoCarousel, thermoformLarge, alProfileCentre, alExtPress, gearGrind, gearHob, rubberTransfer200, imm1200)",
+      "tried": "Not found in the searches above; no specialist-class price for VN."
+    },
+    {
+      "country": "ID",
+      "machineClass": "specialist (waterjet5, rotoCarousel, thermoformLarge, alProfileCentre, alExtPress, gearGrind, rubberTransfer200)",
+      "tried": "SIPLah keywords 'waterjet', 'water jet' (only water-jet looms), 'rotational', 'vacuum forming', 'thermoforming', 'extrusion', 'rotomolding': nothing relevant."
+    },
+    {
+      "country": "PH",
+      "machineClass": "specialist (all)",
+      "tried": "PhilGEPS 'Hobbing'/'Grinding'/'Extrusion'/'Waterjet' title searches: only mis-coded PUP small-value items (e.g. 'Gear hobbing machine' = air compressor PHP 16,300)."
+    }
+  ]
+}
