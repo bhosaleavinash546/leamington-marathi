@@ -8,42 +8,42 @@ import type { CountryBook } from '../country-books.js';
 export const VIETNAM_BOOK: CountryBook = {
  "region": "VN",
  "asOf": "2026-10-30",
- "fxToGBP": 34350,
+ "fxToGBP": 34140.54,
  "currencySymbol": "₫",
  "labourGrades": {
   "forge": {
    "gbpPerHr": 1.7615,
-   "basis": "paid as skilled: the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25794.2884 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58511.78/h (fully loaded — no contributions added) — the country's figures put the setter level with the operator: × 1.0341, the EU manufacturing median gap between the two manual groups (SES 2022) = 60509.17/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as skilled: the worker burden × ISCO 7 ÷ ISCO 8 = 1.000 (ILOSTAT ISCO major groups, all economy, 2024; not below the worker) — JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25636.9996 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58154.99/h (fully loaded — no contributions added) — the country's figures put the setter level with the operator: × 1.0341, the EU manufacturing median gap between the two manual groups (SES 2022) = 60140.20/h. Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/VNM.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "furnace": {
    "gbpPerHr": 1.7034,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25794.2884 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58511.78/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25636.9996 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58154.99/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/VNM.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "blow": {
    "gbpPerHr": 1.7034,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25794.2884 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58511.78/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25636.9996 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58154.99/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/VNM.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "roto": {
    "gbpPerHr": 1.7034,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25794.2884 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58511.78/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25636.9996 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58154.99/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/VNM.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "thermoform": {
    "gbpPerHr": 1.7034,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25794.2884 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58511.78/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25636.9996 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58154.99/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/VNM.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   },
   "trim-router": {
    "gbpPerHr": 1.7034,
-   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25794.2884 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58511.78/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
+   "basis": "paid as semiskilled: JETRO FY2025, Japanese-affiliated manufacturers, Aug 2025: worker annual employer burden US$5,270 (base + allowances + social security + overtime + bonus) × 25636.9996 VND/US$ × wage growth 5.5%/yr over 1 yr = ×1.0550 ÷ 2451 h worked a year (hours/year actually worked) = 58154.99/h (fully loaded — no contributions added). Included: gross earnings for the occupation (national survey or ILOSTAT, the year shown), any statutory or customary annual bonus named, carried to 2026 by the wage growth shown, plus the employer's statutory social contributions, divided by the hours actually worked a year (paid leave and holidays fall on the hours worked). NOT included: non-statutory benefits where no employer-cost survey was found (the United States uses BLS ECEC, which includes them); a 3-shift premium beyond what the survey average holds; overtime; agency margins",
    "source": "https://sdmx.ilo.org/rest/data/ILO,DF_EAR_EMTA_SEX_OCU_NB/VNM.A.....?startPeriod=2018&format=csvfilewithlabels ; https://www.jetro.go.jp/ext_images/_Reports/01/231fa237934b5b0c/20250026rev1.pdf",
    "confidence": "Medium"
   }
@@ -51,1046 +51,1046 @@ export const VIETNAM_BOOK: CountryBook = {
  "materials": {
   "mat-dc01": {
    "gbpPerKg": 0.44,
-   "basis": "CR coil (DC01 / DC04): CR coil (DC01 / DC04) — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg; direct",
+   "basis": "CR coil (DC01 / DC04): CR coil (DC01 / DC04) — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg; direct",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-dc04": {
    "gbpPerKg": 0.44,
-   "basis": "CR coil (DC01 / DC04): CR coil (DC01 / DC04) — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg; direct",
+   "basis": "CR coil (DC01 / DC04): CR coil (DC01 / DC04) — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg; direct",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-dc05": {
    "gbpPerKg": 0.44,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-dc06": {
    "gbpPerKg": 0.4453,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.012 (book £0.85 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.012 (book £0.85 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-if-dx56": {
    "gbpPerKg": 0.5239,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.190 (book £1 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.190 (book £1 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-if-hs260": {
    "gbpPerKg": 0.592,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.345 (book £1.13 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.345 (book £1.13 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-bh260": {
    "gbpPerKg": 0.5762,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.310 (book £1.1 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-greensteel-dc01": {
    "gbpPerKg": 0.5762,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.310 (book £1.1 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.310 (book £1.1 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-hsla340": {
    "gbpPerKg": 0.6234,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.417 (book £1.19 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.417 (book £1.19 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-hsla420": {
    "gbpPerKg": 0.6758,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.536 (book £1.29 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.536 (book £1.29 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-hsla550": {
    "gbpPerKg": 0.7282,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.655 (book £1.39 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.655 (book £1.39 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-dp600": {
    "gbpPerKg": 0.681,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.548 (book £1.3 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.548 (book £1.3 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-dp780": {
    "gbpPerKg": 0.7177,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.631 (book £1.37 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.631 (book £1.37 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-dp980": {
    "gbpPerKg": 0.7858,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.786 (book £1.5 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.786 (book £1.5 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-dp1000": {
    "gbpPerKg": 0.8225,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.869 (book £1.57 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.869 (book £1.57 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-trip780": {
    "gbpPerKg": 0.7596,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.726 (book £1.45 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.726 (book £1.45 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-cp800": {
    "gbpPerKg": 0.7491,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.702 (book £1.43 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.702 (book £1.43 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-ms1200": {
    "gbpPerKg": 0.8382,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.905 (book £1.6 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-ms1300": {
    "gbpPerKg": 0.8748,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.988 (book £1.67 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.988 (book £1.67 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-ms1500": {
    "gbpPerKg": 0.9272,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×2.107 (book £1.77 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×2.107 (book £1.77 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-qp980": {
    "gbpPerKg": 0.9063,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×2.060 (book £1.73 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×2.060 (book £1.73 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-medmn1180": {
    "gbpPerKg": 0.9429,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×2.143 (book £1.8 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×2.143 (book £1.8 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-22mnb5": {
    "gbpPerKg": 0.9377,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×2.131 (book £1.79 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×2.131 (book £1.79 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-usibor1500": {
    "gbpPerKg": 1.0477,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×2.381 (book £2 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×2.381 (book £2 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-usibor2000": {
    "gbpPerKg": 1.2573,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×2.857 (book £2.4 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×2.857 (book £2.4 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-c67s-spring": {
    "gbpPerKg": 0.8382,
-   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15115.4530/kg × the book's grade premium over its base; ladder ×1.905 (book £1.6 ÷ base £0.84)",
+   "basis": "CR automotive grades: CR automotive grades — the SEA market (TH figure): SMM: CRC DC01/SPCC 1.0×1250 CFR Thailand US$586/t = 586 USD/t (2026-10-30) = ₫15023.2817/kg × the book's grade premium over its base; ladder ×1.905 (book £1.6 ÷ base £0.84)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-s355mc": {
    "gbpPerKg": 0.4314,
-   "basis": "HR structural: HR structural — VN's market: SMM: HRC SAE1006/SS400 3.0×1250 EXW Vietnam, Formosa Ha Tinh, US$553/t (+23); Hoa Phat (\"He Fa\") EXW north / central US$554, south US$556 = 553 USD/t (2026-10-14) = ₫14264.2415/kg × the book's grade premium over its base; ladder ×1.039 (book £0.8 ÷ base £0.77)",
+   "basis": "HR structural: HR structural — VN's market: SMM: HRC SAE1006/SS400 3.0×1250 EXW Vietnam, Formosa Ha Tinh, US$553/t (+23); Hoa Phat (\"He Fa\") EXW north / central US$554, south US$556 = 553 USD/t (2026-10-14) = ₫14177.2608/kg × the book's grade premium over its base; ladder ×1.039 (book £0.8 ÷ base £0.77)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-14)",
    "confidence": "Medium"
   },
   "mat-s420mc": {
    "gbpPerKg": 0.4422,
-   "basis": "HR structural: HR structural — VN's market: SMM: HRC SAE1006/SS400 3.0×1250 EXW Vietnam, Formosa Ha Tinh, US$553/t (+23); Hoa Phat (\"He Fa\") EXW north / central US$554, south US$556 = 553 USD/t (2026-10-14) = ₫14264.2415/kg × the book's grade premium over its base; ladder ×1.065 (book £0.82 ÷ base £0.77)",
+   "basis": "HR structural: HR structural — VN's market: SMM: HRC SAE1006/SS400 3.0×1250 EXW Vietnam, Formosa Ha Tinh, US$553/t (+23); Hoa Phat (\"He Fa\") EXW north / central US$554, south US$556 = 553 USD/t (2026-10-14) = ₫14177.2608/kg × the book's grade premium over its base; ladder ×1.065 (book £0.82 ÷ base £0.77)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-14)",
    "confidence": "Medium"
   },
   "mat-dc01-gi": {
    "gbpPerKg": 0.5271,
-   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫18107.5905/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫17997.1737/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-dc03-ga": {
    "gbpPerKg": 0.5461,
-   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫18107.5905/kg × the book's grade premium over its base; ladder ×1.036 (book £1.15 ÷ base £1.11)",
+   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫17997.1737/kg × the book's grade premium over its base; ladder ×1.036 (book £1.15 ÷ base £1.11)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-dc01-ze": {
    "gbpPerKg": 0.5271,
-   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫18107.5905/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫17997.1737/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-znni-eg": {
    "gbpPerKg": 0.5841,
-   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫18107.5905/kg × the book's grade premium over its base; ladder ×1.108 (book £1.23 ÷ base £1.11)",
+   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫17997.1737/kg × the book's grade premium over its base; ladder ×1.108 (book £1.23 ÷ base £1.11)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-zm-coated": {
    "gbpPerKg": 0.5699,
-   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫18107.5905/kg × the book's grade premium over its base; ladder ×1.081 (book £1.2 ÷ base £1.11)",
+   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫17997.1737/kg × the book's grade premium over its base; ladder ×1.081 (book £1.2 ÷ base £1.11)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-tinplate-etp": {
    "gbpPerKg": 0.6411,
-   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫18107.5905/kg × the book's grade premium over its base; ladder ×1.216 (book £1.35 ÷ base £1.11)",
+   "basis": "Coated sheet: Coated sheet — the SEA market (TH figure): SMM: galvanised coil SGCC Z08 1.0×1250 CFR Thailand US$702/t (SGHC80 US$625; SGH340+Z08 US$630) = 702 USD/t (2026-10-30) = ₫17997.1737/kg × the book's grade premium over its base; ladder ×1.216 (book £1.35 ÷ base £1.11)",
    "source": "https://www-old.metal.com/price/Ferrous-Metals/Finished-Steel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-hrpo": {
    "gbpPerKg": 0.6979,
-   "basis": "HR pickled & oiled: no VN or regional price found — the European market price at par (traded material, no country factor): HRC €745/t + a service-centre pickling extra ~€90/t (undated) = €0.835/kg — DERIVED — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫23972.0509/kg; direct",
+   "basis": "HR pickled & oiled: no VN or regional price found — the European market price at par (traded material, no country factor): HRC €745/t + a service-centre pickling extra ~€90/t (undated) = €0.835/kg — DERIVED — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫23825.8737/kg; direct",
    "source": "https://eurometal.net/pickled-hrc-benefits-most-from-northwest-europe-hike/ (undated extra; HRC 2026-10-06)",
    "confidence": "Low"
   },
   "mat-ss409l-sheet": {
    "gbpPerKg": 1.2386,
-   "basis": "409L / 441 ferritic sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫42546.8017/kg; the anchor grade itself",
+   "basis": "409L / 441 ferritic sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫42287.3591/kg; the anchor grade itself",
    "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429 (2026-07-01)",
    "confidence": "Low"
   },
   "mat-ss441-sheet": {
    "gbpPerKg": 1.3734,
-   "basis": "409L / 441 ferritic sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫42546.8017/kg; ladder ×1.109 (book £3.16 ÷ base £2.85)",
+   "basis": "409L / 441 ferritic sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 409L CR €1.482/kg — DERIVED (alloy surcharge + base); 441 at the book's premium over 409L — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫42287.3591/kg; ladder ×1.109 (book £3.16 ÷ base £2.85)",
    "source": "https://yieh.com/en/News/aperam-adjusts-stainless-steel-flat-products-surcharges-for-july-2026/161429 (2026-07-01)",
    "confidence": "Low"
   },
   "mat-ss304-sheet": {
    "gbpPerKg": 1.5863,
-   "basis": "304 sheet: 304 sheet — the SEA market (SG figure): SMM: FOB Indonesia 304/2B coil mill edge US$2,090–2,135/t, mid US$2,112.5 (304/No.1 US$2,002.5) = 2112.5 USD/t (2026-10-30) = ₫54490.4343/kg; direct",
+   "basis": "304 sheet: 304 sheet — the SEA market (SG figure): SMM: FOB Indonesia 304/2B coil mill edge US$2,090–2,135/t, mid US$2,112.5 (304/No.1 US$2,002.5) = 2112.5 USD/t (2026-10-30) = ₫54158.1616/kg; direct",
    "source": "https://www-old.metal.com/price/Base-Metals/Nickel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-ss301-spring": {
    "gbpPerKg": 2.059,
-   "basis": "301 spring strip: 301 spring strip — the SEA market (SG figure): SMM: FOB Indonesia 304/2B coil mill edge US$2,090–2,135/t, mid US$2,112.5 (304/No.1 US$2,002.5) = 2112.5 USD/t (2026-10-30) = ₫54490.4343/kg × the book's grade premium over its base; ladder ×1.298 (book £4.53 ÷ base £3.49)",
+   "basis": "301 spring strip: 301 spring strip — the SEA market (SG figure): SMM: FOB Indonesia 304/2B coil mill edge US$2,090–2,135/t, mid US$2,112.5 (304/No.1 US$2,002.5) = 2112.5 USD/t (2026-10-30) = ₫54158.1616/kg × the book's grade premium over its base; ladder ×1.298 (book £4.53 ÷ base £3.49)",
    "source": "https://www-old.metal.com/price/Base-Metals/Nickel (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-ss316-sheet": {
    "gbpPerKg": 3.5312,
-   "basis": "316L sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫121295.7067/kg; direct",
+   "basis": "316L sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫120556.0677/kg; direct",
    "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/ (2026-09-07)",
    "confidence": "Medium"
   },
   "mat-ss316l": {
    "gbpPerKg": 3.5312,
-   "basis": "316L sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫121295.7067/kg; direct",
+   "basis": "316L sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 316 CR €4,225/t delivered N. Europe (Fastmarkets, 7 Sep 2026) = €4.225/kg; 316L bar not found (the bar takes the sheet price — a floor) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫120556.0677/kg; direct",
    "source": "https://eurometal.net/subdued-buying-weighs-on-european-stainless-cr-sheet-prices/ (2026-09-07)",
    "confidence": "Medium"
   },
   "mat-aisi430": {
    "gbpPerKg": 1.3778,
-   "basis": "430 ferritic sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫47326.8574/kg; direct",
+   "basis": "430 ferritic sheet: no VN or regional price found — the European market price at par (traded material, no country factor): 430 CR €1.6485/kg — DERIVED: the October 1.4016 alloy surcharge + a base (no 430 transaction price found) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫47038.2669/kg; direct",
    "source": "https://legierungszuschlag.info/en/ (2026-10-01)",
    "confidence": "Low"
   },
   "mat-gjs500": {
    "gbpPerKg": 0.3318,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; the anchor grade itself",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; the anchor grade itself",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs400": {
    "gbpPerKg": 0.2918,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫-1374.00/kg (the book's premium: £0.82 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫-1365.62/kg (the book's premium: £0.82 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs450-ssf": {
    "gbpPerKg": 0.3018,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫-1030.50/kg (the book's premium: £0.83 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫-1024.22/kg (the book's premium: £0.83 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs500-14": {
    "gbpPerKg": 0.3118,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫-687.00/kg (the book's premium: £0.84 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫-682.81/kg (the book's premium: £0.84 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs600": {
    "gbpPerKg": 0.3718,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫1374.00/kg (the book's premium: £0.9 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫1365.62/kg (the book's premium: £0.9 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs700": {
    "gbpPerKg": 0.4218,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫3091.50/kg (the book's premium: £0.95 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫3072.65/kg (the book's premium: £0.95 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjs350-lt": {
    "gbpPerKg": 0.3418,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫343.50/kg (the book's premium: £0.87 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫341.41/kg (the book's premium: £0.87 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-simo": {
    "gbpPerKg": 0.8218,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫16831.50/kg (the book's premium: £1.35 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫16728.86/kg (the book's premium: £1.35 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-adi": {
    "gbpPerKg": 1.0518,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫24732.00/kg (the book's premium: £1.58 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫24581.19/kg (the book's premium: £1.58 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjv450": {
    "gbpPerKg": 0.5918,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫8931.00/kg (the book's premium: £1.12 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫8876.54/kg (the book's premium: £1.12 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjv500": {
    "gbpPerKg": 0.6218,
-   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫11397.4901/kg; ladder +₫9961.50/kg (the book's premium: £1.15 - base £0.86)",
+   "basis": "Ductile / CGI / ADI / SiMo iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Treated ductile charge €0.397/kg (merchant pig €0.425 — Brazil→Italy Aug 2026 — + heavy scrap €0.2816 (German E3, Jul–Aug 2026) + returns, FeSiMg and inoculant at FeSi75 €1.26; the mix is an engineering assumption and the figure a FLOOR — arithmetic in research) + the book's grade premium in £/kg at €1.1965/£ (alloy content) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫11327.9903/kg; ladder +₫9900.76/kg (the book's premium: £1.15 - base £0.86)",
    "source": "https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16)) ; https://api.argusmedia.com/articles/2840817 (2026-06-16)",
    "confidence": "Low"
   },
   "mat-gjl250": {
    "gbpPerKg": 0.2947,
-   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫10122.8086/kg; the anchor grade itself",
+   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫10061.0815/kg; the anchor grade itself",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl150": {
    "gbpPerKg": 0.2579,
-   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫10122.8086/kg; ladder ×0.875 (book £0.56 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫10061.0815/kg; ladder ×0.875 (book £0.56 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl200": {
    "gbpPerKg": 0.2763,
-   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫10122.8086/kg; ladder ×0.938 (book £0.6 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫10061.0815/kg; ladder ×0.938 (book £0.6 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl300": {
    "gbpPerKg": 0.3223,
-   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫10122.8086/kg; ladder ×1.094 (book £0.7 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫10061.0815/kg; ladder ×1.094 (book £0.7 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjl350": {
    "gbpPerKg": 0.3407,
-   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫10122.8086/kg; ladder ×1.156 (book £0.74 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫10061.0815/kg; ladder ×1.156 (book £0.74 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gjmb350": {
    "gbpPerKg": 0.3039,
-   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫10122.8086/kg; ladder ×1.031 (book £0.66 ÷ base £0.64)",
+   "basis": "Grey / malleable iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Grey-iron charge €0.3526/kg (merchant pig + heavy scrap + returns; engineering-assumption mix, a FLOOR) × the book's grade premium over GJL-250 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫10061.0815/kg; ladder ×1.031 (book £0.66 ÷ base £0.64)",
    "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/prices-for-brazilian-pig-iron-stabilised-at-475-per-tonne-in-august/ (2026-08)",
    "confidence": "Low"
   },
   "mat-gs-c25": {
-   "gbpPerKg": 0.2507,
-   "basis": "Cast carbon / low-alloy steel (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫8609.842/kg; the anchor grade itself",
-   "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
+   "gbpPerKg": 0.3105,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on VN heavy scrap ₫9998.4298/kg (2026-09-21) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = ₫10602.2853/kg (the German book's arithmetic; mix an engineering assumption); the anchor grade itself",
+   "source": "https://www.bigmint.co/insights/detail/east-asia-japan-h2-scrap-prices-rise-while-vietnamese-buyers-resist-higher-offers-791594 (2026-09-21)",
    "confidence": "Low"
   },
   "mat-astm-a216-wcb": {
-   "gbpPerKg": 0.2507,
-   "basis": "Cast carbon / low-alloy steel (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫8609.842/kg; the anchor grade itself",
-   "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
+   "gbpPerKg": 0.3105,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on VN heavy scrap ₫9998.4298/kg (2026-09-21) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = ₫10602.2853/kg (the German book's arithmetic; mix an engineering assumption); the anchor grade itself",
+   "source": "https://www.bigmint.co/insights/detail/east-asia-japan-h2-scrap-prices-rise-while-vietnamese-buyers-resist-higher-offers-791594 (2026-09-21)",
    "confidence": "Low"
   },
   "mat-g20mn5": {
-   "gbpPerKg": 0.2507,
-   "basis": "Cast carbon / low-alloy steel (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫8609.842/kg; the anchor grade itself",
-   "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
+   "gbpPerKg": 0.3105,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on VN heavy scrap ₫9998.4298/kg (2026-09-21) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = ₫10602.2853/kg (the German book's arithmetic; mix an engineering assumption); the anchor grade itself",
+   "source": "https://www.bigmint.co/insights/detail/east-asia-japan-h2-scrap-prices-rise-while-vietnamese-buyers-resist-higher-offers-791594 (2026-09-21)",
    "confidence": "Low"
   },
   "mat-g42crmo4": {
-   "gbpPerKg": 0.3907,
-   "basis": "Cast carbon / low-alloy steel (charge): no VN or regional price found — the European market price at par (traded material, no country factor): Steel-foundry charge €0.2999/kg (heavy melting scrap €0.2816 — German E3, Jul–Aug 2026 — + deoxidation and melt loss) + the book's premium in £/kg (Cr–Mo) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫8609.842/kg; ladder +₫4809.00/kg (the book's premium: £2.24 - base £2.1)",
-   "source": "https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08) ; https://gmk.center/en/news/the-fall-in-scrap-prices-on-regional-markets-slowed-in-august/ (2026-08 (published 2026-09-16))",
+   "gbpPerKg": 0.4505,
+   "basis": "Cast carbon / low-alloy steel (charge): steel-foundry charge on VN heavy scrap ₫9998.4298/kg (2026-09-21) + FeSi75 0.5% at the European price (€0.0063/kg) ÷ 0.96 melt loss = ₫10602.2853/kg (the German book's arithmetic; mix an engineering assumption); ladder +₫4779.68/kg (the book's premium: £2.24 - base £2.1)",
+   "source": "https://www.bigmint.co/insights/detail/east-asia-japan-h2-scrap-prices-rise-while-vietnamese-buyers-resist-higher-offers-791594 (2026-09-21)",
    "confidence": "Low"
   },
   "mat-ss304-cast": {
    "gbpPerKg": 1.0765,
-   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫36977.2474/kg; the anchor grade itself",
+   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫36751.7669/kg; the anchor grade itself",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-cf8m-cast": {
    "gbpPerKg": 2.1665,
-   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫36977.2474/kg; ladder +₫37441.50/kg (the book's premium: £6.26 - base £5.17)",
+   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫36751.7669/kg; ladder +₫37213.19/kg (the book's premium: £6.26 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-ca6nm-cast": {
    "gbpPerKg": 0.8965,
-   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫36977.2474/kg; ladder +₫-6183.00/kg (the book's premium: £4.99 - base £5.17)",
+   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫36751.7669/kg; ladder +₫-6145.30/kg (the book's premium: £4.99 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-cd4mcun-cast": {
    "gbpPerKg": 2.4165,
-   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫36977.2474/kg; ladder +₫46029.00/kg (the book's premium: £6.51 - base £5.17)",
+   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫36751.7669/kg; ladder +₫45748.32/kg (the book's premium: £6.51 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-gx40crnisi25-20": {
    "gbpPerKg": 2.5565,
-   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫36977.2474/kg; ladder +₫50838.00/kg (the book's premium: £6.65 - base £5.17)",
+   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫36751.7669/kg; ladder +₫50528.00/kg (the book's premium: £6.65 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-17-4ph-cast": {
    "gbpPerKg": 5.5065,
-   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫36977.2474/kg; ladder +₫152170.50/kg (the book's premium: £9.6 - base £5.17)",
+   "basis": "Cast stainless (charge): no VN or regional price found — the European market price at par (traded material, no country factor): CF8 charged as 304 scrap €1.288/kg (304 scrap, mid-Sep 2026, ÷ 0.97 melt loss) + the book's premium in £/kg (Mo / Ni / Cr) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫36751.7669/kg; ladder +₫151242.59/kg (the book's premium: £9.6 - base £5.17)",
    "source": "https://news.metal.com/newscontent/104124933-smm-stainless-steel-flash-indias-stainless-scrap-prices-fall-as-mills-shift-to-npi-and-billet-alternatives (2026-09-18)",
    "confidence": "Low"
   },
   "mat-ni-resist-d2": {
    "gbpPerKg": 2.5961,
-   "basis": "Ni-Resist D-2 (charge): no VN or regional price found — the European market price at par (traded material, no country factor): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫89176.0294/kg; direct",
+   "basis": "Ni-Resist D-2 (charge): no VN or regional price found — the European market price at par (traded material, no country factor): 0.20 × Ni €13.68 (LME, 9 Oct) + 0.02 × Cr €3.03 (HC FeCr) + 0.78 × ductile charge €0.397 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫88632.2503/kg; direct",
    "source": "https://www.westmetall.com/de/markdaten.php (2026-10-09) ; https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome (2026-Q3)",
    "confidence": "Low"
   },
   "mat-ni-resist-d5s": {
    "gbpPerKg": 4.2901,
-   "basis": "Ni-Resist D-5S (charge): no VN or regional price found — the European market price at par (traded material, no country factor): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫147366.3886/kg; direct",
+   "basis": "Ni-Resist D-5S (charge): no VN or regional price found — the European market price at par (traded material, no country factor): 0.35 × Ni + 0.02 × Cr + 0.04 kg FeSi75 €1.26 + 0.59 × ductile charge — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫146467.7754/kg; direct",
    "source": "https://www.westmetall.com/de/markdaten.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-hicr-white": {
    "gbpPerKg": 0.8086,
-   "basis": "High-Cr white iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): 0.23 × Cr €3.03 + 0.77 × grey charge €0.3526 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫27775.9991/kg; direct",
+   "basis": "High-Cr white iron (charge): no VN or regional price found — the European market price at par (traded material, no country factor): 0.23 × Cr €3.03 + 0.77 × grey charge €0.3526 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫27606.6262/kg; direct",
    "source": "https://news.metal.com/en/newscontent/104046674-samchrome-sets-the-reference-point-156-us-centslb-for-q3-2026-european-ferrochrome (2026-Q3)",
    "confidence": "Low"
   },
   "mat-adc12": {
    "gbpPerKg": 2.3136,
-   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫79473.5147/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫78988.8997/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://www-old.metal.com/price/Base-Metals/Aluminum (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-a380": {
    "gbpPerKg": 2.3557,
-   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫79473.5147/kg × the book's grade premium over its base; ladder ×1.018 (book £2.8 ÷ base £2.75)",
+   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫78988.8997/kg × the book's grade premium over its base; ladder ×1.018 (book £2.8 ÷ base £2.75)",
    "source": "https://www-old.metal.com/price/Base-Metals/Aluminum (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-a413": {
    "gbpPerKg": 2.3136,
-   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫79473.5147/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫78988.8997/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://www-old.metal.com/price/Base-Metals/Aluminum (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-a319": {
    "gbpPerKg": 2.4987,
-   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫79473.5147/kg × the book's grade premium over its base; ladder ×1.080 (book £2.97 ÷ base £2.75)",
+   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫78988.8997/kg × the book's grade premium over its base; ladder ×1.080 (book £2.97 ÷ base £2.75)",
    "source": "https://www-old.metal.com/price/Base-Metals/Aluminum (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-lm4": {
    "gbpPerKg": 2.4483,
-   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫79473.5147/kg × the book's grade premium over its base; ladder ×1.058 (book £2.91 ÷ base £2.75)",
+   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫78988.8997/kg × the book's grade premium over its base; ladder ×1.058 (book £2.91 ÷ base £2.75)",
    "source": "https://www-old.metal.com/price/Base-Metals/Aluminum (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-en-ac-46200": {
    "gbpPerKg": 2.3978,
-   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫79473.5147/kg × the book's grade premium over its base; ladder ×1.036 (book £2.85 ÷ base £2.75)",
+   "basis": "Secondary cast aluminium (ingot): Secondary cast aluminium (ingot) — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫78988.8997/kg × the book's grade premium over its base; ladder ×1.036 (book £2.85 ÷ base £2.75)",
    "source": "https://www-old.metal.com/price/Base-Metals/Aluminum (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-adc12-secondary": {
    "gbpPerKg": 2.3136,
-   "basis": "Secondary ADC12: Secondary ADC12 — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫79473.5147/kg; direct",
+   "basis": "Secondary ADC12: Secondary ADC12 — the SEA market (TH figure): SMM Thailand aluminium alloy ingot ADC12 THB 101.5–106.5/kg, avg 104 = 104 THB/kg (2026-10-30) = ₫78988.8997/kg; direct",
    "source": "https://www-old.metal.com/price/Base-Metals/Aluminum (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-lm25": {
    "gbpPerKg": 2.9837,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; the anchor grade itself",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; the anchor grade itself",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-a365": {
    "gbpPerKg": 2.9837,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; the anchor grade itself",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; the anchor grade itself",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-alsi10mg": {
    "gbpPerKg": 2.9837,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; the anchor grade itself",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; the anchor grade itself",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-a390": {
    "gbpPerKg": 3.3041,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.107 (book £3.3 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.107 (book £3.3 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-a357": {
    "gbpPerKg": 3.204,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.074 (book £3.2 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.074 (book £3.2 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-lm6": {
    "gbpPerKg": 2.9837,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; the anchor grade itself",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; the anchor grade itself",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-almg5-cast": {
    "gbpPerKg": 3.0839,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.034 (book £3.08 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.034 (book £3.08 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-a206": {
    "gbpPerKg": 3.6446,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.221 (book £3.64 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.221 (book £3.64 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-en-ac-45300": {
    "gbpPerKg": 3.1139,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.044 (book £3.11 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.044 (book £3.11 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-lm13": {
    "gbpPerKg": 3.0839,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.034 (book £3.08 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.034 (book £3.08 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-aural5": {
    "gbpPerKg": 3.0738,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.030 (book £3.07 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.030 (book £3.07 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-silafont36": {
    "gbpPerKg": 3.1039,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.040 (book £3.1 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.040 (book £3.1 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-castasil37": {
    "gbpPerKg": 3.0338,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.017 (book £3.03 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.017 (book £3.03 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-magsimal59": {
    "gbpPerKg": 3.1539,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.057 (book £3.15 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.057 (book £3.15 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-al-hpdc-lowco2": {
    "gbpPerKg": 3.0038,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.007 (book £3 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.007 (book £3 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-htf-gigacast": {
    "gbpPerKg": 3.3041,
-   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫102491.2835/kg; ladder ×1.107 (book £3.3 ÷ base £2.98)",
+   "basis": "Primary-based cast aluminium: no VN or regional price found — the European market price at par (traded material, no country factor): AlSi7Mg (A356) = LME + Fastmarkets primary-foundry-alloy premium ddp Germany $950–1,050/t (29 May 2026) = €3.57/kg × the book's premium over LM25, never below A356 — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫101866.3105/kg; ladder ×1.107 (book £3.3 ÷ base £2.98)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29 / 2026-10-09) ; https://www.fastmarkets.com/insights/correction-to-european-aluminium-pfa-prices-published-in-error-on-may-22/ (2026-05-29)",
    "confidence": "Low"
   },
   "mat-al6061-forge": {
-   "gbpPerKg": 3.2899,
-   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫105075.0974/kg; held (already above the metal it contains)",
+   "gbpPerKg": 3.3101,
+   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫104434.3687/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-al6082-forge": {
-   "gbpPerKg": 3.1914,
-   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫105075.0974/kg; held (already above the metal it contains)",
+   "gbpPerKg": 3.211,
+   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫104434.3687/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-al2014-forge": {
-   "gbpPerKg": 3.5361,
-   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫105075.0974/kg; held (already above the metal it contains)",
+   "gbpPerKg": 3.5578,
+   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫104434.3687/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-al7075-forge": {
-   "gbpPerKg": 4.531,
-   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫105075.0974/kg; held (already above the metal it contains)",
+   "gbpPerKg": 4.5588,
+   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫104434.3687/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-al2618-forge": {
-   "gbpPerKg": 5.1023,
-   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫105075.0974/kg; held (already above the metal it contains)",
+   "gbpPerKg": 5.1336,
+   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫104434.3687/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-al7050-forge": {
-   "gbpPerKg": 8.3725,
-   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫105075.0974/kg; held (already above the metal it contains)",
+   "gbpPerKg": 8.4239,
+   "basis": "Aluminium forging stock (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Delivered 6063 billet €3.66/kg (LME 9 Oct + DDP North Germany billet premium) — forging stock is never below the billet it is cut from — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫104434.3687/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/ (2026-08-28 / 2026-10-09)",
    "confidence": "Low"
   },
   "mat-aa5182": {
-   "gbpPerKg": 3.4768,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; floor (raised to metal content)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.427,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; floor (raised to metal content)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa5052": {
-   "gbpPerKg": 3.4768,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; floor (raised to metal content)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.427,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; floor (raised to metal content)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa5083": {
-   "gbpPerKg": 3.4768,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; floor (raised to metal content)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.427,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; floor (raised to metal content)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa6082-sheet": {
-   "gbpPerKg": 3.5066,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; held (already above the metal it contains)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.5281,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; held (already above the metal it contains)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa5754-sheet": {
-   "gbpPerKg": 3.4768,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; floor (raised to metal content)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.427,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; floor (raised to metal content)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa6061-sheet": {
-   "gbpPerKg": 3.6051,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; held (already above the metal it contains)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.6272,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; held (already above the metal it contains)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa6063-sheet": {
-   "gbpPerKg": 3.4768,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; floor (raised to metal content)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.4587,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; held (already above the metal it contains)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa3003-sheet": {
-   "gbpPerKg": 3.4768,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; floor (raised to metal content)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.427,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; floor (raised to metal content)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-al-busbar": {
-   "gbpPerKg": 3.6839,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; held (already above the metal it contains)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.7065,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; held (already above the metal it contains)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa6016-t4": {
-   "gbpPerKg": 3.4768,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; floor (raised to metal content)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.4587,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; held (already above the metal it contains)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa6111-t4": {
-   "gbpPerKg": 3.5854,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; held (already above the metal it contains)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.6074,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; held (already above the metal it contains)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa7075-t6": {
-   "gbpPerKg": 6.698,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; held (already above the metal it contains)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 6.7391,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; held (already above the metal it contains)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-aa1050-sheet": {
-   "gbpPerKg": 3.4768,
-   "basis": "Aluminium sheet and plate (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Novelis Europe average selling price, FY to Mar 2026: $5,272 M ÷ 1,115 kt = €4.16/kg (all rolled products, can stock included — a floor, not a price); a German stockholder's single-sheet 5754 price €11.8 is a retail ceiling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫119429.6189/kg; floor (raised to metal content)",
-   "source": "https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000019/nvl-20260331.htm (2025-04-01 to 2026-03-31) ; https://webshop.schachermayer.com/cat/de-AT/product/aluminiumblech-almg3-5754-h22-2500-1250-4-mm/106831840 (page read via search Oct 2026 (price undated))",
+   "gbpPerKg": 3.427,
+   "basis": "Aluminium sheet and plate (floor): Aluminium sheet and plate (floor) — VN's market: 6061 aluminium plate/sheet (nhôm tấm A6061), average mid-2026: 117,000 (VAT not stated — used as stated) VND/kg (2026-06 (stated 'giữa năm 2026'); confirmed on its page). 6061 plate / sheet, Vietnames = 117000.0 VND/kg (2026-06 (stated 'giữa năm 2026')) = ₫117000.0000/kg; floor (raised to metal content)",
+   "source": "https://nhomhopkim.net/product/nhom-6061-tinh-chat-ung-dung/ (2026-06 (stated 'giữa năm 2026'))",
    "confidence": "Low"
   },
   "mat-c101-bar": {
-   "gbpPerKg": 11.0675,
-   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + SG cathode premium $134.0/t = ₫379021.2739/kg — no bar or sheet below the copper it contains; held (already above the metal it contains)",
+   "gbpPerKg": 11.1888,
+   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + VN cathode premium $340.0/t = ₫381991.2936/kg — no bar or sheet below the copper it contains; floor (raised to metal content)",
    "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Copper (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-c110-copper": {
-   "gbpPerKg": 11.0675,
-   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + SG cathode premium $134.0/t = ₫379021.2739/kg — no bar or sheet below the copper it contains; held (already above the metal it contains)",
+   "gbpPerKg": 11.1888,
+   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + VN cathode premium $340.0/t = ₫381991.2936/kg — no bar or sheet below the copper it contains; floor (raised to metal content)",
    "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Copper (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-cu-hairpin": {
-   "gbpPerKg": 13.6915,
-   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + SG cathode premium $134.0/t = ₫379021.2739/kg — no bar or sheet below the copper it contains; held (already above the metal it contains)",
+   "gbpPerKg": 13.7755,
+   "basis": "ETP copper bar / sheet (floor): LME copper cash $14560/t (29. October 2026) + VN cathode premium $340.0/t = ₫381991.2936/kg — no bar or sheet below the copper it contains; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Copper (2026-10-30)",
    "confidence": "Medium"
   },
   "mat-brass-cz121": {
    "gbpPerKg": 9.3357,
-   "basis": "Free-machining / forging brass rod (floor): no VN or regional price found — the European market price at par (traded material, no country factor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫320680.0103/kg; floor (raised to metal content)",
+   "basis": "Free-machining / forging brass rod (floor): no VN or regional price found — the European market price at par (traded material, no country factor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫318724.5624/kg; floor (raised to metal content)",
    "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-brass-cz122-forge": {
    "gbpPerKg": 9.3357,
-   "basis": "Free-machining / forging brass rod (floor): no VN or regional price found — the European market price at par (traded material, no country factor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫320680.0103/kg; floor (raised to metal content)",
+   "basis": "Free-machining / forging brass rod (floor): no VN or regional price found — the European market price at par (traded material, no country factor): MS 58 metal basis €11.17/kg (9 Oct 2026) — metal value before fabrication — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫318724.5624/kg; floor (raised to metal content)",
    "source": "https://www.wiska.com/de/175/messingnotierungen/link/messing.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-cz108-brass": {
    "gbpPerKg": 9.6616,
-   "basis": "70/30 and 63/37 brass sheet (floor): no VN or regional price found — the European market price at par (traded material, no country factor): CuZn37 metal basis €11.56/kg (5 Oct 2026) — metal value before rolling — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫331876.5371/kg; floor (raised to metal content)",
+   "basis": "70/30 and 63/37 brass sheet (floor): no VN or regional price found — the European market price at par (traded material, no country factor): CuZn37 metal basis €11.56/kg (5 Oct 2026) — metal value before rolling — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫329852.8148/kg; floor (raised to metal content)",
    "source": "https://www.messingwerk.de/de/rohstoffpreise.html (2026-10-05)",
    "confidence": "Low"
   },
   "mat-bronze-pb1": {
-   "gbpPerKg": 14.2076,
-   "basis": "Phosphor / tin bronze (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫477595.0266/kg; held (already above the metal it contains)",
+   "gbpPerKg": 14.2948,
+   "basis": "Phosphor / tin bronze (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫474682.7398/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-bronze-c905": {
    "gbpPerKg": 13.9038,
-   "basis": "Phosphor / tin bronze (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫477595.0266/kg; floor (raised to metal content)",
+   "basis": "Phosphor / tin bronze (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫474682.7398/kg; floor (raised to metal content)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-cusn12-cast": {
-   "gbpPerKg": 14.2135,
-   "basis": "Phosphor / tin bronze (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫477595.0266/kg; held (already above the metal it contains)",
+   "gbpPerKg": 14.3008,
+   "basis": "Phosphor / tin bronze (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Metal content 0.89 × Cu €13.2 + 0.105 × Sn €46.55 (LME, 9 Oct) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫474682.7398/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/de/markdaten.php ; https://www.kitco.com/news/off-the-wire/2025-10-07/aurubis-hikes-2026-european-copper-premium-record (2026-10-09) ; https://www.westmetall.com/de/markdaten.php (2026-10-09)",
    "confidence": "Low"
   },
   "mat-zamak3": {
-   "gbpPerKg": 3.1421,
-   "basis": "Zamak 3 (floor): metal content: LME zinc $3980/t + SG SHG premium $112/t, LME Al, Cu (29. October 2026) = ₫104509.1707/kg; held (already above the metal it contains)",
+   "gbpPerKg": 3.1614,
+   "basis": "Zamak 3 (floor): metal content: LME zinc $3980/t + SG SHG premium $112/t, LME Al, Cu (29. October 2026) = ₫103871.8929/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Zinc (2026-10-30)",
    "confidence": "Low"
   },
   "mat-zamak5": {
-   "gbpPerKg": 3.1914,
-   "basis": "Zamak 5 (floor): metal content: LME zinc $3980/t + SG SHG premium $112/t, LME Al, Cu (29. October 2026) = ₫107209.1878/kg; held (already above the metal it contains)",
+   "gbpPerKg": 3.211,
+   "basis": "Zamak 5 (floor): metal content: LME zinc $3980/t + SG SHG premium $112/t, LME Al, Cu (29. October 2026) = ₫106555.4459/kg; held (already above the metal it contains)",
    "source": "https://www.westmetall.com/en/markdaten.php (29. October 2026) ; https://www-old.metal.com/price/Base-Metals/Zinc (2026-10-30)",
    "confidence": "Low"
   },
   "mat-pp-homo": {
-   "gbpPerKg": 0.9779,
-   "basis": "PP family: no VN or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫33589.5803/kg; the anchor grade itself",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.1763,
+   "basis": "PP family: PP family — VN's market: PP homopolymer (raffia) Zhongtian Hechuang PPH-T03 (T30S) — recorded transaction, 5,000 kg: 41,500 (VAT not stated — used as stated) VND/kg (2026-10-19; confirmed on its page); PP homopolymer BSR T303 = 40159.0909 VND/kg (2026-11-02) = ₫40159.0909/kg × the book's grade premium over its base; the anchor grade itself",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=39 (2026-11-02)",
+   "confidence": "Low"
   },
   "mat-pp": {
-   "gbpPerKg": 1.1359,
-   "basis": "PP family: no VN or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫33589.5803/kg; ladder ×1.162 (book £1.15 ÷ base £0.99)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.3664,
+   "basis": "PP family: PP family — VN's market: PP homopolymer (raffia) Zhongtian Hechuang PPH-T03 (T30S) — recorded transaction, 5,000 kg: 41,500 (VAT not stated — used as stated) VND/kg (2026-10-19; confirmed on its page); PP homopolymer BSR T303 = 40159.0909 VND/kg (2026-11-02) = ₫40159.0909/kg × the book's grade premium over its base; ladder ×1.162 (book £1.15 ÷ base £0.99)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=39 (2026-11-02)",
+   "confidence": "Low"
   },
   "mat-pp-impact": {
-   "gbpPerKg": 1.0272,
-   "basis": "PP family: no VN or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫33589.5803/kg; ladder ×1.051 (book £1.04 ÷ base £0.99)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.2357,
+   "basis": "PP family: PP family — VN's market: PP homopolymer (raffia) Zhongtian Hechuang PPH-T03 (T30S) — recorded transaction, 5,000 kg: 41,500 (VAT not stated — used as stated) VND/kg (2026-10-19; confirmed on its page); PP homopolymer BSR T303 = 40159.0909 VND/kg (2026-11-02) = ₫40159.0909/kg × the book's grade premium over its base; ladder ×1.051 (book £1.04 ÷ base £0.99)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=39 (2026-11-02)",
+   "confidence": "Low"
   },
   "mat-pp-bm": {
-   "gbpPerKg": 1.0964,
-   "basis": "PP family: no VN or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫33589.5803/kg; ladder ×1.121 (book £1.11 ÷ base £0.99)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.3189,
+   "basis": "PP family: PP family — VN's market: PP homopolymer (raffia) Zhongtian Hechuang PPH-T03 (T30S) — recorded transaction, 5,000 kg: 41,500 (VAT not stated — used as stated) VND/kg (2026-10-19; confirmed on its page); PP homopolymer BSR T303 = 40159.0909 VND/kg (2026-11-02) = ₫40159.0909/kg × the book's grade premium over its base; ladder ×1.121 (book £1.11 ÷ base £0.99)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=39 (2026-11-02)",
+   "confidence": "Low"
   },
   "mat-ppr-pipe": {
-   "gbpPerKg": 1.1557,
-   "basis": "PP family: no VN or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫33589.5803/kg; ladder ×1.182 (book £1.17 ÷ base £0.99)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.3902,
+   "basis": "PP family: PP family — VN's market: PP homopolymer (raffia) Zhongtian Hechuang PPH-T03 (T30S) — recorded transaction, 5,000 kg: 41,500 (VAT not stated — used as stated) VND/kg (2026-10-19; confirmed on its page); PP homopolymer BSR T303 = 40159.0909 VND/kg (2026-11-02) = ₫40159.0909/kg × the book's grade premium over its base; ladder ×1.182 (book £1.17 ÷ base £0.99)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=39 (2026-11-02)",
+   "confidence": "Low"
   },
   "mat-pp-roto": {
-   "gbpPerKg": 1.4619,
-   "basis": "PP family: no VN or regional price found — the European market price at par (traded material, no country factor): PP homo €1.17/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only; PP copolymer €1.33) × the book's premium over PP homopolymer — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫33589.5803/kg; ladder ×1.495 (book £1.48 ÷ base £0.99)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.7585,
+   "basis": "PP family: PP family — VN's market: PP homopolymer (raffia) Zhongtian Hechuang PPH-T03 (T30S) — recorded transaction, 5,000 kg: 41,500 (VAT not stated — used as stated) VND/kg (2026-10-19; confirmed on its page); PP homopolymer BSR T303 = 40159.0909 VND/kg (2026-11-02) = ₫40159.0909/kg × the book's grade premium over its base; ladder ×1.495 (book £1.48 ÷ base £0.99)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=39 (2026-11-02)",
+   "confidence": "Low"
   },
   "mat-hdpe": {
-   "gbpPerKg": 1.1414,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; the anchor grade itself",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 1.1583,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; the anchor grade itself",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-hdpe-bm": {
-   "gbpPerKg": 1.2392,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; ladder ×1.086 (book £1.14 ÷ base £1.05)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 1.2576,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; ladder ×1.086 (book £1.14 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-hdpe-fuel-coex": {
-   "gbpPerKg": 1.6741,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; ladder ×1.467 (book £1.54 ÷ base £1.05)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 1.6989,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; ladder ×1.467 (book £1.54 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-hdpe-profile": {
-   "gbpPerKg": 1.1414,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; the anchor grade itself",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 1.1583,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; the anchor grade itself",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-hdpe-roto": {
-   "gbpPerKg": 1.4023,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; ladder ×1.229 (book £1.29 ÷ base £1.05)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 1.4231,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; ladder ×1.229 (book £1.29 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-xlpe-roto": {
-   "gbpPerKg": 1.8915,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; ladder ×1.657 (book £1.74 ÷ base £1.05)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 1.9195,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; ladder ×1.657 (book £1.74 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-fr-pe-roto": {
-   "gbpPerKg": 2.9133,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; ladder ×2.552 (book £2.68 ÷ base £1.05)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 2.9565,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; ladder ×2.552 (book £2.68 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-foam-pe-roto": {
-   "gbpPerKg": 2.1632,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; ladder ×1.895 (book £1.99 ÷ base £1.05)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 2.1953,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; ladder ×1.895 (book £1.99 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-cond-pe-roto": {
-   "gbpPerKg": 2.7068,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; ladder ×2.371 (book £2.49 ÷ base £1.05)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 2.7469,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; ladder ×2.371 (book £2.49 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-pex-pipe": {
-   "gbpPerKg": 1.7502,
-   "basis": "PE family: PE family — the SEA market (SG figure): businessanalytiq HDPE index, Southeast Asia, September 2026: US$1.52/kg = 1.52 USD/kg (2026-09) = ₫39207.3184/kg × the book's grade premium over its base; ladder ×1.533 (book £1.61 ÷ base £1.05)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/hdpe-price-index/ (2026-09)",
+   "gbpPerKg": 1.7761,
+   "basis": "PE family: PE family — VN's market: HDPE resin, blow-moulding grade CPChem HHM5502BN (USA origin) — recorded transaction, 2,00: 43,000 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); HDPE resin HD-5502S (Sh = 39545.4545 VND/kg (2026-11-02) = ₫39545.4545/kg × the book's grade premium over its base; ladder ×1.533 (book £1.61 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=43 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-ldpe": {
    "gbpPerKg": 1.3667,
-   "basis": "LDPE family: LDPE family — the SEA market (SG figure): businessanalytiq LDPE index, Southeast Asia, September 2026: US$1.82/kg = 1.82 USD/kg (2026-09) = ₫46945.6049/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "LDPE family: LDPE family — the SEA market (SG figure): businessanalytiq LDPE index, Southeast Asia, September 2026: US$1.82/kg = 1.82 USD/kg (2026-09) = ₫46659.3392/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/ldpe-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-ldpe-bm": {
    "gbpPerKg": 1.5046,
-   "basis": "LDPE family: LDPE family — the SEA market (SG figure): businessanalytiq LDPE index, Southeast Asia, September 2026: US$1.82/kg = 1.82 USD/kg (2026-09) = ₫46945.6049/kg × the book's grade premium over its base; ladder ×1.101 (book £1.2 ÷ base £1.09)",
+   "basis": "LDPE family: LDPE family — the SEA market (SG figure): businessanalytiq LDPE index, Southeast Asia, September 2026: US$1.82/kg = 1.82 USD/kg (2026-09) = ₫46659.3392/kg × the book's grade premium over its base; ladder ×1.101 (book £1.2 ÷ base £1.09)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/ldpe-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-ldpe-tube": {
    "gbpPerKg": 1.3667,
-   "basis": "LDPE family: LDPE family — the SEA market (SG figure): businessanalytiq LDPE index, Southeast Asia, September 2026: US$1.82/kg = 1.82 USD/kg (2026-09) = ₫46945.6049/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "LDPE family: LDPE family — the SEA market (SG figure): businessanalytiq LDPE index, Southeast Asia, September 2026: US$1.82/kg = 1.82 USD/kg (2026-09) = ₫46659.3392/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/ldpe-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-lldpe": {
-   "gbpPerKg": 1.0447,
-   "basis": "LLDPE family: no VN or regional price found — the European market price at par (traded material, no country factor): LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫35886.3037/kg; the anchor grade itself",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.2216,
+   "basis": "LLDPE family: LLDPE family — VN's market: LLDPE film C4 PetroChina Guangxi DFDA-7042N — recorded transaction, 1,000 kg: 42,500 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); LLDPE 7042 (Shandong Yulong) — domest = 41704.5455 VND/kg (2026-11-02) = ₫41704.5455/kg × the book's grade premium over its base; the anchor grade itself",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=45 (2026-11-02)",
+   "confidence": "Low"
   },
   "mat-lldpe-bm": {
-   "gbpPerKg": 1.1641,
-   "basis": "LLDPE family: no VN or regional price found — the European market price at par (traded material, no country factor): LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫35886.3037/kg; ladder ×1.114 (book £1.17 ÷ base £1.05)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.3612,
+   "basis": "LLDPE family: LLDPE family — VN's market: LLDPE film C4 PetroChina Guangxi DFDA-7042N — recorded transaction, 1,000 kg: 42,500 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); LLDPE 7042 (Shandong Yulong) — domest = 41704.5455 VND/kg (2026-11-02) = ₫41704.5455/kg × the book's grade premium over its base; ladder ×1.114 (book £1.17 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=45 (2026-11-02)",
+   "confidence": "Low"
   },
   "mat-lldpe-roto": {
-   "gbpPerKg": 1.4626,
-   "basis": "LLDPE family: no VN or regional price found — the European market price at par (traded material, no country factor): LLDPE C6 €1.25/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium over LLDPE — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫35886.3037/kg; ladder ×1.400 (book £1.47 ÷ base £1.05)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.7102,
+   "basis": "LLDPE family: LLDPE family — VN's market: LLDPE film C4 PetroChina Guangxi DFDA-7042N — recorded transaction, 1,000 kg: 42,500 (VAT not stated — used as stated) VND/kg (2026-10-20; confirmed on its page); LLDPE 7042 (Shandong Yulong) — domest = 41704.5455 VND/kg (2026-11-02) = ₫41704.5455/kg × the book's grade premium over its base; ladder ×1.400 (book £1.47 ÷ base £1.05)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=45 (2026-11-02)",
+   "confidence": "Low"
   },
   "mat-upvc": {
-   "gbpPerKg": 0.8274,
-   "basis": "PVC family: no VN or regional price found — the European market price at par (traded material, no country factor): S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫28421.9526/kg; the anchor grade itself",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 0.5669,
+   "basis": "PVC family: PVC family — VN's market: PVC suspension resin, offers into Vietnam (Thai and Indonesian producers): 750–760 → midpoint 755 ex-VAT USD/t (2026-08-26; confirmed on its page). S-PVC offers into Vietnam, Thai and Indonesian, US$7 = 755.0 USD/t (2026-08-26) = ₫19355.9347/kg × the book's grade premium over its base; the anchor grade itself",
+   "source": "https://polymerupdate.com/News/Details/1505450 (2026-08-26)",
+   "confidence": "Low"
   },
   "mat-fpvc": {
-   "gbpPerKg": 1.2085,
-   "basis": "PVC family: no VN or regional price found — the European market price at par (traded material, no country factor): S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫28421.9526/kg; ladder ×1.461 (book £1.11 ÷ base £0.76)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 0.828,
+   "basis": "PVC family: PVC family — VN's market: PVC suspension resin, offers into Vietnam (Thai and Indonesian producers): 750–760 → midpoint 755 ex-VAT USD/t (2026-08-26; confirmed on its page). S-PVC offers into Vietnam, Thai and Indonesian, US$7 = 755.0 USD/t (2026-08-26) = ₫19355.9347/kg × the book's grade premium over its base; ladder ×1.461 (book £1.11 ÷ base £0.76)",
+   "source": "https://polymerupdate.com/News/Details/1505450 (2026-08-26)",
+   "confidence": "Low"
   },
   "mat-pvc-bm": {
-   "gbpPerKg": 0.9254,
-   "basis": "PVC family: no VN or regional price found — the European market price at par (traded material, no country factor): S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫28421.9526/kg; ladder ×1.118 (book £0.85 ÷ base £0.76)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 0.6341,
+   "basis": "PVC family: PVC family — VN's market: PVC suspension resin, offers into Vietnam (Thai and Indonesian producers): 750–760 → midpoint 755 ex-VAT USD/t (2026-08-26; confirmed on its page). S-PVC offers into Vietnam, Thai and Indonesian, US$7 = 755.0 USD/t (2026-08-26) = ₫19355.9347/kg × the book's grade premium over its base; ladder ×1.118 (book £0.85 ÷ base £0.76)",
+   "source": "https://polymerupdate.com/News/Details/1505450 (2026-08-26)",
+   "confidence": "Low"
   },
   "mat-upvc-window-profile": {
-   "gbpPerKg": 1.4044,
-   "basis": "PVC family: no VN or regional price found — the European market price at par (traded material, no country factor): S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫28421.9526/kg; ladder ×1.697 (book £1.29 ÷ base £0.76)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 0.9623,
+   "basis": "PVC family: PVC family — VN's market: PVC suspension resin, offers into Vietnam (Thai and Indonesian producers): 750–760 → midpoint 755 ex-VAT USD/t (2026-08-26; confirmed on its page). S-PVC offers into Vietnam, Thai and Indonesian, US$7 = 755.0 USD/t (2026-08-26) = ₫19355.9347/kg × the book's grade premium over its base; ladder ×1.697 (book £1.29 ÷ base £0.76)",
+   "source": "https://polymerupdate.com/News/Details/1505450 (2026-08-26)",
+   "confidence": "Low"
   },
   "mat-pvcp-profile": {
-   "gbpPerKg": 1.6766,
-   "basis": "PVC family: no VN or regional price found — the European market price at par (traded material, no country factor): S-PVC resin €0.99/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) × the book's premium of each compound over uPVC, never below the resin — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫28421.9526/kg; ladder ×2.026 (book £1.54 ÷ base £0.76)",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.1488,
+   "basis": "PVC family: PVC family — VN's market: PVC suspension resin, offers into Vietnam (Thai and Indonesian producers): 750–760 → midpoint 755 ex-VAT USD/t (2026-08-26; confirmed on its page). S-PVC offers into Vietnam, Thai and Indonesian, US$7 = 755.0 USD/t (2026-08-26) = ₫19355.9347/kg × the book's grade premium over its base; ladder ×2.026 (book £1.54 ÷ base £0.76)",
+   "source": "https://polymerupdate.com/News/Details/1505450 (2026-08-26)",
+   "confidence": "Low"
   },
   "mat-abs": {
-   "gbpPerKg": 1.4268,
-   "basis": "ABS family: ABS family — the SEA market (SG figure): businessanalytiq ABS index, Southeast Asia, September 2026: US$1.9/kg = 1.9 USD/kg (2026-09) = ₫49009.1480/kg × the book's grade premium over its base; the anchor grade itself",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/abs-price-index/ (2026-09)",
+   "gbpPerKg": 1.4198,
+   "basis": "ABS family: ABS family — VN's market: ABS general purpose ZPC ZA0211 (China) — recorded transaction, 15,000 kg: 51,779 (VAT not stated — used as stated) VND/kg (2026-10-29; confirmed on its page); ABS ZPC ZA0211 — domestic offer listing:  = 48471.3182 VND/kg (2026-11-02) = ₫48471.3182/kg × the book's grade premium over its base; the anchor grade itself",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=35 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-abs-fr": {
-   "gbpPerKg": 1.7702,
-   "basis": "ABS family: ABS family — the SEA market (SG figure): businessanalytiq ABS index, Southeast Asia, September 2026: US$1.9/kg = 1.9 USD/kg (2026-09) = ₫49009.1480/kg × the book's grade premium over its base; ladder ×1.241 (book £2.01 ÷ base £1.62)",
-   "source": "https://businessanalytiq.com/procurementanalytics/index/abs-price-index/ (2026-09)",
+   "gbpPerKg": 1.7616,
+   "basis": "ABS family: ABS family — VN's market: ABS general purpose ZPC ZA0211 (China) — recorded transaction, 15,000 kg: 51,779 (VAT not stated — used as stated) VND/kg (2026-10-29; confirmed on its page); ABS ZPC ZA0211 — domestic offer listing:  = 48471.3182 VND/kg (2026-11-02) = ₫48471.3182/kg × the book's grade premium over its base; ladder ×1.241 (book £2.01 ÷ base £1.62)",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=35 (2026-11-02)",
    "confidence": "Low"
   },
   "mat-gpps": {
    "gbpPerKg": 1.194,
-   "basis": "GPPS: GPPS — the SEA market (SG figure): businessanalytiq GPPS index, Southeast Asia, September 2026: US$1.59/kg (polystyrene index, not split GPPS / HIPS — taken as GPPS) = 1.59 USD/kg (2026-09) = ₫41012.9186/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "GPPS: GPPS — the SEA market (SG figure): businessanalytiq GPPS index, Southeast Asia, September 2026: US$1.59/kg (polystyrene index, not split GPPS / HIPS — taken as GPPS) = 1.59 USD/kg (2026-09) = ₫40762.8293/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polystyrene-ps-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-hips": {
-   "gbpPerKg": 1.4041,
-   "basis": "HIPS: no VN or regional price found — the European market price at par (traded material, no country factor): HIPS €1.68/kg ex-VAT (myCEPPI Central & Eastern Europe weekly market price (plasticportal.eu, wk 37 2026) — the German KI price list is subscriber-only) — the book had HIPS at the GPPS price — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫48231.1922/kg; direct",
-   "source": "https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
-   "confidence": "Medium"
+   "gbpPerKg": 1.3239,
+   "basis": "HIPS: HIPS — VN's market: HIPS INEOS Styrolution Korea 476L — recorded transaction, 1,500 kg: 45,200 (VAT not stated — used as stated) VND/kg (2026-09-10; confirmed on its page). HIPS 476L recorded deal, 10 Sep 2026 (VAT not s = 45200.0 VND/kg (2026-09-10) = ₫45200.0000/kg; direct",
+   "source": "https://www.vnplas.com/deal-data?page=1&tradeNameId=38 (2026-09-10)",
+   "confidence": "Low"
   },
   "mat-pc": {
    "gbpPerKg": 1.6595,
-   "basis": "PC family: PC family — the SEA market (SG figure): businessanalytiq PC index, Southeast Asia, September 2026: US$2.21/kg = 2.21 USD/kg (2026-09) = ₫57005.3774/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "PC family: PC family — the SEA market (SG figure): businessanalytiq PC index, Southeast Asia, September 2026: US$2.21/kg = 2.21 USD/kg (2026-09) = ₫56657.7690/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pc-glazing": {
    "gbpPerKg": 2.7659,
-   "basis": "PC family: PC family — the SEA market (SG figure): businessanalytiq PC index, Southeast Asia, September 2026: US$2.21/kg = 2.21 USD/kg (2026-09) = ₫57005.3774/kg × the book's grade premium over its base; ladder ×1.667 (book £4.2 ÷ base £2.52)",
+   "basis": "PC family: PC family — the SEA market (SG figure): businessanalytiq PC index, Southeast Asia, September 2026: US$2.21/kg = 2.21 USD/kg (2026-09) = ₫56657.7690/kg × the book's grade premium over its base; ladder ×1.667 (book £4.2 ÷ base £2.52)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pc-bm": {
    "gbpPerKg": 2.5683,
-   "basis": "PC family: PC family — the SEA market (SG figure): businessanalytiq PC index, Southeast Asia, September 2026: US$2.21/kg = 2.21 USD/kg (2026-09) = ₫57005.3774/kg × the book's grade premium over its base; ladder ×1.548 (book £3.9 ÷ base £2.52)",
+   "basis": "PC family: PC family — the SEA market (SG figure): businessanalytiq PC index, Southeast Asia, September 2026: US$2.21/kg = 2.21 USD/kg (2026-09) = ₫56657.7690/kg × the book's grade premium over its base; ladder ×1.548 (book £3.9 ÷ base £2.52)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pa6": {
    "gbpPerKg": 1.8848,
-   "basis": "PA6 family: PA6 family — the SEA market (SG figure): businessanalytiq PA6 index, Southeast Asia, September 2026: US$2.51/kg = 2.51 USD/kg (2026-09) = ₫64743.6639/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "PA6 family: PA6 family — the SEA market (SG figure): businessanalytiq PA6 index, Southeast Asia, September 2026: US$2.51/kg = 2.51 USD/kg (2026-09) = ₫64348.8689/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pa6-bm": {
    "gbpPerKg": 3.4779,
-   "basis": "PA6 family: PA6 family — the SEA market (SG figure): businessanalytiq PA6 index, Southeast Asia, September 2026: US$2.51/kg = 2.51 USD/kg (2026-09) = ₫64743.6639/kg × the book's grade premium over its base; ladder ×1.845 (book £3.1 ÷ base £1.68)",
+   "basis": "PA6 family: PA6 family — the SEA market (SG figure): businessanalytiq PA6 index, Southeast Asia, September 2026: US$2.51/kg = 2.51 USD/kg (2026-09) = ₫64348.8689/kg × the book's grade premium over its base; ladder ×1.845 (book £3.1 ÷ base £1.68)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pa6-ext-tube": {
    "gbpPerKg": 1.8848,
-   "basis": "PA6 family: PA6 family — the SEA market (SG figure): businessanalytiq PA6 index, Southeast Asia, September 2026: US$2.51/kg = 2.51 USD/kg (2026-09) = ₫64743.6639/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "PA6 family: PA6 family — the SEA market (SG figure): businessanalytiq PA6 index, Southeast Asia, September 2026: US$2.51/kg = 2.51 USD/kg (2026-09) = ₫64348.8689/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa6-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pa66": {
    "gbpPerKg": 2.7634,
-   "basis": "PA66: PA66 — the SEA market (SG figure): businessanalytiq PA66 index, Southeast Asia, September 2026: US$3.68/kg = 3.68 USD/kg (2026-09) = ₫94922.9813/kg; direct",
+   "basis": "PA66: PA66 — the SEA market (SG figure): businessanalytiq PA66 index, Southeast Asia, September 2026: US$3.68/kg = 3.68 USD/kg (2026-09) = ₫94344.1584/kg; direct",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pa66-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pbt": {
    "gbpPerKg": 3.1175,
-   "basis": "PBT: no VN or regional price found — the European market price at par (traded material, no country factor): PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫107084.7304/kg; direct",
+   "basis": "PBT: no VN or regional price found — the European market price at par (traded material, no country factor): PBT €3.73/kg ex-VAT (businessanalytiq Europe price index (method not published — Medium at best), Sep 2026) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫106431.7473/kg; direct",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polybutylene-terephthalate-pbt-price-index/ (2026-09)",
    "confidence": "Medium"
   },
   "mat-pet-bg": {
    "gbpPerKg": 0.7659,
-   "basis": "PET family: PET family — the SEA market (SG figure): businessanalytiq PET index, Southeast Asia, September 2026: US$1.02/kg = 1.02 USD/kg (2026-09) = ₫26310.1742/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "PET family: PET family — the SEA market (SG figure): businessanalytiq PET index, Southeast Asia, September 2026: US$1.02/kg = 1.02 USD/kg (2026-09) = ₫26149.7396/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pet-preform": {
    "gbpPerKg": 0.7913,
-   "basis": "PET family: PET family — the SEA market (SG figure): businessanalytiq PET index, Southeast Asia, September 2026: US$1.02/kg = 1.02 USD/kg (2026-09) = ₫26310.1742/kg × the book's grade premium over its base; ladder ×1.033 (book £1.25 ÷ base £1.21)",
+   "basis": "PET family: PET family — the SEA market (SG figure): businessanalytiq PET index, Southeast Asia, September 2026: US$1.02/kg = 1.02 USD/kg (2026-09) = ₫26149.7396/kg × the book's grade premium over its base; ladder ×1.033 (book £1.25 ÷ base £1.21)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/pet-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pmma": {
    "gbpPerKg": 1.9824,
-   "basis": "PMMA family: PMMA family — the SEA market (SG figure): businessanalytiq PMMA index, Southeast Asia, September 2026: US$2.64/kg = 2.64 USD/kg (2026-09) = ₫68096.9214/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "PMMA family: PMMA family — the SEA market (SG figure): businessanalytiq PMMA index, Southeast Asia, September 2026: US$2.64/kg = 2.64 USD/kg (2026-09) = ₫67681.6789/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polymethylmethacrylate-pmma-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-peek": {
    "gbpPerKg": 66.2105,
-   "basis": "PEEK family: no VN or regional price found — the European market price at par (traded material, no country factor): PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫2274330.3865/kg; the anchor grade itself",
+   "basis": "PEEK family: no VN or regional price found — the European market price at par (traded material, no country factor): PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫2260461.9369/kg; the anchor grade itself",
    "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets (2026-06-30 (9M); H1 to 2026-03-31)",
    "confidence": "Low"
   },
   "mat-peek-ext": {
    "gbpPerKg": 66.2105,
-   "basis": "PEEK family: no VN or regional price found — the European market price at par (traded material, no country factor): PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin) — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫2274330.3865/kg; the anchor grade itself",
+   "basis": "PEEK family: no VN or regional price found — the European market price at par (traded material, no country factor): PEEK ≈ €79.22/kg — Victrex average selling price £68/kg (its whole mix incl. medical, so an upper bound for industrial resin) — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫2260461.9369/kg; the anchor grade itself",
    "source": "https://www.hl.co.uk/shares/stock-market-news/company--news/victrex-climbs-on-sharp-q3-recovery-across-key-markets (2026-06-30 (9M); H1 to 2026-03-31)",
    "confidence": "Low"
   },
   "mat-pom": {
    "gbpPerKg": 1.209,
-   "basis": "POM: POM — the SEA market (SG figure): businessanalytiq POM index, Southeast Asia, September 2026: US$1.61/kg = 1.61 USD/kg (2026-09) = ₫41528.8043/kg × the book's grade premium over its base; the anchor grade itself",
+   "basis": "POM: POM — the SEA market (SG figure): businessanalytiq POM index, Southeast Asia, September 2026: US$1.61/kg = 1.61 USD/kg (2026-09) = ₫41275.5693/kg × the book's grade premium over its base; the anchor grade itself",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pom-rod": {
    "gbpPerKg": 1.3682,
-   "basis": "POM: POM — the SEA market (SG figure): businessanalytiq POM index, Southeast Asia, September 2026: US$1.61/kg = 1.61 USD/kg (2026-09) = ₫41528.8043/kg × the book's grade premium over its base; ladder ×1.132 (book £2.32 ÷ base £2.05)",
+   "basis": "POM: POM — the SEA market (SG figure): businessanalytiq POM index, Southeast Asia, September 2026: US$1.61/kg = 1.61 USD/kg (2026-09) = ₫41275.5693/kg × the book's grade premium over its base; ladder ×1.132 (book £2.32 ÷ base £2.05)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polyoxymethylene-pom-price-index/ (2026-09)",
    "confidence": "Low"
   },
   "mat-pc-abs": {
    "gbpPerKg": 2.0059,
-   "basis": "PC/ABS (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫68901.7032/kg; floor (raised to metal content)",
+   "basis": "PC/ABS (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Resin content 0.7 × PC €2.64 + 0.3 × ABS €1.84 = €2.40/kg — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫68481.5533/kg; floor (raised to metal content)",
    "source": "https://businessanalytiq.com/procurementanalytics/index/polycarbonate-price-index/ (2026-09) ; https://www.plasticportal.eu/price-reports (2026-W37 (page updated 2026-10-01))",
    "confidence": "Low"
   },
   "mat-cf-dry-3k": {
    "gbpPerKg": 25.0065,
-   "basis": "Carbon fabric (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 28709.042999999998 VND (ECB 2026-10-29): ₫858974.5666/kg; floor (raised to metal content)",
+   "basis": "Carbon fabric (floor): no VN or regional price found — the European market price at par (traded material, no country factor): Carbon fibre €29.92/kg (IMARC Germany, Mar 2026, grade not stated) — a woven fabric is never below the fibre it is woven from — at €1 = 28533.9805212 VND (ECB 2026-10-29): ₫853736.6972/kg; floor (raised to metal content)",
    "source": "https://www.imarcgroup.com/carbon-fibre-pricing-report (2026-03)",
    "confidence": "Low"
   },
   "mat-nr": {
-   "gbpPerKg": 1.8743,
-   "basis": "Natural rubber (raw): Natural rubber (raw) — the SEA market (SG figure): SGX TSR20 November-2026 contract 249.60 US¢/kg (−2.27%); Dec-26 248.20, Jan-27 246.80 — session of 29 Oct 2026 as reported 06:33 30 Oct 2026 = 249.6 US cents/kg (2026-10-29) = ₫64382.5439/kg; direct",
-   "source": "https://thuonghieucongluan.com.vn/gia-cao-su-hom-nay-30-10-dong-loat-giam-tren-cac-san-giao-dich-a339991.html (2026-10-29)",
+   "gbpPerKg": 1.6618,
+   "basis": "Natural rubber (raw): Natural rubber (raw) — VN's market: SVR 10, Vietnam average export price, June 2026 (MOIT / Customs): 2,213 ex-VAT USD/t (2026-06-30; confirmed on its page). SVR 10 (the TSR10/20 class) Vietnam average export price, June 2026 (MOIT / Cu = 2213.0 USD/t (2026-06-30) = ₫56734.6800/kg; direct",
+   "source": "https://www.mkresourcesgovernance.org/documents/330657fc-6642-4c55-9a5f-4c34d5bc8310/vn/ban-tin-thi-truong-cao-su-1607-23072026.pdf (2026-06-30)",
    "confidence": "Medium"
   }
  },
@@ -1101,21 +1101,57 @@ export const VIETNAM_BOOK: CountryBook = {
   "financeRate": 0.0912,
   "ukFinanceRate": 0.04,
   "maintenancePctOfCapex": 0.035,
-  "rentGbpPerM2Yr": 45.0555,
+  "rentGbpPerM2Yr": 44.605,
   "ukRentGbpPerM2Yr": 110,
   "ukElectricityGbpPerKwh": 0.182,
   "labourRatio": 0.063,
   "capitalHeldFactor": 1,
-  "basis": "3 × 8 h, Monday–Friday: 250 working days × 24 h = 6,000 h — Vietnam's full 2026 public-holiday calendar was not available (the holiday API failed or misses Tết / Islamic holidays), so the round's median working year (250 days) is used; Vietnam straight-line tax depreciation — no shift uplift on capital; read on the page: 'Lãi suất cho vay bình quân của các giao dịch phát sinh mới ở mức 9,12%/năm, tăng 1,03 điểm phần trăm' (vs end-2025) (2026-09-30); rent ₫128971.44/m²/month (C&W Northern Vietnam (Hanoi) Industrial MarketBeat Q2 2026: 'The average asking rent for ready-built factories in Northern Vietnam remained stable at 5.0 USD/sqm/month'. Read directly. (AVERAGE asking rent, ready-built factories, Northern Vietnam (Bac Ninh, Hai Phong… electronics/automotive supplier cluster), 2026-Q2) = 128971.44 VND at US$1 = 25794.2884 VND (ECB 2026-10-29)); maintenance the library's own line build-up rule (3.5% of capex); no Vietnam norm found",
+  "basis": "3 × 8 h, Monday–Friday: 250 working days × 24 h = 6,000 h — Vietnam's full 2026 public-holiday calendar was not available (the holiday API failed or misses Tết / Islamic holidays), so the round's median working year (250 days) is used; Vietnam straight-line tax depreciation — no shift uplift on capital; read on the page: 'Lãi suất cho vay bình quân của các giao dịch phát sinh mới ở mức 9,12%/năm, tăng 1,03 điểm phần trăm' (vs end-2025) (2026-09-30); rent ₫126903.15/m²/month (Average asking rent, ready-built factories (RBF), Northern Vietnam, Q2 2026 US$5.0 + Average asking rent, ready-built factories (RBF), Southern Key Economic Zone, Q2 US$4.9 — mean US$4.95/m²/month = 126,903.15 VND at US$1 = 25,637.00 VND (incl. service charge, ex-VAT, 2026-Q2)); maintenance the library's own line build-up rule (3.5% of capex); no Vietnam norm found",
   "heldBasis": "capex not found for Vietnam: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Vietnam's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Vietnam wages)",
   "groups": [
    {
     "id": "cnc-vmc-vn",
     "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
     "refId": "mach-haas-vf2",
-    "refCapexGbp": 26200.87,
+    "refCapexGbp": 26361.62,
     "basis": "Taikan T-V856S — ₫900,000,000 (list, 2024-09; not stated (indicative dealer price); VAT not stated — used as stated; confirmed on its page) = ₫900,000,000 ex-VAT. Taikan T-V856S X800/Y550/Z600 (VF-2 class, a little larger), a dealer's indicative price ('khoảng' — about), Sep 2024; VAT not stated",
     "source": "https://tuloctechnology.com/bang-gia-may-phay-cnc/",
+    "confidence": "Low"
+   },
+   {
+    "id": "cnc-lathe-vn",
+    "match": "^(mach-lathe-cnc|mach-mazak-qt200)$",
+    "refId": "mach-lathe-cnc",
+    "refCapexGbp": 18306.68,
+    "basis": "Borui CK6150-1000 (Fanuc 0i-TF Plus configuration) — ₫625,000,000 (list, 2026-06 (page modified 2026-06-17); machine (web-shop variant price; 'Giảm giá' sale price, regular 699,000,000); VAT not stated — used as stated; confirmed on its page) = ₫625,000,000 ex-VAT. Borui CK6150-1000 with FANUC 0i-TF Plus, 10\" chuck (CNC24H, June 2026) — a FLAT-bed CNC lathe, the class's work but not a slant bed",
+    "source": "https://shop.cnc24h.vn/may-tien-cnc-ck6150-1000-chinh-hang-borui/",
+    "confidence": "Low"
+   },
+   {
+    "id": "press-brake-vn",
+    "match": "^brake-",
+    "refId": "brake-trumpf-trubend3100",
+    "refCapexGbp": 31282.46,
+    "basis": "Accurpress Absolute 310032 (new) — ₫1,536,000,000 (list, undated page (seen 2026-11-02); not stated (machine; dealer web price); VAT not stated — used as stated; confirmed on its page); NVD PBC 100T/3200 (Chinese, sold by VNTECH) — ₫550,000,000–650,000,000 (midpoint) (list, 2026-05 (page published 2026-05-20, modified 2026-08-07); dealer reference price range 550,000,000 - 650,000,000 VND; options/configuration not specified; VAT not stated — used as stated; confirmed on its page) — median of 2 = ₫1,068,000,000 ex-VAT. Accurpress Absolute 310032 (100 t × 3,200 mm, new, dealer list) and NVD PBC 100T/3200 (Chinese, VNTECH table May 2026, 550–650 M — midpoint): a premium and a Chinese machine of the class — the median of the two",
+    "source": "https://tatmachines.com/May-chan-ton-CNC-Accurpress-Absolute-310032.html",
+    "confidence": "Low"
+   },
+   {
+    "id": "fibre-laser-vn",
+    "match": "^(laser-trumpf-3030|laser-trumpf-5030|laser-bystronic-3015|laser-amada-ensis-3015)$",
+    "refId": "laser-trumpf-3030",
+    "refCapexGbp": 21089.3,
+    "basis": "VNTECH fibre laser, single table 1500x3000 mm, 4000 W (model not named) — ₫660,000,000–780,000,000 (midpoint) (list, 2026-05 (page published 2026-05-26; note on page says prices are 'tại thời điểm tháng 12/2026'); dealer reference price range 660,000,000 - 780,000,000 VND; scope not stated; VAT not stated — used as stated; confirmed on its page) = ₫720,000,000 ex-VAT. VNTECH fibre laser, 1,500 × 3,000 mm single table, 4 kW (dealer table, May 2026; 660–780 M — midpoint); maker not named — the re-check: the page (26 May 2026) says its prices are 'as of December 2026' and heads the table '1000W – 3000W' over the 4 kW row",
+    "source": "https://thietbivntech.vn/gia-may-cat-laser-moi-nhat/",
+    "confidence": "Low"
+   },
+   {
+    "id": "waterjet-5ax-vn",
+    "match": "^waterjet-5ax-composite$",
+    "refId": "waterjet-5ax-composite",
+    "refCapexGbp": 197126.35,
+    "basis": "Flow Mach 500 4020 (new) — ₫6,730,000,000 (list, undated (seen 2026-11-02); not stated (machine; dealer web price); VAT not stated — used as stated; confirmed on its page) = ₫6,730,000,000 ex-VAT. Flow Mach 500 4020, new, 5-axis dynamic head (dealer list, undated) — the first sourced price for this class anywhere in the tool — the re-check: the 5-axis head and pump come from the model's general text; what the price includes is not stated",
+    "source": "https://tatmachines.com/May-cat-tia-nuoc-Flow-Mach-500-4020.html",
     "confidence": "Low"
    }
   ]

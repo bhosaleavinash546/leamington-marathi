@@ -213,7 +213,7 @@
      "vn-machines#4"
     ],
     "confidence": "Low",
-    "why": "VNTECH fibre laser, 1,500 × 3,000 mm single table, 4 kW (dealer table, May 2026; 660–780 M — midpoint); maker not named"
+    "why": "VNTECH fibre laser, 1,500 × 3,000 mm single table, 4 kW (dealer table, May 2026; 660–780 M — midpoint); maker not named — the re-check: the page (26 May 2026) says its prices are 'as of December 2026' and heads the table '1000W – 3000W' over the 4 kW row"
    },
    "lathe": {
     "use": [
@@ -230,7 +230,7 @@
      "vn-machines#11"
     ],
     "confidence": "Low",
-    "why": "Flow Mach 500 4020, new, 5-axis dynamic head (dealer list, undated) — the first sourced price for this class anywhere in the tool",
+    "why": "Flow Mach 500 4020, new, 5-axis dynamic head (dealer list, undated) — the first sourced price for this class anywhere in the tool — the re-check: the 5-axis head and pump come from the model's general text; what the price includes is not stated",
     "rejected": {
      "vn-machines#12": "Mach 500 2020: spec table copied from the 4020, smaller yet dearer",
      "vn-machines#13/#14": "Chinese 5-axis STONE-cutting waterjets (340 MPa) — not a composite-trimming machine"

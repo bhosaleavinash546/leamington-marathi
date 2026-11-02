@@ -1861,7 +1861,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       skillLevel: 'Skilled Machinist',
       fullyLoadedRatePerHr: 1.7615,
       effectiveDate: '2026-10-30',
-      sourceNote: 'Vietnam rate book 2026-10-30: ₫60509.17/h fully loaded (national / ILO occupation earnings + statutory employer contributions ÷ hours worked)',
+      sourceNote: 'Vietnam rate book 2026-10-30: ₫60140.2/h fully loaded (national / ILO occupation earnings + statutory employer contributions ÷ hours worked)',
       confidence: 'Medium',
     },
     {
@@ -1870,7 +1870,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       skillLevel: 'Semi-skilled Operator',
       fullyLoadedRatePerHr: 1.7034,
       effectiveDate: '2026-10-30',
-      sourceNote: 'Vietnam rate book 2026-10-30: ₫58511.78/h fully loaded (national / ILO occupation earnings + statutory employer contributions ÷ hours worked)',
+      sourceNote: 'Vietnam rate book 2026-10-30: ₫58154.99/h fully loaded (national / ILO occupation earnings + statutory employer contributions ÷ hours worked)',
       confidence: 'Medium',
     },
     // ── South Korea ───────────────────────────────────────────────────────────
@@ -1998,7 +1998,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     {
       id: 'energy-vn',
       region: 'Vietnam',
-      electricityPerKwh: 0.0577,
+      electricityPerKwh: 0.058,
       gasPerKwh: 0.03,
       effectiveDate: '2026-10-30',
       sourceNote: 'Vietnam rate book 2026-10-30: ₫1980.8/kWh electricity, ₫undefined/kWh gas — Electricity 1980.8 VND/kWh: EVN retail tariff for production, 22 kV to <110 kV (Decision 1279/QD-BCT, from 10 May 2025): off-peak 1,190 / normal 1,833 / peak 3,398 VND/kWh. Peak 09:30-11:30 + 17:00-20:00 Mon-Sat (5 h); off-peak 22:00-04:00 daily (6 h); normal the rest (13 h Mon-Sat, 18 h (rates from 10 May 2025; TOU hours per Circular 60/2025/TT-BCT (Dec 2025)). Gas: no industrial gas price found (industrial piped gas (PV Gas low-pressure to industrial zones)) — held',

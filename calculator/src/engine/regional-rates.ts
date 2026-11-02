@@ -376,9 +376,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   VN: {
     name: 'Vietnam',
     currency: 'VND',
-    fxToGBP: 34350,
+    fxToGBP: 34140.54,
     labour: { skilled: 1.7615, semiskilled: 1.7034, engineer: 2.9414, foundry: 1.7615, electronics: 1.7034, inspector: 1.7615, technician: 2.4684, supervisor: 2.4684 },
-    energy: { electricityPerKwh: 0.0577, gasPerKwh: 0.03 },
+    energy: { electricityPerKwh: 0.058, gasPerKwh: 0.03 },
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.62,
