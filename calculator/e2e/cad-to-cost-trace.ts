@@ -117,11 +117,24 @@ async function screenState(page: Page) {
   });
 }
 
+/** After a theme switch, wait until the colour transitions have finished: axe read the dark background behind the
+ *  light text mid-transition (newer Chromium, Nov 2026: "#4a5c7a on #171c19") — a fixed 200 ms was not enough. */
+async function themeSettled(page: Page): Promise<void> {
+  await page.waitForTimeout(50);
+  await page.waitForFunction(() => document.getAnimations().every(a => a.playState !== 'running' || a.effect?.getComputedTiming().iterations === Infinity),
+    undefined, { timeout: 5_000 }).catch(() => undefined);
+  await page.waitForTimeout(50);
+}
+
 async function axe(page: Page): Promise<string[]> {
   if (!(await page.evaluate(() => 'axe' in window))) await page.evaluate(AXE);
-  const v = await page.evaluate(() => (window as unknown as { axe: { run: (c: unknown, o: unknown) => Promise<{ violations: Array<{ id: string; nodes: unknown[] }> }> } })
+  const v = await page.evaluate(() => (window as unknown as { axe: { run: (c: unknown, o: unknown) => Promise<{ violations: Array<{ id: string; nodes: Array<{ target: string[]; any?: Array<{ data?: Record<string, unknown> }> }> }> }> } })
     .axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } }));
-  return v.violations.map(x => `${x.id} ×${x.nodes.length}`);
+  // the first two nodes of each violation: which element and (contrast) its colours — a count alone could not be traced
+  return v.violations.map(x => `${x.id} ×${x.nodes.length} [${x.nodes.slice(0, 2).map(n => {
+    const d = n.any?.[0]?.data as { fgColor?: string; bgColor?: string; contrastRatio?: number } | undefined;
+    return `${n.target.join(' ')}${d?.fgColor ? ` ${d.fgColor} on ${d.bgColor} = ${d.contrastRatio}` : ''}`;
+  }).join(' | ')}]`);
 }
 
 function pdfText(buf: Buffer): string {
@@ -377,12 +390,12 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   rec.step3 = { ...s, card, shot: await snap('step3-cost') };
   // The same screen in the light theme (CAD2C five-part review, Oct 2026): shot and axe, then back to dark.
   await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
-  await page.waitForTimeout(300);
+  await themeSettled(page);
   rec.step3LightShot = await snap('step3-cost-light');
   const axLight = await axe(page);
   check('3', 'A5', 'axe WCAG 2.1 AA on the cost step in the LIGHT theme', axLight.length === 0, axLight.join(', ') || '0 violations');
   await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
-  await page.waitForTimeout(200);
+  await themeSettled(page);
   check('3', 'M4', 'step 3 current', s.step === 'Cost', `current "${s.step}"`);
   check('3', '#2', 'tooling over the programme with its amortisation basis', card.figs.some(f => /Tooling over the programme/.test(f) && /a part over 5 years × 100,000/.test(f)), card.figs[0] ?? '(none)');
   check('3', 'D6', 'the band says what it covers and that accuracy is not measured', /not the model's error/.test(card.note) && /not yet measured/.test(card.note), card.note);
