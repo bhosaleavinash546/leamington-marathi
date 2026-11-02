@@ -352,6 +352,7 @@ ROLE_OC = {'skilled': '7', 'semiskilled': '8', 'foundry': '7', 'electronics': '8
 GRADE_ROLE = {'forge': 'skilled', 'furnace': 'semiskilled', 'blow': 'semiskilled', 'roto': 'semiskilled', 'thermoform': 'semiskilled', 'trim-router': 'semiskilled'}
 EMEA_EU_MARKET = {'TR', 'MA', 'TN', 'EG'}   # duty-free from the EU (customs union / association agreements) — EU list-price machines
 NA = {'US', 'CA', 'MX'}
+ASIA_MACHINES = {'JP', 'KR', 'TW', 'TH', 'MY', 'SG', 'VN', 'ID', 'PH'}   # own-market machine prices where researched
 SEA = {'TH', 'VN', 'MY', 'ID', 'PH', 'SG'}
 NEA = {'JP', 'KR', 'TW'}
 
@@ -589,7 +590,63 @@ US_GROUPS = [  # Haas US list prices (the US price of the same machines the EU g
 ]
 
 
+# Asian machine prices (Nov 2026, research/machines-asia/): each class is ONE library reference machine; the classes'
+# matches decide which library machines a price stands for (book size scales the rest). imm-1200t's group comes first so
+# the large presses take the large-press price.
+ASIA_CLASSES = [
+    ('vmc3', 'cnc-vmc', '^(mach-vmc3|mach-haas-vf2|mach-drill)$', 'mach-haas-vf2'),
+    ('vmc5', 'cnc-5axis', '^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$', 'mach-haas-umc500'),
+    ('lathe', 'cnc-lathe', '^(mach-lathe-cnc|mach-mazak-qt200)$', 'mach-lathe-cnc'),
+    ('imm1200', 'imm-large', '^imm-(800|1200|2000|3500)t$', 'imm-1200t'),
+    ('imm200', 'imm', '^imm-\\d+t$', 'imm-200t'),
+    ('pressBrake', 'press-brake', '^brake-', 'brake-trumpf-trubend3100'),
+    ('gearHob', 'gear-hob', '^gear-hob-', 'gear-hob-small'),
+]
+MA_DIR = os.path.join(HERE, 'research', 'machines-asia')
+
+
+def groups_asia(cc, ccy, sym):
+    """The country's own machine prices: the items decisions.json admits (each re-checked on its page, verdicts.json),
+    VAT-inclusive prices ÷ (1 + the PwC rate), the median of several. No item, no group — the machine stays at par."""
+    dec = json.load(open(os.path.join(MA_DIR, 'decisions.json')))['countries'].get(cc, {})
+    vat = json.load(open(os.path.join(MA_DIR, 'vat.json')))['rates'].get(cc, {})
+    verd = {v['ref']: v for v in json.load(open(os.path.join(MA_DIR, 'verdicts.json')))}
+    files = {f: json.load(open(os.path.join(MA_DIR, f + '.json')))['items'] for f in ('jp', 'kr-tw', 'th-my-sg', 'vn-id-ph')}
+    out = []
+    for cls, gid, match, ref in ASIA_CLASSES:
+        d = dec.get(cls)
+        if not d or not d.get('use'):
+            continue
+        vals, parts = [], []
+        for r in d['use']:
+            f, i = r.split('#')
+            it, v = files[f][int(i)], verd.get(r, {})
+            if v.get('verdict') not in ('confirmed', 'unreachable'):
+                raise SystemExit(f'{cc} {cls} {r}: re-check verdict {v.get("verdict")!r} — settle it in decisions.json first')
+            if it['currency'] != ccy:
+                raise SystemExit(f'{cc} {cls} {r}: price in {it["currency"]}, book in {ccy}')
+            inc = str(it.get('vat', '')).startswith('inc')
+            if inc and not vat.get('rate'):
+                raise SystemExit(f'{cc} {cls} {r}: VAT-inclusive with no sourced rate')
+            x = it['price'] / (1 + vat['rate']) if inc else it['price']
+            vals.append(x)
+            vtxt = f"VAT-inclusive ÷ {1 + vat['rate']:.2f} (PwC: {vat['rate'] * 100:g}%)" if inc else (
+                'ex-VAT' if str(it.get('vat', '')).startswith('ex') else 'VAT not stated — used as stated')
+            chk = 'confirmed on its page' if v['verdict'] == 'confirmed' else 'the re-check could not reach the page'
+            parts.append(f"{it.get('model') or 'unnamed'} — {sym}{it['price']:,.0f} ({it['priceType']}, {it.get('date', '')}; "
+                         f"{it.get('scope', '')}; {vtxt}; {chk})")
+        vals.sort()
+        n = len(vals)
+        loc = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
+        basis = ('; '.join(parts) + (f' — median of {n}' if n > 1 else '') + f' = {sym}{loc:,.0f} ex-VAT. {d["why"]}')
+        out.append({'id': f'{gid}-{cc.lower()}', 'match': match, 'refId': ref, 'refCapexLocal': round(loc, 2), 'basis': basis,
+                    'source': files[d['use'][0].split('#')[0]][int(d['use'][0].split('#')[1])]['url'], 'confidence': d['confidence']})
+    return out
+
+
 def groups_world(cc, ccy, pe, sym):
+    if cc in ASIA_MACHINES:
+        return groups_asia(cc, ccy, sym)
     if cc in EMEA_EU_MARKET:
         return groups_eu(ccy, pe, sym)
     if cc in NA:
