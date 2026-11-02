@@ -1,0 +1,48 @@
+{
+ "VN": {
+  "name": "Vietnam",
+  "currency": "VND",
+  "fxToGBP": 34350,
+  "pass": 1020,
+  "fail": 0,
+  "gap": 0,
+  "info": 10,
+  "parts": 15,
+  "costed": 15,
+  "headlines": {
+   "hub-flange-forging": "303,473.00",
+   "stub-axle-cast-machine": "493,611.84",
+   "ecu-cover-moulding": "18,802.25",
+   "seat-bracket-sheet": "21,042.12",
+   "battery-rail-al-extrusion": "855,923.77",
+   "blow-moulding-air-duct": "24,155.89",
+   "roto-header-tank": "185,911.78",
+   "thermoforming-trim-cover": "42,043.76",
+   "composites-hat-stiffener": "1,084,516.87",
+   "extrusion-vent-pipe": "18,042.41",
+   "rubber-grommet": "3,840.56",
+   "gear-m3-z38": "396,970.05",
+   "machining-manifold": "358,553.71",
+   "casting-bracket": "235,134.34",
+   "knuckle-forging": "402,905.81"
+  },
+  "headlinesGbp": {
+   "hub-flange-forging": 8.83,
+   "stub-axle-cast-machine": 14.37,
+   "ecu-cover-moulding": 0.55,
+   "seat-bracket-sheet": 0.61,
+   "battery-rail-al-extrusion": 24.92,
+   "blow-moulding-air-duct": 0.7,
+   "roto-header-tank": 5.41,
+   "thermoforming-trim-cover": 1.22,
+   "composites-hat-stiffener": 31.57,
+   "extrusion-vent-pipe": 0.53,
+   "rubber-grommet": 0.11,
+   "gear-m3-z38": 11.56,
+   "machining-manifold": 10.44,
+   "casting-bracket": 6.85,
+   "knuckle-forging": 11.73
+  },
+  "fails": []
+ }
+}

@@ -202,6 +202,8 @@ What changed in the book:
 - **Labour** stays on JETRO's manufacturing burden: Vietnam's own Labour Force Survey 2024 (machine operators
   8.72 M VND a month, + 21.5 % employer contributions) agrees with it within 6 %. **Rent** is the north and south mean.
 
+Live check after the change: 1,020 of 1,020 checks passed on the 15 parts, both reports opened (`scripts/rate-refresh/world-2026-10/live/vietnam-2026-11-02.md`). The software hub book follows the new FX (VN mid £1,074 / senior £1,349 a person-month, regenerated).
+
 What it moved: Vietnam's own share of all costs on the 15 parts 18.4 → 19.5 %; machine capital with no price
 4.9 → 3.7 %; the ratchet's median part on sourced rates 16 → 18.6 %. Still without a price anywhere in the tool: the
 composite laminate, 6082 aluminium bar, the forging bar steels (38MnVS6, 20MnCr5, EN8 — Vietnamese dealer pages are
