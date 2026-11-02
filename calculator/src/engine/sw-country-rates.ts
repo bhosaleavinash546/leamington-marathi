@@ -381,14 +381,14 @@ export const SW_HUB_RATES: Record<SWHubId, SWHubRate> = {
   },
   "VN": {
     id: "VN", label: "Vietnam", country: "VN", cities: ["Hanoi","Ho Chi Minh City","Da Nang"], currency: "VND",
-    fxToGBP: 34350, confidence: "Low",
+    fxToGBP: 34140.54, confidence: "Low",
     midAnnualSalary: 376500000, seniorAnnualSalary: 472800000, seniorBasis: "ITviec 2025–26 embedded median, 5–8 years", onCostInSalary: false,
     employerOnCostPctAtMid: 21.50, onCostBasis: "social insurance 17.5% + health insurance 3% + unemployment insurance 1% — PwC Worldwide Tax Summaries Vietnam; income cap (20 × reference level) not applied; trade-union fee not included",
     onCostUrl: "https://taxsummaries.pwc.com/vietnam/individual/other-taxes",
     productiveHours: 1896, hoursBasis: "(260 − 12 leave − 11 public holidays) × 40 h ÷ 5 — Labour Code 2019: 12 days leave, 11 public holidays (reviewer, lawnet.vn)",
     midPerPMLocal: 36673006, seniorPerPMLocal: 46053114,
-    midPerPMGBP: 1068, seniorPerPMGBP: 1341,
-    build: "VND 376,500,000 mid / 472,800,000 senior gross a year + employer on-cost 21.5% at mid = 457,447,500 / 574,452,000; ÷ 1,896 productive h × 152 h = VND 36,673,006 / 46,053,114 per person-month ÷ 34350 VND per £ = £1,068 / £1,341",
+    midPerPMGBP: 1074, seniorPerPMGBP: 1349,
+    build: "VND 376,500,000 mid / 472,800,000 senior gross a year + employer on-cost 21.5% at mid = 457,447,500 / 574,452,000; ÷ 1,896 productive h × 152 h = VND 36,673,006 / 46,053,114 per person-month ÷ 34140.54 VND per £ = £1,074 / £1,349",
     evidence: ["FPT (FPT Software / FPT Automotive) has expanded its automotive software workforce to more than 5,000 professionals and targets >30% annual growth in automotive software; it runs an AUTOSAR-based (embedded C/C++) digital automotive engineering lab with Hanoi University of Science and Technology.","LG Electronics' Hanoi R&D centre (LGEDV) does software development and verification for in-vehicle infotainment / telematics; LG planned to grow its Vietnam R&D staff from 750 to 1,000.","LG Vehicle Solution Vietnam — LG company page on its Vietnam vehicle-component R&D subsidiary."],
     mid: [
       { value: 28400000, period: "monthly", annualFactor: 12, statistic: "median", dataYear: 2025, source: "ITviec Vietnam IT Salary & Recruitment Market Report 2025–2026 (survey May–Jul and Oct–Nov 2025, 1,839 respondents) — Embedded Engineer", url: "https://itviec.com/report/vietnam-it-salary-and-recruitment-market", seenIn: "search-snippet" },
