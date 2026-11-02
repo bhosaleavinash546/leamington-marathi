@@ -181,6 +181,33 @@ research target, best priced from makers' quotes.
 The provenance ratchet was re-recorded: Vietnam's median part on sourced rates fell 19.8 → 16 % only because its
 sourced VMC price (£26k) is half the at-par UK price it replaced — the unsourced capital is the same on every part.
 
+## 4d. Vietnam, researched in detail (2 Nov 2026)
+
+Vietnam was the least-sourced country. Four researchers worked on it alone (`world-2026-10/research/vn-2026-11/`,
+`BRIEF.md`): exchange rate, labour and rent (33 figures), metals (21), plastics and rubber (47), machines (17).
+`decisions.json` says which figure stands for what and why — and why every other was not used; an independent checker
+opened all 24 pages used: **24 of 24 confirmed** (`verdicts.json`). `build-world.py` takes them through `vn_*`
+(a range → its midpoint, a VAT-inclusive price ÷ 1.10, several prices → the median).
+
+What changed in the book:
+- **Exchange rate:** £1 = 34,140.54 VND — the State Bank's central rate (25,637 VND/US$, 30 Oct, read in its own
+  newspaper; sbv.gov.vn still refuses automated access) × the ECB US$/£, the method of every central-bank book;
+  Vietcombank's own rate feed brackets it. It replaces a held 29 Sep snapshot (34,350; every VND figure moves −0.6 %).
+- **Materials on Vietnam's market:** PP 33,590 → 40,159 VND/kg (+20 %), LLDPE +16 %, HIPS −6 %, ABS −1 %, HDPE +1 %
+  (dated October 2026 deals and offers), PVC −32 % (offers into Vietnam, Aug 2026), natural rubber −12 % (SVR 10
+  export price, MOIT), the cast-steel charge +23 % (HMS scrap CFR Vietnam), copper premium, aluminium sheet.
+- **Machines:** CNC lathe (Borui CK6150, 625 M VND), press brake (median of an Accurpress and an NVD 100 t × 3.2 m,
+  1.07 bn), fibre laser (1.5 × 3 m, 4 kW, 720 M), 5-axis waterjet (Flow Mach 500, 6.73 bn — the first sourced
+  waterjet price in the tool), beside the machining centre already priced.
+- **Labour** stays on JETRO's manufacturing burden: Vietnam's own Labour Force Survey 2024 (machine operators
+  8.72 M VND a month, + 21.5 % employer contributions) agrees with it within 6 %. **Rent** is the north and south mean.
+
+What it moved: Vietnam's own share of all costs on the 15 parts 18.4 → 19.5 %; machine capital with no price
+4.9 → 3.7 %; the ratchet's median part on sourced rates 16 → 18.6 %. Still without a price anywhere in the tool: the
+composite laminate, 6082 aluminium bar, the forging bar steels (38MnVS6, 20MnCr5, EN8 — Vietnamese dealer pages are
+undated; a Mysteel subscription or a supplier quote would close it), HDPE thermoforming sheet, the rotomoulding
+carousel, the large thermoformer and the extrusion press.
+
 ## 5. Proof
 
 - `tests/world-rate-books.test.ts` — every country's book, and every rate of real parts costed there (171 tests).
