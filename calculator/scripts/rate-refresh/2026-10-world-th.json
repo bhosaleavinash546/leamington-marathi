@@ -121,7 +121,17 @@
   "rentBasis": "C&W Thailand Industrial MarketBeat Q3 2026: ready-built factory (RBF) average monthly asking rent THB 196/sq m/month (excl. service charge), unchanged q/q. Read directly. (AVERAGE asking rent, ready-built FACTORIES, Thailand (Central, Eastern and Eastern Seaboard zones combined), 2026-Q3)",
   "ukRentGbpPerM2Yr": 110,
   "capitalHeldFactor": 1.0,
-  "groups": [],
+  "groups": [
+   {
+    "id": "cnc-lathe-th",
+    "match": "^(mach-lathe-cnc|mach-mazak-qt200)$",
+    "refId": "mach-lathe-cnc",
+    "refCapexLocal": 1625000.0,
+    "basis": "Okuma GENOS L2000 — ฿1,700,000 (dealer-quote, 2025-04; machine incl. installation and testing on site; VAT not stated — used as stated; confirmed on its page); Okuma GENOS L250-II — ฿1,550,000 (dealer-quote, 2025-04; machine incl. installation and testing on site; VAT not stated — used as stated; confirmed on its page) — median of 2 = ฿1,625,000 ex-VAT. Okuma GENOS L2000 and L250-II 2-axis lathes, incl. installation and testing — a dealer's clearance prices (Apr 2025), one dealer; VAT not stated",
+    "source": "https://groupcor.com/cleanrance-sales-2025-okuma-cnc-machine/",
+    "confidence": "Low"
+   }
+  ],
   "notRebuiltBasis": "capex not found for Thailand: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Thailand's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Thailand wages)"
  },
  "materialFamilies": [

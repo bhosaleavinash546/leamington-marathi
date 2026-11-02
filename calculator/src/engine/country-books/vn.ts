@@ -1108,6 +1108,16 @@ export const VIETNAM_BOOK: CountryBook = {
   "capitalHeldFactor": 1,
   "basis": "3 × 8 h, Monday–Friday: 250 working days × 24 h = 6,000 h — Vietnam's full 2026 public-holiday calendar was not available (the holiday API failed or misses Tết / Islamic holidays), so the round's median working year (250 days) is used; Vietnam straight-line tax depreciation — no shift uplift on capital; read on the page: 'Lãi suất cho vay bình quân của các giao dịch phát sinh mới ở mức 9,12%/năm, tăng 1,03 điểm phần trăm' (vs end-2025) (2026-09-30); rent ₫128971.44/m²/month (C&W Northern Vietnam (Hanoi) Industrial MarketBeat Q2 2026: 'The average asking rent for ready-built factories in Northern Vietnam remained stable at 5.0 USD/sqm/month'. Read directly. (AVERAGE asking rent, ready-built factories, Northern Vietnam (Bac Ninh, Hai Phong… electronics/automotive supplier cluster), 2026-Q2) = 128971.44 VND at US$1 = 25794.2884 VND (ECB 2026-10-29)); maintenance the library's own line build-up rule (3.5% of capex); no Vietnam norm found",
   "heldBasis": "capex not found for Vietnam: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Vietnam's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Vietnam wages)",
-  "groups": []
+  "groups": [
+   {
+    "id": "cnc-vmc-vn",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
+    "refId": "mach-haas-vf2",
+    "refCapexGbp": 26200.87,
+    "basis": "Taikan T-V856S — ₫900,000,000 (list, 2024-09; not stated (indicative dealer price); VAT not stated — used as stated; confirmed on its page) = ₫900,000,000 ex-VAT. Taikan T-V856S X800/Y550/Z600 (VF-2 class, a little larger), a dealer's indicative price ('khoảng' — about), Sep 2024; VAT not stated",
+    "source": "https://tuloctechnology.com/bang-gia-may-phay-cnc/",
+    "confidence": "Low"
+   }
+  ]
  }
 };

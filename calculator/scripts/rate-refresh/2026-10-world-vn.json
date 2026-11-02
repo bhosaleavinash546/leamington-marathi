@@ -121,7 +121,17 @@
   "rentBasis": "C&W Northern Vietnam (Hanoi) Industrial MarketBeat Q2 2026: 'The average asking rent for ready-built factories in Northern Vietnam remained stable at 5.0 USD/sqm/month'. Read directly. (AVERAGE asking rent, ready-built factories, Northern Vietnam (Bac Ninh, Hai Phong… electronics/automotive supplier cluster), 2026-Q2) = 128971.44 VND at US$1 = 25794.2884 VND (ECB 2026-10-29)",
   "ukRentGbpPerM2Yr": 110,
   "capitalHeldFactor": 1.0,
-  "groups": [],
+  "groups": [
+   {
+    "id": "cnc-vmc-vn",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
+    "refId": "mach-haas-vf2",
+    "refCapexLocal": 900000000,
+    "basis": "Taikan T-V856S — ₫900,000,000 (list, 2024-09; not stated (indicative dealer price); VAT not stated — used as stated; confirmed on its page) = ₫900,000,000 ex-VAT. Taikan T-V856S X800/Y550/Z600 (VF-2 class, a little larger), a dealer's indicative price ('khoảng' — about), Sep 2024; VAT not stated",
+    "source": "https://tuloctechnology.com/bang-gia-may-phay-cnc/",
+    "confidence": "Low"
+   }
+  ],
   "notRebuiltBasis": "capex not found for Vietnam: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Vietnam's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Vietnam wages)"
  },
  "materialFamilies": [

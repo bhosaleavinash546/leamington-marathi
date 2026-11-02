@@ -1108,6 +1108,16 @@ export const THAILAND_BOOK: CountryBook = {
   "capitalHeldFactor": 1,
   "basis": "3 × 8 h, Monday–Friday: 250 working days × 24 h = 6,000 h — Thailand's full 2026 public-holiday calendar was not available (the holiday API failed or misses Tết / Islamic holidays), so the round's median working year (250 days) is used; Thailand straight-line tax depreciation — no shift uplift on capital; World Bank lending interest rate 2025 4.99% (FR.INR.LEND) — the central bank's own company-loan rate was not found; its policy / money-market rate 1.0% would understate what a manufacturer pays; rent ฿196/m²/month (C&W Thailand Industrial MarketBeat Q3 2026: ready-built factory (RBF) average monthly asking rent THB 196/sq m/month (excl. service charge), unchanged q/q. Read directly. (AVERAGE asking rent, ready-built FACTORIES, Thailand (Central, Eastern and Eastern Seaboard zones combined), 2026-Q3)); maintenance the library's own line build-up rule (3.5% of capex); no Thailand norm found",
   "heldBasis": "capex not found for Thailand: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Thailand's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Thailand wages)",
-  "groups": []
+  "groups": [
+   {
+    "id": "cnc-lathe-th",
+    "match": "^(mach-lathe-cnc|mach-mazak-qt200)$",
+    "refId": "mach-lathe-cnc",
+    "refCapexGbp": 36150.64,
+    "basis": "Okuma GENOS L2000 — ฿1,700,000 (dealer-quote, 2025-04; machine incl. installation and testing on site; VAT not stated — used as stated; confirmed on its page); Okuma GENOS L250-II — ฿1,550,000 (dealer-quote, 2025-04; machine incl. installation and testing on site; VAT not stated — used as stated; confirmed on its page) — median of 2 = ฿1,625,000 ex-VAT. Okuma GENOS L2000 and L250-II 2-axis lathes, incl. installation and testing — a dealer's clearance prices (Apr 2025), one dealer; VAT not stated",
+    "source": "https://groupcor.com/cleanrance-sales-2025-okuma-cnc-machine/",
+    "confidence": "Low"
+   }
+  ]
  }
 };

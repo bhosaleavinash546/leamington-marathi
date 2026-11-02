@@ -1216,6 +1216,43 @@ export const SOUTH_KOREA_BOOK: CountryBook = {
   "capitalHeldFactor": 1,
   "basis": "3 × 8 h, Monday–Friday, South Korea's 2026 working calendar: 5880 h (245 days × 24 h; 16 weekday national public holidays removed — https://date.nager.at/api/v3/PublicHolidays/2026/KR); South Korea straight-line tax depreciation — no shift uplift on capital; ECOS API item BECBLA02 (2026-09); rent ₩9347/m²/month (C&W Seoul Logistics MarketBeat 2H 2025, rents by submarket: South GSA (Osan, Hwaseong, Pyeongtaek, Anseong) dry rent KRW 30,900 per 3.3 m² (one pyeong) per month; 30,900 ÷ 3.30579 = 9,347 KRW/m²/month. (AVERAGE dry logistics rent, South Greater Seoul Area (Hyundai Hwaseong / Pyeongtaek supplier belt), assets ≥ 10,000 pyeong, 2025-H2 (latest published, Feb 2026))); maintenance the library's own line build-up rule (3.5% of capex); no South Korea norm found",
   "heldBasis": "capex not found for South Korea: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under South Korea's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at South Korea wages)",
-  "groups": []
+  "groups": [
+   {
+    "id": "cnc-vmc-kr",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
+    "refId": "mach-haas-vf2",
+    "refCapexGbp": 49643.77,
+    "basis": "수직형머시닝센터, domestic make, model not named (spec figures coincide with DN Solutions DNM 4500 catalogue values - our observation) — ₩97,500,000 (procurement-award, 2025-11; machine incl. delivery, installation and electrical work; chip conveyor, spindle cooler, Renishaw TS27R tool setter, oil-mist collector and a starter tooling kit; VAT-inclusive ÷ 1.10 (PwC: 10%); confirmed on its page); 수직형머시닝센터, domestic maker (ISO9001), FANUC 0i-MF Plus — ₩96,998,000 (procurement-award, 2025-04; machine incl. transport, installation, commissioning and training (turn-key); '시운전&부속품포함'; VAT-inclusive ÷ 1.10 (PwC: 10%); confirmed on its page) — median of 2 = ₩88,408,182 ex-VAT. two awards with spec sheets — X800/Y450/Z500 and X660/Y430/Z400 mm (VF-2 class), VAT-inclusive (the notices say so), incl. delivery and installation and a starter tooling kit / mist collector / probe (the re-check's reading)",
+    "source": "https://g2b.dima.tools/list/R25BK01107544",
+    "confidence": "Medium"
+   },
+   {
+    "id": "imm-large-kr",
+    "match": "^imm-(800|1200|2000|3500)t$",
+    "refId": "imm-1200t",
+    "refCapexGbp": 336917.5,
+    "basis": "LS Mtron IMM 1,400 t — ₩660,000,000 (procurement-award, 2026-08; one machine (scope per tender: supply and installation); VAT-inclusive ÷ 1.10 (PwC: 10%); confirmed on its page) = ₩600,000,000 ex-VAT. a 1,400 t injection moulding machine (maker not named in the spec; the winner is LS Mtron), VAT-inclusive — one award, above the 1,200 t reference (book size scales it)",
+    "source": "https://g2b.dima.tools/list/R26BK01648507",
+    "confidence": "Low"
+   },
+   {
+    "id": "imm-kr",
+    "match": "^imm-\\d+t$",
+    "refId": "imm-200t",
+    "refCapexGbp": 57367.7,
+    "basis": "All-electric IMM 180 t, reference model JSW J180ADS-180U (40 mm) or equivalent — ₩124,659,365 (procurement-award, 2026-08; machine incl. import/customs, transport, installation, levelling, commissioning, trial moulding and training; VAT-inclusive ÷ 1.10 (PwC: 10%); confirmed on its page); High-efficiency IMM 220 t (one of two machines in the lot) — ₩100,100,000 (procurement-award, 2026-09; one machine; lot also contained a 300 t machine at 126,500,000 (lot award 226,600,000); VAT-inclusive ÷ 1.10 (PwC: 10%); confirmed on its page) — median of 2 = ₩102,163,348 ex-VAT. 180 t all-electric (JSW J180ADS reference spec) and 220 t (the unit's own line in the lot), VAT-inclusive; the 220 t figure is the tender's budget line for that unit (the lot award equals the sum of its lines)",
+    "source": "https://g2b.dima.tools/list/R26BK01667587",
+    "confidence": "Low"
+   },
+   {
+    "id": "press-brake-kr",
+    "match": "^brake-",
+    "refId": "brake-trumpf-trubend3100",
+    "refCapexGbp": 47729.98,
+    "basis": "유압식 CNC 절곡기, domestic maker (KCs, ISO9001) — ₩93,500,000 (procurement-award, 2025-10; machine incl. installation by maker's engineer, training; VAT-inclusive ÷ 1.10 (PwC: 10%); confirmed on its page) = ₩85,000,000 ex-VAT. hydraulic CNC press brake 130 t × 3,200 mm, Y1/Y2/X/R axes, VAT-inclusive, incl. installation and a set of bending tools",
+    "source": "https://g2b.dima.tools/list/R25BK01077294",
+    "confidence": "Low"
+   }
+  ]
  }
 };

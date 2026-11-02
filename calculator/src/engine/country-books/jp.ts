@@ -1216,6 +1216,43 @@ export const JAPAN_BOOK: CountryBook = {
   "capitalHeldFactor": 1,
   "basis": "3 × 8 h, Monday–Friday, Japan's 2026 working calendar: 5880 h (245 days × 24 h; 16 weekday national public holidays removed — https://date.nager.at/api/v3/PublicHolidays/2026/JP); Japan straight-line tax depreciation — no shift uplift on capital; BOJ API, Aug 2026 latest (updated 2026-10-05) (2026-08); rent JP¥1131/m²/month (CBRE Japan Logistics MarketView Q2 2026 as reported by LNEWS (18 Aug 2026): Chubu (Greater Nagoya) LMT effective rent ¥3,740/tsubo (flat q/q); 3,740 ÷ 3.30579 m²/tsubo = 1,131 JPY/m²/month. (AVERAGE effective rent, large multi-tenant logistics facilities, Chubu / Greater Nagoya (Toyota cluster), 2026-Q2)); maintenance the library's own line build-up rule (3.5% of capex); no Japan norm found",
   "heldBasis": "capex not found for Japan: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Japan's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Japan wages)",
-  "groups": []
+  "groups": [
+   {
+    "id": "cnc-vmc-jp",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
+    "refId": "mach-haas-vf2",
+    "refCapexGbp": 41047.86,
+    "basis": "Brother SPEEDIO S700Xd2 — JP¥8,640,000 (list, 2024-08; machine only (本体価格, base machine); ex-VAT; confirmed on its page) = JP¥8,640,000 ex-VAT. Brother SPEEDIO S700Xd2 list (machine only, ex-tax, 2024): X700/Y400 travel as a VF-2; a 30-taper compact, so lighter cutting than the 40-taper VF-2",
+    "source": "https://www.brother.co.jp/news/2024/speedio/",
+    "confidence": "Low"
+   },
+   {
+    "id": "cnc-5axis-jp",
+    "match": "^(mach-vmc5|mach-dmg-dmu50|mach-haas-umc500)$",
+    "refId": "mach-haas-umc500",
+    "refCapexGbp": 62189.41,
+    "basis": "Brother SPEEDIO U500Xd2 — JP¥13,090,000 (list, 2024-08; machine only (本体価格); ex-VAT; confirmed on its page) = JP¥13,090,000 ex-VAT. Brother SPEEDIO U500Xd2 list (machine only, ex-tax, 2024): trunnion 5-axis, Ø500 jig area as the UMC-500; 30-taper compact",
+    "source": "https://www.brother.co.jp/news/2024/speedio/",
+    "confidence": "Low"
+   },
+   {
+    "id": "press-brake-jp",
+    "match": "^brake-",
+    "refId": "brake-trumpf-trubend3100",
+    "refCapexGbp": 98628.89,
+    "basis": "Amada HRB-1303 — JP¥20,760,000 (list, 2019-12; machine (price 'from'); ex-VAT; confirmed on its page) = JP¥20,760,000 ex-VAT. Amada HRB-1303 (1,300 kN × 3,110 mm) 'from' list price, ex-tax (Dec 2019 — not escalated)",
+    "source": "https://xtech.nikkei.com/atcl/nxt/news/18/06566/",
+    "confidence": "Low"
+   },
+   {
+    "id": "gear-hob-jp",
+    "match": "^gear-hob-",
+    "refId": "gear-hob-small",
+    "refCapexGbp": 199538.21,
+    "basis": "Mitsubishi Heavy Industries Machine Tool (now Nidec Machine Tool) FR-series hobbing machine — JP¥42,000,000 (list, 2019/2020 (article undated; sales target stated for FY to March 2021); machine (price 'from'); ex-VAT; confirmed on its page) = JP¥42,000,000 ex-VAT. Mitsubishi Heavy Industries small hobber 'from' price, ex-tax, work up to Ø150 mm (2019/20 — not escalated)",
+    "source": "https://toolnavi.jp/machinenews/newslist/4107",
+    "confidence": "Low"
+   }
+  ]
  }
 };

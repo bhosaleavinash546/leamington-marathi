@@ -3,47 +3,215 @@
  "rules": {
   "R1": "same machine: the price names the model or carries a spec showing the size of the class (VMC travel within ~±30% of 762×406×508 mm; 5-axis table Ø400–650 mm; lathe 8–10\" chuck; IMM 150–250 t for imm-200t, 900–1,400 t for imm-1200t; press brake 100–135 t × 3–3.2 m; small hobber ≤ 300 mm work)",
   "R2": "one machine per price — a lot total is used only where the award gives the unit's line price",
-  "R3": "machine (incl. delivery / installation accepted and stated); bundles with robots, automation, CAM, a second machine or 'system' are refused",
+  "R3": "machine (incl. delivery / installation accepted and stated); minor standard accessories accepted and stated — a starter tooling kit, a mist collector, a probe, press-brake bending tools; refused: robots, automation, CAM / software, a second machine, a 'system', training, foundation / electrical works, a transformer or compressor, a multi-station classroom tooling set",
   "R4": "ex-VAT: a VAT-inclusive price ÷ (1 + the PwC rate in vat.json); a price whose VAT is not stated is used as stated and says so",
   "R5": "a 'from' price is the base model's, used at Low confidence; a clearance / display-unit price is used at Low and says so",
   "R6": "several admitted prices: the median"
  },
  "countries": {
   "JP": {
-   "vmc3": {"use": ["jp#0"], "confidence": "Low", "why": "Brother SPEEDIO S700Xd2 list (machine only, ex-tax, 2024): X700/Y400 travel as a VF-2; a 30-taper compact, so lighter cutting than the 40-taper VF-2", "rejected": {"jp#1": "earlier version of the same model (S700Xd1, 2022)", "jp#2..jp#14": "procurement awards with no model or size (R1); ¥20–58M — 3–7× the list price, so they hold larger machines, tooling or CAM"}},
-   "vmc5": {"use": ["jp#18"], "confidence": "Low", "why": "Brother SPEEDIO U500Xd2 list (machine only, ex-tax, 2024): trunnion 5-axis, Ø500 jig area as the UMC-500; 30-taper compact", "rejected": {"jp#19": "earlier version (U500Xd1)", "jp#20": "Makino DA500: Ø800 work, 20,000 rpm — a larger, premium class", "jp#21": "OKK VB-X350: no table / travel given", "jp#15..jp#17": "awards with no model or size; #15 a 'system'"}},
-   "pressBrake": {"use": ["jp#33"], "confidence": "Low", "why": "Amada HRB-1303 (1,300 kN × 3,110 mm) 'from' list price, ex-tax (Dec 2019 — not escalated)", "rejected": {"jp#34": "Bodor iBend 'from' price for a 110–220 t series, bed length not given", "jp#35..jp#42": "awards with no tonnage or length"}},
-   "gearHob": {"use": ["jp#43"], "confidence": "Low", "why": "Mitsubishi Heavy Industries small hobber 'from' price, ex-tax, work up to Ø150 mm (2019/20 — not escalated)", "rejected": {"jp#44": "hobber AND a die-sink EDM in one lot"}},
-   "notUsed": {"lathe": "jp#22 includes the sale of the old machine (net price); jp#23 no spec, ¥50.4M — not a 2-axis lathe price", "imm200": "jp#24 Nissei TWX220R is a VERTICAL rotary-table machine; jp#25/26 no clamp force", "laser": "jp#27 Mazak OPTIPLEX 20 kW — far above the 4–6 kW class; awards no power / bed", "alExtPress": "jp#45 a university research press, tonnage not stated"}
+   "vmc3": {
+    "use": [
+     "jp#0"
+    ],
+    "confidence": "Low",
+    "why": "Brother SPEEDIO S700Xd2 list (machine only, ex-tax, 2024): X700/Y400 travel as a VF-2; a 30-taper compact, so lighter cutting than the 40-taper VF-2",
+    "rejected": {
+     "jp#1": "earlier version of the same model (S700Xd1, 2022)",
+     "jp#2..jp#14": "procurement awards with no model or size (R1); ¥20–58M — 3–7× the list price, so they hold larger machines, tooling or CAM"
+    }
+   },
+   "vmc5": {
+    "use": [
+     "jp#18"
+    ],
+    "confidence": "Low",
+    "why": "Brother SPEEDIO U500Xd2 list (machine only, ex-tax, 2024): trunnion 5-axis, Ø500 jig area as the UMC-500; 30-taper compact",
+    "rejected": {
+     "jp#19": "earlier version (U500Xd1)",
+     "jp#20": "Makino DA500: Ø800 work, 20,000 rpm — a larger, premium class",
+     "jp#21": "OKK VB-X350: no table / travel given",
+     "jp#15..jp#17": "awards with no model or size; #15 a 'system'"
+    }
+   },
+   "pressBrake": {
+    "use": [
+     "jp#33"
+    ],
+    "confidence": "Low",
+    "why": "Amada HRB-1303 (1,300 kN × 3,110 mm) 'from' list price, ex-tax (Dec 2019 — not escalated)",
+    "rejected": {
+     "jp#34": "Bodor iBend 'from' price for a 110–220 t series, bed length not given",
+     "jp#35..jp#42": "awards with no tonnage or length"
+    }
+   },
+   "gearHob": {
+    "use": [
+     "jp#43"
+    ],
+    "confidence": "Low",
+    "why": "Mitsubishi Heavy Industries small hobber 'from' price, ex-tax, work up to Ø150 mm (2019/20 — not escalated)",
+    "rejected": {
+     "jp#44": "hobber AND a die-sink EDM in one lot"
+    }
+   },
+   "notUsed": {
+    "lathe": "jp#22 includes the sale of the old machine (net price); jp#23 no spec, ¥50.4M — not a 2-axis lathe price",
+    "imm200": "jp#24 Nissei TWX220R is a VERTICAL rotary-table machine; jp#25/26 no clamp force",
+    "laser": "jp#27 Mazak OPTIPLEX 20 kW — far above the 4–6 kW class; awards no power / bed",
+    "alExtPress": "jp#45 a university research press, tonnage not stated"
+   }
   },
   "KR": {
-   "vmc3": {"use": ["kr-tw#0", "kr-tw#1", "kr-tw#2"], "confidence": "Medium", "why": "three awards with spec sheets — X800/Y450/Z500, X780/Y420/Z510, X660/Y430/Z400 mm (VF-2 class), VAT-inclusive, incl. delivery and installation", "rejected": {"kr-tw#3": "X1,100/Y600 — a larger class", "kr-tw#4": "X1,100/Y600 — a larger class"}},
-   "vmc5": {"use": ["kr-tw#5"], "confidence": "Low", "why": "trunnion A/C, table Ø630 mm, X650/Y600/Z500 (a size above the UMC-500's Ø500), VAT-inclusive, incl. installation", "rejected": {"kr-tw#6": "Ø850 table — a larger class", "kr-tw#7": "bridge type with probes, tool setter and extras (R3)"}},
-   "lathe": {"use": ["kr-tw#8", "kr-tw#9"], "confidence": "Medium", "why": "two 8\" lathes with spec sheets (swing Ø500 / Ø630 mm), VAT-inclusive, incl. installation", "rejected": {"kr-tw#10": "6\" chuck — smaller class", "kr-tw#11": "6\" chuck — smaller class"}},
-   "imm200": {"use": ["kr-tw#12", "kr-tw#13"], "confidence": "Low", "why": "180 t all-electric (JSW J180ADS reference spec) and 220 t (the unit's own line in the lot), VAT-inclusive", "rejected": {"kr-tw#14": "170 t sold with a take-out robot and cyclone (R3)", "kr-tw#15": "280 t — above the class", "kr-tw#16": "a lot of 4 machines, no unit split (R2)"}},
-   "imm1200": {"use": ["kr-tw#17", "kr-tw#18"], "confidence": "Low", "why": "LS Mtron 1,400 t and LS Mtron WIZ900PLUS II 900 t — the two awards that bracket the 1,200 t class; VAT-inclusive", "rejected": {"kr-tw#19": "850 t — below the bracket", "kr-tw#20": "1,800 t, and priced below the 1,400 t machine — not used until checked"}},
-   "pressBrake": {"use": ["kr-tw#22"], "confidence": "Low", "why": "hydraulic CNC press brake 130 t × 3,200 mm, Y1/Y2/X/R axes, VAT-inclusive, incl. installation", "rejected": {"kr-tw#23": "300 t × 4,200 mm — a larger class"}},
-   "notUsed": {"laser": "kr-tw#21 3 kW on a 1,000 × 1,500 mm bed — below the 3 × 1.5 m class", "gearHob": "kr-tw#24 sold with a gantry-loader automation cell (R3)"}
+   "vmc3": {
+    "use": [
+     "kr-tw#0",
+     "kr-tw#2"
+    ],
+    "confidence": "Medium",
+    "why": "two awards with spec sheets — X800/Y450/Z500 and X660/Y430/Z400 mm (VF-2 class), VAT-inclusive (the notices say so), incl. delivery and installation and a starter tooling kit / mist collector / probe (the re-check's reading)",
+    "rejected": {
+     "kr-tw#1": "the re-check found a 5-station classroom tooling set (5 vises, 5 face mills, 2 workbenches) in the price (R3)",
+     "kr-tw#3": "X1,100/Y600 — a larger class",
+     "kr-tw#4": "X1,100/Y600 — a larger class"
+    }
+   },
+   "imm200": {
+    "use": [
+     "kr-tw#12",
+     "kr-tw#13"
+    ],
+    "confidence": "Low",
+    "why": "180 t all-electric (JSW J180ADS reference spec) and 220 t (the unit's own line in the lot), VAT-inclusive; the 220 t figure is the tender's budget line for that unit (the lot award equals the sum of its lines)",
+    "rejected": {
+     "kr-tw#14": "170 t sold with a take-out robot and cyclone (R3)",
+     "kr-tw#15": "280 t — above the class",
+     "kr-tw#16": "a lot of 4 machines, no unit split (R2)"
+    }
+   },
+   "imm1200": {
+    "use": [
+     "kr-tw#17"
+    ],
+    "confidence": "Low",
+    "why": "a 1,400 t injection moulding machine (maker not named in the spec; the winner is LS Mtron), VAT-inclusive — one award, above the 1,200 t reference (book size scales it)",
+    "rejected": {
+     "kr-tw#18": "the re-check found the tender documents say 850 t (not 900 t) and contradict themselves on what is bought",
+     "kr-tw#19": "850 t",
+     "kr-tw#20": "1,800 t, priced below the 1,400 t machine"
+    }
+   },
+   "pressBrake": {
+    "use": [
+     "kr-tw#22"
+    ],
+    "confidence": "Low",
+    "why": "hydraulic CNC press brake 130 t × 3,200 mm, Y1/Y2/X/R axes, VAT-inclusive, incl. installation and a set of bending tools",
+    "rejected": {
+     "kr-tw#23": "300 t × 4,200 mm — a larger class"
+    }
+   },
+   "notUsed": {
+    "laser": "kr-tw#21 3 kW on a 1,000 × 1,500 mm bed — below the 3 × 1.5 m class",
+    "gearHob": "kr-tw#24 sold with a gantry-loader automation cell (R3)",
+    "vmc5": "kr-tw#5: the re-check found a compressor, 65\" monitor, IoT system, NC/CAM-post software, tool setter and probe in the price, and a Ø630 / HSK-A63 machine (R3); #6 Ø850; #7 bridge type with extras",
+    "lathe": "kr-tw#8: price includes a 25 kVA transformer, mist collector, chip conveyor, full tooling kit and 20 soft-jaw sets; kr-tw#9: foundation and panel works, 3 days' training, simulation software, tooling (box-type bed) — both refused (R3); #10/#11 6\" chucks"
+   }
   },
   "TW": {
-   "lathe": {"use": ["kr-tw#34"], "confidence": "Low", "why": "2-axis CNC lathe, 8-inch chuck, one machine (Apr 2021; tax treatment not stated on the notice — 5% if included)", "rejected": {"kr-tw#33": "no spec", "kr-tw#35": "4 machines, no unit price (R2)", "kr-tw#36": "2 machines, no unit price"}},
-   "notUsed": {"vmc3": "award notices give no size (kr-tw#28 names a 3-axis VMC but no travel); #29 two machines", "vmc5": "no size; #30 two machines", "imm200": "no clamp force; #39 with automation", "laser": "no power / bed", "pressBrake": "no tonnage / length; #42 with guarding, #44 scope beyond the machine"}
+   "lathe": {
+    "use": [
+     "kr-tw#34"
+    ],
+    "confidence": "Low",
+    "why": "2-axis CNC lathe, 8-inch chuck, one machine (Apr 2021; tax treatment not stated on the notice — 5% if included)",
+    "rejected": {
+     "kr-tw#33": "no spec",
+     "kr-tw#35": "4 machines, no unit price (R2)",
+     "kr-tw#36": "2 machines, no unit price"
+    }
+   },
+   "notUsed": {
+    "vmc3": "award notices give no size (kr-tw#28 names a 3-axis VMC but no travel); #29 two machines",
+    "vmc5": "no size; #30 two machines",
+    "imm200": "no clamp force; #39 with automation",
+    "laser": "no power / bed",
+    "pressBrake": "no tonnage / length; #42 with guarding, #44 scope beyond the machine"
+   }
   },
   "TH": {
-   "vmc5": {"use": ["th-my-sg#3"], "confidence": "Low", "why": "Okuma MU-500VIII 'Machine Only' 6.40 M THB (dealer promotion, Apr 2026): trunnion 5-axis, Ø500 table as the UMC-500 — a premium Japanese machine; VAT not stated", "rejected": {"th-my-sg#4": "MU-400VIII sold as a package with CAD/CAM (R3)"}},
-   "lathe": {"use": ["th-my-sg#1", "th-my-sg#2"], "confidence": "Low", "why": "Okuma GENOS L2000 and L250-II 2-axis lathes, incl. installation and testing — a dealer's clearance prices (Apr 2025), one dealer; VAT not stated", "rejected": {}},
-   "notUsed": {"vmc3": "th-my-sg#0 GENOS M660V (X1,050 mm) — a larger class", "laser": "th-my-sg#5 3 kW; #6 contradicts itself on power (title 6 kW, body 1.5–3 kW)"}
+   "lathe": {
+    "use": [
+     "th-my-sg#1",
+     "th-my-sg#2"
+    ],
+    "confidence": "Low",
+    "why": "Okuma GENOS L2000 and L250-II 2-axis lathes, incl. installation and testing — a dealer's clearance prices (Apr 2025), one dealer; VAT not stated",
+    "rejected": {}
+   },
+   "notUsed": {
+    "vmc3": "th-my-sg#0 GENOS M660V (X1,050 mm) — a larger class",
+    "laser": "th-my-sg#5 3 kW; #6 contradicts itself on power (title 6 kW, body 1.5–3 kW)",
+    "vmc5": "th-my-sg#3 Okuma MU-500VIII: the re-check found the same '(Machine Only: 6.40 ล้านบาท)' line printed under the smaller MU-400VIII too — a probable copy error, not used; #4 a package with CAD/CAM"
+   }
   },
   "ID": {
-   "vmc3": {"use": ["vn-id-ph#0"], "confidence": "Low", "why": "Timeway VMC X700/Y450/Z450, BT40 (VF-2 class) on the education ministry's school shop (SIPLah), PPN included — a public-sector channel, an upper bound", "rejected": {"vn-id-ph#1": "X620/Y350, 5.5 kW — a smaller class"}},
-   "lathe": {"use": ["vn-id-ph#2", "vn-id-ph#3"], "confidence": "Low", "why": "White Eagle CK30 slant-bed, 8\" hydraulic chuck, from two sellers on SIPLah, PPN included", "rejected": {}},
-   "pressBrake": {"use": ["vn-id-ph#4"], "confidence": "Low", "why": "Timeway hydraulic press brake 1,000 kN × 3,200 mm on SIPLah, PPN included — an NC (not full CNC) control", "rejected": {}}
+   "vmc3": {
+    "use": [
+     "vn-id-ph#0"
+    ],
+    "confidence": "Low",
+    "why": "Timeway VMC X700/Y450/Z450, BT40 (VF-2 class) on the education ministry's school shop (SIPLah), PPN included — a public-sector channel, an upper bound",
+    "rejected": {
+     "vn-id-ph#1": "X620/Y350, 5.5 kW — a smaller class"
+    }
+   },
+   "lathe": {
+    "use": [
+     "vn-id-ph#2",
+     "vn-id-ph#3"
+    ],
+    "confidence": "Low",
+    "why": "White Eagle CK30 slant-bed, 8\" hydraulic chuck, from two sellers on SIPLah, PPN included",
+    "rejected": {}
+   },
+   "pressBrake": {
+    "use": [
+     "vn-id-ph#4"
+    ],
+    "confidence": "Low",
+    "why": "Timeway hydraulic press brake 1,000 kN × 3,200 mm on SIPLah, PPN included — an NC (not full CNC) control",
+    "rejected": {}
+   }
   },
   "VN": {
-   "vmc3": {"use": ["vn-id-ph#5"], "confidence": "Low", "why": "Taikan T-V856S X800/Y550/Z600 (VF-2 class, a little larger), a dealer's indicative price ('khoảng' — about), Sep 2024; VAT not stated", "rejected": {"vn-id-ph#6": "T-V650 spec not on the price page", "vn-id-ph#7": "EMCO award read only in a search snippet; may be a package"}}
+   "vmc3": {
+    "use": [
+     "vn-id-ph#5"
+    ],
+    "confidence": "Low",
+    "why": "Taikan T-V856S X800/Y550/Z600 (VF-2 class, a little larger), a dealer's indicative price ('khoảng' — about), Sep 2024; VAT not stated",
+    "rejected": {
+     "vn-id-ph#6": "T-V650 spec not on the price page",
+     "vn-id-ph#7": "EMCO award read only in a search snippet; may be a package"
+    }
+   }
   },
-  "MY": {"notUsed": {"all": "MyProcurement awards give no model or size (R1); ePerolehan 403"}},
-  "SG": {"notUsed": {"all": "GeBIZ awards give no model or size (R1); th-my-sg#15 is 4 Mazak lathes with no unit price (R2); #17 vacuum former with mould and service, sheet size unknown"}},
-  "PH": {"notUsed": {"all": "no priced machine of a class found (PhilGEPS lots cover several machines; DOST-MIRDC 403)"}}
- }
+  "MY": {
+   "notUsed": {
+    "all": "MyProcurement awards give no model or size (R1); ePerolehan 403"
+   }
+  },
+  "SG": {
+   "notUsed": {
+    "all": "GeBIZ awards give no model or size (R1); th-my-sg#15 is 4 Mazak lathes with no unit price (R2); #17 vacuum former with mould and service, sheet size unknown"
+   }
+  },
+  "PH": {
+   "notUsed": {
+    "all": "no priced machine of a class found (PhilGEPS lots cover several machines; DOST-MIRDC 403)"
+   }
+  }
+ },
+ "recheck": "verdicts.json (independent page re-check, 2 Nov 2026): 24 items, 20 confirmed, 4 differ — every price digit as recorded; the differences are scope or size, applied below"
 }

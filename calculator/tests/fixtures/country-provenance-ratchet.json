@@ -64,8 +64,8 @@
   "heldPct": 39.7
  },
  "VN": {
-  "medianSourcedPct": 19.8,
-  "heldPct": 40.8
+  "medianSourcedPct": 16,
+  "heldPct": 41.3
  },
  "BR": {
   "medianSourcedPct": 39.7,
@@ -125,7 +125,7 @@
  },
  "JP": {
   "medianSourcedPct": 41.1,
-  "heldPct": 34.5
+  "heldPct": 34.4
  },
  "TW": {
   "medianSourcedPct": 41.5,

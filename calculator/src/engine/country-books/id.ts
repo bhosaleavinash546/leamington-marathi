@@ -1216,6 +1216,34 @@ export const INDONESIA_BOOK: CountryBook = {
   "capitalHeldFactor": 1,
   "basis": "3 × 8 h, Monday–Friday: 250 working days × 24 h = 6,000 h — Indonesia's full 2026 public-holiday calendar was not available (the holiday API failed or misses Tết / Islamic holidays), so the round's median working year (250 days) is used; Indonesia straight-line tax depreciation — no shift uplift on capital; read on the page: 'Rata-rata tertimbang suku bunga kredit pada Agustus 2026 mencapai 8,9 persen' (2026-08); rent Rp81936/m²/month (Knight Frank APAC Logistics Highlights H1 2026, Greater Jakarta: prime rent 983,232 IDR per sqm. The indicator table labels it 'IDR psm pm', but the chart beside it is 'IDR/sqm/annum (000)' with an axis of 750–1,000, so it is per ANNUM; 983,232 ÷ 12 = 81,936 IDR/m²/month. (PRIME logistics rent, Greater Jakarta (incl. Bekasi/Karawang automotive belt), 2026-H1)); maintenance the library's own line build-up rule (3.5% of capex); no Indonesia norm found",
   "heldBasis": "capex not found for Indonesia: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Indonesia's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Indonesia wages)",
-  "groups": []
+  "groups": [
+   {
+    "id": "cnc-vmc-id",
+    "match": "^(mach-vmc3|mach-haas-vf2|mach-drill)$",
+    "refId": "mach-haas-vf2",
+    "refCapexGbp": 64469.31,
+    "basis": "TIMEWAY CNC Vertical Machine Center (Siemens 808D) — Rp1,728,973,400 (list, 2026-11 (page read; listing priced 2025+); machine with standard accessories as listed (chip conveyor + trolley, coolant, tools & toolbox); delivery/installation not stated; VAT-inclusive ÷ 1.11 (PwC: 11%); confirmed on its page) = Rp1,557,633,694 ex-VAT. Timeway VMC X700/Y450/Z450, BT40 (VF-2 class) on the education ministry's school shop (SIPLah), PPN included — a public-sector channel, an upper bound",
+    "source": "https://siplahgramedia.id/main/detail/62e00a53207343faafff973820078d5c",
+    "confidence": "Low"
+   },
+   {
+    "id": "cnc-lathe-id",
+    "match": "^(mach-lathe-cnc|mach-mazak-qt200)$",
+    "refId": "mach-lathe-cnc",
+    "refCapexGbp": 39226.06,
+    "basis": "WHITE EAGLE CK30 slant-bed CNC lathe — Rp1,128,744,100 (list, 2026-11 (page read; listing priced 2025+); machine; delivery/installation not stated; VAT-inclusive ÷ 1.11 (PwC: 11%); confirmed on its page); WHITE EAGLE CK30 slant-bed CNC lathe (Mitsubishi controller) — Rp975,227,900 (list, 2026-11 (page read; listing priced 2025+); machine; delivery/installation not stated; VAT-inclusive ÷ 1.11 (PwC: 11%); confirmed on its page) — median of 2 = Rp947,735,135 ex-VAT. White Eagle CK30 slant-bed, 8\" hydraulic chuck, from two sellers on SIPLah, PPN included",
+    "source": "https://siplahgramedia.id/main/detail/f1ef5822a7b347d58389e5c5339a7057",
+    "confidence": "Low"
+   },
+   {
+    "id": "press-brake-id",
+    "match": "^brake-",
+    "refId": "brake-trumpf-trubend3100",
+    "refCapexGbp": 42451.96,
+    "basis": "TIMEWAY hydraulic press brake 100 t x 3200 mm — Rp1,138,500,000 (list, 2026-11 (page read; listing priced 2025+); machine with standard accessories (worktable compensation, overload protection); delivery/installation not stated; VAT-inclusive ÷ 1.11 (PwC: 11%); confirmed on its page) = Rp1,025,675,676 ex-VAT. Timeway hydraulic press brake 1,000 kN × 3,200 mm on SIPLah, PPN included — an NC (not full CNC) control",
+    "source": "https://siplahgramedia.id/main/detail/4ad6fd9e5fe24500af56bb867073c367",
+    "confidence": "Low"
+   }
+  ]
  }
 };

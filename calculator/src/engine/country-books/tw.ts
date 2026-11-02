@@ -1216,6 +1216,16 @@ export const TAIWAN_BOOK: CountryBook = {
   "capitalHeldFactor": 1,
   "basis": "3 × 8 h, Monday–Friday: 250 working days × 24 h = 6,000 h — Taiwan's full 2026 public-holiday calendar was not available (the holiday API failed or misses Tết / Islamic holidays), so the round's median working year (250 days) is used; Taiwan straight-line tax depreciation — no shift uplift on capital; read from the attached XLSX (https://www.cbc.gov.tw/en/dl-227919-27374e3a584b4596aca7903e170a90aa.html), row Sep 2026 (2026-09); rent NT$378/m²/month (Knight Frank APAC Logistics Highlights H1 2026, Taipei: prime rent TW$1,250 per ping per month; 1,250 ÷ 3.30579 m²/ping = 378 TWD/m²/month. (PRIME logistics rent, Taipei, 2026-H1 (updated Aug 2026))); maintenance the library's own line build-up rule (3.5% of capex); no Taiwan norm found",
   "heldBasis": "capex not found for Taiwan: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Taiwan's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Taiwan wages)",
-  "groups": []
+  "groups": [
+   {
+    "id": "cnc-lathe-tw",
+    "match": "^(mach-lathe-cnc|mach-mazak-qt200)$",
+    "refId": "mach-lathe-cnc",
+    "refCapexGbp": 35128.43,
+    "basis": "機械科二軸CNC車床(8英吋) — NT$1,520,000 (procurement-award, 2021-04; 1 machine; VAT not stated — used as stated; confirmed on its page) = NT$1,520,000 ex-VAT. 2-axis CNC lathe, 8-inch chuck, one machine (Apr 2021; tax treatment not stated on the notice — 5% if included)",
+    "source": "https://pcc-api.openfun.app/index/case/3.92.4.52/11002-23/20210416/BDM-1-53378422",
+    "confidence": "Low"
+   }
+  ]
  }
 };

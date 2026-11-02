@@ -122,7 +122,17 @@
   "rentBasis": "Knight Frank APAC Logistics Highlights H1 2026, Taipei: prime rent TW$1,250 per ping per month; 1,250 ÷ 3.30579 m²/ping = 378 TWD/m²/month. (PRIME logistics rent, Taipei, 2026-H1 (updated Aug 2026))",
   "ukRentGbpPerM2Yr": 110,
   "capitalHeldFactor": 1.0,
-  "groups": [],
+  "groups": [
+   {
+    "id": "cnc-lathe-tw",
+    "match": "^(mach-lathe-cnc|mach-mazak-qt200)$",
+    "refId": "mach-lathe-cnc",
+    "refCapexLocal": 1520000,
+    "basis": "機械科二軸CNC車床(8英吋) — NT$1,520,000 (procurement-award, 2021-04; 1 machine; VAT not stated — used as stated; confirmed on its page) = NT$1,520,000 ex-VAT. 2-axis CNC lathe, 8-inch chuck, one machine (Apr 2021; tax treatment not stated on the notice — 5% if included)",
+    "source": "https://pcc-api.openfun.app/index/case/3.92.4.52/11002-23/20210416/BDM-1-53378422",
+    "confidence": "Low"
+   }
+  ],
   "notRebuiltBasis": "capex not found for Taiwan: the machine's capital is the book's AT PAR (×1 — no unsourced country discount), under Taiwan's operating model (3 × 8 h, tax life, loan finance, rent, tariff, support at Taiwan wages)"
  },
  "materialFamilies": [
