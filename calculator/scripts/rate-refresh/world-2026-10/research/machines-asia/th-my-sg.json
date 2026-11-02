@@ -1,0 +1,476 @@
+{
+  "researchedBy": "th-my-sg",
+  "date": "2026-11-02",
+  "items": [
+    {
+      "country": "TH",
+      "machineClass": "vmc3",
+      "model": "Okuma GENOS M660V",
+      "spec": "not stated on page (3-axis vertical machining centre; page describes it for mould work and high-precision parts)",
+      "price": 4800000,
+      "currency": "THB",
+      "priceType": "dealer-quote",
+      "scope": "machine incl. installation and testing on site",
+      "vat": "unknown",
+      "date": "2025-04",
+      "url": "https://groupcor.com/cleanrance-sales-2025-okuma-cnc-machine/",
+      "quote": "GENOS M660V  5,500,000 บาท  4,800,000 บาท",
+      "seenIn": "page",
+      "notes": "Group Engineering Products (Okuma dealer, Thailand) clearance promotion, posted 04 Apr 2025. Page shows a regular price and a special price; the special price is recorded here. Page says the units are display machines ready to ship, stock is limited, and installation and testing on site are included. VAT is not mentioned. Travels and chuck size are not stated on the page. Not independent of the other Group Engineering items. Regular price on the same row: 5,500,000 THB. The GENOS M660V is a larger machine than the VF-2 class (check the maker's travels before using it for mach-haas-vf2)."
+    },
+    {
+      "country": "TH",
+      "machineClass": "lathe",
+      "model": "Okuma GENOS L2000",
+      "spec": "not stated on page (2-axis CNC lathe)",
+      "price": 1700000,
+      "currency": "THB",
+      "priceType": "dealer-quote",
+      "scope": "machine incl. installation and testing on site",
+      "vat": "unknown",
+      "date": "2025-04",
+      "url": "https://groupcor.com/cleanrance-sales-2025-okuma-cnc-machine/",
+      "quote": "GENOS L2000  2,300,000 บาท  1,700,000 บาท",
+      "seenIn": "page",
+      "notes": "Group Engineering Products (Okuma dealer, Thailand) clearance promotion, posted 04 Apr 2025. Page shows a regular price and a special price; the special price is recorded here. Page says the units are display machines ready to ship, stock is limited, and installation and testing on site are included. VAT is not mentioned. Travels and chuck size are not stated on the page. Not independent of the other Group Engineering items. Regular price on the same row: 2,300,000 THB."
+    },
+    {
+      "country": "TH",
+      "machineClass": "lathe",
+      "model": "Okuma GENOS L250-II",
+      "spec": "not stated on page (compact 2-axis CNC lathe)",
+      "price": 1550000,
+      "currency": "THB",
+      "priceType": "dealer-quote",
+      "scope": "machine incl. installation and testing on site",
+      "vat": "unknown",
+      "date": "2025-04",
+      "url": "https://groupcor.com/cleanrance-sales-2025-okuma-cnc-machine/",
+      "quote": "GENOS L250-II  2,100,000 บาท  1,550,000 บาท",
+      "seenIn": "page",
+      "notes": "Group Engineering Products (Okuma dealer, Thailand) clearance promotion, posted 04 Apr 2025. Page shows a regular price and a special price; the special price is recorded here. Page says the units are display machines ready to ship, stock is limited, and installation and testing on site are included. VAT is not mentioned. Travels and chuck size are not stated on the page. Not independent of the other Group Engineering items. Regular price on the same row: 2,100,000 THB."
+    },
+    {
+      "country": "TH",
+      "machineClass": "vmc5",
+      "model": "Okuma MU-500VIII",
+      "spec": "5-axis trunnion VMC, table Ø 500 mm, X/Y/Z 1,050 / 560 / 460 mm (from the page)",
+      "price": 6400000,
+      "currency": "THB",
+      "priceType": "dealer-quote",
+      "scope": "machine only",
+      "vat": "unknown",
+      "date": "2026-04",
+      "url": "https://groupcor.com/okuma-cnc-5-axis-promotion-2026/",
+      "quote": "(Machine Only: 6.40 ล้านบาท)",
+      "seenIn": "page",
+      "notes": "Group Engineering Products (Okuma dealer, Thailand) 5-axis promotion, page dated '01 Apr' with image path 2026/04. The package price for the same model is '฿ 8.5 ล้านบาท' (8,500,000 THB incl. TopSolid CAD/CAM, special options, 1-year after-sales service, installation and training). VAT not mentioned. Promotion price, not a list price."
+    },
+    {
+      "country": "TH",
+      "machineClass": "vmc5",
+      "model": "Okuma MU-400VIII",
+      "spec": "5-axis trunnion VMC, table Ø 400 mm, X/Y/Z 762 / 460 / 460 mm (from the page)",
+      "price": 7000000,
+      "currency": "THB",
+      "priceType": "dealer-quote",
+      "scope": "package: machine + TopSolid CAD/CAM + special options + 1-year after-sales service; turnkey import, transport, installation, setting up and training",
+      "vat": "unknown",
+      "date": "2026-04",
+      "url": "https://groupcor.com/okuma-cnc-5-axis-promotion-2026/",
+      "quote": "฿ 7 ล้านบาท",
+      "seenIn": "page",
+      "notes": "Same dealer page as the MU-500VIII item. Price is for the whole package, not machine only; no machine-only price is given for the MU-400VIII. Table is smaller (Ø400) than the UMC-500 class. VAT not mentioned."
+    },
+    {
+      "country": "TH",
+      "machineClass": "laser",
+      "model": "SaleCNC 'CNC Laser 3000×1500-3000W Double table change' (Chinese-built, source brand not named)",
+      "spec": "3000×1500 bed (title), 3 kW, exchange table; Fuji Electric ALPHA Smart servo drives; laser source and head brand not named",
+      "price": 1399900,
+      "currency": "THB",
+      "priceType": "dealer-quote",
+      "scope": "not stated (machine; optional extra +150,000 THB unspecified)",
+      "vat": "unknown",
+      "date": "2026",
+      "url": "https://www.salecnc.net/product/cnc-laser-3000x1500-3000w-double-table-change",
+      "quote": "CNC Laser 3000×1500-3000W Double table change ... ฿1,819,870 ... ฿1,399,900",
+      "seenIn": "page",
+      "notes": "Thai online dealer (salecnc.net). Shown as a sale price with a struck-through original of 1,819,870 THB. 3 kW is below the 4-6 kW class. No date on the listing (site footer 2026; product image uploaded Jan 2024). Low-end Chinese machine, not comparable to TRUMPF/Amada. Low confidence."
+    },
+    {
+      "country": "TH",
+      "machineClass": "laser",
+      "model": "SaleCNC 'CNC Fiber Laser รุ่น FB-16-1530 6000W' (Chinese-built, source brand not named)",
+      "spec": "working area 1.5 x 3 m; title says 6000 W but the page body also lists 1,000-3,000 W prices",
+      "price": 1420000,
+      "currency": "THB",
+      "priceType": "dealer-quote",
+      "scope": "not stated (page mentions chiller water cooling, fume extraction, loading aid as features)",
+      "vat": "unknown",
+      "date": "2026",
+      "url": "https://www.salecnc.net/product/cnc-fiber-laser-%e0%b9%84%e0%b8%9f%e0%b9%80%e0%b8%9a%e0%b8%ad%e0%b8%a3%e0%b9%8c%e0%b9%80%e0%b8%a5%e0%b9%80%e0%b8%8b%e0%b8%ad%e0%b8%a3%e0%b9%8c-1000w",
+      "quote": "฿2,000,000 Original price was: ฿2,000,000.฿1,420,000Current price is: ฿1,420,000.",
+      "seenIn": "page",
+      "notes": "DOUBTFUL: the page is internally inconsistent on power (title 6000W, URL slug 1000w, body '1,500w => ราคา => 899,000 บาท', '2,000w => ราคา => 999,000 บาท', '3,000w => ราคา => 1,540,000 บาท'). Same dealer as the 3 kW item, so not independent. Low confidence."
+    },
+    {
+      "country": "MY",
+      "machineClass": "vmc3",
+      "model": "not stated (CNC vertical machining centre, milling)",
+      "spec": "not stated",
+      "price": 150000,
+      "currency": "MYR",
+      "priceType": "procurement-award",
+      "scope": "supply ('membekal') of one unit; delivery/installation not stated",
+      "vat": "unknown",
+      "date": "2024-05",
+      "url": "https://myprocurement.treasury.gov.my/archive/results-quotation",
+      "quote": "QT240000000012668 | PERKHIDMATAN MEMBEKAL SATU UNIT MESIN CNC VERTICAL MACHINING CENTRE (MILING) UNTUK KEGUNAAN KOLEJ VOKASIONAL BUTTERWORTH, KEMENTERIAN PENDIDIKAN MALAYSIA | ... | Tarikh Keputusan: | 09/05/2024 | ... | VISUAL IN-TECH SDN. BHD. | Harga Setuju Terima (RM) | 150,000.00",
+      "seenIn": "page",
+      "notes": "MyProcurement (Ministry of Finance) archive of quotation (sebut harga) results; search the archive by the number given. Make, model and specification are not given in the result record. Buyer: Kolej Vokasional Butterworth (BPLTV, Ministry of Education). A vocational-college machine; may be a smaller training VMC than the VF-2 class."
+    },
+    {
+      "country": "MY",
+      "machineClass": "vmc3",
+      "model": "not stated (CNC machining centre, milling, 3 axis)",
+      "spec": "3-axis (no travels given)",
+      "price": 303500,
+      "currency": "MYR",
+      "priceType": "procurement-award",
+      "scope": "supply, delivery, installation, testing and commissioning of 1 unit",
+      "vat": "unknown",
+      "date": "2022-07",
+      "url": "https://myprocurement.treasury.gov.my/archive/results-quotation",
+      "quote": "QT220000000024014 | MEMBEKAL  MENGHANTAR  MEMASANG  MENGUJI DAN MENTAULIAH 1 UNIT CNC MACHINNING CENTRE  MILING  3 AXIS KE KOLEJ VOKASIONAL MATANG TAHUN 2022 | ... | AUDIOLAB SOUND HEARING SOLUTION SDN. BHD. | Harga Setuju Terima (RM) | 303,500.00",
+      "seenIn": "page",
+      "notes": "MyProcurement (Ministry of Finance) archive of quotation (sebut harga) results; search the archive by the number given. Make, model and specification are not given in the result record. Result displayed 29/07/2022 (decision date not given). Buyer: Kolej Vokasional Matang. Winning supplier is a general trading company, not a machine-tool dealer."
+    },
+    {
+      "country": "MY",
+      "machineClass": "vmc3",
+      "model": "not stated (CNC machining centre, milling, 3 axis)",
+      "spec": "3-axis (no travels given)",
+      "price": 199800,
+      "currency": "MYR",
+      "priceType": "procurement-award",
+      "scope": "supply, delivery, installation, testing and commissioning of 1 unit",
+      "vat": "unknown",
+      "date": "2022-07",
+      "url": "https://myprocurement.treasury.gov.my/archive/results-quotation",
+      "quote": "QT220000000019925 | MEMBEKAL  MENGHANTAR  MEMASANG  MENGUJI DAN MENTAULIAH  1 UNIT CNC MACHINNING CENTRE  MILLING  3 AXIS KE KOLEJ VOKASIONAL KERIAN | ... | KEJURUTERAAN DAN SERVIS INTAN | Harga Setuju Terima (RM) | 199,800.00",
+      "seenIn": "page",
+      "notes": "MyProcurement (Ministry of Finance) archive of quotation (sebut harga) results; search the archive by the number given. Make, model and specification are not given in the result record. Result displayed 06/07/2022 (decision date not given). Buyer: Kolej Vokasional Kerian."
+    },
+    {
+      "country": "MY",
+      "machineClass": "lathe",
+      "model": "not stated (CNC lathe machine)",
+      "spec": "not stated",
+      "price": 98800,
+      "currency": "MYR",
+      "priceType": "procurement-award",
+      "scope": "supply, delivery, installation, testing and commissioning, with training",
+      "vat": "unknown",
+      "date": "2024-05",
+      "url": "https://myprocurement.treasury.gov.my/archive/results-quotation",
+      "quote": "QT240000000010591 | SEBUT HARGA MEMBEKAL, MENGHANTAR, MEMASANG, MENGUJIGUNA DAN MENTAULIAH BESERTA LATIHAN PERALATAN AKADEMIK MESIN CNC JENIS LARIK (CNC LATHE MACHINE) DI JABATAN KEJURUTERAAN MEKANIKAL DI POLITEKNIK SULTAN HAJI AHMAD SHAH, KUANTAN, PAHANG | ... | Tarikh Keputusan: | 27/05/2024 | ... | AKUSTIKA JAYA SDN. BHD. | Harga Setuju Terima (RM) | 98,800.00",
+      "seenIn": "page",
+      "notes": "MyProcurement (Ministry of Finance) archive of quotation (sebut harga) results; search the archive by the number given. Make, model and specification are not given in the result record. Described as 'peralatan akademik' (academic equipment); the low price suggests a small training lathe rather than an ST-20 class industrial lathe. Quantity not stated (assumed 1 from wording, not confirmed)."
+    },
+    {
+      "country": "MY",
+      "machineClass": "lathe",
+      "model": "not stated (industrial CNC turning machine with live tooling)",
+      "spec": "live tooling (not a plain 2-axis lathe)",
+      "price": 499997,
+      "currency": "MYR",
+      "priceType": "procurement-award",
+      "scope": "supply, delivery, installation, testing and commissioning",
+      "vat": "unknown",
+      "date": "2025-04",
+      "url": "https://myprocurement.treasury.gov.my/archive/results-quotation",
+      "quote": "QT250000000000693 | SEBUTHARGA MEMBEKAL, MENGHANTAR, MEMASANG, MENGUJIGUNA DAN MENTAULIAH INDUSTRIAL CNC TURNING (LIVE TOOLING) MACHINE BAGI MAKMAL CNC DI KOLEJ KOMUNITI KEPALA BATAS | ... | Tarikh Keputusan: | 07/04/2025 | ... | PUNCAK MEGA SDN. BHD. | Harga Setuju Terima (RM) | 499,997.00",
+      "seenIn": "page",
+      "notes": "MyProcurement (Ministry of Finance) archive of quotation (sebut harga) results; search the archive by the number given. Make, model and specification are not given in the result record. Live-tooling turning centre, so above the 2-axis lathe class. Price sits just under the RM500,000 quotation ceiling. Quantity not stated."
+    },
+    {
+      "country": "MY",
+      "machineClass": "vmc5",
+      "model": "not stated (5-axis CNC vertical milling machine)",
+      "spec": "5-axis (no table size given)",
+      "price": 948100,
+      "currency": "MYR",
+      "priceType": "procurement-award",
+      "scope": "supply, delivery, testing and commissioning",
+      "vat": "unknown",
+      "date": "2021-03",
+      "url": "https://myprocurement.treasury.gov.my/archive/results-tender",
+      "quote": "QT200000000025468 | MEMBEKAL  MENGHANTAR  MENGUJI DAN MENTAULIAH 5 AXIS COMPUTER NUMERICAL CONTROL  CNC  VERTICAL MILLING MACHINE UNTUK TENTERA DARAT | Kementerian: | KEMENTERIAN PERTAHANAN | ... | LESTARI CREATIVE MARKETING | Harga Setuju Terima (RM) | 948,100.00",
+      "seenIn": "page",
+      "notes": "MyProcurement archive of tender results. Result displayed 08/03/2021 (decision date not given); older than 2024. Buyer: Ministry of Defence for the Army. Make, model and specification not given; supplier is a general trading firm."
+    },
+    {
+      "country": "SG",
+      "machineClass": "vmc5",
+      "model": "not stated (5-axis high speed CNC machining centre)",
+      "spec": "5-axis, 'high speed' (no table size given)",
+      "price": 383200,
+      "currency": "SGD",
+      "priceType": "procurement-award",
+      "scope": "supply, delivery, installation and commissioning of one unit",
+      "vat": "unknown",
+      "date": "2025-11",
+      "url": "https://data.gov.sg/datasets/d_acde1106003906a75c3fa052592f2fcb/view",
+      "quote": "NST000ETT25000090 | Supply, Delivery, Installation, and Commissioning of one unit of 5-axis high speed CNC (Computer Numerical Control) machining centre | Agency for Science, Technology and Research | 19/11/2025 | Awarded to Suppliers | PRECISION TECHNOLOGIES PTE LTD | 383200",
+      "seenIn": "page",
+      "notes": "GeBIZ award as published in the 'Government Procurement via GeBIZ' dataset on data.gov.sg (fields tender_no, tender_description, agency, award_date, supplier_name, awarded_amt). Make, model and spec are not in the record. GST treatment of awarded_amt is not stated. Buyer: A*STAR. 'High speed' 5-axis research machine; the class may differ from the UMC-500."
+    },
+    {
+      "country": "SG",
+      "machineClass": "vmc5",
+      "model": "not stated (CNC 5-axis milling machines), qty 2",
+      "spec": "5-axis (no table size given)",
+      "price": 1288000,
+      "currency": "SGD",
+      "priceType": "procurement-award",
+      "scope": "supply, delivery and commissioning of TWO units (total award)",
+      "vat": "unknown",
+      "date": "2025-12",
+      "url": "https://data.gov.sg/datasets/d_acde1106003906a75c3fa052592f2fcb/view",
+      "quote": "NYP000ETT25000032 | SUPPLY, DELIVERY AND COMMISSIONING OF TWO UNITS OF CNC 5-AXIS MILLING MACHINES | Nanyang Polytechnic | 9/12/2025 | Awarded to Suppliers | UNITED MACHINING SOUTH EAST ASIA PTE. LTD. | 1288000",
+      "seenIn": "page",
+      "notes": "GeBIZ award as published in the 'Government Procurement via GeBIZ' dataset on data.gov.sg (fields tender_no, tender_description, agency, award_date, supplier_name, awarded_amt). Make, model and spec are not in the record. GST treatment of awarded_amt is not stated. Price is the total for 2 units (not divided here). Supplier United Machining South East Asia is a machine-tool distributor."
+    },
+    {
+      "country": "SG",
+      "machineClass": "lathe",
+      "model": "Mazak (supplier Yamazaki Mazak Singapore; model not stated) 2-axis CNC lathe, qty 4",
+      "spec": "2-axis CNC lathe (no chuck size given)",
+      "price": 383880,
+      "currency": "SGD",
+      "priceType": "procurement-award",
+      "scope": "supply, delivery, installation and commissioning of FOUR units (total award)",
+      "vat": "unknown",
+      "date": "2026-03",
+      "url": "https://data.gov.sg/datasets/d_acde1106003906a75c3fa052592f2fcb/view",
+      "quote": "SPO000ETT25000047 | SPO-REQ-2025-007361-MAE-Invitation-To-Tender (ITT) for Supply, Delivery, Installation and Commissioning of Four Units of 2-Axis CNC Lathe | Singapore Polytechnic | 9/3/2026 | Awarded to Suppliers | YAMAZAKI MAZAK SINGAPORE PTE LTD | 383880",
+      "seenIn": "page",
+      "notes": "GeBIZ award as published in the 'Government Procurement via GeBIZ' dataset on data.gov.sg (fields tender_no, tender_description, agency, award_date, supplier_name, awarded_amt). Make, model and spec are not in the record. GST treatment of awarded_amt is not stated. Price is the total for 4 units (not divided here). The make (Mazak) follows from the supplier name, not from a stated model. An earlier tender for the same purchase (SPO000ETT24000055, 26/6/2025) was 'Awarded to No Suppliers'."
+    },
+    {
+      "country": "SG",
+      "machineClass": "vmc3",
+      "model": "not stated (3-axis CNC vertical milling machine), qty 2",
+      "spec": "3-axis (no travels given)",
+      "price": 215600,
+      "currency": "SGD",
+      "priceType": "procurement-award",
+      "scope": "supply, delivery, installation and commissioning of TWO units and associated accessories (total award)",
+      "vat": "unknown",
+      "date": "2022-02",
+      "url": "https://data.gov.sg/datasets/d_acde1106003906a75c3fa052592f2fcb/view",
+      "quote": "NYP000ETT21000019 | TENDER FOR THE SUPPLY, DELIVERY, INSTALLATION AND COMMISSIONING OF TWO UNITS OF 3-AXIS CNC VERTICAL MILLING MACHINE AND ASSOCIATED ACCESSORIE | Nanyang Polytechnic | 10/2/2022 | Awarded to Suppliers | NOBELTECH PTE. LTD. | 215600",
+      "seenIn": "page",
+      "notes": "GeBIZ award as published in the 'Government Procurement via GeBIZ' dataset on data.gov.sg (fields tender_no, tender_description, agency, award_date, supplier_name, awarded_amt). Make, model and spec are not in the record. GST treatment of awarded_amt is not stated. Total for 2 units incl. accessories (not divided here). Award date 2022, older than 2024."
+    },
+    {
+      "country": "SG",
+      "machineClass": "thermoformLarge",
+      "model": "not stated (vacuum-forming machine)",
+      "spec": "sheet size not stated",
+      "price": 797900,
+      "currency": "SGD",
+      "priceType": "procurement-award",
+      "scope": "1 unit + 1 set of mould, installation, commissioning, training, 1-year warranty and service, maintenance & calibration package",
+      "vat": "unknown",
+      "date": "2024-04",
+      "url": "https://data.gov.sg/datasets/d_acde1106003906a75c3fa052592f2fcb/view",
+      "quote": "NST000ETT24000011 | Provision of 1 unit of vacuum-forming machine with 1 set of mould provided, comes with installation, commissioning, training, 1 year warranty and service, maintenance & calibration package | Agency for Science, Technology and Research | 25/4/2024 | Awarded to Suppliers | PRECISION TECHNOLOGIES PTE LTD | 797900",
+      "seenIn": "page",
+      "notes": "DOUBTFUL MATCH: GeBIZ award as published in the 'Government Procurement via GeBIZ' dataset on data.gov.sg (fields tender_no, tender_description, agency, award_date, supplier_name, awarded_amt). Make, model and spec are not in the record. GST treatment of awarded_amt is not stated. Sheet size and whether it is inline/rotary are unknown, so it may not be the ≥1200×1000 mm class. The price includes a mould and a service/maintenance package. Research buyer (A*STAR)."
+    }
+  ],
+  "notFound": [
+    {
+      "country": "TH",
+      "machineClass": "imm200",
+      "tried": "Thai searches for เครื่องฉีดพลาสติก 200 ตัน ราคา / Haitian MA2000 ราคา บาท / ประกาศผู้ชนะ เครื่องฉีดพลาสติก: the Haitian agent (SP Intermac) and CCT Group pages show no price. Only used-machine buyer ranges and Alibaba USD offers were found, and those do not count. e-GP (process3.gprocurement.go.th) search pages are behind an F5 JavaScript check and could not be read. ACT Ai (procurement.actai.co) mirrors e-GP contracts; one test query worked, but further scripted queries of its API were refused by this session's permission system, so it was not used. Web searches in Thai (ประกาศผู้ชนะ, ราคาที่ตกลงซื้อ, สขร.1, with the machine name) found award titles, e.g. Kasetsart Univ. Faculty of Engineering 4-axis CNC lathe (2569) and Kantharalom Technical College industrial CNC lathe + CAD/CAM (Oct 2025), but those pages returned 503 or a bot-check page, so no price was read. KMUTT FY2566 procurement report PDF had no machine tools."
+    },
+    {
+      "country": "TH",
+      "machineClass": "pressBrake",
+      "tried": "mccorp.co.th (Thai maker) 100t/3200 NC press brake page: 'Request a Quote', no price. Yellow Pages TH press brake importer: no price for 100 t. Award searches (เครื่องพับโลหะ CNC ประกาศผู้ชนะ) found nothing. e-GP (process3.gprocurement.go.th) search pages are behind an F5 JavaScript check and could not be read. ACT Ai (procurement.actai.co) mirrors e-GP contracts; one test query worked, but further scripted queries of its API were refused by this session's permission system, so it was not used. Web searches in Thai (ประกาศผู้ชนะ, ราคาที่ตกลงซื้อ, สขร.1, with the machine name) found award titles, e.g. Kasetsart Univ. Faculty of Engineering 4-axis CNC lathe (2569) and Kantharalom Technical College industrial CNC lathe + CAD/CAM (Oct 2025), but those pages returned 503 or a bot-check page, so no price was read. KMUTT FY2566 procurement report PDF had no machine tools."
+    },
+    {
+      "country": "TH",
+      "machineClass": "vmc3",
+      "tried": "No VF-2-size dealer price found: Haas, DN Solutions and Brother pages show no Thai prices. Only the Okuma GENOS M660V clearance price (a larger machine) was found and is recorded. e-GP (process3.gprocurement.go.th) search pages are behind an F5 JavaScript check and could not be read. ACT Ai (procurement.actai.co) mirrors e-GP contracts; one test query worked, but further scripted queries of its API were refused by this session's permission system, so it was not used. Web searches in Thai (ประกาศผู้ชนะ, ราคาที่ตกลงซื้อ, สขร.1, with the machine name) found award titles, e.g. Kasetsart Univ. Faculty of Engineering 4-axis CNC lathe (2569) and Kantharalom Technical College industrial CNC lathe + CAD/CAM (Oct 2025), but those pages returned 503 or a bot-check page, so no price was read. KMUTT FY2566 procurement report PDF had no machine tools."
+    },
+    {
+      "country": "TH",
+      "machineClass": "laser",
+      "tried": "No TRUMPF/Amada/Bystronic/HSG/Bodor Thai price found. Only salecnc.net Chinese-machine prices are recorded (Low)."
+    },
+    {
+      "country": "TH",
+      "machineClass": "imm1200",
+      "tried": "Not searched in depth (common classes first); no price met in the Thai searches above. No Thai-listed machine maker publishes ASP."
+    },
+    {
+      "country": "TH",
+      "machineClass": "waterjet5",
+      "tried": "Not searched in depth (common classes first); no price met in the Thai searches above. No Thai-listed machine maker publishes ASP."
+    },
+    {
+      "country": "TH",
+      "machineClass": "rotoCarousel",
+      "tried": "Not searched in depth (common classes first); no price met in the Thai searches above. No Thai-listed machine maker publishes ASP."
+    },
+    {
+      "country": "TH",
+      "machineClass": "thermoformLarge",
+      "tried": "Not searched in depth (common classes first); no price met in the Thai searches above. No Thai-listed machine maker publishes ASP."
+    },
+    {
+      "country": "TH",
+      "machineClass": "alProfileCentre",
+      "tried": "Not searched in depth (common classes first); no price met in the Thai searches above. No Thai-listed machine maker publishes ASP."
+    },
+    {
+      "country": "TH",
+      "machineClass": "alExtPress",
+      "tried": "Not searched in depth (common classes first); no price met in the Thai searches above. No Thai-listed machine maker publishes ASP."
+    },
+    {
+      "country": "TH",
+      "machineClass": "gearGrind",
+      "tried": "Not searched in depth (common classes first); no price met in the Thai searches above. No Thai-listed machine maker publishes ASP."
+    },
+    {
+      "country": "TH",
+      "machineClass": "gearHob",
+      "tried": "Not searched in depth (common classes first); no price met in the Thai searches above. No Thai-listed machine maker publishes ASP."
+    },
+    {
+      "country": "TH",
+      "machineClass": "rubberTransfer200",
+      "tried": "Not searched in depth (common classes first); no price met in the Thai searches above. No Thai-listed machine maker publishes ASP."
+    },
+    {
+      "country": "MY",
+      "machineClass": "imm200",
+      "tried": "No single injection-moulding-machine award: only lab bundles were found (GMI 02/2024 'MAKMAL INJECTION MOLDING' RM1,366,800; PSAS QT230000000006785 multi-lab bundle incl. plastic injection moulding RM504,000), which are not machine prices. No Malaysian dealer RM price for a new 200 t machine found (searched Haitian/Chen Hsong/Borche Malaysia price RM). MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403."
+    },
+    {
+      "country": "MY",
+      "machineClass": "laser",
+      "tried": "No fibre-laser cutter award (LASER hits are all medical lasers or laser films). No Malaysian dealer RM price found. MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403."
+    },
+    {
+      "country": "MY",
+      "machineClass": "pressBrake",
+      "tried": "No award. Advance Pacific Machinery (MY) and newpages listings show no price or are used. MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403."
+    },
+    {
+      "country": "MY",
+      "machineClass": "imm1200",
+      "tried": "MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403. No relevant hit (WATERJET hits are boat spare parts; GEAR hits are gearbox spares or gear oil; THERMOFORM hit is a 2021 exam-board thermoform machine bundled with paper counters)."
+    },
+    {
+      "country": "MY",
+      "machineClass": "waterjet5",
+      "tried": "MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403. No relevant hit (WATERJET hits are boat spare parts; GEAR hits are gearbox spares or gear oil; THERMOFORM hit is a 2021 exam-board thermoform machine bundled with paper counters)."
+    },
+    {
+      "country": "MY",
+      "machineClass": "rotoCarousel",
+      "tried": "MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403. No relevant hit (WATERJET hits are boat spare parts; GEAR hits are gearbox spares or gear oil; THERMOFORM hit is a 2021 exam-board thermoform machine bundled with paper counters)."
+    },
+    {
+      "country": "MY",
+      "machineClass": "thermoformLarge",
+      "tried": "MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403. No relevant hit (WATERJET hits are boat spare parts; GEAR hits are gearbox spares or gear oil; THERMOFORM hit is a 2021 exam-board thermoform machine bundled with paper counters)."
+    },
+    {
+      "country": "MY",
+      "machineClass": "alProfileCentre",
+      "tried": "MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403. No relevant hit (WATERJET hits are boat spare parts; GEAR hits are gearbox spares or gear oil; THERMOFORM hit is a 2021 exam-board thermoform machine bundled with paper counters)."
+    },
+    {
+      "country": "MY",
+      "machineClass": "alExtPress",
+      "tried": "MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403. No relevant hit (WATERJET hits are boat spare parts; GEAR hits are gearbox spares or gear oil; THERMOFORM hit is a 2021 exam-board thermoform machine bundled with paper counters)."
+    },
+    {
+      "country": "MY",
+      "machineClass": "gearGrind",
+      "tried": "MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403. No relevant hit (WATERJET hits are boat spare parts; GEAR hits are gearbox spares or gear oil; THERMOFORM hit is a 2021 exam-board thermoform machine bundled with paper counters)."
+    },
+    {
+      "country": "MY",
+      "machineClass": "gearHob",
+      "tried": "MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403. No relevant hit (WATERJET hits are boat spare parts; GEAR hits are gearbox spares or gear oil; THERMOFORM hit is a 2021 exam-board thermoform machine bundled with paper counters)."
+    },
+    {
+      "country": "MY",
+      "machineClass": "rubberTransfer200",
+      "tried": "MyProcurement results and archive (tender + quotation) searched by title for CNC, MACHINING, MILLING/MILING, LATHE/LARIK, TURNING, INJECTION, SUNTIKAN, MOULDING/MOLDING, LASER CUTTING, FIBER/FIBRE LASER, PRESS BRAKE, BENDING, WATERJET, 5 AXIS, EXTRUSION, ROTATIONAL, THERMOFORM, GEAR, HYDRAULIC PRESS. ePerolehan (eperolehan.gov.my) returned HTTP 403. No relevant hit (WATERJET hits are boat spare parts; GEAR hits are gearbox spares or gear oil; THERMOFORM hit is a 2021 exam-board thermoform machine bundled with paper counters)."
+    },
+    {
+      "country": "SG",
+      "machineClass": "imm200",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.'). No injection-moulding-machine award found."
+    },
+    {
+      "country": "SG",
+      "machineClass": "laser",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.'). Laser awards found are all scientific lasers, picosecond laser micro-machining (NST000ETT24000094, S$532,000) or laser powder-bed AM, not flat-sheet fibre cutters."
+    },
+    {
+      "country": "SG",
+      "machineClass": "pressBrake",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.'). No press brake award found."
+    },
+    {
+      "country": "SG",
+      "machineClass": "imm1200",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.')."
+    },
+    {
+      "country": "SG",
+      "machineClass": "waterjet5",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.')."
+    },
+    {
+      "country": "SG",
+      "machineClass": "rotoCarousel",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.')."
+    },
+    {
+      "country": "SG",
+      "machineClass": "alProfileCentre",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.')."
+    },
+    {
+      "country": "SG",
+      "machineClass": "alExtPress",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.')."
+    },
+    {
+      "country": "SG",
+      "machineClass": "gearGrind",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.')."
+    },
+    {
+      "country": "SG",
+      "machineClass": "gearHob",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.')."
+    },
+    {
+      "country": "SG",
+      "machineClass": "rubberTransfer200",
+      "tried": "data.gov.sg 'Government Procurement via GeBIZ' dataset (18,464 rows, ITT awards FY2021 onward) searched for machining, lathe, CNC, milling, injection, moulding/molding, laser, press brake, bending, waterjet, 5-axis, extrusion, rotational, thermoform, gear, hobbing. The dataset covers tenders only, not small-value quotations, and has no spec field. GeBIZ pages themselves need JavaScript. No Singapore dealer published prices (e.g. SMS Machinery FCNC 100T/3200 is 'Price: R.F.Q.')."
+    }
+  ]
+}
