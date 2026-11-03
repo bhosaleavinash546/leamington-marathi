@@ -1132,6 +1132,8 @@
    "proxies": {}
   }
  ],
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no India overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "held": {
   "electrical steel (25 grades)": "Only a 2025 CRNO CFR-India print and an unspecified IMARC figure — no 2026 India grade prices; held",
   "wrought aluminium sheet / bar / forging stock": "P1020 ₹352–362/kg (Hindalco Aug 2026; Oct derived) is below every book grade (conversion premium ₹20–90/kg); India rolling / extrusion premiums not found; held",

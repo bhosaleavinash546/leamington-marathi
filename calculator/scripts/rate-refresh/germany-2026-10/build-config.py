@@ -211,8 +211,9 @@ machines = {
     'rentLocalPerM2Month': v('rent.clusterAvg'),
     'rentBasis': 'PRIME LOGISTICS headline rents (no production-space figure found): Stuttgart €8.75, Munich €11.00, Hanover/Braunschweig €6.40 (2025), Cologne €8.00 per m²/month — mean €8.54',
     'ukRentGbpPerM2Yr': 110,
-    # Held capital: UK book's × 1.05 — one sourced pair, the Haas VF-2 EU list €64,995 v the UK book's US-list €61,983
-    'capitalHeldFactor': round(v('capex.mach-vmc3') / 61983, 3),
+    # Unpriced capital AT PAR (3 Nov 2026), as in every other book: the × 1.049 it carried came from ONE sourced pair (the
+    # Haas VF-2 EU list €64,995 v the UK book's US-list €61,983) applied to every machine — a UK × factor.
+    'capitalHeldFactor': 1.0,
     'groups': [
         # the Haas EU list IS the VF-2's own price (it sat on the generic VMC and the VF-2 was scaled to 69% of it — Germany live review)
         {'id': 'cnc-vmc-eu', 'match': '^(mach-vmc3|mach-haas-vf2|mach-drill)$', 'refId': 'mach-haas-vf2', 'refCapexLocal': v('capex.mach-vmc3'),
@@ -225,7 +226,7 @@ machines = {
          'basis': 'a complete automatic 7-inch extrusion line incl. automation, Presezzi, about €10 M (Vimetco Extrusion, Romania, 2021–22, ALRO release); Hydro Rackwitz added an 8-inch line on a SECOND-HAND 22 MN press for €11 M (2022–23) — a floor that agrees; other press sizes scale by the book\'s own capital ratio',
          'source': R['capex.al-ext-press-1800t']['source'], 'confidence': 'Low'},
     ],
-    'notRebuiltBasis': f'capex not sourced for Germany: the capital is the UK book\'s × {round(v("capex.mach-vmc3") / 61983, 3)} (Haas VF-2 EU list €64,995 v the UK book\'s US-list €61,983 — one sourced pair); the Germany operating model (2 × 8 h, AfA life, euro-area loan rate, rent, tariff, support at German wages) is applied',
+    'notRebuiltBasis': "capex not sourced for Germany: the machine's capital is the book's AT PAR (×1 — no unsourced country factor; the UK × 1.049 it replaced came from one sourced pair), under the Germany operating model (2 × 8 h, AfA life, euro-area loan rate, rent, tariff, support at German wages)",
 }
 
 # Al extrusion billet = LME + the DDP North Germany 6063 billet premium, over the library's LME (al-extrusion-data AL_MARKET)
@@ -235,7 +236,7 @@ cfg = {'asOf': '2026-10-30', 'label': 'Germany rate book — 4-cluster average (
        'region': 'DE', 'currency': 'EUR', 'currencySymbol': '€', 'dir': 'scripts/rate-refresh/germany-2026-10',
        'snapshot': 'scripts/rate-refresh/germany-2026-10/current-germany-book.json', 'bookFile': 'src/engine/country-books/de.ts', 'bookConst': 'GERMANY_BOOK',
        'fxPerGbp': FX, 'writeFx': True, 'fxBasis': 'ECB euro reference rates 2026-10-29: €1 = £0.83578 → £1 = €1.1965 (the one euro rate of the world round)',
-       'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held,
+       'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'shopMultipliersAtPar': True, 'shopMultipliersBasis': 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Germany overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched', 'heldMaterialsAtPar': {'basis': 'no Germany price this round — the book\'s European-market price at par, no country factor (3 Nov 2026; the UK × 1.03 material factor it replaced had no source)'}, 'held': held,
        'alBilletPremiumUsdPerT': {'value': prem_usd, 'current': 1100,
                                   'basis': f'6063 billet premium DDP North Germany (Ruhr) $1,070–1,135/t (Fastmarkets, 28 Aug 2026 — the latest public print) — mid-point ${prem_usd}/t over the library LME ${LME}',
                                   **src('nonferrous.al.billet6063_premium')}}

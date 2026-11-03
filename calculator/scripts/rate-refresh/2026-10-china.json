@@ -1658,7 +1658,8 @@
  "heldMaterialsAtPar": {
   "basis": "no China price this round — the book's European-market price at par, no country factor (world round, 30 Oct 2026; the UK × factor it replaced had no source)"
  },
- "shopMultipliersBasis": "Overhead ×0.75 agrees with automotive-supplier filings: SG&A ÷ cost of sales Tuopu 4.15 %, Huayu 6.04 % v the UK's TI Fluid Systems 7.68 %, Dowlais ~10.4 % — a ratio of 0.67–0.79 (read from search results; verify); packaging and logistics multipliers held, not researched for China",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no China overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched (China's automotive-supplier filings — SG&A ÷ cost of sales, Tuopu 4.15 %, Huayu 6.04 % v TI Fluid Systems 7.68 % — suggest 0.67–0.79; read in search results only, not applied until verified on the filings)",
  "alBilletPremiumUsdPerT": {
   "value": -21,
   "current": -186,

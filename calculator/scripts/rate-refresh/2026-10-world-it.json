@@ -1388,7 +1388,8 @@
   "source": "https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
   "date": "2026-08-28"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Italy's held multipliers — not researched this round (no Italy overhead share or packaging comparator found)",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Italy overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://data-api.ecb.europa.eu/service/data/MIR/M.IT.B.A2I.AM.R.A.2240.EUR.N?lastNObservations=6&format=csvdata",
   "life": "https://www.agenziaentrate.gov.it/portale/documents/20143/1704562/Decreto+del+31_12_1988+-+Min.+Finanze+coefficienti+di+ammortamento.pdf/f7d5c11d-cc79-ecf7-efc8-f1fc90cc00a3; https://taxsummaries.pwc.com/italy/corporate/deductions",

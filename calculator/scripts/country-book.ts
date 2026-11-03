@@ -297,6 +297,12 @@ if (cfg.shopMultipliersBasis) {
 }
 // held materials at par (Hungary, Oct 2026): a grade with no country evidence is priced at the book's own (European
 // market) price — no unsourced country discount (the 0.97 / resin factors had no source)
+// Overhead and packaging AT PAR (3 Nov 2026): no country has a sourced overhead share or packaging comparator, and the
+// held country multipliers had no source — the UK basis ×1, labelled. Logistics (delivered terms only) stays held.
+if (cfg.shopMultipliersAtPar) {
+  newBlock = newBlock.replace(/overheadMultiplier: [0-9.]+/, 'overheadMultiplier: 1')
+    .replace(/packagingMultiplier: [0-9.]+/, 'packagingMultiplier: 1');
+}
 if (cfg.heldMaterialsAtPar) {
   newBlock = newBlock.replace(/materialFactors: \{[^}]*\}/, 'materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 }')
     .replace(/materialMultiplier: [0-9.]+/, 'materialMultiplier: 1');

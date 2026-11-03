@@ -117,12 +117,19 @@ describe('2. rates used BEFORE the stack follow the country (rate-context.ts)', 
 });
 
 describe('3. overhead, packaging and logistics: one function for screen and headless', () => {
-  it('China: 12 % × 0.75, and the UK-basis packaging / logistics × China\'s multipliers', () => {
+  it('China: overhead 12 % and packaging at par (no country factor — 3 Nov 2026), logistics × China\'s held multiplier', () => {
     const s = regionalShopDefaults('CN', { packagingPerPart: 0.40, logisticsPerPart: 0.60 });
-    expect(s.overheadPct).toBe(0.09);
-    expect(s.packagingPerPart).toBeCloseTo(0.40 * R.CN.packagingMultiplier, 4);
+    expect(s.overheadPct).toBe(0.12);
+    expect(s.packagingPerPart).toBeCloseTo(0.40, 4);
     expect(s.logisticsPerPart).toBeCloseTo(0.60 * R.CN.logisticsMultiplier, 4);
     expect(regionalShopDefaults('UK')).toEqual({ overheadPct: 0.12, packagingPerPart: 0.15, logisticsPerPart: 0.25 });
+  });
+  it('no booked country carries an overhead, packaging or material multiplier — the UK basis at par, labelled (3 Nov 2026)', () => {
+    for (const [cc, r] of Object.entries(R)) {
+      if (cc === 'UK') continue;
+      expect([cc, r.overheadMultiplier, r.packagingMultiplier, r.materialMultiplier]).toEqual([cc, 1, 1, 1]);
+      expect(Object.values(r.materialFactors)).toEqual([1, 1, 1]);
+    }
   });
   it('the screen\'s country switch writes the fields that exist, through that function', () => {
     const main = readFileSync('src/ui/main.ts', 'utf8');

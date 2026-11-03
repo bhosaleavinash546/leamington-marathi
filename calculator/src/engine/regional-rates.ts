@@ -127,12 +127,13 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     fxToGBP: 1.1965,
     labour: { skilled: 43.8362, semiskilled: 36.5733, engineer: 60.0919, foundry: 41.0113, electronics: 36.5733, inspector: 41.0113, technician: 46.6695, supervisor: 55.888 },
     energy: { electricityPerKwh: 0.1496, gasPerKwh: 0.0526 },
-    materialFactors: { commodityResin: 1.042, engineeringResin: 1.03, highPerfResin: 1.008 },
-    materialMultiplier: 1.03,
-    machineRateMultiplier: 1.03,
-    overheadMultiplier: 1.10,
-    packagingMultiplier: 1.05,
+    materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
+    materialMultiplier: 1,
+    machineRateMultiplier: 1,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.15,
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Germany overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // France: labour from the France rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median France ÷ UK machine rate in that book (the service factors read it).
@@ -145,10 +146,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.67,
-    overheadMultiplier: 1.05,
-    packagingMultiplier: 1.05,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.15,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × France’s held multipliers — not researched this round (no France overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no France overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Italy: labour from the Italy rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Italy ÷ UK machine rate in that book (the service factors read it).
@@ -161,10 +162,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.7,
-    overheadMultiplier: 1.00,
-    packagingMultiplier: 1.05,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.15,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Italy’s held multipliers — not researched this round (no Italy overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Italy overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Spain: labour from the Spain rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Spain ÷ UK machine rate in that book (the service factors read it).
@@ -177,10 +178,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.66,
-    overheadMultiplier: 0.95,
-    packagingMultiplier: 1.02,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.15,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Spain’s held multipliers — not researched this round (no Spain overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Spain overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Poland: labour from the Poland rate book 2026-10-10 (scripts/country-book.ts; 4-cluster, 3 × 8 h, ZUS-loaded, 1,720 productive h);
   // machineRateMultiplier = median Poland ÷ UK machine rate in that book (the service factors read it).
@@ -193,9 +194,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.72,
-    overheadMultiplier: 0.85,
-    packagingMultiplier: 0.90,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.20,
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Poland overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Czech Republic: labour from the Czech Republic rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Czech Republic ÷ UK machine rate in that book (the service factors read it).
@@ -208,10 +210,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.69,
-    overheadMultiplier: 0.87,
-    packagingMultiplier: 0.90,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.20,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Czech Republic’s held multipliers — not researched this round (no Czech Republic overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Czech Republic overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Romania: labour from the Romania rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Romania ÷ UK machine rate in that book (the service factors read it).
@@ -224,10 +226,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.71,
-    overheadMultiplier: 0.80,
-    packagingMultiplier: 0.85,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.25,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Romania’s held multipliers — not researched this round (no Romania overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Romania overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Hungary: labour from the Hungary rate book 2026-10-30 (scripts/country-book.ts; 4-cluster, KSH total earnings by FEOR occupation + szocho, 1,728 productive h);
   // machineRateMultiplier = median Hungary ÷ UK machine rate in that book (the service factors read it).
@@ -240,9 +242,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.7,
-    overheadMultiplier: 0.83,
-    packagingMultiplier: 0.88,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.22,
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Hungary overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Sweden: labour from the Sweden rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Sweden ÷ UK machine rate in that book (the service factors read it).
@@ -255,10 +258,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.69,
-    overheadMultiplier: 1.08,
-    packagingMultiplier: 1.08,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.20,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Sweden’s held multipliers — not researched this round (no Sweden overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Sweden overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Netherlands: labour from the Netherlands rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2024 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Netherlands ÷ UK machine rate in that book (the service factors read it).
@@ -271,10 +274,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.76,
-    overheadMultiplier: 1.05,
-    packagingMultiplier: 1.05,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.15,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Netherlands’s held multipliers — not researched this round (no Netherlands overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Netherlands overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Turkey: labour from the Turkey rate book 2026-10-30 (scripts/country-book.ts; Eurostat labour cost × ILO occupation ratio);
   // machineRateMultiplier = median Turkey ÷ UK machine rate in that book (the service factors read it).
@@ -287,10 +290,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.91,
-    overheadMultiplier: 0.78,
-    packagingMultiplier: 0.80,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.30,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Turkey’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Turkey overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // China: labour from the China rate book 2026-10-10 (scripts/country-book.ts; 4-cluster, 2 × 12 h, social insurance at the floor);
   // machineRateMultiplier = median China ÷ UK machine rate in that book (the service factors read it).
@@ -303,10 +306,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.55,
-    overheadMultiplier: 0.75,
-    packagingMultiplier: 0.70,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.45,
-    shopMultipliersBasis: 'Overhead ×0.75 agrees with automotive-supplier filings: SG&A ÷ cost of sales Tuopu 4.15 %, Huayu 6.04 % v the UK’s TI Fluid Systems 7.68 %, Dowlais ~10.4 % — a ratio of 0.67–0.79 (read from search results; verify); packaging and logistics multipliers held, not researched for China',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no China overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched (China’s automotive-supplier filings — SG&A ÷ cost of sales, Tuopu 4.15 %, Huayu 6.04 % v TI Fluid Systems 7.68 % — suggest 0.67–0.79; read in search results only, not applied until verified on the filings)',
   },
   // India: labour from the India rate book 2026-10-10 (scripts/country-book.ts; statutory-loaded, 4-cluster, see the book);
   // machineRateMultiplier = median India ÷ UK machine rate in that book (the service factors read it).
@@ -319,9 +322,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.62,
-    overheadMultiplier: 0.72,
-    packagingMultiplier: 0.65,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.50,
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no India overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Mexico: labour from the Mexico rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Mexico ÷ UK machine rate in that book (the service factors read it).
@@ -334,10 +338,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.66,
-    overheadMultiplier: 0.78,
-    packagingMultiplier: 0.75,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.35,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Mexico’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Mexico overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // United States: labour from the United States rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median United States ÷ UK machine rate in that book (the service factors read it).
@@ -350,10 +354,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.71,
-    overheadMultiplier: 0.95,
-    packagingMultiplier: 0.95,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.25,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × United States’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no United States overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Thailand: labour from the Thailand rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Thailand ÷ UK machine rate in that book (the service factors read it).
@@ -366,10 +370,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.6,
-    overheadMultiplier: 0.75,
-    packagingMultiplier: 0.72,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.40,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Thailand’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Thailand overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Vietnam: labour from the Vietnam rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Vietnam ÷ UK machine rate in that book (the service factors read it).
@@ -382,10 +386,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.62,
-    overheadMultiplier: 0.70,
-    packagingMultiplier: 0.68,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.50,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Vietnam’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Vietnam overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Brazil: labour from the Brazil rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Brazil ÷ UK machine rate in that book (the service factors read it).
@@ -398,10 +402,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.82,
-    overheadMultiplier: 0.85,
-    packagingMultiplier: 0.85,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.45,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Brazil’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Brazil overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // South Korea: labour from the South Korea rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median South Korea ÷ UK machine rate in that book (the service factors read it).
@@ -414,10 +418,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.66,
-    overheadMultiplier: 0.90,
-    packagingMultiplier: 0.92,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.35,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × South Korea’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no South Korea overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // ⟪region-expand 2026-10 — generated by scripts/region-expand.ts; edit the config, not these lines⟫
   // Austria: labour from the Austria rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
@@ -431,10 +435,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.74,
-    overheadMultiplier: 1.1,
-    packagingMultiplier: 1.05,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.15,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Austria’s held multipliers — not researched this round (no Austria overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Austria overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Belgium: labour from the Belgium rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2024 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Belgium ÷ UK machine rate in that book (the service factors read it).
@@ -447,10 +451,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.73,
-    overheadMultiplier: 1.05,
-    packagingMultiplier: 1.05,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.15,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Belgium’s held multipliers — not researched this round (no Belgium overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Belgium overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Portugal: labour from the Portugal rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Portugal ÷ UK machine rate in that book (the service factors read it).
@@ -463,10 +467,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.63,
-    overheadMultiplier: 0.95,
-    packagingMultiplier: 1.02,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.15,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Portugal’s held multipliers — not researched this round (no Portugal overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Portugal overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Slovakia: labour from the Slovakia rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Slovakia ÷ UK machine rate in that book (the service factors read it).
@@ -479,10 +483,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.68,
-    overheadMultiplier: 0.87,
-    packagingMultiplier: 0.9,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.2,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Slovakia’s held multipliers — not researched this round (no Slovakia overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Slovakia overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Slovenia: labour from the Slovenia rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Slovenia ÷ UK machine rate in that book (the service factors read it).
@@ -495,10 +499,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.69,
-    overheadMultiplier: 0.87,
-    packagingMultiplier: 0.9,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.2,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Slovenia’s held multipliers — not researched this round (no Slovenia overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Slovenia overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Lithuania: labour from the Lithuania rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Lithuania ÷ UK machine rate in that book (the service factors read it).
@@ -511,10 +515,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.67,
-    overheadMultiplier: 0.85,
-    packagingMultiplier: 0.9,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.2,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Lithuania’s held multipliers — not researched this round (no Lithuania overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Lithuania overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Bulgaria: labour from the Bulgaria rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Bulgaria ÷ UK machine rate in that book (the service factors read it).
@@ -527,10 +531,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.64,
-    overheadMultiplier: 0.8,
-    packagingMultiplier: 0.85,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.25,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Bulgaria’s held multipliers — not researched this round (no Bulgaria overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Bulgaria overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Serbia: labour from the Serbia rate book 2026-10-30 (scripts/country-book.ts; Eurostat manufacturing labour cost per hour worked 2025 × LCI × SES occupation ratio);
   // machineRateMultiplier = median Serbia ÷ UK machine rate in that book (the service factors read it).
@@ -543,10 +547,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.68,
-    overheadMultiplier: 0.8,
-    packagingMultiplier: 0.85,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.25,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Serbia’s held multipliers — not researched this round (no Serbia overhead share or packaging comparator found)',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Serbia overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Morocco: labour from the Morocco rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Morocco ÷ UK machine rate in that book (the service factors read it).
@@ -559,10 +563,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.6,
-    overheadMultiplier: 0.78,
-    packagingMultiplier: 0.8,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.3,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Morocco’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Morocco overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Tunisia: labour from the Tunisia rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Tunisia ÷ UK machine rate in that book (the service factors read it).
@@ -575,10 +579,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.66,
-    overheadMultiplier: 0.78,
-    packagingMultiplier: 0.8,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.3,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Tunisia’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Tunisia overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Egypt: labour from the Egypt rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Egypt ÷ UK machine rate in that book (the service factors read it).
@@ -591,10 +595,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.8,
-    overheadMultiplier: 0.78,
-    packagingMultiplier: 0.8,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.3,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Egypt’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Egypt overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // South Africa: labour from the South Africa rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median South Africa ÷ UK machine rate in that book (the service factors read it).
@@ -607,10 +611,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.73,
-    overheadMultiplier: 0.85,
-    packagingMultiplier: 0.85,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.45,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × South Africa’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no South Africa overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Japan: labour from the Japan rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Japan ÷ UK machine rate in that book (the service factors read it).
@@ -623,10 +627,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.63,
-    overheadMultiplier: 0.9,
-    packagingMultiplier: 0.92,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.35,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Japan’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Japan overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Taiwan: labour from the Taiwan rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Taiwan ÷ UK machine rate in that book (the service factors read it).
@@ -639,10 +643,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.63,
-    overheadMultiplier: 0.9,
-    packagingMultiplier: 0.92,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.35,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Taiwan’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Taiwan overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Malaysia: labour from the Malaysia rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Malaysia ÷ UK machine rate in that book (the service factors read it).
@@ -655,10 +659,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.6,
-    overheadMultiplier: 0.75,
-    packagingMultiplier: 0.72,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.4,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Malaysia’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Malaysia overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Indonesia: labour from the Indonesia rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Indonesia ÷ UK machine rate in that book (the service factors read it).
@@ -671,10 +675,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.61,
-    overheadMultiplier: 0.75,
-    packagingMultiplier: 0.72,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.4,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Indonesia’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Indonesia overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Philippines: labour from the Philippines rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Philippines ÷ UK machine rate in that book (the service factors read it).
@@ -687,10 +691,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.7,
-    overheadMultiplier: 0.7,
-    packagingMultiplier: 0.68,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.5,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Philippines’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Philippines overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Singapore: labour from the Singapore rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Singapore ÷ UK machine rate in that book (the service factors read it).
@@ -703,10 +707,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.79,
-    overheadMultiplier: 0.9,
-    packagingMultiplier: 0.92,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.35,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Singapore’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Singapore overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // Canada: labour from the Canada rate book 2026-10-30 (scripts/country-book.ts; national / ILO occupation earnings + statutory employer contributions ÷ hours worked);
   // machineRateMultiplier = median Canada ÷ UK machine rate in that book (the service factors read it).
@@ -719,10 +723,10 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     materialFactors: { commodityResin: 1, engineeringResin: 1, highPerfResin: 1 },
     materialMultiplier: 1,
     machineRateMultiplier: 0.67,
-    overheadMultiplier: 0.95,
-    packagingMultiplier: 0.95,
+    overheadMultiplier: 1,
+    packagingMultiplier: 1,
     logisticsMultiplier: 1.25,
-    shopMultipliersBasis: 'Overhead and packaging: the UK basis × Canada’s held multipliers — not researched this round',
+    shopMultipliersBasis: 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Canada overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched',
   },
   // ⟪/region-expand⟫
 };
@@ -1055,7 +1059,13 @@ export function shopDefaultsBasis(region: ManufacturingRegion | undefined, terms
   const exw = terms === 'EXW';
   const sized = exw ? 'packaging from the part\'s size' : 'packaging and logistics from the part\'s size';
   const freight = exw ? ' Ex-works: no freight in the price (logistics 0).' : '';
-  return (region && region !== 'UK'
+  const atPar = rd.overheadMultiplier === 1 && rd.packagingMultiplier === 1;
+  return (region && region !== 'UK' && atPar
+    // no country factor (3 Nov 2026): the held multipliers had no source, so the UK basis stands at par and says so
+    ? `Defaults: overhead 12% and ${sized} — the UK basis at par (×1, no ${rd.name} factor)`
+      + (exw ? '' : `; logistics × ${rd.logisticsMultiplier.toFixed(2)} (delivery to the UK, a held multiplier)`)
+      + `. ${rd.shopMultipliersBasis ?? `No ${rd.name} overhead share or packaging comparator was sourced`}; a typed figure is used as given.`
+    : region && region !== 'UK'
     ? `Defaults: the UK basis (overhead 12%, ${sized}) × ${rd.name}'s multipliers — overhead ${f(rd.overheadMultiplier)}, packaging ${f(rd.packagingMultiplier)}`
       + (exw ? '' : `, logistics ${f(rd.logisticsMultiplier)} (delivery to the UK)`)
       + `. ${rd.shopMultipliersBasis ?? `Held, not researched for ${rd.name}`}; a typed figure is used as given.`

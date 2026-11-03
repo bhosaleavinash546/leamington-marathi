@@ -1338,7 +1338,8 @@
  "heldMaterialsAtPar": {
   "basis": "no Brazil or regional price this round — the book's European-market price at par, no Brazil factor"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Brazil's held multipliers — not researched this round",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Brazil overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.20718/dados/ultimos/4?formato=json",
   "life": "https://taxsummaries.pwc.com/brazil/corporate/deductions",

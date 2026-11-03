@@ -114,8 +114,9 @@ describe('round 2 (10 Oct 2026): what round 1 left held', () => {
     expect(b.sourceNote).not.toMatch(/HELD/);
     expect(mach('brake-amada-hfe100').sourceNote).toMatch(/press-brake-eu/);
   });
-  it('the overhead / packaging / logistics multipliers stay held — no source supported a change', () => {
-    expect(REGIONAL_DATA.PL.overheadMultiplier).toBe(0.85);
+  it('overhead and packaging at par (no source supported a country factor — 3 Nov 2026); logistics held', () => {
+    expect(REGIONAL_DATA.PL.overheadMultiplier).toBe(1);
+    expect(REGIONAL_DATA.PL.packagingMultiplier).toBe(1);
     expect(REGIONAL_DATA.PL.logisticsMultiplier).toBe(1.20);
   });
 });

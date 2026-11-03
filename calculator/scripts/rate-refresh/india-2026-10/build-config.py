@@ -239,7 +239,7 @@ machines = {
 }
 
 cfg = {'asOf': '2026-10-10', 'label': 'India rate book — 4-cluster average (Pune, Chennai, Bengaluru, Delhi NCR), 3-shift', 'fxInrPerGbp': FX,
-       'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held, 'heldMaterialsAtPar': {'basis': 'no India price this round — the book\'s European-market price at par, no country factor (world round, 30 Oct 2026; the UK × factor it replaced had no source)'},
+       'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'shopMultipliersAtPar': True, 'shopMultipliersBasis': 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no India overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched', 'held': held, 'heldMaterialsAtPar': {'basis': 'no India price this round — the book\'s European-market price at par, no country factor (world round, 30 Oct 2026; the UK × factor it replaced had no source)'},
        'alBilletPremiumUsdPerT': {'value': R['nonferrous.anchor.aluminium.billet6063.premiumOverLme3m']['value'],
                                   'basis': 'Hindalco AA6063 billet (P1020 + ₹17,600/t, Aug 2026) over LME 3M, Oct 2026 derived; May measured $803–842/t — the book held $550',
                                   **src('nonferrous.anchor.aluminium.billet6063.premiumOverLme3m')}}

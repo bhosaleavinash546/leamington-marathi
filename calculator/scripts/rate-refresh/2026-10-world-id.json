@@ -1371,7 +1371,8 @@
  "heldMaterialsAtPar": {
   "basis": "no Indonesia or regional price this round — the book's European-market price at par, no Indonesia factor"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Indonesia's held multipliers — not researched this round",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Indonesia overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://www.fortuneidn.com/finance/penyaluran-kredit-naik-13-3-persen-bi-ungkap-tren-suku-bunganya-00-ccw2k-ssnfnj",
   "life": "https://pajak.go.id/sites/default/files/Lampiran%20PMK72TAHUN2023.pdf; https://taxsummaries.pwc.com/indonesia/corporate/deductions",

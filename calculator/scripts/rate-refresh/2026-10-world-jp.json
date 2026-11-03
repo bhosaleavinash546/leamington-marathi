@@ -1365,7 +1365,8 @@
  "heldMaterialsAtPar": {
   "basis": "no Japan or regional price this round — the book's European-market price at par, no Japan factor"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Japan's held multipliers — not researched this round",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Japan overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=json&lang=en&db=IR04&startDate=202606&code=DLLR2CIDBNL1,DLLR2CIDBNL3",
   "life": "https://laws.e-gov.go.jp/api/1/lawdata/340M50000040015; https://taxsummaries.pwc.com/japan/corporate/deductions",

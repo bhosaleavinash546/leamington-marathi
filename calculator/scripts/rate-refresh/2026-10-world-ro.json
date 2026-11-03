@@ -1388,7 +1388,8 @@
   "source": "https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
   "date": "2026-08-28"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Romania's held multipliers — not researched this round (no Romania overhead share or packaging comparator found)",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Romania overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://api.worldbank.org/v2/country/ROU/indicator/FR.INR.LEND?format=json&mrv=5",
   "life": "https://avocatnet.ro/articles/download/8cd069700830f1798cf59f99d6a913c6 (subgroup 2.1 of the catalogue, reproduced by avocatnet); https://taxsummaries.pwc.com/romania/corporate/deductions",

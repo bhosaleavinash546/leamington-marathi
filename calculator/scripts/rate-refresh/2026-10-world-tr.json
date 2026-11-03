@@ -1375,7 +1375,8 @@
  "heldMaterialsAtPar": {
   "basis": "no Turkey or regional price this round — the book's European-market price at par, no Turkey factor"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Turkey's held multipliers — not researched this round",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Turkey overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://www.tcmb.gov.tr/wps/wcm/connect/EN/TCMB+EN/Main+Menu/Core+Functions/Monetary+Policy/Central+Bank+Interest+Rates/1+Week+Repo",
   "life": "https://www.lexpera.com.tr/mevzuat/ozelgeler/b-07-1-gib-4-34-19-02-019-01-1601-sayili-ozelge-1 (search summary); https://taxsummaries.pwc.com/turkey/corporate/deductions",

@@ -1362,7 +1362,8 @@
  "heldMaterialsAtPar": {
   "basis": "no Mexico or regional price this round — the book's European-market price at par, no Mexico factor"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Mexico's held multipliers — not researched this round",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Mexico overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://www.banxico.org.mx/SieInternet/consultarDirectorioInternetAction.do?sector=18&accion=consultarCuadro&idCuadro=CF101&locale=es",
   "life": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf; https://taxsummaries.pwc.com/mexico/corporate/deductions",

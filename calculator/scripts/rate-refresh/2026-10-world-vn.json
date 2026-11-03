@@ -1378,7 +1378,8 @@
  "heldMaterialsAtPar": {
   "basis": "no Vietnam or regional price this round — the book's European-market price at par, no Vietnam factor"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Vietnam's held multipliers — not researched this round",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Vietnam overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://tapchikinhtetaichinh.vn/lai-suat-ty-gia-hom-nay-lai-huy-dong-binh-quan-len-6-46-nam-usd-ngan-hang-giam-gia-169067.html",
   "life": "https://www.jetro.go.jp/ext_images/jfile/country/vn/invest_04/pdfs/vn9A030_taiyounensuu.pdf; https://taxsummaries.pwc.com/vietnam/corporate/deductions",

@@ -1362,7 +1362,8 @@
  "heldMaterialsAtPar": {
   "basis": "no Canada or regional price this round — the book's European-market price at par, no Canada factor"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Canada's held multipliers — not researched this round",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Canada overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://www.bankofcanada.ca/valet/observations/V80691311/json?recent=3",
   "life": "https://laws-lois.justice.gc.ca/eng/regulations/C.R.C.,_c._945/FullText.html; https://taxsummaries.pwc.com/canada/corporate/deductions",

@@ -1343,7 +1343,8 @@
  "heldMaterialsAtPar": {
   "basis": "no Malaysia or regional price this round — the book's European-market price at par, no Malaysia factor"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Malaysia's held multipliers — not researched this round",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Malaysia overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://api.data.gov.my/data-catalogue/?id=interestrates&sort=-date&limit=40",
   "life": "https://taxsummaries.pwc.com/malaysia/corporate/deductions",

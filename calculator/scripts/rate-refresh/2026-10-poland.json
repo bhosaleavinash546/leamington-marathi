@@ -1446,6 +1446,8 @@
    "proxies": {}
   }
  ],
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Poland overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "held": {
   "alloy engineering bar (41Cr4, 42CrMo4, 20MnCr5, 100Cr6, Ni-Cr-Mo), bearing steel": "No dated Polish / European price found — held",
   "stainless bar (304, 316L, 303, martensitic, PH, duplex), 409L / 441": "Not found (alloy surcharges only) — held",

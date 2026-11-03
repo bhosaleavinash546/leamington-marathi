@@ -380,8 +380,7 @@ def build(cc):
                                         f'steel, wrought Al bar / plate, magnesium, titanium / nickel, filled / FR compounds, TPE / TPU, rubber '
                                         f'compounds, composites) — the book\'s European-market price at par, no {name} factor'},
         'alBilletPremiumUsdPerT': {**DE['alBilletPremiumUsdPerT'], 'basis': 'European ' + DE['alBilletPremiumUsdPerT']['basis']},
-        'shopMultipliersBasis': (f'Overhead and packaging: the UK basis × {name}\'s held multipliers — not researched this round (no {name} '
-                                 f'overhead share or packaging comparator found)'),
+        'shopMultipliersAtPar': True, 'shopMultipliersBasis': (f"Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no {name} overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched"),
         'sources': {'finance': fin_s, 'life': lf_s, 'rent': rt_s, 'holidays': hol_src},
     }
     if not cfg_has_lab_rows(cc):
@@ -891,7 +890,7 @@ def build_world(cc):
         'materialFamilies': families_world(cc, ccy, pe, sym),
         'held': DE['held'],
         'heldMaterialsAtPar': {'basis': f'no {name} or regional price this round — the book\'s European-market price at par, no {name} factor'},
-        'shopMultipliersBasis': (f'Overhead and packaging: the UK basis × {name}\'s held multipliers — not researched this round'),
+        'shopMultipliersAtPar': True, 'shopMultipliersBasis': (f"Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no {name} overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched"),
         'sources': {'finance': fin_s, 'life': lf_s, 'rent': rt_s},
     }
     if not cfg_has_lab_rows(cc): cfg['noLibraryLabourRows'] = True

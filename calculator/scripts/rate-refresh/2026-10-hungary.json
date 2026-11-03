@@ -1408,6 +1408,8 @@
    "proxies": {}
   }
  ],
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Hungary overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "held": {
   "materials at par": "no Hungarian or European price found this round (alloy engineering and stainless bar, electrical steel, wrought Al sheet grades beyond the floor, magnesium, titanium / nickel, filled / FR compounds, TPE / TPU, rubber compounds, composites, stock shapes) — priced at the book's own European-market price, ×1: a traded material costs Hungary what it costs the European market, and the 0.97 / resin factors this replaces had no source"
  },

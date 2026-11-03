@@ -295,7 +295,7 @@ machines = {
 cfg = {'asOf': '2026-10-30', 'label': 'Hungary rate book — 4-cluster average (Győr, Central Transdanubia, Kecskemét, Debrecen), 3 × 8 h',
        'region': 'HU', 'currency': 'HUF', 'currencySymbol': 'Ft', 'dir': 'scripts/rate-refresh/hungary-2026-10',
        'snapshot': 'scripts/rate-refresh/hungary-2026-10/current-hungary-book.json', 'bookFile': 'src/engine/country-books/hu.ts', 'bookConst': 'HUNGARY_BOOK',
-       'fxPerGbp': FX, 'fxBasis': FXBASIS, 'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'held': held,
+       'fxPerGbp': FX, 'fxBasis': FXBASIS, 'labour': labour, 'energy': energy, 'machines': machines, 'materialFamilies': families, 'shopMultipliersAtPar': True, 'shopMultipliersBasis': 'Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Hungary overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched', 'held': held,
        'heldMaterialsAtPar': {'basis': AT_PAR}, 'noLibraryLabourRows': True,
        'alBilletPremiumUsdPerT': {'value': round(BILLET_PREM), 'current': 1080,
                                   'basis': f'6063 billet premium ${BILLET_PREM}/t over LME (Fastmarkets, 28 Aug 2026; DDP North Germany — no Central-European print found)',

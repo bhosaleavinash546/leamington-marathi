@@ -1388,7 +1388,8 @@
   "source": "https://www.fastmarkets.com/insights/european-aluminium-billet-ingot-premium-spread-slowly-narrows/",
   "date": "2026-08-28"
  },
- "shopMultipliersBasis": "Overhead and packaging: the UK basis × Sweden's held multipliers — not researched this round (no Sweden overhead share or packaging comparator found)",
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Sweden overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
  "sources": {
   "finance": "https://api.scb.se/OV0104/v1/doris/en/ssd/FM/FM5001/FM5001C/RantaT01N",
   "life": "https://taxsummaries.pwc.com/sweden/corporate/deductions",

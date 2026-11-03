@@ -167,7 +167,7 @@
   "rentLocalPerM2Month": 8.54,
   "rentBasis": "PRIME LOGISTICS headline rents (no production-space figure found): Stuttgart €8.75, Munich €11.00, Hanover/Braunschweig €6.40 (2025), Cologne €8.00 per m²/month — mean €8.54",
   "ukRentGbpPerM2Yr": 110,
-  "capitalHeldFactor": 1.049,
+  "capitalHeldFactor": 1.0,
   "groups": [
    {
     "id": "cnc-vmc-eu",
@@ -197,7 +197,7 @@
     "confidence": "Low"
    }
   ],
-  "notRebuiltBasis": "capex not sourced for Germany: the capital is the UK book's × 1.049 (Haas VF-2 EU list €64,995 v the UK book's US-list €61,983 — one sourced pair); the Germany operating model (2 × 8 h, AfA life, euro-area loan rate, rent, tariff, support at German wages) is applied"
+  "notRebuiltBasis": "capex not sourced for Germany: the machine's capital is the book's AT PAR (×1 — no unsourced country factor; the UK × 1.049 it replaced came from one sourced pair), under the Germany operating model (2 × 8 h, AfA life, euro-area loan rate, rent, tariff, support at German wages)"
  },
  "materialFamilies": [
   {
@@ -1403,6 +1403,11 @@
    "proxies": {}
   }
  ],
+ "shopMultipliersAtPar": true,
+ "shopMultipliersBasis": "Overhead (12%) and packaging: the UK basis AT PAR (×1, no country factor) — no Germany overhead share or packaging comparator was sourced, and the held multipliers they replaced (3 Nov 2026) had no source. Logistics (delivered terms only, 0 ex-works): the UK basis × a held multiplier — freight lanes not yet researched",
+ "heldMaterialsAtPar": {
+  "basis": "no Germany price this round — the book's European-market price at par, no country factor (3 Nov 2026; the UK × 1.03 material factor it replaced had no source)"
+ },
  "held": {
   "engineering bar (C45, 42CrMo4, 38MnVS6, 16MnCr5, 20MnCr5, 100Cr6, 11SMnPb30, 4140 / 4340), forging stock": "No German mill or stockholder BASE price published; only 2026 alloy / scrap surcharges found (Frankstahl Feb 2026, Swiss Steel Steeltec) — held",
   "stainless bar (304, 316, 303, martensitic, PH, duplex)": "Not found (surcharges only) — held",

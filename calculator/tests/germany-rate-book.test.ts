@@ -61,15 +61,16 @@ describe('machines: the 2 × 8 h operating model; continuous lines on three shif
     expect(line.sourceNote).toMatch(/continuous line/);
     expect(mach('forge-press-500t').buildup.annualAvailableHours).toBe(4044);   // UK 3,500 h: a two-shift press
   });
-  it('the extrusion line is the sourced ~€10 M 7-inch line, Low; a machine without capex says its capital is HELD', () => {
+  it('the extrusion line is the sourced ~€10 M 7-inch line, Low; a machine without capex says its capital is AT PAR (no UK × 1.049 — 3 Nov 2026)', () => {
     expect(mach('al-ext-press-1800t').sourceNote).toMatch(/€10,000,000/);
     expect(mach('al-ext-press-1800t').confidence).toBe('Low');
-    expect(mach('forge-press-1600t').sourceNote).toMatch(/capital HELD/);
+    expect(mach('forge-press-1600t').sourceNote).toMatch(/capital AT PAR/);
+    expect(mach('forge-press-1600t').sourceNote).not.toMatch(/1\.049/);
     expect(mach('forge-press-1600t').confidence).toBe('Low');
   });
-  it('marketplace listings are not prices: the TruBend and the SPINNER VMC stay held', () => {
-    expect(mach('brake-trumpf-trubend3100').sourceNote).toMatch(/HELD/);
-    expect(mach('mach-vmc3-de').sourceNote).toMatch(/HELD/);
+  it('marketplace listings are not prices: the TruBend and the SPINNER VMC stay unpriced (capital at par)', () => {
+    expect(mach('brake-trumpf-trubend3100').sourceNote).toMatch(/AT PAR/);
+    expect(mach('mach-vmc3-de').sourceNote).toMatch(/AT PAR/);
   });
 });
 
@@ -118,9 +119,10 @@ describe('Germany live review (Oct 2026): what the reports print', () => {
   it('a book labour rate carries the book\'s date, not the UK entry\'s', () => {
     expect(lab('lab-uk-skilled').effectiveDate).toBe(GERMANY_BOOK.asOf);
   });
-  it('the overhead / packaging / logistics defaults say they are the UK basis × the country multipliers, held', async () => {
+  it('the overhead / packaging defaults say they are the UK basis at par, no country factor (3 Nov 2026)', async () => {
     const { shopDefaultsBasis } = await import('../src/engine/regional-rates.js');
-    expect(shopDefaultsBasis('DE')).toMatch(/UK basis .* Germany's multipliers — overhead ×[\d.]+.*Held, not researched for Germany/);
+    expect(shopDefaultsBasis('DE')).toMatch(/UK basis at par \(×1, no Germany factor\)/);
+    expect(shopDefaultsBasis('DE', 'EXW')).not.toMatch(/logistics ×/);
     expect(shopDefaultsBasis('UK')).not.toMatch(/multipliers/);
   });
 });
