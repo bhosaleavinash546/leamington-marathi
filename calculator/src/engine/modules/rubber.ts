@@ -237,10 +237,12 @@ export function computeRubberDrivers(inputs: RubberInputs): CommodityDrivers {
     mode: 'amortized',
     // The first tool is the investment; anything above one is wear replacement over the amortised parts.
     items: [
-      { label: `1 ${inputs.cavities}-cavity ${tool}`.replace(`1 1-cavity ${tool}`, `1 ${tool}`), gbp: baseMouldCost },
+      { label: `1 ${inputs.cavities}-cavity ${tool}`.replace(`1 1-cavity ${tool}`, `1 ${tool}`), gbp: baseMouldCost,
+        kind: 'initial' as const, firstSetGbp: baseMouldCost, sets: 1 },
       ...(numMoulds > 1 ? [{ label: `${(numMoulds - 1).toLocaleString('en-GB', { maximumFractionDigits: 2 })} of a ${tool} replaced as it wears `
         + `(${inputs.amortizationVolume.toLocaleString('en-GB')} parts ÷ (${inputs.mouldLife.toLocaleString('en-GB')} cycles × ${inputs.cavities}) `
-        + `= ${numMoulds.toLocaleString('en-GB', { maximumFractionDigits: 2 })} ${tool}s)`, gbp: baseMouldCost * (numMoulds - 1) }] : []),
+        + `= ${numMoulds.toLocaleString('en-GB', { maximumFractionDigits: 2 })} ${tool}s)`, gbp: baseMouldCost * (numMoulds - 1),
+        kind: 'replacement' as const, firstSetGbp: baseMouldCost, sets: numMoulds - 1 }] : []),
     ],
   };
 

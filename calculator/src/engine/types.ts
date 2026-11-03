@@ -237,15 +237,38 @@ export interface OperationInput {
   untended?: boolean;
 }
 
+/**
+ * What KIND of money a tooling item is — how a supplier contracts it (report standard, Nov 2026, register #9):
+ *   - 'initial'     the first set of a tool (die, mould, pattern, the tools the volume needs in service) — invoiced up front;
+ *   - 'replacement' the sets bought because the first wears out over the programme, and the upkeep of the tool
+ *                   (mould / die maintenance) — consumed over the programme, not an up-front investment;
+ *   - 'perishable'  cutting tools worn by every part (hobs, grinding wheels, inserts) — a running cost a part;
+ *   - 'nre'         one-off engineering and work-holding: fixtures, programming, first article, inspection masters —
+ *                   up front, with the initial set.
+ * Up-front investment = initial + nre; the rest is running cost carried in the piece price.
+ */
+export type ToolingKind = 'initial' | 'replacement' | 'perishable' | 'nre';
+
+export interface ToolingItem {
+  label: string;
+  gbp: number;
+  kind?: ToolingKind;
+  /** £ of ONE set of this tool (the first set a supplier invoices) — on a tool bought by life. */
+  firstSetGbp?: number;
+  /** Sets this item counts: 1 on the first set, N − 1 on the replacements (fractional where wear is charged fractionally). */
+  sets?: number;
+}
+
 export interface ToolingInput {
   totalToolingCost: number;
   amortizationVolume: number;
   mode: ToolingMode;
   /**
    * What `totalToolingCost` is made of, £ (descriptive: the core reads only the total). The knuckle's ₹38.5 lakh was
-   * one number in both reports (casting 360 review X13).
+   * one number in both reports (casting 360 review X13). Every module's items carry a `kind` and add up to the total
+   * (`toolingSplit` in tooling-split.ts sums them by kind).
    */
-  items?: Array<{ label: string; gbp: number }>;
+  items?: ToolingItem[];
 }
 
 export interface LearningCurveConfig {

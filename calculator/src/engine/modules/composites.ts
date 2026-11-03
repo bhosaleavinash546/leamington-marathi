@@ -202,11 +202,15 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
   const replacements = numTools - inService;
   const each = `£${Math.round(inputs.toolingCost).toLocaleString('en-GB')}`;
   const items = [
-    { label: `${inService} tool${inService === 1 ? '' : 's'} in service (the set the volume needs) × ${each}`, gbp: inputs.toolingCost * inService },
+    // The tools in service are the up-front investment; the wear replacements are consumed over the programme
+    // (report standard #9).
+    { label: `${inService} tool${inService === 1 ? '' : 's'} in service (the set the volume needs) × ${each}`, gbp: inputs.toolingCost * inService,
+      kind: 'initial' as const, firstSetGbp: inputs.toolingCost * inService, sets: 1 },
     ...(replacements > 1e-9 ? [{ label: `${replacements.toLocaleString('en-GB', { maximumFractionDigits: 2 })} replacement tools as they wear out `
       + `(${inputs.amortizationVolume.toLocaleString('en-GB')} parts ÷ ${inputs.toolingLife.toLocaleString('en-GB')} a tool `
       + `= ${numTools.toLocaleString('en-GB', { maximumFractionDigits: 2 })} tools, less ${inService} in service) × ${each}`,
-      gbp: inputs.toolingCost * replacements }] : []),
+      gbp: inputs.toolingCost * replacements, kind: 'replacement' as const, firstSetGbp: inputs.toolingCost * inService,
+      sets: replacements / inService }] : []),
   ];
   const tooling: ToolingInput = {
     totalToolingCost: inputs.toolingCost * numTools,

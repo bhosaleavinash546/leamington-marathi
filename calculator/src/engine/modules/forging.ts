@@ -2,6 +2,7 @@ import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput }
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { estimateForgingDieCost, type DieSteel, type ShapeComplexity } from './forging-advisor.js';
 import { moduleEnergy, FURNACE_FUEL } from '../module-energy.js';
+import { toolSetItems } from '../tooling-split.js';
 
 export interface ForgingInputs {
   materialId: string;
@@ -194,6 +195,9 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     totalToolingCost: baseDieCost * numDieSets,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // The first die set is the up-front investment; the rest is die wear over the programme (report standard #9).
+    items: toolSetItems('Forging die set', baseDieCost, numDieSets,
+      inputs.dieLife > 0 ? `life ${inputs.dieLife.toLocaleString('en-GB')} forgings a set; ${inputs.amortizationVolume.toLocaleString('en-GB')} forgings, charged fractionally` : undefined),
   };
 
   // Billet heating energy — a real per-part cost (furnace/induction), previously
@@ -228,7 +232,8 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     operations.push(...inputs.secondaryMachiningOps);
   }
   const finalTooling: ToolingInput = (inputs.secondaryMachiningToolingCost && inputs.secondaryMachiningToolingCost > 0)
-    ? { ...tooling, totalToolingCost: tooling.totalToolingCost + inputs.secondaryMachiningToolingCost }
+    ? { ...tooling, totalToolingCost: tooling.totalToolingCost + inputs.secondaryMachiningToolingCost,
+        items: [...(tooling.items ?? []), { label: 'Secondary machining fixtures and programming', gbp: inputs.secondaryMachiningToolingCost, kind: 'nre' }] }
     : tooling;
 
   // ── Surface finishing ────────────────────────────────────────────────────

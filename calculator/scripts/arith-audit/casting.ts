@@ -194,8 +194,10 @@ for (const c of CASES) {
   check('pattern life, castings (8,000 moulds × impressions)', pv(pre + 'hpdc-die-life'), life, { abs: 0 });
   // A pattern wears per mould rammed — rejected castings included.
   const sets = Math.ceil(AMORT * uplift / life);
-  const patternItem = (T.drivers.tooling.items as Array<{ label: string; gbp: number }>).find(i => /^Pattern/.test(i.label))!;
-  check('pattern sets × £ (castings poured ÷ life, rejects included)', patternItem.gbp, sets * pattern, { abs: 0.5 });
+  // Report standard #9: the pattern is the first set (up front) and the replacement sets as it wears out.
+  const patternItems = (T.drivers.tooling.items as Array<{ label: string; gbp: number; kind?: string }>).filter(i => /^Pattern/.test(i.label));
+  check('pattern sets × £ (castings poured ÷ life, rejects included)', patternItems.reduce((a, i) => a + i.gbp, 0), sets * pattern, { abs: 0.5 });
+  check('first pattern set £ (up front)', patternItems.find(i => i.kind === 'initial')?.gbp ?? NaN, pattern, { abs: 0.5 });
   const machTooling = cam ? Number(P.machiningToolingCost) + Number(P.machiningProgrammingNRE) : Number(P.secondaryMachiningToolingCost ?? 0);
   const toolingTotal = sets * pattern + machTooling;
   check('tooling £ / part (total ÷ annual × years)', res.breakdown.tooling, toolingTotal / AMORT, { abs: 0.00005 });

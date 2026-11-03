@@ -511,6 +511,8 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
     totalToolingCost: inputs.nreCost ?? 0,
     amortizationVolume: inputs.nreAmortizationVolume ?? inputs.amortizationVolume,
     mode: 'amortized',
+    // Stencil, ICT fixture, programming: one-off NRE (report standard #9).
+    items: (inputs.nreCost ?? 0) > 0 ? [{ label: 'Assembly NRE (stencil, ICT fixture, programming)', gbp: inputs.nreCost!, kind: 'nre' }] : [],
   };
 
   return { rawMaterial, operations, tooling };

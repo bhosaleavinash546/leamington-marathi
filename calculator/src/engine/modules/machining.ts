@@ -140,6 +140,12 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
     totalToolingCost: inputs.toolingCost + inputs.programmingNRE,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // Fixtures and CAM programming are one-off NRE, invoiced up front (report standard #9); the cutting tools a part
+    // wears are a material consumable, not here.
+    items: [
+      ...(inputs.toolingCost > 0 ? [{ label: 'Machining fixtures', gbp: inputs.toolingCost, kind: 'nre' as const }] : []),
+      ...(inputs.programmingNRE > 0 ? [{ label: 'CNC programming (NRE)', gbp: inputs.programmingNRE, kind: 'nre' as const }] : []),
+    ],
   };
 
   return { rawMaterial, operations, tooling };

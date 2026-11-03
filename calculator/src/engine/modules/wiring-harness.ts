@@ -1,4 +1,5 @@
 import type { CommodityDrivers, MaterialLineItem, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { toolSetItems } from '../tooling-split.js';
 
 export interface WireSpec {
   crossSectionMm2: number;      // 0.35 | 0.5 | 0.75 | 1.0 | 1.5 | 2.5 | 4.0
@@ -173,10 +174,9 @@ export function computeWiringHarnessDrivers(inputs: WiringHarnessInputs): Commod
     totalToolingCost: inputs.boardingBoardCost * numBoards,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
-    items: [{
-      label: `Boarding boards: ${numBoards} (one a ${inputs.boardingBoardLife.toLocaleString('en-GB')} harnesses, whole boards over ${inputs.amortizationVolume.toLocaleString('en-GB')})`,
-      gbp: inputs.boardingBoardCost * numBoards,
-    }],
+    // The first board is the up-front investment; the rest are replacements as it wears out (report standard #9).
+    items: toolSetItems('Boarding board', inputs.boardingBoardCost, numBoards,
+      `one a ${inputs.boardingBoardLife.toLocaleString('en-GB')} harnesses, whole boards over ${inputs.amortizationVolume.toLocaleString('en-GB')}`),
   };
 
   return { rawMaterial, operations, tooling };

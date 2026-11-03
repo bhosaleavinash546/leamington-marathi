@@ -2,6 +2,7 @@ import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput }
 import { finishingForCommodity, type CommodityFinishingInput } from './surface-finishing.js';
 import { meltFactsFor, MELT_SHOP } from '../casting-melt.js';
 import { moduleEnergy } from '../module-energy.js';
+import { toolSetItems } from '../tooling-split.js';
 
 export type CastingSubtype = 'hpdc' | 'sand' | 'gravity' | 'investment';
 
@@ -184,7 +185,9 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
         ? Math.ceil(inputs.amortizationVolume * rejectUplift / hpdcPartsPerDieSet - 1e-9)
         : 1;
       tooling = {
-        items: [{ label: `HPDC die sets: ${hpdcNumDieSets} (life ${inputs.hpdc.dieLife.toLocaleString('en-GB')} shots × ${inputs.hpdc.cavities} cavit${inputs.hpdc.cavities > 1 ? 'ies' : 'y'} each)`, gbp: inputs.hpdc.dieCost * hpdcNumDieSets }],
+        // The first die is the up-front investment; the rest are replacements as it wears out (report standard #9).
+        items: toolSetItems('HPDC die', inputs.hpdc.dieCost, hpdcNumDieSets,
+          `life ${inputs.hpdc.dieLife.toLocaleString('en-GB')} shots × ${inputs.hpdc.cavities} cavit${inputs.hpdc.cavities > 1 ? 'ies' : 'y'} each`),
         totalToolingCost: inputs.hpdc.dieCost * hpdcNumDieSets,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
@@ -212,9 +215,10 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
         ? Math.ceil(inputs.amortizationVolume * rejectUplift / inputs.sand.patternLife - 1e-9)
         : 1;
       tooling = {
-        items: [{ label: `Pattern equipment: ${sandNumPatterns} set(s)`
+        // The first pattern set is the up-front investment; the rest are replacements as it wears out (report standard #9).
+        items: toolSetItems('Pattern equipment', inputs.sand.patternCost, sandNumPatterns,
           // the life is in CASTINGS (sets = parts ÷ life): "16,000 moulds" was 8,000 moulds × 2 impressions (Poland review)
-          + (inputs.sand.patternLife > 0 ? ` (life ${inputs.sand.patternLife.toLocaleString('en-GB')} castings each; ${Math.round(inputs.amortizationVolume * rejectUplift).toLocaleString('en-GB')} poured incl. ${(inputs.rejectRate * 100).toFixed(0)}% rejects)` : ''), gbp: inputs.sand.patternCost * sandNumPatterns }],
+          inputs.sand.patternLife > 0 ? `life ${inputs.sand.patternLife.toLocaleString('en-GB')} castings each; ${Math.round(inputs.amortizationVolume * rejectUplift).toLocaleString('en-GB')} poured incl. ${(inputs.rejectRate * 100).toFixed(0)}% rejects` : undefined),
         totalToolingCost: inputs.sand.patternCost * sandNumPatterns,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
@@ -242,8 +246,8 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
         ? Math.ceil(inputs.amortizationVolume * rejectUplift / inputs.gravity.mouldLife - 1e-9)
         : 1;
       tooling = {
-        items: [{ label: `Permanent moulds: ${gravNumMoulds}`
-          + (inputs.gravity.mouldLife > 0 ? ` (life ${inputs.gravity.mouldLife.toLocaleString('en-GB')} castings each)` : ''), gbp: inputs.gravity.mouldCost * gravNumMoulds }],
+        items: toolSetItems('Permanent mould', inputs.gravity.mouldCost, gravNumMoulds,
+          inputs.gravity.mouldLife > 0 ? `life ${inputs.gravity.mouldLife.toLocaleString('en-GB')} castings each` : undefined),
         totalToolingCost: inputs.gravity.mouldCost * gravNumMoulds,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
@@ -267,7 +271,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
         labourEfficiency: inputs.labourEfficiency,
       });
       tooling = {
-        items: [{ label: 'Wax injection die', gbp: inputs.investment.waxDieCost }],
+        items: [{ label: 'Wax injection die', gbp: inputs.investment.waxDieCost, kind: 'initial', firstSetGbp: inputs.investment.waxDieCost, sets: 1 }],
         totalToolingCost: inputs.investment.waxDieCost,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
@@ -355,7 +359,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   }
   if (inputs.secondaryMachiningToolingCost && inputs.secondaryMachiningToolingCost > 0) {
     tooling = { ...tooling, totalToolingCost: tooling.totalToolingCost + inputs.secondaryMachiningToolingCost,
-      items: [...(tooling.items ?? []), { label: 'Secondary machining fixtures and programming', gbp: inputs.secondaryMachiningToolingCost }] };
+      items: [...(tooling.items ?? []), { label: 'Secondary machining fixtures and programming', gbp: inputs.secondaryMachiningToolingCost, kind: 'nre' }] };
   }
 
   // ── Surface finishing ────────────────────────────────────────────────────

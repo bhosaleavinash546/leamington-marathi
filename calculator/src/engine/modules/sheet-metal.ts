@@ -9,6 +9,7 @@ import {
   hardwarePurchaseCostPerPart,
 } from './sheet-metal-hardware.js';
 import { moduleEnergy } from '../module-energy.js';
+import { toolSetItems } from '../tooling-split.js';
 import {
   pickStampingPressId, stampingPressFacts, N_PER_TONNE_FORCE, STAMPING_PRESS_SAFETY, SINGLE_DIE_ALLOWANCE_MM,
 } from '../machine-sizing.js';
@@ -432,12 +433,25 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
 
   // Number of die sets needed over the programme life
   const numDieSets = dieLife > 0 ? Math.ceil(inputs.amortizationVolume / dieLife) : 1;
+  const dieMaintFraction = Math.max(0, inputs.dieMaintenanceFraction ?? 0);
+  const dieMaintYears = Math.max(1, inputs.maintenanceYears ?? 1);
+  const dieName = pressLine === 'tandem' ? `Tandem line dies (${presses} single-stage dies)` : `Stamping die (${inputs.dieType.replace('_', ' ')})`;
   const tooling: ToolingInput = {
     // + die maintenance for every year the amortisation volume covers: a 5-year programme carried ONE year's 5% (Poland
     // live review, 10 Oct 2026 — the seat bracket's headline was 2.4% low).
-    totalToolingCost: dieCost * numDieSets * (1 + Math.max(0, inputs.dieMaintenanceFraction ?? 0) * Math.max(1, inputs.maintenanceYears ?? 1)),
+    totalToolingCost: dieCost * numDieSets * (1 + dieMaintFraction * dieMaintYears),
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // The first die set is the up-front investment; replacement sets and the die upkeep are consumed over the programme
+    // (report standard #9). The items add to the total above.
+    items: [
+      ...toolSetItems(dieName, dieCost, numDieSets,
+        dieLife > 0 ? `life ${Math.round(dieLife).toLocaleString('en-GB')} parts a set` : undefined),
+      ...(dieMaintFraction > 0 ? [{
+        label: `Die maintenance: ${+(dieMaintFraction * 100).toFixed(2)}% of the die${numDieSets > 1 ? ' sets' : ''} a year × ${dieMaintYears} year${dieMaintYears === 1 ? '' : 's'}`,
+        gbp: dieCost * numDieSets * dieMaintFraction * dieMaintYears, kind: 'replacement' as const,
+      }] : []),
+    ],
   };
 
   // ── Surface finishing ────────────────────────────────────────────────────

@@ -68,7 +68,12 @@ describe('A3 — a pattern wears per mould rammed: sets are counted on castings 
   it('250,000 good at 3% reject = 257,732 poured ÷ 32,000 → 9 sets (it bought 8)', () => {
     const d = computeCastingDrivers(SAND);
     expect(d.tooling.totalToolingCost).toBe(9 * 8_000);
-    expect(d.tooling.items![0].label).toMatch(/^Pattern equipment: 9 set\(s\) \(life 32,000 castings each; 257,732 poured incl\. 3% rejects\)/);
+    // report standard #9: the first set is the up-front investment, the other 8 are replacements as it wears out
+    expect(d.tooling.items).toEqual([
+      { label: 'Pattern equipment — first set', gbp: 8_000, kind: 'initial', firstSetGbp: 8_000, sets: 1 },
+      { label: 'Pattern equipment — 8 replacement sets as it wears out (9 sets over the programme; life 32,000 castings each; 257,732 poured incl. 3% rejects)',
+        gbp: 64_000, kind: 'replacement', firstSetGbp: 8_000, sets: 8 },
+    ]);
   });
   it('an exact fit does not buy a spare set', () => {
     const d = computeCastingDrivers({ ...SAND, rejectRate: 0, amortizationVolume: 64_000 });

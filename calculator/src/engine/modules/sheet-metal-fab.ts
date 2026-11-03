@@ -409,6 +409,8 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
     totalToolingCost: inputs.toolingCost,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // Press-brake tooling and nesting / CNC programming, one-off (report standard #9).
+    items: inputs.toolingCost > 0 ? [{ label: 'Press-brake tooling and nesting / CNC programming', gbp: inputs.toolingCost, kind: 'nre' }] : [],
   };
 
   return { rawMaterial: finishedRawMaterial, operations, tooling };

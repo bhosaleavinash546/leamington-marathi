@@ -1,4 +1,5 @@
 import type { CommodityDrivers, RawMaterialInput, OperationInput, ToolingInput } from '../types.js';
+import { toolSetItems } from '../tooling-split.js';
 import {
   estimateRotoCycle, estimateRotoMouldCost,
   type RotoMaterialFamily, type RotoCoolingMethod, type RotoMouldType, type RotoComplexity,
@@ -154,6 +155,10 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
     totalToolingCost: perMouldCost * moulds * numMouldSets,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // The moulds in service are the up-front investment (one set); the rest is mould wear over the programme (report
+    // standard #9). A set is the moulds in service.
+    items: toolSetItems(`Rotational moulds in service (${moulds} mould${moulds === 1 ? '' : 's'} a set)`, perMouldCost * moulds, numMouldSets,
+      inputs.mouldLife > 0 ? `life ${inputs.mouldLife.toLocaleString('en-GB')} cycles a mould, charged fractionally` : undefined),
   };
 
   return { rawMaterial, operations, tooling };

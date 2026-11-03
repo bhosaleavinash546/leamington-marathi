@@ -424,9 +424,11 @@ export async function runExtrusionAudit(): Promise<{ checks: Check[]; parts: Rec
       add('billet £/kg = (LME + UK premium + adder) ÷ FX', s.billetPrice, mat.pricePerKg, 'money');
       add('scrap £/kg = (LME + differential) ÷ FX', s.scrapPrice, mat.scrapRecoveryPricePerKg, 'money');
       // The die line must say what the tooling total is made of (fix X4).
-      const items = (trace.stackInput.tooling as unknown as { items?: Array<{ label: string; gbp: number }> }).items ?? [];
-      const dieItem = items.find(i => /die|tool set/i.test(i.label));
-      add('tooling item: dies consumed £', s.dieGbp * s.dieSets, dieItem?.gbp ?? NaN, 'money');
+      const items = (trace.stackInput.tooling as unknown as { items?: Array<{ label: string; gbp: number; kind?: string }> }).items ?? [];
+      // Report standard #9: the die is two lines — the first set (up front) and the replacements as it wears out.
+      const dieItems = items.filter(i => /die|tool set/i.test(i.label));
+      add('tooling items: dies consumed £ (first set + replacements)', s.dieGbp * s.dieSets, dieItems.length ? dieItems.reduce((a, i) => a + i.gbp, 0) : NaN, 'money');
+      add('tooling item: first die set £ (up front)', s.dieGbp, dieItems.find(i => i.kind === 'initial')?.gbp ?? NaN, 'money');
       parts[part] = { plan: s.plan, dieSets: s.dieSets, dieGbp: s.dieGbp, total: r.total, breakdown: bd };
     } else parts[part] = { total: r.total, breakdown: bd };
   }

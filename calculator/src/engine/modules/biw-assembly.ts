@@ -118,6 +118,8 @@ export function computeBIWDrivers(inputs: BIWAssemblyInputs): CommodityDrivers {
     totalToolingCost: inputs.fixturingToolingCost,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // One-off work-holding for the programme (report standard #9).
+    items: inputs.fixturingToolingCost > 0 ? [{ label: 'Fixturing and welding tooling', gbp: inputs.fixturingToolingCost, kind: 'nre' }] : [],
   };
 
   return { rawMaterial, operations, tooling };

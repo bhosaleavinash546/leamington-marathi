@@ -185,7 +185,7 @@ export function computeBatteryPackDrivers(i: BatteryPackInputs): CommodityDriver
     tooling: {
       totalToolingCost: fixtures,
       amortizationVolume: Math.max(1, i.amortizationVolume), mode: 'amortized',
-      items: [{ label: 'Pack line fixtures — stacking, welding, EOL adapters for one pack design (ESTIMATE, ev-data.ts)', gbp: fixtures }],
+      items: [{ label: 'Pack line fixtures — stacking, welding, EOL adapters for one pack design (ESTIMATE, ev-data.ts)', gbp: fixtures, kind: 'nre' }],
     },
   };
 }

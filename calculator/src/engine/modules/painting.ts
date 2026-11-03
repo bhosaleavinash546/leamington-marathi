@@ -303,6 +303,8 @@ export function computePaintingDrivers(inputs: PaintingInputs): CommodityDrivers
     totalToolingCost: inputs.toolingCost,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // One-off jigs and masking tooling (report standard #9).
+    items: inputs.toolingCost > 0 ? [{ label: 'Fixture and masking tooling', gbp: inputs.toolingCost, kind: 'nre' }] : [],
   };
 
   return { rawMaterial, operations, tooling };

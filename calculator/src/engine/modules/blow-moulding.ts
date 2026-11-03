@@ -1,4 +1,5 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { toolSetItems } from '../tooling-split.js';
 import { estimateBlowMouldCost, type BlowProcess, type BlowMouldMaterial } from './blow-advisor.js';
 
 export interface BlowMouldingInputs {
@@ -195,6 +196,9 @@ export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): Commodit
     totalToolingCost: baseMouldCost * numMoulds,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // The first mould is the up-front investment; the rest is mould wear over the programme (report standard #9).
+    items: toolSetItems(`Blow mould (${inputs.cavities} cavit${inputs.cavities === 1 ? 'y' : 'ies'})`, baseMouldCost, numMoulds,
+      inputs.mouldLife > 0 ? `life ${inputs.mouldLife.toLocaleString('en-GB')} cycles a mould, charged fractionally` : undefined),
   };
 
   return { rawMaterial, operations, tooling };

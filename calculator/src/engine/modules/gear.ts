@@ -33,7 +33,7 @@
  * material grade.
  */
 import { activeRegion, countryFactor, inCountry } from '../regional-services.js';
-import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput, ToolingItem } from '../types.js';
 import {
   adviseGearRoute, GEAR_PROCESS_REFERENCE, HARDENING_ROUTE_UNSUITABLE, resolveHardeningRoute,
   HARDENING_ROUTE_SPEC,
@@ -949,12 +949,19 @@ export function computeGearDrivers(inputs: GearInputs): CommodityDrivers {
   // heat treat and every operation carried ÷ (1 − reject), the tool wear did not). Itemised so the reports print
   // what the tooling total is made of; the items sum to the total.
   const amort = inputs.amortizationVolume;
-  const items: Array<{ label: string; gbp: number }> = [
+  // Kinds (report standard #9): hob / cutter / wheel wear is PERISHABLE tooling — a running cost a part, never an
+  // investment; a broach or an induction coil is the dedicated tool a supplier invoices up front (initial); fixture,
+  // programming and the inspection master are NRE.
+  const DEDICATED_TOOL = /^(Broach|Induction coil)$/;
+  const items: ToolingItem[] = [
     ...a.toolingLines.map(t => ({
       label: `${t.item}: ${t.basis} = £${t.perPart.toFixed(4)}/part${rejectNote} × ${amort.toLocaleString()} parts`,
       gbp: t.perPart * rejectUplift * amort,
+      kind: 'perishable' as const,
     })),
-    ...a.nreLines.map(l => ({ label: l.item, gbp: l.costGBP })),
+    ...a.nreLines.map(l => DEDICATED_TOOL.test(l.item)
+      ? { label: l.item, gbp: l.costGBP, kind: 'initial' as const, firstSetGbp: l.costGBP, sets: 1 }
+      : { label: l.item, gbp: l.costGBP, kind: 'nre' as const }),
   ];
   const tooling: ToolingInput = {
     totalToolingCost: items.reduce((s, i) => s + i.gbp, 0),

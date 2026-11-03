@@ -16,7 +16,7 @@
  *    final assembly, end-of-line test — library machines and labour, so the costing country re-rates them.
  * Metal prices come from the ACTIVE rate book (the costing country's).
  */
-import type { CommodityDrivers, MaterialLineItem, OperationInput, RawMaterialInput } from '../types.js';
+import type { CommodityDrivers, MaterialLineItem, OperationInput, RawMaterialInput, ToolingItem } from '../types.js';
 import { activeRates } from '../rate-context.js';
 import { inCountry, type CountryBasis } from '../regional-services.js';
 import {
@@ -230,10 +230,17 @@ export function computeEMotorDrivers(i: EMotorInputs): CommodityDrivers {
   const dies = Math.max(1, f.strokes * vol / EV_TOOLING.laminationDieLifeStrokes);
   const tools = dies * EV_TOOLING.laminationDieGbp + (i.winding === 'hairpin' ? EV_TOOLING.hairpinToolsGbp : 0) + EV_TOOLING.motorFixturesGbp;
   const toolBasis = { globalShare: 0.2, rest: 'toolroom' } as const;
-  const items = [
-    { label: `Lamination progressive dies: ${dies.toFixed(2)} sets = max(1, ${f.strokes} strokes × ${vol.toLocaleString('en-GB')} motors ÷ ${EV_TOOLING.laminationDieLifeStrokes.toLocaleString('en-GB')} strokes a die) — ESTIMATE price and life`, gbp: inCountry(dies * EV_TOOLING.laminationDieGbp, toolBasis) },
-    ...(i.winding === 'hairpin' ? [{ label: 'Hairpin forming tools — ESTIMATE', gbp: inCountry(EV_TOOLING.hairpinToolsGbp, toolBasis) }] : []),
-    { label: 'Motor line fixtures — ESTIMATE', gbp: inCountry(EV_TOOLING.motorFixturesGbp, toolBasis) },
+  // Kinds (report standard #9): the first lamination die is the up-front investment, the rest die wear over the
+  // programme; hairpin tools are a one-off tool set; line fixtures are NRE.
+  const dieSet = inCountry(EV_TOOLING.laminationDieGbp, toolBasis);
+  const diesGbp = inCountry(dies * EV_TOOLING.laminationDieGbp, toolBasis);
+  const dieWhy = `${dies.toFixed(2)} sets = max(1, ${f.strokes} strokes × ${vol.toLocaleString('en-GB')} motors ÷ ${EV_TOOLING.laminationDieLifeStrokes.toLocaleString('en-GB')} strokes a die) — ESTIMATE price and life`;
+  const items: ToolingItem[] = [
+    { label: `Lamination progressive die — first set (${dieWhy})`, gbp: Math.min(dieSet, diesGbp), kind: 'initial', firstSetGbp: dieSet, sets: 1 },
+    ...(dies > 1 ? [{ label: `Lamination progressive dies — ${(dies - 1).toFixed(2)} replacement sets as they wear out`, gbp: diesGbp - Math.min(dieSet, diesGbp),
+      kind: 'replacement' as const, firstSetGbp: dieSet, sets: dies - 1 }] : []),
+    ...(i.winding === 'hairpin' ? [{ label: 'Hairpin forming tools — ESTIMATE', gbp: inCountry(EV_TOOLING.hairpinToolsGbp, toolBasis), kind: 'initial' as const }] : []),
+    { label: 'Motor line fixtures — ESTIMATE', gbp: inCountry(EV_TOOLING.motorFixturesGbp, toolBasis), kind: 'nre' },
   ];
   return {
     rawMaterial, operations: ops,

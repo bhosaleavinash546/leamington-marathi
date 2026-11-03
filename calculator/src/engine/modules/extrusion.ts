@@ -186,6 +186,8 @@ export function computeExtrusionDrivers(inputs: ExtrusionInputs): CommodityDrive
     totalToolingCost: dieCost,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // One die with its calibration / sizing tooling for the programme: the up-front investment (report standard #9).
+    items: [{ label: 'Extrusion die and calibration / sizing tooling', gbp: dieCost, kind: 'initial', firstSetGbp: dieCost, sets: 1 }],
   };
 
   return { rawMaterial, operations, tooling };

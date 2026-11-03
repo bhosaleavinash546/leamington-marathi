@@ -124,8 +124,8 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
   const combinedTooling: ToolingInput = {
     items: [
       ...(castDrivers.tooling.items ?? []),
-      ...(inputs.machiningToolingCost > 0 ? [{ label: 'Machining fixtures', gbp: inputs.machiningToolingCost }] : []),
-      ...(inputs.machiningProgrammingNRE > 0 ? [{ label: 'CNC programming (NRE)', gbp: inputs.machiningProgrammingNRE }] : []),
+      ...(inputs.machiningToolingCost > 0 ? [{ label: 'Machining fixtures', gbp: inputs.machiningToolingCost, kind: 'nre' as const }] : []),
+      ...(inputs.machiningProgrammingNRE > 0 ? [{ label: 'CNC programming (NRE)', gbp: inputs.machiningProgrammingNRE, kind: 'nre' as const }] : []),
     ],
     totalToolingCost: castDrivers.tooling.totalToolingCost + inputs.machiningToolingCost + inputs.machiningProgrammingNRE,
     amortizationVolume: inputs.amortizationVolume,

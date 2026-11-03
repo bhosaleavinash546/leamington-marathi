@@ -6,6 +6,7 @@ import {
   boughtOutLine, type ToolComplexity, type ToolCostDetail, type ToolCostLine, type ToolMaterialId,
 } from '../toolmaking.js';
 import { moduleEnergy } from '../module-energy.js';
+import { toolSetItems } from '../tooling-split.js';
 
 export type RunnerSystem = 'cold' | 'hot';
 
@@ -594,12 +595,25 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   // mouldLife is in shots; one shot produces `cavities` parts
   const shotsNeeded = inputs.amortizationVolume / inputs.cavities;
   const numMoulds = inputs.mouldLife > 0 ? Math.ceil(shotsNeeded / inputs.mouldLife) : 1;
+  const mouldSetGbp = baseMouldCost * toleranceFactor * finishFactor.tooling;
+  const maintFraction = Math.max(0, inputs.mouldMaintenanceFraction ?? 0);
+  const maintYears = Math.max(1, inputs.maintenanceYears ?? 1);
   const tooling: ToolingInput = {
     // + mould maintenance for every year the amortisation volume covers (a 5-year programme carried one year's 3%).
     totalToolingCost: baseMouldCost * numMoulds * toleranceFactor * finishFactor.tooling
-      * (1 + Math.max(0, inputs.mouldMaintenanceFraction ?? 0) * Math.max(1, inputs.maintenanceYears ?? 1)),
+      * (1 + maintFraction * maintYears),
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // The first mould is the up-front investment; replacement moulds and the upkeep are consumed over the programme
+    // (report standard #9). The items add to the total above.
+    items: [
+      ...toolSetItems(`Injection mould (${inputs.cavities} cavit${inputs.cavities === 1 ? 'y' : 'ies'})`, mouldSetGbp, numMoulds,
+        inputs.mouldLife > 0 ? `life ${inputs.mouldLife.toLocaleString('en-GB')} shots a mould` : undefined),
+      ...(maintFraction > 0 ? [{
+        label: `Mould maintenance: ${+(maintFraction * 100).toFixed(2)}% of the mould${numMoulds > 1 ? 's' : ''} a year × ${maintYears} year${maintYears === 1 ? '' : 's'}`,
+        gbp: mouldSetGbp * numMoulds * maintFraction * maintYears, kind: 'replacement' as const,
+      }] : []),
+    ],
   };
 
   // Post-mould secondary operations — flat £/part adders (inserts, ultrasonic welding,

@@ -206,6 +206,8 @@ export function computeThermoformingDrivers(inputs: ThermoformingInputs): Commod
     totalToolingCost: toolCost,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // One forming tool (with its trim tooling) for the programme: the up-front investment (report standard #9).
+    items: [{ label: 'Forming tool and trim tooling', gbp: toolCost, kind: 'initial', firstSetGbp: toolCost, sets: 1 }],
   };
 
   return { rawMaterial, operations, tooling };

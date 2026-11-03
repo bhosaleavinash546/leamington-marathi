@@ -1,4 +1,4 @@
-import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput, ToolingItem } from '../types.js';
 import { inCountry, countryFactor, countryNote } from '../regional-services.js';
 import { activeLabourRate } from '../rate-context.js';
 import {
@@ -8,6 +8,7 @@ import {
 export type { AlTemper } from '../al-extrusion-data.js';
 import { planAlExtrusion, planImpact, planConform, AL_TOOL_BASIS, type AlSection, type AlPressPlan } from './aluminium-extrusion-advisor.js';
 import { secondaryMachiningCell } from '../machining-time.js';
+import { toolSetItems } from '../tooling-split.js';
 
 /**
  * Aluminium extrusion should-cost — drivers (built Oct 2026).
@@ -238,14 +239,13 @@ export function computeAluminiumExtrusionDrivers(i: AluminiumExtrusionInputs): C
   const programmeKg = i.amortizationVolume * i.extrudedKgPerPart;
   const sets = i.dieLifeKg > 0 ? Math.max(1, programmeKg / i.dieLifeKg) : 1;
   const dieLabel = i.route === 'impact' ? 'Impact tool set (punch, die, ejector)' : i.route === 'conform' ? 'Conform die (tooling)' : 'Extrusion die';
-  const items: Array<{ label: string; gbp: number }> = [{
-    label: `${dieLabel}: £${Math.round(i.dieCostGbp).toLocaleString('en-GB')} a set (the up-front investment) × ${sets.toFixed(2)} set${sets === 1 ? '' : 's'} worn out over the programme`
-      + (i.dieLifeKg > 0 ? ` (${(programmeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t extruded ÷ ${(i.dieLifeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t life a set)` : '')
-      + (i.dieBasis ? `. Die: ${i.dieBasis}` : ''),
-    gbp: i.dieCostGbp * sets,
-  }];
-  if (i.fabToolingGbp) items.push({ label: 'Fabrication fixtures and CNC programming (one-off)', gbp: i.fabToolingGbp });
-  if (i.bendToolingGbp) items.push({ label: 'Stretch-bend form tooling (one-off)', gbp: i.bendToolingGbp });
+  // The first die is the up-front investment; the rest are replacement dies worn out over the programme (report
+  // standard #9). The two add to dieCostGbp × sets.
+  const items: ToolingItem[] = toolSetItems(dieLabel, i.dieCostGbp, sets,
+    i.dieLifeKg > 0 ? `${(programmeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t extruded ÷ ${(i.dieLifeKg / 1000).toLocaleString('en-GB', { maximumFractionDigits: 1 })} t life a set` : undefined);
+  if (i.dieBasis) items[0] = { ...items[0], label: `${items[0].label}. Die: ${i.dieBasis}` };
+  if (i.fabToolingGbp) items.push({ label: 'Fabrication fixtures and CNC programming (one-off)', gbp: i.fabToolingGbp, kind: 'nre' });
+  if (i.bendToolingGbp) items.push({ label: 'Stretch-bend form tooling (one-off)', gbp: i.bendToolingGbp, kind: 'initial', firstSetGbp: i.bendToolingGbp, sets: 1 });
   const tooling: ToolingInput = {
     totalToolingCost: i.dieCostGbp * sets + (i.fabToolingGbp ?? 0) + (i.bendToolingGbp ?? 0),
     amortizationVolume: i.amortizationVolume,

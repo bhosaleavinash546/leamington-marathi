@@ -71,8 +71,14 @@ describe('X4 — the die line says it is dies consumed, not a one-off investment
     const b = buildAlExtrusionInputs(RAIL);
     const t = computeAluminiumExtrusionDrivers(b.inputs).tooling;
     const sets = 250_000 * b.inputs.extrudedKgPerPart / b.inputs.dieLifeKg;
-    expect(t.items?.[0].gbp).toBeCloseTo(b.inputs.dieCostGbp * sets, 2);
-    expect(t.items?.[0].label).toMatch(/£10,003 a set \(the up-front investment\) × 43\.66 sets worn out over the programme \(1,746\.6 t extruded ÷ 40 t life a set\)/);
+    // report standard #9: the first die is the up-front investment, the rest are replacements as it wears out
+    expect(t.items?.[0]).toMatchObject({ kind: 'initial', gbp: b.inputs.dieCostGbp, firstSetGbp: b.inputs.dieCostGbp, sets: 1 });
+    expect(t.items?.[0].label).toMatch(/^Extrusion die — first set/);
+    expect(t.items?.[1]).toMatchObject({ kind: 'replacement', firstSetGbp: b.inputs.dieCostGbp });
+    expect(t.items?.[1].sets).toBeCloseTo(sets - 1, 9);
+    expect(t.items![0].gbp + t.items![1].gbp).toBeCloseTo(b.inputs.dieCostGbp * sets, 2);
+    expect(t.items?.[1].label).toMatch(/^Extrusion die — 42\.66 replacement sets as it wears out \(43\.66 sets over the programme; 1,746\.6 t extruded ÷ 40 t life a set\)/);
+    expect(t.items![1].label).not.toMatch(/£/);   // the reports print the money, in their currency
   });
 });
 

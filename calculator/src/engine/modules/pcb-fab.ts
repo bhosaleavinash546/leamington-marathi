@@ -407,6 +407,8 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
     totalToolingCost: inputs.nreCost,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
+    // Gerbers, drill programs, test fixtures: one-off NRE (report standard #9).
+    items: inputs.nreCost > 0 ? [{ label: 'Fabrication NRE (tooling, drill programs, test fixtures)', gbp: inputs.nreCost, kind: 'nre' }] : [],
   };
 
   // Every table above is what a fabricator charges — "base panel price" by
