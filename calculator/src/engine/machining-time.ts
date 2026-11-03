@@ -573,7 +573,7 @@ export function secondaryMachiningCell(p: {
       + `tool wear ${p.cuttingMin.toFixed(1)} min × £${cuttingDataFor(p.family).toolCostPerCutMin.toFixed(4)}/min = £${wear.toFixed(3)}; `
       + `handling ${handlingMinPerFixturing(p.weightKg)} min a fixturing by weight, ${SETUP_MIN_PER_FIXTURING} min change-over a fixturing a batch of ${batchSize} `
       + `(${HOURS_STATUS})`
-      + (volumeCell ? `; pallet change ${PALLET_CHANGE_SEC} s (Okuma MA-4000H, ISO 10791-9, data.json #64)` : '')
+      + (volumeCell ? `; pallet change ${PALLET_CHANGE_SEC} s (Okuma MA-4000H, ISO 10791-9 — Okuma MA-4000H brochure, Jul 2025)` : '')
       + `; cutting minutes on the published cutting data — ${sourcesLine(p.family, p.turned ? ['turn', 'drill', 'tap'] : ['face', 'drill', 'bore', 'tap'])}; `
       + `${TOOL_CHANGE_STATUS}; ${ALLOWANCE_STATUS}`,
   };

@@ -147,7 +147,13 @@ export function computeUniversalStack(
       field: 'rawMaterial.directCost',
       value: rawMaterialCost,
       unit: '£',
-      rateSource: 'Pre-computed by commodity module',
+      // what the figure is, not which code produced it ("Pre-computed by commodity module", live run 3 Nov 2026)
+      rateSource: (() => {
+        const all = [...new Set((input.rawMaterial.lines ?? []).map(l => (l.ref || l.description || '').trim()).filter(Boolean))];
+        const names = all.length > 4 ? `${all.length} itemised lines` : all.join(' + ');
+        return names ? `Direct cost: the sum of the material lines (${names}), not weight × price per kg`
+          : 'Direct cost supplied as a figure, not weight × price per kg';
+      })(),
       rateId: input.rawMaterial.materialId,
       confidence: 'Medium',
     });

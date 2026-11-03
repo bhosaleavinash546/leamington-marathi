@@ -3,7 +3,7 @@ import { utilisationReference, bandText } from '../engine/suggestion-facts.js';
 import autoTable from 'jspdf-autotable';
 import { routeRowLabel, routeReferenceRow, traceFieldLabel, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import { shortOperationName } from '../engine/operation-names.js';
-import { reportNoteText } from './money-text.js';
+import { reportNoteText, directMaterialBasis } from './money-text.js';
 import { coverWarningText, decisionAnswerLabel } from './decision-text.js';
 import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType, Scenario } from '../engine/types.js';
@@ -44,6 +44,23 @@ export function clipAtWord(text: string, max: number): string {
   const cut = text.slice(0, max);
   const at = cut.lastIndexOf(' ');
   return `${(at > max * 0.5 ? cut.slice(0, at) : cut).replace(/[\s,;:(\u2014\u2013-]+$/, '')}\u2026`;
+}
+
+/**
+ * The first clauses of a note that fit in `max` characters, stopped at a clause boundary ("; ", " — ", ", ") outside
+ * brackets — never inside a word or a number, and never with an ellipsis (§12 printed "÷ 1773.4…" and "at its market…",
+ * which read as a truncated figure; live run, 3 Nov 2026). A note with no boundary to stop at is kept whole.
+ */
+export function clipAtClause(text: string, max: number): string {
+  if (text.length <= max) return text;
+  let depth = 0, best = -1;
+  for (let k = 0; k < max; k++) {
+    const ch = text[k];
+    if (ch === '(' || ch === '[') depth++;
+    else if (ch === ')' || ch === ']') depth = Math.max(0, depth - 1);
+    else if (depth === 0 && (text.startsWith('; ', k) || text.startsWith(' — ', k) || text.startsWith(' – ', k) || text.startsWith(', ', k))) best = k;
+  }
+  return best >= max * 0.3 ? text.slice(0, best).replace(/[\s,;:\u2014\u2013-]+$/, '') : text;
 }
 
 /** A sensitivity driver's base value with its unit, as a person writes it ("0.6 min", "1,000,000 parts", "12.0%"). */
@@ -783,7 +800,7 @@ function renderGeometricDFM(
   y += 11;
 
   if (!g.packAvailable) {
-    y = calloutBox(doc, y, 'No geometric rule pack for this commodity',
+    y = calloutBox(doc, y, 'Geometric DFM checks are not available for this process',
       ['Geometry-based checks did not run. The commercial cost-ratio observations below still apply.'],
       ORANGE, OR_LT);
   }
@@ -816,7 +833,8 @@ function renderGeometricDFM(
     // Face list is capped: a 104-instance issue would otherwise run pages of ids.
     const shown = gr.faceIds.slice(0, 30).join(', ');
     for (const ln of doc.splitTextToSize(
-      `Faces: ${shown}${gr.faceIds.length > 30 ? ` ... (${gr.faceIds.length} total)` : ''}`,
+      // words, not a cut: "... (37 total)" read as a truncated list (live run, 3 Nov 2026)
+      `Faces: ${shown}${gr.faceIds.length > 30 ? ` and ${gr.faceIds.length - 30} more faces — full list in the workbook's 9-DFM sheet` : ''}`,
       CW - 4) as string[]) { doc.text(ln, MG + 2, y); y += 3.1; }
     for (const ln of doc.splitTextToSize(`Fix: ${gr.recommendation}`, CW - 4) as string[]) {
       doc.text(ln, MG + 2, y); y += 3.3;
@@ -1140,7 +1158,7 @@ export function renderShouldCostSections(
   const itemised = input.rawMaterial.directCost !== undefined && (/^mat-virtual/.test(input.rawMaterial.materialId) || !(input.rawMaterial.netWeightKg > 0));
   const itemisedKg = itemised ? (input.rawMaterial.netWeightKg > 0 ? input.rawMaterial.netWeightKg : rulePartWeightKg(cadMeta.checks?.ruleValues)) : null;
   const matRows: string[][] = itemised ? [
-    ['Material',                   (input.rawMaterial.lines ?? []).length ? 'Itemised lines (3B)' : 'Supplied price', '', 'Priced by the commodity module from its own lines, not weight × price per kg'],
+    ['Material',                   (input.rawMaterial.lines ?? []).length ? 'Itemised lines (3B)' : 'Supplied price', '', `Priced as ${directMaterialBasis(input.rawMaterial.lines)}`],
     ['Costed Part Weight',         itemisedKg ? `${itemisedKg.toFixed(4)} kg` : 'not weight-based', itemisedKg ? 'kg' : '', itemisedKg ? 'The part weight the commodity rules costed (the material lines below are bought from it)' : 'The material line is not costed by weight'],
   ] : [
     ['Material ID',                input.rawMaterial.materialId,                             'ID',           ''],
@@ -1156,7 +1174,7 @@ export function renderShouldCostSections(
   let metalLine = 0;
   if (input.rawMaterial.directCost !== undefined) {
     metalLine = input.rawMaterial.directCost;
-    matRows.push(['Direct Material Cost', c(metalLine), currency, 'Priced by the commodity module (not weight × £/kg)']);
+    matRows.push(['Direct Material Cost', c(metalLine), currency, `Priced as ${directMaterialBasis(input.rawMaterial.lines)}`]);
   } else {
     const price = tracedV('material.pricePerKg') ?? mat?.pricePerKg ?? 0;
     const scrapPrice = tracedV('material.scrapRecoveryPricePerKg') ?? mat?.scrapRecoveryPricePerKg ?? 0;
@@ -1201,7 +1219,7 @@ export function renderShouldCostSections(
     ['', '', '', ''],
     ['Data Confidence', itemised ? 'per line (3B provenance)' : mat?.confidence ?? '—', '', ''],
     passThrough
-      ? ['Rates dated', String(library.lastModified ?? '—').slice(0, 10), '', `Rate library ${library.version ?? ''} used by the commodity module`]
+      ? ['Rates dated', String(library.lastModified ?? '—').slice(0, 10), '', `Rate library ${library.version ?? ''} — the book the material lines were priced in`]
       : ['Effective Date', mat?.effectiveDate ?? '—', '', ''],
   );
 
@@ -1686,7 +1704,8 @@ export function renderShouldCostSections(
     body: (() => { const seen = new Set<string>(); return result.traceability.map(t => {
       const role = /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : traceRateIdText(t.rateId);
       const key = `${t.rateId ?? ''}|${t.rateSource}`;
-      const src = seen.has(key) ? `as above (${role || 'same source'})` : (seen.add(key), reportNoteText(t.rateSource));
+      // "as above" names the grade / machine (mat-gs-c25 → its grade): the id stays in its own column only (live run, 3 Nov 2026)
+      const src = seen.has(key) ? `as above (${reportNoteText(role) || 'same source'})` : (seen.add(key), reportNoteText(t.rateSource));
       return t.unit.includes('£')
         ? [traceFieldLabel(shortOperationName(t.field)), (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), src, role, t.confidence]
         : [traceFieldLabel(shortOperationName(t.field)), t.value.toFixed(4), t.unit, src, role, t.confidence];
@@ -2124,7 +2143,7 @@ export function renderShouldCostSections(
       .slice(0, 8)
       .map(t => ({
         title: traceFieldLabel(shortOperationName(t.field)).replace(/^material: price$/i, 'Material price'),
-        detail: `Low confidence — ${/labourRatePerHr/.test(t.field) ? `${t.rateId ? labourRoleLabel(t.rateId) : 'labour'} rate` : /machineRatePerHr/.test(t.field) ? 'machine rate' : 'rate'} ${sym}${(t.value * fxRate).toFixed(2)}${t.unit.replace('£', '')}: ${clipAtWord(reportNoteText(String(t.rateSource)).replace(/^[^:]*book [0-9-]+: /, '').split(/(?<=\.)\s/)[0], 140)} (the derivation is in §6)`,
+        detail: `Low confidence — ${/labourRatePerHr/.test(t.field) ? `${t.rateId ? labourRoleLabel(t.rateId) : 'labour'} rate` : /machineRatePerHr/.test(t.field) ? 'machine rate' : 'rate'} ${sym}${(t.value * fxRate).toFixed(2)}${t.unit.replace('£', '')}: ${clipAtClause(reportNoteText(String(t.rateSource)).replace(/^[^:]*book [0-9-]+: /, '').split(/(?<=\.)\s/)[0], 140)} (derivation in §6)`,
         action: /machineRatePerHr/.test(t.field) ? 'Confirm with the supplier\'s machine-hour rate or a local capex quote'
           : /pricePerKg/.test(t.field) ? 'Confirm with a local supplier price for this grade' : 'Confirm with a local quote',
       }));

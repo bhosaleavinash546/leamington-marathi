@@ -38,8 +38,12 @@ export const CUTTING_SOURCES = {
   'GARANT-DIN338': { name: 'Hoffmann Group GARANT DIN 338 jobber drill product page', rows: '#43' },
 } as const;
 export type CuttingSourceId = keyof typeof CUTTING_SOURCES;
-/** "Mitsubishi Materials MVE … (data.json #19–26)" — what a basis line prints for a rate's source. */
-export const sourceName = (id: CuttingSourceId): string => `${CUTTING_SOURCES[id].name}, data.json ${CUTTING_SOURCES[id].rows}`;
+/**
+ * "Mitsubishi Materials MVE solid carbide drill, recommended cutting conditions (2023)" — what a basis line prints for a
+ * rate's source: the maker and the catalogue. The research file's row ids (`rows`) stay in the code for the tests; they
+ * are never printed (a report read "…(2002–04), data.json #47–53", live run 3 Nov 2026).
+ */
+export const sourceName = (id: CuttingSourceId): string => CUTTING_SOURCES[id].name;
 
 // ── Labelled assumptions (no catalogue gives these) ─────────────────────────────────────────────────────────────────
 /** Face-mill step-over ae / Dc — as the Okuma and Sandvik worked examples cut (data.json #5, #15, #17: 0.68–0.70). */
@@ -90,7 +94,7 @@ export interface CatalogueRow {
 
 const WSX_BODIES: CutterBody[] = [{ dc: 63, z: 5 }, { dc: 80, z: 6 }, { dc: 100, z: 7 }, { dc: 125, z: 8 }];
 const WSX_NOTE = 'cutter Ø chosen from the face width; teeth Ø63 z5 / Ø80 z6 / Ø100 z7 / Ø125 z8 ASSUMED (the WSX445 page '
-  + 'has no body / teeth table; the Okuma and Sandvik worked-example cutters, data.json #5 #15 #17 #18, have these counts)';
+  + 'has no body / teeth table; the Okuma and Sandvik worked-example cutters, have these counts)';
 
 /** The catalogue rows each costed family reads. */
 export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow> = {
@@ -102,7 +106,7 @@ export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow
     shoulder: { vc: 160, fz: 0.25, body: { dc: 50, z: 4 }, bodyAssumed: true, apLimitMm: 20, src: 'MMC-APX4000' },
     drill: { pts: [{ d: 12, n: 2300, f: 0.31 }, { d: 16, n: 1700, f: 0.33 }], src: 'MMC-MVE' },
     bore: { vc: 350, f: 0.2, src: 'SANDVIK-TURN',
-      note: 'no boring row read for steel: the GC4015 turning vc at fn 0.4 (the conservative neighbour of f 0.2), f 0.2 as the Tungaloy T515 boring example (data.json #55)' },
+      note: 'no boring row read for steel: the GC4015 turning vc at fn 0.4 (the conservative neighbour of f 0.2), f 0.2 as the Tungaloy T515 boring example' },
     turnFinish: { vc: 485, fn: 0.1, src: 'SANDVIK-TURN' },
     turnRough: { vc: 350, fn: 0.4, src: 'SANDVIK-TURN' },
     tap: { vc: 15, src: 'OSG-ATAP', note: 'the low end of the S45C advisable band 15–50 m/min' },
@@ -115,7 +119,7 @@ export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow
     rough: { fz: 0.2, apMm: 3.0, src: 'MMC-WSX445' },
     shoulder: { vc: 190, fz: 0.25, body: { dc: 50, z: 4 }, bodyAssumed: true, apLimitMm: 20, src: 'MMC-APX4000' },
     drill: { pts: [{ d: 12, n: 1900, f: 0.31 }, { d: 16, n: 1400, f: 0.33 }], src: 'MMC-MVE',
-      note: 'the MVE ductile row is < 450 MPa; Sandvik R840 pearlitic 09.2 (vc 70–100, fn 0.30–0.55 at Ø10–14, data.json #40) brackets it for GJS-500' },
+      note: 'the MVE ductile row is < 450 MPa; Sandvik R840 pearlitic 09.2 (vc 70–100, fn 0.30–0.55 at Ø10–14) brackets it for GJS-500' },
     bore: { vc: 201, f: 0.2, src: 'TUNGALOY-T515' },
     turnFinish: { vc: 260, fn: 0.1, src: 'SANDVIK-TURN' },
     turnRough: { vc: 215, fn: 0.3, src: 'SANDVIK-TURN' },
@@ -126,14 +130,14 @@ export const CATALOGUE: Record<'steel' | 'cast iron' | 'aluminium', CatalogueRow
     material: 'aluminium alloy (wrought 6xxx / cast Al-Si rows)',
     face: { vc: 1000, fz: 0.2, src: 'TUNGALOY-TUNGALU' },
     bodies: { list: [{ dc: 50, z: 4 }, { dc: 63, z: 5 }, { dc: 100, z: 6 }], assumed: false,
-      note: 'cutter Ø chosen from the face width; teeth Ø50 z4 / Ø63 z5 / Ø100 z6 from the TungAlu-Mill worked table (data.json #13)' },
+      note: 'cutter Ø chosen from the face width; teeth Ø50 z4 / Ø63 z5 / Ø100 z6 from the TungAlu-Mill worked table' },
     rough: { fz: 0.2, apMm: 2.0, src: 'TUNGALOY-TUNGALU' },
     shoulder: { vc: 1000, fz: 0.2, body: { dc: 50, z: 4 }, bodyAssumed: false, apLimitMm: 2.0, src: 'TUNGALOY-TUNGALU' },
     drill: { pts: [{ d: 12, n: 2600, f: 0.31 }, { d: 16, n: 1900, f: 0.33 }], src: 'MMC-MVE' },
     bore: { vc: 400, f: 0.2, src: 'MMC-SVJD',
-      note: 'no boring row read for aluminium: the SVJD turning vc, f 0.2 as the Tungaloy T515 boring example (data.json #55)' },
+      note: 'no boring row read for aluminium: the SVJD turning vc, f 0.2 as the Tungaloy T515 boring example' },
     turnFinish: { vc: 400, fn: 0.15, src: 'MMC-SVJD',
-      note: 'SVJD 400 m/min with Sandvik\'s lowest aluminium fn 0.15 (data.json #53); Sandvik\'s 2,000 m/min is not used — few lathes reach that spindle speed at these diameters' },
+      note: 'SVJD 400 m/min with Sandvik\'s lowest aluminium fn 0.15; Sandvik\'s 2,000 m/min is not used — few lathes reach that spindle speed at these diameters' },
     turnRough: { vc: 400, fn: 0.3, src: 'MMC-SVJD' },
     tap: { vc: 15, src: 'OSG-ATAP', note: 'AC / ADC has no advisable band, only "possible" 5–50 m/min — 15 m/min taken inside it' },
     k: 2.1,

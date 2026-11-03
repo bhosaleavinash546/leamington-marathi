@@ -51,7 +51,7 @@ mkdirSync(OUT, { recursive: true });
 const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
 const freePort = () => new Promise<number>((res, rej) => { const s = createServer(); s.once('error', rej); s.listen(0, '127.0.0.1', () => { const p = (s.address() as { port: number }).port; s.close(() => res(p)); }); });
 // the predicates are pure functions in trace-checks.ts, each proven able to fail (tests/trace-checks.test.ts)
-import { money, samePenny as samePennyFx, costedAlternatives, near as nearFx, marginTypedRe, stampNamesBook } from './trace-checks.js';
+import { money, samePenny as samePennyFx, costedAlternatives, near as nearFx, marginTypedRe, stampNamesBook, materialTraceEvidence } from './trace-checks.js';
 // Country review (Oct 2026): CV_TRACE_COUNTRY=<code> costs every part in that country's book; CV_TRACE_TERMS=EXW prices ex-works.
 const COUNTRY = process.env.CV_TRACE_COUNTRY ?? '';
 const TERMS = process.env.CV_TRACE_TERMS === 'EXW' ? 'EXW' : '';
@@ -566,7 +566,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   check('arith', 'trace', 'Σ operations = buckets 2 and 3', near(rc.procSum, rc.b.process) && near(rc.labSum, rc.b.labour),
     `process ${rc.procSum.toFixed(4)} v ${rc.b.process.toFixed(4)}; labour ${rc.labSum.toFixed(4)} v ${rc.b.labour.toFixed(4)}`);
   check('arith', 'trace', 'material = gross × £/kg + scrap credit + energy (+ listed extras) = bucket 1', near(rc.matCalc, rc.b.material, 0.002),
-    `${rc.gross} kg × ${rc.price}/kg + ${rc.scrap} + ${rc.energy} = ${rc.matCalc.toFixed(4)} v ${rc.b.material.toFixed(4)}`);
+    materialTraceEvidence({ ...rc, material: rc.b.material }));
   check('arith', 'trace', 'tooling = tool cost ÷ amortisation volume = bucket 4', near(rc.toolTotal / rc.amortVol, rc.b.tooling),
     `${rc.toolTotal} ÷ ${rc.amortVol} = ${(rc.toolTotal / rc.amortVol).toFixed(4)} v ${rc.b.tooling.toFixed(4)}`);
   check('arith', 'trace', `overhead = ${(rc.ohPct * 100).toFixed(0)}% of material + process + labour + tooling`, near(rc.ohCalc, rc.b.overhead),

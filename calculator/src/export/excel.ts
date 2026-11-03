@@ -13,7 +13,7 @@ import { normaliseSeverity, SEVERITY_LABEL } from '../engine/dfm-geometry/types.
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
 import { buildWorkbook, workbookBlob, money, pctCell, type SheetSpec } from './xlsx-util.js';
-import { localiseGbpText, localiseRuleValue } from './money-text.js';
+import { localiseGbpText, localiseRuleValue, directMaterialBasis } from './money-text.js';
 import { shopDefaultsBasis, deliveryTermsLine, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
 
 const num4 = (n: number) => +n.toFixed(4);
@@ -23,7 +23,7 @@ const hr6 = (n: number) => +n.toFixed(6);
 export const minutesCell = (min: number): number => (!(min > 0) ? 0 : min >= 0.01 ? +min.toFixed(3) : +min.toPrecision(2));
 /** A traceability rate id as a report prints it — the direct-cost placeholder id is not a rate anyone can look up. */
 export const traceRateIdText = (id: string | undefined): string =>
-  id && /^mat-virtual/.test(id) ? 'commodity module' : (id ?? '');
+  id && /^mat-virtual/.test(id) ? 'material lines' : (id ?? '');
 
 /**
  * The part weight the commodity's rules costed, read off the rule values the report carries — for a material line that
@@ -288,7 +288,7 @@ export async function exportToExcelBlob(
       ['Material basis', placeholder
         ? ((rm.lines ?? []).length ? 'Priced by its itemised lines below (not weight × price per kg)' : 'Supplied / bought-in price — no weight-based material')
         : (mat?.grade ?? rm.materialId), '', ''],
-      ['Direct material cost', m(metalNet), currency, 'priced by the commodity module (not weight × £/kg)'],
+      ['Direct material cost', m(metalNet), currency, directMaterialBasis(rm.lines)],
     );
     const partKg = rm.netWeightKg > 0 ? rm.netWeightKg : rulePartWeightKg(checks?.ruleValues);
     if (partKg) matDetail.push(['Costed part weight', num4(partKg), 'kg', 'the part weight the commodity rules costed — the material is priced by its itemised lines, not weight × price per kg']);

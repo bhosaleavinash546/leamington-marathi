@@ -47,7 +47,7 @@ export const VOLUME_CELL_MIN_ANNUAL = 25_000;
  * (Jul 2025), data.json #64 (as corrected on re-read, 3 Nov 2026). The only maker figure read.
  */
 export const PALLET_CHANGE_SEC = 7.1;
-export const PALLET_CHANGE_SOURCE = 'Okuma MA-4000H 7.1 s, ISO 10791-9 — Okuma MA-4000H brochure (Jul 2025), data.json #64';
+export const PALLET_CHANGE_SOURCE = 'Okuma MA-4000H 7.1 s, ISO 10791-9 — Okuma MA-4000H brochure (Jul 2025)';
 /** Approach directions a 4th-axis tombstone reaches in one clamping. */
 export const HMC_SIDES_PER_CLAMPING = 4;
 export const HMC_MACHINE_ID = 'mach-hmc-400';

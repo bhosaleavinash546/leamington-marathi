@@ -33,7 +33,7 @@ import type { RateLibrary, ToolingKind } from '../../src/engine/types.js';
 import { toolingSplit } from '../../src/engine/tooling-split.js';
 import type { RuleContext } from '../../src/engine/cost-input-rules/types.js';
 import { costMeasuredPart, regionalBook, type BulkPartResult } from './bulk-run.js';
-import { specForCommodity } from '../../src/engine/cost-input-rules/index.js';
+import { specForCommodity, runCostInputRules } from '../../src/engine/cost-input-rules/index.js';
 import { inMaterialScope } from '../../src/engine/material-scope.js';
 import { POLYMER_TAXONOMIES } from '../../src/engine/polymer-material-taxonomy.js';
 import { computeCostUncertainty, type DriverProvenance, type DriverSource } from '../../src/engine/uncertainty.js';
@@ -323,6 +323,21 @@ const PROCESS_ANSWER: Record<string, string> = { casting: CASTING_PROCESS_CHOICE
 const round = (n: number, dp = 4) => Math.round(n * 10 ** dp) / 10 ** dp;
 
 /**
+ * A costed row's money as the ENGINE computed it — the stack result the trace carries, not the executor's 4-dp copy. The
+ * screen shows the headline from the unrounded stack; a row read off the 4-dp total (62.044959 → 62.045) printed £62.05
+ * beside a £62.04 headline on screen, Excel 8-Routes and PDF §9b (live run, 3 Nov 2026). The figure is rounded ONCE, at
+ * display.
+ */
+const exactTotal = (r: BulkPartResult): number | null => {
+  const t = (r.trace as { result?: { total?: number } } | undefined)?.result?.total;
+  return typeof t === 'number' && Number.isFinite(t) ? t : r.total ?? null;
+};
+const exactBreakdown = (r: BulkPartResult): Record<string, number> | null => {
+  const b = (r.trace as { result?: { breakdown?: Record<string, number> } } | undefined)?.result?.breakdown;
+  return b && r.breakdown ? Object.fromEntries(Object.keys(r.breakdown).map(k => [k, Number.isFinite(b[k]) ? b[k] : Number(r.breakdown![k])])) : null;
+};
+
+/**
  * The same POLYMER on another plastics route: an ABS thermoforming sheet compared as a moulding is costed in the
  * moulding's ABS grade, not left at "which resin?" — the assumption is stated on the row. Null when the route has no
  * grade of that polymer.
@@ -565,17 +580,51 @@ async function costRoute(
   return { r, open: r?.status === 'needs_answer' ? open : [] };
 }
 
-function specOf(answers: Record<string, unknown>, original: Record<string, unknown>, assumedIds: Set<string>, route: string, book: RateLibrary): RouteSpecItem[] {
+/** Option labels already read off a route's question, by route | question | value. */
+const OPTION_LABELS = new Map<string, string | null>();
+
+/**
+ * What the question calls an answer — its option's LABEL ("Carbon prepreg, autoclave"), never the option value
+ * ("prepreg-cf", printed in the audit pack and Excel 8-Routes, live run 3 Nov 2026). Generic: the route's own rule pack
+ * is run with that one answer withheld, so the question it asks is the one that was answered, and the option whose value
+ * is the answer gives the label. Null when the route does not ask it (the caller keeps its own naming).
+ */
+function answerOptionLabel(i: CompareRoutesInput, route: string, answers: Record<string, unknown>, id: string, value: string, book: RateLibrary): string | null {
+  const key = `${route}|${id}|${value}`;
+  if (OPTION_LABELS.has(key)) return OPTION_LABELS.get(key)!;
+  let label: string | null = null;
+  const spec = specForCommodity(route);
+  if (spec) {
+    const without = { ...answers };
+    delete without[id];
+    const ctx = {
+      geo: i.geo, geometryQuality: 'occt', commodity: route, commoditySource: 'engineer', annualVolume: i.annualVolume,
+      filename: i.filename, answers: without, rates: book,
+      ...(i.programmeYears && i.programmeYears > 0 ? { programmeYears: i.programmeYears } : {}),
+    } as RuleContext;
+    try {
+      const d = runCostInputRules(spec, ctx).decisions.find(x => x.id === id);
+      label = d?.options.find(o => String(o.value) === value)?.label ?? null;
+    } catch { label = null; }
+  }
+  OPTION_LABELS.set(key, label);
+  return label;
+}
+
+function specOf(answers: Record<string, unknown>, original: Record<string, unknown>, assumedIds: Set<string>, route: string, book: RateLibrary,
+  i?: CompareRoutesInput, rulesBook?: RateLibrary): RouteSpecItem[] {
   const out: RouteSpecItem[] = [];
   for (const [id, label] of SPEC_IDS) {
     const v = answers[id];
     if (v === undefined || v === null || v === '') continue;
-    let value = String(v);
+    const raw = String(v);
+    let value = raw;
     const m = book.materials.find(x => x.id === value);
     if (m) value = m.grade;
-    if (id === CASTING_PROCESS_CHOICE_ID) value = CASTING_PROCESS_LABEL[value] ?? value;
-    if (id === FORGING_PROCESS_CHOICE_ID) value = FORGING_PROCESS_LABEL[value] ?? value;
-    if (id === COMPOSITES_PROCESS_CHOICE_ID) value = COMPOSITES_PROCESS_LABEL[value as 'layup' | 'pcm'] ?? value;
+    else if (id === CASTING_PROCESS_CHOICE_ID) value = CASTING_PROCESS_LABEL[value] ?? value;
+    else if (id === FORGING_PROCESS_CHOICE_ID) value = FORGING_PROCESS_LABEL[value] ?? value;
+    else if (id === COMPOSITES_PROCESS_CHOICE_ID) value = COMPOSITES_PROCESS_LABEL[value as 'layup' | 'pcm'] ?? value;
+    else if (i) value = answerOptionLabel(i, route, answers, id, raw, rulesBook ?? book) ?? value;
     const source: RouteSpecItem['source'] = id === CASTING_PROCESS_CHOICE_ID || id === FORGING_PROCESS_CHOICE_ID || id === COMPOSITES_PROCESS_CHOICE_ID ? 'comparison'
       : assumedIds.has(id) ? 'assumed' : original[id] !== undefined ? 'answered' : 'comparison';
     out.push({ id, label, value, source });
@@ -677,19 +726,21 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
     const band = costed && bands ? bandOf(r!, book, geometryQuality, BAND_TRIALS) : null;
     if (costed) {
       for (const v of ladder) {
-        if (v === i.annualVolume) { byVolume.push({ volume: v, total: round(r!.total!), p10: band?.p10 ?? null, p90: band?.p90 ?? null, note: null }); continue; }
+        if (v === i.annualVolume) { byVolume.push({ volume: v, total: exactTotal(r!), p10: band?.p10 ?? null, p90: band?.p90 ?? null, note: null }); continue; }
         const at = await costRoute(i, route, { ...answers }, v, null);
         const ok = at.r?.status === 'costed' && at.r.total != null;
         const b = ok && bands ? bandOf(at.r!, book, geometryQuality, LADDER_TRIALS) : null;
         byVolume.push({
-          volume: v, total: ok ? round(at.r!.total!) : null, p10: b?.p10 ?? null, p90: b?.p90 ?? null,
+          volume: v, total: ok ? exactTotal(at.r!) : null, p10: b?.p10 ?? null, p90: b?.p90 ?? null,
           note: ok ? null : at.open.length ? `needs an answer at this volume: ${at.open.join('; ')}` : (at.r?.error ?? at.r?.code ?? 'not costed'),
         });
       }
     }
     const tooling = costed && r ? toolingOf(r) : null;
-    const total = costed && r?.total != null ? round(r.total) : null;
-    const toolingPerPart = costed && r?.breakdown?.tooling != null ? round(Number(r.breakdown.tooling)) : null;
+    // The row's money is the engine's own figure, unrounded (exactTotal): the screen, Excel 8-Routes and PDF §9b round
+    // it ONCE, at display — the reference row equals the headline to the penny on display.
+    const total = costed && r?.total != null ? exactTotal(r) : null;
+    const toolingPerPart = costed && r?.breakdown?.tooling != null ? exactBreakdown(r)!.tooling : null;
     // The piece price WITHOUT tooling takes out the tooling's overhead and margin too: the stack charges overhead on the
     // amortised tooling and margin on that, so total − tooling/part left (1+OH)(1+margin) − 1 ≈ 21 % of it in the "piece
     // ex-tooling" and the programme spend counted it on top of the tool investment (arithmetic audit, 30 Oct 2026:
@@ -705,10 +756,10 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
       commodity: r?.commodity ?? null,
       status: r?.status ?? 'error',
       total, toolingPerPart,
-      breakdown: costed && r?.breakdown ? Object.fromEntries(Object.entries(r.breakdown).map(([k, v]) => [k, round(Number(v))])) : null,
+      breakdown: costed && r?.breakdown ? exactBreakdown(r) : null,
       reconciles: costed && r ? reconciles(r) : null,
       audit: costed && r ? auditRow(r) : null,
-      spec: specOf(answers, i.answers, assumedIds, route, i.baseBook),
+      spec: specOf(answers, i.answers, assumedIds, route, i.baseBook, i, book),
       material: costed && r ? materialOf(r, i.baseBook) : null,
       tooling,
       operations: costed && r ? operationsOf(r, i.baseBook) : null,

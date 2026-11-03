@@ -199,7 +199,8 @@ describe('invariant 3 — silent when not measured, and says what it could not c
   it('a commodity with no pack says so rather than returning a clean bill', () => {
     const r = analyseGeometricDFM(ctx([], { commodity: 'pcba' }));
     expect(r.packAvailable).toBe(false);
-    expect(r.limitations.join(' ')).toMatch(/No geometric rule pack exists for pcba/);
+    expect(r.limitations.join(' ')).toMatch(/Geometric DFM checks are not available for pcba/);
+    expect(r.limitations.join(' ')).not.toMatch(/rule pack/);
   });
 });
 

@@ -123,7 +123,8 @@ describe('3. The arithmetic on a row', () => {
     // cell's masked load inside the operator's share of the cut: 22.7563 → 19.9838 (24.0215 before the pilot rule pack)
     // MPI £0.6673, no longer rounded up to £0.67 (7-country review): 19.9805. Report standard round (3 Nov 2026): the
     // secondary machining on the published cutting data (12.5 → 5.8 HMC min) — 15.1618.
-    expect(ref.total).toBe(15.1618);
+    // the engine's unrounded total (live run, 3 Nov 2026: the row is rounded once, at display)
+    expect(ref.total).toBeCloseTo(15.1618, 4);
     expect(ref.tooling!.investment).toBe(440949.69);   // one hydraulic tombstone fixture (£12,000) in place of three dedicated ones
     expect(ref.tooling!.amortisedOver).toBe(500_000);
     expect(ref.material).toMatchObject({ netKg: 3.321, boughtKg: 4.918 });
@@ -265,7 +266,8 @@ describe('6. Second round — processes, the independent re-add, the specificati
   it('the specification states each answer\'s source; an answer a route never reads is marked, an assumed one too', async () => {
     const cmp = await compareRoutes(input('steering_knuckle_RH.stp', { ladder: false, bands: false }), undefined);
     const ref = cmp.rows[0];
-    expect(ref.spec.find(s => s.id === 'service.safetyCritical')).toMatchObject({ value: 'yes', source: 'answered' });
+    // the answer as its question names it, not the option value 'yes' (live run, 3 Nov 2026)
+    expect(ref.spec.find(s => s.id === 'service.safetyCritical')).toMatchObject({ value: 'Yes — safety-critical', source: 'answered' });
     const cam = cmp.rows.find(r => r.route === 'cast_and_machine' && r.process === 'sand')!;
     expect(cam.spec.find(s => s.id === 'service.pressureTight')).toMatchObject({ source: 'assumed' });
     expect(cam.spec.find(s => s.id === 'casting.processChoice')).toMatchObject({ value: 'sand casting', source: 'comparison' });

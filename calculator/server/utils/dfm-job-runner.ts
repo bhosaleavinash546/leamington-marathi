@@ -190,7 +190,7 @@ async function execute(id: string, req: DFMJobRequest): Promise<void> {
       finish(id, analyseGeometricDFM({
         commodity: req.commodity,
         featureSet: { available: false, features: [],
-          note: `No geometric rule pack exists for ${req.commodity} yet.` },
+          note: `Geometric DFM checks are not available for ${req.commodity.replace(/_/g, ' ')}.` },
       }));
       return;
     }

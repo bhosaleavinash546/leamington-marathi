@@ -165,7 +165,7 @@ export function buildGeometricDFMPanel(
     // The checks a design engineer should make on this commodity ride in the limitations — show them, not silence.
     const checks = (g.limitations ?? []).filter(l => /^Checks a design engineer should make/.test(l));
     return `${HEADING}
-      <p class="muted small">No geometric rule pack covers this commodity yet, so
+      <p class="muted small">Geometric DFM checks are not available for this process, so
         <strong>no geometry checks ran</strong>. This is not a clean bill of health — it is an
         absence of coverage.</p>
       ${checks.map(c => `<p class="small">${escHtml(c)}</p>`).join('')}`;

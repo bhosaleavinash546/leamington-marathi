@@ -142,8 +142,9 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
     return {
       commodity: part.commodity, findings: [], rulesEvaluated: 0, featuresExamined: 0,
       packAvailable: false,
-      limitations: [`No geometric rule pack exists for ${part.commodity.replace(/_/g, ' ')} yet, so no `
-        + 'geometry-based checks were run — no finding is not a clean part.',
+      // what the reader needs, not the code's name for it ("No geometric rule pack exists…", live run 3 Nov 2026)
+      limitations: [`Geometric DFM checks are not available for ${part.commodity.replace(/_/g, ' ')}: no geometry-based `
+        + 'checks were run, so the absence of a finding does not mean the part is clean.',
         ...(checks ? [`Checks a design engineer should make on this part: ${checks}`] : [])],
       dfa, grouped: [], totalAddressableGBP: 0,
     };

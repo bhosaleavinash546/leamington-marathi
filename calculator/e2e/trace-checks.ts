@@ -50,3 +50,14 @@ export function stampNamesBook(stamp: string, cc: string): boolean {
   if (cc === 'UK') return /\bUnited Kingdom rate book v\d+(?:\.\d+)*(?![-\w.])/.test(stamp);
   return new RegExp(`rate book v\\d+(?:\\.\\d+)*-${cc}\\b`).test(stamp);
 }
+
+/**
+ * The evidence the material check prints: "gross kg × price/kg + scrap + energy = calc v sheet". A material priced by
+ * its itemised lines (composites: fibre + resin + NDI) has no gross kg or price a kg, and the harness printed
+ * "NaN kg × NaN/kg" (live run, 3 Nov 2026) — it says so instead.
+ */
+export function materialTraceEvidence(rc: { gross: number; price: number; scrap: number; energy: number; matCalc: number; material: number }): string {
+  const tail = `${rc.matCalc.toFixed(4)} v ${rc.material.toFixed(4)}`;
+  if (!Number.isFinite(rc.gross) || !Number.isFinite(rc.price)) return `n/a — material is a build-up (no gross kg × price a kg): ${tail}`;
+  return `${rc.gross} kg × ${rc.price}/kg + ${rc.scrap} + ${rc.energy} = ${tail}`;
+}

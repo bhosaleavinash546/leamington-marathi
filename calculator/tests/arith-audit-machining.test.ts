@@ -132,7 +132,9 @@ describe('T — every printed basis states what its constants are and itemises i
     expect(rowsText).toHaveLength(4);
     // each row prints its feed and the catalogue it came from (report standard, Nov 2026)
     expect(drill.basis).toMatch(/Ø5\.0×12 drill \+ tap M6 \(inferred from the tapping-drill size\): 0\.06 \+ 12 ÷ 806 mm\/min/);
-    expect(drill.basis).toContain('Mitsubishi Materials MVE solid carbide drill, recommended cutting conditions (2023), data.json #19–26');
+    // the maker and catalogue are printed; the research file's row ids are not (live run, 3 Nov 2026)
+    expect(drill.basis).toContain('Mitsubishi Materials MVE solid carbide drill, recommended cutting conditions (2023)');
+    expect(drill.basis).not.toMatch(/data\.json/);
     expect(drill.basis).toContain('OSG A-Tap flier n_102');
     expect(Math.abs(sum - drill.cycleTimeHr * 60)).toBeLessThan(0.05);   // 2-dp rows v the 4-dp hour
   });

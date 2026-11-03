@@ -30,7 +30,7 @@ import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { routeRowLabel, routeReferenceRow, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import { decisionAnswerLabel, decisionAnswerText } from './decision-text.js';
 import { decisionUsedValue, type DecisionForUsed, type DecisionUsedFacts } from './decision-used.js';
-import { reportNoteText } from './money-text.js';
+import { reportNoteText, directMaterialNames } from './money-text.js';
 import { reportStandardFor, dfmRuleApplies, type NotIncludedItem } from './report-standard.js';
 import { toolingSplit as engineToolingSplit } from '../engine/tooling-split.js';
 import { normaliseSeverity, SEVERITY_LABEL, SEVERITY_RANK } from '../engine/dfm-geometry/types.js';
@@ -615,8 +615,9 @@ export function materialSplit(result: PartCostResult, input: UniversalStackInput
   let metal = 0;
   if (rm.directCost !== undefined) {
     metal = rm.directCost;
-    const names = (rm.lines ?? []).map(l => l.ref || l.description).filter(Boolean).slice(0, 4).join(', ');
-    lines.push({ group: 'direct', label: `Material priced by the commodity module${names ? ` (${names})` : ''}`, gbp: metal });
+    // what the line IS, not which code priced it ("Material priced by the commodity module", live run 3 Nov 2026)
+    const names = directMaterialNames(rm.lines);
+    lines.push({ group: 'direct', label: names ? `Material: ${names}${/itemised lines$/.test(names) ? '' : ' build-up'} (see the material lines)` : 'Material: a supplied figure (not weight × price per kg)', gbp: metal });
   } else {
     const mat = library.materials.find(m => m.id === rm.materialId);
     const gross = rm.materialUtilization > 0 ? rm.netWeightKg / rm.materialUtilization : rm.netWeightKg;
@@ -1083,7 +1084,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   } else {
     dfm = { findings: [], considered: 0, status: meta.geometricDFMPending ? 'pending' : 'not run',
       notChecked: meta.geometricDFMPending ? 'DFM pending: the geometric check had not finished when this report was made — export again for its findings.'
-        : 'No geometric DFM check ran for this costing (no CAD model, or no rule pack for the commodity).' };
+        : 'No geometric DFM check ran for this costing (no CAD model, or geometric DFM checks are not available for this process).' };
   }
 
   // The verdict: one line a President reads first.

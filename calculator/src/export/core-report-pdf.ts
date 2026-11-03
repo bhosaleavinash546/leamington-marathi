@@ -230,13 +230,26 @@ export function renderCoreReport(doc: jsPDF, m: CoreReport, o: CoreRenderOptions
     wrapped.forEach((col, k) => { let cy = y + 2.5; for (const l of col) { doc.text(l, MG + k * (colW + 6), cy); cy += l.length * 3 + 0.6; } });
     y += h + 2;
   }
+  // Not in the cost model: its own block when it fits on this page; otherwise one compact paragraph under the list;
+  // and when not even that fits, at the head of section 2 — never a page of its own (the China knuckle's page 2 held
+  // only this block, making the core report 8 pages; live run, 3 Nov 2026).
+  let notModelledDeferred: string | null = null;
   if (m.notModelled.length) {
-    head('Not in the cost model', 'a supplier will charge it — not a scope item to exclude');
-    bullets(m.notModelled, 6.9, SLATE);
+    const lh = 6.9 * 0.43;
+    doc.setFontSize(6.9); doc.setFont('helvetica', 'normal');
+    const blockH = 6.5 + m.notModelled.reduce((s2, t2) => s2 + (doc.splitTextToSize(`•  ${t2}`, CW - 1) as string[]).length * lh + 1.2, 0);
+    const compact = `Not in the cost model (a supplier will charge it — not a scope item to exclude): ${m.notModelled.join(' · ')}`;
+    const compactH = (doc.splitTextToSize(compact, CW) as string[]).length * lh + 1.2;
+    if (y + Math.max(blockH, 14) <= BOTTOM) {   // head() keeps 14 mm for itself and a first line
+      head('Not in the cost model', 'a supplier will charge it — not a scope item to exclude');
+      bullets(m.notModelled, 6.9, SLATE);
+    } else if (y + compactH <= BOTTOM) para(compact, 6.9, SLATE);
+    else notModelledDeferred = compact;
   }
 
   // ════════ 2. COST BUILD-UP ════════
   section(2, 'Cost build-up', 'the 8 buckets add to the price');
+  if (notModelledDeferred) para(`From section 1 — ${notModelledDeferred}`, 6.9, SLATE);
   table(['Bucket', 'A part', 'Share'],
     [...m.buckets.map(b => [b.label, money(b.gbp), pct(b.sharePct)]), ['Should-cost', money(m.total), '100.0%']],
     { 0: { cellWidth: 120 }, 1: { cellWidth: 36, halign: 'right' }, 2: { cellWidth: 26, halign: 'right' } },
