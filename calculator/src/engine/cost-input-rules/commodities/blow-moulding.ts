@@ -30,6 +30,7 @@ import {
 import { pickEBMMachineId, barrierMaterialId } from '../../modules/blow-moulding.js';
 import { thermodynamicCoolFactor } from '../../modules/injection-moulding.js';
 import { decided, ask, answeredNumber, type CommodityRuleSpec, type Decision, type RuleContext, type RuleOutcome } from '../types.js';
+import { serviceQuestionRules } from '../derive/service-questions.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { hollowVerdict } from '../derive/hollow.js';
 import { shellWallMm } from '../derive/shell-wall.js';
@@ -570,5 +571,7 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
         basis: `${a.cavities}-cavity ${a.process.toUpperCase()} ${a.mouldMaterial} tool at ${a.capacityL} L — toolmaker build-up: `
           + `${lines.join('; ')} = £${est.total.toLocaleString('en-GB')} (hours and kg scale with litres — engineering-typical; toolroom £/h from the library)` };
     }),
+    // Leak-tight, advisory (report standard review, 3 Nov 2026).
+    ...serviceQuestionRules('blowMoulding', { pressure: true }),
   ],
 };

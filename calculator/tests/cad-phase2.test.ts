@@ -184,7 +184,7 @@ describe('D5 — compare routes (rebuilt in the compare-routes review, Oct 2026)
   it('the table: reference first, deltas signed, a typed change on the form called out, text escaped', () => {
     const row = (route: string, total: number, toolingPerPart: number, assumed: string[]): RouteCompareRow => ({
       route, process: null, label: route, commodity: route, status: 'costed', total, toolingPerPart, breakdown: null, reconciles: null, audit: null, spec: [],
-      material: null, tooling: null, operations: null, band: null, checks: [], caveats: [], assumed, openQuestions: [], notes: [], refusal: null, byVolume: [], programme: null,
+      material: null, tooling: null, operations: null, band: null, consumables: [], credible: true, notCredible: [], checks: [], caveats: [], assumed, openQuestions: [], notes: [], refusal: null, byVolume: [], programme: null,
     });
     const html = routeCompareHtml(routeComparisonExport({
       principle: 'p', rows: [row('casting', 31.79, 0.9, ['<b>x</b>']), row('forging', 24.22, 1.01, [])], excluded: [], ladder: [], crossovers: [],

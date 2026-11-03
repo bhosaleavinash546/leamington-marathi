@@ -628,7 +628,6 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const occt = ctx.geo.toolingCostEstimates?.imMouldCostGBP;
         // The toolmaker build-up alone (see cavitation-optimiser.ts): the old
         // geometric mean with the kernel's face-count figure (capped at £200k)
         // pulled the one quoted tool — the bumper, £420k — about 30% low.
@@ -642,8 +641,7 @@ export const INJECTION_MOULDING_RULES: CommodityRuleSpec = {
           + `${r.advice.slides} slide(s), ${rc.system} runner`
           + `${rc.system === 'hot' ? ` (${rc.dropsPerCavity * r.advice.cavities} drop(s))` : ''} — ${lines}; `
           + 'toolroom rates, steel and bought-outs are UK benchmarks (Jun 2026, CostVision toolmaking rates) and the hour laws are anchored to one '
-          + 'quotation (a £420k bumper mould): an engineering estimate at this size, replace with a toolmaker\'s quote'
-          + (occt ? `; the kernel's face-count parametric (UK basis, not country-adjusted) said £${Math.round(occt).toLocaleString()} (not used)` : ''),
+          + 'quotation (a £420k bumper mould): an engineering estimate at this size, replace with a toolmaker\'s quote',
           0.65);
       },
     },

@@ -29,7 +29,8 @@
  */
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import type { ManufacturingRegion } from '../../src/engine/regional-rates.js';
-import type { RateLibrary } from '../../src/engine/types.js';
+import type { RateLibrary, ToolingKind } from '../../src/engine/types.js';
+import { toolingSplit } from '../../src/engine/tooling-split.js';
 import type { RuleContext } from '../../src/engine/cost-input-rules/types.js';
 import { costMeasuredPart, regionalBook, type BulkPartResult } from './bulk-run.js';
 import { specForCommodity } from '../../src/engine/cost-input-rules/index.js';
@@ -44,7 +45,8 @@ import { DENSITY_KG_PER_CM3, representativeMaterialId } from '../../src/engine/c
 import type { MaterialFamily } from '../../src/engine/material-family.js';
 import { castingProcessRefusal, type CastingProcess, type AlloyFamily } from '../../src/engine/modules/casting-advisor.js';
 import { forgingProcessRefusal, type ForgingProcess } from '../../src/engine/modules/forging-advisor.js';
-import { castingAlloyForGrade, forgingAlloyForGrade } from '../../src/engine/cost-input-rules/derive/grade.js';
+import { castingAlloyForGrade, forgingAlloyForGrade, castIronDefaultGrade, BRITTLE_IRON } from '../../src/engine/cost-input-rules/derive/grade.js';
+import { ADVISORY_PRESSURE_ROUTES, ADVISORY_SAFETY_ROUTES } from '../../src/engine/cost-input-rules/derive/service-questions.js';
 import { CASTING_PROCESS_CHOICE_ID, castingSectionMm } from '../../src/engine/cost-input-rules/commodities/casting.js';
 import { FORGING_PROCESS_CHOICE_ID, shapeComplexity, advisorComplexity } from '../../src/engine/cost-input-rules/commodities/forging.js';
 import { isRingShape } from '../../src/engine/cost-input-rules/derive/envelope.js';
@@ -96,11 +98,13 @@ export interface RouteMaterial {
 }
 
 export interface RouteTooling {
-  /** The one-off investment, £. */
+  /** The tooling total the costing amortises, £ (up-front + replacements + perishables). */
   investment: number;
   /** Parts it is spread over (annual × programme years, or the life the rules set). */
   amortisedOver: number;
-  items: Array<{ label: string; gbp: number }>;
+  items: Array<{ label: string; gbp: number; kind?: ToolingKind }>;
+  /** The total by kind (report standard #9): up front = first sets + NRE; running = replacement sets + perishable tools. */
+  split?: { upFront: number; replacement: number; perishable: number; running: number };
 }
 
 export interface RouteOperation {
@@ -162,6 +166,18 @@ export interface RouteRow {
   operations: RouteOperation[] | null;
   /** The Monte-Carlo band at the costing's volume. */
   band: RouteBand | null;
+  /**
+   * Every consumable and per-part service in the material bucket, £ a part, as the route's module itemised it — with
+   * any remainder it did not itemise as its own line, so the lines add to the stack's consumables figure.
+   */
+  consumables: Array<{ label: string; gbp: number }>;
+  /**
+   * False when the row is not how a supplier would make this part — the core report leaves it out and the audit pack
+   * prints it with `notCredible`. The costing's own row is always credible.
+   */
+  credible: boolean;
+  /** Why the row is not credible (each reason with its basis), empty when it is. */
+  notCredible: string[];
   /** The feasibility checks this route passed (and, on the costing's own route, failed) with their sources. */
   checks: FeasibilityCheck[];
   caveats: string[];
@@ -190,7 +206,8 @@ export interface RouteCrossover {
   cheaperAbove: boolean | null;
   /** The ladder range over which the two routes' P10–P90 bands overlap around the crossover (indistinguishable there). */
   indistinguishable: { from: number; to: number } | null;
-  /** Tooling payback against the costing's route at the costing's volume, when this route costs more tooling and a lower piece price. */
+  /** Tooling payback against the costing's route at the costing's volume, when this route costs more UP-FRONT tooling
+   *  (first sets + NRE) and a lower piece price — the piece price includes replacement sets and perishable tools. */
   payback: { extraTooling: number; pieceSaving: number; parts: number; months: number } | null;
   text: string;
 }
@@ -258,7 +275,10 @@ export function processVariants(route: string, i: ScreenArgs): ProcessVariant[] 
   const volCm3 = i.geo.volume?.cm3 ?? 0;
   const massKg = volCm3 * (DENSITY_KG_PER_CM3[fam as MaterialFamily] ?? 0);
   if (route === 'casting' || route === 'cast_and_machine') {
-    const alloy: AlloyFamily | null = castingAlloyForGrade(grade ?? representativeMaterialId('casting', fam as MaterialFamily) ?? null);
+    // Cast iron with no grade answered is the grade the casting rules cost — ductile on a part answered safety-critical.
+    // The representative grey iron put "grey iron is not die cast" on a ductile stub axle (report standard review).
+    const unanswered = fam === 'cast iron' ? castIronDefaultGrade(ctx).id : representativeMaterialId('casting', fam as MaterialFamily);
+    const alloy: AlloyFamily | null = castingAlloyForGrade(grade ?? unanswered ?? null);
     if (!alloy) return [];
     const section = castingSectionMm(ctx);
     const src = CASTING_PROCESS_LADDER_SOURCE;
@@ -335,7 +355,9 @@ function toolingOf(r: BulkPartResult): RouteTooling | null {
   return {
     investment: round(t.totalToolingCost ?? 0, 2),
     amortisedOver: Math.round(t.amortizationVolume ?? 0),
-    items: (t.items ?? []).map(x => ({ label: x.label, gbp: round(x.gbp, 2) })),
+    items: (t.items ?? []).map(x => ({ label: x.label, gbp: round(x.gbp, 2), ...(x.kind ? { kind: x.kind } : {}) })),
+    split: (({ upFront, replacement, perishable, running }) => ({ upFront: round(upFront, 2), replacement: round(replacement, 2),
+      perishable: round(perishable, 2), running: round(running, 2) }))(toolingSplit({ totalToolingCost: t.totalToolingCost ?? 0, items: t.items })),
   };
 }
 
@@ -350,6 +372,45 @@ function operationsOf(r: BulkPartResult, book: RateLibrary): RouteOperation[] | 
     labourCost: round(op.labourCost ?? 0),
     bench: !!op.benchOperation,
   }));
+}
+
+/** The consumables line by line (report standard review: the knuckle's precision row carried £34.52 unexplained). */
+export function consumablesOf(r: BulkPartResult): Array<{ label: string; gbp: number }> {
+  const rm = r.trace?.stackInput?.rawMaterial;
+  if (!rm) return [];
+  const total = rm.consumablesCostPerPart ?? 0;
+  const items = (rm.consumablesItems ?? []).filter(x => Math.abs(x.gbp) >= 0.00005).map(x => ({ label: x.label, gbp: round(x.gbp) }));
+  const rest = round(total - items.reduce((s2, x) => s2 + x.gbp, 0));
+  if (Math.abs(rest) >= 0.0005) items.push({ label: items.length ? 'other consumables (not itemised by the route\'s module)' : 'consumables (not itemised by the route\'s module)', gbp: rest });
+  return items;
+}
+
+/**
+ * Utilisation below which machining from solid is not how the part would be bought (the feasibility screen's caveat
+ * threshold) — CostVision engineering heuristic, not sourced.
+ */
+export const NOT_CREDIBLE_UTILISATION = 0.15;
+
+/**
+ * Why a costed alternative row is not how a supplier would make the part. Read off what the row itself costed:
+ *   - a brittle iron (grey, malleable, white) on a part ANSWERED safety-critical — never downgrade an answered
+ *     safety material (the stub axle was compared machined from grey-iron plate);
+ *   - machining from solid below NOT_CREDIBLE_UTILISATION (an 84 kg plate for a 7.6 kg stub axle).
+ */
+export function notCredibleReasons(row: Pick<RouteRow, 'route' | 'material'>, answers: Record<string, unknown>): string[] {
+  const out: string[] = [];
+  const safety = answers['service.safetyCritical'] === 'yes' || answers['service.safetyCritical'] === true;
+  const id = row.material?.materialId ?? '';
+  if (safety && BRITTLE_IRON.test(id)) {
+    out.push(`${row.material!.label} is a brittle iron and the part is answered safety-critical — the costing's own rules exclude it`);
+  }
+  const u = row.material?.utilisation;
+  if (row.route === 'machining' && u != null && u > 0 && u < NOT_CREDIBLE_UTILISATION) {
+    out.push(`machined from solid at ${(u * 100).toFixed(1)}% utilisation (${row.material!.boughtKg} kg bought for a ${row.material!.netKg} kg part, `
+      + `${(1 / u).toFixed(1)} : 1) — below ${(NOT_CREDIBLE_UTILISATION * 100).toFixed(0)}% a part is not bought this way at volume `
+      + '(CostVision engineering heuristic, not sourced)');
+  }
+  return out;
 }
 
 function reconciles(r: BulkPartResult): boolean | null {
@@ -509,9 +570,9 @@ function specOf(answers: Record<string, unknown>, original: Record<string, unkno
   // A service answer the costing carries that this route never reads is said, so a "cheaper" row is not read as a
   // tighter one: pressure-tight on a forging, finish on machining.
   const reads: Record<string, string[]> = {
-    'service.pressureTight': ['casting', 'cast_and_machine'],
+    'service.pressureTight': ['casting', 'cast_and_machine', ...ADVISORY_PRESSURE_ROUTES],
     'service.toleranceClass': ['casting', 'cast_and_machine', 'forging'],
-    'service.safetyCritical': ['casting', 'cast_and_machine', 'forging'],
+    'service.safetyCritical': ['casting', 'cast_and_machine', 'forging', ...ADVISORY_SAFETY_ROUTES],
     'service.finish': Object.keys(FINISH_PREFIX_BY_COMMODITY),
   };
   for (const item of out) {
@@ -638,6 +699,9 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
       tooling,
       operations: costed && r ? operationsOf(r, i.baseBook) : null,
       band,
+      consumables: costed && r ? consumablesOf(r) : [],
+      credible: true,
+      notCredible: [],
       checks: [...(screen?.checks ?? [])],
       caveats: [...(screen?.caveats ?? [])],
       assumed,
@@ -656,6 +720,13 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
   // The reference row names the process the engine chose: the variant whose figures equal the reference IS the
   // reference, so it is folded in and the reference row carries that process.
   const ref = rows[0];
+  // Credibility (report standard review, 3 Nov 2026): a costed alternative that is not how the part would be made is
+  // marked, with its reason, so the core report can leave it out. The costing's own row is always credible.
+  for (const row of rows) {
+    if (row === ref || row.status !== 'costed') continue;
+    row.notCredible = notCredibleReasons(row, i.answers);
+    row.credible = row.notCredible.length === 0;
+  }
   if (i.referenceBand && ref.status === 'costed') {
     ref.band = { ...i.referenceBand };
     const at = ref.byVolume.find(p => p.volume === i.annualVolume);
@@ -715,14 +786,25 @@ export function crossovers(rows: RouteRow[], ref: RouteRow, ladder: number[], an
     // Overlapping bands: the alternative's P10 below the reference's P90 and its P90 above the reference's P10.
     const overlap = pts.filter(p => p.a.p10 != null && p.a.p90 != null && p.b.p10 != null && p.b.p90 != null && p.a.p10 <= p.b.p90! && p.a.p90 >= p.b.p10!);
     const indistinguishable = overlap.length ? { from: overlap[0].v, to: overlap[overlap.length - 1].v } : null;
-    // Payback at the costing's volume: more tooling, lower piece price.
+    // Payback at the costing's volume: more UP-FRONT tooling, lower piece price. Only the first sets, fixtures and
+    // programming are an investment to pay back; replacement sets and perishable tools are consumed with the parts, so
+    // they stay in the piece price compared (report standard #9 — the casting bracket's "£1,717,313 paid back after
+    // 157.5 months" was die consumption treated as capital). A row without a split reads the whole total as up front.
     let payback: RouteCrossover['payback'] = null;
     if (row.tooling && ref.tooling && row.programme && ref.programme) {
-      const extra = row.tooling.investment - ref.tooling.investment;
-      // piece prices without tooling AND its overhead and margin (the programme view's own figure)
-      const saving = ref.programme.pieceExTooling - row.programme.pieceExTooling;
+      const upFront = (r: RouteRow) => r.tooling!.split?.upFront ?? r.tooling!.investment;
+      // piece price without tooling AND its overhead and margin (the programme view's own figure), plus the running
+      // tooling's share of what the stack charged for tooling (with its overhead and margin)
+      const pieceWithRunning = (r: RouteRow) => {
+        const thru = (r.total ?? 0) - r.programme!.pieceExTooling;
+        const running = r.tooling!.split?.running ?? 0;
+        return r.programme!.pieceExTooling + (r.tooling!.investment > 0 ? thru * running / r.tooling!.investment : 0);
+      };
+      const extra = upFront(row) - upFront(ref);
+      // to the printed 4 dp, so the parts are the printed £ ÷ the printed saving
+      const saving = round(pieceWithRunning(ref) - pieceWithRunning(row));
       if (extra > 0 && saving > 0) {
-        const parts = extra / saving;
+        const parts = round(extra, 2) / saving;
         payback = { extraTooling: round(extra, 2), pieceSaving: round(saving), parts: Math.round(parts), months: round(parts / annualVolume * 12, 1) };
       }
     }
@@ -758,7 +840,7 @@ export function crossovers(rows: RouteRow[], ref: RouteRow, ladder: number[], an
         : `; between ${fmtV(indistinguishable.from)} and ${fmtV(indistinguishable.to)} the two P10–P90 bands overlap — the routes are indistinguishable there`;
     }
     if (payback) {
-      found.text += `; its extra £${payback.extraTooling.toLocaleString('en-GB')} of tooling is paid back by a £${payback.pieceSaving.toFixed(4)} lower piece price after ${payback.parts.toLocaleString('en-GB')} parts (${payback.months} months at ${fmtV(annualVolume)} a year)`;
+      found.text += `; its extra £${payback.extraTooling.toLocaleString('en-GB')} of up-front tooling (first sets, fixtures, programming) is paid back by a £${payback.pieceSaving.toFixed(4)} lower piece price (tool replacement and wear included) after ${payback.parts.toLocaleString('en-GB')} parts (${payback.months} months at ${fmtV(annualVolume)} a year)`;
     }
     out.push(found);
   }

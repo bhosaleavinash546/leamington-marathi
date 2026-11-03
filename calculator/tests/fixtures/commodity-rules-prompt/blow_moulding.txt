@@ -33,6 +33,7 @@ BLOW MOULDING COST INPUT RULES:
   mouldMaterial: UNDECIDED — needs "Which resin is this moulded in?" (HDPE Blow Grade (jerry can / drum) | PP Blow Grade (MFI 1.0, random co-polymer) | PET Stretch-Blow Bottle Grade | PA6 Blow Grade (charge-air / ducts) | LDPE Blow Grade)
   mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE Blow Grade (jerry can / drum) | PP Blow Grade (MFI 1.0, random co-polymer) | PET Stretch-Blow Bottle Grade | PA6 Blow Grade (charge-air / ducts) | LDPE Blow Grade)
   mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE Blow Grade (jerry can / drum) | PP Blow Grade (MFI 1.0, random co-polymer) | PET Stretch-Blow Bottle Grade | PA6 Blow Grade (charge-air / ducts) | LDPE Blow Grade)
+  leak-tight question: UNDECIDED — needs "Does this part have to hold pressure or be leak-tight?" (Yes — leak-tight / pressure-rated | No — structural or cosmetic only)
 
 ### context: degraded
 BLOW MOULDING COST INPUT RULES:
@@ -65,3 +66,4 @@ BLOW MOULDING COST INPUT RULES:
   mouldMaterial: UNDECIDED — needs "Which resin is this moulded in?" (HDPE Blow Grade (jerry can / drum) | PP Blow Grade (MFI 1.0, random co-polymer) | PET Stretch-Blow Bottle Grade | PA6 Blow Grade (charge-air / ducts) | LDPE Blow Grade)
   mouldLife: UNDECIDED — needs "Which resin is this moulded in?" (HDPE Blow Grade (jerry can / drum) | PP Blow Grade (MFI 1.0, random co-polymer) | PET Stretch-Blow Bottle Grade | PA6 Blow Grade (charge-air / ducts) | LDPE Blow Grade)
   mouldCostGBP: UNDECIDED — needs "Which resin is this moulded in?" (HDPE Blow Grade (jerry can / drum) | PP Blow Grade (MFI 1.0, random co-polymer) | PET Stretch-Blow Bottle Grade | PA6 Blow Grade (charge-air / ducts) | LDPE Blow Grade)
+  leak-tight question: UNDECIDED — needs "Does this part have to hold pressure or be leak-tight?" (Yes — leak-tight / pressure-rated | No — structural or cosmetic only)

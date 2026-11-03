@@ -160,7 +160,9 @@ export const FERROUS: AlloyFamily[] = ['grey-iron', 'ductile-iron', 'carbon-stee
 export function castingProcessRefusal(process: CastingProcess, alloy: AlloyFamily, sectionMm: number | null): string | null {
   const dieCastable = DIE_CASTABLE.includes(alloy);
   if ((process === 'hpdc' || process === 'megacasting' || process === 'gravity') && !dieCastable) {
-    return `${ALLOY_LABEL[alloy]} is not die cast — pressure and gravity dies take aluminium, magnesium and zinc`;
+    // "is not die cast" was too strong (ductile iron is cast in permanent moulds in some plants) — it is what this rate
+    // book models (report standard review, 3 Nov 2026).
+    return `${ALLOY_LABEL[alloy]} castings are sand-moulded or investment cast in this rate book — its pressure and gravity dies take aluminium, magnesium and zinc`;
   }
   if ((process === 'hpdc' || process === 'megacasting') && sectionMm != null && sectionMm > HPDC_SECTION_MAX_MM) {
     return `a ${sectionMm.toFixed(1)} mm section is above the ${HPDC_SECTION_MAX_MM} mm a pressure die fills before it freezes (CostVision engineering rule, not a published standard)`;

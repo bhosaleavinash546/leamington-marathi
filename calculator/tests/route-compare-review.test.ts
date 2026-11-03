@@ -137,7 +137,19 @@ describe('3. The arithmetic on a row', () => {
       for (let k = 1; k < r.byVolume.length; k++) expect(r.byVolume[k].total!).toBeLessThanOrEqual(r.byVolume[k - 1].total! + 0.0001);
     }
     expect([...new Set(cmp.crossovers.map(c => c.route))]).toEqual(['forging', 'cast_and_machine', 'machining']);
-    for (const c of cmp.crossovers) { expect(c.atVolume).toBeNull(); expect(c.text).toMatch(/dearer than the costed route at every volume/); }
+    // A precision STEEL forging is MPI-tested like a closed-die one (report standard review, 3 Nov 2026 — it carried
+    // £32 of CT a part, £34.52 of consumables): with less steel bought it is the cheaper process at every volume.
+    for (const c of cmp.crossovers) {
+      expect(c.atVolume).toBeNull();
+      expect(c.text).toMatch(c.process === 'precision' ? /cheaper than the costed route at every volume/ : /dearer than the costed route at every volume/);
+    }
+    // the machining row (50.5 kg of plate for a 2.85 kg part) is costed, itemised and marked not credible
+    expect(mach.credible).toBe(false);
+    expect(mach.notCredible.join(' ')).toMatch(/5\.7% utilisation/);
+    expect(cmp.rows.filter(r => r !== mach).every(r => r.credible)).toBe(true);
+    const precision = cmp.rows.find(r => r.process === 'precision')!;
+    expect(precision.consumables.map(l => l.label)).toEqual(['descale', 'NDT', 'machining tool wear and cell consumables']);
+    expect(precision.consumables.find(l => l.label === 'NDT')!.gbp).toBeLessThan(1);
   }, 60_000);
   it('a volume not on the ladder is added to it', async () => {
     const cmp = await compareRoutes(input('IM_Cable_Clip.stp', { annualVolume: 60_000 }));
@@ -210,7 +222,7 @@ describe('6. Second round — processes, the independent re-add, the specificati
     const ex = cmp.excluded.map(e => e.label);
     expect(ex).toContain('forging — cold forming');
     expect(ex).toContain('cast and machine — high-pressure die casting');
-    expect(cmp.excluded.find(e => e.label === 'cast and machine — high-pressure die casting')!.reasons[0].measured).toMatch(/not die cast/);
+    expect(cmp.excluded.find(e => e.label === 'cast and machine — high-pressure die casting')!.reasons[0].measured).toMatch(/sand-moulded or investment cast in this rate book/);
     expect(cmp.excluded.find(e => e.label === 'forging — cold forming')!.reasons[0].measured).toMatch(/slug/);
     // A process the rules price with the same operations and tooling says so — the difference is yield, not process.
     const precision = cmp.rows.find(r => r.label === 'forging — precision forging')!;
@@ -235,7 +247,9 @@ describe('6. Second round — processes, the independent re-add, the specificati
     expect(cam.spec.find(s => s.id === 'service.pressureTight')).toMatchObject({ source: 'assumed' });
     expect(cam.spec.find(s => s.id === 'casting.processChoice')).toMatchObject({ value: 'sand casting', source: 'comparison' });
     const mach = cmp.rows.find(r => r.route === 'machining')!;
-    expect(mach.spec.find(s => s.id === 'service.safetyCritical')).toMatchObject({ source: 'not asked' });
+    // machining asks safety-critical too now (report standard review, 3 Nov 2026); it never reads the tolerance class
+    expect(mach.spec.find(s => s.id === 'service.safetyCritical')).toMatchObject({ source: 'answered' });
+    expect(mach.spec.find(s => s.id === 'service.toleranceClass')).toMatchObject({ source: 'not asked' });
   }, 120_000);
   it('each row carries its Monte-Carlo band, the ladder its band at every point, and the crossover says where bands overlap and what the tooling payback is', async () => {
     const cmp = await compareRoutes(input('TF_Trim_Cover.stp'), undefined);
@@ -254,6 +268,12 @@ describe('6. Second round — processes, the independent re-add, the specificati
     expect(x.text).toMatch(/paid back/);
     // Programme spend = piece (ex tooling) × parts + tooling investment.
     const im = cmp.rows.find(r => r.route === 'injection_moulding')!;
+    // The payback is on the UP-FRONT tooling only (report standard #9): the moulding's replacement moulds and upkeep
+    // are not an investment to pay back.
+    const tf = cmp.rows.find(r => r.route === 'thermoforming')!;
+    expect(im.tooling!.split!.running).toBeGreaterThan(0);
+    expect(x.payback!.extraTooling).toBeCloseTo(im.tooling!.split!.upFront - tf.tooling!.split!.upFront, 1);
+    expect(x.payback!.extraTooling).toBeLessThan(im.tooling!.investment - tf.tooling!.investment);
     expect(im.programme!.total).toBeCloseTo(im.programme!.pieceExTooling * im.programme!.parts + im.tooling!.investment, 1);
     expect(im.programme!.parts).toBe(500_000);
   }, 120_000);

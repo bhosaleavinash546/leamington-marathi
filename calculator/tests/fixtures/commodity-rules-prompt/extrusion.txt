@@ -30,6 +30,7 @@ EXTRUSION COST INPUT RULES:
   oee: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
   labourEfficiency: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
   leakTest: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  leak-tight question: UNDECIDED — needs "Does this part have to hold pressure or be leak-tight?" (Yes — leak-tight / pressure-rated | No — structural or cosmetic only)
 
 ### context: degraded
 EXTRUSION COST INPUT RULES:
@@ -59,3 +60,4 @@ EXTRUSION COST INPUT RULES:
   oee: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
   labourEfficiency: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
   leakTest: UNDECIDED — needs "This part does not have a constant section — is it really extruded?" (Re-route to injection moulding | Re-route to machining)
+  leak-tight question: UNDECIDED — needs "Does this part have to hold pressure or be leak-tight?" (Yes — leak-tight / pressure-rated | No — structural or cosmetic only)

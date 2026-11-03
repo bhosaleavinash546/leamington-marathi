@@ -263,12 +263,13 @@ describe('machining end to end', () => {
     expect(r.provenance['mach-net-wt'].source).toBe('geometry');
   });
 
-  it('says on the record what the kernel claimed, and that it was not used', () => {
+  it('states only the figure it used — the kernel\'s discarded area-rate minutes are not printed', () => {
+    // report standard review, 3 Nov 2026: a rejected internal estimate on a supplier-facing page is ammunition
     const r = runCostInputRules(MACHINING_RULES, ctx(SERVO_HORN, AL));
     const basis = r.provenance['mach-net-wt'].basis;
     expect(basis).toContain('aluminium');
     const text = renderCommodityRulesPrompt(MACHINING_RULES, ctx(SERVO_HORN, AL));
-    expect(text).toContain("the kernel's planar-area rate said 50.2 min (not used)");
+    expect(text).not.toMatch(/planar-area rate said|not used/);
   });
 });
 
@@ -351,7 +352,8 @@ describe('the prompt cannot say anything the engine would not compute', () => {
   it('renders every machining value with its own basis attached', () => {
     const c = ctx(SERVO_HORN, AL);
     const text = renderCommodityRulesPrompt(MACHINING_RULES, c);
-    for (const rule of MACHINING_RULES.rules) {
+    // `.q.` rules hold an advisory QUESTION (safety-critical / leak-tight), not a value — as in the sheet-metal test.
+    for (const rule of MACHINING_RULES.rules.filter(r => !r.id.includes('.q.'))) {
       const out = rule.evaluate(c);
       expect(out.ok, `${rule.id} should be decided`).toBe(true);
       if (!out.ok) continue;

@@ -52,7 +52,7 @@ import { nearNetStockCm3, CORED_ABOVE_MM } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { toForgingAlloyFamily } from '../derive/material.js';
-import { gradedMaterialFacts as materialFacts, forgingAlloyForGrade, gradeDecision, GRADE_DECISION_ID } from '../derive/grade.js';
+import { gradedMaterialFacts as materialFacts, forgingAlloyForGrade, gradeDecision, GRADE_DECISION_ID, namedGradeNote, namedGradeNotCosted } from '../derive/grade.js';
 import { projectedAreaCm2, projectedAreaBasis, isRingShape } from '../derive/envelope.js';
 import { isAxisymmetric } from './machining.js';
 import {
@@ -96,6 +96,21 @@ const NDT_BY_PROCESS: Record<ForgingProcess, 'mpi' | 'ut' | 'ct' | 'none'> = {
   'ring-rolling': 'ut',
   'cold-forming': 'none',
 };
+
+/** Ferritic steels: crack-tested by magnetic particle whatever the impression process. */
+const MPI_STEELS: ForgingAlloyFamily[] = ['carbon-steel', 'microalloyed-steel', 'alloy-steel'];
+
+/**
+ * The crack test a safety-critical forging carries. Industrial CT is the isothermal route's check on titanium and
+ * superalloys; a precision (narrow-flash, near-net) STEEL forging has the same failure modes as a closed-die one —
+ * laps and surface cracks — and takes the same 100 % MPI. The precision row of the knuckle's route comparison carried
+ * £32 of CT on every one of 200,000 steel parts (£34.52 of consumables against £2.58 closed-die; report standard
+ * review, 3 Nov 2026).
+ */
+export function forgingNdtFor(process: ForgingProcess, alloy: ForgingAlloyFamily): 'mpi' | 'ut' | 'ct' | 'none' {
+  if (process === 'precision' && MPI_STEELS.includes(alloy)) return 'mpi';
+  return NDT_BY_PROCESS[process];
+}
 
 // A microalloyed (V / Nb) steel gets its strength from controlled cooling OFF THE FORGE HEAT — that is why it is chosen; a
 // separate normalise was charged on 38MnVS6 whose own library note says "no separate Q&T" (Germany live review, Oct 2026).
@@ -469,6 +484,24 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
   };
 }
 
+/**
+ * The heat treatment a grade the file NAMES would take, when it differs from the costed grade's (report standard
+ * review, 3 Nov 2026: the hub flange's file names C45, a normalised steel, and the costing's 38MnVS6 is controlled-cooled
+ * — the report said "none" with no word of the C45). Stated, not costed: the costed grade stands until it is answered.
+ */
+function namedGradeHeatTreatNote(ctx: RuleContext, a: ForgeAdvice): string {
+  const costed = materialFacts(ctx).gradeId ?? representativeMaterialId('forging', a.familyLabel as MaterialFamily) ?? null;
+  const named = namedGradeNotCosted(ctx, a.familyLabel as MaterialFamily, costed);
+  const alloy = named ? forgingAlloyForGrade(named.id) : null;
+  if (!named || !alloy || HEAT_TREAT[alloy] === HEAT_TREAT[a.alloy]) return '';
+  const ht = HEAT_TREAT[alloy];
+  if (ht === 'none') return `. The file names ${named.grade}, which is controlled-cooled (no separate heat treatment) — answer the grade to cost it`;
+  const add = secondaries({ ...a, alloy }).adders.find(x => /Heat treat/.test(x.label));
+  return `. The file names ${named.grade}: a ${alloy} forging is ${ht === 'normalise' ? 'normalised' : ht === 'quench-temper' ? 'quenched and tempered' : ht}`
+    + (add ? ` — £${add.unitCostGbp}/kg × ${fmt(a.forgedKg, 3)} kg = £${fmt(add.costPerPartGbp, 4)} a part before overhead and margin` : '')
+    + ', NOT in this cost until the grade question is answered';
+}
+
 /** The secondary-op adders, keyed off the route and the safety answer. */
 function secondaries(a: ForgeAdvice) {
   return estimateForgingSecondaryAdders({
@@ -478,7 +511,7 @@ function secondaries(a: ForgeAdvice) {
     descale: a.process !== 'cold-forming',          // hot routes grow scale
     shotBlast: a.process === 'closed-die',
     coining: false,                                  // a tolerance call, asked separately
-    ndt: a.safetyCritical ? NDT_BY_PROCESS[a.process] : 'none',
+    ndt: a.safetyCritical ? forgingNdtFor(a.process, a.alloy) : 'none',
   });
 }
 
@@ -509,7 +542,8 @@ export const FORGING_RULES: CommodityRuleSpec = {
         if (g) return decided('forging.materialId', g, 'engineer', `${r.advice.massBasis}; grade ${materialGradeName(g, ctx.rates)}`, 1);
         const id = representativeMaterialId('forging', r.advice.familyLabel as MaterialFamily);
         return decided('forging.materialId', id ?? r.advice.familyLabel, 'rule',
-          `${r.advice.massBasis}; ${r.advice.familyLabel} → ${id ? materialGradeName(id, ctx.rates) : r.advice.familyLabel} (representative forging billet — not a drawing callout)`, 1);
+          `${r.advice.massBasis}; ${r.advice.familyLabel} → ${id ? materialGradeName(id, ctx.rates) : r.advice.familyLabel} (representative forging billet — not a drawing callout)`
+          + namedGradeNote(ctx, r.advice.familyLabel as MaterialFamily, id ?? null), 1);
       },
     },
     {
@@ -835,7 +869,6 @@ export const FORGING_RULES: CommodityRuleSpec = {
           impressions: r.advice.impressions,
           complexity: r.advice.shape,
         });
-        const occt = ctx.geo.toolingCostEstimates?.forgeDieCostGBP;
         // The toolmaker's lines themselves. It printed "£6713 block" for a residual that held the design, tryout and
         // the toolmaker's overhead (the H13 itself was £1,514) — arith audit, Oct 2026.
         const lines = est.detail.lines.filter(l => l.kind !== 'overheadProfit');
@@ -847,8 +880,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
           + lines.map(l => `${l.item} ${l.hours != null ? `${l.hours} h` : l.kg != null ? `${l.kg} kg` : ''} ${gbp(l.cost)}`.replace(/\s+/g, ' ')).join(' + ')
           + ` = ${gbp(sub)}; toolmaker overhead + profit at ${ohp ? ohp.basis.replace(/^(\d+)%.*/, '$1%') : '22%'} of it = ${gbp(ohp?.cost ?? 0)}`
           + `; die set ${gbp(sub)} + ${gbp(ohp?.cost ?? 0)} = ${gbp(est.total)}`
-          + ' (toolroom hours and the die-block rules are CostVision engineering-typical, not sourced; rates from the toolroom book)'
-          + (occt ? `; the kernel's face-count die £${occt.toFixed(0)} is not used` : ''), 0.65);
+          + ' (toolroom hours and the die-block rules are CostVision engineering-typical, not sourced; rates from the toolroom book)', 0.65);
       },
     },
     {
@@ -898,11 +930,11 @@ export const FORGING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         return decided('forging.heatTreatCostPerKg', adderUnit(r.advice, /Heat treat/), 'library',
-          HEAT_TREAT[r.advice.alloy] === 'none'
+          (HEAT_TREAT[r.advice.alloy] === 'none'
             ? `none — a ${r.advice.alloy} forging is controlled-cooled from the forge heat (no separate heat treatment)`
             : `${HEAT_TREAT[r.advice.alloy]} for a ${r.advice.alloy} forging: £${adderUnit(r.advice, /Heat treat/)}/kg × the`
               + ` ${fmt(r.advice.forgedKg, 3)} kg forging, bought-in (UK price × the country's heat-treat factor —`
-              + ' CostVision engineering-typical, not sourced)', 0.6);
+              + ' CostVision engineering-typical, not sourced)') + namedGradeHeatTreatNote(ctx, r.advice), 0.6);
       },
     },
     {
@@ -929,7 +961,7 @@ export const FORGING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const ndt = r.advice.safetyCritical ? NDT_BY_PROCESS[r.advice.process] : 'none';
+        const ndt = r.advice.safetyCritical ? forgingNdtFor(r.advice.process, r.advice.alloy) : 'none';
         return decided('forging.ndtCostPerPart', adderPerPart(r.advice, /NDT/), 'library',
           ndt === 'none'
             ? 'not safety-critical — no NDT'

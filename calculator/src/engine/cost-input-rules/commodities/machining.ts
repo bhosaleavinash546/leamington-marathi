@@ -47,6 +47,8 @@ import { DRILL_FEED_MM_PER_MIN, TAP_FEED_MM_PER_MIN } from '../../feature-machin
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef, type RuleOutcome } from '../types.js';
 import { holeRows, bRepFaceCount, MESH_DEBURR_FACE_ALLOWANCE } from '../derive/facts.js';
 import { materialFacts, DENSITY_KG_PER_CM3, representativeMaterialId, materialGradeName } from '../derive/material.js';
+import { serviceQuestionRules } from '../derive/service-questions.js';
+import { castIronDefaultGrade } from '../derive/grade.js';
 import { bboxSortedMm } from '../derive/envelope.js';
 
 /**
@@ -586,6 +588,14 @@ export function machiningRuleDefs(cutFor: CutFor): RuleDef<any>[] {
         // "steel", so the screen kept its own first steel (1045, £2.89 of
         // material on the shaft) while headless costed the representative EN8
         // (£2.96) — the same gap the sheet-metal and casting reviews closed.
+        // Cast iron answered safety-critical is ductile, on this route as on the casting routes: the route comparison
+        // machined a safety-critical stub axle from GREY iron plate, the brittle grade the casting rules exclude
+        // (report standard review, 3 Nov 2026).
+        if (r.advice.family === 'cast iron') {
+          const g = castIronDefaultGrade(ctx);
+          return decided('machining.materialId', g.id, 'engineer',
+            `cast iron → ${materialGradeName(g.id, ctx.rates)} (${g.why}); ${r.advice.massBasis}`, 1);
+        }
         const id = representativeMaterialId('machining', r.advice.family) ?? r.advice.family;
         return decided('machining.materialId', id, 'engineer',
           `${r.advice.family} → ${materialGradeName(id, ctx.rates)} (representative machining grade — not a drawing callout); ${r.advice.massBasis}`, 1);
@@ -634,14 +644,12 @@ export function machiningRuleDefs(cutFor: CutFor): RuleDef<any>[] {
         const r = A(ctx);
         if ('blocked' in r) return r.blocked;
         const machineHr = r.advice.ops.filter(o => !o.benchOperation).reduce((s, o) => s + o.cycleTimeHr, 0);
-        const k = r.advice.cut.kernelHr;
         const t = r.advice.routing.chosen.label === 'turned' ? r.advice.cut.turned : null;
         return decided('machining.estimatedCycleTimeHr', Math.round(machineHr * 10_000) / 10_000, 'geometry',
           `${fmt(r.advice.cuttingMin, 1)} min cutting + ${r.advice.routing.chosen.masked
             ? `${fmt(r.advice.setups * PALLET_CHANGE_SEC / 60, 2)} min pallet change (load / unload masked by the cut)`
             : `${fmt(r.advice.setups * r.advice.cut.handlingMin, 1)} min handling`} `
-          + `(${t ? `${t.lathe.basis}; ${t.secondary.basis}` : r.advice.cut.detail.basis})`
-          + (k !== null ? `; the kernel's planar-area rate said ${fmt(k * 60, 1)} min (not used)` : ''),
+          + `(${t ? `${t.lathe.basis}; ${t.secondary.basis}` : r.advice.cut.detail.basis})`,
           0.75);
       },
     },
@@ -679,8 +687,8 @@ export function machiningRuleDefs(cutFor: CutFor): RuleDef<any>[] {
         const setups = 'blocked' in r ? p.count : r.advice.setups;
         return decided('machining.setupTimeHr', Math.round(setups * SETUP_MIN_PER_FIXTURING / 60 * 1000) / 1000, 'rule',
           `${setups} fixturing(s)${'blocked' in r ? '' : ` of the ${r.advice.routing.chosen.label} routing`} × `
-          + `${SETUP_MIN_PER_FIXTURING} min change-over (fixture swap, tool offsets, first-off inspection) a batch — `
-          + 'not the kernel\'s 15 min, which is a per-part allowance (45 min engineering-typical, not sourced)', 0.7);
+          + `${SETUP_MIN_PER_FIXTURING} min change-over (fixture swap, tool offsets, first-off inspection) a batch `
+          + '(45 min engineering-typical, not sourced)', 0.7);
       },
     },
     {
@@ -792,5 +800,7 @@ export function machiningRuleDefs(cutFor: CutFor): RuleDef<any>[] {
 export const MACHINING_RULES: CommodityRuleSpec = {
   commodity: 'machining',
   header: 'MACHINING COST INPUT RULES:',
-  rules: machiningRuleDefs(solidCut),
+  // Safety-critical and leak-tight are asked here too (report standard review, 3 Nov 2026) — advisory, on the
+  // from-solid route only: cast + machine asks them on its casting half, blocking.
+  rules: [...machiningRuleDefs(solidCut), ...serviceQuestionRules('machining', { safety: true, pressure: true })],
 };

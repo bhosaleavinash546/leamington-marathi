@@ -478,6 +478,17 @@ export const RULE_PATHS_NOT_COSTED_HEADLESS: Record<string, string> = {
   'alExtrusion.q.al.temper': 'advisory question — its answer reaches both paths through alExtrusion.temper',
   'alExtrusion.q.al.finish': 'advisory question — its answer reaches both paths through alExtrusion.finish',
   'alExtrusion.q.al.bends': 'advisory question — its answer reaches both paths through alExtrusion.bends',
+  // Safety-critical / leak-tight on the routes that do not price them (report standard review, 3 Nov 2026): the answer is
+  // recorded and a "Yes" is listed as NOT COSTED (derive/service-questions.ts) — no cost input on either path.
+  'machining.q.safetyCritical': 'advisory question — recorded; a Yes is listed as not costed, no cost input',
+  'machining.q.pressureTight': 'advisory question — recorded; a Yes is listed as not costed, no cost input',
+  'sheetMetal.q.safetyCritical': 'advisory question — recorded; a Yes is listed as not costed, no cost input',
+  'alExtrusion.q.safetyCritical': 'advisory question — recorded; a Yes is listed as not costed, no cost input',
+  'gear.q.safetyCritical': 'advisory question — recorded; a Yes is listed as not costed, no cost input',
+  'rotationalMoulding.q.pressureTight': 'advisory question — recorded; a Yes is listed as not costed, no cost input',
+  'blowMoulding.q.pressureTight': 'advisory question — recorded; a Yes is listed as not costed, no cost input',
+  'extrusion.q.pressureTight': 'advisory question — its answer reaches both paths through extrusion.leakTest',
+  'casting.q.impregnation': 'advisory question — its answer reaches both paths through casting.impregnationCostPerPart',
   'extrusion.colourChangesPerDay': 'zero on both paths — the start-up scrap carries the change-over',
   'extrusion.dieChangesPerDay': 'zero on both paths — the start-up scrap carries the change-over',
   'extrusion.specificEnergyKwhPerKg': 'report only — the module derives it from the family',

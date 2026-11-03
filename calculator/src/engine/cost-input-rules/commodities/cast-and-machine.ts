@@ -154,9 +154,12 @@ const CAST_WEIGHT_RULE: RuleDef = {
       + (drilled.holes > 0 ? ` + ${fmt(drilled.cm3, 1)} cm³ of ${drilled.holes} hole(s) ≤ ${DRILLED_FROM_SOLID_MM} mm drilled from solid`
         : sub === 'hpdc' ? ' (HPDC cores its holes)' : '')
       + ` + ${fmt(faceCm3, 1)} cm³ machining stock (${stockMm} mm a side on the machined faces and cored bores, `
-      // No drawing value reaches this rule (casting 360 review: it claimed the drawing's RMA replaced it)
-      + `${sub ?? 'casting'} — ISO 8062-3 RMA typical, an assumption: no drawing is read for it; type the as-cast weight `
-      + `from the drawing or the foundry to override)`
+      // No drawing value reaches this rule (casting 360 review: it claimed the drawing's RMA replaced it). ISO 8062-3
+      // wording (report standard review, 3 Nov 2026): the stock is the RMA for the RMA grade PLUS half the casting
+      // tolerance (DCTG) — the RMA alone is not the stock, and no grade is read, so the figure is an assumption.
+      + `${sub ?? 'casting'} — the total stock a side, assumed (engineering-typical, not sourced): under ISO 8062-3 it is `
+      + `the RMA for the drawing's RMA grade plus half its DCTG casting tolerance, and neither grade is read from a drawing; `
+      + `type the as-cast weight from the drawing or the foundry to override)`
       + (turnCm3 > 0 ? ` + ${fmt(turnCm3, 1)} cm³ turning stock on the ${fmt(turnedCm2, 0)} cm² spindle (${stockMm} mm a side)` : ''), 0.7);
   },
 };

@@ -16,6 +16,7 @@
  *    their true material. Only HPDC happened to agree.
  */
 import { finishRules } from '../derive/finish.js';
+import { IMPREGNATION_DECISION_ID, impregnationDecision } from '../derive/service-questions.js';
 import { heatTreatServiceFactor, ndtServiceFactor, processServiceFactor, inCountry as countryGbp, countryNote, type CountryBasis } from '../../regional-services.js';
 
 /** A sand core: ~30% sand and binder (traded, held), the rest core-shop labour and machine time. ESTIMATE split. */
@@ -38,7 +39,7 @@ import {
 } from '../../casting-tooling.js';
 import { projectedAreaCm2 } from '../derive/envelope.js';
 import { toCastingAlloyFamily, representativeMaterialId, materialGradeName } from '../derive/material.js';
-import { gradedMaterialFacts as materialFacts, castingAlloyForGrade, gradeDecision, GRADE_DECISION_ID, BRITTLE_IRON, castIronDefaultGrade } from '../derive/grade.js';
+import { gradedMaterialFacts as materialFacts, castingAlloyForGrade, gradeDecision, GRADE_DECISION_ID, BRITTLE_IRON, castIronDefaultGrade, namedGradeNote } from '../derive/grade.js';
 import {
   pressureTightDecision, toleranceClassDecision, safetyCriticalDecision,
   answeredBool, answeredToleranceClass, assumedNote,
@@ -91,6 +92,11 @@ interface Advice {
   pressureTight: boolean;
   safetyCritical: boolean;
   massKg: number;
+}
+
+/** A die casting or an aluminium casting that must hold pressure is impregnated as a rule; any other alloy is asked. */
+function lightAlloyImpregnation(a: Pick<Advice, 'subtype' | 'alloy'>): boolean {
+  return a.subtype === 'hpdc' || a.alloy === 'aluminium';
 }
 
 /**
@@ -309,7 +315,8 @@ export const CASTING_RULES: CommodityRuleSpec = {
         // Cast iron: grey unless the part is safety-critical, then ductile (stub axle live run, Oct 2026).
         if (mat.family === 'cast iron') {
           const g = castIronDefaultGrade(ctx);
-          return decided('casting.materialId', g.id, 'geometry', `cast iron → ${materialGradeName(g.id, ctx.rates)} (${g.why})`, 0.85);
+          return decided('casting.materialId', g.id, 'geometry', `cast iron → ${materialGradeName(g.id, ctx.rates)} (${g.why})`
+            + namedGradeNote(ctx, 'cast iron', g.id), 0.85);
         }
         // The aluminium grade follows the process: ADC12 is a die-casting alloy
         // and is not solution-treatable, so a gravity or sand casting — which is
@@ -318,11 +325,13 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if (mat.family === 'aluminium' && !('blocked' in r) && r.advice.subtype !== 'hpdc') {
           return decided('casting.materialId', 'mat-lm25', 'geometry',
-            `aluminium ${r.advice.subtype} casting → ${materialGradeName('mat-lm25', ctx.rates)} (A356 / LM25, the heat-treatable gravity / sand alloy — not a drawing callout)`, 0.8);
+            `aluminium ${r.advice.subtype} casting → ${materialGradeName('mat-lm25', ctx.rates)} (A356 / LM25, the heat-treatable gravity / sand alloy — not a drawing callout)`
+            + namedGradeNote(ctx, 'aluminium', 'mat-lm25'), 0.8);
         }
         const id = representativeMaterialId('casting', mat.family!);
         return decided('casting.materialId', id ?? mat.family!, 'geometry',
-          `${mat.family} → ${id ? materialGradeName(id, ctx.rates) : mat.family} (representative casting grade — not a drawing callout)`, 0.85);
+          `${mat.family} → ${id ? materialGradeName(id, ctx.rates) : mat.family} (representative casting grade — not a drawing callout)`
+          + namedGradeNote(ctx, mat.family!, id ?? null), 0.85);
       },
     },
     {
@@ -488,7 +497,6 @@ export const CASTING_RULES: CommodityRuleSpec = {
             : r.advice.subtype === 'gravity' ? estimateGravityMouldCost({ projectedAreaCm2: area, complexity })
             : r.advice.subtype === 'sand' ? estimateSandPatternCost({ projectedAreaCm2: area * imps, coreCount: cores })
             : estimateInvestmentToolCost({ projectedAreaCm2: area, complexity, coreCount: cores });
-          const kernel = pick[r.advice.subtype];
           return decided('casting.dieMouldCostGBP', est.total, 'advisor',
             `${r.advice.subtype} toolmaker shop model: ${est.detail.labourHours.toLocaleString()} toolroom hours `
             + `+ ${r.advice.subtype === 'sand' ? 'aluminium plate' : 'steel'} + bought-outs from a ${Math.round(area)} cm² parting footprint${imps > 1 ? ` × ${imps} impressions on the plate` : ''}, `
@@ -497,7 +505,6 @@ export const CASTING_RULES: CommodityRuleSpec = {
             + (r.advice.subtype === 'sand'
               ? `${cores} core box(es) (${under} undercut face(s))`
               : `${complexity} (${under} undercut face(s) ≈ ${slides} slide(s)${r.advice.subtype === 'investment' ? `, ${cores} core box(es)` : ''})`)
-            + (kernel != null ? `; the kernel's face-count parametric (UK basis, not country-adjusted) said £${Math.round(kernel).toLocaleString()} (not used)` : '')
             + ' — a quotation overrides this', 0.6);
         }
         if (pick[r.advice.subtype] != null) {
@@ -699,9 +706,24 @@ export const CASTING_RULES: CommodityRuleSpec = {
           // specified in the as-cast condition. A safety-critical part changes the grade (ductile) and the NDT, not the
           // heat treatment; it used to charge a stress relief at £0.35/kg on every safety-critical iron casting. ADI's
           // austempering is in the grade price (the book says so on each ADI grade).
+          // Standards wording (report standard review, 3 Nov 2026): EN 1563 (ductile) and EN 1561 (grey) set mechanical
+          // properties, not the delivery condition — heat treatment is the foundry's choice unless the order says
+          // otherwise. "Specified as-cast" was wrong, and EN 1561 is grey iron only. ADI is EN 1564.
+          const gid = materialFacts(ctx).gradeId ?? castIronDefaultGrade(ctx).id;
+          const gname = materialGradeName(gid, ctx.rates);
+          const ferritic = /-(LT|RT)\b/i.test(gname);
+          const adi = /ADI|austempered/i.test(gname);
+          const std = /GJV|compacted/i.test(gname) ? 'EN 16079' : 'EN 1563';
           return decided('casting.heatTreatCostPerKg', 0, 'rule',
-            `${a === 'ductile-iron' ? 'ductile' : 'grey'} iron is supplied as-cast (EN 1561 / EN 1563 grades are specified as-cast; `
-            + `an ADI grade carries its austempering in the £/kg) — none unless the drawing calls for a stress relief`, 0.6,
+            a === 'ductile-iron'
+              ? (adi
+                ? `${gname}: the austempering (EN 1564) is in the grade's £/kg — no separate heat treatment`
+                : `${gname} is normally met as-cast — ${std} sets the mechanical properties and leaves heat treatment to the `
+                  + 'foundry unless the order says otherwise; none costed'
+                  + (ferritic ? '. A -LT / -RT grade usually needs a ferritising anneal — NOT COSTED (add it if the foundry anneals)' : '')
+                  + ' — add a stress relief if the drawing calls for one')
+              : `${gname} is supplied as-cast — EN 1561 sets the mechanical properties and leaves heat treatment to the `
+                + 'foundry unless the order says otherwise; none costed — add a stress relief if the drawing calls for one', 0.6,
             [SAFETY_CRITICAL_DECISION_ID]);
         }
         if (al && r.advice.process !== 'hpdc') {
@@ -733,12 +755,44 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const needs = r.advice.pressureTight && (r.advice.subtype === 'hpdc' || r.advice.alloy === 'aluminium');
         const sf = processServiceFactor();   // a bought-in process service: labour + equipment, in the costed country
-        return decided('casting.impregnationCostPerPart', needs ? Math.round(0.9 * sf * 10_000) / 10_000 : 0, 'rule',
-          needs ? `pressure-tight non-ferrous casting — vacuum resin impregnation seals porosity, £0.90 a part (advisor rate, UK; engineering-typical, not sourced)${sf !== 1 ? ` × country process-service factor ${sf}` : ''}`
-            : 'not pressure-tight (or ferrous) — no impregnation', 0.6,
-          [PRESSURE_TIGHT_DECISION_ID]);
+        const gbp = Math.round(0.9 * sf * 10_000) / 10_000;
+        const rate = `£0.90 a part (advisor rate, UK; engineering-typical, not sourced)${sf !== 1 ? ` × country process-service factor ${sf}` : ''}`;
+        if (!r.advice.pressureTight) {
+          return decided('casting.impregnationCostPerPart', 0, 'rule', 'not pressure-tight — no impregnation', 0.6, [PRESSURE_TIGHT_DECISION_ID]);
+        }
+        if (lightAlloyImpregnation(r.advice)) {
+          return decided('casting.impregnationCostPerPart', gbp, 'rule',
+            `pressure-tight light-alloy casting — vacuum resin impregnation seals porosity, ${rate}`, 0.6, [PRESSURE_TIGHT_DECISION_ID]);
+        }
+        // Iron, steel and copper-alloy castings that must hold pressure are impregnated case by case (pump, valve and
+        // compressor bodies often are). It was excluded outright — "not pressure-tight (or ferrous)" — so a leak-tight
+        // iron casting was costed without it and nothing said so (report standard review, 3 Nov 2026): it is asked.
+        const ans = ctx.answers[IMPREGNATION_DECISION_ID];
+        if (ans === 'yes' || ans === true) {
+          return decided('casting.impregnationCostPerPart', gbp, 'engineer',
+            `pressure-tight ${r.advice.alloy.replace('-', ' ')} casting, impregnation specified (answered) — vacuum resin impregnation, ${rate}`, 0.6,
+            [PRESSURE_TIGHT_DECISION_ID, IMPREGNATION_DECISION_ID]);
+        }
+        return decided('casting.impregnationCostPerPart', 0, ans === undefined ? 'rule' : 'engineer',
+          ans === undefined
+            ? `pressure-tight ${r.advice.alloy.replace('-', ' ')} casting — impregnation NOT COSTED: it is specified case by case on iron, steel and copper-alloy castings; answer "Is vacuum impregnation specified?" to price it`
+            : `pressure-tight ${r.advice.alloy.replace('-', ' ')} casting — answered: no impregnation`, 0.6,
+          [PRESSURE_TIGHT_DECISION_ID, IMPREGNATION_DECISION_ID]);
+      },
+    },
+    {
+      // The impregnation question (report standard review): advisory, on a leak-tight casting that is not a light alloy.
+      id: 'casting.q.impregnation', path: 'casting.q.impregnation', label: 'impregnation question',
+      evaluate: (ctx) => {
+        const r = advise(ctx);
+        if ('blocked' in r) return r.blocked;
+        if (!r.advice.pressureTight || lightAlloyImpregnation(r.advice)) {
+          return decided('casting.q.impregnation', 'no', 'rule', r.advice.pressureTight ? 'light alloy — impregnated as a rule, not asked' : 'not pressure-tight — not asked', 1);
+        }
+        const ans = ctx.answers[IMPREGNATION_DECISION_ID];
+        if (ans === undefined) return ask(impregnationDecision());
+        return decided('casting.q.impregnation', ans === 'yes' || ans === true ? 'yes' : 'no', 'engineer', 'answered', 1, [IMPREGNATION_DECISION_ID]);
       },
     },
     {

@@ -456,9 +456,19 @@ if (!NO_ROUTES) {
       }
       check(part, `crossover "${x.label}" volume (interpolated here)`, at ?? -1, x.atVolume ?? -1, 1);
       if (x.payback) {
+        // Report standard #9: the payback is on the UP-FRONT tooling (first sets + NRE); replacement sets and perishable
+        // tools stay in the piece price compared. Summed here from the items' kinds, not from the code's split.
         const thru = (1 + si.overheadPct) * (1 + si.marginPct);
-        const saving = (ref.total! - ref.toolingPerPart! * thru) - (row.total! - row.toolingPerPart! * thru);
-        check(part, `payback "${x.label}" piece saving ex-tooling`, x.payback.pieceSaving, Math.round(saving * 10_000) / 10_000, 0.0002);
+        const byKind = (r: typeof ref) => {
+          const items = r.tooling?.items ?? [];
+          const running = items.filter(i => i.kind === 'replacement' || i.kind === 'perishable').reduce((a, i) => a + i.gbp, 0);
+          const inv = r.tooling?.investment ?? 0;
+          return { upFront: inv - running, runningShare: inv > 0 ? running / inv : 0 };
+        };
+        const piece = (r: typeof ref) => r.total! - r.toolingPerPart! * thru * (1 - byKind(r).runningShare);
+        const saving = piece(ref) - piece(row);
+        check(part, `payback "${x.label}" piece saving (ex up-front tooling, running tooling in)`, x.payback.pieceSaving, Math.round(saving * 10_000) / 10_000, 0.0002);
+        check(part, `payback "${x.label}" extra up-front tooling`, x.payback.extraTooling, Math.round((byKind(row).upFront - byKind(ref).upFront) * 100) / 100, 0.05);
       }
       info(`${x.label}: ${x.text}`);
     }

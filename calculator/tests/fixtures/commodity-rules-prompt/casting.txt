@@ -11,14 +11,15 @@ CASTING COST INPUT RULES:
   subtype=gravity  [gravity: medium-volume aluminium — gravity die casting gives denser, heat-treatable (T6) structure than HPDC for wheels/knuckles/pistons, with cheaper tooling than a pressure die [pressure-tight, tolerance class, safety-critical assumed — confirm before quoting] — deterministic, use verbatim]
   yieldFraction=0.6  [gravity aluminium yield band 0.5–0.7, midpoint (feeding scales with the alloy's shrinkage; engineering-typical band, not sourced — the foundry's method yield replaces it) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
-  dieMouldCostGBP=13627  [gravity toolmaker shop model: 194 toolroom hours + steel + bought-outs from a 288 cm² parting footprint, moderate (2 undercut face(s) ≈ 1 slide(s)); the kernel's face-count parametric (UK basis, not country-adjusted) said £26,400 (not used) — a quotation overrides this — deterministic, use verbatim]
+  dieMouldCostGBP=13627  [gravity toolmaker shop model: 194 toolroom hours + steel + bought-outs from a 288 cm² parting footprint, moderate (2 undercut face(s) ≈ 1 slide(s)) — a quotation overrides this — deterministic, use verbatim]
   dieMouldLife=50000  [gravity tool life band 50,000 castings (engineering-typical, not sourced) — deterministic, use verbatim]
   cycleTimeSandGravHr=0.08  [gravity cycle band — deterministic, use verbatim]
   labourId=lab-uk-foundry  [foundry operative on the moulding / die-casting line and at the fettling bench — deterministic, use verbatim]
   fettlingMinutes=2  [light fettling — gravity aluminium, 2.8 kg: gate / riser removal and grind at the foundry rate (engineering-typical minutes) — deterministic, use verbatim]
   heatTreatCostPerKg=1.1  [gravity aluminium is solution treated and aged, T6 — £1.1/kg × the as-cast kg (advisor rate, UK; engineering-typical, not sourced) — deterministic, use verbatim]
   shotBlastCostPerPart=0.2318  [gravity castings are blasted to remove sand / scale / flash — 2.80 kg ÷ 600 kg/h (the low end of a 0.5–2 t/h tumble / hanger blast; engineering-typical, not sourced) × (blast machine £25.07/h + operator £24.60/h), min £0.10 = £0.2318 (CostVision engineering heuristic) — deterministic, use verbatim]
-  impregnationCostPerPart=0  [not pressure-tight (or ferrous) — no impregnation — deterministic, use verbatim]
+  impregnationCostPerPart=0  [not pressure-tight — no impregnation — deterministic, use verbatim]
+  impregnation question=no  [not pressure-tight — not asked — deterministic, use verbatim]
   ndtCostPerPart=0  [not safety-critical — no radiography — deterministic, use verbatim]
   manning=1  [one operator to a gravity cell — deterministic, use verbatim]
   leakTestSec=0  [not pressure-tight — no leak test — deterministic, use verbatim]
@@ -45,6 +46,7 @@ CASTING COST INPUT RULES:
   heatTreatCostPerKg: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   shotBlastCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   impregnationCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
+  impregnation question: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   ndtCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   manning: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)
   leakTestSec: UNDECIDED — needs "What is this part made of?" (Aluminium | Magnesium | Zinc | Cast iron | Steel | Copper alloy | Nickel alloy)

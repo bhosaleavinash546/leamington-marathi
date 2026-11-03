@@ -266,14 +266,15 @@ describe('press, die and secondary ops', () => {
     expect(f.projectedAreaCm2).toBe(AXLE_SILHOUETTE_CM2);
   });
 
-  it('estimates the die from the envelope and shows the kernel figure beside it', () => {
+  it('estimates the die from the envelope — and does not print the kernel figure it discarded', () => {
     const r = runCostInputRules(FORGING_RULES, ctx(STUB_AXLE, STEEL_ANSWERED));
     const f = r.suggestions.forging as Record<string, number>;
     expect(f.dieCost).toBe(estimateForgingDieCost({
       projectedAreaCm2: AXLE_SILHOUETTE_CM2, partWeightKg: f.partWeightKg, dieSteel: 'h13',
       impressions: 2, complexity: 'moderate',
     }).total);
-    expect(r.provenance['forge-die-cost'].basis).toContain('78400');
+    // report standard review (3 Nov 2026): a rejected internal estimate is not printed on a supplier-facing basis
+    expect(r.provenance['forge-die-cost'].basis).not.toMatch(/78400|not used/);
   });
 
   it('counts hits on the line, not the kernel\'s face-count "strokes"', () => {

@@ -30,6 +30,7 @@ import { ROTO_POWDER_YIELD } from '../../modules/rotational-moulding.js';
 import { activeToolroomFactor, activeRates } from '../../rate-context.js';
 import type { RateLibrary } from '../../types.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { serviceQuestionRules } from '../derive/service-questions.js';
 import { shellWallMm } from '../derive/shell-wall.js';
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
@@ -564,5 +565,7 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
           `under-cured, bubbled or warped parts and wall-thickness rejects: ${(ROTO_REJECT * 100).toFixed(0)}% — engineering-typical, not sourced`, 0.55);
       },
     },
+    // Leak-tight, advisory (report standard review, 3 Nov 2026): a coolant header tank was never asked.
+    ...serviceQuestionRules('rotationalMoulding', { pressure: true }),
   ],
 };

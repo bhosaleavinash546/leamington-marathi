@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { jsPDF } from 'jspdf';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { computeUniversalStack } from '../src/engine/core.js';
-import { printPDF } from '../src/export/pdf.js';
+import { printAuditPackPDF } from '../src/export/pdf.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 
 const lib = DEFAULT_RATE_LIBRARY;
@@ -39,7 +39,7 @@ export function sandCastingResult() {
 
 describe('X1 / X6 — the PDF names its currency and shows bench work as bench work', () => {
   const { input, result } = sandCastingResult();
-  const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', []));
+  const text = pdfText(() => printAuditPackPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', []));
   it('prints INR, never a bare number with the sign deleted', () => {
     expect(text).toMatch(/INR \d/);
   });
@@ -50,7 +50,7 @@ describe('X1 / X6 — the PDF names its currency and shows bench work as bench w
 
 describe('X10 / X11 / X21 / X27 — the report says what the costing holds', () => {
   const { input, result } = sandCastingResult();
-  const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+  const text = pdfText(() => printAuditPackPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
     { geometrySource: 'occt', measuredVolumeCm3: 356.1, measuredWeightKg: 2.528, annualVolume: 100000 } as never)).replace(/\n/g, ' ');
   it('gross − net is melt loss, not runner weight, when the melt shop remelts the gating', () => {
     expect(text).toMatch(/Melt Loss \(metal lost\)/);
@@ -90,7 +90,7 @@ describe('X14 / X15 — labour is printed by role, and the trace source column i
   // X15 restated 10 Oct 2026: the source text used to be printed "as recorded, GBP"; it is now converted to the report's
   // currency (src/export/money-text.ts), so an India report carries no £ amount in its notes.
   it('the PDF prints no UK labour key on a costing in India, and no £ amount in its source notes', () => {
-    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+    const text = pdfText(() => printAuditPackPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
     expect(text).not.toMatch(/lab-uk-/);
     expect(text).toMatch(/foundry \(role\)/);
     expect(text).toMatch(/Source \/ Reference/);
@@ -162,7 +162,7 @@ describe('X2 / X3 — a DFM finding is re-costed in the report currency and keep
 describe('X17 — a DFM still running is stated, not silently left out', () => {
   const { input, result } = sandCastingResult();
   it('prints "not included" with the reason', () => {
-    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+    const text = pdfText(() => printAuditPackPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
       { geometrySource: 'occt', geometricDFM: null, geometricDFMPending: true } as never)).replace(/\n/g, ' ');
     expect(text).toMatch(/Geometric DFM \/ DFA - not included/);
     expect(text).toMatch(/This is not a clean result/);
@@ -180,7 +180,7 @@ describe('X5 / X19 / X20 — DFM texts claim only what the costing holds', () =>
     costNotModelled: 'The costing prices its OWN fixturing count.', range: { min: 9, max: 9 }, threshold: { value: 2, comparator: '>', unit: 'setups' },
     worst: { detail: 'reached from 9 directions', measured: { field: 'setups', value: 9, unit: 'setups' } } };
   const dfm = { grouped: [setups], findings: [setups], featuresExamined: 10, rulesEvaluated: 5, packAvailable: true, limitations: [] };
-  const text = pdfText(() => printPDF(res2, withFix as never, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+  const text = pdfText(() => printAuditPackPDF(res2, withFix as never, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
     { geometrySource: 'occt', geometricDFM: dfm } as never)).replace(/\n/g, ' ');
   it('the setups finding states the costing’s count beside its own and which is priced', () => {
     expect(text).toMatch(/In this costing: 4 fixturing\(s\) are charged/);
@@ -232,7 +232,9 @@ describe('the machining-stock basis does not claim a drawing input that does not
   it('says the stock is an assumption and how to override it', () => {
     const basis = JSON.stringify(result.provenance);
     expect(basis).not.toMatch(/drawing's RMA replaces it/);
-    expect(basis).toMatch(/no drawing is read for it/);
+    // ISO 8062-3 wording (report standard review, 3 Nov 2026): RMA + half the DCTG, neither grade read — an assumption
+    expect(basis).toMatch(/assumed .*neither grade is read from a drawing/);
+    expect(basis).toMatch(/type the as-cast weight from the drawing or the foundry to override/);
   });
 });
 
@@ -248,7 +250,7 @@ describe('X29 — an unanswered advisory question prints what the costing used',
     const { input, result } = sandCastingResult();
     const checks = { costable: true, geometryQuality: 'occt', sanity: [], overrides: [],
       decisions: [{ id: 'material.grade', question: 'Which cast iron grade?', severity: 'advisory', answer: null, used: 'EN-GJS-500-7' }] };
-    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+    const text = pdfText(() => printAuditPackPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
       { geometrySource: 'occt', checks } as never)).replace(/\n/g, ' ');
     expect(text).toMatch(/costed as EN-GJS-500-7/);
     expect(text).not.toMatch(/engine default/);
@@ -269,7 +271,7 @@ describe('X12 — the reports print every value the rules set, with its basis', 
       { label: 'Moulding crew', value: '4', ruleValue: '4', source: 'rule', edited: false, basis: 'semi-automatic sand line, 4 operators' },
     ] };
   it('PDF', () => {
-    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+    const text = pdfText(() => printAuditPackPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
       { geometrySource: 'occt', checks } as never)).replace(/\n/g, ' ');
     expect(text).toMatch(/Values the rules set on the costing form/);
     expect(text).toMatch(/2D X-ray/);
@@ -292,7 +294,8 @@ describe('X13 — the tooling says what it is, and why it is spread over this ma
   const drivers = computeCastAndMachineDrivers(trace.mapped.params);
   it('the items add up to the total', () => {
     const items = drivers.tooling.items ?? [];
-    expect(items.map(i => i.label).join(' | ')).toMatch(/Pattern equipment: \d+ set\(s\) \(life 8,000 castings each; [\d,]+ poured incl\. \d+% rejects\) \| Machining fixtures \| CNC programming/);
+    expect(items.map(i => i.label).join(' | ')).toMatch(/Pattern equipment — first set \| Pattern equipment — [\d,]+ replacement sets as it wears out \([\d,]+ sets over the programme; life 8,000 castings each; [\d,]+ poured incl\. \d+% rejects\) \| Machining fixtures \| CNC programming/);
+    expect(items.map(i => i.kind)).toEqual(['initial', 'replacement', 'nre', 'nre']);
     expect(items.reduce((a, i) => a + i.gbp, 0)).toBeCloseTo(drivers.tooling.totalToolingCost, 6);
     expect(items.some(i => /£/.test(i.label))).toBe(false);   // the report prints the money, in its currency
   });
@@ -300,7 +303,7 @@ describe('X13 — the tooling says what it is, and why it is spread over this ma
     const { input } = sandCastingResult();
     const inp = { ...input, annualVolume: 100_000, tooling: { ...input.tooling, items: drivers.tooling.items } };
     const res = computeUniversalStack(inp, lib);
-    const text = pdfText(() => printPDF(res, inp, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+    const text = pdfText(() => printAuditPackPDF(res, inp, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
     expect(text).toMatch(/Pattern equipment/);
     expect(text).toMatch(/ONE year.s volume: no programme life was entered/);
     const blob = await exportToExcelBlob(res, inp, lib, 'INR', 127.1941, null);
@@ -309,7 +312,7 @@ describe('X13 — the tooling says what it is, and why it is spread over this ma
     expect(sum).toMatch(/CNC programming/);
     expect(sum).toMatch(/no programme life was entered/);
     const withLife = { ...inp, programmeYears: 5, tooling: { ...inp.tooling, amortizationVolume: 500_000 } };
-    const t2 = pdfText(() => printPDF(computeUniversalStack(withLife, lib), withLife, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+    const t2 = pdfText(() => printAuditPackPDF(computeUniversalStack(withLife, lib), withLife, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
     expect(t2).toMatch(/the programme: 5 years × 100,000 a year/);
   });
 });
@@ -317,7 +320,7 @@ describe('X13 — the tooling says what it is, and why it is spread over this ma
 describe('P3 report text (X24 / X26 / X31 / X32 / X33 / X38)', () => {
   const { input, result } = sandCastingResult();
   const big = { ...input, tooling: { ...input.tooling, totalToolingCost: 30297 } };
-  const text = pdfText(() => printPDF(computeUniversalStack(big, lib), big, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+  const text = pdfText(() => printAuditPackPDF(computeUniversalStack(big, lib), big, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
   it('money has thousands separators', () => { expect(text).toMatch(/INR 3,853,612\.\d\d|INR 3,85\d,\d{3}\.\d\d/); });
   it('no unrounded float anywhere', () => { expect(text).not.toMatch(/\d\.\d{9,}/); });
   void result;
@@ -340,7 +343,7 @@ describe('X30 — the band the screen shows is on the cover and in the workbook'
   const { input, result } = sandCastingResult();
   const u = computeCostUncertainty(result, input);
   it('PDF cover', () => {
-    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+    const text = pdfText(() => printAuditPackPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
       { geometrySource: 'occt', uncertainty: u } as never)).replace(/\n/g, ' ');
     expect(text).toContain(`± ${u.plusMinusPct}% (P10 INR`);
   });
@@ -388,14 +391,14 @@ describe('the setups finding says when the two counts agree (knuckle: 4 and 4)',
     const setups = { ruleId: 'machining.setup.access-directions', title: 'Features need several setups', severity: 'major', count: 1, faceIds: [1],
       recommendation: 'x', source: { standard: 'x' }, costNotModelled: 'y', range: { min: 4, max: 4 }, threshold: { value: 2, comparator: '>', unit: 'setups' },
       worst: { detail: 'd', measured: { field: 'setups', value: 4, unit: 'setups' } } };
-    const text = pdfText(() => printPDF(computeUniversalStack(withFix as never, lib), withFix as never, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
+    const text = pdfText(() => printAuditPackPDF(computeUniversalStack(withFix as never, lib), withFix as never, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
       { geometrySource: 'occt', geometricDFM: { grouped: [setups], findings: [setups], featuresExamined: 1, rulesEvaluated: 1, packAvailable: true, limitations: [] } } as never)).replace(/\n/g, ' ');
     expect(text).toMatch(/the two agree/);
     expect(text).not.toMatch(/different counts/);
   });
   it('the cover money is grouped', () => {
     const { input, result } = sandCastingResult();
-    const text = pdfText(() => printPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
+    const text = pdfText(() => printAuditPackPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [])).replace(/\n/g, ' ');
     expect(text).not.toMatch(/INR \d{4,}\.\d\d/);
   });
 });

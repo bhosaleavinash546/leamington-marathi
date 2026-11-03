@@ -253,8 +253,9 @@ describe('sheet-metal rules end to end', () => {
   it('completes once the material is answered', () => {
     const r = runCostInputRules(SHEET_METAL_RULES, ctx(CROSS_MEMBER, STEEL));
     expect(r.status).toBe('complete');
-    // Only the ADVISORY finish question remains (CAD to COST D4) — costed bare until answered.
-    expect(r.decisions.map(d => [d.id, d.severity])).toEqual([['service.finish', 'advisory']]);
+    // Only ADVISORY questions remain: the finish (CAD to COST D4) — costed bare until answered — and safety-critical
+    // (report standard review, 3 Nov 2026) — recorded, a Yes listed as not costed.
+    expect(r.decisions.map(d => [d.id, d.severity])).toEqual([['service.finish', 'advisory'], ['service.safetyCritical', 'advisory']]);
 
     const sm = r.suggestions.sheetMetal as Record<string, number | string>;
     expect(sm.thicknessMm).toBe(1.5);
@@ -275,8 +276,8 @@ describe('sheet-metal rules end to end', () => {
       shearStrengthMPa: 280,
     });
     expect(sm.dieCostGBP).toBe(expected.total);
-    // The kernel's independent number rides along so a wide gap is visible.
-    expect(r.provenance['sm-die-cost'].basis).toContain('£92,300 (not used)');
+    // The kernel's discarded parametric is no longer printed (report standard review, 3 Nov 2026).
+    expect(r.provenance['sm-die-cost'].basis).not.toMatch(/not used|£92,300/);
   });
 
   it('predicts die life from material and gauge instead of a flat ladder', () => {

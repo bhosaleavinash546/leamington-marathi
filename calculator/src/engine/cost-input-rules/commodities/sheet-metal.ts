@@ -34,6 +34,7 @@ import {
 import { blankingPressFor } from '../../modules/sheet-metal.js';
 import { FORM_EFFICIENCY_DEFAULTS, SHOP_DEFAULTS } from '../to-cost-params.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { serviceQuestionRules } from '../derive/service-questions.js';
 import { materialFacts, representativeMaterialId, materialGradeName } from '../derive/material.js';
 import { holeRows } from '../derive/facts.js';
 import { thinWallAmbiguity } from '../derive/thin-wall-ambiguity.js';
@@ -651,7 +652,6 @@ export function stampingPlan(ctx: RuleContext): StampingPlan | null {
     ? estimateStampingDieCost({ dieType: 'single_stage', stations: 1, blankAreaCm2, shearStrengthMPa: shear }) : null;
   const dieRaw = (pressLine === 'tandem' ? presses : 1) * lineDie.total + (blankDie?.total ?? 0);
   const die = Math.round(dieRaw * (soft ? SOFT_TOOL.costFactor : 1));
-  const occt = ctx.geo.toolingCostEstimates?.progressiveDieCostGBP;
   const gbp = (v: number) => `£${Math.round(v).toLocaleString('en-GB')}`;
   const dieBasis = (pressLine === 'tandem'
     ? `${presses} single-stage dies, one per press (${proc.operations.join(', ')}), ${Math.round(blankAreaCm2)} cm² blank, ${shear} MPa shear: ${presses} × ${gbp(lineDie.total)}`
@@ -661,8 +661,7 @@ export function stampingPlan(ctx: RuleContext): StampingPlan | null {
     + ` — toolmaker build-up of ${pressLine === 'tandem' ? 'each line die' : 'the die'}: ${stampingDieBuildUp(lineDie)}`
     + (blankDie && pressLine !== 'tandem' ? '; the blanking die is built up the same way as a single-stage die' : '')
     + (soft ? `; SOFT TOOLING (${SOFT_TOOL.label}) at ${SOFT_TOOL.costFactor} × the ${gbp(dieRaw)} production die${blankDie ? 's' : ''} = ${gbp(die)} `
-      + `(engineering-typical ~⅓, not sourced) — ${dieClassFor(ctx).basis}` : '')
-    + (occt ? `; the kernel's face-count parametric (UK basis, not country-adjusted) said £${Math.round(occt).toLocaleString()} (not used)` : '');
+      + `(engineering-typical ~⅓, not sourced) — ${dieClassFor(ctx).basis}` : '');
   return { pressLine, dieType, stations: st, presses, tonnes: Math.round(tonnes), forceBasis, bolsterMm, bolsterBasis,
     pressId, spm, spmBasis, dieCostGBP: die, dieBasis };
 }
@@ -1472,5 +1471,7 @@ export const SHEET_METAL_RULES: CommodityRuleSpec = {
     },
     // The finish question (CAD to COST D4) — asked last: a coating follows the process and the metal.
     ...finishRules('sheetMetal', 'sm'),
+    // Safety-critical, advisory (report standard review, 3 Nov 2026): a seat-anchorage bracket was never asked.
+    ...serviceQuestionRules('sheetMetal', { safety: true }),
   ],
 };

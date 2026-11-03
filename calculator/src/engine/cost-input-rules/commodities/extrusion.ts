@@ -31,6 +31,8 @@ import {
 } from '../../modules/extrusion-advisor.js';
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { serviceQuestionRules } from '../derive/service-questions.js';
+import { PRESSURE_TIGHT_DECISION_ID } from '../derive/service-context.js';
 import { resinFacts, RESIN_DECISION_ID, type ResinFacts } from '../derive/resin.js';
 import { extrusionProfile } from '../derive/profile.js';
 import { COMMODITY_DECISION_ID } from '../derive/commodity.js';
@@ -273,8 +275,18 @@ export const EXTRUSION_RULES: CommodityRuleSpec = {
       value: 0.80, source: 'rule', confidence: 0.6, basis: 'shop OEE, as every route' })),
     fromAdvice('extrusion.labourEfficiency', 'ext-lab-eff', 'labourEfficiency', () => ({
       value: 0.92, source: 'rule', confidence: 0.6, basis: 'shop labour efficiency, as every route' })),
-    fromAdvice('extrusion.leakTest', 'ext-leak', 'leakTest', () => ({
-      value: false, source: 'rule', confidence: 0.4,
-      basis: 'not assumed — a fluid line\'s pressure test is a specification; tick it if the drawing calls one' })),
+    // The pressure test follows the leak-tight answer (report standard review, 3 Nov 2026): answered, it is costed
+    // on the line's test station; unanswered or "No", none is costed and the basis says so.
+    fromAdvice('extrusion.leakTest', 'ext-leak', 'leakTest', (_a, ctx) => {
+      const v = ctx.answers[PRESSURE_TIGHT_DECISION_ID];
+      const yes = v === 'yes' || v === true;
+      return yes
+        ? { value: true, source: 'engineer', confidence: 1, basis: 'answered leak-tight — the pipe / tube pressure test is costed' }
+        : { value: false, source: v === 'no' || v === false ? 'engineer' : 'rule', confidence: v === undefined ? 0.4 : 1,
+          basis: v === undefined
+            ? 'no pressure test costed — a fluid line\'s pressure test is a specification; answer "leak-tight?" (or tick it) if the drawing calls one'
+            : 'answered: not leak-tight — no pressure test' };
+    }),
+    ...serviceQuestionRules('extrusion', { pressure: true }),
   ],
 };

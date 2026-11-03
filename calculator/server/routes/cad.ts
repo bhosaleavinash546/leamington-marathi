@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { geometryTimeoutMs } from '../../src/engine/geometry-timeout.js';
 import { resolveApiKey } from '../utils/api-key.js';
 import multer from 'multer';
-import { queueDFMJobFromBuffer } from '../utils/dfm-job-runner.js';
+import { queueDFMJobFromBuffer, queueNoPackDFMJob } from '../utils/dfm-job-runner.js';
 import { GEOMETRIC_DFM_COMMODITIES } from '../../src/engine/dfm-geometry/index.js';
 import type { CommodityType } from '../../src/engine/types.js';
 import rateLimit from 'express-rate-limit';
@@ -63,7 +63,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // v16: engineer material confirm wins over AI on reanalyse (withAIMaterial),
 //      and casting/cast_and_machine emit the material GRADE from the confirmed
 //      family (was AI grade on cast-iron mass). Final-verification-run fixes.
-const CAD_PROMPT_VERSION = 60;   // 60: 7-country review — press / machine and grade NAMES in the moulding, sheet-metal and casting notes (never library ids), feasibility sources in words; 59: the routing optimiser, composites and blow notes name machines and grades, never library ids; 58: 7-country review — rule notes name the grade, not its library id (steel → 38MnVS6, not mat-steel-38mnvs6); roto moulds sized on the costed book's carousel hours; 57: microalloyed forgings are controlled-cooled from the forge heat (no normalise charged); the forge-press basis states the 1.2 safety as applied (446 t × 1.2 = 535 t); 56: Germany live review, second pass — the machining tool-wear rate prints to 4 decimals (a converted €0.0466/min printed as €0.05), an answered grade confirms the material (no "low confidence" warning, the DFM gets its family); 55: Germany live review — the forging route follows the COSTED grade (unanswered → the representative 38MnVS6), a cold former takes a slug ≤ Ø50 mm, no trim crew without flash, crew text without developer notes; aluminium extrusion runs and die changes a year on the annual volume, dies amortised over annual × programme years; 54: Poland live review — tool decisions (cavitation, stamping v fab, rubber cavities) rank on the amortisation the costing carries (annual × typed programme years), tool maintenance for every year amortised, the kernel parametric labelled UK-basis; 53: country-rates demo review — routing / cavitation lines print machine rates to the penny (£9.05/hr, not £9/hr) and the reject-rate basis drops the "screen had / headless" note; 52: UK rate book (Oct 2026) — the rules' routing / programming / blast lines print the new machine-only UK rates, the engineer at £33.27/h and foundry labour at £24.60/h; 51: casting grade gap review — 11 casting grades (EN AC-46200 / 45300, LM13, GJL-150, GJS-350-22-LT, GJS-500-14, GJV-500, Ni-Resist D-5S, A216 WCB, 1.4848, CuSn12) in the grade question, CGI melts as ductile iron (EN-GJV had no melt data), 4-token designation keys (EN-GJS-500-7 v 500-14); 50: stub axle live run — safety-critical cast iron is ductile EN-GJS-500-7 (safety asked before the grade; grey grades marked brittle), the mass follows the costed grade, near-net spindles are turned (kernel turning.externalAreaMm2, ≥ 8% of the surface) with their stock cast, near-net op names; 49: country-rates review — the rules price in the requested country (and the active company book): toolroom, shot blast, route price, programming, tariff; region is in the cache key; 48: material scope review — one engine scope per commodity (src/engine/material-scope.ts), out-of-scope resin / compound / materialId refused or substituted, blow moulding on blow grades, 17 grades; 47: casting & forging materials review — advisory material.grade question (engineer / declared designation / pin; drawing-read and names lean), grade density and alloy into the advisors, zinc and nickel-alloy families, 35 grades priced by sibling + alloy content; 46: extrusion review — 30 alloys (EC, 3103, 5754 / 5086, 6063A, 6106, 6008, 6351, 6026, 2011 / 2014 / 2017A, 7005 / 7046), tempers per alloy, breakthrough pressure with container friction on the billet length (force-limited billets), mill lengths + cold cut-to-length, semi-hollow by tongue ratio, scrap at LME + Fastmarkets differential, energy priced at the region tariff, finishing consumables and outside-only powder, bend tooling, declared / drawing-read alloy as a leaning, section chaining tolerance by the section, 14 polymer extrusion grades; 45: aluminium-extrusion build — kernel cross-section probe (area, outline, voids, circumscribing circle, wall, constant or machined), aluminium_extrusion route (direct / indirect / hydrostatic / Conform / impact), billet at LME + regional premium, press plan by section, die by the tonne, temper, finish, stretch bends, CNC fabrication by holes + machined volume; 44: extrusion build — polymer extrusion rules from the measured profile (section = V/L, kg/m, 2·V/S wall, tube / pipe / profile, line, screw, cooling-limited rate, start-up and running scrap, die), extrusion route ahead of the hollow test, headless costing, metal refused; 43: composites review — composites is a route and has headless costing, laminate names as evidence, measured enclosure outranks the fill test, laminate wall 2·V/S, cure cell and parts per load, layup tools by volume, waterjet trim, NDI, crew / OEE / scrap / labour rules, fractional tool sets; 42: thermoforming review — plan = largest silhouette, sheet gauge by mass balance, blank with clamp margin nested on the former window, rotary pacing, router trim off the former, sheet grades, field ids (index, electricity) fixed, crew / OEE / scrap / machine rules, forming and polymer names as routing evidence; 41: rotational-moulding review — kernel enclosure probe, closed tanks offered the hollow routes before the bend test, roto powders + grinding, wall 2·V/S, station-paced carousel index, moulds by volume, machine, crew, OEE, scrap, load / unload; 40: blow-moulding review — wall 2·V/S, capacity capped at the envelope or typed, machine by head and shot, parison in series only on an accumulator push or a slow extruder, crew, OEE, scrap, flash reground, in-line trim, fractional moulds, small hollow shells offered the hollow routes, missing shell wall filled at the boundary; 39: rubber review — LSR only for liquid silicone, extruded profiles routed to extrusion, governing cure section, conduction cure term, cavities by volume and platen, deflash bench, post-cure, mould change, crew, OEE, scrap, inserts asked; 38: gear review — set-up per operation and scrap are rules, blank turning at the shared machining rate, /reanalyze routes the commodity like /analyze (gears were re-routed to machining); 37: forging review — forge-line takt by hits, in-line trim press, crew 2, forge labour, 2% scrap, furnace by alloy, fractional die sets, as-forged weight with machining stock, press across the largest silhouette + flash land, ring rolling for rings only, secondary-machining cell (handling, change-over, fixtures, programming, tool wear) for castings and forgings, through = open both ends, clearance holes not reamed; 36: machining review — measured cutting build-up (stock in stocked sizes, roughing by removal rate, finishing by surface type, drilling feed, tool changes, handling), turned parts from bar, 5-axis clamped face, fixtures, programming, tool wear, crew 0.5, near-net cast machining shared with machining, face machining stock; 35: sheet-metal review — one stamping plan (die type, press line, stations, press on force + bolster, SPM, die), stamping v laser+brake priced, soft tooling, binder force, BIW unfold gate, die change, maintenance, crew, scrap; 34: moulding second pass — press shot/tie-bar capacity, cold-runner clamp area, fillet-pair nominal wall, mould change + purge, maintenance, drying; 33: moulding review — measured silhouette area, shell wall guard, per-press dry cycle and fill rate, hot/cold runner, regrind, manning, reject, build-up tool only; 32: casting second pass — crew manning, leak test, mass-based blast, investment by tree, as-cast weight with drilled stock; 31: casting review — remelted returns, melt energy, sand line per mould, section-based HPDC choice and shot time, shop-model tooling, post-cast route, alloy yields, process-aware Al grade; 30: the sheet-metal rules decide the coil grade (sheetMetal.materialId); 29: representative grades the forms can show (cast steel GS-C25, forging billets); 28: Stage 1 is the vision identification (cad-identify.ts), specialist on the 5.5 models; 27: the press is a rule (sheetMetal.pressId); 26: BIW process rules (press line, blanking, presses, draw addendum); 25: sheet-metal cut length (DXF → B-rep identity → 2(L+W)), bend-pair gauge, blank CHECK; 24: 2026-09 refresh round 2 (energy fallbacks, CN/IN factors); 23: 2026-09 rate refresh (machine £/hr in the routing line); 22: the blank says whether it was developed or estimated
+const CAD_PROMPT_VERSION = 61;   // 61: report standard round — grade named by the file stated, NDT on precision steel forgings is MPI (not CT), safety / leak-tight / impregnation questions on more routes, standards wording (EN 1563, ISO 8062-3), no rejected "(not used)" estimates in notes; 60: 7-country review — press / machine and grade NAMES in the moulding, sheet-metal and casting notes (never library ids), feasibility sources in words; 59: the routing optimiser, composites and blow notes name machines and grades, never library ids; 58: 7-country review — rule notes name the grade, not its library id (steel → 38MnVS6, not mat-steel-38mnvs6); roto moulds sized on the costed book's carousel hours; 57: microalloyed forgings are controlled-cooled from the forge heat (no normalise charged); the forge-press basis states the 1.2 safety as applied (446 t × 1.2 = 535 t); 56: Germany live review, second pass — the machining tool-wear rate prints to 4 decimals (a converted €0.0466/min printed as €0.05), an answered grade confirms the material (no "low confidence" warning, the DFM gets its family); 55: Germany live review — the forging route follows the COSTED grade (unanswered → the representative 38MnVS6), a cold former takes a slug ≤ Ø50 mm, no trim crew without flash, crew text without developer notes; aluminium extrusion runs and die changes a year on the annual volume, dies amortised over annual × programme years; 54: Poland live review — tool decisions (cavitation, stamping v fab, rubber cavities) rank on the amortisation the costing carries (annual × typed programme years), tool maintenance for every year amortised, the kernel parametric labelled UK-basis; 53: country-rates demo review — routing / cavitation lines print machine rates to the penny (£9.05/hr, not £9/hr) and the reject-rate basis drops the "screen had / headless" note; 52: UK rate book (Oct 2026) — the rules' routing / programming / blast lines print the new machine-only UK rates, the engineer at £33.27/h and foundry labour at £24.60/h; 51: casting grade gap review — 11 casting grades (EN AC-46200 / 45300, LM13, GJL-150, GJS-350-22-LT, GJS-500-14, GJV-500, Ni-Resist D-5S, A216 WCB, 1.4848, CuSn12) in the grade question, CGI melts as ductile iron (EN-GJV had no melt data), 4-token designation keys (EN-GJS-500-7 v 500-14); 50: stub axle live run — safety-critical cast iron is ductile EN-GJS-500-7 (safety asked before the grade; grey grades marked brittle), the mass follows the costed grade, near-net spindles are turned (kernel turning.externalAreaMm2, ≥ 8% of the surface) with their stock cast, near-net op names; 49: country-rates review — the rules price in the requested country (and the active company book): toolroom, shot blast, route price, programming, tariff; region is in the cache key; 48: material scope review — one engine scope per commodity (src/engine/material-scope.ts), out-of-scope resin / compound / materialId refused or substituted, blow moulding on blow grades, 17 grades; 47: casting & forging materials review — advisory material.grade question (engineer / declared designation / pin; drawing-read and names lean), grade density and alloy into the advisors, zinc and nickel-alloy families, 35 grades priced by sibling + alloy content; 46: extrusion review — 30 alloys (EC, 3103, 5754 / 5086, 6063A, 6106, 6008, 6351, 6026, 2011 / 2014 / 2017A, 7005 / 7046), tempers per alloy, breakthrough pressure with container friction on the billet length (force-limited billets), mill lengths + cold cut-to-length, semi-hollow by tongue ratio, scrap at LME + Fastmarkets differential, energy priced at the region tariff, finishing consumables and outside-only powder, bend tooling, declared / drawing-read alloy as a leaning, section chaining tolerance by the section, 14 polymer extrusion grades; 45: aluminium-extrusion build — kernel cross-section probe (area, outline, voids, circumscribing circle, wall, constant or machined), aluminium_extrusion route (direct / indirect / hydrostatic / Conform / impact), billet at LME + regional premium, press plan by section, die by the tonne, temper, finish, stretch bends, CNC fabrication by holes + machined volume; 44: extrusion build — polymer extrusion rules from the measured profile (section = V/L, kg/m, 2·V/S wall, tube / pipe / profile, line, screw, cooling-limited rate, start-up and running scrap, die), extrusion route ahead of the hollow test, headless costing, metal refused; 43: composites review — composites is a route and has headless costing, laminate names as evidence, measured enclosure outranks the fill test, laminate wall 2·V/S, cure cell and parts per load, layup tools by volume, waterjet trim, NDI, crew / OEE / scrap / labour rules, fractional tool sets; 42: thermoforming review — plan = largest silhouette, sheet gauge by mass balance, blank with clamp margin nested on the former window, rotary pacing, router trim off the former, sheet grades, field ids (index, electricity) fixed, crew / OEE / scrap / machine rules, forming and polymer names as routing evidence; 41: rotational-moulding review — kernel enclosure probe, closed tanks offered the hollow routes before the bend test, roto powders + grinding, wall 2·V/S, station-paced carousel index, moulds by volume, machine, crew, OEE, scrap, load / unload; 40: blow-moulding review — wall 2·V/S, capacity capped at the envelope or typed, machine by head and shot, parison in series only on an accumulator push or a slow extruder, crew, OEE, scrap, flash reground, in-line trim, fractional moulds, small hollow shells offered the hollow routes, missing shell wall filled at the boundary; 39: rubber review — LSR only for liquid silicone, extruded profiles routed to extrusion, governing cure section, conduction cure term, cavities by volume and platen, deflash bench, post-cure, mould change, crew, OEE, scrap, inserts asked; 38: gear review — set-up per operation and scrap are rules, blank turning at the shared machining rate, /reanalyze routes the commodity like /analyze (gears were re-routed to machining); 37: forging review — forge-line takt by hits, in-line trim press, crew 2, forge labour, 2% scrap, furnace by alloy, fractional die sets, as-forged weight with machining stock, press across the largest silhouette + flash land, ring rolling for rings only, secondary-machining cell (handling, change-over, fixtures, programming, tool wear) for castings and forgings, through = open both ends, clearance holes not reamed; 36: machining review — measured cutting build-up (stock in stocked sizes, roughing by removal rate, finishing by surface type, drilling feed, tool changes, handling), turned parts from bar, 5-axis clamped face, fixtures, programming, tool wear, crew 0.5, near-net cast machining shared with machining, face machining stock; 35: sheet-metal review — one stamping plan (die type, press line, stations, press on force + bolster, SPM, die), stamping v laser+brake priced, soft tooling, binder force, BIW unfold gate, die change, maintenance, crew, scrap; 34: moulding second pass — press shot/tie-bar capacity, cold-runner clamp area, fillet-pair nominal wall, mould change + purge, maintenance, drying; 33: moulding review — measured silhouette area, shell wall guard, per-press dry cycle and fill rate, hot/cold runner, regrind, manning, reject, build-up tool only; 32: casting second pass — crew manning, leak test, mass-based blast, investment by tree, as-cast weight with drilled stock; 31: casting review — remelted returns, melt energy, sand line per mould, section-based HPDC choice and shot time, shop-model tooling, post-cast route, alloy yields, process-aware Al grade; 30: the sheet-metal rules decide the coil grade (sheetMetal.materialId); 29: representative grades the forms can show (cast steel GS-C25, forging billets); 28: Stage 1 is the vision identification (cad-identify.ts), specialist on the 5.5 models; 27: the press is a rule (sheetMetal.pressId); 26: BIW process rules (press line, blanking, presses, draw addendum); 25: sheet-metal cut length (DXF → B-rep identity → 2(L+W)), bend-pair gauge, blank CHECK; 24: 2026-09 refresh round 2 (energy fallbacks, CN/IN factors); 23: 2026-09 rate refresh (machine £/hr in the routing line); 22: the blank says whether it was developed or estimated
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -137,6 +137,25 @@ function decidedRoute(sugg: unknown): string {
   return '';
 }
 
+/**
+ * The machining machines the rules routed the part on (`mach-hmc-400`, `mach-lathe-cnc` …), read off every `…machineId`
+ * in the suggestions and their operations — the DFM job judges setup and off-axis findings against them (report
+ * standard, Nov 2026: "3 fixturings on a 3-axis machine" printed on a 4th-axis HMC routing).
+ */
+export function costedMachineIds(sugg: unknown): string[] {
+  const out = new Set<string>();
+  const walk = (o: unknown, depth: number) => {
+    if (!o || typeof o !== 'object' || depth > 5) return;
+    if (Array.isArray(o)) { for (const x of o) walk(x, depth + 1); return; }
+    for (const [k, v] of Object.entries(o as Record<string, unknown>)) {
+      if (/machineid$/i.test(k) && typeof v === 'string' && /^mach-/.test(v)) out.add(v);
+      else if (v && typeof v === 'object') walk(v, depth + 1);
+    }
+  };
+  walk(sugg, 0);
+  return [...out];
+}
+
 /** Region the costing is for (a 2-letter code or a name); '' when not sent. */
 function requestRegion(req: { body?: Record<string, unknown> }): string {
   const r = req.body?.region;
@@ -176,21 +195,27 @@ async function stlMeshMeasures(buffer: Buffer, uploadHash: string): Promise<Pick
 async function queueGeometricDFM(
   buffer: Buffer, filename: string, commodity: string,
   partName: string, materialFamily: string, process: string,
-  annualVolume?: number, region?: string,
+  annualVolume?: number, region?: string, machineIds?: string[],
 ): Promise<string | null> {
-  if (!GEOMETRIC_DFM_COMMODITIES.has(commodity as CommodityType)) return null;
+  const req = {
+    commodity: commodity as CommodityType,
+    partName: partName || filename,
+    // Engineer-confirmed only. Absent means the rules needing it do not run,
+    // which is correct — never a guessed material or route.
+    materialFamily: materialFamily || undefined,
+    process: process || undefined,
+    annualVolume,
+    region,
+    ...(machineIds?.length ? { machineIds } : {}),
+  };
+  // No rule pack: a job that reads no file and runs no kernel — its report says so and lists the checks to make. It
+  // replaces a job an earlier (leaning) route queued, which would otherwise stand and print the wrong pack.
+  if (!GEOMETRIC_DFM_COMMODITIES.has(commodity as CommodityType)) {
+    try { return queueNoPackDFMJob(req); } catch { return null; }
+  }
   // An STL is read by the mesh feature pass (mesh-features.ts) in the job, not by the kernel.
   try {
-    return await queueDFMJobFromBuffer(buffer, filename, {
-      commodity: commodity as CommodityType,
-      partName: partName || filename,
-      // Engineer-confirmed only. Absent means the rules needing it do not run,
-      // which is correct — never a guessed material or route.
-      materialFamily: materialFamily || undefined,
-      process: process || undefined,
-      annualVolume,
-      region,
-    });
+    return await queueDFMJobFromBuffer(buffer, filename, req);
   } catch (e) {
     console.warn('[CAD] geometric DFM job not queued:', (e as Error).message);
     return null;
@@ -207,16 +232,18 @@ async function queueGeometricDFM(
 const _answeredDfmJobs = new Map<string, string>();
 async function requeueGeometricDFMWithAnswers(
   geometryHash: string, filename: string, commodity: string, partName: string,
-  materialFamily: string, process: string, annualVolume?: number, region?: string,
+  materialFamily: string, process: string, annualVolume?: number, region?: string, machineIds?: string[],
 ): Promise<string | null> {
-  if (!materialFamily || !geometryHash) return null;
-  const key = [geometryHash, commodity, materialFamily, process, annualVolume ?? '', region ?? ''].join('|');
+  if (!geometryHash) return null;
+  // A pack commodity waits for the material (its alloy checks need it); a no-pack one needs nothing but the route.
+  if (!materialFamily && GEOMETRIC_DFM_COMMODITIES.has(commodity as CommodityType)) return null;
+  const key = [geometryHash, commodity, materialFamily, process, annualVolume ?? '', region ?? '', (machineIds ?? []).join(',')].join('|');
   const known = _answeredDfmJobs.get(key);
   if (known) return known;
   const kept = getUploadFile(geometryHash);
   if (!kept) return null;
   const name = /\.[a-z0-9]+$/i.test(filename) ? filename : `${filename}.${kept.ext}`;
-  const id = await queueGeometricDFM(kept.buffer, name, commodity, partName, materialFamily, process, annualVolume, region);
+  const id = await queueGeometricDFM(kept.buffer, name, commodity, partName, materialFamily, process, annualVolume, region, machineIds);
   if (id) {
     if (_answeredDfmJobs.size > 500) _answeredDfmJobs.clear();
     _answeredDfmJobs.set(key, id);
@@ -1287,7 +1314,7 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
       preprocessed.partName,
       forcedMaterial || confirmedFamily(decisionAnswers),
       forcedProcess || decidedRoute(det.result.suggestions),
-      annualVolume, requestRegion(req));
+      annualVolume, requestRegion(req), costedMachineIds(det.result.suggestions));
     // Cached WITH the job id, so re-analysing the same part returns the same
     // job rather than silently losing its findings on a cache hit.
     cadCache.set(cacheKey, { ...detPayload, dfmJobId: detJobId });
@@ -1446,7 +1473,8 @@ router.post('/analyze', requireAuth, analyzeLimiter, upload.fields([
     preprocessed.partName,
     forcedMaterial || confirmedFamily(decisionAnswers),
     forcedProcess || decidedRoute((analysis as { costInputSuggestions?: Record<string, unknown> })?.costInputSuggestions),
-    annualVolume, requestRegion(req));
+    annualVolume, requestRegion(req),
+    costedMachineIds((analysis as { costInputSuggestions?: Record<string, unknown> })?.costInputSuggestions));
   cadCache.set(cacheKey, { ...payload, fromCache: true, dfmJobId });
 
   res.json({ ...payload, dfmJobId });
@@ -3132,7 +3160,8 @@ router.post('/reanalyze', requireAuth, reanalyzeLimiter, asyncRoute(async (req, 
           // a moulding answers the RESIN, not the family: without this the upload's job (run while the route was still
           // guessed as machining) stood, and an ECU cover's report priced a drill-reach finding at 14% of the part
           forcedMaterial || String(decisionAnswers['material.family'] ?? '') || (decisionAnswers['material.resin'] ? 'plastic' : ''),
-          forcedProcess || decidedRoute(det.result.suggestions), annualVolume, requestRegion(req)),
+          forcedProcess || decidedRoute(det.result.suggestions), annualVolume, requestRegion(req),
+          costedMachineIds(det.result.suggestions)),
     };
     cadCache.set(cacheKey, detPayload);
     res.json(detPayload);

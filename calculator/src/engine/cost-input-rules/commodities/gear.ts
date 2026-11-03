@@ -27,6 +27,7 @@ import { CUTTING_DATA, stockSize, fromBarTurningTime } from '../../machining-tim
 import type { FeatureRow } from '../../feature-ops.js';
 import type { MaterialFamily } from '../../material-family.js';
 import { analyseGear, GEAR_OEE, GEAR_LABOUR_EFFICIENCY, GEAR_MACHINE_CREW } from '../../modules/gear.js';
+import { serviceQuestionRules } from '../derive/service-questions.js';
 import { HARDENING_ROUTE_UNSUITABLE, adviseGearRoute, type HardeningRoute } from '../../modules/gear-advisor.js';
 import { gearDataCoverage, type GearMaterialClass } from '../../gear-shop-data.js';
 import {
@@ -879,5 +880,7 @@ export const GEAR_RULES: CommodityRuleSpec = {
           `monthly delivery batches: ${ctx.annualVolume.toLocaleString()}/yr ÷ 12`, 0.6);
       },
     },
+    // Safety-critical, advisory (report standard review, 3 Nov 2026): a transmission gear (fatigue) was never asked.
+    ...serviceQuestionRules('gear', { safety: true }),
   ],
 };

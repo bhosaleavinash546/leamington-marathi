@@ -39,7 +39,7 @@ describe('D1 — no "safety-critical" pre-tick without evidence', () => {
 
 describe('D2 — the safety consequence names the check this process charges', () => {
   it('MPI on a forging, X-ray / CT on a casting', () => {
-    expect(safetyConsequence('forging')).toMatch(/MPI on a closed-die forging/);
+    expect(safetyConsequence('forging')).toMatch(/MPI on a closed-die or precision steel forging/);   // precision steel: MPI, not CT (3 Nov 2026)
     expect(safetyConsequence('forging')).not.toMatch(/X-ray/);
     expect(safetyConsequence('casting')).toMatch(/100% MPI with sample X-ray/);
     expect(safetyConsequence('cast_and_machine')).toMatch(/in-line X-ray on light alloys/);

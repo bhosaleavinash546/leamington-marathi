@@ -176,14 +176,15 @@ describe('casting cost-input rules', () => {
     });
 
     it('routes the subtype to the right tooling estimate — the toolmaker shop model', () => {
-      // The kernel's face-count parametric (118,000 / 7,250 here) is a
-      // cross-check in the basis, not the number: it charged £10,000 per
-      // undercut FACE and £150 per B-rep face (casting review, 2 Oct 2026).
+      // The kernel's face-count parametric (118,000 / 7,250 here) is not the
+      // number: it charged £10,000 per undercut FACE and £150 per B-rep face
+      // (casting review, 2 Oct 2026) — and it is no longer printed beside it.
       const area = projectedAreaCm2(ctx(ALL_ANSWERED))!;
       const hpdc = runCostInputRules(CASTING_RULES, ctx(ALL_ANSWERED));
       expect((hpdc.suggestions.casting as Record<string, number>).dieMouldCostGBP)
         .toBe(estimateHPDCDieCost({ projectedAreaCm2: area, complexity: 'moderate' }).total);
-      expect(hpdc.provenance['cast-hpdc-die-cost'].basis).toContain('£118,000 (not used)');
+      // the kernel's discarded parametric is no longer printed (report standard review, 3 Nov 2026)
+      expect(hpdc.provenance['cast-hpdc-die-cost'].basis).not.toMatch(/not used|£118,000/);
 
       const sand = runCostInputRules(CASTING_RULES, ctx(
         { ...ALL_ANSWERED, 'material.family': 'cast iron' }, { annualVolume: 1_000 },

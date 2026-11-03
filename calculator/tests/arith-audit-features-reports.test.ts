@@ -187,10 +187,15 @@ describe('F10 — the route comparison\'s re-add and programme view', () => {
     const r = cmp.rows[0];
     expect(r.programme!.pieceExTooling).toBeCloseTo(r.total! - r.toolingPerPart! * 1.12 * 1.08, 3);
     expect(r.programme!.total).toBeCloseTo(r.programme!.pieceExTooling * r.programme!.parts + r.tooling!.investment, 1);
-    // payback: extra tooling over the ex-tooling piece saving
-    const ref = { ...r, route: 'a', programme: { ...r.programme!, pieceExTooling: 2 }, tooling: { ...r.tooling!, investment: 10_000 }, byVolume: [] } as RouteRow;
-    const alt = { ...r, route: 'b', programme: { ...r.programme!, pieceExTooling: 1.5 }, tooling: { ...r.tooling!, investment: 30_000 }, byVolume: [] } as RouteRow;
+    // payback: extra tooling over the ex-tooling piece saving (all of it up front here — no replacement sets)
+    const upFront = (n: number) => ({ upFront: n, replacement: 0, perishable: 0, running: 0 });
+    const ref = { ...r, route: 'a', programme: { ...r.programme!, pieceExTooling: 2 }, tooling: { ...r.tooling!, investment: 10_000, split: upFront(10_000) }, byVolume: [] } as RouteRow;
+    const alt = { ...r, route: 'b', programme: { ...r.programme!, pieceExTooling: 1.5 }, tooling: { ...r.tooling!, investment: 30_000, split: upFront(30_000) }, byVolume: [] } as RouteRow;
     const x = crossovers([ref, alt], ref, [50_000], 50_000)[0];
     expect(x.payback).toEqual({ extraTooling: 20_000, pieceSaving: 0.5, parts: 40_000, months: 9.6 });
+    // a row with no split (an older trace) reads its whole total as up front — the same answer
+    const noSplit = (row: RouteRow) => ({ ...row, tooling: { ...row.tooling!, split: undefined } }) as RouteRow;
+    const ref0 = noSplit(ref);
+    expect(crossovers([ref0, noSplit(alt)], ref0, [50_000], 50_000)[0].payback).toEqual(x.payback);
   }, 60_000);
 });

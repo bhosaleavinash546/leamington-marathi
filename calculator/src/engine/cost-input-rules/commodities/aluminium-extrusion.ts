@@ -27,6 +27,7 @@ import { buildAlExtrusionInputs, temperNeeds, type AlExtrusionSpec, type AlTempe
 import { featureMinutesEach } from '../../feature-machining.js';
 import { CUTTING_DATA } from '../../machining-time.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type Decision, type RuleContext, type RuleOutcome } from '../types.js';
+import { serviceQuestionRules } from '../derive/service-questions.js';
 import { partNames } from '../derive/part-evidence.js';
 
 export const AL_ALLOY_DECISION_ID = 'material.alAlloy';
@@ -345,5 +346,7 @@ export const ALUMINIUM_EXTRUSION_RULES: CommodityRuleSpec = {
       basis: a.build.plan ? `billet ${a.build.plan.billetMm} mm → ${a.build.plan.partsPerPush} parts a push` : 'feed per part' })),
     rule('alExtrusion.labour', undefined, 'labour', () => ({ value: 'lab-uk-semiskilled', source: 'library', confidence: 0.7, basis: 'press crew (operator, puller, stretcher / saw)' })),
     rule('alExtrusion.ageOven', undefined, 'ageOven', a => ({ value: a.build.inputs.ageOvenId ?? '', source: 'rule', confidence: 0.6, basis: a.build.inputs.ageOvenId ? `${AL_DOWNSTREAM.ageOven.label}, ${AL_DOWNSTREAM.ageOven.loadKg} kg a load` : 'no ageing' })),
+    // Safety-critical, advisory (report standard review, 3 Nov 2026): a battery side rail (crash) was never asked.
+    ...serviceQuestionRules('alExtrusion', { safety: true }),
   ],
 };

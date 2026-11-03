@@ -26,29 +26,44 @@ export const SAFETY_CRITICAL_DECISION_ID = 'service.safetyCritical';
  * `leaning` on the question — the same words, doing honest work instead of
  * silently setting a flag.
  */
-const SAFETY_CRITICAL_HINT =
-  /knuckle|stub.?axle|control.?arm|suspension|steering|upright|kingpin|spindle|hub carrier|wishbone|trailing arm|tie.?rod|subframe|crash|pillar/i;
+export const SAFETY_CRITICAL_HINT =
+  /knuckle|stub.?axle|control.?arm|suspension|steering|upright|kingpin|spindle|hub carrier|wishbone|trailing arm|tie.?rod|subframe|crash|pillar|(?<![a-z])(?:hub|wheel|brake|caliper|seat|anchor)/i;
+// Report standard review (3 Nov 2026): a wheel hub flange (wheel attachment), a brake part and a seat-anchorage bracket
+// showed no leaning — "hub carrier" was the only hub word. A letter before the word stops "github" / "freewheel" style
+// matches; a separator (space, "_", "-") does not, so "FORGE_Hub_Flange" and "Seat_Locking_Bracket" lean Yes.
 
-/** Part names that usually imply a leak spec. */
-const PRESSURE_TIGHT_HINT =
-  /pump|manifold|housing|cover|sump|valve|hydraulic|coolant|fuel|oil|water|intake|plenum|caliper|master.?cyl/i;
+/** Part names that usually imply a leak spec. A coolant header (expansion) tank and a reservoir hold pressure too. */
+export const PRESSURE_TIGHT_HINT =
+  /pump|manifold|housing|cover|sump|valve|hydraulic|coolant|fuel|oil|water|intake|plenum|caliper|master.?cyl|tank|reservoir/i;
 
 function hint(re: RegExp, ctx: RuleContext): boolean {
   return re.test(`${ctx.filename} ${ctx.geo.partName ?? ''}`);
 }
 
+/** What "leak-tight" does on this route — the casting route prices it; the others say what is not costed. */
+export function pressureConsequence(commodity: string): string {
+  if (commodity === 'casting' || commodity === 'cast_and_machine') {
+    return 'vacuum assist on a die casting + impregnation (light alloys; asked on iron and steel) + leak test';
+  }
+  if (commodity === 'extrusion') return 'adds the pipe / tube pressure test station';
+  return 'no leak test is costed on this route — listed as not costed';
+}
+
 export function pressureTightDecision(ctx: RuleContext): Decision {
   const likely = hint(PRESSURE_TIGHT_HINT, ctx);
+  const casting = ctx.commodity === 'casting' || ctx.commodity === 'cast_and_machine';
   return {
     id: PRESSURE_TIGHT_DECISION_ID,
     kind: 'pressure_tight',
     question: 'Does this part have to hold pressure or be leak-tight?',
     why: 'A sealed cavity in the model does not tell us whether there is a leak spec. '
-      + 'It changes the process (vacuum-assisted HPDC), adds impregnation and a leak test, '
-      + 'and rules some routes out entirely.',
+      + (casting
+        ? 'It changes the process (vacuum-assisted HPDC), adds impregnation and a leak test, and rules some routes out entirely.'
+        : 'It decides whether a leak / pressure test belongs in the price; where this route does not cost one it is '
+          + 'listed as not costed.'),
     options: [
       { value: 'yes', label: 'Yes — leak-tight / pressure-rated',
-        consequence: 'vacuum assist + impregnation + leak test', leaning: likely },
+        consequence: pressureConsequence(ctx.commodity), leaning: likely },
       { value: 'no', label: 'No — structural or cosmetic only',
         consequence: 'no porosity-sealing operations', leaning: !likely },
     ],
@@ -79,9 +94,10 @@ export function toleranceClassDecision(): Decision {
 
 /** What "safety-critical" adds on this route — the forging and casting advisors' own secondary operations. */
 export function safetyConsequence(commodity: string): string {
-  if (commodity === 'forging') return 'adds crack testing (MPI on a closed-die forging, UT or CT on open-die / precision)';
+  if (commodity === 'forging') return 'adds crack testing (MPI on a closed-die or precision steel forging, UT on open-die / ring-rolled, CT on titanium and superalloys)';
   if (commodity === 'casting' || commodity === 'cast_and_machine') return 'adds NDT (100% MPI with sample X-ray on iron and steel, in-line X-ray on light alloys, CT on superalloys) and a ductile grade on iron';
-  return 'adds crack testing and a ductile grade where the route uses one';
+  if (commodity === 'machining') return 'a ductile grade on cast iron; no check is costed on this route — special-characteristic controls are listed as not costed';
+  return 'no check is costed on this route — special-characteristic controls are listed as not costed';
 }
 
 export function safetyCriticalDecision(ctx: RuleContext): Decision {

@@ -163,7 +163,8 @@ describe('7. tooling from the toolmaker build-up, not £10,000 per undercut face
     const r = runCostInputRules(CAST_AND_MACHINE_RULES, ctxOf('PRCR002.stp', { ...ANSWERS, 'material.family': 'aluminium' }));
     const die = (r.suggestions.casting as Record<string, number>).dieMouldCostGBP;
     expect(die).toBeLessThan(60_000);
-    expect(r.provenance['cam-hpdc-die-cost'].basis).toContain('£80,000 (not used)');
+    // the kernel's discarded parametric is no longer printed (report standard review, 3 Nov 2026)
+    expect(r.provenance['cam-hpdc-die-cost'].basis).not.toMatch(/not used|£80,000/);
   });
 });
 

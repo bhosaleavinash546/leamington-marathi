@@ -5,13 +5,14 @@
 ### context: full
 MACHINING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
+  Lines marked UNDECIDED are yours to answer: nothing in the geometry settles them. Answer from the drawing, the photo or the part name, and say which you used.
   materialFamily=mat-al6082-bar  [aluminium → 6082-T6 Aluminium Bar (representative machining grade — not a drawing callout); 1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   stockWeightKg=21.697  [328 × 245 mm cut from 100 mm plate (part 320 × 240 × 96: 2.5 mm a side to square the sawn edges + 3 mm saw cut, 1 mm skim a face then the next stocked thickness) = 8036 cm³ of aluminium, 21.697 kg, of which the part is 13% — deterministic, use verbatim]
   materialUtilization=0.129  [328 × 245 mm cut from 100 mm plate (part 320 × 240 × 96: 2.5 mm a side to square the sawn edges + 3 mm saw cut, 1 mm skim a face then the next stocked thickness) = 8036 cm³ of aluminium, 21.697 kg, of which the part is 13% — deterministic, use verbatim]
-  estimatedCycleTimeHr=1.543  [92.2 min cutting + 0.33 min pallet change (load / unload masked by the cut) (rough 6999 cm³ stock − part − 19 cm³ in the holes (cut by the hole time) = 6980 cm³ ÷ 120 cm³/min = 58.2 min; finish 1106 cm² of flats/walls/fillets ÷ 40 cm²/min = 27.7 min; surface 38 cm² free-form ÷ 10.0 cm²/min = 3.8 min; holes 2.1 min; 5 tools × 6 s = 0.5 min (aluminium, ×1 on aluminium; cutting rates engineering-typical for a 15–20 kW machining centre / CNC lathe with carbide, not sourced)); the kernel's planar-area rate said 16.1 min (not used) — deterministic, use verbatim]
+  estimatedCycleTimeHr=1.543  [92.2 min cutting + 0.33 min pallet change (load / unload masked by the cut) (rough 6999 cm³ stock − part − 19 cm³ in the holes (cut by the hole time) = 6980 cm³ ÷ 120 cm³/min = 58.2 min; finish 1106 cm² of flats/walls/fillets ÷ 40 cm²/min = 27.7 min; surface 38 cm² free-form ÷ 10.0 cm²/min = 3.8 min; holes 2.1 min; 5 tools × 6 s = 0.5 min (aluminium, ×1 on aluminium; cutting rates engineering-typical for a 15–20 kW machining centre / CNC lathe with carbide, not sourced)) — deterministic, use verbatim]
   setupCount=2  [2 fixturing(s) of the volume-cell routing (3 approach direction(s) measured) — deterministic, use verbatim]
-  setupTimeHr=1.5  [2 fixturing(s) of the volume-cell routing × 45 min change-over (fixture swap, tool offsets, first-off inspection) a batch — not the kernel's 15 min, which is a per-part allowance (45 min engineering-typical, not sourced) — deterministic, use verbatim]
+  setupTimeHr=1.5  [2 fixturing(s) of the volume-cell routing × 45 min change-over (fixture swap, tool offsets, first-off inspection) a batch (45 min engineering-typical, not sourced) — deterministic, use verbatim]
   batchSize=5000  [100,000/yr ÷ 20 runs a year, held between 50 and 5,000 — deterministic, use verbatim]
   machineId=mach-hmc-400  [cost-ranked 3 routing(s), machine + operator: volume-cell £38.26 (machine £16.77 + operator £21.48; twin-pallet HMC cell at 100,000/yr: 3 direction(s) in 1 clamping(s) on a 4th-axis tombstone + the clamped face, dedicated hydraulic fixture: Horizontal machining centre — 400 mm twin pallet, 4th axis (production cell) £10.87/hr, 2 setup(s) × 45 min / batch 5000 + 10 s pallet change per part per fixturing, 2.5 min load / unload masked by the cut) vs split-3axis £41.49 (machine £15.34 + operator £26.14; 3-fixturing split routing: HAAS VF-2 (3-axis Mill) £9.05/hr + CNC Drilling Centre £6.64/hr, 4 setup(s) × 45 min / batch 5000 + 2.5 min handling per part per setup) vs consolidated-5axis £51.48 (machine £27.67 + operator £23.81; 5-axis: op 10 five sides, op 20 the clamped face: HAAS UMC-500 (5-axis Mill) £17.07/hr, 2 setup(s) × 45 min / batch 5000 + 2.5 min handling per part per setup) → volume-cell, £3.23/part cheaper than split-3axis — deterministic, use verbatim]
   operationCount=6  [6 operation(s): cutting by approach direction, 1 measured drilling op, handling and the bench deburr — deterministic, use verbatim]
@@ -20,6 +21,8 @@ MACHINING COST INPUT RULES:
   fixtureCostGBP=24000  [2 dedicated hydraulic (tombstone) fixture(s) × £12,000 (the volume cell's dedicated fixture; fixture prices engineering-typical toolroom builds, not sourced) — deterministic, use verbatim]
   programmingNRE=175  [CAM programming and prove-out 5.25 h (1.5 h × 2 fixturing(s) + 0.25 h × 1 feature group(s) + 2 h surfacing) × £33.27/h manufacturing engineer (hours engineering-typical, not sourced) — deterministic, use verbatim]
   toolWearCostPerPart=3.6898  [92.2 min of cutting × £0.0400/min inserts, end mills and drills (aluminium) — not in the machine rate (£/min engineering-typical, not sourced) — deterministic, use verbatim]
+  safety-critical question: UNDECIDED — needs "Is this part safety-critical or fatigue-loaded?" (Yes — safety-critical | No)
+  leak-tight question: UNDECIDED — needs "Does this part have to hold pressure or be leak-tight?" (Yes — leak-tight / pressure-rated | No — structural or cosmetic only)
 
 ### context: degraded
 MACHINING COST INPUT RULES:
@@ -31,7 +34,7 @@ MACHINING COST INPUT RULES:
   materialUtilization: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
   estimatedCycleTimeHr: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
   setupCount=1  [no setup analysis available — assuming a single setup — deterministic, use verbatim]
-  setupTimeHr=0.75  [1 fixturing(s) × 45 min change-over (fixture swap, tool offsets, first-off inspection) a batch — not the kernel's 15 min, which is a per-part allowance (45 min engineering-typical, not sourced) — deterministic, use verbatim]
+  setupTimeHr=0.75  [1 fixturing(s) × 45 min change-over (fixture swap, tool offsets, first-off inspection) a batch (45 min engineering-typical, not sourced) — deterministic, use verbatim]
   batchSize=5000  [100,000/yr ÷ 20 runs a year, held between 50 and 5,000 — deterministic, use verbatim]
   machineId: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
   operationCount: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
@@ -40,3 +43,5 @@ MACHINING COST INPUT RULES:
   fixtureCostGBP: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
   programmingNRE: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
   toolWearCostPerPart: UNDECIDED — needs "What is this part made of?" (Aluminium | Steel | Cast iron | Titanium | Copper alloy | Plastic)
+  safety-critical question=pending  [pending the material answer — deterministic, use verbatim]
+  leak-tight question=pending  [pending the material answer — deterministic, use verbatim]

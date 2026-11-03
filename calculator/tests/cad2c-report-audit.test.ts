@@ -144,7 +144,7 @@ describe('R1 / R32 / R33 / U6 — the comparison on screen and in the reports', 
   it('the table puts the basis on its own full-width row under the figures (no sideways scroll), with full route names', () => {
     const row = (route: string, total: number): RouteCompareRow => ({
       route, process: null, label: route, commodity: route, status: 'costed', total, toolingPerPart: 0.1, breakdown: null, reconciles: null, audit: null, spec: [],
-      material: null, tooling: null, operations: null, band: null, checks: [], caveats: ['c'], assumed: [], openQuestions: [], notes: [], refusal: null, byVolume: [], programme: null,
+      material: null, tooling: null, operations: null, band: null, consumables: [], credible: true, notCredible: [], checks: [], caveats: ['c'], assumed: [], openQuestions: [], notes: [], refusal: null, byVolume: [], programme: null,
     });
     const html = routeCompareHtml(routeComparisonExport({ principle: 'p', rows: [row('forging', 10), row('cast_and_machine', 12)], excluded: [], ladder: [], crossovers: [], programme: { annualVolume: 1, years: 5, yearsAssumed: false } },
       { current: 'forging', headline: 10, labels: COMMODITY_REPORT_LABELS }), { fmt: n => `£${n.toFixed(2)}` });
@@ -180,7 +180,7 @@ describe('P-A — no process-plausibility block before a process is chosen', () 
 
 describe('V1 — two isometric CAD views under the summary (the Director, 30 Oct 2026)', async () => {
   const { pdfText, sandCastingResult } = await import('./casting-360-review.test.js');
-  const { printPDF } = await import('../src/export/pdf.js');
+  const { printAuditPackPDF } = await import('../src/export/pdf.js');
   const { exportToExcelBlob } = await import('../src/export/excel.js');
   const { DEFAULT_RATE_LIBRARY: lib } = await import('../src/engine/rate-library.js');
   // an 8 × 6 white JPEG (tests/fixtures/tiny-view.jpg, written by PyMuPDF) — a picture jsPDF and ExcelJS both accept
@@ -190,11 +190,11 @@ describe('V1 — two isometric CAD views under the summary (the Director, 30 Oct
   const { input, result } = sandCastingResult();
 
   it('the PDF cover prints the block and both captions; a costing without views prints nothing', () => {
-    const withViews = pdfText(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], { cadViews: views } as never));
+    const withViews = pdfText(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], { cadViews: views } as never));
     expect(withViews).toMatch(/CAD Model .*Isometric Views/);   // pdfText drops the em dash (an octal escape in the PDF string)
     expect(withViews).toMatch(/front, right, top/);
     expect(withViews).toMatch(/back, left, top/);
-    const without = pdfText(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], {} as never));
+    const without = pdfText(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], {} as never));
     expect(without).not.toMatch(/Isometric Views/);
   });
 

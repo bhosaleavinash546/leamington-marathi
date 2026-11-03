@@ -183,7 +183,7 @@ export function adviseForgingProcess(inputs: ForgingAdvisorInputs): ForgingProce
     const p = inputs.processOverride;
     const chosen = `${alloy} by ${FORGING_PROCESS_REFERENCE[p].label.toLowerCase()} — the process chosen for this row, not the advisor's pick`;
     if (p === 'ring-rolling') return build(p, chosen, ['Billet shear', 'Upset + punch (preform)', 'Ring roll', 'Heat treat', 'Machine'], [...(inputs.safetyCritical ? ['UT / MPI NDT'] : []), 'Heat treat']);
-    if (p === 'precision') return build(p, chosen, ['Preform', 'Isothermal/precision forge', 'Solution + age', ...(inputs.safetyCritical ? ['CT / UT NDT'] : []), 'Finish machine'], ['Heat treat', ...(inputs.safetyCritical ? ['CT/UT NDT'] : []), 'Near-net machining']);
+    if (p === 'precision') return build(p, chosen, precisionRoute(inputs), precisionSecondary(inputs));
     if (p === 'cold-forming') return build(p, chosen, ['Wire/slug cut', 'Multi-station cold form', 'Trim', ...(inputs.alloyFamily === 'aluminium' ? ['Age (T6)'] : ['Optional Q&T'])], ['Phosphate/lube prep', 'Optional heat treat']);
     if (p === 'open-die') return build(p, chosen, ['Ingot/billet heat', 'Open-die forge (draw/upset)', 'Rough machine', 'Heat treat', 'Finish machine'], ['Q&T heat treat', ...(inputs.safetyCritical ? ['UT NDT'] : []), 'Stress relieve']);
     return build('closed-die', chosen, closedDieRoute(inputs), closedDieSecondary(inputs));
@@ -201,8 +201,7 @@ export function adviseForgingProcess(inputs: ForgingAdvisorInputs): ForgingProce
   if (hardToForge || (tol === 'tight' && inputs.complexity === 'high' && inputs.partWeightKg <= 100)) {
     return build('precision',
       `${hardToForge ? `${alloy} is forged near-net to conserve expensive stock and control grain flow` : `tight-tolerance complex ${alloy}`} — precision/isothermal forging cuts machining and buy-to-fly ratio`,
-      ['Preform', 'Isothermal/precision forge', 'Solution + age', ...(inputs.safetyCritical ? ['CT / UT NDT'] : []), 'Finish machine'],
-      ['Heat treat', ...(inputs.safetyCritical ? ['CT/UT NDT'] : []), 'Near-net machining']);
+      precisionRoute(inputs), precisionSecondary(inputs));
   }
 
   // 3. Small, high-volume, simple → cold forging / heading — when the slug fits a cold former (a Ø140 × 2.3 kg flange
@@ -235,6 +234,21 @@ export function adviseForgingProcess(inputs: ForgingAdvisorInputs): ForgingProce
 function closedDieCool(inputs: ForgingAdvisorInputs): string {
   return inputs.alloyFamily === 'microalloyed-steel' ? 'Controlled cool from the forge heat' : 'Heat treat';
 }
+/** Precision forging: isothermal with solution + age and CT on titanium / superalloys; a steel is forged near-net with a
+ *  narrow flash, cooled or heat-treated as a closed-die forging of its grade and crack-tested by MPI (report standard
+ *  review, 3 Nov 2026 — the steel route printed "Solution + age" and "CT / UT NDT"). */
+function precisionRoute(inputs: ForgingAdvisorInputs): string[] {
+  if (HARD_TO_FORGE.includes(inputs.alloyFamily)) {
+    return ['Preform', 'Isothermal/precision forge', 'Solution + age', ...(inputs.safetyCritical ? ['CT / UT NDT'] : []), 'Finish machine'];
+  }
+  return ['Billet shear + heat', 'Preform', 'Precision forge (narrow flash)', 'Flash trim', closedDieCool(inputs),
+    ...(inputs.safetyCritical ? ['MPI NDT'] : []), 'Finish machine'];
+}
+function precisionSecondary(inputs: ForgingAdvisorInputs): string[] {
+  if (HARD_TO_FORGE.includes(inputs.alloyFamily)) return ['Heat treat', ...(inputs.safetyCritical ? ['CT/UT NDT'] : []), 'Near-net machining'];
+  return [closedDieCool(inputs), ...(inputs.safetyCritical ? ['MPI NDT'] : []), 'Near-net machining'];
+}
+
 function closedDieRoute(inputs: ForgingAdvisorInputs): string[] {
   return ['Billet shear + heat', 'Block/finish impressions', 'Flash trim (+ pierce)', closedDieCool(inputs),
     'Shot blast (descale)', ...(inputs.safetyCritical ? ['MPI NDT'] : [])];

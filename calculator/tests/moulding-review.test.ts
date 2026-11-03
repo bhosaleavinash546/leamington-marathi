@@ -121,9 +121,9 @@ describe('4. runner, regrind, crew and scrap are rules, the same on screen and h
 });
 
 describe('5. the mould is the toolmaker build-up, not a blend with face counting', () => {
-  it('the kernel figure is shown, not used', () => {
+  it('the kernel figure is not used — and not printed (report standard review, 3 Nov 2026)', () => {
     const { r } = im('IM_ECU_Cover.stp', 'mat-pa66gf30');
-    expect(r.provenance['imm-mould-cost'].basis).toContain('(not used)');
+    expect(r.provenance['imm-mould-cost'].basis).not.toContain('(not used)');
   });
 });
 

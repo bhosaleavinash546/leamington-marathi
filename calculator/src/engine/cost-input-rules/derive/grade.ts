@@ -143,6 +143,30 @@ export function gradeEvidence(ctx: RuleContext, candidates: MaterialRate[]): Gra
 }
 
 /**
+ * A grade the file NAMES (a STEP product name, the file name) or a drawing read names, when it is not the grade costed
+ * and the grade question is open. A name only LEANS the question (it is not a material property), so the costing stays
+ * at its representative grade — but the report must say so: the hub flange's file named C45 and the report printed
+ * 38MnVS6 with no word of it (report standard review, 3 Nov 2026). Null when nothing is named, the name is the grade
+ * costed, the file DECLARES a grade (then it is costed) or the engineer has answered.
+ */
+export function namedGradeNotCosted(ctx: RuleContext, family: MaterialFamily, costedId: string | null): { id: string; grade: string; where: string } | null {
+  if (!costedId || ctx.answers[GRADE_DECISION_ID] !== undefined) return null;
+  const ev = gradeEvidence(ctx, gradeCandidates(ctx.commodity, family));
+  if (!ev || ev.source === 'declared' || ev.id === costedId) return null;
+  const grade = DEFAULT_RATE_LIBRARY.materials.find(m => m.id === ev.id)?.grade ?? ev.id;
+  return { id: ev.id, grade, where: ev.where };
+}
+
+/** The sentence a grade line carries for `namedGradeNotCosted`: "the STEP product name ("…") names C45 — costed as 38MnVS6 until …". */
+export function namedGradeNote(ctx: RuleContext, family: MaterialFamily, costedId: string | null): string {
+  const n = namedGradeNotCosted(ctx, family, costedId);
+  if (!n) return '';
+  const costed = DEFAULT_RATE_LIBRARY.materials.find(m => m.id === costedId)?.grade ?? costedId;
+  return `; ${n.where} names ${n.grade} — costed as ${costed} until the grade question is answered (a name leans the `
+    + 'question; it does not set the grade)';
+}
+
+/**
  * The grade the engineer chose or the file declares, valid for this family —
  * the one an advisor may act on. Null means "cost at the representative grade".
  */

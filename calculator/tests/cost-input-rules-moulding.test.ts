@@ -263,7 +263,8 @@ describe('injection moulding', () => {
     expect(im.mouldCostGBP).toBe(buildUp);
     expect(buildUp / 420_000).toBeGreaterThan(1.05);
     expect(buildUp / 420_000).toBeLessThan(1.15);
-    expect(r.provenance['imm-mould-cost'].basis).toContain('£412,000 (not used)');
+    // the kernel's discarded parametric is no longer printed (report standard review, 3 Nov 2026)
+    expect(r.provenance['imm-mould-cost'].basis).not.toMatch(/not used|£412,000/);
   });
 
   it('does not re-ask the metal-or-plastic question of someone who chose the tile', () => {
@@ -346,7 +347,8 @@ describe('blow moulding', () => {
       [RESIN_DECISION_ID]: 'mat-pet-preform', [CAPACITY_DECISION_ID]: '0p25_2',
     }, { filename: 'bottle.step', annualVolume: 20_000_000 }));
     expect(r.status).toBe('complete');
-    expect(r.decisions).toHaveLength(0);
+    // only the ADVISORY leak-tight question (report standard review, 3 Nov 2026) — no barrier question
+    expect(r.decisions.map(d => [d.id, d.severity])).toEqual([['service.pressureTight', 'advisory']]);
   });
 
   it('charges no pinch-off flash to a process that makes none', () => {
@@ -396,7 +398,8 @@ describe('the prompt cannot say anything the engine would not compute', () => {
   for (const [name, spec, ctx] of cases) {
     it(`renders every ${name} value with its own basis attached`, () => {
       const text = renderCommodityRulesPrompt(spec, ctx);
-      for (const rule of spec.rules) {
+      // `.q.` rules hold an advisory QUESTION (leak-tight on blow moulding), not a value.
+      for (const rule of spec.rules.filter(r => !r.id.includes('.q.'))) {
         const out = rule.evaluate(ctx);
         expect(out.ok, `${rule.id} should be decided`).toBe(true);
         if (!out.ok) continue;
