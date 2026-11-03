@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { computeUniversalStack } from '../src/engine/core.js';
-import { printPDF, type CADReportMeta } from '../src/export/pdf.js';
+import { printAuditPackPDF, type CADReportMeta } from '../src/export/pdf.js';
 import { exportToExcelBlob } from '../src/export/excel.js';
 import { traceFieldLabel } from '../src/ui/cad-workspace.js';
 import { shortOperationName } from '../src/engine/operation-names.js';
@@ -107,7 +107,7 @@ describe('1 — Excel 3-Operations: the TOTAL and learning-curve rows sit under 
 describe('2 — ex-works reports say freight is not included; delivered keeps the allowance', () => {
   it('EXW: §7 and §9 never describe a delivery allowance', () => {
     const { input, result } = machinedPart('EXW');
-    const t = flat(pdfText(() => printPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [])));
+    const t = flat(pdfText(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [])));
     expect(t).not.toMatch(/delivery allowance/);
     expect(t).toMatch(/ex-works \(EXW\): packaging is in, logistics \(bucket 6\) is 0/);
     expect(t).toMatch(/ex-works: freight not included, import duty out/);
@@ -115,7 +115,7 @@ describe('2 — ex-works reports say freight is not included; delivered keeps th
   });
   it('DAP: the delivery-allowance text stays', () => {
     const { input, result } = machinedPart('DAP');
-    const t = flat(pdfText(() => printPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [])));
+    const t = flat(pdfText(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [])));
     expect(t).toMatch(/supplier delivery allowance in, import duty out/);
     expect(t).toMatch(/packaging and delivery allowance \(bucket 6\)/);
   });
@@ -123,7 +123,7 @@ describe('2 — ex-works reports say freight is not included; delivered keeps th
 
 describe('3 / 4 — a material priced by its itemised lines (composites)', () => {
   const { input, result, cadMeta } = compositePart();
-  const t = flat(pdfText(() => printPDF(result, input, lib, 'CNY', FX_CN, 'composites', null, 'CN', [], cadMeta)));
+  const t = flat(pdfText(() => printAuditPackPDF(result, input, lib, 'CNY', FX_CN, 'composites', null, 'CN', [], cadMeta)));
 
   it('PDF prints the rules\' part weight — never 0.000 kg, a density-1 mass, mat-virtual or "Virtual / Pass-through"', () => {
     expect(t).not.toMatch(/0\.000 kg/);
@@ -150,7 +150,7 @@ describe('3 / 4 — a material priced by its itemised lines (composites)', () =>
   it('a PCB BOM keeps its piece count', () => {
     const pcb = { ...input, rawMaterial: { ...input.rawMaterial, lines: [
       { ref: 'U1', description: 'MCU', qty: 1, unitCost: 2.1, pkg: 'QFN-48' }, { ref: 'C1', description: 'MLCC', qty: 12, unitCost: 0.002, pkg: '0402' }] } };
-    const pt = flat(pdfText(() => printPDF(computeUniversalStack(pcb, lib), pcb, lib, 'GBP', 1, 'pcb_fab', null, 'UK', [])));
+    const pt = flat(pdfText(() => printAuditPackPDF(computeUniversalStack(pcb, lib), pcb, lib, 'GBP', 1, 'pcb_fab', null, 'UK', [])));
     expect(pt).toMatch(/Bill of Materials \(2 lines · 13 pieces\)/);
   });
 
@@ -180,7 +180,7 @@ describe('5 — trace field labels read as a person reads them', () => {
   });
   it('the reports print them (PDF §6, Excel 6-Traceability)', async () => {
     const { input, result } = machinedPart();
-    const t = flat(pdfText(() => printPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [])));
+    const t = flat(pdfText(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [])));
     expect(t).toMatch(/Material price per kg/);
     expect(t).not.toMatch(/material: price per/);
     const tr = (await sheets(await exportToExcelBlob(result, input, lib)))['6-Traceability'];
@@ -190,11 +190,11 @@ describe('5 — trace field labels read as a person reads them', () => {
 
 describe('6 — numbers with their units and enough digits', () => {
   const { input, result } = machinedPart();
-  const t = flat(pdfText(() => printPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [])));
+  const t = flat(pdfText(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [])));
   it('sensitivity bases carry a spaced unit ("1000000parts", "0.01hr" before)', () => {
     // a tool large enough that the amortisation volume is a top-8 driver
     const big = { ...input, tooling: { ...input.tooling, totalToolingCost: 5_000_000 } };
-    const bt = flat(pdfText(() => printPDF(computeUniversalStack(big, lib), big, lib, 'GBP', 1, 'machining', null, 'UK', [])));
+    const bt = flat(pdfText(() => printAuditPackPDF(computeUniversalStack(big, lib), big, lib, 'GBP', 1, 'machining', null, 'UK', [])));
     const sens = bt.slice(bt.indexOf('Sensitivity Analysis'), bt.indexOf('Regional Cost Comparison'));
     expect(sens).toMatch(/Amortisation Volume 1,000,000 parts/);
     expect(sens).toMatch(/Cycle Time 3\.51 min/);
@@ -239,7 +239,7 @@ describe('H2 / H3 — §4C prices features as §4A does, and a turned boss is in
   ] as never;
   const base: CADReportMeta = { geometrySource: 'occt', featureLines, featureLinesInCost: true, featureMachineRatePerHr: 6.64, featureMachineOee: 0.8, annualVolume: 200_000 };
   const section = (meta: CADReportMeta) => {
-    const all = flat(pdfText(() => printPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [], meta)));
+    const all = flat(pdfText(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [], meta)));
     return all.slice(all.indexOf('4C '), all.indexOf('§5'));
   };
 

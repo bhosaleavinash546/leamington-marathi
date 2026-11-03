@@ -360,6 +360,8 @@ describe('the registry and the prompt', () => {
       const text = renderCommodityRulesPrompt(spec, ctx);
       for (const rule of spec.rules) {
         const out = rule.evaluate(ctx);
+        // A service QUESTION rule (rotationalMoulding.q.pressureTight, report standard Nov 2026) asks until answered.
+        if (!out.ok && /\.q\./.test(rule.id)) continue;
         expect(out.ok, `${rule.id} should be decided`).toBe(true);
         if (!out.ok) continue;
         const line = text.split('\n').find(l => l.trim().startsWith(`${rule.label}=`));

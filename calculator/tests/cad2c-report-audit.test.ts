@@ -58,9 +58,9 @@ describe('R10 / R26 / R27 — a rate-book note as a report prints it', () => {
     expect(reportNoteText(null)).toBe('');
   });
 
-  it('a priced lever\'s re-cost basis names the operation short', async () => {
+  it('the "cycle time −20 %" bottleneck lever is gone — a rule of thumb, not a physical change (report standard, Nov 2026)', async () => {
     const src = await import('node:fs').then(fs => fs.readFileSync('src/engine/idea-levers.ts', 'utf8'));
-    expect(src).toMatch(/basis: `\$\{shortOperationName\(top\.operationName\)\} cycle time/);
+    expect(src).not.toMatch(/basis: `\$\{shortOperationName\(top\.operationName\)\} cycle time/);
   });
 
   it('a cover note names the operation whatever its name holds (em dash, commas)', () => {

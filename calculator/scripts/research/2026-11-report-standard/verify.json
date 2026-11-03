@@ -1,0 +1,1849 @@
+[
+ {
+  "set": "machining",
+  "rowIndex": 0,
+  "quantity": "face milling cutting speed vc (finish, L breaker)",
+  "material": "carbon / alloy steel 180-350 HB (e.g. C45, 42CrMo4)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/face_mills_WSX445_MM.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "WSX445 dry table, 1st grade MP6120: 220 (170-270), fz 0.15, ap<1.0. Derived 515 cm2/min (Ø100, ae 70) needs z=7, which this PDF does not give (no body/teeth table) — z is an assumption."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 1,
+  "quantity": "face milling cutting speed vc (finish, L breaker)",
+  "material": "grey cast iron, tensile < 350 MPa (GJL-150..300)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/face_mills_WSX445_MM.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "MC5020 220 (200-270), fz 0.15, ap<1.0."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 2,
+  "quantity": "face milling cutting speed vc (finish, L breaker)",
+  "material": "ductile cast iron, tensile < 450 MPa (GJS-400/450)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/face_mills_WSX445_MM.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "MC5020 200 (180-250). Derived 468 cm2/min checks (n 636.6, vf 668.5, ×70) given z=7 (not on the PDF)."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 3,
+  "quantity": "face milling cutting speed vc (finish, L breaker)",
+  "material": "ductile cast iron, tensile < 800 MPa (GJS-500..700)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/face_mills_WSX445_MM.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Value 160 (110-240) is on the page for VP15TF. But the FIRST-recommended grade for GJS <800 MPa is MC5020 at 200 (180-250) — identical to <450 MPa. The proposal uses MC5020 for <450 (200) and VP15TF for <800 (160): not like-for-like. Like-for-like start value is 200."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 4,
+  "quantity": "face milling feed per tooth and depth of cut by duty",
+  "material": "steel / cast iron (WSX445 rows P and K)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/face_mills_WSX445_MM.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Light 0.15/<2.0, medium 0.2/<3.0, rough 0.2/<4.0, heavy 0.25/<5.0 — same for P and K rows."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 5,
+  "quantity": "face milling worked example: table feed",
+  "material": "steel CMC 01.2 (C 0.25-0.55%, e.g. C45), HB 150",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide D example: 8 × 721 × 0.24 ≈ 1384 mm/min; vc 283, Ø125, ae 85, ap 4, CMC 01.2 HB 150."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 6,
+  "quantity": "shoulder milling worked example: table feed",
+  "material": "steel CMC 01.2, HB 150",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "vf = 1.82 × 5 × 1607 × 0.15 ≈ 2193 mm/min confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 7,
+  "quantity": "shoulder / side milling cutting speed (ae < 0.15 DC)",
+  "material": "carbon / alloy steel 180-350 HB",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/end_mills_APX4000_SHELL_MM.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "ae<0.15DC: 160(120-200) MP6120; fz 0.25 at ae<0.3DC, ap<20."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 8,
+  "quantity": "shoulder / side milling cutting speed (ae < 0.15 DC)",
+  "material": "grey cast iron < 350 MPa",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/end_mills_APX4000_SHELL_MM.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Grey <350 MPa: 230(180-280) MC5020; fz 0.30 at ae<0.15DC, ap<10."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 9,
+  "quantity": "shoulder / side milling cutting speed (ae < 0.15 DC)",
+  "material": "ductile cast iron < 800 MPa",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/end_mills_APX4000_SHELL_MM.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CORRECTED",
+  "correctedValue": "190 (140-220) m/min confirmed; feed is fz 0.25 mm/t (ae<0.15DC, ap<20), not 0.30",
+  "note": "vc 190(140-220) MC5020 confirmed. The fz 0.30 belongs to the GREY iron rows (ap<10). Ductile <800 MPa: fz 0.25 at ae<0.15DC ap<20 (0.20 at 20-50; 0.20 at ae 0.15-0.3DC). Proposal table \"GJS shoulder fz 0.30\" must be 0.25."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 10,
+  "quantity": "shoulder milling (helical shell mill, long edge) cutting speed",
+  "material": "carbon / alloy steel 180-350 HB",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/end_mills_SPX_SHELL_MM.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "SPX shell: steel 180-350HB VP15TF 120 (80-130), ap ≤0.5DC, ae ≤10, fz 0.15-0.30."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 11,
+  "quantity": "face milling cutting speed (PCD)",
+  "material": "cast aluminium, 5% <= Si <= 10% (e.g. A356 / AC4C)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/face_mills_FMAX.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "FMAX: 5%≤Si≤10% MD2030/MD220 2500 (2000-3000), fz 0.08, wet."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 12,
+  "quantity": "face milling cutting speed (CBN)",
+  "material": "grey cast iron < 350 MPa",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/face_mills_FMAX.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "FMAX: grey <350 MPa MB4120 1000 (700-1300), dry."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 13,
+  "quantity": "face / shoulder milling cutting speed and feed (carbide)",
+  "material": "aluminium alloy, 100 HB (wrought, aged; e.g. 6082-T6)",
+  "url": "https://tungaloy.com/wpdata/wp-content/uploads/m_scc_429.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CORRECTED",
+  "correctedValue": "Ø63 is z=5 (n 5100, Vf 5100); Ø50 is z=4. Ø100 z=6 n 3200 Vf 3800 confirmed",
+  "note": "Range 200-2000 / fz 0.1-0.25 confirmed. Worked table mislabelled: at Vc 1000 / fz 0.2 the Ø63 cutter has z=5 (5100 × 5 × 0.2 = 5100). The Ø100 z=6 figures (Vf 3800 → 2,660 cm2/min at ae 70) used by the proposal are correct."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 14,
+  "quantity": "face / shoulder milling cutting speed and feed (carbide)",
+  "material": "cast aluminium alloy Si <= 12%, 75-90 HB (e.g. A356)",
+  "url": "https://tungaloy.com/wpdata/wp-content/uploads/m_scc_429.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Cast Al Si≤12%: 75 HB 200-2000 / 0.15-0.3; 90 HB 200-1500 / 0.1-0.25."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 15,
+  "quantity": "face milling metal removal rate (maker 'actual data', heavy cut)",
+  "material": "S45C (≈ C45)",
+  "url": "https://d30jruhmdicmo0.cloudfront.net/documents/MA-4000H-Jul-2025.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "2,300 × 70 × 3 = 483 cm3/min confirmed. Brochure note: actual data \"may not be obtained\" — demonstration figure."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 16,
+  "quantity": "end (side) milling metal removal rate (maker 'actual data')",
+  "material": "S45C (≈ C45)",
+  "url": "https://d30jruhmdicmo0.cloudfront.net/documents/MA-4000H-Jul-2025.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "8,800 × 4 × 20 = 704 confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 17,
+  "quantity": "face milling metal removal rate (maker 'actual data', heavy cut)",
+  "material": "FCD450 (≈ EN-GJS-450-10)",
+  "url": "https://d30jruhmdicmo0.cloudfront.net/documents/MA-4000H-Jul-2025.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "2,200 × 87.5 × 4.2 = 808.5 ≈ 809 confirmed (spindle-option detail not re-checked; not used by the proposal)."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 18,
+  "quantity": "face milling metal removal rate (maker 'actual data', heavy cut)",
+  "material": "A5052 (Al-Mg wrought)",
+  "url": "https://d30jruhmdicmo0.cloudfront.net/documents/MA-4000H-Jul-2025.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Printed 4,022 (12,000 × 44 × 7.6 = 4,013). Value as printed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 19,
+  "quantity": "drilling Ø12 spindle speed × feed (MVE)",
+  "material": "carbon / alloy steel 180-280 HB (AISI 1045, 4140)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVE.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "MVE Ø12 steel 180-280HB: 2300 × 0.31 = 713 confirmed. NB the MVE PDF says nothing about coolant: the notes' \"MVE = external coolant\" is not on this page."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 20,
+  "quantity": "drilling Ø16 spindle speed × feed (MVE)",
+  "material": "carbon / alloy steel 180-280 HB (AISI 1045, 4140)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVE.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "1700 × 0.33 = 561."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 21,
+  "quantity": "drilling Ø12 spindle speed × feed (MVE)",
+  "material": "grey cast iron < 350 MPa (No 45 B)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVE.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "2100 × 0.33 = 693."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 22,
+  "quantity": "drilling Ø16 spindle speed × feed (MVE)",
+  "material": "grey cast iron < 350 MPa (No 45 B)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVE.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "1500 × 0.35 = 525."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 23,
+  "quantity": "drilling Ø12 spindle speed × feed (MVE)",
+  "material": "ductile cast iron < 450 MPa (printed '60-40-8 etc')",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVE.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "1900 × 0.31 = 589."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 24,
+  "quantity": "drilling Ø16 spindle speed × feed (MVE)",
+  "material": "ductile cast iron < 450 MPa (printed '60-40-8 etc')",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVE.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "1400 × 0.33 = 462."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 25,
+  "quantity": "drilling Ø12 spindle speed × feed (MVE)",
+  "material": "aluminium alloy Si < 5% (6061 / 7075)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVE.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "2600 × 0.31 = 806."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 26,
+  "quantity": "drilling Ø16 spindle speed × feed (MVE)",
+  "material": "aluminium alloy Si < 5% (6061 / 7075)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVE.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "1900 × 0.33 = 627."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 27,
+  "quantity": "drilling Ø12, L/D 3-8, spindle speed × feed (MVS)",
+  "material": "carbon / alloy steel 180-280 HB (AISI 1045, 4140)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVS.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "MVS Ø12 3DC-8DC steel: 3400 × 0.30 = 1020. NB (a) the MVS PDF does not state through-coolant; (b) the deep row is 10DC-25DC at Ø12 (not 10-30DC) and its feed is HIGHER, not lower (3100 × 0.34 = 1054 mm/min) — the notes' \"lower-feed row set for 10-30×D\" is wrong."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 28,
+  "quantity": "drilling Ø16, L/D 3-8, spindle speed × feed (MVS)",
+  "material": "carbon / alloy steel 180-280 HB (AISI 1045, 4140)",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVS.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "2700 × 0.33 = 891 (Ø16 has only a 3DC-8DC row)."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 29,
+  "quantity": "drilling Ø12, L/D 3-8, spindle speed × feed (MVS)",
+  "material": "grey cast iron < 350 MPa",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVS.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "3700 × 0.32 = 1184."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 30,
+  "quantity": "drilling Ø16, L/D 3-8, spindle speed × feed (MVS)",
+  "material": "grey cast iron < 350 MPa",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVS.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "3100 × 0.35 = 1085."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 31,
+  "quantity": "drilling Ø12, L/D 3-8, spindle speed × feed (MVS)",
+  "material": "ductile cast iron < 450 MPa",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVS.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "3000 × 0.30 = 900."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 32,
+  "quantity": "drilling Ø16, L/D 3-8, spindle speed × feed (MVS)",
+  "material": "ductile cast iron < 450 MPa",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVS.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "2500 × 0.33 = 825."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 33,
+  "quantity": "drilling Ø12, L/D 3-8, spindle speed × feed (MVS)",
+  "material": "aluminium alloy Si < 5%",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVS.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "4200 × 0.50 = 2100."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 34,
+  "quantity": "drilling Ø16, L/D 3-8, spindle speed × feed (MVS)",
+  "material": "aluminium alloy Si < 5%",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/drilling_MVS.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "3100 × 0.60 = 1860."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 35,
+  "quantity": "drilling cutting speed vc and feed fn, Ø10.01-14 mm",
+  "material": "steel CMC 01.2 (C 0.25-0.55%, HB 150; C45)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "R840 GC1220, 01.2: vc 80-140, fn (10.01-14.00) 0.20-0.40; footnote 3 confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 36,
+  "quantity": "drilling cutting speed vc and feed fn, Ø10.01-14 mm",
+  "material": "low-alloy steel CMC 02.1 non-hardened (HB 180; 42CrMo4 annealed)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "02.1 HB180: 70-120, 0.18-0.35 (printed \"018-0,35\")."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 37,
+  "quantity": "drilling cutting speed vc and feed fn, Ø10.01-14 mm",
+  "material": "low-alloy steel CMC 02.2 hardened and tempered (HB 275)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "02.2 HB275: 70-100, 0.18-0.35."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 38,
+  "quantity": "drilling cutting speed vc and feed fn, Ø10.01-14 mm",
+  "material": "grey cast iron CMC 08.2 high tensile (HB 260)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "08.2 HB260: 70-130, 0.30-0.55."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 39,
+  "quantity": "drilling cutting speed vc and feed fn, Ø10.01-14 mm",
+  "material": "nodular SG iron CMC 09.1 ferritic (HB 160)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "09.1 HB160: 80-110, 0.35-0.60."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 40,
+  "quantity": "drilling cutting speed vc and feed fn, Ø10.01-14 mm",
+  "material": "nodular SG iron CMC 09.2 pearlitic (HB 250)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "09.2 HB250: 70-100, 0.30-0.55."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 41,
+  "quantity": "drilling cutting speed vc and feed fn, Ø10.01-14 mm",
+  "material": "aluminium cast non-aging CMC 30.21 (HB 75)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "30.21 HB75: 120-230, 0.30-0.50."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 42,
+  "quantity": "drill reach: DIN 1897 stub drill Ø14",
+  "material": "any",
+  "url": "https://hoffmann-group.com/MT/en/mbbridge/p/113020-14",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Hoffmann DIN 1897 Ø14 HSS-E: Lc 54, L 107, max depth 33 (= 54 − 1.5×14)."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 43,
+  "quantity": "drill reach: DIN 338 jobber drill Ø14.5",
+  "material": "any",
+  "url": "https://hoffmann-group.com/BG/en/soltec/p/114400-14%2C5",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Hoffmann DIN 338 Ø14.5 HSS-E: Lc 114, L 169, max depth 92.3 (= 114 − 1.5×14.5)."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 44,
+  "quantity": "finish turning cutting speed and feed (F range)",
+  "material": "carbon / alloy steel 180-280 HB",
+  "url": "https://dy8j5n5de0wyg.cloudfront.net/userfiles/ad/documents/mitsubishi_materials_usa_corp_10636534_catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Rendered page 38: Carbon/Alloy steel 180-280HB, F1 MC6115 FP 820-1575 SFM, .003-.010 IPR, ap .004-.039. 820 SFM = 250 m/min, 1575 = 480."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 45,
+  "quantity": "finish turning with wiper (F range)",
+  "material": "carbon / alloy steel 180-280 HB",
+  "url": "https://dy8j5n5de0wyg.cloudfront.net/userfiles/ad/documents/mitsubishi_materials_usa_corp_10636534_catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "F1 MC6125 FPH 985-1525 SFM, .008-.020 IPR (second condition block of the 180-280HB rows)."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 46,
+  "quantity": "medium turning (M range)",
+  "material": "carbon / alloy steel 180-280 HB",
+  "url": "https://dy8j5n5de0wyg.cloudfront.net/userfiles/ad/documents/mitsubishi_materials_usa_corp_10636534_catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "M1 MC6125 MP 820-1280, .006-.020, .012-.157."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 47,
+  "quantity": "turning cutting speed at fn 0.1 / 0.4 / 0.8 mm/rev",
+  "material": "steel CMC 01.2 (C 0.25-0.55%, HB 150; kc0.4 2100 N/mm²)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "GC4015, 01.2 (kc0.4 2100, HB150): 485-350-255 at hex/fn 0.1-0.4-0.8, κr 90-95°, with cutting fluid."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 48,
+  "quantity": "turning cutting speed at fn 0.1 / 0.4 / 0.8 mm/rev",
+  "material": "low-alloy steel CMC 02.1 non-hardened (HB 180; kc0.4 2150 N/mm²)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "02.1: 530-355-245."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 49,
+  "quantity": "turning cutting speed at fn 0.1 / 0.4 / 0.8 mm/rev",
+  "material": "low-alloy steel CMC 02.2 hardened and tempered (HB 275)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "02.2 HB275: 285-200-150."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 50,
+  "quantity": "turning cutting speed at fn 0.1 / 0.3 / 0.6 mm/rev",
+  "material": "grey cast iron CMC 08.2 high tensile (HB 220; kc0.4 1150 N/mm²)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "GC3005, 08.2: 280-240-200 at 0.1-0.3-0.6."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 51,
+  "quantity": "turning cutting speed at fn 0.1 / 0.3 / 0.6 mm/rev",
+  "material": "nodular iron CMC 09.1 ferritic (HB 160; kc0.4 1050 N/mm²)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "09.1: 300-235-180."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 52,
+  "quantity": "turning cutting speed at fn 0.1 / 0.3 / 0.6 mm/rev",
+  "material": "nodular iron CMC 09.2 pearlitic (HB 250; kc0.4 1750 N/mm²)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "09.2: 260-215-160."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 53,
+  "quantity": "turning cutting speed (recommended, range)",
+  "material": "aluminium cast CMC 30.21 / 30.22 (HB 75-90; kc0.4 750-900 N/mm²)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "H10: 2000 (2500-250), hex 0.15-0.8, for 30.11/30.12/30.21/30.22."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 54,
+  "quantity": "turning cutting speed range",
+  "material": "grey cast iron / ductile cast iron",
+  "url": "https://tungaloy.com/wpdata/wp-content/uploads/433-u_T515.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "T515 CM 0.031: f .006-.016 ipr; grey 490-2300, ductile 490-980 SFM."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 55,
+  "quantity": "internal (boring) turning application example",
+  "material": "ductile cast iron 80-55-06",
+  "url": "https://tungaloy.com/wpdata/wp-content/uploads/433-u_T515.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Application example (tool-life comparison v competitors): 660 sfm, 0.008 ipr, ap 0.059\". Only f 0.2 mm/rev is on the page — the proposal's \"f 0.1-0.2\" lower bound (and 142 mm/min) is not sourced. 284 mm/min at Ø45 checks."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 56,
+  "quantity": "internal (boring) turning application example",
+  "material": "grey cast iron No. 250B",
+  "url": "https://tungaloy.com/wpdata/wp-content/uploads/433-u_T515.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Application example: 980 sfm, 0.008 ipr. 423 mm/min at Ø45 checks."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 57,
+  "quantity": "turning cutting speed (small external tool)",
+  "material": "aluminium alloy",
+  "url": "https://www.mitsubishicarbide.net/contents/mht/enuk/manual/external_turning_tools_SVJD.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "SVJD: HTi10 400 m/min, f 0.05-0.3, ap 0.2-3.0."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 58,
+  "quantity": "tapping cutting speed, A-SFT spiral-flute tap ≤ M24 (2.5P chamfer)",
+  "material": "S45C (≈ C45)",
+  "url": "https://www.osg.co.jp/media_dl/flier/file/n_102.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Rendered chart (p.6): dark (advisable) S45C 15-50; light (possible) 5-15 and 50-75. M10×1.5: 716-2387 mm/min checks."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 59,
+  "quantity": "tapping cutting speed, A-SFT ≤ M24 (2.5P)",
+  "material": "SCM (≈ 42CrMo4 class alloy steel)",
+  "url": "https://www.osg.co.jp/media_dl/flier/file/n_102.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "SCM: advisable 10-15 (dark), possible 5-10 and 15-30."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 60,
+  "quantity": "tapping cutting speed, A-SFT ≤ M24 (2.5P)",
+  "material": "aluminium AC / ADC (cast)",
+  "url": "https://www.osg.co.jp/media_dl/flier/file/n_102.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "AC/ADC 5-50 light (possible) only."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 61,
+  "quantity": "tapping cutting speed, A-SFT ≤ M24 (2.5P)",
+  "material": "ductile cast iron FCD",
+  "url": "https://www.osg.co.jp/media_dl/flier/file/n_102.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "FCD 5-50 possible; end-mill-shank chart 5-75."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 62,
+  "quantity": "tapping cutting speed, A-SFT short chamfer 1.5P / 1P (blind holes) ≤ M24",
+  "material": "S45C / FCD / AC-ADC",
+  "url": "https://www.osg.co.jp/media_dl/flier/file/n_102.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Short-chamfer chart: S45C 3-15 advisable, 15-30 possible; FCD 3-15 possible; AC/ADC 3-30 possible."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 63,
+  "quantity": "chip-to-chip tool change (CTC min, ISO 10791-9)",
+  "material": "n/a (HMC, 400 mm pallet)",
+  "url": "https://d30jruhmdicmo0.cloudfront.net/documents/MA-4000H-Jul-2025.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "MA-4000H: CTC min 2.15 s (≤4 kg) / 2.46 s (>4 kg), ISO 10791-9 (2001); T-T 0.94/1.24 s (MAS)."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 64,
+  "quantity": "pallet change time",
+  "material": "n/a (HMC, 2-pallet APC)",
+  "url": "https://d30jruhmdicmo0.cloudfront.net/documents/MA-4000H-Jul-2025.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CORRECTED",
+  "correctedValue": "6.6 s (MAS standard) / 7.1 s (ISO 10791-9 (2001))",
+  "note": "Values on the page, but the condition is wrong: the two figures are the SAME pallet change measured to two standards — 6.6 s footnote *2 (MAS standard) and 7.1 s footnote *3 (ISO 10791-9 (2001)). Use 7.1 s to match the ISO CTC figures."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 65,
+  "quantity": "rapid traverse and acceleration",
+  "material": "n/a (HMC)",
+  "url": "https://d30jruhmdicmo0.cloudfront.net/documents/MA-4000H-Jul-2025.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "60 m/min; X-Y 1.0 G, Z 1.1 G."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 66,
+  "quantity": "table indexing time (B axis)",
+  "material": "n/a",
+  "url": "https://d30jruhmdicmo0.cloudfront.net/documents/MA-4000H-Jul-2025.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "0.8 s/90°, 0.98 s/180°."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 67,
+  "quantity": "chip-to-chip tool change (CTC min)",
+  "material": "n/a (HMC, 500 mm pallet)",
+  "url": "https://d30jruhmdicmo0.cloudfront.net/documents/MB-5000H2-Feb-2026.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "MB-5000HII: CTC min 2.1 s (≤4 kg) / 2.5 s (≥4 kg), ISO 10791-9; T-T 0.9/1.3 s."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 68,
+  "quantity": "chip-to-chip time t1 (VDI 2852)",
+  "material": "n/a (5-axis universal machining centre)",
+  "url": "https://www.grobgroup.com/en/products/product-range/universal-machining-centers/milling-centers/g350/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "GROB G350: \"Chip-to-chip time t1 2.7 according to VDI 2852 (s)\"."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 69,
+  "quantity": "chip-to-chip time",
+  "material": "n/a (HMC)",
+  "url": "https://in.dmgmori.com/news-and-media/news/chicago-innovations-days-2016-nhx-4000-2nd-generation-and-nhx-",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "DMG NHX 4000 / 5000 2nd gen: spec table 2.2 / 2.5 s."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 70,
+  "quantity": "spindle run-up time (part of a tool change)",
+  "material": "n/a (HMC H series gen4)",
+  "url": "https://br.heller.biz/news/h-gen4-new-generation-of-proven-horizontal-technology",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "HELLER Gen4: spindle run-up \"approx. 1.4 and 2.6 seconds\"; Speed package −10 % chip-to-chip average."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 71,
+  "quantity": "chip-to-chip / tool-to-tool (THIRD-PARTY database, not maker)",
+  "material": "n/a (HMC)",
+  "url": "https://www.techspex.com/machining-centers/makino(2612)/5594",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "Techspex Makino a51nx: 2.20 chip / 0.90 tool — third-party database, not a maker page. Cross-check only."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 72,
+  "quantity": "milling power constant K (Pc = ap×ae×vf×K / 100 000 kW; ηmt 0.8 included)",
+  "material": "CMC 01.2 unalloyed steel C 0.25-0.55% (C45)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide K table at ae/Dc 0.8, fz 0.2 (ηmt 0.8); 0° rake, 1 %/degree rake correction confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 73,
+  "quantity": "milling power constant K (Pc = ap×ae×vf×K / 100 000 kW; ηmt 0.8 included)",
+  "material": "CMC 02.1 low-alloy steel non-hardened (42CrMo4 annealed)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide K table at ae/Dc 0.8, fz 0.2 (ηmt 0.8); 0° rake, 1 %/degree rake correction confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 74,
+  "quantity": "milling power constant K (Pc = ap×ae×vf×K / 100 000 kW; ηmt 0.8 included)",
+  "material": "CMC 02.2 low-alloy steel hardened and tempered",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide K table at ae/Dc 0.8, fz 0.2 (ηmt 0.8); 0° rake, 1 %/degree rake correction confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 75,
+  "quantity": "milling power constant K (Pc = ap×ae×vf×K / 100 000 kW; ηmt 0.8 included)",
+  "material": "CMC 08.1 grey cast iron low tensile",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide K table at ae/Dc 0.8, fz 0.2 (ηmt 0.8); 0° rake, 1 %/degree rake correction confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 76,
+  "quantity": "milling power constant K (Pc = ap×ae×vf×K / 100 000 kW; ηmt 0.8 included)",
+  "material": "CMC 08.2 grey cast iron high tensile",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide K table at ae/Dc 0.8, fz 0.2 (ηmt 0.8); 0° rake, 1 %/degree rake correction confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 77,
+  "quantity": "milling power constant K (Pc = ap×ae×vf×K / 100 000 kW; ηmt 0.8 included)",
+  "material": "CMC 09.1 nodular SG iron ferritic",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide K table at ae/Dc 0.8, fz 0.2 (ηmt 0.8); 0° rake, 1 %/degree rake correction confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 78,
+  "quantity": "milling power constant K (Pc = ap×ae×vf×K / 100 000 kW; ηmt 0.8 included)",
+  "material": "CMC 09.2 nodular SG iron pearlitic",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide K table at ae/Dc 0.8, fz 0.2 (ηmt 0.8); 0° rake, 1 %/degree rake correction confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 79,
+  "quantity": "milling power constant K (Pc = ap×ae×vf×K / 100 000 kW; ηmt 0.8 included)",
+  "material": "CMC 30.12 aluminium wrought and aged (6082-T6 class)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide K table at ae/Dc 0.8, fz 0.2 (ηmt 0.8); 0° rake, 1 %/degree rake correction confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 80,
+  "quantity": "milling power constant K (Pc = ap×ae×vf×K / 100 000 kW; ηmt 0.8 included)",
+  "material": "CMC 30.22 aluminium cast or cast and aged (A356-T6 class)",
+  "url": "https://www.directools.com/documents/all/Sandvik_5747275_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik Milling guide K table at ae/Dc 0.8, fz 0.2 (ηmt 0.8); 0° rake, 1 %/degree rake correction confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 81,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 01.2 steel C 0.25-0.55%, HB 150",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 82,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 02.1 low-alloy non-hardened, HB 180",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 83,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 02.2 low-alloy hardened and tempered, HB 275",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 84,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 08.1 grey iron low tensile, HB 180",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 85,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 08.2 grey iron high tensile, HB 220",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 86,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 09.1 nodular ferritic, HB 160",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 87,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 09.2 nodular pearlitic, HB 250",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 88,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 30.12 Al wrought and aged, HB 100",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 89,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 30.21 Al cast non-aging, HB 75",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "machining",
+  "rowIndex": 90,
+  "quantity": "specific cutting force kc0.4 (turning, at hex 0.4 mm)",
+  "material": "CMC 30.22 Al cast or cast and aged, HB 90",
+  "url": "https://www.directools.com/documents/all/Sandvik_5733363_Catalog.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Sandvik turning table kc0.4 column confirmed."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 0,
+  "quantity": "DISAMATIC C3 mould size (height x width x thickness), types A / B / X",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "DISA General Specifications (04/23): C3 A 480×600, B 535×650, X 535×750; thickness 120-340 / 120-395. Quote is a condensed table rendering; values confirmed."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 1,
+  "quantity": "DISAMATIC C3-250 output",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "C3-250: 250 / 220 for A, B, X; * at 200 mm mould thickness."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 2,
+  "quantity": "DISAMATIC C3-350 output",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "C3-350: 350 / 300."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 3,
+  "quantity": "DISAMATIC D1 mould size and output (D1-205 / D1-315)",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "D1: 400×500×100-315; D1-205 205/185; D1-315 315/285."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 4,
+  "quantity": "DISAMATIC D3 output (D3-365 / D3-425 / D3-555)",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "D3 types A,B,C,X,Z (480×600, 535×650, 550×675, 535×750, 570×750); D3-555 cored 485 (A,B,C), 465 (X,Z)."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 5,
+  "quantity": "DISAMATIC D5 output (D5-355 / D5-415 / D5-450)",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "D5 B/C/Z; 355/330 (manual cored), 415/385, 450/415."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 6,
+  "quantity": "DISA 270 / DISA 280 (large vertical) mould size and output",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "DISA 270 and 280 tables confirmed (280 at 250 mm thickness)."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 7,
+  "quantity": "DISA FLEX (automatic flask line) output",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "FLEX 70HS/80/90: 120/110/100 uncored; \"Speed, sand consumption and weight varies with flask size.\""
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 8,
+  "quantity": "DISA MATCH 14/19, 16/20, 20/24 (horizontal flaskless matchplate) output",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "MATCH 14/19, 16/20, 20/24: DISAMATCH 150 180/145, DISAMATCH 210 210/160."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 9,
+  "quantity": "DISA MATCH 24/28 output",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "MATCH 24/28 711×610: 120/100 (DISAMATCH 120), 150/100 (DISAMATCH 150); speed-up kit sentence confirmed; * at 250 mm."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 10,
+  "quantity": "DISA MATCH 28/32 and 32/32 output",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/86/d2/4f9df9694fdcbe35ee9de23e7802/db-generalspec-forwebsite-download.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "MATCH 28/32 & 32/32: 100 / 75."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 11,
+  "quantity": "DISA MATCH ratings (2012 table, disagrees with current spec)",
+  "url": "https://www.foundry-planet.com/d/disa-matchplate-new-angles-on-a-well-known-process/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Foundry-Planet Table 1: 20/24 160/120; 24/28 120/100; 28/32 and 32/32 100/80."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 12,
+  "quantity": "DISAMATIC C5-S and C3 output (brochure)",
+  "url": "https://static.noricangroup.production.k4.m1.brightspot.cloud/10/54/d984d8424a1f9cb99afd68a48135/disamatic-c5-brochure.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "C5 brochure: C3-A/B/X 350/300 mph; C5-S 800×600 400/345."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 13,
+  "quantity": "Vertical moulding: volume range where used",
+  "url": "https://www.disagroup.com/vertical-explained",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 14,
+  "quantity": "Matchplate (horizontal flaskless): volume range where used",
+  "url": "https://www.disagroup.com/matchplate-explained",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 15,
+  "quantity": "HWS HSP lifting moulding machines (manual / semi-manual flask) output",
+  "url": "https://www.wagner-sinto.de/en/?p=1767",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 16,
+  "quantity": "HWS ACE aeration (automatic flask) moulding machines output",
+  "url": "https://www.wagner-sinto.de/en/?p=1767",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 17,
+  "quantity": "HWS DAFM-SD / EFA-SD / ZFA-SD (automatic flask) output",
+  "url": "https://www.wagner-sinto.de/en/?p=1767",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 18,
+  "quantity": "HWS/Sinto FBO and FDNX (horizontal flaskless) output",
+  "url": "https://www.wagner-sinto.de/en/products/flaskless-moulding-machines-and-lines/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 19,
+  "quantity": "Künkel Wagner automatic flask line (Curitiba) design output",
+  "url": "https://www.foundry-planet.com/d/kuenkel-wagner-the-most-efficient-moulding-plant-worldwide/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 20,
+  "quantity": "Automatic horizontal moulding systems (EMI): rates by layout",
+  "url": "https://emi-inc.com/white-papers/whitepaper-series-issue-1-considerations-manual-automatic-green-sand-expansions/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 21,
+  "quantity": "Realised rate, DISAMATIC D3-B-555 (Ma'anshan Yuemei, China)",
+  "url": "https://www.foundry-planet.com/d/disa-vertical-moulding-guarantees-high-uptime-and-quality-disamatic-d3-delivers-20-million-moulds-in-under-five-years/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "D3-B-555 in production since October 2019, >20 million moulds; 520-540 moulds/h; uptime ≥95 % quote confirmed. 520-540 ÷ 555 = 94-97 % checks."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 22,
+  "quantity": "Realised rate, DISAMATIC C3-350 (Guangzhou Deshan, compressor castings)",
+  "url": "https://www.foundry-planet.com/d/10-million-moulds-in-under-5-years-disamatic-c3-350-delivers-incredible-uptime-with-high-quality-and-low-maintenance/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": ">7,000 moulds/day 24/7 since Dec 2017; 7,000/24 = 292/h = 83 % of 350 (derived, checks)."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 23,
+  "quantity": "Realised rate, DISAMATIC D3 555 (Luyuan, ductile iron pipe fittings)",
+  "url": "https://www.foundry-planet.com/d/one-beats-two-single-disamatic-outperforms-two-vertical-machines-on-productivity-quality-and-profit/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 24,
+  "quantity": "Realised rate, DISA Match 130 matchplate (Littlestown, aluminium) with 18 cores",
+  "url": "https://littlestownfoundry.com/the-best-of-green-sand-matchplate-molding/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Two Disa GFD Match 130 machines with 20 × 24 in flask; quote confirmed."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 25,
+  "quantity": "DISAMATIC D3 at Fansuld (grey and ductile iron, Poland)",
+  "url": "https://www.disagroup.com/news/disa-fansuld/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 26,
+  "quantity": "Small jobbing moulding machine (Malleable Castings, South Africa)",
+  "url": "https://castingssa.com/malleable-castings-boosts-foundry-efficiencies-with-new-automation-and-additional-equipment/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 27,
+  "quantity": "Moulding-line crew, DISAMATIC lines at Trakya Döküm (100,000 t/yr iron)",
+  "url": "https://www.disagroup.com/news/disa-trakya-dokum/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Trakya Döküm: DISAMATIC vertical lines; seamless (automatic) pouring cut staffing three → two per line."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 28,
+  "quantity": "Moulding-line crew, automatic matchplate (Littlestown)",
+  "url": "https://littlestownfoundry.com/the-best-of-green-sand-matchplate-molding/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "\"Total Molds/Day: Approximately 1600\"; one-man operation quote confirmed."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 29,
+  "quantity": "Moulding-line crew, automatic matchplate machine (EMI)",
+  "url": "https://emi-inc.com/white-papers/whitepaper-series-issue-1-considerations-manual-automatic-green-sand-expansions/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 30,
+  "quantity": "Moulding-line crew, Jiangsu Weide (horizontal -> DISA matchplate)",
+  "url": "https://www.disagroup.com/news/DISA-Jiangsu-Weide-case-study/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 31,
+  "quantity": "Automatic core setting delay per mould (matchplate)",
+  "url": "https://littlestownfoundry.com/the-best-of-green-sand-matchplate-molding/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 32,
+  "quantity": "Serial-production iron foundry: typical equipment (EU cluster table)",
+  "url": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC140209/JRC140209_01.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "BREF 2024 Table 2.7 (CAEF 2020) iron foundry serial production column confirmed (table text, condensed)."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 33,
+  "quantity": "Flaskless moulding for large series of small castings",
+  "url": "https://eippcb.jrc.ec.europa.eu/sites/default/files/2019-11/sf_bref_0505.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 34,
+  "quantity": "Pattern plate sets needed on an automatic flaskless line",
+  "url": "https://www.disagroup.com/en-us/process-and-applications/steel-castings",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "DISA steel-castings page: \"Normally only one set of pattern plates is needed, even for high production volumes\" confirmed (page is about green sand for STEEL castings)."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 35,
+  "quantity": "Low-alloy steel matchplate life",
+  "url": "https://www.foundrymag.com/molds-cores/article/21281074/green-sand-molding-for-high-quality-nonferrous-castings-disa",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote confirmed. Context: an FMT article about Boose Quality Castings (an ALUMINIUM foundry) on a DISA MATCH 16/20; \"up to\" 500,000 green-sand moulds for a low-alloy-steel plate. Applying it to ductile iron is an extrapolation the proposal should state."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 36,
+  "quantity": "Pattern material by annual volume (AFS Casting Source)",
+  "url": "https://www.castingsource.com/column/2021/09/15/understanding-materials-pattern-construction",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 37,
+  "quantity": "Green sand tool life by pattern type (Supro MFG table)",
+  "url": "https://chinametalfoundry.com/blog/casting-tooling-cost/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Supro table (supplier blog, no source): wooden 500-3,000; aluminium + core boxes 10,000-50,000; cast iron (resin/no-bake) 50,000-150,000."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 38,
+  "quantity": "Green sand pattern life by material (YB Metal Solution table)",
+  "url": "https://ybmetalsolution.com/pattern-life-maintenance-10k-50k-100k-molds/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "YB table A \"Expected pulls to first refurbishment (and typical total life)\": quote condensed, values confirmed; *total life assumes 1-3 refurbishments."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 39,
+  "quantity": "Metal pattern life before significant refurbishment (Bowmanville Foundry)",
+  "url": "https://bowmanvillefoundry.com/articles/iron-casting-pattern-costs-canadian-industry-guide/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 40,
+  "quantity": "Core box materials for cold box",
+  "url": "https://www.foundrymag.com/ask-the-expert/article/21928771/evaluating-cost-quality-and-environmental-factors-for-shell-vs-cold-box-coremaking",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 41,
+  "quantity": "Fettling time, high-volume ductile iron, manual vs CNC/robot cell",
+  "url": "https://castingssa.com/malleable-castings-boosts-foundry-efficiencies-with-new-automation-and-additional-equipment/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quotes confirmed (45 s manual / 40 s CNC; one operator for 2 machines; foundry range 0.1-30 kg; 5 high-volume ductile components). The page gives NO weight for the 5 components — the notes' \"only measured figure in the 5-10 kg class\" is not supported; P4 (which says 0.1-30 kg) is accurate."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 42,
+  "quantity": "Robotic grinding cycle, 22 kg iron compressor casting with heavy (6-8 mm) flash",
+  "url": "https://www.indianfoundry.org/upload/pdf/Presentation%20-%20Sameer%20Kelkar%20Grindmaster.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Grindmaster: 22 kg, 290×210×150 mm; 260 / 437 s; 193 / 377 s processing; 67 / 60 s NVA."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 43,
+  "quantity": "Fettling share of foundry manpower; automation productivity gain",
+  "url": "https://www.indianfoundry.org/upload/pdf/Presentation%20-%20Sameer%20Kelkar%20Grindmaster.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 44,
+  "quantity": "Cylinder block fettling, automatic vs manual",
+  "url": "https://foundryinfo-india.org/images/pdf/TS-1B-IV.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 45,
+  "quantity": "Automated grinding cell vs operator, 15-60 kg iron castings",
+  "url": "https://www.foundrymag.com/finishing/article/21928758/integrating-automation-for-more-efficient-grinding-deburring",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 46,
+  "quantity": "Robotic grinding replacing floor grinders (Benton Foundry, ductile and grey iron)",
+  "url": "https://www.foundrymag.com/finishing/article/21931644/robotic-grinding-streamlines-cleaning-for-iron-castings",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 47,
+  "quantity": "Automatic grinding machines (Sinto BARINDER): manning and part size",
+  "url": "https://sintoamerica.com/product_category/foundry/auto-grinding-machines/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Sinto BARINDER: \"only 1 person to be operating several machines\"; 50 / 70 / 150 / 325 kg."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 48,
+  "quantity": "Removal of running system: methods by alloy (EU reference)",
+  "url": "https://eippcb.jrc.ec.europa.eu/sites/default/files/2019-11/sf_bref_0505.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 49,
+  "quantity": "Robotic fettling vs manual (ALUMINIUM rainwater goods — context only)",
+  "url": "https://www.foundrytradejournal.com/features/robotic-fettling-cell-is-just-the-job",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 50,
+  "quantity": "Laempe LL core shooters: shot volume, area, cycle",
+  "url": "https://www.laempe.com/en/products/core-shooters/ll-series/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 51,
+  "quantity": "Laempe L core shooters: shot volume, area, cycle",
+  "url": "https://www.laempe.com/en/products/core-shooters/l-series/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 52,
+  "quantity": "Laempe LHL core shooters (24-h continuous): shot volume, cycle",
+  "url": "https://www.laempe.com/en/products/core-shooters/lhl-series",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 53,
+  "quantity": "Cold-box binder addition; amine; purge time",
+  "url": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC140209/JRC140209_01.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 54,
+  "quantity": "Cold box use in automotive foundries; core size",
+  "url": "https://eippcb.jrc.ec.europa.eu/sites/default/files/2019-11/sf_bref_0505.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 55,
+  "quantity": "Binder share of sand raw-material cost",
+  "url": "https://eippcb.jrc.ec.europa.eu/sites/default/files/2019-11/sf_bref_0505.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 56,
+  "quantity": "Silica sand purchase price",
+  "url": "https://eippcb.jrc.ec.europa.eu/sites/default/files/2019-11/sf_bref_0505.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 57,
+  "quantity": "Typical metal yield by iron casting type (BREF Table 3.13)",
+  "url": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC140209/JRC140209_01.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "BREF 2024 Table 3.13 (ETSU 1990) confirmed. NB notes §5 / P6 write \"grey, mechanised, high quality, cored 55-65\": the table gives 55-60 (complicated heavy cored) and 60-65 (relatively simple)."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 58,
+  "quantity": "Operational material efficiency (OME), iron foundries, EU data collection",
+  "url": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC140209/JRC140209_01.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "BREF 2024 Table 3.12 iron foundries: 51 / 58 / 5 / 80 / n 73 confirmed."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 59,
+  "quantity": "Average metal yield, nodular iron (UK survey)",
+  "url": "https://eippcb.jrc.ec.europa.eu/sites/default/files/2019-11/sf_bref_0505.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 60,
+  "quantity": "UK nodular iron yield 1981 vs 1987 (82 foundries)",
+  "url": "https://eippcb.jrc.ec.europa.eu/sites/default/files/2019-11/sf_bref_0505.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 61,
+  "quantity": "Casting share of the casting system weight",
+  "url": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC140209/JRC140209_01.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 62,
+  "quantity": "Ductile iron differential case housing casting yield (simulation case)",
+  "url": "https://publications.jrc.ec.europa.eu/repository/bitstream/JRC140209/JRC140209_01.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 63,
+  "quantity": "Scrap-adjusted casting yield, ductile iron automotive (Fundimig)",
+  "url": "https://www.magmasoft.de/en/solutions/cast-iron/casestudy/Theres-Still-Untapped-Potential-Improved-Yield-by-Optimized-Feeder-Geometry-With-MAGMASOFT/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 64,
+  "quantity": "Ductile iron casting on vertically parted automatic green sand line (Döktaş)",
+  "url": "https://www.foseco.com/fileadmin/user_upload/images/news/GIFA/4.07b_Case_study_gifa_2023_Doktas__Turkey_588750.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Foseco Döktaş: EN-GJS-500, 26.8 kg casting, 53 kg pour, vertically parted automatic greensand; 26.8/53 = 50.6 % checks."
+ },
+ {
+  "set": "foundry",
+  "rowIndex": 65,
+  "quantity": "'Yield rate' 99.4% (Luyuan, DISA) — QUALITY yield, not metal yield",
+  "url": "https://www.foundry-planet.com/d/one-beats-two-single-disamatic-outperforms-two-vertical-machines-on-productivity-quality-and-profit/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Quote found on the live page; value, unit and conditions match."
+ },
+ {
+  "set": "composites",
+  "id": "TL-1",
+  "quantity": "tool_life: carbon/epoxy composite (tooling prepreg) layup tool",
+  "value": "< 300",
+  "url": "https://www.sme.org/technologies/articles/2010/tooling-it-up-for-composites1/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "SME 2010 (Cytec): \"less than 300 cure cycles at temperatures not exceeding 185°C\" confirmed in raw HTML."
+ },
+ {
+  "set": "composites",
+  "id": "TL-2",
+  "quantity": "tool_life: carbon/BMI composite layup tool (Cytec Duratool)",
+  "value": "> 1000",
+  "url": "https://www.sme.org/technologies/articles/2010/tooling-it-up-for-composites1/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Cytec Duratool BMI \"(over 1000 cure cycles at 375°F or 191°C)\" confirmed."
+ },
+ {
+  "set": "composites",
+  "id": "TL-3",
+  "quantity": "tool_life: carbon/BMI composite layup tool (Hexcel HexTool M61)",
+  "value": "several hundred; > 500 part cure cycles demonstrated",
+  "url": "https://hexcel.com/wp-content/uploads/2025/12/HexTool_M61_DataSheet_global.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "HexTool M61 global sheet: \"more than 500 part cure cycles\"; \"several hundred autoclave cycles at 180°C\" confirmed."
+ },
+ {
+  "set": "composites",
+  "id": "TL-4",
+  "quantity": "tool_life: carbon/BMI (HexPly M61 resin) tool",
+  "value": 1000,
+  "url": "https://hexcel.com/wp-content/uploads/2025/12/HexTool_M61_DataSheet.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "Older M61 sheet (© 2015): \"1000 tool thermal cycles at 355°F (180°C)\" confirmed."
+ },
+ {
+  "set": "composites",
+  "id": "TL-5",
+  "quantity": "tool_life: carbon/BMI composite tool (HexTool)",
+  "value": 500,
+  "url": "https://www.compositesworld.com/articles/tooling",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW \"Materials & Processes: Tooling for composites\" (03/23/2016, updated 07/05/2022): \"...can survive 500 autoclave cycles\" (HexTOOL). Same page also says aerospace wants composite tools \"that can withstand thousands of autoclave cure cycles, like Invar can\" — a qualitative Invar statement the notes' gap section does not mention."
+ },
+ {
+  "set": "composites",
+  "id": "TL-6",
+  "quantity": "tool_life: metal ('hard') tools incl. Invar; composite ('soft') tools",
+  "value": "metal: 'many thousands of production cycles'; composite: 'relatively low-volume production' (no number)",
+  "url": "https://www.compositesworld.com/articles/tooling",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "All three sentences returned verbatim by the fetch tool."
+ },
+ {
+  "set": "composites",
+  "id": "TL-7",
+  "quantity": "tool_life: Invar 36",
+  "value": "life of the programme",
+  "url": "https://www.sme.org/technologies/articles/2009/tooling-to-match-composite-production",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "SME 2009: \"tooling would last the life of the program\" (Invar) confirmed in raw HTML."
+ },
+ {
+  "set": "composites",
+  "id": "TL-8",
+  "quantity": "tool_life: nickel-shell (Weber nickel vapour deposition) tool",
+  "value": "1,000–100,000 or more",
+  "url": "https://www.sme.org/technologies/articles/2010/tooling-it-up-for-composites1/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "SME 2010: \"1000–100,000 parts or more\" confirmed in raw HTML."
+ },
+ {
+  "set": "composites",
+  "id": "TL-9",
+  "quantity": "tool_life: electroformed nickel (slush-moulding skins, NOT composites)",
+  "value": "10,000 (geometric grain) / 85,000 (random grain)",
+  "url": "https://www.moldmakingtechnology.com/articles/lessons-in-the-use-of-electroformed-nickel-tools",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "MoldMaking Technology 05/01/2005: 10,000 / 85,000 parts per tool; 110→475 °F every three to four minutes (slush moulding)."
+ },
+ {
+  "set": "composites",
+  "id": "TL-10",
+  "quantity": "tool_life: forged steel compression dies",
+  "value": 200000,
+  "url": "https://www.compositesworld.com/columns/high-volume-molding-methods",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW \"High-volume molding methods\" 11/01/2007: \"As many as 200,000 parts can be turned out on a set of forged steel dies, using sheet molding compound (SMC)\"."
+ },
+ {
+  "set": "composites",
+  "id": "TL-11",
+  "quantity": "tool_life: steel SMC tool; open mould; RTM tool",
+  "value": "SMC > 100,000; open mould > 1,000; RTM > 1,000 to 5,000",
+  "url": "https://www.rtmcomposites.com/blog/demystifying-the-rtm-process",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Table \"Tooling Life*\" (quote says \"Tool Life*\"): SMC >100,000, open mould >1,000, RTM >1,000 to 5,000; article dated July 25, 1998; footnote: Class A finish lowers life."
+ },
+ {
+  "set": "composites",
+  "id": "TL-12",
+  "quantity": "tool_material: steel (AISI 4140 pre-hardened 30–32 HRC), nickel or chrome plated",
+  "value": "AISI 4140, 30–32 HRC, plated",
+  "url": "https://compositeskn.org/KPC/A302",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "CKN A302: steel, nickel or chrome plated; AISI 4140 pre-hardened to HRC 30-32 confirmed."
+ },
+ {
+  "set": "composites",
+  "id": "LR-1",
+  "quantity": "layup_rate: ",
+  "value": 2,
+  "url": "https://www.compositesworld.com/articles/new-equipment-brings-tape-placement-within-reach-of-smaller-shops",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW 11/01/2003 (Sara Black): hand layup flat charge \"average throughput speed of about 2 lb/hr\"; charges 4-40 plies."
+ },
+ {
+  "set": "composites",
+  "id": "LR-2",
+  "quantity": "layup_rate: ",
+  "value": 20,
+  "url": "https://www.compositesworld.com/articles/new-equipment-brings-tape-placement-within-reach-of-smaller-shops",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "\"20 lb/hr at an average speed of 20 ips\" with 3-inch tape, ply drop-offs included."
+ },
+ {
+  "set": "composites",
+  "id": "LR-3",
+  "quantity": "layup_rate: ",
+  "value": "hand: 'a few pounds' per hour; AFP: > 100 lb (45+ kg) per hour",
+  "url": "https://www.compositesworld.com/kc/automated-composites/acm-processes",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "Hand \"a few pounds of material per hour\"; AFP \"over 100 pounds (45+ kg) per hour\"."
+ },
+ {
+  "set": "composites",
+  "id": "LR-4",
+  "quantity": "layup_rate: ",
+  "value": "787 projected ~50, achieved ~1/5 of that (~10); today large production systems 100; very large > 200",
+  "url": "https://leehamnews.com/2026/08/21/bjorns-corner-aircraft-structures-part-15-automated-layup-systems/",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Leeham 2026-08-21: ~50 kg/h projected, one-fifth achieved, 100 kg/h today, >200 kg/h very large systems."
+ },
+ {
+  "set": "composites",
+  "id": "LR-5",
+  "quantity": "layup_rate: ",
+  "value": "hand 2–3; AFP 10–150 (also 30–75 in another table on the same page)",
+  "url": "https://www.addcomposites.com/post/afp-vs-hand-layup-the-manufacturing-revolution-reshaping-composite-production",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Vendor blog values present; context only."
+ },
+ {
+  "set": "composites",
+  "id": "AC-1",
+  "quantity": "autoclave_cure_cycle: ",
+  "value": "heat RT→180 °C at 1–2 °C/min; hold 120 ± 5 min; cool at 2–5 °C/min; vent at ≤ 60 °C; 7 bar",
+  "url": "https://hexcel.com/wp-content/uploads/2025/12/HexPly_M21_global_DataSheet.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "M21 standard cure: 1-2 °C/min to 180 °C, 120 ± 5 min, cool 2-5 °C/min, vent ≤60 °C. Arithmetic 224-340 min = 3.7-5.7 h checks (from 20 °C). The sheet also lists slower variants (0.5-1 °C/min with a 150 °C dwell) that would be longer."
+ },
+ {
+  "set": "composites",
+  "id": "AC-2",
+  "quantity": "autoclave_cure_cycle: ",
+  "value": "10 min to 140 °C + 7 min dwell + 6 min cool-down = 23 min; 7 bar",
+  "url": "https://hexcel.com/wp-content/uploads/2026/01/HexPly_M77_UserGuide.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "M77 user guide Figure 7 standard autoclave cycle: 10 min to 140 °C, 7 min dwell, 7 bar, 6 min cool; \"large autoclave mass\" sentence confirmed (table text, quote condensed)."
+ },
+ {
+  "set": "composites",
+  "id": "AC-3",
+  "quantity": "autoclave_cure_cycle: ",
+  "value": "autoclave 'almost 2 hours' v RapidClave 17 min (Gen 1), 6–8 min (Gen 2); aerospace: 8 h 'considered fast'",
+  "url": "https://compositesworld.com/articles/sub-8-minute-cycle-times-on-carbonepoxy-prepreg",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW 01/06/2015: \"from almost 2 hours\" → 17 min; Gen 2 at 8-, 7-, 6-minute cycles; \"8 hours ... considered fast in the aerospace industry\"."
+ },
+ {
+  "set": "composites",
+  "id": "AC-4",
+  "quantity": "autoclave_capacity: ",
+  "value": "100 in long, 35.38 in bed width, 42.75 in tube diameter, 10–89 psi, 400 °F; heat ≤ 10 °F/min, cool ≤ 3 °F/min",
+  "url": "https://www.me.washington.edu/shops/composites",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "UW ME shop: 100 in long, bed 35.38 in, tube 42.75 in, 10-89 psi, 400 °F, 10 °F/min heat, 3 °F/min cool."
+ },
+ {
+  "set": "composites",
+  "id": "AC-5",
+  "quantity": "autoclave_capacity: ",
+  "value": "motorsport Ø1,500 × 3,300 mm, 0–10 bar, 250 °C; cycling Ø1,450 × 2,700 mm; aerospace Ø4,500–9,000 × 11,000–25,000 mm; range Ø500–9,000 mm, L 500–50,000 mm",
+  "url": "https://www.scholz-autoclaves.com/en/systems/hot-air-autoclaves-for-composite",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "Scholz: range Ø500-9,000 × 500-50,000 mm, 0-70 bar; motorsport unit Ø1,500 (feed height 1,000) × 3,300 mm, 0-10 bar, 250 °C."
+ },
+ {
+  "set": "composites",
+  "id": "VR-1",
+  "quantity": "volume_route: prepreg compression moulding (PCM) — Mitsubishi Rayon, Nissan GT-R decklid (MY2014)",
+  "value": "press 8 min at 140 °C, 8 MPa; preforming < 5 min (1 min heat to 60–70 °C, 0.3 MPa); 84,000 parts/yr/tool (3-min-cure prepreg), 50,000 parts/yr/tool (5-min-cure)",
+  "url": "https://www.compositesworld.com/articles/prepreg-compression-molding-makes-its-commercial-debut",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW 06/01/2015 (Peggy Malnati): 8 min at 140 °C, 8 MPa; preform 1 min to 60-70 °C, 0.3 MPa, <5 min total; 84,000 / 50,000 parts per year per tool (\"reportedly\"). Mould-tool material NOT stated (only the PU-board preform tool). Force 8 MPa × 0.398 × 0.120 m = 382 kN checks."
+ },
+ {
+  "set": "composites",
+  "id": "VR-2",
+  "quantity": "volume_route: press cure of fast-cure prepreg (Hexcel HexPly M77)",
+  "value": "isothermal cure 2 min at 150 °C (3 min at 140, 5 min at 130, 7 min at 120); 'designed for hot-in/hot-out compression molding'; 130 °C / 5 min recommended for compression",
+  "url": "https://hexcel.com/wp-content/uploads/2026/01/HexPly_M77_UserGuide.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "M77: 2 min @150 °C; table 3 min 140, 5 min 130, 7 min 120; \"hot-in/ hot-out compression molding\"; \"(130°C/5min)\" for compression confirmed."
+ },
+ {
+  "set": "composites",
+  "id": "VR-3",
+  "quantity": "volume_route: prepreg press moulding (Solvay)",
+  "value": "aerospace EP2750: takt ≤ 30 min ⇒ 10,000 parts/yr/tool; automotive prepregs: takt ≤ 3 min for small-medium parts; matched metal tools, steel mould",
+  "url": "https://www.compositesworld.com/articles/novel-prepreg-for-compression-molding-in-rapm",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW 05/06/2020: EP2750 takt ≤30 min → 10,000 parts per tool; Heanor line \"takt times of 3 minutes or less for small to medium parts using automotive prepregs\"; matched metal tools / steel mold."
+ },
+ {
+  "set": "composites",
+  "id": "VR-4",
+  "quantity": "volume_route: fast-cure prepreg, automotive volume thresholds",
+  "value": "14,000–40,000 parts = very high volume for CFRP prepreg; 20,000–25,000/yr on one line (Corvette roof) = prepreg's sweet spot; automotive high volume starts ~100,000; suppliers target 80,000–100,000/yr with 2–3 min compression cycles; compression moulding cuts 'as much as four hours' to 5–10 min",
+  "url": "https://acmanet.org/composite-materials-suppliers-develop-rapid-cure-prepregs",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "ACMA page: 14,000-40,000 very high volume; 20,000-25,000/yr sweet spot; ~100,000 automotive high volume; 2- to 3-minute compression cycles for 80,000-100,000/yr; \"as much as four hours down to five to 10 minutes\" confirmed in raw HTML."
+ },
+ {
+  "set": "composites",
+  "id": "VR-5",
+  "quantity": "volume_route: HP-RTM",
+  "value": "realistic 3–7 min per part; BMW i3/i8 cure < 10 min; low-pressure RTM 30–60 min; volumes moved from 1,000–4,000 to 12,000–50,000 parts/yr; preforming slower than the mould cycle",
+  "url": "https://www.compositesworld.com/articles/the-rise-of-hp-rtm",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW 05/01/2015: 3-7 min realistic; BMW i3/i8 <10 min; LP-RTM 30-60 min; 1,000-4,000 → 12,000-50,000 parts/yr; preforming slower than mould cycle."
+ },
+ {
+  "set": "composites",
+  "id": "VR-6",
+  "quantity": "volume_route: HP-RTM (Fraunhofer ICT simulation)",
+  "value": "50,000–80,000 parts per line per year needs ≤ 3 min; only 1-min cure + 10 s injection + 6 s compression reached 166 s",
+  "url": "https://www.compositesworld.com/articles/fraunhofer-ict-in-mold-pressure-sensors-for-hp-rtm",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW 09/27/2017: \"Producing 50,000-80,000 parts per line per year requires a cycle time of 3 minutes or less\"; 166 s from 1-min cure + 10 s injection + 6 s compression is a hypothetical scenario (Table 1), not a trial."
+ },
+ {
+  "set": "composites",
+  "id": "VR-7",
+  "quantity": "volume_route: HP-RTM serial production volume",
+  "value": "up to 30,000 vehicles per year (first serial HP-RTM, 2013)",
+  "url": "https://gardnerweb.com/events/details/hp-rtm-in-automotive-and-aviation-applications",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "Gardner webinar abstract: \"In 2013, the first HP-RTM systems went into automotive serial production, making parts for up to 30,000 vehicles per year.\""
+ },
+ {
+  "set": "composites",
+  "id": "VR-8",
+  "quantity": "volume_route: wet compression moulding (WCM / LCM)",
+  "value": "Dieffenbacher ~180 s; Dow < 60 s total; Hexion 75–135 s; Huntsman DFCM ~1.30 min; paper example: 294 parts/day (> 73,000 parts/yr), 4 workers + 1 foreman per line, part €70 (material €49); BMW 7 Series side sills / tunnel / roof bows",
+  "url": "https://compositesworld.com/articles/wet-compression-molding",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW 01/02/2016: Dieffenbacher ~180 s; Dow <60 s; Hexion 75-135 s; Huntsman 1.30 min; €70 part, €49 material, 294/day (>73,000/yr), 4 workers + 1 foreman per line."
+ },
+ {
+  "set": "composites",
+  "id": "VR-9",
+  "quantity": "volume_route: SMC / compression moulding",
+  "value": "SMC cures 30–150 s, overall cycle as low as 60 s; appropriate above 10,000 parts; steel dies up to 200,000 parts",
+  "url": "https://www.compositesworld.com/columns/high-volume-molding-methods",
+  "readMethod": "fetch-tool (plain curl got HTTP 403; page opened with WebFetch, which returned the quoted sentences verbatim)",
+  "verdict": "CONFIRMED",
+  "note": "CW 11/01/2007: SMC 30-150 s cure, cycle as low as 60 s. The \">10,000 parts\" sentence is said of compression moulding in general (fetch tool flagged this), not SMC specifically."
+ },
+ {
+  "set": "composites",
+  "id": "VR-10",
+  "quantity": "volume_route: compression moulding (SMC, BMC, chopped prepreg SMC-C)",
+  "value": "cycle ~1–4 min; high volume (100,000 parts per year); 2–30 MPa",
+  "url": "https://compositeskn.org/KPC/A302",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "CKN A302: 1-4 min; 100,000 parts per year; 2-30 MPa confirmed."
+ },
+ {
+  "set": "composites",
+  "id": "VR-11",
+  "quantity": "volume_route: SMC v open mould v RTM (1998)",
+  "value": "SMC cycle 3–5 min, justified above ~20,000 units/yr; open mould 4–6 h a moulding; RTM 12–90 min",
+  "url": "https://www.rtmcomposites.com/blog/demystifying-the-rtm-process",
+  "readMethod": "raw HTML (curl, tags stripped, quote searched in the text)",
+  "verdict": "CONFIRMED",
+  "note": "SMC 3-5 min, \">20,000 units per year\"; open mould 4-6 h (table says 6 hours); RTM 12-90 min — all on the page."
+ },
+ {
+  "set": "composites",
+  "id": "CX-1",
+  "quantity": "context: pultrusion machines (KraussMaffei / Pultrex)",
+  "value": "pulling speed 0.04–5.00 m/min by machine size; iBox doubled flat GLASS profiles to 2.9 m/min",
+  "url": "https://kraussmaffei.com/Processes/RPM/Pultrusion/RPM_WP_Pultrex_en.pdf",
+  "readMethod": "pdf-text (curl + pdftotext; table layout read with -layout)",
+  "verdict": "CONFIRMED",
+  "note": "KraussMaffei Pultrex: max 5.00 … 2.00 m/min by size; iBox \"up to 2,9m/min\" — machine capability, glass."
+ }
+]

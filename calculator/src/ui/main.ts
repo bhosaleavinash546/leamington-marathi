@@ -152,6 +152,7 @@ let autoTable: any;
 // Lazy handles for our own PDF helpers (pdf.ts statically pulls jsPDF, so it
 // must load on demand too — otherwise vendor-pdf lands on the initial paint).
 let printPDF: typeof printPDFType | undefined;
+let printAuditPackPDF: typeof printAuditPackType | undefined;
 let printCADAnalysisPDF: typeof printCADType | undefined;
 let drawCostVisionLogo: typeof drawLogoType | undefined;
 let renderShouldCostSections: typeof renderSCType | undefined;
@@ -161,6 +162,7 @@ async function ensurePdfLibs(): Promise<void> {
   jsPDF = m1.jsPDF;
   autoTable = m2.default;
   printPDF = m3.printPDF;
+  printAuditPackPDF = m3.printAuditPackPDF;
   printCADAnalysisPDF = m3.printCADAnalysisPDF;
   drawCostVisionLogo = m3.drawCostVisionLogo;
   renderShouldCostSections = m3.renderShouldCostSections;
@@ -182,7 +184,7 @@ import { recostInCountries, formatRuleValue, type CountryCosting } from './count
 import { pcbMarketFor, pcbFabRegionFor } from '../engine/pcb-market.js';
 import { countryFactor } from '../engine/regional-services.js';
 import type { DriverProvenance, DriverSource } from '../engine/uncertainty.js';
-import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
+import type { printPDF as printPDFType, printAuditPackPDF as printAuditPackType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta, ReportPhoto, FunctionalSafetyMeta, GeometricDFMMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty, confidenceWhy } from '../engine/uncertainty.js';
 import {
@@ -211,6 +213,7 @@ import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } f
 import { computeCarbon } from '../engine/carbon.js';
 import { cuttingDataFor, CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../engine/machining-time.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
+import { ruleFieldReport } from '../engine/cost-input-rules/rule-field-report.js';
 import { generateInsights, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
 import { localiseGbpText, reportNoteText } from '../export/money-text.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
@@ -2906,6 +2909,7 @@ function _applyAgentActionAndCompute(): void {
       renderBreakdown(result);
       el('export-excel-btn').style.display = '';
       el('export-pdf-btn').style.display = '';
+      showAuditPackButton();
       el('export-all-pdf-btn').style.display = '';
       el('save-scenario-btn').style.display = '';
 
@@ -11070,7 +11074,10 @@ function applyRuleFieldsToForm(): void {
     if (!elm) continue;   // this commodity's form is not on screen
 
     if (elm instanceof HTMLSelectElement) {
-      const wanted = String(f.value);
+      // A true / false rule on a yes / no drop-down: "true" is not an option, so the rule was skipped and the screen kept
+      // its own default (gear "case hardened") while headless costed the rule's value (report-standard review, Nov 2026).
+      const yn = typeof f.value === 'boolean' ? Array.from(elm.options).find(o => /^(yes|no)$/i.test(o.value) && (o.value.toLowerCase() === 'yes') === f.value) : undefined;
+      const wanted = yn ? yn.value : String(f.value);
       // Only assign a value the select actually offers — a silent mismatch here
       // is how "Machine '' not found" used to reach Calculate. But a skipped
       // MATERIAL left the drop-down on its first option, and the screen then
@@ -15139,6 +15146,7 @@ function compute(): void {
     // Show action buttons
     el('export-excel-btn').style.display = '';
     el('export-pdf-btn').style.display = '';
+    showAuditPackButton();
     el('export-card-btn').style.display = '';
     el('export-all-pdf-btn').style.display = '';
     el('save-scenario-btn').style.display = '';
@@ -17346,7 +17354,9 @@ async function downloadExcel(): Promise<void> {
   if (!lastResult || !lastInput) return;
   { const why = exportBlockedReason(); if (why) { showToast(`Workbook not produced: ${why}`, 'error'); return; } }
   const band = (() => { try { return resultBand(lastResult!, lastInput!).u; } catch { return null; } })();
-  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null, costedFromCAD() ? _cadRouteComparison : null, reportCadViews(), activeCommodity);
+  // The first sheet is the core report's model and sheet 9 the DFM findings: the workbook gets the PDF's metadata and country rows.
+  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate, buildChecksApplied(), band, costedFromCAD() ? currentCADStamp() : null, costedFromCAD() ? _cadRouteComparison : null, reportCadViews(), activeCommodity,
+    { cadMeta: buildCadReportMeta(), baseLibrary: _baseLibrary, regionalRows: comparisonRows(lastInput, lastResult, false) });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = exportFilename('should-cost', lastResult.partName, 'xlsx');
@@ -18242,14 +18252,17 @@ function reportRuleValues(): NonNullable<NonNullable<CADReportMeta['checks']>['r
     const field = document.getElementById(f.fieldId) as HTMLInputElement | HTMLSelectElement | null;
     if (!field || f.value === null || f.value === undefined || typeof f.value === 'object') continue;   // not on this form
     const label = field.closest('.field-group')?.querySelector('label')?.textContent?.trim() || f.fieldId;
-    const shown = field instanceof HTMLSelectElement ? (field.selectedOptions[0]?.textContent?.trim() ?? field.value) : field.value;
-    const ruleShown = field instanceof HTMLSelectElement
-      ? (Array.from(field.options).find(o => o.value === String(f.value))?.textContent?.trim() ?? String(f.value)) : String(f.value);
-    // a number is compared at the precision the form shows it (setNumericField rounds)
-    const dp = (field.value.split('.')[1] ?? '').length;
-    const edited = field.value !== String(f.value)
-      && !(typeof f.value === 'number' && field.value !== '' && Number(f.value).toFixed(dp) === Number(field.value).toFixed(dp));
-    out.push({ label, value: shown, ruleValue: ruleShown, basis: f.basis, source: f.source, edited });
+    // What the costing APPLIED: a checkbox by its ticked state (its value is always "on" — the vent pipe printed a
+    // pressure test "on (edited)" that was not costed), a boolean rule on a yes / no select as a boolean
+    // (rule-field-report.ts, report standard review 3 Nov 2026).
+    const { shown, ruleShown, edited } = ruleFieldReport(
+      field instanceof HTMLSelectElement
+        ? { kind: 'select', value: field.value, selectedText: field.selectedOptions[0]?.textContent?.trim(),
+          options: Array.from(field.options).map(o => ({ value: o.value, text: o.textContent?.trim() ?? o.value })) }
+        : field.type === 'checkbox' ? { kind: 'checkbox', value: field.value, checked: field.checked }
+        : { kind: 'input', value: field.value },
+      f.value as string | number | boolean);
+    out.push({ label, value: shown, ruleValue: ruleShown, basis: f.basis, source: f.source, edited, fieldId: f.fieldId });
   }
   return out;
 }
@@ -18366,6 +18379,21 @@ async function openPDF(): Promise<void> {
     showToast(`This report costs the ${activeCommodity === 'pcba' ? 'PCBA' : 'PCB fab'} form as it stands, not your photo board — the photos and ASIL are left out. To report the photo board, use "Apply to ${activeCommodity === 'pcba' ? 'PCBA' : 'Fab'}" first, or Export PDF on the photo results.`, 'warning');
   }
   printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), { ...buildCadReportMeta(), cadViews: reportCadViews() }, _baseLibrary, comparisonRows(lastInput, lastResult, false));
+}
+
+/** The audit pack (report standard, Nov 2026): the full detail behind the core should-cost report — same costing, same metadata. */
+async function openAuditPack(): Promise<void> {
+  if (!lastResult || !lastInput) return;
+  { const why = exportBlockedReason(); if (why) { showToast(`Audit pack not produced: ${why}`, 'error'); return; } }
+  await ensurePdfLibs();
+  const notFromPhoto = pcbFormNotFromPhoto();
+  printAuditPackPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, notFromPhoto ? null : currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), { ...buildCadReportMeta(), cadViews: reportCadViews() }, _baseLibrary, comparisonRows(lastInput, lastResult, false));
+}
+
+/** The audit-pack button shows wherever the PDF button does (it is a should-cost report, not for the PCB photo flow). */
+function showAuditPackButton(): void {
+  const b = document.getElementById('export-audit-pdf-btn');
+  if (b) b.style.display = '';
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────
@@ -20538,6 +20566,7 @@ async function init(): Promise<void> {
   el('calc-btn').onclick = compute;
   el('export-excel-btn')?.addEventListener('click', downloadExcel);
   el('export-pdf-btn')?.addEventListener('click', openPDF);
+  el('export-audit-pdf-btn')?.addEventListener('click', openAuditPack);
   el('export-all-pdf-btn')?.addEventListener('click', printMasterPDF);
   el('save-scenario-btn')?.addEventListener('click', openScenarioModal);
   el('save-library-btn')?.addEventListener('click', saveLastResultToLibrary);

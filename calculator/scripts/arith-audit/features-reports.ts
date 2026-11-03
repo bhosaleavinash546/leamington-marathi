@@ -478,7 +478,7 @@ if (!NO_ROUTES) {
 // ── K. Reports ───────────────────────────────────────────────────────────────────────────────────────────────────────
 if (!NO_REPORTS) {
   const { jsPDF } = await import('jspdf');
-  const { printPDF } = await import('../../src/export/pdf.js');
+  const { printAuditPackPDF } = await import('../../src/export/pdf.js');
   const { exportToExcelBlob } = await import('../../src/export/excel.js');
   const ExcelJS = (await import('exceljs')).default;
   for (const part of REPORT_PARTS) {
@@ -493,7 +493,7 @@ if (!NO_REPORTS) {
     const orig = api.save;
     api.save = function (this: InstanceType<typeof jsPDF>) { pdfBytes = this.output('arraybuffer'); return this; };
     try {
-      printPDF(res, si, book, 'GBP', 1, d.commodity as never, null, C.region, [], { geometrySource: 'occt', annualVolume: C.annual, uncertainty: u, uncertaintyBasis: UNCERTAINTY_BASIS }, C.ukBook);
+      printAuditPackPDF(res, si, book, 'GBP', 1, d.commodity as never, null, C.region, [], { geometrySource: 'occt', annualVolume: C.annual, uncertainty: u, uncertaintyBasis: UNCERTAINTY_BASIS }, C.ukBook);
     } finally { api.save = orig; }
     const pdfFile = join(OUT, `${part}.pdf`);
     writeFileSync(pdfFile, Buffer.from(pdfBytes!));

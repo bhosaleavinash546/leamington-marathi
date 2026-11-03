@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { jsPDF } from 'jspdf';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { computeUniversalStack } from '../src/engine/core.js';
-import { printPDF, type CADReportMeta } from '../src/export/pdf.js';
+import { printAuditPackPDF, type CADReportMeta } from '../src/export/pdf.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 import type { FeatureMachiningLine } from '../src/engine/feature-machining.js';
 
@@ -49,7 +49,7 @@ describe('CAD-provenance report path renders (Stages 1 & 4)', () => {
         featureLines, featureMachineRatePerHr: 45, featureStock: 'near_net',
         userSpecifiedMaterial: true, userSpecifiedProcess: true, annualVolume: 50000,
       };
-      expect(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], cadMeta)).not.toThrow();
+      expect(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], cadMeta)).not.toThrow();
       expect(saveCalls).toBe(1);
     } finally {
       api.save = origSave;
@@ -67,7 +67,7 @@ describe('CAD-provenance report path renders (Stages 1 & 4)', () => {
         geometrySource: 'text_parsing', measuredVolumeCm3: null, measuredWeightKg: null,
         featureLines: null, annualVolume: 50000,
       };
-      expect(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], cadMeta)).not.toThrow();
+      expect(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], cadMeta)).not.toThrow();
     } finally {
       api.save = origSave;
     }
@@ -94,9 +94,9 @@ describe('CAD-provenance report path renders (Stages 1 & 4)', () => {
           { field: 'estimatedCycleTimeHr', ruleId: 'casting.cycle', from: undefined, to: 0.0161, basis: 'HPDC 800 t, 58 s cycle', contradicted: false },
         ],
       };
-      expect(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], { geometrySource: 'occt', checks })).not.toThrow();
+      expect(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], { geometrySource: 'occt', checks })).not.toThrow();
       const blocked = { ...checks, costable: false, sanity: [{ ...checks.sanity[1], acknowledged: false }], decisions: [{ ...checks.decisions[0], answer: null }] };
-      expect(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], { geometrySource: 'stl_parser', checks: blocked })).not.toThrow();
+      expect(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], { geometrySource: 'stl_parser', checks: blocked })).not.toThrow();
     } finally {
       api.save = origSave;
     }
@@ -109,7 +109,7 @@ describe('CAD-provenance report path renders (Stages 1 & 4)', () => {
     api.save = function (this: jsPDF) { saveCalls++; return this; };
     try {
       const { input, result } = castingResult();
-      expect(() => printPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], {})).not.toThrow();
+      expect(() => printAuditPackPDF(result, input, lib, 'GBP', 1, 'cast_and_machine', null, 'UK', [], {})).not.toThrow();
     } finally {
       api.save = origSave;
     }

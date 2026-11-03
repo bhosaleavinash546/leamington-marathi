@@ -1,6 +1,7 @@
 /**
- * The executive summary (Nov 2026): one model, page 2 of the PDF and the first sheet of the workbook. Every figure is
- * the costing's own — the lines add to the total, the movers are stack re-runs, the levers are re-costed levers only.
+ * The executive summary (Nov 2026): one model, page 2 of the AUDIT PACK (the core should-cost report replaced it as the
+ * default PDF — report standard, Nov 2026; tests/core-report.test.ts) and the base of the workbook's first sheet. Every
+ * figure is the costing's own — the lines add to the total, the movers are stack re-runs, the levers are re-costed only.
  */
 import { describe, it, expect } from 'vitest';
 import { jsPDF } from 'jspdf';
@@ -9,7 +10,7 @@ import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import { runSensitivity } from '../src/engine/sensitivity.js';
 import { buildExecutiveSummary } from '../src/export/executive-summary.js';
-import { printPDF } from '../src/export/pdf.js';
+import { printAuditPackPDF } from '../src/export/pdf.js';
 import { exportToExcelBlob } from '../src/export/excel.js';
 import type { UniversalStackInput } from '../src/engine/types.js';
 
@@ -58,7 +59,7 @@ describe('the executive summary model', () => {
 });
 
 describe('both reports carry it', () => {
-  it('the PDF draws "Executive Summary" on page 2', () => {
+  it('the audit pack draws "Executive Summary" on page 2, with the Key Assumptions folded in and no process noise', () => {
     const api = (jsPDF as unknown as { API: Record<string, unknown> }).API;
     const origSave = api.save;
     const pages: string[] = [];
@@ -68,13 +69,15 @@ describe('both reports carry it', () => {
       return this;
     };
     try {
-      printPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [], { annualVolume: 50_000 });
+      printAuditPackPDF(result, input, lib, 'GBP', 1, 'machining', null, 'UK', [], { annualVolume: 50_000 });
     } finally { api.save = origSave; }
     expect(pages[1]).toMatch(/Executive Summary/);
     expect(pages[1]).toMatch(/Where the money goes/);
-    expect(pages[0]).not.toMatch(/Executive Summary/);
+    expect(pages[1]).toMatch(/Material utilisation: /);            // the Key Assumptions, folded in (director.md #37)
+    expect(pages[1]).not.toMatch(/Every figure here is in the full report|had only a rule-of-thumb percentage/);   // #46, #47
+    expect(pages[0]).not.toMatch(/Executive Summary|Key Assumptions/);
   });
-  it('the workbook opens on "0-Executive" with the same total, and 1-Summary is unchanged', async () => {
+  it('the workbook opens on "0-Executive" (now the core report sheet) with the same total, and 1-Summary is unchanged', async () => {
     const blob = await exportToExcelBlob(result, input, lib, 'GBP', 1, null, null, null, null, null, 'machining');
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(Buffer.from(await blob.arrayBuffer()) as never);

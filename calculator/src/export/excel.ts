@@ -6,14 +6,15 @@ import { shortOperationName, operationFeatureList } from '../engine/operation-na
 import { decisionAnswerLabel } from './decision-text.js';
 import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
 import { reportNoteText } from './money-text.js';
-import type { ChecksAppliedMeta } from './pdf.js';
+import type { ChecksAppliedMeta, CADReportMeta } from './pdf.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from '../engine/types.js';
-import { buildExecutiveSummary } from './executive-summary.js';
+import { buildCoreReport } from './executive-summary.js';
+import { normaliseSeverity, SEVERITY_LABEL } from '../engine/dfm-geometry/types.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
 import { currencySymbol } from '../engine/insights.js';
 import { buildWorkbook, workbookBlob, money, pctCell, type SheetSpec } from './xlsx-util.js';
 import { localiseGbpText, localiseRuleValue } from './money-text.js';
-import { shopDefaultsBasis, deliveryTermsLine, type ManufacturingRegion } from '../engine/regional-rates.js';
+import { shopDefaultsBasis, deliveryTermsLine, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
 
 const num4 = (n: number) => +n.toFixed(4);
 /** Hours to 6 dp — at 4 dp a reader recomputing an operation from the sheet was out by up to £0.003. */
@@ -68,6 +69,11 @@ export async function exportToExcelBlob(
   cadViews: Array<{ label: string; dataUrl: string }> | null = null,
   /** The commodity — lets the executive summary list the re-costed levers (Nov 2026). */
   commodity: CommodityType | null = null,
+  /**
+   * The CAD report metadata (the same object the PDF gets) and the country rows' basis: the first sheet is the CORE
+   * report's model (report standard, Nov 2026) and sheet 9 lists the geometric DFM findings.
+   */
+  extras: { cadMeta?: Partial<CADReportMeta> | null; baseLibrary?: RateLibrary; regionalRows?: RegionalComparisonRow[] } | null = null,
 ): Promise<Blob> {
   const sym = currencySymbol(currency);
   const m = (gbp: number) => money(gbp * fxRate, sym);
@@ -152,52 +158,99 @@ export async function exportToExcelBlob(
 
   sheets.push({ name: '1-Summary', rows: sum, cols: [58, 18, 12] });
 
-  // ── Sheet 0: Executive summary — the same model as page 2 of the PDF (executive-summary.ts), placed FIRST ──
+  // ── Sheet 0: the CORE should-cost report — the same model as the core PDF (executive-summary.ts buildCoreReport), FIRST ──
   try {
-    const ex = buildExecutiveSummary({ result, input, library, commodity, region: library.regional?.code ?? 'UK', band, stamp,
-      decisions: checks?.decisions ?? null });
-    const exec: unknown[][] = [
-      ['EXECUTIVE SUMMARY'],
-      ['Part', ex.part],
-      ...(ex.commodity ? [['Commodity', ex.commodity]] : []),
-      ['Country', ex.country],
+    const meta = { ...(extras?.cadMeta ?? {}), ...(band ? { uncertainty: band as never } : {}), ...(stamp ? { stamp } : {}),
+      ...(routeComparison ? { routeComparison } : {}), checks: (extras?.cadMeta?.checks ?? checks) ?? null };
+    const cr = buildCoreReport({ result, input, library, commodity, region: library.regional?.code ?? 'UK', cadMeta: meta as never,
+      baseLibrary: extras?.baseLibrary, regionalRows: extras?.regionalRows });
+    const whole = (gbp: number) => money(Math.round(gbp * fxRate), sym);
+    const t = cr.tooling;
+    const core: unknown[][] = [
+      ['SHOULD-COST REPORT — CORE (the same seven sections as the core PDF; the other sheets are the audit detail)'],
+      ['Part', cr.part],
+      ...(cr.commodity ? [['Commodity', cr.commodity]] : []),
+      ['Country', cr.country],
+      ...(cr.stamp ? [['Reproducibility stamp', cr.stamp]] : []),
       [],
-      ['Should-cost a part', m(ex.total), currency],
-      ...(ex.band ? [['  P10 – P90', money(Math.round(ex.band.p10 * fxRate * 100) / 100, sym), money(Math.round(ex.band.p90 * fxRate * 100) / 100, sym)],
-        ['  Band', `± ${ex.band.plusMinusPct}% — the spread of the input ranges, not the model's error`]] : []),
-      ['Confidence', ex.confidence.grade, ex.confidence.reason],
-      ...(ex.annualSpend != null ? [['A year at this volume', m(ex.annualSpend)]] : []),
-      ...(ex.tooling ? [['Tooling over the programme (in the cost)', m(ex.tooling.investmentGbp), `over ${ex.tooling.amortisedOver.toLocaleString('en-GB')} parts`]] : []),
+      ['── 1. DECISION ──'],
+      ['Should-cost a part', m(cr.total), currency],
+      ...(cr.band ? [['  P10 – P90', money(Math.round(cr.band.p10 * fxRate * 100) / 100, sym), money(Math.round(cr.band.p90 * fxRate * 100) / 100, sym)],
+        ['  Band', `± ${cr.band.plusMinusPct}% — ${cr.bandNote}`]] : []),
+      ...(cr.annualSpend != null ? [['A year at this volume', m(cr.annualSpend), `${(cr.annualVolume ?? 0).toLocaleString('en-GB')} a year`]] : []),
+      ['Piece price excluding tooling', m(cr.pieceExToolingGbp), 'the costing re-run with no tooling (its overhead and margin out too)'],
+      ['Initial tooling investment (first sets)', t.totalGbp <= 0 ? 'none' : t.unsplitGbp > 0.5 && t.initialGbp <= 0.5 ? 'not split' : whole(t.initialGbp),
+        t.unsplitGbp > 0.5 ? 'part of the tooling is one figure, not split into sets' : 'a lump sum'],
+      ['Replacement & perishable tooling a part', m(t.replacementPerPartGbp), 'before overhead and margin'],
+      ['Confidence', cr.confidence.grade, cr.confidence.sentence],
+      ...cr.confidence.lowInputs.map(l => ['  Low input', l.label, `${l.unit.includes('£') ? `${sym}${(l.value * fxRate).toFixed(4)}${l.unit.replace('£', '')}` : `${l.value} ${l.unit}`}${l.operations > 1 ? ` (${l.operations} operations)` : ''}`]),
+      ['Resting on figures labelled "not sourced" / "engineering-typical"', m(cr.unsourced.totalGbp), pc(cr.unsourced.sharePct)],
+      ['  Method', cr.unsourced.method],
+      ...cr.alerts.flatMap(al => [[`ALERT — ${al.title}`], ...al.lines.map(l => [`  ${l}`])]),
+      ...(cr.openQuestions.length ? [['Open questions'], ...cr.openQuestions.map(q => [`  ${q}`])] : []),
+      ['Not included until answered'], ...cr.notIncluded.map(n => [`  ${n}`]),
       [],
-      ['── WHAT THE FIGURE ASSUMES ──'],
-      ...ex.basis.map(b => [b]),
+      ['── 2. COST BUILD-UP ──'],
+      ['Bucket', `A part (${currency})`, 'Share'],
+      ...cr.buckets.map(bk => [bk.label, m(bk.gbp), pc(bk.sharePct)]),
+      ['Should-cost', m(cr.total), pc(100)],
       [],
-      ['── WHERE THE MONEY GOES (by kind of cost; the lines add to the total) ──'],
-      ['Cost line', `A part (${currency})`, 'Share'],
-      ...ex.lines.map(l => [l.label, m(l.gbp), pc(l.sharePct)]),
-      ['Should-cost', m(ex.total), pc(100)],
-      ...(ex.largestOperation ? [[`Largest single operation: ${ex.largestOperation.label} (machine + labour)`, m(ex.largestOperation.gbp), pc(ex.largestOperation.sharePct)]] : []),
+      ['Material split (bucket 1)', `A part (${currency})`, 'Group'],
+      ...cr.material.lines.map(l => [l.label, m(l.gbp), ({ metal: 'metal', direct: 'material', consumable: 'consumables & services', energy: 'energy', boughtIn: 'bought-in' } as Record<string, string>)[l.group]]),
+      ['Material total = bucket 1', m(cr.material.totalGbp), `metal ${sym}${(cr.material.metalGbp * fxRate).toFixed(2)} · consumables & services ${sym}${(cr.material.consumablesGbp * fxRate).toFixed(2)} · energy ${sym}${(cr.material.energyGbp * fxRate).toFixed(2)}`],
+      ...(cr.perKg ? [[`Price a kg (${cr.perKg.kgLabel}, ${cr.perKg.kg.toFixed(3)} kg)`, m(cr.perKg.pricePerKg), 'should-cost ÷ kg'], [`Metal a kg (${cr.perKg.kgLabel})`, m(cr.perKg.metalPerKg), 'metal line ÷ kg']] : []),
       [],
-      [`── WHAT WOULD CHANGE IT (each input ± ${ex.moverPct}%, the cost re-run) ──`],
-      ['Input', `−${ex.moverPct}% (${currency} a part)`, `+${ex.moverPct}% (${currency} a part)`],
-      ...ex.movers.map(mv => [mv.label, m(mv.minusGbp), m(mv.plusGbp)]),
+      ...(t.totalGbp > 0 ? [
+        ['Tooling item', `Over the programme (${currency})`, 'First set', 'Replacements', 'Perishable', 'Split read from'],
+        ...t.rows.map(r => [r.label, m(r.gbp), m(r.initialGbp), m(r.replacementGbp), m(r.perishableGbp), r.basis]),
+        ['Tooling total', m(t.totalGbp), m(t.initialGbp), m(t.replacementGbp), m(t.perishableGbp), `÷ ${Math.round(t.amortisationVolume).toLocaleString('en-GB')} parts = bucket 4`],
+        [],
+      ] : []),
+      ['Commercial basis', 'Value', 'Source'],
+      ...cr.commercial.map(c2 => [c2.label, c2.value, c2.source]),
       [],
-      ['── TO CONFIRM ──'],
-      ...ex.toConfirm.map(t => [t]),
+      ['── 3. PROCESS ──'],
+      ...(cr.spec.length ? [['Specification costed to', 'Answer'], ...cr.spec.map(sp => [sp.question, sp.answer]), []] : []),
+      ['Operation', 'Machine class', 'Cycle (min)', 'Parts / cycle', 'Crew', `Machine + crew (${currency}/h)`, `A part (${currency})`],
+      ...cr.operations.map(op => [op.name, op.machine, minutesCell(op.cycleMin), op.partsPerCycle, op.crew, m(op.ratePerHr), m(op.gbp)]),
       [],
-      ['── RE-COSTED LEVERS (levers overlap, so they are not added) ──'],
-      ...(ex.levers.length
-        ? [['Lever', `Saves a part (${currency})`, 'Re-costed on'], ...ex.levers.map(l => [l.action, m(l.savingGbp), l.basis])]
-        : [['No lever could be re-costed for this part.']]),
-      ...(ex.leversNotRecosted > 0 ? [[`${ex.leversNotRecosted} other suggestion${ex.leversNotRecosted === 1 ? '' : 's'} had only a rule-of-thumb percentage and ${ex.leversNotRecosted === 1 ? 'is' : 'are'} not shown.`]] : []),
+      ...(cr.capacity && cr.capacity.rows.length ? [['Capacity implied', 'Operations', 'Hours a year', 'Available h / machine', 'Machines'],
+        ...cr.capacity.rows.map(r => [r.machine, r.operations, Math.round(r.hoursPerYear), r.availableHours, +r.machines.toFixed(2)]), [cr.capacity.formula], []] : []),
+      ...(cr.keyParams.length ? [['Key process parameter', 'Costed', 'Form field', 'Basis'], ...cr.keyParams.map(kp => [kp.name, kp.value, kp.label, kp.basis]), []] : []),
+      ['── 4. WHAT MOVES THE PRICE ──'],
+      ['Figure labelled "not sourced" / "engineering-typical"', 'Costed', `A part (${currency})`, 'Basis'],
+      ...cr.unsourced.items.map(i => [i.label, i.value, i.gbp == null ? 'not attributable' : m(i.gbp), i.basis]),
+      ['Counted once', '', m(cr.unsourced.totalGbp), `${cr.unsourced.sharePct}% of the price`],
       [],
-      ['── NOT INCLUDED ──'],
-      ...ex.notIncluded.map(t => [t]),
+      [`Top movers (± ${cr.sensitivityPct}%, the cost re-run)`, `−${cr.sensitivityPct}% (${currency} a part)`, `+${cr.sensitivityPct}% (${currency} a part)`],
+      ...cr.sensitivity.map(sv => [sv.label, m(sv.minusGbp), m(sv.plusGbp)]),
+      ...(cr.volumeLine ? [['Volume', cr.volumeLine]] : []),
       [],
-      [ex.sources],
+      ['── 5. SUPPLIER NEGOTIATION ──'],
+      ['Driver', 'Our value', 'Question to ask'],
+      ...cr.negotiation.map(n => [n.driver, n.ours, n.question]),
+      [],
+      ['Ask the supplier to break the quotation down into'], ...cr.quoteBreakdown.map(q => [`  ${q}`]),
+      [],
+      ...(cr.levers.length ? [['Re-costed lever', `Saves a part (${currency})`, 'Re-costed on'], ...cr.levers.map(l => [l.action, m(l.savingGbp), l.basis])] : [['No lever could be re-costed for this part.']]),
+      [],
+      ['── 6. ALTERNATIVES ──'],
+      ...(cr.routes ? [[`Route comparison — reference: ${cr.routes.reference}`, `A part (${currency})`, `vs this costing (${currency})`, 'vs this costing %', `Tooling investment (${currency})`],
+        ...cr.routes.rows.map(r => [r.name, m(r.total), m(r.deltaGbp), pc(r.deltaPct), r.toolingGbp != null ? m(r.toolingGbp) : '—']),
+        [`${cr.routes.notShown} other route(s) not feasible, needing an answer, or more than +50 % — see 8-Routes`]] : [['Route comparison not run on this costing']]),
+      [],
+      ['Country', `A part (${currency})`, 'vs base %'],
+      ...cr.countries.rows.map(r => [r.name, m(r.total), r.isBase ? 'base' : pc(-r.vsBasePct)]),
+      [cr.countries.note],
+      [],
+      ['── 7. DESIGN TO COST ──'],
+      ...(cr.dfm.findings.length ? [['Finding', 'Severity', 'In this costing', 'Fix'], ...cr.dfm.findings.map(f => [`${f.title}${f.count > 1 ? ` (${f.count})` : ''}`, f.severity, f.amount ?? 'not re-costed', f.fix])] : []),
+      [cr.dfm.notChecked],
+      [],
+      ['Prepared by', ''], ['Reviewed by', ''], ['Approved by', ''],
     ];
-    sheets.unshift({ name: '0-Executive', rows: exec, cols: [62, 20, 60] });
-  } catch (e) { console.warn('[excel] executive summary not built:', e); /* the workbook is unaffected */ }
+    sheets.unshift({ name: '0-Executive', rows: core, cols: [62, 22, 40, 16, 16, 22, 16] });
+  } catch (e) { console.warn('[excel] core report sheet not built:', e); /* the workbook is unaffected */ }
 
   // ── Sheet 2: Material Detail — every row of the material line, adding up to bucket 1 ──
   const trace = result.traceability ?? [];
@@ -473,6 +526,24 @@ export async function exportToExcelBlob(
     for (const r of x.rows) for (const ck of r.checks) rr.push([name(r), 'yes', ck.label, ck.measured, ck.limit, ck.pass ? 'pass' : 'fail', ck.source]);
     for (const e of x.excluded) for (const ck of e.reasons) rr.push([name(e), 'no', ck.label, ck.measured, ck.limit, 'fail', ck.source]);
     sheets.push({ name: '8-Routes', rows: rr, cols: [30, 12, 12, 11, 11, 7, 12, 11, 11, 11, 11, 11, 11, 11, 11, 10, 12, 26, 9, 9, 10, 14, 12, 14, 70] });
+  }
+
+  // ── Sheet 9: the geometric DFM findings (every rule group, with faces and sources) — when a DFM job has completed ──
+  const gd = extras?.cadMeta?.geometricDFM;
+  if (gd) {
+    const amt = extras?.cadMeta?.geometricDFMAmounts ?? {};
+    const dfmRows: unknown[][] = [
+      ['GEOMETRIC DFM — measured from the CAD model'],
+      [`${gd.grouped.length} rule group(s) across ${gd.findings.length} instance(s), from ${gd.featuresExamined} measured feature(s)`],
+      [],
+      ['Rule', 'Severity', 'Finding', 'Instances', 'In this costing', 'Worst', 'Measured range', 'Limit', 'Fix', 'Not priced because', 'Source', 'Faces'],
+      ...gd.grouped.map(gr => [gr.ruleId, SEVERITY_LABEL[normaliseSeverity(gr.severity, (gr.totalCostGBP ?? 0) > 0)], gr.title, gr.count, amt[gr.ruleId]?.text ?? ((gr.totalCostGBP ?? 0) > 0 ? 'not re-costed' : ''),
+        gr.worst?.detail ?? '', gr.range ? `${gr.range.min} – ${gr.range.max} ${gr.range.unit}` : '', gr.threshold ? `${gr.threshold.comparator} ${gr.threshold.value} ${gr.threshold.unit}` : '',
+        gr.recommendation, gr.costNotModelled ?? '', [gr.source.standard, gr.source.clause].filter(Boolean).join(' — '), (gr.faceIds ?? []).join(', ')]),
+      [],
+      ['What was NOT checked'], ...gd.limitations.map(l => [l]),
+    ];
+    sheets.push({ name: '9-DFM', rows: dfmRows, cols: [34, 10, 40, 10, 16, 40, 18, 14, 50, 30, 30, 30] });
   }
 
   // Every £ amount in the text of a non-£ workbook (rule bases, rate sources, notes) in the workbook's currency

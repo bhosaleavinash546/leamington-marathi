@@ -9,12 +9,14 @@ import { COMMODITY_REPORT_LABELS } from '../ui/data/commodity-meta.js';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType, Scenario } from '../engine/types.js';
 import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages, overheadBaseOf, overheadRateOf } from '../engine/core.js';
-import { generateInsights, currencySymbol } from '../engine/insights.js';
+import { currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
-import { buildExecutiveSummary, type ExecutiveSummary } from './executive-summary.js';
+import { buildExecutiveSummary, buildCoreReport, type ExecutiveSummary } from './executive-summary.js';
+import { renderCoreReport } from './core-report-pdf.js';
 import { rankOpportunities } from '../engine/opportunity-ranking.js';
 import { computeCostUncertainty, overallConfidence, UNCERTAINTY_BASIS, UNCERTAINTY_BUCKET_BASIS } from '../engine/uncertainty.js';
 import { measureLabel, measureAgainstLimit } from '../engine/dfm-geometry/measure-format.js';
+import { normaliseSeverity, SEVERITY_LABEL } from '../engine/dfm-geometry/types.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeRegionalComparison, alBilletMaterialFactors, shopDefaultsBasis, deliveryTermsLine, type ManufacturingRegion, type RegionalComparisonRow } from '../engine/regional-rates.js';
@@ -217,7 +219,7 @@ export interface ChecksAppliedMeta {
    * crew and fettling were in the cost with no basis in either report). `value` is what the form held when costed;
    * `edited` when that differs from the rule's. Money in a basis is held in GBP and converted to the report currency when printed (money-text.ts).
    */
-  ruleValues?: Array<{ label: string; value: string; ruleValue: string; basis: string; source: string; edited: boolean }>;
+  ruleValues?: Array<{ label: string; value: string; ruleValue: string; basis: string; source: string; edited: boolean; fieldId?: string }>;
 }
 
 /** One labelled source photo carried into the report. */
@@ -256,6 +258,8 @@ export interface FunctionalSafetyMeta {
 
 // ─── Shared constants ─────────────────────────────────────────────────────────
 type RGB = [number, number, number];
+/** The core should-cost report (default) or the audit pack (the full detail). */
+export type ReportProfile = 'core' | 'audit';
 
 const W  = 210;
 const MG = 14;
@@ -483,7 +487,7 @@ function utilisationBenchmarkNote(commodity?: string, lossIsNotScrap = false): s
  * Page 2 of a should-cost report: the executive summary (Nov 2026). Formats `buildExecutiveSummary` — every figure is
  * the costing's own (buckets / operations, the screen's band, stack re-runs for the movers and the levers).
  */
-function renderExecutiveSummaryPage(doc: jsPDF, ex: ExecutiveSummary, money: (gbp: number) => string): void {
+function renderExecutiveSummaryPage(doc: jsPDF, ex: ExecutiveSummary, money: (gbp: number) => string, keyAssumptions: string[] = []): void {
   let y = 16;
   // A light heading (the full report's section bars took ~13 mm each and pushed the page onto two).
   const head = (title: string, right?: string): void => {
@@ -514,7 +518,7 @@ function renderExecutiveSummaryPage(doc: jsPDF, ex: ExecutiveSummary, money: (gb
   if (ex.annualSpend != null) doc.text(`${whole(ex.annualSpend)} a year at the volume below`, cx, y + 16.5);
   if (ex.tooling) doc.text(`Tooling ${whole(ex.tooling.investmentGbp)} over ${ex.tooling.amortisedOver.toLocaleString('en-GB')} parts (in the cost)`, cx, y + 20.5);
   y += 27;
-  y = calloutBox(doc, y, 'What the figure assumes', [...ex.basis, `Not included: ${ex.notIncluded.map(t => t.replace(/^./, c => c.toLowerCase())).join('; ')}.`, `Confidence: ${ex.confidence.reason}.`], NAVY, LIGHT);
+  y = calloutBox(doc, y, 'What the figure assumes', [...ex.basis, ...keyAssumptions, `Not included: ${ex.notIncluded.map(t => t.replace(/^./, c => c.toLowerCase())).join('; ')}.`, `Confidence: ${ex.confidence.reason}.`], NAVY, LIGHT);
 
   // Where the money goes
   head('Where the money goes', 'by kind of cost  ·  the lines add to the total');
@@ -565,13 +569,8 @@ function renderExecutiveSummaryPage(doc: jsPDF, ex: ExecutiveSummary, money: (gb
     });
     y = lastFinalY(doc) + 4;
   }
-  if (ex.leversNotRecosted > 0) {
-    doc.setFontSize(7); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
-    doc.text(`${ex.leversNotRecosted} other suggestion${ex.leversNotRecosted === 1 ? '' : 's'} had only a rule-of-thumb percentage and ${ex.leversNotRecosted === 1 ? 'is' : 'are'} not shown.`, MG, y + 2);
-    y += 7;
-  }
-  doc.setFontSize(6.5); doc.setFont('helvetica', 'italic'); doc.setTextColor(...GREY);
-  doc.text(doc.splitTextToSize(ex.sources, CW) as string[], MG, Math.min(y, 278));
+  // "N other suggestions had only a rule-of-thumb percentage" and "Every figure here is in the full report" were removed
+  // (report standard, Nov 2026 — director.md #46, #47: process noise and tool-internal reassurance).
 }
 
 /** Shared should-cost report body — §1 through §15 (breakdown, ops, machine
@@ -742,7 +741,7 @@ function renderGeometricDFM(
     // The stub axle's report left the section out while its job was still running: a reader took that as "no issues".
     y = chk(doc, y, 14);
     doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-    doc.text('Geometric DFM / DFA - not included', MG, y);
+    doc.text('Geometric DFM - not included', MG, y);
     y += 5;
     doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
     const msg = doc.splitTextToSize('The geometric DFM check of this part had not finished when this report was exported, so its findings '
@@ -754,7 +753,7 @@ function renderGeometricDFM(
 
   y = chk(doc, y, 26);
   doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-  doc.text('Geometric DFM / DFA - measured from the CAD model', MG, y);
+  doc.text('Geometric DFM - measured from the CAD model', MG, y);
   y += 5;
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
   const groups = g.grouped ?? [];
@@ -783,9 +782,10 @@ function renderGeometricDFM(
 
   for (const gr of groups) {
     y = chk(doc, y, 26);
-    const sev = String(gr.severity).toUpperCase();
-    const col: RGB = gr.severity === 'critical' || gr.severity === 'major' ? RD
-      : gr.severity === 'minor' ? ORANGE : SLATE;
+    // BLOCKING / COST / RISK / INFO (dfm-geometry/types.ts; a stored job's legacy grade is mapped)
+    const gsev = normaliseSeverity(gr.severity, (gr.totalCostGBP ?? 0) > 0);
+    const sev = SEVERITY_LABEL[gsev];
+    const col: RGB = gsev === 'blocking' ? RD : gsev === 'cost' || gsev === 'risk' ? ORANGE : SLATE;
     doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...col);
     const cost = gr.totalCostGBP ?? 0;
     doc.text(`[${sev}] ${gr.title}${gr.count > 1 ? `  (${gr.count} instances)` : ''}`, MG, y);
@@ -847,16 +847,8 @@ function renderGeometricDFM(
       NAVY, HDR);
   }
 
-  if (g.dfa?.available) {
-    y = chk(doc, y, 20);
-    const p = (g.dfa.penalties ?? []).map(x => `+${Math.round((x.addedSec ?? 0) * 10) / 10}s ${x.reason ?? ''}${x.measured ? ` (${x.measured})` : ''}`);
-    y = calloutBox(doc, y, 'DFA - handling & insertion (Boothroyd method, geometric half)', [
-      `Handling ${g.dfa.handlingTimeSec}s + insertion ${g.dfa.insertionTimeSec}s = `
-      + `${g.dfa.totalTimeSec}s, ${g.dfa.vsIdealRatio}x the 3s ideal part.`,
-      ...p,
-      ...g.dfa.limitations,
-    ], NAVY, HDR);
-  }
+  // The Boothroyd DFA block was removed from every report (director.md #52: a single part's handling time is not a
+  // should-cost input and is not costed).
 
   if (g.limitations.length) {
     y = calloutBox(doc, y, 'What was NOT checked', g.limitations, ORANGE, OR_LT);
@@ -1901,6 +1893,8 @@ export function renderShouldCostSections(
       if (notAsked.length) lines.push(`not read on this route: ${notAsked.map(sp => sp.label.toLowerCase()).join(', ')}`);
       const cross = x.crossovers.find(k => k.route === r.route && k.process === r.process);
       if (cross && r !== ref) lines.unshift(cross.text);
+      // a row the comparison judges not credible says why (route-compare.ts notCredibleReasons) — the core report leaves it out
+      if (r.credible === false && r.notCredible?.length) lines.unshift(`NOT CREDIBLE: ${r.notCredible.join('; ')}`);
       return lines.join('; ');
     };
     autoTable(doc, {
@@ -2029,51 +2023,12 @@ export function renderShouldCostSections(
     volumeProvided: cadMeta?.volumeProvided ?? !!(cadMeta?.annualVolume ?? (input as { annualVolume?: number }).annualVolume),
     pkgLogisticsEstimated: !!cadMeta?.pkgLogisticsEstimated,
     library,
+    // no lever that takes people off a check of a special characteristic on a safety-critical part (insights.ts)
+    safetyCritical: (cadMeta?.checks?.decisions ?? []).some(d => d.id === 'service.safetyCritical' && /^yes$/i.test(String(d.answer ?? ''))),
   };
-  const insights = generateInsights(result, input, library, commodityType, suggestionCtx);
-  if (insights.length > 0) {
-    doc.addPage(); y = 18;
-    y = secBar(doc, y, '§11 — Cost Intelligence Insights', `${insights.length} observation${insights.length === 1 ? '' : 's'}  ·  prompts to look, no saving claimed`);
-
-    const impCol = (imp: string): RGB => imp === 'High' ? RD : imp === 'Medium' ? AM : GREY;
-    const typeLabel: Record<string, string> = {
-      critical: 'CRITICAL', warning: 'WARNING', opportunity: 'OPPORTUNITY',
-      benchmark: 'BENCHMARK', info: 'INFO',
-    };
-
-    const insRows: (string | object)[][] = [];
-    insights.slice(0, 6).forEach(ins => {
-      insRows.push([{
-        content: `[${typeLabel[ins.type] ?? ins.type.toUpperCase()}]  ${ins.title}`,
-        colSpan: 2,
-        styles: {
-          fontStyle: 'bold', fillColor: HDR as RGB,
-          textColor: impCol(ins.impact), fontSize: 8,
-          cellPadding: { top: 4, bottom: 4, left: 5, right: 5 },
-        },
-      }]);
-      insRows.push(['Finding', ins.finding]);
-      insRows.push(['Impact', ins.impact]);
-      if (ins.benchmark) {
-        insRows.push(['Reference', `${ins.benchmark.label}: yours ${ins.benchmark.yourValue.toFixed(1)}${ins.benchmark.unit} vs reference band ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit} (engineering estimate, not a sourced survey)`]);
-      }
-      ins.actions.slice(0, 2).forEach((act, i) => insRows.push([`Action ${i + 1}`, act]));
-      insRows.push(['', '']);
-    });
-
-    // col widths: 26 + (182-26) = 26+156 = 182 ✓
-    autoTable(doc, {
-      startY: y, margin: { left: MG, right: MG },
-      body: insRows as string[][],
-      theme: 'plain',
-      bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: { top: 2.5, bottom: 2.5, left: 4, right: 4 } },
-      columnStyles: {
-        0: { cellWidth: 26, textColor: GREY, fontStyle: 'bold', fontSize: 7 },
-        1: { cellWidth: 156 },
-      },
-    });
-    y = lastFinalY(doc) + 8;
-  }
+  // §11 "Cost Intelligence Insights" was removed (report standard, Nov 2026 — director.md #67: it compared the costing with
+  // unsourced reference bands, contradicted the costing's own rules and gave generic actions; anything real is in the
+  // supplier questions of the core report or the route comparison).
 
   // ════════════════════════════════════════════════════════════════════════
   // §8 + §9 — DFM / DFA, §10 — Optimisation, §11 — Roadmap
@@ -2084,13 +2039,13 @@ export function renderShouldCostSections(
     // The engine grades findings internally (critical/major/minor, score /10).
     // The REPORT does not: a score reads as a verdict on whoever designed the
     // part, and cost-reduction work that starts with a grade gets defended
-    // against rather than actioned. Sections §12–§14 present the identical
+    // against rather than actioned. Sections §11–§12 present the identical
     // deterministic findings ranked by money per part, grouped by category.
     const ranked = rankOpportunities(dfm, result.total);
 
-    // §12 — the ranked list
+    // §11 — the ranked list
     y = chk(doc, y, 22);
-    y = secBar(doc, y, '§12 — Cost-Reduction Opportunities',
+    y = secBar(doc, y, '§11 — Cost-Reduction Opportunities',
       ranked.pricedCount
         ? `${ranked.pricedCount} lever${ranked.pricedCount === 1 ? '' : 's'} re-costed  ·  largest ${c(ranked.headlineSavingPerPart)}/part`
         : 'no lever re-costed  ·  no saving claimed');
@@ -2151,34 +2106,9 @@ export function renderShouldCostSections(
       doc.text('No lever could be re-costed for this part, so none is listed.', MG, y); y += 10;
     }
 
-    // §13 — where the opportunity sits, by category
-    if (ranked.groups.length > 0) {
-      y = chk(doc, y, 22);
-      y = secBar(doc, y, '§13 — Opportunity by Category',
-        `${ranked.groups.length} categories with an actionable lever`);
+    // §13 "Opportunity by Category" was removed (director.md #69: a duplicate of the ranked list with less information).
 
-      autoTable(doc, {
-        startY: y, margin: { left: MG, right: MG },
-        // No category total: levers overlap, and a sum of them is not a saving anyone can bank.
-        head: [['Category', 'Levers', 'Largest lever', 'Its save/part']],
-        body: ranked.groups.map(g => [
-          g.label, String(g.opportunities.length), g.opportunities[0].action, c(g.topSavingPerPart),
-        ]),
-        theme: 'plain',
-        headStyles: { ...TH.headStyles, fontSize: 7 },
-        bodyStyles: { fontSize: 7.5, textColor: SLATE, cellPadding: 2.5, overflow: 'linebreak' },
-        alternateRowStyles: { fillColor: LIGHT },
-        columnStyles: {
-          0: { cellWidth: 40, fontStyle: 'bold' },
-          1: { cellWidth: 20, halign: 'right' },
-          2: { cellWidth: 92, textColor: GREY },
-          3: { cellWidth: 30, halign: 'right', fontStyle: 'bold', textColor: GN },
-        },
-      });
-      y = lastFinalY(doc) + 8;
-    }
-
-    // §14 — inputs to confirm (no saving claimed against any of these). Besides the insight checks, every rate the
+    // §12 — inputs to confirm (no saving claimed against any of these). Besides the insight checks, every rate the
     // costing itself grades Low is an input to confirm — §14 read "None" on reports whose press capital was held at
     // UK × 0.72 and whose resin was a UK price (Poland live review, 10 Oct 2026).
     const lowSeen = new Set<string>();
@@ -2193,7 +2123,7 @@ export function renderShouldCostSections(
     const confirmRows = [...ranked.verificationChecks.map(v => ({ title: v.title, detail: v.detail, action: v.action })), ...lowRates];
     if (confirmRows.length > 0) {
       y = chk(doc, y, 22);
-      y = secBar(doc, y, '§14 — Inputs to Confirm', 'No saving is claimed against these');
+      y = secBar(doc, y, '§12 — Inputs to Confirm', 'No saving is claimed against these');
 
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG },
@@ -2213,22 +2143,22 @@ export function renderShouldCostSections(
     } else {
       // keep the numbering whole (casting 360 X32: §13 ran straight into §15)
       y = chk(doc, y, 14);
-      y = secBar(doc, y, '§14 — Inputs to Confirm', 'None: every input this costing flags is listed in the checks above');
+      y = secBar(doc, y, '§12 — Inputs to Confirm', 'None: every input this costing flags is listed in the checks above');
       y += 2;
     }
 
     // §15 "Implementation Roadmap" (generic quick-win / long-term strings with no arithmetic behind them) was removed
-    // in Nov 2026: §12 already gives each re-costed lever its timeframe and risk.
+    // in Nov 2026: §11 already gives each re-costed lever its timeframe and risk.
   } catch {
     // DFM/DFA not available for this commodity — silently skip
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // §15 — Saved Scenarios (only when the user has saved any)
+  // §13 — Saved Scenarios (only when the user has saved any)
   // ════════════════════════════════════════════════════════════════════════
   if (scenarios.length > 0) {
     y = chk(doc, y, 40);
-    y = secBar(doc, y, '§15 — Saved Scenarios', `${scenarios.length} scenario${scenarios.length === 1 ? '' : 's'}  ·  vs this costing`);
+    y = secBar(doc, y, '§13 — Saved Scenarios', `${scenarios.length} scenario${scenarios.length === 1 ? '' : 's'}  ·  vs this costing`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
       head: [['Scenario', 'Country', 'Total', 'vs this costing', 'Saved']],
@@ -2479,13 +2409,17 @@ export function printPDF(
   baseLibrary?: RateLibrary,
   /** The screen's comparison rows — printed as they are, so the report and the screen agree. */
   regionalRows?: RegionalComparisonRow[],
+  /**
+   * Which document (report standard, Nov 2026): 'core' — the 7-page should-cost report a decision-maker reads
+   * (core-report-pdf.ts, the default); 'audit' — the full detail behind it (`printAuditPackPDF`).
+   */
+  profile: ReportProfile = 'core',
 ): void {
 
   const sym  = currencySymbol(currency);
   const pct  = (n: number) => `${n.toFixed(1)}%`;
   // grouped like every other money figure in the report (casting 360 X31: the cover read "INR 2519.13")
   const money = (n: number) => { const v = n * fxRate; return `${sym}${(Math.abs(v) < 0.005 ? 0 : v).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; };
-  const pcts = breakdownPercentages(result);
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
@@ -2498,6 +2432,7 @@ export function printPDF(
   }
 
   // ── Footer (added last) ──────────────────────────────────────────────────
+  const footerTitle = profile === 'core' && !pcba ? 'Should-Cost Report' : pcba ? 'Should-Cost Analysis Report' : 'Should-Cost Audit Pack';
   const addFooters = () => {
     const total = pageCount(doc);
     for (let i = 1; i <= total; i++) {
@@ -2506,14 +2441,23 @@ export function printPDF(
       doc.line(MG, 285, W - MG, 285);
       const lw = drawCostVisionLogo(doc, MG, 287, 4);
       doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
-      doc.text('Should-Cost Analysis Report  ·  CONFIDENTIAL', MG + lw + 3, 291);
+      doc.text(`${footerTitle}  ·  CONFIDENTIAL`, MG + lw + 3, 291);
       doc.text(`${dateStr}  ${timeStr}`, W / 2, 291, { align: 'center' });
       doc.text(`Page ${i} of ${total}`, W - MG, 291, { align: 'right' });
     }
   };
 
+  // ── The core report: seven pages from one model (executive-summary.ts buildCoreReport) ──
+  if (profile === 'core' && !pcba) {
+    const model = buildCoreReport({ result, input, library, commodity: commodityType, region, cadMeta, baseLibrary, regionalRows });
+    renderCoreReport(doc, model, { money, fx: fxRate, sym, currency, dateStr, cadView: cadMeta.cadViews?.[0] ?? null });
+    addFooters();
+    doc.save(exportFilename('should-cost', result.partName, 'pdf'));
+    return;
+  }
+
   // ════════════════════════════════════════════════════════════════════════
-  // COVER PAGE
+  // COVER PAGE (the audit pack; a PCBA report)
   // ════════════════════════════════════════════════════════════════════════
 
   // Hero banner
@@ -2539,12 +2483,13 @@ export function printPDF(
   doc.setFillColor(...ORANGE);
   doc.roundedRect(MG + 35, 32, 62, 7, 1.5, 1.5, 'F');
   doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
-  doc.text('SHOULD-COST ANALYSIS REPORT', MG + 66, 37, { align: 'center' });
+  doc.text(pcba ? 'SHOULD-COST ANALYSIS REPORT' : 'SHOULD-COST AUDIT PACK', MG + 66, 37, { align: 'center' });
 
   // Date + tag line
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(200, 215, 240);
   doc.text(`Generated: ${dateStr}  ·  ${timeStr}`, MG + 35, 46);
-  doc.text('Bottom-Up Manufacturing Cost Model  ·  Fully Traceable Rate Data', MG + 35, 52);
+  // The "Fully Traceable Rate Data" tagline was removed (director.md #36: a marketing claim the report's own Low inputs contradict).
+  if (!pcba) doc.text('The detail behind the should-cost report: rule bases, rate build-ups, traceability, DFM, re-adds', MG + 35, 52);
 
   // ── Part summary card ────────────────────────────────────────────────────
   let y = 76;
@@ -2590,11 +2535,8 @@ export function printPDF(
     ['Delivered UK / board', money(result.total), ORANGE],
     ...pcba.shares.slice(0, 3).map(sh => [sh.label, pct(sh.pct), SLATE] as [string, string, RGB]),
   ] : [
+    // The cover's bucket shares were removed (director.md #35: they added to 87 % — overhead left out — and §1 prints them).
     ['Total Should-Cost',   money(result.total), ORANGE],
-    ['Material',            pct(pcts.rawMaterial), SLATE],
-    ['Process',             pct(pcts.process), SLATE],
-    ['Labour',              pct(pcts.labour), SLATE],
-    ['Margin',              pct(pcts.margin), SLATE],
   ];
   const chipW = CW / chips.length;
   chips.forEach(([lbl, val, col], i) => {
@@ -2792,11 +2734,13 @@ export function printPDF(
     doc.save(exportFilename('should-cost', result.partName, 'pdf'));
     return;
   }
-  y = calloutBox(doc, y, 'Key Assumptions', [
+  // Key Assumptions: folded into the executive page's "What the figure assumes" (director.md #37 — the callout fell alone
+  // onto page 2 and repeated the executive page's basis).
+  const keyAssumptions = [
     volLine,
     `${itemisedMat ? `Material: itemised lines${itemisedNames ? ` (${itemisedNames})` : ''}` : `Alloy / material: ${alloyMat?.grade ?? input.rawMaterial.materialId}`}${pinNote ? ` (${pinNote})` : ''}   ·   ${costedWeightLine}`,
     `Material utilisation: ${utilPct.toFixed(0)}%   ·   Overhead: ${(input.overheadPct * 100).toFixed(0)}% of material + process + labour + tooling${(input.rawMaterial.boughtIn?.cost ?? 0) > 0 ? ' (bought-in content excluded — it carries a handling charge only)' : ''}   ·   Margin: ${(input.marginPct * 100).toFixed(0)}% of the subtotal${(input.rawMaterial.boughtIn?.cost ?? 0) > 0 ? ' excl. bought-in' : ''}   ·   Operations: ${result.operationDetails.length}`,
-  ], NAVY, HDR);
+  ];
 
 
   // Page 2: the executive summary (Nov 2026) — then the full report from a fresh page.
@@ -2806,9 +2750,12 @@ export function printPDF(
       decisions: cadMeta.checks?.decisions ?? null, volumeProvided: cadMeta.volumeProvided, pkgLogisticsEstimated: cadMeta.pkgLogisticsEstimated,
     });
     doc.addPage();
-    renderExecutiveSummaryPage(doc, ex, money);
+    renderExecutiveSummaryPage(doc, ex, money, keyAssumptions);
     doc.addPage(); y = 18;
-  } catch (e) { console.warn('[report] executive summary not drawn:', e); /* the full report is unaffected */ }
+  } catch (e) {
+    console.warn('[report] executive summary not drawn:', e);   // the full report is unaffected; the assumptions still print
+    y = calloutBox(doc, y, 'Key Assumptions', keyAssumptions, NAVY, HDR);
+  }
 
   y = renderShouldCostSections(doc, y, { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta, baseLibrary, regionalRows });
 
@@ -2816,6 +2763,16 @@ export function printPDF(
 
   const fname = exportFilename('should-cost', result.partName, 'pdf');
   doc.save(fname);
+}
+
+/** The audit pack: the full report — rule bases, rate build-ups, traceability, DFM with faces, re-adds, uncertainty method,
+ *  sensitivity, carbon — behind the core should-cost report (report standard, Nov 2026). Same arguments as `printPDF`. */
+export function printAuditPackPDF(
+  result: PartCostResult, input: UniversalStackInput, library: RateLibrary, currency = 'GBP', fxRate = 1,
+  commodityType: CommodityType = 'machining', partPhotoDataUrl?: string | null, region: ManufacturingRegion = 'UK',
+  scenarios: Scenario[] = [], cadMeta: CADReportMeta = {}, baseLibrary?: RateLibrary, regionalRows?: RegionalComparisonRow[],
+): void {
+  printPDF(result, input, library, currency, fxRate, commodityType, partPhotoDataUrl, region, scenarios, cadMeta, baseLibrary, regionalRows, 'audit');
 }
 
 // Legacy compat

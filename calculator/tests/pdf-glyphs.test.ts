@@ -41,6 +41,13 @@ describe('PDF reports use only WinAnsi-safe glyphs (no jsPDF garbage)', () => {
     expect(bad, `Non-WinAnsi glyph(s) in export/pdf.ts:\n${bad.join('\n')}`).toEqual([]);
   });
 
+  it('src/export/core-report-pdf.ts, executive-summary.ts and report-standard.ts — the core should-cost report and its text', () => {
+    for (const f of ['src/export/core-report-pdf.ts', 'src/export/executive-summary.ts', 'src/export/report-standard.ts']) {
+      const bad = offenders(readFileSync(path.join(root, f), 'utf-8'));
+      expect(bad, `Non-WinAnsi glyph(s) in ${f}:\n${bad.join('\n')}`).toEqual([]);
+    }
+  });
+
   it('printMasterPDF (src/ui/main.ts) — combined "Export All" report', () => {
     const src = readFileSync(path.join(root, 'src/ui/main.ts'), 'utf-8');
     const start = src.indexOf('function printMasterPDF');

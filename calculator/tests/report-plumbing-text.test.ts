@@ -130,8 +130,11 @@ describe('M2 / M4 — a rate-book note as a report prints it', () => {
     expect(reportNoteText('Read from a supplier-hosted copy of the NADCA table via the search engine’s extract — verify against the current NADCA edition.'))
       .toBe('Read from a supplier-hosted copy of the NADCA table — verify against the current NADCA edition.');
     const access = reportNoteText(ACCESS_SOURCE.note);
-    expect(access).not.toMatch(/Search-engine|Fictiv|withdrawn/);
-    expect(access).toMatch(/^A 3-axis machine reaches a part from "up to 6 orthogonal sides", one fixturing per side\. Each direction/);
+    expect(access).not.toMatch(/Search-engine|Fictiv|withdrawn|Protolabs/);
+    // Nov 2026: the prototype-shop citation is gone; the rule is labelled the tool's own and says it is judged against
+    // the costed machine
+    expect(access).toMatch(/^Each direction a tool must come from is a re-fixturing on a 3-axis machine/);
+    expect(access).toMatch(/Judged only when the costing routes the milling on a 3-axis machine/);
   });
   it('every note in the UK book and every country book prints clean', () => {
     const libs = [DEFAULT_RATE_LIBRARY, ...Object.keys(COUNTRY_BOOKS).map(r => buildRegionalLibrary(DEFAULT_RATE_LIBRARY, r as never))];

@@ -154,8 +154,8 @@ describe('X2 / X3 — a DFM finding is re-costed in the report currency and keep
     expect(v.basis).toMatch(/INR \d+\.\d\d per hour/);
     expect(v.basis).not.toMatch(/£/);
   });
-  it('the many-sizes £ says it is an upper bound', () => {
-    expect(v.basis).toMatch(/upper bound: every size merged onto one tool/);
+  it('hole sizes are no longer claimed as "every size merged onto one tool" (report standard, Nov 2026: the finding is unpriced)', () => {
+    expect(v.basis).not.toMatch(/upper bound: every size merged onto one tool/);
   });
 });
 
@@ -164,7 +164,7 @@ describe('X17 — a DFM still running is stated, not silently left out', () => {
   it('prints "not included" with the reason', () => {
     const text = pdfText(() => printAuditPackPDF(result, input, lib, 'INR', 127.1941, 'cast_and_machine', null, 'IN', [],
       { geometrySource: 'occt', geometricDFM: null, geometricDFMPending: true } as never)).replace(/\n/g, ' ');
-    expect(text).toMatch(/Geometric DFM \/ DFA - not included/);
+    expect(text).toMatch(/Geometric DFM - not included/);
     expect(text).toMatch(/This is not a clean result/);
   });
 });
