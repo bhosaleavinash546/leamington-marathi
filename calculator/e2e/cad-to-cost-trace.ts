@@ -529,16 +529,16 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   const pageCount = (buf: Buffer) => (buf.toString('latin1').match(/\/Type\s*\/Page(?!s)/g) ?? []).length;
   const corePages = pageCount(readFileSync(pdf)), auditPages = pageCount(readFileSync(auditPdf));
   check('export', 'STD', 'the core report keeps to its seven sections (≤ 8 pages)', corePages > 0 && corePages <= 8, `${corePages} pages`);
-  check('export', 'STD', 'the audit pack is the full report (more pages than the core, §1 and §9b present)', auditPages > corePages && /§1 — 8-Bucket Cost Breakdown/.test(auditText),
-    `${auditPages} pages${/§1 — 8-Bucket/.test(auditText) ? ', §1 present' : ', §1 MISSING'}`);
+  check('export', 'STD', 'the audit pack is the full report (more pages than the core, §1 and §9b present)', auditPages > corePages && /§1 [—\x97] 8-Bucket Cost Breakdown/.test(auditText),
+    `${auditPages} pages${/§1 [—\x97] 8-Bucket/.test(auditText) ? ', §1 present' : ', §1 MISSING'}`);
   check('export', 'STD', 'the core report states the piece price without tooling and the initial tooling', /PIECE PRICE EXCLUDING TOOLING/.test(text) && /INITIAL TOOLING INVESTMENT/.test(text),
     /PIECE PRICE EXCLUDING TOOLING/.test(text) ? 'found' : 'NOT found');
   // Compare-routes review (Oct 2026): the comparison the screen drew is in both reports.
   const routesSheet = wb.Sheets['8-Routes'] ? (XLSX.utils.sheet_to_json(wb.Sheets['8-Routes'], { header: 1, raw: false }) as unknown[][]) : null;
   const routesRows = routesSheet ? routesSheet.filter(r => typeof r[0] === 'string' && /\(this costing\)/.test(String(r[0]))).length : 0;
   check('3', 'CR5', 'the Excel carries sheet 8-Routes with the costed route marked and the ladder; the core PDF prints the Route Comparison and the audit pack §9b',
-    routesRows >= 1 && !!routesSheet?.some(r => String(r[0] ?? '').startsWith('COST A PART BY ANNUAL VOLUME')) && /Route Comparison/.test(text) && /§9b — Route Comparison/.test(auditText),
-    `8-Routes ${routesSheet ? `${routesSheet.length} rows, ${routesRows} reference row(s)` : 'missing'}; core ${/Route Comparison/.test(text) ? 'present' : 'missing'}; audit §9b ${/§9b — Route Comparison/.test(auditText) ? 'present' : 'missing'}`);
+    routesRows >= 1 && !!routesSheet?.some(r => String(r[0] ?? '').startsWith('COST A PART BY ANNUAL VOLUME')) && /Route Comparison/.test(text) && /§9b [—\x97] Route Comparison/.test(auditText),
+    `8-Routes ${routesSheet ? `${routesSheet.length} rows, ${routesRows} reference row(s)` : 'missing'}; core ${/Route Comparison/.test(text) ? 'present' : 'missing'}; audit §9b ${/§9b [—\x97] Route Comparison/.test(auditText) ? 'present' : 'missing'}`);
   check('export', 'A6/#12', 'PDF opened: the stamp word for word', pdfStamp === stamp, String(pdfStamp));
   check('export', 'A6/#12', 'audit pack opened: the stamp word for word', auditStamp === stamp, String(auditStamp));
   check('export', 'A6', 'PDF opened: the headline', text.includes(money(hero)), `${money(hero)} ${text.includes(money(hero)) ? 'found' : 'NOT found'}`);
