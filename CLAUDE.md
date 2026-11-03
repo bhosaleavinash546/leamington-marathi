@@ -928,6 +928,15 @@ what is true** — nothing here has been compared with a price JLR paid.
   constant, `src/engine/uk-energy.ts` (DESNZ manufacturing + CCL, £0.182 / £0.046) — the generator also writes
   REGIONAL_DATA.UK.energy, `energy-uk` and the PCB `gb` row. Re-priced grades carry `UK_BOOK_BASIS` (2026-10), the rest
   `RATE_BASIS`. After a UK change re-run the India generator. `tests/uk-rate-book.test.ts`.
+- Seven-country CAD-to-Cost review (3 Nov 2026, `calculator/docs/review/seven-country-cad2c-review-2026-11-03.md`): 15 real
+  parts × UK CN IN PL HU DE SK at 200k / 5 yr ex-works, live (7,137 checks, 0 FAIL). Tools: `scripts/country-trace/`
+  `worked-example.py` (re-does every step from an exported workbook), `report-scan.py` (garbage scan of PDFs / workbooks),
+  `review-pack.py` (parts × countries workbook), `parts15-200k.json`; shadow models read region / volume / terms from the
+  dump (`scripts/arith-audit/dump-context.ts`). Rules it left: the CAD volume is read through `cadAnnualVolume()` (the
+  field is not in the page at step 3); rule £ are kept to 4 dp with the result printed (a UK-penny value breaks its own
+  arithmetic once converted); report text names machines / grades — never a library id, file, constant or research note
+  (`reportNoteText`); levers print only what a stack re-run shows; no country carries a UK overhead / packaging /
+  material / capital multiplier (at par, `tests/country-rates.test.ts`).
 - There is no commodity price feed: the simulated ticker (`server/routes/commodities.ts`, a random walk) was
   removed in Oct 2026. The live-metal `price-fetcher.ts` writes a display-only override table read by no costing
   path (its routes are admin-only).

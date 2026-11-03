@@ -15,16 +15,41 @@ independent checks enforce it (§2).
 
 ## 1. Results
 
-<!-- RESULTS -->
+Should-cost a part in £, each country at its own rate book and the FX its report prints (local-currency figures in the
+workbook). 200,000 a year, 5 years, ex-works. Final live run, 3 Nov 2026, 03:13.
+
+| Part | Commodity | UK | CN | IN | PL | HU | DE | SK | Lowest ÷ UK |
+|---|---|---|---|---|---|---|---|---|---|
+| FORGE_Hub_Flange | Forging | £16.69 | **£6.35** | £7.19 | £10.93 | £12.46 | £19.42 | £12.98 | 0.38 (CN) |
+| steering_knuckle_RH | Forging | £19.60 | **£8.55** | £9.94 | £13.67 | £15.47 | £22.63 | £15.85 | 0.44 (CN) |
+| PRCR002 | Cast + machine | £41.24 | £16.01 | **£14.48** | £28.12 | £27.86 | £53.01 | £30.20 | 0.35 (IN) |
+| Casting_Braket | Casting | £17.23 | £7.16 | **£6.81** | £11.67 | £11.61 | £22.92 | £12.78 | 0.40 (IN) |
+| IM_ECU_Cover | Injection moulding | £0.76 | **£0.49** | £0.56 | £0.67 | £0.66 | £0.81 | £0.67 | 0.65 (CN) |
+| Seat_Locking_Bracket | Sheet metal | £1.03 | **£0.52** | £0.71 | £0.92 | £0.90 | £1.04 | £0.91 | 0.50 (CN) |
+| AL_Battery_Rail | Al extrusion | £32.73 | **£22.77** | £27.85 | £31.64 | £32.52 | £33.96 | £32.67 | 0.70 (CN) |
+| BM_Air_Duct | Blow moulding | £0.90 | **£0.68** | £0.69 | £0.76 | £0.76 | £0.96 | £0.76 | 0.75 (CN) |
+| ROTO_Header_Tank | Rotomoulding | £14.48 | £5.55 | **£5.34** | £8.79 | £8.85 | £17.22 | £9.55 | 0.37 (IN) |
+| TF_Trim_Cover | Thermoforming | £2.13 | **£1.22** | £1.25 | £1.63 | £1.62 | £2.66 | £1.70 | 0.57 (CN) |
+| COMP_Hat_Stiffener | Composites | £69.30 | £33.97 | **£33.59** | £47.42 | £45.94 | £81.61 | £48.79 | 0.48 (IN) |
+| EXT_Vent_Pipe | Polymer extrusion | £0.75 | **£0.51** | £0.55 | £0.65 | £0.67 | £0.82 | £0.68 | 0.68 (CN) |
+| RUB_Grommet | Rubber | £0.27 | £0.11 | **£0.11** | £0.17 | £0.17 | £0.31 | £0.18 | 0.40 (IN) |
+| test-gear-m3-z38 | Gear | £17.94 | **£7.16** | £9.74 | £14.51 | £14.54 | £19.29 | £14.53 | 0.40 (CN) |
+| MACH_Hydraulic_Manifold | Machining | £21.17 | £11.23 | **£10.37** | £16.01 | £16.06 | £25.05 | £16.84 | 0.49 (IN) |
+| **Mean ÷ UK** | | 1.00 | 0.51 | 0.56 | 0.76 | 0.77 | 1.15 | 0.80 | |
+
+Germany is above the UK on every part (IG Metall labour, German energy and capital); China and India are lowest. The
+gap is widest where labour and machine hours dominate (castings, forgings, rotomoulding: 0.35–0.44 of UK) and
+narrowest where traded material dominates (aluminium extrusion 0.70, blow moulding 0.75 — the metal / resin costs
+about the same everywhere). These are the tool's figures, not quotes: see §6.
 
 ## 2. How the costs were checked
 
 | Check | What it does | Result |
 |---|---|---|
-| Live harness (`e2e/cad-to-cost-trace.ts`) | Drives every part through the screen in each country; ~146 checks a part (route, questions, buckets, tooling basis, band, compare-routes reference = headline, PDF = Excel = screen, stamp names the country's book, axe WCAG 2.1 AA) | <!-- LIVE --> |
-| Step-by-step re-do (`scripts/country-trace/worked-example.py`) | Reads each exported workbook and re-does every step from the printed inputs: material (gross × price − scrap + consumables + energy), each operation (rate × cycle ÷ OEE ÷ parts a cycle; labour rate × time × crew ÷ efficiency), tooling (investment ÷ amortisation), overhead %, margin %, total | <!-- STEPS --> |
+| Live harness (`e2e/cad-to-cost-trace.ts`) | Drives every part through the screen in each country; ~146 checks a part (route, questions, buckets, tooling basis, band, compare-routes reference = headline, PDF = Excel = screen, stamp names the country's book, axe WCAG 2.1 AA) | **7,137 PASS · 0 FAIL** (105 / 105 parts costed) |
+| Step-by-step re-do (`scripts/country-trace/worked-example.py`) | Reads each exported workbook and re-does every step from the printed inputs: material (gross × price − scrap + consumables + energy), each operation (rate × cycle ÷ OEE ÷ parts a cycle; labour rate × time × crew ÷ efficiency), tooling (investment ÷ amortisation), overhead %, margin %, total | **1,920 steps on 105 costings — all hold**; buckets re-add to the total on all 105 |
 | Shadow models (`scripts/arith-audit/*.ts`) | 13 independent re-implementations re-cost every part from its measured geometry in the country's own book, without calling the code they check | 0 FAIL in all 7 countries (§4) |
-| Report scan (`scripts/country-trace/report-scan.py`) | Reads every PDF and workbook for leaked placeholders, library ids in prose, wrong-currency money, research notes, the stated terms and volume | <!-- SCAN --> |
+| Report scan (`scripts/country-trace/report-scan.py`) | Reads every PDF and workbook for leaked placeholders, library ids in prose, wrong-currency money, research notes, the stated terms and volume | 210 reports: no placeholder, no library id in prose, no £ in a local-currency report other than FX quotes ("¥8.88/£"); terms and volume stated |
 | Independent read | A reviewer with no part in the build read 12 PDFs + 12 workbooks line by line (6 parts × UK and China) | 15 High / 20 Medium / ~12 Low findings — §3 |
 
 ## 3. Bugs found and fixed
