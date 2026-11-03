@@ -5,6 +5,13 @@
  */
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from './types.js';
 import { REGIONAL_DATA, resolveManufacturingRegion, type ManufacturingRegion } from './regional-rates.js';
+import {
+  machiningOpsOf, machiningRoutingVerdict, routingSavingIsMaterial, utilisationReference, bandText, toolingBoughtByLife,
+  remeltableAlloy,
+} from './suggestion-facts.js';
+import { CASTING_PROCESS_REFERENCE } from './modules/casting-advisor.js';
+
+const bandPct = (b: readonly [number, number]) => `${Math.round(b[0] * 100)}–${Math.round(b[1] * 100)} %`;
 
 export type InsightType = 'critical' | 'warning' | 'opportunity' | 'benchmark' | 'info';
 export type InsightCategory = 'material' | 'process' | 'labour' | 'tooling' | 'commercial' | 'regional' | 'design';
@@ -208,20 +215,18 @@ export function currencySymbol(code: string): string {
 
 // ─── Routing awareness ────────────────────────────────────────────────────────
 
-/** Synthetic entries in the operation list that are not machining stations. */
-const SYNTHETIC_OP = /setup \(amortised\)|\bcast|mould|mold|pour|shakeout|melt|foundry/i;
-const FIVE_AXIS_ID = /vmc5|umc|dmu|5[\s-]?ax/i;
+/** Multi-axis machines: a 5-axis centre, or the twin-pallet HMC on a 4th-axis tombstone (the volume cell reaches four
+ *  sides in one clamping — a stub axle on it was told to "quote a multi-axis consolidation"; 7-country review). */
+const FIVE_AXIS_ID = /vmc5|umc|dmu|5[\s-]?ax|hmc/i;
 
-/** The real machining operations behind an operation list — synthetic entries
- *  (the amortised-setup pseudo-op, the casting pour) excluded. */
+/** The real machining operations behind an operation list — synthetic entries (the amortised-setup pseudo-op, the
+ *  casting pour), bench steps, handling and the foundry's fettling excluded (suggestion-facts.ts). CUTTING operations
+ *  only: an extrusion's press, ageing oven, saw and pack bench were counted as "7 machining operations across 5
+ *  stations" (Germany live review, Oct 2026), and a sand casting's "Fettling (gate / riser removal, grind)" bench as a
+ *  third machining station (7-country review, 3 Nov 2026). */
 export function realMachiningOps(input: UniversalStackInput): UniversalStackInput['operations'] {
-  // CUTTING operations only: an extrusion's press, ageing oven, saw and pack bench, and the load / clamp / deburr rows,
-  // were counted as "7 machining operations across 5 stations" (Germany live review, Oct 2026).
-  return (input.operations ?? []).filter(o => !SYNTHETIC_OP.test(o.operationName ?? '')
-    && CUTTING_OP.test(o.operationName ?? '') && !HANDLING_OP.test(o.operationName ?? ''));
+  return machiningOpsOf(input);
 }
-const CUTTING_OP = /mill|drill|turn|bor(e|ing)|tap|ream|grind|machin|fabrication|face|hob|shap/i;
-const HANDLING_OP = /load|clamp|unload|deburr|gauge|inspect|pack|change-over|set-?up/i;
 
 /** The REAL machining stations behind an operation list: synthetic ops
  *  excluded, distinct machines counted, consolidation recognised. */
@@ -260,6 +265,7 @@ export function realMachiningStations(input: UniversalStackInput): {
 function materialDominanceActions(
   commodity: CommodityType,
   matUtilPct: number,
+  part: { boughtOut: boolean; remeltable: boolean } = { boughtOut: true, remeltable: true },
 ): string[] {
   const commercial = [
     'Negotiate a long-term agreement with the supplier for price-ceiling protection',
@@ -341,7 +347,8 @@ function materialDominanceActions(
         // On a casting whose gating is remelted the utilisation is melt loss only — not a yield lever to quote.
         ...(matUtilPct < 90 ? [`Material utilisation at ${matUtilPct.toFixed(0)}% — re-cost with a higher utilisation to see what it is worth`] : []),
         'Review the machining stock left on the casting / forging — it is bought, poured and then cut away',
-        'Explore secondary/recycled alloy grades that meet functional spec',
+        // Only where a secondary / remelt grade exists for the metal (non-ferrous) — not on iron or steel (7-country review).
+        ...(part.remeltable ? ['Explore secondary/recycled alloy grades that meet functional spec'] : []),
         'Confirm returns and scrap recovery are credited back in the quote',
         ...commercial,
       ];
@@ -357,7 +364,9 @@ function materialDominanceActions(
     default:
       return [
         `Material utilisation at ${matUtilPct.toFixed(0)}%` + ' — re-cost with a higher utilisation to see what it is worth',
-        'Re-cost the bought-out content at the target volume',
+        // Only a part that HAS bought-out content (an extruded rail was told to re-cost bought-out content it had none of).
+        ...(part.boughtOut ? ['Re-cost the bought-out content at the target volume'] : []),
+        ...(part.remeltable ? ['Review the alloy against the load case — a secondary / lower-premium alloy where the specification allows'] : []),
         ...commercial,
       ];
   }
@@ -387,29 +396,41 @@ export function generateInsights(
   };
 
   // ── Material dominance ────────────────────────────────────────────────────
-  if (pcts.mat > bm.materialPct[1]) {
-    const excess = pcts.mat - bm.materialPct[1];
+  // An observation, not a defect: a material share above an engineering-estimate band is where the levers are, and it
+  // is normal at volume — it was printed as [CRITICAL] on a stamping and an extruded rail, the rail judged against the
+  // MACHINING band because extrusion has none (7-country review, 3 Nov 2026). Only a commodity's own band is named.
+  const ownBand = Object.prototype.hasOwnProperty.call(COMMODITY_BENCHMARKS, commodity);
+  const rm = input.rawMaterial;
+  const partFacts = {
+    boughtOut: (rm.boughtIn?.cost ?? 0) > 0 || rm.directCost !== undefined,
+    remeltable: remeltableAlloy(input, _library),
+  };
+  if (ownBand ? pcts.mat > bm.materialPct[1] : pcts.mat > 50) {
+    const excess = ownBand ? pcts.mat - bm.materialPct[1] : 0;
     insights.push({
-      type: 'critical',
+      type: 'opportunity',
       category: 'material',
       title: 'Material is the dominant cost driver',
-      finding: `Raw material at ${pcts.mat.toFixed(1)}% of total exceeds the ${commodity.replace(/_/g, ' ')} reference band's ceiling of ${bm.materialPct[1]}% (engineering estimate). Material is controlling this part's economics.`,
+      finding: ownBand
+        ? `Raw material at ${pcts.mat.toFixed(1)}% of total is above the ${commodity.replace(/_/g, ' ')} reference band's ceiling of ${bm.materialPct[1]}% (engineering estimate) — the material is where this part's levers are.`
+        : `Raw material at ${pcts.mat.toFixed(1)}% of total is the largest share of this part's cost — the material is where its levers are (no reference band is held for ${commodity.replace(/_/g, ' ')}).`,
       impact: 'High',
       potentialSavingPct: Math.min(excess * 0.4, 12),
       actions: materialDominanceActions(
         commodity,
-        input.rawMaterial.materialUtilization * 100,
+        rm.materialUtilization * 100,
+        partFacts,
       ),
-      benchmark: {
+      ...(ownBand ? { benchmark: {
         label: 'Material %',
         yourValue: pcts.mat,
         unit: '%',
         industryLow: bm.materialPct[0],
         industryHigh: bm.materialPct[1],
-        status: 'concern',
-      },
+        status: 'watch' as const,
+      } } : {}),
     });
-  } else if (pcts.mat < bm.materialPct[0] && commodity !== 'cast_and_machine') {
+  } else if (ownBand && pcts.mat < bm.materialPct[0] && commodity !== 'cast_and_machine') {
     insights.push({
       type: 'info',
       category: 'material',
@@ -426,16 +447,26 @@ export function generateInsights(
   }
 
   // ── Material utilisation ──────────────────────────────────────────────────
-  if (input.rawMaterial.directCost === undefined && input.rawMaterial.materialUtilization < 0.70) {
-    const util = input.rawMaterial.materialUtilization * 100;
+  // ONE reference per process — the band the rules use (suggestion-facts.ts) — and only below it: a hub flange at 68 %
+  // was "below the forging reference of 75%" while its rules costed it on 55–80 % (7-country review, 3 Nov 2026). A
+  // casting whose gating is remelted reports melt loss, not a yield — no utilisation lever.
+  const utilRef = utilisationReference(commodity);
+  const utilNow = rm.materialUtilization;
+  if (rm.directCost === undefined && !rm.lossIsNotScrap && utilNow > 0
+      && (utilRef ? utilNow < utilRef.band[0] : utilNow < 0.70)) {
+    const util = utilNow * 100;
 
     insights.push({
       type: 'warning',
       category: 'material',
       title: 'Low material utilisation — high scrap rate',
-      finding: `Material utilisation at ${util.toFixed(0)}% is below the ${commodity.replace(/_/g, ' ')} reference of ${(bm.typicalMatUtil * 100).toFixed(0)}% (engineering estimate). You are paying for ${((1 - input.rawMaterial.materialUtilization) / input.rawMaterial.materialUtilization * 100).toFixed(0)}% more raw material than ends up in the part.`,
+      finding: `Material utilisation at ${util.toFixed(0)}% is `
+        + (utilRef
+          ? `below the ${utilRef.label} reference band of ${bandText(utilRef)} (${utilRef.source}).`
+          : 'below 70 % (CostVision heuristic threshold; no process reference band is held).')
+        + ` You are paying for ${((1 - utilNow) / utilNow * 100).toFixed(0)}% more raw material than ends up in the part.`,
       impact: 'Medium',
-      potentialSavingPct: Math.min(8, (bm.typicalMatUtil - input.rawMaterial.materialUtilization) * 20),
+      potentialSavingPct: Math.min(8, Math.max(0, ((utilRef ? utilRef.band[0] : 0.70) - utilNow) * 20)),
       // Say what THIS process loses: "nesting" was printed on a machined block (Germany review).
       actions: [
         ...(['sheet_metal', 'sheet_metal_fab', 'biw_assembly', 'thermoforming'].includes(commodity)
@@ -501,7 +532,11 @@ export function generateInsights(
 
   // ── Tooling dominance ─────────────────────────────────────────────────────
   if (pcts.tool > bm.toolingPct[1]) {
-    const volumeToHalve = input.tooling.amortizationVolume * 2;
+    const amortVol = input.tooling.amortizationVolume;
+    // Say what THIS costing's tooling does with volume: "doubling the volume halves the tooling share" was printed on a
+    // stamping whose tooling per part rose from £1.03 at 200k to £1.13 at 250k (a second die set) and on a composite
+    // with 1,778 replacement tools (7-country review, 3 Nov 2026). Halving holds only for one fixed investment.
+    const life = toolingBoughtByLife(input, commodity);
     // A volume lever built on an ASSUMED volume is a sensitivity note, not an
     // instruction — a real bumper report told the reader to "increase volume"
     // when no volume had ever been entered.
@@ -513,12 +548,15 @@ export function generateInsights(
       title: volumeAssumed
         ? 'Tooling amortisation is volume-sensitive — and the volume is assumed'
         : 'Tooling amortisation is a significant cost driver',
-      finding: `Tooling at ${pcts.tool.toFixed(1)}% of the piece price exceeds the reference band's ${bm.toolingPct[1]}% (engineering estimate). This is volume-sensitive.`
+      finding: `Tooling at ${pcts.tool.toFixed(1)}% of the piece price exceeds the reference band's ${bm.toolingPct[1]}% (engineering estimate).`
+        + (life.byLife ? ' The tool count follows the volume (tool life), so the share does not fall in proportion to it.' : ' It is a fixed investment, so the share is volume-sensitive.')
         + (volumeAssumed ? ` The ${input.tooling.amortizationVolume.toLocaleString()} amortisation volume is a tool assumption — confirm it before acting on any figure below.` : ''),
       impact: volumeAssumed ? 'Medium' : 'High',
       potentialSavingPct: Math.min(10, (pcts.tool - bm.toolingPct[1]) * 0.4),
       actions: [
-        `Amortised over ${volumeToHalve.toLocaleString()} parts (double the volume) the tooling share per part halves`,
+        life.byLife
+          ? `Tooling per part is set by tool life here (${life.why}): more volume buys more tools or sets, so it does not dilute this line in proportion — re-cost at the new volume for the figure`
+          : `The tooling is one investment amortised over ${amortVol.toLocaleString('en-GB')} parts (${life.why}): amortised over ${(amortVol * 2).toLocaleString('en-GB')} parts it would be half as much a part`,
         'Evaluate family tooling (multiple parts per die) to spread NRE across higher volumes',
         'Negotiate supplier tooling ownership with amortisation in piece price',
         'Consider soft tooling (aluminium die) for prototyping at 70-80% lower tooling cost',
@@ -562,22 +600,17 @@ export function generateInsights(
   }
 
   // ── Regional arbitrage opportunity ───────────────────────────────────────
-  // Compared against the country the part is COSTED in, from the country table
-  // (REGIONAL_DATA) — conversion cost ≈ ½ labour + ½ machine-hour multiplier. It
-  // used to quote a fixed 8-country index against the UK whatever the country, so a
-  // part costed in Egypt was told China is "62% cheaper". Country audit, Oct 2026.
+  // Compared against the country the part is COSTED in, from the country table (REGIONAL_DATA): fires only when some
+  // country's labour + machine-hour rates are well below this one's. It names NO country and NO figure: a fixed
+  // "India: a quick index of ~67% lower conversion" printed the same on every part beside a country table that re-costs
+  // each part (hub 86 %, ECU 59 % …) — the table is the figure (7-country review, 3 Nov 2026).
   const labourIntensity = pcts.lab + pcts.proc; // Combined conversion cost
   const here = resolveManufacturingRegion(ctx?.region ?? 'UK') ?? 'UK';
   const conv = (c: ManufacturingRegion) => 0.5 * REGIONAL_DATA[c].labour.semiskilled / REGIONAL_DATA.UK.labour.semiskilled
     + 0.5 * REGIONAL_DATA[c].machineRateMultiplier;
-  const cheaper = (Object.keys(REGIONAL_DATA) as ManufacturingRegion[])
-    .filter(c => c !== here && conv(c) <= 0.7 * conv(here))
-    .sort((x, y) => conv(x) - conv(y));
-  if (labourIntensity > 25 && cheaper.length) {
-    const pick = [...new Set([...cheaper.slice(0, 2), ...cheaper.filter(c => ['PL', 'CZ', 'MX', 'TR', 'MA'].includes(c)).slice(0, 2)])];
-    const cut = (c: ManufacturingRegion) => Math.round((1 - conv(c) / conv(here)) * 100);
-    const best = pick[0];
-    const saving = cut(best) * (labourIntensity / 100);
+  const anyCheaper = (Object.keys(REGIONAL_DATA) as ManufacturingRegion[])
+    .some(c => c !== here && conv(c) <= 0.7 * conv(here));
+  if (labourIntensity > 25 && anyCheaper) {
     insights.push({
       type: 'opportunity',
       category: 'regional',
@@ -586,14 +619,9 @@ export function generateInsights(
       finding: `Conversion (process + labour) is ${labourIntensity.toFixed(0)}% of the cost in ${REGIONAL_DATA[here].name}. `
         + 'Countries with lower labour and machine-hour costs would cost that share for less.',
       impact: 'High',
-      potentialSavingPct: Math.min(20, saving * 0.7),
+      potentialSavingPct: 0,
       actions: [
-        // the regional comparison re-costs the part in each country; this index disagreed with it on a Poland report
-        // ("India ~62% below" beside a table that showed 79%) — the table is the figure (live review, 10 Oct 2026). FIRST:
-        // the PDF prints two actions, and the pointer was the third (Germany review: "India ~85%" beside a table at 89%).
         'For the figure, use the regional comparison table: it re-costs this part in each country (rates, materials, energy, tools and logistics)',
-        ...pick.map(c => `${REGIONAL_DATA[c].name}: a quick index of ~${cut(c)}% lower conversion than ${REGIONAL_DATA[here].name} `
-          + '(½ labour + ½ machine-hour ratio) — an index, not a costing; the table above is the figure'),
         'Offset: logistics, quality risk, IP protection, lead time, and working capital',
         'Recommend pilot batch from 2 alternative regions before full transition',
       ],
@@ -637,16 +665,18 @@ export function generateInsights(
   }
 
   // ── Casting-specific: Low casting yield (runner/gating waste) ─────────────
+  // The same bands the casting rules take their yield from (casting-advisor.ts) — the text said "HPDC 65–75 %; sand /
+  // gravity 75–85 %" while the rules used 55–75 % / 60–80 % (7-country review, 3 Nov 2026). Gating remelted → melt loss.
   if ((commodity === 'casting' || commodity === 'cast_and_machine') &&
-      input.rawMaterial.directCost === undefined &&
-      input.rawMaterial.materialUtilization < 0.68) {
+      input.rawMaterial.directCost === undefined && !input.rawMaterial.lossIsNotScrap &&
+      input.rawMaterial.materialUtilization < CASTING_PROCESS_REFERENCE.sand.yieldBand[0]) {
     const util = input.rawMaterial.materialUtilization * 100;
-    const benchmarkUtil = commodity === 'casting' ? 75 : 78;
+    const benchmarkUtil = Math.round(CASTING_PROCESS_REFERENCE.sand.yieldBand[0] * 100);
     insights.push({
       type: 'warning',
       category: 'material',
       title: 'Low casting yield — excess runner/gating material',
-      finding: `Casting yield of ${util.toFixed(0)}% means ${((1/input.rawMaterial.materialUtilization - 1)*100).toFixed(0)}% of poured metal is returned as runner/gate scrap. Reference band (engineering estimate, not a sourced survey): HPDC 65–75%; sand / gravity 75–85%. Scrap recovery credits are partial — you are paying for metal that doesn't end up in the part.`,
+      finding: `Casting yield of ${util.toFixed(0)}% means ${((1/input.rawMaterial.materialUtilization - 1)*100).toFixed(0)}% of poured metal is returned as runner/gate scrap. Reference band (the casting advisor's pour-yield bands, engineering estimate, not a sourced survey): HPDC ${bandPct(CASTING_PROCESS_REFERENCE.hpdc.yieldBand)}; sand ${bandPct(CASTING_PROCESS_REFERENCE.sand.yieldBand)}; gravity ${bandPct(CASTING_PROCESS_REFERENCE.gravity.yieldBand)}. Scrap recovery credits are partial — you are paying for metal that doesn't end up in the part.`,
       impact: 'Medium',
       potentialSavingPct: Math.min(6, (benchmarkUtil/100 - input.rawMaterial.materialUtilization) * 15),
       actions: [
@@ -660,8 +690,8 @@ export function generateInsights(
         label: 'Casting Yield',
         yourValue: util,
         unit: '%',
-        industryLow: 65,
-        industryHigh: 85,
+        industryLow: Math.round(CASTING_PROCESS_REFERENCE.hpdc.yieldBand[0] * 100),
+        industryHigh: Math.round(CASTING_PROCESS_REFERENCE.gravity.yieldBand[1] * 100),
         status: 'watch',
       },
     });
@@ -728,20 +758,40 @@ export function generateInsights(
   // shipped with that self-critique in §11; this is the fix.
   const machiningStations = realMachiningStations(input);
   if (machiningStations.opCount > 4 && machiningStations.stations > 2 && !machiningStations.consolidated) {
-    insights.push({
-      type: 'info',
-      category: 'design',
-      lever: 'supplier',
-      title: 'Split routing — consolidation worth quoting',
-      finding: `${machiningStations.opCount} machining operation(s) across ${machiningStations.stations} separate stations. Each station is a re-fixturing: fixture cost, handling time, and datum-transfer variation.`,
-      impact: 'Medium',
-      potentialSavingPct: Math.min(8, (machiningStations.stations - 1) * 1.5),
-      actions: [
-        'Quote a multi-axis (4/5-axis) consolidation of the milled and drilled features against the split routing',
-        'Redesign features (deep pockets, undercuts) that force additional setups',
-        'Evaluate whether all features are functionally necessary',
-      ],
-    });
+    // The router's verdict on this content (suggestion-facts.ts): never tell the reader to quote a 5-axis consolidation
+    // the router ranked and rejected — §11 said "quote a multi-axis consolidation" while §12 said 5-axis "does NOT win"
+    // (7-country review, 3 Nov 2026).
+    const v = machiningRoutingVerdict(input, commodity, ctx?.library ?? _library);
+    if (v && (v.alreadyChosen || !routingSavingIsMaterial(v))) {
+      insights.push({
+        type: 'info',
+        category: 'design',
+        lever: 'verified',
+        title: 'Split routing is the cost-ranked choice',
+        finding: `${machiningStations.opCount} machining operation(s) across ${machiningStations.stations} stations — the routing optimiser ranked the alternatives `
+          + `(machine + operator) and none is materially cheaper for this content${v.fiveAxisLoses ? '; 5-axis consolidation was ranked and does not win' : ''}.`,
+        impact: 'Low',
+        potentialSavingPct: 0,
+        actions: ['Use the routing comparison in the derivation trace to defend the process cost line'],
+      });
+    } else {
+      insights.push({
+        type: 'info',
+        category: 'design',
+        lever: 'supplier',
+        title: 'Split routing — consolidation worth quoting',
+        finding: `${machiningStations.opCount} machining operation(s) across ${machiningStations.stations} separate stations. Each station is a re-fixturing: fixture cost, handling time, and datum-transfer variation.`,
+        impact: 'Medium',
+        potentialSavingPct: Math.min(8, (machiningStations.stations - 1) * 1.5),
+        actions: [
+          v && !v.consolidationWins
+            ? 'Re-quote the milled and drilled features on the cost-ranked machine mix — 5-axis consolidation was ranked and does not win on this part'
+            : 'Quote a multi-axis (4/5-axis) consolidation of the milled and drilled features against the split routing',
+          'Redesign features (deep pockets, undercuts) that force additional setups',
+          'Evaluate whether all features are functionally necessary',
+        ],
+      });
+    }
   } else if (machiningStations.opCount > 4 && machiningStations.consolidated) {
     insights.push({
       type: 'info',

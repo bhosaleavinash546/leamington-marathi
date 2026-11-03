@@ -4,11 +4,12 @@
  * Follow the same pattern as insights.ts.
  */
 import type { PartCostResult, UniversalStackInput, CommodityType } from './types.js';
-import { realMachiningStations, realMachiningOps, type SuggestionContext } from './insights.js';
+import { realMachiningStations, type SuggestionContext } from './insights.js';
+import { generateIdeaLevers, recostLevers, RX_INSPECT, FINISH_CAUSE, manualFinishingOp } from './idea-levers.js';
 import {
-  optimiseMachiningRouting, costRoutingAsGiven, classifyOpName, standardBatchSize,
-} from './routing-optimiser.js';
-import { generateIdeaLevers, recostLevers, RX_INSPECT, RX_REWORK } from './idea-levers.js';
+  machiningRoutingVerdict, routingSavingIsMaterial, utilisationReference, bandText, toolingBoughtByLife,
+  type RoutingVerdict,
+} from './suggestion-facts.js';
 
 export type DFMSeverity = 'critical' | 'major' | 'minor' | 'opportunity';
 export type DFMCategory = 'geometry' | 'material' | 'process' | 'tolerance' | 'tooling' | 'assembly' | 'automation' | 'commercial';
@@ -114,6 +115,15 @@ export function generateDFMDFA(
   // already consolidated on one 5-axis machine, including routings this tool
   // itself chose. Void ctx keeps every non-routing rule at its old behaviour.
   const st = realMachiningStations(input);
+  const splitRouting = st.opCount > 4 && st.stations > 2 && !st.consolidated;
+  // The router's verdict on the costed machining content (suggestion-facts.ts) — read once, so the DFM issue, the DFA
+  // issue, the §12 lever and the §11 insight say the same thing. A lever may not propose a routing the router already
+  // ranked and rejected (7-country review, 3 Nov 2026).
+  const routing: RoutingVerdict | null = splitRouting ? machiningRoutingVerdict(input, commodity, ctx?.library) : null;
+  const routingTaken = !!routing && (routing.alreadyChosen || !routingSavingIsMaterial(routing));
+  const routingAction = routing && !routing.consolidationWins
+    ? 'Re-quote on the cost-ranked machine mix — 5-axis consolidation was ranked and does not win on this part'
+    : 'Quote a multi-axis consolidation against the split routing';
   const tot = result.total || 1;
   const matPct  = (result.breakdown.rawMaterial / tot) * 100;
   const procPct = (result.breakdown.process / tot) * 100;
@@ -151,26 +161,47 @@ export function generateDFMDFA(
 
   const dfmIssues: DFMIssue[] = [];
 
-  // All-commodity rules — material utilisation
-  if (matUtil < 0.60) {
+  // All-commodity rules — material utilisation. ONE reference per process, the band the rules use (suggestion-facts.ts):
+  // "below the typical 72% benchmark for this commodity" and "below the 75% forging benchmark" sat beside a forging
+  // costed on a 55–80 % band and a §3 note of 75–90 % (7-country review, 3 Nov 2026). A casting whose gating is remelted
+  // reports melt loss, not a yield; pass-through material has no utilisation.
+  const utilRef = utilisationReference(commodity);
+  const utilApplies = input.rawMaterial?.directCost === undefined && !input.rawMaterial?.lossIsNotScrap && matUtil > 0;
+  const UTIL_FIX: Partial<Record<CommodityType, string>> = {
+    forging: 'Optimise preform design to reduce flash; closed-die forging with a controlled flash land; review the bar drop',
+    sheet_metal: 'Optimise nesting and the strip layout; review the blank outline to reduce the skeleton',
+    sheet_metal_fab: 'Optimise the nest on the sheet; review the blank outline to reduce the offcut',
+    machining: 'Buy stock nearer the finished envelope (a nearer stocked size, saw-cut blank or near-net preform)',
+    extrusion: 'Optimise the cut plan against the order lengths; recycle offcuts closed-loop; negotiate a scrap credit',
+    aluminium_extrusion: 'Optimise the mill length and cut-to-length pattern; negotiate the scrap credit at the billet price',
+  };
+  const UTIL_TITLE: Partial<Record<CommodityType, string>> = {
+    forging: 'Low forging material utilisation (below the closed-die band)',
+    sheet_metal: 'Blank nesting below the stamping reference',
+    sheet_metal_fab: 'Blank nesting below the sheet reference',
+    extrusion: 'High start-up and offcut scrap (below the extrusion reference)',
+    aluminium_extrusion: 'High start-up and offcut scrap (below the extrusion reference)',
+  };
+  if (utilApplies && utilRef && matUtil < utilRef.band[0]) {
+    const deep = matUtil < utilRef.band[0] - 0.10;
     dfmIssues.push({
-      severity: 'critical',
+      severity: deep ? 'critical' : 'major',
       category: 'geometry',
-      title: 'Low material utilisation (<60%)',
-      description: `Material utilisation at ${(matUtil * 100).toFixed(0)}% is critically low. Over 40% of purchased material becomes waste.`,
-      savingPct: 12,
+      title: UTIL_TITLE[commodity] ?? 'Material utilisation below the process reference',
+      description: `Material utilisation at ${(matUtil * 100).toFixed(0)}% is below the ${utilRef.label} reference band of ${bandText(utilRef)} (${utilRef.source}).`,
+      savingPct: deep ? 12 : 6,
       risk: 'Medium',
-      recommendation: 'Improve nesting/billet size; consider near-net-shape process',
+      recommendation: UTIL_FIX[commodity] ?? 'Review blank / billet sizing and the offcut; explore a near-net-shape pre-form',
     });
-  } else if (matUtil >= 0.60 && matUtil < 0.72) {
+  } else if (utilApplies && !utilRef && matUtil < 0.60) {
     dfmIssues.push({
       severity: 'major',
       category: 'geometry',
-      title: 'Below-benchmark material utilisation',
-      description: `Material utilisation at ${(matUtil * 100).toFixed(0)}% is below the typical 72% benchmark for this commodity.`,
-      savingPct: 6,
-      risk: 'Low',
-      recommendation: 'Review blank/billet sizing; optimise nesting layout; explore near-net-shape pre-forms',
+      title: 'Low material utilisation (<60%)',
+      description: `Material utilisation at ${(matUtil * 100).toFixed(0)}% — over 40% of purchased material does not ship in the part (60 % is a CostVision heuristic threshold; no process reference band is held).`,
+      savingPct: 8,
+      risk: 'Medium',
+      recommendation: 'Improve nesting/billet size; consider near-net-shape process',
     });
   }
 
@@ -197,26 +228,34 @@ export function generateDFMDFA(
     });
   }
 
-  // All-commodity rules — tooling
+  // All-commodity rules — tooling. Where the tooling is bought by tool life, more volume buys more tools: the lever is
+  // tool life and tool cost, not volume (7-country review, 3 Nov 2026).
+  const toolLife = toolingBoughtByLife(input, commodity);
   if (toolPct > 20) {
     dfmIssues.push({
       severity: 'major',
       category: 'tooling',
       title: 'High tooling amortisation (>20% of part cost)',
-      description: `Tooling at ${toolPct.toFixed(1)}% of part cost is significantly above the 12% benchmark. Volume-sensitive lever.`,
+      description: `Tooling at ${toolPct.toFixed(1)}% of part cost is significantly above the 12% benchmark (CostVision heuristic). `
+        + (toolLife.byLife ? 'Its tool count is set by tool life × volume, so volume does not dilute it in proportion.' : 'One fixed investment — a volume-sensitive lever.'),
       savingPct: 8,
       risk: 'Low',
-      recommendation: 'Review tool life, increase annual volume, consider modular tooling',
+      recommendation: toolLife.byLife
+        ? 'Extend tool life (surface treatment, maintenance) and challenge the tool price; consider modular tooling'
+        : 'Review tool life, increase annual volume, consider modular tooling',
     });
   } else if (toolPct > 12 && toolPct <= 20) {
     dfmIssues.push({
       severity: 'minor',
       category: 'tooling',
       title: 'Elevated tooling amortisation (12–20%)',
-      description: `Tooling at ${toolPct.toFixed(1)}% of part cost is above the typical range. Consider volume increase or tooling cost reduction.`,
+      description: `Tooling at ${toolPct.toFixed(1)}% of part cost is above the typical range (CostVision heuristic). `
+        + (toolLife.byLife ? 'Its tool count is set by tool life × volume — consider tool-life extension or tooling cost reduction.' : 'Consider volume increase or tooling cost reduction.'),
       savingPct: 4,
       risk: 'Low',
-      recommendation: 'Evaluate family tooling or increase volume to reduce per-part tooling cost',
+      recommendation: toolLife.byLife
+        ? 'Evaluate family tooling or tool-life extension to reduce per-part tooling cost'
+        : 'Evaluate family tooling or increase volume to reduce per-part tooling cost',
     });
   }
 
@@ -342,7 +381,18 @@ export function generateDFMDFA(
   if (commodity === 'machining' || commodity === 'cast_and_machine') {
     // cast_and_machine used to be absent here while the DFA block below was
     // ungated — the same part scored DFM 10/10 and DFA MAJOR for the same fact.
-    if (st.opCount > 4 && st.stations > 2 && !st.consolidated) {
+    if (splitRouting && routingTaken) {
+      dfmIssues.push({
+        severity: 'opportunity',
+        category: 'geometry',
+        lever: 'verified',
+        title: `Split routing across ${st.stations} stations is the cost-ranked choice`,
+        description: `${st.opCount} machining operations across ${st.stations} stations — the routing optimiser ranked the alternatives (machine + operator) and none is materially cheaper for this content.`,
+        savingPct: 0,
+        risk: 'Low',
+        recommendation: 'Use the routing comparison in the derivation trace as negotiation evidence',
+      });
+    } else if (splitRouting) {
       dfmIssues.push({
         severity: 'major',
         category: 'geometry',
@@ -351,7 +401,7 @@ export function generateDFMDFA(
         description: `${st.opCount} machining operations across ${st.stations} separate stations. Each station adds fixture cost, handling time, and process variation.`,
         savingPct: 10,
         risk: 'Medium',
-        recommendation: 'Quote a multi-axis consolidation against the split routing',
+        recommendation: routingAction,
       });
     }
     if (procPct > 40) {
@@ -394,17 +444,7 @@ export function generateDFMDFA(
   }
 
   if (commodity === 'forging') {
-    if (matUtil < 0.75) {
-      dfmIssues.push({
-        severity: 'major',
-        category: 'material',
-        title: 'Low forging material utilisation (<75%)',
-        description: `Material utilisation at ${(matUtil * 100).toFixed(0)}% is below the 75% forging benchmark. Flash and scale loss is excessive.`,
-        savingPct: 8,
-        risk: 'Medium',
-        recommendation: 'Optimise preform design to reduce flash; consider closed-die forging with controlled flash land',
-      });
-    }
+    // (utilisation: the all-commodity rule above, on the closed-die band the forging rules use)
     if (toolPct > 15) {
       dfmIssues.push({
         severity: 'major',
@@ -419,17 +459,7 @@ export function generateDFMDFA(
   }
 
   if (commodity === 'sheet_metal' || commodity === 'sheet_metal_fab') {
-    if (matUtil < 0.65) {
-      dfmIssues.push({
-        severity: 'critical',
-        category: 'geometry',
-        title: 'Blank nesting <65%',
-        description: `Material utilisation at ${(matUtil * 100).toFixed(0)}% implies poor blank nesting. Over 35% of sheet becomes scrap offcuts.`,
-        savingPct: 15,
-        risk: 'Medium',
-        recommendation: 'Optimise nesting with CAD nesting software; consider part redesign to reduce scrap skeleton',
-      });
-    }
+    // (blank nesting: the all-commodity utilisation rule above, on the stamping / blanking reference band)
     if (opCount > 6) {
       dfmIssues.push({
         severity: 'major',
@@ -620,17 +650,7 @@ export function generateDFMDFA(
         recommendation: 'Review die bearing lengths and port design; evaluate a multi-hole die; optimise billet temperature and ram speed for the alloy',
       });
     }
-    if (matUtil < 0.80) {
-      dfmIssues.push({
-        severity: 'major',
-        category: 'material',
-        title: 'High start-up and offcut scrap (<80% utilisation)',
-        description: `Material utilisation at ${(matUtil * 100).toFixed(0)}%. Butt ends, start-up lengths and cut-to-length offcuts exceed the 80% extrusion benchmark.`,
-        savingPct: 5,
-        risk: 'Low',
-        recommendation: 'Optimise cut plan against the order lengths; recycle offcuts closed-loop; negotiate a scrap credit at the billet price',
-      });
-    }
+    // (start-up and offcut scrap: the all-commodity utilisation rule above, on the extrusion reference band)
   }
 
   if (commodity === 'rotational_moulding') {
@@ -690,7 +710,7 @@ export function generateDFMDFA(
 
   const dfaIssues: DFMIssue[] = [];
 
-  if (st.opCount > 4 && st.stations > 2 && !st.consolidated) {
+  if (splitRouting && !routingTaken) {
     dfaIssues.push({
       severity: 'major',
       category: 'assembly',
@@ -699,7 +719,9 @@ export function generateDFMDFA(
       description: `${st.opCount} machining operations across ${st.stations} stations require multiple setups or work transfers, increasing total process cycle time.`,
       savingPct: 8,
       risk: 'Medium',
-      recommendation: 'Quote multi-axis consolidation, combined tooling, or part consolidation against this routing',
+      recommendation: routing && !routing.consolidationWins
+        ? 'Re-quote on the cost-ranked machine mix, or combine tooling / consolidate the part — 5-axis consolidation was ranked and does not win on this part'
+        : 'Quote multi-axis consolidation, combined tooling, or part consolidation against this routing',
     });
   } else if (st.opCount > 4 && st.consolidated) {
     dfaIssues.push({
@@ -765,7 +787,12 @@ export function generateDFMDFA(
     });
   }
 
-  if (opCount > 4 && labPct > 20) {
+  // Only a part that is fastened: an assembly commodity, or an operation that drives / sets fasteners. A one-piece
+  // forging was told to "standardise fastener type … snap-fit or weld" (7-country review, 3 Nov 2026).
+  const FASTENED_OP = /fasten|screw|bolt|rivet|\bnuts?\b|clip|insert|torque|assembl|clinch|pem\b/i;
+  const fastened = ['biw_assembly', 'wiring_harness', 'pcba', 'battery_pack', 'e_motor'].includes(commodity)
+    || (input.operations ?? []).some(o => FASTENED_OP.test(o.operationName ?? ''));
+  if (opCount > 4 && labPct > 20 && fastened) {
     dfaIssues.push({
       severity: 'opportunity',
       category: 'assembly',
@@ -795,16 +822,20 @@ export function generateDFMDFA(
     });
   }
 
-  if (opNamesAll.some(n => RX_REWORK.test(n))) {
+  if (opNamesAll.some(manualFinishingOp)) {
+    // Name THIS part's finishing operations and THIS process's upstream cause — "fettling … gate redesign" was printed on
+    // a saw-cut extrusion's deburr (7-country review, 3 Nov 2026).
+    const finishing = opNamesAll.filter(manualFinishingOp);
+    const cause = FINISH_CAUSE[commodity] ?? 'tool and die condition';
     dfaIssues.push({
       severity: 'minor',
       category: 'assembly',
       lever: 'supplier',
       title: 'Manual finishing after the primary process',
-      description: 'Deburring/fettling/rework appears as its own operation — a symptom of an upstream condition (tool wear, gating, die state) being paid for by hand, every part.',
+      description: `${finishing.join(', ')} ${finishing.length === 1 ? 'is its own operation' : 'are their own operations'} — finishing paid for by hand, every part; its upstream cause is ${cause}.`,
       savingPct: 3,
       risk: 'Low',
-      recommendation: 'Fix the burr at source (tooling discipline, gate redesign); where finishing must remain, tumble/vibratory beats manual',
+      recommendation: `Remove the finishing at its cause (${cause}); where finishing must remain, tumble / vibratory finishing can replace bench labour`,
     });
   }
 
@@ -852,13 +883,17 @@ export function generateDFMDFA(
     });
   }
 
-  // Material utilisation improvement
-  if (matUtil < 0.75) {
+  // Material utilisation improvement — below the process's own reference (the band the rules use), and the target is
+  // that band, not a free-standing "80–90%" (a forging at 68 % inside its 55–80 % band was told to reach 80–90 %).
+  if (utilApplies && (utilRef ? matUtil < utilRef.band[0] : matUtil < 0.75)) {
     costOptimisations.push({
       category: 'material', lever: 'design',
       title: 'Improve Material Utilisation via Near-Net-Shape',
-      description: `Current utilisation at ${(matUtil * 100).toFixed(0)}%. Near-net-shape process or improved nesting targets 80–90%.`,
-      expectedSavingPct: Math.min(15, (0.85 - matUtil) * 50),
+      description: `Current utilisation at ${(matUtil * 100).toFixed(0)}%. `
+        + (utilRef
+          ? `The ${utilRef.label} reference band is ${bandText(utilRef)} (${utilRef.source}) — a near-net-shape pre-form or better nesting / stock sizing targets it.`
+          : 'A near-net-shape process or better nesting raises it (no process reference band is held).'),
+      expectedSavingPct: Math.min(15, Math.max(0, ((utilRef ? (utilRef.band[0] + utilRef.band[1]) / 2 : 0.85) - matUtil) * 50)),
       technicalJustification: 'Near-net-shape pre-forms (forging, casting, PM) reduce buy-to-fly ratio. CAD-optimised nesting can improve sheet/plate usage by 8–15%.',
       risk: 'Medium',
       timeframe: 'Medium Term',
@@ -884,16 +919,24 @@ export function generateDFMDFA(
   // sensitivity note, not an instruction (a real bumper report said "increase
   // volume" when no volume had ever been entered).
   const volumeAssumed = ctx?.volumeProvided === false;
-  if (toolPct > 12) {
+  // "Doubling volume halves per-part tooling" holds only for ONE fixed investment. Where the module buys tools by tool
+  // life (die sets, moulds in service, replacements) more volume buys more tooling: a stamping's tooling per part ROSE
+  // from £1.03 at 200k to £1.13 at 250k and a composite's stayed £69.30 at every volume (7-country review, 3 Nov 2026).
+  // Then it is not a volume lever — only a confirm-the-volume note when the volume is assumed.
+  if (toolPct > 12 && (volumeAssumed || !toolLife.byLife)) {
     costOptimisations.push({
       category: 'tooling', lever: volumeAssumed ? 'assumption' : 'sourcing',
       title: volumeAssumed
         ? 'Tooling NRE is volume-sensitive — confirm the annual volume first'
         : 'Volume Increase to Dilute Tooling NRE',
-      description: `Tooling at ${toolPct.toFixed(1)}% of part cost is volume-sensitive. Doubling volume halves per-part tooling cost.`
+      description: toolLife.byLife
+        ? `Tooling is ${toolPct.toFixed(1)}% of part cost and is bought by tool life in this costing (${toolLife.why}): more volume buys more tools or sets, so it does not dilute this line in proportion — re-cost at the confirmed volume.`
+        : `Tooling at ${toolPct.toFixed(1)}% of part cost is one investment amortised over ${amortVol.toLocaleString('en-GB')} parts (${toolLife.why}): doubling the parts it is amortised over halves the tooling per part.`
         + (volumeAssumed ? ' The amortisation volume in this cost is a tool assumption, not a commitment — confirm it before treating this as a saving.' : ''),
       expectedSavingPct: Math.min(10, toolPct * 0.4),
-      technicalJustification: 'Tooling is a fixed NRE amortised over volume. Annual volume increase through platform sharing or new platform adoption directly reduces tooling cost per part.',
+      technicalJustification: toolLife.byLife
+        ? 'The tool count is sized from tool life × volume, so the tooling per part is set by tool life; a confirmed volume re-sizes the tool sets.'
+        : 'Tooling here is a fixed NRE amortised over volume. Annual volume increase through platform sharing or new platform adoption directly reduces tooling cost per part.',
       risk: 'Low',
       timeframe: 'Quick Win',
     });
@@ -925,70 +968,37 @@ export function generateDFMDFA(
     });
   }
 
-  // Process consolidation — only when the costed routing is actually split,
-  // and the saving is the OPTIMISER'S DELTA, not a generic percentage. The old
-  // action claimed "40–60% through 4/5-axis investment" while the optimiser's
-  // own table could show consolidation LOSING on the same part (it did, on the
-  // real stub axle — the true lever there was the machine mix, not the setup
-  // count). Method: hold turning and grinding identical on both sides (the
-  // optimiser does not re-plan them), cost the milling + drilling content on
-  // the machines AS GIVEN, cost the optimiser's cheapest routing of the same
-  // content, and recommend whichever direction the arithmetic points —
-  // consolidation when the 5-axis candidate wins, a machine-mix re-quote when
-  // a cheaper split wins. No verifiable delta (unknown machine ids) → no claim.
-  if (st.opCount > 4 && st.stations > 2 && !st.consolidated) {
-    const machOps = realMachiningOps(input);
-    const optimisable = machOps.filter(o => {
-      const cap = classifyOpName(o.operationName ?? '');
-      return cap === 'mill3' || cap === 'mill5' || cap === 'drill';
-    });
-    const millOps = optimisable.filter(o => classifyOpName(o.operationName ?? '') !== 'drill');
-    const batch = standardBatchSize(input.tooling?.amortizationVolume ?? 0);
-    const given = optimisable.length > 0 ? costRoutingAsGiven(
-      // per PART: an op that makes n parts a cycle carries 1/n of it (an ageing load of 5,324 parts was booked whole)
-      optimisable.map(o => ({ name: o.operationName ?? '', machineId: o.machineId, cycleTimeHr: o.cycleTimeHr / Math.max(1, o.partsPerCycle ?? 1) })),
-      batch) : null;
-    if (given) {
-      const hrOf = (pred: (cap: string) => boolean) => optimisable
-        .filter(o => pred(classifyOpName(o.operationName ?? '')))
-        .reduce((sum, o) => sum + o.cycleTimeHr / Math.max(1, o.partsPerCycle ?? 1), 0);
-      const opt = optimiseMachiningRouting({
-        millingHr: hrOf(c => c !== 'drill'),
-        drillHr: hrOf(c => c === 'drill'),
-        // Each existing milling op is treated as one fixturing of the split
-        // alternative — the ops are the only setup evidence this layer has.
-        principalDirections: Math.max(1, millOps.length),
-        axisymmetric: false,
-        bboxSortedMm: null,
-        batchSize: batch,
-      });
-      const delta = given.costPerPart - opt.chosen.costPerPart;
-      // Claim only what the arithmetic supports: >2% of the machining spend
-      // and more than pennies.
-      if (delta > Math.max(0.05, given.costPerPart * 0.02)) {
-        const pct = Math.min(20, (delta / given.costPerPart) * 100);
-        const consolidationWins = opt.chosen.label === 'consolidated-5axis';
-        costOptimisations.push(consolidationWins
-          ? {
-              category: 'process', lever: 'supplier',
-              title: 'Multi-Axis Machining to Consolidate Operations',
-              description: `Consolidating the milled and drilled content into a single 5-axis setup saves £${delta.toFixed(2)}/part (${pct.toFixed(0)}% of the costed machining spend of £${given.costPerPart.toFixed(2)}).`,
-              expectedSavingPct: pct,
-              technicalJustification: opt.basis,
-              risk: 'Medium',
-              timeframe: 'Long Term',
-            }
-          : {
-              category: 'process', lever: 'supplier',
-              title: 'Re-quote Machining on the Cost-Optimal Routing',
-              description: `The costed ${st.stations}-station routing books £${given.costPerPart.toFixed(2)}/part of machining; the same content on the cheapest capable machines costs £${opt.chosen.costPerPart.toFixed(2)} — a £${delta.toFixed(2)}/part (${pct.toFixed(0)}%) machine-mix saving. Note: 5-axis consolidation was ranked and does NOT win on this part.`,
-              expectedSavingPct: pct,
-              technicalJustification: opt.basis,
-              risk: 'Low',
-              timeframe: 'Quick Win',
-            });
-      }
-    }
+  // Process consolidation — only when the costed routing is actually split, and the saving is the ROUTER'S delta on the
+  // router's own basis (machine + operator, its volume cell a candidate): the old action claimed "40–60% through 4/5-axis
+  // investment" while the optimiser could show consolidation LOSING; then a machine-only "£5.18 v £3.99 (20%)" was
+  // printed against a stub axle the router had already put on its cheapest routing, with the % capped at 20 beside an
+  // uncapped £1.19 (23 %), and a CN "¥10.03 … ¥9.50 — ¥0.44" whose figures did not subtract (7-country review, 3 Nov
+  // 2026). Now: no lever when the router's choice is the routing costed; the figures are the printed pennies and the
+  // saving is their difference; the % is that saving over the printed machining figure, uncapped.
+  if (routing && !routingTaken) {
+    const v = routing;
+    const pct = v.savingPctOfMachining;
+    const partPct = tot > 0 ? Math.round((v.saving / tot) * 1000) / 10 : 0;
+    costOptimisations.push(v.consolidationWins
+      ? {
+          category: 'process', lever: 'supplier',
+          title: 'Multi-Axis Machining to Consolidate Operations',
+          description: `Consolidating the milled and drilled content into a single 5-axis setup: £${v.given.toFixed(2)}/part of machining as costed (machine + operator, as the router ranks it) against £${v.best.toFixed(2)} — saves £${v.saving.toFixed(2)}/part (${pct.toFixed(0)}% of that machining).`,
+          expectedSavingPct: partPct,
+          technicalJustification: v.basis,
+          risk: 'Medium',
+          timeframe: 'Long Term',
+        }
+      : {
+          category: 'process', lever: 'supplier',
+          title: 'Re-quote Machining on the Cost-Optimal Routing',
+          description: `The costed ${st.stations}-station routing books £${v.given.toFixed(2)}/part of machining (machine + operator, as the router ranks it); the same content on the router's cheapest routing (${v.bestLabel}) costs £${v.best.toFixed(2)} — a £${v.saving.toFixed(2)}/part (${pct.toFixed(0)}% of that machining) machine-mix saving.`
+            + (v.fiveAxisLoses ? ' Note: 5-axis consolidation was ranked and does NOT win on this part.' : ''),
+          expectedSavingPct: partPct,
+          technicalJustification: v.basis,
+          risk: 'Low',
+          timeframe: 'Quick Win',
+        });
   }
 
   // Regional sourcing — pointless advice when the part is already costed in a

@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf';
+import { utilisationReference, bandText } from '../engine/suggestion-facts.js';
 import autoTable from 'jspdf-autotable';
 import { routeRowLabel, routeReferenceRow, traceFieldLabel, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import { shortOperationName } from '../engine/operation-names.js';
@@ -468,12 +469,11 @@ function utilisationBenchmarkNote(commodity?: string, lossIsNotScrap = false): s
   // On a casting whose gating is remelted the utilisation is the metal LOST in melting (dross, burn-off) — not the
   // casting yield; printing a 65–85 % yield band beside a 98 % figure contradicted the line it sat on.
   if (lossIsNotScrap) return 'Melt loss only — runners and risers are remelted (their melt energy is in the cost)';
-  const ref = (t: string) => `Reference: ${t} (CostVision engineering estimate)`;
-  if (/sheet_metal|stamp/.test(c))      return ref('stamping / blanking 55–75 %, nesting + skeleton');
-  if (/forging/.test(c))                return ref('forging 75–90 %, flash + bar drop');
-  if (/machining/.test(c))              return ref('machining 60–75 %, stock removal');
-  if (/cast/.test(c))                   return ref('casting 65–85 %, runners + risers');
-  if (/extrusion/.test(c))              return ref('extrusion 85–95 %, end crop');
+  // ONE reference per process, the band the rules and the insights use (7-country review: §3 printed "forging 75–90 %"
+  // while §11 said "below 75 %" and the forging rules sized the billet on 55–80 %).
+  const u = utilisationReference(c);
+  if (u) return `Reference: ${u.label} ${bandText(u)} (${u.source})`;
+  if (/cast/.test(c)) return 'Reference: casting 65–85 %, runners + risers (CostVision engineering estimate)';
   return '';
 }
 

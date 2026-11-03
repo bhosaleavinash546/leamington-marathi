@@ -81,7 +81,8 @@ export function classifyOpName(name: string): MachiningCapability {
   const n = (name || '').toLowerCase();
   if (/grind|hone|lap/.test(n)) return 'grind';
   if (/5[\s-]?ax|cross.?bore|undercut/.test(n)) return 'mill5';
-  if (/drill|tap|ream|\bbore\b|counterbore|spot.?face/.test(n)) return 'drill';
+  // "tap" as a word, not inside "taper" (a taper-turning op was classed as drilling — 7-country review)
+  if (/drill|\btap(?!er)|ream|\bbore\b|counterbore|spot.?face/.test(n)) return 'drill';
   if (/lathe|turn/.test(n)) return 'turn';
   return 'mill3';
 }

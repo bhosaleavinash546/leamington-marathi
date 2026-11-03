@@ -20,6 +20,7 @@ import type { PartCostResult, UniversalStackInput, CommodityType, RateLibrary } 
 import type { SuggestionContext } from './insights.js';
 import type { CostOptimisation } from './dfm-dfa.js';
 import { computeUniversalStack } from './core.js';
+import { remeltableAlloy, itemisedProcessEnergy } from './suggestion-facts.js';
 
 /**
  * What a lever DOES to the cost drivers, as a pure transform on the stack
@@ -115,10 +116,20 @@ const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: Part
   },
 };
 
-/** A machine-paced cutting operation (not bench, set-up, loading, inspection or packing). */
-function machinePacedCut(o: UniversalStackInput['operations'][number]): boolean {
-  return !o.benchOperation && o.cycleTimeHr > 0
-    && !/load|clamp|unload|handling|set-?up|change-?over|inspect|gauge|deburr|fettl|pack/i.test(o.operationName ?? '');
+/** A cutting / machining operation by its name: milling, drilling, boring, turning, tapping, reaming, grinding, hobbing. */
+const RX_CUTTING = /machin|mill|drill|bor(e|ing)\b|bore\(|turn|lathe|\btap|ream|grind|hon(e|ing)\b|hob|shap|broach/i;
+/** What is NOT a machine-paced cut even when its name mentions one: the foundry / forge / press / moulding line, assembly,
+ *  bench, handling, set-up and inspection rows. */
+const RX_NOT_CUTTING = /mould|mold|\bcast|pour|melt|forg|press|stamp|inject|extru|assembl|weld|fettl|load|clamp|unload|handling|set-?up|change|inspect|gauge|deburr|pack|cure|oven|furnace|heat|blast/i;
+
+/**
+ * A machine-paced CUTTING operation: a machining op by name, on a machine, not bench / set-up / loading / inspection —
+ * and not the foundry, forge, press or moulding line: "Sand Casting — Moulding" and its crew of 4 rode in the
+ * lights-out lever, £4.36 for a lever worth £3.46 on the cutting ops alone (7-country review, 3 Nov 2026).
+ */
+export function machinePacedCut(o: UniversalStackInput['operations'][number]): boolean {
+  const n = o.operationName ?? '';
+  return !o.benchOperation && o.cycleTimeHr > 0 && RX_CUTTING.test(n) && !RX_NOT_CUTTING.test(n);
 }
 
 /**
@@ -194,7 +205,17 @@ export interface LeverSignals {
 // ─── Op-name signal regexes (same style as the sheet-metal weld rule) ────────
 export const RX_INSPECT = /inspect|cmm|gauge|\btest\b|testing|verification/i;
 export const RX_REWORK  = /deburr|fettl|polish|buff|dress|linish|flash removal|rework|touch.?up/i;
+/**
+ * A finishing operation done as its own step (deburr, fettle, polish, rework) — not a machine operation that names a
+ * deburr pass in passing: an extrusion's "Precision cut-to-length and deburr (cold saw, end trims)" was read as manual
+ * finishing and told to "fix the burr at source … gate redesign" (7-country review, 3 Nov 2026).
+ */
+export function manualFinishingOp(name: string): boolean {
+  return RX_REWORK.test(name ?? '') && !/\bsaw\b|cut-?to-?length|cut to length|machin|\bmill|\bturn|\bdrill/i.test(name ?? '');
+}
 const RX_TIGHT    = /grind|lapp?ing|hone|honing|ream|superfinish/i;
+/** Casting / forging clean-up that grinds for the process, not for a callout. */
+const RX_CAST_CLEAN = /fettl|gate|riser|degat|knock.?off|flash|clean|snag|shot.?blast|trim/i;
 const RX_HEAT     = /heat treat|anneal|temper|normalis|carburis|nitrid|stress relie|solution|ag(e|ing) harden/i;
 
 const METAL_FORM: CommodityType[] = ['machining', 'cast_and_machine', 'casting', 'forging', 'sheet_metal', 'sheet_metal_fab', 'extrusion'];
@@ -207,7 +228,7 @@ const ENERGY_WHAT: Partial<Record<CommodityType, string>> = {
   painting: 'the cure oven', rubber: 'the cure', composites: 'the cure', rotational_moulding: 'the oven',
 };
 /** The upstream cause of finishing work, per process. */
-const FINISH_CAUSE: Partial<Record<CommodityType, string>> = {
+export const FINISH_CAUSE: Partial<Record<CommodityType, string>> = {
   machining: 'tool condition and tool path', aluminium_extrusion: 'saw blade condition and cut parameters',
   casting: 'gating, parting line and die condition', cast_and_machine: 'gating, parting line and tool condition',
   forging: 'flash land and trim die condition', injection_moulding: 'parting line, venting and tool condition',
@@ -263,13 +284,23 @@ export function generateIdeaLevers(
   // ═══ MATERIAL ═══════════════════════════════════════════════════════════════
 
   const metalPct = metalShareOf(result, input) * 100;
+  const remeltable = remeltableAlloy(input, ctx?.library);
+  const gradeExample = remeltable
+    ? (/cast|casting/.test(commodity) ? 'e.g. primary → secondary casting alloy where the spec allows' : 'e.g. 6082 → 6060 where strength allows')
+    : ['sheet_metal', 'sheet_metal_fab'].includes(commodity) ? 'e.g. DP600 → HSLA where CAE confirms, or one gauge down'
+      : commodity === 'forging' ? 'e.g. a micro-alloyed grade in place of a quench-and-tempered one where the load case allows'
+        : ['casting', 'cast_and_machine'].includes(commodity) ? 'e.g. a lower-alloy iron or steel grade where the load case allows'
+          : 'e.g. a lower-cost grade of the same family where the load case allows';
   if (METAL_FORM.includes(commodity) && metalPct > 40) {
     out.push({
       category: 'material', lever: 'design',
       title: 'Alternate Material Grade Study',
-      description: `The metal is ${metalPct.toFixed(1)}% of part cost — the largest lever on this part is the metal itself. An equivalent lower-cost grade (or secondary/remelt alloy where the spec allows) attacks it directly.`,
+      // "secondary / remelt alloy" only where the metal has one (non-ferrous) — it was offered on a DC04 steel stamping
+      // (7-country review, 3 Nov 2026); the example substitutions are the part's own family.
+      description: `The metal is ${metalPct.toFixed(1)}% of part cost — the largest lever on this part is the metal itself. An equivalent lower-cost grade`
+        + (remeltable ? ' (or a secondary / remelt alloy where the spec allows)' : '') + ' attacks it directly.',
       expectedSavingPct: Math.min(8, 3 + (metalPct - 40) * 0.15),
-      technicalJustification: 'Grade substitution within the same family (e.g. 6082→6060 where strength allows, primary→secondary casting alloy, DP600→HSLA where CAE confirms) typically saves 5–15% of the material line with no process change. Requires engineering sign-off against the load case.',
+      technicalJustification: `Grade substitution within the same family (${gradeExample}) typically saves 5–15% of the material line with no process change. Requires engineering sign-off against the load case.`,
       risk: 'Medium', timeframe: 'Medium Term',
     });
   }
@@ -334,7 +365,12 @@ export function generateIdeaLevers(
 
   // ═══ DESIGN ═════════════════════════════════════════════════════════════════
 
-  const tightShare = opShareOfTotal(RX_TIGHT);
+  // Tolerance-driven finishing only — not the foundry's fettling ("gate / riser removal, grind"), a deburr or a casting
+  // clean-up, which are there for the process, not a callout (7-country review: "Grinding/honing/reaming content is
+  // 6.7%" was the stub axle's fettling).
+  const tightShare = opDetails
+    .filter(o => RX_TIGHT.test(o.operationName ?? '') && !RX_REWORK.test(o.operationName ?? '') && !RX_CAST_CLEAN.test(o.operationName ?? ''))
+    .reduce((s, o) => s + o.processCost + o.labourCost, 0) / tot;
   // The machining operations' own share — the process bucket also holds the moulding line on a cast + machine part.
   const machPct = commodity === 'machining' ? procPct : opShareOfTotal(RX_MACHINING_OP) * 100;
   if (tightShare > 0.03 || (['machining', 'cast_and_machine'].includes(commodity) && machPct > 35)) {
@@ -401,12 +437,20 @@ export function generateIdeaLevers(
     });
   }
 
-  if (['machining', 'cast_and_machine'].includes(commodity) && labPct > 12 && avgOEE >= 0.75) {
+  // The labour the lever acts on: the cutting operations' own (the moulding crew of a cast + machine part is not run
+  // lights-out — the text said "Labour is 34.1%" of which the cutting ops carried a fraction; 7-country review).
+  const cutNames = new Set(ops.filter(machinePacedCut).map(o => o.operationName));
+  const labHr = (o: UniversalStackInput['operations'][number]) => (o.labourTimeHr ?? 0) * (o.manning ?? 1);
+  const allLabHr = ops.reduce((s, o) => s + labHr(o), 0);
+  const cutLabPct = opDetails.length
+    ? (opDetails.filter(o => cutNames.has(o.operationName)).reduce((s, o) => s + o.labourCost, 0) / tot) * 100
+    : allLabHr > 0 ? labPct * ops.filter(machinePacedCut).reduce((s, o) => s + labHr(o), 0) / allLabHr : 0;
+  if (['machining', 'cast_and_machine'].includes(commodity) && cutLabPct > 12 && avgOEE >= 0.75) {
     out.push({
       category: 'process', lever: 'supplier',
       title: 'Unmanned / Lights-Out Running',
-      description: `Labour is ${labPct.toFixed(1)}% of cost on a machine-paced part with healthy OEE (${(avgOEE * 100).toFixed(0)}%) — the classic profile for bar-feed or pallet-pool unattended running.`,
-      expectedSavingPct: Math.min(6, labPct * 0.3),
+      description: `Labour on the machine-paced cutting operations is ${cutLabPct.toFixed(1)}% of cost, with healthy OEE (${(avgOEE * 100).toFixed(0)}%) — the classic profile for bar-feed or pallet-pool unattended running.`,
+      expectedSavingPct: Math.min(6, cutLabPct * 0.3),
       technicalJustification: 'Bar feeders, pallet pools and probing let a stable machining process run a third shift with no operator. The pass-through of the saving is a negotiation, not a figure (the 30–50% often quoted has no source here).',
       risk: 'Medium', timeframe: 'Medium Term',
     });
@@ -423,11 +467,17 @@ export function generateIdeaLevers(
     });
   }
 
+  const energyInMaterial = itemisedProcessEnergy(result);
   if (ENERGY_INTENSE.includes(commodity) || hasOp(RX_HEAT)) {
     out.push({
       category: 'sustainability', lever: 'supplier',
       title: 'Energy Productivity Programme',
-      description: `This process is energy-intensive (${[ENERGY_WHAT[commodity], hasOp(RX_HEAT) ? 'heat treatment' : ''].filter(Boolean).join(' and ')}). Energy sits inside the machine rate and overhead — and it is the fastest-moving input cost of the decade.`,
+      // Say where THIS costing carries the energy: a forging's billet heating is itemised in the material line (kWh × the
+      // country tariff), not "inside the machine rate" (7-country review, 3 Nov 2026).
+      description: `This process is energy-intensive (${[ENERGY_WHAT[commodity], hasOp(RX_HEAT) ? 'heat treatment' : ''].filter(Boolean).join(' and ')}). `
+        + (energyInMaterial > 0
+          ? `The process energy is itemised in the material line (kWh × the costing country's tariff, ${(energyInMaterial / tot * 100).toFixed(1)}% of cost); the machines' own energy sits in their machine rates — and energy is the fastest-moving input cost of the decade.`
+          : 'Energy sits inside the machine rate and overhead — and it is the fastest-moving input cost of the decade.'),
       expectedSavingPct: 3,
       technicalJustification: 'Melt/furnace scheduling to off-peak tariffs, regenerative burners, cure-recipe optimisation and compressed-air leak programmes typically cut process energy 10–20%, of which 2–4% of part cost reaches the piece price — and the carbon line falls with it.',
       risk: 'Low', timeframe: 'Medium Term',
@@ -532,13 +582,14 @@ export function generateIdeaLevers(
     });
   }
 
-  const reworkShare = opShareOfTotal(RX_REWORK);
-  if (hasOp(RX_REWORK) && reworkShare > 0.02) {
+  const reworkShare = opDetails.filter(o => manualFinishingOp(o.operationName ?? ''))
+    .reduce((s, o) => s + o.processCost + o.labourCost, 0) / tot;
+  if (ops.some(o => manualFinishingOp(o.operationName ?? '')) && reworkShare > 0.02) {
     out.push({
       category: 'quality', lever: 'supplier',
       title: 'Eliminate Manual Finishing at Source',
       // Name the upstream causes of THIS process: "gating" was printed on a saw-cut extrusion's deburr (Germany review).
-      description: `Finishing operations (${ops.filter(o => RX_REWORK.test(o.operationName ?? '')).map(o => o.operationName).join(', ')}) carry ${(reworkShare * 100).toFixed(1)}% of part cost. Manual finishing is a symptom — the cause is upstream (${FINISH_CAUSE[commodity] ?? 'tool and die condition'}) and cheaper to fix there.`,
+      description: `Finishing operations (${ops.filter(o => manualFinishingOp(o.operationName ?? '')).map(o => o.operationName).join(', ')}) carry ${(reworkShare * 100).toFixed(1)}% of part cost. Manual finishing is a symptom — the cause is upstream (${FINISH_CAUSE[commodity] ?? 'tool and die condition'}) and cheaper to fix there.`,
       expectedSavingPct: Math.min(4, 1 + reworkShare * 100 * 0.5),
       technicalJustification: 'Removing the burr or flash at its source (tool condition, gating, die maintenance) beats removing it by hand. Where finishing must remain, tumbling / vibratory finishing replaces bench labour — the ratio depends on the part (CostVision engineering heuristic).',
       risk: 'Low', timeframe: 'Medium Term',
