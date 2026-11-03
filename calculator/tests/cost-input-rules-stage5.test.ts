@@ -310,11 +310,11 @@ describe('composites', () => {
     expect(c.areaM2).toBe(1);
     expect(c.fibreWeightFraction).toBe(0.65);
     expect(c.wasteFraction).toBe(0.15);
-    expect(c.cureTimeHr).toBe(3);
+    expect(c.cureTimeHr).toBe(4.7);       // the HexPly M21 schedule's centre (published data, Nov 2026; was an unsourced 3)
     expect(c.fibrePricePerKg).toBe(33.6);
     expect(c.resinPricePerKg).toBe(0);        // prepreg arrives impregnated
     expect(c.partWeightKg).toBe(5.952);       // 3,840 cm³ at 1,550 kg/m³
-    expect(c.layupTimeHrPerPart).toBe(0.96);  // 1 m² x 16 plies x 0.06 hr
+    expect(c.layupTimeHrPerPart).toBe(6.834); // 1 m² × 16 plies × 0.3875 kg/m² ÷ 0.907 kg/h (hand layup, 2 lb/h; was 0.06 h/m²/ply)
   });
 
   it('offers only process names the engine can accept', () => {

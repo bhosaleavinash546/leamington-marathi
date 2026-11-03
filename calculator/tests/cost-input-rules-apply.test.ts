@@ -150,7 +150,7 @@ describe('the path map', () => {
     // field — wrong by 10,000x.
     expect(c.areaCm2).toBeCloseTo(3460, 0);
     // Likewise 3 hr of cure into a field read as seconds.
-    expect(c.cureTimeSec).toBe(10_800);
+    expect(c.cureTimeSec).toBe(16_920);   // 4.7 h (the HexPly M21 schedule's centre, Nov 2026) × 3,600
   });
 
   it('translates the rubber process vocabulary', () => {

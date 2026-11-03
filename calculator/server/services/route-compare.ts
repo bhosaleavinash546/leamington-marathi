@@ -51,6 +51,8 @@ import { CASTING_PROCESS_CHOICE_ID, castingSectionMm } from '../../src/engine/co
 import { FORGING_PROCESS_CHOICE_ID, shapeComplexity, advisorComplexity } from '../../src/engine/cost-input-rules/commodities/forging.js';
 import { isRingShape } from '../../src/engine/cost-input-rules/derive/envelope.js';
 import { INVESTMENT_TREE } from '../../src/engine/cost-input-rules/commodities/casting.js';
+import { COMPOSITES_PROCESS_CHOICE_ID, COMPOSITES_PROCESS_LABEL } from '../../src/engine/cost-input-rules/commodities/composites.js';
+import { LAMINATE_SYSTEMS } from '../../src/engine/cost-input-rules/derive/laminate.js';
 
 /** Answers that pick the route itself — each row forces its own. */
 const ROUTE_ANSWER_IDS = ['commodity.route', 'commodity.thinWallRoute'];
@@ -65,6 +67,7 @@ const SPEC_IDS: Array<[string, string]> = [
   ['service.pressureTight', 'Leak-tight / pressure'], ['service.toleranceClass', 'Tolerance class'],
   ['service.safetyCritical', 'Safety-critical'], ['service.finish', 'Finish'],
   [CASTING_PROCESS_CHOICE_ID, 'Casting process'], [FORGING_PROCESS_CHOICE_ID, 'Forging process'],
+  [COMPOSITES_PROCESS_CHOICE_ID, 'Composites process'],
 ];
 
 /** The most rows costed in one comparison (the costing's own included). */
@@ -268,6 +271,14 @@ export interface ProcessVariant { process: string; label: string; refusal: strin
  * 9 kg hub is never offered a cold former. A route with one process returns none.
  */
 export function processVariants(route: string, i: ScreenArgs): ProcessVariant[] {
+  // Composites: a PREPREG laminate can be laid up and cured in its cell, or compression moulded (PCM) — the same prepreg,
+  // so the same material family (report-standard research, Nov 2026). Dry fabric + resin has one process.
+  if (route === 'composites') {
+    const lam = LAMINATE_SYSTEMS.find(s => s.value === i.answers['material.laminate']);
+    if (!lam || lam.resinId !== null || lam.process !== 'prepreg_layup') return [];
+    const src = 'PCM: CompositesWorld, "Prepreg compression molding makes its commercial debut" (Jun 2015) — 8 min at 140 °C, 8 MPa';
+    return (['layup', 'pcm'] as const).map(p => ({ process: p, label: COMPOSITES_PROCESS_LABEL[p], refusal: null, source: src }));
+  }
   const fam = materialFamilyOf(i.answers, i.baseBook).family;
   if (!fam || fam === 'rubber' || fam === 'composite' || fam === 'plastic') return [];
   const ctx = { geo: i.geo, answers: i.answers, annualVolume: i.annualVolume, filename: i.filename, rates: i.baseBook, commodity: route, geometryQuality: 'occt' } as RuleContext;
@@ -304,7 +315,8 @@ export function processVariants(route: string, i: ScreenArgs): ProcessVariant[] 
   return [];
 }
 
-const PROCESS_ANSWER: Record<string, string> = { casting: CASTING_PROCESS_CHOICE_ID, cast_and_machine: CASTING_PROCESS_CHOICE_ID, forging: FORGING_PROCESS_CHOICE_ID };
+const PROCESS_ANSWER: Record<string, string> = { casting: CASTING_PROCESS_CHOICE_ID, cast_and_machine: CASTING_PROCESS_CHOICE_ID, forging: FORGING_PROCESS_CHOICE_ID,
+  composites: COMPOSITES_PROCESS_CHOICE_ID };
 
 // ─── Helpers reading a costed result ────────────────────────────────────────────────────────────────────────────────
 
@@ -563,7 +575,8 @@ function specOf(answers: Record<string, unknown>, original: Record<string, unkno
     if (m) value = m.grade;
     if (id === CASTING_PROCESS_CHOICE_ID) value = CASTING_PROCESS_LABEL[value] ?? value;
     if (id === FORGING_PROCESS_CHOICE_ID) value = FORGING_PROCESS_LABEL[value] ?? value;
-    const source: RouteSpecItem['source'] = id === CASTING_PROCESS_CHOICE_ID || id === FORGING_PROCESS_CHOICE_ID ? 'comparison'
+    if (id === COMPOSITES_PROCESS_CHOICE_ID) value = COMPOSITES_PROCESS_LABEL[value as 'layup' | 'pcm'] ?? value;
+    const source: RouteSpecItem['source'] = id === CASTING_PROCESS_CHOICE_ID || id === FORGING_PROCESS_CHOICE_ID || id === COMPOSITES_PROCESS_CHOICE_ID ? 'comparison'
       : assumedIds.has(id) ? 'assumed' : original[id] !== undefined ? 'answered' : 'comparison';
     out.push({ id, label, value, source });
   }
@@ -648,11 +661,11 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
       notes.push('the finish answered is not modelled on this route — costed bare');
     }
     if (process) {
-      delete answers[CASTING_PROCESS_CHOICE_ID]; delete answers[FORGING_PROCESS_CHOICE_ID];
+      delete answers[CASTING_PROCESS_CHOICE_ID]; delete answers[FORGING_PROCESS_CHOICE_ID]; delete answers[COMPOSITES_PROCESS_CHOICE_ID];
       answers[PROCESS_ANSWER[route]] = process;
     } else {
       // The reference row and single-process routes take the engine's own choice.
-      delete answers[CASTING_PROCESS_CHOICE_ID]; delete answers[FORGING_PROCESS_CHOICE_ID];
+      delete answers[CASTING_PROCESS_CHOICE_ID]; delete answers[FORGING_PROCESS_CHOICE_ID]; delete answers[COMPOSITES_PROCESS_CHOICE_ID];
     }
     const assumed: string[] = [];
     const before = new Set(Object.keys(answers));
@@ -684,7 +697,8 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
     const si = r?.trace?.stackInput;
     const toolingThroughStack = toolingPerPart != null && si ? toolingPerPart * (1 + si.overheadPct) * (1 + si.marginPct) : toolingPerPart;
     const parts = i.annualVolume * years;
-    const processLabel = process ? (CASTING_PROCESS_LABEL[process] ?? FORGING_PROCESS_LABEL[process] ?? process) : null;
+    const processLabel = process ? (CASTING_PROCESS_LABEL[process] ?? FORGING_PROCESS_LABEL[process]
+      ?? COMPOSITES_PROCESS_LABEL[process as 'layup' | 'pcm'] ?? process) : null;
     rows.push({
       route, process,
       label: processLabel ? `${route.replace(/_/g, ' ')} — ${processLabel}` : route.replace(/_/g, ' '),

@@ -4452,6 +4452,7 @@ function renderCompositesForm(): string {
         <option value="prepreg_layup">Prepreg Hand Layup</option>
         <option value="hand_layup">Wet Hand Layup</option>
         <option value="rtm">RTM / VARTM</option>
+        <option value="prepreg_compression">Prepreg Compression Moulding (PCM)</option>
         <option value="vartm">VARTM Infusion</option>
         <option value="filament_winding">Filament Winding</option>
         <option value="pultrusion">Pultrusion</option>

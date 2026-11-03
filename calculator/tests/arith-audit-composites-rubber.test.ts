@@ -92,10 +92,14 @@ describe('C3 (M): the tooling total is split into the set in service and its wea
 describe('C4 (M): unsourced constants that move cost are labelled where the reader sees them', () => {
   it('composites bases say "not sourced" for the layup rate, cure, tool £, tool life, reject, trim and the load cap', () => {
     const p = compRun('COMP_Hat_Stiffener.stp', 'prepreg-cf').provenance;
-    for (const f of ['comp-layup-time', 'comp-cure-time', 'comp-tool-cost', 'comp-tool-life', 'comp-reject', 'comp-trim-time', 'comp-cure-batch'])
+    for (const f of ['comp-tool-cost', 'comp-reject', 'comp-trim-time', 'comp-cure-batch'])
       expect(p[f].basis, f).toMatch(/not sourced/);
     expect(p['comp-tool-life'].source).toBe('rule');                       // it claimed 'library' — no library holds it
-    expect(p['comp-layup-time'].basis).toMatch(/6\.5 kg of laminate an hour/);
+    // Report-standard round (Nov 2026): the layup rate, cure and tool life are now PUBLISHED figures, each citing its
+    // source — and where none is published (a metal layup tool's life) the basis says so (composites-published-data.test.ts).
+    expect(p['comp-layup-time'].basis).toMatch(/2 lb\/h.*CompositesWorld/);
+    expect(p['comp-cure-time'].basis).toMatch(/HexPly M21 data sheet/);
+    expect(p['comp-tool-life'].basis).toMatch(/NOT a published life/);
     // 24 fit the bed; the 20 cap binds and now says so
     expect(partsPerCure(0.39829, 0.12, [2.8, 1.0]).basis).toMatch(/24 fit; capped at 20/);
   });

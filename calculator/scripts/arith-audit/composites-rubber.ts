@@ -40,12 +40,21 @@ function check(part: string, what: string, mine: number | string, theirs: unknow
 }
 
 // ── Composites: the audit's copy of the stated system and tool figures ─────────────────────────────────────────────
+// Published figures (report-standard research, Nov 2026 — scripts/research/2026-11-report-standard/composites/data.json):
+// hand layup 2 lb/h [LR-1]; autoclave cure = the HexPly M21 schedule's centre, (160/2 + 120 + 120/5 + 160/1 + 120 + 120/2) / 2
+// = 282 min [AC-1]; PCM press 8 min, preform 5 min, 8 MPa [VR-1]; tool life by tool material — epoxy 300, BMI 500, nickel
+// 1,000, metal layup tool unpublished (no replacements), composite RTM 5,000, matched steel 100,000 [TL-1/3/8/7/11].
+// `cureHr` / `layup` below are the dry-fabric (unsourced) figures; a prepreg (resin null) takes the published ones.
 const SYSTEMS: Record<string, { fibre: string; resin: string | null; process: string; ply: number; fwf: number; waste: number; dens: number; cureHr: number; layup: number; cell: string; bed: [number, number] | null }> = {
-  'prepreg-cf': { fibre: 'mat-cfrp-prepreg-t700', resin: null, process: 'prepreg_layup', ply: 0.25, fwf: 0.65, waste: 0.15, dens: 1550, cureHr: 3.0, layup: 0.06, cell: 'autoclave-1200mm', bed: [2.8, 1.0] },
+  'prepreg-cf': { fibre: 'mat-cfrp-prepreg-t700', resin: null, process: 'prepreg_layup', ply: 0.25, fwf: 0.65, waste: 0.15, dens: 1550, cureHr: 282 / 60, layup: NaN, cell: 'autoclave-1200mm', bed: [2.8, 1.0] },
   'rtm-gf': { fibre: 'mat-gf-dry-e', resin: 'mat-vinylester-rtm', process: 'rtm', ply: 0.50, fwf: 0.50, waste: 0.12, dens: 1800, cureHr: 0.8, layup: 0.025, cell: 'rtm-press-std', bed: null },
 };
-const TOOL: Record<string, { base: number; perM2: number; life: number }> = {
-  prepreg_layup: { base: 12_000, perM2: 14_000, life: 500 }, rtm: { base: 25_000, perM2: 30_000, life: 5_000 },
+const HAND_KG_H = 2 * 0.45359237;
+const PCM_PRESS_MIN = 8, PCM_PREFORM_MIN = 5;
+const TOOL: Record<string, { base: number; perM2: number; lives: Array<number | null> }> = {
+  prepreg_layup: { base: 12_000, perM2: 14_000, lives: [300, 500, 1_000, null] },
+  rtm: { base: 25_000, perM2: 30_000, lives: [5_000, 100_000] },
+  prepreg_compression: { base: 25_000, perM2: 30_000, lives: [100_000] },
 };
 const NDI = { scanM2PerHr: 25, loadUnloadSec: 60, cellGbpPerHrUk: 15 };
 const OEE = 0.8, LAB_EFF = 0.92, REJECT_COMP = 0.04, CURE_ATTEND = 0.25;
@@ -87,12 +96,16 @@ function stack(part: string, res: Res, rm: number, ops: Array<{ name: string; m:
 
 function composites(part: string, geo: OCCTGeometry, answers: Record<string, string>, res: Res) {
   const P = (id: string) => res.provenance?.[id]?.value;
-  const sys = SYSTEMS[answers['material.laminate']];
+  const sys0 = SYSTEMS[answers['material.laminate']];
+  const pcm = sys0.resin === null && answers['composites.processChoice'] === 'pcm';
+  const sys = pcm ? { ...sys0, process: 'prepreg_compression', cureHr: r(PCM_PRESS_MIN / 60, 4), cell: 'rtm-press-std', bed: null } : sys0;
   const S2 = geo.surfaceArea!.mm2, V3 = geo.volume!.mm3;
   const wall = r(2 * V3 / S2, 2);
   const plies = Math.max(2, Math.ceil(wall / sys.ply));
   const area = r(geo.surfaceArea!.cm2 / 2 / 10_000, 3);
-  const layup = r(area * plies * sys.layup, 3);
+  const layup = sys.resin === null
+    ? r(area * plies * sys.ply * sys.dens / 1000 / HAND_KG_H + (pcm ? PCM_PREFORM_MIN / 60 : 0), 3)
+    : r(area * plies * sys.layup, 3);
   const mass = r(geo.volume!.cm3 * sys.dens / 1e6, 4);
   const pa = geo.projectedArea as { xMm2?: number; yMm2?: number; zMm2?: number };
   const planM2 = r(Math.max(pa.xMm2 ?? 0, pa.yMm2 ?? 0, pa.zMm2 ?? 0) / 100, 1) / 10_000;
@@ -103,11 +116,16 @@ function composites(part: string, geo: OCCTGeometry, answers: Record<string, str
     const fit = (x: number, y: number) => Math.floor(sys.bed![0] / x) * Math.floor(sys.bed![1] / y);
     perCure = Math.max(1, Math.min(20, Math.max(fit(a, b), fit(b, a))));
   }
-  const tc = layup + sys.cureHr + 0.5;
+  const tc = pcm ? sys.cureHr : layup + sys.cureHr + 0.5;
   const tools = Math.max(1, Math.ceil(ANNUAL * tc / (4000 * OEE)));
   const trim = r(0.1 + 2 * (d0 + d1) / 1000 / 1.5 / 60, 3);
   const tool = TOOL[sys.process];
   const toolCost = Math.round(tool.base + planM2 * tool.perM2);
+  // The shortest-lived tool material that lasts the cycles a tool sees; none → the longest; unpublished → the cycles.
+  const cycles = AMORT / tools;
+  const lasting = tool.lives.find(l => l === null || l >= cycles);
+  const chosen = lasting === undefined ? tool.lives[tool.lives.length - 1] : lasting;
+  const life = chosen === null ? Math.ceil(cycles) : chosen;
   const ndi = sys.fibre === 'mat-cfrp-prepreg-t700'
     ? r((NDI.loadUnloadSec / 3600 + area / NDI.scanM2PerHr) * (labour('lab-uk-inspector') + NDI.cellGbpPerHrUk), 4) : 0;   // 4 dp, as the product (7-country review)
   const fp = material(sys.fibre).pricePerKg, rp = sys.resin ? material(sys.resin).pricePerKg : 0;
@@ -123,7 +141,8 @@ function composites(part: string, geo: OCCTGeometry, answers: Record<string, str
   check(part, 'rule tools in service', tools, P('comp-tools'), 'exact');
   check(part, 'rule trim h', trim, P('comp-trim-time'), 'pct');
   check(part, 'rule tool £', toolCost, P('comp-tool-cost'), 'pct');
-  check(part, 'rule tool life', tool.life, P('comp-tool-life'), 'exact');
+  check(part, 'rule tool life', life, P('comp-tool-life'), 'exact');
+  check(part, 'rule process', sys.process, P('comp-process'), 'exact');
   check(part, 'rule NDI £', ndi, P('comp-ndi'));
   check(part, 'rule cure cell', sys.cell, P('comp-cure-mach'), 'exact');
 
@@ -136,7 +155,7 @@ function composites(part: string, geo: OCCTGeometry, answers: Record<string, str
     { name: 'cure', m: sys.cell, l: 'lab-uk-semiskilled', ct: sys.cureHr / perCure * U, ppc: 1, oee: OEE, man: 1, lt: sys.cureHr / perCure * CURE_ATTEND * U, le: LAB_EFF },
     { name: 'trim', m: 'waterjet-5ax-composite', l: 'lab-uk-semiskilled', ct: trim * U, ppc: 1, oee: OEE, man: 1, lt: trim * U, le: LAB_EFF },
   ];
-  const numTools = Math.max(tools, AMORT / tool.life);
+  const numTools = Math.max(tools, AMORT / life);
   check(part, 'tooling total £', toolCost * numTools, res.trace.drivers.tooling.totalToolingCost);
   const items = res.trace.drivers.tooling.items as Array<{ gbp: number }> | undefined;
   check(part, 'tooling items add to the total', toolCost * numTools, (items ?? []).reduce((s, i) => s + i.gbp, 0));
@@ -232,6 +251,15 @@ for (const p of base) {
   console.log(`${p.part} — product £${res.total?.toFixed(4)}`);
   const total = p.part.startsWith('COMP_') ? composites(p.part, p.geometry, spec.answers, res) : rubber(p.part, p.geometry, spec.answers, res);
   console.log(`  shadow £${total.toFixed(4)}`);
+  // A prepreg laminate is also costed as prepreg compression moulding (the route comparison's PCM row).
+  if (p.part.startsWith('COMP_') && SYSTEMS[spec.answers['material.laminate']]?.resin === null) {
+    const answers = { ...spec.answers, 'composites.processChoice': 'pcm' };
+    const pr = await costMeasuredPart(p.geometry, p.part,
+      { partNumber: p.part, file: p.part, annualVolume: ANNUAL, ...(spec.commodity ? { commodity: spec.commodity } : {}) },
+      answers, 'UK', { annualVolume: ANNUAL, programmeYears: YEARS }, book, { partNumber: p.part, file: p.part, status: 'error' }) as Res;
+    console.log(`${p.part} as PCM — product £${pr.total?.toFixed(4)}`);
+    console.log(`  shadow £${composites(`${p.part} (PCM)`, p.geometry, answers, pr).toFixed(4)}`);
+  }
 }
 console.log(`\n${pass} PASS, ${fail} FAIL`);
 if (fail) { console.log(fails.join('\n')); process.exit(1); }

@@ -37,18 +37,96 @@ export interface LaminateSystem {
   wasteFraction: number;
   /** Cured laminate density, kg/m³. */
   densityKgPerM3: number;
+  /** Cure cycle, hours — used ONLY where no published schedule applies (the oven and dry-fabric systems). An autoclave
+   *  prepreg's cure is the published schedule of its resin system (`autoclaveCure`). */
   cureHr: number;
-  /** Layup rate, hours per m² of laminated area per ply. */
+  /** Layup rate, hours per m² of laminated area per ply — used ONLY for dry fabric (no published preforming rate was
+   *  found). A prepreg is laid by hand at the published mass rate (`HAND_LAYUP_KG_PER_HR`). */
   layupHrPerM2PerPly: number;
   note: string;
+}
+
+// ─── Published layup rates and cure schedules (report-standard research, 3 Nov 2026) ──────────────────────────────
+// scripts/research/2026-11-report-standard/composites/{notes.md,data.json}; every row re-read in ../verify.md (all
+// composites rows CONFIRMED). Rows marked "read through a fetch tool" refuse a plain download (HTTP 403) and were read
+// through a page-fetch tool that returned the sentence verbatim — a person should open the page before a report quotes it.
+
+/** 1 lb in kg (exact, international pound). */
+const KG_PER_LB = 0.45359237;
+
+/**
+ * Hand layup of carbon/epoxy prepreg: "an average throughput speed of about 2 lb/hr" for a FLAT charge of 4–40 plies
+ * (CompositesWorld, S. Black, Nov 2003 — LR-1; read through a fetch tool). 2 lb/h = 0.907 kg/h. On a shaped tool (a hat
+ * section) it is an UPPER bound: a shaped ply is slower to lay than a flat one.
+ */
+export const HAND_LAYUP_KG_PER_HR = 2 * KG_PER_LB;
+/**
+ * Automated tape laying, 3 in tape, on the same flat charge: "20 lb/hr at an average speed of 20 ips" (LR-2, same
+ * article). NOT costed: it lays a flat charge, so a shaped part then needs a forming step with no published rate, and
+ * the tape-laying cell's capital is held (not sourced) in the rate book. Printed so the method costed is explicit —
+ * the old 0.06 h/m²/ply (6.5 kg/h on 0.25 mm carbon) was tape-laying speed charged as hand layup.
+ */
+export const ATL_KG_PER_HR = 20 * KG_PER_LB;
+export const LAYUP_RATE_SOURCE = 'CompositesWorld, "New Equipment Brings Tape Placement Within Reach Of Smaller Shops" '
+  + '(S. Black, Nov 2003) — hand layup "about 2 lb/hr", tape laying "20 lb/hr", both on a flat carbon/epoxy charge; '
+  + 'read through a fetch tool';
+
+/** The answer that names the prepreg's resin system — an answer, never asked by the rules (as casting.processChoice). */
+export const RESIN_SYSTEM_DECISION_ID = 'composites.resinSystem';
+export type ResinSystem = 'epoxy-180' | 'fast-cure';
+
+/** Room temperature the M21 heat-up starts from — the datasheet says "from room temperature"; 20 °C is taken. */
+const ROOM_TEMP_C = 20;
+/**
+ * Hexcel HexPly M21 (180 °C aerospace toughened epoxy) data sheet ©2020, standard autoclave cure (AC-1, PDF text):
+ * heat at 1–2 °C/min to 180 °C, hold 120 min, cool at 2–5 °C/min, vent at 60 °C or below.
+ */
+export const M21_SCHEDULE = { cureC: 180, rampCPerMin: [1, 2] as [number, number], holdMin: 120, coolCPerMin: [2, 5] as [number, number], ventC: 60 };
+/** Hexcel HexPly M77 User Guide ©2016, standard autoclave cycle (AC-2, PDF text): 10 min to 140 °C, 7 min dwell, 6 min cool. */
+export const M77_AUTOCLAVE_MIN = { toTemp: 10, dwell: 7, cool: 6 };
+
+export interface CureSchedule { resin: ResinSystem; hr: number; lowHr: number; highHr: number; basis: string }
+
+/** The autoclave cure of a prepreg, by its resin system — the datasheet schedule, with its arithmetic. */
+export function autoclaveCure(resin: ResinSystem): CureSchedule {
+  if (resin === 'fast-cure') {
+    const m = M77_AUTOCLAVE_MIN;
+    const min = m.toTemp + m.dwell + m.cool;
+    const hr = Math.round(min / 60 * 10_000) / 10_000;
+    return { resin, hr, lowHr: hr, highHr: hr,
+      basis: `fast-cure 140 °C epoxy (Hexcel HexPly M77 class): ${m.toTemp} min to 140 °C + ${m.dwell} min dwell + ${m.cool} min cool `
+        + `= ${min} min = ${hr} h (HexPly M77 User Guide ©2016, standard autoclave cycle; tool heat-up with a full load of tools `
+        + 'is not in the schedule and is NOT costed — no published figure)' };
+  }
+  const s = M21_SCHEDULE;
+  const heat = (s.cureC - ROOM_TEMP_C);
+  const cool = (s.cureC - s.ventC);
+  const lowMin = heat / s.rampCPerMin[1] + s.holdMin + cool / s.coolCPerMin[1];
+  const highMin = heat / s.rampCPerMin[0] + s.holdMin + cool / s.coolCPerMin[0];
+  const midMin = (lowMin + highMin) / 2;
+  const hr = Math.round(midMin / 60 * 10_000) / 10_000;
+  return { resin, hr, lowHr: Math.round(lowMin / 60 * 100) / 100, highHr: Math.round(highMin / 60 * 100) / 100,
+    basis: `180 °C aerospace epoxy (Hexcel HexPly M21 class): heat ${heat} K at ${s.rampCPerMin[0]}–${s.rampCPerMin[1]} °C/min `
+      + `(${heat / s.rampCPerMin[1]}–${heat / s.rampCPerMin[0]} min, from ${ROOM_TEMP_C} °C room temperature — taken) + ${s.holdMin} min hold `
+      + `+ cool ${cool} K to the ${s.ventC} °C vent at ${s.coolCPerMin[0]}–${s.coolCPerMin[1]} °C/min (${cool / s.coolCPerMin[1]}–${cool / s.coolCPerMin[0]} min) `
+      + `= ${lowMin}–${highMin} min; the centre, ${midMin} min = ${hr} h, is costed (HexPly M21 data sheet ©2020, standard cure; `
+      + 'load, pressurise and unload are not in the schedule and are NOT costed — no published figure)' };
+}
+
+/** The resin system answered, or the default for the laminate: an autoclave prepreg is costed as the 180 °C system. */
+export function resinSystemOf(answers: Readonly<Record<string, unknown>>): { resin: ResinSystem; answered: boolean } {
+  const v = answers[RESIN_SYSTEM_DECISION_ID];
+  if (v === 'fast-cure' || v === 'epoxy-180') return { resin: v, answered: true };
+  return { resin: 'epoxy-180', answered: false };
 }
 
 /**
  * The four systems that cover almost every real composite should-cost.
  *
  * Ply thickness, fibre fraction and waste are the published characteristics of
- * each system; the cure times mirror the ranges the prompt carried
- * (autoclave 2–4 hr, RTM 0.5–1.5 hr, infusion 1–2 hr).
+ * each system. The autoclave prepreg's cure is its resin system's published schedule (`autoclaveCure`) and a prepreg is
+ * laid at the published hand-layup mass rate; the `cureHr` / `layupHrPerM2PerPly` below are used only by the oven and
+ * dry-fabric systems, and are engineering-typical, not sourced (printed so).
  *
  * The `process` values are the engine's `CompositeProcess`, which is worth
  * stating because the prompt's are not. `cad.ts` asks the model for
@@ -67,7 +145,7 @@ export const LAMINATE_SYSTEMS: LaminateSystem[] = [
     fibreId: 'mat-cfrp-prepreg-t700', resinId: null,
     process: 'prepreg_layup',
     plyThicknessMm: 0.25, fibreWeightFraction: 0.65, wasteFraction: 0.15,
-    densityKgPerM3: 1550, cureHr: 3.0, layupHrPerM2PerPly: 0.06,
+    densityKgPerM3: 1550, cureHr: 3.0, layupHrPerM2PerPly: 0.06,   // unused: published cure / layup (above)
     note: 'aerospace and motorsport structure — highest properties, highest cost',
   },
   {
@@ -76,7 +154,7 @@ export const LAMINATE_SYSTEMS: LaminateSystem[] = [
     fibreId: 'mat-gfrp-prepreg-e', resinId: null,
     process: 'prepreg_layup',
     plyThicknessMm: 0.30, fibreWeightFraction: 0.60, wasteFraction: 0.15,
-    densityKgPerM3: 1900, cureHr: 2.0, layupHrPerM2PerPly: 0.05,
+    densityKgPerM3: 1900, cureHr: 2.0, layupHrPerM2PerPly: 0.05,   // cure used (oven); layup unused (hand rate)
     note: 'structural glass — radomes, covers, tooling',
   },
   {

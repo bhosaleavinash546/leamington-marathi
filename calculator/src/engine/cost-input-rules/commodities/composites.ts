@@ -9,9 +9,14 @@
  *
  *   plies          = measured wall ÷ cured ply thickness
  *   areaM2         = measured surface area
- *   layup hours    = area × plies × the system's layup rate
- *   fibre fraction, waste fraction, cure time = properties of the system
- *   tool cost      = area × the tool rate for the process
+ *   layup hours    = laminate mass laid ÷ the published hand-layup rate (prepreg; dry fabric: area × plies × its rate)
+ *   cure time      = the resin system's published schedule (autoclave prepreg) or the PCM press cycle
+ *   fibre fraction, waste fraction = properties of the system
+ *   tool cost      = area × the tool rate for the process (unsourced, labelled)
+ *   tool life      = the tool material the cycles each tool sees call for, at its published life
+ *
+ * Published data (report-standard round, Nov 2026): scripts/research/2026-11-report-standard/composites/ (notes.md,
+ * data.json; re-read in ../verify.md). Ids in [brackets] are that file's rows.
  *
  * The prompt asked the model for `plies: estimate from structural requirement
  * (typical CFRP 4–16 plies; GFRP 3–8 plies)` — a guess at a number the kernel
@@ -28,23 +33,118 @@
  */
 import { materialGradeName } from '../derive/material.js';
 import { countryFactor, countryNote } from '../../regional-services.js';
-import { activeToolroomFactor, activeLabourRate } from '../../rate-context.js';
+import { activeToolroomFactor, activeLabourRate, activeRates } from '../../rate-context.js';
 import { CURE_ATTENDANCE, type CompositeProcess } from '../../modules/composites.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
-import { laminateFacts, type LaminateSystem } from '../derive/laminate.js';
+import {
+  laminateFacts, autoclaveCure, resinSystemOf, HAND_LAYUP_KG_PER_HR, ATL_KG_PER_HR, LAYUP_RATE_SOURCE,
+  type LaminateSystem, type ResinSystem,
+} from '../derive/laminate.js';
+import { amortisationParts } from './injection-moulding.js';
 import { planAreaCm2, bboxSortedMm } from '../derive/envelope.js';
 import { shellWallMm } from '../derive/shell-wall.js';
 
 /** Tool cost per m² of moulding surface, by process — the ranges the prompt carried. Engineering-typical, NOT
- *  sourced, and printed as such in the tool cost and tool life bases (arithmetic audit, Oct 2026). */
+ *  sourced, and printed as such in the tool cost basis (arithmetic audit, Oct 2026; research gap 2, Nov 2026: no tool
+ *  price per m² by material was found). `life` is used only where no tool material below has a published life (vartm,
+ *  hand layup, filament winding, pultrusion — printed "not sourced"). PCM has no tool price of its own: it is priced on
+ *  the RTM matched-die build-up and says so. */
 export const TOOL_RATE_PER_M2: Record<CompositeProcess, { base: number; perM2: number; life: number }> = {
-  prepreg_layup:    { base: 12_000, perM2: 14_000, life: 500 },   // autoclave-capable, invar or tooling prepreg
+  prepreg_layup:    { base: 12_000, perM2: 14_000, life: 500 },   // autoclave layup tool (life: COMP_TOOL_LIFE)
   vartm:            { base: 4_000,  perM2: 5_000,  life: 300 },   // one-sided infusion tool
-  rtm:              { base: 25_000, perM2: 30_000, life: 5_000 }, // matched steel die, both faces
+  rtm:              { base: 25_000, perM2: 30_000, life: 5_000 }, // matched die, both faces (life: COMP_TOOL_LIFE)
+  prepreg_compression: { base: 25_000, perM2: 30_000, life: 100_000 }, // = the RTM matched-die build-up (life: COMP_TOOL_LIFE)
   hand_layup:       { base: 3_000,  perM2: 4_000,  life: 200 },
   filament_winding: { base: 8_000,  perM2: 6_000,  life: 2_000 },
   pultrusion:       { base: 15_000, perM2: 2_000,  life: 20_000 },
 };
+
+// ─── Tool life by tool material (report-standard research, 3 Nov 2026) ─────────────────────────────────────────────
+// scripts/research/2026-11-report-standard/composites/data.json (ids in brackets), every row CONFIRMED in ../verify.md.
+// "fetch tool": the page refuses a plain download and was read through a page-fetch tool that returned the sentence
+// verbatim — open it in a browser before a report quotes it.
+
+export type CompToolMaterial = 'cfrp-epoxy' | 'cfrp-bmi' | 'nickel-shell' | 'metal-layup' | 'composite-rtm' | 'steel-matched';
+
+export interface CompToolLife {
+  label: string;
+  /** Cure / moulding cycles a tool lasts; null = no published count (the tool is taken to last the programme). */
+  life: number | null;
+  source: string;
+}
+
+export const COMP_TOOL_LIFE: Record<CompToolMaterial, CompToolLife> = {
+  'cfrp-epoxy': { label: 'carbon/epoxy tooling-prepreg layup tool', life: 300,
+    source: 'Cytec, quoted in SME Media "Tooling It Up for Composites" (Apr 2010): "Epoxy tooling is generally limited to less than '
+      + '300 cure cycles at temperatures not exceeding 185°C" [TL-1] — 300 is the upper bound' },
+  'cfrp-bmi': { label: 'carbon/BMI layup tool (HexTool M61 class)', life: 500,
+    source: 'Hexcel HexTool M61 data sheet ©2015: "after more than 500 part cure cycles" [TL-3]; CompositesWorld "Tooling for composites" '
+      + '(2016): "can survive 500 autoclave cycles" [TL-5, fetch tool]; the older M61 sheet says 1,000 tool thermal cycles [TL-4]' },
+  'nickel-shell': { label: 'nickel-shell layup tool', life: 1_000,
+    source: 'Weber Manufacturing (a vendor claim), quoted in SME Media (Apr 2010): "1000–100,000 parts or more" [TL-8] — the lower end' },
+  'metal-layup': { label: 'metal layup tool (Invar / steel)', life: null,
+    source: 'no cycle count is published: Invar tooling "would last the life of the program" (SME Media, Apr 2009) [TL-7]; metal tools '
+      + '"withstand many thousands of production cycles" (CompositesWorld "Tooling for composites", 2016) [TL-6, fetch tool]' },
+  'composite-rtm': { label: 'composite RTM mould', life: 5_000,
+    source: 'JHM Technologies, "Demystifying the RTM Process" (1998): RTM tool life "> 1,000 to 5,000" mouldings [TL-11] — the upper end' },
+  'steel-matched': { label: 'matched steel compression die', life: 100_000,
+    source: 'SMC ANALOGUE — no PCM / HP-RTM tool life is published: JHM Technologies (1998): "Expected tooling life for a steel tool as used '
+      + 'in the SMC process is greater then 100,000 moldings" [TL-11]; up to 200,000 parts on forged steel dies (CompositesWorld, 2007) '
+      + '[TL-10, fetch tool]; compression-mould steel is AISI 4140 at 30–32 HRC, plated (CKN A302) [TL-12]' },
+};
+
+/** The tool materials each process can use, shortest life first. A process not listed keeps its unsourced life. */
+export const TOOL_MATERIALS_BY_PROCESS: Partial<Record<CompositeProcess, CompToolMaterial[]>> = {
+  prepreg_layup: ['cfrp-epoxy', 'cfrp-bmi', 'nickel-shell', 'metal-layup'],
+  rtm: ['composite-rtm', 'steel-matched'],
+  prepreg_compression: ['steel-matched'],
+};
+
+export interface ToolChoice {
+  material: CompToolMaterial | null;
+  /** The life the costing uses (for a metal layup tool: the cycles each tool sees — not a published life). */
+  life: number;
+  cyclesPerTool: number;
+  replacements: boolean;
+  basis: string;
+  /** Set when something about the tool is NOT in the price. */
+  notCosted: string | null;
+}
+
+/**
+ * Choose the tool material from the cycles each tool must see over the programme: programme parts ÷ tools in service.
+ * The tool PRICE is the same (unsourced) build-up whatever the material, so the material that lasts with the shortest
+ * life is chosen and no tool is replaced; when none lasts (the steel die beyond 100,000), the longest-lived is costed
+ * and its wear replacements are bought. A metal layup tool has no published count: no wear replacements are charged
+ * and resurfacing / replacement is listed as NOT costed.
+ */
+export function chooseToolMaterial(process: CompositeProcess, programmeParts: number, toolsInService: number): ToolChoice {
+  const cycles = programmeParts / Math.max(1, toolsInService);
+  const cyc = Math.ceil(cycles);
+  const cands = TOOL_MATERIALS_BY_PROCESS[process];
+  const lead = `${programmeParts.toLocaleString('en-GB')} programme parts ÷ ${toolsInService} tool${toolsInService === 1 ? '' : 's'} in service `
+    + `= ${cyc.toLocaleString('en-GB')} cycles a tool`;
+  if (!cands) {
+    const life = TOOL_RATE_PER_M2[process].life;
+    return { material: null, life, cyclesPerTool: cycles, replacements: cycles > life, notCosted: null,
+      basis: `${lead}; ${life.toLocaleString('en-GB')} parts a tool, engineering-typical, not sourced (no published life for this `
+        + 'process\'s tool was found); the costing buys the larger of the tools in service and programme parts ÷ this life' };
+  }
+  const lasts = cands.find(m => COMP_TOOL_LIFE[m].life === null || COMP_TOOL_LIFE[m].life! >= cycles);
+  const m = lasts ?? cands[cands.length - 1];
+  const t = COMP_TOOL_LIFE[m];
+  const skipped = cands.slice(0, cands.indexOf(m)).map(x => `${COMP_TOOL_LIFE[x].label} ${COMP_TOOL_LIFE[x].life!.toLocaleString('en-GB')}`);
+  const why = skipped.length ? ` — more than the published life of a ${skipped.join(', ')} cycles` : '';
+  if (t.life === null) {
+    return { material: m, life: cyc, cyclesPerTool: cycles, replacements: false,
+      notCosted: `Layup tool resurfacing / replacement — not costed (no published cycle life for a ${t.label}; confirm the life with the tool maker)`,
+      basis: `${lead}${why}: a ${t.label}. Its life: ${t.source}. No wear replacements are charged — the life entered is the ${cyc.toLocaleString('en-GB')} `
+        + 'cycles each tool sees, NOT a published life; tool resurfacing / replacement is NOT costed (no published cycle life)' };
+  }
+  return { material: m, life: t.life, cyclesPerTool: cycles, replacements: !lasts, notCosted: null,
+    basis: `${lead}: a ${t.label}, ${t.life.toLocaleString('en-GB')} cycles${lasts ? `${why}, and it lasts them — no replacements`
+      : ' — fewer than each tool sees, so wear replacements are bought (programme parts ÷ life)'}. ${t.source}` };
+}
 
 /**
  * Ply count from the measured wall.
@@ -96,6 +196,69 @@ const TRIM_LOAD_HR = 0.1;
 const TRIM_M_PER_MIN = 1.5;
 /** Most tools one autoclave / oven load is costed with (the bed can fit more of a small part). */
 export const MAX_PARTS_PER_CURE = 20;
+/** Reject allowance the rules set (porosity, delamination, dimensional) — engineering-typical, not sourced. */
+export const COMP_REJECT = 0.04;
+
+// ─── Process choice: layup + cure cell, or prepreg compression moulding (report-standard research, Nov 2026) ───────
+
+/** The engineer's (or the route comparison's) choice of composites process — an answer, never asked by the rules. */
+export const COMPOSITES_PROCESS_CHOICE_ID = 'composites.processChoice';
+export type CompositesProcessChoice = 'layup' | 'pcm';
+export const COMPOSITES_PROCESS_LABEL: Record<CompositesProcessChoice, string> = {
+  layup: 'Prepreg layup + cure cell',
+  pcm: 'Prepreg compression moulding (PCM)',
+};
+
+/**
+ * Prepreg compression moulding — the same prepreg (so the same material family), pressed in a heated matched steel die.
+ * Every figure from data.json [id]; CompositesWorld rows were read through a fetch tool.
+ */
+export const PCM = {
+  /** "The molding cycle in a hydraulic compression press is 8 minutes at 140°C, using 8 MPa forming pressure" — the only
+   *  published total PCM cycle (Mitsubishi Rayon, Nissan GT-R decklid; CompositesWorld, Jun 2015) [VR-1, fetch tool]. */
+  pressCycleMin: 8,
+  /** "takt times of 3 minutes or less for small to medium parts using automotive prepregs" (Solvay; CompositesWorld,
+   *  May 2020) [VR-3, fetch tool] — costed when the resin system is answered fast-cure. */
+  fastCureTaktMin: 3,
+  /** Preforming "< 5 min" (1 min heat to 60–70 °C, 0.3 MPa form) [VR-1] — the upper bound, laminator time. */
+  preformMin: 5,
+  /** Forming pressure, MPa [VR-1]: press force = this × the measured plan area. */
+  pressureMPa: 8,
+  /** Parts a tool a year the source reports: 50,000 (5-min-cure prepreg) to 84,000 (3-min-cure) [VR-1] — a cross-check. */
+  annualPerTool: [50_000, 84_000] as [number, number],
+  /** The library's hydraulic composites press (Langzauner awards — tonnage not stated in the book). */
+  machineId: 'rtm-press-std',
+} as const;
+
+/** Prepreg autoclave above this many parts a year carries a route alert — the industry quote's ceiling of prepreg's
+ *  sweet spot (Huntsman, ACMA Composites Manufacturing, Jul 2016) [VR-4]. Not a judgement: the number is the quote's. */
+export const AUTOCLAVE_VOLUME_ALERT = 25_000;
+export const AUTOCLAVE_VOLUME_ALERT_TEXT = 'ROUTE ALERT (industry quote): prepreg in an autoclave is a low-volume route — '
+  + '"Around 20,000 to 25,000 parts per year on a single production line such as the Corvette roof" is prepreg\'s sweet spot and '
+  + '"In automotive, you haven\'t reached high volume until about 100,000 parts" (Huntsman, in ACMA Composites Manufacturing, '
+  + '"Fast-cure Prepreg is Making Inroads", Jul 2016). Compare prepreg compression moulding (PCM) in the route comparison';
+
+/** The route alert for a costing, or null below the threshold / off the autoclave route. */
+export function compositesRouteAlert(annualVolume: number, cureMachineId: string, process: CompositeProcess): string | null {
+  if (process !== 'prepreg_layup' || !/autoclave/.test(cureMachineId) || !(annualVolume > AUTOCLAVE_VOLUME_ALERT)) return null;
+  return `${annualVolume.toLocaleString('en-GB')} a year is above ${AUTOCLAVE_VOLUME_ALERT.toLocaleString('en-GB')}. ${AUTOCLAVE_VOLUME_ALERT_TEXT}`;
+}
+
+/** Cure cells (autoclaves / ovens / presses) the volume implies, with its arithmetic — the same formula the report's
+ *  capacity table uses (annual × cycle a part ÷ OEE ÷ the machine's annual hours, the cycle carrying the reject allowance). */
+export function cureCellsImplied(annualVolume: number, cureHr: number, perCure: number, machineId: string): { n: number; basis: string } {
+  const m = activeRates().machines.find(x => x.id === machineId);
+  const hours = m?.buildup?.annualAvailableHours ?? COMP_TOOL_HOURS;
+  const perPart = cureHr / Math.max(1, perCure) / (1 - COMP_REJECT);
+  const n = annualVolume * perPart / COMP_OEE / hours;
+  const what = /autoclave/.test(machineId) ? 'autoclave' : /oven/.test(machineId) ? 'oven' : 'press';
+  const plural = (w: string) => (w === 'press' ? 'presses' : `${w}s`);
+  return { n, basis: `${plural(what)} implied: ${annualVolume.toLocaleString('en-GB')}/yr × ${cureHr} h ÷ ${perCure} a load ÷ (1 − ${COMP_REJECT} reject) `
+    + `÷ ${COMP_OEE} OEE ÷ ${hours.toLocaleString('en-GB')} h a year (rate book) = ${n.toFixed(1)} ${n >= 1.05 ? plural(what) : what}` };
+}
+
+/** What a composites costing does NOT price, for the report's "Not included" list (each with its reason). */
+export interface CompositesNotCosted { item: string; reason: string }
 
 /**
  * Ultrasonic C-scan of structural carbon as a STATION — time × rates — not a flat £ (arithmetic audit, Oct 2026).
@@ -144,6 +307,11 @@ export function partsPerCure(lM: number, wM: number, bed: [number, number] | nul
 
 interface CompAdvice {
   system: LaminateSystem;
+  /** The process costed: the laminate's own, or PCM when answered. */
+  process: CompositeProcess;
+  choice: CompositesProcessChoice;
+  resin: ResinSystem;
+  resinAnswered: boolean;
   massKg: number;
   fibrePrice: number;
   resinPrice: number;
@@ -154,18 +322,27 @@ interface CompAdvice {
   pliesBasis: string;
   areaM2: number;
   layupHr: number;
+  layupBasis: string;
+  cureHr: number;
+  cureBasis: string;
   planM2: number;
   planBasis: string;
   cureMachineId: string;
   cureLabel: string;
+  cureMachineBasis: string;
   perCure: number;
   perCureBasis: string;
+  cells: number;
+  cellsBasis: string;
   tools: number;
   toolsBasis: string;
+  tool: ToolChoice;
   trimHr: number;
   trimBasis: string;
   ndi: number;
   ndiBasis: string;
+  alert: string | null;
+  notCosted: CompositesNotCosted[];
 }
 
 function envelopeAsk(): RuleOutcome<never> {
@@ -179,6 +356,9 @@ function envelopeAsk(): RuleOutcome<never> {
     blockedFieldIds: [], blockedRuleIds: [], severity: 'blocking',
   });
 }
+
+/** A prepreg system: the fibre £/kg buys the resin too, and it can be laid up OR compression moulded. */
+const isPrepreg = (s: LaminateSystem) => s.resinId === null && s.process === 'prepreg_layup';
 
 function advise(ctx: RuleContext): { advice: CompAdvice } | { blocked: RuleOutcome<never> } {
   const lam = laminateFacts(ctx);
@@ -194,20 +374,99 @@ function advise(ctx: RuleContext): { advice: CompAdvice } | { blocked: RuleOutco
   const wallMm = Math.round(w.mm * 100) / 100;
 
   const s = lam.system!;
+  const prepreg = isPrepreg(s);
+  // PCM is a prepreg process: on a dry-fabric laminate the answer is not one this laminate can take, and is ignored.
+  const choice: CompositesProcessChoice = prepreg && ctx.answers[COMPOSITES_PROCESS_CHOICE_ID] === 'pcm' ? 'pcm' : 'layup';
+  const pcm = choice === 'pcm';
+  const process: CompositeProcess = pcm ? 'prepreg_compression' : s.process;
+  const { resin, answered: resinAnswered } = resinSystemOf(ctx.answers);
+  const notCosted: CompositesNotCosted[] = [];
   const p = plyCount(wallMm, s);
-  const layupHr = Math.round(areaM2 * p.n * s.layupHrPerM2PerPly * 1000) / 1000;
-  const cell = CURE_CELLS[s.value];
-  const cure = partsPerCure(d[0] / 1000, d[1] / 1000, cell.bedM);
 
-  // Layup tools the volume needs: a tool is tied up through layup, cure and
-  // turnaround, so the year's parts need volume × that ÷ the hours a tool can
-  // work. The module bought only as many as tool LIFE demanded.
-  const toolCycleHr = layupHr + s.cureHr + TOOL_TURNAROUND_HR;
+  // ── Layup: a prepreg at the published hand-layup mass rate; dry fabric at its (unsourced) area rate ───────────────
+  let layupHr: number, layupBasis: string;
+  if (prepreg) {
+    const plyKgM2 = s.plyThicknessMm * s.densityKgPerM3 / 1000;
+    const laidKg = areaM2 * p.n * plyKgM2;
+    const stackHr = laidKg / HAND_LAYUP_KG_PER_HR;
+    const preformHr = pcm ? PCM.preformMin / 60 : 0;
+    layupHr = Math.round((stackHr + preformHr) * 1000) / 1000;
+    layupBasis = `HAND LAYUP costed: ${fmt(areaM2, 3)} m² × ${p.n} plies × ${fmt(plyKgM2, 4)} kg/m² a ply (${s.plyThicknessMm} mm × `
+      + `${s.densityKgPerM3} kg/m³) = ${fmt(laidKg, 4)} kg laid ÷ ${fmt(HAND_LAYUP_KG_PER_HR, 3)} kg/h (2 lb/h) = ${fmt(stackHr, 3)} h`
+      + (pcm ? ` + preform ${PCM.preformMin} min (≤ ${PCM.preformMin} min, CompositesWorld Jun 2015 [VR-1], fetch tool — the preform `
+        + `station's heater and press time is NOT costed, no rate in the book) = ${layupHr} h — a flat stack, which is what the published rate measured`
+        : ' — the published rate is for a flat charge, so on a shaped tool it is an upper bound (the part takes longer)')
+      + `. Source: ${LAYUP_RATE_SOURCE}. Tape laying (${fmt(ATL_KG_PER_HR, 1)} kg/h, same source) is NOT costed: `
+      + (pcm ? 'the tape-laying cell\'s capital is not sourced in the rate book'
+        : 'it lays a flat charge, a shaped part then needs a forming step with no published rate, and the tape-laying cell\'s capital '
+          + 'is not sourced in the rate book')
+      + (s.value !== 'prepreg-cf' ? '; the rate was measured on carbon/epoxy prepreg and is applied to this prepreg as an analogue' : '');
+  } else {
+    layupHr = Math.round(areaM2 * p.n * s.layupHrPerM2PerPly * 1000) / 1000;
+    layupBasis = `${fmt(areaM2, 3)} m² × ${p.n} plies × ${s.layupHrPerM2PerPly} hr/m²/ply for ${s.label} = ${layupHr} h (dry-fabric `
+      + `preforming rate engineering-typical, not sourced — no published rate was found: it lays `
+      + `${fmt(s.plyThicknessMm * s.densityKgPerM3 / 1000 / s.layupHrPerM2PerPly, 1)} kg of laminate an hour)`;
+  }
+
+  // ── Cure: the press cycle (PCM), the resin system's published autoclave schedule, or the cell's unsourced cycle ────
+  const cell = pcm ? { machineId: PCM.machineId, bedM: null, label: 'heated hydraulic compression press — cures in the matched die' }
+    : CURE_CELLS[s.value];
+  let cureHr: number, cureBasis: string;
+  if (pcm) {
+    const fast = resin === 'fast-cure' && resinAnswered;
+    const min = fast ? PCM.fastCureTaktMin : PCM.pressCycleMin;
+    cureHr = Math.round(min / 60 * 10_000) / 10_000;
+    cureBasis = fast
+      ? `PCM press takt ${min} min with a fast-cure automotive prepreg — "takt times of 3 minutes or less for small to medium parts using `
+        + 'automotive prepregs" (Solvay, CompositesWorld May 2020 [VR-3], fetch tool)'
+      : `PCM press cycle ${min} min at 140 °C, 8 MPa — "The molding cycle in a hydraulic compression press is 8 minutes at 140°C" `
+        + '(Mitsubishi Rayon PCM, CompositesWorld Jun 2015 [VR-1], fetch tool; the only published total PCM cycle — a 3-min takt is '
+        + `costed when the resin system is answered fast-cure)${resin === 'epoxy-180' && resinAnswered ? '. A 180 °C aerospace epoxy is not a press-cure prepreg; the published PCM cycle is costed' : ''}`;
+    cureBasis += `; ${min} min = ${cureHr} h. The prepreg priced is the library grade — a PCM-grade prepreg price is not separately sourced`;
+  } else if (/autoclave/.test(cell.machineId) && prepreg) {
+    const c = autoclaveCure(resin);
+    cureHr = c.hr;
+    cureBasis = `resin system ${resinAnswered ? 'answered' : 'costed (unanswered: an autoclave prepreg is costed as the 180 °C aerospace system '
+      + 'its laminate option names; answer composites.resinSystem "fast-cure" for the 23-min M77 cycle)'}: ${c.basis}`
+      + (c.lowHr !== c.highHr ? `; range ${c.lowHr}–${c.highHr} h` : '')
+      + (/125\s*°C/.test(String(activeRates().materials.find(m => m.id === s.fibreId)?.grade ?? ''))
+        ? '. NOTE: the library prepreg priced is a 125 °C-cure grade; no published cure schedule for that grade was read' : '');
+  } else {
+    cureHr = s.cureHr;
+    cureBasis = `${s.label} cure cycle including ramp and dwell (engineering-typical, not sourced — no published schedule was read for it)`;
+  }
+  cureBasis += `; the cure operator is charged ${CURE_ATTENDANCE * 100} % of each part's share of it — load, check, unload`;
+
+  const cure = partsPerCure(d[0] / 1000, d[1] / 1000, cell.bedM);
+  const forceKn = PCM.pressureMPa * plan.cm2 / 10_000 * 1000;
+  const cureMachineBasis = pcm
+    ? `PCM cures in a heated hydraulic compression press: ${PCM.pressureMPa} MPa forming pressure [VR-1] × ${fmt(plan.cm2 / 10_000, 4)} m² `
+      + `measured plan (${plan.basis}) = ${fmt(forceKn, 0)} kN (${fmt(forceKn / 9.80665, 0)} t) press force; costed on the library's hydraulic `
+      + 'composites press, whose tonnage the rate book does not state — confirm the press against this force'
+    : `${s.label} cures in the ${cell.label}`;
+
+  // Tools the volume needs: a layup tool is tied up through layup, cure and turnaround; a PCM die only through the press
+  // cycle (the preform is made on its own preform tool). The module bought only as many as tool LIFE demanded.
+  const toolCycleHr = pcm ? cureHr : layupHr + cureHr + TOOL_TURNAROUND_HR;
   const needed = ctx.annualVolume * toolCycleHr / (COMP_TOOL_HOURS * COMP_OEE);
   const tools = Math.max(1, Math.ceil(needed));
-  const toolsBasis = `${ctx.annualVolume.toLocaleString('en-GB')}/yr × ${toolCycleHr.toFixed(2)} h a tool is tied up `
-    + `(layup ${layupHr.toFixed(2)} + cure ${s.cureHr} + turnaround ${TOOL_TURNAROUND_HR}) ÷ (${COMP_TOOL_HOURS} h × ${COMP_OEE} OEE) `
-    + `= ${needed.toFixed(2)} → ${tools} tool${tools === 1 ? '' : 's'}`;
+  const toolsBasis = (pcm
+    ? `${ctx.annualVolume.toLocaleString('en-GB')}/yr × ${cureHr} h a die is in the press`
+    : `${ctx.annualVolume.toLocaleString('en-GB')}/yr × ${toolCycleHr.toFixed(2)} h a tool is tied up `
+      + `(layup ${layupHr.toFixed(2)} + cure ${cureHr} + turnaround ${TOOL_TURNAROUND_HR})`)
+    + ` ÷ (${COMP_TOOL_HOURS} h × ${COMP_OEE} OEE) = ${needed.toFixed(2)} → ${tools} tool${tools === 1 ? '' : 's'}`
+    + (pcm ? ` (${Math.round(COMP_TOOL_HOURS * COMP_OEE / cureHr).toLocaleString('en-GB')} parts a die a year; the source reports `
+      + `${PCM.annualPerTool[0].toLocaleString('en-GB')}–${PCM.annualPerTool[1].toLocaleString('en-GB')} with 5- and 3-min-cure prepregs [VR-1])` : '');
+  const tool = chooseToolMaterial(process, amortisationParts(ctx), tools);
+  if (tool.notCosted) notCosted.push({ item: tool.notCosted, reason: 'no published cycle life for a metal layup tool' });
+
+  const cells = cureCellsImplied(ctx.annualVolume, cureHr, cure.n, cell.machineId);
+  const alert = compositesRouteAlert(ctx.annualVolume, cell.machineId, process);
+  if (prepreg && !pcm) {
+    notCosted.push({ item: 'Vacuum-bag consumables (bag film, breather, peel ply, sealant)', reason: 'no published price was found — needs a distributor price list' });
+    notCosted.push({ item: 'Autoclave load, pressurise and unload time beyond the datasheet cure schedule', reason: 'no published figure' });
+  }
+  if (pcm) notCosted.push({ item: 'PCM preform station (heater + 0.3 MPa forming press) machine time and preform tool', reason: 'no rate in the book; the 5-min preform is charged as laminator time' });
 
   const perimM = 2 * (d[0] + d[1]) / 1000;
   const trimHr = Math.round((TRIM_LOAD_HR + perimM / TRIM_M_PER_MIN / 60) * 1000) / 1000;
@@ -219,18 +478,33 @@ function advise(ctx: RuleContext): { advice: CompAdvice } | { blocked: RuleOutco
 
   return {
     advice: {
-      system: s, massKg: lam.massKg!,
+      system: s, process, choice, resin, resinAnswered, massKg: lam.massKg!,
       fibrePrice: lam.fibrePricePerKg!, resinPrice: lam.resinPricePerKg!,
       basis: lam.basis, wallMm, wallBasis: w.basis,
       plies: p.n, pliesBasis: p.basis,
-      areaM2, layupHr,
+      areaM2, layupHr, layupBasis, cureHr, cureBasis,
       planM2: plan.cm2 / 10_000, planBasis: plan.basis,
-      cureMachineId: cell.machineId, cureLabel: cell.label,
-      perCure: cure.n, perCureBasis: cure.basis,
-      tools, toolsBasis, trimHr, trimBasis,
-      ndi: ndi.gbp, ndiBasis: ndi.basis,
+      cureMachineId: cell.machineId, cureLabel: cell.label, cureMachineBasis,
+      perCure: cure.n, perCureBasis: cure.basis, cells: cells.n, cellsBasis: cells.basis,
+      tools, toolsBasis, tool, trimHr, trimBasis,
+      ndi: ndi.gbp, ndiBasis: ndi.basis, alert, notCosted,
     },
   };
+}
+
+/**
+ * What this costing does NOT price (the report's "Not included" list): metal layup tool resurfacing, bag consumables,
+ * autoclave handling time, the PCM preform station. Empty while the laminate is unanswered.
+ */
+export function compositesNotCosted(ctx: RuleContext): CompositesNotCosted[] {
+  const r = advise(ctx);
+  return 'blocked' in r ? [] : r.advice.notCosted;
+}
+
+/** The route alert for this costing (prepreg autoclave above 25,000 a year), or null. */
+export function compositesAlert(ctx: RuleContext): string | null {
+  const r = advise(ctx);
+  return 'blocked' in r ? null : r.advice.alert;
 }
 
 type Src = 'geometry' | 'rule' | 'library' | 'advisor' | 'engineer';
@@ -261,8 +535,13 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        return decided('composites.process', r.advice.system.process, 'engineer',
-          `${r.advice.system.label} — ${r.advice.system.note}`, 1);
+        const a = r.advice;
+        return decided('composites.process', a.process, 'engineer',
+          (a.choice === 'pcm'
+            ? `${COMPOSITES_PROCESS_LABEL.pcm} of ${a.system.label.replace(/, autoclave$/, '')} — answered (or the route comparison's row): `
+              + 'the same prepreg pressed in a heated matched steel die'
+            : `${a.system.label} — ${a.system.note}`)
+          + (a.alert ? `. ${a.alert}` : ''), 1);
       },
     },
     {
@@ -367,11 +646,7 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const a = r.advice;
-        return decided('composites.layupTimeHrPerPart', a.layupHr, 'rule',
-          `${fmt(a.areaM2, 3)} m² × ${a.plies} plies × ${a.system.layupHrPerM2PerPly} hr/m²/ply `
-          + `for ${a.system.label} = ${a.layupHr} h (rate engineering-typical, not sourced: it lays `
-          + `${fmt(a.system.plyThicknessMm * a.system.densityKgPerM3 / 1000 / a.system.layupHrPerM2PerPly, 1)} kg of laminate an hour)`, 0.6);
+        return decided('composites.layupTimeHrPerPart', r.advice.layupHr, 'rule', r.advice.layupBasis, 0.6);
       },
     },
     {
@@ -382,9 +657,7 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        return decided('composites.cureTimeHr', r.advice.system.cureHr, 'library',
-          `${r.advice.system.label} cure cycle including ramp and dwell (engineering-typical, not sourced); the cure `
-          + `operator is charged ${CURE_ATTENDANCE * 100} % of each part's share of it — load, check, unload`, 0.7);
+        return decided('composites.cureTimeHr', r.advice.cureHr, 'library', r.advice.cureBasis, 0.7);
       },
     },
     {
@@ -396,7 +669,7 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
         const a = r.advice;
-        const rate = TOOL_RATE_PER_M2[a.system.process];
+        const rate = TOOL_RATE_PER_M2[a.process];
         // The tool is sized to the part's footprint, not its laminated area — a
         // deep part covers more cloth than it occupies on the shop floor.
         const footprintM2 = a.planM2;
@@ -404,10 +677,11 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         const tf = activeToolroomFactor();
         const total = Math.round((rate.base + footprintM2 * rate.perM2) * tf);
         return decided('composites.toolingCost', total, 'rule',
-          `${a.system.process} tool: £${rate.base.toLocaleString('en-GB')} base + `
+          `${a.process === 'prepreg_compression' ? 'PCM matched steel die, priced on the RTM matched-die build-up (no PCM tool price was found)'
+            : `${a.process} tool`}: £${rate.base.toLocaleString('en-GB')} base + `
           + `${fmt(footprintM2, 3)} m² plan (${a.planBasis}) × £${rate.perM2.toLocaleString('en-GB')}/m²`
           + (tf !== 1 ? ` × toolroom factor ${tf}` : '') + ` = £${total.toLocaleString('en-GB')} a tool `
-          + '(engineering-typical rates, not sourced)', 0.55);
+          + '(engineering-typical rates, not sourced; the same price whatever the tool material)', 0.55);
       },
     },
     {
@@ -418,20 +692,14 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        const rate = TOOL_RATE_PER_M2[r.advice.system.process];
-        return decided('composites.toolingLife', rate.life, 'rule',
-          (r.advice.system.process === 'rtm'
-            ? 'matched steel die — the only composite tool that runs like a press tool'
-            : 'layup tool — life is set by thermal cycling and surface degradation')
-          + ` — ${rate.life.toLocaleString('en-GB')} parts a tool, engineering-typical, not sourced; the costing buys `
-          + 'the larger of the tools in service and programme parts ÷ this life',
-          0.6);
+        const t = r.advice.tool;
+        return decided('composites.toolingLife', t.life, 'rule', t.basis, t.material && COMP_TOOL_LIFE[t.material].life !== null ? 0.7 : 0.5);
       },
     },
     fromAdvice('composites.cureMachineId', 'comp-cure-mach', 'cureMachineId', a => ({
-      value: a.cureMachineId, source: 'rule', confidence: 0.7, basis: `${a.system.label} cures in the ${a.cureLabel}` })),
+      value: a.cureMachineId, source: 'rule', confidence: 0.7, basis: a.cureMachineBasis })),
     fromAdvice('composites.partsPerCureCycle', 'comp-cure-batch', 'partsPerCureCycle', a => ({
-      value: a.perCure, source: 'rule', confidence: 0.6, basis: a.perCureBasis })),
+      value: a.perCure, source: 'rule', confidence: 0.6, basis: `${a.perCureBasis}; ${a.cellsBasis}` })),
     fromAdvice('composites.toolsInService', 'comp-tools', 'toolsInService', a => ({
       value: a.tools, source: 'rule', confidence: 0.6, basis: a.toolsBasis })),
     fromAdvice('composites.trimMachineId', 'comp-trim-mach', 'trimMachineId', () => ({
@@ -454,6 +722,6 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
     fromAdvice('composites.labourEfficiency', 'comp-lab-eff', 'labourEfficiency', () => ({
       value: 0.92, source: 'rule', confidence: 0.6, basis: 'shop labour efficiency, as every route' })),
     fromAdvice('composites.rejectRate', 'comp-reject', 'rejectRate', () => ({
-      value: 0.04, source: 'rule', confidence: 0.55, basis: 'porosity, delamination, dimensional: 4% (engineering-typical, not sourced)' })),
+      value: COMP_REJECT, source: 'rule', confidence: 0.55, basis: `porosity, delamination, dimensional: ${COMP_REJECT * 100}% (engineering-typical, not sourced)` })),
   ],
 };

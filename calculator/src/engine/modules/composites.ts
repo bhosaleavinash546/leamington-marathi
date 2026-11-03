@@ -4,6 +4,8 @@ export type CompositeProcess =
   | 'hand_layup'
   | 'prepreg_layup'
   | 'rtm'
+  /** Prepreg compression moulding: a flat prepreg stack, preformed, pressed in a heated matched steel die. */
+  | 'prepreg_compression'
   | 'vartm'
   | 'filament_winding'
   | 'pultrusion';
@@ -64,7 +66,7 @@ export function getCompositeInputSchema(): Record<string, string> {
     fibreWeightFraction: 'number 0–1 — mass fraction of fibre in cured part. CFRP hand layup: 0.50, prepreg: 0.60, RTM: 0.55, GFRP: 0.45–0.55',
     partWeightKg: 'number — cured finished part weight kg',
     wasteFraction: 'number 0–1 — trim and offcut waste fraction. Prepreg hand layup: 0.15–0.30, RTM: 0.05–0.10, pultrusion: 0.02–0.05',
-    process: 'hand_layup | prepreg_layup | rtm | vartm | filament_winding | pultrusion',
+    process: 'hand_layup | prepreg_layup | prepreg_compression | rtm | vartm | filament_winding | pultrusion',
     areaM2: 'number — developed part surface area m² (used for reference; layupTimeHrPerPart drives cost)',
     plies: 'number — number of laminate plies',
     layupMachineId: 'string? — AFP/ATL machine ID for automated layup; omit for hand layup. e.g. autoclave-1200mm',
@@ -83,7 +85,7 @@ export function getCompositeInputSchema(): Record<string, string> {
     ndiCostPerPart: 'number? — NDI C-scan / UT inspection £/part. Automotive structural: 15–50, aerospace: 80–250',
     rejectRate: 'number 0–1? — composite scrap rate (delamination, porosity, dimensional). 0.03–0.08 typical',
     toolingCost: 'number — mould/mandrel cost £. Machined Al tool: 8k–50k; CFRP mould: 15k–150k; invar: 100k–500k',
-    toolingLife: 'number — parts per tool life. Al mould: 500–2000; CFRP mould: 100–400; invar: 2000–5000',
+    toolingLife: 'number — parts per tool life, by tool material (sourced in cost-input-rules/commodities/composites.ts COMP_TOOL_LIFE): carbon/epoxy tool < 300, carbon/BMI 500 (to 1,000), nickel shell 1,000+ (vendor claim), steel compression die > 100,000 (SMC analogue); Invar / steel layup tools have no published count',
     amortizationVolume: 'number — parts over which to amortize tooling cost',
   };
 }
@@ -103,7 +105,7 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
   // Prepreg is bought as fibre AND resin: its £/kg is a kg of prepreg, and the cured laminate is that prepreg. With
   // no separate resin buy (resin £0) the whole laminate mass is bought at the prepreg price — it used to buy only the
   // fibre's 65 %, while the line said "Prepreg (fibre + resin)" (arithmetic audit, Oct 2026).
-  const prepreg = inputs.process === 'prepreg_layup' && !(inputs.resinPricePerKg > 0);
+  const prepreg = (inputs.process === 'prepreg_layup' || inputs.process === 'prepreg_compression') && !(inputs.resinPricePerKg > 0);
   const boughtNet = prepreg ? inputs.partWeightKg : fibreMassNet;
   const netMatCost = prepreg
     ? inputs.partWeightKg * inputs.fibrePricePerKg
@@ -147,6 +149,7 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
   operations.push({
     operationName: inputs.layupMachineId
       ? 'Automated Fibre Placement / Layup'
+      : inputs.process === 'prepreg_compression' ? 'Prepreg Stack & Preform (PCM)'
       : `${inputs.process === 'hand_layup' ? 'Hand' : inputs.process === 'prepreg_layup' ? 'Prepreg Hand' : inputs.process.toUpperCase()} Layup`,
     machineId: inputs.layupMachineId ?? 'bench-assembly',
     labourId: inputs.layupLabourId,
@@ -162,7 +165,8 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
   const batchSize = Math.max(1, inputs.partsPerCureCycle ?? 1);
   const cureCyclePerPart = inputs.cureTimeHr / batchSize;
   operations.push({
-    operationName: `Cure (${inputs.cureMachineId.includes('autoclave') ? 'Autoclave' : inputs.cureMachineId.includes('rtm') ? 'RTM Press' : 'Oven'})`,
+    operationName: `Cure (${inputs.cureMachineId.includes('autoclave') ? 'Autoclave' : inputs.process === 'prepreg_compression' ? 'Compression Press'
+      : inputs.cureMachineId.includes('rtm') ? 'RTM Press' : 'Oven'})`,
     machineId: inputs.cureMachineId,
     labourId: inputs.cureLabourId,
     cycleTimeHr: cureCyclePerPart * rejectUplift,
@@ -206,7 +210,7 @@ export function computeCompositeDrivers(inputs: CompositeInputs): CommodityDrive
     // (report standard #9).
     { label: `${inService} tool${inService === 1 ? '' : 's'} in service (the set the volume needs) × ${each}`, gbp: inputs.toolingCost * inService,
       kind: 'initial' as const, firstSetGbp: inputs.toolingCost * inService, sets: 1 },
-    ...(replacements > 1e-9 ? [{ label: `${replacements.toLocaleString('en-GB', { maximumFractionDigits: 2 })} replacement tools as they wear out `
+    ...(replacements > 1e-9 ? [{ label: `${replacements.toLocaleString('en-GB', { maximumFractionDigits: 2 })} replacement tool${replacements === 1 ? '' : 's'} as they wear out `
       + `(${inputs.amortizationVolume.toLocaleString('en-GB')} parts ÷ ${inputs.toolingLife.toLocaleString('en-GB')} a tool `
       + `= ${numTools.toLocaleString('en-GB', { maximumFractionDigits: 2 })} tools, less ${inService} in service) × ${each}`,
       gbp: inputs.toolingCost * replacements, kind: 'replacement' as const, firstSetGbp: inputs.toolingCost * inService,

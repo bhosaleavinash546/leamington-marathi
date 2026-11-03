@@ -8912,16 +8912,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "composites",
-      "total": 69.37,
+      "total": 83.47,
       "breakdown": {
         "rawMaterial": 13.36,
-        "process": 12.8,
-        "labour": 5.72,
-        "tooling": 25.34,
+        "process": 17.76,
+        "labour": 15.72,
+        "tooling": 22.05,
         "packaging": 0.07,
         "logistics": 0.07,
-        "overhead": 6.87,
-        "margin": 5.14
+        "overhead": 8.27,
+        "margin": 6.18
       }
     }
   },
@@ -9310,16 +9310,16 @@
     "outcome": {
       "status": "costed",
       "commodity": "composites",
-      "total": 438.05,
+      "total": 708.77,
       "breakdown": {
         "rawMaterial": 181.12,
-        "process": 89.36,
-        "labour": 36.66,
-        "tooling": 54.2,
+        "process": 140.09,
+        "labour": 177.75,
+        "tooling": 86.18,
         "packaging": 0.39,
         "logistics": 0.52,
-        "overhead": 43.36,
-        "margin": 32.45
+        "overhead": 70.22,
+        "margin": 52.5
       }
     }
   },

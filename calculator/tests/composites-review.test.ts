@@ -86,8 +86,9 @@ describe('4. a cure load is what fits the bed', () => {
 });
 
 describe('5. layup tools: what the volume needs, worn out fractionally', () => {
-  it('roof at 5,000/yr: 7 tools in service (each tied up 4.2 h)', () => {
-    expect(comp(ROOF, 'prepreg-cf').toolsInService).toBe(7);
+  it('roof at 5,000/yr: 16 tools in service (each tied up 10.17 h)', () => {
+    // 4.97 h hand layup at 2 lb/h + 4.7 h M21 cure + 0.5 h turnaround (published rates, Nov 2026; was 4.2 h → 7 tools)
+    expect(comp(ROOF, 'prepreg-cf').toolsInService).toBe(16);
   });
   it('tools are the greater of throughput and wear, not ceil(volume ÷ life)', () => {
     const base = {
