@@ -27,7 +27,7 @@ import { materialFromFile } from './cost-input-rules/derive/part-evidence.js';
 import { shapeComplexity as forgingShape } from './cost-input-rules/commodities/forging.js';
 import type { RuleContext } from './cost-input-rules/types.js';
 import { COMMODITY_FAMILIES, DENSITY_KG_PER_CM3, representativeMaterialId } from './cost-input-rules/derive/material.js';
-import { enclosedShell, cavityShell } from './cost-input-rules/derive/hollow.js';
+import { enclosedShell, cavityShell, hollowVerdict } from './cost-input-rules/derive/hollow.js';
 import { extrusionProfile } from './cost-input-rules/derive/profile.js';
 import { looksLikeGear } from './cost-input-rules/derive/commodity.js';
 import { forgingAlloyForGrade } from './cost-input-rules/derive/grade.js';
@@ -120,6 +120,12 @@ const SRC = {
   thinShell: 'a thin shell (wall ≤ 4 mm at < 25% fill, ≥ 200 mm across) misruns as a sand or gravity casting and is '
     + 'not machined from solid; a near-solid part (> 60% fill) is not a sheet or moulded process (CostVision engineering '
     + 'rule, the costing\'s own plausibility checks; the costing chain would refuse the route)',
+  closedSection: 'a closed (hollow) section — a chamber enclosed all round the profile — cannot be formed from one sheet: pressing '
+    + 'and bending leave the section open unless a seam is welded along its length, which is an assembly, not this route '
+    + '(CostVision like-for-like rule; the chambers are the kernel\'s measured section voids)',
+  hollowCosted: 'a hollow body (a duct, a tank) has an inner surface no one-piece tool can leave: an injection mould needs a core '
+    + 'that comes out, a forming tool reaches one side only — two halves welded is an assembly, not this route (CostVision '
+    + 'like-for-like rule; the body is costed on a hollow route and the kernel reads it near-enclosed)',
   castWallFerrous: 'minimum castable wall ~3 mm for iron, steel, copper and nickel alloys (investment and shell '
     + 'castings reach ~3 mm; sand 5 mm or more; engineering-typical)',
 };
@@ -153,6 +159,10 @@ interface Facts {
   bosses: number;
   /** The kernel's enclosure probe alone (a deep cup reads enclosed too). */
   enclosed: boolean;
+  /** Chambers enclosed all round the constant section (kernel `profileSection.voids`). */
+  sectionVoids: number;
+  /** The fill / wall verdict: a thin watertight body whose cavity may open through a neck or ends. */
+  hollowVerdict: ReturnType<typeof hollowVerdict>;
   isGear: boolean;
 }
 
@@ -194,6 +204,11 @@ function factsOf(geo: OCCTGeometry): Facts {
     undercutRegions: Array.isArray(d?.undercutRegions) ? d!.undercutRegions!.length : 0,
     bosses: (geo.features as { bossShaftCount?: number } | undefined)?.bossShaftCount ?? 0,
     enclosed,
+    sectionVoids: (() => {
+      const ps = geo.profileSection as { voids?: number; constant?: boolean } | null | undefined;
+      return ps && ps.constant !== false && typeof ps.voids === 'number' ? ps.voids : 0;
+    })(),
+    hollowVerdict: hollowVerdict(geo),
     isGear: false,
   };
 }
@@ -249,6 +264,12 @@ export interface ScreenInput {
   filename: string;
   family: RouteFamily | null;
   annualVolume: number;
+  /**
+   * The costing's own route makes a HOLLOW body (blow or rotational moulding). With a near-enclosed reading that is the
+   * engineer's confirmation of what the shape alone leaves open (a bent duct and an open fascia read alike), and the
+   * one-piece open-tool routes are refused — the 2.5 L air duct was offered injection moulding at −7 % (fresh review N4).
+   */
+  costedHollow?: boolean;
 }
 
 function check(id: string, label: string, measured: string, limit: string, pass: boolean, source: string): FeasibilityCheck {
@@ -284,6 +305,12 @@ export function screenRoute(route: string, i: ScreenInput): RouteScreen {
     'extrusion', 'aluminium_extrusion', 'rubber', 'composites', 'gear'];
   const drawnCup = !!f.turning && f.turning.fraction >= 0.9 && f.enclosed && !f.sealed && !cavityShell(i.geo);
   if (oneTool.includes(route)) {
+    const hollowRefused = !!i.costedHollow && (f.hollowVerdict === 'near-enclosed' || f.hollowVerdict === 'sealed') && !f.closedContainer;
+    if (hollowRefused) {
+      checks.push(check('hollow_costed', 'Hollow body',
+        `a hollow body (the costing's route is a hollow moulding) — ${f.fill == null ? '?' : (f.fill * 100).toFixed(1)}% envelope fill at a ${mm(f.shellWallMm)} wall (near-enclosed)`,
+        'an open shape a one-piece tool can leave', false, SRC.hollowCosted));
+    }
     const closedText = f.sealed ? 'a sealed internal void'
       : cavityShell(i.geo) ? 'faces open into an enclosed cavity (kernel draft pass)'
       : f.closedContainer ? 'a closed shell (kernel enclosure probe, faces into the cavity)' : 'an open shape';
@@ -369,6 +396,10 @@ export function screenRoute(route: string, i: ScreenInput): RouteScreen {
     checks.push(check('drawn_form', 'Drawn form', 'a revolved cup (closed shell, one turned axis)',
       'laser-cut and bent only — no drawn form', false, SRC.drawnCup));
   }
+  if ((route === 'sheet_metal' || route === 'sheet_metal_fab') && f.sectionVoids > 0) {
+    checks.push(check('closed_section', 'Closed section', `${f.sectionVoids} chamber(s) enclosed in a constant section (kernel section voids)`,
+      'an open section: one sheet, pressed or bent', false, SRC.closedSection));
+  }
   if (route === 'sheet_metal' || route === 'sheet_metal_fab') {
     checks.push(check('gauge', 'Sheet gauge', `${mm(f.gaugeMm)} (${f.gaugeSource})`, '0.4–6 mm',
       f.gaugeMm != null && f.gaugeMm >= 0.4 && f.gaugeMm <= 6, SRC.gauge));
@@ -422,8 +453,9 @@ export function screenRoute(route: string, i: ScreenInput): RouteScreen {
  */
 export function screenRoutes(current: string, i: ScreenInput): RouteScreen[] {
   const out: RouteScreen[] = [];
+  const costedHollow = i.costedHollow ?? (current === 'blow_moulding' || current === 'rotational_moulding');
   for (const route of [current, ...COMPARABLE_ROUTES.filter(r => r !== current)]) {
-    const s = screenRoute(route, i);
+    const s = screenRoute(route, { ...i, costedHollow });
     if (route === current && !s.feasible) {
       s.caveats.unshift(...s.checks.filter(c => !c.pass).map(c => route === 'aluminium_extrusion' && c.id === 'profile'
         ? 'the measured shape is not a constant section: the rules cost an extrusion machined to shape'

@@ -24,21 +24,40 @@ export interface KeyDriver {
   match: RegExp;
   /** The question for the supplier. */
   question: string;
+  /** 'basis': print the head of the rule's basis (what was chosen and why), not the bare value — a tool life of 500 says
+   *  nothing until it names the tool material it was chosen on. */
+  display?: 'value' | 'basis';
 }
 
-export interface NotIncludedItem { text: string; costedIf?: RegExp }
+/**
+ * `costedIf`: dropped when an operation, consumable / service line or tooling item of the costing matches it.
+ * `unlessAnswered`: dropped when the engineer answered the question that settles it that way — a leak test is never
+ * listed after "Does this part have to hold pressure? No" (fresh review N17).
+ */
+export interface NotIncludedItem { text: string; costedIf?: RegExp; unlessAnswered?: { id: string; answer: RegExp } }
 
 export interface CommodityReportStandard {
   keyDrivers: KeyDriver[];
   /** `costedIf`: the item is dropped when an operation or a consumable / service line of the costing matches it. */
   notIncluded: NotIncludedItem[];
+  /** Costs the model does not carry that a supplier WILL charge — a gap in the cost model, not a scope item to exclude. */
+  notModelled?: string[];
   quoteBreakdown: string[];
   dfm: { apply: string[]; notApply: string[] };
 }
 
 /** Quality and launch items no commodity prices until asked (quality.md §B: "Not included until answered"). */
-const LAUNCH: NotIncludedItem[] = [{ text: 'PPAP / initial samples and first-article inspection' }, { text: 'Gauges and check fixtures', costedIf: /gauge|check fixture/i }];
-const ni = (text: string, costedIf?: RegExp): NotIncludedItem => ({ text, ...(costedIf ? { costedIf } : {}) });
+// Gauges and check fixtures are capital the costing never prices: a bench "deburr and gauge check" is an operator's minutes,
+// not the gauges — the stub axle (the safety part) was the only one of 15 without the line (fresh review N17).
+const LAUNCH: NotIncludedItem[] = [{ text: 'PPAP / initial samples and first-article inspection' }, { text: 'Gauges and check fixtures / CMM programme', costedIf: /check fixture|gauges and fixtures|inspection fixture/i }];
+const ni = (text: string, costedIf?: RegExp, unlessAnswered?: NotIncludedItem['unlessAnswered']): NotIncludedItem =>
+  ({ text, ...(costedIf ? { costedIf } : {}), ...(unlessAnswered ? { unlessAnswered } : {}) });
+/** Settled by a "No" to the leak-tight question. */
+const NOT_PRESSURE_TIGHT = { id: 'service.pressureTight', answer: /^no$/ };
+/** Settled by "None — bare part" to the finish question. */
+const BARE = { id: 'service.finish', answer: /^none$/ };
+/** Heat treatment the costing prices as an operation or a consumable line. */
+const HEAT_TREAT_COSTED = /heat treat|normalis|anneal|stress relie|temper|quench|carburi|nitrid|solution/i;
 
 const CASTING_DRIVERS: KeyDriver[] = [
   { name: 'Casting yield (poured kg a good casting)', match: /cast[\s-]?yield|casting yield/i, question: 'What is your method yield — poured kg per good casting?' },
@@ -59,7 +78,7 @@ const CASTING_DRIVERS: KeyDriver[] = [
 const STANDARDS: Record<string, CommodityReportStandard> = {
   cast_and_machine: {
     keyDrivers: CASTING_DRIVERS,
-    notIncluded: [...LAUNCH, ni('Part marking / traceability (DMC) — mandatory on a safety-critical part', /mark/i), ni('Final wash / cleanliness', /wash/i), ni('Rust preventive or coating after machining', /rust|coat|paint/i), ni('Nodularity / hardness / test-bar certification (EN 1563)'), ni('Stress relief, if the drawing calls for it', /stress relief|heat treat|anneal/i), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i)],
+    notIncluded: [...LAUNCH, ni('Part marking / traceability (DMC) — mandatory on a safety-critical part', /mark/i), ni('Final wash / cleanliness', /wash/i), ni('Rust preventive or coating after machining', /rust|coat|paint/i), ni('Nodularity / hardness / test-bar certification (EN 1563)'), ni('Stress relief, if the drawing calls for it', HEAT_TREAT_COSTED), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
     quoteBreakdown: ['Casting price a part and £/kg as cast, ex-foundry', 'Metal charge £/kg and the index it follows',
       'Poured kg and yield', 'Cores: count and cost a casting', 'Pattern equipment: price, life and sets', 'Fettling, blast and NDT cost a casting',
       'Machining cycle by operation and machine class', 'Machine and labour £/h', 'Tooling investment separate from the piece price', 'Overhead and margin %'],
@@ -68,7 +87,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
   },
   casting: {
     keyDrivers: CASTING_DRIVERS,
-    notIncluded: [...LAUNCH, ni('Machining of features left as-cast'), ni('Heat treatment certificate (cast steel is usually normalised — check the specification)'), ni('X-ray / UT, if specified', /x-?ray|ultrason|\bUT\b/i), ni('Coating', /coat|paint|plat/i), ni('Part marking / traceability', /mark/i)],
+    notIncluded: [...LAUNCH, ni('Machining of features left as-cast'), ni('Heat treatment certificate'), ni('Heat treatment, if the specification calls for it', HEAT_TREAT_COSTED), ni('X-ray / UT, if specified', /x-?ray|ultrason|\bUT\b/i), ni('Coating', /coat|paint|plat/i, BARE), ni('Rust preventive', /rust|oil|coat|paint/i), ni('Part marking / traceability', /mark/i), ni('Leak test and impregnation, if pressure-tight', /leak|impregnat/i, NOT_PRESSURE_TIGHT)],
     quoteBreakdown: ['Casting price a part and £/kg as cast', 'Metal charge £/kg and the index it follows', 'Poured kg and yield',
       'Cores: count and cost a casting', 'Pattern equipment: price, life and sets', 'Fettling, heat treatment, blast and NDT cost a casting',
       'Moulding line, moulds an hour, impressions and crew', 'Overhead and margin %'],
@@ -90,7 +109,8 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'NDT (MPI)', match: /\bndt\b/i, question: 'Crack-detection regime and its cost a forging?' },
       { name: 'Trim press', match: /trim[\s-]?mach/i, question: 'Trim (and pierce) press, in line or separate?' },
     ],
-    notIncluded: [...LAUNCH, ni('Billet shear / saw and the induction heater\'s capital (not in the rate book)'), ni('Grain-flow / macro-etch or ultrasonic testing, if specified'), ni('Shot peening', /peen/i), ni('Part marking / traceability', /mark/i), ni('Rust protection or coating', /rust|coat|oil/i), ni('Machining of features left as-forged')],
+    notIncluded: [...LAUNCH, ni('Grain-flow / macro-etch or ultrasonic testing, if specified'), ni('Shot peening', /peen/i), ni('Part marking / traceability', /mark/i), ni('Rust protection or coating', /rust|coat|oil/i, BARE), ni('Machining of features left as-forged')],
+    notModelled: ['Billet shear / saw and the induction heater: their machine time and capital are not in the rate book, so not in this price — a supplier will charge them (a gap in the cost model, not an item you can exclude; ask for them on the quotation).'],
     quoteBreakdown: ['Forging price a part and £/kg as forged', 'Bar / billet £/kg and the index it follows', 'Billet kg, forging kg, flash and yield',
       'Press tonnage, hits and takt', 'Die set price, die life and sets over the programme', 'Heat treatment, descale and MPI cost a forging',
       'Machining cycle (if machined) by operation', 'Overhead and margin %'],
@@ -106,7 +126,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'CAM programming', match: /prog/i, question: 'Programming and prove-out cost?' },
       { name: 'Scrap', match: /reject|scrap/i, question: 'Machining scrap rate?' },
     ],
-    notIncluded: [...LAUNCH, ni('Pressure / leak test (hydraulic parts — ask)', /leak|pressure test/i), ni('Cross-hole deburr (thermal / ECM / brush)', /deburr/i), ni('Cleanliness wash (ISO 16232)', /wash/i), ni('Anodise / coating', /anodis|coat/i), ni('Part marking', /mark/i)],
+    notIncluded: [...LAUNCH, ni('Pressure / leak test (hydraulic parts — ask)', /leak|pressure test/i, NOT_PRESSURE_TIGHT), ni('Cross-hole deburr (thermal / ECM / brush)', /deburr/i), ni('Cleanliness wash (ISO 16232)', /wash/i), ni('Anodise / coating', /anodis|coat/i, BARE), ni('Part marking', /mark/i)],
     quoteBreakdown: ['Stock form, size and £/kg', 'Cycle time by set-up (roughing, finishing, holes)', 'Machine class and £/h', 'Labour £/h and manning',
       'Cutting-tool cost a part', 'Fixtures and programming (one-off)', 'Scrap rate', 'Overhead and margin %'],
     dfm: { apply: ['machining.'], notApply: ['moulding.', 'blow.', 'sheetmetal.', 'casting.', 'forging.'] },
@@ -115,7 +135,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
     keyDrivers: [
       { name: 'Cavities', match: /imm[\s-]?cav\b|cavities/i, question: 'How many cavities, and why that number?' },
       { name: 'Press', match: /imm[\s-]?mach\b|^press|machine/i, question: 'Press tonnage?' },
-      { name: 'Cooling time', match: /cool/i, question: 'Cycle split: fill / pack / cool / eject?' },
+      { name: 'Cooling factor (× wall²)', match: /cool/i, question: 'Cycle split: fill / pack / cool / eject?' },
       { name: 'Fill', match: /\bfill\b/i, question: 'Fill time?' },
       { name: 'Pack / hold', match: /\bpack\b|hold/i, question: 'Pack / hold time?' },
       { name: 'Open, eject, close', match: /eject/i, question: 'Dry cycle of the press?' },
@@ -142,7 +162,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'Die life', match: /die[\s-]?life/i, question: 'Die life, and maintenance a year?' },
       { name: 'Crew', match: /manning/i, question: 'Crew on the line?' },
     ],
-    notIncluded: [...LAUNCH, ni('E-coat / zinc plating (ask: "Is the part coated?")', /coat|zinc|plat/i), ni('Weld nuts / fasteners', /weld|nut|fasten/i), ni('Burr-height control'), ni('Part marking, if safety-relevant', /mark/i)],
+    notIncluded: [...LAUNCH, ni('E-coat / zinc plating (ask: "Is the part coated?")', /coat|zinc|plat/i, BARE), ni('Weld nuts / fasteners', /weld|nut|fasten/i), ni('Burr-height control'), ni('Part marking, if safety-relevant', /mark/i)],
     quoteBreakdown: ['Coil grade, gauge and £/kg (and the index)', 'Blank, strip pitch and width, utilisation', 'Scrap credit £/kg', 'Press, tonnage, SPM and crew',
       'Die price, type, stations and life', 'Die maintenance', 'Overhead and margin %'],
     dfm: { apply: ['sheetmetal.'], notApply: ['moulding.', 'casting.', 'forging.', 'blow.', 'machining.'] },
@@ -155,9 +175,9 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'Minimum wall', match: /wall/i, question: 'Exit speed at this wall?' },
       { name: 'Hollows', match: /voids|hollow/i, question: 'Die type (solid / porthole)?' },
       { name: 'Temper', match: /temper/i, question: 'Ageing route and cost?' },
-      { name: 'Finish', match: /alx[\s-]?finish$|^finish/i, question: 'Finish (mill / anodise / powder) and its price a square metre?' },
+      { name: 'Finish', match: /(^|\s)alx-finish$|^finish(?!ed)\b/i, question: 'Finish (mill / anodise / powder) and its price a square metre?' },
     ],
-    notIncluded: [...LAUNCH, ni('Machining and drilling beyond the measured holes'), ni('Anodise / powder (open question)', /anodis|powder/i), ni('Stretch-bending (open question)', /stretch|bend/i), ni('CMM / straightness checks'), ni('Mechanical test and EN 10204 3.1 certificate per ageing load')],
+    notIncluded: [...LAUNCH, ni('Machining and drilling beyond the measured holes'), ni('Anodise / powder (open question)', /anodis|powder/i, BARE), ni('Stretch-bending (open question)', /stretch|bend/i), ni('CMM / straightness checks'), ni('Mechanical test and EN 10204 3.1 certificate per ageing load')],
     quoteBreakdown: ['Billet: LME + premium + alloy adder (the index basis)', 'Conversion £/kg', 'kg/m and recovery %', 'Press, die type and exit speed',
       'Die price a set (up-front) and die life in tonnes', 'Ageing, cut-to-length and fabrication', 'Overhead and margin % on conversion'],
     dfm: { apply: [], notApply: ['moulding.', 'casting.', 'forging.', 'blow.', 'sheetmetal.', 'machining.'] },
@@ -171,7 +191,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'Die and calibrator', match: /die[\s-]?cost/i, question: 'Die and calibrator price?' },
       { name: 'Crew', match: /manning/i, question: 'Operators a line?' },
     ],
-    notIncluded: [...LAUNCH, ni('Secondary forming (bends, flaring)', /bend|flar/i), ni('End fittings', /fitting/i), ni('Printing / marking', /print|mark/i), ni('Pressure test, if specified', /pressure|leak/i)],
+    notIncluded: [...LAUNCH, ni('Secondary forming (bends, flaring)', /bend|flar/i), ni('End fittings', /fitting/i), ni('Printing / marking', /print|mark/i), ni('Pressure test, if specified', /pressure|leak/i, NOT_PRESSURE_TIGHT)],
     quoteBreakdown: ['Resin grade and £/kg', 'kg/m and cut length', 'Line rate (m/min, kg/h)', 'Start-up and steady scrap', 'Die and calibrator', 'Overhead and margin %'],
     dfm: { apply: [], notApply: ['moulding.', 'casting.', 'forging.', 'blow.', 'sheetmetal.', 'machining.'] },
   },
@@ -186,7 +206,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'Mould life', match: /mould[\s-]?life/i, question: 'Mould life?' },
       { name: 'Crew', match: /manning/i, question: 'Operators a machine?' },
     ],
-    notIncluded: [...LAUNCH, ni('Assembly of clips / foam'), ni('Leak test, if the part must seal', /leak/i), ni('Wall-thickness sampling'), ni('Labelling')],
+    notIncluded: [...LAUNCH, ni('Assembly of clips / foam'), ni('Leak test, if the part must seal', /leak/i, NOT_PRESSURE_TIGHT), ni('Wall-thickness sampling'), ni('Labelling')],
     quoteBreakdown: ['Resin and £/kg', 'Part and flash weight, regrind', 'Machine, heads and cycle', 'Cavities', 'Mould price and life', 'In-line trim', 'Overhead and margin %'],
     dfm: { apply: ['blow.'], notApply: ['moulding.', 'casting.', 'forging.', 'sheetmetal.', 'machining.'] },
   },
@@ -202,7 +222,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'Powder grinding', match: /powder/i, question: 'Powder £/kg including grinding?' },
       { name: 'Crew', match: /manning/i, question: 'Operators at the carousel?' },
     ],
-    notIncluded: [...LAUNCH, ni('Inserts / fittings', /insert|stak/i), ni('Leak / pressure-decay test (ask: pressure-tight?)', /leak|pressure/i), ni('Burst test'), ni('Labelling')],
+    notIncluded: [...LAUNCH, ni('Inserts / fittings', /insert|stak/i), ni('Leak / pressure-decay test (ask: pressure-tight?)', /leak|pressure/i, NOT_PRESSURE_TIGHT), ni('Burst test'), ni('Labelling')],
     quoteBreakdown: ['Powder £/kg incl. grinding', 'Charge kg', 'Oven, cool and load times — which paces the carousel', 'Parts an arm and moulds in service',
       'Mould price and life', 'Crew and OEE', 'Overhead and margin %'],
     dfm: { apply: [], notApply: ['moulding.', 'casting.', 'forging.', 'blow.', 'sheetmetal.', 'machining.'] },
@@ -225,7 +245,9 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
   },
   composites: {
     keyDrivers: [
-      { name: 'Tool life', match: /tool[\s-]?life/i, question: 'Tool life by tool material (steel / Invar / CFRP)?' },
+      { name: 'Process', match: /(^|\s)comp-process$/i, question: 'Layup (autoclave / oven), RTM or compression moulding — and why at this volume?', display: 'basis' },
+      { name: 'Cure system', match: /(^|\s)comp-cure-mach$|cure[\s-]?mach/i, question: 'Which cure cell (autoclave / oven / press), its bed and parts a load?' },
+      { name: 'Tool material and life', match: /tool[\s-]?life/i, question: 'Tool material (steel / Invar / CFRP / nickel shell) and its life in cycles?', display: 'basis' },
       { name: 'Tools in service', match: /comp[\s-]?tools$|tools in service/i, question: 'How many tools in service at this volume?' },
       { name: 'Tool price', match: /tool[\s-]?cost/i, question: 'Tool price?' },
       { name: 'Plies', match: /plies/i, question: 'Ply count and layup method?' },
@@ -265,7 +287,7 @@ const STANDARDS: Record<string, CommodityReportStandard> = {
       { name: 'Set-up', match: /setup/i, question: 'Set-up a batch on each machine?' },
       { name: 'Scrap', match: /reject/i, question: 'Scrap rate after heat treatment?' },
     ],
-    notIncluded: [...LAUNCH, ni('Hard turning / grinding of the bore and faces', /hard turn|bore grind|grind(ing)? (of )?the bore/i), ni('Shot peening', /peen/i), ni('Straightening', /straighten/i), ni('100 % gear roll / noise test'), ni('Part marking', /mark/i), ni('Final wash and rust preventive', /wash/i)],
+    notIncluded: [...LAUNCH, ni('Hard turning / grinding of the bore and faces', /hard turn|bore grind|grind(ing)? (of )?the bore/i), ni('Shot peening', /peen/i), ni('Straightening', /straighten/i), ni('100 % gear roll / noise test'), ni('Part marking', /mark/i), ni('Final wash', /wash/i), ni('Rust preventive', /rust|preserv|oil/i)],
     quoteBreakdown: ['Blank route and price', 'Cycle by operation (turn, hob, chamfer, grind, check)', 'Heat treatment £/kg and case depth',
       'Hob and wheel cost a part (perishable)', 'Fixtures, masters and programming (one-off)', 'Overhead and margin %'],
     dfm: { apply: ['machining.feature.toothed-form'], notApply: ['moulding.', 'casting.', 'forging.', 'blow.', 'sheetmetal.'] },

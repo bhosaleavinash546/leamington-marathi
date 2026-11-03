@@ -85,7 +85,9 @@ describe('2. The screen on every real part: same family, the shape, the equipmen
     for (const r of ['extrusion', 'rubber', 'injection_moulding', 'blow_moulding', 'composites']) expect(s.find(x => x.route === r)!.feasible, r).toBe(false);
     // Machining from solid is refused as the costing chain would refuse it: a 2.5 mm shell at 16% fill, 1.8 m long.
     expect(s.find(x => x.route === 'machining')!.checks.find(c => c.id === 'thin_shell')!.pass).toBe(false);
-    expect(candidateRoutes(input('AL_Battery_Rail.stp'))).toEqual(['aluminium_extrusion', 'sheet_metal', 'sheet_metal_fab']);
+    // a 4-chamber closed section is not pressed or bent from one sheet (fresh review N4, 3 Nov 2026)
+    expect(candidateRoutes(input('AL_Battery_Rail.stp'))).toEqual(['aluminium_extrusion']);
+    for (const r of ['sheet_metal', 'sheet_metal_fab']) expect(s.find(x => x.route === r)!.checks.find(c => c.id === 'closed_section')!.pass, r).toBe(false);
   });
   it('a closed tank is only a hollow route; a gear is only the gear route; a CFRP panel is only composites', () => {
     expect(candidateRoutes(input('ROTO_Coolant_Tank.stp'))).toEqual(['rotational_moulding', 'blow_moulding']);
@@ -119,7 +121,9 @@ describe('3. The arithmetic on a row', () => {
     const ref = cmp.rows[0];
     // arithmetic audit (30 Oct 2026): forging MPI as the casting station (£2.50 → £0.67), descale per kg of forging, the
     // cell's masked load inside the operator's share of the cut: 22.7563 → 19.9838 (24.0215 before the pilot rule pack)
-    expect(ref.total).toBe(19.9805);   // MPI £0.6673, no longer rounded up to £0.67 (7-country review)
+    // MPI £0.6673, no longer rounded up to £0.67 (7-country review): 19.9805. Report standard round (3 Nov 2026): the
+    // secondary machining on the published cutting data (12.5 → 5.8 HMC min) — 15.1618.
+    expect(ref.total).toBe(15.1618);
     expect(ref.tooling!.investment).toBe(440949.69);   // one hydraulic tombstone fixture (£12,000) in place of three dedicated ones
     expect(ref.tooling!.amortisedOver).toBe(500_000);
     expect(ref.material).toMatchObject({ netKg: 3.321, boughtKg: 4.918 });
@@ -188,7 +192,8 @@ describe('4. Like for like across plastics routes', () => {
       expect(r.status, r.route).toBe('costed');
       expect(r.openQuestions.join(' ')).not.toMatch(/made of/);
     }
-    expect(cmp.rows.find(r => r.route === 'sheet_metal')!.material!.label).toMatch(/Sheet/);
+    // the sheet routes are refused on the closed section (fresh review N4) — listed with their reason, not costed
+    expect(cmp.rows.some(r => r.route === 'sheet_metal')).toBe(false);
   }, 60_000);
 });
 

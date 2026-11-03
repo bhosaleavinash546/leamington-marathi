@@ -30,10 +30,13 @@ import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { routeRowLabel, routeReferenceRow, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import { decisionAnswerLabel, decisionAnswerText } from './decision-text.js';
 import { reportNoteText } from './money-text.js';
-import { reportStandardFor, dfmRuleApplies } from './report-standard.js';
+import { reportStandardFor, dfmRuleApplies, type NotIncludedItem } from './report-standard.js';
 import { toolingSplit as engineToolingSplit } from '../engine/tooling-split.js';
 import { normaliseSeverity, SEVERITY_LABEL, SEVERITY_RANK } from '../engine/dfm-geometry/types.js';
 import { serviceNotCosted } from '../engine/cost-input-rules/derive/service-questions.js';
+import { compositesNotCosted, compositesAlert, compositesRouteAlert } from '../engine/cost-input-rules/commodities/composites.js';
+import type { RuleContext } from '../engine/cost-input-rules/types.js';
+import type { CompositeProcess } from '../engine/modules/composites.js';
 
 export interface ExecutiveLine { label: string; gbp: number; sharePct: number }
 export interface ExecutiveMover { label: string; minusGbp: number; plusGbp: number }
@@ -217,6 +220,10 @@ export function buildExecutiveSummary(a: ExecutiveSummaryArgs): ExecutiveSummary
 // ONE model, drawn by the core PDF (core-report-pdf.ts, 7 pages) and the workbook's first sheet. Every figure is the
 // costing's own or an engine re-run (the sensitivity, the levers, the piece price without tooling, the country rows);
 // the model adds only sums, shares and the capacity count, and states each one's formula where it prints it.
+//
+// Money in TEXT is written in £ ("£1.63 a part") and converted by the renderer (the PDF's `hardenPdfText`, the
+// workbook's per-cell `localiseGbpText`): a bare number beside a "(£)" label is never printed — a China report read
+// "Cores 1.6293 (Core Cost/Part (¥))" against ¥14.47 on the page before (fresh review N1, 3 Nov 2026).
 
 /** The parts of the CAD report metadata the core report reads (structurally the same as pdf.ts's CADReportMeta). */
 export interface CoreReportMeta {
@@ -244,6 +251,9 @@ export interface CoreReportMeta {
     decisions: Array<{ id: string; question: string; severity: 'blocking' | 'advisory'; answer: string | null; used?: string | null }>;
     ruleValues?: Array<{ label: string; value: string; ruleValue?: string; basis: string; source?: string; edited?: boolean; fieldId?: string }>;
   } | null;
+  /** The rules' context of the costing (geometry, answers, volume), when the caller has it: a commodity's own "not
+   *  costed" list and route alert are read from it (composites: `compositesNotCosted` / `compositesAlert`). */
+  ruleContext?: RuleContext | null;
 }
 
 export interface CoreReportArgs {
@@ -257,6 +267,10 @@ export interface CoreReportArgs {
   baseLibrary?: RateLibrary;
   /** The screen's country rows — printed as they are when given. */
   regionalRows?: RegionalComparisonRow[];
+  /** The report currency (units per £) and its symbol: money the model writes into TEXT (alerts, the verdict, the
+   *  re-add parts) is converted from the exact £ here, never pre-rounded in £ and converted after (¥0.04 drift). */
+  fx?: number;
+  sym?: string;
 }
 
 export type ToolingKind = 'initial' | 'replacement' | 'perishable' | 'unsplit';
@@ -280,16 +294,72 @@ export interface CoreTooling {
   bucketPerPartGbp: number;
 }
 
+/**
+ * The price as a supplier quotes it (fresh review N2): a piece price with the RUNNING tooling inside it (replacement sets
+ * and perishable tools are consumed with the parts) plus the UP-FRONT tooling as a lump sum. The piece price is the stack
+ * re-run with only the running tooling; the lump sum's share of the headline is what is left, so
+ * piece price + lump sum ÷ amortisation volume × its overhead and margin = the headline, exactly.
+ */
+export interface CorePrice {
+  mode: 'amortized' | 'one_time_nre' | 'none';
+  pieceAsQuotedGbp: number;
+  /** First sets + NRE (fixtures, programming, masters); a tooling figure that is not split is counted here. */
+  upfrontGbp: number;
+  /** The up-front tooling's share of the headline, a part, with its overhead and margin (headline - piece as quoted). */
+  upfrontPerPartGbp: number;
+  /** upfrontPerPart ÷ (upfront ÷ amortisation volume): the overhead and margin the amortised tooling carries. */
+  upfrontFactor: number | null;
+  amortisationVolume: number;
+  /** Replacement and perishable tooling a part, with overhead and margin (piece as quoted - the piece with no tooling). */
+  runningPerPartGbp: number;
+  /** Cutting-tool wear the costing carries as a consumable in material (bucket 1), before overhead and margin. */
+  toolWearInMaterialGbp: number;
+  /** A not-split tooling figure was counted as up-front. */
+  unsplitCountedUpfront: boolean;
+}
+
 export interface CoreMaterialLine { group: 'metal' | 'direct' | 'consumable' | 'energy' | 'boughtIn'; label: string; gbp: number; note?: string }
 export interface CoreUnsourcedItem { label: string; value: string; basis: string; gbp: number | null; drives: string[] }
-export interface CoreAlert { kind: 'route' | 'scope'; title: string; lines: string[] }
-export interface CoreOperation { name: string; machine: string; bench: boolean; cycleMin: number; partsPerCycle: number; crew: number;
-  machinePerHr: number | null; labourPerHr: number; ratePerHr: number; gbp: number }
-export interface CoreCapacityRow { machine: string; operations: number; hoursPerYear: number; availableHours: number; machines: number }
-export interface CoreParam { name: string; label: string; value: string; basis: string; question: string }
-export interface CoreRouteRow { name: string; total: number; deltaGbp: number; deltaPct: number; band: { p10: number; p90: number; plusMinusPct: number } | null; toolingGbp: number | null; note: string | null }
+export interface CoreAlert { kind: 'blocking' | 'route' | 'scope'; title: string; lines: string[] }
+export interface CoreOperation {
+  name: string; machine: string; bench: boolean; cycleMin: number; partsPerCycle: number;
+  /** OEE the machine time is divided by (null on a bench operation). */
+  oee: number | null;
+  /** Crew on the operation as entered, and the crew the labour line CHARGES (crew × labour time ÷ cycle). */
+  crew: number; crewCharged: number;
+  labourEfficiency: number;
+  machinePerHr: number | null;
+  /** Labour £ an hour of cycle: labour rate × crew charged ÷ labour efficiency. */
+  labourPerHr: number;
+  /** machine £/h ÷ OEE + labour £/h: × cycle ÷ 60 ÷ parts a cycle = A part. */
+  ratePerHr: number;
+  gbp: number;
+}
+export interface CoreCapacityRow { machine: string; operations: number; hoursPerYear: number; availableHours: number; machines: number; line: boolean }
+export interface CoreParam { name: string; label: string; value: string; display: string; basis: string; question: string }
+export interface CoreRouteRow {
+  name: string; total: number; deltaGbp: number; deltaPct: number; band: { p10: number; p90: number; plusMinusPct: number } | null;
+  /** The FIRST SET (up-front tooling), as page 1 defines the investment — not the programme total. */
+  toolingGbp: number | null;
+  /** Tooling over the programme (first sets + replacements + perishables). */
+  toolingProgrammeGbp: number | null;
+  note: string | null;
+}
 export interface CoreCountryRow { name: string; total: number; vsBasePct: number; isBase: boolean; approx: boolean }
 export interface CoreDfmFinding { ruleId: string; severity: string; title: string; count: number; amount: string | null; fix: string }
+/** Cast + machine / forge + machine: the two prices a buyer is quoted (fresh review N23). */
+export interface CoreFormMachineSplit {
+  form: 'Casting' | 'Forging';
+  /** Ex-foundry / ex-forge, a part, with its overhead and margin. */
+  formGbp: number;
+  kg: number;
+  kgLabel: string;
+  formPerKg: number;
+  machiningGbp: number;
+  /** The machining's direct cost before overhead and margin, and what it is made of. */
+  machiningDirectGbp: number;
+  machiningParts: string[];
+}
 
 export interface CoreReport {
   exec: ExecutiveSummary;
@@ -300,51 +370,85 @@ export interface CoreReport {
   region: string;
   stamp: string | null;
   total: number;
+  /** One line at the top of page 1: the price, the confidence and what to ask first (£ in text, converted by the renderer). */
+  verdict: string;
   annualVolume: number | null;
   programmeYears: number | null;
   annualSpend: number | null;
   /** The stack re-run with no tooling: the tooling's own overhead and margin come out with it. */
   pieceExToolingGbp: number;
+  price: CorePrice;
   tooling: CoreTooling;
   band: { p10: number; p90: number; plusMinusPct: number } | null;
   bandNote: string;
   confidence: {
+    /** Graded on the DISTINCT inputs printed (the same thresholds as `overallConfidence`). */
     grade: string;
+    /** The screen's grade (every traced row) — and why it differs, when it does. */
+    screenGrade: string;
+    gradeNote: string | null;
     /** Distinct inputs (a rate shared by 9 operations counts once), by grade. */
     distinct: { total: number; high: number; medium: number; low: number };
     lowInputs: Array<{ label: string; value: number; unit: string; operations: number }>;
     sentence: string;
   };
   /** `ruleBasis` false: the costing carries no rule values (not a CAD costing), so the form's inputs are not graded. */
-  unsourced: { items: CoreUnsourcedItem[]; totalGbp: number; sharePct: number; method: string; ruleBasis: boolean };
+  unsourced: {
+    items: CoreUnsourcedItem[]; totalGbp: number; sharePct: number; method: string; ruleBasis: boolean;
+    /** Overhead, margin and packaging that are CostVision defaults — NOT in the share above, stated beside it. */
+    defaults: Array<{ label: string; gbp: number }>;
+    defaultsGbp: number;
+    defaultsNote: string;
+  };
   alerts: CoreAlert[];
   openQuestions: string[];
   notIncluded: string[];
+  /** Costs the model does not carry that a supplier will charge (a gap in the cost model, not a scope item). */
+  notModelled: string[];
   terms: string;
   buckets: Array<{ label: string; gbp: number; sharePct: number }>;
   material: { lines: CoreMaterialLine[]; metalGbp: number; consumablesGbp: number; energyGbp: number; boughtInGbp: number; totalGbp: number };
   perKg: { kg: number; kgLabel: string; pricePerKg: number; metalPerKg: number } | null;
+  formMachine: CoreFormMachineSplit | null;
   commercial: Array<{ label: string; value: string; source: string }>;
   spec: Array<{ question: string; answer: string }>;
   operations: CoreOperation[];
-  capacity: { formula: string; rows: CoreCapacityRow[] } | null;
+  capacity: { formula: string; rows: CoreCapacityRow[]; warnings: string[] } | null;
   keyParams: CoreParam[];
   sensitivity: Array<{ label: string; base: number; unit: string; minusGbp: number; plusGbp: number }>;
   sensitivityPct: number;
+  /** Movers left out: < 0.5 % of the price either way, or a zero base (nothing to vary). */
+  sensitivityDropped: number;
   volumeLine: string | null;
   negotiation: Array<{ driver: string; ours: string; question: string }>;
   quoteBreakdown: string[];
   levers: ExecutiveLever[];
   routes: { reference: string; rows: CoreRouteRow[]; notShown: number; principle: string } | null;
-  countries: { rows: CoreCountryRow[]; note: string };
+  countries: { rows: CoreCountryRow[]; note: string; basis: string };
   dfm: { findings: CoreDfmFinding[]; considered: number; notChecked: string; status: 'ran' | 'pending' | 'not run' };
 }
 
-const UNSOURCED_RE = /not sourced|engineering[- ]typical|heuristic/i;
+/** Labels that say a value has no source: "not sourced", "engineering-typical", a heuristic, a HELD figure, an ESTIMATE. */
+const UNSOURCED_RE = /not sourced|engineering[- ]typical|heuristic|\bheld\b/i;
+const ESTIMATE_RE = /\bESTIMATE\b/;
+export const isUnsourcedText = (t: string) => UNSOURCED_RE.test(t) || ESTIMATE_RE.test(t);
 /** Operations that are not the primary forming / moulding step (a crew or a cycle rule drives the primary step). */
 const SECONDARY_OP_RE = /trim|deflash|inspect|\bndt\b|\bndi\b|fettl|blast|set-?up|change|load|pallet|deburr|wash|heat|machin|drill|bor(e|ing)\b|turn|mill|grind|cut-to|\bsaw|ageing|age\b|melt|pack|descale|c-scan|gauge|cure oven|post-?cure/i;
+/** More machines than this for ONE part is a dedicated line — CostVision engineering heuristic, not sourced. */
+export const CAPACITY_DEDICATED_LINE = 5;
+/** A mover below this share of the price either way is not printed among the top movers. */
+const MOVER_MIN_SHARE = 0.005;
 
-interface CostLine { id: string; label: string; gbp: number; text: string }
+type ToolFamily = 'tool' | 'fixture' | 'programming' | 'inspection';
+interface CostLine { id: string; label: string; gbp: number; text: string; family?: ToolFamily; kind?: 'initial' | 'replacement' | 'perishable' }
+
+/** What a tooling item is: a die / mould / pattern / cutter, a fixture, the programming, or inspection equipment. */
+function toolFamily(label: string): ToolFamily {
+  if (/fixture/i.test(label)) return 'fixture';
+  if (/\bprogramming\b|\bCAM\b|prove-?out|\(NRE\)/i.test(label)) return 'programming';
+  if (/inspection master|first[- ]article|\bgauges?\b|\bCMM\b|\bmasters?\b/i.test(label)) return 'inspection';
+  return 'tool';
+}
 
 /** The cost lines a rule value can drive, each a £ a part before overhead and margin. */
 function costLinesOf(result: PartCostResult, input: UniversalStackInput): {
@@ -359,10 +463,25 @@ function costLinesOf(result: PartCostResult, input: UniversalStackInput): {
     process: { id: `op:${i}:p`, label: `${shortOperationName(o.operationName)} (machine)`, gbp: o.processCost, text: o.operationName },
     labour: { id: `op:${i}:l`, label: `${shortOperationName(o.operationName)} (labour)`, gbp: o.labourCost, text: o.operationName },
   }));
+  // Each tooling item a part, split by KIND (first set / replacements / perishables): a life drives the replacements, a
+  // price the sets it buys. The stub axle's £0.71 of pattern replacements was attributed to "Programming NRE" because
+  // "over the programme" matched /program/ (fresh review N3).
   const tl = input.tooling;
   const vol = tl.mode === 'amortized' && tl.amortizationVolume > 0 ? tl.amortizationVolume : 0;
-  const tooling: CostLine[] = vol ? ((tl.items?.length ? tl.items : [{ label: 'Tooling (not itemised)', gbp: tl.totalToolingCost }])
-    .map((t, i) => ({ id: `tool:${i}`, label: `${t.label.split(':')[0].split(' (')[0]} a part`, gbp: t.gbp / vol, text: t.label }))) : [];
+  const tooling: CostLine[] = [];
+  if (vol) {
+    const items = tl.items?.length ? tl.items : [{ label: 'Tooling (not itemised)', gbp: tl.totalToolingCost }];
+    items.forEach((t, i) => {
+      const s = splitToolingItem(t);
+      const name = t.label.split(':')[0].split(' (')[0].split(' — ')[0];
+      const family = toolFamily(t.label);
+      for (const [kind, g] of [['initial', s.initialGbp], ['replacement', s.replacementGbp], ['perishable', s.perishableGbp]] as const) {
+        if (!(g > 0)) continue;
+        const word = kind === 'initial' ? (family === 'tool' ? 'first set' : 'up front') : kind === 'replacement' ? 'replacements' : 'perishable';
+        tooling.push({ id: `tool:${i}:${kind}`, label: `${name} (${word}) a part`, gbp: g / vol, text: t.label, family, kind });
+      }
+    });
+  }
   return { consumables, energy, ops, tooling };
 }
 
@@ -370,9 +489,14 @@ function costLinesOf(result: PartCostResult, input: UniversalStackInput): {
 function attributeRule(key: string, c: ReturnType<typeof costLinesOf>): CostLine[] | null {
   const cons = (re: RegExp) => c.consumables.filter(l => re.test(l.text));
   const opsAll = (re: RegExp) => c.ops.filter(o => re.test(o.name)).flatMap(o => [o.process, o.labour]);
+  const tools = (families: ToolFamily[], kinds?: Array<CostLine['kind']>) =>
+    c.tooling.filter(l => families.includes(l.family!) && (!kinds || kinds.includes(l.kind)));
   const casting = /^cam[\s-]|cast/i.test(key);
   const primary = c.ops.filter(o => !o.bench && (casting ? /cast|mould|pour/i.test(o.name) : !SECONDARY_OP_RE.test(o.name)));
   const nonEmpty = (ls: CostLine[]) => (ls.length ? ls : null);
+  // A value that moves the whole cost is listed without a figure — "Reject Rate" was given £ because " rate" matched the
+  // cycle pattern below (fresh review N3).
+  if (/yield|reject|scrap|\boee\b|efficien|batch|utili[sz]|weight|[\s-]wt\b/i.test(key) && !/set[\s-]?up/i.test(key)) return null;
   if (/\bcores?\b|sand[\s-]?core/i.test(key)) return nonEmpty(cons(/\bcores?\b/i));
   if (/blast/i.test(key)) return nonEmpty([...cons(/blast/i), ...opsAll(/blast/i)]);
   if (/\bndt\b|\bndi\b|inspect/i.test(key)) return nonEmpty([...cons(/\bndt\b|\bndi\b|inspect|x-?ray|magnetic|\bmpi\b/i), ...opsAll(/\bndt\b|\bndi\b|inspect|c-scan|ultrason/i)]);
@@ -385,9 +509,12 @@ function attributeRule(key: string, c: ReturnType<typeof costLinesOf>): CostLine
   if (/lay[\s-]?up/i.test(key)) return nonEmpty(opsAll(/lay[\s-]?up/i));
   if (/cure[\s-]?time/i.test(key)) return nonEmpty(opsAll(/cure|autoclave|oven/i));
   if (/set[\s-]?up[\s-]?time|setup[\s-]?hr|die[\s-]?chg|change[\s-]?over/i.test(key)) return nonEmpty(opsAll(/set-?up|change/i));
-  if (/fixture|mach[\s-]?tooling/i.test(key)) return nonEmpty(c.tooling.filter(l => /fixture/i.test(l.text)));
-  if (/prog/i.test(key)) return nonEmpty(c.tooling.filter(l => /program/i.test(l.text)));
-  if (/(die|mould|mold|tool)[\s-]?(life|cost)|pattern/i.test(key)) return nonEmpty(c.tooling.filter(l => !/fixture|program|inspection master|first article/i.test(l.text)));
+  if (/fixture|mach[\s-]?tooling/i.test(key)) return nonEmpty(tools(['fixture']));
+  if (/\bprog(ramming)?\b|prog[\s-]?nre|-prog/i.test(key)) return nonEmpty(tools(['programming']));
+  // a tool's LIFE drives how many replacement sets are bought; its PRICE drives every set
+  if (/(die|mould|mold|tool|pattern)[\s-]?life|\blife\b/i.test(key)) return nonEmpty(tools(['tool'], ['replacement', 'perishable']));
+  if (/tools in service|comp[\s-]?tools$/i.test(key)) return nonEmpty(tools(['tool'], ['initial']));
+  if (/(die|mould|mold|tool|pattern|mandrel)[\s-]?(cost|price)|pattern/i.test(key)) return nonEmpty(tools(['tool']));
   if (/manning|crew/i.test(key)) return nonEmpty(primary.map(o => o.labour));
   if (/cycle|[\s-]ct\b|^ct\b|heat\b|cool|\bfill\b|\bpack\b|eject|blow[\s-]?t\b|open[\s-]?close|\bspm\b|strokes|index|[\s-]rate\b|\bload\b|parison/i.test(key)) return nonEmpty(primary.flatMap(o => [o.process, o.labour]));
   if (/kwh|energy|furnace/i.test(key)) return nonEmpty(c.energy);
@@ -442,6 +569,33 @@ function toolingSplit(input: UniversalStackInput, result: PartCostResult): CoreT
   };
 }
 
+/** Cutting-tool wear carried as a consumable (in material): a perishable tool, wherever the costing put it. */
+const TOOL_WEAR_RE = /tool[\s-]?wear|cutting[\s-]?tool|\binserts?\b/i;
+
+/** The piece price as quoted and the up-front tooling (see CorePrice). */
+export function quotedPrice(result: PartCostResult, input: UniversalStackInput, library: RateLibrary, tooling: CoreTooling, pieceExTooling: number): CorePrice {
+  const tl = input.tooling;
+  const toolWear = (input.rawMaterial.consumablesItems ?? []).filter(i => TOOL_WEAR_RE.test(i.label)).reduce((s, i) => s + i.gbp, 0);
+  const base = { toolWearInMaterialGbp: toolWear, unsplitCountedUpfront: false };
+  if (!(tl.totalToolingCost > 0)) {
+    return { ...base, mode: 'none', pieceAsQuotedGbp: result.total, upfrontGbp: 0, upfrontPerPartGbp: 0, upfrontFactor: null, amortisationVolume: tl.amortizationVolume, runningPerPartGbp: 0 };
+  }
+  if (tl.mode !== 'amortized') {
+    return { ...base, mode: 'one_time_nre', pieceAsQuotedGbp: result.total, upfrontGbp: tl.totalToolingCost, upfrontPerPartGbp: 0, upfrontFactor: null, amortisationVolume: tl.amortizationVolume, runningPerPartGbp: 0 };
+  }
+  const running = tooling.replacementGbp + tooling.perishableGbp;
+  const upfront = Math.max(0, tl.totalToolingCost - running);
+  let piece = result.total - (upfront / tl.amortizationVolume);
+  try { piece = computeUniversalStack({ ...input, tooling: { ...tl, totalToolingCost: running } }, library).total; } catch { /* keep the bucket difference */ }
+  const upPerPart = result.total - piece;
+  return {
+    ...base, mode: 'amortized', pieceAsQuotedGbp: piece, upfrontGbp: upfront, upfrontPerPartGbp: upPerPart,
+    upfrontFactor: upfront > 0 ? upPerPart / (upfront / tl.amortizationVolume) : null,
+    amortisationVolume: tl.amortizationVolume, runningPerPartGbp: piece - pieceExTooling,
+    unsplitCountedUpfront: tooling.unsplitGbp > 0.5,
+  };
+}
+
 /** The material bucket split into metal (index-linked) / consumables & bought services / energy / bought-in — adds to bucket 1. */
 export function materialSplit(result: PartCostResult, input: UniversalStackInput, library: RateLibrary): CoreReport['material'] {
   const rm = input.rawMaterial;
@@ -481,6 +635,9 @@ export function materialSplit(result: PartCostResult, input: UniversalStackInput
   return { lines, metalGbp: metal, consumablesGbp: cons, energyGbp: energy, boughtInGbp: bought, totalGbp: metal + cons + energy + bought };
 }
 
+/** A machine that runs as one LINE (a moulding line, a carousel, a press line): a second one is a second line. */
+const LINE_RE = /\bline\b|carousel|transfer press|tandem/i;
+
 /** Machines implied at the annual volume: Σ annual × cycle ÷ parts a cycle ÷ OEE over the operations on a machine, ÷ its annual hours. */
 export function capacityImplied(input: UniversalStackInput, library: RateLibrary, annual: number): CoreCapacityRow[] {
   const by = new Map<string, CoreCapacityRow>();
@@ -490,15 +647,120 @@ export function capacityImplied(input: UniversalStackInput, library: RateLibrary
     const avail = m?.buildup?.annualAvailableHours ?? 0;
     if (!m || !(avail > 0)) continue;
     const hrs = annual * op.cycleTimeHr / (op.partsPerCycle > 0 ? op.partsPerCycle : 1) / (op.oee > 0 ? op.oee : 1);
-    const row = by.get(m.id) ?? { machine: m.machineClass, operations: 0, hoursPerYear: 0, availableHours: avail, machines: 0 };
+    const row = by.get(m.id) ?? { machine: m.machineClass, operations: 0, hoursPerYear: 0, availableHours: avail, machines: 0, line: LINE_RE.test(m.machineClass) };
     row.operations += 1; row.hoursPerYear += hrs; row.machines = row.hoursPerYear / avail;
     by.set(m.id, row);
   }
   return [...by.values()].sort((a, b) => b.machines - a.machines);
 }
 
-const clip = (s: string, n: number) => (s.length <= n ? s : `${s.slice(0, s.lastIndexOf(' ', n) > n * 0.6 ? s.lastIndexOf(' ', n) : n).replace(/[\s,;:(—–-]+$/, '')}…`);
+/** What the capacity rows call for a remark on: a dedicated line (> 5 machines) or one line over 100 % loaded. */
+export function capacityWarnings(rows: CoreCapacityRow[], annual: number): string[] {
+  const out: string[] = [];
+  let dedicated = false;
+  for (const r of rows) {
+    if (r.line && r.machines > 1) {
+      out.push(`${r.machine} loaded ${(r.machines * 100).toFixed(0)} % at ${annual.toLocaleString('en-GB')} a year on its ${r.availableHours.toLocaleString('en-GB')} h: one line cannot make the volume — a second line, more shifts or a faster cycle; ask the supplier which.`);
+    } else if (r.machines > CAPACITY_DEDICATED_LINE) {
+      dedicated = true;
+      out.push(`${r.machines.toFixed(1)} × ${r.machine} for this one part: a supplier would run a dedicated line or transfer cell at this volume.`);
+    }
+  }
+  if (dedicated) out.push(`The cycle times are the costing's — machining minutes are engineering-typical and conservative; confirm with a supplier cycle sheet (more than ${CAPACITY_DEDICATED_LINE} machines for one part: CostVision engineering heuristic, not sourced).`);
+  return out;
+}
+
+/** The confidence grade of a set of graded inputs — the same thresholds as `overallConfidence` (uncertainty.ts). */
+export function gradeOfCounts(high: number, medium: number, low: number): 'High' | 'Medium' | 'Low' {
+  const n = high + medium + low;
+  if (!n) return 'Medium';
+  if (low / n >= 0.4) return 'Low';
+  if (high / n >= 0.7) return 'High';
+  return (high + medium / 2) / n >= 0.45 ? 'Medium' : 'Low';
+}
+
 const ruleKey = (r: { label: string; fieldId?: string }) => `${r.label} ${r.fieldId ?? ''}`.trim();
+/** A form field's label without its hints: "Mould / Die Cost (£, 0=estimate)" gives "Mould / Die Cost". */
+export function cleanFieldLabel(label: string): string {
+  let s = label.trim();
+  for (let k = 0; k < 3 && /\([^()]*(?:\([^()]*\)[^()]*)*\)\s*$/.test(s); k++) s = s.replace(/\s*\([^()]*(?:\([^()]*\)[^()]*)*\)\s*$/, '').trim();
+  return s || label.trim();
+}
+const fmtNum = (v: number) => {
+  const a = Math.abs(v);
+  return a >= 1000 ? Math.round(v).toLocaleString('en-GB') : a >= 100 ? (+v.toFixed(1)).toLocaleString('en-GB') : `${+v.toFixed(a < 1 ? 4 : 2)}`;
+};
+const fmtGbp = (v: number) => {
+  const a = Math.abs(v);
+  return a >= 100 ? `£${Math.round(v).toLocaleString('en-GB')}` : a >= 1 ? `£${v.toFixed(2)}` : `£${v.toFixed(4)}`;
+};
+/**
+ * A rule value as a buyer reads it — its unit from the form label, money written in £ (converted by the renderer), no
+ * form hints: "Core Cost/Part (£)" 1.6293 gives "£1.63 a part"; "Cycle Time (hr)" 0.0167 gives "1.00 min (60 an hour)";
+ * "Casting Yield (0–1)" 0.625 gives "62.5 %"; "Die Cost (£)" 11025 gives "£11,025".
+ */
+export function paramDisplay(label: string, value: string): string {
+  const raw = String(value ?? '').trim();
+  if (/^(true|false)$/i.test(raw)) return /^true$/i.test(raw) ? 'Yes' : 'No';
+  const n = Number(raw.replace(/,/g, ''));
+  if (raw === '' || !Number.isFinite(n)) return reportNoteText(/^[a-z]+(?:_[a-z]+)+$/.test(raw) ? raw.replace(/_/g, ' ') : raw);
+  const unitM = /\(([^()]*)\)\s*\)?\s*$/.exec(label.replace(/\s+$/, ''));
+  const unit = (unitM?.[1] ?? '').replace(/,?\s*0\s*=.*$/, '').replace(/\bopt\.?$/, '').trim();
+  if (/£/.test(unit)) {
+    if (n === 0) return 'none costed (£0)';
+    const per = unit.replace(/^£\s*/, '');
+    if (/^\/\s*(part|pc)\b/i.test(per) || (!per && /\/\s*part\b|per part|a part/i.test(cleanFieldLabel(label)))) return `${fmtGbp(n)} a part`;
+    if (/^\/\s*(hr|h|hour)\b/i.test(per)) return `${fmtGbp(n)}/h`;
+    if (/^\//.test(per)) return `${fmtGbp(n)}${per.replace(/\s+/g, '')}`;
+    return fmtGbp(n);
+  }
+  if (/^(hr|h|hours?)$/i.test(unit) || /\(hr\)/.test(label)) {
+    return `${(n * 60).toFixed(2)} min${n > 0 && n <= 1 ? ` (${fmtNum(1 / n)} an hour)` : ''}`;
+  }
+  if (/^0\s*[–-]\s*1$/.test(unit)) return `${+(n * 100).toFixed(1)} %`;
+  if (/^%$/.test(unit)) return `${+n.toFixed(2)} %`;
+  if (/^(sec|s)$/i.test(unit)) return `${fmtNum(n)} s`;
+  if (/min\s*\/\s*part/i.test(unit)) return `${fmtNum(n)} min a part`;
+  if (!unit || /^(shots|cycles|strokes|parts|sets)$/i.test(unit)) return `${fmtNum(n)}${unit ? ` ${unit}` : ''}`;
+  return `${fmtNum(n)} ${unit}`;
+}
+
+/** What the costing did for an unanswered advisory question — the reader is told, not sent to "the basis". */
+function usedFor(d: { id: string; used?: string | null }, input: UniversalStackInput, rvs: NonNullable<NonNullable<CoreReportMeta['checks']>['ruleValues']>): string | null {
+  if (d.used) return d.used;
+  const ops = input.operations.map(o => o.operationName);
+  const cons = (input.rawMaterial.consumablesItems ?? []).map(i => i.label);
+  const find = (re: RegExp) => [...ops, ...cons].find(t => re.test(t));
+  const head = (s: string) => reportNoteText(s.split(/ — |; /)[0]).trim();
+  const ruleBy = (re: RegExp) => rvs.find(r => re.test(r.fieldId ?? ''));
+  switch (d.id) {
+    case 'service.finish': {
+      const f = find(/coat|paint|powder|anodis|plat|e-?coat|galvan|phosphat|zinc/i);
+      return f ? `${shortOperationName(f)} (in the price)` : 'a bare part (no coating or surface treatment in the price)';
+    }
+    case 'service.pressureTight': {
+      const f = find(/leak|pressure test|pressure-decay|impregnat/i);
+      return f ? `${shortOperationName(f)} (in the price)` : 'not leak-tight (no leak or pressure test in the price)';
+    }
+    case 'service.safetyCritical': {
+      const f = find(/\bndt\b|\bmpi\b|magnetic|x-?ray|crack/i);
+      return f ? `not safety-critical; ${shortOperationName(f)} is in the price` : 'not safety-critical (no special-characteristic checks in the price)';
+    }
+    default: {
+      const map: Record<string, RegExp> = { 'al.route': /^alx-route$/, 'al.temper': /^alx-temper$/, 'al.finish': /^alx-finish$/, 'al.bends': /^alx-bends$/,
+        'gear.hardeningRoute': /^gear-caseh$/ };
+      const r = map[d.id] ? ruleBy(map[d.id]) : undefined;
+      return r ? (r.basis ? head(r.basis) : String(r.value)) : null;
+    }
+  }
+}
+
+/** Machining inside a cast + machine or forge + machine costing: the machine is a cutting machine, or a bench deburr / gauge. */
+function isMachiningOp(o: { operationName: string; machineId: string; benchOperation?: boolean }, library: RateLibrary): boolean {
+  if (o.benchOperation) return /deburr|gauge|machin/i.test(o.operationName);
+  const m = library.machines.find(x => x.id === o.machineId);
+  return /^mach-/.test(o.machineId) || /machin|lathe|turning|\bmill|drill|grind/i.test(m?.machineClass ?? '');
+}
 
 export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const { result, input, library } = a;
@@ -514,13 +776,20 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const u = !geomEstimated && meta.uncertainty ? meta.uncertainty : computeCostUncertainty(result, input, geomEstimated ? { baseCvOverride: 0.28 } : {});
   const exec = buildExecutiveSummary({ result, input, library, commodity, region: regionCode, band: u, stamp: meta.stamp ?? null,
     decisions: meta.checks?.decisions ?? null, volumeProvided: meta.volumeProvided, pkgLogisticsEstimated: meta.pkgLogisticsEstimated });
+  const omFactor = (1 + input.overheadPct) * (1 + input.marginPct);
+  const rvs = meta.checks?.ruleValues ?? [];
+  const fx = a.fx && a.fx > 0 ? a.fx : 1;
+  const sym = a.sym ?? '£';
+  const M = (g: number, dp = 2) => `${sym}${(g * fx).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+  const MW = (g: number) => `${sym}${Math.round(g * fx).toLocaleString('en-GB')}`;
 
   // Piece price without tooling — the stack re-run (the tooling's overhead and margin leave with it).
   let pieceEx = total - result.breakdown.tooling;
   try { pieceEx = computeUniversalStack({ ...input, tooling: { ...input.tooling, totalToolingCost: 0 } }, library).total; } catch { /* keep the bucket difference */ }
   const tooling = toolingSplit(input, result);
+  const price = quotedPrice(result, input, library, tooling, pieceEx);
 
-  // Confidence by DISTINCT input: a rate shared by nine operations is one input.
+  // Confidence by DISTINCT input: a rate shared by nine operations is one input — and graded on those inputs.
   const distinct = new Map<string, { label: string; value: number; unit: string; conf: string; ops: number }>();
   const rank = { Low: 0, Medium: 1, High: 2 } as Record<string, number>;
   for (const t of result.traceability) {
@@ -540,34 +809,64 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
   const dl = [...distinct.values()];
   const cnt = (c: string) => dl.filter(d => d.conf === c).length;
   const lowInputs = dl.filter(d => d.conf === 'Low').map(d => ({ label: d.label, value: d.value, unit: d.unit, operations: d.ops }));
-  const grade = overallConfidence(result);
+  const screenGrade = overallConfidence(result);
+  const grade = dl.length ? gradeOfCounts(cnt('High'), cnt('Medium'), cnt('Low')) : screenGrade;
+  const gradeNote = grade !== screenGrade
+    ? `The costing screen grades ${screenGrade}: it counts each operation's use of a shared rate separately (${result.traceability.length} traced rows); this report grades the ${dl.length} inputs once each.`
+    : null;
 
-  // The £ resting on figures labelled "not sourced / engineering-typical": each cost line such a value drives (matched
-  // by name) or whose own basis says so, counted once, before overhead and margin.
+  // The £ resting on figures labelled "not sourced / engineering-typical / ESTIMATE / held": each cost line such a value
+  // drives (matched by name and, for tooling, by kind) or whose own basis says so, counted once, before overhead and margin.
   const cl = costLinesOf(result, input);
   const counted = new Map<string, CostLine>();
   const unsourcedItems: CoreUnsourcedItem[] = [];
-  for (const rv of meta.checks?.ruleValues ?? []) {
-    if (!UNSOURCED_RE.test(rv.basis)) continue;
+  const driverName = (r: { label: string; fieldId?: string }) => std.keyDrivers.find(d => d.match.test(ruleKey(r)))?.name;
+  for (const rv of rvs) {
+    if (!isUnsourcedText(rv.basis)) continue;
     const lines = attributeRule(ruleKey(rv), cl);
     for (const l of lines ?? []) counted.set(l.id, l);
     const gbp = lines ? lines.reduce((s, l) => s + l.gbp, 0) : null;
-    unsourcedItems.push({ label: rv.label, value: reportNoteText(String(rv.value)), basis: clip(reportNoteText(rv.basis), 150), gbp, drives: (lines ?? []).map(l => l.label) });
+    unsourcedItems.push({ label: driverName(rv) ?? cleanFieldLabel(rv.label), value: paramDisplay(rv.label, String(rv.value)), basis: reportNoteText(rv.basis), gbp,
+      drives: (lines ?? []).map(l => l.label) });
   }
   const selfLabelled: CostLine[] = [
-    ...cl.consumables.filter(l => UNSOURCED_RE.test(l.text)),
-    ...cl.energy.filter(l => UNSOURCED_RE.test(l.text)),
-    ...cl.ops.filter(o => UNSOURCED_RE.test(o.name)).flatMap(o => [o.process, o.labour]).filter(l => l.gbp > 0),
+    ...cl.consumables.filter(l => isUnsourcedText(l.text)),
+    ...cl.energy.filter(l => isUnsourcedText(l.text)),
+    ...cl.tooling.filter(l => isUnsourcedText(l.text)),
+    ...cl.ops.filter(o => isUnsourcedText(o.name)).flatMap(o => [o.process, o.labour]).filter(l => l.gbp > 0),
   ].filter(l => !counted.has(l.id));
   for (const l of selfLabelled) {
     counted.set(l.id, l);
-    unsourcedItems.push({ label: l.label, value: '—', basis: clip(reportNoteText(l.text), 150), gbp: l.gbp, drives: [l.label] });
+    unsourcedItems.push({ label: l.label, value: '—', basis: reportNoteText(l.text), gbp: l.gbp, drives: [l.label] });
   }
   unsourcedItems.sort((x, y) => (y.gbp ?? -1) - (x.gbp ?? -1));
   const unsourcedGbp = [...counted.values()].reduce((s, l) => s + l.gbp, 0);
 
-  // Alerts: a feasible route ≥ 20 % cheaper at the programme volume; uncosted scope.
+  const defaultOverhead = regionalShopDefaults(regionCode as ManufacturingRegion).overheadPct;
+  const overheadDefault = Math.abs(input.overheadPct - defaultOverhead) < 1e-9;
+  const pkgDefault = meta.pkgLogisticsEstimated !== false;
+  const bk = result.breakdown;
+  const defaults = [
+    ...(overheadDefault && bk.overhead > 0 ? [{ label: `overhead ${(input.overheadPct * 100).toFixed(1)} %`, gbp: bk.overhead }] : []),
+    ...(bk.margin > 0 ? [{ label: `margin ${(input.marginPct * 100).toFixed(1)} %`, gbp: bk.margin }] : []),
+    ...(pkgDefault && bk.packaging > 0 ? [{ label: 'packaging', gbp: bk.packaging }] : []),
+  ];
+  const defaultsGbp = defaults.reduce((s, d) => s + d.gbp, 0);
+  const listAnd = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
+  const defaultsNote = defaults.length
+    ? `Not in this share: ${listAnd(defaults.map(d => `${d.label} ${M(d.gbp)}`))} — CostVision defaults, not sourced (section 2). `
+      + `With them, ${M(unsourcedGbp + defaultsGbp)} a part (${share(unsourcedGbp + defaultsGbp).toFixed(1)} %) rests on unsourced figures or defaults.`
+    : 'Overhead, margin and packaging were entered on the costing; they are not in this share.';
+
+  // Alerts: a blocking DFM finding; a feasible route ≥ 20 % cheaper at the programme volume; uncosted scope.
   const alerts: CoreAlert[] = [];
+  const g = meta.geometricDFM;
+  if (g) {
+    for (const gr of (g.grouped ?? []).filter(x => dfmRuleApplies(commodity, x.ruleId) && normaliseSeverity(x.severity, (x.totalCostGBP ?? 0) > 0) === 'blocking')) {
+      alerts.push({ kind: 'blocking', title: `This route as costed cannot be made as drawn: ${gr.title}${gr.count > 1 ? ` (${gr.count})` : ''}`,
+        lines: [`${gr.recommendation} — the price assumes it can (Design to cost).`] });
+    }
+  }
   const x = meta.routeComparison && meta.routeComparison.rows.length ? meta.routeComparison : null;
   const ref = x ? routeReferenceRow(x) : null;
   const refTotal = ref?.total ?? null;
@@ -576,6 +875,13 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     // only rows the comparison judges credible (route-compare.ts notCredibleReasons: brittle iron on a safety part, machining
     // from solid below the material-use floor …); the audit pack prints the others with their reasons
     const costed = x.rows.filter(r => r !== ref && r.total != null && !r.refusal && r.credible !== false);
+    const firstSet = (r: typeof x.rows[number]): number | null => {
+      const t = r.tooling as (typeof r.tooling & { split?: { upFront: number } }) | null | undefined;
+      if (!t) return null;
+      if (t.split && Number.isFinite(t.split.upFront)) return t.split.upFront;
+      if (t.items?.length) return t.items.reduce((s, it) => s + splitToolingItem(it as never).initialGbp, 0);
+      return t.investment;
+    };
     const rows: CoreRouteRow[] = costed
       .map(r => ({ r, d: r.total! / refTotal - 1 }))
       .filter(({ d }) => d <= 0.5)
@@ -583,62 +889,69 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
       .map(({ r, d }) => ({
         name: routeRowLabel(r, x.labels), total: r.total!, deltaGbp: r.total! - refTotal, deltaPct: Math.round(d * 1000) / 10,
         band: r.band ? { p10: r.band.p10, p90: r.band.p90, plusMinusPct: r.band.plusMinusPct } : null,
-        toolingGbp: r.tooling?.investment ?? null,
+        toolingGbp: firstSet(r), toolingProgrammeGbp: r.tooling?.investment ?? null,
         note: x.crossovers.find(k => k.route === r.route && k.process === r.process)?.text ?? null,
       }));
     routes = { reference: routeRowLabel(ref, x.labels), rows, notShown: x.excluded.length + (costed.length - rows.length) + x.rows.filter(r => r !== ref && (r.total == null || r.refusal || r.credible === false)).length, principle: x.principle };
     for (const row of rows.filter(r => r.deltaPct <= -20)) {
       alerts.push({ kind: 'route', title: `A feasible route is ${Math.abs(row.deltaPct).toFixed(0)} % cheaper: ${row.name}`,
-        lines: [`${row.name} costs £${row.total.toFixed(2)} a part against £${refTotal.toFixed(2)} for the costed route at ${x.programme.annualVolume.toLocaleString('en-GB')} a year`
-          + (annual ? ` — £${Math.round(Math.abs(row.deltaGbp * annual)).toLocaleString('en-GB')} a year less` : '') + '. Both are re-costs of the same part in the same material (Alternatives).'] });
+        lines: [`${row.name} costs ${M(row.total)} a part against ${M(refTotal)} for the costed route at ${x.programme.annualVolume.toLocaleString('en-GB')} a year`
+          + (annual ? ` — ${MW(Math.abs(row.deltaGbp * annual))} a year less` : '') + '. Both are re-costs of the same part in the same material (Alternatives; an alert at 20 % or more cheaper).'] });
     }
   }
+  // The commodity's own route alert (composites: prepreg in an autoclave above 25,000 a year — an industry quote).
+  if (commodity === 'composites') {
+    let text: string | null = null;
+    try {
+      if (meta.ruleContext) text = compositesAlert(meta.ruleContext);
+      else {
+        const proc = rvs.find(r => /(^|\s)comp-process$/.test(r.fieldId ?? ''))?.value as CompositeProcess | undefined;
+        const cure = input.operations.find(o => /autoclave|oven|cure/i.test(`${o.machineId} ${o.operationName}`))?.machineId ?? '';
+        if (proc && annual) text = compositesRouteAlert(annual, cure, proc);
+      }
+    } catch { /* no alert */ }
+    if (text) alerts.push({ kind: 'route', title: 'The costed route does not suit this volume: prepreg cured in an autoclave', lines: [text.replace(/^ROUTE ALERT \(industry quote\): /, '').replace(/ROUTE ALERT \(industry quote\): /, '(industry quote) ')] });
+  }
   if (meta.featureLinesInCost && meta.featureLines?.length) {
-    const rate = meta.featureMachineRatePerHr ?? 0;
-    const oee = meta.featureMachineOee != null && meta.featureMachineOee > 0 && meta.featureMachineOee <= 1 ? meta.featureMachineOee : 1;
     const turned = (l: FeatureMachiningLine) => !!meta.featureTurningOp && (l.kind === 'boss' || /turn/i.test(l.operation));
     const not = meta.featureLines.filter(l => !l.included && !turned(l));
-    if (not.length) {
-      const min = not.reduce((s, l) => s + l.totalMinutes, 0);
-      const n = not.reduce((s, l) => s + l.count, 0);
-      const gbp = (min / 60) * rate / oee;
-      alerts.push({ kind: 'scope', title: `Uncosted scope: ${n} machinable feature${n === 1 ? '' : 's'} detected and NOT in this price`,
-        lines: [`${n} feature instance(s), ${min.toFixed(1)} min, could add up to £${gbp.toFixed(2)} of machine time (minutes ÷ 60 × £${rate.toFixed(2)}/h ÷ OEE ${+oee.toFixed(3)}); `
-          + 'operator, overhead and margin come on top. Confirm which are machined before using this price.',
-          `Features: ${not.slice(0, 6).map(l => `${l.count}× ${l.kind}${l.diaMm ? ` Ø${l.diaMm.toFixed(1)}` : ''}`).join(', ')}${not.length > 6 ? ', …' : ''}.`] });
-    }
+    if (not.length) alerts.push(uncostedScopeAlert(not, meta, result, library, annual, omFactor, M, MW));
   }
 
   const decisionsAll = meta.checks?.decisions ?? [];
   // Scope: the commodity's "Not included until answered" list, without the items the costing does price.
   const costedText = [...input.operations.map(o => o.operationName), ...(input.rawMaterial.consumablesItems ?? []).map(i => i.label), ...(input.tooling.items ?? []).map(i => i.label)].join(' | ');
-  // + what an answered "Yes" calls for that this route does not price (service-questions.ts serviceNotCosted)
+  // An answer as the rules read it: the screen prints the option's label ("No — structural or cosmetic only").
+  const answerValue = (v: string) => (/^yes\b/i.test(v) ? 'yes' : /^no\b/i.test(v) ? 'no' : /^none\b/i.test(v) ? 'none' : v);
   const answers: Record<string, unknown> = Object.fromEntries(decisionsAll.filter(d => d.answer != null && d.answer !== '')
-    .map(d => [d.id, /^yes$/i.test(String(d.answer)) ? 'yes' : /^no$/i.test(String(d.answer)) ? 'no' : d.answer]));
+    .map(d => [d.id, answerValue(String(d.answer))]));
   const matCat = library.materials.find(m => m.id === input.rawMaterial.materialId)?.category ?? '';
   let fromAnswers: string[] = [];
   try {
     fromAnswers = serviceNotCosted(String(commodity ?? ''), answers, { heavyAlloyCasting: /iron|steel|copper|bronze|brass|nickel/i.test(matCat) })
       .map(n => `${n.item} — ${n.reason}`);
   } catch { /* no service questions for this commodity */ }
+  if (commodity === 'composites' && meta.ruleContext) {
+    try { fromAnswers = [...fromAnswers, ...compositesNotCosted(meta.ruleContext).map(n => `${n.item} — ${n.reason}`)]; } catch { /* laminate unanswered */ }
+  }
+  const answeredAway = (i: NotIncludedItem) => !!i.unlessAnswered && i.unlessAnswered.answer.test(String(answers[i.unlessAnswered.id] ?? ''));
   const notIncluded = [
     ...fromAnswers,
     ...(input.deliveryTerms === 'EXW' ? ['Freight to your plant — the price is ex-works (EXW)'] : []),
     'Import duty, customs and cross-border shipping',
     ...(input.tooling.totalToolingCost > 0 && input.tooling.mode === 'one_time_nre' ? ['Tooling — charged once, separately'] : []),
-    ...std.notIncluded.filter(i => !(i.costedIf && i.costedIf.test(costedText))).map(i => i.text),
+    ...std.notIncluded.filter(i => !(i.costedIf && i.costedIf.test(costedText)) && !answeredAway(i)).map(i => i.text),
   ];
 
-  const decisions = meta.checks?.decisions ?? [];
-  const answerOf = (d: typeof decisions[number]) => decisionAnswerLabel(d.id, d.answer, { routeLabels: COMMODITY_REPORT_LABELS, grades: library.materials });
-  const openQuestions = decisions.filter(d => d.answer == null || d.answer === '')
-    .map(d => `${d.question} — ${decisionAnswerText({ severity: d.severity, answer: null, used: d.used })}`);
-  const spec = decisions.map(d => ({ question: d.question, answer: decisionAnswerText({ severity: d.severity, answer: answerOf(d), used: d.used }) }));
+  const answerOf = (d: typeof decisionsAll[number]) => decisionAnswerLabel(d.id, d.answer, { routeLabels: COMMODITY_REPORT_LABELS, grades: library.materials });
+  const withUsed = (d: typeof decisionsAll[number]) => ({ ...d, used: d.answer == null || d.answer === '' ? usedFor(d, input, rvs) : d.used });
+  const openQuestions = decisionsAll.filter(d => d.answer == null || d.answer === '')
+    .map(d => `${d.question} — ${decisionAnswerText({ severity: d.severity, answer: null, used: withUsed(d).used })}`);
+  const spec = decisionsAll.map(d => ({ question: d.question, answer: decisionAnswerText({ severity: d.severity, answer: answerOf(d), used: withUsed(d).used }) }));
 
-  const b = result.breakdown;
   const buckets = ([
-    ['1. Material', b.rawMaterial], ['2. Process (machine)', b.process], ['3. Direct labour', b.labour], ['4. Tooling (amortised)', b.tooling],
-    ['5. Packaging', b.packaging], ['6. Logistics', b.logistics], ['7. Overhead', b.overhead], ['8. Margin', b.margin],
+    ['1. Material', bk.rawMaterial], ['2. Process (machine)', bk.process], ['3. Direct labour', bk.labour], ['4. Tooling (amortised)', bk.tooling],
+    ['5. Packaging', bk.packaging], ['6. Logistics', bk.logistics], ['7. Overhead', bk.overhead], ['8. Margin', bk.margin],
   ] as Array<[string, number]>).map(([label, gbp]) => ({ label, gbp, sharePct: share(gbp) }));
 
   const material = materialSplit(result, input, library);
@@ -649,13 +962,36 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     pricePerKg: total / kgCostedOn, metalPerKg: material.metalGbp / kgCostedOn,
   } : null;
 
-  const defaultOverhead = regionalShopDefaults(regionCode as ManufacturingRegion).overheadPct;
+  // Cast + machine / forge + machine: the casting (or forging) ex-works and the machining, each with its overhead and margin.
+  let formMachine: CoreFormMachineSplit | null = null;
+  if (castOrForge && kgCostedOn > 0) {
+    const machOps = result.operationDetails.filter(o => isMachiningOp(o, library));
+    if (machOps.length) {
+      const vol = input.tooling.mode === 'amortized' && input.tooling.amortizationVolume > 0 ? input.tooling.amortizationVolume : 0;
+      const opsGbp = machOps.reduce((s, o) => s + o.processCost + o.labourCost, 0);
+      const wear = (input.rawMaterial.consumablesItems ?? []).filter(i => TOOL_WEAR_RE.test(i.label) || /cell consumables|coolant/i.test(i.label));
+      const wearGbp = wear.reduce((s, i) => s + i.gbp, 0);
+      const toolItems = vol ? (input.tooling.items ?? []).filter(i => ['fixture', 'programming'].includes(toolFamily(i.label))) : [];
+      const toolGbp = toolItems.reduce((s, i) => s + i.gbp, 0) / (vol || 1);
+      const direct = opsGbp + wearGbp + toolGbp;
+      const machining = direct * omFactor;
+      const form = total - machining;
+      const isForge = /forg/.test(String(commodity));
+      formMachine = {
+        form: isForge ? 'Forging' : 'Casting', formGbp: form, kg: kgCostedOn, kgLabel: isForge ? 'as forged' : 'as cast', formPerKg: form / kgCostedOn,
+        machiningGbp: machining, machiningDirectGbp: direct,
+        machiningParts: [`${machOps.length} machining operation(s) ${M(opsGbp)}`, ...(wearGbp > 0 ? [`cutting-tool wear ${M(wearGbp)}`] : []),
+          ...(toolGbp > 0 ? [`fixtures and programming ${M(toolGbp, 4)} a part`] : [])],
+      };
+    }
+  }
+
   const commercial = [
     { label: 'Overhead', value: `${(input.overheadPct * 100).toFixed(1)} % of material + process + labour + tooling`,
-      source: Math.abs(input.overheadPct - defaultOverhead) < 1e-9 ? 'CostVision default, not sourced — not a market benchmark' : 'as entered on the costing' },
+      source: overheadDefault ? 'CostVision default, not sourced — not a market benchmark' : 'as entered on the costing' },
     { label: 'Margin', value: `${(input.marginPct * 100).toFixed(1)} % of the subtotal`, source: 'the figure on the costing form (CostVision default unless typed), not sourced' },
     { label: 'Packaging', value: `£${input.packagingPerPart.toFixed(4)} a part`,
-      source: meta.pkgLogisticsEstimated === false ? 'as entered on the costing' : 'CostVision default from the part\'s size, not sourced — replace with the supplier\'s pack' },
+      source: pkgDefault ? 'CostVision default from the part\'s size, not sourced — replace with the supplier\'s pack' : 'as entered on the costing' },
     { label: 'Terms', value: deliveryTermsLine(input.deliveryTerms), source: 'as selected on the costing' },
   ];
 
@@ -663,47 +999,60 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     const m = library.machines.find(x2 => x2.id === o.machineId);
     const bench = !!o.benchOperation;
     const machinePerHr = bench ? null : o.machineRateUsed;
-    const labourPerHr = o.labourRateUsed * o.manning;
+    const eff = o.labourEfficiency > 0 ? o.labourEfficiency : 1;
+    const crewCharged = bench ? o.manning : (o.cycleTimeHr > 0 ? o.manning * o.labourTimeHr / o.cycleTimeHr : 0);
+    const labourPerHr = o.labourRateUsed * crewCharged / eff;
+    const oee = bench ? null : (o.oee > 0 ? o.oee : 1);
     return { name: shortOperationName(o.operationName), machine: bench ? 'Bench (labour only)' : (m?.machineClass ?? 'machine'), bench,
-      cycleMin: (bench ? o.labourTimeHr : o.cycleTimeHr) * 60, partsPerCycle: o.partsPerCycle, crew: o.manning,
-      machinePerHr, labourPerHr, ratePerHr: (machinePerHr ?? 0) + labourPerHr, gbp: o.processCost + o.labourCost };
+      cycleMin: (bench ? o.labourTimeHr : o.cycleTimeHr) * 60, partsPerCycle: o.partsPerCycle, oee, crew: o.manning, crewCharged,
+      labourEfficiency: eff, machinePerHr, labourPerHr, ratePerHr: (machinePerHr ?? 0) / (oee ?? 1) + labourPerHr, gbp: o.processCost + o.labourCost };
   });
+  const capRows = annual ? capacityImplied(input, library, annual) : [];
   const capacity = annual ? {
-    formula: `machines = ${annual.toLocaleString('en-GB')} a year × cycle ÷ parts a cycle ÷ OEE, summed over the operations on the machine, ÷ the machine's annual available hours (rate book)`,
-    rows: capacityImplied(input, library, annual),
+    formula: `machines = ${annual.toLocaleString('en-GB')} a year × cycle ÷ parts a cycle ÷ OEE, summed over the operations on the machine, ÷ that machine's own annual available hours (its shift pattern in the rate book)`,
+    rows: capRows, warnings: capacityWarnings(capRows, annual),
   } : null;
 
   // Key process parameters and the negotiation sheet: the commodity's drivers, matched to the values the rules set.
-  const rvs = meta.checks?.ruleValues ?? [];
   const used = new Set<number>();
   const keyParams: CoreParam[] = [];
   for (const d of std.keyDrivers) {
     const i = rvs.findIndex((r, k) => !used.has(k) && d.match.test(ruleKey(r)));
     if (i < 0) continue;
     used.add(i);
-    keyParams.push({ name: d.name, label: rvs[i].label, value: clip(reportNoteText(String(rvs[i].value)), 60), basis: clip(reportNoteText(rvs[i].basis), 140), question: d.question });
+    const shown = paramDisplay(rvs[i].label, String(rvs[i].value));
+    const basisHead = reportNoteText(rvs[i].basis).split(/; | \(engineering|\. /)[0].trim();
+    keyParams.push({ name: d.name, label: rvs[i].label, value: reportNoteText(String(rvs[i].value)),
+      display: d.display === 'basis' && basisHead ? `${shown} — ${basisHead}` : shown,
+      basis: reportNoteText(rvs[i].basis), question: d.question });
   }
   const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
   const topOp = [...operations].filter(o => !o.bench).sort((p, q) => q.gbp - p.gbp)[0];
   const negotiation = [
     ...(mat && input.rawMaterial.directCost === undefined ? [{ driver: 'Material price', ours: `${mat.grade}: £${mat.pricePerKg.toFixed(4)}/kg (rate book)`, question: 'What price a kg do you buy at, and which index does it follow?' }] : []),
-    ...keyParams.map(p => ({ driver: p.name, ours: `${p.value} (${p.label})`, question: p.question })),
-    ...(topOp ? [{ driver: `Largest operation: ${clip(topOp.name, 50)}`, ours: `${topOp.cycleMin.toFixed(2)} min on ${topOp.machine}; machine + crew £${topOp.ratePerHr.toFixed(2)}/h`, question: 'What is your cycle and your machine-hour rate for it?' }] : []),
-    ...(tooling.totalGbp > 0 ? [{ driver: 'Tooling', ours: `£${Math.round(tooling.totalGbp).toLocaleString('en-GB')} over the programme${tooling.unsplitGbp > 0.5 ? ' (not split into first set and replacements)' : ` (first set £${Math.round(tooling.initialGbp).toLocaleString('en-GB')})`}`, question: 'Tooling as a lump sum (first set) and replacements in the piece price — which do you quote?' }] : []),
+    ...keyParams.map(p => ({ driver: p.name, ours: p.display, question: p.question })),
+    ...(topOp ? [{ driver: `Largest operation: ${topOp.name}`, ours: `${topOp.cycleMin.toFixed(2)} min on ${topOp.machine}; machine ${M(topOp.machinePerHr ?? 0)}/h ÷ OEE ${+(topOp.oee ?? 1).toFixed(3)} + crew ${M(topOp.labourPerHr)}/h`, question: 'What is your cycle and your machine-hour rate for it?' }] : []),
+    ...(tooling.totalGbp > 0 ? [{ driver: 'Tooling', ours: price.mode === 'amortized'
+      ? `up front ${MW(price.upfrontGbp)} (lump sum); replacements and wear ${M(price.runningPerPartGbp)} a part in the piece price`
+      : `${MW(tooling.totalGbp)} charged once`, question: 'Tooling as a lump sum (first set) and replacements in the piece price — which do you quote?' }] : []),
     { driver: 'Overhead and margin', ours: `${(input.overheadPct * 100).toFixed(1)} % + ${(input.marginPct * 100).toFixed(1)} %`, question: 'What overhead and margin do you apply, and on what base?' },
   ];
 
   let sensitivity: CoreReport['sensitivity'] = [];
+  let sensitivityDropped = 0;
   const sensitivityPct = 10;
   try {
-    sensitivity = runSensitivity(input, library, sensitivityPct).drivers.slice(0, 5).map(d => ({
+    const all = runSensitivity(input, library, sensitivityPct).drivers;
+    const kept = all.filter(d => d.baseValue !== 0 && Math.max(Math.abs(d.minusCost - total), Math.abs(d.plusCost - total)) >= MOVER_MIN_SHARE * total);
+    sensitivityDropped = Math.min(all.length, 5) - Math.min(kept.length, 5);
+    sensitivity = kept.slice(0, 5).map(d => ({
       label: moverLabel(d.driver), base: d.baseValue, unit: d.unit, minusGbp: r4(d.minusCost - total), plusGbp: r4(d.plusCost - total) }));
   } catch { /* nothing to vary */ }
   const volumeLine = ref && ref.byVolume.length
-    ? ref.byVolume.filter(p => p.total != null).map(p => `£${p.total!.toFixed(2)} at ${p.volume.toLocaleString('en-GB')}/yr`).join(' · ') : null;
+    ? ref.byVolume.filter(p => p.total != null).map(p => `${M(p.total!)} at ${p.volume.toLocaleString('en-GB')}/yr`).join(' · ') : null;
 
   // Country rows: the screen's, or the part re-costed in each country's book, as §9 of the audit pack prints them.
-  let countries: CoreReport['countries'] = { rows: [], note: '' };
+  let countries: CoreReport['countries'] = { rows: [], note: '', basis: '' };
   try {
     const alAlloy = commodity === 'aluminium_extrusion' ? AL_ALLOY_LIST.find(al => `mat-al-billet-${al.toLowerCase()}` === input.rawMaterial.materialId) : undefined;
     const rc = a.regionalRows?.length ? a.regionalRows
@@ -714,53 +1063,118 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
       note: input.deliveryTerms === 'EXW'
         ? 'Each row is ex-works in that country: no freight to your plant, no import duty. Indicative — confirm with an RFQ.'
         : 'Each row carries that country\'s packaging and delivery allowance; import duty and cross-border freight are out. Indicative — confirm with an RFQ.',
+      basis: 'Basis: each row is this part re-costed in that country\'s OWN rate book — its labour (statutory on-costs included), machine-hour '
+        + 'rates on its own shift pattern and annual hours, energy tariff, material markets and services; an item a book could not price is at par '
+        + 'with the UK (no factor). A gap between two countries is the gap between their books: compare their labour £/h and annual hours in the audit pack.',
     };
   } catch { /* no country table */ }
 
   // Design to cost: at most five geometric findings that apply to the costed process and carry a re-costed £ or a
-  // blocking / major severity.
-  const g = meta.geometricDFM;
+  // blocking / cost / risk severity.
   let dfm: CoreReport['dfm'];
   if (g) {
     const amounts = meta.geometricDFMAmounts ?? {};
     const applies = (g.grouped ?? []).filter(gr => dfmRuleApplies(commodity, gr.ruleId));
     // BLOCKING / COST / RISK / INFO (dfm-geometry/types.ts): a re-costed £, or blocking / cost / risk — never INFO
-    const grade = (gr: { severity: string; totalCostGBP?: number }) => normaliseSeverity(gr.severity, (gr.totalCostGBP ?? 0) > 0);
-    const rank = (gr: { severity: string; totalCostGBP?: number }) => SEVERITY_RANK[grade(gr)];
-    const pick = applies.filter(gr => amounts[gr.ruleId] || rank(gr) <= 2)
-      .sort((p, q) => (amounts[q.ruleId] ? 1 : 0) - (amounts[p.ruleId] ? 1 : 0) || rank(p) - rank(q));
+    const sev = (gr: { severity: string; totalCostGBP?: number }) => normaliseSeverity(gr.severity, (gr.totalCostGBP ?? 0) > 0);
+    const rankOf = (gr: { severity: string; totalCostGBP?: number }) => SEVERITY_RANK[sev(gr)];
+    const pick = applies.filter(gr => amounts[gr.ruleId] || rankOf(gr) <= 2)
+      .sort((p, q) => rankOf(p) - rankOf(q) || (amounts[q.ruleId] ? 1 : 0) - (amounts[p.ruleId] ? 1 : 0));
     dfm = {
-      findings: pick.slice(0, 5).map(gr => ({ ruleId: gr.ruleId, severity: SEVERITY_LABEL[grade(gr)], title: gr.title, count: gr.count,
-        amount: amounts[gr.ruleId]?.text ?? null, fix: clip(gr.recommendation ?? '', 150) })),
+      findings: pick.slice(0, 5).map(gr => ({ ruleId: gr.ruleId, severity: SEVERITY_LABEL[sev(gr)], title: gr.title, count: gr.count,
+        amount: amounts[gr.ruleId]?.text ?? null, fix: gr.recommendation ?? '' })),
       considered: (g.grouped ?? []).length,
-      notChecked: `Not checked: tolerances, datums and finish call-outs (no drawing is read)${g.limitations.length ? `; ${g.limitations.length} further limit${g.limitations.length === 1 ? '' : 's'} of the check in the audit pack` : ''}.`,
+      notChecked: `Not checked: tolerances, datums and finish call-outs (no drawing is read)${g.limitations.length ? `. ${g.limitations.length} other limit${g.limitations.length === 1 ? '' : 's'} of the DFM check ${g.limitations.length === 1 ? 'is' : 'are'} listed in the audit pack` : ''}.`,
       status: 'ran',
     };
   } else {
     dfm = { findings: [], considered: 0, status: meta.geometricDFMPending ? 'pending' : 'not run',
-      notChecked: meta.geometricDFMPending ? 'The geometric DFM check had not finished when this report was made — export again for its findings.'
+      notChecked: meta.geometricDFMPending ? 'DFM pending: the geometric check had not finished when this report was made — export again for its findings.'
         : 'No geometric DFM check ran for this costing (no CAD model, or no rule pack for the commodity).' };
   }
 
+  // The verdict: one line a President reads first.
+  const askFirst = unsourcedItems.filter(i => (i.gbp ?? 0) > 0).slice(0, 3).map(i => i.label.replace(/ a part$/, '').toLowerCase());
+  const flags = [
+    ...alerts.filter(al => al.kind === 'blocking').map(() => 'a DFM finding says the route as costed cannot be made'),
+    ...alerts.filter(al => al.kind === 'route').slice(0, 1).map(al => al.title.replace(/^./, ch => ch.toLowerCase()).replace(/:/, ' —')),
+    ...alerts.filter(al => al.kind === 'scope').map(al => al.title.replace(/^Uncosted scope: /, '').replace(/ detected and NOT in this price/, ' not in the price')),
+  ];
+  const verdict = `Should-cost ${M(total)} a part, ${grade} confidence`
+    + (rvs.length ? ` — ${share(unsourcedGbp).toFixed(0)} % of it rests on unsourced figures` : '')
+    + (flags.length ? `; ${flags.join('; ')}` : '')
+    + (openQuestions.length ? `. ${openQuestions.length} question${openQuestions.length === 1 ? '' : 's'} open` : '')
+    + (askFirst.length ? `. Ask the supplier first for: ${askFirst.join(', ')}.` : '.');
+
   return {
     exec, part: result.partName, commodity: exec.commodity, commodityId: commodity, country: exec.country, region: regionCode,
-    stamp: meta.stamp ?? null, total, annualVolume: annual, programmeYears: years, annualSpend: annual ? r4(total * annual) : null,
-    pieceExToolingGbp: pieceEx, tooling,
+    stamp: meta.stamp ?? null, total, verdict, annualVolume: annual, programmeYears: years, annualSpend: annual ? r4(total * annual) : null,
+    pieceExToolingGbp: pieceEx, price, tooling,
     band: { p10: u.p10, p90: u.p90, plusMinusPct: u.plusMinusPct },
     bandNote: 'the spread of the inputs, not the model\'s error — accuracy not yet measured against a price paid',
     confidence: {
-      grade, distinct: { total: dl.length, high: cnt('High'), medium: cnt('Medium'), low: cnt('Low') }, lowInputs,
-      sentence: `${dl.length} distinct inputs: ${cnt('High')} High, ${cnt('Medium')} Medium, ${cnt('Low')} Low (a rate shared by several operations counts once)`,
+      grade, screenGrade, gradeNote, distinct: { total: dl.length, high: cnt('High'), medium: cnt('Medium'), low: cnt('Low') }, lowInputs,
+      sentence: `${dl.length} distinct inputs: ${cnt('High')} High, ${cnt('Medium')} Medium, ${cnt('Low')} Low (a rate shared by several operations counts once) — graded ${grade} on these`,
     },
     unsourced: {
-      items: unsourcedItems, totalGbp: unsourcedGbp, sharePct: share(unsourcedGbp), ruleBasis: (meta.checks?.ruleValues?.length ?? 0) > 0,
-      method: 'Each cost line (an operation\'s machine or labour, a consumable or service line, an energy line, a tooling item a part) that a value '
-        + 'labelled "not sourced", "engineering-typical" or "heuristic" drives — matched by name — or whose own basis says so, counted once, before '
-        + 'overhead and margin. A value that moves the whole cost (yield, scrap, OEE, batch) is listed without a figure.',
+      items: unsourcedItems, totalGbp: unsourcedGbp, sharePct: share(unsourcedGbp), ruleBasis: rvs.length > 0,
+      defaults, defaultsGbp, defaultsNote,
+      method: 'Each cost line (an operation\'s machine or labour, a consumable or service line, an energy line, a tooling item a part by kind — a life '
+        + 'drives the replacement sets, a price every set) that a value labelled "not sourced", "engineering-typical", "heuristic", "held" or ESTIMATE drives — '
+        + 'matched by name — or whose own basis says so, counted once, before overhead and margin. A value that moves the whole cost (yield, scrap, '
+        + 'reject rate, OEE, batch, weight) is listed without a figure.',
     },
-    alerts, openQuestions, notIncluded, terms: deliveryTermsLine(input.deliveryTerms),
-    buckets, material, perKg, commercial, spec, operations, capacity, keyParams,
-    sensitivity, sensitivityPct, volumeLine, negotiation, quoteBreakdown: std.quoteBreakdown, levers: exec.levers.length ? exec.levers : [],
+    alerts, openQuestions, notIncluded, notModelled: std.notModelled ?? [], terms: deliveryTermsLine(input.deliveryTerms),
+    buckets, material, perKg, formMachine, commercial, spec, operations, capacity, keyParams,
+    sensitivity, sensitivityPct, sensitivityDropped, volumeLine, negotiation, quoteBreakdown: std.quoteBreakdown, levers: exec.levers.length ? exec.levers : [],
     routes, countries, dfm,
   };
+}
+
+/**
+ * Uncosted scope, ALL-IN (fresh review N6): the features' minutes priced at the costing's own rates for the operation they
+ * would join (machine ÷ OEE + crew ÷ labour efficiency), with overhead and margin — and which time model gave the minutes.
+ * The knuckle's alert said "£13.05 of machine time … operator, overhead and margin come on top" from a per-feature time
+ * ten times the costing's own.
+ */
+function uncostedScopeAlert(not: FeatureMachiningLine[], meta: CoreReportMeta, result: PartCostResult,
+  library: RateLibrary, annual: number | null, omFactor: number, M: (g: number) => string, MW: (g: number) => string): CoreAlert {
+  const min = not.reduce((s, l) => s + l.totalMinutes, 0);
+  const n = not.reduce((s, l) => s + l.count, 0);
+  const rate = meta.featureMachineRatePerHr ?? 0;
+  // the op the features would join: the costing's machining operation on that machine (else its largest machining op)
+  const machOps = result.operationDetails.filter(o => !o.benchOperation && isMachiningOp(o, library) && o.cycleTimeHr > 0);
+  const onMachine = machOps.filter(o => rate > 0 && Math.abs(o.machineRateUsed - rate) < 0.01);
+  const host = (onMachine.length ? onMachine : machOps).sort((p, q) => (q.processCost + q.labourCost) - (p.processCost + p.labourCost))[0];
+  let perHr: number, how: string;
+  if (host) {
+    const oee = host.oee > 0 ? host.oee : 1;
+    const crew = host.manning * host.labourTimeHr / host.cycleTimeHr;
+    const eff = host.labourEfficiency > 0 ? host.labourEfficiency : 1;
+    perHr = host.machineRateUsed / oee + host.labourRateUsed * crew / eff;
+    how = `at the rates of "${shortOperationName(host.operationName)}": machine ${M(host.machineRateUsed)}/h ÷ OEE ${+oee.toFixed(3)} + labour ${M(host.labourRateUsed)}/h × crew ${+crew.toFixed(2)} ÷ efficiency ${+eff.toFixed(2)}`;
+  } else {
+    const oee = meta.featureMachineOee != null && meta.featureMachineOee > 0 && meta.featureMachineOee <= 1 ? meta.featureMachineOee : 1;
+    perHr = rate / oee;
+    how = `at the feature machine's ${M(rate)}/h ÷ OEE ${+oee.toFixed(3)} (no machining operation in the costing to take a crew from)`;
+  }
+  const direct = (min / 60) * perHr;
+  const allIn = direct * omFactor;
+  // the per-feature time of the costed machining (an operation named "… N features / holes / bores")
+  let costedMin = 0, costedN = 0;
+  for (const o of machOps) {
+    const k = /(\d+)\s+(?:features?|holes?|cored bores?|bores?)\b/i.exec(o.operationName);
+    if (k) { costedMin += o.cycleTimeHr * 60; costedN += Number(k[1]); }
+  }
+  const per = n > 0 ? min / n : 0;
+  const perCosted = costedN > 0 ? costedMin / costedN : null;
+  const differs = perCosted != null && per > 0 && (per / perCosted > 1.5 || perCosted / per > 1.5);
+  const lines = [
+    `${n} feature instance(s), ${min.toFixed(1)} min from the feature-machining table (standard minutes a feature, ${per.toFixed(2)} min each) `
+      + `${how}, × overhead and margin ${omFactor.toFixed(4)}: about ${M(allIn)} a part all-in${annual ? ` (${MW(allIn * annual)} a year)` : ''}. Confirm which are machined before using this price.`,
+    ...(differs ? [`The two time models differ: the costing's own machining build-up prices its ${costedN} features at ${perCosted!.toFixed(2)} min each, `
+      + `the feature table these at ${per.toFixed(2)} min each — at the costing's minutes they would add about ${M(costedN ? (n * perCosted! / 60) * perHr * omFactor : 0)} a part.`] : []),
+    `Features: ${not.map(l => `${l.count}× ${l.kind}${l.diaMm ? ` Ø${l.diaMm.toFixed(1)}` : ''}`).join(', ')}.`,
+  ];
+  return { kind: 'scope', title: `Uncosted scope: ${n} machinable feature${n === 1 ? '' : 's'} detected and NOT in this price`, lines };
 }

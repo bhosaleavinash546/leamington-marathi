@@ -531,8 +531,9 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   check('export', 'STD', 'the core report keeps to its seven sections (≤ 8 pages)', corePages > 0 && corePages <= 8, `${corePages} pages`);
   check('export', 'STD', 'the audit pack is the full report (more pages than the core, §1 and §9b present)', auditPages > corePages && /§1 [—\x97] 8-Bucket Cost Breakdown/.test(auditText),
     `${auditPages} pages${/§1 [—\x97] 8-Bucket/.test(auditText) ? ', §1 present' : ', §1 MISSING'}`);
-  check('export', 'STD', 'the core report states the piece price without tooling and the initial tooling', /PIECE PRICE EXCLUDING TOOLING/.test(text) && /INITIAL TOOLING INVESTMENT/.test(text),
-    /PIECE PRICE EXCLUDING TOOLING/.test(text) ? 'found' : 'NOT found');
+  // fresh review N2: the piece price as quoted (running tooling inside) + the up-front lump sum, re-added to the headline
+  check('export', 'STD', 'the core report states the piece price as quoted, the up-front tooling and the re-add', /PIECE PRICE AS QUOTED/.test(text) && /UP-FRONT TOOLING/.test(text) && /Re-add: piece price/.test(text),
+    /PIECE PRICE AS QUOTED/.test(text) ? (/Re-add: piece price/.test(text) ? 'found' : 're-add NOT found') : 'NOT found');
   // Compare-routes review (Oct 2026): the comparison the screen drew is in both reports.
   const routesSheet = wb.Sheets['8-Routes'] ? (XLSX.utils.sheet_to_json(wb.Sheets['8-Routes'], { header: 1, raw: false }) as unknown[][]) : null;
   const routesRows = routesSheet ? routesSheet.filter(r => typeof r[0] === 'string' && /\(this costing\)/.test(String(r[0]))).length : 0;

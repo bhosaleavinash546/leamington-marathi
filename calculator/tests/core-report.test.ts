@@ -160,10 +160,19 @@ describe('the core report model', () => {
     expect(core.volumeLine).toMatch(/at 5,000\/yr/);
   });
 
-  it('alerts on uncosted scope with its machine-minute £, and not when the costing turns the boss', () => {
+  it('alerts on uncosted scope ALL-IN at the rates of the op it would join, naming the time model (fresh review N6)', () => {
     const scope = core.alerts.find(a => a.kind === 'scope')!;
     expect(scope.title).toMatch(/1 machinable feature/);
-    expect(scope.lines[0]).toContain(`£${(6 / 60 * 13.59 / 0.8).toFixed(2)}`);
+    // the host op: the costing's largest machining op on the HMC (Drilling), machine ÷ OEE + labour × crew ÷ efficiency
+    const host = castRes.operationDetails.find(o => /Drilling/.test(o.operationName))!;
+    const perHr = host.machineRateUsed / host.oee + host.labourRateUsed * host.manning / host.labourEfficiency;
+    const allIn = 6 / 60 * perHr * (1 + cast.overheadPct) * (1 + cast.marginPct);
+    expect(scope.lines[0]).toContain(`about £${allIn.toFixed(2)} a part all-in`);
+    expect(scope.lines[0]).toContain(`(£${Math.round(allIn * 200_000).toLocaleString('en-GB')} a year)`);
+    expect(scope.lines[0]).toMatch(/feature-machining table \(standard minutes a feature/);
+    // the costing's own drilling is 12 holes in 7.97 min — 0.66 min each against the table's 6 min: said so
+    expect(scope.lines[1]).toMatch(/The two time models differ: the costing's own machining build-up prices its 12 features at 0\.66 min each/);
+    expect(scope.lines.join(' ')).not.toMatch(/…/);
     const turned = buildCoreReport({ result: castRes, input: cast, library: lib, commodity: 'cast_and_machine', region: 'UK', cadMeta: { ...meta, featureTurningOp: 'Turning — spindle' } as never });
     expect(turned.alerts.some(a => a.kind === 'scope')).toBe(false);
   });
@@ -179,13 +188,14 @@ describe('the core report model', () => {
   it('the £ resting on unsourced figures: the lines they drive, counted once; a whole-cost figure is listed without £', () => {
     const ops = castRes.operationDetails;
     const energy = castRes.traceability.find(t => t.field === 'rawMaterial.energyKwh.electricity')!.value;
-    const pattern = 716_625 / 1_000_000;
+    // a LIFE drives the replacement sets only (64 of the 65), never the first set or the programming
+    const pattern = 716_625 * 64 / 65 / 1_000_000;
     const expected = 3.09 /* cores */ + (ops[1].processCost + ops[1].labourCost) /* fettling */ + ops[0].labourCost /* crew */
       + pattern /* die life → the pattern item a part */ + 0.15 /* green sand, self-labelled */ + energy /* self-labelled */;
     expect(core.unsourced.totalGbp).toBeCloseTo(expected, 9);
     expect(core.unsourced.sharePct).toBeCloseTo(Math.round(expected / castRes.total * 1000) / 10, 9);
-    expect(core.unsourced.items.find(i => /Yield/.test(i.label))!.gbp).toBeNull();
-    expect(core.unsourced.items.some(i => /Die Cost/.test(i.label))).toBe(false);           // sourced basis: not listed
+    expect(core.unsourced.items.find(i => /yield/i.test(i.label))!.gbp).toBeNull();
+    expect(core.unsourced.items.some(i => /toolmaker shop model/.test(i.basis))).toBe(false); // sourced basis: not listed
     expect(core.unsourced.method).toMatch(/counted once, before overhead and margin/);
   });
 
@@ -259,7 +269,9 @@ describe('the PDF profile switch', () => {
     expect(coreText).toContain(`£${castRes.total.toFixed(2)}`);
     expect(coreText).toMatch(/Ex-works \(EXW\)/);
     expect(coreText).toContain('Route Comparison');
-    expect(coreText).toMatch(/PIECE PRICE EXCLUDING TOOLING/);
+    expect(coreText).toMatch(/PIECE PRICE AS QUOTED/);
+    expect(coreText).toMatch(/Re-add: piece price £\d+\.\d\d \+ up-front tooling £25,891 ÷ 1,000,000 parts × 1\.2096 \(its overhead and margin\) = £/);
+    expect(coreText).not.toMatch(/…/);                                      // no truncated line anywhere (N21)
     expect(coreText).toMatch(/Prepared by/);
     expect(coreText).not.toMatch(/§1 — 8-Bucket/);
   });
@@ -290,7 +302,8 @@ describe('the workbook', () => {
     first.eachRow(r => rows.push((r.values as unknown[]).slice(1)));
     const row = (label: string) => rows.find(r => r[0] === label);
     expect(Number(row('Should-cost a part')![1])).toBeCloseTo(castRes.total, 4);
-    expect(Number(row('Piece price excluding tooling')![1])).toBeCloseTo(core.pieceExToolingGbp, 4);
+    expect(Number(row('Piece price as quoted')![1])).toBeCloseTo(core.price.pieceAsQuotedGbp, 4);
+    expect(Number(row('  Re-add')![2])).toBeCloseTo(castRes.total, 4);
     expect(Number(row('Material total = bucket 1')![1])).toBeCloseTo(castRes.breakdown.rawMaterial, 4);
     expect(rows.some(r => r[0] === '── 7. DESIGN TO COST ──')).toBe(true);
     const dfm = wb.getWorksheet('9-DFM')!;

@@ -99,7 +99,8 @@ describe('F16 — the shape basis prints the score that gives the value', () => 
     const b = knuckle.provenance['forge-shape'].basis;
     expect(knuckle.provenance['forge-shape'].value).toBe('moderate');
     expect(b).toMatch(/score 2 \+ 0 \+ 1 = 3 → complex/);
-    expect(b).toMatch(/181 of 310 faces are cylinders, cones or tori \(58%, ≥ 55%\) — formed in round dies, so moderate/);
+    // the demotion LEADS the basis (fresh review N5) — a shortened line still says "moderate, demoted from complex"
+    expect(b).toMatch(/^moderate, demoted from complex: 181 of 310 faces are cylinders, cones or tori \(58%, ≥ 55%\) — formed in round dies/);
   });
 });
 

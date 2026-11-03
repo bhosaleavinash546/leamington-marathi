@@ -174,14 +174,17 @@ export function shapeComplexityBasis(ctx: RuleContext, s: ShapeComplexity): stri
   const by = (ctx.geo.faces?.byType ?? {}) as Record<string, number>;
   const total = ctx.geo.faces?.total ?? 0;
   const rev = (by['CYLINDER'] ?? 0) + (by['CONE'] ?? 0) + (by['TORUS'] ?? 0);
-  let text = `score ${a} + ${b} + ${c} = ${score} → ${raw} — ${a} for ${freeForm} free-form face(s), ${b} for ${undercuts}`
+  const scoreText = `score ${a} + ${b} + ${c} = ${score} → ${raw} — ${a} for ${freeForm} free-form face(s), ${b} for ${undercuts}`
     + ` undercut face(s), ${c} for ${faces} faces (≥ 3 complex, ≥ 1 moderate; free-form ≥ 3 / ≥ 8, undercuts ≥ 4,`
     + ' faces ≥ 120 — CostVision heuristic)';
+  // The demotion LEADS the basis (fresh review N5): a reader who stops at "score … = 3 → complex" — or a report that
+  // shortens the line — read "complex" beside a costed "moderate".
   if (raw !== s) {
-    text += `; ${isAxisymmetric(ctx) ? 'a square, axisymmetric envelope' : `${rev} of ${total} faces are cylinders, cones or tori`
-      + ` (${Math.round(rev / Math.max(1, total) * 100)}%, ≥ 55%)`} — formed in round dies, so ${s}`;
+    const why = isAxisymmetric(ctx) ? 'a square, axisymmetric envelope'
+      : `${rev} of ${total} faces are cylinders, cones or tori (${Math.round(rev / Math.max(1, total) * 100)}%, ≥ 55%)`;
+    return `${s}, demoted from ${raw}: ${why} — formed in round dies (CostVision heuristic). The ${scoreText}`;
   }
-  return text;
+  return scoreText;
 }
 
 /** The advisor grades complexity on a three-point scale of its own. */

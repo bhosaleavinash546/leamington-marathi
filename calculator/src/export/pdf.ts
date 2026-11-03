@@ -159,6 +159,9 @@ export interface CADReportMeta {
   featureMachineOee?: number | null;
   /** The costing's turning operation, when it has one: a boss / turned feature is cut there, not left uncosted. */
   featureTurningOp?: string | null;
+  /** The rules' context of the costing (geometry, answers, volume): the core report reads a commodity's own "not costed"
+   *  list and route alert from it (composites). Optional — without it the core falls back to what the rule values hold. */
+  ruleContext?: import('../engine/cost-input-rules/types.js').RuleContext | null;
   /** Geometric DFM/DFA from the background job, when one has completed. */
   geometricDFM?: GeometricDFMMeta | null;
   /**
@@ -2449,7 +2452,7 @@ export function printPDF(
 
   // ── The core report: seven pages from one model (executive-summary.ts buildCoreReport) ──
   if (profile === 'core' && !pcba) {
-    const model = buildCoreReport({ result, input, library, commodity: commodityType, region, cadMeta, baseLibrary, regionalRows });
+    const model = buildCoreReport({ result, input, library, commodity: commodityType, region, cadMeta, baseLibrary, regionalRows, fx: fxRate, sym });
     renderCoreReport(doc, model, { money, fx: fxRate, sym, currency, dateStr, cadView: cadMeta.cadViews?.[0] ?? null });
     addFooters();
     doc.save(exportFilename('should-cost', result.partName, 'pdf'));
