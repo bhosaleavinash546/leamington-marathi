@@ -257,12 +257,11 @@ describe('C2/H4 — regional machine rate rebuild (energy re-tariff)', () => {
     expect(machineRate(tr, 'imm-800t')).toBeLessThan(flat);
   });
 
-  it('a dearer-capex country can be cheaper than the UK on an energy-dominated machine', () => {
-    // Germany: held capital × 1.049 (dearer than the UK book) but BDEW electricity €0.179 = £0.150 < the UK's £0.182
-    // (DESNZ) — for the energy-heavy 800T press the cheaper power outweighs the dearer capital. (Austria showed this
-    // until it got its own book in the world round, 30 Oct 2026.)
+  it('cheaper power makes an energy-dominated machine cheaper than in the UK', () => {
+    // Germany: capital at par (3 Nov 2026 — it carried UK × 1.049 before) and BDEW electricity €0.179 = £0.150 < the
+    // UK's £0.182 (DESNZ) — the energy-heavy 800T press is cheaper to run in Germany.
     const de = buildRegionalLibrary(lib, 'DE');
-    expect(REGIONAL_DATA.DE.machineRateMultiplier).toBeGreaterThan(1);
+    expect(REGIONAL_DATA.DE.energy.electricityPerKwh).toBeLessThan(REGIONAL_DATA.UK.energy.electricityPerKwh);
     expect(machineRate(de, 'imm-800t')).toBeLessThan(machineRate(lib, 'imm-800t'));
   });
 
