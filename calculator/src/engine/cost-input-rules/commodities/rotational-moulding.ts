@@ -27,7 +27,7 @@ import {
   type RotoMaterialFamily, type RotoCoolingMethod, type RotoMouldType, type RotoComplexity,
 } from '../../modules/roto-advisor.js';
 import { ROTO_POWDER_YIELD } from '../../modules/rotational-moulding.js';
-import { activeToolroomFactor, activeRates } from '../../rate-context.js';
+import { activeToolroomFactor, activeRates, factorText } from '../../rate-context.js';
 import type { RateLibrary } from '../../types.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { serviceQuestionRules } from '../derive/service-questions.js';
@@ -451,12 +451,15 @@ export const ROTATIONAL_MOULDING_RULES: CommodityRuleSpec = {
         // vent count were not on the page (arith audit, Oct 2026).
         const rates = rotoMouldRates(a.mouldType);
         const tf = activeToolroomFactor();
+        // The UK build-up, then the country's toolroom factor — printed every time, on one chain (the parts printed
+        // country £ beside UK arithmetic, the factor in a bracket only off the UK; report standard round, Nov 2026).
+        const uk = rates.base + a.areaCm2 * rates.perCm2 * ROTO_COMPLEXITY_FACTOR[a.complexity] + a.vents * ROTO_VENT_GBP + ROTO_INSULATION_GBP;
+        const money = (n: number, dp = 0) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
         return decided('roto.mouldCost', est.total, 'advisor',
-          `${a.mouldType} tool, ${a.complexity}: £${est.base.toLocaleString('en-GB')} base`
-          + ` + size (${a.areaCm2.toFixed(1)} cm² × £${rates.perCm2}/cm² × ${ROTO_COMPLEXITY_FACTOR[a.complexity]} ${a.complexity} = £${est.size.toLocaleString('en-GB')})`
-          + ` + details (${a.vents} vent${a.vents === 1 ? '' : 's'} × £${ROTO_VENT_GBP} + £${ROTO_INSULATION_GBP} insulation = £${est.details.toLocaleString('en-GB')})`
-          + (Math.abs(tf - 1) > 1e-9 ? ` (each × toolroom factor ${tf.toFixed(3)})` : '')
-          + ` = £${est.total.toLocaleString('en-GB')} a mould`
+          `${a.mouldType} tool, ${a.complexity}: UK ${money(rates.base)} base + ${a.areaCm2.toFixed(1)} cm² × ${money(rates.perCm2, 2)}/cm² `
+          + `× ${ROTO_COMPLEXITY_FACTOR[a.complexity]} ${a.complexity} + ${a.vents} vent${a.vents === 1 ? '' : 's'} × ${money(ROTO_VENT_GBP)} `
+          + `+ ${money(ROTO_INSULATION_GBP)} insulation = ${money(uk, 2)}; ${money(uk, 2)} × ${factorText('toolroom', tf)} `
+          + `= ${money(Math.round(Math.round(uk * 100) / 100 * tf * 100) / 100, 2)} → ${money(est.total)} a mould`
           + ' — build rates engineering-typical, not sourced', 0.65);
       },
     },

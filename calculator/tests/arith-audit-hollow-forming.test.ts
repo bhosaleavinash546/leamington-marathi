@@ -51,7 +51,9 @@ describe('rotational moulding', () => {
     const life = get('roto.mouldLife');
     expect(life.source).toBe('rule');
     expect(life.basis).toMatch(/engineering-typical, not sourced/);
-    expect(get('roto.mouldCost').basis).toContain('1430.2 cm² × £18/cm² × 0.75 simple = £19,308');
+    // Report standard round (Nov 2026): the UK build-up on one line, then × the toolroom factor — printed every time.
+    expect(get('roto.mouldCost').basis).toContain('1430.2 cm² × £18.00/cm² × 0.75 simple + 2 vents × £250 + £500 insulation = £26,307.70; '
+      + '£26,307.70 × UK toolroom 1.00 = £26,307.70 → £26,308 a mould');
   });
   it('H8 grinding is charged on the powder charged (scrap + 1% loss), and a mould wears on parts moulded', () => {
     const base = {

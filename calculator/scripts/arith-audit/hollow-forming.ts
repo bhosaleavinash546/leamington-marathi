@@ -35,6 +35,9 @@ const book = C.book;
 const TOOLROOM_RATES = C.toolroom;
 
 const ANNUAL = C.annual, YEARS = C.years, AMORT = ANNUAL * YEARS;
+/** The toolroom factor as a tool basis prints it (report standard round, Nov 2026): "China toolroom 0.3416", "UK toolroom 1.00". */
+const TF_TEXT = `${C.region === 'UK' ? 'UK' : (book.regional?.name ?? C.region)} toolroom ${C.toolroomFactor === 1 ? '1.00' : String(C.toolroomFactor)}`;
+const gbp2 = (n: number) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 let fails = 0, passes = 0;
 const out: string[] = [];
@@ -195,6 +198,9 @@ function roto(part: string, g: any, d: any, resin: string) {
   chk(part, 'index s', p.indexTimeSec, index);
   chk(part, 'moulds in service', p.mouldsInService, moulds, 'exact');
   chk(part, 'mould £', p.mouldCost, mould, 'gbp');
+  // the basis: the UK build-up, then × the country's toolroom factor, both printed (report standard round, Nov 2026)
+  const ukMould = 6000 + area * 18 * cx + vents * 250 + 500;
+  chk(part, 'mould basis: UK £ × toolroom', String(d.provenance['rm-mould-cost'].basis).includes(`= ${gbp2(ukMould)}; ${gbp2(ukMould)} × ${TF_TEXT} = `), true);
   chk(part, 'mould life', p.mouldLife, life, 'exact');
   const util = 0.99;
   const net = kg * up, gross = net / util;
@@ -263,6 +269,9 @@ function thermo(part: string, g: any, d: any, resin: string) {
   chk(part, 'load s', p.indexTimeSec, load);
   chk(part, 'trim s', p.trimTimeSec, trim);
   chk(part, 'tool £', p.toolCost, tool, 'gbp');
+  // the basis: the UK build-up, then × the country's toolroom factor, both printed (report standard round, Nov 2026)
+  const ukTool = Math.round(((tm.base + plan * tm.perCm2) * cx * (1 + (n - 1) * 0.7)) * 100) / 100 + Math.round(plan * 0.25 * n);
+  chk(part, 'tool basis: UK £ × toolroom', String(d.provenance['tf-tool-cost'].basis).includes(`= ${gbp2(ukTool)} UK; ${gbp2(ukTool)} × ${TF_TEXT} = `), true);
   const up = 1 / 0.97;
   const net = kg * up, util = kg * n / sheetKg, gross = net / util;
   const spec = r(fam.cp * (fam.tf - 23) / 3600 / 0.4 + 0.02, 3);

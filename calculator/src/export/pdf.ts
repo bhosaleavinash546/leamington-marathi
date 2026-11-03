@@ -162,6 +162,9 @@ export interface CADReportMeta {
   /** The rules' context of the costing (geometry, answers, volume): the core report reads a commodity's own "not costed"
    *  list and route alert from it (composites). Optional — without it the core falls back to what the rule values hold. */
   ruleContext?: import('../engine/cost-input-rules/types.js').RuleContext | null;
+  /** The same "not costed" items and route alert as the server read them off its rule context — the CAD response's
+   *  `reportNotes` (report-notes.ts). What the app has: the browser never holds a RuleContext. */
+  reportNotes?: import('../engine/cost-input-rules/report-notes.js').RuleReportNotes | null;
   /** Geometric DFM/DFA from the background job, when one has completed. */
   geometricDFM?: GeometricDFMMeta | null;
   /**
@@ -214,7 +217,9 @@ export interface ChecksAppliedMeta {
   sanity: Array<{ code: string; message: string; severity: 'warn' | 'error'; blocking?: boolean; acknowledged?: boolean }>;
   decisions: Array<{ id: string; question: string; severity: 'blocking' | 'advisory'; answer: string | null;
     /** What the costing used for an unanswered advisory question (the grade it costed) — never "engine default". */
-    used?: string | null }>;
+    used?: string | null;
+    /** The question's options — the one marked `costed` is what an unanswered advisory was costed as (decision-used.ts). */
+    options?: Array<{ value: string; label: string; costed?: boolean; leaning?: boolean }> }>;
   /** Rule-owned fields written over the model's value (or set where it said nothing). */
   overrides: Array<{ field: string; ruleId: string; from: unknown; to: unknown; basis: string; contradicted: boolean }>;
   /**
@@ -2750,7 +2755,8 @@ export function printPDF(
   try {
     const ex = buildExecutiveSummary({
       result, input, library, commodity: commodityType, region, band: cadMeta.uncertainty ?? null, stamp: cadMeta.stamp ?? null,
-      decisions: cadMeta.checks?.decisions ?? null, volumeProvided: cadMeta.volumeProvided, pkgLogisticsEstimated: cadMeta.pkgLogisticsEstimated,
+      decisions: cadMeta.checks?.decisions ?? null, ruleValues: cadMeta.checks?.ruleValues ?? null,
+      volumeProvided: cadMeta.volumeProvided, pkgLogisticsEstimated: cadMeta.pkgLogisticsEstimated,
     });
     doc.addPage();
     renderExecutiveSummaryPage(doc, ex, money, keyAssumptions);

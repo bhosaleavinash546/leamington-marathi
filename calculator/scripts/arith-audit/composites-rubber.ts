@@ -96,6 +96,7 @@ function stack(part: string, res: Res, rm: number, ops: Array<{ name: string; m:
 
 function composites(part: string, geo: OCCTGeometry, answers: Record<string, string>, res: Res) {
   const P = (id: string) => res.provenance?.[id]?.value;
+  const B = (id: string) => String((res.provenance?.[id] as { basis?: string } | undefined)?.basis ?? '');
   const sys0 = SYSTEMS[answers['material.laminate']];
   const pcm = sys0.resin === null && answers['composites.processChoice'] === 'pcm';
   const sys = pcm ? { ...sys0, process: 'prepreg_compression', cureHr: r(PCM_PRESS_MIN / 60, 4), cell: 'rtm-press-std', bed: null } : sys0;
@@ -141,6 +142,8 @@ function composites(part: string, geo: OCCTGeometry, answers: Record<string, str
   check(part, 'rule tools in service', tools, P('comp-tools'), 'exact');
   check(part, 'rule trim h', trim, P('comp-trim-time'), 'pct');
   check(part, 'rule tool £', toolCost, P('comp-tool-cost'), 'pct');
+  // Report standard round (Nov 2026): the tool basis is the UK build-up, then × the toolroom factor — printed every time.
+  check(part, 'tool basis: UK build-up × UK toolroom 1.00', 'yes', new RegExp(`= £${(tool.base + planM2 * tool.perM2).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} UK; .* × UK toolroom 1\\.00 = £`).test(B('comp-tool-cost')) ? 'yes' : B('comp-tool-cost').slice(0, 140), 'exact');
   check(part, 'rule tool life', life, P('comp-tool-life'), 'exact');
   check(part, 'rule process', sys.process, P('comp-process'), 'exact');
   check(part, 'rule NDI £', ndi, P('comp-ndi'));
@@ -174,6 +177,7 @@ const REJECT_RUB = 0.03;
 
 function rubber(part: string, geo: OCCTGeometry, answers: Record<string, string>, res: Res) {
   const P = (id: string) => res.provenance?.[id]?.value;
+  const B = (id: string) => String((res.provenance?.[id] as { basis?: string } | undefined)?.basis ?? '');
   const mat = material(answers['material.elastomer']);
   const mass = r(geo.volume!.cm3 * mat.densityKgPerM3 / 1e6, 4);
   const mean = 2 * geo.volume!.mm3 / geo.surfaceArea!.mm2;
@@ -219,6 +223,8 @@ function rubber(part: string, geo: OCCTGeometry, answers: Record<string, string>
   check(part, 'rule projected cm²', area, P('rub-proj-area'), 'pct');
   check(part, 'rule flash kg', flash, P('rub-flash-wt'), 'pct');
   check(part, 'rule mould £', mould, P('rub-mould-cost'), 'pct');
+  // Report standard round (Nov 2026): every factor on the mould basis, the country's toolroom one included (UK 1.00).
+  check(part, 'mould basis: base × steel × UK toolroom 1.00', 'yes', new RegExp(`base: UK £${MOULD_BASE[proc].toLocaleString('en-GB')} × [\\d.]+ steel × UK toolroom 1\\.00 = £`).test(B('rub-mould-cost')) ? 'yes' : B('rub-mould-cost').slice(0, 140), 'exact');
   check(part, 'rule mould life', 200_000, P('rub-mould-life'), 'exact');
   check(part, 'rule crew', CREW[proc], P('rub-manning'), 'exact');
 

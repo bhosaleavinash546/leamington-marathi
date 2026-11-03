@@ -33,7 +33,7 @@
  */
 import { materialGradeName } from '../derive/material.js';
 import { countryFactor, countryNote } from '../../regional-services.js';
-import { activeToolroomFactor, activeLabourRate, activeRates } from '../../rate-context.js';
+import { activeToolroomFactor, activeLabourRate, activeRates, factorText } from '../../rate-context.js';
 import { CURE_ATTENDANCE, type CompositeProcess } from '../../modules/composites.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import {
@@ -675,13 +675,17 @@ export const COMPOSITES_RULES: CommodityRuleSpec = {
         const footprintM2 = a.planM2;
         // Built where the part is made: × the country's toolroom factor (1 in the UK).
         const tf = activeToolroomFactor();
-        const total = Math.round((rate.base + footprintM2 * rate.perM2) * tf);
+        const ukGbp = rate.base + footprintM2 * rate.perM2;
+        const total = Math.round(ukGbp * tf);
+        // The chain in full, the country's toolroom factor printed every time (UK 1.00) — it was printed only when not
+        // 1, after the plan × rate, so "base + plan × rate × factor" read as if the base were not scaled (report
+        // standard round, Nov 2026). The plan is cm² to 0.1 (5 dp in m²), so both equations hold as printed.
+        const money = (n: number, dp = 0) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
         return decided('composites.toolingCost', total, 'rule',
           `${a.process === 'prepreg_compression' ? 'PCM matched steel die, priced on the RTM matched-die build-up (no PCM tool price was found)'
-            : `${a.process} tool`}: £${rate.base.toLocaleString('en-GB')} base + `
-          + `${fmt(footprintM2, 3)} m² plan (${a.planBasis}) × £${rate.perM2.toLocaleString('en-GB')}/m²`
-          + (tf !== 1 ? ` × toolroom factor ${tf}` : '') + ` = £${total.toLocaleString('en-GB')} a tool `
-          + '(engineering-typical rates, not sourced; the same price whatever the tool material)', 0.55);
+            : `${a.process} tool`}: ${money(rate.base)} base + ${fmt(footprintM2, 5)} m² plan × ${money(rate.perM2)}/m² = ${money(ukGbp, 2)} UK; `
+          + `${money(ukGbp, 2)} × ${factorText('toolroom', tf)} = ${money(total)} a tool `
+          + `(plan: ${a.planBasis}; engineering-typical rates, not sourced; the same price whatever the tool material)`, 0.55);
       },
     },
     {

@@ -23,7 +23,7 @@
  *    720 s. Guessing that is not an estimate, it is a coin toss with two orders
  *    of magnitude on it.
  */
-import { activeMachineRate, activeLabourRate } from '../../rate-context.js';
+import { activeMachineRate, activeLabourRate, activeToolroomFactor, factorText } from '../../rate-context.js';
 import {
   estimateRubberCureTimeSec, estimateRubberMouldCost, rubberCureBreakdown, rubberMouldBase, rubberMouldSteelFactor,
   rubberComplexityFactor, RUBBER_CAVITY_GBP, RUBBER_THERMAL_DIFFUSIVITY_MM2_S,
@@ -274,6 +274,9 @@ function advise(ctx: RuleContext): { advice: RubAdvice } | { blocked: RuleOutcom
   };
 }
 
+/** £ with thousands separators at a fixed number of decimals — a tool basis line's figures. */
+const gbp = (n: number, dp = 0) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+
 export const RUBBER_RULES: CommodityRuleSpec = {
   commodity: 'rubber',
   header: 'RUBBER MOULDING COST INPUT RULES:',
@@ -472,13 +475,27 @@ export const RUBBER_RULES: CommodityRuleSpec = {
         });
         const area = a.profile ? a.profile.sectionCm2 : a.areaCm2;
         const C = RUBBER_CAVITY_GBP;
+        // Every factor printed, the country's toolroom one included (it was applied silently: "£2050 base (£6,000 × 1
+        // steel)"). Each "a × b = c" holds on the printed figures (basis-check.py); the cavity power and a total rounded
+        // once are stated without an "=" (report standard round, Nov 2026).
+        const steelF = rubberMouldSteelFactor(a.steel), cplxF = rubberComplexityFactor(a.complexity);
+        const tf = activeToolroomFactor(), TF = factorText('toolroom', tf);
+        const perCavUk = C.fixed + Number(fmt(area, 2)) * C.perCm2;
+        const perCav = perCavUk * steelF * cplxF * tf;
+        const parts = [
+          `base: UK ${gbp(rubberMouldBase(a.process))} × ${steelF} steel × ${TF} = ${gbp(est.base)}`,
+          `a cavity: ${gbp(C.fixed)} + ${fmt(area, 2)} cm² × ${gbp(C.perCm2)} = ${gbp(perCavUk, 2)} UK`,
+          `${gbp(perCavUk, 2)} × ${steelF} steel × ${cplxF} ${a.complexity} × ${TF} = ${gbp(perCav, 2)} a cavity`,
+          `${a.cavities} cavit${a.cavities === 1 ? 'y' : 'ies'}: ${gbp(perCav, 2)} × ${a.cavities}^${C.exponent} gives ${gbp(est.cavityBlock)}`,
+          ...(est.inserts ? [`insert nests: ${a.inserts} × UK ${gbp(C.insertNest)} × ${TF} = ${gbp(est.inserts)}`] : []),
+        ];
+        const sum = est.base + est.cavityBlock + est.inserts;
         return decided('rubber.mouldCost', est.total, 'advisor',
-          `${a.cavities}-cavity ${a.process.replace(/_/g, ' ')} tool in ${a.steel}, ${a.complexity}: `
-          + `£${est.base} base (£${rubberMouldBase(a.process).toLocaleString('en-GB')} × ${rubberMouldSteelFactor(a.steel)} steel) `
-          + `+ £${est.cavityBlock} cavities ((£${C.fixed} + ${fmt(area, 1)} cm² × £${C.perCm2}) × ${rubberMouldSteelFactor(a.steel)} steel `
-          + `× ${rubberComplexityFactor(a.complexity)} ${a.complexity} × ${a.cavities}^${C.exponent})`
-          + (est.inserts ? ` + £${est.inserts} insert nests (${a.inserts} × £${C.insertNest})` : '')
-          + ` = £${est.total.toLocaleString('en-GB')} (UK toolroom build-up, engineering-typical, not sourced)`, 0.65);
+          `${a.cavities}-cavity ${a.process.replace(/_/g, ' ')} tool in ${a.steel}, ${a.complexity} — ${parts.join('; ')}; `
+          + (sum === est.total
+            ? `tool: ${gbp(est.base)} + ${gbp(est.cavityBlock)}${est.inserts ? ` + ${gbp(est.inserts)}` : ''} = ${gbp(est.total)}`
+            : `tool ${gbp(est.total)} (the parts summed before rounding)`)
+          + ' (UK toolroom build-up × the country\'s toolroom factor, engineering-typical, not sourced)', 0.65);
       },
     },
     {

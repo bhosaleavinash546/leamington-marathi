@@ -429,8 +429,19 @@ export async function runExtrusionAudit(): Promise<{ checks: Check[]; parts: Rec
       const dieItems = items.filter(i => /die|tool set/i.test(i.label));
       add('tooling items: dies consumed £ (first set + replacements)', s.dieGbp * s.dieSets, dieItems.length ? dieItems.reduce((a, i) => a + i.gbp, 0) : NaN, 'money');
       add('tooling item: first die set £ (up front)', s.dieGbp, dieItems.find(i => i.kind === 'initial')?.gbp ?? NaN, 'money');
+      // Report standard round (Nov 2026): the die basis prints the whole chain, the country's die factor every time
+      // (UK 1.00), and ends on the costed £.
+      const dieLabel = dieItems.find(i => i.kind === 'initial')?.label ?? '';
+      add('die basis prints the die factor (UK 1.00)', 'yes', /× UK die factor 1\.00 = /.test(dieLabel) ? 'yes' : dieLabel.slice(0, 120));
+      add('die basis ends on the die £', 'yes', dieLabel.includes(`→ £${s.dieGbp.toLocaleString('en-GB')}`) ? 'yes' : dieLabel.slice(0, 120));
       parts[part] = { plan: s.plan, dieSets: s.dieSets, dieGbp: s.dieGbp, total: r.total, breakdown: bd };
-    } else parts[part] = { total: r.total, breakdown: bd };
+    } else {
+      // Report standard round (Nov 2026): the die basis is the UK build-up × the country's toolroom factor, printed every time.
+      const b = String((prov['ext-die-cost'] as { basis?: string } | undefined)?.basis ?? '');
+      add('die basis prints the toolroom factor (UK 1.00)', 'yes', /× UK toolroom 1\.00 = /.test(b) ? 'yes' : b.slice(0, 120));
+      add('die basis ends on the die £', 'yes', b.includes(`→ £${(sh.inputs as { dieCost: number }).dieCost.toLocaleString('en-GB')}`) ? 'yes' : b.slice(0, 120));
+      parts[part] = { total: r.total, breakdown: bd };
+    }
   }
   return { checks, parts };
 }

@@ -144,13 +144,15 @@ export function answeredBool(ctx: RuleContext, id: string): boolean | null {
   return d.options.find(o => o.leaning)?.value === 'yes';
 }
 
+/** Tolerance class has no geometric leaning to fall back on. 'standard' is the stated assumption, and it is the one
+ *  that does not silently push a part toward investment casting (tight) or sand (loose). The report prints it as what
+ *  an unanswered class was costed as (decision-used.ts). */
+export const TOLERANCE_CLASS_ASSUMED: ToleranceClass = 'standard';
+
 export function answeredToleranceClass(ctx: RuleContext): ToleranceClass | null {
   const v = ctx.answers[TOLERANCE_CLASS_DECISION_ID];
   if (v === 'loose' || v === 'standard' || v === 'tight') return v;
-  // Tolerance class has no geometric leaning to fall back on. 'standard' is the
-  // stated assumption, and it is the one that does not silently push a part
-  // toward investment casting (tight) or sand (loose).
-  return ctx.assumeLeanings ? 'standard' : null;
+  return ctx.assumeLeanings ? TOLERANCE_CLASS_ASSUMED : null;
 }
 
 /**

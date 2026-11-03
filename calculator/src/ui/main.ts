@@ -215,6 +215,8 @@ import { computeCarbon } from '../engine/carbon.js';
 import { CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../engine/machining-time.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { ruleFieldReport } from '../engine/cost-input-rules/rule-field-report.js';
+import type { RuleReportNotes } from '../engine/cost-input-rules/report-notes.js';
+import { decisionUsedValue } from '../export/decision-used.js';
 import { generateInsights, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
 import { localiseGbpText, reportNoteText } from '../export/money-text.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
@@ -429,9 +431,10 @@ let _cadFillSource: Record<string, string> = {};
 let _cadDecisions: CADDecision[] = [];
 /** Every question asked on this upload, by id — the open list empties as they are answered, but the report must still
  *  say what was asked and answered (the Checks sheet listed none on a costing with six answers). */
-let _cadDecisionsAsked: Record<string, { question: string; severity: string; options?: Array<{ value: string; label: string }> }> = {};
+let _cadDecisionsAsked: Record<string, { question: string; severity: string; options?: Array<{ value: string; label: string; costed?: boolean }> }> = {};
 function rememberDecisions(ds: CADDecision[]): CADDecision[] {
-  for (const d of ds) _cadDecisionsAsked[d.id] = { question: d.question, severity: d.severity, options: d.options.map(o => ({ value: o.value, label: o.label })) };
+  // `costed` rides along: the option an unanswered advisory is costed as (decision-used.ts — the report says so).
+  for (const d of ds) _cadDecisionsAsked[d.id] = { question: d.question, severity: d.severity, options: d.options.map(o => ({ value: o.value, label: o.label, ...(o.costed ? { costed: true } : {}) })) };
   return ds;
 }
 let _cadDecisionAnswers: Record<string, string> = {};
@@ -512,6 +515,9 @@ function _rebuildActiveLibrary(): void {
 let _cadAppliedTo: CommodityType | null = null;
 /** The rules and kernel versions the server reported for this analysis — the reproducibility stamp. */
 let _cadVersions: { rules: number; kernel: string } | null = null;
+/** What the rules say the costing does not price, and a route alert — the CAD response's `reportNotes`, read by the
+ *  core report (the browser never holds a RuleContext; report-notes.ts). */
+let _cadReportNotes: RuleReportNotes | null = null;
 let _breakdownChart: Chart | null = null;
 let _displayCurrency = 'GBP';
 let _displayFxRate = 1.0;
@@ -6022,7 +6028,7 @@ function wireCADEvents(): void {
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null; cadDfmJobId = null; cadGeometricDFM = null; cadMeshFaces = null;
     _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-    _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadAnswersApplied = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
+    _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadAnswersApplied = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null; _cadReportNotes = null;
     unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
@@ -6376,7 +6382,7 @@ function setCADFile(f: File): void {
   setCadQualityBadge(null, null);
   // A new part starts with a clean slate — clear any pins from the previous file.
   _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-  _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadAnswersApplied = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null;
+  _cadDecisions = []; _cadDecisionsAsked = {}; _cadDecisionAnswers = {}; _cadAnswersApplied = {}; _cadRuleFields = {}; _cadAnalysisByRegion = {}; _cadFillsByRegion = {}; _cadFillSource = {}; _cadDiff = null; _cadReportNotes = null;
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
   const cadFileInfo = document.getElementById('cad-file-info');
   if (cadFileInfo) cadFileInfo.style.display = 'flex';
@@ -6568,6 +6574,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     _cadDecisions = rememberDecisions((data as { decisions?: CADDecision[] }).decisions ?? []);
     _cadRuleFields = (data as { ruleFields?: Record<string, CADRuleField> }).ruleFields ?? {};
+    _cadReportNotes = (data as { reportNotes?: RuleReportNotes | null }).reportNotes ?? null;
     _cadAnalysisByRegion = (data as { analysisByRegion?: typeof _cadAnalysisByRegion }).analysisByRegion ?? {};
     _cadDiff = (data as { diff?: CADDiff | null }).diff ?? null;
     cadDfmJobId = (data as { dfmJobId?: string | null }).dfmJobId ?? null;
@@ -7602,6 +7609,7 @@ async function reanalyzeCADOnce(): Promise<boolean> {
     // What the rules could still not settle after the answers were applied.
     _cadDecisions = rememberDecisions(data.decisions ?? []);
     _cadRuleFields = data.ruleFields ?? {};
+    _cadReportNotes = (data as { reportNotes?: RuleReportNotes | null }).reportNotes ?? null;
     // The server re-queues the DFM with the answered material / route: follow the new job (casting 360 review X4).
     const reJob = (data as { dfmJobId?: string | null }).dfmJobId;
     if (reJob && reJob !== cadDfmJobId) { cadDfmJobId = reJob; cadGeometricDFM = null; void pollGeometricDFM(reJob); }
@@ -11274,6 +11282,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
     _cadDecisions = rememberDecisions(data.decisions ?? []);
     _cadRuleFields = data.ruleFields ?? {};
+    _cadReportNotes = (data as { reportNotes?: RuleReportNotes | null }).reportNotes ?? null;
     _cadAnalysisByRegion = (data as { analysisByRegion?: typeof _cadAnalysisByRegion }).analysisByRegion ?? {};
     // This path never asks for a comparison, so any diff on screen is the last
     // part's. Clearing beats leaving it to look current.
@@ -18234,21 +18243,31 @@ function buildChecksApplied(): CADReportMeta['checks'] {
   // An answer prints as the option the engineer chose ("Carbon prepreg, autoclave"), never its value ("prepreg-cf")
   // — the reports printed the internal value (7-country review, 3 Nov 2026).
   const optionLabel = (id: string, v: string | undefined) => (v && asked[id]?.options?.find(o => o.value === v)?.label) || v;
+  const ruleValues = reportRuleValues();
+  // What an unanswered ADVISORY question was costed as — the costed option, the operations, the rule value it governs
+  // (decision-used.ts); the reports printed "the rules' value (see the basis)" (report standard round, Nov 2026).
+  const costedItems = lastInput ? [...lastInput.operations.map(o => o.operationName), ...(lastInput.rawMaterial.consumablesItems ?? []).map(i => i.label)] : [];
+  const usedFor = (id: string, d: { severity: string; options?: Array<{ value: string; label: string; costed?: boolean }> }, answer: string | null | undefined): string | null => {
+    if (answer || d.severity !== 'advisory' || !lastInput) return null;
+    // an unanswered grade question: the grade the costing used (casting 360 X29)
+    if (id === 'material.grade') return library.materials.find(m => m.id === lastInput!.rawMaterial.materialId)?.grade ?? null;
+    return decisionUsedValue({ id, options: d.options }, { costedItems, ruleValues });
+  };
   return {
     costable: !openBlocking && !unacked,
     geometryQuality: cadGeometrySource === 'occt' ? 'occt' : cadGeometrySource === 'stl_parser' ? 'stl' : cadGeometrySource ? 'text' : null,
     sanity: cadSanityWarnings.map(w => ({ ...w, acknowledged: w.blocking ? _cadSanityAcks.has(w.code) : undefined })),
     // a question asked in an earlier round and no longer asked was settled by a later answer (the resin settles the
     // family) — it printed "OPEN" under a "COSTABLE — no blocking decision is open" status (Poland live review)
-    decisions: Object.entries(asked).map(([id, d]) => ({ id, question: d.question, severity: d.severity as CADDecision['severity'],
-      answer: optionLabel(id, _cadDecisionAnswers[id]) ?? (_cadDecisions.some(c => c.id === id) ? null
+    decisions: Object.entries(asked).map(([id, d]) => {
+      const answer = optionLabel(id, _cadDecisionAnswers[id]) ?? (_cadDecisions.some(c => c.id === id) ? null
         : id === 'material.family' && _cadDecisionAnswers['material.resin']
           ? `plastic — settled by the resin answered (${library.materials.find(m => m.id === _cadDecisionAnswers['material.resin'])?.grade ?? _cadDecisionAnswers['material.resin']})`
-          : 'no longer asked — settled by a later answer'),
-      // an unanswered grade question: the grade the costing used (casting 360 X29)
-      used: id === 'material.grade' && lastInput ? (library.materials.find(m => m.id === lastInput!.rawMaterial.materialId)?.grade ?? null) : null })),
+          : 'no longer asked — settled by a later answer');
+      return { id, question: d.question, severity: d.severity as CADDecision['severity'], answer, used: usedFor(id, d, answer), options: d.options };
+    }),
     overrides: _cadRuleOverrides,
-    ruleValues: reportRuleValues(),
+    ruleValues,
   };
 }
 
@@ -18374,6 +18393,8 @@ function buildCadReportMeta(): CADReportMeta {
     featureStock,
     userSpecifiedMaterial: _cadMaterialLocked,
     userSpecifiedProcess: _cadProcessLocked,
+    // the rules' "not costed" items and route alert for THIS CAD part (the core report checks the commodity too)
+    reportNotes: dfmBelongsToCosting() ? _cadReportNotes : null,
   };
 }
 

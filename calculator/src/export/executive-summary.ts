@@ -29,12 +29,14 @@ import { labourRoleLabel } from '../engine/labour-roles.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { routeRowLabel, routeReferenceRow, type RouteComparisonExport } from '../ui/cad-workspace.js';
 import { decisionAnswerLabel, decisionAnswerText } from './decision-text.js';
+import { decisionUsedValue, type DecisionForUsed, type DecisionUsedFacts } from './decision-used.js';
 import { reportNoteText } from './money-text.js';
 import { reportStandardFor, dfmRuleApplies, type NotIncludedItem } from './report-standard.js';
 import { toolingSplit as engineToolingSplit } from '../engine/tooling-split.js';
 import { normaliseSeverity, SEVERITY_LABEL, SEVERITY_RANK } from '../engine/dfm-geometry/types.js';
 import { serviceNotCosted } from '../engine/cost-input-rules/derive/service-questions.js';
-import { compositesNotCosted, compositesAlert, compositesRouteAlert } from '../engine/cost-input-rules/commodities/composites.js';
+import { compositesRouteAlert } from '../engine/cost-input-rules/commodities/composites.js';
+import { ruleReportNotes, type RuleReportNotes } from '../engine/cost-input-rules/report-notes.js';
 import type { RuleContext } from '../engine/cost-input-rules/types.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 
@@ -81,7 +83,9 @@ export interface ExecutiveSummaryArgs {
   region?: ManufacturingRegion | string | null;
   band?: { p10: number; p90: number; plusMinusPct: number } | null;
   stamp?: string | null;
-  decisions?: ReadonlyArray<{ id?: string; question: string; severity: string; answer: string | null; used?: string | null }> | null;
+  decisions?: ReadonlyArray<{ id?: string; question: string; severity: string; answer: string | null; used?: string | null; options?: DecisionForUsed['options'] }> | null;
+  /** The rule values on the form — what an unanswered advisory question was costed as is read from them (decision-used.ts). */
+  ruleValues?: DecisionUsedFacts['ruleValues'] | null;
   volumeProvided?: boolean;
   pkgLogisticsEstimated?: boolean;
 }
@@ -157,9 +161,11 @@ export function buildExecutiveSummary(a: ExecutiveSummaryArgs): ExecutiveSummary
 
   // What to confirm: open or defaulted questions, Low-graded rates, and the standing statement on accuracy.
   const toConfirm: string[] = [];
+  const costedItems = [...input.operations.map(o => o.operationName), ...(input.rawMaterial.consumablesItems ?? []).map(i => i.label)];
   for (const d of a.decisions ?? []) {
     if (d.answer == null || d.answer === '') {
-      toConfirm.push(d.severity === 'blocking' ? `OPEN — ${d.question}` : `${d.question} — not answered${d.used ? `; costed as ${d.used}` : '; the rules\' value is used'}`);
+      const used = d.severity === 'blocking' ? null : decisionUsedValue({ ...d, id: d.id ?? '' }, { costedItems, ruleValues: a.ruleValues ?? [] });
+      toConfirm.push(d.severity === 'blocking' ? `OPEN — ${d.question}` : `${d.question} — not answered${used ? `; costed as ${used}` : '; the rules\' value is used'}`);
     }
   }
   if (why.low > 0) toConfirm.push(`${why.low} rate${why.low === 1 ? ' is' : 's are'} graded Low confidence — each is listed with how to close it (Inputs to Confirm).`);
@@ -248,12 +254,18 @@ export interface CoreReportMeta {
   geometricDFMPending?: boolean;
   annualVolume?: number | null;
   checks?: {
-    decisions: Array<{ id: string; question: string; severity: 'blocking' | 'advisory'; answer: string | null; used?: string | null }>;
+    decisions: Array<{ id: string; question: string; severity: 'blocking' | 'advisory'; answer: string | null; used?: string | null;
+      /** The question's options: the one marked `costed` is what an unanswered advisory was costed as. */
+      options?: DecisionForUsed['options'] }>;
     ruleValues?: Array<{ label: string; value: string; ruleValue?: string; basis: string; source?: string; edited?: boolean; fieldId?: string }>;
   } | null;
   /** The rules' context of the costing (geometry, answers, volume), when the caller has it: a commodity's own "not
    *  costed" list and route alert are read from it (composites: `compositesNotCosted` / `compositesAlert`). */
   ruleContext?: RuleContext | null;
+  /** The same notes as the server read them off its rule context (the CAD response's `reportNotes`) — what the browser
+   *  has, since it never holds a RuleContext. Used when `ruleContext` is absent, and only for the commodity they were
+   *  made for. */
+  reportNotes?: RuleReportNotes | null;
 }
 
 export interface CoreReportArgs {
@@ -726,33 +738,10 @@ export function paramDisplay(label: string, value: string): string {
 }
 
 /** What the costing did for an unanswered advisory question — the reader is told, not sent to "the basis". */
-function usedFor(d: { id: string; used?: string | null }, input: UniversalStackInput, rvs: NonNullable<NonNullable<CoreReportMeta['checks']>['ruleValues']>): string | null {
-  if (d.used) return d.used;
-  const ops = input.operations.map(o => o.operationName);
-  const cons = (input.rawMaterial.consumablesItems ?? []).map(i => i.label);
-  const find = (re: RegExp) => [...ops, ...cons].find(t => re.test(t));
-  const head = (s: string) => reportNoteText(s.split(/ — |; /)[0]).trim();
-  const ruleBy = (re: RegExp) => rvs.find(r => re.test(r.fieldId ?? ''));
-  switch (d.id) {
-    case 'service.finish': {
-      const f = find(/coat|paint|powder|anodis|plat|e-?coat|galvan|phosphat|zinc/i);
-      return f ? `${shortOperationName(f)} (in the price)` : 'a bare part (no coating or surface treatment in the price)';
-    }
-    case 'service.pressureTight': {
-      const f = find(/leak|pressure test|pressure-decay|impregnat/i);
-      return f ? `${shortOperationName(f)} (in the price)` : 'not leak-tight (no leak or pressure test in the price)';
-    }
-    case 'service.safetyCritical': {
-      const f = find(/\bndt\b|\bmpi\b|magnetic|x-?ray|crack/i);
-      return f ? `not safety-critical; ${shortOperationName(f)} is in the price` : 'not safety-critical (no special-characteristic checks in the price)';
-    }
-    default: {
-      const map: Record<string, RegExp> = { 'al.route': /^alx-route$/, 'al.temper': /^alx-temper$/, 'al.finish': /^alx-finish$/, 'al.bends': /^alx-bends$/,
-        'gear.hardeningRoute': /^gear-caseh$/ };
-      const r = map[d.id] ? ruleBy(map[d.id]) : undefined;
-      return r ? (r.basis ? head(r.basis) : String(r.value)) : null;
-    }
-  }
+function usedFor(d: DecisionForUsed, input: UniversalStackInput, rvs: NonNullable<NonNullable<CoreReportMeta['checks']>['ruleValues']>): string | null {
+  // ONE resolver with the screen's checks (decision-used.ts): what the costing holds for an unanswered advisory.
+  const costedItems = [...input.operations.map(o => o.operationName), ...(input.rawMaterial.consumablesItems ?? []).map(i => i.label)];
+  return decisionUsedValue(d, { costedItems, ruleValues: rvs });
 }
 
 /** Machining inside a cast + machine or forge + machine costing: the machine is a cutting machine, or a bench deburr / gauge. */
@@ -899,11 +888,15 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
           + (annual ? ` — ${MW(Math.abs(row.deltaGbp * annual))} a year less` : '') + '. Both are re-costs of the same part in the same material (Alternatives; an alert at 20 % or more cheaper).'] });
     }
   }
+  // The commodity's own notes from its rules: read off the rule context when the caller has one (headless), else the
+  // CAD response's copy (the app) — one function makes both (report-notes.ts).
+  const notes = meta.ruleContext ? ruleReportNotes(commodity, meta.ruleContext)
+    : meta.reportNotes && meta.reportNotes.commodity === commodity ? meta.reportNotes : null;
   // The commodity's own route alert (composites: prepreg in an autoclave above 25,000 a year — an industry quote).
   if (commodity === 'composites') {
     let text: string | null = null;
     try {
-      if (meta.ruleContext) text = compositesAlert(meta.ruleContext);
+      if (notes) text = notes.alert;
       else {
         const proc = rvs.find(r => /(^|\s)comp-process$/.test(r.fieldId ?? ''))?.value as CompositeProcess | undefined;
         const cure = input.operations.find(o => /autoclave|oven|cure/i.test(`${o.machineId} ${o.operationName}`))?.machineId ?? '';
@@ -911,6 +904,8 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
       }
     } catch { /* no alert */ }
     if (text) alerts.push({ kind: 'route', title: 'The costed route does not suit this volume: prepreg cured in an autoclave', lines: [text.replace(/^ROUTE ALERT \(industry quote\): /, '').replace(/ROUTE ALERT \(industry quote\): /, '(industry quote) ')] });
+  } else if (notes?.alert) {
+    alerts.push({ kind: 'route', title: 'The costed route does not suit this volume', lines: [notes.alert] });
   }
   if (meta.featureLinesInCost && meta.featureLines?.length) {
     const turned = (l: FeatureMachiningLine) => !!meta.featureTurningOp && (l.kind === 'boss' || /turn/i.test(l.operation));
@@ -931,9 +926,7 @@ export function buildCoreReport(a: CoreReportArgs): CoreReport {
     fromAnswers = serviceNotCosted(String(commodity ?? ''), answers, { heavyAlloyCasting: /iron|steel|copper|bronze|brass|nickel/i.test(matCat) })
       .map(n => `${n.item} — ${n.reason}`);
   } catch { /* no service questions for this commodity */ }
-  if (commodity === 'composites' && meta.ruleContext) {
-    try { fromAnswers = [...fromAnswers, ...compositesNotCosted(meta.ruleContext).map(n => `${n.item} — ${n.reason}`)]; } catch { /* laminate unanswered */ }
-  }
+  if (notes) fromAnswers = [...fromAnswers, ...notes.notCosted.map(n => `${n.item} — ${n.reason}`)];
   const answeredAway = (i: NotIncludedItem) => !!i.unlessAnswered && i.unlessAnswered.answer.test(String(answers[i.unlessAnswered.id] ?? ''));
   const notIncluded = [
     ...fromAnswers,

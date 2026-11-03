@@ -30,7 +30,7 @@ import {
   formingPressureBar, thermoformFamilyData, TF_TOOL_COOL_MULT, MOULD_RATE,
   type ThermoformMethod, type FormComplexity, type MouldMaterial,
 } from '../../modules/thermoforming-advisor.js';
-import { activeToolroomFactor } from '../../rate-context.js';
+import { activeToolroomFactor, factorText } from '../../rate-context.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { resinFacts, type ResinFacts } from '../derive/resin.js';
 import { bboxSortedMm, planAreaCm2 } from '../derive/envelope.js';
@@ -362,18 +362,32 @@ export const THERMOFORMING_RULES: CommodityRuleSpec = {
       const cavMult = 1 + (a.perSheet - 1) * 0.7;
       const value = Math.round(est.total * sets);
       return { value, source: 'advisor', confidence: 0.65,
-        basis: `${a.perSheet}-up ${a.mouldMaterial} ${a.method} tool over ${a.areaCm2.toFixed(1)} cm², ${a.complexity} form: `
-          + `(£${r.base.toLocaleString('en-GB')} + ${a.areaCm2.toFixed(1)} cm² × £${r.perCm2}/cm²) × ${cx} ${a.complexity}`
-          + (methodMult !== 1 ? ` × ${methodMult} ${a.method}` : '')
-          + (a.perSheet > 1 ? ` × ${cavMult.toFixed(1)} for ${a.perSheet} up (each further cavity +70%)` : '')
-          + ` = £${est.mould.toLocaleString('en-GB')} mould`
-          + (est.vacuumHoles > 0 ? ` + ${a.areaCm2.toFixed(1)} cm² × £0.25 × ${a.perSheet} = £${est.vacuumHoles.toLocaleString('en-GB')} vacuum holes` : '')
-          + (est.trim > 0 ? ` + £${est.trim.toLocaleString('en-GB')} trim tool` : '')
-          + (Math.abs(activeToolroomFactor() - 1) > 1e-9 ? ` (each × toolroom factor ${activeToolroomFactor().toFixed(3)})` : '')
-          + ` = £${est.total.toLocaleString('en-GB')}; ${est.lifeCycles.toLocaleString('en-GB')} cycle life against `
-          + `${Math.round(cycles).toLocaleString('en-GB')} cycles amortised`
-          + (sets > 1 ? ` = ${sets.toFixed(2)} tool sets → £${value.toLocaleString('en-GB')}` : ' — one tool lasts')
-          + ' (build rates and life engineering-typical, not sourced)' };
+        // The UK build-up, then the country's toolroom factor on the sum — printed every time (the parts printed country £
+        // beside UK arithmetic, the factor in a bracket only off the UK; report standard round, Nov 2026).
+        basis: (() => {
+          const tf = activeToolroomFactor();
+          const money = (n: number, dp = 0) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+          const area = a.areaCm2.toFixed(1);
+          const mouldUk = Math.round((r.base + Number(area) * r.perCm2) * cx * methodMult * cavMult * 100) / 100;
+          const vac = a.method === 'pressure' ? 0 : Math.round(Number(area) * 0.25 * a.perSheet);
+          const trimUk = a.routerTrim ? 0 : Math.round(800 + Number(area) * 0.4 * a.perSheet);   // the advisor's steel-rule die
+          const uk = Math.round((mouldUk + vac + trimUk) * 100) / 100;
+          return `${a.perSheet}-up ${a.mouldMaterial} ${a.method} tool over ${area} cm², ${a.complexity} form, UK: `
+            + `mould: ${money(r.base)} + ${area} cm² × ${money(r.perCm2, 2)}/cm² = ${money(r.base + Number(area) * r.perCm2, 2)}; `
+            + `${money(r.base + Number(area) * r.perCm2, 2)} × ${cx} ${a.complexity}`
+            + (methodMult !== 1 ? ` × ${methodMult} ${a.method}` : '')
+            + (a.perSheet > 1 ? ` × ${cavMult.toFixed(1)} for the cavities` : '')
+            + ` = ${money(mouldUk, 2)}`
+            + (a.perSheet > 1 ? ` (${a.perSheet} up, each further cavity +70%)` : '')
+            + (vac > 0 ? `; vacuum holes: ${area} cm² × £0.25 × ${a.perSheet} = ${money(vac)}` : '')
+            + (trimUk > 0 ? `; steel-rule trim die: £800 + ${area} cm² × £0.40 × ${a.perSheet} = ${money(trimUk)}` : '')
+            + `; tool: ${money(mouldUk, 2)}${vac > 0 ? ` + ${money(vac)}` : ''}${trimUk > 0 ? ` + ${money(trimUk)}` : ''} = ${money(uk, 2)} UK; `
+            + `${money(uk, 2)} × ${factorText('toolroom', tf)} = ${money(Math.round(uk * tf * 100) / 100, 2)} → ${money(est.total)}; `
+            + `${est.lifeCycles.toLocaleString('en-GB')} cycle life against `
+            + `${Math.round(cycles).toLocaleString('en-GB')} cycles amortised`
+            + (sets > 1 ? ` = ${sets.toFixed(2)} tool sets → £${value.toLocaleString('en-GB')}` : ' — one tool lasts')
+            + ' (build rates and life engineering-typical, not sourced)';
+        })() };
     }),
     // Display: the module derives the specific energy itself from family and method.
     fromAdvice('thermoforming.energyKwhPerKg', undefined, 'energyKwhPerKg', a => ({

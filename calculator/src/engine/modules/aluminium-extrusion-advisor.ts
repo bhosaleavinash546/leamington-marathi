@@ -26,7 +26,8 @@
  * Every constant is in al-extrusion-data.ts with its basis. Nothing here sets a
  * price: it decides quantities the cost module multiplies by library rates.
  */
-import { countryFactor, countryNote, type CountryBasis } from '../regional-services.js';
+import { countryFactor, inCountry, type CountryBasis } from '../regional-services.js';
+import { factorText } from '../rate-context.js';
 
 /** An extrusion / impact die or bend tool: ~20% H13 steel (traded), the rest die-shop labour and machining. ESTIMATE split. */
 export const AL_TOOL_BASIS: CountryBasis = { globalShare: 0.2, rest: 'toolroom' };
@@ -149,16 +150,40 @@ export function dieCost(type: AlDieType, ccdMm: number, holes: number, s: AlSect
   // UK die-maker prices; in the costed country the die shop's labour and machining move
   // with its toolroom economics, the H13 steel (~20%) is traded (regional-services.ts).
   const cf = countryFactor(AL_TOOL_BASIS);
-  let gbp = (d.baseGbp + d.perMmGbp * ccdMm) * (1 + 0.45 * (holes - 1)) * cf;
-  const notes = [`£${d.baseGbp} + £${d.perMmGbp}/mm × ${ccdMm.toFixed(0)} mm circle (UK)${countryNote(AL_TOOL_BASIS)}`];
-  if (holes > 1) notes.push(`× ${(1 + 0.45 * (holes - 1)).toFixed(2)} for ${holes} openings (+45% an opening)`);
-  if (s.voids > 2) { gbp *= 1.3; notes.push('×1.3 multi-void'); }
+  const open = 1 + 0.45 * (holes - 1);
+  let gbp = (d.baseGbp + d.perMmGbp * ccdMm) * open * cf;
+  const mults: string[] = [];
+  let m = open;
+  if (holes > 1) mults.push(`× ${open.toFixed(2)} for the openings`);
+  if (s.voids > 2) { gbp *= 1.3; m *= 1.3; mults.push('× 1.3 multi-void'); }
   const intricacy = s.perimeterMm * Math.max(0.5, s.minWallMm) / (2 * s.areaMm2);
-  if (intricacy > 1.3) { gbp *= 1.3; notes.push('×1.3 intricate outline'); }
-  return { gbp: Math.round(gbp), lifeKg: d.lifeT * 1000, basis: `${d.label}: ${notes.join(' ')} = £${Math.round(gbp).toLocaleString('en-GB')} a die — ESTIMATE `
+  if (intricacy > 1.3) { gbp *= 1.3; m *= 1.3; mults.push('× 1.3 intricate outline'); }
+  return { gbp: Math.round(gbp), lifeKg: d.lifeT * 1000, basis: `${d.label}: ${alToolChain(d.baseGbp, d.perMmGbp, ccdMm, 'circle', m, mults, cf, Math.round(gbp))} a die`
+    + ` (${holes > 1 ? `${holes} openings at +45% an opening; ` : ''}${AL_DIE_FACTOR_NOTE}) — ESTIMATE `
     + `(European die-maker figures above the published Asian $300–10,000; the opening / void / intricacy multipliers engineering-typical); `
-    + `life ${d.lifeT} t (H13 30–80 t published), nitrided every ${AL_DIE_NITRIDE.everyT} t at £${AL_DIE_NITRIDE.gbp}` };
+    // the nitride is a heat-treat service in the costed country (aluminium-extrusion.ts inCountry): its factor printed
+    + `life ${d.lifeT} t (H13 30–80 t published), nitrided every ${AL_DIE_NITRIDE.everyT} t at UK £${AL_DIE_NITRIDE.gbp} × `
+    + `${factorText('heat-treat', countryFactor('heatTreat'))} = £${inCountry(AL_DIE_NITRIDE.gbp, 'heatTreat').toFixed(2)}` };
 }
+
+/**
+ * A UK-basis tool price taken to the costed country, the whole chain printed (report standard round, Nov 2026 — the die
+ * factor was printed only off the UK, after a bracket that kept basis-check.py from evaluating it): "UK £2,200 + £34/mm
+ * × 183.457 mm circle = £8,437.54; £8,437.54 × 1.45 for the openings × China die factor 0.5734 = £7,015.38 → £7,015".
+ * Each "=" is the arithmetic of the figures as printed; "→" is the costed £ (the same chain unrounded, rounded once).
+ * The die factor is 20 % traded H13 steel + 80 % the country's toolroom (AL_TOOL_BASIS).
+ */
+export function alToolChain(baseGbp: number, perMmGbp: number, mm: number, what: string, mult: number, mults: string[], cf: number, gbp: number): string {
+  const money = (n: number, dp = 0) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+  const mm3 = Number(mm.toFixed(3));
+  const uk = Math.round((baseGbp + perMmGbp * mm3) * 100) / 100;
+  const here = Math.round(uk * mult * cf * 100) / 100;
+  return `UK ${money(baseGbp)} + ${money(perMmGbp)}/mm × ${mm3} mm ${what} = ${money(uk, 2)}; `
+    + `${money(uk, 2)} ${mults.length ? `${mults.join(' ')} ` : ''}× ${factorText('die factor', cf)} = ${money(here, 2)} → ${money(gbp)}`;
+}
+
+/** What the die factor is, printed once beside a chain. */
+export const AL_DIE_FACTOR_NOTE = "die factor: 20% traded H13 steel + 80% the country's toolroom";
 
 /** The full press plan for a profile. */
 export function planAlExtrusion(inp: AlPlanInput): AlPressPlan {
@@ -307,11 +332,13 @@ export function planConform(s: AlSection, alloy: AlAlloy): { feasible: boolean; 
 }
 
 /** Impact extrusion of a cup: slug, strokes, tool. */
-export function planImpact(partKg: number, outerDiaMm: number): { slugKg: number; secPerPart: number; toolGbp: number; toolLifeHits: number; basis: string } {
+export function planImpact(partKg: number, outerDiaMm: number): { slugKg: number; secPerPart: number; toolGbp: number; toolLifeHits: number; toolBasis: string; basis: string } {
   const slugKg = partKg * (1 + AL_IMPACT.trimAllowance);
   return {
     slugKg, secPerPart: 60 / AL_IMPACT.strokesPerMin,
     toolGbp: Math.round((AL_IMPACT.toolBaseGbp + AL_IMPACT.toolPerMmGbp * outerDiaMm) * countryFactor(AL_TOOL_BASIS)), toolLifeHits: AL_IMPACT.toolLifeHits,
+    toolBasis: alToolChain(AL_IMPACT.toolBaseGbp, AL_IMPACT.toolPerMmGbp, outerDiaMm, 'cup outside Ø', 1, [], countryFactor(AL_TOOL_BASIS),
+      Math.round((AL_IMPACT.toolBaseGbp + AL_IMPACT.toolPerMmGbp * outerDiaMm) * countryFactor(AL_TOOL_BASIS))),
     basis: `slug ${slugKg.toFixed(3)} kg (+${AL_IMPACT.trimAllowance * 100}% trim), ${AL_IMPACT.strokesPerMin} strokes/min`,
   };
 }

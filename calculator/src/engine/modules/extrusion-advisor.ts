@@ -1,4 +1,4 @@
-import { activeToolroomFactor } from '../rate-context.js';
+import { activeToolroomFactor, factorText } from '../rate-context.js';
 import type { DFMSeverity, DFMCategory } from '../dfm-dfa.js';
 
 /**
@@ -168,7 +168,13 @@ function dieRates(p: ExtrusionProcess): { base: number; perMm: number; calBase: 
   }
 }
 
-/** The die arithmetic in words: "(£4,000 + 32 mm × £22) × 0.75 simple + calibration £3,000 + 32 mm × £30". */
+/**
+ * The die arithmetic in words, UK build-up then the country's toolroom factor — printed every time (report standard
+ * round, Nov 2026: it printed the UK arithmetic beside the country's £ and the factor only off the UK):
+ * "die: £4,000 + 32 mm × £22 = £4,704; £4,704 × 0.75 simple = £3,528.00; calibration: £3,000 + 32 mm × £30 = £3,960;
+ * set: £3,528.00 + £3,960 = £7,488.00 UK; £7,488.00 × China toolroom 0.3416 = £2,557.90 → £2,558".
+ * Every "=" holds on the printed figures (basis-check.py); "→" is the costed £ (`estimateExtrusionDieCost`).
+ */
 export function extrusionDieBasis(inp: ExtrusionDieInputs): string {
   const size = Math.max(2, inp.sizeMm ?? 50);
   const r = dieRates(inp.process);
@@ -176,8 +182,17 @@ export function extrusionDieBasis(inp: ExtrusionDieInputs): string {
   const cx = cxName === 'complex' ? 1.5 : cxName === 'simple' ? 0.75 : 1.0;
   const layers = Math.max(1, Math.floor(inp.layers ?? 1));
   const tf = activeToolroomFactor();
-  return `(£${r.base.toLocaleString('en-GB')} + ${size} mm × £${r.perMm}) × ${cx} ${cxName} + calibration £${r.calBase.toLocaleString('en-GB')} + ${size} mm × £${r.calPerMm}`
-    + (layers > 1 ? ` + ${layers - 1} co-ex layer${layers > 2 ? 's' : ''} × £3,500` : '') + (tf !== 1 ? `, × ${tf.toFixed(3)} toolroom factor` : '');
+  const money = (n: number, dp = 0) => `£${n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  const dieUk = r.base + size * r.perMm, die = r2(dieUk * cx);
+  const cal = r.calBase + size * r.calPerMm;
+  const layerUk = (layers - 1) * 3500;
+  const uk = r2(die + cal + layerUk);
+  return `die: ${money(r.base)} + ${size} mm × ${money(r.perMm)} = ${money(dieUk)}; ${money(dieUk)} × ${cx} ${cxName} = ${money(die, 2)}; `
+    + `calibration: ${money(r.calBase)} + ${size} mm × ${money(r.calPerMm)} = ${money(cal)}; `
+    + (layerUk ? `co-ex: ${layers - 1} × £3,500 = ${money(layerUk)}; ` : '')
+    + `set: ${money(die, 2)} + ${money(cal)}${layerUk ? ` + ${money(layerUk)}` : ''} = ${money(uk, 2)} UK; `
+    + `${money(uk, 2)} × ${factorText('toolroom', tf)} = ${money(r2(uk * tf), 2)} → ${money(estimateExtrusionDieCost(inp).total)}`;
 }
 
 /** Estimate an extrusion die + calibration/sizing tool set (£) from process, size and layers. */

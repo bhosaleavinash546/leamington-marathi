@@ -66,3 +66,19 @@ export function activeLabourRate(id: string): number {
 export function activeToolroomFactor(): number {
   return activeRates().regional?.toolroomFactor ?? 1;
 }
+
+/** The active book's country name for a basis line ("China"), "UK" for the UK book or one that names no country. */
+export function activeCountryName(): string {
+  const r = activeRates().regional;
+  return r && r.code !== 'UK' ? (r.name || r.code) : 'UK';
+}
+
+/**
+ * A country factor as a basis line prints it, ALWAYS — "China toolroom 0.3417", "UK toolroom 1.00" (report standard
+ * round, Nov 2026: tool prices printed "£6,000 × 1 steel" beside £2,050 — the toolroom factor applied silently). It sits
+ * inside a chain with no bracket between it and the "=", so `scripts/arith-audit/basis-check.py` evaluates the chain.
+ */
+export function factorText(kind: string, factor: number): string {
+  const name = activeCountryName();
+  return `${name} ${kind} ${factor === 1 ? '1.00' : String(factor)}`;
+}

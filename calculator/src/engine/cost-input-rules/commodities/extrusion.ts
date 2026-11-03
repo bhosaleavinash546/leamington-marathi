@@ -258,8 +258,9 @@ export const EXTRUSION_RULES: CommodityRuleSpec = {
       value: a.complexity, source: 'rule', confidence: 0.6, basis: a.processBasis })),
     fromAdvice('extrusion.dieCostGBP', 'ext-die-cost', 'dieCostGBP', a => ({
       value: a.die.total, source: 'advisor', confidence: 0.6,
-      basis: `${a.process} die £${a.die.die.toLocaleString('en-GB')} + calibration £${a.die.calibration.toLocaleString('en-GB')} `
-        + `at ${a.dieSizeMm} mm, ${a.complexity} (${extrusionDieBasis({ process: a.process, sizeMm: a.dieSizeMm, layers: 1, complexity: a.complexity })}) — `
+      // UK build-up, then the country's toolroom factor on the set — every time (report standard round, Nov 2026)
+      basis: `${a.process} die + calibration at ${a.dieSizeMm} mm, ${a.complexity} — `
+        + `${extrusionDieBasis({ process: a.process, sizeMm: a.dieSizeMm, layers: 1, complexity: a.complexity })} — `
         + `parametric die-maker figures, engineering-typical, not sourced` })),
     // No tariff rule: the line's kWh go to the engine, which prices them at the
     // costing country's tariff (module-energy.ts). Copying the tariff into the
