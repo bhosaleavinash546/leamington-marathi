@@ -177,7 +177,9 @@ describe('10. the hub flange reconciles by hand', () => {
   // uplift on heating, descale and NDT; the lathe chuckings are soft jaws, not £2,500 fixtures: £17.40 → £17.11.
   // Report standard round (3 Nov 2026): the lathe and drill times on published cutting data (lathe 7.8 → 1.5 min; the six
   // Ø14 clearance holes at the MVE n·f, no material factor on the allowances): £17.11 → £11.72.
-  it('£11.72 at 50,000/yr', () => {
-    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(11.72);
+  // Secondary-machining parity (Nov 2026): the near-net plan of cast + machine — outside and faces turned in a lathe
+  // fixture, holes and bore on the 5-axis in one fixturing, deburr, turning stock forged on — £11.72 → £13.00.
+  it('£13.00 at 50,000/yr', () => {
+    expect(baseline.find(b => b.part === 'FORGE_Hub_Flange.stp')!.outcome.total).toBe(13);
   });
 });
