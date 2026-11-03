@@ -76,24 +76,30 @@ describe('packaging & logistics levers', () => {
 // ─── Process levers ──────────────────────────────────────────────────────────
 
 describe('process levers', () => {
-  it('multi-cavity fires for single-cavity moulding, never for machining, never when already multi-cavity', () => {
-    const im = run(result(), input([op('Injection Moulding')]), 'injection_moulding');
+  // Report-standard review (3 Nov 2026): multi-cavity acts on the forming operation only, and only on the step the rules'
+  // own cavitation sizing gives (ctx.cavitation) — the operation list alone cannot say whether one more cavity fits.
+  const step = { current: 1, next: 2, formingToolGBP: { current: 20_000, next: 34_000 }, basis: 'the rules\' sizing' };
+  it('multi-cavity fires only with the rules\' step, on a forming operation — never for machining, never without the step', () => {
+    expect(run(result(), input([op('Injection Moulding')]), 'injection_moulding').costOptimisations
+      .some(o => o.title.includes('Multi-Cavity'))).toBe(false);
+    const im = run(result(), input([op('Injection Moulding')]), 'injection_moulding', { cavitation: step });
     expect(im.costOptimisations.some(o => o.title.includes('Multi-Cavity'))).toBe(true);
-    const mach = run(result(), input([op('Milling')]), 'machining');
+    const mach = run(result(), input([op('Milling')]), 'machining', { cavitation: step });
     expect(mach.costOptimisations.some(o => o.title.includes('Multi-Cavity'))).toBe(false);
-    const twoCav = run(result(), input([op('Injection Moulding', { partsPerCycle: 2 })]), 'injection_moulding');
-    expect(twoCav.costOptimisations.some(o => o.title.includes('Multi-Cavity'))).toBe(false);
+    const full = run(result(), input([op('Injection Moulding', { partsPerCycle: 2 })]), 'injection_moulding',
+      { cavitation: { ...step, current: 2, next: null } });
+    expect(full.costOptimisations.some(o => o.title.includes('Multi-Cavity'))).toBe(false);
   });
 
   it('multi-cavity on an assumed volume becomes confirm-first', () => {
-    const r = run(result(), input([op('Injection Moulding')]), 'injection_moulding', { volumeProvided: false });
+    const r = run(result(), input([op('Injection Moulding')]), 'injection_moulding', { volumeProvided: false, cavitation: step });
     const lev = r.costOptimisations.find(o => o.title.includes('Multi-Cavity'));
     expect(lev!.title).toContain('Confirm the Annual Volume');
   });
 
-  it('lights-out running fires on machine-paced machining with healthy OEE and real labour', () => {
+  it('no lights-out lever — no automation or gauging capex is held to charge against it', () => {
     const r = run(result({ labour: 18 }), input([op('CNC Milling')]), 'machining');
-    expect(r.costOptimisations.some(o => o.title.includes('Lights-Out'))).toBe(true);
+    expect(r.costOptimisations.some(o => /Lights-Out|Unmanned/.test(o.title))).toBe(false);
   });
 
   it('the bottleneck rule names the dominant operation', () => {

@@ -62,6 +62,38 @@ export interface SuggestionContext {
    * saving are dropped rather than shown with a percentage.
    */
   library?: import('./types.js').RateLibrary;
+  /**
+   * The part was answered SAFETY-CRITICAL (`service.safetyCritical` = yes). No lever that takes people off a check of a
+   * special characteristic is offered then — skip-lot / right-sized inspection, unattended running (quality review
+   * row 1, Nov 2026).
+   */
+  safetyCritical?: boolean;
+  /**
+   * The rules' own cavitation step for the FORMING operation — the only basis on which a multi-cavity / multi-up lever is
+   * re-costed (idea-levers.ts). Absent: no multi-cavity lever (the rules already chose the cavities by cost, fit or
+   * machine, and the operation list alone cannot say whether one more fits).
+   */
+  cavitation?: FormingCavityStep;
+}
+
+/** The forming operation's cavity / impression step, as the commodity's rules size it (see SuggestionContext.cavitation). */
+export interface FormingCavityStep {
+  /** The forming operation's name in the operation list (default: the first forming operation found by name). */
+  operationName?: string;
+  /** Cavities / impressions / parts per cycle the costing runs. */
+  current: number;
+  /** The next count the rules' own sizing allows (fits the flask / platen / window, a press in the ladder); null = none. */
+  next: number | null;
+  /** 'cavities' (default), 'impressions', 'parts a sheet' … */
+  unit?: string;
+  /** The forming machine for `next` — REQUIRED where the machine is sized by its cavities (IM, blow, rubber, die casting). */
+  machineIdForNext?: string;
+  /** The forming operation's cycle time at `next`, h, in the operation's own convention, when it differs. */
+  cycleTimeHrForNext?: number;
+  /** The forming tooling £ the costing carries (every set / replacement) at `current` and at `next`, from the rules. */
+  formingToolGBP: { current: number; next: number };
+  /** Where the step comes from — printed on the lever's basis (e.g. "5 impressions fit the 500 × 400 mm flask"). */
+  basis: string;
 }
 
 // ─── Reference bands by commodity — engineering estimates, NOT a sourced survey ────────────────────────────────
@@ -682,7 +714,8 @@ export function generateInsights(
       actions: [
         'Work with die designer to optimise runner/gate geometry and reduce pour weight',
         'Consider vacuum-assisted HPDC (vacural) to allow thinner gates and reduce gating volume',
-        'Evaluate multi-cavity tooling — more parts per shot reduces gate-to-part ratio',
+        // No "evaluate multi-cavity tooling": the casting rules already put every impression the flask / die holds on the
+        // pattern (report-standard review, Nov 2026 — the bracket's pattern was 4-up).
         'Review scrap alloy buy-back rate — negotiate higher recovery price for clean alloy returns',
         `Re-cost at a ${benchmarkUtil}% yield to see what the gating is worth on this part`,
       ],

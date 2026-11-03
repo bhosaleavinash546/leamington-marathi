@@ -19,7 +19,7 @@ import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../src/engine/rate-
 import { costMeasuredPart, regionalBook } from '../server/services/bulk-run.js';
 import { generateDFMDFA } from '../src/engine/dfm-dfa.js';
 import { generateInsights, realMachiningStations } from '../src/engine/insights.js';
-import { machinePacedCut, generateIdeaLevers } from '../src/engine/idea-levers.js';
+import { generateIdeaLevers } from '../src/engine/idea-levers.js';
 import {
   machiningRoutingVerdict, utilisationReference, toolingBoughtByLife, remeltableAlloy,
 } from '../src/engine/suggestion-facts.js';
@@ -67,34 +67,14 @@ beforeAll(async () => {
 
 // ─── H4 ──────────────────────────────────────────────────────────────────────
 
-describe('H4 — lights-out acts on the cutting operations only', () => {
-  it('the sand moulding line, its crew, the melt shop, fettling, set-up, loading and bench are not machine-paced cuts', () => {
-    const ops = stubUK.input.operations;
-    const cut = ops.filter(machinePacedCut).map(o => o.operationName);
-    expect(cut.some(n => /moulding/i.test(n))).toBe(false);
-    expect(cut.some(n => /melt|fettl|set-?up|load|pallet change|deburr/i.test(n))).toBe(false);
-    expect(cut.some(n => /^Finish machining/.test(n))).toBe(true);
-    expect(cut.some(n => /^Drilling/.test(n))).toBe(true);
-    expect(cut.some(n => /^Turning/.test(n))).toBe(true);
-  });
-
-  it('the re-costed £ is the stack re-run with manning ×0.6 on the cutting ops alone — not with the moulding crew', () => {
-    const { input, result, lib, dfm } = stubUK;
-    const lever = dfm.costOptimisations.find(o => o.title === 'Unmanned / Lights-Out Running');
-    expect(lever).toBeDefined();
-    expect(lever!.savingBasis).toBe('recosted');
-    const base = computeUniversalStack(input, lib).total;
-    const thin = (pred: (o: UniversalStackInput['operations'][number]) => boolean) => base - computeUniversalStack({
-      ...input, operations: input.operations.map(o => pred(o) ? { ...o, manning: Math.max(0.3, (o.manning ?? 1) * 0.6) } : o),
-    }, lib).total;
-    const cuttingOnly = thin(machinePacedCut);
-    const withMoulding = thin(o => machinePacedCut(o) || /moulding/i.test(o.operationName));
-    expect(lever!.savingGBP!).toBeCloseTo(cuttingOnly, 3);
-    expect(withMoulding - cuttingOnly).toBeGreaterThan(0.5);   // the crew of 4 was worth ~£0.9 of the old £4.36
-    // and the text quotes the cutting ops' labour, not the whole labour bucket (34.1 % on the report)
-    const labPct = result.breakdown.labour / result.total * 100;
-    expect(lever!.description).not.toContain(`Labour is ${labPct.toFixed(1)}%`);
-    expect(lever!.description).toMatch(/cutting operations is \d/);
+describe('H4 — lights-out is no longer a lever (report-standard review, 3 Nov 2026)', () => {
+  // It re-costed manning ×0.6 on the cutting ops (H4 had already taken the 4-man moulding crew out of it) but charged no
+  // pallet pool, probing or gauging, and none is held from a source — overstated by construction, and on this
+  // safety-critical stub axle it took people off the special-characteristic checks (Director #10, quality #1).
+  it('the stub axle is offered no unattended / lights-out running, priced or not (UK and CN)', () => {
+    for (const c of [stubUK, stubCN]) {
+      expect(c.dfm.costOptimisations.some(o => /Lights-Out|Unmanned/.test(o.title))).toBe(false);
+    }
   });
 });
 

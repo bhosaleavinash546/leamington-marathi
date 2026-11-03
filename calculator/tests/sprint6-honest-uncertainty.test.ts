@@ -107,10 +107,16 @@ describe('idea levers re-costed through the stack', () => {
     recostLevers(levers, result, input, lib);
     expect(levers.find(l => l.title.startsWith('Consumables'))?.savingBasis).toBe('heuristic');
     expect(levers.find(l => l.title.startsWith('Payment'))?.savingBasis).toBe('heuristic');
-    // A transform that changes nothing is dropped.
-    const noop: CostOptimisation[] = [{ title: 'Returnable Packaging Loop', description: '', expectedSavingPct: 3, technicalJustification: '', risk: 'Low' as const, timeframe: 'Quick Win' as const }];
-    recostLevers(noop, result, { ...input, packagingPerPart: 0 }, lib);
-    expect(noop.length).toBe(0);
+    // A transform whose re-cost is under a penny is dropped (a lever printed as £0.00 is not a lever): the scrap credit
+    // on a part whose scrap is already credited a hair under 30 % of prime.
+    const price = result.traceability.find(t => t.field === 'material.pricePerKg')?.value ?? 0;
+    const rm = input.rawMaterial;
+    if (price > 0 && rm.directCost === undefined && rm.materialUtilization > 0 && rm.materialUtilization < 1) {
+      const noop: CostOptimisation[] = [{ title: 'Scrap Revenue Recovery at Index Prices', description: '', expectedSavingPct: 3, technicalJustification: '', risk: 'Low' as const, timeframe: 'Quick Win' as const }];
+      const almost = { ...input, rawMaterial: { ...rm, scrapRecoveryPricePerKgOverride: 0.3 * price - 0.001 } };
+      recostLevers(noop, computeUniversalStack(almost, lib), almost, lib);
+      expect(noop.length).toBe(0);
+    }
   });
 
   it('without a library nothing is re-costed and the old percentages stand', () => {

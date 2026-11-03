@@ -16,6 +16,7 @@
  * produced and the part total the engine already calculated.
  */
 import type { DFMDFAResult, DFMIssue, CostOptimisation, LeverCategory } from './dfm-dfa.js';
+import { MIN_LEVER_SAVING_GBP } from './idea-levers.js';
 
 export interface RankedOpportunity {
   category: LeverCategory;
@@ -159,7 +160,8 @@ function timeframeOf(risk: DFMIssue['risk']): RankedOpportunity['timeframe'] {
 }
 
 function fromLever(o: CostOptimisation, partTotal: number): RankedOpportunity {
-  const priced = o.savingBasis === 'recosted' && (o.savingGBP ?? 0) > 0;
+  // A lever under a penny prints as £0.00 — it is not listed (report-standard review, Nov 2026: "Multi-Machine Manning £0.00").
+  const priced = o.savingBasis === 'recosted' && (o.savingGBP ?? 0) >= MIN_LEVER_SAVING_GBP;
   return {
     category: o.category ?? 'process',
     action: o.title,

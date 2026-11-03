@@ -62,7 +62,7 @@ describe('the scrap-credit lever is the gap to 30% of prime — not a second cre
       technicalJustification: '', risk: 'Low', timeframe: 'Quick Win' }];
     recostLevers(levers, result, input, PL);
     const expected = scrapKg * (0.30 * mat.pricePerKg - mat.scrapRecoveryPricePerKg) * 1.10 * 1.08;
-    if (expected > 0.0005) {
+    if (expected >= 0.01) {   // a lever under a penny is not listed (report-standard review, Nov 2026)
       expect(levers[0].savingGBP).toBeCloseTo(expected, 4);
       // the old transform (utilisation +30% of the scrap) bought less metal AND kept the credit: ~8× this
       expect(levers[0].savingGBP!).toBeLessThan(0.03);

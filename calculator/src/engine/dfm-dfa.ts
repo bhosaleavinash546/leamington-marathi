@@ -818,7 +818,11 @@ export function generateDFMDFA(
       description: `Standalone inspection/test operations carry ${(inspConvShare * 100).toFixed(1)}% of part cost. Capable processes should be verifying in-line, not at a separate station.`,
       savingPct: 3,
       risk: 'Low',
-      recommendation: 'Move to in-line gauging / on-machine probing; SPC-based skip-lot once capability is demonstrated',
+      // A safety-critical part keeps a 100 % check of its special characteristics: in-line gauging may replace the
+      // station, skip-lot may not (quality review row 1, Nov 2026).
+      recommendation: ctx?.safetyCritical
+        ? 'Move to in-line gauging / on-machine probing with a 100 % check of the special characteristics kept (safety-critical part — no skip-lot)'
+        : 'Move to in-line gauging / on-machine probing; SPC-based skip-lot once capability is demonstrated',
     });
   }
 
@@ -877,7 +881,9 @@ export function generateDFMDFA(
       title: 'Automate High-Labour Operations',
       description: `Labour represents ${labPct.toFixed(1)}% of total part cost. Automation of repetitive tasks can reduce this significantly.`,
       expectedSavingPct: Math.min(20, labPct * 0.4),
-      technicalJustification: 'Cobot or hard automation for loading/unloading, assembly, and inspection can achieve 50–70% labour reduction with <18 month payback at current volumes.',
+      technicalJustification: ctx?.safetyCritical
+        ? 'Cobot or hard automation for loading/unloading and assembly can achieve 50–70% labour reduction with <18 month payback at current volumes. The checks of the special characteristics on this safety-critical part stay 100 %, by a person or an automated gauge.'
+        : 'Cobot or hard automation for loading/unloading, assembly, and inspection can achieve 50–70% labour reduction with <18 month payback at current volumes.',
       risk: 'Medium',
       timeframe: 'Medium Term',
     });
@@ -1027,7 +1033,7 @@ export function generateDFMDFA(
   // Re-cost, don't multiply: with the library in hand, every lever that
   // carries a driver transform is run through the real stack and keeps only
   // the saving the arithmetic actually shows.
-  if (ctx?.library) recostLevers(costOptimisations, result, input, ctx.library);
+  if (ctx?.library) recostLevers(costOptimisations, result, input, ctx.library, ctx, commodity);
 
   // Biggest lever first; the backstops below always append at the end.
   costOptimisations.sort((a, b) => b.expectedSavingPct - a.expectedSavingPct);

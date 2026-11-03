@@ -23,21 +23,40 @@ import { computeUniversalStack } from './core.js';
 import { remeltableAlloy, itemisedProcessEnergy } from './suggestion-facts.js';
 
 /**
- * What a lever DOES to the cost drivers, as a pure transform on the stack
- * input. Only levers whose effect is a modelled driver get one — "attack the
- * bottleneck" means a 20% cycle-time cut on the governing operation; a
- * "payment-terms discount" is a commercial term the stack has no driver for,
- * so it stays a stated percentage and is labelled as such.
+ * What a lever DOES to the cost drivers, as a pure transform on the stack input. A lever is re-costed — and so listed
+ * with a £ — only when its change is PHYSICALLY DEFINED: a named driver moved to a value the costing, the rules or a
+ * stated source give (report-standard review, 3 Nov 2026). What the five reviewers withdrew, and why:
+ *
+ *  - "Attack the bottleneck — cycle time −20 %": a sensitivity case, no change named that delivers it (the sensitivity
+ *    table already carries ±10 % on every driver).
+ *  - "Unmanned / lights-out — manning ×0.6": no pallet pool, probing or gauging capex was charged, and none is held
+ *    from a source (the book's HMC note quotes a used EC-400 WITH a pallet pool, not the pool's own price) — the saving
+ *    was overstated by construction, and on a safety-critical part it took people off the special-characteristic checks.
+ *  - "Consumables ×0.8", "packaging ×0.5", "pack density ×0.8", "freight ×0.7", "net weight −10 %", "utilisation
+ *    +10 points (regrind)", "tooling ×0.6 (soft tool)", "tool life ×1.25", "1:2 manning": each a rule-of-thumb
+ *    multiplier on a driver, not a design or process change — and several re-recommended what the rules had already
+ *    decided (regrind, soft tooling ≤ 25k, the crew per machine).
+ *  - "Multi-cavity ×2 on every operation, tooling ×1.7": it halved the machining, fettling and melt shop of a casting
+ *    (£5.93, 34 %, on a bracket whose pattern already carried 4 impressions — a further impression is worth ≤ £0.5) and
+ *    doubled a blow moulder the rules had sized for one cavity. It now acts on the FORMING operation only, by the step
+ *    the rules' own cavitation sizing allows (`SuggestionContext.cavitation`), with the forming machine re-sized where it
+ *    depends on cavities — or it is not priced.
+ *
+ * Those levers stay in the catalogue as unpriced suggestions (counted, never listed with a figure — see
+ * opportunity-ranking.ts) where they are still useful questions; the bottleneck and lights-out levers are gone.
  */
 export type LeverTransform = (input: UniversalStackInput) => UniversalStackInput;
 
-const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: PartCostResult) => { next: UniversalStackInput; basis: string } | null> = {
-  'Closed-Loop Regrind of Runners and Trim': (input) => {
-    const u = input.rawMaterial.materialUtilization;
-    const next = Math.min(0.95, u + 0.10);
-    if (next <= u) return null;
-    return { next: { ...input, rawMaterial: { ...input.rawMaterial, materialUtilization: next } }, basis: `material utilisation ${(u * 100).toFixed(0)}% → ${(next * 100).toFixed(0)}% (10-20% regrind blend)` };
-  },
+/** The smallest saving a lever is listed at: a lever that prints as £0.00 is not a lever (Director #45). */
+export const MIN_LEVER_SAVING_GBP = 0.01;
+
+/** The scrap-credit target: 30 % of the prime price — engineering-typical, not sourced (confirm against the scrap index). */
+const SCRAP_CREDIT_SHARE_OF_PRIME = 0.30;
+
+type Transform = (input: UniversalStackInput, result: PartCostResult, ctx: SuggestionContext | undefined, commodity: CommodityType | undefined)
+  => { next: UniversalStackInput; basis: string } | null;
+
+const LEVER_TRANSFORMS: Record<string, Transform> = {
   'Scrap Revenue Recovery at Index Prices': (input, result) => {
     // Raise the scrap CREDIT to 30% of prime. The costing already credits the scrap at its own recovery price, so the
     // lever is only the gap between that price and 30% of prime, on the scrap the part makes. It was modelled as better
@@ -48,88 +67,77 @@ const LEVER_TRANSFORMS: Record<string, (input: UniversalStackInput, result: Part
     const tr = (f: string) => result.traceability.find(t => t.field === f)?.value;
     const price = tr('material.pricePerKg'), scrap = tr('material.scrapRecoveryPricePerKg') ?? 0;
     if (!(price && price > 0)) return null;
-    const target = 0.30 * price;
+    const target = SCRAP_CREDIT_SHARE_OF_PRIME * price;
     const scrapKg = rm.netWeightKg / rm.materialUtilization - rm.netWeightKg;
     const gain = scrapKg * (target - scrap);
     if (!(gain > 1e-6)) return null;
     return { next: { ...input, rawMaterial: { ...rm, scrapRecoveryPricePerKgOverride: target } },
-      basis: `${scrapKg.toFixed(3)} kg of scrap a part credited at 30% of prime (£${target.toFixed(3)}/kg) instead of the costed £${scrap.toFixed(3)}/kg` };
+      basis: `${scrapKg.toFixed(3)} kg of scrap a part credited at 30% of prime (£${target.toFixed(3)}/kg — 30% is engineering-typical, not sourced: confirm against the scrap index) instead of the costed £${scrap.toFixed(3)}/kg` };
   },
-  'Attack the Bottleneck': (input, result) => {
-    const ops = result.operationDetails ?? [];
-    if (!ops.length) return null;
-    const top = ops.reduce((a, b) => (b.processCost + b.labourCost > a.processCost + a.labourCost ? b : a));
-    const k = input.operations.findIndex(o => o.operationName === top.operationName);
-    if (k < 0) return null;
-    return { next: { ...input, operations: input.operations.map((o, i) => i === k ? { ...o, cycleTimeHr: o.cycleTimeHr * 0.8, labourTimeHr: o.labourTimeHr * 0.8 } : o) }, basis: `${shortOperationName(top.operationName)} cycle time −20%` };
-  },
-  'Multi-Cavity / Multi-Up Tooling': (input) => ({
-    next: { ...input,
-      operations: input.operations.map(o => ({ ...o, partsPerCycle: Math.max(2, (o.partsPerCycle ?? 1) * 2) })),
-      tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * 1.7 } },
-    basis: '2 cavities (parts per cycle ×2), tooling NRE ×1.7',
-  }),
-  'Multi-Cavity Tooling — Confirm the Annual Volume First': (input) => ({
-    next: { ...input,
-      operations: input.operations.map(o => ({ ...o, partsPerCycle: Math.max(2, (o.partsPerCycle ?? 1) * 2) })),
-      tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * 1.7 } },
-    basis: '2 cavities (parts per cycle ×2), tooling NRE ×1.7 — at the ASSUMED volume',
-  }),
-  // Machine-paced CUTTING operations only: set-up, load / clamp and bench deburr are the operator's own work — the ×0.6
-  // was applied to every operation, overstating the lever by a third (Germany review). No automation capex is added.
-  'Unmanned / Lights-Out Running': (input) => ({
-    next: { ...input, operations: input.operations.map(o => (machinePacedCut(o) ? { ...o, manning: Math.max(0.3, (o.manning ?? 1) * 0.6) } : o)) },
-    basis: 'manning ×0.6 on the machine-paced cutting operations (not set-up, loading or bench work); no automation capex added — CostVision engineering heuristic',
-  }),
-  'Multi-Machine Manning': (input) => ({
-    next: { ...input, operations: input.operations.map(o => tendedMachineOp(o) ? { ...o, manning: (o.manning ?? 1) / 2 } : o) },
-    basis: '1:2 manning on machine-paced operations tended by one operator',
-  }),
-  'Soft / Bridge Tooling for This Volume': (input) => ({
-    next: { ...input, tooling: { ...input.tooling, totalToolingCost: input.tooling.totalToolingCost * 0.6 } },
-    basis: 'tooling NRE ×0.6 (aluminium / soft tool)',
-  }),
-  'Tool-Life Extension Programme': (input) => ({
-    next: { ...input, tooling: { ...input.tooling, amortizationVolume: input.tooling.amortizationVolume * 1.25 } },
-    basis: 'amortisation volume ×1.25 (tool life extended a quarter)',
-  }),
-  'Returnable Packaging Loop': (input) => ({
-    next: { ...input, packagingPerPart: input.packagingPerPart * 0.5 }, basis: 'packaging per part ×0.5 (returnable loop)',
-  }),
-  'Packaging Cost — Confirm, Then Make It Returnable': (input) => ({
-    next: { ...input, packagingPerPart: input.packagingPerPart * 0.5 }, basis: 'packaging per part ×0.5 (returnable loop) — on the ESTIMATED figure',
-  }),
-  'Pack Density / Cube Utilisation Review': (input) => ({
-    next: { ...input, packagingPerPart: input.packagingPerPart * 0.8, logisticsPerPart: input.logisticsPerPart * 0.8 }, basis: 'packaging and logistics per part ×0.8 (20% denser pack)',
-  }),
-  'Freight Mode and Consolidation Review': (input) => ({
-    next: { ...input, logisticsPerPart: input.logisticsPerPart * 0.7 }, basis: 'logistics per part ×0.7 (consolidated FCL / sea)',
-  }),
-  'Lightweighting / Wall Optimisation': (input) => ({
-    next: { ...input, rawMaterial: { ...input.rawMaterial, netWeightKg: input.rawMaterial.netWeightKg * 0.9 } }, basis: 'net weight −10%',
-  }),
-  'Consumables Rationalisation (Cores, Patterns, Shell)': (input) => {
-    const c = input.rawMaterial.consumablesCostPerPart ?? 0;
-    const core = coreConsumables(input);
-    if (!(c > 0) || !(core > 0)) return null;
-    return { next: { ...input, rawMaterial: { ...input.rawMaterial, consumablesCostPerPart: c - 0.2 * core } }, basis: 'core / pattern / shell consumables ×0.8' };
+  'Multi-Cavity / Multi-Up Tooling': (input, _result, ctx, commodity) => formingCavityStep(input, ctx, commodity),
+  'Multi-Cavity Tooling — Confirm the Annual Volume First': (input, _result, ctx, commodity) => {
+    const t = formingCavityStep(input, ctx, commodity);
+    return t ? { ...t, basis: `${t.basis} — at the ASSUMED volume` } : null;
   },
 };
 
-/** A cutting / machining operation by its name: milling, drilling, boring, turning, tapping, reaming, grinding, hobbing. */
-const RX_CUTTING = /machin|mill|drill|bor(e|ing)\b|bore\(|turn|lathe|\btap|ream|grind|hon(e|ing)\b|hob|shap|broach/i;
-/** What is NOT a machine-paced cut even when its name mentions one: the foundry / forge / press / moulding line, assembly,
- *  bench, handling, set-up and inspection rows. */
-const RX_NOT_CUTTING = /mould|mold|\bcast|pour|melt|forg|press|stamp|inject|extru|assembl|weld|fettl|load|clamp|unload|handling|set-?up|change|inspect|gauge|deburr|pack|cure|oven|furnace|heat|blast/i;
+// ─── Multi-cavity: the forming operation only, by the rules' own step ────────
+
+/** The forming operation by name: the moulding line, die-cast / blow / injection machine, press, former, rubber mould. */
+const RX_FORMING = /mould|mold|die.?cast|hpdc|\bcasting\b|blow|inject|thermoform|forming|\bpress|stamp|transfer|compression|forg/i;
+/** Never the forming operation: machining, the melt shop, fettling, trim / deflash, bench, handling, set-up, change-over,
+ *  inspection — a cavity does not halve any of them (the bracket's 12.4 min HMC op and its fettling bench were halved). */
+const RX_NOT_FORMING = /machin|drill|\bmill|turn|lathe|bor(e|ing)\b|\btap|ream|grind|melt|fettl|trim|deflash|deburr|inspect|gauge|set-?up|change|load|clamp|pallet|pack|cure oven|heat treat|blast/i;
+
+/** Commodities whose forming machine is sized by the cavities it carries (shot, clamp, platen, heads). */
+const CAVITY_SIZED_MACHINE: CommodityType[] = ['injection_moulding', 'blow_moulding', 'rubber'];
+
+/** The index of the forming operation in the operation list (the one a cavity / impression step acts on), or −1. */
+export function formingOperationIndex(input: UniversalStackInput, operationName?: string): number {
+  const ops = input.operations ?? [];
+  if (operationName) {
+    const k = ops.findIndex(o => o.operationName === operationName);
+    return k >= 0 && !ops[k].benchOperation && !RX_NOT_FORMING.test(ops[k].operationName ?? '') ? k : -1;
+  }
+  return ops.findIndex(o => !o.benchOperation && o.cycleTimeHr > 0
+    && RX_FORMING.test(o.operationName ?? '') && !RX_NOT_FORMING.test(o.operationName ?? ''));
+}
 
 /**
- * A machine-paced CUTTING operation: a machining op by name, on a machine, not bench / set-up / loading / inspection —
- * and not the foundry, forge, press or moulding line: "Sand Casting — Moulding" and its crew of 4 rode in the
- * lights-out lever, £4.36 for a lever worth £3.46 on the cutting ops alone (7-country review, 3 Nov 2026).
+ * The next cavity / impression step on the FORMING operation, as the rules' own sizing allows it
+ * (`SuggestionContext.cavitation`): parts per cycle × next ÷ current on that one operation (machine AND labour, as
+ * core.ts divides both), the forming machine re-sized where it depends on cavities, the forming tooling at the rules'
+ * figure for `next`. Null — the lever is not priced — when the rules give no further step, or the forming machine
+ * depends on cavities and no machine for `next` is given.
  */
-export function machinePacedCut(o: UniversalStackInput['operations'][number]): boolean {
-  const n = o.operationName ?? '';
-  return !o.benchOperation && o.cycleTimeHr > 0 && RX_CUTTING.test(n) && !RX_NOT_CUTTING.test(n);
+function formingCavityStep(input: UniversalStackInput, ctx: SuggestionContext | undefined, commodity: CommodityType | undefined)
+  : { next: UniversalStackInput; basis: string } | null {
+  const cav = ctx?.cavitation;
+  if (!cav || !(cav.current >= 1) || !(cav.next != null && cav.next > cav.current)) return null;
+  const k = formingOperationIndex(input, cav.operationName);
+  if (k < 0) return null;
+  const op = input.operations[k];
+  const sized = commodity ? CAVITY_SIZED_MACHINE.includes(commodity) || (/die.?cast|hpdc/i.test(op.operationName ?? '')) : false;
+  if (sized && !cav.machineIdForNext) return null;
+  const ratio = cav.next / cav.current;
+  const cycleRatio = cav.cycleTimeHrForNext && op.cycleTimeHr > 0 ? cav.cycleTimeHrForNext / op.cycleTimeHr : 1;
+  const nextOp = {
+    ...op,
+    partsPerCycle: (op.partsPerCycle ?? 1) * ratio,
+    cycleTimeHr: op.cycleTimeHr * cycleRatio,
+    labourTimeHr: (op.labourTimeHr ?? 0) * cycleRatio,
+    ...(cav.machineIdForNext ? { machineId: cav.machineIdForNext } : {}),
+  };
+  const toolDelta = cav.formingToolGBP.next - cav.formingToolGBP.current;
+  return {
+    next: { ...input,
+      operations: input.operations.map((o, i) => (i === k ? nextOp : o)),
+      tooling: { ...input.tooling, totalToolingCost: Math.max(0, input.tooling.totalToolingCost + toolDelta) } },
+    basis: `${shortOperationName(op.operationName)} only: ${cav.current} → ${cav.next} ${cav.unit ?? 'cavities'} (${cav.basis})`
+      + (cav.machineIdForNext && cav.machineIdForNext !== op.machineId ? `; forming machine re-sized for ${cav.next}` : '')
+      + `; forming tooling £${Math.round(cav.formingToolGBP.current).toLocaleString('en-GB')} → £${Math.round(cav.formingToolGBP.next).toLocaleString('en-GB')}`
+      + '; no other operation changed',
+  };
 }
 
 /**
@@ -168,12 +176,14 @@ const RX_MACHINING_OP = /machin|drill|bor(e|ing)|turn|mill|load \/ clamp|setup|d
 
 /**
  * Run every lever that has a transform through the real stack. The saving
- * becomes Δtotal / total; a lever whose re-cost shows no saving is removed —
- * an idea that does not survive the arithmetic is not an idea. Levers with no
- * transform keep their bounded percentage and are labelled `heuristic`.
+ * becomes Δtotal / total; a lever whose re-cost shows less than a penny is removed —
+ * an idea that does not survive the arithmetic is not an idea, and a lever printed as
+ * £0.00 is padding. Levers with no transform keep their bounded percentage and are
+ * labelled `heuristic` (counted, never listed with a figure).
  */
 export function recostLevers(
   levers: CostOptimisation[], result: PartCostResult, input: UniversalStackInput, library: RateLibrary,
+  ctx?: SuggestionContext, commodity?: CommodityType,
 ): void {
   // Baseline from the SAME input the transforms start from, so Δ is the lever alone.
   const base = computeUniversalStack(input, library).total;
@@ -182,12 +192,12 @@ export function recostLevers(
     const key = Object.keys(LEVER_TRANSFORMS).find(k => lever.title === k || lever.title.startsWith(k));
     if (!key) { lever.savingBasis = 'heuristic'; continue; }
     let t: { next: UniversalStackInput; basis: string } | null = null;
-    try { t = LEVER_TRANSFORMS[key](input, result); } catch { t = null; }
+    try { t = LEVER_TRANSFORMS[key](input, result, ctx, commodity); } catch { t = null; }
     if (!t) { lever.savingBasis = 'heuristic'; continue; }
     let next: number;
     try { next = computeUniversalStack(t.next, library).total; } catch { lever.savingBasis = 'heuristic'; continue; }
     const savingGBP = base - next;
-    if (!(savingGBP > 0.0005)) { levers.splice(i, 1); continue; }   // did not survive the arithmetic
+    if (!(savingGBP >= MIN_LEVER_SAVING_GBP)) { levers.splice(i, 1); continue; }   // did not survive the arithmetic
     lever.savingBasis = 'recosted';
     lever.savingGBP = Math.round(savingGBP * 10_000) / 10_000;
     lever.expectedSavingPct = Math.round((savingGBP / base) * 1000) / 10;
@@ -250,7 +260,7 @@ export function generateIdeaLevers(
   sig: LeverSignals,
 ): CostOptimisation[] {
   const out: CostOptimisation[] = [];
-  const { matPct, procPct, labPct, toolPct, oheadPct, mgnPct, opCount, avgOEE, matUtil } = sig;
+  const { matPct, procPct, labPct, toolPct, oheadPct, mgnPct, opCount, matUtil } = sig;
   const tot = result.total || 1;
   const ops = input.operations ?? [];
   const opDetails = result.operationDetails ?? [];
@@ -269,11 +279,6 @@ export function generateIdeaLevers(
   const amortVol = input.tooling?.amortizationVolume ?? 0;
   const toolingNRE = input.tooling?.totalToolingCost ?? 0;
 
-  // Per-operation Pareto — which single operation carries the conversion cost.
-  const opConv = opDetails.map(o => ({ name: o.operationName, conv: o.processCost + o.labourCost }));
-  const convTotal = opConv.reduce((s, o) => s + o.conv, 0);
-  const topOp = opConv.length > 0 ? opConv.reduce((a, b) => (b.conv > a.conv ? b : a)) : null;
-  const topOpShare = topOp && convTotal > 0 ? topOp.conv / convTotal : 0;
 
   const maxManning = ops.filter(tendedMachineOp).reduce((m, o) => Math.max(m, o.manning ?? 0), 0);
   const hasOp = (rx: RegExp) => ops.some(o => rx.test(o.operationName ?? ''));
@@ -412,49 +417,38 @@ export function generateIdeaLevers(
 
   // ═══ PROCESS ════════════════════════════════════════════════════════════════
 
-  if (topOp && topOpShare > 0.5 && opCount >= 2 && convTotal / tot > 0.2) {
-    out.push({
-      category: 'process', lever: 'supplier',
-      title: `Attack the Bottleneck: "${shortOperationName(topOp.name)}"`,
-      description: `One operation — ${shortOperationName(topOp.name)} — carries ${(topOpShare * 100).toFixed(0)}% of the conversion cost. Improving anything else first is working on the wrong problem.`,
-      expectedSavingPct: Math.min(8, topOpShare * (procPct + labPct) * 0.2),
-      technicalJustification: 'Focused cycle-time engineering on the governing operation (feeds/speeds, tooling upgrade, cooling optimisation, SMED on its changeover) moves the whole part cost; a 20% gain on the bottleneck is a realistic first-pass target.',
-      risk: 'Medium', timeframe: 'Medium Term',
-    });
-  }
+  // No "attack the bottleneck — cycle time −20 %" lever: the −20 % named no change that delivers it — it is a sensitivity
+  // case, and the sensitivity table already varies every driver (report-standard review, 3 Nov 2026; on 9 of 15 pages).
 
-  if (CAVITY_PROCESSES.includes(commodity) && ops.length > 0 && ops.every(o => (o.partsPerCycle ?? 1) <= 1) && (procPct + labPct) > 25) {
+  // Multi-cavity / multi-up: ONLY on the forming operation, ONLY by the step the rules' own cavitation sizing allows
+  // (`ctx.cavitation`: the cavities / impressions the costing runs and the next count that fits the flask, platen,
+  // window or press ladder). It doubled parts per cycle on EVERY operation — the casting bracket's HMC machining,
+  // fettling bench and melt shop — and printed £5.93 (34 %) for a pattern that already carried 4 impressions, and it
+  // doubled an air duct on the blow moulder the rules had sized for one cavity (report-standard review, 3 Nov 2026).
+  // The rules choose cavitation by cost (IM optimiser, rubber cavities), by fit (sand flask, thermoform window, roto
+  // arm) or by machine (blow head and shot), so with no further step from them there is no lever.
+  const cav = ctx?.cavitation;
+  const formingIdx = cav ? formingOperationIndex(input, cav.operationName) : -1;
+  if (CAVITY_PROCESSES.includes(commodity) && cav && cav.next != null && cav.next > cav.current && formingIdx >= 0) {
+    const formingName = shortOperationName(ops[formingIdx].operationName);
     out.push({
       category: 'process', lever: 'supplier',
       title: volumeAssumed
         ? 'Multi-Cavity Tooling — Confirm the Annual Volume First'
         : 'Multi-Cavity / Multi-Up Tooling',
-      description: `Every cycle currently makes one part. A 2-cavity (or family) tool halves the machine and labour minutes per part against roughly 60–80% more tooling NRE.`
+      description: `${formingName} runs ${cav.current} ${cav.unit ?? 'cavities'} a cycle; the rules' own sizing allows ${cav.next} (${cav.basis}). `
+        + 'Only the forming operation divides by the extra cavity — machining, trimming, finishing and inspection stay per part.'
         + (volumeAssumed ? ' The volume in this cost is a tool assumption — confirm the real programme volume before committing cavity investment.' : ''),
-      expectedSavingPct: Math.min(12, (procPct + labPct) * 0.3),
-      technicalJustification: 'Cavitation is the standard volume lever in moulding and die casting: machine time per part scales with 1/cavities while the tool price scales far slower (~1.6–1.8× for 2 cavities). The tool already cost-ranks cavity options in the derivation trace.',
+      expectedSavingPct: 0,
+      technicalJustification: 'Re-costed through the stack on the forming operation alone, with the forming tooling and (where it depends on cavities) the forming machine at the rules\' figures for the next step.',
       risk: 'Medium', timeframe: 'Medium Term',
     });
   }
 
-  // The labour the lever acts on: the cutting operations' own (the moulding crew of a cast + machine part is not run
-  // lights-out — the text said "Labour is 34.1%" of which the cutting ops carried a fraction; 7-country review).
-  const cutNames = new Set(ops.filter(machinePacedCut).map(o => o.operationName));
-  const labHr = (o: UniversalStackInput['operations'][number]) => (o.labourTimeHr ?? 0) * (o.manning ?? 1);
-  const allLabHr = ops.reduce((s, o) => s + labHr(o), 0);
-  const cutLabPct = opDetails.length
-    ? (opDetails.filter(o => cutNames.has(o.operationName)).reduce((s, o) => s + o.labourCost, 0) / tot) * 100
-    : allLabHr > 0 ? labPct * ops.filter(machinePacedCut).reduce((s, o) => s + labHr(o), 0) / allLabHr : 0;
-  if (['machining', 'cast_and_machine'].includes(commodity) && cutLabPct > 12 && avgOEE >= 0.75) {
-    out.push({
-      category: 'process', lever: 'supplier',
-      title: 'Unmanned / Lights-Out Running',
-      description: `Labour on the machine-paced cutting operations is ${cutLabPct.toFixed(1)}% of cost, with healthy OEE (${(avgOEE * 100).toFixed(0)}%) — the classic profile for bar-feed or pallet-pool unattended running.`,
-      expectedSavingPct: Math.min(6, cutLabPct * 0.3),
-      technicalJustification: 'Bar feeders, pallet pools and probing let a stable machining process run a third shift with no operator. The pass-through of the saving is a negotiation, not a figure (the 30–50% often quoted has no source here).',
-      risk: 'Medium', timeframe: 'Medium Term',
-    });
-  }
+  // No "unmanned / lights-out — manning ×0.6" lever: it charged no pallet pool, probing or post-process gauging, and no
+  // sourced figure for them is held, so the saving was overstated by construction; on a safety-critical part it took
+  // people off the special-characteristic checks (report-standard review, 3 Nov 2026 — Director #10, quality #1). Whether
+  // the supplier runs the cell unattended is a question for the negotiation, not a £.
 
   if (maxManning >= 1 && labPct > 15 && !['wiring_harness', 'composites', 'biw_assembly'].includes(commodity) && ops.some(tendedMachineOp)) {
     out.push({
@@ -571,7 +565,9 @@ export function generateIdeaLevers(
   // ═══ QUALITY ════════════════════════════════════════════════════════════════
 
   const inspShare = opShareOfTotal(RX_INSPECT);
-  if (hasOp(RX_INSPECT) && inspShare > 0.05) {
+  // Not on a safety-critical part: skip-lot / reduced inspection takes people off the checks of its special
+  // characteristics (quality review row 1, Nov 2026).
+  if (hasOp(RX_INSPECT) && inspShare > 0.05 && !ctx?.safetyCritical) {
     out.push({
       category: 'quality', lever: 'supplier',
       title: 'Right-Size Inspection and Test',
