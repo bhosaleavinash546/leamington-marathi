@@ -253,12 +253,12 @@ export const CORED_ROUTES: ReadonlySet<string> = new Set(['sand', 'shell', 'inve
 /** Permanent-mould routes: an undercut is a slide or a metal / sand core in the die. */
 export const DIE_ROUTES: ReadonlySet<string> = new Set(['hpdc', 'diecast', 'gravity']);
 
-/** Where the costing already carries a casting undercut — the reason the finding adds no £ of its own. */
+/** Where the costing already carries a casting undercut — the reason the finding adds no cost of its own. */
 export function castingUndercutInPrice(route: string | undefined): string {
   const r = String(route ?? '').toLowerCase();
   if (r === 'sand' || r === 'shell') {
     return 'Already in the price: the sand route prices a core a part and the core boxes in the pattern equipment from the '
-      + 'measured undercut count. This finding adds no £ of its own.';
+      + 'measured undercut count. This finding adds no cost of its own.';
   }
   if (r === 'investment') return 'Already in the price: the investment tool carries core boxes from the measured undercut count.';
   if (DIE_ROUTES.has(r)) {
