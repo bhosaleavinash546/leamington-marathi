@@ -56,12 +56,15 @@ def scan(cc, kind, lines):
         for name, rx in CHECKS:
             if rx.search(ln):
                 hits.append((name, ln[:240]))
-        if cc != 'UK' and '£' in ln and not re.search(r'£1 = |\(£|GBP|£/', ln):
+        # an FX quote ("¥8.88/£", "$1.3285/£") is not money in the wrong currency (harness fix, 3 Nov 2026 UK/CN re-run)
+        bare = re.sub(r'[\d.,]+/£', '', ln)
+        if cc != 'UK' and '£' in bare and not re.search(r'£1 = |\(£|GBP|£/', bare):
             hits.append(('pound-in-local-report', ln[:240]))
         if sym != '£' and re.search(re.escape(sym) + r'\s*' + re.escape(sym), ln):
             hits.append(('double-symbol', ln[:240]))
         m = re.search(r'[Rr]ate book[^·|]*?\b(United Kingdom|China|India|Poland|Hungary|Germany|Slovakia|UK)\b', ln)
-        if m and cc in NAME and m.group(1) not in (NAME[cc], cc):
+        # the country-table basis sentence ("… an item a book could not price is at par with the UK") names no book
+        if m and cc in NAME and m.group(1) not in (NAME[cc], cc) and 'at par with the UK' not in ln:
             hits.append(('stamp-country', ln[:240]))
     text = '\n'.join(lines)
     if kind == 'pdf':
