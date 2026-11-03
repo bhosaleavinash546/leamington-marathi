@@ -314,6 +314,13 @@ function materialOf(r: BulkPartResult, book: RateLibrary): RouteMaterial | null 
   const net = Number.isFinite(rm.netWeightKg) ? rm.netWeightKg : null;
   const util = Number.isFinite(rm.materialUtilization) && rm.materialUtilization > 0 ? rm.materialUtilization : null;
   const m = book.materials.find(x => x.id === rm.materialId);
+  // A module-priced material (composites' fibre + resin + NDI) has no weight × £/kg: it printed "Virtual / Pass-through,
+  // net 0.000 kg" on the screen and in both reports (7-country review, 3 Nov 2026). Name its lines, no weights.
+  if (rm.directCost !== undefined && /^mat-virtual/.test(rm.materialId ?? '')) {
+    const refs = (rm.lines ?? []).map(l => l.ref).filter(Boolean);
+    return { materialId: null, label: `priced by its itemised lines${refs.length ? ` (${refs.join(', ')})` : ''} — not by weight`,
+      netKg: null, boughtKg: null, utilisation: null };
+  }
   return {
     materialId: rm.materialId ?? null,
     label: m?.grade ?? rm.materialId ?? 'material',

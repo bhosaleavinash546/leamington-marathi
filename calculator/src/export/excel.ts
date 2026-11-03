@@ -17,6 +17,31 @@ import { shopDefaultsBasis, deliveryTermsLine, type ManufacturingRegion } from '
 const num4 = (n: number) => +n.toFixed(4);
 /** Hours to 6 dp — at 4 dp a reader recomputing an operation from the sheet was out by up to £0.003. */
 const hr6 = (n: number) => +n.toFixed(6);
+/** Minutes with enough digits that a non-zero time never reads 0.00 (a die change is 0.0018 min a part). */
+export const minutesCell = (min: number): number => (!(min > 0) ? 0 : min >= 0.01 ? +min.toFixed(3) : +min.toPrecision(2));
+/** A traceability rate id as a report prints it — the direct-cost placeholder id is not a rate anyone can look up. */
+export const traceRateIdText = (id: string | undefined): string =>
+  id && /^mat-virtual/.test(id) ? 'commodity module' : (id ?? '');
+
+/**
+ * The part weight the commodity's rules costed, read off the rule values the report carries — for a material line that
+ * is not weight × price (composites buy fibre + resin as itemised lines, so `rawMaterial.netWeightKg` is 0 and the
+ * placeholder material's density-1 mass is not the part's). Null when the rules did not set one.
+ */
+export function rulePartWeightKg(ruleValues: ReadonlyArray<{ label: string; value: string }> | null | undefined): number | null {
+  const rv = (ruleValues ?? []).find(r => /^(cured |net |finished )?part weight\b/i.test(String(r.label).trim()));
+  const v = rv ? Number(String(rv.value).replace(/[^0-9.]/g, '')) : NaN;
+  return Number.isFinite(v) && v > 0 ? v : null;
+}
+
+/**
+ * A route row's material that is the direct-cost placeholder (composites: fibre + resin priced as itemised lines) —
+ * its "0.000 kg for 0.000 kg (Virtual / Pass-through)" is not a mass anyone bought.
+ */
+export function isItemisedRouteMaterial(mt: { materialId?: string | null; label: string; netKg: number | null } | null | undefined): boolean {
+  return !!mt && (/^mat-virtual/.test(mt.materialId ?? '') || /pass-through/i.test(mt.label) || mt.netKg === 0);
+}
+export const ITEMISED_MATERIAL_TEXT = 'priced by its itemised lines (not by weight)';
 
 /**
  * The costing as a workbook. Every figure is the ENGINE's (computeUniversalStack) — nothing here recomputes a cost — and
@@ -86,7 +111,10 @@ export async function exportToExcelBlob(
   sum.push(['Model confidence', band?.overallConfidence ?? overallConfidence(result)]);
   if (band) {
     sum.push(['Uncertainty band', `± ${band.plusMinusPct}%`, 'as shown on screen']);
-    sum.push(['  P10 (optimistic)', m(band.p10)], ['  P90 (conservative)', m(band.p90)]);
+    // The band is a simulated range, held to the penny in GBP: converted, it is rounded to the report currency's
+    // penny so the cell does not carry the conversion's digits (CN P10 read 49.6392 beside 6-dp engine figures).
+    const r2 = (gbp: number) => money(Math.round(gbp * fxRate * 100) / 100, sym);
+    sum.push(['  P10 (optimistic)', r2(band.p10)], ['  P90 (conservative)', r2(band.p90)]);
   }
   if (result.toolingNRE !== undefined) {
     sum.push(['NRE / Tooling (one-time, not in unit cost)', m(result.toolingNRE), '']);
@@ -137,9 +165,13 @@ export async function exportToExcelBlob(
   if (isDirect) {
     metalNet = rm.directCost ?? 0;
     matDetail.push(
-      ['Material basis', placeholder ? 'Supplied / bought-in price — no weight-based material' : (mat?.grade ?? rm.materialId), '', ''],
+      ['Material basis', placeholder
+        ? ((rm.lines ?? []).length ? 'Priced by its itemised lines below (not weight × price per kg)' : 'Supplied / bought-in price — no weight-based material')
+        : (mat?.grade ?? rm.materialId), '', ''],
       ['Direct material cost', m(metalNet), currency, 'priced by the commodity module (not weight × £/kg)'],
     );
+    const partKg = rm.netWeightKg > 0 ? rm.netWeightKg : rulePartWeightKg(checks?.ruleValues);
+    if (partKg) matDetail.push(['Costed part weight', num4(partKg), 'kg', 'the part weight the commodity rules costed — the material is priced by its itemised lines, not weight × price per kg']);
     for (const l of rm.lines ?? []) {
       matDetail.push([`   ${l.ref} ${l.description}`, m(l.unitCost * l.qty), currency, `${l.qty} × ${sym}${(l.unitCost * fxRate).toFixed(4)}${l.pkg ? ` · ${l.pkg}` : ''}`]);
     }
@@ -208,7 +240,7 @@ export async function exportToExcelBlob(
       bench ? '' : mach?.machineClass ?? '—',
       bench ? '' : m(op.machineRateUsed),
       hr6(op.cycleTimeHr),
-      +(op.cycleTimeHr * 60).toFixed(3),
+      minutesCell(op.cycleTimeHr * 60),
       op.partsPerCycle,
       bench ? '' : pctCell(op.oee),
       bench ? '' : hr6(op.cycleTimeHr / op.oee),
@@ -225,21 +257,29 @@ export async function exportToExcelBlob(
     ]);
   }
   const opsLabour = result.operationDetails.reduce((s, o) => s + o.labourCost, 0);
+  // Summary rows are placed BY HEADER NAME — a count of blanks put the TOTAL one column left of its headers when the
+  // 'Measured features' column was added (labour total under "Labour Efficiency"; report review, Nov 2026).
+  const byHeader = (cells: Record<string, unknown>): unknown[] => {
+    for (const k of Object.keys(cells)) if (!opHdr.includes(k)) throw new Error(`3-Operations has no column '${k}'`);
+    return opHdr.map(h => (h in cells ? cells[h] : ''));
+  };
   if (lc && Math.abs(b.labour - opsLabour) >= 0.00005) {
     // The operations' labour is costed before Wright's law; the bucket after it.
-    opRows.push([`Learning-curve adjustment (${lc.curvePct}% curve, ×${lc.adjustmentFactor.toFixed(4)} on labour)`,
-      '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', m(b.labour - opsLabour), m(b.labour - opsLabour), '']);
+    opRows.push(byHeader({
+      'Operation': `Learning-curve adjustment (${lc.curvePct}% curve, ×${lc.adjustmentFactor.toFixed(4)} on labour)`,
+      'Labour Cost': m(b.labour - opsLabour), 'Op Total': m(b.labour - opsLabour),
+    }));
   }
-  opRows.push([
-    'TOTAL', '', '', '', '', '', '', '', '',
-    m(b.process), '', '', '', '', '', '',
-    m(b.labour),
-    m(b.process + b.labour),
-    pctCell((b.process + b.labour) / result.total),
-  ]);
+  opRows.push(byHeader({
+    'Operation': 'TOTAL',
+    'Process Cost': m(b.process),
+    'Labour Cost': m(b.labour),
+    'Op Total': m(b.process + b.labour),
+    '% of Total': pctCell((b.process + b.labour) / result.total),
+  }));
 
   sheets.push({ name: '3-Operations', rows: opRows, cols: [
-    40, 18, 22, 16, 14, 14, 10, 8, 16, 14, 18, 20, 16, 9, 14, 14, 14, 14, 10,
+    40, 30, 22, 16, 14, 14, 10, 8, 8, 14, 14, 18, 20, 14, 9, 14, 14, 14, 14, 10,
   ] });
 
   // ── Sheet 4: Machine Rate Buildup (machines the costing used, bench placeholders excluded) ──
@@ -281,7 +321,7 @@ export async function exportToExcelBlob(
   const trRows: unknown[][] = [trHdr];
   for (const t of trace) {
     const isMoney = t.unit.includes('£');
-    trRows.push([traceFieldLabel(shortOperationName(t.field)), isMoney ? m(t.value) : num4(t.value), isMoney ? t.unit.replace('£', sym) : t.unit, reportNoteText(t.rateSource), /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId, t.confidence]);
+    trRows.push([traceFieldLabel(shortOperationName(t.field)), isMoney ? m(t.value) : num4(t.value), isMoney ? t.unit.replace('£', sym) : t.unit, reportNoteText(t.rateSource), /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : traceRateIdText(t.rateId), t.confidence]);
   }
   sheets.push({ name: '6-Traceability', rows: trRows, cols: [40, 14, 10, 70, 22, 12] });
 
@@ -354,7 +394,8 @@ export async function exportToExcelBlob(
         ...['rawMaterial', 'process', 'labour', 'tooling', 'packaging', 'logistics', 'overhead', 'margin'].map(k => (r.breakdown ? m(r.breakdown[k] ?? 0) : '—')),
         r.reconciles == null ? '' : r.reconciles ? 'OK' : 'MISMATCH',
         r.audit ? (r.audit.closes ? 'CLOSES' : 'OPEN') : '',
-        r.material?.label ?? '', r.material?.netKg ?? '', r.material?.boughtKg ?? '', r.material?.utilisation != null ? pctCell(r.material.utilisation) : '',
+        ...(isItemisedRouteMaterial(r.material) ? [ITEMISED_MATERIAL_TEXT, '', '', '']
+          : [r.material?.label ?? '', r.material?.netKg ?? '', r.material?.boughtKg ?? '', r.material?.utilisation != null ? pctCell(r.material.utilisation) : '']),
         r.tooling ? m(r.tooling.investment) : '', r.tooling?.amortisedOver ?? '', r.programme ? m(r.programme.total) : '',
         [...(r.commodity && r.commodity !== r.route ? [`costed as ${x.labels[r.commodity] ?? r.commodity}`] : []), ...r.assumed.map(a => `assumed: ${a}`), ...r.openQuestions.map(q => `needs an answer: ${q}`), ...(r.refusal ? [`not costed: ${r.refusal}`] : []), ...r.notes, ...r.caveats].join('; '),
       ]),
@@ -377,7 +418,7 @@ export async function exportToExcelBlob(
     rr.push(['INDEPENDENT RE-ADD — recomputed from the rates and times the engine recorded, never by running the engine again'], ['Route · process', 'Line', 'How', 'Re-added', 'Engine', 'Closes']);
     for (const r of x.rows) for (const ln of r.audit?.lines ?? []) rr.push([name(r), ln.line, ln.how, m(ln.recomputed), m(ln.reported), ln.closes ? 'yes' : 'NO']);
     rr.push([], ['OPERATIONS BY ROUTE'], ['Route · process', 'Operation', 'Machine class', 'Cycle (min)', 'Process', 'Labour']);
-    for (const r of x.rows) for (const op of r.operations ?? []) rr.push([name(r), op.name, op.machine, op.bench ? '' : op.cycleMin, m(op.processCost), m(op.labourCost)]);
+    for (const r of x.rows) for (const op of r.operations ?? []) rr.push([name(r), op.name, op.machine, op.bench ? '' : minutesCell(op.cycleMin), m(op.processCost), m(op.labourCost)]);
     rr.push([], ['FEASIBILITY — every route and process with rules, the checks it passed or failed, and the source of each limit'], ['Route · process', 'Feasible', 'Check', 'Measured', 'Limit', 'Pass', 'Source']);
     for (const r of x.rows) for (const ck of r.checks) rr.push([name(r), 'yes', ck.label, ck.measured, ck.limit, ck.pass ? 'pass' : 'fail', ck.source]);
     for (const e of x.excluded) for (const ck of e.reasons) rr.push([name(e), 'no', ck.label, ck.measured, ck.limit, 'fail', ck.source]);

@@ -187,15 +187,30 @@ export interface CostCardModel {
   commercial?: Array<{ id: string; label: string; value: number; unit: '%' | 'money' | 'count'; grade: BasisGrade }>;
 }
 
+/** The core's material-line traceability keys, named as a report prints them. */
+const TRACE_FIELD_NAMES: Record<string, string> = {
+  'material.pricePerKg': 'Material price per kg',
+  'material.scrapRecoveryPricePerKg': 'Scrap recovery price per kg',
+  'rawMaterial.consumablesCostPerPart': 'Consumables per part',
+  'rawMaterial.directCost': 'Direct material cost',
+  'rawMaterial.boughtIn': 'Bought-in content',
+};
+
 /**
  * A traceability field as a person reads it: "CNC Machining — 20 features (1×Ø10.0×12, …) [geometry-measured].labourRatePerHr"
  * → "CNC Machining — 20 features: labour rate". The card printed the raw key, feature list and all.
  */
 export function traceFieldLabel(field: string): string {
+  // The material line's own keys (core.ts) read as a person names them — the generic split printed "material: price
+  // per", "rawMaterial.energyKwh: electricity" and "rawMaterial: direct cost" (report review, Nov 2026).
+  const known = TRACE_FIELD_NAMES[field];
+  if (known) return known;
+  const energy = /^rawMaterial\.energyKwh\.(\w+)$/.exec(field);
+  if (energy) return `Process energy — ${energy[1].replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase()}`;
   const name = field.split(' (')[0].split(' [')[0].replace(/\.\w+$/, '').trim();
   const prop = field.match(/\]?\.([a-zA-Z]+)$/)?.[1];
   if (!prop) return name;
-  const words = prop.replace(/PerHr$|Hr$|Kg$|Gbp$/, '').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+  const words = prop.replace(/PerHr$|Hr$|Gbp$/, '').replace(/(?<!Per)Kg$/, '').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
   return words && !name.toLowerCase().includes(words) ? `${name}: ${words}` : name;
 }
 
@@ -394,7 +409,7 @@ export function routeCompareHtml(x: RouteComparisonExport, o: { fmt: (n: number)
           ${r.band ? `<h5>Band</h5><p>P10 ${money0(r.band.p10)} – P90 ${money0(r.band.p90)} (± ${r.band.plusMinusPct}% about the median, confidence ${esc(r.band.confidence)}) — the spread of the modelled input ranges, not the model's error</p>` : ''}
         </div>
         <div><h5>Specification costed</h5><table class="cad-compare-mini"><tbody>${r.spec.map(sp => `<tr><th scope="row">${esc(sp.label)}</th><td>${esc(sp.value)}</td><td><span class="cad-compare-src">${esc(sp.source)}</span></td></tr>`).join('') || '<tr><td>—</td></tr>'}</tbody></table>
-          <h5>Material</h5>${r.material ? `<p>${esc(r.material.label)}<br>net ${kg(r.material.netKg)} · bought ${kg(r.material.boughtKg)}${r.material.utilisation != null ? ` · ${(r.material.utilisation * 100).toFixed(0)}% utilisation` : ''}</p>` : '<p>—</p>'}
+          <h5>Material</h5>${r.material ? `<p>${esc(r.material.label)}${r.material.netKg == null && r.material.boughtKg == null ? '' : `<br>net ${kg(r.material.netKg)} · bought ${kg(r.material.boughtKg)}`}${r.material.utilisation != null ? ` · ${(r.material.utilisation * 100).toFixed(0)}% utilisation` : ''}</p>` : '<p>—</p>'}
           <h5>Tooling</h5>${r.tooling ? `<p>${money0(r.tooling.investment)} one-off over ${r.tooling.amortisedOver.toLocaleString('en-GB')} parts = ${money0(r.toolingPerPart ?? 0)} a part${r.tooling.items.length ? `<br><span class="cad-compare-items">${r.tooling.items.map(it => `${esc(it.label)} ${money0(it.gbp)}`).join(' · ')}</span>` : ''}</p>` : '<p>—</p>'}
           ${r.programme ? `<h5>Programme (${r.programme.parts.toLocaleString('en-GB')} parts over ${r.programme.years} yr)</h5><p>${money0(r.programme.pieceExTooling)} a part excluding tooling × ${r.programme.parts.toLocaleString('en-GB')} = ${money0(r.programme.pieceSpend)}, + tooling ${money0(r.programme.tooling)} = <strong>${money0(r.programme.total)}</strong></p>` : ''}
           ${r.byVolume.length ? `<h5>By volume (median, P10–P90)</h5><table class="cad-compare-mini"><tbody>${r.byVolume.map(v => `<tr><th scope="row">${v.volume.toLocaleString('en-GB')} / yr</th><td class="num">${v.total != null ? money0(v.total) : `— <span class="cad-compare-note">${esc(v.note ?? '')}</span>`}</td><td class="num cad-compare-note">${v.p10 != null && v.p90 != null ? `${money0(v.p10)}–${money0(v.p90)}` : ''}</td></tr>`).join('')}</tbody></table>${cross ? `<p class="cad-compare-cross">${esc(cross.text)}</p>` : ''}` : ''}

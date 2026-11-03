@@ -25,6 +25,42 @@ import { brandRgb } from '../brand/index.js';
 import { labourRoleLabel } from '../engine/labour-roles.js';
 import { decisionAnswerText, toolingAmortisationBasis } from './decision-text.js';
 import { localiseGbpText, localiseRuleValue } from './money-text.js';
+import { rulePartWeightKg, isItemisedRouteMaterial, ITEMISED_MATERIAL_TEXT, traceRateIdText } from './excel.js';
+
+/** Minutes as the §4 tables print them: 2 dp, more where a non-zero time would read 0.00 (a die change per part). */
+export function minutesText(min: number): string {
+  if (!(min > 0)) return '0.00';
+  if (min >= 0.01) return min.toFixed(2);
+  return min.toFixed(Math.min(8, 1 - Math.floor(Math.log10(min))));
+}
+
+/** Cut a note at a word boundary with an ellipsis — `.slice(0, 140)` stopped mid-word ("÷ 1773.4 p"). */
+export function clipAtWord(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const at = cut.lastIndexOf(' ');
+  return `${(at > max * 0.5 ? cut.slice(0, at) : cut).replace(/[\s,;:(\u2014\u2013-]+$/, '')}\u2026`;
+}
+
+/** A sensitivity driver's base value with its unit, as a person writes it ("0.6 min", "1,000,000 parts", "12.0%"). */
+export function sensitivityBaseText(d: { baseValue: number; unit: string; parameter: string }, input: UniversalStackInput, money: (gbp: number) => string): string {
+  const v = d.baseValue;
+  if (d.unit.includes('£')) return `${money(v)}${d.unit.replace('£', '')}`;
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  switch (d.unit) {
+    case 'hr': {
+      // A bench operation has no machine time: the driver swings its LABOUR time, so print that.
+      const i = Number(/^operations\[(\d+)\]/.exec(d.parameter)?.[1] ?? NaN);
+      const op = Number.isFinite(i) ? input.operations[i] : undefined;
+      if (!(v > 0) && op && op.labourTimeHr > 0) return `${minutesText(op.labourTimeHr * 60)} min (labour)`;
+      return `${minutesText(v * 60)} min`;
+    }
+    case 'parts': return `${v.toLocaleString('en-GB', { maximumFractionDigits: 2 })} parts`;
+    case 'kg': return `${v.toFixed(3)} kg`;
+    case '%': return `${r2(v)}%`;
+    default: return `${r2(v)}${d.unit ? ` ${d.unit}` : ''}`;
+  }
+}
 
 /**
  * CAD-derived provenance + geometry metadata that rides into the should-cost
@@ -113,7 +149,12 @@ export interface CADReportMeta {
   featureLines?: FeatureMachiningLine[] | null;
   /** True only when the costing's operations are these feature lines; otherwise §4C is a geometry audit with no £. */
   featureLinesInCost?: boolean;
+  /** The rate of the machine that cuts the features (not the lathe's when a drilling centre drills them). */
   featureMachineRatePerHr?: number | null;
+  /** That machine's OEE — §4A charges minutes ÷ 60 × rate ÷ OEE, so §4C does too (default 1). */
+  featureMachineOee?: number | null;
+  /** The costing's turning operation, when it has one: a boss / turned feature is cut there, not left uncosted. */
+  featureTurningOp?: string | null;
   /** Geometric DFM/DFA from the background job, when one has completed. */
   geometricDFM?: GeometricDFMMeta | null;
   /**
@@ -997,7 +1038,14 @@ export function renderShouldCostSections(
 
   y = secBar(doc, y, '§3 — Material Detail');
 
-  const matRows: string[][] = [
+  // A direct-cost material priced by its itemised lines (composites' fibre + resin) has no grade, no £/kg and no
+  // costed kg of its own: its placeholder printed "mat-virtual", "Virtual / Pass-through" and "0.0000 kg" (Nov 2026).
+  const itemised = input.rawMaterial.directCost !== undefined && (/^mat-virtual/.test(input.rawMaterial.materialId) || !(input.rawMaterial.netWeightKg > 0));
+  const itemisedKg = itemised ? (input.rawMaterial.netWeightKg > 0 ? input.rawMaterial.netWeightKg : rulePartWeightKg(cadMeta.checks?.ruleValues)) : null;
+  const matRows: string[][] = itemised ? [
+    ['Material',                   (input.rawMaterial.lines ?? []).length ? 'Itemised lines (3B)' : 'Supplied price', '', 'Priced by the commodity module from its own lines, not weight × price per kg'],
+    ['Costed Part Weight',         itemisedKg ? `${itemisedKg.toFixed(4)} kg` : 'not weight-based', itemisedKg ? 'kg' : '', itemisedKg ? 'The part weight the commodity rules costed (the material lines below are bought from it)' : 'The material line is not costed by weight'],
+  ] : [
     ['Material ID',                input.rawMaterial.materialId,                             'ID',           ''],
     // the source note is printed once, on the price row (it was printed in full on both rows — demo review 2026-10-10)
     ['Grade / Specification',      mat?.grade ?? 'Direct Cost Entry',                        '',             mat ? 'Price source: see Material Price below' : ''],
@@ -1054,7 +1102,7 @@ export function renderShouldCostSections(
   const passThrough = input.rawMaterial.directCost !== undefined;
   matRows.push(
     ['', '', '', ''],
-    ['Data Confidence', mat?.confidence ?? '—', '', ''],
+    ['Data Confidence', itemised ? 'per line (3B provenance)' : mat?.confidence ?? '—', '', ''],
     passThrough
       ? ['Rates dated', String(library.lastModified ?? '—').slice(0, 10), '', `Rate library ${library.version ?? ''} used by the commodity module`]
       : ['Effective Date', mat?.effectiveDate ?? '—', '', ''],
@@ -1093,22 +1141,64 @@ export function renderShouldCostSections(
   // the report and, on its own, unauditable. Print the lines behind it.
   const matLines = input.rawMaterial.lines ?? [];
   if (matLines.length > 0) {
+    // The line values are summed ONCE, exactly, and only then converted and rounded. A board's lines are pieces, so a
+    // PCB BOM counts them; any other itemisation (composites' kg of prepreg + an inspection a part) mixes units, so it
+    // prints each quantity with its unit and no piece total ("2 lines · 1.4128 pieces" added kg to counts; Nov 2026).
+    const isPcb = /pcb/.test(String(commodityType));
     const linesTotal = matLines.reduce((a, l) => a + l.qty * l.unitCost, 0);
     const totalQty = matLines.reduce((a, l) => a + l.qty, 0);
+    const direct = input.rawMaterial.directCost ?? 0;
+    // Lines that reconcile to the bucket (the gap is the rounding of the line quantities) total AS the bucket, so the
+    // BOM total and §1 never differ by a display penny (CN ¥112.30 v ¥112.29).
+    const reconciles = Math.abs(direct - linesTotal) < 0.005;
+    const bomTotal = reconciles && direct > 0 ? direct : linesTotal;
+    const qtyText = (q: number) => (Number.isInteger(q) ? String(q) : q.toLocaleString('en-GB', { maximumFractionDigits: 4 }));
     doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-    doc.text(`3B  Bill of Materials  (${matLines.length} lines  ${String.fromCharCode(183)}  ${totalQty} pieces)`, MG, y);
+    doc.text(isPcb
+      ? `3B  Bill of Materials  (${matLines.length} lines  ${String.fromCharCode(183)}  ${qtyText(totalQty)} pieces)`
+      : `3B  Itemised material  (${matLines.length} line${matLines.length === 1 ? '' : 's'})`, MG, y);
     y += 5;
 
     // Column set matches the PCB master report's BOM so the two are readable
     // side by side: line number, designator, description, package, value, qty,
     // unit and extended cost. Package and value are what let an engineer check
     // a line against the board without going back to the source photographs.
-    const body = matLines.map((l, i) => [
-      String(i + 1), l.ref, l.description, l.pkg ?? '', l.value ?? '',
-      String(l.qty), c(l.unitCost), c(l.qty * l.unitCost),
-    ]);
-    body.push(['', '', 'BOM TOTAL', '', '', String(totalQty), '', c(linesTotal)]);
+    const body = isPcb
+      ? matLines.map((l, i) => [
+        String(i + 1), l.ref, l.description, l.pkg ?? '', l.value ?? '',
+        qtyText(l.qty), c(l.unitCost), c(l.qty * l.unitCost),
+      ])
+      : matLines.map((l, i) => [
+        String(i + 1), l.ref, l.description, `${qtyText(l.qty)}${l.pkg ? ` ${l.pkg}` : ''}`, c(l.unitCost), c(l.qty * l.unitCost),
+      ]);
+    body.push(isPcb ? ['', '', 'BOM TOTAL', '', '', qtyText(totalQty), '', c(bomTotal)] : ['', '', 'TOTAL', '', '', c(bomTotal)]);
 
+    if (!isPcb) {
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG },
+        head: [['#', 'Line', 'Description', 'Qty', `Unit ${currency}`, `Ext ${currency}`]],
+        body,
+        theme: 'plain',
+        headStyles: { ...TH.headStyles, fontSize: 7 },
+        bodyStyles: { ...TH.bodyStyles, fontSize: 6.8 },
+        alternateRowStyles: { fillColor: LIGHT },
+        columnStyles: {
+          0: { cellWidth: 10, textColor: GREY, halign: 'right', cellPadding: { top: 2.5, bottom: 2.5, left: 1, right: 1.5 } },
+          1: { cellWidth: 22, fontStyle: 'bold' },
+          2: { cellWidth: 66 },
+          3: { cellWidth: 36, halign: 'right' },
+          4: { cellWidth: 22, halign: 'right' },
+          5: { cellWidth: 26, halign: 'right', fontStyle: 'bold' },
+        },
+        didParseCell: (d) => {
+          if (d.section === 'body' && d.row.index === body.length - 1) {
+            d.cell.styles.fontStyle = 'bold';
+            d.cell.styles.fillColor = OR_LT;
+            d.cell.styles.textColor = NAVY;
+          }
+        },
+      });
+    } else {
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG },
       head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', `Unit ${currency}`, `Ext ${currency}`]],
@@ -1140,6 +1230,7 @@ export function renderShouldCostSections(
         }
       },
     });
+    }
     y = lastFinalY(doc) + 4;
 
     // Provenance is per line and too long for a column, so it goes underneath —
@@ -1161,10 +1252,10 @@ export function renderShouldCostSections(
 
     // Reconcile the itemisation against the bucket it is meant to explain. A
     // silent gap here would be worse than printing nothing.
-    const direct = input.rawMaterial.directCost ?? 0;
     const gap = direct - linesTotal;
     const note = Math.abs(gap) < 0.005
-      ? `Lines reconcile exactly to the ${c(direct)} direct material cost.`
+      ? (c(linesTotal) === c(direct) ? `Lines reconcile exactly to the ${c(direct)} direct material cost.`
+        : `Lines reconcile to the ${c(direct)} direct material cost: they add to ${sym}${(linesTotal * fxRate).toFixed(4)}, the ${sym}${(Math.abs(gap) * fxRate).toFixed(4)} difference being the rounding of the line quantities; the total printed is the bucket.`)
       : `Lines total ${c(linesTotal)} against a ${c(direct)} material bucket - the ${c(Math.abs(gap))} `
         + `${gap > 0 ? 'balance' : 'excess'} is carried outside the itemisation${/pcb/.test(commodityType) ? ' (bare board, yield / rework allowance, coating)' : ''} — see the material rows above.`;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...GREY);
@@ -1221,7 +1312,7 @@ export function renderShouldCostSections(
       shortOperationName(op.operationName),
       mObj?.machineClass ?? op.machineId,
       c(op.machineRateUsed),
-      (op.cycleTimeHr * 60).toFixed(2),
+      minutesText(op.cycleTimeHr * 60),
       // Parts per cycle divides BOTH machine and labour time. Without it the
       // reader cannot reconcile a multi-cavity mould or multi-up stamping:
       // "45 s cycle" against a per-part cost four times smaller looks wrong
@@ -1273,7 +1364,7 @@ export function renderShouldCostSections(
       lObj?.skillLevel ?? op.labourId,
       c(op.labourRateUsed),
       String(op.manning),
-      (op.labourTimeHr * 60).toFixed(2),
+      minutesText(op.labourTimeHr * 60),
       pct(op.labourEfficiency * 100),
       c(op.labourCost),
       c(op.processCost + op.labourCost),
@@ -1348,29 +1439,38 @@ export function renderShouldCostSections(
     } else {
 
     const rate = cadMeta.featureMachineRatePerHr ?? 0;
+    // §4A charges an operation minutes ÷ 60 × rate ÷ OEE; the feature table priced the same minutes without the OEE
+    // (and at the lathe's rate on a drilled hub flange), so the two disagreed (report review H2, Nov 2026).
+    const oee = cadMeta.featureMachineOee != null && cadMeta.featureMachineOee > 0 && cadMeta.featureMachineOee <= 1 ? cadMeta.featureMachineOee : 1;
+    const machineGbp = (min: number) => (min / 60) * rate / oee;
+    // A boss / turned feature on a part the costing turns is cut by that turning operation (§4A): it is not an
+    // uncosted feature, and not priced again at this machine's rate (report review H3).
+    const turnOp = cadMeta.featureTurningOp ? shortOperationName(cadMeta.featureTurningOp) : null;
+    const inTurning = (l: FeatureMachiningLine) => !!turnOp && !l.included && (l.kind === 'boss' || /turn/i.test(l.operation));
     const kindLbl: Record<string, string> = { hole: 'Hole / bore', boss: 'Boss', face: 'Face', pocket: 'Pocket', slot: 'Slot' };
     let costedMin = 0, notMin = 0, costedCnt = 0, notCnt = 0;
     const featRows = cadMeta.featureLines.map(l => {
       const dim = (l.kind === 'hole' || l.kind === 'boss')
         ? `Ø${l.diaMm.toFixed(1)} × ${l.depthMm.toFixed(0)}${l.kind === 'hole' ? (l.through ? ' thru' : ' blind') : ''}`
         : `${Math.round(l.areaMm2 ?? 0)} mm²${l.depthMm > 0 ? ` × ${l.depthMm.toFixed(0)}` : ''}`;
-      const lineCost = (l.totalMinutes / 60) * rate;
-      if (l.included) { costedMin += l.totalMinutes; costedCnt += l.count; } else { notMin += l.totalMinutes; notCnt += l.count; }
+      const turned = inTurning(l);
+      if (l.included) { costedMin += l.totalMinutes; costedCnt += l.count; } else if (!turned) { notMin += l.totalMinutes; notCnt += l.count; }
       return [
         kindLbl[l.kind] ?? l.kind,
         dim,
         String(l.count),
         l.operation,
         l.totalMinutes.toFixed(2),
-        l.included ? c(lineCost) : '—',
-        l.included ? 'Yes' : 'No',
+        l.included ? c(machineGbp(l.totalMinutes)) : turned ? `in ${turnOp}` : '—',
+        l.included ? 'Yes' : turned ? 'In turning' : 'No',
       ];
     });
-    featRows.push(['TOTAL costed', '', String(costedCnt), '', costedMin.toFixed(2), c((costedMin / 60) * rate), 'Yes']);
+    featRows.push(['TOTAL costed', '', String(costedCnt), '', costedMin.toFixed(2), c(machineGbp(costedMin)), 'Yes']);
 
     // The column is minutes × the machine's own rate — machine only; it read as the feature's full cost (Germany review).
     doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
-    doc.text(`"Machine" = minutes × the machine rate (${c(rate)}/h, machine only — operator, overhead and margin are added in the stack).`, MG, y); y += 4;
+    for (const ln of doc.splitTextToSize(`"Machine" = minutes × the machine rate ÷ OEE (${c(rate)}/h ÷ ${+oee.toFixed(3)}), as §4A charges it — machine only; operator, overhead and margin are added in the stack.${turnOp ? ` A boss or turned feature is cut in "${turnOp}" (§4A) and is not priced again here.` : ''}`, CW) as string[]) { doc.text(ln, MG, y); y += 3.3; }
+    y += 0.7;
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG },
       head: [['Feature', 'Ø×depth / area', 'Qty', 'Operation', 'Min', 'Machine', 'Costed?']],
@@ -1398,7 +1498,7 @@ export function renderShouldCostSections(
     y = lastFinalY(doc) + 4;
     if (notCnt > 0) {
       y = calloutBox(doc, y, `${notCnt} detected feature(s) NOT costed`, [
-        `${notCnt} machinable feature instance(s) (${notMin.toFixed(1)} min) were detected in the geometry but are NOT included in this cost — on a near-net part they may be ${/forg/.test(String(commodityType)) ? 'as-forged' : /cast/.test(String(commodityType)) ? 'as-cast' : 'left as supplied'}. If they are machined, tick them in the Machined-Features panel and re-cost; this could add up to ${c((notMin / 60) * rate)} of machine time (operator, overhead and margin come on top in the stack).`,
+        `${notCnt} machinable feature instance(s) (${notMin.toFixed(1)} min) were detected in the geometry but are NOT included in this cost — on a near-net part they may be ${/forg/.test(String(commodityType)) ? 'as-forged' : /cast/.test(String(commodityType)) ? 'as-cast' : 'left as supplied'}. If they are machined, tick them in the Machined-Features panel and re-cost; this could add up to ${c(machineGbp(notMin))} of machine time (operator, overhead and margin come on top in the stack).`,
       ], AM, OR_LT);
     } else {
       y += 4;
@@ -1487,9 +1587,9 @@ export function renderShouldCostSections(
     // Each distinct source is printed in full once: the same 30-line machine note repeated for every operation turned
     // §6 into ten pages of identical text (demo review 2026-10-10). A later row with the same source says so.
     body: (() => { const seen = new Set<string>(); return result.traceability.map(t => {
-      const role = /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : t.rateId;
+      const role = /^lab-/.test(t.rateId ?? '') ? labourRoleLabel(t.rateId) : traceRateIdText(t.rateId);
       const key = `${t.rateId ?? ''}|${t.rateSource}`;
-      const src = seen.has(key) ? `as above (${role ?? 'same source'})` : (seen.add(key), reportNoteText(t.rateSource));
+      const src = seen.has(key) ? `as above (${role || 'same source'})` : (seen.add(key), reportNoteText(t.rateSource));
       return t.unit.includes('£')
         ? [traceFieldLabel(shortOperationName(t.field)), (t.value * fxRate).toFixed(4), t.unit.replace('£', sym), src, role, t.confidence]
         : [traceFieldLabel(shortOperationName(t.field)), t.value.toFixed(4), t.unit, src, role, t.confidence];
@@ -1558,7 +1658,7 @@ export function renderShouldCostSections(
     if (lowRates > 0) drivers.push(`${lowRates} rate(s) at Low confidence`);
     if (result.breakdown.tooling > 0.005) drivers.push('tooling amortisation carries the widest per-bucket spread');
     if (!drivers.length) drivers.push('rate-data confidence alone (no estimated geometry, no Low-confidence rate)');
-    if (cadMeta.featureLinesInCost && cadMeta.featureLines?.some(l => !l.included)) drivers.push('some detected features not costed (see §4C)');
+    if (cadMeta.featureLinesInCost && cadMeta.featureLines?.some(l => !l.included && !(cadMeta.featureTurningOp && (l.kind === 'boss' || /turn/i.test(l.operation))))) drivers.push('some detected features not costed (see §4C)');
     y = calloutBox(doc, y, `Why confidence is ${confShown}`, [
       `Main band drivers: ${drivers.join('; ')}.`,
     ], confShown === 'High' ? GN : confShown === 'Medium' ? AM : RD,
@@ -1580,7 +1680,10 @@ export function renderShouldCostSections(
           : `The tooling over the amortisation (${c(tl.totalToolingCost)} — the first tool, any replacement sets the volume needs and their maintenance) is recovered through this unit cost, amortised over ${Math.round(tl.amortizationVolume).toLocaleString('en-GB')} parts (bucket 4).`)
         : 'No tooling investment is in this costing.',
       // the costing carries a logistics bucket, so "Ex-Works" contradicted it (Poland live review): say what is in and out
-      'Import duty and international freight / cross-border shipping — bucket 6 is the supplier\'s own delivery allowance (a tool estimate: confirm the lane and Incoterm).',
+      input.deliveryTerms === 'EXW'
+        // Ex-works: there is no delivery allowance to describe — logistics is 0 (delivery terms, 30 Oct 2026)
+        ? 'Freight to your plant — the price is ex-works (EXW): packaging is in, logistics (bucket 6) is 0; import duty and international / cross-border shipping are not included.'
+        : 'Import duty and international freight / cross-border shipping — bucket 6 is the supplier\'s own delivery allowance (a tool estimate: confirm the lane and Incoterm).',
       'Formal embodied-carbon reporting (figures are indicative cradle-to-gate — replace with supplier EPDs).',
     ];
     if (isCasting) {
@@ -1601,7 +1704,6 @@ export function renderShouldCostSections(
       y = chk(doc, y, 46);
       y = secBar(doc, y, '§8 — Sensitivity Analysis', `± ${sens.variationPct}% driver swing  ·  ranked by ${sym} impact`);
       const r1 = (n: number) => Math.round(n * 10) / 10;
-      const r2v = (n: number) => Math.round(n * 100) / 100;
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG }, theme: 'grid',
         head: [['Cost Driver', 'Base', `-${sens.variationPct}% cost`, `+${sens.variationPct}% cost`, `Range ${sym}`]],
@@ -1609,8 +1711,7 @@ export function renderShouldCostSections(
           // Monetary drivers carry a '£' in their unit (e.g. "£/kg", "£/hr") and a
           // GBP-denominated baseValue. Convert those to the display currency + symbol;
           // non-money drivers (%, hr, parts) stay as-is. (The header/Range use `sym`.)
-          const money = d.unit.includes('£');
-          const base = money ? `${c(d.baseValue)}${d.unit.replace('£', '')}` : `${r2v(d.baseValue)}${d.unit}`;
+          const base = sensitivityBaseText(d, input, c);
           return [d.driver, base,
             `${d.minusPct > 0 ? '+' : ''}${r1(d.minusPct)}%`, `${d.plusPct > 0 ? '+' : ''}${r1(d.plusPct)}%`, c(d.range)];
         }),
@@ -1640,7 +1741,7 @@ export function renderShouldCostSections(
     const cheapest = Math.min(...rc.map(r => r.total));
     const baseName = rc.find(r => r.isBase)?.name ?? 'base';
     doc.addPage(); y = 18;
-    y = secBar(doc, y, '§9 — Regional Cost Comparison', `per-region should-cost (supplier delivery allowance in, import duty out)  ·  vs ${baseName}`);
+    y = secBar(doc, y, '§9 — Regional Cost Comparison', `per-region should-cost (${input.deliveryTerms === 'EXW' ? 'ex-works: freight not included' : 'supplier delivery allowance in'}, import duty out)  ·  vs ${baseName}`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
       // Every column the total is made of, so a row adds up (it hid packaging and margin), and no local-currency tag over
@@ -1672,7 +1773,9 @@ export function renderShouldCostSections(
       ? 'Each row scales this costing\'s buckets by that country\'s rate factors (no rate book was available to re-cost it).'
       : 'A row without a mark is the part costed with that country selected (its rules, rates, tooling and services).'
         + (repriced.length ? ` Rows marked \u2020 (${repriced.map(r => r.name).join(', ')}) re-price this costing's operations and material weight in that country's book, tooling by its toolroom rate, overhead, packaging and logistics by its shop factors; per-part services and consumables, a material the module priced directly and the module's own choices (machine, cavities, tool life) are carried from the costing country, so they are an approximation.` : ''))
-      + ' Each row carries that country\'s packaging and delivery allowance (bucket 6) and excludes import duty and cross-border freight to the buyer. Indicative — confirm with an RFQ.';
+      + (input.deliveryTerms === 'EXW'
+        ? ' Each row is ex-works (EXW): it carries that country\'s packaging, no freight (logistics 0), and excludes import duty and cross-border freight to the buyer. Indicative — confirm with an RFQ.'
+        : ' Each row carries that country\'s packaging and delivery allowance (bucket 6) and excludes import duty and cross-border freight to the buyer. Indicative — confirm with an RFQ.');
     const rcLines = doc.splitTextToSize(rcNote, CW);
     doc.text(rcLines, MG, y + 3);
     y += rcLines.length * 3.2 + 6;
@@ -1715,7 +1818,8 @@ export function renderShouldCostSections(
         r.tooling ? c(r.tooling.investment) : '—', r.toolingPerPart != null ? c(r.toolingPerPart) : '—',
         r.programme ? c(r.programme.total) : '—',
         r.audit ? (r.audit.closes ? 'closes' : 'OPEN') : '—',
-        r.material ? `${r.material.boughtKg != null ? `${r.material.boughtKg.toFixed(3)} kg` : '—'} for ${r.material.netKg != null ? `${r.material.netKg.toFixed(3)} kg` : '—'} (${r.material.label})` : '—',
+        isItemisedRouteMaterial(r.material) ? ITEMISED_MATERIAL_TEXT
+          : r.material ? `${r.material.boughtKg != null ? `${r.material.boughtKg.toFixed(3)} kg` : '—'} for ${r.material.netKg != null ? `${r.material.netKg.toFixed(3)} kg` : '—'} (${r.material.label})` : '—',
         why(r),
       ]),
       headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 5.8 },
@@ -1984,7 +2088,7 @@ export function renderShouldCostSections(
       .slice(0, 8)
       .map(t => ({
         title: traceFieldLabel(shortOperationName(t.field)).replace(/^material: price$/i, 'Material price'),
-        detail: `Low confidence — ${/labourRatePerHr/.test(t.field) ? `${t.rateId ? labourRoleLabel(t.rateId) : 'labour'} rate` : /machineRatePerHr/.test(t.field) ? 'machine rate' : 'rate'} ${sym}${(t.value * fxRate).toFixed(2)}${t.unit.replace('£', '')}: ${reportNoteText(String(t.rateSource)).replace(/^[^:]*book [0-9-]+: /, '').split(/(?<=\.)\s/)[0].slice(0, 140)} (the derivation is in §6)`,
+        detail: `Low confidence — ${/labourRatePerHr/.test(t.field) ? `${t.rateId ? labourRoleLabel(t.rateId) : 'labour'} rate` : /machineRatePerHr/.test(t.field) ? 'machine rate' : 'rate'} ${sym}${(t.value * fxRate).toFixed(2)}${t.unit.replace('£', '')}: ${clipAtWord(reportNoteText(String(t.rateSource)).replace(/^[^:]*book [0-9-]+: /, '').split(/(?<=\.)\s/)[0], 140)} (the derivation is in §6)`,
         action: /machineRatePerHr/.test(t.field) ? 'Confirm with the supplier\'s machine-hour rate or a local capex quote'
           : /pricePerKg/.test(t.field) ? 'Confirm with a local supplier price for this grade' : 'Confirm with a local quote',
       }));
@@ -2536,13 +2640,23 @@ export function printPDF(
 
   // ── Geometry provenance (CAD flows) — measured vs estimated ───────────────
   const alloyMat = library.materials.find(m => m.id === input.rawMaterial.materialId);
+  // A direct-cost material priced by its itemised lines (composites) has no density of its own: the "measured" mass
+  // at the placeholder's density (volume × 1.0) is not the part's, and its costed kg is 0. Print the part weight the
+  // rules costed, or say the material is priced by its lines — never 0.000 kg or a density-1 mass (Nov 2026).
+  const itemisedMat = input.rawMaterial.directCost !== undefined
+    && (/^mat-virtual/.test(input.rawMaterial.materialId) || !(input.rawMaterial.netWeightKg > 0));
+  const itemisedKg = itemisedMat ? (input.rawMaterial.netWeightKg > 0 ? input.rawMaterial.netWeightKg : rulePartWeightKg(cadMeta.checks?.ruleValues)) : null;
+  const itemisedNames = (input.rawMaterial.lines ?? []).map(l => l.ref).filter(Boolean).join(', ');
   if (cadMeta.geometrySource) {
     const src = cadMeta.geometrySource;
-    const wt = cadMeta.measuredWeightKg != null ? `${cadMeta.measuredWeightKg.toFixed(3)} kg` : '—';
+    const wt = itemisedMat ? (itemisedKg ? `${itemisedKg.toFixed(3)} kg (the part weight the rules costed)` : 'not costed by weight')
+      : cadMeta.measuredWeightKg != null ? `${cadMeta.measuredWeightKg.toFixed(3)} kg` : '—';
     const vol = cadMeta.measuredVolumeCm3 != null ? `${cadMeta.measuredVolumeCm3.toFixed(1)} cm³` : '—';
     if (src === 'occt') {
       y = calloutBox(doc, y, 'Geometry Provenance — MEASURED (OCCT B-rep kernel)', [
-        `Volume, weight and every feature were measured from the CAD solid by the Open CASCADE kernel. Measured volume ${vol}; finished-part mass at the costed material's density ${wt}.`,
+        itemisedMat
+          ? `Volume and every feature were measured from the CAD solid by the Open CASCADE kernel. Measured volume ${vol}; part weight ${wt}.`
+          : `Volume, weight and every feature were measured from the CAD solid by the Open CASCADE kernel. Measured volume ${vol}; finished-part mass at the costed material's density ${wt}.`,
         // The VOLUME is measured; the costed weight adds rule machining stock, and prices / rates carry their own
         // confidence — "not an estimate" overstated it (casting 360 review, Oct 2026).
         'The volume, faces and holes are measured. The costed weight is the measured part with its stated allowances (the reject allowance, and machining stock where the route carries it — §3), and the prices and rates carry their own confidence (§6) — those are estimates, not measurements.',
@@ -2569,7 +2683,9 @@ export function printPDF(
   const costedKg = input.rawMaterial.netWeightKg;
   const finishedKg = cadMeta.measuredWeightKg ?? null;
   const nearNet = /cast|forg/.test(commodityType);
-  const costedWeightLine = finishedKg != null && Math.abs(costedKg - finishedKg) > 0.01 * Math.max(finishedKg, 1e-9)
+  const costedWeightLine = itemisedMat
+    ? (itemisedKg ? `Costed part weight: ${itemisedKg.toFixed(3)} kg (the rules' part weight) — the material is priced by its itemised lines (§3B)` : 'Costed weight: not weight-based — the material is priced by its itemised lines (§3B)')
+    : finishedKg != null && Math.abs(costedKg - finishedKg) > 0.01 * Math.max(finishedKg, 1e-9)
     ? `Costed weight: ${costedKg.toFixed(3)} kg${nearNet ? ` (${/forg/.test(commodityType) ? 'as forged' : 'as cast'}: the finished ${finishedKg.toFixed(3)} kg measured + the stock machining removes)` : costedKg > finishedKg ? ` (the finished ${finishedKg.toFixed(3)} kg measured + the reject / process allowance the module carries)` : ` (finished part measured at ${finishedKg.toFixed(3)} kg)`}`
     : `Net weight: ${costedKg.toFixed(3)} kg${wtNote}`;
 
@@ -2606,7 +2722,7 @@ export function printPDF(
   }
   y = calloutBox(doc, y, 'Key Assumptions', [
     volLine,
-    `Alloy / material: ${alloyMat?.grade ?? input.rawMaterial.materialId}${pinNote ? ` (${pinNote})` : ''}   ·   ${costedWeightLine}`,
+    `${itemisedMat ? `Material: itemised lines${itemisedNames ? ` (${itemisedNames})` : ''}` : `Alloy / material: ${alloyMat?.grade ?? input.rawMaterial.materialId}`}${pinNote ? ` (${pinNote})` : ''}   ·   ${costedWeightLine}`,
     `Material utilisation: ${utilPct.toFixed(0)}%   ·   Overhead: ${(input.overheadPct * 100).toFixed(0)}% of material + process + labour + tooling${(input.rawMaterial.boughtIn?.cost ?? 0) > 0 ? ' (bought-in content excluded — it carries a handling charge only)' : ''}   ·   Margin: ${(input.marginPct * 100).toFixed(0)}% of the subtotal${(input.rawMaterial.boughtIn?.cost ?? 0) > 0 ? ' excl. bought-in' : ''}   ·   Operations: ${result.operationDetails.length}`,
   ], NAVY, HDR);
 

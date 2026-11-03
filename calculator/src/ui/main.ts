@@ -18213,7 +18213,10 @@ function buildChecksApplied(): CADReportMeta['checks'] {
   // The same test the costing gate applies (sanityStillApplies) — STATUS printed NOT COSTABLE for a figure it accepted.
   const unacked = cadSanityWarnings.some(w => w.blocking && sanityStillApplies(w.code) && !_cadSanityAcks.has(w.code));
   const asked = { ..._cadDecisionsAsked };
-  for (const d of _cadDecisions) asked[d.id] = { question: d.question, severity: d.severity };
+  for (const d of _cadDecisions) asked[d.id] = { question: d.question, severity: d.severity, options: d.options.map(o => ({ value: o.value, label: o.label })) };
+  // An answer prints as the option the engineer chose ("Carbon prepreg, autoclave"), never its value ("prepreg-cf")
+  // — the reports printed the internal value (7-country review, 3 Nov 2026).
+  const optionLabel = (id: string, v: string | undefined) => (v && asked[id]?.options?.find(o => o.value === v)?.label) || v;
   return {
     costable: !openBlocking && !unacked,
     geometryQuality: cadGeometrySource === 'occt' ? 'occt' : cadGeometrySource === 'stl_parser' ? 'stl' : cadGeometrySource ? 'text' : null,
@@ -18221,7 +18224,7 @@ function buildChecksApplied(): CADReportMeta['checks'] {
     // a question asked in an earlier round and no longer asked was settled by a later answer (the resin settles the
     // family) — it printed "OPEN" under a "COSTABLE — no blocking decision is open" status (Poland live review)
     decisions: Object.entries(asked).map(([id, d]) => ({ id, question: d.question, severity: d.severity as CADDecision['severity'],
-      answer: _cadDecisionAnswers[id] ?? (_cadDecisions.some(c => c.id === id) ? null
+      answer: optionLabel(id, _cadDecisionAnswers[id]) ?? (_cadDecisions.some(c => c.id === id) ? null
         : id === 'material.family' && _cadDecisionAnswers['material.resin']
           ? `plastic — settled by the resin answered (${library.materials.find(m => m.id === _cadDecisionAnswers['material.resin'])?.grade ?? _cadDecisionAnswers['material.resin']})`
           : 'no longer asked — settled by a later answer'),
@@ -18296,12 +18299,16 @@ function buildCadReportMeta(): CADReportMeta {
   if (!cadAnalysisResult || !lastInput) return universal;
   const volCm3 = cadOCCTGeometry?.volume?.cm3 ?? null;
   const matRate = library.materials.find(m => m.id === lastInput!.rawMaterial.materialId);
-  const measuredWeightKg = (volCm3 != null && matRate)
+  // No weight for a module-priced placeholder material: volume × its density 1,000 printed 0.195 kg beside a costing
+  // that used 0.303 kg (composites, 7-country review).
+  const measuredWeightKg = (volCm3 != null && matRate && !/^mat-virtual/.test(matRate.id))
     ? Math.round((volCm3 / 1e6) * matRate.densityKgPerM3 * 1000) / 1000
     : null;
 
   let featureLines: FeatureMachiningLine[] | null = null;
   let featureMachineRatePerHr: number | null = null;
+  let featureMachineOee = 1;
+  let featureTurningOp: string | null = null;
   let featureStock: 'near_net' | 'solid_billet' | null = null;
   let featureLinesInCost = false;
   const rows = (cadOCCTGeometry?.featureTable ?? []) as FeatureRow[];
@@ -18318,7 +18325,13 @@ function buildCadReportMeta(): CADReportMeta {
       fm = computeFeatureMachining(rows, { machineId, labourId: resolveLabourId('lab-uk-skilled'), stockCondition: stock });
     }
     featureLines = fm.lines;
+    // The machine that CUTS the features (holes / pockets), not the first operation: a forging's secondary machining
+    // turns on the lathe first, and §4C priced its drilling at the lathe's rate (7-country review, 3 Nov 2026).
+    const featOp = (fm.operations ?? []).filter(o => !/turn/i.test(o.operationName)).sort((a, b) => b.cycleTimeHr - a.cycleTimeHr)[0];
+    if (featOp) { machineId = featOp.machineId; featureMachineOee = featOp.oee ?? 1; }
     featureMachineRatePerHr = library.machines.find(m => m.id === machineId)?.computedRatePerHr ?? null;
+    // A turned boss is not "not costed" when the costing turns the part in its own operation.
+    featureTurningOp = lastInput!.operations.find(o => /turn/i.test(o.operationName) && !o.benchOperation)?.operationName ?? null;
     // In the cost only when the costing's operations ARE these feature operations (casting / forging secondary
     // machining, or machining with feature machining as the basis). Otherwise the table is a geometry audit of a fresh
     // VMC calculation the costing never used — the PDF printed "Costed? Yes" and a £ total for it, and the 3D viewer
@@ -18336,6 +18349,8 @@ function buildCadReportMeta(): CADReportMeta {
     featureLines,
     featureLinesInCost,
     featureMachineRatePerHr,
+    featureMachineOee,
+    featureTurningOp,
     featureStock,
     userSpecifiedMaterial: _cadMaterialLocked,
     userSpecifiedProcess: _cadProcessLocked,
@@ -21298,7 +21313,9 @@ function collectCADBasis(): BasisRow[] {
   }
   // Measured fields the fill wrote outside the rule set (weights, envelope).
   for (const id of Object.keys(_cadFillSource)) {
-    if (seen.has(id) || !CAD_MEASURED_ID.test(id) || cadGeometrySource === 'text_parsing') continue;
+    // An advisor widget's own inputs (forge-adv-vol, sm-adv-vol …) are not the costing: the hub flange's Basis listed
+    // "Measured · Annual Volume · 100000" — the forging advisor's default — on a 200,000-a-year costing (7-country review).
+    if (seen.has(id) || !CAD_MEASURED_ID.test(id) || /-adv-/.test(id) || cadGeometrySource === 'text_parsing') continue;
     const value = shown(id);
     if (!value || value === '0') continue;
     seen.add(id);
