@@ -24,6 +24,7 @@ import type { OCCTGeometry } from '../../server/utils/geometry-bridge.js';
 import type { RateLibrary } from './types.js';
 import type { MaterialFamily } from './material-family.js';
 import { materialFromFile } from './cost-input-rules/derive/part-evidence.js';
+import { shapeComplexity as forgingShape } from './cost-input-rules/commodities/forging.js';
 import type { RuleContext } from './cost-input-rules/types.js';
 import { COMMODITY_FAMILIES, DENSITY_KG_PER_CM3, representativeMaterialId } from './cost-input-rules/derive/material.js';
 import { enclosedShell, cavityShell } from './cost-input-rules/derive/hollow.js';
@@ -335,7 +336,10 @@ export function screenRoute(route: string, i: ScreenInput): RouteScreen {
     const alloy = forgingAlloyForGrade(repId ?? null) ?? 'carbon-steel';
     if (f.planCm2 != null) {
       const tonnes = estimateForgingTonnage({
-        projectedAreaCm2: f.planCm2 + flashGeometry(f.planCm2).landAreaCm2, alloyFamily: alloy, shapeComplexity: 'moderate',
+        // The costing's own shape rule (constraint factor 3 / 5 / 8 from the measured faces) — a fixed "moderate" sized
+        // the hub flange at 893 t beside the costing's 535 t (7-country review, 3 Nov 2026).
+        projectedAreaCm2: f.planCm2 + flashGeometry(f.planCm2).landAreaCm2, alloyFamily: alloy,
+        shapeComplexity: forgingShape({ geo: i.geo, filename: i.filename, answers: {} } as unknown as RuleContext),
       });
       const need = Math.round(tonnes * 1.2);
       const max = largestForgePressTonnes();
