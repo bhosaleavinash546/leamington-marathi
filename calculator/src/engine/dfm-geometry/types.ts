@@ -32,12 +32,54 @@ import type { ManufacturingFeature, ManufacturingFeatureSet } from '../ai-analys
 
 export type { ManufacturingFeature, ManufacturingFeatureSet };
 
-/** Ordered worst-first — the report and the API both sort on this. */
-export type GeoSeverity = 'critical' | 'major' | 'minor' | 'advisory';
+/**
+ * What a finding means for THIS costing, worst first (report standard, Nov 2026 — the old MAJOR / MINOR grades did not
+ * track consequence: 7 of the stub axle's 9 findings were MAJOR, none blocked the process or moved the price):
+ *
+ * - `blocking` — the part cannot be made as drawn on the costed route (a forging face that cannot leave the die).
+ * - `cost`     — the finding carries a £ re-costed through the costing's own model (set by the runner after pricing,
+ *                never by a rule).
+ * - `risk`     — a quality, yield or tool-life risk the costing does not price.
+ * - `info`     — a fact the engineer should know; no defect and no £.
+ */
+export type GeoSeverity = 'blocking' | 'cost' | 'risk' | 'info';
+
+/** The grades before Nov 2026 — still in stored job results; `normaliseSeverity` maps them. */
+export type LegacyGeoSeverity = 'critical' | 'major' | 'minor' | 'advisory';
 
 export const SEVERITY_RANK: Record<GeoSeverity, number> = {
-  critical: 0, major: 1, minor: 2, advisory: 3,
+  blocking: 0, cost: 1, risk: 2, info: 3,
 };
+
+/** The word the panel and the reports print. */
+export const SEVERITY_LABEL: Record<GeoSeverity, string> = {
+  blocking: 'BLOCKING', cost: 'COST', risk: 'RISK', info: 'INFO',
+};
+
+/** One line on what each grade means — printed with the legend. */
+export const SEVERITY_MEANING: Record<GeoSeverity, string> = {
+  blocking: 'cannot be made as drawn on the costed route',
+  cost: 'moves this costing by the re-costed amount shown',
+  risk: 'a quality, yield or tool-life risk the costing does not price',
+  info: 'for information; no defect and no amount',
+};
+
+/**
+ * Any grade — new or one stored by an older job — as a new grade. An old result has no `cost` grade: a priced finding
+ * maps to `cost` (unless it was critical), `critical` to `blocking`, `major` / `minor` to `risk`, `advisory` to `info`.
+ */
+export function normaliseSeverity(s: string | undefined, priced = false): GeoSeverity {
+  const k = String(s ?? '').toLowerCase();
+  if (k === 'blocking' || k === 'critical') return 'blocking';
+  if (priced || k === 'cost') return 'cost';
+  if (k === 'risk' || k === 'major' || k === 'minor') return 'risk';
+  return 'info';
+}
+
+/** Sort rank of any grade string (new or legacy); unknown sorts last. */
+export function severityRank(s: string | undefined): number {
+  return SEVERITY_RANK[normaliseSeverity(s)] ?? 4;
+}
 
 /**
  * Where a threshold comes from. Required on every rule.
@@ -73,6 +115,49 @@ export interface PartContext {
    * with a stated reason — never estimated. See `cost-impact.ts`.
    */
   cost?: import('./cost-impact.js').CostContext;
+  /**
+   * The faces the COSTING machines (cast + machine, castings and forgings with secondary machining): its faced rows,
+   * every hole and cored / pierced bore, and the turned axis. Draft, corner, undercut, section and hot-spot rules judge
+   * only the faces the process forms, so they skip these (report standard, Nov 2026: the casting draft rule flagged the
+   * very flats the costing machines). Absent = no machined set known; every face is judged, and the report says so.
+   * Built by `machinedFaceSet` (machined-faces.ts) from the same feature table the costing reads.
+   */
+  machined?: MachinedFaceSet;
+  /**
+   * Library ids of the machines the costing routes the part on (e.g. `mach-hmc-400`). Setup and compound-angle findings
+   * are judged against them — a 3-axis setup count is not a finding on a 4th-axis routing. Absent = not known.
+   */
+  machineIds?: string[];
+  /** The developed flat blank of a sheet part, when the job unfolded it (`sheet-blank.ts`). */
+  sheetBlank?: import('./commodities/sheet-blank.js').SheetBlankFacts;
+  /**
+   * True only when the part is costed as part of an assembly. Nothing sets it today: the Boothroyd handling / insertion
+   * estimate is not applicable to a single part with no assembly, and is not returned (report standard, Nov 2026).
+   */
+  assembly?: boolean;
+}
+
+/** The faces a costing machines, with where each came from. */
+export interface MachinedFaceSet {
+  faceIds: number[];
+  /** How many faces each source contributed (a face may come from more than one). */
+  counts: { faced: number; holes: number; turned: number; steps: number; blends: number };
+  /** One sentence the report prints: what the costing machines and how the set was read. */
+  basis: string;
+}
+
+/** Does this feature sit on a face the costing machines? */
+export function onMachinedFace(f: { faceIds: number[] }, part: PartContext): boolean {
+  const m = part.machined;
+  if (!m || !m.faceIds.length) return false;
+  const set = machinedLookup(m);
+  return f.faceIds.some(id => set.has(id));
+}
+const _lookup = new WeakMap<MachinedFaceSet, Set<number>>();
+function machinedLookup(m: MachinedFaceSet): Set<number> {
+  let s = _lookup.get(m);
+  if (!s) { s = new Set(m.faceIds); _lookup.set(m, s); }
+  return s;
 }
 
 /**
@@ -96,6 +181,9 @@ export interface GeometricFinding {
   recommendation: string;
   source: RuleSource;
   positionMm?: [number, number, number];
+  /** The feature's measured area, mm² — the group's "worst" prefers the largest face among equal readings (a 0 mm² sliver
+   *  at 0° draft is not the face to show). */
+  areaMm2?: number;
   /**
    * What this finding is worth, when a cost path is modelled. See
    * `cost-impact.ts` — set by `analyseGeometricDFM`, never by a rule, so a rule
@@ -207,6 +295,7 @@ export function finding(
     recommendation: o.recommendation,
     source: rule.source,
     ...(f.positionMm ? { positionMm: f.positionMm } : {}),
+    ...(f.areaMm2 !== undefined ? { areaMm2: Math.round(f.areaMm2 * 10) / 10 } : {}),
   };
 }
 
@@ -276,7 +365,7 @@ export function runGeometricRules(
   }
 
   findings.sort((a, b) =>
-    SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity]
+    severityRank(a.severity) - severityRank(b.severity)
     || a.ruleId.localeCompare(b.ruleId)
     || a.featureId.localeCompare(b.featureId));
 

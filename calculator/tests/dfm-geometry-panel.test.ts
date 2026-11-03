@@ -36,8 +36,9 @@ const featureSet = (features: ManufacturingFeature[],
  * number typed into a fixture.
  */
 const deepHole: ManufacturingFeature = {
-  id: 'H1', kind: 'hole', faceIds: [7, 8], diaMm: 4.9, depthMm: 40, ldRatio: 8.16,
-  areaMm2: 615, positionMm: [0, 0, 0],
+  // Ø4.9 × 60: beyond the 52 mm flute of a DIN 338 jobber drill of that size, so the deep-hole premium is priced
+  id: 'H1', kind: 'hole', faceIds: [7, 8], diaMm: 4.9, depthMm: 60, ldRatio: 12.24,
+  areaMm2: 924, positionMm: [0, 0, 0],
 };
 
 /** The engine result IS the wire shape — the server sends `job.result` verbatim. */
@@ -176,6 +177,29 @@ describe('clicking a finding always says what happened', () => {
     const hint = dfmHighlightHint(Array.from({ length: 60 }, (_, i) => i + 1), false);
     expect(hint).toContain('and 48 more');
     expect(hint).not.toContain('60,');
+  });
+});
+
+describe('grades (report standard, Nov 2026)', () => {
+  it('prints BLOCKING / COST / RISK / INFO — and maps a stored old grade, a priced one to COST', () => {
+    expect(severityBadge('blocking')).toContain('>BLOCKING<');
+    expect(severityBadge('risk')).toContain('>RISK<');
+    // a result stored by an older job
+    expect(severityBadge('critical')).toContain('>BLOCKING<');
+    expect(severityBadge('major')).toContain('>RISK<');
+    expect(severityBadge('advisory')).toContain('>INFO<');
+    expect(severityBadge('major', true)).toContain('>COST<');
+    const html = buildGeometricDFMPanel(run());
+    expect(html).toMatch(/<strong>COST<\/strong> moves this costing/);
+    expect(html).not.toMatch(/>Major<|>Minor<|>Advisory</);
+  });
+  it('a commodity with no pack prints the checks a design engineer should make, and no DFA block for one part', () => {
+    const g = analyseGeometricDFM({ commodity: 'rotational_moulding', featureSet: { available: false, features: [] } }) as unknown as GeometricDFMMeta;
+    const html = buildGeometricDFMPanel(g);
+    expect(html).toMatch(/Checks a design engineer should make on this part: wall uniformity/);
+    expect(html).not.toMatch(/pinch|parison|feeds/i);
+    expect(g.dfa?.available).toBe(false);
+    expect(buildGeometricDFMPanel(run())).not.toMatch(/Boothroyd|handling and insertion from/);
   });
 });
 

@@ -108,9 +108,11 @@ HARD RULE — numbers: do not state ANY figure (money, percentage, time, rate, q
 requeueOrphans();   // a restart must not strand a job in 'running' forever
 
 router.post('/jobs', requireAuth, (req: Request, res: Response) => {
-  const { filePath, commodity, partName, materialFamily, process: proc } = req.body as {
+  const { filePath, commodity, partName, materialFamily, process: proc, machineIds } = req.body as {
     filePath?: string; commodity?: string; partName?: string;
     materialFamily?: string; process?: string;
+    /** Library ids of the machines the costing routed the part on — setup / off-axis findings are judged against them. */
+    machineIds?: unknown;
   };
   if (!filePath || !commodity) {
     res.status(400).json({ error: 'filePath and commodity are required' });
@@ -124,9 +126,11 @@ router.post('/jobs', requireAuth, (req: Request, res: Response) => {
     res.status(400).json({ error: 'filePath must be a file staged by this server for a DFM job' });
     return;
   }
+  const machines = Array.isArray(machineIds)
+    ? machineIds.filter((m): m is string => typeof m === 'string' && /^[a-z0-9-]{1,64}$/.test(m)).slice(0, 20) : [];
   const id = queueDFMJob({
     filePath, commodity: commodity as CommodityType, partName,
-    materialFamily, process: proc,
+    materialFamily, process: proc, ...(machines.length ? { machineIds: machines } : {}),
   });
   res.status(202).json({
     jobId: id,

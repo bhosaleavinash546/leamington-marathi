@@ -66,14 +66,21 @@ describe('invariant 1 — no citation, no ship', () => {
 
     const sand = analyseGeometricDFM(ctx([wall], { process: 'sand' }))
       .findings.find(f => f.ruleId === 'casting.draft.insufficient')!;
-    expect(sand.source.standard).toMatch(/Sand-casting practice/);
-    expect(sand.source.standard).not.toMatch(/NADCA/);
+    // Nov 2026: no sand draft standard was read, so the floor is labelled the tool's own; EN 12890 is named as the
+    // standard that governs pattern draft, and nothing about it is search-engine text.
+    expect(sand.source.standard).toMatch(/CostVision engineering heuristic/);
+    expect(sand.source.note).toMatch(/EN 12890/);
+    expect(`${sand.source.standard} ${sand.source.note}`).not.toMatch(/NADCA|search-engine|Search-engine|verify against/);
+    // …and a sand mould has no die and no ejection: the fix speaks of pattern draw and draft metal
+    expect(sand.recommendation).not.toMatch(/ejection|die wear/);
+    expect(sand.recommendation).toMatch(/pattern/);
     expect(sand.threshold.value).toBe(MIN_DRAFT_DEG.sand);
 
     const hpdc = analyseGeometricDFM(ctx([wall], { process: 'hpdc' }))
       .findings.find(f => f.ruleId === 'casting.draft.insufficient')!;
     expect(hpdc.source.standard).toMatch(/NADCA/);
     expect(hpdc.threshold.value).toBe(MIN_DRAFT_DEG.hpdc);
+    expect(hpdc.recommendation).toMatch(/ejection drag and the die wear/);
   });
 
   it('every route source says what its number is — a floor the tool uses, or its own heuristic (citation audit, Oct 2026)', () => {
@@ -132,7 +139,10 @@ describe('invariant 2 — a finding names the geometry that caused it', () => {
       { id: 'P1', kind: 'planar_face', faceIds: [1], draftDeg: 0.2, draftClass: 'drafted' },
       { id: 'P2', kind: 'planar_face', faceIds: [2], draftClass: 'undercut', draftDeg: 95 },
     ]));
-    expect(r.findings[0].severity).toBe('major');
+    // Nov 2026 grades: the draft shortfall is a RISK; the die-cast undercut is INFO (the die price's complexity class
+    // already reads the undercut count) — the risk leads.
+    expect(r.findings[0].severity).toBe('risk');
+    expect(r.findings.find(f => f.ruleId === 'casting.undercut.requires-core')!.severity).toBe('info');
   });
 });
 
@@ -181,8 +191,9 @@ describe('invariant 3 — silent when not measured, and says what it could not c
   it('sheet metal declares the checks it cannot yet perform', () => {
     const r = analyseGeometricDFM(ctx([], { commodity: 'sheet_metal' }));
     const text = r.limitations.join(' ');
-    expect(text).toMatch(/Bend-to-hole distance was not checked/);
-    expect(text).toMatch(/flat pattern/i);
+    // without a developed blank the bend-line checks say they did not run (they run on the blank: sheet-blank.ts)
+    expect(text).toMatch(/Hole-to-edge, hole-to-bend, minimum-flange and bend-relief checks need the developed blank/);
+    expect(text).toMatch(/Bend radius against material thickness was not checked/);
   });
 
   it('a commodity with no pack says so rather than returning a clean bill', () => {
@@ -193,24 +204,26 @@ describe('invariant 3 — silent when not measured, and says what it could not c
 });
 
 describe('machining rules read the hole, not the invoice', () => {
-  it('flags a hole beyond standard drill reach with its measured L:D', () => {
+  it('flags a hole beyond a DIN 338 jobber drill\u2019s flute, measured against that flute', () => {
     const r = analyseGeometricDFM(ctx(
       [{ id: 'H4', kind: 'hole', faceIds: [4, 5], diaMm: 6, depthMm: 72, ldRatio: 12 }],
       { commodity: 'machining' }));
     const f = r.findings.find(x => x.ruleId === 'machining.hole.depth-beyond-standard-drill')!;
-    expect(f.severity).toBe('critical');         // 12:1 is past extended reach: a gun-drilling operation
-    expect(f.measured.value).toBe(12);
-    expect(f.threshold.value).toBe(STANDARD_DRILL_LD);
-    expect(f.recommendation).toMatch(/gun-drilling|trepanning/);
+    expect(f.severity).toBe('info');             // no rates in this context: unpriced, so not COST
+    expect(f.measured).toMatchObject({ field: 'depthMm', value: 72 });
+    expect(f.threshold.value).toBe(57);          // DIN 338 Ø5.3–6.0: l2 = 57 mm
+    expect(f.source.standard).toMatch(/DIN 338/);
+    expect(f.recommendation).toMatch(/DIN 340/);
+    expect(STANDARD_DRILL_LD).toBe(4);           // the prototype-shop 4×D no longer fires anything
   });
 
-  it('a hole past 4×D is MAJOR, not only past 10×D (the manifold\u2019s Ø8 × 70 at 8.8:1)', () => {
-    const r = analyseGeometricDFM(ctx(
-      [{ id: 'H5', kind: 'hole', faceIds: [6], diaMm: 8, depthMm: 70, ldRatio: 8.75 }],
-      { commodity: 'machining' }));
-    const f = r.findings.find(x => x.ruleId === 'machining.hole.depth-beyond-standard-drill')!;
-    expect(f.severity).toBe('major');
-    expect(f.recommendation).toMatch(/peck-drilling/);
+  it('a hole a jobber drill reaches is not a finding (the manifold\u2019s Ø8 × 70 at 8.8:1; the stub axle\u2019s Ø14 × 59)', () => {
+    for (const [d, L] of [[8, 70], [14, 59]]) {
+      const r = analyseGeometricDFM(ctx(
+        [{ id: 'H5', kind: 'hole', faceIds: [6], diaMm: d, depthMm: L, ldRatio: L / d }],
+        { commodity: 'machining' }));
+      expect(r.findings.filter(x => x.ruleId === 'machining.hole.depth-beyond-standard-drill'), `Ø${d} × ${L}`).toHaveLength(0);
+    }
   });
 
   it('leaves a normal hole alone', () => {
@@ -236,7 +249,7 @@ describe('machining rules read the hole, not the invoice', () => {
       [{ id: 'H1', kind: 'hole', faceIds: [1], diaMm: 14.3, depthMm: 14, ldRatio: 1 }],
       { commodity: 'machining' }));
     const f = r.findings.find(x => x.ruleId === 'machining.hole.non-preferred-diameter')!;
-    expect(f.severity).toBe('advisory');
+    expect(f.severity).toBe('info');
     expect(f.recommendation).toContain('14.5');
     expect(isStockDrill(7.33)).toBe(false);
   });
@@ -327,7 +340,8 @@ describe('forging reads its thresholds from the advisor, never restates them', (
     const loosest = Math.min(...Object.values(FORGING_PROCESS_REFERENCE).map(r => r.minWebMm));
     const r = analyseGeometricDFM(ctx(
       [{ id: 'P1', kind: 'planar_face', faceIds: [1], thicknessMm: 0.5 }],
-      { commodity: 'forging', process: undefined }));
+      // a 0.5 mm web is a plausible wall on a part whose median wall is 1 mm (on a 4 mm part it reads as a ray graze)
+      { commodity: 'forging', process: undefined, featureSet: { medianThicknessMm: 1 } as ManufacturingFeatureSet }));
     const f = r.findings.find(x => x.ruleId === 'forging.web.below-process-minimum')!;
     expect(f.threshold.value).toBe(loosest);
     expect(f.source.note).toMatch(/most permissive/);
@@ -353,7 +367,7 @@ describe('forging reads its thresholds from the advisor, never restates them', (
   });
 
   it('exempts cold forming from the hot-metal fillet rule', () => {
-    const fillet = { id: 'F1', kind: 'fillet' as const, faceIds: [1], radiusMm: 1 };
+    const fillet = { id: 'F1', kind: 'fillet' as const, faceIds: [1], radiusMm: 1, concave: true };
     expect(analyseGeometricDFM(ctx([fillet], { commodity: 'forging', process: 'closed-die' }))
       .findings.some(f => f.ruleId.includes('fillet'))).toBe(true);
     expect(analyseGeometricDFM(ctx([fillet], { commodity: 'forging', process: 'cold-forming' }))
@@ -394,7 +408,8 @@ describe('blow moulding is honest about a weak measurement', () => {
   it('says the wall is characteristic, not per-face, and that layers are unknown', () => {
     const t = analyseGeometricDFM(ctx([], { commodity: 'blow_moulding' })).limitations.join(' ');
     expect(t).toMatch(/not a per-face measurement/);
-    expect(t).toMatch(/six-layer coextrusion/);
+    expect(t).toMatch(/costed as a single layer/);
+    expect(t).not.toMatch(/six-layer|automotive fuel tank is typically/);   // fuel-tank text on a duct is noise
     expect(t).toMatch(/Blow-up ratio was not computed/);
   });
 });

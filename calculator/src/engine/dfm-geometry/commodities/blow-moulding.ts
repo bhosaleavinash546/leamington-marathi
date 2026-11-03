@@ -44,7 +44,7 @@ export const BLOW_MOULDING_RULES: readonly GeometricRule[] = [
       const min = wall * CORNER_RADIUS_WALL_MULTIPLE;
       if (f.radiusMm >= min) return null;
       return finding(this, f, part, {
-        severity: 'major',
+        severity: 'risk',
         detail: `Corner at face ${f.faceIds.join(', ')} is R${f.radiusMm.toFixed(2)} mm against a `
               + `${min.toFixed(2)} mm minimum (2× the ${wall.toFixed(2)} mm characteristic wall).`,
         measuredField: 'radiusMm', measuredValue: f.radiusMm, unit: 'mm',
@@ -71,7 +71,7 @@ export const BLOW_MOULDING_RULES: readonly GeometricRule[] = [
     evaluate(f, part) {
       if (f.draftClass !== 'undercut') return null;
       return finding(this, f, part, {
-        severity: 'major',
+        severity: 'risk',
         ...undercutEvidence(f, 'blow mould'),
         recommendation: 'Re-orient the split line, relax the feature so it draws, or price a '
           + 'moving insert. Deep undercuts on a blown part are often cheaper to trim after '
@@ -103,7 +103,7 @@ export function blowPartLevelFindings(part: PartContext) {
       rule('blow.wall.below-minimum', 'Nominal wall below the blow-moulding floor',
            `Nominal wall ≥ ${MIN_BLOWN_WALL_MM} mm`),
       anchor, part, {
-        severity: 'major',
+        severity: 'risk',
         detail: `Characteristic wall (2·V/S) is ${wall.toFixed(2)} mm against a `
               + `${MIN_BLOWN_WALL_MM} mm floor.`,
         measuredField: 'characteristicWallMm', measuredValue: wall, unit: 'mm',
@@ -126,7 +126,7 @@ export function blowPartLevelFindings(part: PartContext) {
         rule('blow.parison.slenderness-sag', 'Part slenderness implies a sag-prone parison',
              `Parison L/D ≤ ${MAX_PARISON_L_TO_D}`),
         anchor, part, {
-          severity: 'minor',
+          severity: 'risk',
           detail: `Part is ${d[2].toFixed(0)} mm long on a ${dia.toFixed(0)} mm mean section — `
                 + `L/D ${lToD.toFixed(1)}.`,
           measuredField: 'partLtoD', measuredValue: lToD, unit: ':1',
@@ -155,8 +155,7 @@ export const BLOW_LIMITATIONS: readonly string[] = [
   + 'rather than a feature of the part.',
   'Pinch-off and weld-line position were not checked. On an extrusion-blown part the pinch weld '
   + 'is the weakest line and a common failure origin, and where it falls depends on the mould.',
-  'Multi-layer barrier construction was not detected. An automotive fuel tank is typically a '
-  + 'six-layer coextrusion, and costing it as a monolayer understates material significantly — '
-  + 'the layer schedule has to be stated by an engineer.',
+  'Multi-layer construction was not detected: the part is costed as a single layer. A barrier part (a fuel tank or filler) '
+  + 'is a coextrusion whose layer schedule an engineer must state.',
   'Top-load and drop performance were not assessed; those need the material and a structural check.',
 ];

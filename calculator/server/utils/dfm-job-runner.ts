@@ -21,9 +21,11 @@ import { readFile, writeFile, unlink } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import {
-  analyseGeometricDFM, GEOMETRIC_DFM_COMMODITIES,
-  type GeometricAnalysis, type PartContext, type CostContext,
+  analyseGeometricDFM, GEOMETRIC_DFM_COMMODITIES, machinedFaceSet, sheetBlankFromFlat,
+  type GeometricAnalysis, type PartContext, type CostContext, type SheetBlankFacts,
 } from '../../src/engine/dfm-geometry/index.js';
+import { extractSkinMesh } from './geometry-bridge.js';
+import { unfoldSkin, DEVELOPABLE_STRAIN_PCT, type SkinMeshFile } from './blank-unfold.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import { partWeightKgFor, timeFactorFor } from '../../src/engine/dfm-geometry/cost-impact.js';
 import { withRates } from '../../src/engine/rate-context.js';
@@ -57,6 +59,11 @@ export interface DFMJobRequest {
   annualVolume?: number;
   /** 2-letter region for rate selection, e.g. 'GB', 'CN'. Defaults to the library. */
   region?: string;
+  /**
+   * Library ids of the machines the costing's rules routed the part on (`mach-hmc-400` …). Setup and off-axis findings
+   * are judged against them; absent = not known, and the findings say so.
+   */
+  machineIds?: string[];
   createdBy?: string;
 }
 
@@ -103,6 +110,16 @@ export async function queueDFMJobFromBuffer(
   const path = join(tmpdir(), `cv-dfm-${randomUUID()}.${ext}`);
   await writeFile(path, buffer);
   return queueDFMJob({ ...req, filePath: path, ownsFile: true, partName: req.partName ?? filename });
+}
+
+/**
+ * A job for a commodity with no rule pack: it reads no file and runs no kernel — its result is the truthful "no pack"
+ * report with the checks a design engineer should make. Queued so an answered route REPLACES the upload's job (a roto
+ * tank answered after upload kept the blow-moulding job its leaning route had queued, and printed blow-moulding
+ * limitations — report standard, Nov 2026).
+ */
+export function queueNoPackDFMJob(req: Omit<DFMJobRequest, 'filePath' | 'ownsFile'>): string {
+  return queueDFMJob({ ...req, filePath: '', ownsFile: false });
 }
 
 export function queueDFMJob(req: DFMJobRequest): string {
@@ -203,13 +220,60 @@ async function kernelPart(buf: Buffer, req: DFMJobRequest): Promise<PartContext>
   if (!geo || geo.status !== 'success') {
     throw new Error(geo?.error || 'geometry engine did not return a successful measurement');
   }
+  const part = partFromKernelGeometry(geo, req);
+  // A sheet part: the bend-line checks run on its developed blank (sheet-blank.ts). Soft: without it they are listed as
+  // not run, and the rest of the report stands.
+  if ((req.commodity === 'sheet_metal' || req.commodity === 'sheet_metal_fab') && sheetCandidate(geo)) {
+    const sb = await developedBlankFacts(buf, basename(req.filePath)).catch(() => null);
+    if (sb) return { ...part, sheetBlank: sb };
+  }
+  return part;
+}
 
+/** The unfold runs only on a part the kernel measured as sheet (a bend-measured gauge), as the costing's own unfold does. */
+function sheetCandidate(geo: OCCTGeometry): boolean {
+  const sm = geo.sheetMetal;
+  return !!sm && sm.thicknessSource === 'bend-pairs' && (sm.bendCount ?? 0) > 0 && (sm.thicknessMm ?? 0) > 0;
+}
+
+/** Export the skins, flatten the largest, read the bends off its creases — the facts the blank checks need. */
+async function developedBlankFacts(buf: Buffer, filename: string): Promise<SheetBlankFacts | null> {
+  const mesh = await extractSkinMesh(buf, filename, { timeoutMs: 180_000 });
+  if (mesh.status !== 'success') return null;
+  return sheetBlankFromSkinMesh(mesh.mesh);
+}
+
+/** Pure: the blank facts from a kernel skin-mesh export (the largest skin, unfolded with its flat kept). */
+export function sheetBlankFromSkinMesh(file: SkinMeshFile): SheetBlankFacts | null {
+  const skin = [...(file.skins ?? [])].sort((a, b) => b.area3dMm2 - a.area3dMm2)[0];
+  if (!skin) return null;
+  const u = unfoldSkin(skin, { keepInternals: true });
+  const fi = u.internals;
+  if (!fi) return null;
+  return sheetBlankFromFlat({
+    vertices3d: skin.vertices, triangles: fi.T, mReal: fi.mReal, flat: fi.U, outer: fi.outer, holes: fi.holes,
+    gaugeMm: file.thicknessMm, developable: u.maxStrainPct <= DEVELOPABLE_STRAIN_PCT,
+    source: `the larger skin unfolded (${u.triangleCount.toLocaleString('en-GB')} triangles, ${file.thicknessMm.toFixed(2)} mm gauge, `
+      + `${u.maxStrainPct.toFixed(1)}% stretch at the 95th percentile)`,
+  });
+}
+
+/**
+ * The rule pack's input from a kernel measurement — pure, so the real-parts DFM test and the before / after survey build
+ * the part exactly as the job does.
+ */
+export function partFromKernelGeometry(geo: OCCTGeometry, req: Omit<DFMJobRequest, 'filePath'>): PartContext {
+  const featureSet = geo.manufacturingFeatures ?? {
+    available: false, features: [],
+    note: 'The kernel ran but produced no feature set — the part may exceed the face cap.',
+  };
+  // The faces the costing machines, from the same feature table it reads (cast + machine, castings, forgings).
+  const machined = machinedFaceSet(geo, featureSet, req.commodity);
   return {
     commodity: req.commodity,
-    featureSet: geo.manufacturingFeatures ?? {
-      available: false, features: [],
-      note: 'The kernel ran but produced no feature set — the part may exceed the face cap.',
-    },
+    featureSet,
+    ...(machined ? { machined } : {}),
+    ...(req.machineIds?.length ? { machineIds: req.machineIds } : {}),
     bboxMm: geo.boundingBox
       ? { x: geo.boundingBox.xMm, y: geo.boundingBox.yMm, z: geo.boundingBox.zMm }
       : undefined,
@@ -240,6 +304,7 @@ async function stlPart(buf: Buffer, req: DFMJobRequest): Promise<{ part: PartCon
     medianWallMm: m.featureSet.medianThicknessMm ?? null,
     materialFamily: req.materialFamily,
     process: req.process,
+    ...(req.machineIds?.length ? { machineIds: req.machineIds } : {}),
     cost: { ...resolveCostContext(req, volumeCm3),
       ...(m.projectedAlongDrawMm2 ? { projectedAreaCm2: m.projectedAlongDrawMm2 / 100 } : {}) },
   };
@@ -260,14 +325,14 @@ async function stlPart(buf: Buffer, req: DFMJobRequest): Promise<{ part: PartCon
  * specific machine a supplier happens to own. The basis string says so.
  */
 /** The deployment's active book (company rates when loaded) in the requested country — the book the CAD rules price in. */
-function costBook(req: DFMJobRequest) {
+function costBook(req: Omit<DFMJobRequest, 'filePath'>) {
   // An unrecognised region falls back to the default library rather than throwing — a bad region code must not lose
   // the whole DFM report.
   try { return rateBookForRegion(regionOf(req.region)); }
   catch { return DEFAULT_RATE_LIBRARY; }
 }
 
-function resolveCostContext(req: DFMJobRequest, volumeCm3?: number): CostContext {
+function resolveCostContext(req: Omit<DFMJobRequest, 'filePath'>, volumeCm3?: number): CostContext {
   const lib = costBook(req);
   const machine = lib.machines.find(m => /vmc|machining/i.test(m.id))
     ?? lib.machines[0];

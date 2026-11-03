@@ -40,11 +40,10 @@
  * measurement layer follows: modelled or silent, never invented.
  */
 import type { GeometricFinding, PartContext } from './types.js';
-import { featureMinutesEach, nearNetHoleMinutes } from '../feature-machining.js';
-import { coredAbove } from './commodities/machining.js';
+import { featureMinutesEach, DEEP_HOLE_PECK, DRILL_FEED_MM_PER_MIN, MICRO_DRILL_FEED_MM_PER_MIN } from '../feature-machining.js';
 import { CUTTING_DATA } from '../machining-time.js';
 import { estimateMouldCost } from '../modules/injection-moulding.js';
-import { priceHoleSizes } from './commodities/machining-access.js';
+import { castingUndercutInPrice } from './commodities/casting.js';
 
 /** Where the money comes from. Printed on the finding so it can be argued with. */
 export type CostImpactKind =
@@ -106,13 +105,22 @@ export interface CostContext {
   rateBasis?: string;
 }
 
-/** Why a rule has no pricer. Specific per rule — a generic line is not an answer. */
-export const NOT_MODELLED: Record<string, string> = {
-  'casting.draft.insufficient':
-    'Insufficient draft costs die wear and ejection drag. Converting that to £/part needs a '
-    + 'die-life-versus-draft model, which this engine does not have.',
+/**
+ * Why a rule has no pricer. Specific per rule — a generic line is not an answer — and, where the reason depends on the
+ * route, said in the route's own terms (a sand mould has no die to wear).
+ */
+export const NOT_MODELLED: Record<string, string | ((part: PartContext) => string)> = {
+  'casting.draft.insufficient': (part) => {
+    const r = String(part.process ?? '').toLowerCase();
+    return r === 'hpdc' || r === 'diecast' || r === 'gravity'
+      ? 'Insufficient draft costs die wear and ejection drag; the die-life model has no draft term, so no £ is derived. '
+        + 'Draft would also add metal, which the costed weight does not carry.'
+      : 'Pattern-draw damage at zero draft is a yield risk (no scrap-rate model). The cost path of adding draft is metal: '
+        + 'the costed as-cast weight is the finished model plus machining stock and carries no draft metal, so it is not priced.';
+  },
   'forging.draft.below-process-minimum':
-    'Same as casting: die galling and shortened die life, with no draft term in the die-life model.',
+    'Die galling and shortened die life: the die-life model has no draft term. Draft would add metal, which the costed '
+    + 'as-forged weight (finished model plus machining stock) does not carry.',
   'moulding.draft.insufficient':
     'Ejector drag marks are a cosmetic reject risk, not a modelled cost.',
   'casting.section.abrupt-change':
@@ -140,21 +148,16 @@ export const NOT_MODELLED: Record<string, string> = {
   'blow.undercut.needs-split-or-insert':
     'A third split or moving insert would be priced by a blow-mould estimator; this engine has '
     + 'a mould-cost model for injection tools only.',
-  'casting.undercut.requires-core':
-    'A slide or core adds die cost, but the casting die estimator does not price slides '
-    + 'separately the way the injection-mould estimator does, so the delta is not derivable.',
+  'casting.undercut.requires-core': (part) => castingUndercutInPrice(part.process),
   'forging.undercut.cannot-release':
-    'The remedy is a post-forging machining operation, but the undercut is a FACE and the kernel '
-    + 'measures no volume for what that operation would remove. Pricing it would mean inventing a '
-    + 'cut. (An earlier version routed this to the hole pricer, which silently returned nothing '
-    + 'because a face carries no diameter — a wrong mapping is worse than an honest gap.)',
+    'The remedy is a machining operation after forging, but the undercut is a face and the kernel measures no volume for '
+    + 'what that operation would remove, so its time is not derived.',
   'machining.hole.compound-angle':
-    'An off-frame hole is a fixturing of its own on a 3-axis machine. The DFM does not price it (neither here nor in '
-    + 'the "several setups" finding): the costing\u2019s own fixturing count — the "Load / clamp / unload" line and '
-    + 'the fixture NRE — is what is in the price.',
+    'An off-axis hole is a fixturing of its own on a 3-axis machine. The DFM does not price it: the costing\u2019s own '
+    + 'fixturing count — the "Load / clamp / unload" line and the fixture cost — is what is in the price.',
   'machining.hole.intersecting':
     'Cross-hole deburring (tool, brush, thermal or ECM) is not an operation in the machining model, so its '
-    + 'time is not derivable here.',
+    + 'time is not derivable here — and it is not in the price.',
   'machining.feature.toothed-form':
     'Tooth cutting is costed on the gear route (hob / shape / broach time per tooth), not as a DFM delta on the '
     + 'machining cost.',
@@ -175,7 +178,13 @@ export const NOT_MODELLED: Record<string, string> = {
   'machining.hole.non-preferred-diameter':
     'Moving to the nearest stock size still leaves a distinct size, so the costing\u2019s tool count does not change '
     + 'unless the new size is one the part already uses — that is a hole-size consolidation, a finding of its own when '
-    + 'the part has 6 or more hole sizes.',
+    + 'the part has 6 or more drilled sizes.',
+  'machining.hole.many-sizes':
+    'Which sizes can merge is a drawing question (fits, threads, clearance classes). Each size merged into one the part '
+    + 'already uses saves one tool change in the costing\u2019s own model; merging every size is not achievable, so no '
+    + 'total is shown.',
+  'machining.hole.depth-beyond-standard-drill':
+    'Below 5×D the costing drills at its normal rate, so the hole\u2019s extra depth carries no premium to take out.',
   'casting.hole.beyond-cored-depth':
     'A routing correction, not a design saving: the cost sheet prices holes above the cored size as cored and '
     + 'finish-bored; this one is too deep to core and will be drilled from solid. The finding states both times.',
@@ -196,12 +205,8 @@ export const NOT_MODELLED: Record<string, string> = {
 const round4 = (n: number) => Math.round(n * 10000) / 10000;
 
 /**
- * Machining cost of a hole or bore, from the same function the costing uses.
- *
- * `featureMinutesEach` is linear in depth and carries no peck-drilling penalty,
- * so this is NOT the extra cost of the hole being deep — it is what the hole
- * costs at all. That is the honest figure available, and the basis says so:
- * shorten or delete the feature and this is what comes back.
+ * Machining cost of a hole, from the same function the costing uses — for the one finding whose remedy ADDS the hole's
+ * own operation (a sheet hole smaller than the gauge is drilled after the press, not pierced).
  */
 function holeFeatureCost(
   f: GeometricFinding, part: PartContext, ctx: CostContext,
@@ -211,25 +216,49 @@ function holeFeatureCost(
   const feat = part.featureSet.features.find(x => x.id === f.featureId);
   const dia = feat?.diaMm, depth = feat?.depthMm;
   if (!(dia && dia > 0) || !(depth && depth > 0)) return null;
-  // The costing's own per-hole time: through / blind from the kernel, the peck allowance past 5×D included, × the
-  // confirmed metal's cutting-time factor.
   const through = feat?.openEnds === 2 ? true : feat?.openEnds === 1 ? false : null;
   const tf = ctx.timeFactor ?? 1;
   const row = { kind: 'hole' as const, diaMm: dia, depthMm: depth, through, count: 1 };
-  // On a casting the costing prices a hole above the cored size as cored + finish-bored, not drilled from solid — the
-  // time it charges is the time a lever may take out (arithmetic audit, Oct 2026).
-  const cast = part.commodity === 'cast_and_machine' || part.commodity === 'casting';
-  const minutes = (cast ? nearNetHoleMinutes(row, coredAbove(part.process)) : featureMinutesEach(row)) * tf;
+  const minutes = featureMinutesEach(row) * tf;
   const gbp = (minutes / 60) * (mr + lr);
   return {
     perPartGBP: round4(gbp),
     minutes: round4(minutes),
     kind: 'feature_cost',
-    basis: `${minutes.toFixed(2)} min to make the Ø${dia.toFixed(1)} × ${depth.toFixed(0)} mm`
-         + `${through === null ? '' : through ? ' through' : ' blind'} hole (the costing\u2019s ${cast ? 'cored + bored' : 'drilling'} time, `
-         + `peck drilling past 5×D included${tf !== 1 ? `, × ${tf} for the metal` : ''}) `
-         + `× £${(mr + lr).toFixed(2)}/h ${ctx.rateBasis ?? 'at the reference machine + labour rate'}. This is the hole\u2019s whole `
-         + 'machining cost: deleting it saves all of it, making it shallower saves part of it.',
+    basis: `${minutes.toFixed(2)} min to drill the Ø${dia.toFixed(1)} × ${depth.toFixed(0)} mm`
+         + `${through === null ? '' : through ? ' through' : ' blind'} hole after the press (the costing\u2019s drilling time`
+         + `${tf !== 1 ? `, × ${tf} for the metal` : ''}) × £${(mr + lr).toFixed(2)}/h ${ctx.rateBasis ?? 'at the reference machine + labour rate'}.`,
+    confidence: 'modelled',
+  };
+}
+
+/**
+ * The DESIGN-ADDRESSABLE part of a deep hole: the costing's own peck premium. `featureMinutesEach` drills a hole deeper
+ * than 5×D at 1/`DEEP_HOLE_PECK` of its feed; the premium is the extra time that costs — what a hole within 5×D (shorter,
+ * or a larger diameter) would not pay. The hole's own drilling time is not a saving (a shorter hole still has to be
+ * drilled) and is never shown as one (report standard, Nov 2026: the stub axle's £1.29 was two holes' whole cost).
+ */
+export function deepHolePremium(
+  f: GeometricFinding, part: PartContext, ctx: CostContext,
+): FindingCostImpact | null {
+  const { machineRatePerHr: mr, labourRatePerHr: lr } = ctx;
+  if (mr === undefined || lr === undefined) return null;
+  const feat = part.featureSet.features.find(x => x.id === f.featureId);
+  const dia = feat?.diaMm, depth = feat?.depthMm;
+  if (!(dia && dia > 0) || !(depth && depth > 0)) return null;
+  if (!(depth > 5 * Math.max(dia, 1))) return null;           // within 5×D: no premium in the costing
+  const feed = dia > 6 ? DRILL_FEED_MM_PER_MIN : MICRO_DRILL_FEED_MM_PER_MIN;
+  const tf = ctx.timeFactor ?? 1;
+  const minutes = (DEEP_HOLE_PECK - 1) * (depth / feed) * tf;
+  const gbp = (minutes / 60) * (mr + lr);
+  return {
+    perPartGBP: round4(gbp),
+    minutes: round4(minutes),
+    kind: 'feature_cost',
+    basis: `the costing\u2019s deep-hole premium on the Ø${dia.toFixed(1)} × ${depth.toFixed(0)} mm hole: ${depth.toFixed(0)} mm ÷ `
+      + `${feed} mm/min × (${DEEP_HOLE_PECK} − 1) peck${tf !== 1 ? ` × ${tf} for the metal` : ''} = ${minutes.toFixed(2)} min × `
+      + `£${(mr + lr).toFixed(2)}/h ${ctx.rateBasis ?? 'at the reference machine + labour rate'}. A hole within 5×D (shorter, or `
+      + 'a larger diameter) does not pay it; the drilling itself stays.',
     confidence: 'modelled',
   };
 }
@@ -283,7 +312,7 @@ type Pricer = (f: GeometricFinding, part: PartContext, ctx: CostContext) => Find
  * reviewable decision rather than an oversight.
  */
 export const PRICERS: Record<string, Pricer> = {
-  'machining.hole.depth-beyond-standard-drill': holeFeatureCost,
+  'machining.hole.depth-beyond-standard-drill': deepHolePremium,
   // the sheet prices the hole as pierced in the die; one smaller than the gauge is drilled after — a cost to ADD
   'sheetmetal.hole.smaller-than-thickness': holeFeatureCost,
   // One slide per undercut REGION (blocked faces the kernel joined), not per face: a five-face snap-fit pocket is
@@ -293,7 +322,6 @@ export const PRICERS: Record<string, Pricer> = {
     const region = part.featureSet.features.find(x => x.id === f.featureId)?.undercutRegion;
     return c && region !== undefined ? { ...c, costGroup: `slide:${region}`, basis: `${c.basis} One slide for undercut region ${region}.` } : c;
   },
-  'machining.hole.many-sizes': (f, _part, ctx) => priceHoleSizes(f, ctx),
 
 };
 
@@ -307,9 +335,9 @@ export function priceFinding(
   f: GeometricFinding, part: PartContext, ctx: CostContext,
 ): { costImpact?: FindingCostImpact; costNotModelled?: string } {
   const pricer = PRICERS[f.ruleId];
+  const why = () => { const w = NOT_MODELLED[f.ruleId]; return typeof w === 'function' ? w(part) : w; };
   if (!pricer) {
-    return { costNotModelled: NOT_MODELLED[f.ruleId]
-      ?? 'No cost path is modelled for this rule.' };
+    return { costNotModelled: why() ?? 'No cost path is modelled for this rule.' };
   }
   try {
     const hit = pricer(f, part, ctx);
@@ -324,6 +352,8 @@ export function priceFinding(
     missing.push('machine and labour rates');
   }
   if (!ctx.annualVolume) missing.push('annual volume (tooling cannot be amortised)');
+  // A pricer that ran and found no premium to take out (a deep hole within 5×D) says so in its own words.
+  if (!missing.length && why()) return { costNotModelled: why() };
   return {
     costNotModelled: missing.length
       ? `Cost path exists but ${missing.join(' and ')} were not supplied.`

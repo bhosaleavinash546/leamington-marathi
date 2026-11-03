@@ -28,6 +28,7 @@
  */
 import { escHtml } from './toast.js';
 import type { GeometricDFMMeta } from '../export/pdf.js';
+import { normaliseSeverity, SEVERITY_LABEL, SEVERITY_MEANING, type GeoSeverity } from '../engine/dfm-geometry/types.js';
 
 type Grouped = GeometricDFMMeta['grouped'][number];
 
@@ -39,14 +40,26 @@ export function dfmMoney(v: number): string {
   return v >= 0.01 ? `£${v.toFixed(2)}` : `£${v.toFixed(4)}`;
 }
 
-function severityClass(s: string): string {
-  return s === 'critical' || s === 'major' ? 'danger' : s === 'minor' ? 'warn' : 'muted';
+/**
+ * Grades (report standard, Nov 2026): BLOCKING / COST / RISK / INFO. A result stored by an older job carries the old
+ * critical / major / minor / advisory, mapped by `normaliseSeverity` (a priced old finding reads COST).
+ */
+function grade(s: string, priced = false): GeoSeverity {
+  return normaliseSeverity(s, priced);
 }
 
+function severityClass(s: string, priced = false): string {
+  const g = grade(s, priced);
+  return g === 'blocking' ? 'danger' : g === 'cost' || g === 'risk' ? 'warn' : 'muted';
+}
+
+/** The legacy CSS class that colours each grade (calculator.css styles the old four names). */
+const SEV_CSS: Record<GeoSeverity, string> = { blocking: 'critical', cost: 'major', risk: 'minor', info: 'advisory' };
+
 /** The severity as a word an engineer reads at a glance — never colour alone (WCAG 1.4.1). */
-export function severityBadge(s: string): string {
-  const k = ['critical', 'major', 'minor'].includes(s) ? s : 'advisory';
-  return `<span class="dfm-sev dfm-sev--${k}">${k.charAt(0).toUpperCase()}${k.slice(1)}</span>`;
+export function severityBadge(s: string, priced = false): string {
+  const g = grade(s, priced);
+  return `<span class="dfm-sev dfm-sev--${SEV_CSS[g]} dfm-sev--${g}" title="${escHtml(SEVERITY_MEANING[g])}">${SEVERITY_LABEL[g]}</span>`;
 }
 
 export { MEASURE_LABELS, measureLabel, fmtMeasureNum, withUnit, measuredText, thresholdText, measureAgainstLimit } from '../engine/dfm-geometry/measure-format.js';
@@ -118,9 +131,9 @@ function issueItem(x: Grouped, i: number, amounts?: ReadonlyMap<string, DfmAmoun
   const amt = amounts ? amounts.get(x.ruleId) : own;
   const faces = x.faceIds.length;
   return `
-    <li class="dfm-geo-item ${severityClass(x.severity)}" data-dfm-idx="${i}">
+    <li class="dfm-geo-item ${severityClass(x.severity, (x.totalCostGBP ?? 0) > 0)}" data-dfm-idx="${i}">
       <div class="dfm-geo-top">
-        ${severityBadge(x.severity)}
+        ${severityBadge(x.severity, (x.totalCostGBP ?? 0) > 0)}
         <strong class="dfm-geo-title">${escHtml(x.title)}${x.count > 1 ? ` <em>×${x.count}</em>` : ''}</strong>
         ${amt ? `<span class="dfm-geo-cost" title="${escHtml(amt.title)}">${escHtml(amt.text)}</span>` : '<span class="dfm-geo-nocost">not priced</span>'}
         <!-- A real button, not role="button" on the <li>: the item holds links, and a list item that is itself a control
@@ -149,11 +162,13 @@ export function buildGeometricDFMPanel(
   if (!g) return '';
 
   if (!g.packAvailable) {
+    // The checks a design engineer should make on this commodity ride in the limitations — show them, not silence.
+    const checks = (g.limitations ?? []).filter(l => /^Checks a design engineer should make/.test(l));
     return `${HEADING}
       <p class="muted small">No geometric rule pack covers this commodity yet, so
         <strong>no geometry checks ran</strong>. This is not a clean bill of health — it is an
-        absence of coverage. ${g.featuresExamined} feature(s) were measured and are available to
-        the cost model regardless.</p>`;
+        absence of coverage.</p>
+      ${checks.map(c => `<p class="small">${escHtml(c)}</p>`).join('')}`;
   }
 
   const priced = (g.totalAddressableGBP ?? 0) > 0;
@@ -170,7 +185,9 @@ export function buildGeometricDFMPanel(
       from ${g.featuresExamined} measured features and ${g.rulesEvaluated} rules. ${money}
       Click an issue to highlight its faces in the 3D viewer.</p>`;
 
-  const tail = `${limitationsBlock(g.limitations ?? [])}${dfaBlock(g.dfa)}
+  const legend = `<p class="small muted dfm-geo-legend">${(['blocking', 'cost', 'risk', 'info'] as const)
+    .map(k => `<strong>${SEVERITY_LABEL[k]}</strong> ${escHtml(SEVERITY_MEANING[k])}`).join(' · ')}.</p>`;
+  const tail = `${legend}${limitationsBlock(g.limitations ?? [])}${dfaBlock(g.dfa)}
     <div id="dfm-geo-hint" class="small muted" style="margin-top:6px"></div>`;
 
   if (!g.grouped.length) {

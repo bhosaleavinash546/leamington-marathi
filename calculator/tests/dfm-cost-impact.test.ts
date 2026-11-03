@@ -25,7 +25,7 @@ import {
 import type { PartContext, ManufacturingFeature } from '../src/engine/dfm-geometry/types.js';
 import type { ManufacturingFeatureSet } from '../src/engine/ai-analysis.js';
 import { estimateMouldCost } from '../src/engine/modules/injection-moulding.js';
-import { featureMinutesEach } from '../src/engine/feature-machining.js';
+import { featureMinutesEach, DEEP_HOLE_PECK, DRILL_FEED_MM_PER_MIN, MICRO_DRILL_FEED_MM_PER_MIN } from '../src/engine/feature-machining.js';
 
 const VOL = 50_000, MR = 60, LR = 25;
 const BBOX = { x: 200, y: 100, z: 40 };
@@ -66,13 +66,18 @@ describe('a price reconciles to the engine it came from', () => {
     expect(g.totalCostGBP).toBeGreaterThan(0);
   });
 
-  it('the deep hole equals featureMinutesEach × the machine+labour rate', () => {
-    const minutes = featureMinutesEach({ kind: 'hole', diaMm: 6, depthMm: 72, through: null, count: 1 });
-    const hand = (minutes / 60) * (MR + LR);
-
+  it('the deep hole is the costing\u2019s own peck premium — never the hole\u2019s whole drilling time (report standard, Nov 2026)', () => {
+    // featureMinutesEach drills past 5×D at 1/1.5 of its feed: the premium is the extra 0.5 × L ÷ feed, what a hole
+    // within 5×D would not pay. The hole's own time (the old £) stays whatever the design does.
+    const whole = featureMinutesEach({ kind: 'hole', diaMm: 6, depthMm: 72, through: null, count: 1 });
+    const premium = (DEEP_HOLE_PECK - 1) * 72 / MICRO_DRILL_FEED_MM_PER_MIN;   // Ø6 ≤ 6 mm: the micro-drill feed
     const r = analyseGeometricDFM(ctx([DEEP_HOLE], { commodity: 'machining' }));
     const g = r.grouped.find(x => x.ruleId === 'machining.hole.depth-beyond-standard-drill')!;
-    expect(g.totalCostGBP).toBeCloseTo(hand, 4);
+    expect(g.totalCostGBP).toBeCloseTo((premium / 60) * (MR + LR), 4);
+    expect(g.worst.costImpact!.minutes).toBeCloseTo(premium, 4);
+    expect(g.totalCostGBP).toBeLessThan((whole / 60) * (MR + LR) / 2);
+    expect(g.severity).toBe('cost');           // priced through the costing's model → COST
+    void DRILL_FEED_MM_PER_MIN;
   });
 
   it('keeps sub-penny precision instead of rounding a real cost to zero', () => {
@@ -88,10 +93,12 @@ describe('a price reconciles to the engine it came from', () => {
   it('prints the arithmetic, so a supplier can check it', () => {
     const r = analyseGeometricDFM(ctx([DEEP_HOLE], { commodity: 'machining' }));
     const f = r.findings.find(x => x.costImpact)!;
-    expect(f.costImpact!.basis).toMatch(/the costing\u2019s drilling time/);
+    expect(f.costImpact!.basis).toMatch(/the costing\u2019s deep-hole premium/);
+    expect(f.costImpact!.basis).toMatch(/72 mm ÷ 250 mm\/min × \(1\.5 − 1\) peck = 0\.14 min/);
     expect(f.costImpact!.basis).toMatch(/reference machine \+ labour/);
-    // one plain sentence on what the figure is — the old "deleting it recovers this, shortening it recovers part"
-    expect(f.costImpact!.basis).toMatch(/deleting it saves all of it, making it shallower saves part of it\.$/);
+    // what the figure is not: the drilling itself stays
+    expect(f.costImpact!.basis).toMatch(/the drilling itself stays\.$/);
+    expect(f.costImpact!.basis).not.toMatch(/whole machining cost|deleting it saves all/);
     expect(f.costImpact!.basis).not.toMatch(/mach-|lab-/);
     expect(f.costImpact!.minutes).toBeGreaterThan(0);   // what Design to Cost takes off the costed operation
     expect(f.costImpact!.confidence).toBe('modelled');
@@ -144,7 +151,9 @@ describe('the quality-risk rules have NO pricer, deliberately', () => {
 
   it('gives each a SPECIFIC reason, not a generic line', () => {
     for (const id of MUST_STAY_UNPRICED) {
-      const why = NOT_MODELLED[id];
+      const w = NOT_MODELLED[id];
+      // a route-dependent reason is a function of the part (a sand mould has no die to wear)
+      const why = typeof w === 'function' ? w(ctx([], { process: 'sand' })) : w;
       expect(why, `${id} has no stated reason`).toBeDefined();
       expect(why.length).toBeGreaterThan(40);
       expect(why).not.toMatch(/^No cost path is modelled/);
@@ -153,7 +162,11 @@ describe('the quality-risk rules have NO pricer, deliberately', () => {
 
   it('names the missing model rather than hand-waving', () => {
     expect(NOT_MODELLED['casting.hotspot.isolated-heavy-section']).toMatch(/scrap-rate model/);
-    expect(NOT_MODELLED['casting.draft.insufficient']).toMatch(/die-life/);
+    const draft = NOT_MODELLED['casting.draft.insufficient'] as (p: PartContext) => string;
+    expect(draft(ctx([], { process: 'hpdc' }))).toMatch(/die-life/);
+    // sand: no die, no ejection — the cost path is draft metal, which the costed weight does not carry
+    expect(draft(ctx([], { process: 'sand' }))).not.toMatch(/die/);
+    expect(draft(ctx([], { process: 'sand' }))).toMatch(/draft metal/);
     expect(NOT_MODELLED['casting.section.abrupt-change']).toMatch(/fabricated/);
   });
 
@@ -232,9 +245,10 @@ describe('coverage is explicit', () => {
   it('prices exactly the rules whose £ the costing reproduces (arithmetic audit, Oct 2026)', () => {
     // Withdrawn: per-corner pocket passes (not in the cost model), setups at reference rates (the costing prices its
     // own count), the cored-depth "+£" (wrong sign — a routing correction), the non-stock size (no tool-count change).
+    // Nov 2026: hole-size consolidation is unpriced — merging every size onto one tool is not achievable, and which
+    // sizes can merge is a drawing question.
     expect(Object.keys(PRICERS).sort()).toEqual([
       'machining.hole.depth-beyond-standard-drill',
-      'machining.hole.many-sizes',
       'moulding.undercut.requires-side-action',
       'sheetmetal.hole.smaller-than-thickness',
     ]);

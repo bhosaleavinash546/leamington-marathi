@@ -16,24 +16,34 @@ export function coredAbove(process: string | undefined): number {
   return CORED_ABOVE_MM[key] ?? CORED_ABOVE_MM.sand;
 }
 
-/** Source text found in the publishers' OWN pages, as a search engine extracted them — the pages themselves could
- *  not be opened from this environment (egress policy), so every quote below says so. Verify against the live URL. */
-const EXTRACT_NOTE = 'Quoted from the search engine’s extract of the publisher’s page (the page itself could not be opened '
-  + 'here) — verify against the live URL.';
-
 /** A CostVision rule of thumb with no published figure behind it — said so, not dressed as a citation. */
 export const OWN_HEURISTIC = (what: string) => ({
   standard: 'CostVision engineering heuristic (not a published standard)',
   note: what,
 });
 
-/**
- * Depth-to-diameter beyond which a standard drill is no longer the recommended tool, and beyond which it is a
- * specialist operation. Hubs: "Recommended hole depth: 4 x nominal diameter. Typical: 10 x nominal diameter";
- * MSC: holes "more than 10 diameters deep … requires a specialty drill".
- */
+/** Kept for callers: the depth-to-diameter of the Hubs prototype-shop guidance this rule no longer fires on. */
 export const STANDARD_DRILL_LD = 4;
 export const EXTENDED_DRILL_LD = 10;
+
+/**
+ * DIN 338 type N (jobber length) twist drills — flute length l2 by diameter range, mm: [upper bound of the Ø range, l2].
+ * ISO 235-1 gives the same jobber series. A hole no deeper than l2 is drilled with a stock jobber drill; deeper needs a
+ * long-series drill (DIN 340) or deep-hole drilling. The table stops at Ø20 (DIN 338's standard range); above it the
+ * reach check does not run.
+ */
+export const DIN338_FLUTE_MM: ReadonlyArray<readonly [number, number]> = [
+  [1.06, 12], [1.18, 14], [1.32, 16], [1.5, 18], [1.7, 20], [1.9, 22], [2.12, 24], [2.36, 27], [2.65, 30], [3.0, 33],
+  [3.35, 36], [3.75, 39], [4.25, 43], [4.75, 47], [5.3, 52], [6.0, 57], [6.7, 63], [7.5, 69], [8.5, 75], [9.5, 81],
+  [10.6, 87], [11.8, 94], [13.2, 101], [14.0, 108], [15.0, 114], [16.0, 120], [17.0, 125], [18.0, 130], [19.0, 135],
+  [20.0, 140],
+];
+/** Flute length of the DIN 338 jobber drill for this diameter, mm — null outside the table (Ø < 0.95 or > 20). */
+export function jobberFluteMm(diaMm: number): number | null {
+  if (!(diaMm >= 0.95) || diaMm > 20) return null;
+  return DIN338_FLUTE_MM.find(([upTo]) => diaMm <= upTo + 1e-9)?.[1] ?? null;
+}
+
 /**
  * Above this diameter the costing does not drill: it helical-mills or bores (feature-machining.ts, d > 26). Drill-reach
  * and stock-drill rules stop here — a Ø29.9 bore through a hollow driveshaft is not a drilling question.
@@ -54,11 +64,10 @@ export function nearestStockDrill(dia: number): number {
   return Math.round(Math.round(dia / step) * step * 100) / 100;
 }
 const DRILL_SIZE_SOURCE = {
-  standard: 'Hubs (Protolabs Network), "How to design parts for CNC machining" — holes',
-  url: 'https://www.hubs.com/knowledge-base/how-design-parts-cnc-machining/',
-  note: '"Specify hole diameters in 0.1 mm increments up to 10 mm, and in 0.5 mm increments above 10 mm." ' + EXTRACT_NOTE
-    + ' The tool accepts 0.1 mm steps to \u230013 because jobber drills are stocked that finely there (the M12 tap drill is \u230010.2), '
-    + 'so a stock tap drill is never called special.',
+  standard: 'CostVision engineering heuristic (not a published standard) \u2014 stock jobber-drill diameters',
+  note: 'Jobber drills (DIN 338) are commonly stocked in 0.1 mm steps to \u230013 and 0.5 mm steps above; a diameter off that '
+    + 'grid is treated as a special tool. The grid is the tool\u2019s own reading of distributor stock, not a clause of the '
+    + 'standard. Only holes the costing drills are judged (not cored or bored bores, spot faces or ISO 866 centre holes).',
 };
 
 /**
@@ -68,46 +77,84 @@ const DRILL_SIZE_SOURCE = {
 export const CUTTER_LD_STANDARD = 4;
 export const CUTTER_LD_LONG = 6;
 const LONG_REACH_SOURCE = {
-  standard: 'Hubs (Protolabs Network), "How to design parts for CNC machining" — internal edges and cavities',
-  url: 'https://www.hubs.com/knowledge-base/how-design-parts-cnc-machining/',
-  note: 'Tools cut best at 2–3× their diameter and reach "up to four times" at extra cost; cavities "greater than six times '
-    + 'the tool diameter are considered deep"; internal corner radius "⅓ x cavity depth (or larger)". Sandvik Coromant fits '
-    + 'damped adaptors from 4×D overhang. Reported past 4×D, major past 6×D. ' + EXTRACT_NOTE,
+  standard: 'CostVision engineering heuristic (not a published standard) \u2014 cutter reach past 4\u00d7 and 6\u00d7 its diameter',
+  note: 'An end mill cuts best within a few diameters of the holder; beyond that it deflects and is run at reduced feed and '
+    + 'depth of cut. Reported past 4\u00d7D, as a risk past 6\u00d7D \u2014 the tool\u2019s own thresholds (engineering-typical, not '
+    + 'sourced).',
 };
 
 const DRILL_DEPTH_SOURCE = {
-  standard: 'Hubs (Protolabs Network), "How to design parts for CNC machining" — holes; MSC Industrial Supply, deep-hole drilling',
-  url: 'https://www.hubs.com/knowledge-base/how-design-parts-cnc-machining/',
-  note: 'Hubs: "Recommended hole depth: 4 x nominal diameter. Typical: 10 x nominal diameter." MSC: a hole "more than 10 '
-    + 'diameters deep … requires a specialty drill". Major past 4×D, critical past 10×D (gun drilling). ' + EXTRACT_NOTE,
+  standard: 'DIN 338 (type N, jobber-length twist drills) \u2014 flute length l2 by diameter; ISO 235-1 gives the same series',
+  note: 'A hole deeper than the jobber drill\u2019s flute needs a long-series drill (DIN 340) or deep-hole drilling. The '
+    + 'amount is the costing\u2019s own deep-hole premium: its drilling time pecks 1.5\u00d7 slower past 5\u00d7D (feature-machining '
+    + 'model, engineering-typical, not sourced) \u2014 the part of the hole\u2019s cost a shallower or larger hole takes out. The '
+    + 'hole\u2019s own drilling time is not a saving and is not shown.',
 };
+
+/** Centre-drill pilot diameters d1 of ISO 866 (form A centre holes, R10 series) — a stock centre drill, not a hole size. */
+export const ISO866_D1_MM: readonly number[] = [0.5, 0.63, 0.8, 1, 1.25, 1.6, 2, 2.5, 3.15, 4, 5, 6.3, 8, 10];
+/** A land shallower than this fraction of its diameter is a spot face / seat, not a hole — the costing's own test
+ *  (feature-machining.ts spot-faces a land under \u00bc Ø). */
+export const SPOT_FACE_DEPTH_RATIO = 0.25;
+
+/**
+ * A centre hole: a blind hole at an ISO 866 pilot diameter on the axis of a turned diameter (a boss on the same line — the
+ * part is turned between centres), or which opens into a larger coaxial recess at its mouth (the centre drill's
+ * countersink). A centre drill is a stock tool; the hole is not a drill size, a non-stock size or a deep hole.
+ */
+export function isCentreHole(f: import('../types.js').ManufacturingFeature, part: import('../types.js').PartContext): boolean {
+  if (f.kind !== 'hole' || f.diaMm === undefined || f.openEnds === 2) return false;
+  if (!ISO866_D1_MM.some(d => Math.abs(d - f.diaMm!) <= 0.02)) return false;
+  if (!f.axis || !f.positionMm) return false;
+  const a = f.axis, p = f.positionMm;
+  const coaxial = (g: import('../types.js').ManufacturingFeature) => !!g.axis && !!g.positionMm
+    && Math.abs(a[0] * g.axis[0] + a[1] * g.axis[1] + a[2] * g.axis[2]) >= Math.cos(Math.PI / 90)
+    && lineGap(g.positionMm, p, a) < 0.5;
+  return (part.featureSet.features ?? []).some(g => g !== f && coaxial(g) && (
+    (g.kind === 'boss' && (g.diaMm ?? 0) > f.diaMm!)
+    || (g.kind === 'hole' && (g.diaMm ?? 0) > f.diaMm!
+      && Math.hypot(g.positionMm![0] - p[0], g.positionMm![1] - p[1], g.positionMm![2] - p[2]) <= ((g.depthMm ?? 0) + (f.depthMm ?? 0)) / 2 + 0.5)));
+}
+function lineGap(q: readonly number[], c: readonly number[], a: readonly number[]): number {
+  const l = Math.hypot(a[0], a[1], a[2]) || 1;
+  const u = [a[0] / l, a[1] / l, a[2] / l];
+  const v = [q[0] - c[0], q[1] - c[1], q[2] - c[2]];
+  const t = v[0] * u[0] + v[1] * u[1] + v[2] * u[2];
+  return Math.hypot(v[0] - t * u[0], v[1] - t * u[1], v[2] - t * u[2]);
+}
+
+/** Is this hole drilled in the costing (not cored and finish-bored, not helical-milled, not a spot face)? */
+export function drilledInCosting(f: import('../types.js').ManufacturingFeature, part: import('../types.js').PartContext): boolean {
+  if (f.kind !== 'hole' || !(f.diaMm && f.diaMm > 0)) return false;
+  if (f.diaMm > DRILLED_MAX_DIA_MM) return false;
+  const cast = part.commodity === 'cast_and_machine' || part.commodity === 'casting';
+  if (cast && f.diaMm > coredAbove(part.process)) return false;
+  if (part.commodity === 'forging' && f.diaMm > coredAbove('forging')) return false;
+  if (f.depthMm !== undefined && f.depthMm > 0 && f.depthMm < SPOT_FACE_DEPTH_RATIO * f.diaMm) return false;
+  return true;
+}
 
 export const MACHINING_RULES: readonly GeometricRule[] = [
   {
     id: 'machining.hole.depth-beyond-standard-drill',
     commodity: 'machining',
-    title: 'Hole deeper than standard drill reach',
+    title: 'Hole deeper than a jobber drill reaches',
     appliesTo: ['hole'],
     source: DRILL_DEPTH_SOURCE,
     evaluate(f, part) {
-      if (f.ldRatio === undefined || f.diaMm === undefined) return null;
-      if (f.diaMm > DRILLED_MAX_DIA_MM) return null;   // bored / helical-milled, not drilled
-      if (f.ldRatio <= STANDARD_DRILL_LD) return null;
-      const extreme = f.ldRatio > EXTENDED_DRILL_LD;
+      if (f.diaMm === undefined || f.depthMm === undefined) return null;
+      if (!drilledInCosting(f, part) || isCentreHole(f, part)) return null;   // bored, cored or a centre hole: not drilled
+      const flute = jobberFluteMm(f.diaMm);
+      // Measured or silent: outside DIN 338's range there is no reach to judge against.
+      if (flute === null || f.depthMm <= flute) return null;
       return finding(this, f, part, {
-        // Major from 4×D: peck drilling or extended-reach tooling is a slower cycle, dearer tools and broken drills —
-        // a cost driver, not a footnote. Critical past 10×D: a gun-drilling / trepanning operation of its own, often a
-        // specialist subcontract (demo review, Oct 2026).
-        severity: extreme ? 'critical' : 'major',
-        detail: `⌀${f.diaMm.toFixed(1)} mm hole is ${f.depthMm?.toFixed(1)} mm deep — `
-              + `${f.ldRatio.toFixed(1)}:1 depth-to-diameter.`,
-        measuredField: 'ldRatio', measuredValue: f.ldRatio, unit: ':1',
-        thresholdValue: STANDARD_DRILL_LD, comparator: '>',
-        recommendation: extreme
-          ? 'Beyond ~10:1 this is a gun-drilling or trepanning operation. Open the diameter, '
-            + 'drill from both ends, or accept a specialist operation and its setup.'
-          : 'Beyond ~4:1 needs peck-drilling or extended-reach tooling — slower cycle, higher '
-            + 'tool cost and greater breakage risk. Open the diameter if the function allows.',
+        severity: 'info',     // 'cost' once the costing's deep-hole premium is priced on it
+        detail: `⌀${f.diaMm.toFixed(1)} mm hole is ${f.depthMm.toFixed(1)} mm deep (${(f.depthMm / f.diaMm).toFixed(1)}×D) — `
+              + `beyond the ${flute} mm flute of a DIN 338 jobber drill of that diameter.`,
+        measuredField: 'depthMm', measuredValue: f.depthMm, unit: 'mm',
+        thresholdValue: flute, comparator: '>',
+        recommendation: 'Shorten the hole to the jobber drill\'s reach, open the diameter, or drill from both ends; otherwise '
+          + 'it needs a long-series (DIN 340) or deep-hole drill and runs at the costing\'s deep-hole (peck) rate.',
       });
     },
   },
@@ -121,12 +168,14 @@ export const MACHINING_RULES: readonly GeometricRule[] = [
     evaluate(f, part) {
       if (f.diaMm === undefined || f.diaMm <= 0) return null;
       if (isStockDrill(f.diaMm)) return null;
-      if (f.diaMm > DRILLED_MAX_DIA_MM) return null;   // above the drilled range — bored / helical-milled, any size, one tool
-      // On a casting a hole above the cored size is cast in and finish-bored, never drilled (CORED_ABOVE_MM).
-      if (part.commodity === 'cast_and_machine' && f.diaMm > coredAbove(part.process)) return null;
+      // Only a hole the costing DRILLS: above the drilled range it is bored / helical-milled (any size, one tool), on a
+      // casting above the cored size it is cast in and finish-bored, a shallow land is a spot face.
+      if (!drilledInCosting(f, part)) return null;
+      // An ISO 866 centre hole (Ø3.15 …) is made by a stock centre drill.
+      if (isCentreHole(f, part)) return null;
       const closest = nearestStockDrill(f.diaMm);
       return finding(this, f, part, {
-        severity: 'advisory',
+        severity: 'info',
         detail: `⌀${f.diaMm.toFixed(2)} mm is not a stock drill size (0.1 mm steps to ⌀13, 0.5 mm above); nearest is `
               + `⌀${closest} mm.`,
         measuredField: 'diaMm', measuredValue: f.diaMm, unit: 'mm',
@@ -155,7 +204,7 @@ export const MACHINING_RULES: readonly GeometricRule[] = [
       if (f.radiusMm === undefined || f.radiusMm <= 0) return null;
       if (f.radiusMm >= 1.0) return null;
       return finding(this, f, part, {
-        severity: 'minor',
+        severity: 'info',
         detail: `Internal corner at face ${f.faceIds.join(', ')} is R${f.radiusMm.toFixed(2)} mm.`,
         measuredField: 'radiusMm', measuredValue: f.radiusMm, unit: 'mm',
         thresholdValue: 1.0, comparator: '<',
@@ -179,7 +228,7 @@ export const MACHINING_RULES: readonly GeometricRule[] = [
       if (ld <= CUTTER_LD_STANDARD) return null;
       const extreme = ld > CUTTER_LD_LONG;
       return finding(this, f, part, {
-        severity: extreme ? 'major' : 'minor',
+        severity: extreme ? 'risk' : 'info',
         detail: `R${f.radiusMm.toFixed(1)} mm internal corner reached ${f.toolReachMm.toFixed(1)} mm deep — a ≤ Ø${(2 * f.radiusMm).toFixed(1)} mm `
           + `cutter at ${ld.toFixed(1)}× its diameter.`,
         measuredField: 'cutterLD', measuredValue: ld, unit: '×D',

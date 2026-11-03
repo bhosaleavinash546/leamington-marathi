@@ -48,6 +48,12 @@ export const LARGE_PART_MM = 380;
 
 export interface DFAHandlingResult {
   available: boolean;
+  /**
+   * Why the estimate is not given: a single part costed with no assembly has no handling / insertion context, no
+   * efficiency index and no £ (report standard, Nov 2026 — the block printed "3.83 s, 1.28× the ideal part" on a 9 kg
+   * chassis casting with no assembly). Present ⇒ `available` is false.
+   */
+  notApplicable?: string;
   /** Estimated one-handed manual handling time, seconds. */
   handlingTimeSec?: number;
   /** Estimated insertion time, seconds. */
@@ -110,14 +116,14 @@ export function analyseDFAHandling(part: PartContext): DFAHandlingResult {
     handling += 0.5;
     penalties.push({
       reason: 'Asymmetric envelope — the part must be oriented before insertion',
-      addedSec: 0.5, severity: 'minor',
+      addedSec: 0.5, severity: 'info',
       measured: `bounding box ${bbox.x.toFixed(0)}×${bbox.y.toFixed(0)}×${bbox.z.toFixed(0)} mm, no two dimensions within 5%`,
     });
   } else if (sym === 'square_prism') {
     handling += 0.25;
     penalties.push({
       reason: 'Partial symmetry — one orientation decision remains',
-      addedSec: 0.25, severity: 'advisory',
+      addedSec: 0.25, severity: 'info',
       measured: `bounding box ${bbox.x.toFixed(0)}×${bbox.y.toFixed(0)}×${bbox.z.toFixed(0)} mm`,
     });
   }
@@ -128,7 +134,7 @@ export function analyseDFAHandling(part: PartContext): DFAHandlingResult {
     handling += 0.9;
     penalties.push({
       reason: 'Small part — needs tweezers or a fixture rather than fingers',
-      addedSec: 0.9, severity: 'major',
+      addedSec: 0.9, severity: 'risk',
       measured: `largest dimension ${largestDim.toFixed(1)} mm < ${SMALL_PART_MM} mm`,
     });
   }
@@ -136,7 +142,7 @@ export function analyseDFAHandling(part: PartContext): DFAHandlingResult {
     handling += 0.7;
     penalties.push({
       reason: 'Thin part — hard to pick off a flat surface',
-      addedSec: 0.7, severity: 'major',
+      addedSec: 0.7, severity: 'risk',
       measured: `thickness ${smallest.toFixed(2)} mm < ${THIN_PART_MM} mm`,
     });
   }
@@ -144,7 +150,7 @@ export function analyseDFAHandling(part: PartContext): DFAHandlingResult {
     handling += 1.5;
     penalties.push({
       reason: 'Large part — two-handed handling or mechanical assistance',
-      addedSec: 1.5, severity: 'major',
+      addedSec: 1.5, severity: 'risk',
       measured: `largest dimension ${largest.toFixed(0)} mm > ${LARGE_PART_MM} mm`,
     });
   }
@@ -162,7 +168,7 @@ export function analyseDFAHandling(part: PartContext): DFAHandlingResult {
     penalties.push({
       reason: 'Fasteners approach from more than one direction — the part must be re-oriented '
             + 'or the fixture indexed during assembly',
-      addedSec: add, severity: axes.size > 2 ? 'major' : 'minor',
+      addedSec: add, severity: axes.size > 2 ? 'risk' : 'info',
       measured: `${axes.size} distinct hole axes across ${holes.length} holes`,
     });
   }
@@ -181,3 +187,11 @@ export function analyseDFAHandling(part: PartContext): DFAHandlingResult {
 }
 
 const round = (n: number) => Math.round(n * 100) / 100;
+
+/** The DFA result for a part costed on its own: not applicable, and why. */
+export const DFA_NOT_APPLICABLE = 'Not applicable: this part is costed on its own, with no assembly — Boothroyd handling and '
+  + 'insertion times need the assembly it goes into (its neighbours, fasteners and insertion directions), have no efficiency '
+  + 'index for one part and carry no £ in a part should-cost.';
+export function dfaNotApplicable(): DFAHandlingResult {
+  return { available: false, notApplicable: DFA_NOT_APPLICABLE, penalties: [], source: BOOTHROYD_SOURCE, limitations: [DFA_NOT_APPLICABLE] };
+}

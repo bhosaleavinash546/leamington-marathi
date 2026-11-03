@@ -1,29 +1,22 @@
 /**
  * Sheet-metal DFM, measured per feature.
  *
- * Sheet metal is the commodity where the kernel's aggregate view is weakest —
- * it measures bend count and total bend length but not per-bend geometry, so
- * the bend-relief and flange-length rules that need a named bend cannot run
- * from what is measured today. Those are declared as gaps rather than
- * approximated: `SHEET_METAL_LIMITATIONS` is printed on the report so nobody
- * reads a short finding list as a clean part.
+ * The kernel's aggregate view gives bend count and total bend length but no bend line; the bend-line checks (hole to
+ * edge, hole to bend, minimum flange, bend relief) run on the developed blank instead — `sheet-blank.ts`. What neither
+ * can check is declared in `SHEET_METAL_LIMITATIONS`, printed so nobody reads a short finding list as a clean part.
  */
 import type { GeometricRule, PartContext } from '../types.js';
 import { finding } from '../types.js';
 
-/**
- * Minimum distance from a hole edge to a bend line, as a multiple of material
- * thickness, before the hole distorts as the bend forms.
- */
-export const HOLE_TO_BEND_MIN_T = 2.5;
+export { HOLE_TO_BEND_MIN_T } from './sheet-blank.js';
 
 /** Minimum hole diameter as a multiple of thickness for punching without cracking. */
 export const MIN_PUNCH_DIA_T = 1.0;
 
 const SM_GUIDE = {
-  standard: 'Sheet-metal design guidance (Protolabs-style design guides)',
-  note: '"Holes and slots should be a minimum of material thickness in diameter." Search-engine extract of a sheet-metal design '
-      + 'guide \u2014 verify against the live page.',
+  standard: 'CostVision engineering heuristic (not a published standard) \u2014 pierced hole \u2265 the gauge',
+  note: 'A punch smaller than the sheet it pierces buckles or breaks; a hole under the gauge is drilled or laser-cut after the '
+      + 'press. The 1 \u00d7 t floor is the tool\u2019s own (engineering-typical, not sourced).',
 };
 
 export const SHEET_METAL_RULES: readonly GeometricRule[] = [
@@ -41,7 +34,7 @@ export const SHEET_METAL_RULES: readonly GeometricRule[] = [
       const ratio = f.diaMm / t;
       if (ratio >= MIN_PUNCH_DIA_T) return null;
       return finding(this, f, part, {
-        severity: 'major',
+        severity: 'risk',
         detail: `⌀${f.diaMm.toFixed(2)} mm hole in ${t.toFixed(2)} mm material — `
               + `${ratio.toFixed(2)}× thickness.`,
         measuredField: 'diaToThicknessRatio', measuredValue: ratio, unit: '×',
@@ -52,27 +45,6 @@ export const SHEET_METAL_RULES: readonly GeometricRule[] = [
     },
   },
 
-  {
-    id: 'sheetmetal.hole.deep-relative-to-diameter',
-    commodity: 'sheet_metal',
-    title: 'Hole depth inconsistent with a sheet part',
-    appliesTo: ['hole'],
-    source: { standard: 'CostVision engineering heuristic (not a published standard)', note: 'A hole deeper than 3× its diameter is unlikely on a sheet part — it flags a possible mis-classification (formed collar, or not a sheet part). The 3× threshold is the tool\u2019s own.' },
-    evaluate(f, part) {
-      if (f.ldRatio === undefined || f.diaMm === undefined) return null;
-      if (f.ldRatio <= 3) return null;
-      return finding(this, f, part, {
-        severity: 'advisory',
-        detail: `⌀${f.diaMm.toFixed(1)} mm hole is ${f.depthMm?.toFixed(1)} mm deep `
-              + `(${f.ldRatio.toFixed(1)}:1) — deeper than a punched sheet feature.`,
-        measuredField: 'ldRatio', measuredValue: f.ldRatio, unit: ':1',
-        thresholdValue: 3, comparator: '>',
-        recommendation: 'Confirm this is a formed collar / extruded hole rather than a punched '
-          + 'one — the two cost very differently. If it is a plain hole, the part may not be '
-          + 'sheet metal.',
-      });
-    },
-  },
 ];
 
 /**
@@ -84,14 +56,21 @@ export const SHEET_METAL_RULES: readonly GeometricRule[] = [
  * we cannot yet perform.
  */
 export const SHEET_METAL_LIMITATIONS: readonly string[] = [
-  'Bend-to-hole distance was not checked: the kernel measures bend COUNT and total bend length '
-  + 'but does not yet emit per-bend lines, so the distance from each hole to its nearest bend '
-  + 'cannot be computed.',
-  'Flange length against tooling minimum was not checked, for the same reason.',
-  'Bend relief at notches was not checked — it needs per-bend endpoints.',
   'Bend radius against material thickness was not checked — it needs the per-bend inner radius.',
-  'Blank utilisation was not checked — it needs a flat pattern, which the kernel does not unfold.',
+  'Burr side and springback were not checked — they are die and process decisions.',
+  'Blank nesting and utilisation are in the costing (strip layout), not repeated here.',
 ];
+
+/** A hole deeper than this × its diameter is not a pierced sheet feature — a classifier check, reported as a note. */
+export const SHEET_HOLE_LD_NOTE = 3;
+/** The note for holes too deep for a sheet part (formed collars, or not a sheet part) — never a finding. */
+export function sheetDeepHoleNote(part: PartContext): string | null {
+  const deep = (part.featureSet.features ?? []).filter(f => f.kind === 'hole' && (f.ldRatio ?? 0) > SHEET_HOLE_LD_NOTE);
+  if (!deep.length) return null;
+  return `${deep.length} hole(s) are deeper than ${SHEET_HOLE_LD_NOTE}× their diameter (deepest ⌀${deep[0].diaMm?.toFixed(1)} mm, `
+    + `${deep[0].depthMm?.toFixed(1)} mm) — a formed collar or extruded hole, or the part is not sheet: confirm on the drawing `
+    + '(CostVision engineering heuristic, not a finding).';
+}
 
 /** Sheet-metal fab shares the pack; the commodity label differs only in costing. */
 export function sheetMetalRulesFor(commodity: PartContext['commodity']): readonly GeometricRule[] {

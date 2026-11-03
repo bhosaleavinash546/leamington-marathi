@@ -8,26 +8,30 @@
 import { computeUniversalStack } from '../core.js';
 import type { CommodityType } from '../types.js';
 import type { GeometricRule, GeometricFinding, PartContext, GeometricDFMResult } from './types.js';
-import { runGeometricRules } from './types.js';
-import { CASTING_RULES, CASTING_LIMITATIONS, castingHotSpotFindings } from './commodities/casting.js';
+import { runGeometricRules, normaliseSeverity, severityRank } from './types.js';
+import { CASTING_RULES, CASTING_LIMITATIONS, castingHotSpotFindings, hotSpotStatement } from './commodities/casting.js';
 import { INJECTION_MOULDING_RULES, MOULDING_LIMITATIONS } from './commodities/injection-moulding.js';
 import { MACHINING_RULES, MACHINING_LIMITATIONS } from './commodities/machining.js';
 import { machiningPartLevelFindings, toothedSets, toothedFindings } from './commodities/machining-access.js';
-import { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS } from './commodities/sheet-metal.js';
+import { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS, sheetDeepHoleNote } from './commodities/sheet-metal.js';
+import { sheetBlankFindings, sheetBlankStatement } from './commodities/sheet-blank.js';
 import { FORGING_RULES, FORGING_LIMITATIONS } from './commodities/forging.js';
 import { BLOW_MOULDING_RULES, BLOW_LIMITATIONS, blowPartLevelFindings } from './commodities/blow-moulding.js';
-import { analyseDFAHandling, type DFAHandlingResult } from './dfa-handling.js';
+import { analyseDFAHandling, dfaNotApplicable, type DFAHandlingResult } from './dfa-handling.js';
 import { priceFinding, totalCostGBP, type CostContext } from './cost-impact.js';
 import { findingVariant, NOT_IN_STACK_RULES } from '../design-to-cost.js';
 
 export * from './types.js';
-export { analyseDFAHandling, symmetryClass } from './dfa-handling.js';
+export { analyseDFAHandling, symmetryClass, dfaNotApplicable, DFA_NOT_APPLICABLE } from './dfa-handling.js';
+export { machinedFaceSet, MACHINED_SET_COMMODITIES } from './machined-faces.js';
+export { sheetBlankFromFlat, sheetBlankFindings, sheetBlankStatement } from './commodities/sheet-blank.js';
+export type { SheetBlankFacts, SheetBend } from './commodities/sheet-blank.js';
 export { priceFinding, totalCostGBP, PRICERS, NOT_MODELLED } from './cost-impact.js';
 export type { FindingCostImpact, CostContext, CostImpactKind } from './cost-impact.js';
 export type { DFAHandlingResult } from './dfa-handling.js';
 export { CASTING_RULES, CASTING_LIMITATIONS, MIN_DRAFT_DEG } from './commodities/casting.js';
 export { INJECTION_MOULDING_RULES, MOULDING_LIMITATIONS } from './commodities/injection-moulding.js';
-export { MACHINING_RULES, MACHINING_LIMITATIONS, STANDARD_DRILL_LD, isStockDrill, nearestStockDrill } from './commodities/machining.js';
+export { MACHINING_RULES, MACHINING_LIMITATIONS, STANDARD_DRILL_LD, isStockDrill, nearestStockDrill, jobberFluteMm, isCentreHole } from './commodities/machining.js';
 export { machiningPartLevelFindings, partFrame, coverDirections } from './commodities/machining-access.js';
 export { SHEET_METAL_RULES, SHEET_METAL_LIMITATIONS } from './commodities/sheet-metal.js';
 export { FORGING_RULES, FORGING_LIMITATIONS } from './commodities/forging.js';
@@ -104,17 +108,44 @@ export interface GeometricAnalysis extends GeometricDFMResult {
 /** Below this share of faces the rules can judge (planes, cylinders), the report leads with what was not checked. */
 export const FREEFORM_JUDGED_MIN = 0.5;
 
+/**
+ * What a design engineer should check on a commodity the geometric rules do not cover — printed instead of silence, so a
+ * report with no DFM section is not read as a clean part (report standard, Nov 2026, dfm.md #29). Checks only, no
+ * thresholds: none is computed here.
+ */
+export const NO_PACK_CHECKS: Partial<Record<CommodityType, string>> = {
+  aluminium_extrusion: 'minimum wall against the circumscribing circle and the alloy on the extruder\u2019s chart; thick-to-thin '
+    + 'wall ratio; void count and tongue ratio (die complexity); the EN 755-9 tolerance class; any fabrication after extrusion '
+    + '(holes, end machining).',
+  extrusion: 'wall uniformity and ovality; the minimum bend radius if the profile is post-formed; cut-to-length and any '
+    + 'flaring or end forming.',
+  rotational_moulding: 'wall uniformity; inside corner radii; the spacing of parallel walls (the powder must flow between them) '
+    + 'and kiss-offs; inserts and threads. Undercuts are acceptable in roto.',
+  thermoforming: 'draw ratio and corner thinning; undercuts (a split or collapsing tool); draft by male or female tool; corner '
+    + 'radius against the sheet gauge.',
+  composites: 'the process against the programme volume; inside radius for prepreg bridging; ply drop-offs; flange width; '
+    + 'draft for demould; whether a constant section could be pultruded.',
+  rubber: 'the thickest cure section; the ISO 3302-1 tolerance class; the flash-line position; demould over undercuts (rubber '
+    + 'strips over them); insert bonding.',
+  gear: 'the case depth (ECD) on the drawing; the blank route (forged near-net or bar); rim and web thickness; the root fillet '
+    + 'against the hob; grinding stock and heat-treat distortion.',
+};
+
 export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
   const rules = packFor(part.commodity);
   const packAvailable = rules.length > 0;
+  // Boothroyd handling / insertion needs the assembly the part goes into; a part costed on its own gets "not applicable".
+  const dfa = part.assembly ? analyseDFAHandling(part) : dfaNotApplicable();
 
   if (!packAvailable) {
+    const checks = NO_PACK_CHECKS[part.commodity];
     return {
       commodity: part.commodity, findings: [], rulesEvaluated: 0, featuresExamined: 0,
       packAvailable: false,
-      limitations: [`No geometric rule pack exists for ${part.commodity} yet, so no `
-        + 'geometry-based checks were run. The commercial cost-ratio observations still apply.'],
-      dfa: analyseDFAHandling(part), grouped: [], totalAddressableGBP: 0,
+      limitations: [`No geometric rule pack exists for ${part.commodity.replace(/_/g, ' ')} yet, so no `
+        + 'geometry-based checks were run — no finding is not a clean part.',
+        ...(checks ? [`Checks a design engineer should make on this part: ${checks}`] : [])],
+      dfa, grouped: [], totalAddressableGBP: 0,
     };
   }
 
@@ -153,15 +184,28 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
   if (part.commodity === 'blow_moulding') {
     findings.push(...blowPartLevelFindings(part));
   }
+  const accessNotes: string[] = [];
   if (part.commodity === 'machining' || part.commodity === 'cast_and_machine') {
-    findings.push(...machiningPartLevelFindings(part));
+    findings.push(...machiningPartLevelFindings(part, accessNotes));
   }
+  const blankFindings = part.commodity === 'sheet_metal' || part.commodity === 'sheet_metal_fab' ? sheetBlankFindings(part) : [];
+  findings.push(...blankFindings);
   // Every pack declares what geometry can never tell it. A short finding list
   // must not be read as a clean part — this is the difference between "we
   // looked and found little" and "we could not look".
+  // Which faces the process-form rules judged — machined faces are the costing's, not the mould's or the die's.
+  if (fsx.available && (part.commodity === 'casting' || part.commodity === 'cast_and_machine' || part.commodity === 'forging')) {
+    const judged = (fsx.faceCount ?? 0) - (part.machined?.faceIds.length ?? 0);
+    limitations.unshift(part.machined
+      ? `${part.machined.basis} (${part.machined.faceIds.length} machined face(s) set aside; ${Math.max(0, judged)} judged.)`
+      : 'No machined-face set was available for this part (no feature table, or an STL), so draft, corner, undercut and '
+        + 'section checks judged EVERY face — on a finished model that includes faces the drawing machines.');
+  }
   if (part.commodity === 'casting' || part.commodity === 'cast_and_machine') {
+    limitations.push(hotSpotStatement(part, findings.filter(f => f.ruleId === 'casting.hotspot.isolated-heavy-section').length));
     limitations.push(...CASTING_LIMITATIONS);
   }
+  limitations.push(...accessNotes);
   if (part.commodity === 'machining' || part.commodity === 'cast_and_machine') {
     limitations.push(...MACHINING_LIMITATIONS);
   }
@@ -169,6 +213,9 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
     limitations.push(...MOULDING_LIMITATIONS);
   }
   if (part.commodity === 'sheet_metal' || part.commodity === 'sheet_metal_fab') {
+    limitations.push(sheetBlankStatement(part.sheetBlank, blankFindings.length));
+    const deep = sheetDeepHoleNote(part);
+    if (deep) limitations.push(deep);
     limitations.push(...SHEET_METAL_LIMITATIONS);
   }
   if (part.commodity === 'forging') {
@@ -213,18 +260,16 @@ export function analyseGeometricDFM(part: PartContext): GeometricAnalysis {
     const priced = priceFinding(f, part, costCtx);
     if (priced.costImpact) f.costImpact = priced.costImpact;
     else if (priced.costNotModelled) f.costNotModelled = priced.costNotModelled;
+    // COST is earned by a re-costable £, never asserted by a rule: a priced finding is graded COST unless it blocks.
+    f.severity = normaliseSeverity(f.severity, (f.costImpact?.perPartGBP ?? 0) > 0);
   }
 
-  findings.sort((a, b) => {
-    const rank = { critical: 0, major: 1, minor: 2, advisory: 3 } as const;
-    return rank[a.severity] - rank[b.severity]
+  findings.sort((a, b) => severityRank(a.severity) - severityRank(b.severity)
       || a.ruleId.localeCompare(b.ruleId)
-      || a.featureId.localeCompare(b.featureId);
-  });
+      || a.featureId.localeCompare(b.featureId));
 
   return { ...base, findings, limitations, packAvailable,
-    grouped: groupFindings(findings), totalAddressableGBP: totalCostGBP(findings),
-    dfa: analyseDFAHandling(part) };
+    grouped: groupFindings(findings), totalAddressableGBP: totalCostGBP(findings), dfa };
 }
 
 /**
@@ -266,20 +311,20 @@ export function groupFindings(findings: readonly GeometricFinding[]): GroupedFin
     const k = by.get(f.ruleId);
     if (k) k.push(f); else by.set(f.ruleId, [f]);
   }
-  const rank = { critical: 0, major: 1, minor: 2, advisory: 3 } as const;
   const out: GroupedFinding[] = [];
   for (const [ruleId, list] of by) {
     const vals = list.map(f => f.measured.value);
     // "Worst" = furthest the wrong side of the threshold, whichever way it points.
     const below = list[0].threshold.comparator.startsWith('<');
     const worst = list.reduce((a, b) =>
-      (below ? b.measured.value < a.measured.value : b.measured.value > a.measured.value) ? b : a);
+      (below ? b.measured.value < a.measured.value : b.measured.value > a.measured.value)
+      || (b.measured.value === a.measured.value && (b.areaMm2 ?? 0) > (a.areaMm2 ?? 0)) ? b : a);
     out.push({
       ruleId,
       title: list[0].title,
       totalCostGBP: totalCostGBP(list),
       ...(list[0].costNotModelled ? { costNotModelled: list[0].costNotModelled } : {}),
-      severity: list.reduce((a, b) => (rank[b.severity] < rank[a.severity] ? b : a)).severity,
+      severity: normaliseSeverity(list.reduce((a, b) => (severityRank(b.severity) < severityRank(a.severity) ? b : a)).severity),
       count: list.length,
       faceIds: [...new Set(list.flatMap(f => f.faceIds))].sort((a, b) => a - b),
       worst,
@@ -296,7 +341,7 @@ export function groupFindings(findings: readonly GeometricFinding[]): GroupedFin
   // advisory, and unpriced always follows priced at equal severity.
   out.sort((a, b) =>
     b.totalCostGBP - a.totalCostGBP
-    || rank[a.severity] - rank[b.severity]
+    || severityRank(a.severity) - severityRank(b.severity)
     || b.count - a.count
     || a.ruleId.localeCompare(b.ruleId));
   return out;

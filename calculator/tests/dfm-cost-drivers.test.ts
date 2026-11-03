@@ -64,9 +64,16 @@ describe('the real hydraulic manifold (recorded kernel output) — recognition a
     expect(x).toHaveLength(2);
     expect(x.every(f => /⌀18\.0 mm and ⌀11\.0 mm|⌀11\.0 mm and ⌀18\.0 mm/.test(f.detail))).toBe(true);
   });
-  it('flags the real deep holes only: the Ø8 × 70 galleries and the Ø11 × 60 bolt holes', () => {
-    const deep = r.findings.filter(f => f.ruleId === 'machining.hole.depth-beyond-standard-drill');
-    expect(deep.map(f => f.measured.value).sort()).toEqual([5.455, 5.455, 5.455, 5.455, 8.75, 8.75]);
+  it('flags no deep hole: a DIN 338 jobber drill reaches the Ø8 × 70 galleries (flute 75) and the Ø11 × 60 bolt holes (94)', () => {
+    // Report standard, Nov 2026: the old 4×D prototype-shop threshold priced these six holes' whole drilling time (£1.50)
+    // as a design saving. A stock jobber drill reaches all of them; only the costing's own peck premium past 5×D is
+    // design-addressable, and it is shown only on a hole beyond jobber reach.
+    expect(r.findings.filter(f => f.ruleId === 'machining.hole.depth-beyond-standard-drill')).toEqual([]);
+  });
+  it('the cross-drilled ports are a RISK (a burr inside a fluid part), unpriced with the reason', () => {
+    const x = r.findings.filter(f => f.ruleId === 'machining.hole.intersecting');
+    expect(x.every(f => f.severity === 'risk')).toBe(true);
+    expect(x[0].costNotModelled).toMatch(/not in the price/);
   });
   it('raises no corner finding: R5 corners 20 mm deep are a 2×D cutter', () => {
     expect(rules(r).some(id => id.startsWith('machining.corner.'))).toBe(false);
@@ -78,10 +85,10 @@ describe('internal corners', () => {
     ({ id: 'FIL1', kind: 'fillet', faceIds: [1], radiusMm: 2, concave: true, toolReachMm: 30, openDirs: [[0, 0, 1]], ...o });
   it('long reach: R2 at 30 mm is a Ø4 cutter at 7.5×D — major; at 14 mm, 3.5×D — nothing', () => {
     const f = analyseGeometricDFM(ctx([corner({})])).findings.find(x => x.ruleId === 'machining.corner.long-reach-cutter')!;
-    expect(f.severity).toBe('major');
+    expect(f.severity).toBe('risk');
     expect(f.measured.value).toBeCloseTo(7.5, 3);
     expect(rules(analyseGeometricDFM(ctx([corner({ toolReachMm: 14 })])))).not.toContain('machining.corner.long-reach-cutter');
-    expect(analyseGeometricDFM(ctx([corner({ toolReachMm: 20 })])).findings.find(x => x.ruleId === 'machining.corner.long-reach-cutter')!.severity).toBe('minor');
+    expect(analyseGeometricDFM(ctx([corner({ toolReachMm: 20 })])).findings.find(x => x.ruleId === 'machining.corner.long-reach-cutter')!.severity).toBe('info');
   });
   it('an external round never fires a cutter rule', () => {
     expect(rules(analyseGeometricDFM(ctx([corner({ concave: false, radiusMm: 0.5 })])))).toEqual([]);
@@ -131,13 +138,22 @@ describe('cross holes and hole sizes', () => {
     expect(rules(analyseGeometricDFM(ctx([a, hole('H4', 6, [40, 0, 0], [0, 1, 0], 30)])))).not.toContain('machining.hole.intersecting');
     expect(rules(analyseGeometricDFM(ctx([a, hole('H5', 6, [0, 2, 0], [1, 0, 0], 40)])))).not.toContain('machining.hole.intersecting'); // parallel
   });
-  it('six or more hole sizes is an advisory, priced as the costing\'s tool changes (machine + labour), with minutes', () => {
+  it('six or more DRILLED sizes is INFO and unpriced — merging every size onto one tool is not achievable', () => {
     const feats = [3, 4, 5, 6, 8, 10].map((d, i) => hole(`H${i + 1}`, d, [i * 30, 0, 0], [0, 0, 1], 5));
     const f = analyseGeometricDFM(ctx(feats)).findings.find(x => x.ruleId === 'machining.hole.many-sizes')!;
     expect(f.measured.value).toBe(6);
-    expect(f.costImpact!.minutes).toBeCloseTo(5 * 6 / 60, 6);
-    expect(f.costImpact!.perPartGBP).toBeCloseTo(5 * (6 / 3600) * (60 + 25), 4);
+    expect(f.severity).toBe('info');
+    expect(f.costImpact).toBeUndefined();
+    expect(f.costNotModelled).toMatch(/drawing question/);
     expect(rules(analyseGeometricDFM(ctx(feats.slice(0, 5))))).not.toContain('machining.hole.many-sizes');
+  });
+  it('a stepped hole is one size, a shallow land a spot face, a bore above the drilled range not a drill size', () => {
+    // six sizes, but: Ø6 + Ø10 are one stepped hole (coaxial, touching), Ø20 × 2 is a spot face (< ¼ Ø deep),
+    // Ø30 is bored (> Ø26) — three drilled sizes remain
+    const feats = [hole('H1', 6, [0, 0, 0], [0, 0, 1], 10), hole('H2', 10, [0, 0, 8], [0, 0, 1], 6),
+      hole('H3', 4, [40, 0, 0], [0, 0, 1], 8), hole('H4', 5, [80, 0, 0], [0, 0, 1], 8),
+      hole('H5', 20, [120, 0, 0], [0, 0, 1], 2), hole('H6', 30, [160, 0, 0], [0, 0, 1], 20)];
+    expect(rules(analyseGeometricDFM(ctx(feats)))).not.toContain('machining.hole.many-sizes');
   });
 });
 
@@ -223,8 +239,9 @@ describe('independent-review regressions (OCP-built parts, recorded kernel outpu
     ];
     expect(rules(analyseGeometricDFM(ctx(feats, { commodity: 'cast_and_machine' })))).not.toContain('machining.hole.compound-angle');
   });
-  it('a hole flagged by several rules is priced once — the hole\'s own time; a non-stock size carries no £', () => {
-    const h: ManufacturingFeature = { id: 'H1', kind: 'hole', faceIds: [1], diaMm: 6.33, depthMm: 60, ldRatio: 9.5, openEnds: 1, axis: [0, 0, 1], positionMm: [0, 0, 0], openDirs: [[0, 0, 1]] };
+  it('a hole flagged by several rules is priced once — the deep-hole premium; a non-stock size carries no £', () => {
+    // Ø6.33 is beyond DIN 338's Ø6.0 row (l2 = 63 mm for Ø6.0–6.7): 70 mm is beyond the jobber drill's reach
+    const h: ManufacturingFeature = { id: 'H1', kind: 'hole', faceIds: [1], diaMm: 6.33, depthMm: 70, ldRatio: 11.06, openEnds: 1, axis: [0, 0, 1], positionMm: [0, 0, 0], openDirs: [[0, 0, 1]] };
     const r = analyseGeometricDFM(ctx([h]));
     expect(rules(r)).toContain('machining.hole.non-preferred-diameter');
     const priced = r.findings.filter(f => f.featureId === 'H1' && f.costImpact);

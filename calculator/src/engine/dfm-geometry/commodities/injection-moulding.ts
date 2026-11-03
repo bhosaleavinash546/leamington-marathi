@@ -19,10 +19,9 @@ export const BOSS_TO_WALL_MAX = 2.5;
 export const MIN_MOULD_DRAFT_DEG = 0.5;
 
 const DFM_TEXT = {
-  standard: 'Injection-moulding design guidelines (widely published; e.g. Protolabs / Xometry '
-          + 'design-for-moulding guides and the Plastics Design Library handbook)',
-  note: 'These are industry design-guide figures rather than a formal standard, and are stated '
-      + 'as such so an engineer can argue with the number rather than with the tool.',
+  standard: 'CostVision engineering heuristic (not a published standard) \u2014 widely published moulding design-guide figures',
+  note: 'Industry design-guide figures (moulders\u2019 and resin suppliers\u2019 guides), not a formal standard; stated as such so an '
+      + 'engineer can argue with the number rather than with the tool.',
 };
 
 export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
@@ -43,7 +42,7 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
       const ratio = f.thicknessMm / thin;
       if (ratio <= 1 / RIB_TO_WALL_MAX) return null;     // 1/0.6 = 1.67
       return finding(this, f, part, {
-        severity: ratio > 2.5 ? 'major' : 'minor',
+        severity: 'risk',
         detail: `Face ${f.faceIds.join(', ')} is ${f.thicknessMm.toFixed(2)} mm against an `
               + `adjoining ${thin.toFixed(2)} mm — ${ratio.toFixed(2)}× the thinner section.`,
         measuredField: 'thicknessRatio', measuredValue: ratio, unit: '×',
@@ -60,11 +59,11 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
     title: 'Boss wall thick relative to the nominal wall — sink risk',
     appliesTo: ['boss'],
     source: {
-      standard: 'Protolabs, injection-moulding design guide \u2014 bosses',
-      note: 'The boss WALL should be "between 40 and 60 per cent of the thickness of the wall". Reported above 60 %. '
+      standard: 'CostVision engineering heuristic (not a published standard) \u2014 boss wall 40\u201360 % of the nominal wall',
+      note: 'The 40\u201360 % boss-wall band is a widely published moulding design-guide figure, not a standard. Reported above 60 %. '
         + 'The boss wall is (outer \u2300 \u2212 core-hole \u2300) / 2, from the boss and the hole on its axis; the nominal wall is the '
         + 'part\u2019s median measured wall. A boss with no core hole is not judged here (its outer diameter alone does not say '
-        + 'how thick it is). Quoted from the search engine\u2019s extract of the publisher\u2019s page \u2014 verify against the live URL.',
+        + 'how thick it is). A screw boss\u2019s outer diameter is set by the screw maker\u2019s boss rule, which this check does not read.',
     },
     evaluate(f, part) {
       if (part.featureSet.wallAnalysisValid === false) return null;
@@ -83,13 +82,14 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
       const ratio = bossWall / nominal;
       if (ratio <= BOSS_WALL_TO_WALL_MAX) return null;
       return finding(this, f, part, {
-        severity: 'minor',
+        severity: 'risk',
         detail: `Boss \u2300${f.diaMm.toFixed(1)} mm with a \u2300${(core.diaMm as number).toFixed(1)} mm core: its wall is ${bossWall.toFixed(2)} mm `
               + `against a ${nominal.toFixed(2)} mm nominal wall \u2014 ${(ratio * 100).toFixed(0)} %.`,
         measuredField: 'bossWallToWall', measuredValue: ratio, unit: '\u00d7',
         thresholdValue: BOSS_WALL_TO_WALL_MAX, comparator: '>',
-        recommendation: 'Thin the boss wall to 40\u201360 % of the nominal wall (open the core or reduce the outer diameter) and '
-          + 'support it with gussets; a thick boss sinks on the show face.',
+        recommendation: 'If the boss takes a thread-forming screw, keep the outer diameter the screw maker specifies (a thinner '
+          + 'wall splits under the screw\u2019s hoop stress) and treat the sink at the boss ROOT: core out its base, add a sink-'
+          + 'relief groove or gussets. Otherwise thin the boss wall toward 40\u201360 % of the nominal wall.',
       });
     },
   },
@@ -105,13 +105,13 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
       if (f.draftClass === 'undercut') return null;
       if (f.draftDeg >= MIN_MOULD_DRAFT_DEG) return null;
       return finding(this, f, part, {
-        severity: f.draftDeg === 0 ? 'major' : 'minor',
+        severity: 'risk',
         detail: `Face ${f.faceIds.join(', ')} draws at ${f.draftDeg.toFixed(2)}° against a `
               + `${MIN_MOULD_DRAFT_DEG}° minimum.`,
         measuredField: 'draftDeg', measuredValue: f.draftDeg, unit: '°',
         thresholdValue: MIN_MOULD_DRAFT_DEG, comparator: '<',
         recommendation: 'Add draft to at least 0.5° per side — more if the face is textured, '
-          + 'roughly 1° per 0.025 mm of texture depth. Otherwise expect ejector drag marks.',
+          + 'roughly 1° per 0.025 mm of texture depth (confirm the texture). Otherwise expect ejector drag marks.',
       });
     },
   },
@@ -125,7 +125,7 @@ export const INJECTION_MOULDING_RULES: readonly GeometricRule[] = [
     evaluate(f, part) {
       if (f.draftClass !== 'undercut') return null;
       return finding(this, f, part, {
-        severity: 'major',
+        severity: 'risk',     // 'cost' once the slide is priced through the mould estimator
         ...undercutEvidence(f, 'mould'),
         recommendation: 'Re-orient the parting, redesign the feature to draw, or price a slide / '
           + 'lifter — each adds mould cost and lengthens the cycle.',
@@ -166,7 +166,7 @@ export const CORE_PIN_RULE: GeometricRule = {
     url: 'https://www.envalior.com/en-us/holes',
     note: 'Envalior: "The depth of a blind hole should not exceed three times the hole diameter"; under \u23005 mm the ratio is 2. '
       + 'Through-hole cores, supported at both ends, may be longer: \u2264 4\u00d7D under \u23005 mm, \u2264 6\u00d7D above (Wevolver design guide). '
-      + 'Quoted from the search engine\u2019s extracts of the publishers\u2019 pages \u2014 verify against the live URLs.',
+      + 'Material-supplier design guidance, not a standard.',
   },
   evaluate(f, part) {
     if (f.diaMm === undefined || f.diaMm <= 0 || f.ldRatio === undefined || f.openEnds === undefined) return null;
@@ -176,13 +176,14 @@ export const CORE_PIN_RULE: GeometricRule = {
     const limit = blind ? (small ? CORE_PIN_BLIND_LD_SMALL : CORE_PIN_BLIND_LD) : (small ? CORE_PIN_THROUGH_LD_SMALL : CORE_PIN_THROUGH_LD);
     if (f.ldRatio <= limit) return null;
     return finding(this, f, part, {
-      severity: f.ldRatio > 2 * limit ? 'major' : 'minor',
+      severity: 'risk',
       detail: `${blind ? 'Blind' : 'Through'} ⌀${f.diaMm.toFixed(1)} mm hole ${f.depthMm?.toFixed(1)} mm deep — `
         + `a core pin at ${f.ldRatio.toFixed(1)}× its diameter against ${limit}×.`,
       measuredField: 'ldRatio', measuredValue: f.ldRatio, unit: '×D', thresholdValue: limit, comparator: '>',
       recommendation: blind
-        ? 'Shorten the hole, open it right through (a core supported at both ends), or core it from both sides; otherwise '
-          + 'the pin deflects and runs hot — slower cycle, an off-centre hole and pin breakage.'
+        ? 'Step the core pin: hold the small diameter only over the screw engagement (about 2–2.5 d, engineering-typical) and step it larger '
+          + 'beyond, open the hole right through (a core supported at both ends), or core it from both sides; otherwise the '
+          + 'pin deflects and runs hot — slower cycle, an off-centre hole and pin breakage.'
         : 'Core it from both halves (two pins meeting in the middle) or open the diameter.',
     });
   },

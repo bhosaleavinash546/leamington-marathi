@@ -11,6 +11,7 @@
  */
 import type { GeometricFinding, ManufacturingFeature, PartContext, RuleSource } from '../types.js';
 import { isBlend } from '../types.js';
+import { drilledInCosting, isCentreHole } from './machining.js';
 import {
   HANDLING_MIN_PER_FIXTURING, PROGRAMMING_HR, TOOL_CHANGE_SEC, fixtureCostGBP, handlingMinPerFixturing,
 } from '../../machining-time.js';
@@ -30,34 +31,44 @@ export const SETUPS_REPORTED_AT = 3;
 export const HOLE_SIZES_REPORTED_AT = 6;
 
 export const ACCESS_SOURCE: RuleSource = {
-  standard: 'Protolabs, CNC machining design guidance \u2014 orthogonal sides and setups',
-  note: 'A 3-axis machine reaches a part from "up to 6 orthogonal sides", one fixturing per side. Search-engine extract '
-    + '\u2014 verify against the live page. (An earlier Fictiv "six setups or less, 1 or 2 is ideal" quote could not be found '
-    + 'and was withdrawn.) Each direction a tool must come from is a re-fixturing on a 3-axis machine; counted here as the '
-    + 'smallest set of directions that reaches every measured hole and internal corner (greedy set cover). The 3-direction '
-    + 'reporting threshold is the tool\u2019s own.',
+  standard: 'CostVision engineering heuristic (not a published standard) \u2014 tool directions and fixturings',
+  note: 'Each direction a tool must come from is a re-fixturing on a 3-axis machine; counted here as the smallest set of '
+    + 'directions that reaches every measured hole and internal corner (greedy set cover). Judged only when the costing '
+    + 'routes the milling on a 3-axis machine (or names no machine); the 3-direction reporting threshold is the tool\u2019s own.',
 };
 export const COMPOUND_SOURCE: RuleSource = {
-  standard: 'Protolabs, "CNC Machining: 3-Axis vs 5-Axis Indexed vs 5-Axis Continuous"',
-  url: 'https://www.protolabs.com/resources/blog/cnc-machining-3-axis-vs-5-axis-indexed-vs-5-axis-continuous/',
-  note: '5-axis indexed allows "non-orthogonal features like off-axis holes". Quoted from the search engine’s extract of the page (the page itself was not opened in this session) — verify against the live URL. A bore whose axis is off every principal direction of the part cannot be reached by a 3-axis '
-    + 'spindle in a square setup: it needs a 4th/5th axis, a sine / angle plate or a dedicated fixture.',
+  standard: 'CostVision engineering heuristic (not a published standard) \u2014 off-axis bores and machine axes',
+  note: 'A bore whose axis is off every principal direction of the part is reached by a 3-axis spindle only with an angle '
+    + 'fixture. An axis tilted in ONE principal plane is a single angle (one rotary axis or an angle plate); tilted out of '
+    + 'every principal plane it is a compound angle (two rotary axes, or a compound-angle fixture). Judged against the machine '
+    + 'the costing routes the part on.',
 };
 export const CROSS_HOLE_SOURCE: RuleSource = {
-  standard: 'LaRoux K. Gillespie (Bendix), "Deburring Small Intersecting Holes"',
-  note: '"Only 14 of the 37 major deburring processes are applicable to most intersecting hole applications"; deburring '
-    + 'has been estimated "as high as 30% of total part cost" (a 1970s\u201380s upper estimate for manual deburring of precision '
-    + 'parts \u2014 a ceiling, not a typical figure). Search-engine extract of a copy of the paper \u2014 verify against the original. '
-    + 'Where one drilled bore breaks into another the exit burr is inside the part and out of reach of normal deburring: it '
-    + 'needs a cross-hole deburring tool, brushing, thermal (TEM) or ECM deburring.',
+  standard: 'Cross-hole burr \u2014 a principle (L. K. Gillespie, "Deburring Small Intersecting Holes", Bendix), not a numeric threshold',
+  note: 'Where one drilled bore breaks into another the exit burr is inside the part and out of reach of normal deburring: it '
+    + 'needs a cross-hole deburring tool, brushing, thermal (TEM) or electrochemical (ECM) deburring, and on a fluid part a '
+    + 'cleanliness check (ISO 16232 for road-vehicle fluid circuits).',
 };
 export const TOOL_COUNT_SOURCE: RuleSource = {
-  standard: 'Fictiv, "Optimizing part design for CNC machining" \u2014 drill sizes',
-  url: 'https://www.fictiv.com/?p=1397',
-  note: '"Minimize the number of different drill sizes… reduce the amount of time spent on tool changes." A VMC tool '
-    + 'change is ~3.6\u20134.5 s chip-to-chip (Haas VF-2 generations); the costing uses 6 s. The 6-size reporting threshold is the tool\u2019s own. Quoted from the search engine’s extract of the page (the page itself was not opened in this session) — verify against the live URL. Each distinct hole diameter is a separate drill (and tap / reamer where it is threaded or fitted): '
-    + 'a tool change in the cycle and a CAM operation to program.',
+  standard: 'CostVision engineering heuristic (not a published standard) \u2014 distinct drilled sizes',
+  note: 'Each distinct drilled diameter is a drill and a tool change (the costing charges 6 s a change). Counted on the holes '
+    + 'the costing DRILLS: a stepped hole is one bore (a step tool at volume), cored or bored bores are not drill sizes, an '
+    + 'ISO 866 centre hole is a stock centre drill and a land shallower than \u00bc of its diameter is a spot face. The '
+    + '6-size reporting threshold is the tool\u2019s own.',
 };
+
+/** What the costed machines reach in one clamping: 5 (5-axis), 4 (a 4th-axis HMC), 3 (3-axis / drill), or null (none named). */
+export function costedMillAxes(machineIds: readonly string[] | undefined): number | null {
+  if (!machineIds?.length) return null;
+  let best: number | null = null;
+  for (const id of machineIds) {
+    const m = id.toLowerCase();
+    const axes = /vmc5|5ax|5-axis|umc|five/.test(m) ? 5 : /hmc|4ax|4th/.test(m) ? 4
+      : /vmc|vf\d|mill|drill|machining|router/.test(m) ? 3 : null;
+    if (axes !== null) best = Math.max(best ?? 0, axes);
+  }
+  return best;
+}
 
 /** The part's own frame: the largest planar face's normal, the largest face square to it, and their cross. */
 export function partFrame(features: readonly ManufacturingFeature[]): V3[] {
@@ -220,7 +231,7 @@ export function toothedSets(features: readonly ManufacturingFeature[]): ToothedS
 /** The advisory each tooth form gets — what it is and where it is costed. */
 export function toothedFindings(part: PartContext, sets: readonly ToothedSet[]): GeometricFinding[] {
   return sets.map(t => partFinding({
-    ruleId: 'machining.feature.toothed-form', part, severity: 'advisory',
+    ruleId: 'machining.feature.toothed-form', part, severity: 'info',
     title: 'Tooth form (gear or spline) — generated, not end-milled',
     detail: `${t.ids.length} concave R${t.radiusMm.toFixed(2)} mm roots on a ring of radius ${t.pitchRadiusMm.toFixed(1)} mm round `
       + `${dirLabel(t.axis)} — a gear or spline tooth form. The corner rules do not judge them as end-milled corners.`,
@@ -276,15 +287,25 @@ function partFinding(o: {
   };
 }
 
-/** Part-level machining findings: setups, compound angles, cross holes, hole sizes. */
-export function machiningPartLevelFindings(part: PartContext): GeometricFinding[] {
+/**
+ * Part-level machining findings: setups, off-axis holes, cross holes, hole sizes. `notes` collects what a check
+ * deliberately did not report (judged against the costed machine) — the runner prints it with the limitations.
+ */
+export function machiningPartLevelFindings(part: PartContext, notes?: string[]): GeometricFinding[] {
   const feats = part.featureSet.features ?? [];
   const out: GeometricFinding[] = [];
   const holes = feats.filter(f => f.kind === 'hole' && f.diaMm && f.axis);
 
   // ── setups: directions a tool must come from ──
+  // Judged against the COSTED machine: a 4th-axis HMC or a 5-axis reaches the part's sides in one clamping, and the
+  // costing's own fixturing count is what is in the price (report standard, Nov 2026 — the stub axle printed "3
+  // fixturings on a 3-axis machine" on a 4th-axis HMC routing).
+  const axes = costedMillAxes(part.machineIds);
   const items = accessItems(part);
-  if (items.length) {
+  if (items.length && axes !== null && axes >= 4) {
+    notes?.push(`Setups were not counted against a 3-axis machine: the costing routes the milling on a ${axes === 5 ? '5-axis machine' : '4th-axis machining centre'}, `
+      + 'which reaches the part\'s sides in one clamping; the costing\'s own fixturing count is the one in the price.');
+  } else if (items.length) {
     const cover = coverDirections(items);
     // Directions spread AROUND one axis (radial holes in a shaft, scallops round a flange) are one rotary-indexed
     // fixturing — a 4th axis or a mill-turn's C axis — not one each: the hollow driveshaft read 21 "setups".
@@ -299,11 +320,12 @@ export function machiningPartLevelFindings(part: PartContext): GeometricFinding[
       }
       out.push(partFinding({
         ruleId: 'machining.setup.access-directions', part,
-        severity: setups >= 4 ? 'major' : 'minor',
+        severity: 'info',
         title: 'Features need several setups on a 3-axis machine',
         detail: `The measured holes and internal corners are reached from ${cover.length} directions — `
           + `${parts.join(', ')} — so ${setups} fixturings`
-          + (idx ? ' (the radial ones indexed on a 4th axis; a plain 3-axis needs one each).' : ' on a 3-axis machine.'),
+          + (idx ? ' (the radial ones indexed on a 4th axis; a plain 3-axis needs one each)' : ' on a 3-axis machine')
+          + (axes === 3 ? ', the machine class the costing routes it on.' : ' (the costing named no machine to judge against).'),
         faceIds: items.flatMap(i => i.f.faceIds), featureId: 'PART:setups',
         field: 'setups', value: setups, unit: 'setups', threshold: SETUPS_REPORTED_AT - 1, comparator: '>',
         recommendation: 'Bring features onto fewer faces (the fewest directions the function allows), or '
@@ -313,9 +335,10 @@ export function machiningPartLevelFindings(part: PartContext): GeometricFinding[
     }
   }
 
-  // ── compound-angle holes: ONE finding per off-frame direction (a stepped bore is one fixturing) ──
+  // ── off-axis holes: ONE finding per off-frame direction; coaxial lands are one bore ──
   const frame = partFrame(feats);
   const cosTol = Math.cos((SAME_DIRECTION_DEG * Math.PI) / 180);
+  const sinTol = Math.sin((SAME_DIRECTION_DEG * Math.PI) / 180);
   const offGroups: Array<{ dir: V3; off: number; holes: ManufacturingFeature[] }> = [];
   for (const h of holes) {
     const off = offFrameDeg(h.axis!, frame);
@@ -325,16 +348,30 @@ export function machiningPartLevelFindings(part: PartContext): GeometricFinding[
     if (g) g.holes.push(h); else offGroups.push({ dir: d, off, holes: [h] });
   }
   for (const g of offGroups) {
+    // A single angle: the axis lies in a principal plane (one frame component ~0) — one rotary axis reaches it.
+    const comps = frame.map(f => Math.abs(dot(g.dir, f)));
+    const compound = comps.every(c => c > sinTol);
+    const need = compound ? 5 : 4;
+    if (axes !== null && axes >= need) {
+      notes?.push(`${boreCount(g.holes)} off-axis bore(s) at ${g.off.toFixed(1)}° (${compound ? 'a compound angle' : 'a single angle'}) are `
+        + `reached by the ${axes === 5 ? '5-axis machine' : '4th-axis machining centre'} the costing routes the part on — not a finding.`);
+      continue;
+    }
     const sizes = [...new Set(g.holes.map(h => `⌀${h.diaMm!.toFixed(1)}`))];
+    const n = boreCount(g.holes);
+    const plane = compound ? '' : ` — tilted in the plane square to ${dirLabel(frame[comps.indexOf(Math.min(...comps))])}, a single angle`;
     out.push(partFinding({
-      ruleId: 'machining.hole.compound-angle', part, severity: 'major',
-      title: 'Holes on a compound angle',
-      detail: `${g.holes.length} bore${g.holes.length > 1 ? 's' : ''} (${sizes.join(', ')} mm) on an axis ${g.off.toFixed(1)}° off the `
-        + `part's nearest principal direction — ${dirLabel(g.dir)}.`,
+      ruleId: 'machining.hole.compound-angle', part, severity: 'info',
+      title: compound ? 'Holes on a compound angle' : 'Holes on a single off-axis angle',
+      detail: `${n} bore${n > 1 ? 's' : ''}${g.holes.length > n ? ` (${g.holes.length} coaxial lands)` : ''} (${sizes.join(', ')} mm) on an axis `
+        + `${g.off.toFixed(1)}° off the part's nearest principal direction — ${dirLabel(g.dir)}${plane}.`,
       faceIds: g.holes.flatMap(h => h.faceIds), featureId: `ANG:${g.holes[0].id}`, field: 'offFrameDeg', value: g.off, unit: '°',
       threshold: SAME_DIRECTION_DEG, comparator: '>',
-      recommendation: 'Square the axis to a principal face if the function allows; otherwise these need a 4/5-axis machine or '
-        + 'an angle fixture — a fixturing of their own on a 3-axis machine.',
+      recommendation: compound
+        ? 'If the function allows, bring the axis into a principal plane (one angle) or square it; otherwise it needs a 5-axis '
+          + 'machine or a compound-angle fixture.'
+        : 'An axis set by the part\'s function (a kingpin or camber angle) stays: it needs a 4th axis or an angle fixture, a '
+          + 'fixturing of its own on a 3-axis machine.',
       source: COMPOUND_SOURCE, positionMm: g.holes[0].positionMm,
     }));
   }
@@ -366,34 +403,74 @@ export function machiningPartLevelFindings(part: PartContext): GeometricFinding[
       if (seen.has(key)) continue;
       seen.add(key);
       out.push(partFinding({
-        ruleId: 'machining.hole.intersecting', part, severity: 'minor',
+        ruleId: 'machining.hole.intersecting', part, severity: 'risk',
         title: 'Cross-drilled holes break into each other',
         detail: `⌀${hs[i].diaMm!.toFixed(1)} mm and ⌀${hs[j].diaMm!.toFixed(1)} mm bores intersect `
           + `(axes ${gap.toFixed(1)} mm apart at the crossing).`,
         faceIds: [...hs[i].faceIds, ...hs[j].faceIds], featureId: `X:${key}`,
         field: 'axisGapMm', value: gap, unit: 'mm', threshold: Math.round((A.r + B.r) * 1000) / 1000, comparator: '<',
         recommendation: 'The exit burr is inside the bore: allow a cross-hole deburr (tool, brush, thermal or ECM) '
-          + 'and its inspection, or offset the holes so they do not break through where the flow allows.',
+          + 'and its inspection — on a fluid part a cleanliness risk — or offset the holes so they do not break through where '
+          + 'the flow allows. The costing has no cross-hole deburr operation.',
         source: CROSS_HOLE_SOURCE, positionMm: pA.map(v => Math.round(v * 1000) / 1000) as [number, number, number],
       }));
     }
   }
 
   // ── hole sizes (tools) ──
-  // Rounded to 0.5 mm — the way the costing counts hole tools (machining-time.ts), so the two agree.
-  const sizes = [...new Set(holes.map(h => Math.round(h.diaMm! * 2) / 2))].sort((a, b) => a - b);
+  // Only the holes the costing DRILLS, a stepped hole counted once (its lands are one bore), centre holes out — the stub
+  // axle's "14 sizes" were 10 lands of two cored bearing bores, a centre hole and its countersink (report standard,
+  // Nov 2026).
+  const drilled = holes.filter(h => drilledInCosting(h, part) && !isCentreHole(h, part));
+  const centre = holes.filter(h => isCentreHole(h, part));
+  const chains = coaxialChains(drilled.filter(h => !centre.some(c => sameAxisLine(c, h))));
+  const sizes = [...new Set(chains.map(c => c.map(h => Math.round(h.diaMm! * 10) / 10).sort((a, b) => a - b).join('/')))];
   if (sizes.length >= HOLE_SIZES_REPORTED_AT) {
     out.push(partFinding({
-      ruleId: 'machining.hole.many-sizes', part, severity: 'advisory',
-      title: 'Many different hole sizes',
-      detail: `${sizes.length} hole diameters (${sizes.map(s => `⌀${s}`).join(', ')}) — a drill each (a boring tool for a cored or bored bore), plus taps / reamers where fitted or threaded.`,
-      faceIds: holes.flatMap(h => h.faceIds), featureId: 'PART:hole-sizes',
+      ruleId: 'machining.hole.many-sizes', part, severity: 'info',
+      title: 'Many different drilled hole sizes',
+      detail: `${sizes.length} drilled sizes (${sizes.map(s => `⌀${s}`).join(', ')}) — a drill each (a step tool for a stepped `
+        + 'hole), plus taps / reamers where fitted or threaded.',
+      faceIds: chains.flat().flatMap(h => h.faceIds), featureId: 'PART:hole-sizes',
       field: 'holeSizes', value: sizes.length, unit: 'sizes', threshold: HOLE_SIZES_REPORTED_AT - 1, comparator: '>',
-      recommendation: 'Consolidate clearance and tapping sizes onto a few standard diameters so one drill serves several holes.',
+      recommendation: 'Consolidate clearance and tapping sizes onto a few standard diameters so one drill serves several holes, '
+        + 'where the fits and threads on the drawing allow.',
       source: TOOL_COUNT_SOURCE,
     }));
   }
   return out;
+}
+
+/** Two holes on one axis line (parallel, within the kernel's 0.5 mm coaxial tolerance). */
+function sameAxisLine(a: ManufacturingFeature, b: ManufacturingFeature): boolean {
+  if (!a.axis || !b.axis || !a.positionMm || !b.positionMm) return false;
+  if (Math.abs(dot(norm(a.axis), norm(b.axis))) < Math.cos((SAME_DIRECTION_DEG * Math.PI) / 180)) return false;
+  const u = norm(a.axis), v = [b.positionMm[0] - a.positionMm[0], b.positionMm[1] - a.positionMm[1], b.positionMm[2] - a.positionMm[2]];
+  const t = dot(v, u);
+  return Math.hypot(v[0] - t * u[0], v[1] - t * u[1], v[2] - t * u[2]) < 0.5;
+}
+/** Holes on one axis line whose extents touch — the lands of one stepped hole or bore. */
+export function coaxialChains(hs: readonly ManufacturingFeature[]): ManufacturingFeature[][] {
+  const out: ManufacturingFeature[][] = [];
+  const touch = (a: ManufacturingFeature, b: ManufacturingFeature) => {
+    if (!sameAxisLine(a, b)) return false;
+    const p = a.positionMm!, q = b.positionMm!;
+    return Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]) <= ((a.depthMm ?? 0) + (b.depthMm ?? 0)) / 2 + 0.5;
+  };
+  for (const h of hs) {
+    const joined = out.filter(c => c.some(x => touch(x, h)));
+    if (!joined.length) { out.push([h]); continue; }
+    const merged = [h, ...joined.flat()];
+    for (const c of joined) out.splice(out.indexOf(c), 1);
+    out.push(merged);
+  }
+  return out;
+}
+/** Bores on distinct axis lines (coaxial lands are one bore). */
+function boreCount(hs: readonly ManufacturingFeature[]): number {
+  const lines: ManufacturingFeature[] = [];
+  for (const h of hs) if (!lines.some(l => sameAxisLine(l, h))) lines.push(h);
+  return lines.length;
 }
 
 // ── pricing (registered in cost-impact.ts) ──────────────────────────────────
