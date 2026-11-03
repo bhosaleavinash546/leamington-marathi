@@ -14,8 +14,8 @@ INPUTS, independently of the tool's own arithmetic:
   6  overhead                           12 % (the printed rate) × (material + process + labour + tooling)
   7  margin                             8 % (the printed rate) × (factory cost + overhead)
   8  total                              the sum of the 8 buckets
-A step "holds" when the re-done figure equals the printed one to ½ of the last printed unit (a 0.5 p tolerance on
-£ figures). Nothing here calls the tool.
+A step "holds" when the re-done figure equals the printed one within the rounding of its printed inputs (inputs are
+printed to 4 dp, so ± 0.06 % plus 0.6 of a minor unit). Nothing here calls the tool.
 """
 import json, re, sys
 
@@ -49,7 +49,9 @@ def trace(path):
            'stamp': s.get('Reproducibility'), 'steps': [], 'holds': True}
 
     def step(n, what, formula, redone, printed):
-        ok = printed is None or redone is None or abs(redone - printed) <= TOL + 1e-6 * abs(printed)
+        # Inputs are printed to 4 dp (0.1489 kg): re-done from them a step can move by ± half that last digit relative
+        # to the input (≤ 0.05 % on a 0.1 kg part) — in forint or rupee that is a few hundredths of a unit.
+        ok = printed is None or redone is None or abs(redone - printed) <= TOL + 6e-4 * abs(printed)
         out['steps'].append({'n': n, 'what': what, 'formula': formula,
                              'redone': None if redone is None else round(redone, 6),
                              'printed': printed, 'holds': ok})
