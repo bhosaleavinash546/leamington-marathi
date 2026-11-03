@@ -1,11 +1,11 @@
 {
  "DE": {
   "medianSourcedPct": 40.8,
-  "heldPct": 29.2
+  "heldPct": 29.3
  },
  "FR": {
   "medianSourcedPct": 47.4,
-  "heldPct": 32.1
+  "heldPct": 32.2
  },
  "IT": {
   "medianSourcedPct": 46.6,
@@ -13,47 +13,47 @@
  },
  "ES": {
   "medianSourcedPct": 45,
-  "heldPct": 33.9
+  "heldPct": 34
  },
  "PL": {
   "medianSourcedPct": 48.1,
-  "heldPct": 32.3
+  "heldPct": 32.1
  },
  "CZ": {
   "medianSourcedPct": 46.8,
-  "heldPct": 35.7
+  "heldPct": 35.9
  },
  "RO": {
   "medianSourcedPct": 49.3,
-  "heldPct": 38.7
+  "heldPct": 38.8
  },
  "HU": {
   "medianSourcedPct": 47.6,
-  "heldPct": 35.8
+  "heldPct": 36
  },
  "SE": {
   "medianSourcedPct": 49.1,
-  "heldPct": 30.7
+  "heldPct": 30.8
  },
  "NL": {
   "medianSourcedPct": 51.2,
-  "heldPct": 29.5
+  "heldPct": 29.6
  },
  "TR": {
   "medianSourcedPct": 36.2,
-  "heldPct": 42.1
+  "heldPct": 42.3
  },
  "CN": {
   "medianSourcedPct": 40.2,
-  "heldPct": 37.5
+  "heldPct": 37.4
  },
  "IN": {
   "medianSourcedPct": 36.9,
-  "heldPct": 36.9
+  "heldPct": 36.8
  },
  "MX": {
   "medianSourcedPct": 16.7,
-  "heldPct": 44.3
+  "heldPct": 44.5
  },
  "US": {
   "medianSourcedPct": 36.8,
@@ -61,15 +61,15 @@
  },
  "TH": {
   "medianSourcedPct": 14.5,
-  "heldPct": 45.7
+  "heldPct": 45.9
  },
  "VN": {
-  "medianSourcedPct": 12,
-  "heldPct": 46.2
+  "medianSourcedPct": 10.2,
+  "heldPct": 46.5
  },
  "BR": {
   "medianSourcedPct": 39,
-  "heldPct": 43.1
+  "heldPct": 43.3
  },
  "KR": {
   "medianSourcedPct": 40.4,
@@ -77,11 +77,11 @@
  },
  "AT": {
   "medianSourcedPct": 50.8,
-  "heldPct": 29.8
+  "heldPct": 29.9
  },
  "BE": {
   "medianSourcedPct": 50.6,
-  "heldPct": 29.8
+  "heldPct": 30
  },
  "PT": {
   "medianSourcedPct": 49.1,
@@ -97,35 +97,35 @@
  },
  "LT": {
   "medianSourcedPct": 48.3,
-  "heldPct": 37
+  "heldPct": 37.1
  },
  "BG": {
   "medianSourcedPct": 49.6,
-  "heldPct": 39.1
+  "heldPct": 39.2
  },
  "RS": {
   "medianSourcedPct": 49.1,
-  "heldPct": 38.2
+  "heldPct": 38.4
  },
  "MA": {
   "medianSourcedPct": 43.2,
-  "heldPct": 43.6
+  "heldPct": 43.7
  },
  "TN": {
   "medianSourcedPct": 43.5,
-  "heldPct": 43.1
+  "heldPct": 43.3
  },
  "EG": {
   "medianSourcedPct": 32.1,
-  "heldPct": 45.2
+  "heldPct": 45.4
  },
  "ZA": {
   "medianSourcedPct": 48,
-  "heldPct": 40.6
+  "heldPct": 40.7
  },
  "JP": {
   "medianSourcedPct": 40.5,
-  "heldPct": 39.2
+  "heldPct": 39.4
  },
  "TW": {
   "medianSourcedPct": 40.9,
@@ -133,22 +133,22 @@
  },
  "MY": {
   "medianSourcedPct": 42.7,
-  "heldPct": 45
+  "heldPct": 45.1
  },
  "ID": {
   "medianSourcedPct": 37.3,
-  "heldPct": 46.3
+  "heldPct": 46.5
  },
  "PH": {
   "medianSourcedPct": 42.9,
-  "heldPct": 43.7
+  "heldPct": 43.9
  },
  "SG": {
   "medianSourcedPct": 43.8,
-  "heldPct": 35.9
+  "heldPct": 36
  },
  "CA": {
   "medianSourcedPct": 44.4,
-  "heldPct": 34.8
+  "heldPct": 34.9
  }
 }

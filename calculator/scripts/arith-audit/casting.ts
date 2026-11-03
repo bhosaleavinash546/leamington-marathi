@@ -19,6 +19,9 @@
  *                                                     # years and terms (dump-context.ts) — UK dumps only: the country
  *                                                     # factors on the core / NDT / blast constants are not restated here
  *
+ * Secondary-machining parity (3 Nov 2026): the casting route costs the machined features as secondary machining on the
+ * near-net plan (cast + machine's), pours / heat-treats / blasts the AS-CAST weight; the two routes must total the same.
+ *
  * Foundry at volume (3 Nov 2026): the moulding line is chosen by the part's moulds a year on the semi-automatic line
  * (≥ 5,000 → the automatic vertical line, when an impression fits its mould), each line with its own face, rated
  * output and crew; a ferrous casting ≤ 30 kg off the automatic line is fettled on the robotic cell (40 s, ½ operator);
@@ -89,6 +92,7 @@ function check(label: string, got: number, want: number, opts: { abs?: number; r
   if (verbose || !ok) console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${label.padEnd(58)} product ${got.toFixed(6).padStart(14)}  shadow ${want.toFixed(6).padStart(14)}`);
 }
 const r0 = (x: number) => Math.round(x);
+const totals = new Map<string, number>();
 
 const base = JSON.parse(readFileSync(BASELINE, 'utf8')) as Array<{ part: string; geometry: OCCTGeometry }>;
 
@@ -126,8 +130,11 @@ for (const c of CASES) {
   const extCm2 = (geo.turning?.externalAreaMm2 ?? 0) / 100;
   const turnedCm2 = extCm2 >= TURNED_MIN_CM2 && extCm2 / geo.surfaceArea.cm2 >= TURNED_MIN_SHARE ? extCm2 : 0;
   const stockCm3 = drilledMm3 / 1000 + faceMm3 / 1000 + turnedCm2 * STOCK_MM / 10;
-  const castKg = cam ? finished + stockCm3 * density : finished;
+  // Secondary-machining parity (3 Nov 2026): the casting route machines the same rows as secondary machining and pours
+  // the same as-cast weight (it poured the finished weight).
+  const castKg = finished + stockCm3 * density;
   if (cam) check('as-cast mass, kg', pv('cam-cast-wt'), castKg, { rel: 0.001 });
+  else check('as-cast mass, kg (casting route, secondary machining)', Number(P.partWeightKg), castKg, { rel: 0.001 });
   const castUsed = cam ? Number(P.castPartWeightKg) : Number(P.partWeightKg);
 
   // ── 2. Yield, pour, melt loss, utilisation, metal, melt energy ──
@@ -212,12 +219,19 @@ for (const c of CASES) {
     check(`op £ ${o.operationName.slice(0, 40)}`, o.processCost + o.labourCost, p + l);
     machProc += p; machLab += l;
   }
+  const perMin = c.alloy === 'steel' ? 0.12 : 0.10;
   if (cam) {
     check('setup h / part (setup ÷ batch)', ops.find(o => /^Machining Setup/.test(o.operationName)).cycleTimeHr, pv('cam-mach-setup-time') / pv('cam-mach-batch-size'), { abs: 1e-9 });
     const cutMin = (P.machiningOps as Array<any>).filter(o => !o.benchOperation && !/^Pallet change|load|clamp|unload/i.test(o.name))
       .reduce((s: number, o: any) => s + o.cycleTimeHr, 0) * 60;
-    const perMin = c.alloy === 'steel' ? 0.12 : 0.10;
     check('tool wear £ (cutting min × £/min)', items.get('cutting-tool wear') ?? 0, cutMin * perMin, { abs: 0.0005 });
+  } else {
+    // The casting route's secondary machining is the near-net plan: the same change-over (efficiency 1), the same tool wear.
+    const setupOp = ops.find(o => /^Machining Setup/.test(o.operationName));
+    check('secondary machining: change-over at labour efficiency 1', setupOp?.labourEfficiency ?? NaN, 1, { abs: 0 });
+    const cutMin = (P.secondaryMachiningOps as Array<any>).filter(o => !o.benchOperation && !/^Machining Setup|^Pallet change|load|clamp|unload/i.test(o.operationName))
+      .reduce((s: number, o: any) => s + o.cycleTimeHr, 0) * 60;
+    check('tool wear £ (cutting min × £/min)', items.get('machining consumables') ?? 0, cutMin * perMin, { abs: 0.0005 });
   }
 
   // ── 6. Tooling: the sand pattern build-up, sets over the programme, amortisation ──
@@ -266,7 +280,14 @@ for (const c of CASES) {
   check('bucket overhead (12% of factory base)', T.result.breakdown.overhead, oh);
   check('bucket margin (8% of subtotal)', T.result.breakdown.margin, mg);
   check('TOTAL', res.total, factory + oh + pack + logi + mg);
+  totals.set(`${c.part}|${c.commodity}`, res.total);
   if (verbose) console.log(`  shadow: cast ${castKg.toFixed(4)} kg, pour ${pour.toFixed(4)} kg, lost ${lost.toFixed(4)} kg, metal £${metalGbp.toFixed(4)}, energy £${energyGbp.toFixed(4)}, impressions ${imps}, pattern £${pattern} × ${sets}`);
+}
+
+// Secondary-machining parity: the same part on the casting route (machined features costed) and cast + machine, same total.
+for (const [k, t] of totals) {
+  const [part, com] = k.split('|');
+  if (com === 'casting' && totals.has(`${part}|cast_and_machine`)) check(`${part}: casting route = cast + machine (same scope)`, t, totals.get(`${part}|cast_and_machine`)!, { abs: 0 });
 }
 
 console.log(`\n${pass + fail} checks: ${pass} PASS, ${fail} FAIL`);

@@ -69,11 +69,15 @@ describe('2. The screen on every real part: same family, the shape, the equipmen
       }
     }
   });
-  it('the knuckle: forging, cast + machine and machining; as-cast refused (12 machined bores); sheet metal refused on gauge', () => {
+  it('the knuckle: forging, casting, cast + machine and machining; the casting route costs its 12 machined bores; sheet metal refused on gauge', () => {
     const routes = candidateRoutes(input('steering_knuckle_RH.stp'));
-    expect(routes).toEqual(['forging', 'cast_and_machine', 'machining']);
+    // Secondary-machining parity (Nov 2026): the casting route costs the machined features as secondary machining on the
+    // near-net plan, so it is the finished scope — it was refused here as "as-cast".
+    expect(routes).toEqual(['forging', 'casting', 'cast_and_machine', 'machining']);
     const s = screenCandidates(input('steering_knuckle_RH.stp'));
-    expect(s.find(x => x.route === 'casting')!.checks.find(c => c.id === 'as_cast_scope')!.pass).toBe(false);
+    const scope = s.find(x => x.route === 'casting')!.checks.find(c => c.id === 'as_cast_scope')!;
+    expect(scope.pass).toBe(true);
+    expect(scope.measured).toMatch(/machined features costed as secondary machining — same scope as cast \+ machine/);
     expect(s.find(x => x.route === 'sheet_metal')!.checks.find(c => c.id === 'gauge')!.measured).toMatch(/9\.02 mm/);
   });
   it('the 1.8 m aluminium rail: no forging (constant section; 10,776 t against the 8,000 t press), no plastics, no rubber', () => {
@@ -107,7 +111,7 @@ describe('2. The screen on every real part: same family, the shape, the equipmen
 describe('3. The arithmetic on a row', () => {
   it('the knuckle: buckets add up on every costed row; the machining row buys 50.9 kg of plate for a 2.85 kg part; tooling investment ÷ amortisation = tooling a part', async () => {
     const cmp = await compareRoutes(input('steering_knuckle_RH.stp'), undefined);
-    expect([...new Set(cmp.rows.map(r => r.route))]).toEqual(['forging', 'cast_and_machine', 'machining']);
+    expect([...new Set(cmp.rows.map(r => r.route))]).toEqual(['forging', 'casting', 'cast_and_machine', 'machining']);
     expect(cmp.rows[0].label).toBe('forging — closed-die forging');
     for (const r of cmp.rows) {
       expect(r.status, r.route).toBe('costed');
@@ -123,11 +127,19 @@ describe('3. The arithmetic on a row', () => {
     // cell's masked load inside the operator's share of the cut: 22.7563 → 19.9838 (24.0215 before the pilot rule pack)
     // MPI £0.6673, no longer rounded up to £0.67 (7-country review): 19.9805. Report standard round (3 Nov 2026): the
     // secondary machining on the published cutting data (12.5 → 5.8 HMC min) — 15.1618.
-    // the engine's unrounded total (live run, 3 Nov 2026: the row is rounded once, at display)
-    expect(ref.total).toBeCloseTo(15.1618, 4);
-    expect(ref.tooling!.investment).toBe(440949.69);   // one hydraulic tombstone fixture (£12,000) in place of three dedicated ones
+    // Secondary-machining parity (Nov 2026): the forging's secondary machining is the near-net plan of cast + machine —
+    // the deburr and gauge check, the tool changes, the crewed pallet change, the spindle turned on the lathe in its own
+    // fixture, and the as-forged weight carrying that spindle's turning stock — 17.2467.
+    expect(ref.total).toBeCloseTo(17.2467, 4);   // unrounded engine total, rounded once at display (live run, 3 Nov 2026)
+    expect(ref.tooling!.investment).toBe(443582.83);   // the tombstone fixture + the lathe's own fixture, programming of the machined rows
     expect(ref.tooling!.amortisedOver).toBe(500_000);
-    expect(ref.material).toMatchObject({ netKg: 3.321, boughtKg: 4.918 });
+    expect(ref.material).toMatchObject({ netKg: 3.434, boughtKg: 5.084 });
+    // The casting route and cast + machine now cost the same scope the same, process by process.
+    for (const proc of ['sand', 'investment']) {
+      const a = cmp.rows.find(r => r.route === 'casting' && r.process === proc)!;
+      const b = cmp.rows.find(r => r.route === 'cast_and_machine' && r.process === proc)!;
+      expect(a.total, proc).toBe(b.total);
+    }
     const mach = cmp.rows.find(r => r.route === 'machining')!;
     expect(mach.material!.netKg).toBe(2.852);
     // utilisation to 4 dp: the kg bought is the stock the basis prints (it was 3 dp, 0.45 kg off — arithmetic audit L1)
@@ -141,7 +153,7 @@ describe('3. The arithmetic on a row', () => {
       // Tooling spread over more parts: the part never gets dearer as the volume rises on these routes.
       for (let k = 1; k < r.byVolume.length; k++) expect(r.byVolume[k].total!).toBeLessThanOrEqual(r.byVolume[k - 1].total! + 0.0001);
     }
-    expect([...new Set(cmp.crossovers.map(c => c.route))]).toEqual(['forging', 'cast_and_machine', 'machining']);
+    expect([...new Set(cmp.crossovers.map(c => c.route))]).toEqual(['forging', 'casting', 'cast_and_machine', 'machining']);
     // A precision STEEL forging is MPI-tested like a closed-die one (report standard review, 3 Nov 2026 — it carried
     // £32 of CT a part, £34.52 of consumables): with less steel bought it is the cheaper process at every volume.
     // Foundry at volume + catalogue machining (3 Nov 2026): sand cast + machine crosses BELOW closed-die forging inside
@@ -151,7 +163,9 @@ describe('3. The arithmetic on a row', () => {
     for (const c of cmp.crossovers) {
       const row = cmp.rows.find(r => r.route === c.route && r.process === c.process)!;
       if (c.atVolume === null) {
-        expect(c.text).toMatch(c.process === 'precision' ? /cheaper than the costed route at every volume/ : /dearer than the costed route at every volume/);
+        // With the forging's machining now the near-net plan (it dearer by ~£2), sand cast + machine is cheaper at every
+        // volume on the ladder rather than crossing below it at ~40,000 / yr.
+        expect(c.text).toMatch(c.process === 'precision' || c.process === 'sand' ? /cheaper than the costed route at every volume/ : /dearer than the costed route at every volume/);
         continue;
       }
       expect(`${c.route}/${c.process}`).toBe('cast_and_machine/sand');

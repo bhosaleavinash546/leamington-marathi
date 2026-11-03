@@ -187,6 +187,8 @@ export interface RoutingInputs {
   annualVolume?: number;
   /** The operator's rate the routings are ranked with (default: the book's skilled machinist). */
   labourRatePerHr?: number;
+  /** No twin-pallet HMC candidate: a turned near-net part's holes go to the drill, not the volume cell. */
+  noVolumeCell?: boolean;
 }
 
 const fmtGBP = (v: number) => `£${v.toFixed(2)}`;
@@ -297,7 +299,7 @@ export function optimiseMachiningRouting(p: RoutingInputs): RoutingChoice {
   // Volume cell: a twin-pallet HMC with a dedicated hydraulic fixture on a 4th-axis tombstone. Four approach
   // directions in one clamping (a fifth and sixth need a second), the drilling in the same clamping, the
   // load / unload masked by the cut. A prismatic part only — a turned part stays on the lathe.
-  if ((p.annualVolume ?? 0) >= VOLUME_CELL_MIN_ANNUAL && !p.turned && !p.axisymmetric) {
+  if ((p.annualVolume ?? 0) >= VOLUME_CELL_MIN_ANNUAL && !p.turned && !p.axisymmetric && !p.noVolumeCell) {
     const clampings = dirs <= HMC_SIDES_PER_CLAMPING ? 1 : 2;
     const cellSetups = clampings + (p.fromSolid && dirs > 1 ? 1 : 0);
     push('volume-cell', cheapestCapable(library, 'hmc', p.bboxSortedMm), null, cellSetups,

@@ -35,7 +35,8 @@ import { flashGeometry } from './cost-input-rules/commodities/forging.js';
 import { MIN_UTILISATION } from './cost-input-rules/commodities/machining.js';
 import { estimateForgingTonnage } from './modules/forging-advisor.js';
 import { FORGE_PRESS_TIERS } from './machine-sizing.js';
-import { stockSize } from './machining-time.js';
+import { stockSize, costedNearNetRows } from './machining-time.js';
+import type { FeatureRow } from './feature-ops.js';
 import { HPDC_SECTION_MAX_MM } from './modules/casting-advisor.js';
 import { COLD_FORMER_MAX_SLUG_MM } from './modules/forging-advisor.js';
 import { INVESTMENT_TREE } from './cost-input-rules/commodities/casting.js';
@@ -96,8 +97,9 @@ const SRC = {
     + 'forge press in the rate book (CostVision engineering rule, the costing\'s own press sizing and forge-press ladder)',
   castWall: 'minimum castable wall ~1.5 mm (aluminium HPDC design guides: thin walls 1.5–2.5 mm; sand and gravity need '
     + '3 mm or more — the lowest floor across the processes the casting rules choose from; engineering-typical)',
-  asCast: 'an as-cast part with holes or bores is not the finished part; the finished scope is cast + machine '
-    + '(CostVision like-for-like rule)',
+  asCast: 'the casting route costs a part\'s machined features (its holes, bores and measured faces) as secondary machining on '
+    + 'the near-net plan of cast + machine, and pours the casting with their machining stock — so its scope is the finished '
+    + 'part, the same as cast + machine (CostVision like-for-like rule)',
   stock: `machining from solid buys the next stocked plate or bar; below ${(MIN_UTILISATION * 100).toFixed(0)}% utilisation `
     + 'the rules clamp the stock and the cost would be understated (CostVision engineering rule, the costing\'s own stock sizing)',
   mouldWall: 'injection moulding wall 0.5–6 mm (design guides: typical 1–5 mm, thin-wall to 0.5 mm; above ~6 mm sink '
@@ -348,8 +350,15 @@ export function screenRoute(route: string, i: ScreenInput): RouteScreen {
       f.shellWallMm == null || f.shellWallMm >= floor, ferrous ? SRC.castWallFerrous : SRC.castWall));
   }
   if (route === 'casting') {
-    checks.push(check('as_cast_scope', 'Finished scope', `${f.holes} hole(s) / bore(s) measured`,
-      'as-cast only: no machined features', f.holes === 0, SRC.asCast));
+    // The casting route carries the machined features as secondary machining (secondary-machining parity, Nov 2026): it
+    // is the finished scope, not an as-cast one — it used to be refused here whenever the part had a hole.
+    const machined = costedNearNetRows((i.geo.featureTable ?? []) as FeatureRow[]);
+    const faces = machined.filter(r => r.kind === 'face').reduce((s, r) => s + r.count, 0);
+    checks.push(check('as_cast_scope', 'Finished scope',
+      machined.length
+        ? `${f.holes} hole(s) / bore(s) and ${faces} measured face(s): machined features costed as secondary machining — same scope as cast + machine`
+        : 'no machined feature measured — the part is finished as cast',
+      'the finished part (machined features costed)', true, SRC.asCast));
   }
   if (route === 'forging') {
     checks.push(check('forge_web', 'Minimum section', `${mm(f.shellWallMm)} (2·V/S)`, '≥ 3 mm',

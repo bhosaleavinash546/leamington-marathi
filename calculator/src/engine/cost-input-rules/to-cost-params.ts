@@ -33,7 +33,7 @@
  * measurements, and any number that moves because of them is attributable to
  * this block.
  */
-import { activeLabourRate, activeRates } from '../rate-context.js';
+import { activeRates } from '../rate-context.js';
 import { finishSpec, FINISH_PRODUCT_FORM, FINISH_RACK_DEFAULTS, SURFACE_ROUTE_LABELS } from '../surface-finish-routes.js';
 import { countryFactor } from '../regional-services.js';
 import type { CADAnalysisResult, OCCTGeometry } from '../ai-analysis.js';
@@ -42,9 +42,8 @@ import { DEFAULT_RATE_LIBRARY } from '../rate-library.js';
 import { inMaterialScope } from '../material-scope.js';
 import { buildAlExtrusionInputs, type AlTemper } from '../modules/aluminium-extrusion.js';
 import type { AlAlloy, AlExtrusionRoute, AlFinish } from '../al-extrusion-data.js';
-import { computeFeatureMachining, secondaryMachiningMachineId } from '../feature-machining.js';
-import { CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../machining-time.js';
-import { CUTTING_MANNING } from './commodities/machining.js';
+import { CORED_ABOVE_MM, NEAR_NET_TURN_STOCK_MM, asCastWeight } from '../machining-time.js';
+import { nearNetSecondaryMachining, type NearNetSecondary } from './secondary-machining.js';
 import { standardBatchSize } from '../routing-optimiser.js';
 import type { FeatureRow } from '../feature-ops.js';
 import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../geometry-sanity.js';
@@ -186,45 +185,19 @@ export interface ToCostParamsResult {
  */
 function secondaryMachining(
   geo: OCCTGeometry | undefined, labourId: string,
-  family: MaterialFamily | null | undefined, coredAboveMm: number | undefined,
-  weightKg: number, annualVolume: number,
-): (ReturnType<typeof computeFeatureMachining> & { toolingGBP: number; toolWearPerPart: number }) | null {
-  const rows = geo?.featureTable as FeatureRow[] | undefined;
-  if (!rows?.length) return null;
-  const fam = family ?? 'steel';
-  const base = {
-    machineId: secondaryMachiningMachineId(rows, 'near_net'), labourId, stockCondition: 'near_net' as const,
-    // One operator tends two machining centres while they cut — the crew the
-    // machining routes use (load / unload in the cell op takes a whole one).
-    oee: SHOP_DEFAULTS.oee, manning: CUTTING_MANNING,
-    labourEfficiency: SHOP_DEFAULTS.labourEfficiency,
-    // Every feature is timed on the metal's own catalogue row (report standard, Nov 2026 — it was an aluminium baseline ×
-    // a time factor). Cored (cast) or pierced (forged) bores are finish-bored, not cut from solid (machining review, Oct 2026).
-    family: fam,
+  family: MaterialFamily | null | undefined, subtype: string, coredAboveMm: number | undefined,
+  annualVolume: number,
+): NearNetSecondary | null {
+  // The near-net plan of cast + machine — the cut, routing, operations, change-over, fixtures, programming and tool wear
+  // (secondary-machining parity, Nov 2026: this was the feature table + `secondaryMachiningCell`, a second model that
+  // costed the same features £1.85 less on a bracket). Cored (cast) or pierced (forged) bores are finish-bored.
+  return nearNetSecondaryMachining(geo, {
+    family: family ?? 'steel', subtype, annualVolume,
+    labourEfficiency: SHOP_DEFAULTS.labourEfficiency, labourId,
     ...(coredAboveMm !== undefined ? { coredAboveMm } : {}),
-  };
-  // Cutting first, then the cell around it — load / unload, change-over,
-  // fixtures, programming, tool wear — the same function the screen calls.
-  // A turned near-net part (a hub flange): outside and faces on the CNC lathe, holes on the drill centre — it was
-  // face-milled on a VMC (pilot rule pack, 30 Oct 2026). Two chuckings + a drill fixturing; never the HMC cell.
-  const tp = turnedPartFacts(geo);
-  const turned = tp ? nearNetTurnedPlan(rows, tp, fam) : null;
-  const base0 = turned ? { ...base, machineId: 'mach-drill', turned } : base;
-  const cut = computeFeatureMachining(rows, base0);
-  if (cut.featureCount === 0) return null;
-  const holes = cut.lines.some(l => l.included && l.kind !== 'face');
-  const c = secondaryMachiningCell({
-    fixturings: turned ? 2 + (holes ? 1 : 0) : (geo?.setupAnalysis?.estimatedSetupCount ?? 2),
-    weightKg, annualVolume, family: fam,
-    featureRows: cut.lines.filter(l => l.included).length,
-    cuttingMin: cut.totalCycleHr * 60,
-    engineerRatePerHr: activeLabourRate('lab-uk-engineer'),   // the costed country's (rate-context.ts)
-    milled: !turned && base.machineId === 'mach-vmc3',
-    turned: !!turned,
+    // a forging's turned surface carries the near-net turning stock the forging routes have always used
+    ...(subtype === 'forging' ? { turnStockMm: NEAR_NET_TURN_STOCK_MM } : {}),
   });
-  // The volume cell moves a milled part onto the twin-pallet HMC (the cell's machine); otherwise the choice stands.
-  const r = computeFeatureMachining(rows, { ...base0, ...(c.machineId ? { machineId: c.machineId } : {}), cell: c.cell });
-  return { ...r, toolingGBP: c.toolingGBP, toolWearPerPart: c.toolWearPerPart };
 }
 
 /**
@@ -466,14 +439,24 @@ export function toCostParams(
         ...postCast(c),
       };
       Object.assign(params, castingSubtypeBlock(c, weight));
-      const sec = secondaryMachining(geo, 'lab-uk-skilled', mat.family, CORED_ABOVE_MM[c.subtype] ?? 20,
-        weight, annualVolume);
+      const sec = secondaryMachining(geo, 'lab-uk-skilled', mat.family, c.subtype, CORED_ABOVE_MM[c.subtype] ?? 20,
+        annualVolume);
       if (sec) {
         params.secondaryMachiningOps = sec.operations;
-        // Fixtures + programming and tool wear, from the same cell the screen
+        // Fixtures + programming and tool wear, from the same plan the screen
         // prices (forging review, Oct 2026 — this used to be "not derived, 0").
         params.secondaryMachiningToolingCost = sec.toolingGBP;
         params.secondaryMachiningConsumablesPerPart = sec.toolWearPerPart;
+        // A machined casting is poured, heat-treated and blasted AS CAST — finished + drilled-hole stock + machining stock
+        // on the rows it machines — as cast + machine pours it (secondary-machining parity, Nov 2026: it poured the
+        // finished 2.512 kg of a 3.039 kg bracket casting).
+        if (geo?.volume?.cm3) {
+          params.partWeightKg = asCastWeight({
+            finishedKg: weight, volumeCm3: geo.volume.cm3, rows: sec.rows, subtype: c.subtype, family: mat.family ?? null,
+            turning: geo.turning, surfaceAreaCm2: geo.surfaceArea?.cm2 ?? 0,
+          }).kg;
+          assumed.push('partWeightKg = finished + drilled-hole stock + machining stock (as cast, the rows it machines)');
+        }
       }
       return { commodity, params, assumed };
     }
@@ -643,11 +626,11 @@ export function toCostParams(
       if (!f.forgeId) assumed.push('forgeId (weight-tier fallback)');
       // Bores above the pierce size are forged in (punched through the wad) and
       // finish-bored; smaller holes are drilled from solid.
-      const sec = secondaryMachining(geo, 'lab-uk-skilled', mat.family,
-        // An impression forging — one that makes flash — pierces its bores; the
-        // screen reads the same signal off its flash field.
-        f.process === 'open-die' ? undefined : CORED_ABOVE_MM.forging,
-        weight, annualVolume);
+      const sec = secondaryMachining(geo, 'lab-uk-skilled', mat.family, 'forging',
+        // An impression forging — one that makes flash — pierces its bores; an open-die forging drills every hole. The
+        // screen reads the same signal off its forge machine.
+        f.process === 'open-die' ? Infinity : CORED_ABOVE_MM.forging,
+        annualVolume);
       if (sec) {
         params.secondaryMachiningOps = sec.operations;
         params.secondaryMachiningToolingCost = sec.toolingGBP;

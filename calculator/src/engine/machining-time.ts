@@ -34,7 +34,7 @@ import { activeToolroomFactor } from './rate-context.js';
 import { VOLUME_CELL_MIN_ANNUAL, PALLET_CHANGE_SEC, HMC_SIDES_PER_CLAMPING, HMC_MACHINE_ID } from './routing-optimiser.js';
 import type { MaterialFamily } from './material-family.js';
 import type { FeatureRow } from './feature-ops.js';
-import { featureTime, ALLOWANCE_STATUS } from './feature-machining.js';
+import { featureTime, defaultInclude, ALLOWANCE_STATUS } from './feature-machining.js';
 import {
   millRoughEffective, turnRoughEffective, millRoughInCut, turnRoughInCut, sidePassCm2PerMin, turnFinishCm2PerMin,
   sourcesLine, sourceName, MACHINABILITY_RATIO, ROUGH_AIR_SHARE, TURN_ROUGH_AP_MM, SIDE_PASS_AP_MM, ASSUMED,
@@ -392,28 +392,66 @@ export function castMachiningStockMm(subtype: string | null, family: MaterialFam
  * `face` rows — the flats a casting has no draft on) faced once, its holes
  * drilled or finish-bored. Pockets and bosses are cast in.
  */
-export function nearNetMachiningTime(rows: FeatureRow[], family: MaterialFamily, subtype: string | null): CuttingTime {
-  const cored = CORED_ABOVE_MM[subtype ?? ''] ?? 20;
+export function nearNetMachiningTime(
+  rows: FeatureRow[], family: MaterialFamily, subtype: string | null,
+  opts: { coredAboveMm?: number; finishFactor?: number } = {},
+): CuttingTime & { otherMin: number; otherTools: number } {
+  const cored = opts.coredAboveMm ?? CORED_ABOVE_MM[subtype ?? ''] ?? 20;
+  const ff = opts.finishFactor && opts.finishFactor > 0 ? opts.finishFactor : 1;
   const faces = rows.filter(r => r.kind === 'face');
   const faceTimes = faces.map(r => featureTime(r, family));
-  const faceMin = faces.reduce((s, r, i) => s + faceTimes[i].min * r.count, 0);
+  const faceMin = faces.reduce((s, r, i) => s + faceTimes[i].min * r.count, 0) * ff;
+  // A pocket, slot or boss the engineer ticked on the form is milled / turned on the machining centre at its own feature
+  // time (featureTime) — the same minutes the feature table prints. None is in the default set (they are cast / forged in).
+  const others = rows.filter(r => r.kind !== 'face' && r.kind !== 'hole');
+  const otherMin = others.reduce((s, r) => s + featureTime(r, family).min * r.count, 0) * ff;
   const holes = holeTimes(rows, family, cored);
-  const holeMin = holes.min;
-  // A face mill if any face is machined, a chamfer tool, one tool per hole size.
-  const tools = (faces.length ? 1 : 0) + 1 + new Set(rows.filter(r => r.kind === 'hole').map(r => Math.round(r.diaMm * 2) / 2)).size;
+  const holeMin = holes.min * ff;
+  // A face mill if any face is machined, an end mill if a pocket / slot / boss is, a chamfer tool, one tool per hole size.
+  const otherTools = others.length ? 1 : 0;
+  const tools = (faces.length ? 1 : 0) + otherTools + 1 + new Set(rows.filter(r => r.kind === 'hole').map(r => Math.round(r.diaMm * 2) / 2)).size;
   const toolChangeMin = tools * TOOL_CHANGE_SEC / 60;
   const facedCm2 = faces.reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
   const ops: Array<'face' | 'drill' | 'bore' | 'tap'> = ['face', 'drill', 'bore', 'tap'];
+  const finishNote = ff !== 1 ? ` × ${ff} tolerance / finish factor (as entered)` : '';
   return {
-    roughMin: 0, finishMin: r2(faceMin), surfacingMin: 0, holeMin: r2(holeMin),
-    tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(faceMin + holeMin + toolChangeMin),
+    roughMin: 0, finishMin: r2(faceMin + otherMin), surfacingMin: 0, holeMin: r2(holeMin),
+    tools, toolChangeMin: r2(toolChangeMin), totalMin: r2(faceMin + otherMin + holeMin + toolChangeMin),
+    otherMin: r2(otherMin), otherTools,
     basis: `face ${faces.reduce((s, r) => s + r.count, 0)} machined face(s), ${facedCm2.toFixed(0)} cm² = ${faceMin.toFixed(1)} min `
       + `(each: 0.2 min positioning + passes × (√area + cutter Ø + 2 × 5 mm clearance) ÷ the table feed n·z·fz — the face taken as √area square, `
-      + `clearance ${ASSUMED}${faceTimes.length ? `; e.g. ${faceTimes[0].text}` : ''}); `
-      + `holes ${holeMin.toFixed(1)} min (≤ Ø${cored} drilled from solid, larger cored and finish-bored); `
+      + `clearance ${ASSUMED}${faceTimes.length ? `; e.g. ${faceTimes[0].text}` : ''}${finishNote}); `
+      + (others.length ? `${others.reduce((s, r) => s + r.count, 0)} pocket / slot / boss feature(s) ticked to machine, ${otherMin.toFixed(1)} min `
+        + `(${others.map(r => `${r.count}× ${featureTime(r, family).text}`).join('; ')}${finishNote}); ` : '')
+      + `holes ${holeMin.toFixed(1)} min (${cored === Infinity ? 'every hole drilled from solid' : `≤ Ø${cored} drilled from solid, larger cored and finish-bored`}${finishNote}); `
       + `${tools} tools × ${TOOL_CHANGE_SEC} s (${TOOL_CHANGE_STATUS}; ${ALLOWANCE_STATUS}; sources — ${sourcesLine(family, ops)}; `
       + `${CUTTING_DATA_STATUS})`,
   };
+}
+
+/**
+ * The feature rows a near-net costing machines: the engineer's ticks when the form gives them, else the default set —
+ * holes and the measured faces (`defaultInclude`; pockets and bosses are cast / forged in). ONE reading for the cast +
+ * machine route and the casting / forging routes' secondary machining (secondary-machining parity, Nov 2026).
+ */
+export function costedNearNetRows(rows: FeatureRow[], includeFlags?: boolean[]): FeatureRow[] {
+  return rows.filter((r, i) => (includeFlags ? !!includeFlags[i] : defaultInclude(r, 'near_net')));
+}
+
+/**
+ * Faces a near-net part has MACHINED — the B-rep faces behind its costed feature rows (each hole's walls, each faced
+ * flat), counted once. A row without face ids counts one face an instance. The deburr reads this: a casting's as-cast
+ * faces carry no machined edge (it read all 230 B-rep faces of a bracket that machines 28; secondary-machining parity,
+ * Nov 2026).
+ */
+export function machinedFaceCount(rows: FeatureRow[]): number {
+  const ids = new Set<number>();
+  let unnamed = 0;
+  for (const r of rows) {
+    if (r.faceIds?.length) r.faceIds.forEach(id => ids.add(id));
+    else unnamed += Math.max(1, r.count);
+  }
+  return ids.size + unnamed;
 }
 
 /** Below this outside area on the turned axis there is nothing a lathe operation is worth setting up for. */
@@ -471,6 +509,44 @@ export function nearNetStockCm3(rows: FeatureRow[], stockMm: number, coredAboveM
     else if (r.kind === 'hole' && r.diaMm > coredAboveMm) mm3 += Math.PI * r.diaMm * Math.max(r.depthMm, 0) * r.count * stockMm;
   }
   return Math.round(mm3 / 100) / 10;
+}
+
+/**
+ * Holes up to this Ø in a sand, gravity or investment casting are drilled from solid, so their volume was poured and
+ * then cut away (HPDC cores its holes).
+ */
+export const DRILLED_FROM_SOLID_MM = 20;
+
+/**
+ * The AS-CAST weight of a casting that is machined: the finished part + the metal of its holes drilled from solid + the
+ * per-side machining stock on its machined faces and cored bores + the turning stock on a turned axis. ONE function for
+ * the cast + machine rule, the casting route's secondary machining (headless) and the casting form (the screen, on the
+ * rows ticked to machine) — the casting route used to pour, heat-treat and blast the finished weight for the same scope
+ * (secondary-machining parity, Nov 2026). `rows` are the rows the costing machines (`costedNearNetRows`).
+ */
+export function asCastWeight(p: {
+  finishedKg: number; volumeCm3: number; rows: FeatureRow[]; subtype: string | null; family: MaterialFamily | null;
+  turning?: { externalAreaMm2?: number } | null; surfaceAreaCm2?: number;
+}): { kg: number; drilledCm3: number; drilledHoles: number; faceCm3: number; turnCm3: number; turnedCm2: number; stockMm: number; density: number } {
+  const sub = p.subtype;
+  const density = p.finishedKg / Math.max(1e-9, p.volumeCm3);   // kg / cm³, from the costed metal
+  let mm3 = 0; let holes = 0;
+  if (sub !== 'hpdc' && sub !== null) {
+    for (const r of p.rows) {
+      if (r.kind !== 'hole' || !r.diaMm || !r.depthMm || r.diaMm > DRILLED_FROM_SOLID_MM) continue;
+      const n = r.count ?? 1;
+      mm3 += Math.PI * r.diaMm ** 2 / 4 * r.depthMm * n;
+      holes += n;
+    }
+  }
+  const drilledCm3 = Math.round(mm3 / 10) / 100;
+  const stockMm = castMachiningStockMm(sub, p.family);
+  const faceCm3 = nearNetStockCm3(p.rows, stockMm, sub === 'hpdc' ? CORED_ABOVE_MM.hpdc : DRILLED_FROM_SOLID_MM);
+  // The turned axis (a spindle) is cast with the same stock on its outside: it is poured and paid for.
+  const turnedCm2 = nearNetTurnedAreaCm2(p.turning, p.surfaceAreaCm2 ?? 0);
+  const turnCm3 = Math.round(turnedCm2 * stockMm / 10 * 10) / 10;
+  const kg = Math.round((p.finishedKg + (drilledCm3 + faceCm3 + turnCm3) * density) * 1000) / 1000;
+  return { kg, drilledCm3, drilledHoles: holes, faceCm3, turnCm3, turnedCm2, stockMm, density };
 }
 
 // ── The cell's other costs ──────────────────────────────────────────────────

@@ -128,13 +128,17 @@ describe('8. secondary machining is a cell, priced alike on both paths (castings
     const p = toCostParams('forging', analysis.costInputSuggestions as never, 50_000, 'steel', c.geo)!.params as Record<string, unknown>;
     expect(Number(p.secondaryMachiningToolingCost)).toBeGreaterThan(0);
     expect(Number(p.secondaryMachiningConsumablesPerPart)).toBeGreaterThan(0);
-    const ops = p.secondaryMachiningOps as Array<{ operationName: string; manning: number; benchOperation?: boolean }>;
-    expect(ops[0].manning).toBe(0.5);
+    const ops = p.secondaryMachiningOps as Array<{ operationName: string; machineId: string; manning: number; labourEfficiency: number; benchOperation?: boolean }>;
+    // The near-net plan of cast + machine (secondary-machining parity, Nov 2026): the change-over first (machine + setter,
+    // efficiency 1), the cut at half an operator, the spindle on the lathe in its own fixture, the pallet change, the deburr.
+    expect(ops[0].operationName).toBe('Machining Setup (amortised)');
+    expect(ops[0].labourEfficiency).toBe(1);
+    expect(ops.filter(o => /^(Finish machining|Drilling|Finish boring)/.test(o.operationName)).every(o => o.manning === 0.5)).toBe(true);
     // 50,000/yr: the twin-pallet cell (pilot rule pack) — the spindle pays a pallet change, the load / unload is masked
-    expect(ops[1].operationName).toContain('Pallet change');
-    // Arithmetic audit M4: the load is paid inside the operator's half of the 12-minute cut — no extra labour step
-    expect(ops.some(o => /load \/ unload on the pallet/.test(o.operationName))).toBe(false);
-    expect(ops[2].operationName).toContain('change-over');
+    expect(ops.find(o => o.operationName.startsWith('Pallet change'))!.machineId).toBe('mach-hmc-400');
+    // Arithmetic audit M4: the load is paid inside the operator's half of the cut — no extra labour step
+    expect(ops.some(o => /load \/ unload on the pallet/i.test(o.operationName))).toBe(false);
+    expect(ops[ops.length - 1].operationName).toBe('Deburr and gauge check (bench)');
   });
 });
 

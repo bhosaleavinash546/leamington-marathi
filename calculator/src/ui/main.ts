@@ -212,7 +212,8 @@ import {
 import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { CORED_ABOVE_MM, secondaryMachiningCell, turnedPartFacts, nearNetTurnedPlan } from '../engine/machining-time.js';
+import { CORED_ABOVE_MM, turnedPartFacts, asCastWeight, NEAR_NET_TURN_STOCK_MM } from '../engine/machining-time.js';
+import { nearNetSecondaryMachining } from '../engine/cost-input-rules/secondary-machining.js';
 import { familyFromMaterialId } from '../engine/cost-input-rules/derive/material.js';
 import { ruleFieldReport } from '../engine/cost-input-rules/rule-field-report.js';
 import type { RuleReportNotes } from '../engine/cost-input-rules/report-notes.js';
@@ -4628,7 +4629,7 @@ function renderCastingForm(): string {
       <div class="field-group"><label>Material</label><select id="cast-mat" class="material-select"></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="cast-part-wt" step="0.01" min="0.001" value="1.2" title="Finished casting weight (as-cast, before any machining). Weigh from CAD or design."/></div>
+      <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="cast-part-wt" step="0.01" min="0.001" value="1.2" title="Finished part weight (the CAD model). When machined features are ticked below, the costing pours the casting AS CAST: this weight + the drilled-hole and machining stock of the ticked rows."/></div>
       <div class="field-group"><label title="Part weight ÷ total pour weight. HPDC: 0.55–0.70 (heavy runners). Sand: 0.70–0.85. Gravity: 0.65–0.80. Investment: 0.85–0.95. Lower yield = more scrap metal cost.">Casting Yield (0–1) ⓘ</label><input type="number" id="cast-yield" step="0.01" min="0.01" max="1" value="0.75" title="Part weight ÷ total pour weight. HPDC: 0.55–0.70 (heavy runners). Sand: 0.70–0.85. Gravity: 0.65–0.80. Investment: 0.85–0.95."/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -10869,7 +10870,8 @@ function populateMachinedFeatures(prefix: string): void {
 }
 
 /** Read the panel and build secondary machining ops (null if none active). */
-function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; toolingCost: number; toolWearPerPart: number; result: ReturnType<typeof computeFeatureMachining> } | null {
+function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; toolingCost: number; toolWearPerPart: number; result: ReturnType<typeof computeFeatureMachining>;
+  /** Near-net: the rows the plan machines — the casting pours their stock (as cast). */ rows?: FeatureRow[] } | null {
   const rows = (cadOCCTGeometry?.featureTable ?? []) as FeatureRow[];
   if (!rows.length) return null;
   const body = document.getElementById(`${prefix}-mf-body`);
@@ -10902,39 +10904,31 @@ function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; too
     family,
     ...(coredAboveMm !== undefined ? { coredAboveMm } : {}),
   };
-  // A turned near-net part (a hub flange): outside and faces on the CNC lathe, holes on the drill centre — as
-  // headless (pilot rule pack, 30 Oct 2026). A machine the engineer picked on the form stands for the holes.
-  const tp = stockCondition === 'near_net' && (prefix === 'cast' || prefix === 'forge') ? turnedPartFacts(cadOCCTGeometry) : null;
-  const turned = tp ? nearNetTurnedPlan(rows, tp, family, undefined, includeFlags) : null;
-  const base0 = turned ? { ...base, machineId: typedMachine || resolveMachineIdForOp('mach-drill', 'CNC Drilling'), turned } : base;
-  const cut = computeFeatureMachining(rows, base0);
-  if (cut.featureCount === 0) return null;
-  // The machining cell around the cut — load / unload, change-over, fixtures,
-  // programming, tool wear — from the same function headless calls (forging
-  // review, Oct 2026). Near-net parts only (castings, forgings).
+  // Near-net secondary machining on a casting or forging: the near-net plan of cast + machine — cut, routing, operations,
+  // change-over, fixtures, programming, tool wear — from the ONE function headless calls (secondary-machining parity,
+  // Nov 2026; it was the feature table + the cell, a second model). The ticks, the finish factor and a machine or
+  // operator the engineer picked are inputs to that plan.
   if (stockCondition === 'near_net' && (prefix === 'cast' || prefix === 'forge')) {
-    const holes = cut.lines.some(l => l.included && l.kind !== 'face');
-    const annualVolume = num(`${prefix}-amort`) || num('annual-volume') || 100000;
-    const c = secondaryMachiningCell({
-      fixturings: turned ? 2 + (holes ? 1 : 0) : (cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? 2),
-      weightKg: num(`${prefix}-part-wt`),
-      annualVolume,
-      family,
-      featureRows: cut.lines.filter(l => l.included).length,
-      cuttingMin: cut.totalCycleHr * 60,
-      engineerRatePerHr: library.labour.find(l => l.id === 'lab-uk-engineer')?.fullyLoadedRatePerHr ?? 42.8,
-      // the volume cell only when no machine was picked on the form and the cut mills faces
-      milled: !turned && machineAuto && cut.lines.some(l => l.included && l.kind !== 'hole'),
-      turned: !!turned,
+    // The ANNUAL volume, as headless plans the cell (batch, volume cell, fixtures) — `-amort` is annual × programme years
+    // and planned a 5-year programme as a five-times-larger annual volume.
+    const annualVolume = num('annual-volume') || parseFloat(cadAnnualVolume()) || 100000;
+    const sec = nearNetSecondaryMachining(cadOCCTGeometry, {
+      family, subtype: prefix === 'cast' ? (castSub || null) : 'forging', annualVolume,
+      includeFlags, finishFactor, labourId,
+      // an open-die (hammer) forging drills every hole; an impression forging pierces above Ø25
+      coredAboveMm: coredAboveMm ?? Infinity,
+      ...(prefix === 'forge' ? { turnStockMm: NEAR_NET_TURN_STOCK_MM } : {}),
+      ...(typedMachine ? { machineId: typedMachine } : {}),
     });
-    const cellMachine = c.machineId ? resolveMachineIdForOp(c.machineId, 'CNC Milling') : null;
+    if (!sec) return null;
     // show the costed machine on the form (the select stays "auto" — a programmatic value is not a change)
-    if (machSel && machineAuto) machSel.value = cellMachine ?? base0.machineId;
-    const result = computeFeatureMachining(rows, { ...base0, ...(cellMachine ? { machineId: cellMachine } : {}), cell: c.cell });
+    if (machSel && machineAuto) machSel.value = resolveMachineIdForOp(sec.machineId, 'CNC Milling');
     // A typed figure replaces the derived fixtures + programming; 0 keeps them.
     const typed = num(`${prefix}-mf-tooling`);
-    return { ops: result.operations, toolingCost: typed > 0 ? typed : c.toolingGBP, toolWearPerPart: c.toolWearPerPart, result };
+    return { ops: sec.operations, toolingCost: typed > 0 ? typed : sec.toolingGBP, toolWearPerPart: sec.toolWearPerPart, result: sec.result, rows: sec.rows };
   }
+  const cut = computeFeatureMachining(rows, base);
+  if (cut.featureCount === 0) return null;
   const toolingCost = num(`${prefix}-mf-tooling`);
   return { ops: cut.operations, toolingCost, toolWearPerPart: 0, result: cut };
 }
@@ -13244,6 +13238,16 @@ function collectCastingInput(): UniversalStackInput {
   }
 
   const secondary = collectSecondaryMachining('cast');
+  // A machined casting is poured, heat-treated and blasted AS CAST: the finished weight on the form + the drilled-hole
+  // and machining stock of the rows ticked to machine — the ONE function headless and cast + machine use
+  // (secondary-machining parity, Nov 2026: the casting route poured the finished weight for the same scope).
+  if (secondary?.rows && cadOCCTGeometry?.volume?.cm3) {
+    common.partWeightKg = asCastWeight({
+      finishedKg: common.partWeightKg, volumeCm3: cadOCCTGeometry.volume.cm3, rows: secondary.rows, subtype,
+      family: familyFromMaterialId(common.materialId) ?? null, turning: cadOCCTGeometry.turning,
+      surfaceAreaCm2: cadOCCTGeometry.surfaceArea?.cm2 ?? 0,
+    }).kg;
+  }
   const surfaceFinishing = collectSurfaceFinishing('cast');
   reportSurfaceFinishing(surfaceFinishing, common.partWeightKg, common.labourId);
   const drivers = computeCastingDrivers({

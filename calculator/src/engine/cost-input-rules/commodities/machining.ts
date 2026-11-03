@@ -38,6 +38,7 @@ import {
   holeMinutes, CORED_ABOVE_MM, HOURS_STATUS, CUTTING_DATA_STATUS,
   fixtureCostGBP, programmingHours, toolWearPerPart, cuttingDataFor,
   handlingMinPerFixturing, SETUP_MIN_PER_FIXTURING, PROGRAMMING_HR, turnedPartFacts, type CuttingTime,
+  costedNearNetRows, machinedFaceCount, TOOL_CHANGE_SEC,
 } from '../../machining-time.js';
 import {
   optimiseMachiningRouting, standardBatchSize, type RoutingChoice, CUTTING_MANNING, PALLET_CHANGE_SEC, PALLET_CHANGE_SOURCE,
@@ -64,6 +65,9 @@ export const MIN_UTILISATION = 0.05;
 
 /** Shop settings the plan states on every operation (SHOP_DEFAULTS in to-cost-params). */
 const MACHINE_OEE = 0.80;
+/** …and the labour efficiency the cast + machine mapping gives the plan's operations (SHOP_DEFAULTS.labourEfficiency —
+ *  a test holds them equal); the casting / forging secondary machining uses the same (secondary-machining.ts). */
+export const MACHINE_LABOUR_EFFICIENCY = 0.92;
 /** One operator tends two machining centres while they cut; load / unload and bench work take a whole operator
  *  (defined with the routing optimiser, which ranks the operator with the machine; re-exported for its callers). */
 export { CUTTING_MANNING } from '../../routing-optimiser.js';
@@ -165,6 +169,9 @@ export interface MachiningCut {
   handlingMin: number;
   /** The weight handled (stock or casting), kg. */
   handledKg: number;
+  /** Near-net: the feature rows the cut machines (`costedNearNetRows`) — the drilling, programming and deburr read these,
+   *  not every row of the table (a cast-in pocket is not programmed or deburred). Absent: every row (from solid). */
+  rows?: FeatureRow[];
 }
 
 const kernelCuttingHr = (ctx: RuleContext): number | null => {
@@ -204,10 +211,28 @@ export function solidCut(ctx: RuleContext, family: MaterialFamily): MachiningCut
   };
 }
 
-/** Near-net (cast) finish machining: the machined faces and the holes, nothing roughed. */
-export function nearNetCut(ctx: RuleContext, family: MaterialFamily, subtype: string | null): MachiningCut {
-  const rows = (ctx.geo.featureTable ?? []) as FeatureRow[];
-  const nn = nearNetMachiningTime(rows, family, subtype);
+/** What a near-net cut can be told beyond the part: the form's ticks and settings (casting / forging secondary machining). */
+export interface NearNetCutOptions {
+  /** Per feature-table row: machined or not (the form's ticks). Absent: holes and measured faces (`costedNearNetRows`). */
+  includeFlags?: boolean[];
+  /** Holes above this Ø are cored / pierced and finish-bored (default `CORED_ABOVE_MM[subtype]`); Infinity drills every hole. */
+  coredAboveMm?: number;
+  /** Per-side stock on a turned axis, mm (default the casting process's `castMachiningStockMm`). */
+  turnStockMm?: number;
+  /** Tolerance / finish factor on the milling and drilling minutes (the form's field; default 1). */
+  finishFactor?: number;
+}
+
+/**
+ * Near-net (cast / forged) finish machining: the machined faces and the holes, nothing roughed. ONE cut for the cast +
+ * machine route and for the casting and forging routes' secondary machining (`nearNetSecondaryMachining`) — they used to
+ * be two models that priced the same 18 features £1.85 apart (secondary-machining parity, Nov 2026).
+ */
+export function nearNetCut(ctx: RuleContext, family: MaterialFamily, subtype: string | null, opts: NearNetCutOptions = {}): MachiningCut {
+  const rows = costedNearNetRows((ctx.geo.featureTable ?? []) as FeatureRow[], opts.includeFlags);
+  const cored = opts.coredAboveMm ?? CORED_ABOVE_MM[subtype ?? ''] ?? 20;
+  const ff = opts.finishFactor && opts.finishFactor > 0 ? opts.finishFactor : 1;
+  const nn = nearNetMachiningTime(rows, family, subtype, { coredAboveMm: cored, finishFactor: ff });
   const handledKg = (ctx.geo.volume?.cm3 ?? 0) * DENSITY_KG_PER_CM3[family];
   // A turned part (hub, flange, pulley): the outside AND the faces are turned on the lathe; a part with a spindle
   // (stub axle) turns the spindle only and mills its faces (pilot rule pack, 30 Oct 2026).
@@ -215,18 +240,18 @@ export function nearNetCut(ctx: RuleContext, family: MaterialFamily, subtype: st
   const facedCm2 = rows.filter(r => r.kind === 'face').reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
   const turnedCm2 = tp ? tp.externalCm2 + facedCm2 : nearNetTurnedAreaCm2(ctx.geo.turning, ctx.geo.surfaceArea?.cm2 ?? 0);
   const spindle = turnedCm2 > 0
-    ? nearNetTurningTime(turnedCm2, family, castMachiningStockMm(subtype, family), ctx.geo.turning?.externalMaxDiaMm ?? ctx.geo.turning?.maxDiaMm ?? 0)
+    ? nearNetTurningTime(turnedCm2, family, opts.turnStockMm ?? castMachiningStockMm(subtype, family), ctx.geo.turning?.externalMaxDiaMm ?? ctx.geo.turning?.maxDiaMm ?? 0)
     : null;
   // Holes up to the cored size are drilled from solid (drill machine); the cored bores above it are finish-bored on the
   // machining centre — the same minutes nearNetMachiningTime counted, split by where they are cut.
-  const cored = CORED_ABOVE_MM[subtype ?? ''] ?? 20;
-  const boreMin = Math.round(holeMinutes(rows.filter(r => r.kind === 'hole' && r.diaMm > cored), family, cored) * 100) / 100;
+  const boreMin = Math.round(holeMinutes(rows.filter(r => r.kind === 'hole' && r.diaMm > cored), family, cored) * ff * 100) / 100;
   return {
     kind: 'near-net', family, handledKg, handlingMin: handlingMinPerFixturing(handledKg),
-    // a turned part's faces are in the lathe's time; its tool changes are the lathe's three
-    millMin: tp ? 0 : nn.finishMin + nn.toolChangeMin,
+    // a turned part's faces are in the lathe's time; its tool changes are the lathe's three (a ticked pocket / boss is
+    // still milled, with its end mill)
+    millMin: tp ? (nn.otherMin > 0 ? Math.round((nn.otherMin + nn.otherTools * TOOL_CHANGE_SEC / 60) * 100) / 100 : 0) : nn.finishMin + nn.toolChangeMin,
     holeMin: Math.max(0, Math.round((nn.holeMin - boreMin) * 100) / 100), boreMin, coredAboveMm: cored,
-    turned: null, spindle, turnedPart: !!tp, detail: nn, surfaced: false, kernelHr: kernelCuttingHr(ctx),
+    turned: null, spindle, turnedPart: !!tp, detail: nn, surfaced: false, kernelHr: kernelCuttingHr(ctx), rows,
   };
 }
 
@@ -297,6 +322,9 @@ export function routingFor(ctx: RuleContext, cut: MachiningCut): RoutingChoice {
       chuckings: 2,
     } : null,
     annualVolume: ctx.annualVolume,
+    // A turned near-net part (hub flange) is turned on the lathe and drilled — never the HMC cell (pilot rule pack): the
+    // casting / forging feature path held it so, and it is now the same plan (secondary-machining parity, Nov 2026).
+    ...(cut.turnedPart ? { noVolumeCell: true } : {}),
   });
 }
 
@@ -327,7 +355,7 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
   const ops: OperationPlan[] = [];
   const machine = { labourId: 'lab-uk-skilled', manning: CUTTING_MANNING, oee: MACHINE_OEE, partsPerCycle: 1 };
   const chosen = routing.chosen;
-  const holeRowsAll = ((ctx.geo.featureTable ?? []) as FeatureRow[]).filter(r => r.kind === 'hole');
+  const holeRowsAll = (cut.rows ?? (ctx.geo.featureTable ?? []) as FeatureRow[]).filter(r => r.kind === 'hole');
   const holeIds = holeRowsAll.flatMap(r => r.faceIds ?? []);
   const holeSummary = holeRowsAll.map(r => `${r.count}×Ø${r.diaMm.toFixed(1)}×${r.depthMm.toFixed(0)}`).join(', ');
   const nHoles = holeRowsAll.reduce((s, r) => s + r.count, 0);
@@ -436,13 +464,20 @@ export function buildOperationPlan(ctx: RuleContext, cut: MachiningCut, routing:
       basis: `${chosen.setups} fixturing(s) × ${cut.handlingMin} min every part to load, clamp and unload `
         + `${fmt(cut.handledKg, 2)} kg — the handling the routing was ranked with (by weight: ≤ 0.5 kg 0.3, ≤ 5 kg 0.6, ≤ 20 kg 1.2, else 2.5 min; ${HOURS_STATUS})` });
   }
+  // The deburr counts the faces the costing MACHINES: every face of a part cut from solid; on a near-net part only the
+  // faces of its costed features — an as-cast / as-forged face leaves no machined edge (it read all 230 B-rep faces of a
+  // bracket that machines 28; secondary-machining parity, Nov 2026).
   const bRepFaces = bRepFaceCount(ctx);
-  const deburr = deburrInspectMinutes(bRepFaces ?? MESH_DEBURR_FACE_ALLOWANCE);
+  const machinedFaces = cut.kind === 'near-net' && cut.rows && bRepFaces !== null ? machinedFaceCount(cut.rows) : null;
+  const deburr = deburrInspectMinutes(machinedFaces ?? bRepFaces ?? MESH_DEBURR_FACE_ALLOWANCE);
   ops.push({ name: 'Deburr and gauge check (bench)', type: 'milling_3ax', machineId: chosen.primaryMachineId,
     cycleTimeHr: hr4(deburr), partsPerCycle: 1, labourId: 'lab-uk-semiskilled', manning: 1, oee: 1, benchOperation: true,
     basis: bRepFaces === null
       ? `mesh upload — no B-rep faces to count (its triangles are not faces): 0.5 min deburr + 0.004 min × ${MESH_DEBURR_FACE_ALLOWANCE} faces allowed + 0.5 min gauge check = ${fmt(deburr, 2)} min (assumed)`
-      : `0.5 min deburr + 0.004 min × ${bRepFaces} B-rep faces of edges + 0.5 min gauge check = ${fmt(deburr, 2)} min (engineering-typical, not sourced)` });
+      : machinedFaces !== null
+        ? `0.5 min deburr + 0.004 min × ${machinedFaces} machined faces (the B-rep faces of the costed features — the near-net faces left as made carry no machined edge) `
+          + `+ 0.5 min gauge check = ${fmt(deburr, 2)} min (engineering-typical, not sourced)`
+        : `0.5 min deburr + 0.004 min × ${bRepFaces} B-rep faces of edges (a part cut from solid is machined all over) + 0.5 min gauge check = ${fmt(deburr, 2)} min (engineering-typical, not sourced)` });
   return ops;
 }
 
@@ -470,14 +505,16 @@ export function machiningNRE(ctx: RuleContext, cut: MachiningCut, routing: Routi
   // the near-net spindle's lathe fixture is its own dedicated one (not a tombstone fixture)
   const latheFx = lathe ? fixtureCostGBP(1, 0, ctx.annualVolume) : null;
   const fx = { gbp: mill.gbp + (latheFx?.gbp ?? 0), basis: latheFx ? `${mill.basis}; lathe: ${latheFx.basis}` : mill.basis };
-  const rows = (ctx.geo.featureTable ?? []).length;
+  // From solid every feature row is programmed; near-net only the rows it machines (a cast-in pocket is not programmed —
+  // secondary-machining parity, Nov 2026).
+  const rows = cut.kind === 'near-net' && cut.rows ? cut.rows.length : (ctx.geo.featureTable ?? []).length;
   const hrs = programmingHours(routing.chosen.setups + lathe, rows, cut.surfaced);
   const rate = activeLabourRate('lab-uk-engineer');   // the costed country's engineer
   return {
     fixtureGBP: fx.gbp, fixtureBasis: fx.basis,
     programmingGBP: Math.round(hrs * rate),
     programmingBasis: `CAM programming and prove-out ${fmt(hrs, 2)} h (${PROGRAMMING_HR.perFixturing} h × ${routing.chosen.setups + lathe} fixturing(s)${lathe ? ' incl. the lathe' : ''} `
-      + `+ ${PROGRAMMING_HR.perFeatureRow} h × ${rows} feature group(s)${cut.surfaced ? ` + ${PROGRAMMING_HR.surfacing} h surfacing` : ''}) `
+      + `+ ${PROGRAMMING_HR.perFeatureRow} h × ${rows} ${cut.kind === 'near-net' ? 'machined ' : ''}feature group(s)${cut.surfaced ? ` + ${PROGRAMMING_HR.surfacing} h surfacing` : ''}) `
       + `× £${rate.toFixed(2)}/h manufacturing engineer (hours engineering-typical, not sourced)`,
   };
 }

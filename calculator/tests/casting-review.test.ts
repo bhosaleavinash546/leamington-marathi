@@ -304,14 +304,18 @@ describe('I. plain casting: finish machining is costed the same on screen and he
       materialId: 'mat-gs-c25', netWeightKg: 2.512,
       casting: { subtype: 'sand', yieldFraction: 0.53, dieMouldCostGBP: 1, dieMouldLife: 1, cavities: 1, cycleTimeHpdcSec: 0, cycleTimeSandGravHr: 0.01 },
     } as never, 50_000, 'steel', g)!;
-    const ops = m.params.secondaryMachiningOps as Array<{ machineId: string; labourId: string }>;
-    // 50,000/yr: the milled bracket runs on the twin-pallet HMC cell (pilot rule pack); below the cell's volume it is the VMC
-    expect(ops.every(o => o.machineId === 'mach-hmc-400' && o.labourId === 'lab-uk-skilled')).toBe(true);
+    const ops = m.params.secondaryMachiningOps as Array<{ machineId: string; labourId: string; benchOperation?: boolean }>;
+    // 50,000/yr: the milled bracket runs on the twin-pallet HMC cell (pilot rule pack), cut by a machinist; the bench
+    // deburr and gauge check is semi-skilled — the near-net plan of cast + machine (secondary-machining parity, Nov 2026)
+    expect(ops.every(o => o.machineId === 'mach-hmc-400')).toBe(true);
+    expect(ops.filter(o => !o.benchOperation).every(o => o.labourId === 'lab-uk-skilled')).toBe(true);
+    expect(ops.filter(o => o.benchOperation).map(o => o.labourId)).toEqual(['lab-uk-semiskilled']);
     const low = toCostParams('casting', {
       materialId: 'mat-gs-c25', netWeightKg: 2.512,
       casting: { subtype: 'sand', yieldFraction: 0.53, dieMouldCostGBP: 1, dieMouldLife: 1, cavities: 1, cycleTimeHpdcSec: 0, cycleTimeSandGravHr: 0.01 },
     } as never, 10_000, 'steel', g)!;
-    expect((low.params.secondaryMachiningOps as Array<{ machineId: string }>).every(o => o.machineId === 'mach-vmc3')).toBe(true);
+    // below the cell's volume the plan's cost-ranked routing — the single-clamping 5-axis on this bracket — never a drill
+    expect((low.params.secondaryMachiningOps as Array<{ machineId: string }>).every(o => o.machineId === 'mach-haas-umc500')).toBe(true);
     // Fixtures + programming are derived now, from the fixturings and features
     // (forging review) — the cell the screen prices too, not an invented £15k.
     expect(m.params.secondaryMachiningToolingCost).toBeGreaterThan(0);

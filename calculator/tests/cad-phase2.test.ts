@@ -164,9 +164,12 @@ describe('D5 — compare routes (rebuilt in the compare-routes review, Oct 2026)
     const cam = cmp.rows.find(r => r.route === 'cast_and_machine')!;
     expect(cam.status).toBe('costed');
     expect(cam.assumed.join(' ')).toMatch(/leak-tight/);
-    // As-cast is not the finished knuckle: it has 12 machined holes / bores.
-    expect(cmp.rows.map(r => r.route)).not.toContain('casting');
-    expect(cmp.excluded.find(e => e.route === 'casting')!.reasons[0].id).toBe('as_cast_scope');
+    // The casting route costs the knuckle's 12 machined holes / bores as secondary machining on the near-net plan
+    // (secondary-machining parity, Nov 2026): the finished scope, costed alike with cast + machine.
+    const cast = cmp.rows.find(r => r.route === 'casting' && r.process === cam.process)!;
+    expect(cast.status).toBe('costed');
+    expect(cast.total).toBe(cam.total);
+    expect(cmp.excluded.some(e => e.route === 'casting' && e.reasons.some(x => x.id === 'as_cast_scope'))).toBe(false);
   });
   it('only routes that can make the named metal are offered (no rubber for a steel shaft)', () => {
     const s = part('MACH_Stepped_Shaft.stp');

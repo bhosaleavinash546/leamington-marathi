@@ -50,10 +50,15 @@ describe('A2 — cast + machine blasts the CASTING, so the blast is sized on the
     expect(r.provenance['cam-shot-blast'].basis).toContain(`${castKg.toFixed(2)} kg as cast`);
     expect(r.params.shotBlastCostPerPart).toBe(want);
   });
-  it('the casting route (no machining stock) still blasts the part as cast = its own weight', async () => {
+  it('the casting route machines the same features (secondary machining), so it blasts the same as-cast weight', async () => {
+    // Secondary-machining parity (Nov 2026): the casting route costs the bracket's holes and faces as secondary machining
+    // and pours the casting with their stock on — the blast follows (it blasted the 2.512 kg finished part).
     const r = await cost('Casting_Braket.stp', 'casting');
-    const kg = Number(r.provenance['cast-part-wt'].value);
-    expect(r.provenance['cast-shot-blast'].value).toBe(Math.max(0.1, Math.round(kg / 600 * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 10_000) / 10_000));
+    const finished = Number(r.provenance['cast-part-wt'].value);
+    const castKg = Number(r.params.partWeightKg);
+    expect(castKg).toBeGreaterThan(finished);
+    expect(r.provenance['cast-shot-blast'].value).toBe(Math.max(0.1, Math.round(castKg / 600 * (machineRate('blast-machine') + labourRate('lab-uk-foundry')) * 10_000) / 10_000));
+    expect(r.provenance['cast-shot-blast'].basis).toContain(`${castKg.toFixed(2)} kg as cast`);
   });
 });
 

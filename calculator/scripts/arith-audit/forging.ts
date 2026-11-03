@@ -28,7 +28,7 @@ const BASELINE = join(import.meta.dirname, '../../tests/fixtures/real-parts-base
 // ── The model's constants, as printed on the bases (UK basis; the programme and country are the dump's own) ─────────
 const C = dumpContext(DUMP);
 const ANNUAL = C.annual, YEARS = C.years, AMORT = ANNUAL * YEARS;
-const STOCK_MM = 2, PIERCE_ABOVE_MM = 25;                   // closed-die machining stock a side; bores > Ø25 pierced
+const STOCK_MM = 2, PIERCE_ABOVE_MM = 25, TURN_STOCK_MM = 2;   // + near-net turning stock a side (NEAR_NET_TURN_STOCK_MM)                   // closed-die machining stock a side; bores > Ø25 pierced
 const FLASH = 0.10, BAND_MID = (0.55 + 0.80) / 2;            // closed-die
 const KT = { simple: 3, moderate: 5, complex: 8 } as const;
 const FLOW_MICROALLOYED = 105;                                // MPa, hot
@@ -91,8 +91,13 @@ for (const name of PARTS) {
     else if (r.kind === 'hole' && r.diaMm > PIERCE_ABOVE_MM) stockMm3 += Math.PI * r.diaMm * Math.max(r.depthMm, 0) * r.count * STOCK_MM;
   }
   const stock = Math.round(stockMm3 / 100) / 10;
-  const forged = Math.round((finished + (drilled + stock) * rho) * 1000) / 1000;
-  check(name, 'as-forged kg (finished + drilled + stock)', forged, P.partWeightKg, { abs: 0.0015 });
+  // Secondary-machining parity (3 Nov 2026): the secondary machining is the near-net plan, which turns a turned axis
+  // (outside ≥ 20 cm² and ≥ 8 % of the surface) on the lathe — the forging carries that axis's 2 mm turning stock.
+  const ext = (g.turning?.externalAreaMm2 ?? 0) / 100;
+  const turnedCm2 = rows.some(r => r.kind === 'hole' || r.kind === 'face') && ext >= 20 && ext / g.surfaceArea.cm2 >= 0.08 ? ext : 0;
+  const turn = Math.round(turnedCm2 * TURN_STOCK_MM / 10 * 10) / 10;
+  const forged = Math.round((finished + (drilled + stock + turn) * rho) * 1000) / 1000;
+  check(name, 'as-forged kg (finished + drilled + stock + turning stock)', forged, P.partWeightKg, { abs: 0.0015 });
 
   // ── Plan area, shape, press ──
   const pa = g.projectedArea;

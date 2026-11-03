@@ -78,7 +78,7 @@ describe('2. a grade the file names', () => {
     const ht = r.provenance['forge-ht-cost'];
     expect(ht.value).toBe(0);
     expect(ht.basis).toMatch(/controlled-cooled/);
-    expect(ht.basis).toMatch(/The file names C45 .*normalised — £0\.3\/kg × 2\.842 kg = £0\.8526 a part .*NOT in this cost/);
+    expect(ht.basis).toMatch(/The file names C45 .*normalised — £0\.3\/kg × 3\.093 kg = £0\.9279 a part .*NOT in this cost/);
   });
 
   it('answered C45, the heat treatment follows the grade (normalise) and the note goes', () => {

@@ -48,7 +48,7 @@ import { pickForgePressId, pickStampingPressId, FORGE_PRESS_TIERS } from '../../
 import { NDT_STATION } from '../../modules/casting-advisor.js';
 import { activeLabourRate } from '../../rate-context.js';
 import { countryFactor } from '../../regional-services.js';
-import { nearNetStockCm3, CORED_ABOVE_MM } from '../../machining-time.js';
+import { nearNetStockCm3, CORED_ABOVE_MM, costedNearNetRows, nearNetTurnedAreaCm2, NEAR_NET_TURN_STOCK_MM } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { toForgingAlloyFamily } from '../derive/material.js';
@@ -451,10 +451,17 @@ function advise(ctx: RuleContext): { advice: ForgeAdvice } | { blocked: RuleOutc
     .reduce((s2, r) => s2 + Math.PI * r.diaMm ** 2 / 4 * Math.max(r.depthMm, 0) * r.count, 0) / 1000;
   const stockMm = FORGING_MACHINING_STOCK_MM[rec.process];
   const faceCm3 = stockMm > 0 ? nearNetStockCm3(rows, stockMm, pierce) : 0;
-  const forgedKg = Math.round((mat.massKg + (drilledCm3 + faceCm3) * density) * 1000) / 1000;
+  // The turned axis the secondary machining turns on the lathe (a spindle, or a turned part's outside) is forged with the
+  // near-net turning stock that machining roughs off — poured as metal here as on cast + machine (secondary-machining
+  // parity, Nov 2026: the plan turned it, the weight did not carry it).
+  const turnedCm2 = costedNearNetRows(rows).length ? nearNetTurnedAreaCm2(ctx.geo.turning, ctx.geo.surfaceArea?.cm2 ?? 0) : 0;
+  const turnCm3 = Math.round(turnedCm2 * NEAR_NET_TURN_STOCK_MM / 10 * 10) / 10;
+  const forgedKg = Math.round((mat.massKg + (drilledCm3 + faceCm3 + turnCm3) * density) * 1000) / 1000;
   const forgedBasis = `${fmt(mat.massKg, 3)} kg finished + ${fmt(drilledCm3, 1)} cm³ of holes drilled from solid`
     + `${pierce < Infinity ? ` (≤ Ø${pierce}; larger bores pierced)` : ''} + ${fmt(faceCm3, 1)} cm³ machining stock `
-    + `(${stockMm} mm a side on the machined faces, ${rec.process}) — ${mat.basis}`;
+    + `(${stockMm} mm a side on the machined faces, ${rec.process})`
+    + (turnCm3 > 0 ? ` + ${fmt(turnCm3, 1)} cm³ turning stock on the ${fmt(turnedCm2, 0)} cm² turned axis (${NEAR_NET_TURN_STOCK_MM} mm a side, engineering-typical, not sourced)` : '')
+    + ` — ${mat.basis}`;
   return {
     advice: {
       alloy, familyLabel: mat.family!,

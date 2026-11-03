@@ -34,7 +34,9 @@ import { pickHPDCMachineId } from '../../machine-sizing.js';
 import { libraryMachineRate } from '../../uk-tariff.js';
 import type { ToolComplexity } from '../../toolmaking.js';
 import type { CastingSubtype } from '../../modules/casting.js';
-import { answeredNumber, decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { answeredNumber, decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
+import { asCastWeight, costedNearNetRows, DRILLED_FROM_SOLID_MM } from '../../machining-time.js';
+import type { FeatureRow } from '../../feature-ops.js';
 import {
   estimateHPDCDieCost, estimateGravityMouldCost, estimateSandPatternCost, estimateInvestmentToolCost,
 } from '../../casting-tooling.js';
@@ -185,6 +187,41 @@ function advise(ctx: RuleContext): { advice: Advice } | { blocked: RuleOutcome<n
 export function castingSubtypeFor(ctx: RuleContext): CastingSubtype | null {
   const r = advise(ctx);
   return 'blocked' in r ? null : r.advice.subtype;
+}
+
+export type AsCastFacts = ReturnType<typeof asCastWeight> & { finishedKg: number; subtype: string | null };
+
+/**
+ * The as-cast facts of a casting machined on its default rows (holes and measured faces — `costedNearNetRows`), or null
+ * pending the material. Cast + machine pours this weight, and so does the casting route whenever it costs the same
+ * machined features as secondary machining (secondary-machining parity, Nov 2026): the casting is poured, heat-treated
+ * and blasted with its machining stock on, then machined.
+ */
+export function asCastFacts(ctx: RuleContext): AsCastFacts | null {
+  const mat = materialFacts(ctx);
+  if (mat.decision || mat.massKg === null) return null;
+  const sub = castingSubtypeFor(ctx);
+  const a = asCastWeight({
+    finishedKg: mat.massKg, volumeCm3: ctx.geo.volume?.cm3 ?? 0, rows: costedNearNetRows((ctx.geo.featureTable ?? []) as FeatureRow[]),
+    subtype: sub, family: mat.family ?? null, turning: ctx.geo.turning, surfaceAreaCm2: ctx.geo.surfaceArea?.cm2 ?? 0,
+  });
+  return { ...a, finishedKg: mat.massKg, subtype: sub };
+}
+
+/** The as-cast weight's basis line (cast + machine's weight rule; the casting route's secondary machining). */
+export function asCastBasis(a: AsCastFacts): string {
+  const sub = a.subtype;
+  return `${fmt(a.finishedKg, 3)} kg finished`
+    + (a.drilledHoles > 0 ? ` + ${fmt(a.drilledCm3, 1)} cm³ of ${a.drilledHoles} hole(s) ≤ ${DRILLED_FROM_SOLID_MM} mm drilled from solid`
+      : sub === 'hpdc' ? ' (HPDC cores its holes)' : '')
+    + ` + ${fmt(a.faceCm3, 1)} cm³ machining stock (${a.stockMm} mm a side on the machined faces and cored bores, `
+    // No drawing value reaches this rule (casting 360 review: it claimed the drawing's RMA replaced it). ISO 8062-3
+    // wording (report standard review, 3 Nov 2026): the stock is the RMA for the RMA grade PLUS half the casting
+    // tolerance (DCTG) — the RMA alone is not the stock, and no grade is read, so the figure is an assumption.
+    + `${sub ?? 'casting'} — the total stock a side, assumed (engineering-typical, not sourced): under ISO 8062-3 it is `
+    + `the RMA for the drawing's RMA grade plus half its DCTG casting tolerance, and neither grade is read from a drawing; `
+    + `type the as-cast weight from the drawing or the foundry to override)`
+    + (a.turnCm3 > 0 ? ` + ${fmt(a.turnCm3, 1)} cm³ turning stock on the ${fmt(a.turnedCm2, 0)} cm² spindle (${a.stockMm} mm a side)` : '');
 }
 
 /**
@@ -885,7 +922,13 @@ export const CASTING_RULES: CommodityRuleSpec = {
       evaluate: (ctx) => {
         const r = advise(ctx);
         if ('blocked' in r) return r.blocked;
-        return shotBlastOutcome(r.advice.subtype, r.advice.massKg, 'kg');
+        // The casting is blasted as cast — before it is machined — so a machined casting is blasted at its AS-CAST weight
+        // (finished + machining stock), on the casting route as on cast + machine (arithmetic audit, Oct 2026: the stub
+        // axle's 9.08 kg casting was blasted as 7.36 kg; secondary-machining parity, Nov 2026: the casting route still did).
+        const a = asCastFacts(ctx);
+        return a && a.kg > r.advice.massKg
+          ? shotBlastOutcome(r.advice.subtype, a.kg, 'kg as cast (finished + machining stock)')
+          : shotBlastOutcome(r.advice.subtype, r.advice.massKg, 'kg');
       },
     },
     {

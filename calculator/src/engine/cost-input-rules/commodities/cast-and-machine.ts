@@ -22,16 +22,13 @@
  * the SAME rule set as `machining` (`machiningRuleDefs`) given a near-net cut
  * (`nearNetCut`): the measured faces and holes, at the metal's cutting rate.
  */
-import {
-  castMachiningStockMm, nearNetStockCm3, nearNetTurnedAreaCm2, CORED_ABOVE_MM,
-} from '../../machining-time.js';
+import { asCastWeight, costedNearNetRows, DRILLED_FROM_SOLID_MM } from '../../machining-time.js';
 import type { FeatureRow } from '../../feature-ops.js';
-import { decided, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef } from '../types.js';
-import { CASTING_RULES, castingSubtypeFor, shotBlastOutcome } from './casting.js';
+import { decided, type CommodityRuleSpec, type RuleContext, type RuleDef } from '../types.js';
+// The GRADED facts (casting.ts `asCastFacts`): the cast weight starts from the same finished mass (the grade's density)
+// the finished-weight rule states — it used the family's mid density, 0.7% off on ductile iron.
+import { CASTING_RULES, castingSubtypeFor, asCastFacts, asCastBasis } from './casting.js';
 import { machiningRuleDefs, nearNetCut } from './machining.js';
-// The GRADED facts: the cast weight starts from the same finished mass (the grade's density) the
-// finished-weight rule states — it used the family's mid density, 0.7% off on ductile iron.
-import { gradedMaterialFacts as materialFacts } from '../derive/grade.js';
 
 /**
  * Where each half's field lands on the combined form.
@@ -103,34 +100,29 @@ function repath(rule: RuleDef): RuleDef {
 }
 
 /**
- * Metal the casting carries for machining.
+ * Metal the casting carries for machining — `asCastWeight` (machining-time.ts), the ONE function the casting route's
+ * secondary machining (headless) and the casting form (the screen) also call (secondary-machining parity, Nov 2026).
  *
- * Holes up to DRILLED_FROM_SOLID_MM in a sand, gravity or investment casting are
- * drilled from solid, so their volume was poured and then cut away (HPDC cores
- * its holes). The machined faces and cored bores carry the process's per-side
- * machining stock (`castMachiningStockMm`, ISO 8062-3 RMA typical) — measured
- * from the feature table's face areas and bore walls, which the second casting
- * pass stated as "not measured, not included".
+ * Holes up to DRILLED_FROM_SOLID_MM in a sand, gravity or investment casting are drilled from solid, so their volume was
+ * poured and then cut away (HPDC cores its holes). The machined faces and cored bores carry the process's per-side
+ * machining stock (`castMachiningStockMm`, ISO 8062-3 RMA typical) — measured from the feature table's face areas and
+ * bore walls, which the second casting pass stated as "not measured, not included".
  */
-export const DRILLED_FROM_SOLID_MM = 20;
+export { DRILLED_FROM_SOLID_MM };
 
 export function drilledStockCm3(ctx: RuleContext): { cm3: number; holes: number } {
-  let mm3 = 0; let holes = 0;
-  for (const f of ctx.geo.featureTable ?? []) {
-    const row = f as { kind?: string; diaMm?: number; depthMm?: number; count?: number };
-    if (row.kind !== 'hole' || !row.diaMm || !row.depthMm || row.diaMm > DRILLED_FROM_SOLID_MM) continue;
-    const n = row.count ?? 1;
-    mm3 += Math.PI * row.diaMm ** 2 / 4 * row.depthMm * n;
-    holes += n;
-  }
-  return { cm3: Math.round(mm3 / 10) / 100, holes };
+  const a = asCastWeight({ finishedKg: 0, volumeCm3: 1, rows: costedNearNetRows((ctx.geo.featureTable ?? []) as FeatureRow[]),
+    subtype: 'sand', family: null });
+  return { cm3: a.drilledCm3, holes: a.drilledHoles };
 }
+
+/** The as-cast facts / weight / basis live with the casting rules (casting.ts), which size the blast on them too. */
+export { asCastFacts, asCastBasis };
 
 /** The as-cast weight, kg (finished + the metal machining removes), or null while the material is unanswered. */
 export function asCastWeightKg(ctx: RuleContext): number | null {
-  const o = CAST_WEIGHT_RULE.evaluate(ctx);
-  const v = o.ok ? Number(o.decided.value) : 0;
-  return v > 0 ? v : null;
+  const a = asCastFacts(ctx);
+  return a && a.kg > 0 ? a.kg : null;
 }
 
 const CAST_WEIGHT_RULE: RuleDef = {
@@ -139,30 +131,9 @@ const CAST_WEIGHT_RULE: RuleDef = {
   fieldId: 'cam-cast-wt',
   label: 'castPartWeightKg',
   evaluate: (ctx) => {
-    const mat = materialFacts(ctx);
-    if (mat.decision || mat.massKg === null) return decided('castAndMachine.castPartWeightKg', 0, 'rule', 'pending the material answer', 0.1);
-    const sub = castingSubtypeFor(ctx);
-    const density = mat.massKg / Math.max(1e-9, ctx.geo.volume?.cm3 ?? 0);   // kg / cm³, from the confirmed metal
-    const drilled = sub === 'hpdc' || sub === null ? { cm3: 0, holes: 0 } : drilledStockCm3(ctx);
-    const stockMm = castMachiningStockMm(sub, mat.family ?? null);
-    const faceCm3 = nearNetStockCm3((ctx.geo.featureTable ?? []) as FeatureRow[], stockMm,
-      sub === 'hpdc' ? CORED_ABOVE_MM.hpdc : DRILLED_FROM_SOLID_MM);
-    // The turned axis (a spindle) is cast with the same stock on its outside: it is poured and paid for.
-    const turnedCm2 = nearNetTurnedAreaCm2(ctx.geo.turning, ctx.geo.surfaceArea?.cm2 ?? 0);
-    const turnCm3 = Math.round(turnedCm2 * stockMm / 10 * 10) / 10;
-    const kg = mat.massKg + (drilled.cm3 + faceCm3 + turnCm3) * density;
-    return decided('castAndMachine.castPartWeightKg', Math.round(kg * 1000) / 1000, 'geometry',
-      `${fmt(mat.massKg, 3)} kg finished`
-      + (drilled.holes > 0 ? ` + ${fmt(drilled.cm3, 1)} cm³ of ${drilled.holes} hole(s) ≤ ${DRILLED_FROM_SOLID_MM} mm drilled from solid`
-        : sub === 'hpdc' ? ' (HPDC cores its holes)' : '')
-      + ` + ${fmt(faceCm3, 1)} cm³ machining stock (${stockMm} mm a side on the machined faces and cored bores, `
-      // No drawing value reaches this rule (casting 360 review: it claimed the drawing's RMA replaced it). ISO 8062-3
-      // wording (report standard review, 3 Nov 2026): the stock is the RMA for the RMA grade PLUS half the casting
-      // tolerance (DCTG) — the RMA alone is not the stock, and no grade is read, so the figure is an assumption.
-      + `${sub ?? 'casting'} — the total stock a side, assumed (engineering-typical, not sourced): under ISO 8062-3 it is `
-      + `the RMA for the drawing's RMA grade plus half its DCTG casting tolerance, and neither grade is read from a drawing; `
-      + `type the as-cast weight from the drawing or the foundry to override)`
-      + (turnCm3 > 0 ? ` + ${fmt(turnCm3, 1)} cm³ turning stock on the ${fmt(turnedCm2, 0)} cm² spindle (${stockMm} mm a side)` : ''), 0.7);
+    const a = asCastFacts(ctx);
+    if (!a) return decided('castAndMachine.castPartWeightKg', 0, 'rule', 'pending the material answer', 0.1);
+    return decided('castAndMachine.castPartWeightKg', a.kg, 'geometry', asCastBasis(a), 0.7);
   },
 };
 
@@ -171,30 +142,15 @@ const NEAR_NET_MACHINING_RULES = machiningRuleDefs(
   (ctx, family) => nearNetCut(ctx, family, castingSubtypeFor(ctx)),
 ).filter(r => !DROPPED_MACHINING_RULES.has(r.id)).map(repath);
 
-/**
- * The casting is blasted as cast — before it is machined — so the blast is sized on the AS-CAST weight here, not the
- * finished one the casting rule reads (arithmetic audit, Oct 2026: the stub axle's 9.08 kg casting was blasted as
- * 7.36 kg). Heat treatment already charges the as-cast weight (cast-and-machine.ts module).
- */
-function asCastBlast(rule: RuleDef): RuleDef {
-  if (rule.id !== 'casting.shotBlastCostPerPart') return rule;
-  return {
-    ...rule,
-    evaluate: (ctx) => {
-      const o = rule.evaluate(ctx);
-      const kg = asCastWeightKg(ctx);
-      const sub = castingSubtypeFor(ctx);
-      if (!o.ok || kg === null || sub === null) return o;
-      return shotBlastOutcome(sub, kg, 'kg as cast (finished + machining stock)');
-    },
-  };
-}
+// The casting is blasted as cast — before it is machined — at the AS-CAST weight: the casting rule itself sizes it so
+// (casting.shotBlastCostPerPart reads `asCastFacts`), on this route and on the casting route alike. Heat treatment
+// charges the as-cast weight in the module (× castPartWeightKg).
 
 export const CAST_AND_MACHINE_RULES: CommodityRuleSpec = {
   commodity: 'cast_and_machine',
   header: 'CAST + MACHINE COST INPUT RULES:',
   rules: [
-    ...CASTING_RULES.rules.map(asCastBlast).map(repath),
+    ...CASTING_RULES.rules.map(repath),
     CAST_WEIGHT_RULE,
     ...NEAR_NET_MACHINING_RULES,
   ],

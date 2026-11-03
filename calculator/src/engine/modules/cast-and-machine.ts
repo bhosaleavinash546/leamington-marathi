@@ -70,6 +70,44 @@ export interface CastAndMachineInputs {
   surfaceFinishing?: CommodityFinishingInput;
 }
 
+/**
+ * The machining half's operations as the stack costs them: the batch change-over amortised (machine + setter, OEE 1,
+ * labour efficiency 1 — as the machining module), then the plan's operations (a bench task labour only). ONE function
+ * for cast + machine and for the casting / forging routes' secondary machining (`nearNetSecondaryMachining`), so the
+ * same plan costs the same on every route (secondary-machining parity, Nov 2026).
+ */
+export function machiningOperationInputs(
+  setup: CastAndMachineInputs['machiningSetup'], ops: MachiningOperation[],
+): OperationInput[] {
+  const setupPerPart = setup.setupTimeHr / Math.max(setup.batchSize, 1);
+  return [
+    {
+      operationName: 'Machining Setup (amortised)',
+      machineId: setup.machineId,
+      labourId: setup.labourId,
+      cycleTimeHr: setupPerPart,
+      partsPerCycle: 1,
+      oee: 1.0,
+      manning: 1,
+      labourTimeHr: setupPerPart,
+      labourEfficiency: 1.0,
+    },
+    ...ops.map(op => ({
+      operationName: op.name,
+      machineId: op.machineId,
+      labourId: op.labourId,
+      // A bench task is labour only (no machine time).
+      cycleTimeHr: op.benchOperation ? 0 : op.cycleTimeHr,
+      partsPerCycle: op.partsPerCycle,
+      oee: op.oee,
+      manning: op.manning,
+      labourTimeHr: op.benchOperation ? Math.max(op.labourTimeHr, op.cycleTimeHr) : op.labourTimeHr,
+      labourEfficiency: op.labourEfficiency,
+      ...(op.benchOperation ? { benchOperation: true } : {}),
+    } satisfies OperationInput)),
+  ];
+}
+
 export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): CommodityDrivers {
   // 1. Compute casting drivers (provides rawMaterial + casting operations + casting tooling)
   const castDrivers = computeCastingDrivers({
@@ -95,33 +133,7 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
   });
 
   // 2. Build machining operations (setup pseudo-op + main ops)
-  const setupPerPart = inputs.machiningSetup.setupTimeHr / Math.max(inputs.machiningSetup.batchSize, 1);
-  const machOps: OperationInput[] = [
-    {
-      operationName: 'Machining Setup (amortised)',
-      machineId: inputs.machiningSetup.machineId,
-      labourId: inputs.machiningSetup.labourId,
-      cycleTimeHr: setupPerPart,
-      partsPerCycle: 1,
-      oee: 1.0,
-      manning: 1,
-      labourTimeHr: setupPerPart,
-      labourEfficiency: 1.0,
-    },
-    ...inputs.machiningOps.map(op => ({
-      operationName: op.name,
-      machineId: op.machineId,
-      labourId: op.labourId,
-      // A bench task is labour only (no machine time).
-      cycleTimeHr: op.benchOperation ? 0 : op.cycleTimeHr,
-      partsPerCycle: op.partsPerCycle,
-      oee: op.oee,
-      manning: op.manning,
-      labourTimeHr: op.benchOperation ? Math.max(op.labourTimeHr, op.cycleTimeHr) : op.labourTimeHr,
-      labourEfficiency: op.labourEfficiency,
-      ...(op.benchOperation ? { benchOperation: true } : {}),
-    } satisfies OperationInput)),
-  ];
+  const machOps = machiningOperationInputs(inputs.machiningSetup, inputs.machiningOps);
 
   // 3. Combine tooling: casting tooling cost already inflated by consumables in castDrivers
   const combinedTooling: ToolingInput = {

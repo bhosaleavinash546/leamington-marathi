@@ -131,15 +131,18 @@ describe('1. the volume machining cell', () => {
       featureRows: 10, cuttingMin: 10, engineerRatePerHr: 42.8, milled: false });
     expect(holesOnly.volumeCell).toBe(false);
     expect(holesOnly.cell.fixturings).toBe(3);
-    // the knuckle forging headless
+    // the knuckle forging headless — its secondary machining is the near-net plan of cast + machine (secondary-machining
+    // parity, Nov 2026): the volume cell, the pallet change crewed like the cut (0.5), the load masked by the cut
     const k = ctx('steering_knuckle_RH.stp', 'forging', 50_000, { 'material.family': 'steel', 'service.toleranceClass': 'standard', 'service.safetyCritical': 'yes' });
     const { analysis } = buildDeterministicAnalysis(FORGING_RULES, k, 'knuckle');
     const p = toCostParams('forging', analysis.costInputSuggestions as never, 50_000, 'steel', k.geo)!.params as Record<string, unknown>;
-    const ops = p.secondaryMachiningOps as Array<{ operationName: string; machineId: string; benchOperation?: boolean; untended?: boolean; manning: number; labourTimeHr: number }>;
-    expect(ops[0].machineId).toBe(HMC_MACHINE_ID);
-    expect(ops[1]).toMatchObject({ untended: true, labourTimeHr: 0 });
-    // the masked load is covered by the operator's share of the 12-minute cut (arithmetic audit M4): no load step
-    expect(ops.some(o => /load \/ unload on the pallet/.test(o.operationName))).toBe(false);
+    const ops = p.secondaryMachiningOps as Array<{ operationName: string; machineId: string; benchOperation?: boolean; untended?: boolean; manning: number; labourTimeHr: number; cycleTimeHr: number }>;
+    expect(ops[0]).toMatchObject({ operationName: 'Machining Setup (amortised)', machineId: HMC_MACHINE_ID });
+    const pallet = ops.find(o => o.operationName.startsWith('Pallet change'))!;
+    expect(pallet).toMatchObject({ machineId: HMC_MACHINE_ID, manning: 0.5 });
+    expect(pallet.labourTimeHr).toBe(pallet.cycleTimeHr);
+    // the masked load is covered by the operator's share of the cut (arithmetic audit M4): no load step
+    expect(ops.some(o => /load \/ unload on the pallet/i.test(o.operationName))).toBe(false);
   });
 
   it('a hydraulic fixture is a stated toolroom build', () => {
@@ -156,16 +159,19 @@ describe('2. a turned near-net part is turned, faces included', () => {
     expect(turnedPartFacts(geoOf('FORGE_Control_Arm_Yoke.stp'))).toBeNull();   // Ø50 boss on a 250 mm part
   });
 
-  it('the hub flange headless: outside + 3 faces on the lathe, 7 holes on the drill centre, 2 chuckings + 1 fixturing', () => {
+  it('the hub flange headless: outside + 3 faces on the lathe in its own fixture, the holes on a machining centre — never the HMC', () => {
     const c = ctx('FORGE_Hub_Flange.stp', 'forging', 100_000, { 'material.family': 'steel', 'service.toleranceClass': 'standard', 'service.safetyCritical': 'no' });
     const { analysis } = buildDeterministicAnalysis(FORGING_RULES, c, 'hub');
     const p = toCostParams('forging', analysis.costInputSuggestions as never, 100_000, 'steel', c.geo)!.params as Record<string, unknown>;
     const ops = p.secondaryMachiningOps as Array<{ operationName: string; machineId: string; cycleTimeHr: number }>;
-    expect(ops[0].operationName).toMatch(/^Turning — outside and faces on the CNC lathe/);
-    expect(ops[0].machineId).toBe('mach-lathe-cnc');
-    expect(ops[1].operationName).toMatch(/^CNC Machining — 7 features \(6×Ø14\.0×18, 1×Ø60\.0×50\)/);   // no faces in the drill op
-    expect(ops[1].machineId).toBe('mach-drill');
-    expect(ops[2].operationName).toMatch(/3 fixturing\(s\)/);
+    // the near-net plan (secondary-machining parity, Nov 2026): the turned part's outside and faces on the lathe, loaded
+    // into its own fixture; the 6 bolt holes drilled and the pierced Ø60 bore finish-bored on the routing's machine
+    const lathe = ops.find(o => /^Turning — outside and faces on the CNC lathe/.test(o.operationName))!;
+    expect(lathe.machineId).toBe('mach-lathe-cnc');
+    expect(ops.find(o => /^Load \/ clamp \/ unload — lathe fixture/.test(o.operationName))!.machineId).toBe('mach-lathe-cnc');
+    const drill = ops.find(o => /^Drilling — 6 holes \(6×Ø14\.0×18\)/.test(o.operationName))!;   // no faces in the drill op
+    expect(ops.find(o => /^Finish boring — 1 cored bore\(s\) \(1×Ø60\.0×50\)/.test(o.operationName))!.machineId).toBe(drill.machineId);
+    expect(drill.machineId).not.toBe('mach-lathe-cnc');
     // never the HMC cell, whatever the volume
     expect(ops.some(o => o.machineId === HMC_MACHINE_ID)).toBe(false);
   });

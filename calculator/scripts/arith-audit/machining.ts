@@ -376,15 +376,28 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   if (process.env.ARITH_VERBOSE) console.log(JSON.stringify({ part, stockCm3, removed, wall, free, roughMin, finishMin, surfMin, holesMin, tools, cands, s }, null, 1));
 }
 
-// ── Near-net: the cast + machine half (rules, nearNetCut) ─────────────────────────────────────────────────────────
-function castAndMachine(partFile: string, family: string, subtype: string): void {
+// ── Near-net: the cast + machine half (rules, nearNetCut) AND the casting / forging routes' secondary machining ────────
+// Secondary-machining parity (3 Nov 2026): ONE near-net plan on both — the costed rows are holes and measured faces; the
+// deburr counts the machined faces (the costed rows' B-rep faces), the programming the costed rows; a turned near-net part
+// (hub flange) is turned outside + faces on the lathe and never routed to the HMC cell; the forging route's ops carry the
+// change-over first (efficiency 1) and the casting / forging tooling is fixtures + programming in one item.
+function nearNet(partFile: string, family: string, subtype: string, mode: 'cam' | 'secondary', coredOverride?: number, turnStock?: number): void {
   const part = partFile.replace(/\.stp$/, '');
   const geo: Geo = BASE.find(b => b.part === partFile)!.geometry;
   const dump = JSON.parse(readFileSync(join(DUMP, `${part}.json`), 'utf8'));
   const P = dump.params;
-  const rows: Row[] = geo.featureTable ?? [];
+  const all: Row[] = geo.featureTable ?? [];
+  const rows = all.filter(r => r.kind === 'hole' || r.kind === 'face');                 // the default costed rows
   const cd = CUT[family];
-  const cored = CORED[subtype] ?? 20;
+  const cored = coredOverride ?? CORED[subtype] ?? 20;
+  // turned near-net part?
+  const t = geo.turning; const bb = geo.boundingBox;
+  let tp: { ext: number; dia: number } | null = null;
+  if (t && t.axis && t.fraction >= 0.6) {
+    const dims = [bb.xMm, bb.yMm, bb.zMm]; const ax = t.axis.map(Math.abs); const i = ax.indexOf(Math.max(...ax));
+    const perp = dims.filter((_, k) => k !== i); const dia = t.externalMaxDiaMm ?? t.maxDiaMm ?? 0;
+    if (dia >= 0.9 * Math.max(...perp) && (t.externalAreaMm2 ?? 0) / 100 >= 20) tp = { ext: t.externalAreaMm2 / 100, dia };
+  }
   const faces = rows.filter(r => r.kind === 'face');
   const facesMin = faces.reduce((s, r) => s + holeMin(r, family) * r.count, 0);
   const allHoleMin = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + nearNetHoleMin(r, family, cored) * r.count, 0);
@@ -392,10 +405,11 @@ function castAndMachine(partFile: string, family: string, subtype: string): void
   const nn = { finish: r2(facesMin), tc: r2(tools * TOOL_CHANGE_S / 60), hole: r2(allHoleMin) };
   const boreMin = r2(rows.filter(r => r.kind === 'hole' && r.diaMm > cored).reduce((s, r) => s + nearNetHoleMin(r, family, cored) * r.count, 0));
   const drillMin = Math.max(0, r2(nn.hole - boreMin));
-  const millMin = nn.finish + nn.tc;
+  const millMin = tp ? 0 : nn.finish + nn.tc;
   const ext = (geo.turning?.externalAreaMm2 ?? 0) / 100;
-  const spindleCm2 = ext >= 20 && ext / geo.surfaceArea.cm2 >= 0.08 ? ext : 0;
-  const stockMm = subtype === 'sand' && (family === 'steel' || family === 'cast iron') ? CAST_STOCK_MM.sand_ferrous : CAST_STOCK_MM[subtype] ?? 1.5;
+  const facedCm2 = faces.reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
+  const spindleCm2 = tp ? tp.ext + facedCm2 : ext >= 20 && ext / geo.surfaceArea.cm2 >= 0.08 ? ext : 0;
+  const stockMm = turnStock ?? (subtype === 'sand' && (family === 'steel' || family === 'cast iron') ? CAST_STOCK_MM.sand_ferrous : CAST_STOCK_MM[subtype] ?? 1.5);
   const sp = spindleCm2 * stockMm / 10 / turnQ(family) + spindleCm2 / turnFin(family) + 3 * TURN_ALLOW + 3 * TOOL_CHANGE_S / 60;
   const spindleMin = r2(sp);
   const hMin = handlingMin(geo.volume.cm3 * DENSITY[family]);
@@ -403,9 +417,9 @@ function castAndMachine(partFile: string, family: string, subtype: string): void
   const tot = dirsList.reduce((s, d) => s + d.faceCount, 0);
   // Routing, cost-ranked like the from-solid part (machine + operator), on the near-net conventions: held on its cast
   // datums, so the split needs one fixturing a direction (not ≥ 2) and the 5-axis one clamping; the cored bores are
-  // milled-centre time. At 50,000/yr in the UK this is the HMC cell; in a book where the VMC is cheap it need not be.
+  // milled-centre time. A turned part is one direction and never the HMC cell.
   const sortedBb = [geo.boundingBox.xMm, geo.boundingBox.yMm, geo.boundingBox.zMm].sort((a: number, b: number) => b - a);
-  const dirs = Math.max(1, geo.setupAnalysis?.estimatedSetupCount ?? 1);
+  const dirs = tp ? 1 : Math.max(1, geo.setupAnalysis?.estimatedSetupCount ?? 1);
   const batch = Math.round(Math.min(5000, Math.max(50, ANNUAL / 20)));
   const millHr = (millMin + boreMin) / 60, drillHr = drillMin / 60, setupHr = SETUP_MIN / 60, hHr = hMin / 60;
   const lab = labourRate('lab-uk-skilled');
@@ -420,24 +434,26 @@ function castAndMachine(partFile: string, family: string, subtype: string): void
   };
   push('split-3axis', cheapest('mill3', sortedBb), cheapest('drill', sortedBb), dirs + (drillHr > 0 ? 1 : 0));
   push('consolidated-5axis', cheapest('mill5', sortedBb), null, 1);
-  if (ANNUAL >= 25_000) push('volume-cell', cheapest('hmc', sortedBb), null, dirs <= 4 ? 1 : 2, true);
+  if (ANNUAL >= 25_000 && !tp) push('volume-cell', cheapest('hmc', sortedBb), null, dirs <= 4 ? 1 : 2, true);
   cands.sort((a, b) => a.total - b.total);
   const ch = cands[0];
-  const routeBasis = String(dump.provenance['cam-mach-setup-mach']?.basis ?? '');
-  for (const c of cands) {
-    const m = new RegExp(`${c.label} £([0-9.]+) \\(machine`).exec(routeBasis);
-    check(part, `routing ${c.label}: machine + operator £/part (basis)`, r2(c.total), m ? Number(m[1]) : NaN, 0.0051);
+  if (mode === 'cam') {
+    const routeBasis = String(dump.provenance['cam-mach-setup-mach']?.basis ?? '');
+    for (const c of cands) {
+      const m = new RegExp(`${c.label} £([0-9.]+) \\(machine`).exec(routeBasis);
+      check(part, `routing ${c.label}: machine + operator £/part (basis)`, r2(c.total), m ? Number(m[1]) : NaN, 0.0051);
+    }
+    check(part, 'routing chosen', ch.label, /→ ([a-z0-9-]+)/.exec(routeBasis)?.[1]);
   }
-  check(part, 'routing chosen', ch.label, /→ ([a-z0-9-]+)/.exec(routeBasis)?.[1]);
   const expected: Array<[string, number, string, number]> = [];
-  for (const d of dirsList) expected.push([`Finish machining — ${d.directionLabel} side`, hr4(millMin * d.faceCount / tot), ch.primary, 0.5]);
+  if (millMin > 0) for (const d of dirsList) expected.push([`Finish machining — ${d.directionLabel} side`, hr4(millMin * d.faceCount / tot), ch.primary, 0.5]);
   if (drillMin > 0) expected.push(['Drilling', hr4(drillMin), ch.drill, 0.5]);
   if (boreMin > 0) expected.push(['Finish boring', hr4(boreMin), ch.primary, 0.5]);
-  // The lathe op is the cut; loading the casting into the lathe fixture is a whole operator's (finding M3).
+  // The lathe op is the cut; loading the part into the lathe fixture is a whole operator's (finding M3).
   if (!spindleCm2) { /* no turned axis (a bracket): no lathe op */ }
   else if (PRE) expected.push(['Turning — spindle (+ load, pre-fix)', hr4(spindleMin + hMin), 'mach-lathe-cnc', 0.5]);
   else {
-    expected.push(['Turning — spindle', hr4(spindleMin), 'mach-lathe-cnc', 0.5]);
+    expected.push([tp ? 'Turning — outside and faces' : 'Turning — spindle', hr4(spindleMin), 'mach-lathe-cnc', 0.5]);
     expected.push(['Load / clamp / unload — lathe', hr4(hMin), 'mach-lathe-cnc', 1]);
   }
   if (ch.masked) {
@@ -449,90 +465,52 @@ function castAndMachine(partFile: string, family: string, subtype: string): void
   } else {
     expected.push(['Load / clamp / unload', hr4(ch.setups * hMin), ch.primary, 1]);
   }
-  expected.push(['Deburr', hr4(Math.round((1 + 0.004 * geo.faces.total) * 100) / 100), ch.primary, 1]);
-  check(part, 'machining operation count', expected.length, P.machiningOps.length, 0);
+  // The deburr counts the MACHINED faces: the costed rows' B-rep faces, once each (a row without ids, one an instance).
+  const ids = new Set<number>(); let unnamed = 0;
+  for (const r of rows as Array<Row & { faceIds?: number[] }>) { if (r.faceIds?.length) r.faceIds.forEach(x => ids.add(x)); else unnamed += Math.max(1, r.count); }
+  const machinedFaces = ids.size + unnamed;
+  expected.push(['Deburr', hr4(Math.round((1 + 0.004 * machinedFaces) * 100) / 100), ch.primary, 1]);
+  const lathe = spindleCm2 ? 1 : 0;
+  const setups = ch.setups + lathe;
+  // The ops as costed: cast + machine's plan (P.machiningOps) or the secondary machining (P.secondaryMachiningOps, the
+  // change-over first — the same inputs the cast + machine module builds).
+  type DOp = { name: string; cycleTimeHr: number; machineId: string; manning: number; labourEfficiency?: number };
+  let dOps: DOp[];
+  if (mode === 'cam') dOps = P.machiningOps;
+  else {
+    const so = (P.secondaryMachiningOps ?? []) as Array<{ operationName: string; cycleTimeHr: number; labourTimeHr: number; machineId: string; manning: number; labourEfficiency: number; benchOperation?: boolean }>;
+    const setupOp = so[0];
+    check(part, 'change-over op first: setups × 45 min ÷ batch', Math.round(setups * SETUP_MIN / 60 * 1000) / 1000 / batch, setupOp?.cycleTimeHr, 1e-9);
+    check(part, 'change-over op labour efficiency 1', 1, setupOp?.labourEfficiency, 0);
+    check(part, 'change-over op machine', ch.primary, setupOp?.machineId);
+    dOps = so.slice(1).map(o => ({ name: o.operationName, cycleTimeHr: o.benchOperation ? o.labourTimeHr : o.cycleTimeHr, machineId: o.machineId, manning: o.manning, labourEfficiency: o.labourEfficiency }));
+    for (const o of dOps) check(part, `op ${o.name.slice(0, 40)} labour efficiency (shop)`, LAB_EFF, o.labourEfficiency, 0);
+  }
+  check(part, 'machining operation count', expected.length, dOps.length, 0);
   expected.forEach(([name, hr, mach, man], i) => {
-    const d = P.machiningOps[i];
+    const d = dOps[i];
     if (!d) return;
+    check(part, `op ${name.slice(0, 40)} name`, name, d.name.slice(0, name.length));
     check(part, `op ${name.slice(0, 40)} hr`, hr, d.cycleTimeHr, 0.00005);
     check(part, `op ${name.slice(0, 40)} machine`, mach, d.machineId);
     check(part, `op ${name.slice(0, 40)} crew`, man, d.manning, 0);
   });
   const cutMin = expected.filter(e => !/^(Load|Pallet|Deburr)/.test(e[0])).reduce((s, e) => s + e[1] * 60, 0);
-  check(part, 'tool wear £ = cutting min (no handling) × £/min', Math.round(cutMin * cd.wear * 10_000) / 10_000, P.machiningToolWearCostPerPart);
+  const wear = Math.round(cutMin * cd.wear * 10_000) / 10_000;
+  check(part, 'tool wear £ = cutting min (no handling) × £/min', wear, mode === 'cam' ? P.machiningToolWearCostPerPart : P.secondaryMachiningConsumablesPerPart);
   // the cell's fixture(s) — a hydraulic tombstone fixture on the HMC, dedicated fixtures on a split / 5-axis routing — and
   // the lathe's own dedicated fixture, each a toolroom build (× the book's toolroom factor, rounded per fixture set)
   const millFx = fixtureGBP(ch.setups * (ch.masked ? FIXTURE.hydraulic : ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular));
-  const lathe = spindleCm2 ? 1 : 0;
   const latheFx = lathe ? fixtureGBP(ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular) : 0;
-  check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} + lathe fixture)`, millFx + latheFx, P.machiningToolingCost, 0.5);
-  const prog = Math.round(Math.round((PROG.perFix * (ch.setups + lathe) + PROG.perRow * rows.length) * 100) / 100 * labourRate('lab-uk-engineer'));
-  check(part, 'programming £', prog, P.machiningProgrammingNRE, 0.5);
-  check(part, `setup hr (${ch.setups}${lathe ? ' + lathe' : ''}) × 45 min`, (ch.setups + lathe) * SETUP_MIN / 60, P.machiningSetup.setupTimeHr);
-}
-
-// ── Near-net: the feature path (forgings, castings — secondaryMachining in to-cost-params) ───────────────────────────
-function featurePath(partFile: string, family: string, weightKg: number, coredAbove: number | undefined): void {
-  const part = partFile.replace(/\.stp$/, '');
-  const geo: Geo = BASE.find(b => b.part === partFile)!.geometry;
-  const dump = JSON.parse(readFileSync(join(DUMP, `${part}.json`), 'utf8'));
-  const P = dump.params;
-  const rows: Row[] = geo.featureTable ?? [];
-  const cd = CUT[family];
-  const included = rows.filter(r => r.kind === 'hole' || r.kind === 'face');
-  // turned near-net part?
-  const t = geo.turning; const bb = geo.boundingBox;
-  let tp: { ext: number; dia: number } | null = null;
-  if (t && t.axis && t.fraction >= 0.6) {
-    const dims = [bb.xMm, bb.yMm, bb.zMm]; const ax = t.axis.map(Math.abs); const i = ax.indexOf(Math.max(...ax));
-    const perp = dims.filter((_, k) => k !== i); const dia = t.externalMaxDiaMm ?? t.maxDiaMm ?? 0;
-    if (dia >= 0.9 * Math.max(...perp) && (t.externalAreaMm2 ?? 0) / 100 >= 20) tp = { ext: t.externalAreaMm2 / 100, dia };
-  }
-  const minEach = (r: Row) => (tp && r.kind === 'face') ? 0 : (coredAbove !== undefined ? nearNetHoleMin(r, family, coredAbove) : holeMin(r, family));
-  const millMin = included.reduce((s, r) => s + Math.round(minEach(r) * r.count * 1000) / 1000, 0);
-  let latheMin = 0;
-  if (tp) {
-    const faced = included.filter(r => r.kind === 'face').reduce((s, r) => s + (r.areaMm2 ?? 0) * r.count, 0) / 100;
-    const a = tp.ext + faced;
-    latheMin = r2(a * NEAR_NET_TURN_STOCK / 10 / turnQ(family) + a / turnFin(family) + 3 * TURN_ALLOW + 3 * TOOL_CHANGE_S / 60);
-  }
-  const milled = !tp && included.some(r => r.kind !== 'hole');
-  const volumeCell = milled && ANNUAL >= 25_000;
-  const asked = tp ? 2 + (included.some(r => r.kind !== 'face') ? 1 : 0) : (geo.setupAnalysis?.estimatedSetupCount ?? 2);
-  const fixturings = volumeCell ? (asked <= 4 ? 1 : 2) : asked;
-  const batch = Math.round(Math.min(5000, Math.max(50, ANNUAL / 20)));
-  const hMin = handlingMin(weightKg);
-  const machine = volumeCell ? 'mach-hmc-400' : tp ? 'mach-drill' : milled ? 'mach-vmc3' : 'mach-drill';
-  const ops = P.secondaryMachiningOps as Array<{ operationName: string; machineId: string; cycleTimeHr: number; labourTimeHr: number; manning: number; oee: number; benchOperation?: boolean }>;
-  let i = 0;
-  if (tp) {
-    check(part, 'lathe op min (outside + faces, 2 mm stock)', latheMin, ops[i].cycleTimeHr * 60, 0.006);
-    check(part, 'lathe op machine', 'mach-lathe-cnc', ops[i].machineId); i++;
-  }
-  check(part, 'cut op min (holes, faces at the metal\'s catalogue row)', millMin, ops[i].cycleTimeHr * 60, 0.006);
-  check(part, 'cut op machine', machine, ops[i].machineId);
-  check(part, 'cut op crew 0.5', CUT_MANNING, ops[i].manning, 0); i++;
-  const changeMin = fixturings * SETUP_MIN / batch;
-  if (volumeCell) {
-    check(part, 'pallet change hr = fixturings × 7.1 s (machine)', fixturings * PALLET_S / 3600, ops[i].cycleTimeHr, 0.00001); i++;
-    // Change-over stops the machine (finding L4): machine time, its own op — the pallet only masks the load.
-    // Lead's merge (M4): only the load the cut's crew share does not already cover is charged; absent when covered.
-    const extraLoad = PRE ? fixturings * hMin + changeMin : Math.max(0, fixturings * hMin - CUT_MANNING * millMin);
-    if (extraLoad > 0) {
-      check(part, 'masked load: labour only, handling', extraLoad / 60, ops[i].labourTimeHr, 0.00001);
-      check(part, 'masked load: no machine time', 0, ops[i].cycleTimeHr, 0); i++;
-    } else check(part, 'masked load: covered by the cut — no step', 0, ops.filter(o => /load \/ unload on the pallet/i.test(o.operationName)).length, 0);
-    if (!PRE) { check(part, 'change-over op hr (machine + setter)', changeMin / 60, ops[i]?.cycleTimeHr, 0.000001); i++; }
+  // programming: the MACHINED feature rows (a cast-in pocket or boss is not programmed)
+  const prog = Math.round(Math.round((PROG.perFix * setups + PROG.perRow * rows.length) * 100) / 100 * labourRate('lab-uk-engineer'));
+  if (mode === 'cam') {
+    check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} + lathe fixture)`, millFx + latheFx, P.machiningToolingCost, 0.5);
+    check(part, `programming £ (${rows.length} machined rows)`, prog, P.machiningProgrammingNRE, 0.5);
+    check(part, `setup hr (${ch.setups}${lathe ? ' + lathe' : ''}) × 45 min`, setups * SETUP_MIN / 60, P.machiningSetup.setupTimeHr);
   } else {
-    check(part, 'load / unload + change-over hr', fixturings * (hMin + SETUP_MIN / batch) / 60, ops[i].cycleTimeHr, 0.00001); i++;
+    check(part, `fixtures + programming £ (${rows.length} machined rows)`, millFx + latheFx + prog, P.secondaryMachiningToolingCost, 1);
   }
-  const cuttingMin = millMin + latheMin;
-  check(part, 'tool wear £', Math.round(cuttingMin * cd.wear * 10_000) / 10_000, P.secondaryMachiningConsumablesPerPart, 0.0002);
-  const chuck = tp ? 2 : 0;
-  const each = volumeCell ? FIXTURE.hydraulic : FIXTURE.dedicated;
-  const fixture = fixtureGBP(PRE ? fixturings * each : (fixturings - chuck) * each + chuck * FIXTURE.softJaws);     // lathe chuckings are soft jaws (finding L3)
-  const prog = Math.round(Math.round((PROG.perFix * fixturings + PROG.perRow * included.length) * 100) / 100 * labourRate('lab-uk-engineer'));
-  check(part, 'fixtures + programming £', fixture + prog, P.secondaryMachiningToolingCost, 0.5);
 }
 
 if (!existsSync(DUMP)) { console.error(`no dump at ${DUMP}`); process.exit(2); }
@@ -540,12 +518,14 @@ console.log(`machining shadow model — ${contextLine(C)}`);
 fromSolid('Part1.stp', 'aluminium', 'mat-al6082-bar');
 fromSolid('MACH_Hydraulic_Manifold.stp', 'aluminium', 'mat-al6082-bar');
 fromSolid('MACH_Stepped_Shaft.stp', 'steel', 'mat-en8');
-castAndMachine('PRCR002.stp', 'cast iron', 'sand');
-featurePath('FORGE_Hub_Flange.stp', 'steel', 2.842, 25);
-featurePath('steering_knuckle_RH.stp', 'steel', 3.255, 25);
-// Added with the catalogue time base (3 Nov 2026): the cast-steel bracket's machining half and the yoke's feature path.
-castAndMachine('Casting_Braket.stp', 'steel', 'sand');
-featurePath('FORGE_Control_Arm_Yoke.stp', 'steel', 2.124, 25);
+nearNet('PRCR002.stp', 'cast iron', 'sand', 'cam');
+// The forgings' secondary machining is the near-net plan (secondary-machining parity, 3 Nov 2026): pierced above Ø25,
+// 2 mm near-net turning stock.
+nearNet('FORGE_Hub_Flange.stp', 'steel', 'forging', 'secondary', 25, NEAR_NET_TURN_STOCK);
+nearNet('steering_knuckle_RH.stp', 'steel', 'forging', 'secondary', 25, NEAR_NET_TURN_STOCK);
+// Added with the catalogue time base (3 Nov 2026): the cast-steel bracket's machining half and the yoke.
+nearNet('Casting_Braket.stp', 'steel', 'sand', 'cam');
+nearNet('FORGE_Control_Arm_Yoke.stp', 'steel', 'forging', 'secondary', 25, NEAR_NET_TURN_STOCK);
 
 console.log(`\n${pass} PASS, ${fail} FAIL`);
 if (fail) { console.log('\nFAILS:\n' + fails.join('\n')); process.exit(1); }

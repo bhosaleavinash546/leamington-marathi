@@ -81,8 +81,9 @@ describe('F3 — the die-cost basis lists the toolmaker lines and re-adds to the
     expect(lines.reduce((s, v) => s + v, 0)).toBe(sub);
     const ohp = +b.match(/of it = £([\d,]+)/)![1].replace(/,/g, '');
     expect(sub + ohp).toBe(hub.provenance['forge-die-cost'].value);
-    expect(b).toMatch(/Die blocks .* £1,514/);          // the H13 itself, not £6,713
-    const est = estimateForgingDieCost({ projectedAreaCm2: 116, partWeightKg: 2.842, dieSteel: 'h13', impressions: 2, complexity: 'simple' });
+    // the H13 itself, not £6,713; £1,521 since the as-forged weight carries the turned outside's stock (secondary-machining parity, Nov 2026)
+    expect(b).toMatch(/Die blocks .* £1,521/);
+    const est = estimateForgingDieCost({ projectedAreaCm2: 116, partWeightKg: 3.093, dieSteel: 'h13', impressions: 2, complexity: 'simple' });
     expect(hub.provenance['forge-die-cost'].value).toBe(est.total);
   });
 });
@@ -108,16 +109,16 @@ describe('F7 / F8 — yield and flash print the billet they build', () => {
   it('billet = forging + flash ÷ yield, and finished ÷ billet beside it', () => {
     const b = hub.provenance['forge-yield'].basis;
     expect(b).toMatch(/as-forged weight ÷ billet/);
-    expect(b).toMatch(/billet = 2\.842 kg forging \+ 0\.284 kg flash = 3\.126 kg ÷ 0\.743 = 4\.207 kg/);
-    expect(b).toMatch(/finished ÷ billet = 2\.198 kg ÷ 4\.207 kg = 0\.52/);
+    expect(b).toMatch(/billet = 3\.093 kg forging \+ 0\.309 kg flash = 3\.402 kg ÷ 0\.743 = 4\.579 kg/);
+    expect(b).toMatch(/finished ÷ billet = 2\.198 kg ÷ 4\.579 kg = 0\.48/);
     expect(hub.provenance['forge-flash'].basis).toMatch(/cost-neutral/);
   });
 });
 
 describe('F6 / F9 / F10 — services and exclusions say what they are', () => {
   it('heating, descale and NDT print their £ / kWh basis and that they are not sourced', () => {
-    expect(hub.provenance['forge-heat-energy'].basis).toMatch(/0\.35 kWh\/kg × 4\.207 kg billet ÷ 0\.98 .* = 1\.503 kWh/);
-    expect(hub.provenance['forge-descale'].basis).toMatch(/£0\.12\/kg × the 2\.842 kg forging/);
+    expect(hub.provenance['forge-heat-energy'].basis).toMatch(/0\.35 kWh\/kg × 4\.579 kg billet ÷ 0\.98 .* = 1\.635 kWh/);
+    expect(hub.provenance['forge-descale'].basis).toMatch(/£0\.12\/kg × the 3\.093 kg forging/);
     expect(hub.provenance['forge-descale'].basis).not.toMatch(/pickled off/);
     // Lead's merge (arithmetic audit F14): MPI is the casting route's station — 75 s × (inspector + bench), not a flat £2.50.
     expect(knuckle.provenance['forge-ndt'].basis).toMatch(/magnetic-particle .*75 s a part × \(inspector £[\d.]+\/h × 1 \+ bench £4\.00\/h\) = £0\.67 a part .*not sourced/);
