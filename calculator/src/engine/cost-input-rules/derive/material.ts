@@ -281,6 +281,14 @@ const REPRESENTATIVE_GRADE: Record<string, Partial<Record<MaterialFamily, string
  * plastic forging, a cast-iron stamping — so the caller stops rather than
  * costing something that cannot be made.
  */
+/**
+ * The grade NAME a rule note prints for a library id (7-country review, 3 Nov 2026): notes read
+ * "steel → mat-steel-38mnvs6", an internal id, on the screen and in both reports.
+ */
+export function materialGradeName(id: string, rates = DEFAULT_RATE_LIBRARY): string {
+  return rates.materials.find(m => m.id === id)?.grade ?? DEFAULT_RATE_LIBRARY.materials.find(m => m.id === id)?.grade ?? id;
+}
+
 export function representativeMaterialId(
   commodity: string, family: MaterialFamily,
 ): string | null {

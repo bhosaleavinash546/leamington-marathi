@@ -1,4 +1,5 @@
 // First: every later fetch to our API must carry the session token.
+import { cadAnnualVolumeText } from './cad-volume.js';
 import './auth-fetch.js';
 // Before any markup renders: whether this installation has AI at all.
 import { MATERIAL_SCOPE_BY_SELECT } from './material-scope.js';
@@ -6272,6 +6273,10 @@ function wireCADContext(): void {
  */
 const CAD_KEPT_FIELDS = ['cad-annual-volume', 'cad-commodity-override', 'cad-material-override', 'cad-analysis-mode', 'cad-deep-analysis'] as const;
 const _cadFormKept: Record<string, string | boolean> = {};
+/** The engineer's annual volume even when the CAD screen is not drawn (cad-volume.ts). */
+function cadAnnualVolume(): string {
+  return cadAnnualVolumeText(document.getElementById('cad-annual-volume') as HTMLInputElement | null, _cadFormKept['cad-annual-volume']);
+}
 
 function keepCADFormValues(): void {
   for (const id of CAD_KEPT_FIELDS) {
@@ -6328,7 +6333,7 @@ function restoreCADScreen(): void {
   hidePersistentCADViewer();
   void mountCADViewer('cad-viewer-host', cadFile, false);
   if (cadAnalysisResult) {
-    const vol = parseFloat((document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '') || 100000;
+    const vol = parseFloat(cadAnnualVolume()) || 100000;
     renderCADResults(cadAnalysisResult, false, vol);
   }
   updateCADSteps();
@@ -6468,7 +6473,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     // User overrides
     const commOvr = (document.getElementById('cad-commodity-override') as HTMLSelectElement | null)?.value ?? '';
     const matOvr  = (document.getElementById('cad-material-override')  as HTMLSelectElement | null)?.value ?? '';
-    const annVol  = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000';
+    const annVol  = cadAnnualVolume();
     const ovrWt   = (document.getElementById('cad-ovr-weight')  as HTMLInputElement | null)?.value ?? '';
     const ovrVol  = (document.getElementById('cad-ovr-volume')  as HTMLInputElement | null)?.value ?? '';
     const ovrLen  = (document.getElementById('cad-ovr-length')  as HTMLInputElement | null)?.value ?? '';
@@ -7404,7 +7409,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   document.getElementById('cad-clear-pins-btn')?.addEventListener('click', () => {
     _cadMaterialLocked = false; _cadProcessLocked = false;
     _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
-    const vol = parseFloat((document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '') || 100000;
+    const vol = parseFloat(cadAnnualVolume()) || 100000;
     if (cadAnalysisResult) renderCADResults(cadAnalysisResult, false, vol);
   });
 
@@ -7523,7 +7528,7 @@ async function reanalyzeCADOnce(): Promise<boolean> {
   // Prefer the engineer's pin over the transient select value so a lock always wins.
   const matOvr  = (_cadMaterialLocked && _cadPinnedMaterialId) || (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value || '';
   const procOvr = (_cadProcessLocked && _cadPinnedSubtype) || (document.getElementById('cad-reanalyze-process') as HTMLSelectElement | null)?.value || '';
-  const annVol  = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000';
+  const annVol  = cadAnnualVolume();
   const apiKey  = val('cad-api-key');
 
   const statusEl  = document.getElementById('cad-reanalyze-status');
@@ -12128,7 +12133,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
   const bboxMaxMm = Math.max(r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z);
 
   // Sync annual volume from CAD form to Universal Costs
-  const cadAnnVol = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value;
+  const cadAnnVol = cadAnnualVolume();
   if (cadAnnVol) {
     const univVol = document.getElementById('annual-volume') as HTMLInputElement | null;
     if (univVol) { univVol.value = cadAnnVol; univVol.dispatchEvent(new Event('input')); }
@@ -19821,7 +19826,7 @@ function loadCADDemo(commodity: string): void {
     cadGeometrySource = 'text_parsing';
     _cadDiff = null;                 // demos are recordings — there is nothing to compare
 
-    const annVol = parseInt((document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000', 10) || 100000;
+    const annVol = parseInt(cadAnnualVolume(), 10) || 100000;
     renderCADResults(result, false, annVol);
     el('cad-results')?.insertAdjacentHTML('afterbegin',
       '<div role="note" style="margin-bottom:10px;padding:8px 12px;border-radius:6px;font-size:0.76rem;font-weight:600;'
@@ -21453,7 +21458,7 @@ async function loadRouteComparison(): Promise<void> {
     current: activeCommodity,
     decisionAnswers: _cadDecisionAnswers,
     acknowledged: [..._cadSanityAcks],
-    annualVolume: (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000',
+    annualVolume: cadAnnualVolume(),   // the CAD screen is not drawn at step 3 — the field read 100,000 (3 Nov 2026)
     region: _mfgRegion,
   };
   if (programmeYearsValue()) body['programmeYears'] = programmeYearsValue();

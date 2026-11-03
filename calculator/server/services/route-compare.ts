@@ -568,7 +568,7 @@ export async function compareRoutes(i: CompareRoutesInput, routes?: string[]): P
           const same = id === 'material.resin' ? samePolymerGrade(v, route, i.baseBook) : null;
           if (same) {
             answers['material.resin'] = same.id;
-            notes.push(`resin assumed: ${same.label} — the same polymer (${same.polymer}) as ${v}, in the grade this route buys`);
+            notes.push(`resin assumed: ${same.label} — the same polymer (${same.polymer}) as ${i.baseBook.materials.find(m => m.id === v)?.grade ?? v}, in the grade this route buys`);
           } else {
             const gradeName = i.baseBook.materials.find(m => m.id === v)?.grade ?? v;
             notes.push(`${gradeName} is not bought on this route — its representative ${familyOfCategory(cat) ?? fam.family ?? ''} grade is costed`.replace(/\s+grade/, ' grade'));

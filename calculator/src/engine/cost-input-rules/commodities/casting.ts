@@ -37,7 +37,7 @@ import {
   estimateHPDCDieCost, estimateGravityMouldCost, estimateSandPatternCost, estimateInvestmentToolCost,
 } from '../../casting-tooling.js';
 import { projectedAreaCm2 } from '../derive/envelope.js';
-import { toCastingAlloyFamily, representativeMaterialId } from '../derive/material.js';
+import { toCastingAlloyFamily, representativeMaterialId, materialGradeName } from '../derive/material.js';
 import { gradedMaterialFacts as materialFacts, castingAlloyForGrade, gradeDecision, GRADE_DECISION_ID, BRITTLE_IRON, castIronDefaultGrade } from '../derive/grade.js';
 import {
   pressureTightDecision, toleranceClassDecision, safetyCriticalDecision,
@@ -315,11 +315,11 @@ export const CASTING_RULES: CommodityRuleSpec = {
         const r = advise(ctx);
         if (mat.family === 'aluminium' && !('blocked' in r) && r.advice.subtype !== 'hpdc') {
           return decided('casting.materialId', 'mat-lm25', 'geometry',
-            `aluminium ${r.advice.subtype} casting → mat-lm25 (A356 / LM25, the heat-treatable gravity / sand alloy — not a drawing callout)`, 0.8);
+            `aluminium ${r.advice.subtype} casting → ${materialGradeName('mat-lm25', ctx.rates)} (A356 / LM25, the heat-treatable gravity / sand alloy — not a drawing callout)`, 0.8);
         }
         const id = representativeMaterialId('casting', mat.family!);
         return decided('casting.materialId', id ?? mat.family!, 'geometry',
-          `${mat.family} → ${id ?? mat.family} (representative casting grade — not a drawing callout)`, 0.85);
+          `${mat.family} → ${id ? materialGradeName(id, ctx.rates) : mat.family} (representative casting grade — not a drawing callout)`, 0.85);
       },
     },
     {

@@ -1128,7 +1128,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       if (own) {
         // the row's date is the rate's own — a German report dated its book rates with the UK entry's date (Germany review)
         return { ...l, fullyLoadedRatePerHr: own.fullyLoadedRatePerHr, region: rd.name, effectiveDate: own.effectiveDate ?? l.effectiveDate,
-          sourceNote: `${own.id} — the rate book's own ${rd.name} rate (${own.sourceNote ?? ''})`.trim(), confidence: own.confidence };
+          sourceNote: `the rate book's own ${rd.name} rate (${own.sourceNote ?? ''})`.trim(), confidence: own.confidence };
       }
       const grade = book?.labourGrades[suffix];
       if (grade) {

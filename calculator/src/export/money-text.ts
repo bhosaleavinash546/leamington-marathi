@@ -10,6 +10,8 @@
 
 // A £ that is part of a currency symbol is not a pound: the Egyptian pound prints "E£", and an Egypt PDF converted its
 // own "E£724.30" again ("EE£54,162.14", × 74.78) — the bucket rows a third time (world rate round live run, 30 Oct 2026).
+import { DEFAULT_RATE_LIBRARY } from '../engine/rate-library.js';
+
 const NOT_IN_SYMBOL = '(?<![A-Za-z])';
 const AMOUNT = new RegExp(`${NOT_IN_SYMBOL}£(\\d[\\d,]*(?:\\.\\d+)?)(?:([–-])(\\d[\\d,]*(?:\\.\\d+)?))?`, 'g');
 
@@ -31,9 +33,25 @@ const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
  * does not carry and a module parameter that rode in the note ("coolFactor ~2.2 s/mm²") are dropped. The rate
  * database export keeps the note as written.
  */
+/** Library ids (machines, labour grades, materials) by the NAME a reader knows them by — built once. */
+let LIBRARY_NAMES: Map<string, string> | null = null;
+function libraryName(id: string): string | undefined {
+  if (!LIBRARY_NAMES) {
+    LIBRARY_NAMES = new Map<string, string>();
+    for (const m of DEFAULT_RATE_LIBRARY.machines) LIBRARY_NAMES.set(m.id, m.machineClass);
+    for (const l of DEFAULT_RATE_LIBRARY.labour) LIBRARY_NAMES.set(l.id, `${l.skillLevel} labour`);
+    for (const m of DEFAULT_RATE_LIBRARY.materials) LIBRARY_NAMES.set(m.id, m.grade);
+  }
+  return LIBRARY_NAMES.get(id);
+}
+
 export function reportNoteText(note: string | null | undefined): string {
   if (!note) return '';
   return note
+    // a rate note that quotes another library entry by its internal id ("Capex = mach-haas-vf2 £53,204",
+    // "(rate id mach-lathe-cnc)") prints that entry's name (7-country review, 3 Nov 2026)
+    .replace(/\s*\(rate id [a-z0-9-]+\)/g, '')
+    .replace(/\b(?:mach|lab|mat)-[a-z0-9]+(?:-[a-z0-9]+)*\b/g, id => libraryName(id) ?? id)
     .replace(/\s*\|\s*Refresh \d{4}-\d{2}:.*$/s, '')
     .replace(/\s*Was £[\d.,]+\/[a-z²]+(?:\s*\([^)]*\))?\.?/g, '')
     .replace(/\s*\(see [A-Z ]+ PRICING BASIS\)/g, '')

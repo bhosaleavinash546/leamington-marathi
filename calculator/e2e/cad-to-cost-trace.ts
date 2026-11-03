@@ -397,7 +397,7 @@ async function tracePart(page: Page, base: string, p: PartSpec, net: Array<Recor
   await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
   await themeSettled(page);
   check('3', 'M4', 'step 3 current', s.step === 'Cost', `current "${s.step}"`);
-  check('3', '#2', 'tooling over the programme with its amortisation basis', card.figs.some(f => /Tooling over the programme/.test(f) && /a part over 5 years × 100,000/.test(f)), card.figs[0] ?? '(none)');
+  check('3', '#2', 'tooling over the programme with its amortisation basis', card.figs.some(f => /Tooling over the programme/.test(f) && f.includes(`a part over ${p.programmeYears ?? 5} years × ${(p.annual ?? 100_000).toLocaleString('en-GB')}`)), card.figs[0] ?? '(none)');
   check('3', 'D6', 'the band says what it covers and that accuracy is not measured', /not the model's error/.test(card.note) && /not yet measured/.test(card.note), card.note);
   check('3', '§3', 'confidence shown beside the band', card.figs.some(f => /confidence (High|Medium|Low)/.test(f)), card.figs[1] ?? '');
   check('3', '§3', 'confidence explained ("why", "what would raise it")', /data points behind this cost/.test(card.why) && /moves it/.test(card.why), card.why);

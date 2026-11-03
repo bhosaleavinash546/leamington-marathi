@@ -35,7 +35,7 @@
  */
 import { finishRules } from '../derive/finish.js';
 import { bRepFaceCount } from '../derive/facts.js';
-import { representativeMaterialId } from '../derive/material.js';
+import { representativeMaterialId, materialGradeName } from '../derive/material.js';
 import type { MaterialFamily } from '../../material-family.js';
 import {
   adviseForgingProcess, estimateForgingTonnage, estimateForgingDieCost,
@@ -506,10 +506,10 @@ export const FORGING_RULES: CommodityRuleSpec = {
         // refused "steel", keeping its first billet while the headless path
         // priced the representative grade — two numbers for one part.
         const g = materialFacts(ctx).gradeId;
-        if (g) return decided('forging.materialId', g, 'engineer', `${r.advice.massBasis}; grade ${g}`, 1);
+        if (g) return decided('forging.materialId', g, 'engineer', `${r.advice.massBasis}; grade ${materialGradeName(g, ctx.rates)}`, 1);
         const id = representativeMaterialId('forging', r.advice.familyLabel as MaterialFamily);
         return decided('forging.materialId', id ?? r.advice.familyLabel, 'rule',
-          `${r.advice.massBasis}; ${r.advice.familyLabel} → ${id ?? r.advice.familyLabel} (representative forging billet — not a drawing callout)`, 1);
+          `${r.advice.massBasis}; ${r.advice.familyLabel} → ${id ? materialGradeName(id, ctx.rates) : r.advice.familyLabel} (representative forging billet — not a drawing callout)`, 1);
       },
     },
     {

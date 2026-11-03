@@ -123,9 +123,12 @@ describe('extrusion — authentic country prices (not multiplier-scaled)', () =>
   });
 
   it('every country price for a grade lands verbatim in that region library', () => {
+    // One library a country (built once — rebuilding it per grade ran past the timeout once every country had a book).
+    const books = new Map<string, ReturnType<typeof buildRegionalLibrary>>();
     for (const [id, byRegion] of Object.entries(EXTRUSION_COUNTRY_PRICES)) {
       for (const [region, price] of Object.entries(byRegion)) {
-        const rl = buildRegionalLibrary(lib, region as any);
+        if (!books.has(region)) books.set(region, buildRegionalLibrary(lib, region as any));
+        const rl = books.get(region)!;
         expect(matPrice(rl, id)).toBeCloseTo(price as number, 6);
       }
     }

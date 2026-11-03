@@ -162,3 +162,22 @@ describe('8. the parts reconcile', () => {
     expect(baseline.find(b => b.part === 'ROTO_Coolant_Tank.stp')!.outcome.total).toBe(52.28);   // 28 moulds, not 26 (moulds sized for parts moulded)
   });
 });
+
+describe('roto moulds are sized on the costed book\'s hours (7-country review, 3 Nov 2026)', async () => {
+  const { rotoHoursIn, rotoMoulds, ROTO_HOURS, ROTO_REJECT } = await import('../src/engine/cost-input-rules/commodities/rotational-moulding.js');
+  const { buildRegionalLibrary } = await import('../src/engine/regional-rates.js');
+  const { DEFAULT_RATE_LIBRARY } = await import('../src/engine/rate-library.js');
+  it('a country book\'s carousel hours, not the UK library\'s, divide the volume', () => {
+    const cn = buildRegionalLibrary(DEFAULT_RATE_LIBRARY, 'CN' as never);
+    const h = rotoHoursIn(cn, 'rotomould-carousel-4arm');
+    expect(h).toBe(cn.machines.find(m => m.id === 'rotomould-carousel-4arm')!.buildup!.annualAvailableHours);
+    expect(h).not.toBe(ROTO_HOURS);
+    const uk = rotoMoulds(200_000, 4, 2, 1290);
+    const there = rotoMoulds(200_000, 4, 2, 1290, ROTO_REJECT, h);
+    expect(there.moulds).toBeLessThan(uk.moulds);
+    expect(there.basis).toContain(`${h.toLocaleString('en-GB')} h × 3600`);
+  });
+  it('the UK costing is unchanged', () => {
+    expect(rotoHoursIn(DEFAULT_RATE_LIBRARY, 'rotomould-carousel-4arm')).toBe(ROTO_HOURS);
+  });
+});

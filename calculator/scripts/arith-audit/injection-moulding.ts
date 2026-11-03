@@ -11,17 +11,23 @@
  * The constants below are COPIES of the ones under audit (each named with its file); the arithmetic is written out
  * here a second time. Packaging and logistics are the envelope estimate shared by every commodity
  * (geometry-sanity.ts) and are taken from the dump's stack input as given. Exit 1 on any FAIL.
+ *
+ * Country, volume, programme and delivery terms are the dump's own (7-country review, 3 Nov 2026, dump-context.ts):
+ * every £/h, £/kg and the tariff come from that region's book, the mould's toolroom hours at the book's toolroom
+ * factor (tool steel, the mould base and bought-out parts are traded — UK £), the high-volume wear coating × the
+ * country's heat-treat factor, overhead the country's shop default; ex-works carries no freight.
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
 import {
-  TOOLROOM_RATES_UK, TOOL_MATERIAL_GBP_PER_KG, BOUGHT_OUT_GBP, SHOP_OVERHEAD_PROFIT,
+  TOOL_MATERIAL_GBP_PER_KG, BOUGHT_OUT_GBP, SHOP_OVERHEAD_PROFIT,
 } from '../../src/engine/toolmaking.js';
+import { dumpContext, contextLine } from './dump-context.js';
 
 const dumpDir = process.argv[2] ?? 'arith-dump';
 const PARTS = ['IM_ECU_Cover', 'IM_Cable_Clip', 'IM_Storage_Tray'];
-const ANNUAL = 50_000, YEARS = 5, AMORT = ANNUAL * YEARS;
+const C = dumpContext(dumpDir);
+const ANNUAL = C.annual, YEARS = C.years, AMORT = ANNUAL * YEARS;
 
 // ── constants under audit (copied) ─────────────────────────────────────────────
 const CAVITY_P: Record<string, number> = { 'mat-pa66gf30': 55 + 10, 'mat-pp-impact': 35 };      // derive/resin.ts
@@ -44,11 +50,10 @@ const REJECT = 0.02, OEE = 0.85, LAB_EFF = 0.95, MAINT = 0.03, DRY_KWH = 0.15;
 const r1 = (v: number) => Math.round(v * 10) / 10;
 const r4 = (v: number) => Math.round(v * 10_000) / 10_000;
 
-const book = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
-const machineRate = (id: string) => book.machines.find(m => m.id === id)!.computedRatePerHr;
-const labourRate = (id: string) => book.labour.find(l => l.id === id)!.fullyLoadedRatePerHr;
-const material = (id: string) => book.materials.find(m => m.id === id)!;
-const tariff = book.energy[0].electricityPerKwh;
+const machineRate = C.machineRate;
+const labourRate = C.labourRate;
+const material = C.material;
+const tariff = C.tariff;
 
 let pass = 0, fail = 0;
 const lines: string[] = [];
@@ -71,7 +76,7 @@ function mouldBuildUp(n: number, areaPerCav: number, cls: string, slides: number
   const depthF = 1 + Math.max(0, d - 0.4 * Math.sqrt(a)) / 60;    // > 1 only where the 3 cm floor lifts d (small parts)
   const H = (12 + 3.4 * a ** 0.72) * depthF * steel[1];
   const nE = n ** 0.9;
-  const R = TOOLROOM_RATES_UK;
+  const R = C.toolroom;
   const costs = [
     Math.round((30 + 0.2 * H) * R.design),
     Math.round(1200 + 9.5 * Math.max(10, areaPerCav * n) ** 0.85),
@@ -83,7 +88,7 @@ function mouldBuildUp(n: number, areaPerCav: number, cls: string, slides: number
     Math.round((2 + Math.ceil(n / 2) + (areaPerCav > 2000 ? 2 : 0)) * 8 * R.tryoutPress),
     ...(slides > 0 ? [Math.round(slides * BOUGHT_OUT_GBP.corePullCylinder), Math.round(slides * (28 + areaPerCav / 200) * R.fitting)] : []),
     ...(hotDrops > 0 ? [Math.round(hotDrops * BOUGHT_OUT_GBP.hotRunnerPerDrop), BOUGHT_OUT_GBP.hotRunnerController] : []),
-    ...(steel[2] > 0 ? [steel[2]] : []),
+    ...(steel[2] > 0 ? [Math.round(Math.round(steel[2] * C.factor('heatTreat') * 10_000) / 10_000)] : []),   // wear coating × heat-treat factor
   ];
   const sub = costs.reduce((s, c) => s + c, 0);
   return Math.round(sub + Math.round(sub * SHOP_OVERHEAD_PROFIT));
@@ -224,15 +229,18 @@ for (const P of PARTS) {
   const proc = procMould + pr * setupH / batch, labr = labMould + tech * setupH / batch;
   const pk = d.trace.stackInput.packagingPerPart, lg = d.trace.stackInput.logisticsPerPart;
   const base = matCost + proc + labr + toolPP;
-  const oh = 0.12 * base, sub = base + pk + lg + oh, mg = 0.08 * sub, tot = sub + mg;
+  const oh = C.overheadPct * base, sub = base + pk + lg + oh, mg = C.marginPct * sub, tot = sub + mg;
+  check(P, 'overhead % / margin % (country shop default)', `${C.overheadPct}/${C.marginPct}`, `${d.trace.stackInput.overheadPct}/${d.trace.stackInput.marginPct}`);
+  if (C.terms === 'EXW') check(P, 'ex-works: logistics £ = 0', 0, lg, 0);
   const b = d.trace.result.breakdown;
   check(P, 'process £', proc, b.process);
   check(P, 'labour £', labr, b.labour);
-  check(P, 'overhead £ = 12% × factory base', oh, b.overhead);
+  check(P, `overhead £ = ${Math.round(C.overheadPct * 100)}% × factory base`, oh, b.overhead);
   check(P, 'margin £ = 8% × subtotal', mg, b.margin);
   check(P, 'TOTAL £', tot, d.trace.result.total);
 }
 
+console.log(`injection-moulding shadow model — ${contextLine(C)}`);
 console.log(lines.join('\n'));
 console.log(`\n${pass + fail} checks: ${pass} PASS, ${fail} FAIL`);
 process.exit(fail ? 1 : 0);

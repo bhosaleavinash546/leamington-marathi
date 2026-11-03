@@ -9,19 +9,25 @@
  * operations are the machining auditor's: their TIMES are taken from the dump and only their £ re-priced here.
  *
  *   npx tsx scripts/arith-audit/forging.ts [dumpDir]      # exits 1 on any FAIL
+ *
+ * Country, volume, programme and delivery terms are the dump's own (7-country review, 3 Nov 2026, dump-context.ts):
+ * every £/h, £/kg and the tariff come from that region's book, the toolroom hours of the die at the book's toolroom
+ * factor, the UK-basis £ services (descale, the MPI bench, the die's heat treatment) × the country's factor for that
+ * service, overhead the country's shop default; ex-works carries no freight.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
-import { TOOLROOM_RATES_UK, TOOL_MATERIAL_GBP_PER_KG, SHOP_OVERHEAD_PROFIT } from '../../src/engine/toolmaking.js';
+import { TOOL_MATERIAL_GBP_PER_KG, SHOP_OVERHEAD_PROFIT } from '../../src/engine/toolmaking.js';
+import { dumpContext, contextLine } from './dump-context.js';
 
 const DUMP = process.argv[2]
   ?? '/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/arith-dump';
 const PARTS = ['steering_knuckle_RH', 'FORGE_Hub_Flange', 'FORGE_Control_Arm_Yoke'];
 const BASELINE = join(import.meta.dirname, '../../tests/fixtures/real-parts-baseline.json');
 
-// ── The model's constants, as printed on the bases (UK; programme as the dump: 50,000 a year × 5 years) ──────────
-const ANNUAL = 50_000, YEARS = 5, AMORT = ANNUAL * YEARS;
+// ── The model's constants, as printed on the bases (UK basis; the programme and country are the dump's own) ─────────
+const C = dumpContext(DUMP);
+const ANNUAL = C.annual, YEARS = C.years, AMORT = ANNUAL * YEARS;
 const STOCK_MM = 2, PIERCE_ABOVE_MM = 25;                   // closed-die machining stock a side; bores > Ø25 pierced
 const FLASH = 0.10, BAND_MID = (0.55 + 0.80) / 2;            // closed-die
 const KT = { simple: 3, moderate: 5, complex: 8 } as const;
@@ -31,18 +37,18 @@ const STAMP_LADDER = [100, 200, 400, 630, 800, 1000, 1250];
 const LOAD_S = 3, HIT_S_MECH = 4, HIT_S_HYD = 8, IMPRESSIONS = 2;
 const CREW = 2, TRIM_CREW = 1, REJECT = 0.02, OEE = 0.8, EFF = 0.92;
 const HEAT_KWH_PER_KG = 0.35, DESCALE_GBP_KG = 0.12;
-// MPI as a station (lead's merge, arithmetic audit F14): 75 s a part × (UK inspector £/h × 1 + a £4/h bench), the
-// casting route's NDT_STATION.mpi — written out here from the rate book, not imported.
-const MPI_GBP = Math.round(75 / 3600 * (DEFAULT_RATE_LIBRARY.labour.find(l => l.id === 'lab-uk-inspector')!.fullyLoadedRatePerHr * 1 + 4) * 100) / 100;
+// MPI as a station (lead's merge, arithmetic audit F14): 75 s a part × (the book's inspector £/h × 1 + a UK £4/h bench
+// × the country's inspection factor), the casting route's NDT_STATION.mpi — written out here from the rate book, not imported.
+const MPI_GBP = Math.round(75 / 3600 * (C.labourRate('lab-uk-inspector') * 1 + 4 * C.factor('inspection')) * 100) / 100;
 const DIE_LIFE_BASE = 38_000;                                 // microalloyed steel
-const OVERHEAD = 0.12, MARGIN = 0.08;
+const OVERHEAD = C.overheadPct, MARGIN = C.marginPct;
 const TN = 9806.65;
 
 type Row = { kind: string; diaMm: number; depthMm: number; count: number; areaMm2?: number };
-const lib = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
-const machineRate = (id: string) => lib.machines.find(m => m.id === id)!.computedRatePerHr;
-const labourRate = (id: string) => lib.labour.find(l => l.id === id)!.fullyLoadedRatePerHr;
-const tariff = lib.energy.find(e => e.id === 'energy-uk')!.electricityPerKwh;
+const lib = C.book;
+const machineRate = C.machineRate;
+const labourRate = C.labourRate;
+const tariff = C.tariff;
 
 let pass = 0, fail = 0;
 const out: string[] = [];
@@ -151,10 +157,10 @@ for (const name of PARTS) {
   const heightCm = Math.max(18, Math.sqrt(area) + 4);
   const steelKg = area * 4 * heightCm * 2 * 1.15 * 7.85e-3 + P.partWeightKg * 3;
   const sinkHrs = (40 + 0.9 * area ** 0.85) * cf * IMPRESSIONS;
-  const r0 = Math.round, T = TOOLROOM_RATES_UK;
+  const r0 = Math.round, T = C.toolroom;
   const dieLines = [
     r0((20 + 0.15 * sinkHrs) * T.design), r0(steelKg * TOOL_MATERIAL_GBP_PER_KG.h13), r0((30 + 0.05 * steelKg) * T.cnc),
-    r0(sinkHrs * T.cnc), r0(0.25 * sinkHrs * cf * T.edm), r0(2500 + steelKg * 2.2), r0(IMPRESSIONS * 16 * cf * T.polish),
+    r0(sinkHrs * T.cnc), r0(0.25 * sinkHrs * cf * T.edm), r0((2500 + steelKg * 2.2) * C.factor('heatTreat')), r0(IMPRESSIONS * 16 * cf * T.polish),
     r0(18 * T.tryoutPress),
   ];
   const sub = dieLines.reduce((s, v) => s + v, 0);
@@ -171,7 +177,7 @@ for (const name of PARTS) {
   // ── Per-part services (every forging made, scrap included) ──
   const kwh = HEAT_KWH_PER_KG * billet * uplift;
   check(name, 'heating kWh (billet × scrap uplift)', kwh, rm.energyKwh?.electricity, { rel: 0.0005 });
-  const descale = DESCALE_GBP_KG * P.partWeightKg * uplift;
+  const descale = Math.round(DESCALE_GBP_KG * C.factor('process') * 10_000) / 10_000 * P.partWeightKg * uplift;
   const item = (label: string) => (rm.consumablesItems ?? []).find((i: { label: string }) => i.label === label)?.gbp ?? 0;
   check(name, 'descale £ (per kg of FORGING)', descale, item('descale'), pence);
   check(name, 'NDT £', safety ? MPI_GBP * uplift : 0, item('NDT'), pence);
@@ -208,6 +214,7 @@ for (const name of PARTS) {
   const labour = forgeLab + trimLab + secLab;
   const pkg = d.trace.stackInput.packagingPerPart, log = d.trace.stackInput.logisticsPerPart;   // shop defaults (not forging's)
   check(name, 'overhead % / margin %', `${OVERHEAD}/${MARGIN}`, `${d.trace.stackInput.overheadPct}/${d.trace.stackInput.marginPct}`);
+  if (C.terms === 'EXW') check(name, 'ex-works: logistics £ = 0', 0, log, { abs: 0 });
   const factory = material + process_ + labour + tooling + pkg + log;
   const overhead = OVERHEAD * (factory - pkg - log);
   const margin = MARGIN * (factory + overhead);
@@ -222,6 +229,7 @@ for (const name of PARTS) {
   out.push(`      ${name}: billet ${billet.toFixed(3)} kg, ${tonnes} t → ${press} t press, takt ${(cycleHr * 3600).toFixed(0)} s, die £${die} / ${life} → total £${(factory + overhead + margin).toFixed(4)}`);
 }
 
+console.log(`forging shadow model — ${contextLine(C)}`);
 console.log(out.join('\n'));
 console.log(`\nforging shadow model: ${pass} PASS, ${fail} FAIL  (${DUMP})`);
 process.exit(fail ? 1 : 0);

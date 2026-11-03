@@ -1422,7 +1422,7 @@ export function renderShouldCostSections(
     const rh  = (n: number) => c(n / eff);
 
     machRows.push([{
-      content: `${mach.machineClass}  ·  Confidence: ${mach.confidence}  ·  ${reportNoteText(mach.sourceNote)}  (rate id ${mach.id})`,
+      content: `${mach.machineClass}  ·  Confidence: ${mach.confidence}  ·  ${reportNoteText(mach.sourceNote)}`,
       colSpan: 4,
       styles: { fontStyle: 'bold', fillColor: HDR, textColor: NAVY, fontSize: 7.5, cellPadding: { top: 3, bottom: 3, left: 4, right: 4 } },
     } as unknown as string]);

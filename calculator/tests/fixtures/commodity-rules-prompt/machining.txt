@@ -5,7 +5,7 @@
 ### context: full
 MACHINING COST INPUT RULES:
   Lines marked deterministic are computed from the measured geometry and will REPLACE whatever you return for them — restate them, do not re-derive them.
-  materialFamily=mat-al6082-bar  [aluminium → mat-al6082-bar (representative machining grade — not a drawing callout); 1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
+  materialFamily=mat-al6082-bar  [aluminium → 6082-T6 Aluminium Bar (representative machining grade — not a drawing callout); 1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   netWeightKg=2.8  [1037 cm³ × 0.0027 kg/cm³ (aluminium, confirmed by engineer) — deterministic, use verbatim]
   stockWeightKg=21.697  [328 × 245 mm cut from 100 mm plate (part 320 × 240 × 96: 2.5 mm a side to square the sawn edges + 3 mm saw cut, 1 mm skim a face then the next stocked thickness) = 8036 cm³ of aluminium, 21.697 kg, of which the part is 13% — deterministic, use verbatim]
   materialUtilization=0.129  [328 × 245 mm cut from 100 mm plate (part 320 × 240 × 96: 2.5 mm a side to square the sawn edges + 3 mm saw cut, 1 mm skim a face then the next stocked thickness) = 8036 cm³ of aluminium, 21.697 kg, of which the part is 13% — deterministic, use verbatim]

@@ -12,21 +12,29 @@
  *   npx tsx scripts/arith-audit/hollow-forming.ts <dumpDir>
  *
  * Tolerances: £ to ½ p; inputs to 0.5 % (or exact for counts / ids).
- * Packaging, logistics, overhead % and margin % are the shop defaults (another group's rules) and are read from
- * the dump's stack input, not recomputed here.
+ * Packaging and logistics are the shop defaults (another group's rules) and are read from the dump's stack input;
+ * overhead % and margin % are the country's shop default (checked against the stack input).
+ *
+ * Country, volume, programme and delivery terms are the dump's own (7-country review, 3 Nov 2026, dump-context.ts):
+ * every £/h, £/kg and the tariff come from that region's book; mould and tool builds at the book's toolroom factor
+ * (tool material and bought-out frames / inserts are traded — UK £); the roto grinding adder × the country's
+ * process-service factor; the roto carousel's hours a year are the costed machine's in that book; ex-works carries
+ * no freight.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
-import { TOOLROOM_RATES, TOOL_MATERIAL_GBP_PER_KG, SHOP_OVERHEAD_PROFIT } from '../../src/engine/toolmaking.js';
+import { TOOL_MATERIAL_GBP_PER_KG, SHOP_OVERHEAD_PROFIT } from '../../src/engine/toolmaking.js';
+import { dumpContext, contextLine } from './dump-context.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const dumpDir = process.argv[2] ?? join(here, 'dump');
 const baseline = JSON.parse(readFileSync(join(here, '../../tests/fixtures/real-parts-baseline.json'), 'utf8')) as Array<{ part: string; geometry: any }>;
-const book = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+const C = dumpContext(dumpDir);
+const book = C.book;
+const TOOLROOM_RATES = C.toolroom;
 
-const ANNUAL = 50_000, YEARS = 5, AMORT = ANNUAL * YEARS;
+const ANNUAL = C.annual, YEARS = C.years, AMORT = ANNUAL * YEARS;
 
 let fails = 0, passes = 0;
 const out: string[] = [];
@@ -57,9 +65,11 @@ function buckets(part: string, d: any, m: Model) {
   const labour = m.ops.reduce((s, o) => s + labourRate(o.labourId) * o.manning * o.labourHr / o.ppc / o.eff, 0);
   const tooling = m.toolingTotal / AMORT;
   const base = m.material + process + labour + tooling;
-  const overhead = si.overheadPct * base;
+  chk(part, 'overhead % / margin % (country default)', `${si.overheadPct}/${si.marginPct}`, `${C.overheadPct}/${C.marginPct}`);
+  if (C.terms === 'EXW') chk(part, 'ex-works: logistics £ = 0', si.logisticsPerPart, 0, 'exact');
+  const overhead = C.overheadPct * base;
   const subtotal = base + si.packagingPerPart + si.logisticsPerPart + overhead;
-  const margin = si.marginPct * subtotal;
+  const margin = C.marginPct * subtotal;
   const b = d.breakdown;
   chk(part, 'bucket rawMaterial £', b.rawMaterial, m.material, 'gbp');
   chk(part, 'bucket process £', b.process, process, 'gbp');
@@ -164,7 +174,8 @@ function roto(part: string, g: any, d: any, resin: string) {
   const load = 120 + 60 * perArm;
   const index = Math.round(Math.max(heat, cool / 2, load));  // 4-arm: oven / two cooling bays / load
   const reject = 0.03, up = 1 / (1 - reject);
-  const hours = 3500;                                        // library rotomoulder hours
+  // the costed carousel's hours a year in THIS book (3,500 in the UK; a country book runs its own shift pattern)
+  const hours = (book.machines.find(x => x.id === 'rotomould-carousel-4arm') as any).buildup.annualAvailableHours as number;
   const need = ANNUAL / (1 - reject) * arms * index / (hours * 3600 * 0.8);
   const moulds = Math.max(perArm, Math.ceil(need / perArm) * perArm);
   const area = r(g.projectedArea.alongDrawMm2 / 100, 1);
@@ -172,7 +183,7 @@ function roto(part: string, g: any, d: any, resin: string) {
   const score = (freeForm >= 10 ? 2 : freeForm >= 4 ? 1 : 0) + (undercuts >= 2 ? 1 : 0);
   const cx = score >= 3 ? 1.5 : score >= 1 ? 1.0 : 0.75;
   const vents = 1 + (g.featureTable ?? []).filter((x: any) => x.kind === 'boss').length;
-  const mould = Math.round(6000 + area * 18 * cx + vents * 250 + 500);   // CNC aluminium (≥ 20,000/yr)
+  const mould = Math.round((6000 + area * 18 * cx + vents * 250 + 500) * C.toolroomFactor);   // CNC aluminium (≥ 20,000/yr), × toolroom factor
   const life = 10_000;
   chk(part, 'wall mm (2V/S)', d.provenance['rm-wall'].value, wall);
   chk(part, 'part kg', p.partWeightKg, kg);
@@ -187,7 +198,8 @@ function roto(part: string, g: any, d: any, resin: string) {
   chk(part, 'mould life', p.mouldLife, life, 'exact');
   const util = 0.99;
   const net = kg * up, gross = net / util;
-  const material = gross * m.pricePerKg - (gross - net) * m.scrapRecoveryPricePerKg + 0.25 * kg * up / util;
+  const grind = Math.round(0.25 * C.factor('process') * 10_000) / 10_000;   // £0.25/kg UK grinding × process-service factor
+  const material = gross * m.pricePerKg - (gross - net) * m.scrapRecoveryPricePerKg + grind * kg * up / util;
   const hr = index / 3600 * up;
   const sets = Math.max(1, AMORT * up / (life * moulds));
   buckets(part, d, {
@@ -234,8 +246,11 @@ function thermo(part: string, g: any, d: any, resin: string) {
   const freeForm = g.features?.freeFormFaceCount ?? 0, undercuts = g.draftAnalysis?.undercutFaceCount ?? 0;
   const score = (freeForm >= 10 ? 2 : freeForm >= 4 ? 1 : 0) + (undercuts >= 2 ? 1 : 0);
   const cx = score >= 3 ? 1.6 : score >= 1 ? 1.0 : 0.7;
-  const tool0 = Math.round((3500 + plan * 1.2) * cx * (1 + (n - 1) * 0.7) + Math.round(plan * 0.25 * n));   // cast-al vacuum, router trim
-  const tool = Math.round(tool0 * Math.max(1, AMORT / n / 250_000));
+  // vacuum tool by the volume it must survive: epoxy below 2,000/yr, machined aluminium at ≥ 200,000/yr, else cast
+  const tm = ANNUAL < 2_000 ? { base: 1500, perCm2: 0.8, life: 5_000 } : ANNUAL >= 200_000 ? { base: 6000, perCm2: 2.2, life: 1_000_000 }
+    : { base: 3500, perCm2: 1.2, life: 250_000 };
+  const tool0 = Math.round(((tm.base + plan * tm.perCm2) * cx * (1 + (n - 1) * 0.7) + Math.round(plan * 0.25 * n)) * C.toolroomFactor);   // router trim, × toolroom factor
+  const tool = Math.round(tool0 * Math.max(1, AMORT / n / tm.life));
   chk(part, 'plan cm²', d.provenance['tf-area'].value, plan);
   chk(part, 'sheet gauge mm (mass balance)', p.sheetThicknessMm, sheet);
   chk(part, 'part kg', p.partWeightKg, kg);
@@ -253,7 +268,7 @@ function thermo(part: string, g: any, d: any, resin: string) {
   const spec = r(fam.cp * (fam.tf - 23) / 3600 / 0.4 + 0.02, 3);
   const kwh = spec * sheetKg / n * up;
   chk(part, 'oven kWh / part', d.trace.drivers.rawMaterial.energyKwh?.electricity, kwh);
-  const material = gross * m.pricePerKg - (gross - net) * m.scrapRecoveryPricePerKg + kwh * book.energy[0].electricityPerKwh;
+  const material = gross * m.pricePerKg - (gross - net) * m.scrapRecoveryPricePerKg + kwh * C.tariff;
   const hr = cycle / 3600 * up, thr = trim / 3600 * up;
   buckets(part, d, {
     material,
@@ -281,6 +296,7 @@ for (const [part, fn, resin] of PARTS) {
   if (d.status !== 'costed') { out.push(`FAIL  ${part}: status ${d.status}`); fails++; continue; }
   fn(part, g, d, resin);
 }
+console.log(`hollow-forming shadow model — ${contextLine(C)}`);
 console.log(out.join('\n'));
 console.log(`\n${passes} PASS, ${fails} FAIL`);
 process.exit(fails ? 1 : 0);

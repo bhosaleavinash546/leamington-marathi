@@ -461,7 +461,7 @@ export const BLOW_MOULDING_RULES: CommodityRuleSpec = {
       : { value: a.flashKg, source: 'rule', confidence: 0.6,
           basis: `${a.partKg > 3 ? 22 : 12}% of part weight = ${a.partKg} × ${a.partKg > 3 ? 0.22 : 0.12} = ${a.flashKg} kg — pinch-off and neck trim`
             + (a.partKg > 3 ? '; a large accumulator parison sheds more than a bottle' : '')
-            + '; flash share engineering-typical, not sourced (it sizes the shot and the machine, and is reground — no material £)' }),
+            + '; flash share engineering-typical, not sourced (it sizes the shot and the machine, and is reground — no material cost)' }),
     // Extrusion-blow flash is granulated at the machine and fed back into the
     // wall (into the regrind layer of a co-ex tank). It was bought as virgin
     // resin and credited at scrap value — £3.20 of resin on every fuel tank.

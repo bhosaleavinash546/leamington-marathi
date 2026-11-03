@@ -27,7 +27,8 @@ import {
   type RotoMaterialFamily, type RotoCoolingMethod, type RotoMouldType, type RotoComplexity,
 } from '../../modules/roto-advisor.js';
 import { ROTO_POWDER_YIELD } from '../../modules/rotational-moulding.js';
-import { activeToolroomFactor } from '../../rate-context.js';
+import { activeToolroomFactor, activeRates } from '../../rate-context.js';
+import type { RateLibrary } from '../../types.js';
 import { decided, ask, type CommodityRuleSpec, type RuleContext, type RuleOutcome } from '../types.js';
 import { shellWallMm } from '../derive/shell-wall.js';
 import { DEFAULT_RATE_LIBRARY } from '../../rate-library.js';
@@ -146,8 +147,18 @@ export function rotoIndexSec(arms: number, heat: number, cool: number, load: num
   return { sec: r(sec), basis: `4-arm carousel: oven ${r(heat)} / two cooling bays ${r(cool)} ÷ 2 / load ${r(load)} s in parallel — the slowest station paces it` };
 }
 
-/** Hours a year a rotomoulder runs — the library's figure for every one of them. */
+/** Hours a year a rotomoulder runs in the UK library — the fallback when the costed book has no figure. */
 export const ROTO_HOURS = DEFAULT_RATE_LIBRARY.machines.find(m => m.id === 'rotomould-biaxial')?.buildup.annualAvailableHours ?? 3500;
+
+/**
+ * Hours a year the COSTED carousel runs, from the costing's own book (7-country review, 3 Nov 2026): the machine £/h is
+ * spread over that book's hours (CN 6,336, DE 4,044 …), so the moulds the volume needs must divide by the same hours —
+ * they used to divide by the UK library's 3,500 in every country, buying 106 coolant-tank moulds in China, not 60.
+ */
+export function rotoHoursIn(rates: RateLibrary | null | undefined, machineId: string): number {
+  const h = (rates ?? activeRates()).machines.find(m => m.id === machineId)?.buildup?.annualAvailableHours;
+  return h && h > 0 ? h : ROTO_HOURS;
+}
 export const ROTO_OEE = 0.80;
 /** Grinding pellet to ~35 mesh powder, £/kg — the library's roto grades say "add grinding premium". */
 export const ROTO_GRINDING_GBP_PER_KG = 0.25;
@@ -167,20 +178,20 @@ export const ROTO_MOULD_LIFE: Record<RotoMouldType, number> = { fabricated: 20_0
  * every position of every arm whatever the volume: 8 coolant-tank moulds
  * (£135k) for 5,000 tanks a year, £27 a tank.
  */
-export function rotoMoulds(annualVolume: number, arms: number, perArm: number, indexSec: number, reject = ROTO_REJECT):
-  { moulds: number; basis: string } {
+export function rotoMoulds(annualVolume: number, arms: number, perArm: number, indexSec: number, reject = ROTO_REJECT,
+  hours = ROTO_HOURS): { moulds: number; basis: string } {
   const revSec = arms * indexSec;
   // The moulds make the scrapped parts too — the module charges the machine time
   // for them (÷ (1 − reject)), so the mould count carries them as well (arith audit).
   const moulded = annualVolume / (1 - reject);
-  const need = moulded * revSec / (ROTO_HOURS * 3600 * ROTO_OEE);
+  const need = moulded * revSec / (hours * 3600 * ROTO_OEE);
   const moulds = Math.max(perArm, Math.ceil(need / perArm) * perArm);
   // Index printed in seconds so the arithmetic on the page holds (4 × 22 min ≠ 86 min).
   return {
     moulds,
     basis: `one part per mould per revolution (${arms} arms × ${indexSec} s index = ${revSec} s); `
       + `${annualVolume.toLocaleString('en-GB')}/yr ÷ (1 − ${(reject * 100).toFixed(0)}% reject) = ${Math.round(moulded).toLocaleString('en-GB')} moulded; `
-      + `${Math.round(moulded).toLocaleString('en-GB')} × ${revSec} s ÷ (${ROTO_HOURS} h × 3600 s/h × ${ROTO_OEE} OEE) = ${need.toFixed(2)} moulds `
+      + `${Math.round(moulded).toLocaleString('en-GB')} × ${revSec} s ÷ (${hours.toLocaleString('en-GB')} h × 3600 s/h × ${ROTO_OEE} OEE) = ${need.toFixed(2)} moulds `
       + `→ ${moulds} (whole arm-loads of ${perArm})`,
   };
 }
@@ -245,7 +256,7 @@ function advise(ctx: RuleContext): { advice: RmAdvice } | { blocked: RuleOutcome
   // Demould and charge each mould on the arm, plus the arm's own handling.
   const loadSec = ROTO_ARM_HANDLING_SEC + ROTO_CHARGE_SEC_PER_MOULD * perArm.n;
   const index = rotoIndexSec(arms, cycle.heatingSec, cycle.coolingSec, loadSec);
-  const m = rotoMoulds(ctx.annualVolume, arms, perArm.n, index.sec);
+  const m = rotoMoulds(ctx.annualVolume, arms, perArm.n, index.sec, ROTO_REJECT, rotoHoursIn(ctx.rates, rotoMachineFor(arms)));
   const crew = arms >= 3 ? 2 : 1;
 
   return {

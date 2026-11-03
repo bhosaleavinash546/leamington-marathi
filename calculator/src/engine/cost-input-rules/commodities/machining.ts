@@ -46,7 +46,7 @@ import { tappedThread, featureToOperation } from '../../feature-ops.js';
 import { DRILL_FEED_MM_PER_MIN, TAP_FEED_MM_PER_MIN } from '../../feature-machining.js';
 import { decided, ask, fmt, type CommodityRuleSpec, type RuleContext, type RuleDef, type RuleOutcome } from '../types.js';
 import { holeRows, bRepFaceCount, MESH_DEBURR_FACE_ALLOWANCE } from '../derive/facts.js';
-import { materialFacts, DENSITY_KG_PER_CM3, representativeMaterialId } from '../derive/material.js';
+import { materialFacts, DENSITY_KG_PER_CM3, representativeMaterialId, materialGradeName } from '../derive/material.js';
 import { bboxSortedMm } from '../derive/envelope.js';
 
 /**
@@ -588,7 +588,7 @@ export function machiningRuleDefs(cutFor: CutFor): RuleDef<any>[] {
         // (£2.96) — the same gap the sheet-metal and casting reviews closed.
         const id = representativeMaterialId('machining', r.advice.family) ?? r.advice.family;
         return decided('machining.materialId', id, 'engineer',
-          `${r.advice.family} → ${id} (representative machining grade — not a drawing callout); ${r.advice.massBasis}`, 1);
+          `${r.advice.family} → ${materialGradeName(id, ctx.rates)} (representative machining grade — not a drawing callout); ${r.advice.massBasis}`, 1);
       },
     },
     {

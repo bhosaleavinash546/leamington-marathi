@@ -12,30 +12,34 @@
  *
  * Every constant below is the AUDITOR's restatement of the value the code states (file:line in the comment), so a
  * silent change in the code shows up here as a FAIL. Exit code 1 on any FAIL.
+ * Country, volume, programme and delivery terms are read off the dump (7-country review, 3 Nov 2026,
+ * dump-context.ts): every £/h is the region's own book, fixtures take the book's toolroom factor, overhead the
+ * country's shop default; ex-works carries no freight.
  * Write-up: docs/review/arith-audit/machining.md.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DEFAULT_RATE_LIBRARY, recomputeMachineRates } from '../../src/engine/rate-library.js';
+import { dumpContext, contextLine } from './dump-context.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const DUMP = process.argv[2]
   ?? '/tmp/claude-0/-home-user-leamington-marathi/8bf32d1a-7485-5bd6-9947-7843ee6c5644/scratchpad/arith-dump';
 const BASE = JSON.parse(readFileSync(join(ROOT, 'tests/fixtures/real-parts-baseline.json'), 'utf8')) as Array<{ part: string; geometry: Geo }>;
-const BOOK = recomputeMachineRates(DEFAULT_RATE_LIBRARY);
+const C = dumpContext(DUMP);
+const BOOK = C.book;
 /** Model the code BEFORE the audit's fixes (M1, L1, M3, L3, L4) — reproduces the shared pre-fix dump. */
 const PRE = !!process.env.ARITH_PRE_FIX;
-const machineRate = (id: string) => BOOK.machines.find(m => m.id === id)!.computedRatePerHr;
-const labourRate = (id: string) => BOOK.labour.find(l => l.id === id)!.fullyLoadedRatePerHr;
+const machineRate = C.machineRate;
+const labourRate = C.labourRate;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Geo = any;
 interface Row { kind: string; diaMm: number; depthMm: number; through: boolean | null; count: number; areaMm2?: number }
 
 // ── Auditor's restatement of the stated constants ─────────────────────────────────────────────────────────────────
-const ANNUAL = 50_000, YEARS = 5;                                   // dump.ts
+const ANNUAL = C.annual, YEARS = C.years;                          // the dump's own (dump.ts)
 const DENSITY: Record<string, number> = { aluminium: 0.0027, steel: 0.00785, 'cast iron': 0.00715 };   // derive/material.ts:23
 const CUT: Record<string, { tf: number; mill: number; turn: number; wear: number }> = {               // machining-time.ts CUTTING_DATA
   aluminium: { tf: 1.0, mill: 120, turn: 250, wear: 0.04 },
@@ -49,7 +53,9 @@ const PLATE = [3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65
 const BAR = [6, 8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 30, 32, 35, 38, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100, 110, 120,
   130, 140, 150, 160, 180, 200, 220, 250, 280, 300];
 const handlingMin = (kg: number) => kg <= 0.5 ? 0.3 : kg <= 5 ? 0.6 : kg <= 20 ? 1.2 : 2.5;
-const FIXTURE = { modular: 500, dedicated: 2500, softJaws: 300, hydraulic: 12_000 };
+const FIXTURE = { modular: 500, dedicated: 2500, softJaws: 300, hydraulic: 12_000 };   // UK toolroom builds
+/** machining-time.ts fixtureCostGBP: the UK-basis £ × the book's toolroom factor, rounded once per call. */
+const fixtureGBP = (ukGbp: number) => Math.round(ukGbp * C.toolroomFactor);
 const PROG = { perFix: 1.5, perRow: 0.25, surf: 2 };
 const DRILL_FEED = 400, MICRO_FEED = 250, PECK = 1.5, TAP_FEED = 500, TAP_APPROACH = 0.10, BORE_FEED = 150;
 const TAP_DRILLS = [2.5, 3.3, 4.2, 5.0, 6.8, 8.5, 10.2];
@@ -139,9 +145,9 @@ function stack(p: { materialId: string; netKg: number; util: number; wear: numbe
   }
   const tooling = p.tooling / p.amort;
   const base = material + process + labour + tooling;
-  const overhead = 0.12 * base;
+  const overhead = C.overheadPct * base;
   const subtotal = base + p.packaging + p.logistics + overhead;
-  const margin = 0.08 * subtotal;
+  const margin = C.marginPct * subtotal;
   return { material, process, labour, tooling, overhead, margin, total: subtotal + margin, perOp };
 }
 
@@ -289,8 +295,8 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   check(part, 'setup machine', ch.primary, P.setup.machineId);
   const chuck = ch.label === 'turned' ? 2 : 0;
   const each = ch.label === 'volume-cell' ? FIXTURE.hydraulic : ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular;
-  const fixture = (ch.setups - chuck) * each + chuck * FIXTURE.softJaws;
-  check(part, 'fixtures £', fixture, P.toolingCost, 0.5);
+  const fixture = fixtureGBP((ch.setups - chuck) * each + chuck * FIXTURE.softJaws);
+  check(part, 'fixtures £ (× toolroom factor)', fixture, P.toolingCost, 0.5);
   const progHr = Math.round((PROG.perFix * ch.setups + PROG.perRow * rows.length + (free > 0.5 && surfMin > 0 ? PROG.surf : 0)) * 100) / 100;
   const prog = Math.round(progHr * labourRate('lab-uk-engineer'));
   check(part, 'programming £ = h × engineer', prog, P.programmingNRE, 0.5);
@@ -300,6 +306,9 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   check(part, 'amortisation volume = annual × years', ANNUAL * YEARS, P.amortizationVolume, 0);
 
   // Stack
+  check(part, 'overhead % / margin % (country shop default)', `${C.overheadPct}/${C.marginPct}`,
+    `${dump.trace.stackInput.overheadPct}/${dump.trace.stackInput.marginPct}`);
+  if (C.terms === 'EXW') check(part, 'ex-works: logistics £ = 0', 0, dump.trace.stackInput.logisticsPerPart, 0);
   const s = stack({ materialId, netKg, util: P.materialUtilization, wear, ops, setupHr: setupsCharged * SETUP_MIN / 60, batch,
     setupMachine: ch.primary, tooling: fixture + prog, amort: ANNUAL * YEARS,
     packaging: dump.trace.stackInput.packagingPerPart, logistics: dump.trace.stackInput.logisticsPerPart });
@@ -308,7 +317,7 @@ function fromSolid(partFile: string, family: string, materialId: string): void {
   check(part, '£ process', s.process, B.process);
   check(part, '£ labour', s.labour, B.labour);
   check(part, '£ tooling (fixtures + programming ÷ volume)', s.tooling, B.tooling);
-  check(part, '£ overhead 12 %', s.overhead, B.overhead);
+  check(part, `£ overhead ${Math.round(C.overheadPct * 100)} %`, s.overhead, B.overhead);
   check(part, '£ margin 8 %', s.margin, B.margin);
   check(part, '£ TOTAL', s.total, dump.total);
   if (process.env.ARITH_VERBOSE) console.log(JSON.stringify({ part, stockCm3, removed, wall, free, roughMin, finishMin, surfMin, holesMin, tools, cands, s }, null, 1));
@@ -339,24 +348,54 @@ function castAndMachine(partFile: string, family: string, subtype: string): void
   const hMin = handlingMin(geo.volume.cm3 * DENSITY[family]);
   const dirsList = geo.setupAnalysis.principalDirections as Array<{ directionLabel: string; faceCount: number }>;
   const tot = dirsList.reduce((s, d) => s + d.faceCount, 0);
+  // Routing, cost-ranked like the from-solid part (machine + operator), on the near-net conventions: held on its cast
+  // datums, so the split needs one fixturing a direction (not ≥ 2) and the 5-axis one clamping; the cored bores are
+  // milled-centre time. At 50,000/yr in the UK this is the HMC cell; in a book where the VMC is cheap it need not be.
+  const sortedBb = [geo.boundingBox.xMm, geo.boundingBox.yMm, geo.boundingBox.zMm].sort((a: number, b: number) => b - a);
+  const dirs = Math.max(1, geo.setupAnalysis?.estimatedSetupCount ?? 1);
+  const batch = Math.round(Math.min(5000, Math.max(50, ANNUAL / 20)));
+  const millHr = (millMin + boreMin) / 60, drillHr = drillMin / 60, setupHr = SETUP_MIN / 60, hHr = hMin / 60;
+  const lab = labourRate('lab-uk-skilled');
+  const labourOf = (cutHr: number, handHr: number) => Math.round(lab * (cutHr * CUT_MANNING + handHr) * 10_000) / 10_000;
+  const cands: Array<{ label: string; primary: string; drill: string; setups: number; total: number; masked: boolean }> = [];
+  const push = (label: string, prim: { id: string; rate: number }, drill: { id: string; rate: number } | null, setups: number, masked = false) => {
+    const dr = drillHr > 0 ? (drill ?? prim) : null;
+    const machine = millHr * prim.rate + drillHr * (dr?.rate ?? 0) + setups * setupHr * prim.rate / batch
+      + (masked ? setups * PALLET_S / 3600 * prim.rate : setups * hHr * prim.rate);
+    const labour = labourOf(millHr + drillHr, masked ? Math.max(0, setups * hHr - (millHr + drillHr) * CUT_MANNING) : setups * hHr);
+    cands.push({ label, primary: prim.id, drill: dr?.id ?? prim.id, setups, total: machine + labour, masked });
+  };
+  push('split-3axis', cheapest('mill3', sortedBb), cheapest('drill', sortedBb), dirs + (drillHr > 0 ? 1 : 0));
+  push('consolidated-5axis', cheapest('mill5', sortedBb), null, 1);
+  if (ANNUAL >= 25_000) push('volume-cell', cheapest('hmc', sortedBb), null, dirs <= 4 ? 1 : 2, true);
+  cands.sort((a, b) => a.total - b.total);
+  const ch = cands[0];
+  const routeBasis = String(dump.provenance['cam-mach-setup-mach']?.basis ?? '');
+  for (const c of cands) {
+    const m = new RegExp(`${c.label} £([0-9.]+) \\(machine`).exec(routeBasis);
+    check(part, `routing ${c.label}: machine + operator £/part (basis)`, r2(c.total), m ? Number(m[1]) : NaN, 0.0051);
+  }
+  check(part, 'routing chosen', ch.label, /→ ([a-z0-9-]+)/.exec(routeBasis)?.[1]);
   const expected: Array<[string, number, string, number]> = [];
-  for (const d of dirsList) expected.push([`Finish machining — ${d.directionLabel} side`, hr4(millMin * d.faceCount / tot), 'mach-hmc-400', 0.5]);
-  expected.push(['Drilling', hr4(drillMin), 'mach-hmc-400', 0.5]);
-  expected.push(['Finish boring', hr4(boreMin), 'mach-hmc-400', 0.5]);
+  for (const d of dirsList) expected.push([`Finish machining — ${d.directionLabel} side`, hr4(millMin * d.faceCount / tot), ch.primary, 0.5]);
+  expected.push(['Drilling', hr4(drillMin), ch.drill, 0.5]);
+  expected.push(['Finish boring', hr4(boreMin), ch.primary, 0.5]);
   // The lathe op is the cut; loading the casting into the lathe fixture is a whole operator's (finding M3).
   if (PRE) expected.push(['Turning — spindle (+ load, pre-fix)', hr4(spindleMin + hMin), 'mach-lathe-cnc', 0.5]);
   else {
     expected.push(['Turning — spindle', hr4(spindleMin), 'mach-lathe-cnc', 0.5]);
     expected.push(['Load / clamp / unload — lathe', hr4(hMin), 'mach-lathe-cnc', 1]);
   }
-  expected.push(['Pallet change', hr4(1 * PALLET_S / 60), 'mach-hmc-400', 0.5]);
-  {
+  if (ch.masked) {
+    expected.push(['Pallet change', hr4(ch.setups * PALLET_S / 60), ch.primary, 0.5]);
     // Lead's merge (M4): only the load the operator's 0.5 share of the cut does not cover.
     const cutMin = expected.filter(e => !/^Load \/ clamp|^Pallet change|^Deburr/.test(String(e[0]))).reduce((s, e) => s + Number(e[1]) * 60, 0);
-    const extra = Math.max(0, 1 * hMin - 0.5 * cutMin);
-    if (extra > 0) expected.push(['Load / unload on the pallet', hr4(extra), 'mach-hmc-400', 1]);
+    const extra = Math.max(0, ch.setups * hMin - 0.5 * cutMin);
+    if (extra > 0) expected.push(['Load / unload on the pallet', hr4(extra), ch.primary, 1]);
+  } else {
+    expected.push(['Load / clamp / unload', hr4(ch.setups * hMin), ch.primary, 1]);
   }
-  expected.push(['Deburr', hr4(Math.round((1 + 0.004 * geo.faces.total) * 100) / 100), 'mach-hmc-400', 1]);
+  expected.push(['Deburr', hr4(Math.round((1 + 0.004 * geo.faces.total) * 100) / 100), ch.primary, 1]);
   check(part, 'machining operation count', expected.length, P.machiningOps.length, 0);
   expected.forEach(([name, hr, mach, man], i) => {
     const d = P.machiningOps[i];
@@ -367,10 +406,14 @@ function castAndMachine(partFile: string, family: string, subtype: string): void
   });
   const cutMin = expected.filter(e => !/^(Load|Pallet|Deburr)/.test(e[0])).reduce((s, e) => s + e[1] * 60, 0);
   check(part, 'tool wear £ = cutting min (no handling) × £/min', Math.round(cutMin * cd.wear * 10_000) / 10_000, P.machiningToolWearCostPerPart);
-  check(part, 'fixtures £ (1 hydraulic + lathe fixture)', FIXTURE.hydraulic + FIXTURE.dedicated, P.machiningToolingCost, 0.5);
-  const prog = Math.round(Math.round((PROG.perFix * 2 + PROG.perRow * rows.length) * 100) / 100 * labourRate('lab-uk-engineer'));
+  // the cell's fixture(s) — a hydraulic tombstone fixture on the HMC, dedicated fixtures on a split / 5-axis routing — and
+  // the lathe's own dedicated fixture, each a toolroom build (× the book's toolroom factor, rounded per fixture set)
+  const millFx = fixtureGBP(ch.setups * (ch.masked ? FIXTURE.hydraulic : ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular));
+  const latheFx = fixtureGBP(ANNUAL * 5 > 10_000 ? FIXTURE.dedicated : FIXTURE.modular);
+  check(part, `fixtures £ (${ch.setups} ${ch.masked ? 'hydraulic' : 'mill'} + lathe fixture)`, millFx + latheFx, P.machiningToolingCost, 0.5);
+  const prog = Math.round(Math.round((PROG.perFix * (ch.setups + 1) + PROG.perRow * rows.length) * 100) / 100 * labourRate('lab-uk-engineer'));
   check(part, 'programming £', prog, P.machiningProgrammingNRE, 0.5);
-  check(part, 'setup hr (cell + lathe) × 45 min', 1.5, P.machiningSetup.setupTimeHr);
+  check(part, `setup hr (${ch.setups} + lathe) × 45 min`, (ch.setups + 1) * SETUP_MIN / 60, P.machiningSetup.setupTimeHr);
 }
 
 // ── Near-net: the feature path (forgings, castings — secondaryMachining in to-cost-params) ───────────────────────────
@@ -432,12 +475,13 @@ function featurePath(partFile: string, family: string, weightKg: number, coredAb
   check(part, 'tool wear £', Math.round(cuttingMin * cd.wear * 10_000) / 10_000, P.secondaryMachiningConsumablesPerPart, 0.0002);
   const chuck = tp ? 2 : 0;
   const each = volumeCell ? FIXTURE.hydraulic : FIXTURE.dedicated;
-  const fixture = PRE ? fixturings * each : (fixturings - chuck) * each + chuck * FIXTURE.softJaws;     // lathe chuckings are soft jaws (finding L3)
+  const fixture = fixtureGBP(PRE ? fixturings * each : (fixturings - chuck) * each + chuck * FIXTURE.softJaws);     // lathe chuckings are soft jaws (finding L3)
   const prog = Math.round(Math.round((PROG.perFix * fixturings + PROG.perRow * included.length) * 100) / 100 * labourRate('lab-uk-engineer'));
   check(part, 'fixtures + programming £', fixture + prog, P.secondaryMachiningToolingCost, 0.5);
 }
 
 if (!existsSync(DUMP)) { console.error(`no dump at ${DUMP}`); process.exit(2); }
+console.log(`machining shadow model — ${contextLine(C)}`);
 fromSolid('Part1.stp', 'aluminium', 'mat-al6082-bar');
 fromSolid('MACH_Hydraulic_Manifold.stp', 'aluminium', 'mat-al6082-bar');
 fromSolid('MACH_Stepped_Shaft.stp', 'steel', 'mat-en8');
